@@ -113,7 +113,7 @@ function boot() {
 
   const totalRoutes = 9 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.7.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.8.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
