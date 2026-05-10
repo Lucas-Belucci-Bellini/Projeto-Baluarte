@@ -84,18 +84,7 @@ const ROUTE_INFO = {
     phase: 5,
     blurb: 'Hub com 5 calculadoras: Financeira, Conversores, Estatística, Engenharia, Saúde. (Científica entra na Fase 4.)'
   },
-  '/calc-cientifica': {
-    title: 'Calculadora Científica',
-    icon: '∑',
-    phase: 4,
-    blurb: 'Trigonometria, hiperbólicas, logaritmos, fatoriais, memória e histórico.'
-  },
-  '/calc-numerica': {
-    title: 'Calculadora Numérica',
-    icon: '01',
-    phase: 4,
-    blurb: 'Conversões Dec/Bin/Hex/Oct, bit ops, complemento de 2, IEEE 754 visualizer.'
-  },
+  /* /calc-cientifica e /calc-numerica implementados na Fase 4 */
   '/tabela-verdade': {
     title: 'Tabela Verdade',
     icon: '⊨',
