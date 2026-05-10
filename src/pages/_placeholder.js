@@ -78,13 +78,7 @@ const ROUTE_INFO = {
 
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
-  /* F4-F6 ativos */
-  '/cripto': {
-    title: 'Lab de Criptografia',
-    icon: '⚿',
-    phase: 7,
-    blurb: 'César, Base64/32/Hex, AES-GCM (Web Crypto), SHA family, Morse, Vigenère, Atbash, OTP.'
-  },
+  /* F4-F7 ativos */
   '/graficos': {
     title: 'Gerador de Gráficos',
     icon: '◢',
