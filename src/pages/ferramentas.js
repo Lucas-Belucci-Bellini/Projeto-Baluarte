@@ -1,9 +1,12 @@
 /**
  * Hub de Ferramentas — 35+ ferramentas em 7 categorias.
- * Busca textual + filtro por categoria. Cada card vai virar página real nas próximas fases.
+ * Busca textual + filtro por categoria. Cada card aponta para uma rota real
+ * (página implementada ou placeholder).
  */
 
 import { h, debounce, normalize, mount, cx } from '../utils/helpers.js';
+import { router } from '../core/router.js';
+import { toast } from '../utils/toast.js';
 
 /* ============================================================
  *  Catálogo de ferramentas (35 entradas, 7 categorias)
@@ -74,6 +77,53 @@ const CATEGORIES = [
   { id: 'sistema', label: 'Sistema' }
 ];
 
+/* ============================================================
+ *  Mapa: tool.id → rota registrada no router
+ *  Tools sem entrada aqui exibem um toast informando que ainda
+ *  não foi planejada uma rota dedicada (chegará em fases futuras).
+ * ============================================================ */
+const TOOL_ROUTES = {
+  /* Desenvolvimento */
+  editor: '/editor',
+  terminal: '/terminal',
+  regex: '/regex',
+  /* Cálculo */
+  'calc-cientifica': '/calc-cientifica',
+  'calc-financeira': '/calculadoras',
+  'calc-conversores': '/calculadoras',
+  'calc-estatistica': '/calculadoras',
+  'calc-engenharia': '/calculadoras',
+  'calc-saude': '/calculadoras',
+  'calc-numerica': '/calc-numerica',
+  'tabela-verdade': '/tabela-verdade',
+  /* Criptografia */
+  'cripto-cesar': '/cripto',
+  'cripto-base': '/cripto',
+  'cripto-aes': '/cripto',
+  'cripto-hash': '/cripto',
+  'cripto-misto': '/cripto',
+  /* Visualização */
+  graficos: '/graficos',
+  fft: '/fft',
+  simbolos: '/simbolos',
+  /* Mídia */
+  'media-hub': '/media',
+  videos: '/videos',
+  'audio-fft': '/fft',
+  /* Referência */
+  'tabela-periodica': '/tabela-periodica',
+  'modpack-mc': '/modpack',
+  'guia-pc': '/guia-pc',
+  'arsenal-ref': '/arsenal',
+  doutrina: '/arsenal',
+  /* Sistema */
+  cotacoes: '/economia',
+  jarvis: '/jarvis',
+  shadow: '/shadow',
+  config: '/perfil'
+  /* Sem rota dedicada (futuras): json, git-helper, colorpicker, qrcode */
+};
+
 /* ============================================================ */
 
 let activeCategory = 'all';
@@ -83,6 +133,7 @@ let countEl = null;
 
 function toolCard(tool) {
   const isReady = tool.phase <= 1;
+  const route = TOOL_ROUTES[tool.id] || null;
 
   return h(
     'div',
@@ -91,15 +142,20 @@ function toolCard(tool) {
       'data-status': isReady ? 'ready' : 'locked',
       'data-category': tool.category,
       'data-id': tool.id,
-      title: isReady
+      title: route
         ? `Abrir ${tool.name}`
-        : `${tool.name} — disponível na Fase ${tool.phase}`,
+        : `${tool.name} — sem rota dedicada (chega em fase futura)`,
       onclick: () => {
-        if (!isReady) {
-          alert(`"${tool.name}" será implementada na Fase ${tool.phase}.`);
-          return;
+        if (route) {
+          /* Rota existe: navega. Se for placeholder, a própria página informa fase. */
+          router.navigate(route);
+        } else {
+          /* Sem rota mapeada (ferramentas extras tipo JSON Studio, Color Picker, etc.) */
+          toast(`"${tool.name}" ainda não tem rota dedicada — chegará em fase futura.`, {
+            type: 'warning',
+            duration: 3200
+          });
         }
-        alert(`"${tool.name}" — Fase 1 entregou apenas o catálogo. A página real vem nas próximas fases.`);
       }
     },
     h(

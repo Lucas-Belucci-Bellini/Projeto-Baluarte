@@ -118,7 +118,7 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
-      `v0.1.0 · Fase ${CURRENT_PHASE}/5`
+      `v0.1.5 · Fase ${CURRENT_PHASE}/21`
     )
   );
 
