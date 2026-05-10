@@ -17,6 +17,7 @@ import { editorPage } from './pages/editor.js';
 import { terminalPage } from './pages/terminal.js';
 import { calcCientificaPage } from './pages/calc-cientifica.js';
 import { calcNumericaPage } from './pages/calc-numerica.js';
+import { calculadorasPage } from './pages/calculadoras/index.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -30,6 +31,7 @@ router.register('/editor', () => editorPage());
 router.register('/terminal', () => terminalPage());
 router.register('/calc-cientifica', () => calcCientificaPage());
 router.register('/calc-numerica', () => calcNumericaPage());
+router.register('/calculadoras', () => calculadorasPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
@@ -53,8 +55,8 @@ const PRINCIPAL_ROUTES = [
  *  Acessadas via Hub de Ferramentas e direto pela URL.
  * ============================================================== */
 const TOOL_ROUTES = [
-  /* /editor (F2), /terminal (F3), /calc-cientifica + /calc-numerica (F4) ativos */
-  '/calculadoras',
+  /* F2 /editor, F3 /terminal, F4 /calc-cientifica + /calc-numerica,
+     F5 /calculadoras (hub com 5 calcs) */
   '/tabela-verdade',
   '/cripto',
   '/graficos',
@@ -108,13 +110,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 6 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 7 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.4.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.5.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (6 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (7 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }

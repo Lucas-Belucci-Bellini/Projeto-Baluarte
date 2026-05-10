@@ -78,13 +78,8 @@ const ROUTE_INFO = {
 
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
-  '/calculadoras': {
-    title: 'Calculadoras',
-    icon: '∑',
-    phase: 5,
-    blurb: 'Hub com 5 calculadoras: Financeira, Conversores, Estatística, Engenharia, Saúde. (Científica entra na Fase 4.)'
-  },
-  /* /calc-cientifica e /calc-numerica implementados na Fase 4 */
+  /* /calculadoras implementado na Fase 5
+   * /calc-cientifica e /calc-numerica implementados na Fase 4 */
   '/tabela-verdade': {
     title: 'Tabela Verdade',
     icon: '⊨',
