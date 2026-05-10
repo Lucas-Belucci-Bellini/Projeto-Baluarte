@@ -77,13 +77,7 @@ const ROUTE_INFO = {
   },
 
   /* ===== Ferramentas (acessadas via Hub) =====
-   * /editor está implementado (Fase 2) — não tem placeholder */
-  '/terminal': {
-    title: 'Terminal Web',
-    icon: '▶',
-    phase: 3,
-    blurb: '60+ comandos POSIX-like. Filesystem virtual em memória, pipes, redirects e history navegável.'
-  },
+   * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
   '/calculadoras': {
     title: 'Calculadoras',
     icon: '∑',

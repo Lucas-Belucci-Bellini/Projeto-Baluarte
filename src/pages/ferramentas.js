@@ -18,7 +18,7 @@ import { toast } from '../utils/toast.js';
 const TOOLS = [
   /* === Desenvolvimento (5) === */
   { id: 'editor', name: 'Editor de Código', category: 'desenvolvimento', icon: '⌨', phase: 1, desc: '26 linguagens com syntax highlight, multi-tabs, runners JS/HTML/CSS/Markdown, persistência local.' },
-  { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 2, desc: '60+ comandos POSIX-like. Filesystem virtual, pipes e redirects.' },
+  { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 1, desc: '60+ comandos POSIX-like. Filesystem virtual persistente, pipes, redirects, history e autocomplete.' },
   { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 2, desc: 'Tester com highlight, grupos nomeados e cheatsheet integrada.' },
   { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 2, desc: 'Format, minify, diff, validação JSON Schema e conversão YAML/TOML.' },
   { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 2, desc: 'Cheatsheet interativa, gerador de .gitignore e templates de commit.' },
