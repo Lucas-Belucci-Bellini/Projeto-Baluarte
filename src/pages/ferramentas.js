@@ -18,19 +18,19 @@ import { toast } from '../utils/toast.js';
 const TOOLS = [
   /* === Desenvolvimento (5) === */
   { id: 'editor', name: 'Editor de Código', category: 'desenvolvimento', icon: '⌨', phase: 1, desc: '26 linguagens com syntax highlight, multi-tabs, runners JS/HTML/CSS/Markdown, persistência local.' },
-  { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 2, desc: '60+ comandos POSIX-like. Filesystem virtual, pipes e redirects.' },
+  { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 1, desc: '60+ comandos POSIX-like. Filesystem virtual persistente, pipes, redirects, history e autocomplete.' },
   { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 2, desc: 'Tester com highlight, grupos nomeados e cheatsheet integrada.' },
   { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 2, desc: 'Format, minify, diff, validação JSON Schema e conversão YAML/TOML.' },
   { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 2, desc: 'Cheatsheet interativa, gerador de .gitignore e templates de commit.' },
 
   /* === Cálculo (8) === */
-  { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 2, desc: 'Trigonometria, hiperbólicas, logaritmos, fatoriais, memória.' },
+  { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 1, desc: 'Trigonometria (deg/rad), hiperbólicas, logaritmos, fatoriais, memória, histórico.' },
   { id: 'calc-financeira', name: 'Financeira', category: 'calculo', icon: '$', phase: 2, desc: 'VP/VF, juros simples e compostos, TIR, VPL, parcelamento.' },
   { id: 'calc-conversores', name: 'Conversores', category: 'calculo', icon: '⇄', phase: 2, desc: 'Unidades SI, imperial, energia, dados, temperatura, tempo.' },
   { id: 'calc-estatistica', name: 'Estatística', category: 'calculo', icon: 'σ', phase: 2, desc: 'Média, mediana, desvio, regressão linear, distribuições.' },
   { id: 'calc-engenharia', name: 'Engenharia', category: 'calculo', icon: '⚙', phase: 2, desc: 'Lei de Ohm, divisor de tensão, Bernoulli, vigas, estruturas.' },
   { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 2, desc: 'IMC, TMB, macros, FC máxima, hidratação, ovulação.' },
-  { id: 'calc-numerica', name: 'Numérica (Bin/Hex/Oct)', category: 'calculo', icon: '01', phase: 2, desc: 'Conversões Dec/Bin/Hex/Oct. Bit ops. IEEE 754 visualizer.' },
+  { id: 'calc-numerica', name: 'Numérica (Bin/Hex/Oct)', category: 'calculo', icon: '01', phase: 1, desc: 'Conversões Dec/Bin/Hex/Oct simultâneas. Bit ops (AND/OR/XOR/NOT/shift). IEEE 754 visualizer.' },
   { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 2, desc: 'Chips lógicos, mapa de Karnaugh, simplificação.' },
 
   /* === Criptografia (5) === */

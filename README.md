@@ -41,8 +41,8 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 | 1 | `v0.1.0-fase1` | Foundation: SPA shell, router, layout, Home, Hub de Ferramentas | ✅ |
 | 1.5 | `v0.1.5-sync` | Sync: 17 rotas placeholder extras + sistema de toast | ✅ |
 | 2 | `v0.2.0` | Editor de Código (26 langs, runners, tabs) | ✅ |
-| 3 | `v0.3.0` | Terminal Web (60+ comandos, VFS, pipes) | ⏳ |
-| 4 | `v0.4.0` | Calc Científica + Numérica (IEEE 754) | ⏳ |
+| 3 | `v0.3.0` | Terminal Web (60+ comandos, VFS, pipes) | ✅ |
+| 4 | `v0.4.0` | Calc Científica + Numérica (IEEE 754) | ✅ |
 | 5 | `v0.5.0` | Calculadoras (Financeira, Conv, Estat, Eng, Saúde) | ⏳ |
 | 6 | `v0.6.0` | Tabela Verdade + Mapa de Karnaugh | ⏳ |
 | 7 | `v0.7.0` | Lab Cripto P1 (César, Base64, SHA, Morse) | ⏳ |

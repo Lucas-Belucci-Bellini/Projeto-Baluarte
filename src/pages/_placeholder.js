@@ -77,31 +77,14 @@ const ROUTE_INFO = {
   },
 
   /* ===== Ferramentas (acessadas via Hub) =====
-   * /editor está implementado (Fase 2) — não tem placeholder */
-  '/terminal': {
-    title: 'Terminal Web',
-    icon: '▶',
-    phase: 3,
-    blurb: '60+ comandos POSIX-like. Filesystem virtual em memória, pipes, redirects e history navegável.'
-  },
+   * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
   '/calculadoras': {
     title: 'Calculadoras',
     icon: '∑',
     phase: 5,
     blurb: 'Hub com 5 calculadoras: Financeira, Conversores, Estatística, Engenharia, Saúde. (Científica entra na Fase 4.)'
   },
-  '/calc-cientifica': {
-    title: 'Calculadora Científica',
-    icon: '∑',
-    phase: 4,
-    blurb: 'Trigonometria, hiperbólicas, logaritmos, fatoriais, memória e histórico.'
-  },
-  '/calc-numerica': {
-    title: 'Calculadora Numérica',
-    icon: '01',
-    phase: 4,
-    blurb: 'Conversões Dec/Bin/Hex/Oct, bit ops, complemento de 2, IEEE 754 visualizer.'
-  },
+  /* /calc-cientifica e /calc-numerica implementados na Fase 4 */
   '/tabela-verdade': {
     title: 'Tabela Verdade',
     icon: '⊨',
