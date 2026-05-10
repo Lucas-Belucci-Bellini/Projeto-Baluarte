@@ -31,7 +31,7 @@ const TOOLS = [
   { id: 'calc-engenharia', name: 'Engenharia', category: 'calculo', icon: '⚙', phase: 1, desc: 'Lei de Ohm, divisor de tensão, resistor color code, frequência↔λ, Stevin (hidrostática).' },
   { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 1, desc: 'IMC + classificação, TMB Mifflin, macros, FC máxima e zonas Karvonen, hidratação.' },
   { id: 'calc-numerica', name: 'Numérica (Bin/Hex/Oct)', category: 'calculo', icon: '01', phase: 1, desc: 'Conversões Dec/Bin/Hex/Oct simultâneas. Bit ops (AND/OR/XOR/NOT/shift). IEEE 754 visualizer.' },
-  { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 2, desc: 'Chips lógicos, mapa de Karnaugh, simplificação.' },
+  { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 1, desc: 'Parser de expressões lógicas (AND/OR/NOT/XOR/IMPLIES/IFF), tabela completa, K-map (até 4 vars), SOP/POS canônicas, simplificação Quine-McCluskey.' },
 
   /* === Criptografia (5) === */
   { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 2, desc: 'Cifra clássica com shift configurável e brute force.' },
