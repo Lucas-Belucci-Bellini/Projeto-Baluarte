@@ -1,0 +1,262 @@
+/* ============================================================
+ *  Lab de Criptografia (P1 e P2) — Fase 7+8
+ * ============================================================ */
+
+.page-cripto {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+/* ===== Tabs ===== */
+.cripto-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-md);
+  padding: 4px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+}
+.cripto-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cripto-tab:hover:not(:disabled) {
+  background: var(--color-cyan-soft);
+  color: var(--color-cyan);
+}
+.cripto-tab.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan-edge);
+  color: var(--color-cyan);
+  box-shadow: 0 0 12px var(--color-cyan-edge);
+}
+.cripto-tab__icon {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+}
+.cripto-tab--locked {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
+/* ===== Tile ===== */
+.cripto-tile {
+  background: linear-gradient(180deg, var(--color-bg-elevated), var(--color-surface));
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.cripto-tile__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-cyan);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  margin: 0;
+  border-bottom: var(--border-thin);
+  padding-bottom: 8px;
+  font-family: var(--font-mono);
+}
+.cripto-tile__title-sub {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-magenta);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  margin-top: var(--space-sm);
+}
+.cripto-tile__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.cripto-tile__grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+.cripto-tile__grid input,
+.cripto-tile__grid textarea,
+.cripto-tile__grid select {
+  font-size: 14px;
+  text-transform: none;
+  font-family: var(--font-mono);
+}
+.cripto-tile__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+@media (max-width: 700px) {
+  .cripto-tile__row { grid-template-columns: 1fr; }
+}
+.cripto-tile__col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ===== Output ===== */
+.cripto-out {
+  background: var(--color-bg);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-cyan);
+  word-break: break-all;
+  white-space: pre-wrap;
+  min-height: 24px;
+  line-height: 1.5;
+}
+.cripto-out.is-error {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+.cripto-out__label {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+/* ===== Brute force ===== */
+.cripto-bf {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 320px;
+  overflow-y: auto;
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  background: var(--color-bg);
+}
+.cripto-bf__row {
+  display: grid;
+  grid-template-columns: 80px 1fr 60px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.cripto-bf__row:hover {
+  background: var(--color-cyan-soft);
+}
+.cripto-bf__row.is-best {
+  background: rgba(255, 0, 170, 0.08);
+  border-left: 2px solid var(--color-magenta);
+}
+.cripto-bf__shift {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.cripto-bf__text {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cripto-bf__score {
+  font-size: 11px;
+  text-align: right;
+}
+
+/* ===== Base grid ===== */
+.cripto-base-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.cripto-base-row {
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  background: var(--color-surface);
+}
+.cripto-base-row__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.cripto-base-row__head strong {
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+}
+.cripto-base-row__head .btn {
+  margin-left: auto;
+}
+
+/* ===== Hash grid ===== */
+.cripto-hash-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cripto-hash-row {
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: var(--color-surface);
+}
+.cripto-hash-row.is-info {
+  background: var(--color-warning-soft);
+  border-color: var(--color-warning);
+}
+.cripto-hash-row__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.cripto-hash-row__head strong {
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+}
+.cripto-hash-row__head .btn {
+  margin-left: auto;
+}
+.cripto-hash__value {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* ===== Morse ===== */
+.cripto-morse-out {
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  line-height: 1.7;
+  color: var(--color-magenta);
+  text-shadow: 0 0 4px rgba(255, 0, 170, 0.4);
+}

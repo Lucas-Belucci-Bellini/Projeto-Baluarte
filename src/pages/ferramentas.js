@@ -34,11 +34,12 @@ const TOOLS = [
   { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 1, desc: 'Parser de expressões lógicas (AND/OR/NOT/XOR/IMPLIES/IFF), tabela completa, K-map (até 4 vars), SOP/POS canônicas, simplificação Quine-McCluskey.' },
 
   /* === Criptografia (5) === */
-  { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 2, desc: 'Cifra clássica com shift configurável e brute force.' },
-  { id: 'cripto-base', name: 'Base64 / Base32 / Hex', category: 'cripto', icon: '⬢', phase: 2, desc: 'Encode/decode em múltiplas bases.' },
-  { id: 'cripto-aes', name: 'AES-GCM', category: 'cripto', icon: '⚿', phase: 2, desc: 'Criptografia simétrica autenticada via Web Crypto API nativa.' },
-  { id: 'cripto-hash', name: 'Hash (SHA family)', category: 'cripto', icon: '#', phase: 2, desc: 'SHA-1, SHA-256, SHA-384, SHA-512, MD5 (info).' },
-  { id: 'cripto-misto', name: 'Morse · Vigenère · Atbash · OTP', category: 'cripto', icon: '· ─', phase: 2, desc: 'Cifras clássicas e modernas em um único laboratório.' },
+  { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 1, desc: 'Cifra clássica com shift 0-25, brute force ranqueado por score PT.' },
+  { id: 'cripto-base', name: 'Base64 / Base32 / Hex', category: 'cripto', icon: '⬢', phase: 1, desc: 'Encode simultâneo nas 3 bases + decoder com detecção de formato.' },
+  { id: 'cripto-aes', name: 'AES-GCM', category: 'cripto', icon: '⚿', phase: 8, desc: 'Criptografia simétrica autenticada via Web Crypto API.' },
+  { id: 'cripto-hash', name: 'Hash (SHA family)', category: 'cripto', icon: '#', phase: 1, desc: 'SHA-1, SHA-256, SHA-384, SHA-512 simultâneos via Web Crypto.' },
+  { id: 'cripto-morse', name: 'Código Morse', category: 'cripto', icon: '· ─', phase: 1, desc: 'Encode/decode + áudio (Web Audio API) com WPM e frequência ajustáveis.' },
+  { id: 'cripto-misto', name: 'Vigenère · Atbash · OTP', category: 'cripto', icon: '⊕', phase: 8, desc: 'Cifras polialfabéticas e One-Time Pad (Fase 8).' },
 
   /* === Visualização (4) === */
   { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 2, desc: '12 tipos (linha, barra, pizza, radar, área, scatter, ...) em Canvas puro.' },
@@ -101,6 +102,7 @@ const TOOL_ROUTES = {
   'cripto-base': '/cripto',
   'cripto-aes': '/cripto',
   'cripto-hash': '/cripto',
+  'cripto-morse': '/cripto',
   'cripto-misto': '/cripto',
   /* Visualização */
   graficos: '/graficos',
