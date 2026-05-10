@@ -1,0 +1,348 @@
+/* ============================================================
+ *  Editor de Código — estilos específicos
+ * ============================================================ */
+
+.page-editor {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+  min-height: 600px;
+}
+
+.editor-wrap {
+  display: grid;
+  grid-template-rows: auto auto 1fr 1fr;
+  flex: 1;
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+  box-shadow: var(--shadow-md);
+  min-height: 0;
+}
+
+/* ===== Tabs bar ===== */
+.editor-tabs {
+  background: var(--color-bg);
+  border-bottom: var(--border-thin);
+  overflow-x: auto;
+}
+.editor-tabs::-webkit-scrollbar { height: 4px; }
+
+.editor-tabs__list {
+  display: flex;
+  align-items: stretch;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.editor-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0 var(--space-md);
+  background: transparent;
+  border: none;
+  border-right: var(--border-thin);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  user-select: none;
+  flex-shrink: 0;
+}
+.editor-tab:hover {
+  background: var(--color-cyan-soft);
+  color: var(--color-cyan);
+}
+.editor-tab.is-active {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+}
+.editor-tab.is-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+}
+.editor-tab__icon {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+}
+.editor-tab__name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.editor-tab__close {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-xs);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.editor-tab__close:hover {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+.editor-tab--add {
+  width: 36px;
+  justify-content: center;
+  padding: 0;
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cyan);
+}
+.editor-tab--add:hover {
+  background: var(--color-cyan-soft);
+}
+
+/* ===== Toolbar ===== */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg);
+  border-bottom: var(--border-thin);
+  flex-wrap: wrap;
+}
+.editor-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.editor-toolbar__lang {
+  width: auto;
+  min-width: 180px;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+.editor-toolbar__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-left: auto;
+}
+
+/* ===== Editor area ===== */
+.editor-area {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  background: var(--color-bg);
+  overflow: hidden;
+  position: relative;
+  min-height: 200px;
+}
+
+.editor-lines {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 12px 12px 12px 16px;
+  text-align: right;
+  user-select: none;
+  white-space: pre;
+  overflow: hidden;
+  border-right: var(--border-thin);
+  min-width: 48px;
+}
+
+.editor-area__main {
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-textarea,
+.editor-highlight {
+  position: absolute;
+  inset: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 12px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  white-space: pre;
+  word-wrap: normal;
+  overflow: auto;
+  tab-size: 2;
+  -moz-tab-size: 2;
+}
+
+.editor-textarea {
+  color: transparent;
+  caret-color: var(--color-cyan);
+  resize: none;
+  z-index: 2;
+  outline: none;
+}
+.editor-textarea::selection {
+  background: rgba(0, 240, 255, 0.25);
+  color: transparent;
+}
+
+.editor-highlight {
+  z-index: 1;
+  pointer-events: none;
+  color: var(--color-text-primary);
+}
+.editor-highlight code {
+  font: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  white-space: pre;
+}
+
+/* ===== Tokens ===== */
+.tk { font: inherit; }
+.tk--keyword { color: var(--color-magenta); font-weight: 600; }
+.tk--string  { color: #ffd76b; }
+.tk--number  { color: #ff9d6b; }
+.tk--comment { color: var(--color-text-muted); font-style: italic; }
+.tk--punct   { color: #93a4bf; }
+.tk--attr    { color: var(--color-cyan); font-style: italic; }
+.tk--heading { color: var(--color-cyan); font-weight: 700; }
+.tk--bold    { color: var(--color-text-primary); font-weight: 700; }
+.tk--italic  { color: var(--color-text-primary); font-style: italic; }
+.tk--code    { color: #ffd76b; background: var(--color-surface-2); padding: 0 4px; border-radius: 3px; }
+.tk--link    { color: var(--color-magenta); text-decoration: underline; }
+
+/* ===== Preview ===== */
+.editor-preview {
+  background: var(--color-bg-elevated);
+  border-top: var(--border-base);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.editor-preview__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+.editor-preview__iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+  flex: 1;
+}
+.editor-preview__html {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-lg);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+.editor-preview__logs {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-warning);
+  white-space: pre-wrap;
+}
+
+/* Markdown rendered */
+.md-preview h1, .md-preview h2, .md-preview h3,
+.md-preview h4, .md-preview h5, .md-preview h6 {
+  margin: 16px 0 8px;
+  color: var(--color-text-primary);
+}
+.md-preview h1 { font-size: 24px; border-bottom: var(--border-base); padding-bottom: 8px; }
+.md-preview h2 { font-size: 20px; }
+.md-preview p  { margin: 8px 0; line-height: 1.7; color: var(--color-text-secondary); }
+.md-preview ul { margin: 8px 0 8px 24px; }
+.md-preview li { margin: 4px 0; }
+.md-preview code {
+  background: var(--color-surface);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+}
+.md-preview pre {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.md-preview pre code {
+  background: none;
+  padding: 0;
+  color: var(--color-text-primary);
+}
+.md-preview a {
+  color: var(--color-cyan);
+  text-decoration: underline;
+}
+
+kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--color-surface);
+  color: var(--color-cyan);
+  border: var(--border-thin);
+  border-radius: var(--radius-xs);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .page-editor {
+    height: auto;
+    min-height: 100vh;
+  }
+  .editor-wrap {
+    grid-template-rows: auto auto auto auto;
+  }
+  .editor-area {
+    min-height: 280px;
+  }
+  .editor-preview {
+    min-height: 240px;
+  }
+  .editor-toolbar__lang {
+    min-width: 140px;
+  }
+  .editor-tab__name {
+    max-width: 100px;
+  }
+}

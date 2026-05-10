@@ -76,13 +76,8 @@ const ROUTE_INFO = {
     blurb: 'Camada de autenticação SHA-256×100, proteção de áreas sensíveis.'
   },
 
-  /* ===== Ferramentas (acessadas via Hub) ===== */
-  '/editor': {
-    title: 'Editor de Código',
-    icon: '⌨',
-    phase: 2,
-    blurb: '26 linguagens com syntax highlight (Prism.js). Multi-abas, runners para JS/HTML/CSS, integração com terminal. Vai virar IDE completa na Fase 21.'
-  },
+  /* ===== Ferramentas (acessadas via Hub) =====
+   * /editor está implementado (Fase 2) — não tem placeholder */
   '/terminal': {
     title: 'Terminal Web',
     icon: '▶',
