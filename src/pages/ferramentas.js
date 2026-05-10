@@ -25,11 +25,11 @@ const TOOLS = [
 
   /* === Cálculo (8) === */
   { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 1, desc: 'Trigonometria (deg/rad), hiperbólicas, logaritmos, fatoriais, memória, histórico.' },
-  { id: 'calc-financeira', name: 'Financeira', category: 'calculo', icon: '$', phase: 2, desc: 'VP/VF, juros simples e compostos, TIR, VPL, parcelamento.' },
-  { id: 'calc-conversores', name: 'Conversores', category: 'calculo', icon: '⇄', phase: 2, desc: 'Unidades SI, imperial, energia, dados, temperatura, tempo.' },
-  { id: 'calc-estatistica', name: 'Estatística', category: 'calculo', icon: 'σ', phase: 2, desc: 'Média, mediana, desvio, regressão linear, distribuições.' },
-  { id: 'calc-engenharia', name: 'Engenharia', category: 'calculo', icon: '⚙', phase: 2, desc: 'Lei de Ohm, divisor de tensão, Bernoulli, vigas, estruturas.' },
-  { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 2, desc: 'IMC, TMB, macros, FC máxima, hidratação, ovulação.' },
+  { id: 'calc-financeira', name: 'Financeira', category: 'calculo', icon: '$', phase: 1, desc: 'Juros simples/compostos, VPL/TIR, Parcelamento Price, conversão de taxa.' },
+  { id: 'calc-conversores', name: 'Conversores', category: 'calculo', icon: '⇄', phase: 1, desc: '10 categorias, 80+ unidades: comprimento, massa, temperatura, energia, tempo, dados, velocidade, pressão, ângulo.' },
+  { id: 'calc-estatistica', name: 'Estatística', category: 'calculo', icon: 'σ', phase: 1, desc: 'Média, mediana, moda, desvio, variância, quartis + regressão linear (R², predição).' },
+  { id: 'calc-engenharia', name: 'Engenharia', category: 'calculo', icon: '⚙', phase: 1, desc: 'Lei de Ohm, divisor de tensão, resistor color code, frequência↔λ, Stevin (hidrostática).' },
+  { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 1, desc: 'IMC + classificação, TMB Mifflin, macros, FC máxima e zonas Karvonen, hidratação.' },
   { id: 'calc-numerica', name: 'Numérica (Bin/Hex/Oct)', category: 'calculo', icon: '01', phase: 1, desc: 'Conversões Dec/Bin/Hex/Oct simultâneas. Bit ops (AND/OR/XOR/NOT/shift). IEEE 754 visualizer.' },
   { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 2, desc: 'Chips lógicos, mapa de Karnaugh, simplificação.' },
 
