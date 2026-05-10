@@ -44,7 +44,7 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 | 3 | `v0.3.0` | Terminal Web (60+ comandos, VFS, pipes) | ✅ |
 | 4 | `v0.4.0` | Calc Científica + Numérica (IEEE 754) | ✅ |
 | 5 | `v0.5.0` | Calculadoras (Financeira, Conv, Estat, Eng, Saúde) | ✅ |
-| 6 | `v0.6.0` | Tabela Verdade + Mapa de Karnaugh | ⏳ |
+| 6 | `v0.6.0` | Tabela Verdade + Mapa de Karnaugh | ✅ |
 | 7 | `v0.7.0` | Lab Cripto P1 (César, Base64, SHA, Morse) | ⏳ |
 | 8 | `v0.8.0` | Lab Cripto P2 (AES-GCM, Vigenère, Atbash, OTP) | ⏳ |
 | 9 | `v0.9.0` | Gerador de Gráficos (Canvas 2D, 12 tipos) | ⏳ |

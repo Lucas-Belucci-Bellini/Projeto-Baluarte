@@ -78,14 +78,7 @@ const ROUTE_INFO = {
 
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
-  /* /calculadoras implementado na Fase 5
-   * /calc-cientifica e /calc-numerica implementados na Fase 4 */
-  '/tabela-verdade': {
-    title: 'Tabela Verdade',
-    icon: '⊨',
-    phase: 6,
-    blurb: 'Parser de expressões lógicas, mapa de Karnaugh, simplificação automática.'
-  },
+  /* F4-F6 ativos */
   '/cripto': {
     title: 'Lab de Criptografia',
     icon: '⚿',

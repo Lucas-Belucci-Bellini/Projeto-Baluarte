@@ -46,7 +46,7 @@ export const NAV_GROUPS = [
   }
 ];
 
-const CURRENT_PHASE = 5;
+const CURRENT_PHASE = 6;
 
 function navItem(item, currentPath) {
   const isActive = currentPath === item.path;
@@ -118,7 +118,7 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
-      `v0.5.0 · Fase ${CURRENT_PHASE}/21`
+      `v0.6.0 · Fase ${CURRENT_PHASE}/21`
     )
   );
 
