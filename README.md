@@ -32,17 +32,34 @@ npm run preview    # serve dist/ para teste
 
 ---
 
-## Roadmap em 5 fases
+## Roadmap em 21 fases
 
 Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 
 | Fase | Tag | Conteúdo | Status |
 |---|---|---|---|
-| 1 | `v0.1.0-fase1` | Foundation: SPA shell, router, layout, Home, Hub de Ferramentas, 11 placeholders | ✅ |
-| 2 | `v0.2.0-fase2` | Ferramentas Técnicas: Editor, Terminal, Calculadoras, Cripto, Gráficos, Símbolos | ⏳ |
-| 3 | `v0.3.0-fase3` | Conteúdo: Arsenal, Biblioteca, Elites, CiberSeg, Academia | ⏳ |
-| 4 | `v0.4.0-fase4` | Mídia + Universo: FFT, Media Hub, Vídeos, Universo, Modpack, Tabela Periódica | ⏳ |
-| 5 | `v1.0.0-fase5` | IA + PWA + Polish: J.A.R.V.I.S., Mark 11 IA Proprietária, Service Worker, Auth | ⏳ |
+| 1 | `v0.1.0-fase1` | Foundation: SPA shell, router, layout, Home, Hub de Ferramentas | ✅ |
+| 1.5 | `v0.1.5-sync` | Sync: 17 rotas placeholder extras + sistema de toast | ✅ |
+| 2 | `v0.2.0` | Editor de Código (26 langs, runners, tabs) | ⏳ |
+| 3 | `v0.3.0` | Terminal Web (60+ comandos, VFS, pipes) | ⏳ |
+| 4 | `v0.4.0` | Calc Científica + Numérica (IEEE 754) | ⏳ |
+| 5 | `v0.5.0` | Calculadoras (Financeira, Conv, Estat, Eng, Saúde) | ⏳ |
+| 6 | `v0.6.0` | Tabela Verdade + Mapa de Karnaugh | ⏳ |
+| 7 | `v0.7.0` | Lab Cripto P1 (César, Base64, SHA, Morse) | ⏳ |
+| 8 | `v0.8.0` | Lab Cripto P2 (AES-GCM, Vigenère, Atbash, OTP) | ⏳ |
+| 9 | `v0.9.0` | Gerador de Gráficos (Canvas 2D, 12 tipos) | ⏳ |
+| 10 | `v0.10.0` | Símbolos (1200+ Unicode) + Lab de Regex | ⏳ |
+| 11 | `v0.11.0` | Arsenal (159 armas + veículos + doutrina) | ⏳ |
+| 12 | `v0.12.0` | Biblioteca (24+ arcos, viewer, retomar leitura) | ⏳ |
+| 13 | `v0.13.0` | Elites (18-26 equipes ALFA→ZETA, fichas) | ⏳ |
+| 14 | `v0.14.0` | CiberSeg + Academia (10 langs com tutoriais) | ⏳ |
+| 15 | `v0.15.0` | Visualizador FFT + Media Hub (scanner local) | ⏳ |
+| 16 | `v0.16.0` | Central de Vídeos + Universo Hub | ⏳ |
+| 17 | `v0.17.0` | Tabela Periódica + Modpack MC + Guia PC + Logic Sim | ⏳ |
+| 18 | `v0.18.0` | PWA offline + Shadow Bridge auth + Perfil | ⏳ |
+| 19 | `v0.19.0` | Economia + Cotações + JARVIS (chat básico) | ⏳ |
+| 20 | `v0.20.0` | JARVIS completo (4 modos, agente, memória) | ⏳ |
+| 21 | `v1.0.0` | Editor → IDE completa + IA Proprietária Mark 11 | ⏳ |
 
 ---
 

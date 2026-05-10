@@ -1,9 +1,10 @@
 /**
- * Bootstrap principal — Baluarte Mark XIII (Fase 1).
+ * Bootstrap principal — Baluarte Mark XIII (Fase 1.5).
  * 1. Monta o shell (sidebar + header + main).
- * 2. Registra as 13 rotas no router.
+ * 2. Registra TODAS as rotas (13 principais + 17 ferramentas = 30 rotas).
  * 3. Conecta o router ao shell.
- * 4. Inicia.
+ * 4. Inicializa toast system.
+ * 5. Inicia.
  */
 
 import { router } from './core/router.js';
@@ -13,35 +14,66 @@ import { mountShell, renderPage } from './layout/shell.js';
 import { homePage } from './pages/home.js';
 import { ferramentasPage } from './pages/ferramentas.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
+import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
 
 /* ==============================================================
- *  Registro de rotas
- *  Fase 1: /home + /ferramentas implementadas.
- *  Fases 2-5: rotas registradas com placeholderPage(path).
+ *  Rotas funcionais (Fase 1)
  * ============================================================== */
-
 router.register('/home', () => homePage());
 router.register('/ferramentas', () => ferramentasPage());
 
-router.register('/biblioteca', () => placeholderPage('/biblioteca'));
-router.register('/elites', () => placeholderPage('/elites'));
-router.register('/lab', () => placeholderPage('/lab'));
-router.register('/economia', () => placeholderPage('/economia'));
-router.register('/academia', () => placeholderPage('/academia'));
-router.register('/arsenal', () => placeholderPage('/arsenal'));
-router.register('/ciberseg', () => placeholderPage('/ciberseg'));
-router.register('/universo', () => placeholderPage('/universo'));
-router.register('/perfil', () => placeholderPage('/perfil'));
-router.register('/jarvis', () => placeholderPage('/jarvis'));
-router.register('/shadow', () => placeholderPage('/shadow'));
+/* ==============================================================
+ *  Rotas de páginas principais (placeholders — Fases 11-20)
+ * ============================================================== */
+const PRINCIPAL_ROUTES = [
+  '/biblioteca',
+  '/elites',
+  '/lab',
+  '/economia',
+  '/academia',
+  '/arsenal',
+  '/ciberseg',
+  '/universo',
+  '/perfil',
+  '/jarvis',
+  '/shadow'
+];
+
+/* ==============================================================
+ *  Rotas de ferramentas (placeholders — Fases 2-21)
+ *  Acessadas via Hub de Ferramentas e direto pela URL.
+ * ============================================================== */
+const TOOL_ROUTES = [
+  '/editor',
+  '/terminal',
+  '/calculadoras',
+  '/calc-cientifica',
+  '/calc-numerica',
+  '/tabela-verdade',
+  '/cripto',
+  '/graficos',
+  '/simbolos',
+  '/regex',
+  '/fft',
+  '/media',
+  '/videos',
+  '/tabela-periodica',
+  '/modpack',
+  '/guia-pc',
+  '/logic-sim',
+  '/ia-proprietaria'
+];
+
+[...PRINCIPAL_ROUTES, ...TOOL_ROUTES].forEach((path) => {
+  router.register(path, () => placeholderPage(path));
+});
 
 router.setNotFound((path) => notFoundPage(path));
 
 /* ==============================================================
  *  Wire router → shell
  * ============================================================== */
-
 bus.on('route:change', ({ view, path }) => {
   if (view) renderPage(view, path);
 });
@@ -58,7 +90,6 @@ bus.on('route:error', ({ path, error }) => {
 /* ==============================================================
  *  Inicialização
  * ============================================================== */
-
 function boot() {
   const root = $('#app');
   if (!root) {
@@ -69,14 +100,16 @@ function boot() {
   appState.set({ bootedAt: Date.now() });
 
   mountShell(root);
+  initToast();
   router.start('/home');
 
+  const totalRoutes = 2 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · Fase 1 ativa',
+    '%c⬡ BALUARTE — Mark XIII · v0.1.5-sync',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    '%cRotas registradas: 13 · Páginas funcionais: 2 (home, ferramentas) · Placeholders: 11',
+    `%cRotas: ${totalRoutes} (2 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }
@@ -89,7 +122,7 @@ if (document.readyState === 'loading') {
 
 /* ==============================================================
  *  Service Worker — registrado em modo passivo (skeleton).
- *  Cache real só na Fase 5.
+ *  Cache real só na Fase 18.
  * ============================================================== */
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => {

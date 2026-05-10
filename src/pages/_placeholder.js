@@ -7,72 +7,183 @@ import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 
 const ROUTE_INFO = {
+  /* ===== Páginas principais (13) ===== */
   '/biblioteca': {
     title: 'Biblioteca',
     icon: '◫',
-    phase: 3,
+    phase: 12,
     blurb:
       'Arquivo das Crônicas da Baluarte: 24+ arcos narrativos, viewer com capítulos e retomada de leitura.'
   },
   '/elites': {
     title: 'Elites',
     icon: '◆',
-    phase: 3,
-    blurb: '18-20 equipes ALFA → ZETA, fichas de operadores, hierarquia tática completa.'
+    phase: 13,
+    blurb: '18-26 equipes ALFA → ZETA, fichas de operadores, hierarquia tática completa.'
   },
   '/lab': {
     title: 'Lab Científico',
     icon: '⚛',
-    phase: 2,
+    phase: 17,
     blurb: 'Ferramentas científicas, simuladores, calculadoras avançadas e ambiente de experimentação.'
   },
   '/economia': {
     title: 'Economia',
     icon: '◈',
-    phase: 5,
+    phase: 19,
     blurb: 'Cotações live (câmbio + crypto), dashboards financeiros e indicadores macro.'
   },
   '/academia': {
     title: 'Academia',
     icon: '◬',
-    phase: 3,
+    phase: 14,
     blurb: '10 linguagens com tutoriais offline, trilhas de aprendizado e desafios.'
   },
   '/arsenal': {
     title: 'Arsenal',
     icon: '⌖',
-    phase: 3,
+    phase: 11,
     blurb: '159 armas catalogadas + veículos + doutrina de combate.'
   },
   '/ciberseg': {
     title: 'CiberSeg',
     icon: '⚿',
-    phase: 3,
+    phase: 14,
     blurb: 'Enciclopédia de ataque e defesa cibernética, ferramentas, OPSEC.'
   },
   '/universo': {
     title: 'Universo',
     icon: '✦',
-    phase: 4,
+    phase: 16,
     blurb: 'Hub de universos: Halo, DOOM, Horror, Endfield e crossovers.'
   },
   '/perfil': {
     title: 'Perfil',
     icon: '◔',
-    phase: 5,
+    phase: 18,
     blurb: 'Perfil do operador Lucas Belucci Bellini, links e estatísticas pessoais.'
   },
   '/jarvis': {
     title: 'J.A.R.V.I.S.',
     icon: '◉',
-    phase: 5,
+    phase: 20,
     blurb: 'Assistente IA com 4 modos (Claude API + Ollama local), memória em IndexedDB e chamada de ferramentas.'
   },
   '/shadow': {
     title: 'Shadow Bridge',
     icon: '◐',
-    phase: 5,
+    phase: 18,
     blurb: 'Camada de autenticação SHA-256×100, proteção de áreas sensíveis.'
+  },
+
+  /* ===== Ferramentas (acessadas via Hub) ===== */
+  '/editor': {
+    title: 'Editor de Código',
+    icon: '⌨',
+    phase: 2,
+    blurb: '26 linguagens com syntax highlight (Prism.js). Multi-abas, runners para JS/HTML/CSS, integração com terminal. Vai virar IDE completa na Fase 21.'
+  },
+  '/terminal': {
+    title: 'Terminal Web',
+    icon: '▶',
+    phase: 3,
+    blurb: '60+ comandos POSIX-like. Filesystem virtual em memória, pipes, redirects e history navegável.'
+  },
+  '/calculadoras': {
+    title: 'Calculadoras',
+    icon: '∑',
+    phase: 5,
+    blurb: 'Hub com 5 calculadoras: Financeira, Conversores, Estatística, Engenharia, Saúde. (Científica entra na Fase 4.)'
+  },
+  '/calc-cientifica': {
+    title: 'Calculadora Científica',
+    icon: '∑',
+    phase: 4,
+    blurb: 'Trigonometria, hiperbólicas, logaritmos, fatoriais, memória e histórico.'
+  },
+  '/calc-numerica': {
+    title: 'Calculadora Numérica',
+    icon: '01',
+    phase: 4,
+    blurb: 'Conversões Dec/Bin/Hex/Oct, bit ops, complemento de 2, IEEE 754 visualizer.'
+  },
+  '/tabela-verdade': {
+    title: 'Tabela Verdade',
+    icon: '⊨',
+    phase: 6,
+    blurb: 'Parser de expressões lógicas, mapa de Karnaugh, simplificação automática.'
+  },
+  '/cripto': {
+    title: 'Lab de Criptografia',
+    icon: '⚿',
+    phase: 7,
+    blurb: 'César, Base64/32/Hex, AES-GCM (Web Crypto), SHA family, Morse, Vigenère, Atbash, OTP.'
+  },
+  '/graficos': {
+    title: 'Gerador de Gráficos',
+    icon: '◢',
+    phase: 9,
+    blurb: '12 tipos de gráficos em Canvas 2D puro: linha, barra, pizza, radar, área, scatter, candle e mais.'
+  },
+  '/simbolos': {
+    title: 'Hub de Símbolos',
+    icon: '✦',
+    phase: 10,
+    blurb: '1200+ símbolos Unicode categorizados, busca, copy-to-clipboard.'
+  },
+  '/regex': {
+    title: 'Lab de Regex',
+    icon: '✱',
+    phase: 10,
+    blurb: 'Tester de regex com explicação passo-a-passo, grupos nomeados, cheatsheet.'
+  },
+  '/fft': {
+    title: 'Visualizador FFT',
+    icon: '~',
+    phase: 15,
+    blurb: 'Web Audio API, 6 modos de visualização espectral em tempo real.'
+  },
+  '/media': {
+    title: 'Media Hub',
+    icon: '◫',
+    phase: 15,
+    blurb: 'Scanner local de mídia via File System Access API. Organização e player.'
+  },
+  '/videos': {
+    title: 'Central de Vídeos',
+    icon: '▶',
+    phase: 16,
+    blurb: 'YouTube embeds + arquivos locais, playlists customizadas.'
+  },
+  '/tabela-periodica': {
+    title: 'Tabela Periódica',
+    icon: '⚛',
+    phase: 17,
+    blurb: '118 elementos interativos com propriedades, isótopos e configuração eletrônica.'
+  },
+  '/modpack': {
+    title: 'Modpack Minecraft',
+    icon: '◧',
+    phase: 17,
+    blurb: '490+ mods catalogados com tier list, dependências e compatibilidades.'
+  },
+  '/guia-pc': {
+    title: 'Guia para Montar PC',
+    icon: '◨',
+    phase: 17,
+    blurb: 'Tutorial passo-a-passo, presets de uso, compatibilidade de peças.'
+  },
+  '/logic-sim': {
+    title: 'Simulador de Lógica',
+    icon: '◐',
+    phase: 17,
+    blurb: 'Portas lógicas drag-and-drop, simulação de circuitos digitais.'
+  },
+  '/ia-proprietaria': {
+    title: 'IA Proprietária Mark 11',
+    icon: '◉',
+    phase: 21,
+    blurb: 'Sistema dinâmico de Skills (SKILL.md). IA embarcada no Baluarte com referências aos repos Anthropic/Gemini.'
   }
 };
 
