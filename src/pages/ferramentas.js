@@ -36,10 +36,12 @@ const TOOLS = [
   /* === Criptografia (5) === */
   { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 1, desc: 'Cifra clássica com shift 0-25, brute force ranqueado por score PT.' },
   { id: 'cripto-base', name: 'Base64 / Base32 / Hex', category: 'cripto', icon: '⬢', phase: 1, desc: 'Encode simultâneo nas 3 bases + decoder com detecção de formato.' },
-  { id: 'cripto-aes', name: 'AES-GCM', category: 'cripto', icon: '⚿', phase: 8, desc: 'Criptografia simétrica autenticada via Web Crypto API.' },
+  { id: 'cripto-aes', name: 'AES-GCM', category: 'cripto', icon: '⚿', phase: 1, desc: 'AES-256 autenticado via Web Crypto. Chave derivada por PBKDF2-SHA256 (100k iter), salt+IV random.' },
   { id: 'cripto-hash', name: 'Hash (SHA family)', category: 'cripto', icon: '#', phase: 1, desc: 'SHA-1, SHA-256, SHA-384, SHA-512 simultâneos via Web Crypto.' },
   { id: 'cripto-morse', name: 'Código Morse', category: 'cripto', icon: '· ─', phase: 1, desc: 'Encode/decode + áudio (Web Audio API) com WPM e frequência ajustáveis.' },
-  { id: 'cripto-misto', name: 'Vigenère · Atbash · OTP', category: 'cripto', icon: '⊕', phase: 8, desc: 'Cifras polialfabéticas e One-Time Pad (Fase 8).' },
+  { id: 'cripto-vigenere', name: 'Vigenère', category: 'cripto', icon: 'V', phase: 1, desc: 'Cifra polialfabética com chave repetida. Mostra a chave esticada alinhada.' },
+  { id: 'cripto-atbash', name: 'Atbash', category: 'cripto', icon: 'A', phase: 1, desc: 'Substituição A↔Z, B↔Y… Involução (decode = encode).' },
+  { id: 'cripto-otp', name: 'One-Time Pad', category: 'cripto', icon: '⊕', phase: 1, desc: 'XOR byte-a-byte com chave random ≥ mensagem. Provadamente seguro (Shannon).' },
 
   /* === Visualização (4) === */
   { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 2, desc: '12 tipos (linha, barra, pizza, radar, área, scatter, ...) em Canvas puro.' },
@@ -97,13 +99,15 @@ const TOOL_ROUTES = {
   'calc-saude': '/calculadoras',
   'calc-numerica': '/calc-numerica',
   'tabela-verdade': '/tabela-verdade',
-  /* Criptografia */
+  /* Criptografia (todas no hub /cripto) */
   'cripto-cesar': '/cripto',
   'cripto-base': '/cripto',
   'cripto-aes': '/cripto',
   'cripto-hash': '/cripto',
   'cripto-morse': '/cripto',
-  'cripto-misto': '/cripto',
+  'cripto-vigenere': '/cripto',
+  'cripto-atbash': '/cripto',
+  'cripto-otp': '/cripto',
   /* Visualização */
   graficos: '/graficos',
   fft: '/fft',

@@ -252,6 +252,55 @@
   letter-spacing: 0.04em;
 }
 
+/* ===== Atbash table ===== */
+.atbash-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 4px;
+  padding: var(--space-sm);
+  background: var(--color-bg);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  margin-top: 4px;
+}
+.atbash-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.atbash-pair__a {
+  color: var(--color-cyan);
+  font-weight: 700;
+}
+.atbash-pair__b {
+  color: var(--color-magenta);
+  font-weight: 700;
+}
+.atbash-pair__arrow {
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+/* ===== Vigenère key stretch ===== */
+.vigenere-stretch {
+  background: var(--color-bg);
+  border: 1px dashed var(--color-magenta);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: var(--color-magenta) !important;
+  white-space: pre-wrap;
+  word-break: break-all;
+  min-height: 26px;
+}
+
 /* ===== Morse ===== */
 .cripto-morse-out {
   font-size: 16px;

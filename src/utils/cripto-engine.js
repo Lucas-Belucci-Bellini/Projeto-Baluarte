@@ -235,3 +235,136 @@ export function stopMorse() {
   } catch {}
   activePlayback = null;
 }
+
+/* ============ Vigenère (polialfabética) ============ */
+
+export function vigenereEncode(text, key, decode = false) {
+  const k = (key || '').toUpperCase().replace(/[^A-Z]/g, '');
+  if (!k) return text;
+  let ki = 0;
+  return [...text].map((ch) => {
+    const upper = ch.toUpperCase();
+    const idx = ALPHA_UP.indexOf(upper);
+    if (idx === -1) return ch;
+    const shift = ALPHA_UP.indexOf(k[ki % k.length]);
+    ki++;
+    const newIdx = decode
+      ? ((idx - shift) % 26 + 26) % 26
+      : (idx + shift) % 26;
+    const enc = ALPHA_UP[newIdx];
+    return ch === ch.toLowerCase() ? enc.toLowerCase() : enc;
+  }).join('');
+}
+
+export function vigenereDecode(text, key) {
+  return vigenereEncode(text, key, true);
+}
+
+/* ============ Atbash ============ */
+
+export function atbash(text) {
+  return [...text].map((ch) => {
+    const upper = ch.toUpperCase();
+    const idx = ALPHA_UP.indexOf(upper);
+    if (idx === -1) return ch;
+    const reversed = ALPHA_UP[25 - idx];
+    return ch === ch.toLowerCase() ? reversed.toLowerCase() : reversed;
+  }).join('');
+}
+
+/* ============ One-Time Pad (XOR) ============ */
+
+/** Gera bytes aleatórios via crypto.getRandomValues */
+export function randomBytes(length) {
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return bytes;
+}
+
+export function otpEncode(textBytes, keyBytes) {
+  if (keyBytes.length < textBytes.length) {
+    throw new Error(`Chave precisa ter pelo menos ${textBytes.length} bytes (tem ${keyBytes.length})`);
+  }
+  const out = new Uint8Array(textBytes.length);
+  for (let i = 0; i < textBytes.length; i++) {
+    out[i] = textBytes[i] ^ keyBytes[i];
+  }
+  return out;
+}
+
+export function bytesToBase64(bytes) {
+  let bin = '';
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin);
+}
+
+export function base64ToBytes(b64) {
+  try {
+    const bin = atob(b64.trim());
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  } catch { return null; }
+}
+
+export function textToBytes(text) {
+  return new TextEncoder().encode(text);
+}
+
+export function bytesToText(bytes) {
+  return new TextDecoder().decode(bytes);
+}
+
+/* ============ AES-GCM (Web Crypto) ============ */
+
+const AES_PBKDF2_ITERATIONS = 100_000;
+
+async function deriveKey(password, salt) {
+  const baseKey = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    'PBKDF2',
+    false,
+    ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: AES_PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    baseKey,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+/**
+ * Encripta texto com AES-GCM derivando chave de senha via PBKDF2.
+ * Output formato: base64( salt(16) | iv(12) | ciphertext+tag )
+ */
+export async function aesEncrypt(plaintext, password) {
+  if (!password) throw new Error('senha vazia');
+  const salt = randomBytes(16);
+  const iv = randomBytes(12);
+  const key = await deriveKey(password, salt);
+  const ct = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    new TextEncoder().encode(plaintext)
+  );
+  const out = new Uint8Array(salt.length + iv.length + ct.byteLength);
+  out.set(salt, 0);
+  out.set(iv, salt.length);
+  out.set(new Uint8Array(ct), salt.length + iv.length);
+  return bytesToBase64(out);
+}
+
+export async function aesDecrypt(b64Cipher, password) {
+  if (!password) throw new Error('senha vazia');
+  const all = base64ToBytes(b64Cipher);
+  if (!all || all.length < 16 + 12 + 16) throw new Error('dados muito curtos');
+  const salt = all.slice(0, 16);
+  const iv = all.slice(16, 28);
+  const ct = all.slice(28);
+  const key = await deriveKey(password, salt);
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+  return new TextDecoder().decode(pt);
+}
