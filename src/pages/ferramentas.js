@@ -44,7 +44,7 @@ const TOOLS = [
   { id: 'cripto-otp', name: 'One-Time Pad', category: 'cripto', icon: '⊕', phase: 1, desc: 'XOR byte-a-byte com chave random ≥ mensagem. Provadamente seguro (Shannon).' },
 
   /* === Visualização (4) === */
-  { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 2, desc: '12 tipos (linha, barra, pizza, radar, área, scatter, ...) em Canvas puro.' },
+  { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 1, desc: '12 tipos em Canvas 2D puro: linha, barra V/H, pizza, donut, área, radar, scatter, bolha, heatmap, histograma, gauge. Export PNG.' },
   { id: 'fft', name: 'Visualizador FFT', category: 'visualizacao', icon: '~', phase: 4, desc: '6 modos de visualização espectral via Web Audio API.' },
   { id: 'colorpicker', name: 'Color Studio', category: 'visualizacao', icon: '◐', phase: 2, desc: 'HEX/RGB/HSL/OKLCH, paletas geradas, gradient builder.' },
   { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 2, desc: '1200+ caracteres Unicode categorizados, busca e copy.' },
