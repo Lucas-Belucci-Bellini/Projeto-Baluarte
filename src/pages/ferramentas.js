@@ -19,7 +19,7 @@ const TOOLS = [
   /* === Desenvolvimento (5) === */
   { id: 'editor', name: 'Editor de Código', category: 'desenvolvimento', icon: '⌨', phase: 1, desc: '26 linguagens com syntax highlight, multi-tabs, runners JS/HTML/CSS/Markdown, persistência local.' },
   { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 1, desc: '60+ comandos POSIX-like. Filesystem virtual persistente, pipes, redirects, history e autocomplete.' },
-  { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 2, desc: 'Tester com highlight, grupos nomeados e cheatsheet integrada.' },
+  { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 1, desc: 'Tester JS com highlight de matches, grupos nomeados, replace preview, 10 exemplos e cheatsheet completa.' },
   { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 2, desc: 'Format, minify, diff, validação JSON Schema e conversão YAML/TOML.' },
   { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 2, desc: 'Cheatsheet interativa, gerador de .gitignore e templates de commit.' },
 
@@ -47,7 +47,7 @@ const TOOLS = [
   { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 1, desc: '12 tipos em Canvas 2D puro: linha, barra V/H, pizza, donut, área, radar, scatter, bolha, heatmap, histograma, gauge. Export PNG.' },
   { id: 'fft', name: 'Visualizador FFT', category: 'visualizacao', icon: '~', phase: 4, desc: '6 modos de visualização espectral via Web Audio API.' },
   { id: 'colorpicker', name: 'Color Studio', category: 'visualizacao', icon: '◐', phase: 2, desc: 'HEX/RGB/HSL/OKLCH, paletas geradas, gradient builder.' },
-  { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 2, desc: '1200+ caracteres Unicode categorizados, busca e copy.' },
+  { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 1, desc: '1200+ caracteres Unicode em 14 categorias. Busca por code point ou nome, favoritos persistidos, click copia.' },
 
   /* === Mídia (4) === */
   { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 4, desc: 'Scanner local via File System Access API, organização e player.' },

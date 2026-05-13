@@ -48,7 +48,7 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 | 7 | `v0.7.0` | Lab Cripto P1 (César, Base64, SHA, Morse) | ✅ |
 | 8 | `v0.8.0` | Lab Cripto P2 (AES-GCM, Vigenère, Atbash, OTP) | ✅ |
 | 9 | `v0.9.0` | Gerador de Gráficos (Canvas 2D, 12 tipos) | ✅ |
-| 10 | `v0.10.0` | Símbolos (1200+ Unicode) + Lab de Regex | ⏳ |
+| 10 | `v0.10.0` | Símbolos (1200+ Unicode) + Lab de Regex | ✅ |
 | 11 | `v0.11.0` | Arsenal (159 armas + veículos + doutrina) | ⏳ |
 | 12 | `v0.12.0` | Biblioteca (24+ arcos, viewer, retomar leitura) | ⏳ |
 | 13 | `v0.13.0` | Elites (18-26 equipes ALFA→ZETA, fichas) | ⏳ |
