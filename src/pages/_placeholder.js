@@ -79,18 +79,6 @@ const ROUTE_INFO = {
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
   /* F4-F9 ativos */
-  '/simbolos': {
-    title: 'Hub de Símbolos',
-    icon: '✦',
-    phase: 10,
-    blurb: '1200+ símbolos Unicode categorizados, busca, copy-to-clipboard.'
-  },
-  '/regex': {
-    title: 'Lab de Regex',
-    icon: '✱',
-    phase: 10,
-    blurb: 'Tester de regex com explicação passo-a-passo, grupos nomeados, cheatsheet.'
-  },
   '/fft': {
     title: 'Visualizador FFT',
     icon: '~',
