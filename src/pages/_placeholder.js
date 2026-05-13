@@ -78,13 +78,7 @@ const ROUTE_INFO = {
 
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
-  /* F4-F7 ativos */
-  '/graficos': {
-    title: 'Gerador de Gráficos',
-    icon: '◢',
-    phase: 9,
-    blurb: '12 tipos de gráficos em Canvas 2D puro: linha, barra, pizza, radar, área, scatter, candle e mais.'
-  },
+  /* F4-F9 ativos */
   '/simbolos': {
     title: 'Hub de Símbolos',
     icon: '✦',

@@ -20,6 +20,7 @@ import { calcNumericaPage } from './pages/calc-numerica.js';
 import { calculadorasPage } from './pages/calculadoras/index.js';
 import { tabelaVerdadePage } from './pages/tabela-verdade.js';
 import { criptoPage } from './pages/cripto/index.js';
+import { graficosPage } from './pages/graficos.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -36,6 +37,7 @@ router.register('/calc-numerica', () => calcNumericaPage());
 router.register('/calculadoras', () => calculadorasPage());
 router.register('/tabela-verdade', () => tabelaVerdadePage());
 router.register('/cripto', () => criptoPage());
+router.register('/graficos', () => graficosPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
@@ -59,8 +61,7 @@ const PRINCIPAL_ROUTES = [
  *  Acessadas via Hub de Ferramentas e direto pela URL.
  * ============================================================== */
 const TOOL_ROUTES = [
-  /* F2-F7 ativos. Restante placeholder. */
-  '/graficos',
+  /* F2-F9 ativos. Restante placeholder. */
   '/simbolos',
   '/regex',
   '/fft',
@@ -111,13 +112,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 9 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 10 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.8.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.9.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (9 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (10 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }
