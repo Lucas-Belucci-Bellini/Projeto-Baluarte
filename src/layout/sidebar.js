@@ -31,7 +31,7 @@ export const NAV_GROUPS = [
     label: 'Tático',
     items: [
       { path: '/elites', label: 'Elites', icon: '◆', phase: 3 },
-      { path: '/arsenal', label: 'Arsenal', icon: '⌖', phase: 3 },
+      { path: '/arsenal', label: 'Arsenal', icon: '⌖', phase: 1 },
       { path: '/ciberseg', label: 'CiberSeg', icon: '⚿', phase: 3 },
       { path: '/economia', label: 'Economia', icon: '◈', phase: 5 }
     ]
@@ -46,7 +46,7 @@ export const NAV_GROUPS = [
   }
 ];
 
-const CURRENT_PHASE = 10;
+const CURRENT_PHASE = 11;
 
 function navItem(item, currentPath) {
   const isActive = currentPath === item.path;
@@ -118,7 +118,7 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
-      `v0.10.0 · Fase ${CURRENT_PHASE}/21`
+      `v0.11.0 · Fase ${CURRENT_PHASE}/21`
     )
   );
 
