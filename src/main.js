@@ -24,6 +24,7 @@ import { graficosPage } from './pages/graficos.js';
 import { simbolosPage } from './pages/simbolos.js';
 import { regexPage } from './pages/regex.js';
 import { arsenalPage } from './pages/arsenal.js';
+import { bibliotecaPage } from './pages/biblioteca.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -44,12 +45,12 @@ router.register('/graficos', () => graficosPage());
 router.register('/simbolos', () => simbolosPage());
 router.register('/regex', () => regexPage());
 router.register('/arsenal', () => arsenalPage());
+router.register('/biblioteca', () => bibliotecaPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
  * ============================================================== */
 const PRINCIPAL_ROUTES = [
-  '/biblioteca',
   '/elites',
   '/lab',
   '/economia',
@@ -115,13 +116,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 13 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 14 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.11.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.12.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (13 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (14 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }

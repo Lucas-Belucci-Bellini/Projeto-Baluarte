@@ -8,13 +8,6 @@ import { router } from '../core/router.js';
 
 const ROUTE_INFO = {
   /* ===== Páginas principais (13) ===== */
-  '/biblioteca': {
-    title: 'Biblioteca',
-    icon: '◫',
-    phase: 12,
-    blurb:
-      'Arquivo das Crônicas da Baluarte: 24+ arcos narrativos, viewer com capítulos e retomada de leitura.'
-  },
   '/elites': {
     title: 'Elites',
     icon: '◆',
