@@ -39,12 +39,6 @@ const ROUTE_INFO = {
     phase: 14,
     blurb: '10 linguagens com tutoriais offline, trilhas de aprendizado e desafios.'
   },
-  '/arsenal': {
-    title: 'Arsenal',
-    icon: '⌖',
-    phase: 11,
-    blurb: '159 armas catalogadas + veículos + doutrina de combate.'
-  },
   '/ciberseg': {
     title: 'CiberSeg',
     icon: '⚿',

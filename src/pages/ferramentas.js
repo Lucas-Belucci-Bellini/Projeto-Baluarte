@@ -59,8 +59,8 @@ const TOOLS = [
   { id: 'tabela-periodica', name: 'Tabela Periódica', category: 'referencia', icon: '⚛', phase: 4, desc: '118 elementos, propriedades, isótopos, configuração eletrônica.' },
   { id: 'modpack-mc', name: 'Modpack Minecraft', category: 'referencia', icon: '◧', phase: 4, desc: '490+ mods catalogados, tier list e dependências.' },
   { id: 'guia-pc', name: 'Guia para Montar PC', category: 'referencia', icon: '◨', phase: 4, desc: 'Tutorial passo-a-passo, compatibilidades, presets de uso.' },
-  { id: 'arsenal-ref', name: 'Arsenal (Catálogo)', category: 'referencia', icon: '⌖', phase: 3, desc: '159 armas + veículos + doutrinas táticas.' },
-  { id: 'doutrina', name: 'Doutrina Militar', category: 'referencia', icon: '◆', phase: 3, desc: 'Manuais, ROE, taxonomia de operações especiais.' },
+  { id: 'arsenal-ref', name: 'Arsenal (Catálogo)', category: 'referencia', icon: '⌖', phase: 1, desc: '159 armas + 24 veículos + 6 doutrinas. Filtro por categoria/equipe/tier, busca textual e ficha completa.' },
+  { id: 'doutrina', name: 'Doutrina Militar', category: 'referencia', icon: '◆', phase: 1, desc: 'CQB, Overwatch, Fireteam, Breach, EVAC, Recon — 6 manuais táticos do Baluarte.' },
 
   /* === Sistema (4) === */
   { id: 'cotacoes', name: 'Cotações Live', category: 'sistema', icon: '$', phase: 5, desc: 'Câmbio + crypto em tempo real (APIs externas).' },
