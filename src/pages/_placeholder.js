@@ -20,18 +20,6 @@ const ROUTE_INFO = {
     phase: 19,
     blurb: 'Cotações live (câmbio + crypto), dashboards financeiros e indicadores macro.'
   },
-  '/academia': {
-    title: 'Academia',
-    icon: '◬',
-    phase: 14,
-    blurb: '10 linguagens com tutoriais offline, trilhas de aprendizado e desafios.'
-  },
-  '/ciberseg': {
-    title: 'CiberSeg',
-    icon: '⚿',
-    phase: 14,
-    blurb: 'Enciclopédia de ataque e defesa cibernética, ferramentas, OPSEC.'
-  },
   '/universo': {
     title: 'Universo',
     icon: '✦',
