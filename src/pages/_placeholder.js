@@ -8,12 +8,6 @@ import { router } from '../core/router.js';
 
 const ROUTE_INFO = {
   /* ===== Páginas principais (13) ===== */
-  '/elites': {
-    title: 'Elites',
-    icon: '◆',
-    phase: 13,
-    blurb: '18-26 equipes ALFA → ZETA, fichas de operadores, hierarquia tática completa.'
-  },
   '/lab': {
     title: 'Lab Científico',
     icon: '⚛',

@@ -51,7 +51,7 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 | 10 | `v0.10.0` | Símbolos (1200+ Unicode) + Lab de Regex | ✅ |
 | 11 | `v0.11.0` | Arsenal (159 armas + veículos + doutrina) | ✅ |
 | 12 | `v0.12.0` | Biblioteca (24 arcos, viewer, retomar leitura) | ✅ |
-| 13 | `v0.13.0` | Elites (18-26 equipes ALFA→ZETA, fichas) | ⏳ |
+| 13 | `v0.13.0` | Elites (26 equipes ALFA→ZULU, fichas) | ✅ |
 | 14 | `v0.14.0` | CiberSeg + Academia (10 langs com tutoriais) | ⏳ |
 | 15 | `v0.15.0` | Visualizador FFT + Media Hub (scanner local) | ⏳ |
 | 16 | `v0.16.0` | Central de Vídeos + Universo Hub | ⏳ |
