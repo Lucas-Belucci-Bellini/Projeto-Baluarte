@@ -40,13 +40,13 @@ export const NAV_GROUPS = [
     label: 'Sistema',
     items: [
       { path: '/jarvis', label: 'J.A.R.V.I.S.', icon: '◉', phase: 5 },
-      { path: '/perfil', label: 'Perfil', icon: '◔', phase: 5 },
-      { path: '/shadow', label: 'Shadow Bridge', icon: '◐', phase: 5 }
+      { path: '/perfil', label: 'Perfil', icon: '◔', phase: 1 },
+      { path: '/shadow', label: 'Shadow Bridge', icon: '◐', phase: 1 }
     ]
   }
 ];
 
-const CURRENT_PHASE = 17;
+const CURRENT_PHASE = 18;
 
 function navItem(item, currentPath) {
   const isActive = currentPath === item.path;
@@ -118,7 +118,7 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
-      `v0.17.0 · Fase ${CURRENT_PHASE}/21`
+      `v0.18.0 · Fase ${CURRENT_PHASE}/21`
     )
   );
 
