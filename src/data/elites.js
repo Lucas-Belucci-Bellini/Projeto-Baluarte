@@ -13,26 +13,8 @@ const STATUS_OPTIONS = [
   { id: 'classified', label: 'Classificada',   color: 'magenta' }
 ];
 
-const SPECIALTIES = [
-  'CQB / Assalto urbano',
-  'Sniper / Overwatch',
-  'Inserção aérea',
-  'Reconhecimento profundo',
-  'Demolição / Breach',
-  'Operações navais',
-  'Operações orbitais',
-  'Combate antiblindagem',
-  'Drift / Mecha',
-  'Stealth / Exfiltração',
-  'Caça a alvos de alto valor',
-  'CiberSeg / SIGINT',
-  'Medicina de combate',
-  'CSAR',
-  'Contraterrorismo',
-  'Guerra eletrônica',
-  'Comando e coordenação',
-  'Combate paranormal'
-];
+/* SPECIALTIES é derivado dinamicamente de EQUIPES (abaixo) — garante
+ * que todas as especialidades reais apareçam no filtro, sem drift. */
 
 export const EQUIPES = [
   {
@@ -481,6 +463,12 @@ export const EQUIPES = [
 
 export const TOTAL_EQUIPES = EQUIPES.length;
 export const ACTIVE_COUNT = EQUIPES.filter((e) => e.status === 'ativa').length;
+
+/* Lista única e ordenada de especialidades, derivada das equipes. */
+const SPECIALTIES = [...new Set(EQUIPES.map((e) => e.specialty))].sort((a, b) =>
+  a.localeCompare(b)
+);
+
 export { STATUS_OPTIONS, SPECIALTIES };
 
 export function findEquipe(code) {

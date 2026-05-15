@@ -26,6 +26,8 @@ import { regexPage } from './pages/regex.js';
 import { arsenalPage } from './pages/arsenal.js';
 import { bibliotecaPage } from './pages/biblioteca.js';
 import { elitesPage } from './pages/elites.js';
+import { cibersegPage } from './pages/ciberseg.js';
+import { academiaPage } from './pages/academia.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -48,6 +50,8 @@ router.register('/regex', () => regexPage());
 router.register('/arsenal', () => arsenalPage());
 router.register('/biblioteca', () => bibliotecaPage());
 router.register('/elites', () => elitesPage());
+router.register('/ciberseg', () => cibersegPage());
+router.register('/academia', () => academiaPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
@@ -55,8 +59,6 @@ router.register('/elites', () => elitesPage());
 const PRINCIPAL_ROUTES = [
   '/lab',
   '/economia',
-  '/academia',
-  '/ciberseg',
   '/universo',
   '/perfil',
   '/jarvis',
@@ -117,13 +119,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 15 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 17 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.13.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.14.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (15 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (17 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }
