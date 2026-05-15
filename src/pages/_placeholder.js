@@ -14,18 +14,6 @@ const ROUTE_INFO = {
     phase: 17,
     blurb: 'Ferramentas científicas, simuladores, calculadoras avançadas e ambiente de experimentação.'
   },
-  '/economia': {
-    title: 'Economia',
-    icon: '◈',
-    phase: 19,
-    blurb: 'Cotações live (câmbio + crypto), dashboards financeiros e indicadores macro.'
-  },
-  '/jarvis': {
-    title: 'J.A.R.V.I.S.',
-    icon: '◉',
-    phase: 20,
-    blurb: 'Assistente IA com 4 modos (Claude API + Ollama local), memória em IndexedDB e chamada de ferramentas.'
-  },
 
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
