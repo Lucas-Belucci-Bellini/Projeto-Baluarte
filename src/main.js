@@ -32,6 +32,10 @@ import { fftPage } from './pages/fft.js';
 import { mediaPage } from './pages/media.js';
 import { videosPage } from './pages/videos.js';
 import { universoPage } from './pages/universo.js';
+import { tabelaPeriodicaPage } from './pages/tabela-periodica.js';
+import { modpackPage } from './pages/modpack.js';
+import { guiaPcPage } from './pages/guia-pc.js';
+import { logicSimPage } from './pages/logic-sim.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -60,6 +64,10 @@ router.register('/fft', () => fftPage());
 router.register('/media', () => mediaPage());
 router.register('/videos', () => videosPage());
 router.register('/universo', () => universoPage());
+router.register('/tabela-periodica', () => tabelaPeriodicaPage());
+router.register('/modpack', () => modpackPage());
+router.register('/guia-pc', () => guiaPcPage());
+router.register('/logic-sim', () => logicSimPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
@@ -77,11 +85,7 @@ const PRINCIPAL_ROUTES = [
  *  Acessadas via Hub de Ferramentas e direto pela URL.
  * ============================================================== */
 const TOOL_ROUTES = [
-  /* F2-F16 ativos. Restante placeholder. */
-  '/tabela-periodica',
-  '/modpack',
-  '/guia-pc',
-  '/logic-sim',
+  /* F2-F17 ativos. Restante placeholder. */
   '/ia-proprietaria'
 ];
 
@@ -123,13 +127,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 21 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 25 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.16.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.17.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (21 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (25 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }
