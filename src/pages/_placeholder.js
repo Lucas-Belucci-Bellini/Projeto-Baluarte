@@ -42,30 +42,6 @@ const ROUTE_INFO = {
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
   /* F4-F9 ativos */
-  '/tabela-periodica': {
-    title: 'Tabela Periódica',
-    icon: '⚛',
-    phase: 17,
-    blurb: '118 elementos interativos com propriedades, isótopos e configuração eletrônica.'
-  },
-  '/modpack': {
-    title: 'Modpack Minecraft',
-    icon: '◧',
-    phase: 17,
-    blurb: '490+ mods catalogados com tier list, dependências e compatibilidades.'
-  },
-  '/guia-pc': {
-    title: 'Guia para Montar PC',
-    icon: '◨',
-    phase: 17,
-    blurb: 'Tutorial passo-a-passo, presets de uso, compatibilidade de peças.'
-  },
-  '/logic-sim': {
-    title: 'Simulador de Lógica',
-    icon: '◐',
-    phase: 17,
-    blurb: 'Portas lógicas drag-and-drop, simulação de circuitos digitais.'
-  },
   '/ia-proprietaria': {
     title: 'IA Proprietária Mark 11',
     icon: '◉',

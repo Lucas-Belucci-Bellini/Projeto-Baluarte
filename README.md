@@ -55,7 +55,7 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 | 14 | `v0.14.0` | CiberSeg + Academia (10 langs com tutoriais) | ✅ |
 | 15 | `v0.15.0` | Visualizador FFT (6 modos) + Media Hub | ✅ |
 | 16 | `v0.16.0` | Central de Vídeos + Universo Hub (10 universos) | ✅ |
-| 17 | `v0.17.0` | Tabela Periódica + Modpack MC + Guia PC + Logic Sim | ⏳ |
+| 17 | `v0.17.0` | Tabela Periódica + Modpack MC + Guia PC + Logic Sim | ✅ |
 | 18 | `v0.18.0` | PWA offline + Shadow Bridge auth + Perfil | ⏳ |
 | 19 | `v0.19.0` | Economia + Cotações + JARVIS (chat básico) | ⏳ |
 | 20 | `v0.20.0` | JARVIS completo (4 modos, agente, memória) | ⏳ |
