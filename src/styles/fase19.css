@@ -1,0 +1,462 @@
+/* ============================================================
+ *  Fase 19 — Economia + J.A.R.V.I.S.
+ * ============================================================ */
+
+/* ===== Economia ===== */
+.page-economia {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+.eco-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.eco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.eco-card {
+  background: linear-gradient(180deg, var(--color-bg-elevated), var(--color-surface));
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.eco-card--crypto {
+  border-left: 3px solid var(--color-warning);
+}
+.eco-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.eco-card__icon {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--color-cyan);
+}
+.eco-card__code {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+.eco-card__label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.eco-card__value {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.eco-card__usd {
+  font-size: 11px;
+}
+.eco-card__pct {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+.eco-card__range {
+  font-size: 9px;
+  margin-top: 2px;
+}
+.eco-error {
+  grid-column: 1 / -1;
+  padding: var(--space-md);
+  font-size: 13px;
+}
+
+.eco-converter-wrap {
+  margin-bottom: var(--space-md);
+}
+.eco-conv {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: var(--space-sm);
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  align-items: end;
+}
+.eco-conv label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.eco-conv label > span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.eco-conv__out {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+.eco-conv__result {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-cyan);
+  padding: 6px 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-sm);
+}
+@media (max-width: 700px) {
+  .eco-conv { grid-template-columns: 1fr 1fr; }
+}
+
+/* ===== J.A.R.V.I.S. ===== */
+.page-jarvis {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+  display: flex;
+  flex-direction: column;
+}
+
+.jarvis-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.jarvis-config-wrap {
+  margin-bottom: var(--space-sm);
+}
+.jarvis-config {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+.jarvis-modes {
+  display: flex;
+  gap: 6px;
+  margin-bottom: var(--space-sm);
+}
+.jarvis-mode {
+  flex: 1;
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+.jarvis-mode.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+.jarvis-config__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.jarvis-config__body label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.jarvis-config__body label > span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.jarvis-config__warn {
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.jarvis-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-height: 480px;
+}
+
+.jarvis-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.jarvis-welcome {
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.jarvis-welcome__icon {
+  font-size: 56px;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  text-shadow: 0 0 20px var(--color-cyan-edge);
+  animation: pulseGlowCyan 2.5s ease-in-out infinite;
+}
+.jarvis-welcome__title {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  color: var(--color-text-primary);
+}
+.jarvis-welcome__text {
+  font-size: 13px;
+  max-width: 380px;
+}
+
+.jarvis-msg {
+  display: flex;
+  gap: var(--space-sm);
+  max-width: 80%;
+}
+.jarvis-msg--user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+.jarvis-msg__avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 18px;
+}
+.jarvis-msg--ai .jarvis-msg__avatar {
+  background: var(--color-cyan-soft);
+  border: 1px solid var(--color-cyan);
+  color: var(--color-cyan);
+}
+.jarvis-msg--user .jarvis-msg__avatar {
+  background: var(--color-magenta-soft);
+  border: 1px solid var(--color-magenta);
+  color: var(--color-magenta);
+}
+.jarvis-msg__role {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+.jarvis-msg--user .jarvis-msg__role {
+  text-align: right;
+}
+.jarvis-msg__text {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text-primary);
+}
+.jarvis-msg--ai .jarvis-msg__text {
+  border-color: var(--color-cyan-edge);
+}
+.jarvis-msg--user .jarvis-msg__text {
+  background: var(--color-magenta-soft);
+  border-color: var(--color-magenta-edge);
+}
+
+.jarvis-typing {
+  display: flex;
+  gap: 4px;
+}
+.jarvis-typing span {
+  animation: pulseDot 1.2s ease-in-out infinite;
+  color: var(--color-cyan);
+}
+.jarvis-typing span:nth-child(2) { animation-delay: 0.2s; }
+.jarvis-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+.jarvis-input-row {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-top: var(--border-thin);
+  background: var(--color-bg);
+}
+.jarvis-input {
+  flex: 1;
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  resize: none;
+  max-height: 120px;
+}
+.jarvis-input:focus {
+  outline: none;
+  border-color: var(--color-cyan);
+}
+.jarvis-input-row .btn {
+  font-size: 18px;
+  align-self: stretch;
+  padding: 0 18px;
+}
+
+/* ===== Fase 20 — 4 modos, sessões, agente ===== */
+
+.jv-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--space-md);
+  flex: 1;
+  min-height: 480px;
+}
+@media (max-width: 768px) {
+  .jv-layout { grid-template-columns: 1fr; }
+}
+
+.jv-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.jv-sessions__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+.jv-sessions__empty {
+  font-size: 12px;
+  text-align: center;
+  padding: var(--space-md);
+}
+.jv-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.jv-session:hover { border-color: var(--color-cyan-edge); }
+.jv-session.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+}
+.jv-session__icon {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--color-cyan);
+}
+.jv-session__body { flex: 1; min-width: 0; }
+.jv-session__title {
+  font-size: 12px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.jv-session__date { font-size: 10px; }
+.jv-session__del {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+}
+.jv-session__del:hover { color: var(--color-danger); }
+
+.jv-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: var(--space-sm);
+}
+.jv-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+.jv-mode:hover { border-color: var(--color-cyan-edge); }
+.jv-mode.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+}
+.jv-mode__icon {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--color-cyan);
+}
+.jv-mode__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.jv-mode__desc {
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.jv-tool-call {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-warning-soft);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 11px;
+  max-width: 90%;
+}
+.jv-tool-call__icon {
+  color: var(--color-warning);
+  font-family: var(--font-mono);
+}
+.jv-tool-call__text {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
