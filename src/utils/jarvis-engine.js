@@ -1,11 +1,13 @@
 /**
- * JARVIS Engine (Fase 19) — chat assistente do Baluarte.
+ * JARVIS Engine — chat assistente do Baluarte.
  *
- * 2 modos nesta fase (4 modos completos na Fase 20):
+ * 4 modos (Fase 20 completa):
  *   - local:  assistente de regras, conhece o Baluarte, navega e informa
  *   - claude: chamada direta à Claude API (requer API key do usuário)
+ *   - ollama: modelo local via Ollama (http://localhost:11434)
+ *   - agente: Claude API + tool-use (executa ações no Baluarte)
  *
- * Memória de conversa em localStorage. Histórico por sessão.
+ * Memória de conversa em IndexedDB (jarvis-memory.js).
  */
 
 import { storage } from '../core/storage.js';
@@ -13,6 +15,7 @@ import { ARSENAL, TOTAL } from '../data/arsenal.js';
 import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
+import { TOOL_SCHEMAS, runTool } from './jarvis-tools.js';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
@@ -25,6 +28,8 @@ export function loadConfig() {
     mode: 'local',
     apiKey: '',
     model: 'claude-sonnet-4-6',
+    ollamaUrl: 'http://localhost:11434',
+    ollamaModel: 'llama3.2',
     systemPrompt: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.'
   };
 }
@@ -247,4 +252,131 @@ export async function processClaude(messages, config) {
   const data = await res.json();
   const textBlock = (data.content || []).find((b) => b.type === 'text');
   return textBlock ? textBlock.text : '(resposta vazia)';
+}
+
+/* ===== Modo OLLAMA — modelo local ===== */
+
+/**
+ * Chama um modelo local via Ollama.
+ * Requer Ollama rodando (ollama serve) em config.ollamaUrl.
+ * @returns {Promise<string>}
+ */
+export async function processOllama(messages, config) {
+  const url = (config.ollamaUrl || 'http://localhost:11434').replace(/\/$/, '');
+  const body = {
+    model: config.ollamaModel || 'llama3.2',
+    stream: false,
+    messages: [
+      { role: 'system', content: config.systemPrompt },
+      ...messages.map((m) => ({
+        role: m.role === 'jarvis' ? 'assistant' : 'user',
+        content: m.text
+      }))
+    ]
+  };
+
+  let res;
+  try {
+    res = await fetch(`${url}/api/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch (e) {
+    throw new Error('Ollama inacessível. Rode "ollama serve" e verifique a URL nas configurações.');
+  }
+
+  if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
+  const data = await res.json();
+  return data.message?.content || '(resposta vazia)';
+}
+
+/* ===== Modo AGENTE — Claude API + tool use ===== */
+
+/**
+ * Modo agente: Claude com ferramentas. Executa um loop de tool-use
+ * até o modelo dar a resposta final.
+ *
+ * @param {Array} messages - histórico de conversa
+ * @param {object} config
+ * @param {function} onToolCall - callback(toolName, input, result) para UI
+ * @returns {Promise<string>} resposta final em texto
+ */
+export async function processAgent(messages, config, onToolCall) {
+  if (!config.apiKey) {
+    throw new Error('Modo agente requer Claude API key. Configure nas opções (⚙).');
+  }
+
+  /* Constrói histórico no formato da API */
+  const apiMessages = messages.map((m) => ({
+    role: m.role === 'jarvis' ? 'assistant' : 'user',
+    content: m.text
+  }));
+
+  const MAX_TURNS = 6;
+  let finalText = '';
+
+  for (let turn = 0; turn < MAX_TURNS; turn++) {
+    const body = {
+      model: config.model || 'claude-sonnet-4-6',
+      max_tokens: 1536,
+      system: config.systemPrompt +
+        ' Você tem ferramentas para navegar e consultar o Baluarte. Use-as quando fizer sentido.',
+      tools: TOOL_SCHEMAS,
+      messages: apiMessages
+    };
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': config.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}`;
+      try { detail = (await res.json()).error?.message || detail; } catch {}
+      throw new Error(detail);
+    }
+
+    const data = await res.json();
+    const content = data.content || [];
+
+    /* Acumula texto */
+    const textBlocks = content.filter((b) => b.type === 'text');
+    if (textBlocks.length) {
+      finalText = textBlocks.map((b) => b.text).join('\n');
+    }
+
+    /* Tem tool_use? */
+    const toolUses = content.filter((b) => b.type === 'tool_use');
+    if (toolUses.length === 0 || data.stop_reason !== 'tool_use') {
+      return finalText || '(sem resposta)';
+    }
+
+    /* Adiciona resposta do assistant ao histórico */
+    apiMessages.push({ role: 'assistant', content });
+
+    /* Executa cada ferramenta */
+    const toolResults = [];
+    for (const tu of toolUses) {
+      const result = runTool(tu.name, tu.input);
+      if (onToolCall) {
+        try { onToolCall(tu.name, tu.input, result); } catch {}
+      }
+      toolResults.push({
+        type: 'tool_result',
+        tool_use_id: tu.id,
+        content: JSON.stringify(result)
+      });
+    }
+
+    apiMessages.push({ role: 'user', content: toolResults });
+  }
+
+  return finalText || '(limite de turnos do agente atingido)';
 }
