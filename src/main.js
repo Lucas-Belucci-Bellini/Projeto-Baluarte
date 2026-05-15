@@ -28,6 +28,8 @@ import { bibliotecaPage } from './pages/biblioteca.js';
 import { elitesPage } from './pages/elites.js';
 import { cibersegPage } from './pages/ciberseg.js';
 import { academiaPage } from './pages/academia.js';
+import { fftPage } from './pages/fft.js';
+import { mediaPage } from './pages/media.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -52,6 +54,8 @@ router.register('/biblioteca', () => bibliotecaPage());
 router.register('/elites', () => elitesPage());
 router.register('/ciberseg', () => cibersegPage());
 router.register('/academia', () => academiaPage());
+router.register('/fft', () => fftPage());
+router.register('/media', () => mediaPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
@@ -70,9 +74,7 @@ const PRINCIPAL_ROUTES = [
  *  Acessadas via Hub de Ferramentas e direto pela URL.
  * ============================================================== */
 const TOOL_ROUTES = [
-  /* F2-F10 ativos. Restante placeholder. */
-  '/fft',
-  '/media',
+  /* F2-F15 ativos. Restante placeholder. */
   '/videos',
   '/tabela-periodica',
   '/modpack',
@@ -119,13 +121,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 17 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 19 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.14.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.15.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (17 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (19 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }

@@ -53,7 +53,7 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 | 12 | `v0.12.0` | Biblioteca (24 arcos, viewer, retomar leitura) | ✅ |
 | 13 | `v0.13.0` | Elites (26 equipes ALFA→ZULU, fichas) | ✅ |
 | 14 | `v0.14.0` | CiberSeg + Academia (10 langs com tutoriais) | ✅ |
-| 15 | `v0.15.0` | Visualizador FFT + Media Hub (scanner local) | ⏳ |
+| 15 | `v0.15.0` | Visualizador FFT (6 modos) + Media Hub | ✅ |
 | 16 | `v0.16.0` | Central de Vídeos + Universo Hub | ⏳ |
 | 17 | `v0.17.0` | Tabela Periódica + Modpack MC + Guia PC + Logic Sim | ⏳ |
 | 18 | `v0.18.0` | PWA offline + Shadow Bridge auth + Perfil | ⏳ |

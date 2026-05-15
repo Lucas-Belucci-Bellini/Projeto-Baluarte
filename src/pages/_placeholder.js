@@ -48,18 +48,6 @@ const ROUTE_INFO = {
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
   /* F4-F9 ativos */
-  '/fft': {
-    title: 'Visualizador FFT',
-    icon: '~',
-    phase: 15,
-    blurb: 'Web Audio API, 6 modos de visualização espectral em tempo real.'
-  },
-  '/media': {
-    title: 'Media Hub',
-    icon: '◫',
-    phase: 15,
-    blurb: 'Scanner local de mídia via File System Access API. Organização e player.'
-  },
   '/videos': {
     title: 'Central de Vídeos',
     icon: '▶',

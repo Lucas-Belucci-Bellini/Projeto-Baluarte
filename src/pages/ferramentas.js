@@ -45,14 +45,14 @@ const TOOLS = [
 
   /* === Visualização (4) === */
   { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 1, desc: '12 tipos em Canvas 2D puro: linha, barra V/H, pizza, donut, área, radar, scatter, bolha, heatmap, histograma, gauge. Export PNG.' },
-  { id: 'fft', name: 'Visualizador FFT', category: 'visualizacao', icon: '~', phase: 4, desc: '6 modos de visualização espectral via Web Audio API.' },
+  { id: 'fft', name: 'Visualizador FFT', category: 'visualizacao', icon: '~', phase: 1, desc: '6 modos (barras/curva/waveform/radial/spectrogram/partículas) via Web Audio API. Mic, arquivo ou tom de teste.' },
   { id: 'colorpicker', name: 'Color Studio', category: 'visualizacao', icon: '◐', phase: 2, desc: 'HEX/RGB/HSL/OKLCH, paletas geradas, gradient builder.' },
   { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 1, desc: '1200+ caracteres Unicode em 14 categorias. Busca por code point ou nome, favoritos persistidos, click copia.' },
 
   /* === Mídia (4) === */
-  { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 4, desc: 'Scanner local via File System Access API, organização e player.' },
+  { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 1, desc: 'Player local pra áudio/vídeo/imagens via File API. Drag-and-drop e cross-link com FFT.' },
   { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 4, desc: 'YouTube embeds + arquivos locais, playlists.' },
-  { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 4, desc: 'Player com FFT, EQ, loop e exportação.' },
+  { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 1, desc: 'Atalho para Visualizador FFT — analisa áudio do mic ou arquivo em tempo real.' },
   { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 2, desc: 'Gera e lê QR codes (WiFi, vCard, URL, texto).' },
 
   /* === Referência (5) === */
@@ -116,6 +116,8 @@ const TOOL_ROUTES = {
   'media-hub': '/media',
   videos: '/videos',
   'audio-fft': '/fft',
+  'fft': '/fft',
+  'media-hub': '/media',
   /* Referência */
   'tabela-periodica': '/tabela-periodica',
   'modpack-mc': '/modpack',
