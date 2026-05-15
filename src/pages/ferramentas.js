@@ -51,7 +51,7 @@ const TOOLS = [
 
   /* === Mídia (4) === */
   { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 1, desc: 'Player local pra áudio/vídeo/imagens via File API. Drag-and-drop e cross-link com FFT.' },
-  { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 4, desc: 'YouTube embeds + arquivos locais, playlists.' },
+  { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 1, desc: 'YouTube embeds em 5 playlists temáticas. Marca "assistido", busca, cross-link com Media Hub.' },
   { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 1, desc: 'Atalho para Visualizador FFT — analisa áudio do mic ou arquivo em tempo real.' },
   { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 2, desc: 'Gera e lê QR codes (WiFi, vCard, URL, texto).' },
 
@@ -115,6 +115,7 @@ const TOOL_ROUTES = {
   /* Mídia */
   'media-hub': '/media',
   videos: '/videos',
+  'universo': '/universo',
   'audio-fft': '/fft',
   'fft': '/fft',
   'media-hub': '/media',
