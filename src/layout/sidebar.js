@@ -24,7 +24,7 @@ export const NAV_GROUPS = [
       { path: '/biblioteca', label: 'Biblioteca', icon: '◫', phase: 1 },
       { path: '/academia', label: 'Academia', icon: '◬', phase: 1 },
       { path: '/lab', label: 'Lab Científico', icon: '⚛', phase: 2 },
-      { path: '/universo', label: 'Universo', icon: '✦', phase: 4 }
+      { path: '/universo', label: 'Universo', icon: '✦', phase: 1 }
     ]
   },
   {
@@ -46,7 +46,7 @@ export const NAV_GROUPS = [
   }
 ];
 
-const CURRENT_PHASE = 15;
+const CURRENT_PHASE = 16;
 
 function navItem(item, currentPath) {
   const isActive = currentPath === item.path;
@@ -118,7 +118,7 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
-      `v0.15.0 · Fase ${CURRENT_PHASE}/21`
+      `v0.16.0 · Fase ${CURRENT_PHASE}/21`
     )
   );
 

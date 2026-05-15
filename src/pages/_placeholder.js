@@ -20,12 +20,6 @@ const ROUTE_INFO = {
     phase: 19,
     blurb: 'Cotações live (câmbio + crypto), dashboards financeiros e indicadores macro.'
   },
-  '/universo': {
-    title: 'Universo',
-    icon: '✦',
-    phase: 16,
-    blurb: 'Hub de universos: Halo, DOOM, Horror, Endfield e crossovers.'
-  },
   '/perfil': {
     title: 'Perfil',
     icon: '◔',
@@ -48,12 +42,6 @@ const ROUTE_INFO = {
   /* ===== Ferramentas (acessadas via Hub) =====
    * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
   /* F4-F9 ativos */
-  '/videos': {
-    title: 'Central de Vídeos',
-    icon: '▶',
-    phase: 16,
-    blurb: 'YouTube embeds + arquivos locais, playlists customizadas.'
-  },
   '/tabela-periodica': {
     title: 'Tabela Periódica',
     icon: '⚛',
