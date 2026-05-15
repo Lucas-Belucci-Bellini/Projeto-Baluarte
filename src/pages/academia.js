@@ -9,6 +9,7 @@ import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import { LANGS_ACADEMY, TOTAL_LANGS, findLang } from '../data/academia.js';
+import { getLang as getEditorLang } from '../data/editor-langs.js';
 
 const STORAGE_KEY = 'academia:state';
 
@@ -113,19 +114,21 @@ function renderPanel() {
           h('button', {
             className: 'btn btn--primary btn--sm',
             onclick: () => {
-              /* Salva o código no editor e navega */
-              const editorState = JSON.parse(localStorage.getItem('baluarte:editor:state') || '{}');
-              if (!editorState.tabs) editorState.tabs = [];
+              /* Usa storage helper + extensão real da linguagem (do editor-langs) */
+              const editorLang = getEditorLang(lang.id);
+              const ext = editorLang?.ext || 'txt';
+              const editorState = storage.get('editor:state') || { tabs: [], activeId: null };
+              if (!Array.isArray(editorState.tabs)) editorState.tabs = [];
               const newTab = {
                 id: 'tab_' + Math.random().toString(36).slice(2, 8),
-                name: `${lang.id}-${i + 1}.${lang.id === 'cpp' ? 'cpp' : lang.id === 'csharp' ? 'cs' : lang.id}`,
+                name: `${lang.id}-${i + 1}.${ext}`,
                 lang: lang.id,
                 content: m.code
               };
               editorState.tabs.push(newTab);
               editorState.activeId = newTab.id;
-              localStorage.setItem('baluarte:editor:state', JSON.stringify(editorState));
-              toast('Aberto no Editor', { type: 'success' });
+              storage.set('editor:state', editorState);
+              toast(`Aberto: ${newTab.name}`, { type: 'success' });
               router.navigate('/editor');
             }
           }, '⌨ abrir no Editor')

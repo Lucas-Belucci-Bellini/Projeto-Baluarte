@@ -11,6 +11,7 @@ import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import { EQUIPES, STATUS_OPTIONS, SPECIALTIES, TOTAL_EQUIPES, ACTIVE_COUNT, findEquipe, statusInfo } from '../data/elites.js';
+import { findArc } from '../data/cronicas.js';
 
 const STORAGE_KEY = 'elites:state';
 
@@ -174,12 +175,22 @@ function renderDetail() {
   );
 
   if (e.arc) {
+    const targetArc = findArc(e.arc);
     detailEl.appendChild(
       h('button', {
         className: 'btn btn--primary btn--sm',
         style: 'margin-top: 12px',
-        onclick: () => router.navigate('/biblioteca')
-      }, '◫ Ler arco da equipe na Biblioteca →')
+        onclick: () => {
+          /* Pré-seleciona o arco na Biblioteca antes de navegar */
+          const bibState = storage.get('biblioteca:state') || {};
+          bibState.selectedArc = e.arc;
+          if (targetArc?.chapters?.[0]) {
+            bibState.selectedChapter = targetArc.chapters[0].id;
+          }
+          storage.set('biblioteca:state', bibState);
+          router.navigate('/biblioteca');
+        }
+      }, `◫ Ler ${targetArc ? targetArc.title : 'arco'} na Biblioteca →`)
     );
   }
 }
