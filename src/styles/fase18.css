@@ -1,0 +1,274 @@
+/* ============================================================
+ *  Fase 18 — Shadow Bridge + Perfil
+ * ============================================================ */
+
+/* ===== Shadow Bridge ===== */
+.page-shadow {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+.shadow-card {
+  max-width: 480px;
+  margin: var(--space-xl) auto;
+  background: linear-gradient(180deg, var(--color-bg-elevated), var(--color-surface));
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  box-shadow: var(--shadow-lg), 0 0 32px rgba(0, 240, 255, 0.06);
+}
+.shadow-card__icon {
+  font-size: 64px;
+  font-family: var(--font-mono);
+  color: var(--color-cyan);
+  text-shadow: 0 0 20px var(--color-cyan-edge);
+  margin-bottom: var(--space-sm);
+}
+.shadow-card__icon--success {
+  color: var(--color-success);
+  text-shadow: 0 0 20px var(--color-success);
+}
+.shadow-card__title {
+  font-size: 20px;
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text-primary);
+}
+.shadow-card__desc {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+}
+
+.shadow-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  text-align: left;
+}
+.shadow-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.shadow-form label > span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+.shadow-form .btn {
+  margin-top: 4px;
+}
+
+.shadow-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: var(--space-md) 0;
+  text-align: left;
+}
+.shadow-info__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+.shadow-info__row span {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+.shadow-info__row code {
+  font-size: 12px;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.shadow-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--space-md);
+}
+
+/* ===== Perfil ===== */
+.page-perfil {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+.perfil-id {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--space-md);
+  background: linear-gradient(135deg, var(--color-cyan-soft), transparent);
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.perfil-id__avatar {
+  width: 120px;
+  height: 120px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-cyan);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  text-shadow: 0 0 16px var(--color-cyan-edge);
+}
+.perfil-id__name {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.perfil-id__callsign {
+  font-size: 12px;
+  color: var(--color-magenta);
+  margin: 2px 0 8px;
+}
+.perfil-id__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.perfil-id__bio {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .perfil-id { grid-template-columns: 1fr; }
+  .perfil-id__avatar { width: 80px; height: 80px; font-size: 40px; }
+}
+
+.perfil-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.perfil-stat {
+  text-align: center;
+  padding: var(--space-md);
+}
+.perfil-stat__icon {
+  font-size: 24px;
+  font-family: var(--font-mono);
+  color: var(--color-cyan);
+}
+.perfil-stat__value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 4px 0 2px;
+}
+.perfil-stat__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.perfil-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px;
+  margin-bottom: var(--space-md);
+}
+.perfil-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+.perfil-link:hover {
+  border-color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+  transform: translateX(2px);
+}
+.perfil-link__icon {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--color-cyan);
+}
+.perfil-link__label {
+  flex: 1;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+.perfil-link__arrow {
+  color: var(--color-magenta);
+}
+
+.perfil-config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+.perfil-config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.perfil-config-field > span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.perfil-config-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-top: var(--border-thin);
+  cursor: pointer;
+}
+.perfil-config-row__label {
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+.perfil-config-row__desc {
+  font-size: 11px;
+  margin-top: 2px;
+}
+.perfil-config-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-cyan);
+  flex-shrink: 0;
+}
+.perfil-danger {
+  border-top: var(--border-thin);
+  padding-top: var(--space-sm);
+}
+
+/* Reduce motion global */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}

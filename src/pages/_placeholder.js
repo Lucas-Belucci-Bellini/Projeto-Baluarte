@@ -20,23 +20,11 @@ const ROUTE_INFO = {
     phase: 19,
     blurb: 'Cotações live (câmbio + crypto), dashboards financeiros e indicadores macro.'
   },
-  '/perfil': {
-    title: 'Perfil',
-    icon: '◔',
-    phase: 18,
-    blurb: 'Perfil do operador Lucas Belucci Bellini, links e estatísticas pessoais.'
-  },
   '/jarvis': {
     title: 'J.A.R.V.I.S.',
     icon: '◉',
     phase: 20,
     blurb: 'Assistente IA com 4 modos (Claude API + Ollama local), memória em IndexedDB e chamada de ferramentas.'
-  },
-  '/shadow': {
-    title: 'Shadow Bridge',
-    icon: '◐',
-    phase: 18,
-    blurb: 'Camada de autenticação SHA-256×100, proteção de áreas sensíveis.'
   },
 
   /* ===== Ferramentas (acessadas via Hub) =====
