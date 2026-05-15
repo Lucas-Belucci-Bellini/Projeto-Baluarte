@@ -1,0 +1,110 @@
+/* ============================================================
+ *  Hub de Símbolos — Fase 10
+ * ============================================================ */
+
+.page-simbolos {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+.symbols-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-md);
+}
+.symbols-cat {
+  background: var(--color-surface);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.symbols-cat:hover {
+  border-color: var(--color-cyan-edge);
+  color: var(--color-cyan);
+}
+.symbols-cat.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+.symbols-cat__icon {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.symbols-cat__count {
+  background: rgba(255, 0, 170, 0.15);
+  color: var(--color-magenta);
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.symbols-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 4px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+}
+.symbol-tile {
+  background: var(--color-bg);
+  border: 1px solid rgba(0, 240, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 80ms ease;
+  position: relative;
+}
+.symbol-tile:hover {
+  border-color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+  transform: scale(1.05);
+  z-index: 2;
+}
+.symbol-tile:active {
+  transform: scale(0.95);
+}
+.symbol-tile.is-fav::before {
+  content: '★';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 10px;
+  color: var(--color-magenta);
+  text-shadow: 0 0 4px var(--color-magenta);
+}
+.symbol-tile__char {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--color-text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.symbol-tile__code {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+}
+.symbol-tile:hover .symbol-tile__code {
+  color: var(--color-cyan);
+}
+
+.symbols-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-xl);
+}

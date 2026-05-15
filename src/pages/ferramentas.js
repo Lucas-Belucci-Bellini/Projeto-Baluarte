@@ -19,45 +19,48 @@ const TOOLS = [
   /* === Desenvolvimento (5) === */
   { id: 'editor', name: 'Editor de Código', category: 'desenvolvimento', icon: '⌨', phase: 1, desc: '26 linguagens com syntax highlight, multi-tabs, runners JS/HTML/CSS/Markdown, persistência local.' },
   { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 1, desc: '60+ comandos POSIX-like. Filesystem virtual persistente, pipes, redirects, history e autocomplete.' },
-  { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 2, desc: 'Tester com highlight, grupos nomeados e cheatsheet integrada.' },
+  { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 1, desc: 'Tester JS com highlight de matches, grupos nomeados, replace preview, 10 exemplos e cheatsheet completa.' },
   { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 2, desc: 'Format, minify, diff, validação JSON Schema e conversão YAML/TOML.' },
   { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 2, desc: 'Cheatsheet interativa, gerador de .gitignore e templates de commit.' },
 
   /* === Cálculo (8) === */
   { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 1, desc: 'Trigonometria (deg/rad), hiperbólicas, logaritmos, fatoriais, memória, histórico.' },
-  { id: 'calc-financeira', name: 'Financeira', category: 'calculo', icon: '$', phase: 2, desc: 'VP/VF, juros simples e compostos, TIR, VPL, parcelamento.' },
-  { id: 'calc-conversores', name: 'Conversores', category: 'calculo', icon: '⇄', phase: 2, desc: 'Unidades SI, imperial, energia, dados, temperatura, tempo.' },
-  { id: 'calc-estatistica', name: 'Estatística', category: 'calculo', icon: 'σ', phase: 2, desc: 'Média, mediana, desvio, regressão linear, distribuições.' },
-  { id: 'calc-engenharia', name: 'Engenharia', category: 'calculo', icon: '⚙', phase: 2, desc: 'Lei de Ohm, divisor de tensão, Bernoulli, vigas, estruturas.' },
-  { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 2, desc: 'IMC, TMB, macros, FC máxima, hidratação, ovulação.' },
+  { id: 'calc-financeira', name: 'Financeira', category: 'calculo', icon: '$', phase: 1, desc: 'Juros simples/compostos, VPL/TIR, Parcelamento Price, conversão de taxa.' },
+  { id: 'calc-conversores', name: 'Conversores', category: 'calculo', icon: '⇄', phase: 1, desc: '10 categorias, 80+ unidades: comprimento, massa, temperatura, energia, tempo, dados, velocidade, pressão, ângulo.' },
+  { id: 'calc-estatistica', name: 'Estatística', category: 'calculo', icon: 'σ', phase: 1, desc: 'Média, mediana, moda, desvio, variância, quartis + regressão linear (R², predição).' },
+  { id: 'calc-engenharia', name: 'Engenharia', category: 'calculo', icon: '⚙', phase: 1, desc: 'Lei de Ohm, divisor de tensão, resistor color code, frequência↔λ, Stevin (hidrostática).' },
+  { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 1, desc: 'IMC + classificação, TMB Mifflin, macros, FC máxima e zonas Karvonen, hidratação.' },
   { id: 'calc-numerica', name: 'Numérica (Bin/Hex/Oct)', category: 'calculo', icon: '01', phase: 1, desc: 'Conversões Dec/Bin/Hex/Oct simultâneas. Bit ops (AND/OR/XOR/NOT/shift). IEEE 754 visualizer.' },
-  { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 2, desc: 'Chips lógicos, mapa de Karnaugh, simplificação.' },
+  { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 1, desc: 'Parser de expressões lógicas (AND/OR/NOT/XOR/IMPLIES/IFF), tabela completa, K-map (até 4 vars), SOP/POS canônicas, simplificação Quine-McCluskey.' },
 
   /* === Criptografia (5) === */
-  { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 2, desc: 'Cifra clássica com shift configurável e brute force.' },
-  { id: 'cripto-base', name: 'Base64 / Base32 / Hex', category: 'cripto', icon: '⬢', phase: 2, desc: 'Encode/decode em múltiplas bases.' },
-  { id: 'cripto-aes', name: 'AES-GCM', category: 'cripto', icon: '⚿', phase: 2, desc: 'Criptografia simétrica autenticada via Web Crypto API nativa.' },
-  { id: 'cripto-hash', name: 'Hash (SHA family)', category: 'cripto', icon: '#', phase: 2, desc: 'SHA-1, SHA-256, SHA-384, SHA-512, MD5 (info).' },
-  { id: 'cripto-misto', name: 'Morse · Vigenère · Atbash · OTP', category: 'cripto', icon: '· ─', phase: 2, desc: 'Cifras clássicas e modernas em um único laboratório.' },
+  { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 1, desc: 'Cifra clássica com shift 0-25, brute force ranqueado por score PT.' },
+  { id: 'cripto-base', name: 'Base64 / Base32 / Hex', category: 'cripto', icon: '⬢', phase: 1, desc: 'Encode simultâneo nas 3 bases + decoder com detecção de formato.' },
+  { id: 'cripto-aes', name: 'AES-GCM', category: 'cripto', icon: '⚿', phase: 1, desc: 'AES-256 autenticado via Web Crypto. Chave derivada por PBKDF2-SHA256 (100k iter), salt+IV random.' },
+  { id: 'cripto-hash', name: 'Hash (SHA family)', category: 'cripto', icon: '#', phase: 1, desc: 'SHA-1, SHA-256, SHA-384, SHA-512 simultâneos via Web Crypto.' },
+  { id: 'cripto-morse', name: 'Código Morse', category: 'cripto', icon: '· ─', phase: 1, desc: 'Encode/decode + áudio (Web Audio API) com WPM e frequência ajustáveis.' },
+  { id: 'cripto-vigenere', name: 'Vigenère', category: 'cripto', icon: 'V', phase: 1, desc: 'Cifra polialfabética com chave repetida. Mostra a chave esticada alinhada.' },
+  { id: 'cripto-atbash', name: 'Atbash', category: 'cripto', icon: 'A', phase: 1, desc: 'Substituição A↔Z, B↔Y… Involução (decode = encode).' },
+  { id: 'cripto-otp', name: 'One-Time Pad', category: 'cripto', icon: '⊕', phase: 1, desc: 'XOR byte-a-byte com chave random ≥ mensagem. Provadamente seguro (Shannon).' },
 
   /* === Visualização (4) === */
-  { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 2, desc: '12 tipos (linha, barra, pizza, radar, área, scatter, ...) em Canvas puro.' },
-  { id: 'fft', name: 'Visualizador FFT', category: 'visualizacao', icon: '~', phase: 4, desc: '6 modos de visualização espectral via Web Audio API.' },
+  { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 1, desc: '12 tipos em Canvas 2D puro: linha, barra V/H, pizza, donut, área, radar, scatter, bolha, heatmap, histograma, gauge. Export PNG.' },
+  { id: 'fft', name: 'Visualizador FFT', category: 'visualizacao', icon: '~', phase: 1, desc: '6 modos (barras/curva/waveform/radial/spectrogram/partículas) via Web Audio API. Mic, arquivo ou tom de teste.' },
   { id: 'colorpicker', name: 'Color Studio', category: 'visualizacao', icon: '◐', phase: 2, desc: 'HEX/RGB/HSL/OKLCH, paletas geradas, gradient builder.' },
-  { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 2, desc: '1200+ caracteres Unicode categorizados, busca e copy.' },
+  { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 1, desc: '1200+ caracteres Unicode em 14 categorias. Busca por code point ou nome, favoritos persistidos, click copia.' },
 
   /* === Mídia (4) === */
-  { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 4, desc: 'Scanner local via File System Access API, organização e player.' },
-  { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 4, desc: 'YouTube embeds + arquivos locais, playlists.' },
-  { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 4, desc: 'Player com FFT, EQ, loop e exportação.' },
+  { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 1, desc: 'Player local pra áudio/vídeo/imagens via File API. Drag-and-drop e cross-link com FFT.' },
+  { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 1, desc: 'YouTube embeds em 5 playlists temáticas. Marca "assistido", busca, cross-link com Media Hub.' },
+  { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 1, desc: 'Atalho para Visualizador FFT — analisa áudio do mic ou arquivo em tempo real.' },
   { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 2, desc: 'Gera e lê QR codes (WiFi, vCard, URL, texto).' },
 
   /* === Referência (5) === */
-  { id: 'tabela-periodica', name: 'Tabela Periódica', category: 'referencia', icon: '⚛', phase: 4, desc: '118 elementos, propriedades, isótopos, configuração eletrônica.' },
-  { id: 'modpack-mc', name: 'Modpack Minecraft', category: 'referencia', icon: '◧', phase: 4, desc: '490+ mods catalogados, tier list e dependências.' },
-  { id: 'guia-pc', name: 'Guia para Montar PC', category: 'referencia', icon: '◨', phase: 4, desc: 'Tutorial passo-a-passo, compatibilidades, presets de uso.' },
-  { id: 'arsenal-ref', name: 'Arsenal (Catálogo)', category: 'referencia', icon: '⌖', phase: 3, desc: '159 armas + veículos + doutrinas táticas.' },
-  { id: 'doutrina', name: 'Doutrina Militar', category: 'referencia', icon: '◆', phase: 3, desc: 'Manuais, ROE, taxonomia de operações especiais.' },
+  { id: 'tabela-periodica', name: 'Tabela Periódica', category: 'referencia', icon: '⚛', phase: 1, desc: '118 elementos com massa, configuração eletrônica e categoria. Filtro por categoria, grid 18×10.' },
+  { id: 'modpack-mc', name: 'Modpack Minecraft', category: 'referencia', icon: '◧', phase: 1, desc: '60+ mods catalogados em 9 categorias com tier list (S/A/B/C) e descrição completa.' },
+  { id: 'guia-pc', name: 'Guia para Montar PC', category: 'referencia', icon: '◨', phase: 1, desc: '4 presets (orçamento → workstation) + tutorial de 7 passos.' },
+  { id: 'arsenal-ref', name: 'Arsenal (Catálogo)', category: 'referencia', icon: '⌖', phase: 1, desc: '159 armas + 24 veículos + 6 doutrinas. Filtro por categoria/equipe/tier, busca textual e ficha completa.' },
+  { id: 'doutrina', name: 'Doutrina Militar', category: 'referencia', icon: '◆', phase: 1, desc: 'CQB, Overwatch, Fireteam, Breach, EVAC, Recon — 6 manuais táticos do Baluarte.' },
 
   /* === Sistema (4) === */
   { id: 'cotacoes', name: 'Cotações Live', category: 'sistema', icon: '$', phase: 5, desc: 'Câmbio + crypto em tempo real (APIs externas).' },
@@ -96,12 +99,15 @@ const TOOL_ROUTES = {
   'calc-saude': '/calculadoras',
   'calc-numerica': '/calc-numerica',
   'tabela-verdade': '/tabela-verdade',
-  /* Criptografia */
+  /* Criptografia (todas no hub /cripto) */
   'cripto-cesar': '/cripto',
   'cripto-base': '/cripto',
   'cripto-aes': '/cripto',
   'cripto-hash': '/cripto',
-  'cripto-misto': '/cripto',
+  'cripto-morse': '/cripto',
+  'cripto-vigenere': '/cripto',
+  'cripto-atbash': '/cripto',
+  'cripto-otp': '/cripto',
   /* Visualização */
   graficos: '/graficos',
   fft: '/fft',
@@ -109,7 +115,10 @@ const TOOL_ROUTES = {
   /* Mídia */
   'media-hub': '/media',
   videos: '/videos',
+  'universo': '/universo',
   'audio-fft': '/fft',
+  'fft': '/fft',
+  'media-hub': '/media',
   /* Referência */
   'tabela-periodica': '/tabela-periodica',
   'modpack-mc': '/modpack',

@@ -17,6 +17,25 @@ import { editorPage } from './pages/editor.js';
 import { terminalPage } from './pages/terminal.js';
 import { calcCientificaPage } from './pages/calc-cientifica.js';
 import { calcNumericaPage } from './pages/calc-numerica.js';
+import { calculadorasPage } from './pages/calculadoras/index.js';
+import { tabelaVerdadePage } from './pages/tabela-verdade.js';
+import { criptoPage } from './pages/cripto/index.js';
+import { graficosPage } from './pages/graficos.js';
+import { simbolosPage } from './pages/simbolos.js';
+import { regexPage } from './pages/regex.js';
+import { arsenalPage } from './pages/arsenal.js';
+import { bibliotecaPage } from './pages/biblioteca.js';
+import { elitesPage } from './pages/elites.js';
+import { cibersegPage } from './pages/ciberseg.js';
+import { academiaPage } from './pages/academia.js';
+import { fftPage } from './pages/fft.js';
+import { mediaPage } from './pages/media.js';
+import { videosPage } from './pages/videos.js';
+import { universoPage } from './pages/universo.js';
+import { tabelaPeriodicaPage } from './pages/tabela-periodica.js';
+import { modpackPage } from './pages/modpack.js';
+import { guiaPcPage } from './pages/guia-pc.js';
+import { logicSimPage } from './pages/logic-sim.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -30,19 +49,32 @@ router.register('/editor', () => editorPage());
 router.register('/terminal', () => terminalPage());
 router.register('/calc-cientifica', () => calcCientificaPage());
 router.register('/calc-numerica', () => calcNumericaPage());
+router.register('/calculadoras', () => calculadorasPage());
+router.register('/tabela-verdade', () => tabelaVerdadePage());
+router.register('/cripto', () => criptoPage());
+router.register('/graficos', () => graficosPage());
+router.register('/simbolos', () => simbolosPage());
+router.register('/regex', () => regexPage());
+router.register('/arsenal', () => arsenalPage());
+router.register('/biblioteca', () => bibliotecaPage());
+router.register('/elites', () => elitesPage());
+router.register('/ciberseg', () => cibersegPage());
+router.register('/academia', () => academiaPage());
+router.register('/fft', () => fftPage());
+router.register('/media', () => mediaPage());
+router.register('/videos', () => videosPage());
+router.register('/universo', () => universoPage());
+router.register('/tabela-periodica', () => tabelaPeriodicaPage());
+router.register('/modpack', () => modpackPage());
+router.register('/guia-pc', () => guiaPcPage());
+router.register('/logic-sim', () => logicSimPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
  * ============================================================== */
 const PRINCIPAL_ROUTES = [
-  '/biblioteca',
-  '/elites',
   '/lab',
   '/economia',
-  '/academia',
-  '/arsenal',
-  '/ciberseg',
-  '/universo',
   '/perfil',
   '/jarvis',
   '/shadow'
@@ -53,20 +85,7 @@ const PRINCIPAL_ROUTES = [
  *  Acessadas via Hub de Ferramentas e direto pela URL.
  * ============================================================== */
 const TOOL_ROUTES = [
-  /* /editor (F2), /terminal (F3), /calc-cientifica + /calc-numerica (F4) ativos */
-  '/calculadoras',
-  '/tabela-verdade',
-  '/cripto',
-  '/graficos',
-  '/simbolos',
-  '/regex',
-  '/fft',
-  '/media',
-  '/videos',
-  '/tabela-periodica',
-  '/modpack',
-  '/guia-pc',
-  '/logic-sim',
+  /* F2-F17 ativos. Restante placeholder. */
   '/ia-proprietaria'
 ];
 
@@ -108,13 +127,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 6 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 25 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.4.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.17.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (6 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (25 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }

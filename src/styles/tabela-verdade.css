@@ -1,0 +1,303 @@
+/* ============================================================
+ *  Tabela Verdade + K-map — Fase 6
+ * ============================================================ */
+
+.page-tabela-verdade {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+/* ===== Input ===== */
+.logic-input-card {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-md), 0 0 16px rgba(0, 240, 255, 0.05);
+}
+.logic-input {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 12px 16px;
+  background: var(--color-bg);
+  color: var(--color-cyan);
+}
+.logic-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.logic-examples .chip {
+  font-size: 11px;
+  padding: 3px 10px;
+}
+
+/* ===== Output ===== */
+.logic-output {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.logic-canonical {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.logic-canonical code {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.logic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+@media (max-width: 1024px) {
+  .logic-grid { grid-template-columns: 1fr; }
+}
+
+.logic-card {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+.logic-card--error {
+  border-color: var(--color-danger);
+}
+.logic-card__title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-cyan);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  border-bottom: var(--border-thin);
+}
+
+/* ===== Tabela verdade ===== */
+.logic-table-wrap {
+  overflow: auto;
+  max-height: 480px;
+}
+.logic-table {
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  width: 100%;
+}
+.logic-table th,
+.logic-table td {
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  padding: 6px 12px;
+  text-align: center;
+}
+.logic-table th {
+  background: var(--color-surface);
+  color: var(--color-cyan);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.logic-table th.logic-table__result {
+  background: var(--color-magenta-soft);
+  color: var(--color-magenta);
+  border-color: var(--color-magenta-edge);
+}
+.logic-table td {
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+}
+.logic-table td.is-on {
+  color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+  font-weight: 700;
+}
+.logic-table td.logic-table__result-cell {
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  font-weight: 600;
+}
+.logic-table td.logic-table__result-cell.is-on {
+  color: var(--color-magenta);
+  background: var(--color-magenta-soft);
+  font-weight: 700;
+  text-shadow: 0 0 6px var(--color-magenta);
+}
+.logic-table tr.is-true {
+  background: rgba(255, 0, 170, 0.03);
+}
+
+/* ===== K-map ===== */
+.kmap-wrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-md) var(--space-sm);
+}
+.kmap {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.kmap th,
+.kmap td {
+  width: 56px;
+  height: 56px;
+  text-align: center;
+  vertical-align: middle;
+}
+.kmap__corner {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-cyan-edge);
+  border-right: 1px solid var(--color-cyan-edge);
+  position: relative;
+}
+.kmap__corner-row {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+}
+.kmap__corner-col {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+}
+.kmap__corner-slash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  color: var(--color-text-muted);
+  font-size: 24px;
+}
+.kmap__col-label,
+.kmap__row-label {
+  background: var(--color-surface);
+  color: var(--color-cyan);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+}
+.kmap__cell {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: 18px;
+  font-weight: 600;
+  border: 1px solid rgba(0, 240, 255, 0.08);
+  transition: background var(--transition-fast);
+}
+.kmap__cell.is-true {
+  background: var(--color-magenta-soft);
+  color: var(--color-magenta);
+  text-shadow: 0 0 8px var(--color-magenta);
+  border-color: var(--color-magenta);
+}
+.kmap-legend {
+  font-size: 11px;
+  text-align: center;
+  padding: 0 var(--space-md) var(--space-sm);
+}
+
+/* ===== Forms canônicas ===== */
+.logic-forms {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.logic-form {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-md);
+  align-items: baseline;
+}
+.logic-form__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.logic-form__expr {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-cyan);
+  background: var(--color-surface);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: var(--border-thin);
+  word-break: break-all;
+  display: block;
+}
+.logic-form--simple .logic-form__expr {
+  background: var(--color-magenta-soft);
+  color: var(--color-magenta);
+  border-color: var(--color-magenta-edge);
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .logic-form {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* ===== Help ===== */
+.logic-help {
+  margin-top: var(--space-md);
+}
+.logic-help__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.logic-help__table th,
+.logic-help__table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: var(--border-thin);
+}
+.logic-help__table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+}
+.logic-help__table td:first-child {
+  color: var(--color-cyan);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+.logic-help__table code {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  padding: 2px 6px;
+  border-radius: 3px;
+}

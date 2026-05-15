@@ -1,0 +1,192 @@
+/* ============================================================
+ *  Hub de Universos — Fase 16
+ * ============================================================ */
+
+.page-universo {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+.univ-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 6px;
+  margin-bottom: var(--space-md);
+}
+.univ-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+.univ-card:hover {
+  border-color: var(--u-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.univ-card.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--u-color);
+  box-shadow: 0 0 16px var(--u-color);
+}
+.univ-card__icon {
+  font-size: 32px;
+  font-family: var(--font-mono);
+  text-shadow: 0 0 12px currentColor;
+}
+.univ-card__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.univ-card__type {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+}
+
+.univ-detail {
+  background: linear-gradient(180deg, var(--color-bg-elevated), var(--color-surface));
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.univ-detail__head {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: var(--space-md);
+  align-items: center;
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--u-color);
+  margin-bottom: var(--space-md);
+}
+.univ-detail__icon {
+  width: 80px;
+  height: 80px;
+  border: 2px solid;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-family: var(--font-mono);
+  background: var(--color-bg);
+}
+.univ-detail__type {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--color-magenta);
+  font-weight: 700;
+}
+.univ-detail__name {
+  margin: 4px 0 2px;
+  font-size: 26px;
+  color: var(--color-text-primary);
+}
+.univ-detail__tagline {
+  font-style: italic;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+.univ-detail__summary {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg);
+  border-left: 3px solid var(--u-color);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+}
+.univ-detail__summary p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.univ-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.univ-section {
+  background: var(--color-bg);
+  border: var(--border-thin);
+  border-left: 3px solid var(--s-color, var(--color-cyan));
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+}
+.univ-section__title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--s-color, var(--color-cyan));
+  margin-bottom: 6px;
+}
+.univ-list {
+  margin: 0;
+  padding-left: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.univ-list li {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.univ-arcs {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: var(--border-thin);
+}
+.univ-arcs__title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-magenta);
+  margin-bottom: 8px;
+}
+.univ-arc-link {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 4px;
+  transition: all var(--transition-fast);
+}
+.univ-arc-link:hover {
+  border-color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+  transform: translateX(2px);
+}
+.univ-arc-link__code {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 50px;
+}
+.univ-arc-link__title {
+  flex: 1;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+.univ-arc-link__arrow {
+  color: var(--color-magenta);
+}

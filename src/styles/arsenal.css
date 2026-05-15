@@ -1,0 +1,333 @@
+/* ============================================================
+ *  Arsenal — Fase 11
+ * ============================================================ */
+
+.page-arsenal {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+/* ===== Tabs ===== */
+.arsenal-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: var(--space-md);
+  padding: 4px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  width: fit-content;
+}
+.arsenal-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 8px 18px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.arsenal-tab.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+/* ===== Categorias chips ===== */
+.arsenal-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-md);
+}
+.arsenal-cat {
+  background: var(--color-surface);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.arsenal-cat:hover {
+  border-color: var(--color-cyan-edge);
+  color: var(--color-cyan);
+}
+.arsenal-cat.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--cat-color, var(--color-cyan));
+  color: var(--cat-color, var(--color-cyan));
+}
+.arsenal-cat__icon { font-family: var(--font-mono); font-size: 14px; }
+.arsenal-cat__count {
+  background: rgba(255, 0, 170, 0.15);
+  color: var(--color-magenta);
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* ===== Filter row ===== */
+.arsenal-filter-row {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-end;
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+.arsenal-filter-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 160px;
+}
+
+/* ===== Grid principal ===== */
+.arsenal-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-md);
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .arsenal-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Lista ===== */
+.arsenal-list {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.arsenal-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 10px;
+  padding: 8px 12px;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border: 1px solid transparent;
+}
+.arsenal-row:hover {
+  background: var(--color-surface);
+}
+.arsenal-row.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+}
+.arsenal-row__icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  background: var(--color-bg);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+}
+.arsenal-row__name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.arsenal-row.is-active .arsenal-row__name {
+  color: var(--color-cyan);
+}
+.arsenal-row__meta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.arsenal-row__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.arsenal-empty {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+/* ===== Detalhe ===== */
+.arsenal-detail {
+  background: linear-gradient(180deg, var(--color-bg-elevated), var(--color-surface));
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  position: sticky;
+  top: calc(var(--header-height) + 8px);
+  min-height: 400px;
+}
+.arsenal-detail__empty {
+  text-align: center;
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.arsenal-detail__head {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: var(--space-sm);
+  align-items: start;
+  margin-bottom: var(--space-sm);
+}
+.arsenal-detail__icon {
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--color-cyan);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-family: var(--font-mono);
+  background: var(--color-bg);
+}
+.arsenal-detail__title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.arsenal-detail__name {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
+  letter-spacing: 0.02em;
+}
+.arsenal-detail__crumbs {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+.arsenal-detail__badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.arsenal-detail__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: var(--space-sm) 0;
+  padding: var(--space-sm);
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  border: var(--border-thin);
+}
+.arsenal-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.arsenal-stat__label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.arsenal-stat__value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-cyan);
+}
+
+.arsenal-detail__notes-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-magenta);
+  margin: var(--space-sm) 0 4px;
+}
+.arsenal-detail__notes p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.arsenal-detail__actions {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: var(--border-thin);
+}
+
+/* ===== Doutrinas ===== */
+.doutrinas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--space-md);
+}
+.doutrina-card {
+  background: linear-gradient(180deg, var(--color-bg-elevated), var(--color-surface));
+  border: var(--border-thin);
+  border-left: 3px solid var(--color-magenta);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+.doutrina-card__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 4px;
+  font-family: var(--font-mono);
+}
+.doutrina-card__summary {
+  font-size: 12px;
+  margin-bottom: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--border-thin);
+}
+.doutrina-card__list {
+  margin: 0;
+  padding-left: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.doutrina-card__list li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+/* Badges adicionais para tiers */
+.badge--muted {
+  color: var(--color-text-muted);
+  border-color: var(--color-text-muted);
+  background: rgba(147, 164, 191, 0.08);
+}
