@@ -38,6 +38,8 @@ import { guiaPcPage } from './pages/guia-pc.js';
 import { logicSimPage } from './pages/logic-sim.js';
 import { shadowPage } from './pages/shadow.js';
 import { perfilPage } from './pages/perfil.js';
+import { economiaPage } from './pages/economia.js';
+import { jarvisPage } from './pages/jarvis.js';
 import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
@@ -72,14 +74,14 @@ router.register('/guia-pc', () => guiaPcPage());
 router.register('/logic-sim', () => logicSimPage());
 router.register('/shadow', () => shadowPage());
 router.register('/perfil', () => perfilPage());
+router.register('/economia', () => economiaPage());
+router.register('/jarvis', () => jarvisPage());
 
 /* ==============================================================
  *  Rotas de páginas principais (placeholders — Fases 11-20)
  * ============================================================== */
 const PRINCIPAL_ROUTES = [
-  '/lab',
-  '/economia',
-  '/jarvis'
+  '/lab'
 ];
 
 /* ==============================================================
@@ -129,13 +131,13 @@ function boot() {
   initToast();
   router.start('/home');
 
-  const totalRoutes = 27 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
+  const totalRoutes = 29 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.18.0',
+    '%c⬡ BALUARTE — Mark XIII · v0.19.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (27 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    `%cRotas: ${totalRoutes} (29 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
     'color: #93a4bf; font-family: monospace;'
   );
 }

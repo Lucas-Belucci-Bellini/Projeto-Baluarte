@@ -63,8 +63,8 @@ const TOOLS = [
   { id: 'doutrina', name: 'Doutrina Militar', category: 'referencia', icon: '◆', phase: 1, desc: 'CQB, Overwatch, Fireteam, Breach, EVAC, Recon — 6 manuais táticos do Baluarte.' },
 
   /* === Sistema (4) === */
-  { id: 'cotacoes', name: 'Cotações Live', category: 'sistema', icon: '$', phase: 5, desc: 'Câmbio + crypto em tempo real (APIs externas).' },
-  { id: 'jarvis', name: 'J.A.R.V.I.S.', category: 'sistema', icon: '◉', phase: 5, desc: 'Assistente IA com 4 modos. Claude API + Ollama local.' },
+  { id: 'cotacoes', name: 'Cotações Live', category: 'sistema', icon: '$', phase: 1, desc: 'Câmbio (AwesomeAPI) + crypto (CoinGecko) em tempo real + conversor.' },
+  { id: 'jarvis', name: 'J.A.R.V.I.S.', category: 'sistema', icon: '◉', phase: 1, desc: 'Assistente IA — modo local (regras) ou Claude API. 4 modos completos na Fase 20.' },
   { id: 'shadow', name: 'Shadow Bridge', category: 'sistema', icon: '◐', phase: 5, desc: 'Autenticação SHA-256×100. Proteção de áreas sensíveis.' },
   { id: 'config', name: 'Configurações', category: 'sistema', icon: '⚙', phase: 1, desc: 'Tema, atalhos, idioma, limpeza de cache.' }
 ];

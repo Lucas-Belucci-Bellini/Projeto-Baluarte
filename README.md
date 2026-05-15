@@ -57,7 +57,7 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 | 16 | `v0.16.0` | Central de Vídeos + Universo Hub (10 universos) | ✅ |
 | 17 | `v0.17.0` | Tabela Periódica + Modpack MC + Guia PC + Logic Sim | ✅ |
 | 18 | `v0.18.0` | PWA offline + Shadow Bridge auth + Perfil | ✅ |
-| 19 | `v0.19.0` | Economia + Cotações + JARVIS (chat básico) | ⏳ |
+| 19 | `v0.19.0` | Economia + Cotações + JARVIS (chat básico) | ✅ |
 | 20 | `v0.20.0` | JARVIS completo (4 modos, agente, memória) | ⏳ |
 | 21 | `v1.0.0` | Editor → IDE completa + IA Proprietária Mark 11 | ⏳ |
 
