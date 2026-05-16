@@ -1,41 +1,49 @@
 /**
- * Página /biblioteca — Crônicas da Baluarte (Fase 12).
+ * Página /biblioteca — Crônicas da Baluarte.
  *
- * Layout (desktop):
- *   ┌─ filtro/busca ─────────────────────────────┐
- *   ├─ lista de arcos (left) ┃ viewer (right) ──┤
- *   └─────────────────────────────────────────────┘
+ * Leitor da saga canônica "Onde os Deuses Sangram" (24 arcos, mais de
+ * mil capítulos) somada aos arcos de cenário do universo. A saga é um
+ * arquivo grande: carrega sob demanda (loadSaga) quando a página abre.
  *
- * Recursos:
- *   - 24 arcos catalogados
- *   - Capítulos navegáveis com prev/next
- *   - Retomar leitura (último arco + capítulo lido)
- *   - Marcadores (favoritos)
- *   - Busca por título/tag/universo
- *   - Tema light/dark do viewer
- *   - Tamanho de fonte ajustável
+ * Recursos: capítulos navegáveis (prev/next), retomar leitura,
+ * favoritos, busca, filtro por universo, tema dark/sépia, fonte.
  */
 
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
-import { ARCS, UNIVERSES, findArc, findChapter } from '../data/cronicas.js';
+import { ARCS, UNIVERSES, loadSaga } from '../data/cronicas.js';
 
 const STORAGE_KEY = 'biblioteca:state';
+const SAGA_UNIVERSE = 'Onde os Deuses Sangram';
 
 let state = null;
 let listEl = null;
 let viewerEl = null;
 let searchInput = null;
 let univSelect = null;
+let sagaCountEl = null;
+
+let sagaArcos = [];
+let sagaStatus = 'loading'; /* loading | ok | error */
+
+/** Saga (carregada) + arcos de cenário (síncronos). */
+function allArcs() {
+  return [...sagaArcos, ...ARCS];
+}
+function findArc(id) {
+  return allArcs().find((a) => a.id === id) || null;
+}
 
 function loadState() {
-  return storage.get(STORAGE_KEY) || {
+  const saved = storage.get(STORAGE_KEY);
+  if (saved) return saved;
+  return {
     search: '',
     universe: 'all',
     onlyBookmarked: false,
-    selectedArc: ARCS[0].id,
-    selectedChapter: ARCS[0].chapters[0]?.id,
+    selectedArc: null,
+    selectedChapter: null,
     fontSize: 16,
     theme: 'dark', /* dark | sepia */
     bookmarks: [],
@@ -47,7 +55,7 @@ function persist() { storage.set(STORAGE_KEY, state); }
 /* ===== Filtros ===== */
 
 function applyFilters() {
-  let pool = ARCS;
+  let pool = allArcs();
   if (state.universe !== 'all') {
     pool = pool.filter((a) => a.universe === state.universe);
   }
@@ -68,9 +76,28 @@ function applyFilters() {
 
 /* ===== Lista de arcos ===== */
 
+function statusBanner() {
+  if (sagaStatus === 'loading') {
+    return h('div', { className: 'biblioteca-resume' },
+      h('div', { className: 'biblioteca-resume__label' }, '⏳ Carregando a saga'),
+      h('div', { className: 'biblioteca-resume__chap' },
+        'Onde os Deuses Sangram — 24 arcos. Pode levar um instante.')
+    );
+  }
+  return h('div', { className: 'biblioteca-resume' },
+    h('div', { className: 'biblioteca-resume__label u-text-danger' }, '⚠ A saga não carregou'),
+    h('div', { className: 'biblioteca-resume__chap' },
+      'Verifique a conexão e recarregue. Os arcos de cenário seguem disponíveis abaixo.')
+  );
+}
+
 function renderList() {
   if (!listEl) return;
   empty(listEl);
+
+  if (sagaStatus !== 'ok') {
+    listEl.appendChild(statusBanner());
+  }
 
   const filtered = applyFilters();
 
@@ -84,11 +111,10 @@ function renderList() {
     return;
   }
 
-  /* Continue reading banner */
-  const lastArcId = state.selectedArc;
-  const last = findArc(lastArcId);
-  if (last && state.progress[lastArcId]) {
-    const progress = state.progress[lastArcId];
+  /* Retomar leitura */
+  const last = findArc(state.selectedArc);
+  if (last && state.progress[state.selectedArc]) {
+    const progress = state.progress[state.selectedArc];
     const chapter = last.chapters.find((c) => c.id === progress.lastChapter);
     if (chapter) {
       listEl.appendChild(
@@ -115,7 +141,7 @@ function renderList() {
       'data-id': arc.id,
       onclick: () => {
         state.selectedArc = arc.id;
-        state.selectedChapter = arc.chapters[0]?.id;
+        state.selectedChapter = arc.chapters[0] && arc.chapters[0].id;
         persist();
         document.querySelectorAll('.arc-card').forEach((c) =>
           c.classList.toggle('is-active', c.dataset.id === arc.id)
@@ -165,7 +191,9 @@ function renderViewer() {
     viewerEl.appendChild(
       h('div', { className: 'biblioteca-empty u-text-muted' },
         h('div', { style: { fontSize: '64px' } }, '◫'),
-        h('div', null, 'Selecione um arco para começar a ler.')
+        h('div', null, sagaStatus === 'loading'
+          ? 'Carregando a saga das Crônicas…'
+          : 'Selecione um arco para começar a ler.')
       )
     );
     return;
@@ -299,8 +327,12 @@ function renderViewer() {
 
 export function bibliotecaPage() {
   state = loadState();
+  sagaArcos = [];
+  sagaStatus = 'loading';
 
   const fullPage = h('div', { className: 'page-biblioteca' });
+
+  sagaCountEl = h('span', { className: 'u-text-cyan' }, 'carregando capítulos…');
 
   fullPage.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
@@ -314,10 +346,9 @@ export function bibliotecaPage() {
         'A fan fic ',
         h('span', { className: 'u-text-cyan' }, '"Onde os Deuses Sangram"'),
         ' — uma saga de ',
-        h('span', { className: 'u-text-cyan' }, '24 arcos e mais de 200 capítulos'),
-        '. O Vault é integrado ao site aos poucos, a cada versão: abaixo estão ',
-        'os arcos já trazidos e os arcos de cenário do universo. ',
-        'Retomar leitura, favoritar, tema dark/sépia, fonte ajustável.'
+        h('span', { className: 'u-text-cyan' }, '24 arcos'),
+        ' (', sagaCountEl, '), somada aos arcos de cenário do universo. ',
+        'Retomar leitura, favoritar, tema dark/sépia e fonte ajustáveis.'
       )
     )
   );
@@ -345,6 +376,9 @@ export function bibliotecaPage() {
     }
   },
     h('option', { value: 'all', selected: state.universe === 'all' }, 'Todos universos'),
+    h('option', {
+      value: SAGA_UNIVERSE, selected: state.universe === SAGA_UNIVERSE
+    }, 'Onde os Deuses Sangram (saga)'),
     ...UNIVERSES.map((u) =>
       h('option', { value: u, selected: state.universe === u }, u)
     )
@@ -379,6 +413,27 @@ export function bibliotecaPage() {
 
   renderList();
   renderViewer();
+
+  /* Carrega a saga completa sob demanda (arquivo grande, fora do bundle). */
+  loadSaga()
+    .then(({ arcos }) => {
+      sagaArcos = arcos;
+      sagaStatus = 'ok';
+      const totalCh = arcos.reduce((s, a) => s + a.chapters.length, 0);
+      if (sagaCountEl) sagaCountEl.textContent = totalCh + ' capítulos';
+      if (!findArc(state.selectedArc) && sagaArcos[0]) {
+        state.selectedArc = sagaArcos[0].id;
+        state.selectedChapter = sagaArcos[0].chapters[0] && sagaArcos[0].chapters[0].id;
+      }
+      renderList();
+      renderViewer();
+    })
+    .catch((err) => {
+      console.error('[biblioteca] falha ao carregar a saga:', err);
+      sagaStatus = 'error';
+      if (sagaCountEl) sagaCountEl.textContent = 'capítulos indisponíveis';
+      renderList();
+    });
 
   return fullPage;
 }

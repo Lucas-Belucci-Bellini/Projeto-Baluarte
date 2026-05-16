@@ -8,11 +8,11 @@
  * Estrutura:
  *   { id, title, code, universe, tags, synopsis, cover, equipe, chapters: [{ id, title, content }] }
  *
- * A fan fic canônica "Onde os Deuses Sangram" vem de fanfic.json e
- * entra como os primeiros arcos (SAGA) da Biblioteca.
+ * A saga canônica "Onde os Deuses Sangram" (24 arcos, 200+ capítulos)
+ * é grande demais para o bundle — carrega sob demanda via loadSaga().
  */
 
-import fanfic from './fanfic.json';
+import fanficUrl from './fanfic.json?url';
 
 const slayer = `O ar dentro do bunker cheirava a ozônio queimado e ferro. Lucas
 sentiu o pulsar do Núcleo Infinity Dreadnought atrás do peitoral
@@ -439,32 +439,41 @@ const SCENARIO_ARCS = [
   })
 ];
 
-/* ===== Fan fic canônica — "Onde os Deuses Sangram" =====
- * A saga completa soma 24 arcos e mais de 200 capítulos no Vault;
- * o site integra os arcos aos poucos, a cada versão. */
-const SAGA_ARCS = (fanfic.parts || []).map((part) => ({
-  id: part.id,
-  code: 'CRÔNICAS',
-  title: part.title,
-  universe: part.universe,
-  series: fanfic.title,
-  canonical: true,
-  tags: ['fan fic', 'canônico', part.universe],
-  cover: '☉',
-  equipe: '',
-  synopsis: part.synopsis,
-  chapters: part.chapters || []
-}));
+/* Arcos de cenário do universo — carregados de imediato (síncrono). */
+export const ARCS = SCENARIO_ARCS;
 
-/** Metadados da fan fic canônica. */
-export const FANFIC_META = {
-  title: fanfic.title,
-  author: fanfic.author,
-  synopsis: fanfic.synopsis
-};
+/* ===== Saga canônica — "Onde os Deuses Sangram" =====
+ * 24 arcos, 200+ capítulos. O arquivo é grande, então fica fora do
+ * bundle JS e é buscado sob demanda quando a Biblioteca abre. */
+let sagaCache = null;
 
-/* Saga canônica primeiro, depois os arcos de cenário. */
-export const ARCS = [...SAGA_ARCS, ...SCENARIO_ARCS];
+export async function loadSaga() {
+  if (sagaCache) return sagaCache;
+  const res = await fetch(fanficUrl);
+  if (!res.ok) throw new Error('Falha ao carregar a saga (HTTP ' + res.status + ').');
+  const data = await res.json();
+  const arcos = (data.arcos || []).map((arco) => {
+    const blocks = (arco.chapters && arco.chapters[0] && arco.chapters[0].blocks) || [];
+    const firstP = blocks.find((b) => b && b.t === 'p');
+    const preview = firstP ? firstP.v : '';
+    return {
+      id: arco.id,
+      code: 'CRÔNICAS',
+      title: arco.title,
+      universe: 'Onde os Deuses Sangram',
+      canonical: true,
+      cover: '☉',
+      tags: ['fan fic', 'canônico'],
+      synopsis: preview.length > 150 ? preview.slice(0, 150) + '…' : preview,
+      chapters: arco.chapters || []
+    };
+  });
+  sagaCache = {
+    meta: { title: data.title, author: data.author, synopsis: data.synopsis },
+    arcos
+  };
+  return sagaCache;
+}
 
 /* Estatísticas */
 export const ARCS_TOTAL = ARCS.length;

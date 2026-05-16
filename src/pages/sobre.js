@@ -90,8 +90,8 @@ const MAPA = [
     group: 'Conhecimento & narrativa',
     items: [
       { icon: '◫', name: 'Biblioteca — Crônicas da Baluarte',
-        desc: 'A fan fic "Onde os Deuses Sangram": uma saga de 24 arcos e mais ' +
-          'de 200 capítulos, integrada ao site aos poucos, com leitor de capítulos.' },
+        desc: 'A fan fic "Onde os Deuses Sangram" completa: 24 arcos e mais de ' +
+          'mil capítulos, com leitor, favoritos e retomada de leitura.' },
       { icon: '◬', name: 'Academia',
         desc: 'Tutoriais de linguagens de programação, do primeiro passo ao avançado.' },
       { icon: '✦', name: 'Universo',
