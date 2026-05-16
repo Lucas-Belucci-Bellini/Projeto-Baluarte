@@ -439,11 +439,12 @@ const SCENARIO_ARCS = [
   })
 ];
 
-/* ===== Fan fic canônica — "Onde os Deuses Sangram" ===== */
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-const SAGA_ARCS = (fanfic.parts || []).map((part, i) => ({
+/* ===== Fan fic canônica — "Onde os Deuses Sangram" =====
+ * A saga completa soma 24 arcos e mais de 200 capítulos no Vault;
+ * o site integra os arcos aos poucos, a cada versão. */
+const SAGA_ARCS = (fanfic.parts || []).map((part) => ({
   id: part.id,
-  code: 'SAGA ' + (ROMAN[i] || part.order),
+  code: 'CRÔNICAS',
   title: part.title,
   universe: part.universe,
   series: fanfic.title,

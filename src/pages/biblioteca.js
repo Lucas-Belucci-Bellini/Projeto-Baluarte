@@ -19,7 +19,7 @@
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
-import { ARCS, ARCS_TOTAL, CHAPTERS_TOTAL, UNIVERSES, findArc, findChapter } from '../data/cronicas.js';
+import { ARCS, UNIVERSES, findArc, findChapter } from '../data/cronicas.js';
 
 const STORAGE_KEY = 'biblioteca:state';
 
@@ -313,11 +313,11 @@ export function bibliotecaPage() {
       h('p', { className: 'page-header__description' },
         'A fan fic ',
         h('span', { className: 'u-text-cyan' }, '"Onde os Deuses Sangram"'),
-        ' — saga crossover em 4 partes — mais os arcos de cenário do universo. ',
-        h('span', { className: 'u-text-cyan' }, `${ARCS_TOTAL} entradas`),
-        ', ',
-        h('span', { className: 'u-text-cyan' }, `${CHAPTERS_TOTAL} capítulos`),
-        '. Retomar leitura, favoritar, tema dark/sépia, fonte ajustável.'
+        ' — uma saga de ',
+        h('span', { className: 'u-text-cyan' }, '24 arcos e mais de 200 capítulos'),
+        '. O Vault é integrado ao site aos poucos, a cada versão: abaixo estão ',
+        'os arcos já trazidos e os arcos de cenário do universo. ',
+        'Retomar leitura, favoritar, tema dark/sépia, fonte ajustável.'
       )
     )
   );
