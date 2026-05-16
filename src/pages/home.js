@@ -1,6 +1,6 @@
 /**
  * Home — Ponte de Comando.
- * Cards de status do sistema, métricas, vigilância, acesso rápido.
+ * Cards de status do sistema, métricas, vigilância e acesso rápido.
  */
 
 import { h, formatNumber } from '../utils/helpers.js';
@@ -9,11 +9,11 @@ import { appState } from '../core/state.js';
 
 const QUICK_LINKS = [
   { label: 'Hub de Ferramentas', path: '/ferramentas', icon: '⚙', desc: '35+ ferramentas técnicas' },
-  { label: 'Arsenal', path: '/arsenal', icon: '⌖', desc: '159 armas + veículos', phase: 3 },
-  { label: 'Biblioteca', path: '/biblioteca', icon: '◫', desc: 'Crônicas da Baluarte', phase: 3 },
-  { label: 'Elites', path: '/elites', icon: '◆', desc: '18 equipes ALFA → ZETA', phase: 3 },
-  { label: 'J.A.R.V.I.S.', path: '/jarvis', icon: '◉', desc: 'Assistente IA', phase: 5 },
-  { label: 'CiberSeg', path: '/ciberseg', icon: '⚿', desc: 'Defesa cibernética', phase: 3 }
+  { label: 'Biblioteca', path: '/biblioteca', icon: '◫', desc: 'Crônicas da Baluarte' },
+  { label: 'Arsenal', path: '/arsenal', icon: '⌖', desc: '159 armas + veículos' },
+  { label: 'Elites', path: '/elites', icon: '◆', desc: 'Equipes ALFA → ZULU' },
+  { label: 'J.A.R.V.I.S.', path: '/jarvis', icon: '◉', desc: 'Assistente de IA' },
+  { label: 'Sobre o Projeto', path: '/sobre', icon: '◇', desc: 'História e mapa do site' }
 ];
 
 function metricCard(label, value, trend, trendClass = 'u-text-success', accent = 'card') {
@@ -33,42 +33,53 @@ function metricCard(label, value, trend, trendClass = 'u-text-success', accent =
 }
 
 function quickCard(link) {
-  const isLocked = link.phase && link.phase > 1;
   return h(
     'div',
     {
       className: 'card card--interactive tool-card anim-fade-in-up',
-      'data-status': isLocked ? 'locked' : 'ready',
-      onclick: () => {
-        router.navigate(link.path);
-      }
+      'data-status': 'ready',
+      onclick: () => router.navigate(link.path)
     },
     h(
       'div',
       { className: 'tool-card__head' },
       h('div', { className: 'tool-card__icon' }, link.icon),
-      isLocked
-        ? h('span', { className: 'badge badge--magenta' }, `F${link.phase}`)
-        : h('span', { className: 'badge badge--success' }, 'PRONTO')
+      h('span', { className: 'badge badge--success' }, 'PRONTO')
     ),
     h('h3', { className: 'tool-card__title' }, link.label),
     h('p', { className: 'tool-card__desc' }, link.desc),
+    h('div', { className: 'tool-card__meta' }, 'Disponível agora')
+  );
+}
+
+function buildBanner() {
+  return h(
+    'div',
+    { className: 'card card--magenta home-build anim-fade-in' },
+    h('div', { className: 'home-build__badge' }, '⚠ v1.0.0 · EM CONSTRUÇÃO'),
     h(
       'div',
-      { className: 'tool-card__meta' },
-      isLocked ? `Em desenvolvimento · Fase ${link.phase}` : 'Disponível agora'
+      { className: 'home-build__body' },
+      h('p', { className: 'home-build__text' },
+        'O Baluarte chegou à v1.0.0 — sua primeira versão completa, entregue em ' +
+        '21 fases. Ainda assim, o projeto segue em construção: novas versões ' +
+        'trarão mais conteúdo. As fases são snapshots do caminho percorrido.'),
+      h('button', {
+        className: 'btn btn--primary btn--sm',
+        onclick: () => router.navigate('/sobre')
+      }, '◇ Conhecer a história do projeto')
     )
   );
 }
 
 function vigilanciaPanel() {
   const events = [
-    { time: '03:14', tag: 'NÚCLEO', msg: 'Sistema operacional Mark XIII inicializado.', cls: 'u-text-cyan' },
-    { time: '03:14', tag: 'ROUTER', msg: 'SPA hash router carregou 13 rotas.', cls: 'u-text-success' },
-    { time: '03:13', tag: 'STORAGE', msg: 'localStorage namespace "baluarte:" verificado.', cls: 'u-text-success' },
-    { time: '03:12', tag: 'PWA', msg: 'manifest.json ativo. Service Worker em modo passivo.', cls: 'u-text-warning' },
-    { time: '03:11', tag: 'AUTH', msg: 'Shadow Bridge não inicializado — Fase 5.', cls: 'u-text-muted' },
-    { time: '03:10', tag: 'IA', msg: 'J.A.R.V.I.S. offline — aguardando Fase 5.', cls: 'u-text-muted' }
+    { time: 'v1.0.0', tag: 'NÚCLEO', msg: 'Mark XIII estável — 21 fases entregues.', cls: 'u-text-cyan' },
+    { time: 'rotas', tag: 'ROUTER', msg: 'SPA hash router com 31 rotas ativas.', cls: 'u-text-success' },
+    { time: 'IA', tag: 'JARVIS', msg: 'J.A.R.V.I.S. online — 4 modos operacionais.', cls: 'u-text-success' },
+    { time: 'IA', tag: 'MARK 11', msg: 'IA Proprietária — sistema de Skills carregado.', cls: 'u-text-success' },
+    { time: 'PWA', tag: 'OFFLINE', msg: 'Service Worker ativo — site funciona offline.', cls: 'u-text-success' },
+    { time: 'lore', tag: 'CRÔNICAS', msg: 'Onde os Deuses Sangram — saga em 4 partes na Biblioteca.', cls: 'u-text-cyan' }
   ];
 
   const list = h(
@@ -78,8 +89,8 @@ function vigilanciaPanel() {
       h(
         'li',
         { style: { display: 'flex', gap: '12px', alignItems: 'baseline' } },
-        h('span', { className: 'u-text-muted' }, ev.time),
-        h('span', { className: `badge ${ev.cls === 'u-text-success' ? 'badge--success' : ev.cls === 'u-text-warning' ? 'badge--warning' : ev.cls === 'u-text-cyan' ? 'badge--cyan' : 'badge--muted'}` }, ev.tag),
+        h('span', { className: 'u-text-muted', style: { minWidth: '46px' } }, ev.time),
+        h('span', { className: `badge ${ev.cls === 'u-text-cyan' ? 'badge--cyan' : 'badge--success'}` }, ev.tag),
         h('span', { style: { color: 'var(--color-text-secondary)' } }, ev.msg)
       )
     )
@@ -100,11 +111,11 @@ function vigilanciaPanel() {
 
 function statusInfraPanel() {
   const items = [
-    { label: 'Frontend', value: 'JS ES2022 + Vite 5', status: 'OK', cls: 'badge--success' },
-    { label: 'Backend (J.A.R.V.I.S.)', value: 'Node 22 + Express', status: 'FASE 5', cls: 'badge--magenta' },
-    { label: 'Persistência', value: 'localStorage + IndexedDB', status: 'PARCIAL', cls: 'badge--warning' },
-    { label: 'PWA / Service Worker', value: 'Skeleton ativo', status: 'PASSIVO', cls: 'badge--warning' },
-    { label: 'Auth (Shadow Bridge)', value: 'SHA-256×100', status: 'FASE 5', cls: 'badge--magenta' }
+    { label: 'Frontend', value: 'JS ES2022 puro + Vite 5', status: 'OK', cls: 'badge--success' },
+    { label: 'Roteamento', value: 'SPA hash router · 31 rotas', status: 'OK', cls: 'badge--success' },
+    { label: 'Persistência', value: 'localStorage + IndexedDB', status: 'OK', cls: 'badge--success' },
+    { label: 'PWA / Service Worker', value: 'Offline-first ativo', status: 'OK', cls: 'badge--success' },
+    { label: 'Inteligência', value: 'J.A.R.V.I.S. + IA Mark 11', status: 'ONLINE', cls: 'badge--cyan' }
   ];
 
   const rows = items.map((item) =>
@@ -144,12 +155,11 @@ function statusInfraPanel() {
 }
 
 export function homePage() {
-  const user = appState.get('user');
+  const user = appState.get('user') || { name: 'Operador' };
 
   return h(
     'div',
     { className: 'page-home' },
-    /* Header da página */
     h(
       'div',
       { className: 'page-header anim-fade-in' },
@@ -164,19 +174,21 @@ export function homePage() {
       h(
         'p',
         { className: 'page-header__description' },
-        `Bem-vindo, operador `,
+        'Bem-vindo, operador ',
         h('strong', { className: 'u-text-cyan' }, user.name),
         '. Status do Mark XIII em tempo real. Use o menu lateral ou os cards abaixo para navegar.'
       )
     ),
 
+    buildBanner(),
+
     /* Métricas */
     h(
       'div',
       { className: 'status-grid' },
-      metricCard('PÁGINAS ATIVAS', '2 / 13', '11 em fases futuras', 'u-text-warning', 'card--magenta'),
+      metricCard('VERSÃO', 'v1.0.0', '21 / 21 fases entregues', 'u-text-cyan', 'card--magenta'),
+      metricCard('ROTAS ATIVAS', formatNumber(31), 'todas operacionais'),
       metricCard('FERRAMENTAS', formatNumber(35), 'em 7 categorias'),
-      metricCard('FASE ATUAL', '01 / 05', 'Foundation entregue'),
       metricCard('UPTIME NÚCLEO', '∞', 'sessão ativa', 'u-text-cyan')
     ),
 
@@ -193,7 +205,7 @@ export function homePage() {
       ...QUICK_LINKS.map(quickCard)
     ),
 
-    /* Vigilância + Infra side-by-side */
+    /* Vigilância + Infra */
     h(
       'div',
       {

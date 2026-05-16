@@ -65,7 +65,7 @@ const TOOLS = [
   /* === Sistema (4) === */
   { id: 'cotacoes', name: 'Cotações Live', category: 'sistema', icon: '$', phase: 1, desc: 'Câmbio (AwesomeAPI) + crypto (CoinGecko) em tempo real + conversor.' },
   { id: 'jarvis', name: 'J.A.R.V.I.S.', category: 'sistema', icon: '◉', phase: 1, desc: 'Assistente IA — modo local (regras) ou Claude API. 4 modos completos na Fase 20.' },
-  { id: 'shadow', name: 'Shadow Bridge', category: 'sistema', icon: '◐', phase: 5, desc: 'Autenticação SHA-256×100. Proteção de áreas sensíveis.' },
+  { id: 'ia-proprietaria', name: 'IA Proprietária Mark 11', category: 'sistema', icon: '◎', phase: 1, desc: 'Sistema de Skills dinâmico (SKILL.md). Capacidades modulares e componíveis da IA embarcada do Baluarte.' },
   { id: 'config', name: 'Configurações', category: 'sistema', icon: '⚙', phase: 1, desc: 'Tema, atalhos, idioma, limpeza de cache.' }
 ];
 
@@ -128,7 +128,7 @@ const TOOL_ROUTES = {
   /* Sistema */
   cotacoes: '/economia',
   jarvis: '/jarvis',
-  shadow: '/shadow',
+  'ia-proprietaria': '/ia-proprietaria',
   config: '/perfil'
   /* Sem rota dedicada (futuras): json, git-helper, colorpicker, qrcode */
 };
@@ -173,7 +173,7 @@ function toolCard(tool) {
       h('div', { className: 'tool-card__icon' }, tool.icon),
       isReady
         ? h('span', { className: 'badge badge--success' }, 'PRONTO')
-        : h('span', { className: 'badge badge--magenta' }, `FASE ${tool.phase}`)
+        : h('span', { className: 'badge badge--magenta' }, 'ROADMAP')
     ),
     h('h3', { className: 'tool-card__title' }, tool.name),
     h('p', { className: 'tool-card__desc' }, tool.desc),

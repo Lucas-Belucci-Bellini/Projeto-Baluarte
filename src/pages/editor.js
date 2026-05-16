@@ -27,7 +27,8 @@ import {
   runTab,
   renameTab
 } from '../utils/editor-engine.js';
-import { getLang } from '../data/editor-langs.js';
+import { getLang, langForExt } from '../data/editor-langs.js';
+import * as vfs from '../utils/vfs.js';
 
 let state = null;
 let editorEl = null;
@@ -180,6 +181,24 @@ function renderToolbar() {
           }
         },
         '✕ Clear'
+      ),
+      h(
+        'button',
+        {
+          className: 'btn btn--ghost btn--sm',
+          title: 'Abrir arquivo do filesystem virtual (compartilhado com o Terminal)',
+          onclick: handleOpenVfs
+        },
+        '◫ Abrir VFS'
+      ),
+      h(
+        'button',
+        {
+          className: 'btn btn--ghost btn--sm',
+          title: 'Salvar a aba atual no filesystem virtual',
+          onclick: handleSaveVfs
+        },
+        '⤓ Salvar VFS'
       )
     ),
     h(
@@ -353,6 +372,48 @@ function handleSave() {
   toast('Salvo localmente', { type: 'success', duration: 1400 });
 }
 
+/* ============================================================
+ *  Integração VFS (Editor ↔ Terminal — filesystem compartilhado)
+ * ============================================================ */
+
+function handleOpenVfs() {
+  const path = prompt(
+    'Caminho do arquivo no filesystem virtual:\n(ex: /home/lucas/README.md)',
+    '/home/lucas/README.md'
+  );
+  if (!path) return;
+  try {
+    const content = vfs.readFile(path, '/');
+    const name = vfs.basename(path);
+    const ext = name.includes('.') ? name.split('.').pop() : '';
+    const langDef = langForExt(ext);
+    const tab = addTab(state, langDef ? langDef.id : 'javascript');
+    tab.name = name;
+    updateTabContent(state, tab.id, content);
+    persist();
+    render();
+    toast(`Aberto: ${name}`, { type: 'success' });
+  } catch (e) {
+    toast('Erro: ' + e.message, { type: 'danger' });
+  }
+}
+
+function handleSaveVfs() {
+  const activeTab = getActiveTab(state);
+  const suggested = '/home/lucas/' + activeTab.name;
+  const path = prompt(
+    'Salvar a aba atual em qual caminho do VFS?',
+    suggested
+  );
+  if (!path) return;
+  try {
+    vfs.writeFile(path, activeTab.content, '/');
+    toast(`Salvo no VFS: ${path}`, { type: 'success' });
+  } catch (e) {
+    toast('Erro: ' + e.message, { type: 'danger' });
+  }
+}
+
 function attachKeyboard() {
   kbHandler = (e) => {
     /* Só dentro da página /editor */
@@ -417,26 +478,22 @@ export function editorPage() {
         h('span', null, '›'),
         h('span', null, 'EDITOR DE CÓDIGO')
       ),
-      h('h1', { className: 'page-header__title' }, '⌨ Editor de Código'),
+      h('h1', { className: 'page-header__title' }, '⌨ Editor de Código · IDE'),
       h(
         'p',
         { className: 'page-header__description' },
-        'Multi-tabs com syntax highlight para 26 linguagens. ',
-        'Runners para ',
-        h('span', { className: 'u-text-cyan' }, 'JavaScript'),
-        ', ',
-        h('span', { className: 'u-text-cyan' }, 'HTML/CSS'),
-        ' e ',
-        h('span', { className: 'u-text-cyan' }, 'Markdown'),
-        '. Atalhos: ',
+        'Multi-tabs · 26 linguagens · runners JS/HTML/CSS/Markdown. ',
+        h('span', { className: 'u-text-cyan' }, 'Integração VFS'),
+        ': abre e salva no filesystem virtual compartilhado com o Terminal. ',
+        'Atalhos: ',
         h('kbd', null, 'Ctrl+Enter'),
-        ' (run), ',
+        ' run · ',
         h('kbd', null, 'Ctrl+S'),
-        ' (save), ',
+        ' save · ',
         h('kbd', null, 'Ctrl+T'),
-        ' (nova tab), ',
+        ' nova tab · ',
         h('kbd', null, 'Ctrl+W'),
-        ' (fechar).'
+        ' fechar.'
       )
     )
   );

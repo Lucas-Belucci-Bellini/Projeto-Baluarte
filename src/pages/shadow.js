@@ -1,176 +1,164 @@
 /**
- * Página /shadow — Shadow Bridge auth (Fase 18).
+ * Página /shadow — Ponte Shadow (setor restrito A.R.G.E.N.T.).
  *
- * Camada de autenticação client-side com SHA-256 × 100 + salt.
- * Protege áreas sensíveis localmente (não substitui auth server).
+ * NÃO existe link para esta página em nenhum menu, card ou rodapé.
+ * O acesso é feito pelo gateway oculto (utils/shadow-gate.js): o
+ * operador invoca o terminal digitando a sequência secreta e
+ * autentica com o código de acesso. Sem sessão restrita válida,
+ * esta rota não revela absolutamente nada.
  */
 
-import { h, empty } from '../utils/helpers.js';
+import { h } from '../utils/helpers.js';
+import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
-import {
-  isSetup, setupPassword, login, logout, isAuthenticated,
-  getSession, timeRemaining, resetAuth
-} from '../utils/auth-engine.js';
+import { isShadowUnlocked, openShadowGate, lockShadow } from '../utils/shadow-gate.js';
 
-function fmtDuration(ms) {
-  if (ms <= 0) return 'expirado';
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  return `${h}h ${m.toString().padStart(2, '0')}m`;
+function storageReport() {
+  let keys = 0;
+  let bytes = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('baluarte:')) {
+        keys++;
+        bytes += k.length + (localStorage.getItem(k) || '').length;
+      }
+    }
+  } catch {
+    /* sem acesso a localStorage */
+  }
+  return { keys, kb: (bytes / 1024).toFixed(1) };
+}
+
+function diagRow(label, value) {
+  return h('div', { className: 'shadow-vault__row' },
+    h('span', { className: 'shadow-vault__row-label' }, label),
+    h('span', { className: 'shadow-vault__row-value u-mono' }, value)
+  );
+}
+
+function restrictedLink(icon, label, desc, route) {
+  return h('button', {
+    className: 'shadow-vault__link',
+    onclick: () => router.navigate(route)
+  },
+    h('span', { className: 'shadow-vault__link-icon' }, icon),
+    h('span', { className: 'shadow-vault__link-body' },
+      h('span', { className: 'shadow-vault__link-label' }, label),
+      h('span', { className: 'shadow-vault__link-desc' }, desc)
+    ),
+    h('span', { className: 'shadow-vault__link-arrow' }, '→')
+  );
 }
 
 export function shadowPage() {
-  const fullPage = h('div', { className: 'page-shadow' });
+  /* Setor selado: dispara o gateway e não revela nada. */
+  if (!isShadowUnlocked()) {
+    openShadowGate();
+    return h('section', { className: 'empty-state anim-fade-in' },
+      h('div', { className: 'empty-state__icon' }, '◍'),
+      h('h1', { className: 'empty-state__title' }, 'Setor selado'),
+      h('p', { className: 'empty-state__subtitle' },
+        'Este setor exige autenticação do operador. Se você chegou aqui por acaso, ' +
+        'não há nada para ver.'),
+      h('div', { className: 'empty-state__phase' }, 'ACESSO RESTRITO'),
+      h('button', {
+        className: 'btn btn--primary', style: { marginTop: '24px' },
+        onclick: () => router.navigate('/home')
+      }, '↩ Voltar à Ponte de Comando')
+    );
+  }
 
-  fullPage.appendChild(
+  /* ===== Ponte desbloqueada ===== */
+  const report = storageReport();
+  const swActive = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+  const page = h('div', { className: 'page-shadow' });
+
+  page.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
       h('div', { className: 'page-header__crumbs' },
         h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'SHADOW BRIDGE')),
-      h('h1', { className: 'page-header__title' }, '◐ Shadow Bridge'),
+        h('span', null, 'SETOR RESTRITO')),
+      h('h1', { className: 'page-header__title' }, '◖ Ponte Shadow'),
       h('p', { className: 'page-header__description' },
-        'Camada de autenticação ',
-        h('span', { className: 'u-text-cyan' }, 'SHA-256 × 100'),
-        ' com salt aleatório. Sessão de 4 horas. ',
-        h('span', { className: 'u-text-muted' },
-          'Implementação client-side — não substitui auth servidor.')
+        'Setor restrito do Baluarte. Você autenticou com o código de acesso ',
+        h('span', { className: 'u-text-cyan' }, 'A.R.G.E.N.T.'),
+        ', verificado por SHA-256 iterado ×100. Esta área não aparece em nenhum menu.')
+    )
+  );
+
+  page.appendChild(
+    h('div', { className: 'shadow-vault__granted anim-fade-in' },
+      h('span', { className: 'shadow-vault__granted-icon' }, '✓'),
+      h('div', null,
+        h('div', { className: 'shadow-vault__granted-title' }, 'ACESSO CONCEDIDO'),
+        h('div', { className: 'shadow-vault__granted-sub' },
+          'Sessão restrita ativa — ela se encerra ao fechar esta aba do navegador.')
       )
     )
   );
 
-  const cardEl = h('div', { className: 'shadow-card' });
-  fullPage.appendChild(cardEl);
+  page.appendChild(
+    h('div', { className: 'card shadow-vault__about' },
+      h('h2', { className: 'shadow-vault__h' }, '◐ O que é a Ponte Shadow'),
+      h('p', null,
+        'A Ponte Shadow é a camada oculta do Baluarte — reservada para o que é ',
+        h('strong', null, 'pesado, sensível ou perigoso'),
+        ' demais para ficar exposto na navegação comum. Não existe aba, botão ou ' +
+        'link para ela: só chega aqui quem sabe invocar o gateway e conhece o ' +
+        'código de acesso do operador.'),
+      h('p', { className: 'u-text-muted' },
+        'O código nunca foi gravado no site. O que existe no código-fonte é apenas o ',
+        h('strong', null, 'hash'),
+        ' — o resultado de passar o código por SHA-256 cem vezes seguidas. ' +
+        'Quem abrir o site e inspecionar o bundle vai encontrar a prova matemática ' +
+        'da senha, e nunca a senha em si.')
+    )
+  );
 
-  function render() {
-    empty(cardEl);
-
-    /* Estado 1: ainda não configurou senha */
-    if (!isSetup()) {
-      const passInput = h('input', {
-        className: 'input', type: 'password',
-        placeholder: 'Senha (≥4 caracteres)',
-        autocomplete: 'new-password'
-      });
-      const pass2Input = h('input', {
-        className: 'input', type: 'password',
-        placeholder: 'Confirme a senha',
-        autocomplete: 'new-password'
-      });
-
-      cardEl.appendChild(
-        h('div', { className: 'shadow-card__icon' }, '◐'),
-        h('h2', { className: 'shadow-card__title' }, 'Configurar Shadow Bridge'),
-        h('p', { className: 'shadow-card__desc u-text-muted' },
-          'Defina uma senha mestre. Ela passará por 100 iterações de SHA-256 com salt antes de ser armazenada. A senha nunca é armazenada em texto plano.'),
-        h('div', { className: 'shadow-form' },
-          h('label', null, h('span', null, 'SENHA'), passInput),
-          h('label', null, h('span', null, 'CONFIRMAR'), pass2Input),
-          h('button', {
-            className: 'btn btn--primary',
-            onclick: async () => {
-              if (passInput.value !== pass2Input.value) {
-                toast('Senhas não coincidem', { type: 'danger' });
-                return;
-              }
-              try {
-                await setupPassword(passInput.value);
-                toast('Shadow Bridge configurado!', { type: 'success' });
-                render();
-              } catch (e) {
-                toast(e.message, { type: 'danger' });
-              }
-            }
-          }, '⚿ Configurar')
-        )
-      );
-      return;
-    }
-
-    /* Estado 2: autenticado */
-    if (isAuthenticated()) {
-      const session = getSession();
-      cardEl.appendChild(
-        h('div', { className: 'shadow-card__icon shadow-card__icon--success' }, '✓'),
-        h('h2', { className: 'shadow-card__title' }, 'Sessão Ativa'),
-        h('div', { className: 'shadow-info' },
-          h('div', { className: 'shadow-info__row' },
-            h('span', null, 'Token (preview)'),
-            h('code', null, session.token.slice(0, 16) + '…')
-          ),
-          h('div', { className: 'shadow-info__row' },
-            h('span', null, 'Iniciada'),
-            h('code', null, new Date(session.startedAt).toLocaleString('pt-BR'))
-          ),
-          h('div', { className: 'shadow-info__row' },
-            h('span', null, 'Expira em'),
-            h('code', { className: 'u-text-cyan' }, fmtDuration(timeRemaining()))
-          )
-        ),
-        h('div', { className: 'shadow-actions' },
-          h('button', {
-            className: 'btn btn--ghost',
-            onclick: () => { logout(); toast('Sessão encerrada', { type: 'info' }); render(); }
-          }, '🔓 Logout'),
-          h('button', {
-            className: 'btn btn--ghost btn--sm u-text-danger',
-            title: 'Apaga senha e sessão (reset completo)',
-            onclick: () => {
-              if (confirm('Reset apaga senha configurada e exige novo setup. Continuar?')) {
-                resetAuth();
-                toast('Auth resetado', { type: 'warning' });
-                render();
-              }
-            }
-          }, '× Reset completo')
-        )
-      );
-      return;
-    }
-
-    /* Estado 3: precisa fazer login */
-    const passInput = h('input', {
-      className: 'input', type: 'password',
-      placeholder: 'Senha mestre',
-      autocomplete: 'current-password',
-      onkeydown: (e) => { if (e.key === 'Enter') doLogin(); }
-    });
-
-    async function doLogin() {
-      try {
-        const ok = await login(passInput.value);
-        if (!ok) {
-          toast('Senha incorreta', { type: 'danger' });
-          passInput.value = '';
-          return;
-        }
-        toast('Acesso concedido', { type: 'success' });
-        render();
-      } catch (e) {
-        toast(e.message, { type: 'danger' });
-      }
-    }
-
-    cardEl.appendChild(
-      h('div', { className: 'shadow-card__icon' }, '◐'),
-      h('h2', { className: 'shadow-card__title' }, 'Autenticar — Shadow Bridge'),
-      h('p', { className: 'shadow-card__desc u-text-muted' },
-        'Digite a senha mestre para abrir uma nova sessão de 4 horas.'),
-      h('div', { className: 'shadow-form' },
-        h('label', null, h('span', null, 'SENHA'), passInput),
-        h('button', { className: 'btn btn--primary', onclick: doLogin }, '⚿ Entrar'),
-        h('button', {
-          className: 'btn btn--ghost btn--sm u-text-danger',
-          onclick: () => {
-            if (confirm('Reset apaga a senha configurada. Você terá que criar uma nova. Continuar?')) {
-              resetAuth();
-              render();
-            }
-          }
-        }, 'Esqueci a senha (reset)')
+  page.appendChild(
+    h('div', { className: 'card shadow-vault__diag' },
+      h('h2', { className: 'shadow-vault__h' }, '◈ Diagnóstico do núcleo'),
+      h('div', { className: 'shadow-vault__rows' },
+        diagRow('Versão do núcleo', 'Mark XIII · v1.0.0'),
+        diagRow('Sessão restrita', 'ATIVA'),
+        diagRow('Service Worker', swActive ? 'controlando · offline-ready' : 'inativo nesta sessão'),
+        diagRow('Dados locais (baluarte:)', `${report.keys} chaves · ${report.kb} KB`),
+        diagRow('Cifra do gateway', 'SHA-256 ×100 + salt fixo')
       )
-    );
-  }
+    )
+  );
 
-  render();
-  return fullPage;
+  page.appendChild(
+    h('div', { className: 'section-header' },
+      h('h2', { className: 'section-header__title' }, 'Módulos profundos'),
+      h('span', { className: 'section-header__count' }, 'acesso direto'))
+  );
+  page.appendChild(
+    h('div', { className: 'shadow-vault__links' },
+      restrictedLink('◉', 'J.A.R.V.I.S.',
+        'Agente IA com ferramentas e memória persistente.', '/jarvis'),
+      restrictedLink('◎', 'IA Proprietária Mark 11',
+        'Sistema de Skills dinâmico — capacidades modulares.', '/ia-proprietaria'),
+      restrictedLink('⌨', 'Editor IDE',
+        'Ambiente de código completo com filesystem virtual.', '/editor'),
+      restrictedLink('▶', 'Terminal Web',
+        'Terminal com 60+ comandos e VFS persistente.', '/terminal')
+    )
+  );
+
+  page.appendChild(
+    h('div', { className: 'shadow-vault__seal' },
+      h('button', {
+        className: 'btn btn--ghost',
+        onclick: () => {
+          lockShadow();
+          toast('Ponte selada — sessão restrita encerrada.', { type: 'info' });
+          router.navigate('/home');
+        }
+      }, '⊘ Selar a ponte e sair')
+    )
+  );
+
+  return page;
 }

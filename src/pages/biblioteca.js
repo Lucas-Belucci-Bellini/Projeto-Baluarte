@@ -126,8 +126,9 @@ function renderList() {
       h('div', { className: 'arc-card__cover' }, arc.cover),
       h('div', { className: 'arc-card__body' },
         h('div', { className: 'arc-card__head' },
-          h('span', { className: 'arc-card__code' }, arc.code),
+          h('span', { className: cx('arc-card__code', arc.canonical && 'arc-card__code--saga') }, arc.code),
           h('span', { className: 'arc-card__univ' }, arc.universe),
+          arc.canonical && h('span', { className: 'arc-card__canon' }, '◆ FAN FIC'),
           isBookmarked && h('span', { className: 'arc-card__bookmark' }, '★')
         ),
         h('div', { className: 'arc-card__title' }, arc.title),
@@ -245,7 +246,7 @@ function renderViewer() {
       h('button', {
         className: cx('viewer-chapter-tab', c.id === chapter.id && 'is-active'),
         onclick: () => openChapter(arc.id, c.id)
-      }, c.title.replace(/^Capítulo [IVX]+ — /, ''))
+      }, c.title.replace(/^Capítulo [\dIVX]+ [—-] /, ''))
     );
   });
 
@@ -255,11 +256,21 @@ function renderViewer() {
     style: { fontSize: state.fontSize + 'px' }
   });
   body.appendChild(h('h3', { className: 'chapter-body__title' }, chapter.title));
-  /* Texto: cada parágrafo separado por \n\n */
-  const paragraphs = chapter.content.split(/\n\n+/);
-  paragraphs.forEach((p) => {
-    body.appendChild(h('p', null, p.trim()));
-  });
+  if (Array.isArray(chapter.blocks)) {
+    /* Capítulo estruturado (fan fic): blocos de subtítulo (h) e prosa (p). */
+    chapter.blocks.forEach((b) => {
+      if (b && b.t === 'h') {
+        body.appendChild(h('h4', { className: 'chapter-body__sub' }, b.v));
+      } else if (b && b.v) {
+        body.appendChild(h('p', null, b.v));
+      }
+    });
+  } else {
+    /* Texto simples: cada parágrafo separado por linha em branco. */
+    chapter.content.split(/\n\n+/).forEach((p) => {
+      body.appendChild(h('p', null, p.trim()));
+    });
+  }
 
   /* Navegação prev/next */
   const idx = arc.chapters.findIndex((c) => c.id === chapter.id);
@@ -300,11 +311,13 @@ export function bibliotecaPage() {
       ),
       h('h1', { className: 'page-header__title' }, '◫ Biblioteca — Crônicas da Baluarte'),
       h('p', { className: 'page-header__description' },
-        h('span', { className: 'u-text-cyan' }, `${ARCS_TOTAL} arcos`),
+        'A fan fic ',
+        h('span', { className: 'u-text-cyan' }, '"Onde os Deuses Sangram"'),
+        ' — saga crossover em 4 partes — mais os arcos de cenário do universo. ',
+        h('span', { className: 'u-text-cyan' }, `${ARCS_TOTAL} entradas`),
         ', ',
         h('span', { className: 'u-text-cyan' }, `${CHAPTERS_TOTAL} capítulos`),
-        ' do universo Baluarte e crossovers (DOOM, Halo, Pacific Rim, Solo Leveling, Vanadis, Arifureta). ',
-        'Retomar leitura, favoritar, tema dark/sépia, fonte ajustável.'
+        '. Retomar leitura, favoritar, tema dark/sépia, fonte ajustável.'
       )
     )
   );

@@ -62,15 +62,15 @@ function pageTitleForRoute(path) {
     '/ferramentas': 'Hub de Ferramentas',
     '/biblioteca': 'Biblioteca',
     '/academia': 'Academia',
-    '/lab': 'Lab Científico',
     '/universo': 'Universo',
     '/elites': 'Elites',
     '/arsenal': 'Arsenal',
     '/ciberseg': 'CiberSeg',
     '/economia': 'Economia',
     '/jarvis': 'J.A.R.V.I.S.',
+    '/ia-proprietaria': 'IA Proprietária Mark 11',
     '/perfil': 'Perfil',
-    '/shadow': 'Shadow Bridge'
+    '/sobre': 'Sobre o Projeto'
   };
   return map[path] || 'Mark XIII';
 }
