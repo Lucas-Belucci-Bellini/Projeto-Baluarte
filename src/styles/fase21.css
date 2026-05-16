@@ -1,0 +1,639 @@
+/* ============================================================
+ *  Fase 21 — IA Proprietária Mark 11
+ * ============================================================ */
+
+.page-mark11 {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+.mark11-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+.mark11-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mark11-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-md);
+  align-items: start;
+  margin-bottom: var(--space-md);
+}
+@media (max-width: 1024px) {
+  .mark11-grid { grid-template-columns: 1fr; }
+}
+
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.skill-card {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-left: 3px solid var(--sk-color, var(--color-cyan));
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.skill-card:hover {
+  background: var(--color-surface);
+  transform: translateX(2px);
+}
+.skill-card.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--sk-color, var(--color-cyan));
+  box-shadow: 0 0 12px var(--sk-color, var(--color-cyan-edge));
+}
+.skill-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.skill-card__cat {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sk-color, var(--color-cyan));
+}
+.skill-card__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.skill-card__trigger {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.skill-detail {
+  background: linear-gradient(180deg, var(--color-bg-elevated), var(--color-surface));
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  min-height: 400px;
+}
+.skill-detail__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--sk-color, var(--color-cyan));
+  margin-bottom: var(--space-sm);
+}
+.skill-detail__cat {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sk-color, var(--color-cyan));
+}
+.skill-detail__name {
+  margin: 2px 0 0;
+  font-size: 22px;
+  color: var(--color-text-primary);
+}
+.skill-detail__trigger {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  background: var(--color-bg);
+  border: var(--border-thin);
+  border-left: 3px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: var(--space-md);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+.skill-detail__trigger-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-warning);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.skill-detail__body {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.skill-detail__body h2 {
+  font-size: 18px;
+  color: var(--color-cyan);
+  margin: var(--space-md) 0 4px;
+}
+.skill-detail__body h3 {
+  font-size: 14px;
+  color: var(--color-magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: var(--space-sm) 0 4px;
+}
+.skill-detail__body h4 {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  margin: var(--space-sm) 0 2px;
+}
+.skill-detail__body p { color: var(--color-text-secondary); margin: 6px 0; }
+.skill-detail__body ul { margin: 6px 0 6px 20px; }
+.skill-detail__body li { color: var(--color-text-secondary); margin: 2px 0; }
+.skill-detail__body code {
+  background: var(--color-surface);
+  color: var(--color-cyan);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.skill-detail__body blockquote {
+  border-left: 3px solid var(--color-cyan);
+  padding: 4px 12px;
+  margin: 8px 0;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.mark11-doc {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+.mark11-doc__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.mark11-doc p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 6px 0;
+}
+
+/* ===== Skill creator modal ===== */
+.skill-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+.skill-modal {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-cyan);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg), 0 0 32px rgba(0, 240, 255, 0.1);
+}
+.skill-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.skill-modal__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.skill-modal__form label > span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+.skill-modal__form textarea {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  resize: vertical;
+}
+.skill-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: var(--space-md);
+}
+
+/* ===== Final v1.0.0 — celebração ===== */
+.v1-banner {
+  background: linear-gradient(135deg, var(--color-cyan-soft), var(--color-magenta-soft));
+  border: 1px solid var(--color-cyan);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+/* ============================================================
+ *  Gateway A.R.G.E.N.T. — terminal oculto da Ponte Shadow
+ * ============================================================ */
+.argent-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 99990;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(3px);
+}
+.argent-gate__term {
+  width: 100%;
+  max-width: 520px;
+  background: #05070a;
+  border: 1px solid var(--color-cyan);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.18);
+  overflow: hidden;
+  font-family: var(--font-mono);
+}
+.argent-gate__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(0, 240, 255, 0.06);
+  border-bottom: 1px solid var(--color-cyan-edge);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+.argent-gate__x {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+.argent-gate__x:hover { color: var(--color-magenta); }
+.argent-gate__scr { padding: var(--space-md); }
+.argent-gate__line {
+  margin: 2px 0;
+  font-size: 12px;
+  color: #1fd6e8;
+}
+.argent-gate__line--dim {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+.argent-gate__prompt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--space-sm);
+  padding: 8px 10px;
+  background: #00060a;
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-sm);
+}
+.argent-gate__caret { color: var(--color-cyan); }
+.argent-gate__input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+}
+.argent-gate__msg {
+  min-height: 18px;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.argent-gate__msg.is-wait { color: var(--color-warning); }
+.argent-gate__msg.is-ok { color: var(--color-cyan); }
+.argent-gate__msg.is-err { color: var(--color-magenta); }
+.argent-gate__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: var(--space-sm);
+}
+
+/* ============================================================
+ *  Ponte Shadow — console do setor restrito
+ * ============================================================ */
+.shadow-vault__granted {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  background: linear-gradient(135deg, var(--color-cyan-soft), transparent);
+  border: 1px solid var(--color-cyan);
+  border-radius: var(--radius-md);
+}
+.shadow-vault__granted-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--color-cyan);
+  border: 2px solid var(--color-cyan);
+  border-radius: 50%;
+}
+.shadow-vault__granted-title {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-cyan);
+}
+.shadow-vault__granted-sub {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+.shadow-vault__about,
+.shadow-vault__diag { margin-bottom: var(--space-md); }
+.shadow-vault__h {
+  margin: 0 0 var(--space-sm);
+  font-size: 16px;
+  color: var(--color-text-primary);
+}
+.shadow-vault__about p {
+  margin: 6px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+.shadow-vault__rows { display: flex; flex-direction: column; }
+.shadow-vault__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: var(--border-thin);
+}
+.shadow-vault__row:last-child { border-bottom: none; }
+.shadow-vault__row-label { color: var(--color-text-muted); }
+.shadow-vault__row-value { color: var(--color-cyan); }
+.shadow-vault__links {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.shadow-vault__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  text-align: left;
+  cursor: pointer;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.shadow-vault__link:hover {
+  border-color: var(--color-cyan);
+  transform: translateY(-1px);
+}
+.shadow-vault__link-icon {
+  font-size: 20px;
+  color: var(--color-cyan);
+}
+.shadow-vault__link-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.shadow-vault__link-label {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.shadow-vault__link-desc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.shadow-vault__link-arrow { color: var(--color-text-muted); }
+.shadow-vault__seal {
+  margin-top: var(--space-lg);
+  text-align: center;
+}
+
+/* ============================================================
+ *  Página Sobre o Projeto
+ * ============================================================ */
+.sobre-h {
+  margin: 0 0 var(--space-sm);
+  font-size: 18px;
+  color: var(--color-cyan);
+}
+.sobre-hero { margin-bottom: var(--space-md); }
+.sobre-hero p {
+  margin: 8px 0;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+.sobre-timeline {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-lg);
+}
+.sobre-tl-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: var(--border-thin);
+}
+.sobre-tl-tag {
+  padding-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-cyan);
+}
+.sobre-tl-title {
+  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.sobre-tl-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+@media (max-width: 640px) {
+  .sobre-tl-item { grid-template-columns: 1fr; gap: 4px; }
+}
+.sobre-map-group {
+  margin: var(--space-md) 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-magenta);
+}
+.sobre-map-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-bottom: var(--space-sm);
+}
+.sobre-map-card {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  padding: var(--space-sm);
+}
+.sobre-map-card__icon {
+  flex-shrink: 0;
+  font-size: 22px;
+  color: var(--color-cyan);
+}
+.sobre-map-card__name {
+  margin-bottom: 2px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.sobre-map-card__desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+.sobre-edu { margin-bottom: var(--space-md); }
+.sobre-edu p {
+  margin: 0 0 var(--space-sm);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+.sobre-edu-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  border-top: var(--border-thin);
+}
+.sobre-edu-item__icon {
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--color-cyan);
+}
+.sobre-build {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, var(--color-magenta-soft), var(--color-cyan-soft));
+  border: 1px solid var(--color-magenta);
+  border-radius: var(--radius-md);
+}
+.sobre-build__badge {
+  display: inline-block;
+  margin-bottom: var(--space-sm);
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+}
+.sobre-build__title {
+  margin: 0 0 var(--space-sm);
+  font-size: 20px;
+  color: var(--color-text-primary);
+}
+.sobre-build p {
+  margin: 8px 0;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+.sobre-build__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: var(--space-md);
+}
+
+/* ============================================================
+ *  Home — banner de obra em andamento
+ * ============================================================ */
+.home-build { margin-bottom: var(--space-md); }
+.home-build__badge {
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-warning);
+}
+.home-build__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.home-build__text {
+  flex: 1;
+  min-width: 260px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================================
+ *  Biblioteca — marcação da saga canônica
+ * ============================================================ */
+.arc-card__code--saga {
+  padding: 1px 6px;
+  font-weight: 700;
+  color: #00141a;
+  background: var(--color-cyan);
+  border-radius: 3px;
+}
+.arc-card__canon {
+  padding: 1px 5px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-magenta);
+  border: 1px solid var(--color-magenta);
+  border-radius: 3px;
+}
+.chapter-body__sub {
+  margin: var(--space-md) 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-cyan);
+}

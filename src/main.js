@@ -1,9 +1,9 @@
 /**
- * Bootstrap principal — Baluarte Mark XIII (Fase 1.5).
+ * Bootstrap principal — Baluarte Mark XIII · v1.0.0.
  * 1. Monta o shell (sidebar + header + main).
- * 2. Registra TODAS as rotas (13 principais + 17 ferramentas = 30 rotas).
+ * 2. Registra as 31 rotas.
  * 3. Conecta o router ao shell.
- * 4. Inicializa toast system.
+ * 4. Inicializa toast + gateway oculto da Ponte Shadow.
  * 5. Inicia.
  */
 
@@ -40,7 +40,10 @@ import { shadowPage } from './pages/shadow.js';
 import { perfilPage } from './pages/perfil.js';
 import { economiaPage } from './pages/economia.js';
 import { jarvisPage } from './pages/jarvis.js';
-import { placeholderPage, notFoundPage } from './pages/_placeholder.js';
+import { iaProprietariaPage } from './pages/ia-proprietaria.js';
+import { notFoundPage } from './pages/_placeholder.js';
+import { sobrePage } from './pages/sobre.js';
+import { initShadowGate } from './utils/shadow-gate.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
 
@@ -76,27 +79,13 @@ router.register('/shadow', () => shadowPage());
 router.register('/perfil', () => perfilPage());
 router.register('/economia', () => economiaPage());
 router.register('/jarvis', () => jarvisPage());
+router.register('/ia-proprietaria', () => iaProprietariaPage());
+
+router.register('/sobre', () => sobrePage());
 
 /* ==============================================================
- *  Rotas de páginas principais (placeholders — Fases 11-20)
+ *  Mark XIII v1.0.0 — 31 rotas, todas implementadas. Sem placeholders.
  * ============================================================== */
-const PRINCIPAL_ROUTES = [
-  '/lab'
-];
-
-/* ==============================================================
- *  Rotas de ferramentas (placeholders — Fases 2-21)
- *  Acessadas via Hub de Ferramentas e direto pela URL.
- * ============================================================== */
-const TOOL_ROUTES = [
-  /* F2-F17 ativos. Restante placeholder. */
-  '/ia-proprietaria'
-];
-
-[...PRINCIPAL_ROUTES, ...TOOL_ROUTES].forEach((path) => {
-  router.register(path, () => placeholderPage(path));
-});
-
 router.setNotFound((path) => notFoundPage(path));
 
 /* ==============================================================
@@ -129,15 +118,15 @@ function boot() {
 
   mountShell(root);
   initToast();
+  initShadowGate();
   router.start('/home');
 
-  const totalRoutes = 29 + PRINCIPAL_ROUTES.length + TOOL_ROUTES.length;
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v0.20.0',
+    '%c⬡ BALUARTE — Mark XIII · v1.0.0',
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    `%cRotas: ${totalRoutes} (29 ativas + ${PRINCIPAL_ROUTES.length} principais placeholder + ${TOOL_ROUTES.length} ferramentas placeholder)`,
+    '%c31 rotas ativas · 21 fases entregues · JS puro + Vite 5',
     'color: #93a4bf; font-family: monospace;'
   );
 }

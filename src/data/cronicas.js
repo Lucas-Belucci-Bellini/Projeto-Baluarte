@@ -7,7 +7,12 @@
  *
  * Estrutura:
  *   { id, title, code, universe, tags, synopsis, cover, equipe, chapters: [{ id, title, content }] }
+ *
+ * A fan fic canônica "Onde os Deuses Sangram" vem de fanfic.json e
+ * entra como os primeiros arcos (SAGA) da Biblioteca.
  */
+
+import fanfic from './fanfic.json';
 
 const slayer = `O ar dentro do bunker cheirava a ozônio queimado e ferro. Lucas
 sentiu o pulsar do Núcleo Infinity Dreadnought atrás do peitoral
@@ -87,7 +92,7 @@ A espada de fóton coerente brilhou no escuro. Ele aceitou.`;
 
 const arc = (data) => ({ ...data, chapters: data.chapters || [] });
 
-export const ARCS = [
+const SCENARIO_ARCS = [
   arc({
     id: 'alfa-despertar',
     code: 'ALFA',
@@ -433,6 +438,32 @@ export const ARCS = [
     ]
   })
 ];
+
+/* ===== Fan fic canônica — "Onde os Deuses Sangram" ===== */
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+const SAGA_ARCS = (fanfic.parts || []).map((part, i) => ({
+  id: part.id,
+  code: 'SAGA ' + (ROMAN[i] || part.order),
+  title: part.title,
+  universe: part.universe,
+  series: fanfic.title,
+  canonical: true,
+  tags: ['fan fic', 'canônico', part.universe],
+  cover: '☉',
+  equipe: '',
+  synopsis: part.synopsis,
+  chapters: part.chapters || []
+}));
+
+/** Metadados da fan fic canônica. */
+export const FANFIC_META = {
+  title: fanfic.title,
+  author: fanfic.author,
+  synopsis: fanfic.synopsis
+};
+
+/* Saga canônica primeiro, depois os arcos de cenário. */
+export const ARCS = [...SAGA_ARCS, ...SCENARIO_ARCS];
 
 /* Estatísticas */
 export const ARCS_TOTAL = ARCS.length;

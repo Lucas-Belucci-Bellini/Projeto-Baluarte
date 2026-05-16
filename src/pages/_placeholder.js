@@ -6,25 +6,8 @@
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 
-const ROUTE_INFO = {
-  /* ===== Páginas principais (13) ===== */
-  '/lab': {
-    title: 'Lab Científico',
-    icon: '⚛',
-    phase: 17,
-    blurb: 'Ferramentas científicas, simuladores, calculadoras avançadas e ambiente de experimentação.'
-  },
-
-  /* ===== Ferramentas (acessadas via Hub) =====
-   * /editor (Fase 2) e /terminal (Fase 3) estão implementados — sem placeholder */
-  /* F4-F9 ativos */
-  '/ia-proprietaria': {
-    title: 'IA Proprietária Mark 11',
-    icon: '◉',
-    phase: 21,
-    blurb: 'Sistema dinâmico de Skills (SKILL.md). IA embarcada no Baluarte com referências aos repos Anthropic/Gemini.'
-  }
-};
+/* Mark XIII v1.0.0 — toda rota tem página real; nenhum placeholder ativo. */
+const ROUTE_INFO = {};
 
 export function placeholderPage(path) {
   const info = ROUTE_INFO[path] || {
