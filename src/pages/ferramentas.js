@@ -1,5 +1,5 @@
 /**
- * Hub de Ferramentas — 35+ ferramentas em 7 categorias.
+ * Hub de Ferramentas — catálogo de ferramentas técnicas em 7 categorias.
  * Busca textual + filtro por categoria. Cada card aponta para uma rota real
  * (página implementada ou placeholder).
  */
@@ -9,7 +9,7 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 
 /* ============================================================
- *  Catálogo de ferramentas (35 entradas, 7 categorias)
+ *  Catálogo de ferramentas (7 categorias)
  *  Cada item: { id, name, category, icon, desc, phase }
  *  Status visual:
  *   - phase = 1 → ready
@@ -115,10 +115,7 @@ const TOOL_ROUTES = {
   /* Mídia */
   'media-hub': '/media',
   videos: '/videos',
-  'universo': '/universo',
   'audio-fft': '/fft',
-  'fft': '/fft',
-  'media-hub': '/media',
   /* Referência */
   'tabela-periodica': '/tabela-periodica',
   'modpack-mc': '/modpack',
@@ -298,9 +295,9 @@ export function ferramentasPage() {
         'p',
         { className: 'page-header__description' },
         'Catálogo central de todas as ferramentas técnicas do Baluarte. ',
-        h('span', { className: 'u-text-cyan' }, '35 ferramentas'),
+        h('span', { className: 'u-text-cyan' }, `${TOOLS.length} ferramentas`),
         ' organizadas em ',
-        h('span', { className: 'u-text-cyan' }, '7 categorias'),
+        h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length - 1} categorias`),
         '. Algumas já estão prontas, outras chegam em fases futuras.'
       )
     ),

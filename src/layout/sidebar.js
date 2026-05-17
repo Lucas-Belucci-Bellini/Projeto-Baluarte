@@ -1,5 +1,5 @@
 /**
- * Sidebar — navegação principal das 13 páginas.
+ * Sidebar — navegação principal do Baluarte (todas as rotas).
  * Collapsible no desktop. Drawer overlay no mobile.
  */
 
@@ -9,7 +9,7 @@ import { appState } from '../core/state.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
 
-/* ===== Definição das 13 rotas oficiais ===== */
+/* ===== Grupos de navegação do menu lateral — todas as rotas ===== */
 export const NAV_GROUPS = [
   {
     label: 'Operações',
@@ -19,11 +19,38 @@ export const NAV_GROUPS = [
     ]
   },
   {
+    label: 'Ferramentas',
+    items: [
+      { path: '/editor', label: 'Editor de Código', icon: '⌨', phase: 1 },
+      { path: '/terminal', label: 'Terminal', icon: '▸', phase: 1 },
+      { path: '/calculadoras', label: 'Calculadoras', icon: '∑', phase: 1 },
+      { path: '/calc-cientifica', label: 'Calc. Científica', icon: 'π', phase: 1 },
+      { path: '/calc-numerica', label: 'Calc. Numérica', icon: '⊞', phase: 1 },
+      { path: '/tabela-verdade', label: 'Tabela Verdade', icon: '⊨', phase: 1 },
+      { path: '/cripto', label: 'Lab de Cripto', icon: '⚿', phase: 1 },
+      { path: '/regex', label: 'Lab de Regex', icon: '✱', phase: 1 },
+      { path: '/graficos', label: 'Gráficos', icon: '◢', phase: 1 },
+      { path: '/simbolos', label: 'Símbolos', icon: '❖', phase: 1 },
+      { path: '/logic-sim', label: 'Logic Sim', icon: '⊻', phase: 1 }
+    ]
+  },
+  {
     label: 'Conhecimento',
     items: [
       { path: '/biblioteca', label: 'Biblioteca', icon: '◫', phase: 1 },
       { path: '/academia', label: 'Academia', icon: '◬', phase: 1 },
-      { path: '/universo', label: 'Universo', icon: '✦', phase: 1 }
+      { path: '/universo', label: 'Universo', icon: '✦', phase: 1 },
+      { path: '/tabela-periodica', label: 'Tabela Periódica', icon: '⚛', phase: 1 },
+      { path: '/modpack', label: 'Modpack Minecraft', icon: '◧', phase: 1 },
+      { path: '/guia-pc', label: 'Guia para Montar PC', icon: '◨', phase: 1 }
+    ]
+  },
+  {
+    label: 'Mídia',
+    items: [
+      { path: '/fft', label: 'Visualizador FFT', icon: '∿', phase: 1 },
+      { path: '/media', label: 'Media Hub', icon: '▦', phase: 1 },
+      { path: '/videos', label: 'Central de Vídeos', icon: '▶', phase: 1 }
     ]
   },
   {
