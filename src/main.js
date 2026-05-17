@@ -1,5 +1,5 @@
 /**
- * Bootstrap principal — Baluarte Mark XIII · v1.0.0.
+ * Bootstrap principal — Baluarte Mark XIII.
  * 1. Monta o shell (sidebar + header + main).
  * 2. Registra as 31 rotas.
  * 3. Conecta o router ao shell.
@@ -46,6 +46,7 @@ import { sobrePage } from './pages/sobre.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { initToast } from './utils/toast.js';
 import { $ } from './utils/helpers.js';
+import { VERSION } from './data/version.js';
 
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
@@ -122,7 +123,7 @@ function boot() {
   router.start('/home');
 
   console.log(
-    '%c⬡ BALUARTE — Mark XIII · v1.0.0',
+    `%c⬡ BALUARTE — Mark XIII · v${VERSION}`,
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(

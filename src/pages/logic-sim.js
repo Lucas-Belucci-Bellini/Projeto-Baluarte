@@ -8,7 +8,7 @@
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
-import { LOGIC_GATES } from '../data/modpack.js';
+import { LOGIC_GATES } from '../data/logic-gates.js';
 
 const STORAGE_KEY = 'logic-sim:state';
 let state = null;

@@ -8,6 +8,7 @@ import { bus } from '../core/events.js';
 import { appState } from '../core/state.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
+import { VERSION, CODENAME } from '../data/version.js';
 
 /* ===== Grupos de navegação do menu lateral — todas as rotas ===== */
 export const NAV_GROUPS = [
@@ -145,7 +146,7 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
-      `v1.0.0 · Fase ${CURRENT_PHASE}/21`
+      `v${VERSION} · ${CODENAME}`
     )
   );
 

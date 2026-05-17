@@ -174,14 +174,3 @@ export const PC_PRESETS = [
     tip: 'PCIe lanes importam. Threadripper PRO oferece 128 lanes vs 24 do consumidor.'
   }
 ];
-
-/* Lógica: portas básicas (Logic Sim) */
-export const LOGIC_GATES = [
-  { id: 'AND',  symbol: '∧', fn: (a, b) => a && b, desc: 'Saída 1 se ambos forem 1.' },
-  { id: 'OR',   symbol: '∨', fn: (a, b) => a || b, desc: 'Saída 1 se pelo menos um for 1.' },
-  { id: 'NOT',  symbol: '¬', fn: (a) => !a, desc: 'Inverte o sinal (1 input).' },
-  { id: 'XOR',  symbol: '⊕', fn: (a, b) => a !== b, desc: 'Saída 1 se exatamente um for 1.' },
-  { id: 'NAND', symbol: '⊼', fn: (a, b) => !(a && b), desc: 'NOT AND. Universal: pode formar qualquer porta.' },
-  { id: 'NOR',  symbol: '⊽', fn: (a, b) => !(a || b), desc: 'NOT OR. Também universal.' },
-  { id: 'XNOR', symbol: '↔', fn: (a, b) => a === b, desc: 'NOT XOR (igualdade).' }
-];

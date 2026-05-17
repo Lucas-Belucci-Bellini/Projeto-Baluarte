@@ -11,6 +11,7 @@
  */
 
 import { storage } from '../core/storage.js';
+import { VERSION } from '../data/version.js';
 import { ARSENAL, TOTAL } from '../data/arsenal.js';
 import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
@@ -118,7 +119,7 @@ export function processLocal(message) {
   if (/\b(status|situacao|fase|versao|estado)\b/.test(msg)) {
     return { text: [
       '⬡ STATUS — Baluarte Mark XIII',
-      `Fase: 19/21 · v0.19.0`,
+      `Versão: v${VERSION}`,
       `Arsenal: ${TOTAL} itens catalogados`,
       `Elites: ${TOTAL_EQUIPES} equipes`,
       `Crônicas: ${ARCS_TOTAL} arcos`,

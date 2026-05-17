@@ -10,6 +10,7 @@
  */
 
 import * as vfs from '../utils/vfs.js';
+import { VERSION } from './version.js';
 
 /* ===== Helpers internos ===== */
 
@@ -808,13 +809,12 @@ export const COMMANDS = {
     run: () => [
       '⬡ BALUARTE — Status do Núcleo',
       '─────────────────────────────────',
-      '  Mark XIII v0.3.0',
-      '  Fase: 3/21 (Terminal Web)',
-      '  Frontend: ONLINE',
-      '  PWA: PASSIVO',
-      '  J.A.R.V.I.S.: OFFLINE (Fase 20)',
-      '  Shadow Bridge: STANDBY (Fase 18)',
-      '  IA Proprietária: TBD (Fase 21)'
+      `  Mark XIII · v${VERSION}`,
+      '  Frontend: ONLINE · JS puro + Vite',
+      '  PWA: ATIVO (offline-first)',
+      '  J.A.R.V.I.S.: ONLINE',
+      '  Shadow Bridge: operacional',
+      '  IA Proprietária Mark 11: ONLINE'
     ].join('\n')
   },
 
