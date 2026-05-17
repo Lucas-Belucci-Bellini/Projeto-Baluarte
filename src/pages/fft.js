@@ -2,7 +2,7 @@
  * Página /fft — Visualizador FFT (Fase 15).
  *
  * 6 modos de visualização via Web Audio API.
- * Fontes: microfone, arquivo, tom de teste.
+ * Fontes: microfone, áudio do sistema (som do PC), arquivo, tom de teste.
  */
 
 import { h, cx, debounce, empty } from '../utils/helpers.js';
@@ -10,6 +10,7 @@ import { toast } from '../utils/toast.js';
 import {
   RENDER_MODES,
   connectMicrophone,
+  connectSystemAudio,
   connectMediaElement,
   connectTestTone,
   setTestFrequency,
@@ -61,7 +62,7 @@ export function fftPage() {
       h('p', { className: 'page-header__description' },
         h('span', { className: 'u-text-cyan' }, '6 modos'),
         ' de visualização em Canvas 2D via Web Audio API: barras, curva, forma de onda, radial, spectrogram, partículas. ',
-        'Suporta microfone, arquivo de áudio e oscilador de teste.'
+        'Captura microfone, áudio do sistema (o som do PC), arquivo de áudio ou oscilador de teste.'
       )
     )
   );
@@ -90,6 +91,22 @@ export function fftPage() {
       }
     }
   }, '🎙 Microfone');
+
+  const systemBtn = h('button', {
+    className: 'btn',
+    onclick: async () => {
+      try {
+        setStatus('Solicitando áudio do sistema…', 'warning');
+        await connectSystemAudio();
+        setStatus('● ÁUDIO DO PC', 'danger');
+        startRender(canvasEl);
+        toast('Capturando o som do PC. Escolha a aba/tela e marque "compartilhar áudio".', { type: 'info' });
+      } catch (e) {
+        setStatus('PARADO', 'muted');
+        toast('Erro: ' + e.message, { type: 'danger' });
+      }
+    }
+  }, '🖥 Áudio do PC');
 
   const fileInput = h('input', {
     type: 'file',
@@ -212,7 +229,7 @@ export function fftPage() {
   fullPage.appendChild(
     h('div', { className: 'fft-toolbar' },
       h('div', { className: 'fft-toolbar__group' },
-        micBtn, fileBtn, testBtn, stopBtn,
+        micBtn, systemBtn, fileBtn, testBtn, stopBtn,
         fileInput
       ),
       statusBadge

@@ -106,6 +106,35 @@ export async function connectMicrophone() {
   return true;
 }
 
+/** Captura o áudio do sistema (o som do PC) via getDisplayMedia. */
+export async function connectSystemAudio() {
+  disconnect();
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') await ctx.resume();
+  ensureAnalyser();
+
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+    });
+  } catch {
+    throw new Error('Captura cancelada ou bloqueada pelo navegador.');
+  }
+  if (!stream.getAudioTracks().length) {
+    stream.getTracks().forEach((t) => t.stop());
+    throw new Error('Nenhum áudio capturado — marque "compartilhar áudio" ao escolher a aba/tela.');
+  }
+  microphoneStream = stream;
+  sourceNode = ctx.createMediaStreamSource(stream);
+  /* não conecta ao destination — evita eco */
+  sourceNode.connect(analyserNode);
+  try { gainNode.disconnect(ctx.destination); } catch {}
+  sourceType = 'system';
+  return true;
+}
+
 export function connectMediaElement(el) {
   disconnect();
   const ctx = getAudioCtx();
