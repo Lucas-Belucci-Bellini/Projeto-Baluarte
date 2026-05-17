@@ -1,13 +1,13 @@
 /*
- * Service Worker — Baluarte Mark XIII (Fase 18)
+ * Service Worker — Baluarte (v2.0.0)
  *
- * Estratégia: stale-while-revalidate
- *   - Cache primeiro (resposta rápida)
- *   - Update em background (frescor garantido na próxima request)
- *   - Fallback offline para navegação
+ * Estratégia: stale-while-revalidate para assets, network-first para
+ * navegação. A VERSION abaixo muda a cada release — ao mudar, o
+ * navegador instala o SW novo, que limpa os caches das versões antigas.
+ * Isso evita servir assets velhos após um deploy (ex.: no Vercel).
  */
 
-const VERSION = 'baluarte-v0.18.0';
+const VERSION = 'baluarte-v2.0.0';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
