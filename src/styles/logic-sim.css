@@ -1,0 +1,75 @@
+/* ============================================================
+ *  Simulador de Lógica Digital (/logic-sim) — v2.0.0
+ * ============================================================ */
+
+.lsim-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-sm);
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+}
+
+.lsim-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.lsim-palette-btn {
+  min-width: 46px;
+  padding: 6px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-cyan);
+  background: var(--color-surface);
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.lsim-palette-btn:hover {
+  background: var(--color-cyan-soft);
+  transform: translateY(-1px);
+}
+
+.lsim-tool-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.lsim-tool-btn.is-active {
+  color: var(--color-bg);
+  background: var(--color-cyan);
+  border-color: var(--color-cyan);
+  font-weight: 700;
+}
+
+.lsim-canvas-wrap {
+  overflow: auto;
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  background: #0a0d14;
+  max-width: 100%;
+}
+.lsim-canvas {
+  display: block;
+  cursor: crosshair;
+}
+
+.lsim-hint {
+  margin-top: var(--space-sm);
+  font-size: 12px;
+  line-height: 1.6;
+}

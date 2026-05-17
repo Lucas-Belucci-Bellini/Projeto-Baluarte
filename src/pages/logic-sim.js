@@ -1,199 +1,433 @@
 /**
- * Página /logic-sim — Simulador de Lógica (Fase 17).
+ * Página /logic-sim — Simulador de Lógica Digital (v2.0.0).
  *
- * Modo simplificado: o usuário escolhe uma porta, define as 2 entradas
- * e vê a saída em tempo real. Mostra também a tabela verdade da porta.
+ * Simulador interativo de verdade: coloca componentes num canvas, liga
+ * com fios (saída → entrada), alterna as entradas e vê os sinais
+ * propagarem em tempo real. Suporta realimentação (latches/flip-flops
+ * montados com portas). Salva/carrega o circuito em localStorage.
  */
 
-import { h, cx, empty } from '../utils/helpers.js';
+import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { router } from '../core/router.js';
-import { LOGIC_GATES } from '../data/logic-gates.js';
+import { toast } from '../utils/toast.js';
+import {
+  GATES, PALETTE, createCircuit, addComponent, removeComponent,
+  addWire, removeWire, simulate, inputValues, serialize, deserialize
+} from '../utils/logic-sim-engine.js';
 
-const STORAGE_KEY = 'logic-sim:state';
-let state = null;
-let outputEl = null;
-let gateLabelEl = null;
+const STORAGE_KEY = 'logic-sim:circuit';
+const CW = 1000;          /* largura lógica do canvas */
+const CH = 560;           /* altura  lógica do canvas */
+const W = 80;             /* largura do componente */
+const H = 52;             /* altura do componente */
+const PR = 7;             /* raio do port */
 
-function loadState() {
-  return storage.get(STORAGE_KEY) || { gate: 'AND', a: false, b: false };
+let circuit = null;
+let tool = 'wire';        /* 'wire' | 'erase' */
+let drag = null;          /* { comp, dx, dy, moved } */
+let wiring = null;        /* { from, mx, my } */
+let addCount = 0;
+let frame = 0;
+
+/* ===== Geometria ===== */
+
+function inPortPos(comp, port) {
+  const def = GATES[comp.type];
+  if (def.ins <= 1) return { x: comp.x, y: comp.y + H / 2 };
+  return { x: comp.x, y: comp.y + (port === 0 ? H * 0.3 : H * 0.7) };
 }
-function persist() { storage.set(STORAGE_KEY, state); }
-
-function currentGate() {
-  return LOGIC_GATES.find((g) => g.id === state.gate) || LOGIC_GATES[0];
+function outPortPos(comp) {
+  return { x: comp.x + W, y: comp.y + H / 2 };
+}
+function compAt(x, y) {
+  for (let i = circuit.comps.length - 1; i >= 0; i--) {
+    const c = circuit.comps[i];
+    if (x >= c.x && x <= c.x + W && y >= c.y && y <= c.y + H) return c;
+  }
+  return null;
+}
+function outPortAt(x, y) {
+  for (const c of circuit.comps) {
+    if (GATES[c.type].outs === 0) continue;
+    const p = outPortPos(c);
+    if ((x - p.x) ** 2 + (y - p.y) ** 2 <= (PR + 5) ** 2) return c;
+  }
+  return null;
+}
+function inPortAt(x, y) {
+  for (const c of circuit.comps) {
+    const def = GATES[c.type];
+    for (let p = 0; p < def.ins; p++) {
+      const pos = inPortPos(c, p);
+      if ((x - pos.x) ** 2 + (y - pos.y) ** 2 <= (PR + 5) ** 2) return { comp: c, port: p };
+    }
+  }
+  return null;
+}
+function distSeg(px, py, x1, y1, x2, y2) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len2 = dx * dx + dy * dy || 1;
+  let t = ((px - x1) * dx + (py - y1) * dy) / len2;
+  t = Math.max(0, Math.min(1, t));
+  const cx = x1 + t * dx, cy = y1 + t * dy;
+  return Math.hypot(px - cx, py - cy);
+}
+function wireAt(x, y) {
+  const byId = {};
+  circuit.comps.forEach((c) => (byId[c.id] = c));
+  for (const w of circuit.wires) {
+    const a = byId[w.from], b = byId[w.to];
+    if (!a || !b) continue;
+    const p1 = outPortPos(a), p2 = inPortPos(b, w.toPort);
+    if (distSeg(x, y, p1.x, p1.y, p2.x, p2.y) < 7) return w;
+  }
+  return null;
 }
 
-function compute() {
-  const g = currentGate();
-  if (g.id === 'NOT') return g.fn(state.a);
-  return g.fn(state.a, state.b);
+/* ===== Persistência ===== */
+
+function save() {
+  storage.set(STORAGE_KEY, serialize(circuit));
 }
 
-function updateOutput() {
-  if (!outputEl) return;
-  const out = compute();
-  outputEl.textContent = out ? '1' : '0';
-  outputEl.classList.toggle('is-on', !!out);
-  if (gateLabelEl) {
-    const g = currentGate();
-    gateLabelEl.textContent = g.id === 'NOT'
-      ? `¬A = ${out ? 1 : 0}`
-      : `A ${g.symbol} B = ${out ? 1 : 0}`;
+/* ===== Desenho ===== */
+
+function colorFor(on) {
+  return on ? '#00f0ff' : '#3a4358';
+}
+
+function draw(ctx) {
+  ctx.clearRect(0, 0, CW, CH);
+
+  /* grade */
+  ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx <= CW; gx += 28) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, CH); ctx.stroke();
+  }
+  for (let gy = 0; gy <= CH; gy += 28) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(CW, gy); ctx.stroke();
+  }
+
+  const byId = {};
+  circuit.comps.forEach((c) => (byId[c.id] = c));
+
+  /* fios */
+  ctx.lineWidth = 2.5;
+  for (const w of circuit.wires) {
+    const a = byId[w.from], b = byId[w.to];
+    if (!a || !b) continue;
+    const p1 = outPortPos(a), p2 = inPortPos(b, w.toPort);
+    ctx.strokeStyle = colorFor(!!a.value);
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    const mx = (p1.x + p2.x) / 2;
+    ctx.bezierCurveTo(mx, p1.y, mx, p2.y, p2.x, p2.y);
+    ctx.stroke();
+  }
+
+  /* fio temporário (ligando) */
+  if (wiring) {
+    const a = byId[wiring.from];
+    if (a) {
+      const p1 = outPortPos(a);
+      ctx.strokeStyle = '#ffaa00';
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(wiring.mx, wiring.my);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  /* componentes */
+  for (const c of circuit.comps) {
+    const def = GATES[c.type];
+    const ins = inputValues(circuit, c);
+    const lit = c.type === 'OUT' ? ins[0] : !!c.value;
+
+    /* corpo */
+    ctx.fillStyle = lit ? 'rgba(0,240,255,0.14)' : 'rgba(20,26,38,0.96)';
+    ctx.strokeStyle = lit ? '#00f0ff' : '#46506a';
+    ctx.lineWidth = (drag && drag.comp === c) ? 3 : 1.6;
+    roundRect(ctx, c.x, c.y, W, H, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    /* rótulo / valor */
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    if (c.type === 'IN') {
+      ctx.fillStyle = c.on ? '#00f0ff' : '#9aa6bd';
+      ctx.font = 'bold 24px monospace';
+      ctx.fillText(c.on ? '1' : '0', c.x + W / 2, c.y + H / 2 + 1);
+    } else if (c.type === 'OUT') {
+      ctx.beginPath();
+      ctx.arc(c.x + W / 2, c.y + H / 2, 13, 0, Math.PI * 2);
+      ctx.fillStyle = lit ? '#00f0ff' : '#2a3142';
+      ctx.fill();
+      ctx.strokeStyle = lit ? '#aef6ff' : '#46506a';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else if (c.type === 'CLOCK') {
+      ctx.fillStyle = c.on ? '#00f0ff' : '#9aa6bd';
+      ctx.font = 'bold 13px monospace';
+      ctx.fillText('CLK ' + (c.on ? '1' : '0'), c.x + W / 2, c.y + H / 2 + 1);
+    } else {
+      ctx.fillStyle = '#dfe6f5';
+      ctx.font = 'bold 14px monospace';
+      ctx.fillText(c.type, c.x + W / 2, c.y + H / 2 + 1);
+    }
+
+    /* ports de entrada */
+    for (let p = 0; p < def.ins; p++) {
+      const pos = inPortPos(c, p);
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, PR, 0, Math.PI * 2);
+      ctx.fillStyle = colorFor(ins[p]);
+      ctx.fill();
+      ctx.strokeStyle = '#0b0e16';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+    /* port de saída */
+    if (def.outs) {
+      const pos = outPortPos(c);
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, PR, 0, Math.PI * 2);
+      ctx.fillStyle = colorFor(!!c.value);
+      ctx.fill();
+      ctx.strokeStyle = '#0b0e16';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
   }
 }
 
-function renderTruthTable() {
-  const g = currentGate();
-  const rows = [];
-  if (g.id === 'NOT') {
-    for (const a of [0, 1]) {
-      rows.push({ inputs: [a], out: g.fn(!!a) ? 1 : 0 });
-    }
-  } else {
-    for (const a of [0, 1]) {
-      for (const b of [0, 1]) {
-        rows.push({ inputs: [a, b], out: g.fn(!!a, !!b) ? 1 : 0 });
-      }
-    }
-  }
-  return rows;
+function roundRect(ctx, x, y, w, hh, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + hh, r);
+  ctx.arcTo(x + w, y + hh, x, y + hh, r);
+  ctx.arcTo(x, y + hh, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
 }
+
+/* ===== Exemplos ===== */
+
+function buildExample(key) {
+  const c = createCircuit();
+  if (key === 'and') {
+    const a = addComponent(c, 'IN', 70, 130);
+    const b = addComponent(c, 'IN', 70, 320);
+    const g = addComponent(c, 'AND', 360, 210);
+    const o = addComponent(c, 'OUT', 640, 224);
+    addWire(c, a.id, g.id, 0);
+    addWire(c, b.id, g.id, 1);
+    addWire(c, g.id, o.id, 0);
+  } else if (key === 'half-adder') {
+    const a = addComponent(c, 'IN', 70, 120);
+    const b = addComponent(c, 'IN', 70, 330);
+    const x = addComponent(c, 'XOR', 380, 150);
+    const an = addComponent(c, 'AND', 380, 320);
+    const soma = addComponent(c, 'OUT', 680, 164);
+    const carry = addComponent(c, 'OUT', 680, 334);
+    addWire(c, a.id, x.id, 0);
+    addWire(c, b.id, x.id, 1);
+    addWire(c, a.id, an.id, 0);
+    addWire(c, b.id, an.id, 1);
+    addWire(c, x.id, soma.id, 0);
+    addWire(c, an.id, carry.id, 0);
+  } else if (key === 'sr-latch') {
+    const s = addComponent(c, 'IN', 70, 120);
+    const r = addComponent(c, 'IN', 70, 360);
+    const n1 = addComponent(c, 'NOR', 360, 150);
+    const n2 = addComponent(c, 'NOR', 360, 330);
+    const q = addComponent(c, 'OUT', 660, 164);
+    const qn = addComponent(c, 'OUT', 660, 344);
+    addWire(c, s.id, n1.id, 0);
+    addWire(c, n2.id, n1.id, 1);
+    addWire(c, n1.id, n2.id, 0);
+    addWire(c, r.id, n2.id, 1);
+    addWire(c, n1.id, q.id, 0);
+    addWire(c, n2.id, qn.id, 0);
+  }
+  return c;
+}
+
+/* ===== Página ===== */
 
 export function logicSimPage() {
-  state = loadState();
-  const fullPage = h('div', { className: 'page-logic' });
+  /* carrega o circuito salvo, ou começa com o exemplo AND */
+  const saved = storage.get(STORAGE_KEY);
+  circuit = (saved && deserialize(saved)) || buildExample('and');
+  tool = 'wire';
+  drag = null;
+  wiring = null;
+  addCount = 0;
 
-  fullPage.appendChild(
+  const page = h('div', { className: 'page-logic-sim' });
+
+  page.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
       h('div', { className: 'page-header__crumbs' },
         h('span', null, 'BALUARTE'), h('span', null, '›'),
         h('span', null, 'FERRAMENTAS'), h('span', null, '›'),
         h('span', null, 'LOGIC SIM')),
-      h('h1', { className: 'page-header__title' }, '◐ Simulador de Lógica'),
+      h('h1', { className: 'page-header__title' }, '⊻ Simulador de Lógica Digital'),
       h('p', { className: 'page-header__description' },
-        '7 portas lógicas básicas com simulação interativa. Para análise completa de expressões compostas, ',
-        h('a', { href: '#/tabela-verdade', style: 'color: var(--color-cyan)' }, 'use /tabela-verdade'),
-        '.'
+        'Coloque componentes, ligue saída → entrada com fios e veja os sinais ',
+        'propagarem em tempo real. Funciona com realimentação — dá pra montar ',
+        'travas e flip-flops com portas.')
+    )
+  );
+
+  /* canvas (criado antes da toolbar pra os botões referenciarem) */
+  const canvas = h('canvas', { className: 'lsim-canvas' });
+  const ctx = canvas.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = CW * dpr;
+  canvas.height = CH * dpr;
+  canvas.style.width = CW + 'px';
+  canvas.style.height = CH + 'px';
+  ctx.scale(dpr, dpr);
+
+  /* ===== Toolbar ===== */
+  const palette = h('div', { className: 'lsim-group' });
+  PALETTE.forEach((type) => {
+    palette.appendChild(
+      h('button', {
+        className: 'lsim-palette-btn',
+        title: 'Adicionar ' + type,
+        onclick: () => {
+          addCount++;
+          const x = 120 + (addCount % 6) * 26;
+          const y = 90 + (addCount % 6) * 26;
+          addComponent(circuit, type, x, y);
+          save();
+        }
+      }, GATES[type].label)
+    );
+  });
+
+  function toolBtn(id, label) {
+    return h('button', {
+      className: 'lsim-tool-btn' + (tool === id ? ' is-active' : ''),
+      'data-tool': id,
+      onclick: () => {
+        tool = id;
+        document.querySelectorAll('.lsim-tool-btn').forEach((b) =>
+          b.classList.toggle('is-active', b.dataset.tool === id));
+      }
+    }, label);
+  }
+
+  function exampleBtn(key, label) {
+    return h('button', {
+      className: 'btn btn--ghost btn--sm',
+      onclick: () => { circuit = buildExample(key); save(); toast('Exemplo carregado: ' + label, { type: 'info' }); }
+    }, label);
+  }
+
+  page.appendChild(
+    h('div', { className: 'lsim-bar' },
+      palette,
+      h('div', { className: 'lsim-group' },
+        toolBtn('wire', '✋ Mover / Ligar'),
+        toolBtn('erase', '✕ Apagar')
+      ),
+      h('div', { className: 'lsim-group' },
+        h('button', {
+          className: 'btn btn--ghost btn--sm',
+          onclick: () => { circuit = createCircuit(); save(); toast('Canvas limpo', { type: 'info' }); }
+        }, '⌫ Limpar'),
+        exampleBtn('and', 'AND'),
+        exampleBtn('half-adder', 'Meio-somador'),
+        exampleBtn('sr-latch', 'Trava SR')
       )
     )
   );
 
-  /* Gate selector */
-  const gateBar = h('div', { className: 'logic-gates' });
-  LOGIC_GATES.forEach((g) => {
-    gateBar.appendChild(
-      h('button', {
-        className: cx('logic-gate-btn', state.gate === g.id && 'is-active'),
-        'data-g': g.id,
-        onclick: () => {
-          state.gate = g.id;
-          persist();
-          document.querySelectorAll('.logic-gate-btn').forEach((b) =>
-            b.classList.toggle('is-active', b.dataset.g === g.id)
-          );
-          /* Re-render circuit */
-          renderCircuit();
-        }
-      },
-        h('span', { className: 'logic-gate-btn__sym' }, g.symbol),
-        h('span', { className: 'logic-gate-btn__name' }, g.id)
-      )
-    );
-  });
-  fullPage.appendChild(gateBar);
-
-  const circuitEl = h('div', { className: 'logic-circuit' });
-  fullPage.appendChild(circuitEl);
-
-  function renderCircuit() {
-    empty(circuitEl);
-    const g = currentGate();
-    const isNot = g.id === 'NOT';
-
-    /* Description */
-    circuitEl.appendChild(
-      h('div', { className: 'logic-desc' },
-        h('strong', null, g.id + ' — ' + g.symbol + ' '),
-        h('span', { className: 'u-text-muted' }, g.desc)
-      )
-    );
-
-    /* Circuit visual */
-    const wires = h('div', { className: 'logic-wires' });
-    const inputA = h('button', {
-      className: cx('logic-input', state.a && 'is-on'),
-      onclick: () => { state.a = !state.a; persist(); inputA.classList.toggle('is-on', state.a); inputA.textContent = state.a ? '1' : '0'; updateOutput(); }
-    }, state.a ? '1' : '0');
-    const inputB = !isNot ? h('button', {
-      className: cx('logic-input', state.b && 'is-on'),
-      onclick: () => { state.b = !state.b; persist(); inputB.classList.toggle('is-on', state.b); inputB.textContent = state.b ? '1' : '0'; updateOutput(); }
-    }, state.b ? '1' : '0') : null;
-
-    const gateBox = h('div', { className: 'logic-gate' },
-      h('div', { className: 'logic-gate__name' }, g.id),
-      h('div', { className: 'logic-gate__sym' }, g.symbol)
-    );
-
-    outputEl = h('div', { className: 'logic-output' }, '0');
-    gateLabelEl = h('div', { className: 'logic-label u-mono u-text-muted' }, '');
-
-    wires.appendChild(
-      h('div', { className: 'logic-inputs' },
-        h('div', { className: 'logic-port' }, h('span', { className: 'logic-port__label u-text-muted' }, 'A'), inputA),
-        !isNot && h('div', { className: 'logic-port' }, h('span', { className: 'logic-port__label u-text-muted' }, 'B'), inputB)
-      )
-    );
-    wires.appendChild(h('div', { className: 'logic-arrow' }, '→'));
-    wires.appendChild(gateBox);
-    wires.appendChild(h('div', { className: 'logic-arrow' }, '→'));
-    wires.appendChild(
-      h('div', { className: 'logic-port' },
-        h('span', { className: 'logic-port__label u-text-muted' }, 'OUT'),
-        outputEl
-      )
-    );
-    circuitEl.appendChild(wires);
-    circuitEl.appendChild(gateLabelEl);
-
-    /* Truth table */
-    const rows = renderTruthTable();
-    const tbl = h('table', { className: 'logic-truth' });
-    const thead = h('thead');
-    const trH = h('tr');
-    trH.appendChild(h('th', null, 'A'));
-    if (!isNot) trH.appendChild(h('th', null, 'B'));
-    trH.appendChild(h('th', null, 'OUT'));
-    thead.appendChild(trH);
-    tbl.appendChild(thead);
-    const tbody = h('tbody');
-    rows.forEach((r) => {
-      const tr = h('tr');
-      r.inputs.forEach((v) => tr.appendChild(h('td', null, v)));
-      tr.appendChild(h('td', { className: cx('logic-truth__out', r.out && 'is-on') }, r.out));
-      tbody.appendChild(tr);
-    });
-    tbl.appendChild(tbody);
-    circuitEl.appendChild(
-      h('div', { className: 'logic-truth-wrap' },
-        h('div', { className: 'logic-truth-title' }, '◫ Tabela verdade'),
-        tbl
-      )
-    );
-
-    updateOutput();
-  }
-
-  renderCircuit();
-
-  /* Botão pra tabela-verdade completa */
-  fullPage.appendChild(
-    h('button', {
-      className: 'btn btn--primary btn--sm',
-      style: 'margin-top: var(--space-md)',
-      onclick: () => router.navigate('/tabela-verdade')
-    }, '⊨ Expressões compostas → /tabela-verdade')
+  page.appendChild(
+    h('div', { className: 'lsim-canvas-wrap' }, canvas)
   );
 
-  return fullPage;
+  page.appendChild(
+    h('p', { className: 'lsim-hint u-text-muted' },
+      'Clique numa porta da paleta para adicioná-la · arraste os componentes · ',
+      'clique no port de saída (●) e solte num port de entrada para criar um fio · ',
+      'clique numa entrada IN para alterná-la (0/1) · ferramenta Apagar remove peças e fios.')
+  );
+
+  /* ===== Interação ===== */
+  function mousePos(e) {
+    const r = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - r.left) * (CW / r.width),
+      y: (e.clientY - r.top) * (CH / r.height)
+    };
+  }
+
+  canvas.addEventListener('mousedown', (e) => {
+    const { x, y } = mousePos(e);
+    if (tool === 'erase') {
+      const c = compAt(x, y);
+      if (c) { removeComponent(circuit, c.id); save(); return; }
+      const w = wireAt(x, y);
+      if (w) { removeWire(circuit, w.id); save(); return; }
+      return;
+    }
+    /* tool wire */
+    const op = outPortAt(x, y);
+    if (op) { wiring = { from: op.id, mx: x, my: y }; return; }
+    const c = compAt(x, y);
+    if (c) { drag = { comp: c, dx: x - c.x, dy: y - c.y, moved: false }; }
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    const { x, y } = mousePos(e);
+    if (drag) {
+      const nx = Math.max(0, Math.min(CW - W, x - drag.dx));
+      const ny = Math.max(0, Math.min(CH - H, y - drag.dy));
+      if (Math.abs(nx - drag.comp.x) > 1 || Math.abs(ny - drag.comp.y) > 1) drag.moved = true;
+      drag.comp.x = nx;
+      drag.comp.y = ny;
+    } else if (wiring) {
+      wiring.mx = x; wiring.my = y;
+    }
+  });
+
+  window.addEventListener('mouseup', function onUp(e) {
+    if (!canvas.isConnected) { window.removeEventListener('mouseup', onUp); return; }
+    const { x, y } = mousePos(e);
+    if (wiring) {
+      const ip = inPortAt(x, y);
+      if (ip) { addWire(circuit, wiring.from, ip.comp.id, ip.port); save(); }
+      wiring = null;
+    }
+    if (drag) {
+      if (!drag.moved && drag.comp.type === 'IN') {
+        drag.comp.on = !drag.comp.on;
+      } else if (drag.moved) {
+        save();
+      }
+      drag = null;
+    }
+  });
+
+  /* ===== Loop de simulação ===== */
+  const loop = setInterval(() => {
+    if (!canvas.isConnected) { clearInterval(loop); return; }
+    frame++;
+    const clk = Math.floor(frame / 14) % 2 === 1;
+    for (const c of circuit.comps) {
+      if (c.type === 'CLOCK') c.on = clk;
+    }
+    simulate(circuit);
+    draw(ctx);
+  }, 50);
+
+  return page;
 }
