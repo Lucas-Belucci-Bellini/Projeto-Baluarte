@@ -1,0 +1,179 @@
+/* ============================================================
+ * Rádio de Frequências (v2.0.0)
+ * ============================================================ */
+
+.radio-set {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+/* ===== Visor ===== */
+.radio-display {
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
+}
+
+.radio-display__freq {
+  font-size: 48px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cyan);
+  line-height: 1;
+  text-shadow: var(--shadow-glow-cyan);
+}
+
+.radio-display__unit {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-left: 6px;
+}
+
+.radio-display__station {
+  margin-top: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+.radio-display__station.is-locked {
+  color: var(--color-success);
+}
+
+/* ===== Barras de sinal ===== */
+.radio-signal {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 3px;
+  height: 24px;
+  margin-top: var(--space-sm);
+}
+
+.radio-signal__bar {
+  width: 6px;
+  background: var(--color-surface-3);
+  border-radius: 1px;
+  transition: background var(--transition-fast);
+}
+
+.radio-signal__bar:nth-child(1) { height: 30%; }
+.radio-signal__bar:nth-child(2) { height: 40%; }
+.radio-signal__bar:nth-child(3) { height: 50%; }
+.radio-signal__bar:nth-child(4) { height: 62%; }
+.radio-signal__bar:nth-child(5) { height: 73%; }
+.radio-signal__bar:nth-child(6) { height: 83%; }
+.radio-signal__bar:nth-child(7) { height: 92%; }
+.radio-signal__bar:nth-child(8) { height: 100%; }
+
+.radio-signal__bar.is-lit {
+  background: var(--color-cyan);
+  box-shadow: 0 0 6px var(--color-cyan-edge);
+}
+
+/* ===== Dial ===== */
+.radio-dial-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.radio-dial { flex: 1; }
+
+.radio-dial__min,
+.radio-dial__max {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ===== Controles ===== */
+.radio-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.btn.is-on {
+  background: var(--color-success-soft);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.radio-vol {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  min-width: 200px;
+}
+
+.radio-vol span:first-child {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.radio-vol input { flex: 1; }
+
+.radio-vol__val {
+  font-size: var(--font-size-sm);
+  min-width: 44px;
+  text-align: right;
+}
+
+/* ===== Lista de estações ===== */
+.radio-stations {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-sm);
+}
+
+.radio-station {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-fast);
+}
+
+.radio-station:hover {
+  border-color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+  transform: translateY(-1px);
+}
+
+.radio-station__freq {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cyan);
+  flex-shrink: 0;
+}
+
+.radio-station__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.radio-station__nome {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.radio-station__desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
