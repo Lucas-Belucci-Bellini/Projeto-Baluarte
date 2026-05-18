@@ -1,0 +1,97 @@
+/* ============================================================
+ * QR Code Studio (v2.0.0)
+ * ============================================================ */
+
+.qr-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .qr-layout { grid-template-columns: 1fr; }
+}
+
+.qr-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+.qr-controls__label {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-text-muted);
+}
+
+.qr-input {
+  width: 100%;
+  resize: vertical;
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+}
+
+.qr-input:focus {
+  outline: none;
+  border-color: var(--color-cyan);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.qr-ctl {
+  display: grid;
+  grid-template-columns: 64px 1fr 48px;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.qr-ctl label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.qr-ctl input[type='range'] { width: 100%; }
+
+.qr-scale__val {
+  font-size: var(--font-size-sm);
+  text-align: right;
+}
+
+.qr-status {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-base);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: var(--border-thin);
+}
+
+.qr-status--ok { color: var(--color-success); border-color: var(--color-success-soft); }
+.qr-status--err { color: var(--color-danger); border-color: var(--color-danger-soft); }
+.qr-status--idle { color: var(--color-text-muted); }
+
+.qr-preview {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  min-height: 240px;
+}
+
+.qr-canvas {
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-md);
+}
