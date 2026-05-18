@@ -9,7 +9,10 @@ import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
-import { LANGS_ACADEMY, TOTAL_LANGS, findLang, LEARNING_RESOURCES } from '../data/academia.js';
+import {
+  LANGS_ACADEMY, TOTAL_LANGS, findLang, LEARNING_RESOURCES,
+  TECH_INTRO, TECH_CARREIRAS
+} from '../data/academia.js';
 import { getLang as getEditorLang } from '../data/editor-langs.js';
 
 const STORAGE_KEY = 'academia:state';
@@ -165,9 +168,37 @@ export function academiaPage() {
 
   renderPanel();
 
+  fullPage.appendChild(renderCarreiras());
   fullPage.appendChild(renderResources());
 
   return fullPage;
+}
+
+/* ===== Carreiras: programar não é só código ===== */
+function renderCarreiras() {
+  const wrap = h('div', { className: 'academia-resources' });
+
+  wrap.appendChild(
+    h('div', { className: 'section-header', style: { marginTop: '24px' } },
+      h('h2', { className: 'section-header__title' }, '◆ Programar Não É Só Código'))
+  );
+  wrap.appendChild(
+    h('p', { className: 'academia-resources__intro u-text-muted' }, TECH_INTRO)
+  );
+
+  const grid = h('div', { className: 'academia-resource-grid' });
+  TECH_CARREIRAS.forEach((c) => {
+    grid.appendChild(
+      h('div', { className: 'academia-carreira' },
+        h('div', { className: 'academia-carreira__head' },
+          h('span', { className: 'academia-carreira__nome' }, c.nome),
+          h('span', { className: 'academia-carreira__tag' }, c.codigo)),
+        h('div', { className: 'academia-carreira__desc' }, c.desc)
+      )
+    );
+  });
+  wrap.appendChild(grid);
+  return wrap;
 }
 
 /* ===== Recursos externos: onde tirar dúvidas e estudar ===== */

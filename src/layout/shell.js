@@ -61,6 +61,7 @@ function pageTitleForRoute(path) {
     '/home': 'Ponte de Comando',
     '/ferramentas': 'Hub de Ferramentas',
     '/editor': 'Editor de Código',
+    '/json-studio': 'JSON Studio',
     '/terminal': 'Terminal',
     '/calculadoras': 'Calculadoras',
     '/calc-cientifica': 'Calculadora Científica',

@@ -298,7 +298,21 @@ export const ENTRIES_CS = [
     severity: 'info',
     summary: 'Centralização e correlação de logs para reconstruir incidentes e detectar ataques em andamento.',
     tools: ['Splunk', 'Elastic/ELK', 'Wazuh', 'Graylog'],
-    counter: '—' }
+    counter: '—' },
+
+  /* ESTEGANOGRAFIA */
+  { id: 'm51', cat: 'malware', title: 'Esteganografia — dados ocultos em imagens',
+    severity: 'alto',
+    summary: 'Técnica de esconder informação — links, scripts ou arquivos inteiros — dentro de uma imagem de aparência normal. ' +
+      'Quatro métodos comuns: (1) ALTERAÇÃO DE PIXELS — muda-se o último bit de cor (LSB) de cada pixel; como cada pixel é RGB, ' +
+      'o olho não percebe, mas um software lê esse padrão secreto e extrai o texto/link. (2) METADADOS — scripts e comandos ' +
+      'maliciosos são inseridos nos metadados do arquivo; a imagem parece normal, mas um site ou sistema vulnerável executa o ' +
+      'código escondido ao processá-la. (3) CONCATENAÇÃO — comandos de sistema juntam um arquivo de texto aos dados de uma ' +
+      'imagem, gerando um arquivo que carrega a URL oculta no código-fonte. (4) PHISHING VISUAL — não se altera a imagem: ' +
+      'forja-se um elemento (ex.: um botão de "play" falso) ligado a um link externo malicioso para enganar o clique.',
+    tools: ['steghide', 'zsteg', 'binwalk', 'exiftool', 'StegOnline', 'OpenStego'],
+    counter: 'Desconfiar de imagens de origem incerta; inspecionar metadados com exiftool; recomprimir/reprocessar imagens ' +
+      'recebidas (destrói payloads LSB); nunca executar arquivos extraídos de imagens; conferir a extensão real do arquivo.' }
 ];
 
 export const TOTAL_CS = ENTRIES_CS.length;

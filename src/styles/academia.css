@@ -231,3 +231,44 @@
   line-height: var(--line-height-base);
   margin-top: 3px;
 }
+
+/* ===== Carreiras (v2.0.0) ===== */
+.academia-carreira {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-left: 3px solid var(--color-magenta-edge);
+  border-radius: var(--radius-sm);
+}
+
+.academia-carreira__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.academia-carreira__nome {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+}
+
+.academia-carreira__tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-magenta);
+  background: var(--color-magenta-soft);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+}
+
+.academia-carreira__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+  margin-top: 4px;
+}
