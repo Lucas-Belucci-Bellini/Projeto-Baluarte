@@ -168,8 +168,162 @@ export const LANGS_ACADEMY = [
   }
 ];
 
+LANGS_ACADEMY.push(
+  {
+    id: 'c',
+    name: 'C',
+    icon: 'C',
+    color: '#5c6bc0',
+    paradigm: 'Procedural (systems)',
+    year: 1972,
+    creator: 'Dennis Ritchie / Bell Labs',
+    summary: 'A linguagem-mãe dos sistemas. Compilada, próxima do hardware, sem garbage collector. Base do Unix, Linux e de quase todo sistema operacional.',
+    why: 'Aprender C é entender como o computador funciona de verdade — ponteiros, memória, stack e heap. É o alicerce de C++, Rust, Go e Python (o interpretador é em C).',
+    modules: [
+      { title: 'Hello e tipos', code: `#include <stdio.h>\n\nint main(void) {\n    char nome[] = "Lucas";\n    int missoes = 3;\n    printf("Operador %s: %d missoes\\n", nome, missoes);\n    return 0;\n}` },
+      { title: 'Ponteiros', code: `int x = 42;\nint *p = &x;     // p aponta para x\nprintf("%d\\n", *p);  // 42 (desreferencia)\n*p = 100;        // altera x atraves do ponteiro\nprintf("%d\\n", x);   // 100` },
+      { title: 'Structs', code: `struct Operador {\n    char nome[32];\n    int  clearance;\n};\n\nstruct Operador op = { "Lucas", 9 };\nprintf("%s nivel %d\\n", op.nome, op.clearance);` },
+      { title: 'Alocação dinâmica', code: `#include <stdlib.h>\n\nint *v = malloc(5 * sizeof(int));\nfor (int i = 0; i < 5; i++) v[i] = i * i;\nfree(v);   // sempre libere o que alocou` }
+    ]
+  },
+  {
+    id: 'sql',
+    name: 'SQL',
+    icon: 'SQL',
+    color: '#e38c00',
+    paradigm: 'Declarativa (consulta)',
+    year: 1974,
+    creator: 'Donald Chamberlin / Raymond Boyce (IBM)',
+    summary: 'Linguagem para consultar e manipular bancos de dados relacionais — PostgreSQL, MySQL, SQLite, SQL Server.',
+    why: 'Todo sistema sério guarda dados. SQL é universal: você descreve O QUE quer e o banco descobre COMO buscar. Habilidade obrigatória pra qualquer dev.',
+    modules: [
+      { title: 'SELECT', code: `SELECT nome, equipe, clearance\nFROM operadores\nWHERE clearance >= 7\nORDER BY clearance DESC\nLIMIT 10;` },
+      { title: 'JOIN', code: `SELECT o.nome, e.codinome\nFROM operadores o\nJOIN equipes e ON e.id = o.equipe_id\nWHERE e.status = 'ativa';` },
+      { title: 'Agregações', code: `SELECT equipe_id,\n       COUNT(*)        AS total,\n       AVG(clearance)  AS media\nFROM operadores\nGROUP BY equipe_id\nHAVING COUNT(*) > 3;` },
+      { title: 'INSERT / UPDATE', code: `INSERT INTO operadores (nome, equipe_id, clearance)\nVALUES ('Lucas', 1, 9);\n\nUPDATE operadores\nSET clearance = 10\nWHERE nome = 'Lucas';` }
+    ]
+  },
+  {
+    id: 'ruby',
+    name: 'Ruby',
+    icon: 'RB',
+    color: '#cc342d',
+    paradigm: 'OOP (tudo é objeto)',
+    year: 1995,
+    creator: 'Yukihiro "Matz" Matsumoto',
+    summary: 'Linguagem dinâmica desenhada para a felicidade do programador. Famosa pelo framework Ruby on Rails.',
+    why: 'Sintaxe expressiva e elegante — código que se lê quase como inglês. Rails ainda acelera muito a criação de aplicações web.',
+    modules: [
+      { title: 'Variáveis e saída', code: `nome = "Lucas"\nmissoes = ["ALFA", "BRAVO", "DELTA"]\nputs "#{nome}: #{missoes.size} missoes"` },
+      { title: 'Métodos e blocos', code: `def saudar(nome)\n  "Operador #{nome} reportando"\nend\n\nputs saudar("Charlie")\n[1, 2, 3].each { |n| puts n * 10 }` },
+      { title: 'Classes', code: `class Operador\n  attr_accessor :nome, :equipe\n\n  def initialize(nome, equipe)\n    @nome = nome\n    @equipe = equipe\n  end\n\n  def reportar\n    "#{@equipe}: #{@nome} ok"\n  end\nend` },
+      { title: 'Iteradores funcionais', code: `nums = (1..10).to_a\npares = nums.select { |n| n.even? }\ndobro = nums.map  { |n| n * 2 }\nsoma  = nums.reduce(0) { |a, n| a + n }` }
+    ]
+  },
+  {
+    id: 'php',
+    name: 'PHP',
+    icon: 'PHP',
+    color: '#777bb4',
+    paradigm: 'Multi-paradigma (web)',
+    year: 1995,
+    creator: 'Rasmus Lerdorf',
+    summary: 'Linguagem de servidor que move boa parte da web. WordPress, Wikipedia e o Facebook original rodam em PHP.',
+    why: 'O PHP 8 é rápido e moderno. Roda em qualquer hospedagem barata e o framework Laravel é um dos melhores do mercado.',
+    modules: [
+      { title: 'Variáveis e echo', code: `<?php\n$nome = "Lucas";\n$missoes = 3;\necho "Operador $nome: $missoes missoes\\n";` },
+      { title: 'Funções', code: `<?php\nfunction reportar(string $nome, string $equipe): string {\n    return "$equipe: $nome ok";\n}\n\necho reportar("Charlie", "ALFA");` },
+      { title: 'Arrays associativos', code: `<?php\n$operador = [\n    "nome" => "Lucas",\n    "equipe" => "ALFA",\n    "clearance" => 9,\n];\nforeach ($operador as $chave => $valor) {\n    echo "$chave: $valor\\n";\n}` },
+      { title: 'Classes', code: `<?php\nclass Operador {\n    public function __construct(\n        public string $nome,\n        public string $equipe\n    ) {}\n\n    public function reportar(): string {\n        return "{$this->equipe}: {$this->nome} ok";\n    }\n}` }
+    ]
+  },
+  {
+    id: 'lua',
+    name: 'Lua',
+    icon: 'LUA',
+    color: '#3a4fb0',
+    paradigm: 'Multi-paradigma (scripting)',
+    year: 1993,
+    creator: 'PUC-Rio — Roberto Ierusalimschy',
+    summary: 'Linguagem de script leve e embarcável, criada no Brasil (PUC-Rio). Roteiriza jogos e aplicativos.',
+    why: 'Orgulho nacional. Roda dentro do Roblox, World of Warcraft, Neovim e Redis — é pequena, veloz e fácil de embutir.',
+    modules: [
+      { title: 'Variáveis e tipos', code: `local nome = "Lucas"\nlocal missoes = { "ALFA", "BRAVO", "DELTA" }\nprint(nome .. ": " .. #missoes .. " missoes")` },
+      { title: 'Funções', code: `local function reportar(nome, equipe)\n  return equipe .. ": " .. nome .. " ok"\nend\n\nprint(reportar("Charlie", "ALFA"))` },
+      { title: 'Tables', code: `local operador = {\n  nome = "Lucas",\n  equipe = "ALFA",\n  clearance = 9,\n}\nfor chave, valor in pairs(operador) do\n  print(chave, valor)\nend` },
+      { title: 'Metatables', code: `local Vetor = {}\nVetor.__index = Vetor\n\nfunction Vetor.novo(x, y)\n  return setmetatable({ x = x, y = y }, Vetor)\nend\n\nfunction Vetor:soma(o)\n  return Vetor.novo(self.x + o.x, self.y + o.y)\nend` }
+    ]
+  },
+  {
+    id: 'bash',
+    name: 'Bash',
+    icon: 'SH',
+    color: '#4eaa25',
+    paradigm: 'Script de shell',
+    year: 1989,
+    creator: 'Brian Fox / GNU',
+    summary: 'O shell padrão do Linux. Automatiza tarefas, encadeia programas e administra servidores pelo terminal.',
+    why: 'Quem mexe com Linux, servidores ou DevOps vive no terminal. Bash é a cola que junta todas as ferramentas.',
+    modules: [
+      { title: 'Variáveis', code: `#!/bin/bash\nnome="Lucas"\nmissoes=3\necho "Operador $nome: $missoes missoes"\necho "Data: $(date +%F)"` },
+      { title: 'Condicionais', code: `#!/bin/bash\nclearance=9\nif [ "$clearance" -ge 7 ]; then\n  echo "Acesso OMEGA liberado"\nelse\n  echo "Acesso negado"\nfi` },
+      { title: 'Loops', code: `#!/bin/bash\nfor equipe in ALFA BRAVO DELTA; do\n  echo "Equipe $equipe pronta"\ndone\n\nfor arquivo in *.txt; do\n  echo "Processando $arquivo"\ndone` },
+      { title: 'Funções e pipes', code: `#!/bin/bash\nreportar() {\n  echo "$2: $1 ok"\n}\nreportar "Charlie" "ALFA"\n\n# conta arquivos .js no diretorio\nls *.js | wc -l` }
+    ]
+  }
+);
+
 export const TOTAL_LANGS = LANGS_ACADEMY.length;
 
 export function findLang(id) {
   return LANGS_ACADEMY.find((l) => l.id === id) || null;
 }
+
+/**
+ * Recursos externos de aprendizado — onde tirar dúvidas, estudar de graça,
+ * consultar documentação e treinar. Links verificados e estáveis.
+ */
+export const LEARNING_RESOURCES = [
+  {
+    group: 'Tire suas dúvidas',
+    note: 'Comunidades onde você pergunta e alguém responde.',
+    links: [
+      { name: 'Stack Overflow', url: 'https://stackoverflow.com', desc: 'O maior repositório de perguntas e respostas de programação do mundo.' },
+      { name: 'Stack Overflow em Português', url: 'https://pt.stackoverflow.com', desc: 'Versão em português — pergunte sem medo do inglês.' },
+      { name: 'r/learnprogramming', url: 'https://www.reddit.com/r/learnprogramming/', desc: 'Comunidade do Reddit dedicada a quem está começando.' },
+      { name: 'DEV Community', url: 'https://dev.to', desc: 'Artigos, tutoriais e discussões escritas por desenvolvedores.' }
+    ]
+  },
+  {
+    group: 'Cursos gratuitos',
+    note: 'Trilhas completas de graça, do zero ao avançado.',
+    links: [
+      { name: 'freeCodeCamp', url: 'https://www.freecodecamp.org', desc: 'Currículo enorme e gratuito com certificados — web, dados, Python.' },
+      { name: 'The Odin Project', url: 'https://www.theodinproject.com', desc: 'Trilha full-stack open-source, projeto após projeto.' },
+      { name: 'CS50 (Harvard)', url: 'https://cs50.harvard.edu/x/', desc: 'O lendário curso de introdução à ciência da computação de Harvard.' },
+      { name: 'Curso em Vídeo', url: 'https://www.cursoemvideo.com', desc: 'Cursos gratuitos em português do prof. Gustavo Guanabara.' },
+      { name: 'Khan Academy', url: 'https://pt.khanacademy.org/computing', desc: 'Computação e programação explicadas do começo, em português.' }
+    ]
+  },
+  {
+    group: 'Documentação e referência',
+    note: 'Onde consultar como as coisas funcionam de verdade.',
+    links: [
+      { name: 'MDN Web Docs', url: 'https://developer.mozilla.org/pt-BR/', desc: 'A referência definitiva de HTML, CSS e JavaScript (Mozilla).' },
+      { name: 'W3Schools', url: 'https://www.w3schools.com', desc: 'Tutoriais curtos com exemplos editáveis no navegador.' },
+      { name: 'DevDocs', url: 'https://devdocs.io', desc: 'Documentação de dezenas de linguagens reunida e pesquisável.' },
+      { name: 'roadmap.sh', url: 'https://roadmap.sh', desc: 'Mapas visuais do que estudar para cada carreira de dev.' }
+    ]
+  },
+  {
+    group: 'Pratique programando',
+    note: 'Exercícios e desafios para fixar o que aprendeu.',
+    links: [
+      { name: 'Exercism', url: 'https://exercism.org', desc: 'Exercícios com mentoria gratuita em mais de 70 linguagens.' },
+      { name: 'Codewars', url: 'https://www.codewars.com', desc: 'Desafios (katas) com ranking e soluções da comunidade.' },
+      { name: 'LeetCode', url: 'https://leetcode.com', desc: 'Problemas de algoritmos — o padrão para entrevistas técnicas.' },
+      { name: 'Beecrowd', url: 'https://judge.beecrowd.com', desc: 'Juiz online brasileiro (ex-URI) com centenas de problemas.' },
+      { name: 'Advent of Code', url: 'https://adventofcode.com', desc: 'Quebra-cabeças de programação lançados todo mês de dezembro.' }
+    ]
+  }
+];

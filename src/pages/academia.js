@@ -1,14 +1,15 @@
 /**
- * Página /academia — Trilhas de 10 linguagens (Fase 14).
+ * Página /academia — Trilhas de linguagens + recursos de aprendizado (v2.0.0).
  *
  * Cada linguagem: cards de módulos com código + botão "abrir no Editor".
+ * Seção final: links externos para tirar dúvidas, cursos grátis e prática.
  */
 
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
-import { LANGS_ACADEMY, TOTAL_LANGS, findLang } from '../data/academia.js';
+import { LANGS_ACADEMY, TOTAL_LANGS, findLang, LEARNING_RESOURCES } from '../data/academia.js';
 import { getLang as getEditorLang } from '../data/editor-langs.js';
 
 const STORAGE_KEY = 'academia:state';
@@ -164,5 +165,50 @@ export function academiaPage() {
 
   renderPanel();
 
+  fullPage.appendChild(renderResources());
+
   return fullPage;
+}
+
+/* ===== Recursos externos: onde tirar dúvidas e estudar ===== */
+function renderResources() {
+  const wrap = h('div', { className: 'academia-resources' });
+
+  wrap.appendChild(
+    h('div', { className: 'section-header', style: { marginTop: '24px' } },
+      h('h2', { className: 'section-header__title' }, '◆ Onde Tirar Dúvidas e Estudar'))
+  );
+  wrap.appendChild(
+    h('p', { className: 'academia-resources__intro u-text-muted' },
+      'Travou num código? Quer aprender de graça? Estes são os melhores lugares ',
+      'da internet para pedir ajuda, fazer cursos e treinar. Abrem em nova aba.')
+  );
+
+  LEARNING_RESOURCES.forEach((cat) => {
+    const grid = h('div', { className: 'academia-resource-grid' });
+    cat.links.forEach((link) => {
+      grid.appendChild(
+        h('a', {
+          className: 'academia-resource',
+          href: link.url,
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        },
+          h('div', { className: 'academia-resource__head' },
+            h('span', { className: 'academia-resource__name' }, link.name),
+            h('span', { className: 'academia-resource__arrow' }, '↗')),
+          h('div', { className: 'academia-resource__desc' }, link.desc)
+        )
+      );
+    });
+    wrap.appendChild(
+      h('div', { className: 'academia-resource-cat' },
+        h('div', { className: 'academia-resource-cat__title' }, cat.group),
+        h('div', { className: 'academia-resource-cat__note u-text-muted' }, cat.note),
+        grid
+      )
+    );
+  });
+
+  return wrap;
 }
