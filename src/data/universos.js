@@ -195,6 +195,101 @@ export const UNIVERSOS = [
     threats: ['Marduk', 'Anubis', 'Tiamat', 'Odin', 'Susanoo', 'Outros 6'],
     media: ['Crônicas: Onde os Deuses Sangram (ZULU)'],
     arcs: ['zulu-deuses-sangram']
+  },
+  {
+    id: 'warhammer-40k',
+    name: 'Warhammer 40.000',
+    tagline: 'No futuro sombrio só existe guerra.',
+    color: '#ffaa00',
+    icon: '⚙',
+    type: 'crossover',
+    summary: 'Galáxia em guerra eterna sob o Imperium da Humanidade. A equipe HOTEL do Baluarte estuda a doutrina de atrito imperial e a corrupção do Caos.',
+    keyFacts: [
+      'Cenário: 41º milênio',
+      'O Imperador no Trono Dourado há 10 mil anos',
+      'Space Marines — soldados geneticamente aprimorados',
+      'Inimigos: Caos, Tiranídeos, Necrons, Orks'
+    ],
+    factions: ['Imperium da Humanidade', 'Adeptus Astartes', 'Forças do Caos'],
+    threats: ['Os Quatro Deuses do Caos', 'Enxame Tiranídeo', 'O Despertar Necron'],
+    media: ['Estudo de doutrina: atrito imperial (HOTEL)'],
+    arcs: []
+  },
+  {
+    id: 'gundam',
+    name: 'Mobile Suit Gundam',
+    tagline: 'Pilotos jovens, guerras antigas.',
+    color: '#66ddff',
+    icon: '◇',
+    type: 'crossover',
+    summary: 'Conflitos orbitais travados por mobile suits gigantes. A equipe DELTA cruza a tecnologia Jaeger do Baluarte com a doutrina de pilotagem Newtype.',
+    keyFacts: [
+      'Mobile suits — mechas humanoides de combate',
+      'Colônias espaciais x Terra',
+      'Newtypes — humanos de percepção expandida',
+      'Reactor de minóvio como fonte de energia'
+    ],
+    factions: ['Federação Terrestre', 'Principado de Zeon', 'Pilotos independentes'],
+    threats: ['Guerra orbital total', 'Queda de colônias', 'Armas de extermínio em massa'],
+    media: ['Cruzamento técnico: Jaeger Mk II × mobile suit (DELTA)'],
+    arcs: []
+  },
+  {
+    id: 'evangelion',
+    name: 'Neon Genesis Evangelion',
+    tagline: 'Sincronize. Ou seja consumido.',
+    color: '#7c4dff',
+    icon: '◉',
+    type: 'crossover',
+    summary: 'Crianças pilotam bio-mechas colossais contra os Anjos. A equipe INDIA estuda o trauma de sincronização e a fronteira entre piloto e máquina.',
+    keyFacts: [
+      'Evangelions — unidades bio-mecânicas pilotadas por sincronização',
+      'Anjos — entidades de origem desconhecida',
+      'Projeto de Instrumentalização Humana',
+      'O Terceiro Impacto como ameaça final'
+    ],
+    factions: ['NERV', 'SEELE', 'Pilotos das Crianças'],
+    threats: ['Os Anjos', 'O Terceiro Impacto', 'Colapso de identidade na sincronização'],
+    media: ['Estudo psicológico: custo da sincronização (INDIA)'],
+    arcs: []
+  },
+  {
+    id: 'mass-effect',
+    name: 'Mass Effect',
+    tagline: 'A galáxia inteira contra a escuridão que vem das estrelas.',
+    color: '#00ff88',
+    icon: '✦',
+    type: 'crossover',
+    summary: 'Ópera espacial de civilizações unidas contra uma ameaça cíclica de extinção. A equipe JULIETT mapeia a doutrina de coalizão multiespécie.',
+    keyFacts: [
+      'Relés de Massa permitem viagem interestelar',
+      'O Conselho da Cidadela governa a galáxia',
+      'Os Ceifadores retornam a cada 50 mil anos',
+      'Esquadrões multiespécie de operações especiais'
+    ],
+    factions: ['Aliança de Sistemas', 'Conselho da Cidadela', 'Esquadrão Normandy'],
+    threats: ['Os Ceifadores', 'Indoutrinação', 'Extinção cíclica'],
+    media: ['Doutrina de coalizão multiespécie (JULIETT)'],
+    arcs: []
+  },
+  {
+    id: 'cyberpunk',
+    name: 'Cyberpunk · Night City',
+    tagline: 'Acorda, samurai. Há uma cidade pra queimar.',
+    color: '#ff00aa',
+    icon: '◈',
+    type: 'crossover',
+    summary: 'Metrópole distópica dominada por corporações e implantes cibernéticos. A equipe ROMEO estuda contra-inteligência corporativa e o risco da ciberpsicose.',
+    keyFacts: [
+      'Night City — megalópole sem lei',
+      'Implantes cibernéticos (cyberware) ampliam o corpo',
+      'Corporações acima do Estado',
+      'Netrunners invadem mentes e sistemas'
+    ],
+    factions: ['Megacorporações', 'Mercenários (edgerunners)', 'Gangues de rua'],
+    threats: ['Ciberpsicose', 'Guerra corporativa', 'IAs hostis além do Blackwall'],
+    media: ['Contra-inteligência corporativa (ROMEO)'],
+    arcs: []
   }
 ];
 
