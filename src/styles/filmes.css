@@ -1,0 +1,152 @@
+/* ============================================================
+ * Filmes — Cinema do Baluarte (v2.0.0)
+ * ============================================================ */
+
+.filmes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.filme-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.filme-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-cyan);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.filme-card__poster {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(0, 240, 255, 0.18), transparent 70%),
+    linear-gradient(160deg, var(--color-surface-3), var(--color-bg-elevated));
+  border-bottom: var(--border-thin);
+}
+
+.filme-card__glyph {
+  font-size: 40px;
+  color: var(--color-cyan);
+  opacity: 0.85;
+}
+
+.filme-card__genero {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background: var(--color-overlay);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+}
+
+.filme-card__body {
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.filme-card__titulo {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.filme-card__meta {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+}
+
+.filme-card__sinopse {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
+
+/* ===== Player modal ===== */
+.filmes-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+.filmes-player {
+  width: min(960px, 100%);
+  background: var(--color-surface);
+  border: var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.filmes-player__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: var(--border-thin);
+}
+
+.filmes-player__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.filmes-player__close {
+  background: transparent;
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.filmes-player__close:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.filmes-player__stage {
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.filmes-player__frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.filmes-player__hint {
+  font-size: var(--font-size-xs);
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+}

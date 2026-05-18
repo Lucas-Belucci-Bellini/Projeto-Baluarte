@@ -74,6 +74,7 @@ function pageTitleForRoute(path) {
     '/portas': 'Enciclopédia de Lógica Digital',
     '/morse': 'Gerador de Código Morse',
     '/memes': 'Arquivo de Memes 2016',
+    '/filmes': 'Cinema do Baluarte',
     '/biblioteca': 'Biblioteca',
     '/academia': 'Academia',
     '/robotica': 'Currículo de Robótica',

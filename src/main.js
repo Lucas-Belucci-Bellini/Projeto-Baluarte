@@ -40,6 +40,7 @@ import { logicSimPage } from './pages/logic-sim.js';
 import { portasPage } from './pages/portas.js';
 import { morsePage } from './pages/morse.js';
 import { memesPage } from './pages/memes.js';
+import { filmesPage } from './pages/filmes.js';
 import { shadowPage } from './pages/shadow.js';
 import { perfilPage } from './pages/perfil.js';
 import { economiaPage } from './pages/economia.js';
@@ -84,6 +85,7 @@ router.register('/logic-sim', () => logicSimPage());
 router.register('/portas', () => portasPage());
 router.register('/morse', () => morsePage());
 router.register('/memes', () => memesPage());
+router.register('/filmes', () => filmesPage());
 router.register('/shadow', () => shadowPage());
 router.register('/perfil', () => perfilPage());
 router.register('/economia', () => economiaPage());
@@ -93,7 +95,7 @@ router.register('/ia-proprietaria', () => iaProprietariaPage());
 router.register('/sobre', () => sobrePage());
 
 /* ==============================================================
- *  Mark XIII — 35 rotas, todas implementadas. Sem placeholders.
+ *  Mark XIII — 36 rotas, todas implementadas. Sem placeholders.
  * ============================================================== */
 router.setNotFound((path) => notFoundPage(path));
 
@@ -135,7 +137,7 @@ function boot() {
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    '%c35 rotas ativas · JS puro + Vite 5',
+    '%c36 rotas ativas · JS puro + Vite 5',
     'color: #93a4bf; font-family: monospace;'
   );
 }
