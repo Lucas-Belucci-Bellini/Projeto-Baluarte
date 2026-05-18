@@ -42,6 +42,7 @@ export const NAV_GROUPS = [
     items: [
       { path: '/biblioteca', label: 'Biblioteca', icon: '◫', phase: 1 },
       { path: '/academia', label: 'Academia', icon: '◬', phase: 1 },
+      { path: '/robotica', label: 'Robótica', icon: '⚙', phase: 1 },
       { path: '/universo', label: 'Universo', icon: '✦', phase: 1 },
       { path: '/tabela-periodica', label: 'Tabela Periódica', icon: '⚛', phase: 1 },
       { path: '/modpack', label: 'Modpack Minecraft', icon: '◧', phase: 1 },

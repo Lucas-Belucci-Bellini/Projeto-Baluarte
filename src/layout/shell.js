@@ -76,6 +76,7 @@ function pageTitleForRoute(path) {
     '/memes': 'Arquivo de Memes 2016',
     '/biblioteca': 'Biblioteca',
     '/academia': 'Academia',
+    '/robotica': 'Currículo de Robótica',
     '/universo': 'Universo',
     '/tabela-periodica': 'Tabela Periódica',
     '/modpack': 'Modpack Minecraft',
