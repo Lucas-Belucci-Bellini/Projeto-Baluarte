@@ -12,31 +12,59 @@
  */
 
 export const GATES = {
-  IN:    { ins: 0, outs: 1, label: 'IN',   kind: 'source' },
-  CLOCK: { ins: 0, outs: 1, label: 'CLK',  kind: 'source' },
-  OUT:   { ins: 1, outs: 0, label: 'OUT',  kind: 'sink' },
-  NOT:   { ins: 1, outs: 1, label: 'NOT',  kind: 'gate' },
-  AND:   { ins: 2, outs: 1, label: 'AND',  kind: 'gate' },
-  OR:    { ins: 2, outs: 1, label: 'OR',   kind: 'gate' },
-  NAND:  { ins: 2, outs: 1, label: 'NAND', kind: 'gate' },
-  NOR:   { ins: 2, outs: 1, label: 'NOR',  kind: 'gate' },
-  XOR:   { ins: 2, outs: 1, label: 'XOR',  kind: 'gate' },
-  XNOR:  { ins: 2, outs: 1, label: 'XNOR', kind: 'gate' }
+  IN:     { ins: 0, outs: 1, label: 'IN',    kind: 'source' },
+  CLOCK:  { ins: 0, outs: 1, label: 'CLK',   kind: 'source' },
+  OUT:    { ins: 1, outs: 0, label: 'OUT',   kind: 'sink' },
+  BUFFER: { ins: 1, outs: 1, label: 'BUF',   kind: 'gate' },
+  NOT:    { ins: 1, outs: 1, label: 'NOT',   kind: 'gate' },
+  AND:    { ins: 2, outs: 1, label: 'AND',   kind: 'gate' },
+  OR:     { ins: 2, outs: 1, label: 'OR',    kind: 'gate' },
+  NAND:   { ins: 2, outs: 1, label: 'NAND',  kind: 'gate' },
+  NOR:    { ins: 2, outs: 1, label: 'NOR',   kind: 'gate' },
+  XOR:    { ins: 2, outs: 1, label: 'XOR',   kind: 'gate' },
+  XNOR:   { ins: 2, outs: 1, label: 'XNOR',  kind: 'gate' },
+  AND3:   { ins: 3, outs: 1, label: 'AND3',  kind: 'gate' },
+  OR3:    { ins: 3, outs: 1, label: 'OR3',   kind: 'gate' },
+  NAND3:  { ins: 3, outs: 1, label: 'NAND3', kind: 'gate' },
+  NOR3:   { ins: 3, outs: 1, label: 'NOR3',  kind: 'gate' },
+  XOR3:   { ins: 3, outs: 1, label: 'XOR3',  kind: 'gate' },
+  XNOR3:  { ins: 3, outs: 1, label: 'XNOR3', kind: 'gate' }
 };
 
 /** Ordem da paleta de componentes. */
-export const PALETTE = ['IN', 'CLOCK', 'OUT', 'NOT', 'AND', 'OR', 'NAND', 'NOR', 'XOR', 'XNOR'];
+export const PALETTE = [
+  'IN', 'CLOCK', 'OUT', 'BUFFER', 'NOT',
+  'AND', 'OR', 'NAND', 'NOR', 'XOR', 'XNOR',
+  'AND3', 'OR3', 'NAND3', 'NOR3', 'XOR3', 'XNOR3'
+];
 
-function applyGate(type, a, b) {
+/**
+ * Aplica a função lógica de uma porta a um vetor de entradas.
+ * Generaliza para qualquer número de entradas (2, 3 ou mais):
+ *  - AND/NAND  → todas verdadeiras
+ *  - OR/NOR    → ao menos uma verdadeira
+ *  - XOR/XNOR  → paridade (nº ímpar de entradas verdadeiras)
+ */
+function applyGate(type, inputs) {
+  const all = inputs.length > 0 && inputs.every(Boolean);
+  const any = inputs.some(Boolean);
+  const oddOnes = inputs.filter(Boolean).length % 2 === 1;
   switch (type) {
-    case 'NOT':  return !a;
-    case 'AND':  return !!(a && b);
-    case 'OR':   return !!(a || b);
-    case 'NAND': return !(a && b);
-    case 'NOR':  return !(a || b);
-    case 'XOR':  return a !== b;
-    case 'XNOR': return a === b;
-    default:     return false;
+    case 'BUFFER': return !!inputs[0];
+    case 'NOT':    return !inputs[0];
+    case 'AND':
+    case 'AND3':   return all;
+    case 'OR':
+    case 'OR3':    return any;
+    case 'NAND':
+    case 'NAND3':  return !all;
+    case 'NOR':
+    case 'NOR3':   return !any;
+    case 'XOR':
+    case 'XOR3':   return oddOnes;
+    case 'XNOR':
+    case 'XNOR3':  return !oddOnes;
+    default:       return false;
   }
 }
 
@@ -86,14 +114,14 @@ export function simulate(circuit) {
     for (const c of circuit.comps) {
       if (c.type === 'IN' || c.type === 'CLOCK') continue;
       const def = GATES[c.type];
-      const inv = [false, false];
+      const inv = new Array(Math.max(def.ins, 1)).fill(false);
       for (const w of circuit.wires) {
         if (w.to === c.id && w.toPort < def.ins) {
           const src = byId[w.from];
           if (src) inv[w.toPort] = !!src.value;
         }
       }
-      const next = c.type === 'OUT' ? inv[0] : applyGate(c.type, inv[0], inv[1]);
+      const next = c.type === 'OUT' ? inv[0] : applyGate(c.type, inv);
       if (next !== c.value) { c.value = next; changed = true; }
     }
     if (!changed) break;

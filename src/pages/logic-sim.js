@@ -34,7 +34,8 @@ let frame = 0;
 function inPortPos(comp, port) {
   const def = GATES[comp.type];
   if (def.ins <= 1) return { x: comp.x, y: comp.y + H / 2 };
-  return { x: comp.x, y: comp.y + (port === 0 ? H * 0.3 : H * 0.7) };
+  /* distribui as N entradas uniformemente na lateral esquerda */
+  return { x: comp.x, y: comp.y + (H * (port + 1)) / (def.ins + 1) };
 }
 function outPortPos(comp) {
   return { x: comp.x + W, y: comp.y + H / 2 };
@@ -279,8 +280,10 @@ export function logicSimPage() {
       h('h1', { className: 'page-header__title' }, '⊻ Simulador de Lógica Digital'),
       h('p', { className: 'page-header__description' },
         'Coloque componentes, ligue saída → entrada com fios e veja os sinais ',
-        'propagarem em tempo real. Funciona com realimentação — dá pra montar ',
-        'travas e flip-flops com portas.')
+        'propagarem em tempo real. ',
+        h('span', { className: 'u-text-cyan' }, '14 portas'),
+        ' (incluindo BUFFER e versões de 3 entradas). Funciona com ',
+        'realimentação — dá pra montar travas e flip-flops com portas.')
     )
   );
 
