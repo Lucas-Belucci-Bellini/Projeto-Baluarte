@@ -228,13 +228,17 @@ function renderDetail(w) {
     )
   );
 
-  const stats = [
-    ['Origem', w.origin],
-    ['Ano', w.year],
-    ['Calibre', w.caliber],
-    ['Alcance efetivo', w.rangeM ? `${fmt(w.rangeM)} m` : '—'],
-    ['Peso', w.weightKg ? `${w.weightKg} kg` : '—']
-  ];
+  /* Itens com `specs` próprias (aeronaves, naval, etc.) usam essa ficha;
+     o armamento clássico mantém o grid padrão calibre/alcance/peso. */
+  const stats = Array.isArray(w.specs) && w.specs.length
+    ? [['Origem', w.origin], ['Ano', w.year], ...w.specs]
+    : [
+        ['Origem', w.origin],
+        ['Ano', w.year],
+        ['Calibre', w.caliber],
+        ['Alcance efetivo', w.rangeM ? `${fmt(w.rangeM)} m` : '—'],
+        ['Peso', w.weightKg ? `${w.weightKg} kg` : '—']
+      ];
 
   detailEl.appendChild(
     h('div', { className: 'arsenal-detail__stats' },
@@ -353,13 +357,12 @@ export function arsenalPage() {
       h('h1', { className: 'page-header__title' }, '⌖ Arsenal'),
       h('p', { className: 'page-header__description' },
         h('span', { className: 'u-text-cyan' }, `${TOTAL} entradas`),
-        ' catalogadas: ',
-        h('span', { className: 'u-text-cyan' }, '124 armas'),
-        ', ',
-        h('span', { className: 'u-text-cyan' }, '24 veículos'),
-        ' e ',
+        ' num catálogo militar completo — armas leves, artilharia, defesa aérea, ',
+        'aeronaves, frota naval, drones e veículos em ',
+        h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length} categorias`),
+        ', mais ',
         h('span', { className: 'u-text-cyan' }, `${DOUTRINAS.length} doutrinas`),
-        '. Filtre por categoria, equipe (ALFA-SIERRA) e tier.'
+        ' táticas. Filtre por categoria, equipe (ALFA-SIERRA) e tier.'
       )
     )
   );
