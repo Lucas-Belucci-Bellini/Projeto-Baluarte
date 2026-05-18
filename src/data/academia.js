@@ -327,3 +327,31 @@ export const LEARNING_RESOURCES = [
     ]
   }
 ];
+
+/**
+ * Programar não é só escrever código. A área de tecnologia tem muitos
+ * papéis — e até "programar" envolve ler, depurar, projetar e comunicar.
+ */
+export const TECH_INTRO =
+  'Muita gente acha que trabalhar com tecnologia é passar o dia digitando ' +
+  'código. Não é. Programar de verdade é, na maior parte do tempo, LER código, ' +
+  'CAÇAR bugs, PROJETAR soluções, conversar com pessoas e tomar decisões. E o ' +
+  'campo é enorme: há carreiras inteiras de TI que quase não tocam em código. ' +
+  'Escolha pelo que você gosta de fazer, não pelo estereótipo.';
+
+export const TECH_CARREIRAS = [
+  { nome: 'Front-end', codigo: 'Muito código', desc: 'Constrói a interface que o usuário vê e usa — HTML, CSS, JavaScript. Mistura código com olhar para design.' },
+  { nome: 'Back-end', codigo: 'Muito código', desc: 'Cuida do servidor, da lógica de negócio e dos bancos de dados — a parte que o usuário não vê.' },
+  { nome: 'Mobile', codigo: 'Muito código', desc: 'Desenvolve aplicativos para celular (Android, iOS), lidando com telas pequenas e recursos limitados.' },
+  { nome: 'DevOps / SRE', codigo: 'Código + infra', desc: 'Automatiza deploys, monitora sistemas e mantém tudo no ar de forma confiável. Mais scripts e infraestrutura que app.' },
+  { nome: 'QA / Testes', codigo: 'Pouco a médio código', desc: 'Garante a qualidade: encontra bugs, escreve testes e pensa em tudo que pode dar errado.' },
+  { nome: 'Cibersegurança', codigo: 'Código + análise', desc: 'Protege sistemas e dados, investiga ataques e pensa como um invasor para defender melhor.' },
+  { nome: 'Ciência / Análise de Dados', codigo: 'Código + estatística', desc: 'Transforma montanhas de dados em decisões. Mais matemática, estatística e perguntas certas que software.' },
+  { nome: 'UX / UI Design', codigo: 'Quase nenhum código', desc: 'Projeta como o produto deve ser usado e como deve parecer, para que seja fácil e agradável.' },
+  { nome: 'Product Manager', codigo: 'Nenhum código', desc: 'Decide O QUE construir e por quê. Conversa com usuários, prioriza e alinha o time — não programa.' },
+  { nome: 'Gestão / Tech Lead', codigo: 'Pouco código', desc: 'Lidera pessoas e decisões técnicas. Quanto mais sênior, menos código e mais comunicação e estratégia.' },
+  { nome: 'Documentação Técnica', codigo: 'Quase nenhum código', desc: 'Escreve manuais, tutoriais e referências claras. Une domínio técnico com talento para escrever.' },
+  { nome: 'Suporte Técnico', codigo: 'Nenhum a pouco código', desc: 'Ajuda usuários a resolver problemas. Porta de entrada comum na área, exige paciência e didática.' },
+  { nome: 'Game Design', codigo: 'Pouco código', desc: 'Projeta as regras, a progressão e a diversão de um jogo — diferente de programar o jogo.' },
+  { nome: 'Banco de Dados', codigo: 'Código especializado (SQL)', desc: 'Modela, otimiza e protege os dados. Especialidade própria, com SQL no centro.' }
+];
