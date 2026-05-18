@@ -84,6 +84,7 @@ function pageTitleForRoute(path) {
     '/modpack': 'Modpack Minecraft',
     '/guia-pc': 'Guia para Montar PC',
     '/fft': 'Visualizador FFT',
+    '/radio': 'Rádio de Frequências',
     '/media': 'Media Hub',
     '/videos': 'Central de Vídeos',
     '/elites': 'Elites',

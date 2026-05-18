@@ -23,7 +23,7 @@ function loadConfig() {
 
 const STATS = [
   { label: 'Versão', value: 'v' + VERSION, icon: '◆' },
-  { label: 'Rotas ativas', value: '37', icon: '◫' },
+  { label: 'Rotas ativas', value: '38', icon: '◫' },
   { label: 'Ferramentas', value: '40', icon: '⚙' },
   { label: 'Equipes catalogadas', value: '26', icon: '◆' },
   { label: 'Arcos das Crônicas', value: '24', icon: '◫' },
