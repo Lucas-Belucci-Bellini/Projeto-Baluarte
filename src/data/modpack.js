@@ -90,7 +90,27 @@ export const MODS = [
   { name: 'Hwyla', cat: 'utility', tier: 'B', author: 'TehNut', desc: 'Outra variante de tooltip.' },
   { name: 'AppleSkin', cat: 'utility', tier: 'A', author: 'squeek502', desc: 'Mostra saturation/exhaustion.' },
   { name: 'Bookshelf', cat: 'utility', tier: 'B', author: 'darkhax', desc: 'Lib usada por vários mods.' },
-  { name: 'Curios API', cat: 'utility', tier: 'S', author: 'TheIllusiveC4', desc: 'Slots cosméticos/utility (anéis, cintos).' }
+  { name: 'Curios API', cat: 'utility', tier: 'S', author: 'TheIllusiveC4', desc: 'Slots cosméticos/utility (anéis, cintos).' },
+
+  /* ===== Expansão v2.0.0 ===== */
+  { name: 'Powah!', cat: 'tech', tier: 'A', author: 'owmii', desc: 'Geração e armazenamento de energia simples e escalável.' },
+  { name: 'Pretty Pipes', cat: 'tech', tier: 'A', author: 'Ellpeck', desc: 'Transporte e filtragem de itens com pipes visuais.' },
+  { name: 'Eidolon', cat: 'magic', tier: 'A', author: 'elucent', desc: 'Magia oculta com rituais, necromancia e atmosfera sombria.' },
+  { name: 'Malum', cat: 'magic', tier: 'B', author: 'Lodestar Team', desc: 'Magia espiritual com spirits, arcana e nodes.' },
+  { name: "Alex's Mobs", cat: 'exploration', tier: 'S', author: 'sbom_xela', desc: '90+ criaturas novas espalhadas por todos os biomas.' },
+  { name: 'The Betweenlands', cat: 'exploration', tier: 'A', author: 'Angry Pixel', desc: 'Dimensão pantanosa sombria com progressão própria.' },
+  { name: "L_Ender's Cataclysm", cat: 'exploration', tier: 'A', author: 'L_Ender', desc: 'Dungeons e bosses épicos com loot poderoso.' },
+  { name: 'Epic Fight', cat: 'combat', tier: 'S', author: 'Yesman', desc: 'Reformula o combate com combos e animações de ação.' },
+  { name: 'Better Combat', cat: 'combat', tier: 'A', author: 'Daedelus', desc: 'Ataques com alcance, hitbox e animações realistas.' },
+  { name: "Mowzie's Mobs", cat: 'combat', tier: 'A', author: 'BobMowzie', desc: 'Mobs e bosses com IA elaborada e movesets únicos.' },
+  { name: 'Supplementaries', cat: 'building', tier: 'S', author: 'MehVahdJukaar', desc: 'Dezenas de blocos decorativos e funcionais vanilla+.' },
+  { name: 'Framed Blocks', cat: 'building', tier: 'A', author: 'XFactHD', desc: 'Blocos que assumem a textura de qualquer outro bloco.' },
+  { name: 'Sophisticated Backpacks', cat: 'storage', tier: 'S', author: 'P3pp3rF1y', desc: 'Mochilas com upgrades: filtros, autocoleta, alimentação.' },
+  { name: 'Functional Storage', cat: 'storage', tier: 'A', author: 'Buuz135', desc: 'Drawers modernos, sucessor espiritual do Storage Drawers.' },
+  { name: 'Embeddium', cat: 'performance', tier: 'S', author: 'embeddedt', desc: 'Port do Sodium para Forge — grande ganho de FPS.' },
+  { name: 'Entity Culling', cat: 'performance', tier: 'A', author: 'tr7zw', desc: 'Pula a renderização de entidades fora do campo de visão.' },
+  { name: 'REI — Roughly Enough Items', cat: 'utility', tier: 'S', author: 'shedaniel', desc: 'Navegador de receitas e itens, alternativa ao JEI.' },
+  { name: 'FTB Quests', cat: 'utility', tier: 'A', author: 'FTB Team', desc: 'Sistema de missões e progressão guiada para modpacks.' }
 ];
 
 export const TOTAL_MODS = MODS.length;
