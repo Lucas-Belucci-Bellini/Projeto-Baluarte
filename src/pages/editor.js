@@ -282,30 +282,181 @@ function renderEditorArea() {
   );
 }
 
+/* Pares para auto-fechamento estilo VS Code. */
+const EDITOR_PAIRS = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' };
+const EDITOR_CLOSERS = new Set([')', ']', '}']);
+
+/**
+ * Teclado do editor — recursos estilo VS Code:
+ *  Tab/Shift+Tab (indenta bloco) · auto-fechamento de pares · pula o
+ *  fechamento · backspace apaga par vazio · Enter com auto-indentação ·
+ *  Ctrl+/ comenta · Alt+↑↓ move linha · Shift+Alt+↑↓ duplica linha.
+ */
 function handleEditorKeydown(e) {
-  /* Tab inserts dois espaços; Shift+Tab outdenta */
+  const ta = e.target;
+  const val = ta.value;
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+
+  /* Aplica novo conteúdo + seleção e atualiza o highlight. */
+  const apply = (next, selStart, selEnd) => {
+    ta.value = next;
+    ta.selectionStart = selStart;
+    ta.selectionEnd = selEnd == null ? selStart : selEnd;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+
+  /* Limites das linhas que a seleção toca. */
+  const blockStart = val.lastIndexOf('\n', start - 1) + 1;
+  let blockEnd = val.indexOf('\n', end);
+  if (blockEnd === -1) blockEnd = val.length;
+
+  /* ---- Tab / Shift+Tab ---- */
   if (e.key === 'Tab') {
     e.preventDefault();
-    const ta = e.target;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const val = ta.value;
-
-    if (e.shiftKey) {
-      /* outdent: remove até 2 espaços antes do cursor */
-      const lineStart = val.lastIndexOf('\n', start - 1) + 1;
-      const before = val.slice(0, lineStart);
-      const line = val.slice(lineStart, start);
-      const trimmed = line.replace(/^ {1,2}/, '');
-      const removed = line.length - trimmed.length;
-      ta.value = before + trimmed + val.slice(start);
-      ta.selectionStart = ta.selectionEnd = start - removed;
+    const multiLine = val.slice(start, end).includes('\n');
+    if (e.shiftKey || multiLine) {
+      const lines = val.slice(blockStart, blockEnd).split('\n');
+      let firstDelta = 0;
+      let totalDelta = 0;
+      const out = lines.map((l, i) => {
+        if (e.shiftKey) {
+          const rem = (l.match(/^ {1,2}/) || [''])[0].length;
+          if (i === 0) firstDelta = -rem;
+          totalDelta -= rem;
+          return l.slice(rem);
+        }
+        if (i === 0) firstDelta = 2;
+        totalDelta += 2;
+        return '  ' + l;
+      });
+      const block = out.join('\n');
+      apply(
+        val.slice(0, blockStart) + block + val.slice(blockEnd),
+        Math.max(blockStart, start + firstDelta),
+        end + totalDelta
+      );
     } else {
-      ta.value = val.slice(0, start) + '  ' + val.slice(end);
-      ta.selectionStart = ta.selectionEnd = start + 2;
+      apply(val.slice(0, start) + '  ' + val.slice(end), start + 2);
     }
-    /* dispara input pra atualizar highlight */
-    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    return;
+  }
+
+  /* ---- Ctrl+/ — comenta / descomenta o bloco ---- */
+  if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+    e.preventDefault();
+    const lang = getLang(getActiveTab(state).lang);
+    const token = lang && lang.lineComment;
+    if (!token) return;
+    const lines = val.slice(blockStart, blockEnd).split('\n');
+    const real = lines.filter((l) => l.trim());
+    const commented = real.length > 0 && real.every((l) => l.trimStart().startsWith(token));
+    let out;
+    if (commented) {
+      out = lines.map((l) => {
+        const i = l.indexOf(token);
+        return i === -1 ? l : l.slice(0, i) + l.slice(i + token.length).replace(/^ /, '');
+      });
+    } else {
+      const indent = Math.min(...real.map((l) => l.match(/^ */)[0].length));
+      out = lines.map((l) =>
+        l.trim() ? l.slice(0, indent) + token + ' ' + l.slice(indent) : l
+      );
+    }
+    const block = out.join('\n');
+    apply(val.slice(0, blockStart) + block + val.slice(blockEnd), blockStart, blockStart + block.length);
+    return;
+  }
+
+  /* ---- Alt+↑↓ move linha · Shift+Alt+↑↓ duplica ---- */
+  if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+    e.preventDefault();
+    const block = val.slice(blockStart, blockEnd);
+    if (e.shiftKey) {
+      const dup = val.slice(0, blockEnd) + '\n' + block + val.slice(blockEnd);
+      if (e.key === 'ArrowDown') {
+        const d = block.length + 1;
+        apply(dup, start + d, end + d);
+      } else {
+        apply(dup, start, end);
+      }
+    } else if (e.key === 'ArrowUp') {
+      if (blockStart === 0) return;
+      const prevStart = val.lastIndexOf('\n', blockStart - 2) + 1;
+      const prevLine = val.slice(prevStart, blockStart - 1);
+      const d = blockStart - prevStart;
+      apply(
+        val.slice(0, prevStart) + block + '\n' + prevLine + val.slice(blockEnd),
+        start - d, end - d
+      );
+    } else {
+      if (blockEnd >= val.length) return;
+      let nextEnd = val.indexOf('\n', blockEnd + 1);
+      if (nextEnd === -1) nextEnd = val.length;
+      const nextLine = val.slice(blockEnd + 1, nextEnd);
+      const d = nextLine.length + 1;
+      apply(
+        val.slice(0, blockStart) + nextLine + '\n' + block + val.slice(nextEnd),
+        start + d, end + d
+      );
+    }
+    return;
+  }
+
+  /* ---- Enter — mantém indentação, abre bloco entre chaves ---- */
+  if (e.key === 'Enter' && start === end) {
+    const indent = (val.slice(blockStart, start).match(/^ */) || [''])[0];
+    const before = val[start - 1];
+    const after = val[start];
+    if (before && '{[('.includes(before)) {
+      e.preventDefault();
+      const inner = indent + '  ';
+      if (after && '}])'.includes(after)) {
+        apply(val.slice(0, start) + '\n' + inner + '\n' + indent + val.slice(start), start + 1 + inner.length);
+      } else {
+        apply(val.slice(0, start) + '\n' + inner + val.slice(start), start + 1 + inner.length);
+      }
+      return;
+    }
+    if (indent) {
+      e.preventDefault();
+      apply(val.slice(0, start) + '\n' + indent + val.slice(start), start + 1 + indent.length);
+      return;
+    }
+  }
+
+  /* ---- Auto-fechamento de pares (e wrap da seleção) ---- */
+  if (EDITOR_PAIRS[e.key]) {
+    const open = e.key;
+    const close = EDITOR_PAIRS[open];
+    if (open === close && start === end && val[start] === open) {
+      e.preventDefault();
+      apply(val, start + 1);
+      return;
+    }
+    e.preventDefault();
+    if (start !== end) {
+      apply(val.slice(0, start) + open + val.slice(start, end) + close + val.slice(end), start + 1, end + 1);
+    } else {
+      apply(val.slice(0, start) + open + close + val.slice(start), start + 1);
+    }
+    return;
+  }
+
+  /* ---- Pula sobre o fechamento já presente ---- */
+  if (EDITOR_CLOSERS.has(e.key) && start === end && val[start] === e.key) {
+    e.preventDefault();
+    apply(val, start + 1);
+    return;
+  }
+
+  /* ---- Backspace apaga par vazio () [] {} "" '' `` ---- */
+  if (e.key === 'Backspace' && start === end && start > 0) {
+    const b = val[start - 1];
+    if (EDITOR_PAIRS[b] && EDITOR_PAIRS[b] === val[start]) {
+      e.preventDefault();
+      apply(val.slice(0, start - 1) + val.slice(start + 1), start - 1);
+    }
   }
 }
 
@@ -483,9 +634,16 @@ export function editorPage() {
         'p',
         { className: 'page-header__description' },
         'Multi-tabs · 26 linguagens · runners JS/HTML/CSS/Markdown. ',
-        h('span', { className: 'u-text-cyan' }, 'Integração VFS'),
-        ': abre e salva no filesystem virtual compartilhado com o Terminal. ',
-        'Atalhos: ',
+        h('span', { className: 'u-text-cyan' }, 'Edição estilo VS Code'),
+        ': auto-fechamento de pares, auto-indentação, ',
+        h('kbd', null, 'Ctrl+/'),
+        ' comenta · ',
+        h('kbd', null, 'Alt+↑↓'),
+        ' move linha · ',
+        h('kbd', null, 'Shift+Alt+↑↓'),
+        ' duplica · ',
+        h('kbd', null, 'Tab'),
+        ' indenta o bloco. ',
         h('kbd', null, 'Ctrl+Enter'),
         ' run · ',
         h('kbd', null, 'Ctrl+S'),
@@ -493,7 +651,7 @@ export function editorPage() {
         h('kbd', null, 'Ctrl+T'),
         ' nova tab · ',
         h('kbd', null, 'Ctrl+W'),
-        ' fechar.'
+        ' fechar. VFS compartilhado com o Terminal.'
       )
     )
   );
