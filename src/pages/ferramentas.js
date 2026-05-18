@@ -90,6 +90,7 @@ const TOOL_ROUTES = {
   editor: '/editor',
   terminal: '/terminal',
   regex: '/regex',
+  json: '/json-studio',
   /* Cálculo */
   'calc-cientifica': '/calc-cientifica',
   'calc-financeira': '/calculadoras',
@@ -127,7 +128,7 @@ const TOOL_ROUTES = {
   jarvis: '/jarvis',
   'ia-proprietaria': '/ia-proprietaria',
   config: '/perfil'
-  /* Sem rota dedicada (futuras): json, git-helper, colorpicker, qrcode */
+  /* Sem rota dedicada (futuras): git-helper, colorpicker, qrcode */
 };
 
 /* ============================================================ */
