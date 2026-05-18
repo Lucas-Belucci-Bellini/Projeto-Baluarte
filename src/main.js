@@ -28,6 +28,7 @@ import { bibliotecaPage } from './pages/biblioteca.js';
 import { elitesPage } from './pages/elites.js';
 import { cibersegPage } from './pages/ciberseg.js';
 import { academiaPage } from './pages/academia.js';
+import { roboticaPage } from './pages/robotica.js';
 import { fftPage } from './pages/fft.js';
 import { mediaPage } from './pages/media.js';
 import { videosPage } from './pages/videos.js';
@@ -36,8 +37,10 @@ import { tabelaPeriodicaPage } from './pages/tabela-periodica.js';
 import { modpackPage } from './pages/modpack.js';
 import { guiaPcPage } from './pages/guia-pc.js';
 import { logicSimPage } from './pages/logic-sim.js';
+import { portasPage } from './pages/portas.js';
 import { morsePage } from './pages/morse.js';
 import { memesPage } from './pages/memes.js';
+import { filmesPage } from './pages/filmes.js';
 import { shadowPage } from './pages/shadow.js';
 import { perfilPage } from './pages/perfil.js';
 import { economiaPage } from './pages/economia.js';
@@ -70,6 +73,7 @@ router.register('/biblioteca', () => bibliotecaPage());
 router.register('/elites', () => elitesPage());
 router.register('/ciberseg', () => cibersegPage());
 router.register('/academia', () => academiaPage());
+router.register('/robotica', () => roboticaPage());
 router.register('/fft', () => fftPage());
 router.register('/media', () => mediaPage());
 router.register('/videos', () => videosPage());
@@ -78,8 +82,10 @@ router.register('/tabela-periodica', () => tabelaPeriodicaPage());
 router.register('/modpack', () => modpackPage());
 router.register('/guia-pc', () => guiaPcPage());
 router.register('/logic-sim', () => logicSimPage());
+router.register('/portas', () => portasPage());
 router.register('/morse', () => morsePage());
 router.register('/memes', () => memesPage());
+router.register('/filmes', () => filmesPage());
 router.register('/shadow', () => shadowPage());
 router.register('/perfil', () => perfilPage());
 router.register('/economia', () => economiaPage());
@@ -89,7 +95,7 @@ router.register('/ia-proprietaria', () => iaProprietariaPage());
 router.register('/sobre', () => sobrePage());
 
 /* ==============================================================
- *  Mark XIII — 33 rotas, todas implementadas. Sem placeholders.
+ *  Mark XIII — 36 rotas, todas implementadas. Sem placeholders.
  * ============================================================== */
 router.setNotFound((path) => notFoundPage(path));
 
@@ -131,7 +137,7 @@ function boot() {
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    '%c33 rotas ativas · JS puro + Vite 5',
+    '%c36 rotas ativas · JS puro + Vite 5',
     'color: #93a4bf; font-family: monospace;'
   );
 }

@@ -1,0 +1,152 @@
+/* ============================================================
+ * Robótica — Currículo (v2.0.0)
+ * ============================================================ */
+
+.robotica-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .robotica-layout { grid-template-columns: 1fr; }
+}
+
+/* ===== Rail de módulos ===== */
+.robotica-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
+  position: sticky;
+  top: var(--space-sm);
+}
+
+@media (max-width: 760px) {
+  .robotica-rail { position: static; }
+}
+
+.robotica-rail__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.robotica-rail__item:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text-primary);
+}
+
+.robotica-rail__item.is-active {
+  background: var(--color-cyan-soft);
+  color: var(--color-cyan);
+}
+
+.robotica-rail__num {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.robotica-rail__item.is-active .robotica-rail__num { color: var(--color-cyan); }
+
+.robotica-rail__icon { font-size: var(--font-size-md); }
+
+.robotica-rail__label {
+  flex: 1;
+  line-height: var(--line-height-tight);
+}
+
+/* ===== Painel ===== */
+.robotica-panel {
+  background: var(--color-surface);
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.robotica-mod__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.robotica-mod__icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-sm);
+  color: var(--color-cyan);
+}
+
+.robotica-mod__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.robotica-mod__resumo {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-loose);
+  padding: var(--space-sm) var(--space-md);
+  border-left: 3px solid var(--color-cyan-edge);
+  background: var(--color-bg-elevated);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: var(--space-md);
+}
+
+.robotica-mod__topicos-label {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.robotica-topicos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-sm);
+}
+
+.robotica-topico {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.robotica-topico__nome {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-cyan);
+  font-size: var(--font-size-sm);
+  margin-bottom: 2px;
+}
+
+.robotica-topico__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
