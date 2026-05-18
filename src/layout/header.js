@@ -6,6 +6,7 @@
 import { h, pad2 } from '../utils/helpers.js';
 import { bus } from '../core/events.js';
 import { appState } from '../core/state.js';
+import { VERSION } from '../data/version.js';
 
 let clockTimer = null;
 
@@ -75,7 +76,7 @@ export function renderHeader() {
         { className: 'header__status' },
         statusItem('NÚCLEO', 'ONLINE'),
         statusItem('REDE', 'OK'),
-        statusItem('FASE', '01/05', 'status-dot--warning')
+        statusItem('VERSÃO', `v${VERSION}`, 'status-dot--online')
       )
     ),
     h(

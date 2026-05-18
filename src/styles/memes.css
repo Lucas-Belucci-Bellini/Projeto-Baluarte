@@ -1,0 +1,217 @@
+/* ============================================================
+ * Memes — Arquivo de Memes 2016 (v2.0.0)
+ * ============================================================ */
+
+.memes-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+@media (max-width: 640px) {
+  .memes-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+.memes-stat {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+}
+
+.memes-stat__value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cyan);
+}
+
+.memes-stat__label {
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ===== Toolbar ===== */
+.memes-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.memes-search { width: 100%; }
+
+.memes-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.memes-filter {
+  padding: 6px 14px;
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.memes-filter:hover {
+  border-color: var(--color-cyan-edge);
+  color: var(--color-text-primary);
+}
+
+.memes-filter.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+/* ===== Grade ===== */
+.memes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-md);
+}
+
+@media (max-width: 560px) {
+  .memes-grid { grid-template-columns: 1fr; }
+}
+
+.memes-empty {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+  font-size: var(--font-size-md);
+}
+
+/* ===== Cartão ===== */
+.meme-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  background: var(--color-surface);
+  border: var(--border-base);
+  border-left: 3px solid var(--color-text-muted);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-fast);
+}
+
+.meme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.meme-card--lendario { border-left-color: var(--color-magenta); }
+.meme-card--classico { border-left-color: var(--color-cyan); }
+.meme-card--viral { border-left-color: var(--color-warning); }
+
+.meme-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.meme-card__glyph {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  color: var(--color-cyan);
+}
+
+.meme-card__head-text { flex: 1; min-width: 0; }
+
+.meme-card__name {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.meme-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: 4px;
+}
+
+.meme-card__when,
+.meme-card__cat {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+.meme-card__cat {
+  padding: 1px 7px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-pill);
+}
+
+.meme-card__tier {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wider);
+  padding: 3px 7px;
+  border-radius: var(--radius-xs);
+}
+
+.meme-card__tier--lendario {
+  background: var(--color-magenta-soft);
+  color: var(--color-magenta);
+}
+
+.meme-card__tier--classico {
+  background: var(--color-cyan-soft);
+  color: var(--color-cyan);
+}
+
+.meme-card__tier--viral {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.meme-card__quote {
+  font-style: italic;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  padding: var(--space-xs) var(--space-sm);
+  border-left: 2px solid var(--color-cyan-edge);
+  background: var(--color-bg-elevated);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+
+.meme-card__origin {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
+
+.meme-card__origin-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.meme-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-loose);
+}

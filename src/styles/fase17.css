@@ -414,33 +414,6 @@
   font-family: var(--font-mono);
   font-size: 11px;
 }
-.logic-input, .logic-output {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 28px;
-  font-weight: 700;
-  background: var(--color-bg);
-  border: 2px solid var(--color-text-muted);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  color: var(--color-text-muted);
-}
-.logic-input.is-on, .logic-output.is-on {
-  background: var(--color-success-soft);
-  border-color: var(--color-success);
-  color: var(--color-success);
-  box-shadow: 0 0 12px var(--color-success);
-}
-.logic-output {
-  cursor: default;
-  border-color: var(--color-cyan);
-  color: var(--color-cyan);
-}
 
 .logic-gate {
   width: 100px;
