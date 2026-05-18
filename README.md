@@ -1,20 +1,29 @@
 # ⬡ Projeto Baluarte — Mark XIII
 
-Plataforma web narrativa/militar de Lucas Belucci Bellini.
-**Stack:** JavaScript puro (ES2022) + HTML5 + CSS3 + Vite. Sem TypeScript. Sem framework.
+Plataforma web narrativa, militar e de ferramentas técnicas de **Lucas Belucci
+Bellini**.
 
-> Esta é a 13ª iteração do projeto. As 12 anteriores quebraram por TypeScript, stubs incompletos ou HTMLs gigantes inline. O Mark XIII foi construído incrementalmente em **21 fases**, cada uma entregando algo funcional e versionada por tag/release no GitHub. A **v1.0.0** consolida as 21 fases — e o projeto segue em construção a partir dela.
+**Stack (não negociável):** JavaScript puro (ES2022) + HTML5 + CSS3 + Vite 5.
+Sem TypeScript. Sem framework. Sem JSX.
+
+> Esta é a 13ª iteração do projeto. As 12 anteriores quebraram por TypeScript,
+> stubs incompletos ou HTMLs gigantes inline. O Mark XIII foi construído
+> incrementalmente em **21 fases** — cada uma entregando algo funcional — até a
+> **v1.0.0**. A partir dela, a **v2.0.0** expande a plataforma com novas
+> ferramentas, mais conteúdo e um catálogo militar completo.
 
 ---
 
 ## Como rodar
 
 ### Windows (duplo-clique)
+
 ```
 start.bat
 ```
 
 ### Qualquer plataforma (terminal)
+
 ```bash
 npm install
 npm run dev
@@ -23,43 +32,71 @@ npm run dev
 Abre em `http://localhost:5173`.
 
 ### Build de produção
+
 ```bash
 npm run build      # gera dist/
 npm run preview    # serve dist/ para teste
 ```
 
-**Requisitos:** Node.js 18+ (testado com 22).
+**Requisitos:** Node.js 18+ (testado com 22). O deploy de produção roda no
+Vercel, reconstruído a partir da branch `main`.
 
 ---
 
-## Roadmap em 21 fases
+## O que tem no Baluarte
 
-Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
+São **36 rotas**, todas implementadas. O menu lateral organiza tudo em 6 grupos.
 
-| Fase | Tag | Conteúdo | Status |
-|---|---|---|---|
-| 1 | `v0.1.0-fase1` | Foundation: SPA shell, router, layout, Home, Hub de Ferramentas | ✅ |
-| 1.5 | `v0.1.5-sync` | Sync: 17 rotas placeholder extras + sistema de toast | ✅ |
-| 2 | `v0.2.0` | Editor de Código (26 langs, runners, tabs) | ✅ |
-| 3 | `v0.3.0` | Terminal Web (60+ comandos, VFS, pipes) | ✅ |
-| 4 | `v0.4.0` | Calc Científica + Numérica (IEEE 754) | ✅ |
-| 5 | `v0.5.0` | Calculadoras (Financeira, Conv, Estat, Eng, Saúde) | ✅ |
-| 6 | `v0.6.0` | Tabela Verdade + Mapa de Karnaugh | ✅ |
-| 7 | `v0.7.0` | Lab Cripto P1 (César, Base64, SHA, Morse) | ✅ |
-| 8 | `v0.8.0` | Lab Cripto P2 (AES-GCM, Vigenère, Atbash, OTP) | ✅ |
-| 9 | `v0.9.0` | Gerador de Gráficos (Canvas 2D, 12 tipos) | ✅ |
-| 10 | `v0.10.0` | Símbolos (1200+ Unicode) + Lab de Regex | ✅ |
-| 11 | `v0.11.0` | Arsenal (159 armas + veículos + doutrina) | ✅ |
-| 12 | `v0.12.0` | Biblioteca (24 arcos, viewer, retomar leitura) | ✅ |
-| 13 | `v0.13.0` | Elites (26 equipes ALFA→ZULU, fichas) | ✅ |
-| 14 | `v0.14.0` | CiberSeg + Academia (10 langs com tutoriais) | ✅ |
-| 15 | `v0.15.0` | Visualizador FFT (6 modos) + Media Hub | ✅ |
-| 16 | `v0.16.0` | Central de Vídeos + Universo Hub (10 universos) | ✅ |
-| 17 | `v0.17.0` | Tabela Periódica + Modpack MC + Guia PC + Logic Sim | ✅ |
-| 18 | `v0.18.0` | PWA offline-first + camada de autenticação + Perfil | ✅ |
-| 19 | `v0.19.0` | Economia + Cotações + JARVIS (chat básico) | ✅ |
-| 20 | `v0.20.0` | JARVIS completo (4 modos, agente, memória) | ✅ |
-| 21 | `v1.0.0` | IDE + IA Proprietária Mark 11 + Crônicas (fan fic) + Sobre o Projeto | ✅ |
+### Operações
+- **Ponte de Comando** — painel inicial com status do sistema.
+- **Hub de Ferramentas** — catálogo navegável de todas as ferramentas.
+
+### Ferramentas
+- **Editor de Código** — 26 linguagens, multi-abas, runners JS/HTML/CSS/MD e
+  edição estilo VS Code (auto-fechamento de pares, auto-indentação, `Ctrl+/`,
+  mover/duplicar linha).
+- **Terminal Web** — 60+ comandos POSIX-like, filesystem virtual, pipes.
+- **Calculadoras** — científica, numérica (IEEE 754) e o hub com financeira,
+  conversores, estatística, engenharia e saúde.
+- **Tabela Verdade** — parser lógico, Mapa de Karnaugh e Quine-McCluskey.
+- **Lab de Cripto** — César, Base64/32, SHA, AES-GCM, Vigenère, Atbash, OTP.
+- **Lab de Regex** — tester com destaque de matches e cheatsheet.
+- **Gerador de Gráficos** — 12 tipos em Canvas 2D puro.
+- **Símbolos** — 1200+ caracteres Unicode pesquisáveis.
+- **Logic Sim** — simulador de lógica digital interativo (14 portas, fios,
+  propagação em tempo real, realimentação).
+- **Portas Lógicas** — enciclopédia de lógica digital: símbolos, tabelas verdade,
+  blocos construtivos e catálogo de CIs 7400/4000.
+- **Código Morse** — texto ↔ Morse, áudio por oscilador e flash visual.
+
+### Conhecimento
+- **Biblioteca** — as Crônicas da Baluarte (24 arcos, 1127 capítulos).
+- **Academia** — 16 linguagens de programação + recursos externos de estudo.
+- **Robótica** — currículo de 12 módulos, do básico ao avançado.
+- **Universo** — 10 universos narrativos cruzados.
+- **Tabela Periódica** — 118 elementos.
+- **Modpack Minecraft** e **Guia para Montar PC**.
+
+### Mídia
+- **Visualizador FFT** — 6 modos via Web Audio; capta microfone, arquivo,
+  oscilador e o áudio do próprio PC.
+- **Media Hub** — player local de áudio/vídeo/imagem.
+- **Central de Vídeos** — playlists temáticas.
+- **Arquivo de Memes** — catálogo curado dos memes de 2016.
+- **Cinema** — acervo de filmes com player embutido.
+
+### Tático
+- **Arsenal** — catálogo militar completo: armas leves, artilharia, defesa
+  aérea, aeronaves, frota naval, drones e veículos (251 itens, 15 categorias).
+- **Elites** — 26 equipes operacionais ALFA→ZULU.
+- **CiberSeg** — enciclopédia de cibersegurança.
+- **Economia** — cotações de câmbio e cripto ao vivo.
+
+### Sistema
+- **J.A.R.V.I.S.** — assistente em 4 modos (local, Claude API, Ollama, agente).
+- **IA Proprietária Mark 11** — sistema de Skills modular.
+- **Perfil** — identidade do operador, estatísticas e configurações.
+- **Sobre o Projeto** — a história das 13 iterações.
 
 ---
 
@@ -67,67 +104,67 @@ Cada fase fecha com `tag` e `Release` no GitHub para permitir rollback.
 
 ```
 Projeto-Baluarte/
-├── package.json              Vite + scripts
-├── vite.config.js            Dev server porta 5173
-├── index.html                SPA shell (1 div #app)
-├── start.bat                 Inicializador Windows
+├── index.html                SPA shell + <link> de todos os CSS
+├── vite.config.js            Build Vite 5
 ├── public/
 │   ├── manifest.json         PWA
-│   ├── sw.js                 Service Worker (skeleton — ativa na Fase 5)
-│   └── offline.html          Fallback offline
+│   └── sw.js                 Service Worker (stale-while-revalidate, versionado)
 └── src/
-    ├── main.js               Bootstrap: registra rotas + monta shell
-    ├── styles/               Design system (Material 3 Dark Neon)
-    │   ├── variables.css     Tokens (cyan #00f0ff, magenta #ff00aa)
-    │   ├── reset.css
-    │   ├── base.css          Tipografia (Inter + JetBrains Mono)
-    │   ├── components.css    Botões, cards, inputs, chips
-    │   ├── layout.css        Header + Sidebar + shell responsivo
-    │   └── animations.css    Glow neon, transições
+    ├── main.js               Bootstrap: registra as 36 rotas + monta o shell
     ├── core/                 Engine
-    │   ├── router.js         SPA hash router (#/home, #/ferramentas...)
-    │   ├── state.js          Store reativo (Proxy + listeners)
-    │   ├── events.js         Event Bus pub/sub
-    │   └── storage.js        localStorage com fallback in-memory
-    ├── layout/
-    │   ├── header.js         Status Infinity Dreadnought + clock
-    │   ├── sidebar.js        Navegação 13 páginas, collapsible
-    │   └── shell.js          Page wrapper
-    ├── pages/
-    │   ├── home.js           Ponte de Comando (cards de status)
-    │   ├── ferramentas.js    Hub de Ferramentas (35 cards, busca, 7 cats)
-    │   └── _placeholder.js   "Em Desenvolvimento — Fase X"
-    ├── data/                 (populado nas próximas fases)
-    └── utils/
-        └── helpers.js        debounce, formatters, $, $$
+    │   ├── router.js         Router SPA por hash (#/home, #/arsenal…)
+    │   ├── state.js          Store reativo
+    │   ├── events.js         Event bus pub/sub
+    │   └── storage.js        localStorage com fallback em memória
+    ├── layout/               header, sidebar, shell
+    ├── pages/                Uma função por rota → retorna HTMLElement
+    ├── data/                 Datasets (arsenal, academia, fanfic.json…)
+    ├── utils/                Engines e helpers (h(), fft-engine, logic-sim…)
+    └── styles/               Design system — Material 3 Dark + Neon
 ```
+
+Cada página é uma função pura que devolve um `HTMLElement`, montado pelo `h()`
+— um helper de ~30 linhas em `utils/helpers.js`. Não há virtual DOM nem
+framework.
 
 ---
 
 ## Stack (não negociável)
 
-- **Frontend**: JavaScript ES2022 (módulos ESM nativos), HTML5, CSS3
-- **Build**: Vite 5
-- **Backend** (Fase 5): Node.js 22 + Express + Socket.IO (J.A.R.V.I.S.)
-- **Persistência**: localStorage + IndexedDB (Fase 5)
-- **Crypto**: Web Crypto API nativa
-- **Audio**: Web Audio API nativa
-- **Charts**: Canvas 2D puro
-- **Syntax highlight**: Prism.js standalone (única dep externa, só na Fase 2)
-- **Fontes**: Inter + JetBrains Mono
-- **Design**: Material 3 Dark + Neon (cyan/magenta)
+- **Frontend:** JavaScript ES2022 (módulos ESM nativos), HTML5, CSS3.
+- **Build:** Vite 5.
+- **Persistência:** localStorage + IndexedDB (J.A.R.V.I.S.).
+- **Cripto:** Web Crypto API nativa.
+- **Áudio:** Web Audio API nativa.
+- **Gráficos:** Canvas 2D puro.
+- **Fontes:** Inter + JetBrains Mono.
+- **Design:** Material 3 Dark + Neon (cyan `#00f0ff` / magenta `#ff00aa`).
+
+---
+
+## Histórico de versões
+
+O **v1.0.0** consolidou 21 fases incrementais (Foundation, Editor, Terminal,
+Calculadoras, Cripto, Arsenal, Biblioteca, Elites, FFT, Universo, PWA, JARVIS,
+IDE + IA Proprietária). Cada fase fechou com tag e Release no GitHub.
+
+A **v2.0.0** está em desenvolvimento na branch `v2.0.0` e adiciona, entre
+outras coisas: o Logic Sim interativo, a Enciclopédia de Lógica Digital, o
+gerador de Código Morse, o Arquivo de Memes, o Cinema, o currículo de Robótica,
+o Arsenal como catálogo militar completo, a edição estilo VS Code no editor e a
+captura do áudio do PC no FFT.
 
 ---
 
 ## Regras de ouro
 
-1. **Nada de TypeScript.** Nunca. (12 versões anteriores quebraram por TS.)
-2. **Nada de JSX/React/Vue.** Vanilla JS + funções que retornam `HTMLElement`.
-3. **Cada fase só fecha quando testada no browser** — não basta compilar.
-4. **Cada fase = 1 tag + 1 Release no GitHub** para rollback fácil.
+1. **Nada de TypeScript.** Nunca — 12 versões anteriores quebraram por isso.
+2. **Nada de JSX/React/Vue.** JavaScript puro + funções que retornam `HTMLElement`.
+3. **Só fecha quando funciona no navegador** — não basta compilar.
+4. **Trabalho incremental e versionado** no GitHub.
 
 ---
 
 ## Contato
 
-Lucas Belucci Bellini — Brasil
+Repositório: <https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte>
