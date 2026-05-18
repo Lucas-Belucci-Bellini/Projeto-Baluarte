@@ -4,11 +4,11 @@
  * Perfil de Lucas Belucci Bellini + estatísticas do projeto + configurações.
  */
 
-import { h, cx, empty } from '../utils/helpers.js';
+import { h } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { router } from '../core/router.js';
-import { isAuthenticated } from '../utils/auth-engine.js';
+import { VERSION } from '../data/version.js';
 
 const STORAGE_KEY = 'perfil:config';
 
@@ -22,12 +22,12 @@ function loadConfig() {
 }
 
 const STATS = [
-  { label: 'Fase atual', value: '18 / 21', icon: '◆' },
-  { label: 'Páginas ativas', value: '27', icon: '◫' },
-  { label: 'Ferramentas', value: '35+', icon: '⚙' },
-  { label: 'Linhas de código', value: '~16k', icon: '⌨' },
+  { label: 'Versão', value: 'v' + VERSION, icon: '◆' },
+  { label: 'Rotas ativas', value: '31', icon: '◫' },
+  { label: 'Ferramentas', value: '38', icon: '⚙' },
   { label: 'Equipes catalogadas', value: '26', icon: '◆' },
-  { label: 'Arcos das Crônicas', value: '24', icon: '◫' }
+  { label: 'Arcos das Crônicas', value: '24', icon: '◫' },
+  { label: 'Capítulos da saga', value: '1127', icon: '⌨' }
 ];
 
 const LINKS = [
@@ -62,10 +62,7 @@ export function perfilPage() {
         h('div', { className: 'perfil-id__badges' },
           h('span', { className: 'badge badge--magenta' }, 'CLEARANCE OMEGA'),
           h('span', { className: 'badge badge--cyan' }, 'EQUIPE ALFA'),
-          h('span', { className: 'badge badge--success' }, 'EQUIPE TANGO'),
-          h('span', {
-            className: cx('badge', isAuthenticated() ? 'badge--success' : 'badge--muted')
-          }, isAuthenticated() ? 'SHADOW: AUTENTICADO' : 'SHADOW: BLOQUEADO')
+          h('span', { className: 'badge badge--success' }, 'EQUIPE TANGO')
         ),
         h('p', { className: 'perfil-id__bio' },
           'Operador-líder e arquiteto do Núcleo Infinity Dreadnought. ',
