@@ -1,0 +1,186 @@
+/* ============================================================
+ * Portas Lógicas — Enciclopédia de Lógica Digital (v2.0.0)
+ * ============================================================ */
+
+.portas-link { text-decoration: none; }
+.portas-link:hover { text-decoration: underline; }
+
+.portas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.porta-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+.porta-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.porta-card__symbol {
+  flex-shrink: 0;
+  width: 116px;
+  height: 74px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+}
+
+.porta-card__symbol svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.porta-card__id {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.porta-card__name {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.porta-card__inputs {
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wide);
+}
+
+.porta-card__expr {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-xs);
+  padding: 6px 10px;
+  color: var(--color-cyan);
+  font-size: var(--font-size-sm);
+}
+
+.porta-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-loose);
+  flex: 1;
+}
+
+/* ===== Tabela verdade ===== */
+.logic-tt {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+.logic-tt th,
+.logic-tt td {
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.logic-tt th {
+  background: var(--color-surface-2);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
+}
+
+.logic-tt td.is-one {
+  color: var(--color-cyan);
+  font-weight: var(--font-weight-bold);
+}
+
+.logic-tt td.is-zero { color: var(--color-text-muted); }
+
+.logic-tt td.is-other {
+  color: var(--color-magenta);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== Nota de universalidade ===== */
+.portas-note {
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border-left: 3px solid var(--color-magenta);
+}
+
+.portas-note__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-magenta);
+  margin-bottom: var(--space-xs);
+}
+
+.portas-note p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-loose);
+}
+
+.portas-note strong { color: var(--color-text-primary); }
+
+/* ===== Tabelas de CIs ===== */
+.portas-chips {
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.portas-chips__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.portas-chips__family {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-cyan);
+}
+
+.portas-chips__count {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+}
+
+.portas-chips__note {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+  margin: var(--space-xs) 0 var(--space-sm);
+}
+
+.portas-chip-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.portas-chip-table th,
+.portas-chip-table td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+.portas-chip-table th {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.portas-chip-table tbody tr:hover {
+  background: var(--color-cyan-soft);
+}

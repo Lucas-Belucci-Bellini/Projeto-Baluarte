@@ -23,8 +23,8 @@ function loadConfig() {
 
 const STATS = [
   { label: 'Versão', value: 'v' + VERSION, icon: '◆' },
-  { label: 'Rotas ativas', value: '33', icon: '◫' },
-  { label: 'Ferramentas', value: '39', icon: '⚙' },
+  { label: 'Rotas ativas', value: '34', icon: '◫' },
+  { label: 'Ferramentas', value: '40', icon: '⚙' },
   { label: 'Equipes catalogadas', value: '26', icon: '◆' },
   { label: 'Arcos das Crônicas', value: '24', icon: '◫' },
   { label: 'Capítulos da saga', value: '1127', icon: '⌨' }

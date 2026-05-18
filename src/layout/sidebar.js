@@ -33,6 +33,7 @@ export const NAV_GROUPS = [
       { path: '/graficos', label: 'Gráficos', icon: '◢', phase: 1 },
       { path: '/simbolos', label: 'Símbolos', icon: '❖', phase: 1 },
       { path: '/logic-sim', label: 'Logic Sim', icon: '⊻', phase: 1 },
+      { path: '/portas', label: 'Portas Lógicas', icon: '⊡', phase: 1 },
       { path: '/morse', label: 'Código Morse', icon: '⠶', phase: 1 }
     ]
   },
