@@ -53,7 +53,7 @@ const TOOLS = [
   { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 1, desc: 'Player local pra áudio/vídeo/imagens via File API. Drag-and-drop e cross-link com FFT.' },
   { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 1, desc: 'YouTube embeds em 5 playlists temáticas. Marca "assistido", busca, cross-link com Media Hub.' },
   { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 1, desc: 'Atalho para Visualizador FFT — analisa áudio do mic ou arquivo em tempo real.' },
-  { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 2, desc: 'Gera e lê QR codes (WiFi, vCard, URL, texto).' },
+  { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 1, desc: 'Gera QR Codes de texto/URL com codificador próprio (Reed-Solomon, nível L) e exporta PNG.' },
 
   /* === Referência (5) === */
   { id: 'tabela-periodica', name: 'Tabela Periódica', category: 'referencia', icon: '⚛', phase: 1, desc: '118 elementos com massa, configuração eletrônica e categoria. Filtro por categoria, grid 18×10.' },
@@ -91,6 +91,7 @@ const TOOL_ROUTES = {
   terminal: '/terminal',
   regex: '/regex',
   json: '/json-studio',
+  qrcode: '/qr-studio',
   /* Cálculo */
   'calc-cientifica': '/calc-cientifica',
   'calc-financeira': '/calculadoras',
@@ -128,7 +129,7 @@ const TOOL_ROUTES = {
   jarvis: '/jarvis',
   'ia-proprietaria': '/ia-proprietaria',
   config: '/perfil'
-  /* Sem rota dedicada (futuras): git-helper, colorpicker, qrcode */
+  /* Sem rota dedicada (futuras): git-helper, colorpicker */
 };
 
 /* ============================================================ */

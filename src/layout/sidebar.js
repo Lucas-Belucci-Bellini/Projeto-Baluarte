@@ -24,6 +24,7 @@ export const NAV_GROUPS = [
     items: [
       { path: '/editor', label: 'Editor de Código', icon: '⌨', phase: 1 },
       { path: '/json-studio', label: 'JSON Studio', icon: '⟦⟧', phase: 1 },
+      { path: '/qr-studio', label: 'QR Code Studio', icon: '▦', phase: 1 },
       { path: '/terminal', label: 'Terminal', icon: '▸', phase: 1 },
       { path: '/calculadoras', label: 'Calculadoras', icon: '∑', phase: 1 },
       { path: '/calc-cientifica', label: 'Calc. Científica', icon: 'π', phase: 1 },
