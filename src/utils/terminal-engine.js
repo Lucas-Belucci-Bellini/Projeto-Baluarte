@@ -285,7 +285,7 @@ export function autocomplete(prefix, ctx) {
 /* ===== Default ctx factory ===== */
 
 export function createContext(terminal) {
-  return {
+  const ctx = {
     terminal,
     cwd: '/home/lucas',
     env: {
@@ -297,9 +297,13 @@ export function createContext(terminal) {
       LANG: 'pt_BR.UTF-8',
       TERM: 'baluarte-color'
     },
-    aliases: { ll: 'ls -la', la: 'ls -a' },
+    aliases: { ll: 'ls -la', la: 'ls -a', dir: 'ls' },
     history: loadHistory(),
-    bootedAt: Date.now(),
-    setCwd(p) { this.cwd = p; }
+    bootedAt: Date.now()
   };
+  /* setCwd fecha sobre o ctx real — os comandos recebem uma cópia rasa
+     ({ ...ctx, stdin }), então um `this.cwd = p` se perderia. A arrow
+     function garante que a mudança de diretório (cd) atinja o ctx real. */
+  ctx.setCwd = (p) => { ctx.cwd = p; };
+  return ctx;
 }
