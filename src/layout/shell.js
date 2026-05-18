@@ -71,6 +71,8 @@ function pageTitleForRoute(path) {
     '/graficos': 'Gerador de Gráficos',
     '/simbolos': 'Hub de Símbolos',
     '/logic-sim': 'Simulador de Lógica',
+    '/morse': 'Gerador de Código Morse',
+    '/memes': 'Arquivo de Memes 2016',
     '/biblioteca': 'Biblioteca',
     '/academia': 'Academia',
     '/universo': 'Universo',

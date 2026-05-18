@@ -32,7 +32,8 @@ export const NAV_GROUPS = [
       { path: '/regex', label: 'Lab de Regex', icon: '✱', phase: 1 },
       { path: '/graficos', label: 'Gráficos', icon: '◢', phase: 1 },
       { path: '/simbolos', label: 'Símbolos', icon: '❖', phase: 1 },
-      { path: '/logic-sim', label: 'Logic Sim', icon: '⊻', phase: 1 }
+      { path: '/logic-sim', label: 'Logic Sim', icon: '⊻', phase: 1 },
+      { path: '/morse', label: 'Código Morse', icon: '⠶', phase: 1 }
     ]
   },
   {
@@ -51,7 +52,8 @@ export const NAV_GROUPS = [
     items: [
       { path: '/fft', label: 'Visualizador FFT', icon: '∿', phase: 1 },
       { path: '/media', label: 'Media Hub', icon: '▦', phase: 1 },
-      { path: '/videos', label: 'Central de Vídeos', icon: '▶', phase: 1 }
+      { path: '/videos', label: 'Central de Vídeos', icon: '▶', phase: 1 },
+      { path: '/memes', label: 'Arquivo de Memes', icon: '◫', phase: 1 }
     ]
   },
   {
