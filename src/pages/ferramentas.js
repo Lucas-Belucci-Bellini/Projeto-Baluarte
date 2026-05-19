@@ -55,7 +55,7 @@ const TOOLS = [
   { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 1, desc: 'Player local pra áudio/vídeo/imagens via File API. Drag-and-drop e cross-link com FFT.' },
   { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 1, desc: 'YouTube embeds em 5 playlists temáticas. Marca "assistido", busca, cross-link com Media Hub.' },
   { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 1, desc: 'Atalho para Visualizador FFT — analisa áudio do mic ou arquivo em tempo real.' },
-  { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 1, desc: 'Gera QR Codes de texto/URL com codificador próprio (Reed-Solomon, nível L) e exporta PNG.' },
+  { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 1, tag: 'novo', desc: 'Gera QR Codes de texto, Wi-Fi, vCard e e-mail com codificador próprio (Reed-Solomon) e lê QR Codes pela câmera.' },
   { id: 'radio', name: 'Rádio', category: 'midia', icon: '∿', phase: 1, tag: 'novo', desc: 'Receptor de rádio com dois modos: sintetizador via Web Audio (100% offline) e Online com estações reais da internet pela Radio Browser API.' },
   { id: 'musicas', name: 'Central de Música', category: 'midia', icon: '♫', phase: 1, tag: 'novo', desc: 'Faixa em destaque em loop infinito e playlist temática, via embeds do Spotify.' },
   { id: 'filmes', name: 'Cinema', category: 'midia', icon: '▣', phase: 1, tag: 'novo', desc: 'Cinema do Baluarte — catálogo de filmes do acervo; cada título abre num player modal integrado.' },
