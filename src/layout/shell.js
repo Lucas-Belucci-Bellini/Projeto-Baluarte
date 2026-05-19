@@ -73,6 +73,7 @@ function pageTitleForRoute(path) {
     '/regex': 'Lab de Regex',
     '/graficos': 'Gerador de Gráficos',
     '/simbolos': 'Hub de Símbolos',
+    '/color-studio': 'Color Studio',
     '/logic-sim': 'Simulador de Lógica',
     '/portas': 'Enciclopédia de Lógica Digital',
     '/morse': 'Gerador de Código Morse',

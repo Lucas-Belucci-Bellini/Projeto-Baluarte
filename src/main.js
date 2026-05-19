@@ -25,6 +25,7 @@ import { tabelaVerdadePage } from './pages/tabela-verdade.js';
 import { criptoPage } from './pages/cripto/index.js';
 import { graficosPage } from './pages/graficos.js';
 import { simbolosPage } from './pages/simbolos.js';
+import { colorStudioPage } from './pages/color-studio.js';
 import { regexPage } from './pages/regex.js';
 import { arsenalPage } from './pages/arsenal.js';
 import { bibliotecaPage } from './pages/biblioteca.js';
@@ -75,6 +76,7 @@ router.register('/tabela-verdade', () => tabelaVerdadePage());
 router.register('/cripto', () => criptoPage());
 router.register('/graficos', () => graficosPage());
 router.register('/simbolos', () => simbolosPage());
+router.register('/color-studio', () => colorStudioPage());
 router.register('/regex', () => regexPage());
 router.register('/arsenal', () => arsenalPage());
 router.register('/biblioteca', () => bibliotecaPage());
@@ -105,7 +107,7 @@ router.register('/ia-proprietaria', () => iaProprietariaPage());
 router.register('/sobre', () => sobrePage());
 
 /* ==============================================================
- *  Mark XIII — 41 rotas, todas implementadas. Sem placeholders.
+ *  Mark XIII — 42 rotas, todas implementadas. Sem placeholders.
  * ============================================================== */
 router.setNotFound((path) => notFoundPage(path));
 
@@ -147,7 +149,7 @@ function boot() {
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    '%c41 rotas ativas · JS puro + Vite 5',
+    '%c42 rotas ativas · JS puro + Vite 5',
     'color: #93a4bf; font-family: monospace;'
   );
 }
