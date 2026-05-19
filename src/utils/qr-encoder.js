@@ -1,9 +1,10 @@
 /**
  * Codificador de QR Code — implementação própria, sem dependências.
  *
- * Escopo: modo byte (UTF-8), nível de correção de erro L, versões 1–4,
- * bloco único, máscara fixa 0. Capacidade máxima ~78 bytes — cobre
- * URLs e textos curtos. `encodeQR(text)` devolve { version, size,
+ * Escopo: modo byte (UTF-8), nível de correção de erro L, versões 1–6
+ * com interleaving multi-bloco (a v6 usa 2 blocos Reed-Solomon),
+ * máscara fixa 0. Capacidade máxima ~134 bytes — cobre URLs, configs
+ * de Wi-Fi e vCards curtos. `encodeQR(text)` devolve { version, size,
  * modules } ou lança erro se o texto não couber.
  */
 
@@ -55,13 +56,25 @@ function rsEncode(data, ecLen) {
   return res;
 }
 
-/* Versões suportadas — nível L, bloco único. */
+/* Versões suportadas — nível L.
+ * blocks: lista de [quantidade, codewords de dados por bloco].
+ * ecPerBlock: codewords de correção de erro por bloco.
+ * align: coordenada do padrão de alinhamento central (0 = nenhum). */
 const VERSIONS = {
-  1: { dataCW: 19, ecCW: 7,  align: 0 },
-  2: { dataCW: 34, ecCW: 10, align: 18 },
-  3: { dataCW: 55, ecCW: 15, align: 22 },
-  4: { dataCW: 80, ecCW: 20, align: 26 }
+  1: { blocks: [[1, 19]],  ecPerBlock: 7,  align: 0 },
+  2: { blocks: [[1, 34]],  ecPerBlock: 10, align: 18 },
+  3: { blocks: [[1, 55]],  ecPerBlock: 15, align: 22 },
+  4: { blocks: [[1, 80]],  ecPerBlock: 20, align: 26 },
+  5: { blocks: [[1, 108]], ecPerBlock: 26, align: 30 },
+  6: { blocks: [[2, 68]],  ecPerBlock: 18, align: 34 }
 };
+
+const MAX_VERSION = 6;
+
+/* Total de codewords de dados de uma versão. */
+function dataCapacity(info) {
+  return info.blocks.reduce((sum, [count, cw]) => sum + count * cw, 0);
+}
 
 /* Info de formato (15 bits): BCH(15,5) + máscara XOR. */
 function formatBits(ecLevelBits, mask) {
@@ -79,14 +92,15 @@ export function encodeQR(text) {
 
   /* Escolhe a menor versão que comporta os dados. */
   let version = 0;
-  for (let v = 1; v <= 4; v++) {
-    if (bytes.length <= VERSIONS[v].dataCW - 2) { version = v; break; }
+  for (let v = 1; v <= MAX_VERSION; v++) {
+    if (bytes.length <= dataCapacity(VERSIONS[v]) - 2) { version = v; break; }
   }
   if (version === 0) {
-    throw new Error('Texto longo demais — máximo de 78 bytes (QR nível L, versões 1–4).');
+    throw new Error('Texto longo demais — máximo ~134 bytes (QR nível L, versões 1–6).');
   }
   const info = VERSIONS[version];
   const size = 17 + 4 * version;
+  const totalData = dataCapacity(info);
 
   /* ===== Fluxo de bits ===== */
   const bits = [];
@@ -97,7 +111,7 @@ export function encodeQR(text) {
   pushBits(bytes.length, 8);     /* contagem de caracteres (v1–9) */
   for (const b of bytes) pushBits(b, 8);
 
-  const capacityBits = info.dataCW * 8;
+  const capacityBits = totalData * 8;
   for (let i = 0; i < 4 && bits.length < capacityBits; i++) bits.push(0);
   while (bits.length % 8 !== 0) bits.push(0);
 
@@ -110,14 +124,39 @@ export function encodeQR(text) {
   }
   const pad = [0xec, 0x11];
   let pi = 0;
-  while (dataCW.length < info.dataCW) { dataCW.push(pad[pi++ % 2]); }
+  while (dataCW.length < totalData) { dataCW.push(pad[pi++ % 2]); }
 
-  /* ===== Correção de erro ===== */
-  const ecCW = rsEncode(dataCW, info.ecCW);
-  const allCW = dataCW.concat(ecCW);
+  /* ===== Blocos + correção de erro (Reed-Solomon por bloco) ===== */
+  const dataBlocks = [];
+  const ecBlocks = [];
+  let offset = 0;
+  for (const [count, cw] of info.blocks) {
+    for (let b = 0; b < count; b++) {
+      const block = dataCW.slice(offset, offset + cw);
+      offset += cw;
+      dataBlocks.push(block);
+      ecBlocks.push(rsEncode(block, info.ecPerBlock));
+    }
+  }
+
+  /* Interleaving: codewords de dados e depois os de correção,
+   * intercalados coluna a coluna entre os blocos. */
+  const finalCW = [];
+  const maxData = Math.max(...dataBlocks.map((b) => b.length));
+  for (let i = 0; i < maxData; i++) {
+    for (const block of dataBlocks) {
+      if (i < block.length) finalCW.push(block[i]);
+    }
+  }
+  const maxEc = Math.max(...ecBlocks.map((b) => b.length));
+  for (let i = 0; i < maxEc; i++) {
+    for (const block of ecBlocks) {
+      if (i < block.length) finalCW.push(block[i]);
+    }
+  }
 
   const finalBits = [];
-  for (const cw of allCW) {
+  for (const cw of finalCW) {
     for (let i = 7; i >= 0; i--) finalBits.push((cw >> i) & 1);
   }
 
@@ -156,7 +195,7 @@ export function encodeQR(text) {
   /* Módulo escuro fixo */
   setFn(size - 8, 8, 1);
 
-  /* Padrão de alinhamento (versões 2–4: um, no centro) */
+  /* Padrão de alinhamento (versões 2–6: um, no centro) */
   if (info.align) {
     const a = info.align;
     for (let dr = -2; dr <= 2; dr++) {

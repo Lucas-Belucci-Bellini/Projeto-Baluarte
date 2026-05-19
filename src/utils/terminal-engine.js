@@ -54,34 +54,6 @@ function expandVars(token, env) {
   });
 }
 
-/** Divide tokens por operadores: |, >, >>, &&. */
-function splitByOperator(tokens) {
-  /* Retorna { stages: [tokens, tokens...], outputs: [{type, file}], chains: [&&] } */
-  const stages = [];
-  let cur = [];
-  let outputs = [null]; /* uma entrada por stage */
-  let chainBreak = false;
-  let chains = [];
-
-  for (let i = 0; i < tokens.length; i++) {
-    const t = tokens[i];
-    if (t === '|') {
-      stages.push(cur); cur = []; outputs.push(null);
-    } else if (t === '>' || t === '>>') {
-      const file = tokens[++i];
-      if (!file) throw new Error(`${t}: missing file operand`);
-      outputs[outputs.length - 1] = { type: t, file };
-    } else if (t === '&&') {
-      stages.push(cur); cur = [];
-      chains.push('&&');
-    } else {
-      cur.push(t);
-    }
-  }
-  if (cur.length) stages.push(cur);
-  return { stages, outputs, chains };
-}
-
 /* ===== Execução ===== */
 
 /**
@@ -98,15 +70,17 @@ export async function execute(line, ctx) {
   /* Adiciona ao history */
   pushHistory(ctx, trimmed);
 
-  /* Suporte a múltiplos comandos por ; */
+  /* Suporte a múltiplos comandos por ; — cada saída fica numa linha. */
   const parts = trimmed.split(/;(?=(?:[^"']|"[^"]*"|'[^']*')*$)/);
-  let final = { stdout: '', stderr: '', exit: 0 };
+  const outs = [];
+  const final = { stdout: '', stderr: '', exit: 0 };
   for (const part of parts) {
     const r = await runOne(part.trim(), ctx);
-    final.stdout += r.stdout;
+    if (r.stdout) outs.push(r.stdout);
     final.stderr += r.stderr;
     final.exit = r.exit;
   }
+  final.stdout = outs.join('\n');
   return final;
 }
 
@@ -297,7 +271,14 @@ export function createContext(terminal) {
       LANG: 'pt_BR.UTF-8',
       TERM: 'baluarte-color'
     },
-    aliases: { ll: 'ls -la', la: 'ls -a', dir: 'ls' },
+    aliases: {
+      /* atalhos POSIX usuais */
+      ll: 'ls -la', la: 'ls -a',
+      /* estilo PowerShell — cmdlets mapeados para os comandos POSIX */
+      dir: 'ls', gci: 'ls', gc: 'cat', sl: 'cd', gl: 'pwd', chdir: 'cd',
+      copy: 'cp', move: 'mv', del: 'rm', erase: 'rm', ren: 'mv',
+      sls: 'grep', gps: 'ps', write: 'echo'
+    },
     history: loadHistory(),
     bootedAt: Date.now()
   };

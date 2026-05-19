@@ -331,9 +331,8 @@ export const COMMANDS = {
   echo: {
     desc: 'imprime texto',
     run: (args) => {
-      const noNl = args[0] === '-n';
-      if (noNl) args = args.slice(1);
-      return args.join(' ') + (noNl ? '' : '');
+      if (args[0] === '-n') args = args.slice(1);
+      return args.join(' ');
     }
   },
 
@@ -352,7 +351,7 @@ export const COMMANDS = {
     run: (args, ctx) => {
       let n = 10;
       const idxN = args.indexOf('-n');
-      if (idxN >= 0) { n = parseInt(args[idxN + 1], 10) || 10; args = args.filter((_, i) => i !== idxN && i !== idxN + 1); }
+      if (idxN >= 0) { const p = parseInt(args[idxN + 1], 10); n = Number.isNaN(p) ? 10 : p; args = args.filter((_, i) => i !== idxN && i !== idxN + 1); }
       const text = args.length ? args.map((p) => {
         try { return vfs.readFile(p, ctx.cwd); } catch (e) { return ''; }
       }).join('') : asStdin(ctx.stdin);
@@ -365,7 +364,7 @@ export const COMMANDS = {
     run: (args, ctx) => {
       let n = 10;
       const idxN = args.indexOf('-n');
-      if (idxN >= 0) { n = parseInt(args[idxN + 1], 10) || 10; args = args.filter((_, i) => i !== idxN && i !== idxN + 1); }
+      if (idxN >= 0) { const p = parseInt(args[idxN + 1], 10); n = Number.isNaN(p) ? 10 : p; args = args.filter((_, i) => i !== idxN && i !== idxN + 1); }
       const text = args.length ? args.map((p) => {
         try { return vfs.readFile(p, ctx.cwd); } catch { return ''; }
       }).join('') : asStdin(ctx.stdin);

@@ -278,7 +278,8 @@ function renderEditorArea() {
       { className: 'editor-area__main' },
       highlightEl,
       editorEl
-    )
+    ),
+    buildFindPanel()
   );
 }
 
@@ -461,6 +462,230 @@ function handleEditorKeydown(e) {
 }
 
 /* ============================================================
+ *  Find & Replace — painel de busca/substituição
+ * ============================================================ */
+
+const findState = {
+  open: false,
+  mode: 'find',          /* 'find' | 'replace' */
+  query: '',
+  replace: '',
+  caseSensitive: false,
+  matches: [],           /* posições de início de cada ocorrência */
+  current: -1
+};
+
+let findPanelEl = null;
+let findInputEl = null;
+let findReplaceInputEl = null;
+let findReplaceRowEl = null;
+let findCountEl = null;
+
+/* Recalcula as ocorrências de findState.query no conteúdo do editor. */
+function computeMatches() {
+  const text = editorEl ? editorEl.value : '';
+  const q = findState.query;
+  findState.matches = [];
+  if (q) {
+    const hay = findState.caseSensitive ? text : text.toLowerCase();
+    const needle = findState.caseSensitive ? q : q.toLowerCase();
+    let i = hay.indexOf(needle);
+    while (i !== -1) {
+      findState.matches.push(i);
+      i = hay.indexOf(needle, i + needle.length);
+    }
+  }
+  if (!findState.matches.length) findState.current = -1;
+  else if (findState.current < 0 || findState.current >= findState.matches.length) {
+    findState.current = 0;
+  }
+  updateFindCount();
+}
+
+function updateFindCount() {
+  if (!findCountEl) return;
+  const n = findState.matches.length;
+  if (!findState.query) findCountEl.textContent = '';
+  else if (n === 0) findCountEl.textContent = 'nada';
+  else findCountEl.textContent = `${findState.current + 1} / ${n}`;
+}
+
+/* Seleciona a ocorrência atual no textarea e rola até ela. */
+function revealMatch() {
+  if (findState.current < 0 || !editorEl) return;
+  const pos = findState.matches[findState.current];
+  editorEl.setSelectionRange(pos, pos + findState.query.length);
+  const line = editorEl.value.slice(0, pos).split('\n').length - 1;
+  const lh = parseFloat(getComputedStyle(editorEl).lineHeight) || 21;
+  const target = line * lh;
+  const view = editorEl.clientHeight;
+  if (target < editorEl.scrollTop || target > editorEl.scrollTop + view - lh * 2) {
+    editorEl.scrollTop = Math.max(0, target - view / 2);
+  }
+}
+
+function stepMatch(dir) {
+  if (!findState.matches.length) return;
+  const n = findState.matches.length;
+  findState.current = (findState.current + dir + n) % n;
+  revealMatch();
+  updateFindCount();
+}
+
+/* Aplica novo conteúdo ao textarea disparando o fluxo de input normal. */
+function applyEditorValue(next) {
+  editorEl.value = next;
+  editorEl.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function replaceCurrentMatch() {
+  if (findState.current < 0 || !findState.matches.length) return;
+  const pos = findState.matches[findState.current];
+  const idx = findState.current;
+  applyEditorValue(
+    editorEl.value.slice(0, pos) +
+    findState.replace +
+    editorEl.value.slice(pos + findState.query.length)
+  );
+  computeMatches();
+  if (findState.matches.length) {
+    findState.current = idx % findState.matches.length;
+    revealMatch();
+    updateFindCount();
+  }
+}
+
+function replaceAllMatches() {
+  if (!findState.matches.length) return;
+  const text = editorEl.value;
+  const q = findState.query;
+  let out;
+  if (findState.caseSensitive) {
+    out = text.split(q).join(findState.replace);
+  } else {
+    const hay = text.toLowerCase();
+    const needle = q.toLowerCase();
+    out = '';
+    let i = 0;
+    let idx;
+    while ((idx = hay.indexOf(needle, i)) !== -1) {
+      out += text.slice(i, idx) + findState.replace;
+      i = idx + needle.length;
+    }
+    out += text.slice(i);
+  }
+  const count = findState.matches.length;
+  applyEditorValue(out);
+  computeMatches();
+  toast(`${count} ocorrência(s) substituída(s)`, { type: 'success', duration: 1800 });
+}
+
+function openFind(mode) {
+  findState.open = true;
+  findState.mode = mode;
+  if (!findPanelEl) return;
+  findPanelEl.classList.add('is-open');
+  findReplaceRowEl.style.display = mode === 'replace' ? '' : 'none';
+  /* pré-preenche a busca com a seleção atual (se for de uma linha) */
+  if (editorEl) {
+    const sel = editorEl.value.slice(editorEl.selectionStart, editorEl.selectionEnd);
+    if (sel && !sel.includes('\n')) findState.query = sel;
+  }
+  findInputEl.value = findState.query;
+  findReplaceInputEl.value = findState.replace;
+  computeMatches();
+  revealMatch();
+  findInputEl.focus();
+  findInputEl.select();
+}
+
+function closeFind() {
+  findState.open = false;
+  if (findPanelEl) findPanelEl.classList.remove('is-open');
+  if (editorEl) editorEl.focus();
+}
+
+function buildFindPanel() {
+  findInputEl = h('input', {
+    className: 'editor-find__input u-mono',
+    type: 'text',
+    spellcheck: 'false',
+    placeholder: 'Localizar',
+    oninput: () => {
+      findState.query = findInputEl.value;
+      computeMatches();
+      revealMatch();
+    },
+    onkeydown: (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); stepMatch(e.shiftKey ? -1 : 1); }
+      else if (e.key === 'Escape') { e.preventDefault(); closeFind(); }
+    }
+  });
+
+  findReplaceInputEl = h('input', {
+    className: 'editor-find__input u-mono',
+    type: 'text',
+    spellcheck: 'false',
+    placeholder: 'Substituir por',
+    oninput: () => { findState.replace = findReplaceInputEl.value; },
+    onkeydown: (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); replaceCurrentMatch(); }
+      else if (e.key === 'Escape') { e.preventDefault(); closeFind(); }
+    }
+  });
+
+  findCountEl = h('span', { className: 'editor-find__count u-mono' }, '');
+
+  const caseBtn = h('button', {
+    className: 'editor-find__toggle',
+    title: 'Diferenciar maiúsculas de minúsculas',
+    onclick: () => {
+      findState.caseSensitive = !findState.caseSensitive;
+      caseBtn.classList.toggle('is-on', findState.caseSensitive);
+      computeMatches();
+      revealMatch();
+    }
+  }, 'Aa');
+
+  findReplaceRowEl = h('div', { className: 'editor-find__row' },
+    findReplaceInputEl,
+    h('button', { className: 'editor-find__btn editor-find__btn--text',
+      title: 'Substituir a ocorrência atual (Enter)', onclick: replaceCurrentMatch }, 'Subst.'),
+    h('button', { className: 'editor-find__btn editor-find__btn--text',
+      title: 'Substituir todas', onclick: replaceAllMatches }, 'Tudo')
+  );
+
+  findPanelEl = h('div', { className: 'editor-find' },
+    h('div', { className: 'editor-find__row' },
+      findInputEl,
+      caseBtn,
+      findCountEl,
+      h('button', { className: 'editor-find__btn',
+        title: 'Anterior (Shift+Enter)', onclick: () => stepMatch(-1) }, '↑'),
+      h('button', { className: 'editor-find__btn',
+        title: 'Próximo (Enter)', onclick: () => stepMatch(1) }, '↓'),
+      h('button', { className: 'editor-find__btn',
+        title: 'Fechar (Esc)', onclick: closeFind }, '×')
+    ),
+    findReplaceRowEl
+  );
+
+  /* Restaura o painel se ele estava aberto antes de um render(). */
+  if (findState.open) {
+    findPanelEl.classList.add('is-open');
+    findInputEl.value = findState.query;
+    findReplaceInputEl.value = findState.replace;
+    caseBtn.classList.toggle('is-on', findState.caseSensitive);
+    findReplaceRowEl.style.display = findState.mode === 'replace' ? '' : 'none';
+    computeMatches();
+  } else {
+    findReplaceRowEl.style.display = 'none';
+  }
+
+  return findPanelEl;
+}
+
+/* ============================================================
  *  Render: Preview / Output
  * ============================================================ */
 
@@ -588,6 +813,14 @@ function attachKeyboard() {
       closeTab(state, active.id);
       persist();
       render();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+      e.preventDefault();
+      openFind('find');
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') {
+      e.preventDefault();
+      openFind('replace');
+    } else if (e.key === 'Escape' && findState.open) {
+      closeFind();
     }
   };
   window.addEventListener('keydown', kbHandler);
@@ -612,6 +845,11 @@ function render() {
 
 export function editorPage() {
   state = loadState();
+
+  /* Find & Replace começa fechado a cada visita à página. */
+  findState.open = false;
+  findState.matches = [];
+  findState.current = -1;
 
   const fullPage = h('div', { className: 'page-editor' });
 
@@ -651,7 +889,11 @@ export function editorPage() {
         h('kbd', null, 'Ctrl+T'),
         ' nova tab · ',
         h('kbd', null, 'Ctrl+W'),
-        ' fechar. VFS compartilhado com o Terminal.'
+        ' fechar · ',
+        h('kbd', null, 'Ctrl+F'),
+        ' localizar · ',
+        h('kbd', null, 'Ctrl+H'),
+        ' substituir. VFS compartilhado com o Terminal.'
       )
     )
   );
