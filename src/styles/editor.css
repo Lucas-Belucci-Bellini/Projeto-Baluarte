@@ -219,6 +219,82 @@
   white-space: pre;
 }
 
+/* ===== Find & Replace ===== */
+.editor-find {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  padding: var(--space-xs);
+  background: var(--color-surface);
+  border: var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+}
+.editor-find.is-open { display: flex; }
+
+.editor-find__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.editor-find__input {
+  width: 180px;
+  padding: 4px 8px;
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-xs);
+  color: var(--color-text-primary);
+  font-size: 12px;
+}
+.editor-find__input:focus {
+  outline: none;
+  border-color: var(--color-cyan);
+}
+
+.editor-find__count {
+  min-width: 52px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.editor-find__btn,
+.editor-find__toggle {
+  height: 24px;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: var(--border-thin);
+  border-radius: var(--radius-xs);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.editor-find__btn:hover,
+.editor-find__toggle:hover {
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+.editor-find__btn--text {
+  padding: 0 8px;
+  font-size: 11px;
+}
+.editor-find__toggle.is-on {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
 /* ===== Tokens ===== */
 .tk { font: inherit; }
 .tk--keyword { color: var(--color-magenta); font-weight: 600; }
