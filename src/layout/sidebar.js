@@ -56,6 +56,7 @@ export const NAV_GROUPS = [
     items: [
       { path: '/fft', label: 'Visualizador FFT', icon: '∿', phase: 1 },
       { path: '/radio', label: 'Rádio', icon: '◉', phase: 1 },
+      { path: '/musicas', label: 'Música', icon: '♪', phase: 1 },
       { path: '/media', label: 'Media Hub', icon: '▦', phase: 1 },
       { path: '/videos', label: 'Central de Vídeos', icon: '▶', phase: 1 },
       { path: '/memes', label: 'Arquivo de Memes', icon: '◫', phase: 1 },

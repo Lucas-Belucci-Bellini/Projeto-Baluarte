@@ -1,0 +1,31 @@
+/* ============================================================
+ * Música — Central de Música (v2.0.0)
+ * ============================================================ */
+
+.musica-host {
+  background: var(--color-surface);
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  overflow: hidden;
+}
+
+.musica-embed {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+
+.musica-host iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+
+.musica-nota {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-loose);
+  margin: var(--space-sm) 0 var(--space-md);
+}

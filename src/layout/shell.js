@@ -86,6 +86,7 @@ function pageTitleForRoute(path) {
     '/guia-pc': 'Guia para Montar PC',
     '/fft': 'Visualizador FFT',
     '/radio': 'Rádio de Frequências',
+    '/musicas': 'Central de Música',
     '/media': 'Media Hub',
     '/videos': 'Central de Vídeos',
     '/elites': 'Elites',
