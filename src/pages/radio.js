@@ -1,21 +1,28 @@
 /**
- * Página /radio — Rádio de Frequências (v2.0.0).
+ * Página /radio — Rádio (v2.1.0).
  *
- * Um receptor de rádio sintetizado via Web Audio: o dial percorre toda
- * a banda, gera estática entre as estações e "trava" o sinal quando
- * você sintoniza uma frequência de estação. 100% offline.
+ * Dois modos selecionáveis:
+ *  • Sintetizador — receptor de rádio sintetizado via Web Audio. O dial
+ *    percorre a banda, gera estática entre as estações e trava o sinal
+ *    ao sintonizar uma frequência conhecida. 100% offline.
+ *  • Online — estações de rádio REAIS da internet, buscadas na Radio
+ *    Browser API e tocadas num elemento <audio>. Requer conexão.
+ *
+ * Rádio RF de verdade (ondas no ar) é impossível num navegador — o modo
+ * Online toca streams de internet.
  */
 
-import { h, cx } from '../utils/helpers.js';
+import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { searchStations, COUNTRY_OPTIONS, GENRE_OPTIONS } from '../utils/radio-api.js';
 
 const STORAGE_KEY = 'radio:state';
 const BAND_MIN = 87.5;
 const BAND_MAX = 108.0;
 const LOCK_RANGE = 0.35; /* MHz de tolerância para travar a estação */
 
-/* Estações fixas — cada uma emite um sinal sintetizado distinto. */
+/* Estações fixas do sintetizador — cada uma emite um sinal sintetizado distinto. */
 const STATIONS = [
   { freq: 89.1,  nome: 'Núcleo FM',        tipo: 'tom',   tom: 220, wave: 'sine',     desc: 'Portadora grave do Núcleo Infinity.' },
   { freq: 92.4,  nome: 'Rádio Alfa',       tipo: 'acorde', tom: 330, wave: 'triangle', desc: 'Acorde de três tons da equipe ALFA.' },
@@ -29,23 +36,24 @@ const STATIONS = [
 const MORSE = { B: '-...', A: '.-', L: '.-..', U: '..-', R: '.-.', T: '-', E: '.' };
 const MORSE_WORD = 'BALUARTE';
 
-let audio = null; /* { ctx, noise, noiseGain, osc, sigGain, master, lfo, lfoGain } */
 let routeWatcher = null;
+let current = null; /* { el, stop } da view ativa */
 
-function teardown() {
-  if (audio) {
-    try { audio.ctx.close(); } catch {}
-    audio = null;
+/* Estado persistido, normalizado. */
+function loadState() {
+  const state = storage.get(STORAGE_KEY) || {};
+  if (typeof state.freq !== 'number') state.freq = 95.7;
+  if (typeof state.volume !== 'number') state.volume = 0.6;
+  if (typeof state.onlineVolume !== 'number') state.onlineVolume = 0.7;
+  if (state.mode !== 'online' && state.mode !== 'synth') state.mode = 'synth';
+  if (!state.query || typeof state.query !== 'object') {
+    state.query = { name: '', country: 'BR', tag: '' };
   }
+  return state;
 }
 
 export function radioPage() {
-  const state = storage.get(STORAGE_KEY) || { freq: 95.7, volume: 0.6 };
-  if (typeof state.freq !== 'number') state.freq = 95.7;
-  if (typeof state.volume !== 'number') state.volume = 0.6;
-
-  let power = false;
-  let morseTimer = null;
+  const state = loadState();
 
   const fullPage = h('div', { className: 'page-radio' });
 
@@ -55,14 +63,74 @@ export function radioPage() {
         h('span', null, 'BALUARTE'), h('span', null, '›'),
         h('span', null, 'MÍDIA'), h('span', null, '›'),
         h('span', null, 'RÁDIO')),
-      h('h1', { className: 'page-header__title' }, '◉))) Rádio de Frequências'),
+      h('h1', { className: 'page-header__title' }, '◉))) Rádio'),
       h('p', { className: 'page-header__description' },
-        'Receptor sintetizado via Web Audio. Gire o dial pela banda ',
-        h('span', { className: 'u-text-cyan' }, `${BAND_MIN}–${BAND_MAX} MHz`),
-        ': entre as estações há estática; ao sintonizar uma frequência ',
-        'de estação o sinal trava. Totalmente offline.')
+        'Dois modos: ',
+        h('span', { className: 'u-text-cyan' }, 'Sintetizador'),
+        ' — um receptor sintetizado via Web Audio, totalmente offline — e ',
+        h('span', { className: 'u-text-cyan' }, 'Online'),
+        ' — estações de rádio reais da internet via Radio Browser API. ',
+        'Rádio RF de verdade não funciona no navegador; o modo Online toca streams.')
     )
   );
+
+  /* ===== Alternador de modo ===== */
+  const modeBtns = {};
+  const modeBar = h('div', { className: 'radio-mode' });
+  [
+    { id: 'synth', label: '◉ Sintetizador' },
+    { id: 'online', label: '◈ Online' }
+  ].forEach((m) => {
+    const btn = h('button', {
+      className: 'radio-mode__btn',
+      onclick: () => setMode(m.id)
+    }, m.label);
+    modeBtns[m.id] = btn;
+    modeBar.appendChild(btn);
+  });
+  fullPage.appendChild(modeBar);
+
+  const contentEl = h('div', { className: 'radio-content' });
+  fullPage.appendChild(contentEl);
+
+  function setMode(mode) {
+    if (current) current.stop();
+    state.mode = mode;
+    storage.set(STORAGE_KEY, state);
+    Object.entries(modeBtns).forEach(([id, btn]) =>
+      btn.classList.toggle('is-active', id === mode));
+    current = mode === 'online' ? buildOnlineView(state) : buildSynthView(state);
+    empty(contentEl);
+    contentEl.appendChild(current.el);
+  }
+
+  /* Encerra o áudio ao sair da rota /radio */
+  if (routeWatcher) window.removeEventListener('hashchange', routeWatcher);
+  routeWatcher = () => {
+    if (!location.hash.startsWith('#/radio')) {
+      if (current) current.stop();
+      current = null;
+      window.removeEventListener('hashchange', routeWatcher);
+      routeWatcher = null;
+    }
+  };
+  window.addEventListener('hashchange', routeWatcher);
+
+  setMode(state.mode);
+  return fullPage;
+}
+
+/* ============================================================
+ * Modo Sintetizador — receptor sintetizado via Web Audio
+ * ============================================================ */
+
+function buildSynthView(state) {
+  let power = false;
+  let morseTimer = null;
+  let raf = 0;
+  let audio = null; /* { ctx, noise, noiseGain, osc, sigGain, master } */
+
+  const view = h('div', { className: 'radio-synth' });
 
   /* ===== Visor ===== */
   const freqDisplay = h('div', { className: 'radio-display__freq u-mono' }, state.freq.toFixed(1));
@@ -194,7 +262,6 @@ export function radioPage() {
   }
 
   /* loop leve só para o efeito de sweep contínuo */
-  let raf = 0;
   function loop() {
     if (power && audio) {
       const { station } = nearest(state.freq);
@@ -254,7 +321,7 @@ export function radioPage() {
   });
 
   /* ===== Layout ===== */
-  fullPage.appendChild(
+  view.appendChild(
     h('div', { className: 'radio-set card' },
       h('div', { className: 'radio-display' },
         h('div', null,
@@ -277,7 +344,7 @@ export function radioPage() {
   );
 
   /* Estações — clique sintoniza */
-  fullPage.appendChild(
+  view.appendChild(
     h('div', { className: 'section-header' },
       h('h2', { className: 'section-header__title' }, 'Estações Conhecidas'))
   );
@@ -302,22 +369,253 @@ export function radioPage() {
       )
     );
   });
-  fullPage.appendChild(list);
+  view.appendChild(list);
 
-  /* Fecha o áudio ao sair da rota */
-  if (routeWatcher) window.removeEventListener('hashchange', routeWatcher);
-  routeWatcher = () => {
-    if (!location.hash.startsWith('#/radio')) {
+  tune();
+
+  return {
+    el: view,
+    stop() {
       clearMorse();
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
-      teardown();
-      window.removeEventListener('hashchange', routeWatcher);
-      routeWatcher = null;
+      if (audio) {
+        try { audio.ctx.close(); } catch {}
+        audio = null;
+      }
     }
   };
-  window.addEventListener('hashchange', routeWatcher);
+}
 
-  tune();
-  return fullPage;
+/* ============================================================
+ * Modo Online — estações reais via Radio Browser API
+ * ============================================================ */
+
+function buildOnlineView(state) {
+  const view = h('div', { className: 'radio-online' });
+
+  const audioEl = new Audio();
+  audioEl.preload = 'none';
+  audioEl.volume = state.onlineVolume;
+
+  let currentStation = null;
+  const resultCards = new Map(); /* uuid -> elemento do card */
+
+  /* ===== Painel "tocando agora" ===== */
+  const npIcon = h('span', { className: 'radio-np__icon' }, '◉');
+  const npName = h('div', { className: 'radio-np__name' }, 'Nenhuma estação');
+  const npMeta = h('div', { className: 'radio-np__meta u-mono' },
+    'Busque e escolha uma estação abaixo');
+  const stopBtn = h('button', { className: 'btn btn--sm', disabled: true }, '■ Parar');
+
+  const volValue = h('span', { className: 'u-mono u-text-cyan radio-vol__val' },
+    `${Math.round(state.onlineVolume * 100)}%`);
+  const volSlider = h('input', {
+    type: 'range', min: '0', max: '1', step: '0.05', value: String(state.onlineVolume),
+    oninput: (e) => {
+      state.onlineVolume = parseFloat(e.target.value);
+      audioEl.volume = state.onlineVolume;
+      volValue.textContent = `${Math.round(state.onlineVolume * 100)}%`;
+      storage.set(STORAGE_KEY, state);
+    }
+  });
+
+  const nowPlaying = h('div', { className: 'radio-np card', dataset: { state: 'idle' } },
+    npIcon,
+    h('div', { className: 'radio-np__body' }, npName, npMeta),
+    h('div', { className: 'radio-np__controls' },
+      stopBtn,
+      h('label', { className: 'radio-vol' },
+        h('span', null, 'Vol'), volSlider, volValue))
+  );
+  view.appendChild(nowPlaying);
+
+  /* Atualiza o painel: idle | loading | playing | error. */
+  function setNowPlaying(phase, station, message) {
+    nowPlaying.dataset.state = phase;
+    const icons = { idle: '◉', loading: '◌', playing: '▶', error: '⚠' };
+    npIcon.textContent = icons[phase] || '◉';
+    if (station) {
+      npName.textContent = station.name;
+      const bits = [
+        station.country,
+        station.codec,
+        station.bitrate ? `${station.bitrate} kbps` : ''
+      ].filter(Boolean);
+      npMeta.textContent = message || bits.join(' · ') || '—';
+    } else {
+      npName.textContent = 'Nenhuma estação';
+      npMeta.textContent = message || 'Busque e escolha uma estação abaixo';
+    }
+    stopBtn.disabled = phase === 'idle';
+  }
+
+  function highlight(uuid) {
+    resultCards.forEach((card, id) => card.classList.toggle('is-playing', id === uuid));
+  }
+
+  function stopPlayback() {
+    currentStation = null;
+    audioEl.pause();
+    audioEl.removeAttribute('src');
+    audioEl.load();
+    highlight(null);
+    setNowPlaying('idle', null);
+  }
+  stopBtn.onclick = stopPlayback;
+
+  function playStation(station) {
+    /* Site servido por HTTPS não toca stream HTTP (mixed content). */
+    if (location.protocol === 'https:' && station.url.startsWith('http:')) {
+      currentStation = station;
+      highlight(station.uuid);
+      setNowPlaying('error', station, 'Stream HTTP bloqueado pelo navegador (site em HTTPS)');
+      toast('Estação HTTP — bloqueada em site HTTPS', { type: 'warning' });
+      return;
+    }
+    currentStation = station;
+    highlight(station.uuid);
+    setNowPlaying('loading', station, 'Conectando…');
+    audioEl.src = station.url;
+    const attempt = audioEl.play();
+    if (attempt && typeof attempt.catch === 'function') {
+      attempt.catch(() => {
+        if (currentStation === station) {
+          setNowPlaying('error', station, 'Não foi possível tocar esta estação');
+        }
+      });
+    }
+  }
+
+  audioEl.addEventListener('playing', () => {
+    if (currentStation) setNowPlaying('playing', currentStation);
+  });
+  audioEl.addEventListener('waiting', () => {
+    if (currentStation) setNowPlaying('loading', currentStation, 'Carregando…');
+  });
+  audioEl.addEventListener('stalled', () => {
+    if (currentStation) setNowPlaying('loading', currentStation, 'Sinal travado…');
+  });
+  audioEl.addEventListener('error', () => {
+    if (currentStation) setNowPlaying('error', currentStation, 'Stream fora do ar ou indisponível');
+  });
+
+  /* ===== Formulário de busca ===== */
+  const nameInput = h('input', {
+    className: 'input',
+    type: 'search',
+    placeholder: 'Nome da estação (opcional)…',
+    value: state.query.name || '',
+    onkeydown: (e) => { if (e.key === 'Enter') doSearch(); }
+  });
+
+  const countrySel = h('select', { className: 'input' },
+    ...COUNTRY_OPTIONS.map((o) =>
+      h('option', { value: o.value, selected: o.value === state.query.country }, o.label)));
+
+  const genreSel = h('select', { className: 'input' },
+    ...GENRE_OPTIONS.map((o) =>
+      h('option', { value: o.value, selected: o.value === state.query.tag }, o.label)));
+
+  const searchBtn = h('button', { className: 'btn btn--primary' }, 'Buscar');
+
+  view.appendChild(
+    h('div', { className: 'radio-search card' },
+      h('label', { className: 'radio-search__field' },
+        h('span', null, 'Nome'), nameInput),
+      h('label', { className: 'radio-search__field' },
+        h('span', null, 'País'), countrySel),
+      h('label', { className: 'radio-search__field' },
+        h('span', null, 'Gênero'), genreSel),
+      searchBtn)
+  );
+
+  /* ===== Resultados ===== */
+  view.appendChild(
+    h('div', { className: 'section-header' },
+      h('h2', { className: 'section-header__title' }, 'Estações'))
+  );
+  const resultsEl = h('div', { className: 'radio-results' });
+  view.appendChild(resultsEl);
+
+  function renderMessage(text, kind) {
+    empty(resultsEl);
+    resultCards.clear();
+    resultsEl.appendChild(
+      h('div', { className: kind === 'error' ? 'radio-results__msg u-text-danger' : 'radio-results__msg u-text-muted' },
+        text));
+  }
+
+  function renderResults(list) {
+    empty(resultsEl);
+    resultCards.clear();
+    if (!list.length) {
+      renderMessage('Nenhuma estação encontrada. Tente outros filtros.');
+      return;
+    }
+    list.forEach((s) => {
+      const blocked = location.protocol === 'https:' && s.url.startsWith('http:');
+      const meta = [s.country, ...s.tags.slice(0, 3)].filter(Boolean).join(' · ') || 'sem gênero';
+      const card = h('button', {
+        className: blocked ? 'radio-result is-http' : 'radio-result',
+        title: blocked ? 'Stream HTTP — bloqueado em site HTTPS' : s.url,
+        onclick: () => playStation(s)
+      },
+        h('span', { className: 'radio-result__play' }, '▸'),
+        h('span', { className: 'radio-result__body' },
+          h('span', { className: 'radio-result__name' }, s.name),
+          h('span', { className: 'radio-result__meta u-mono' }, meta)),
+        h('span', { className: 'radio-result__tag u-mono' },
+          blocked ? 'HTTP' : (s.bitrate ? `${s.bitrate}k` : s.codec))
+      );
+      resultCards.set(s.uuid, card);
+      resultsEl.appendChild(card);
+    });
+    if (currentStation) highlight(currentStation.uuid);
+  }
+
+  let searching = false;
+  async function doSearch() {
+    if (searching) return;
+    searching = true;
+    searchBtn.disabled = true;
+    searchBtn.textContent = 'Buscando…';
+    state.query = {
+      name: nameInput.value.trim(),
+      country: countrySel.value,
+      tag: genreSel.value
+    };
+    storage.set(STORAGE_KEY, state);
+    renderMessage('Buscando estações…');
+    try {
+      const list = await searchStations({
+        name: state.query.name,
+        countryCode: state.query.country,
+        tag: state.query.tag,
+        limit: 40
+      });
+      renderResults(list);
+    } catch (err) {
+      renderMessage('Falha ao buscar estações: ' + err.message, 'error');
+      toast('Erro ao buscar estações', { type: 'danger' });
+    } finally {
+      searching = false;
+      searchBtn.disabled = false;
+      searchBtn.textContent = 'Buscar';
+    }
+  }
+  searchBtn.onclick = doSearch;
+
+  setNowPlaying('idle', null);
+  doSearch(); /* carga inicial com os filtros salvos */
+
+  return {
+    el: view,
+    stop() {
+      currentStation = null;
+      audioEl.pause();
+      audioEl.removeAttribute('src');
+      audioEl.load();
+    }
+  };
 }
