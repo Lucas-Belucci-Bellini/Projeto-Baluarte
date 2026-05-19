@@ -10,20 +10,21 @@ import { toast } from '../utils/toast.js';
 
 /* ============================================================
  *  Catálogo de ferramentas (7 categorias)
- *  Cada item: { id, name, category, icon, desc, phase }
+ *  Cada item: { id, name, category, icon, desc, phase, tag? }
  *  Status visual:
  *   - phase = 1 → ready
  *   - phase >= 2 → locked
+ *   - tag = 'novo' → selo extra "NOVO" (ferramenta recém-adicionada)
  * ============================================================ */
 const TOOLS = [
   /* === Desenvolvimento (5) === */
   { id: 'editor', name: 'Editor de Código', category: 'desenvolvimento', icon: '⌨', phase: 1, desc: '26 linguagens com syntax highlight, multi-tabs, runners JS/HTML/CSS/Markdown, persistência local.' },
   { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 1, desc: '60+ comandos POSIX-like. Filesystem virtual persistente, pipes, redirects, history e autocomplete.' },
   { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 1, desc: 'Tester JS com highlight de matches, grupos nomeados, replace preview, 10 exemplos e cheatsheet completa.' },
-  { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 2, desc: 'Format, minify, diff, validação JSON Schema e conversão YAML/TOML.' },
+  { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 1, desc: 'Formata, minifica e valida JSON, com árvore navegável, erros com linha/coluna e estatísticas da estrutura.' },
   { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 1, desc: 'Cheatsheet de comandos Git agrupados (clique copia) e modelos de .gitignore.' },
 
-  /* === Cálculo (8) === */
+  /* === Cálculo (9) === */
   { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 1, desc: 'Trigonometria (deg/rad), hiperbólicas, logaritmos, fatoriais, memória, histórico.' },
   { id: 'calc-financeira', name: 'Financeira', category: 'calculo', icon: '$', phase: 1, desc: 'Juros simples/compostos, VPL/TIR, Parcelamento Price, conversão de taxa.' },
   { id: 'calc-conversores', name: 'Conversores', category: 'calculo', icon: '⇄', phase: 1, desc: '10 categorias, 80+ unidades: comprimento, massa, temperatura, energia, tempo, dados, velocidade, pressão, ângulo.' },
@@ -32,8 +33,9 @@ const TOOLS = [
   { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 1, desc: 'IMC + classificação, TMB Mifflin, macros, FC máxima e zonas Karvonen, hidratação.' },
   { id: 'calc-numerica', name: 'Numérica (Bin/Hex/Oct)', category: 'calculo', icon: '01', phase: 1, desc: 'Conversões Dec/Bin/Hex/Oct simultâneas. Bit ops (AND/OR/XOR/NOT/shift). IEEE 754 visualizer.' },
   { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 1, desc: 'Parser de expressões lógicas (AND/OR/NOT/XOR/IMPLIES/IFF), tabela completa, K-map (até 4 vars), SOP/POS canônicas, simplificação Quine-McCluskey.' },
+  { id: 'logic-sim', name: 'Logic Sim', category: 'calculo', icon: '⊞', phase: 1, tag: 'novo', desc: 'Simulador de lógica digital interativo: monte circuitos com portas no canvas, ligue com fios e veja os sinais propagarem em tempo real. Salva no navegador.' },
 
-  /* === Criptografia (5) === */
+  /* === Criptografia (8) === */
   { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 1, desc: 'Cifra clássica com shift 0-25, brute force ranqueado por score PT.' },
   { id: 'cripto-base', name: 'Base64 / Base32 / Hex', category: 'cripto', icon: '⬢', phase: 1, desc: 'Encode simultâneo nas 3 bases + decoder com detecção de formato.' },
   { id: 'cripto-aes', name: 'AES-GCM', category: 'cripto', icon: '⚿', phase: 1, desc: 'AES-256 autenticado via Web Crypto. Chave derivada por PBKDF2-SHA256 (100k iter), salt+IV random.' },
@@ -49,18 +51,25 @@ const TOOLS = [
   { id: 'colorpicker', name: 'Color Studio', category: 'visualizacao', icon: '◐', phase: 2, desc: 'HEX/RGB/HSL/OKLCH, paletas geradas, gradient builder.' },
   { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 1, desc: '1200+ caracteres Unicode em 14 categorias. Busca por code point ou nome, favoritos persistidos, click copia.' },
 
-  /* === Mídia (4) === */
+  /* === Mídia (7) === */
   { id: 'media-hub', name: 'Media Hub', category: 'midia', icon: '◫', phase: 1, desc: 'Player local pra áudio/vídeo/imagens via File API. Drag-and-drop e cross-link com FFT.' },
   { id: 'videos', name: 'Central de Vídeos', category: 'midia', icon: '▶', phase: 1, desc: 'YouTube embeds em 5 playlists temáticas. Marca "assistido", busca, cross-link com Media Hub.' },
   { id: 'audio-fft', name: 'Áudio Studio', category: 'midia', icon: '♪', phase: 1, desc: 'Atalho para Visualizador FFT — analisa áudio do mic ou arquivo em tempo real.' },
   { id: 'qrcode', name: 'QR Code Studio', category: 'midia', icon: '▦', phase: 1, desc: 'Gera QR Codes de texto/URL com codificador próprio (Reed-Solomon, nível L) e exporta PNG.' },
+  { id: 'radio', name: 'Rádio', category: 'midia', icon: '∿', phase: 1, tag: 'novo', desc: 'Receptor de rádio com dois modos: sintetizador via Web Audio (100% offline) e Online com estações reais da internet pela Radio Browser API.' },
+  { id: 'musicas', name: 'Central de Música', category: 'midia', icon: '♫', phase: 1, tag: 'novo', desc: 'Faixa em destaque em loop infinito e playlist temática, via embeds do Spotify.' },
+  { id: 'filmes', name: 'Cinema', category: 'midia', icon: '▣', phase: 1, tag: 'novo', desc: 'Cinema do Baluarte — catálogo de filmes do acervo; cada título abre num player modal integrado.' },
 
-  /* === Referência (5) === */
+  /* === Referência (9) === */
   { id: 'tabela-periodica', name: 'Tabela Periódica', category: 'referencia', icon: '⚛', phase: 1, desc: '118 elementos com massa, configuração eletrônica e categoria. Filtro por categoria, grid 18×10.' },
   { id: 'modpack-mc', name: 'Modpack Minecraft', category: 'referencia', icon: '◧', phase: 1, desc: '60+ mods catalogados em 9 categorias com tier list (S/A/B/C) e descrição completa.' },
   { id: 'guia-pc', name: 'Guia para Montar PC', category: 'referencia', icon: '◨', phase: 1, desc: '4 presets (orçamento → workstation) + tutorial de 7 passos.' },
   { id: 'arsenal-ref', name: 'Arsenal (Catálogo)', category: 'referencia', icon: '⌖', phase: 1, desc: '159 armas + 24 veículos + 6 doutrinas. Filtro por categoria/equipe/tier, busca textual e ficha completa.' },
   { id: 'doutrina', name: 'Doutrina Militar', category: 'referencia', icon: '◆', phase: 1, desc: 'CQB, Overwatch, Fireteam, Breach, EVAC, Recon — 6 manuais táticos do Baluarte.' },
+  { id: 'portas', name: 'Lógica Digital', category: 'referencia', icon: '∧', phase: 1, tag: 'novo', desc: 'Enciclopédia de lógica digital: portas fundamentais com símbolo, expressão e tabela verdade, blocos construtivos e catálogo de CIs 7400/4000.' },
+  { id: 'ciberseg', name: 'CiberSeg', category: 'referencia', icon: '⊘', phase: 1, tag: 'novo', desc: 'Enciclopédia de cibersegurança — catálogo de ataques, defesas e ferramentas com filtro por categoria e ficha detalhada.' },
+  { id: 'academia', name: 'Academia', category: 'referencia', icon: '</>', phase: 1, tag: 'novo', desc: 'Trilhas de linguagens de programação com módulos de código e atalho "abrir no Editor", mais recursos de aprendizado e carreiras de tecnologia.' },
+  { id: 'robotica', name: 'Robótica', category: 'referencia', icon: '⊙', phase: 1, tag: 'novo', desc: 'Currículo de robótica em 12 módulos, do básico ao avançado, com rail de navegação e painel de conteúdo.' },
 
   /* === Sistema (4) === */
   { id: 'cotacoes', name: 'Cotações Live', category: 'sistema', icon: '$', phase: 1, desc: 'Câmbio (AwesomeAPI) + crypto (CoinGecko) em tempo real + conversor.' },
@@ -101,6 +110,7 @@ const TOOL_ROUTES = {
   'calc-saude': '/calculadoras',
   'calc-numerica': '/calc-numerica',
   'tabela-verdade': '/tabela-verdade',
+  'logic-sim': '/logic-sim',
   /* Criptografia (todas no hub /cripto) */
   'cripto-cesar': '/cripto',
   'cripto-base': '/cripto',
@@ -118,12 +128,19 @@ const TOOL_ROUTES = {
   'media-hub': '/media',
   videos: '/videos',
   'audio-fft': '/fft',
+  radio: '/radio',
+  musicas: '/musicas',
+  filmes: '/filmes',
   /* Referência */
   'tabela-periodica': '/tabela-periodica',
   'modpack-mc': '/modpack',
   'guia-pc': '/guia-pc',
   'arsenal-ref': '/arsenal',
   doutrina: '/arsenal',
+  portas: '/portas',
+  ciberseg: '/ciberseg',
+  academia: '/academia',
+  robotica: '/robotica',
   /* Sistema */
   cotacoes: '/economia',
   jarvis: '/jarvis',
@@ -171,9 +188,14 @@ function toolCard(tool) {
       'div',
       { className: 'tool-card__head' },
       h('div', { className: 'tool-card__icon' }, tool.icon),
-      isReady
-        ? h('span', { className: 'badge badge--success' }, 'PRONTO')
-        : h('span', { className: 'badge badge--magenta' }, 'ROADMAP')
+      h(
+        'div',
+        { className: 'tool-card__badges' },
+        tool.tag === 'novo' && h('span', { className: 'badge badge--cyan' }, 'NOVO'),
+        isReady
+          ? h('span', { className: 'badge badge--success' }, 'PRONTO')
+          : h('span', { className: 'badge badge--magenta' }, 'ROADMAP')
+      )
     ),
     h('h3', { className: 'tool-card__title' }, tool.name),
     h('p', { className: 'tool-card__desc' }, tool.desc),
