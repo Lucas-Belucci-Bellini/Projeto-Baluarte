@@ -21,7 +21,7 @@ const TOOLS = [
   { id: 'terminal', name: 'Terminal Web', category: 'desenvolvimento', icon: '▶', phase: 1, desc: '60+ comandos POSIX-like. Filesystem virtual persistente, pipes, redirects, history e autocomplete.' },
   { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 1, desc: 'Tester JS com highlight de matches, grupos nomeados, replace preview, 10 exemplos e cheatsheet completa.' },
   { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 2, desc: 'Format, minify, diff, validação JSON Schema e conversão YAML/TOML.' },
-  { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 2, desc: 'Cheatsheet interativa, gerador de .gitignore e templates de commit.' },
+  { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 1, desc: 'Cheatsheet de comandos Git agrupados (clique copia) e modelos de .gitignore.' },
 
   /* === Cálculo (8) === */
   { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 1, desc: 'Trigonometria (deg/rad), hiperbólicas, logaritmos, fatoriais, memória, histórico.' },
@@ -128,8 +128,9 @@ const TOOL_ROUTES = {
   cotacoes: '/economia',
   jarvis: '/jarvis',
   'ia-proprietaria': '/ia-proprietaria',
-  config: '/perfil'
-  /* Sem rota dedicada (futuras): git-helper, colorpicker */
+  config: '/perfil',
+  'git-helper': '/git-helper',
+  /* Sem rota dedicada (futuras): colorpicker */
 };
 
 /* ============================================================ */
