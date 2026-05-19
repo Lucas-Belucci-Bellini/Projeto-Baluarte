@@ -1,0 +1,83 @@
+/* ============================================================
+ * Git Helper (v2.0.0)
+ * ============================================================ */
+
+.git-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.git-cmd {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-left: 3px solid var(--color-cyan-edge);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-fast);
+}
+
+.git-cmd:hover {
+  border-left-color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+  transform: translateY(-1px);
+}
+
+.git-cmd__code {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-cyan);
+  word-break: break-word;
+}
+
+.git-cmd__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
+
+/* ===== Modelos de .gitignore ===== */
+.git-templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+.git-template {
+  padding: var(--space-md);
+}
+
+.git-template__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.git-template__nome {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.git-template__code {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin: 0;
+  overflow-x: auto;
+}
+
+.git-template__code code {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: pre;
+}
