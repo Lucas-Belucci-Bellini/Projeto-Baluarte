@@ -70,6 +70,7 @@ function pageTitleForRoute(path) {
     '/calc-numerica': 'Calculadora Numérica',
     '/tabela-verdade': 'Tabela Verdade',
     '/cripto': 'Lab de Criptografia',
+    '/esteganografia': 'Esteganografia',
     '/regex': 'Lab de Regex',
     '/graficos': 'Gerador de Gráficos',
     '/simbolos': 'Hub de Símbolos',

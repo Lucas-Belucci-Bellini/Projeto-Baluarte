@@ -60,6 +60,8 @@ São **36 rotas**, todas implementadas. O menu lateral organiza tudo em 6 grupos
   conversores, estatística, engenharia e saúde.
 - **Tabela Verdade** — parser lógico, Mapa de Karnaugh e Quine-McCluskey.
 - **Lab de Cripto** — César, Base64/32, SHA, AES-GCM, Vigenère, Atbash, OTP.
+- **Esteganografia** — esconde/revela texto em imagens via LSB (Canvas), com
+  opção de cifrar com AES-256 antes de esconder. Exporta PNG sem perda.
 - **Lab de Regex** — tester com destaque de matches e cheatsheet.
 - **Gerador de Gráficos** — 12 tipos em Canvas 2D puro.
 - **Símbolos** — 1200+ caracteres Unicode pesquisáveis.

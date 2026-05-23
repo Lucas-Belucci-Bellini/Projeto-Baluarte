@@ -44,6 +44,7 @@ const TOOLS = [
   { id: 'cripto-vigenere', name: 'Vigenère', category: 'cripto', icon: 'V', phase: 1, desc: 'Cifra polialfabética com chave repetida. Mostra a chave esticada alinhada.' },
   { id: 'cripto-atbash', name: 'Atbash', category: 'cripto', icon: 'A', phase: 1, desc: 'Substituição A↔Z, B↔Y… Involução (decode = encode).' },
   { id: 'cripto-otp', name: 'One-Time Pad', category: 'cripto', icon: '⊕', phase: 1, desc: 'XOR byte-a-byte com chave random ≥ mensagem. Provadamente seguro (Shannon).' },
+  { id: 'cripto-steg', name: 'Esteganografia', category: 'cripto', icon: '◳', phase: 1, tag: 'novo', desc: 'Esconde e revela texto dentro de imagens via LSB (Canvas), 100% no navegador. Opção de cifrar com AES-256 antes de esconder. Exporta PNG sem perda.' },
 
   /* === Visualização (4) === */
   { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 1, desc: '12 tipos em Canvas 2D puro: linha, barra V/H, pizza, donut, área, radar, scatter, bolha, heatmap, histograma, gauge. Export PNG.' },
@@ -120,6 +121,7 @@ const TOOL_ROUTES = {
   'cripto-vigenere': '/cripto',
   'cripto-atbash': '/cripto',
   'cripto-otp': '/cripto',
+  'cripto-steg': '/esteganografia',
   /* Visualização */
   graficos: '/graficos',
   fft: '/fft',
