@@ -37,8 +37,10 @@ function inPortPos(comp, port) {
   /* distribui as N entradas uniformemente na lateral esquerda */
   return { x: comp.x, y: comp.y + (H * (port + 1)) / (def.ins + 1) };
 }
-function outPortPos(comp) {
-  return { x: comp.x + W, y: comp.y + H / 2 };
+function outPortPos(comp, port = 0) {
+  const def = GATES[comp.type];
+  if (def.outs <= 1) return { x: comp.x + W, y: comp.y + H / 2 };
+  return { x: comp.x + W, y: comp.y + (H * (port + 1)) / (def.outs + 1) };
 }
 function compAt(x, y) {
   for (let i = circuit.comps.length - 1; i >= 0; i--) {
@@ -49,9 +51,11 @@ function compAt(x, y) {
 }
 function outPortAt(x, y) {
   for (const c of circuit.comps) {
-    if (GATES[c.type].outs === 0) continue;
-    const p = outPortPos(c);
-    if ((x - p.x) ** 2 + (y - p.y) ** 2 <= (PR + 5) ** 2) return c;
+    const def = GATES[c.type];
+    for (let p = 0; p < def.outs; p++) {
+      const pos = outPortPos(c, p);
+      if ((x - pos.x) ** 2 + (y - pos.y) ** 2 <= (PR + 5) ** 2) return { comp: c, port: p };
+    }
   }
   return null;
 }
@@ -79,7 +83,7 @@ function wireAt(x, y) {
   for (const w of circuit.wires) {
     const a = byId[w.from], b = byId[w.to];
     if (!a || !b) continue;
-    const p1 = outPortPos(a), p2 = inPortPos(b, w.toPort);
+    const p1 = outPortPos(a, w.fromPort), p2 = inPortPos(b, w.toPort);
     if (distSeg(x, y, p1.x, p1.y, p2.x, p2.y) < 7) return w;
   }
   return null;
@@ -118,8 +122,8 @@ function draw(ctx) {
   for (const w of circuit.wires) {
     const a = byId[w.from], b = byId[w.to];
     if (!a || !b) continue;
-    const p1 = outPortPos(a), p2 = inPortPos(b, w.toPort);
-    ctx.strokeStyle = colorFor(!!a.value);
+    const p1 = outPortPos(a, w.fromPort), p2 = inPortPos(b, w.toPort);
+    ctx.strokeStyle = colorFor(a.values && a.values[w.fromPort]);
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y);
     const mx = (p1.x + p2.x) / 2;
@@ -131,7 +135,7 @@ function draw(ctx) {
   if (wiring) {
     const a = byId[wiring.from];
     if (a) {
-      const p1 = outPortPos(a);
+      const p1 = outPortPos(a, wiring.fromPort);
       ctx.strokeStyle = '#ffaa00';
       ctx.setLineDash([6, 4]);
       ctx.beginPath();
@@ -146,7 +150,7 @@ function draw(ctx) {
   for (const c of circuit.comps) {
     const def = GATES[c.type];
     const ins = inputValues(circuit, c);
-    const lit = c.type === 'OUT' ? ins[0] : !!c.value;
+    const lit = c.type === 'OUT' ? ins[0] : !!(c.values && c.values[0]);
 
     /* corpo */
     ctx.fillStyle = lit ? 'rgba(0,240,255,0.14)' : 'rgba(20,26,38,0.96)';
@@ -175,11 +179,12 @@ function draw(ctx) {
       ctx.fillStyle = c.on ? '#00f0ff' : '#9aa6bd';
       ctx.font = 'bold 13px monospace';
       ctx.fillText('CLK ' + (c.on ? '1' : '0'), c.x + W / 2, c.y + H / 2 + 1);
-    } else {
+    } else if (def.kind !== 'ff') {
       ctx.fillStyle = '#dfe6f5';
       ctx.font = 'bold 14px monospace';
-      ctx.fillText(c.type, c.x + W / 2, c.y + H / 2 + 1);
+      ctx.fillText(def.label, c.x + W / 2, c.y + H / 2 + 1);
     }
+    /* flip-flops são identificados pelos rótulos das portas (abaixo) */
 
     /* ports de entrada */
     for (let p = 0; p < def.ins; p++) {
@@ -192,16 +197,34 @@ function draw(ctx) {
       ctx.lineWidth = 1.5;
       ctx.stroke();
     }
-    /* port de saída */
-    if (def.outs) {
-      const pos = outPortPos(c);
+    /* ports de saída */
+    for (let p = 0; p < def.outs; p++) {
+      const pos = outPortPos(c, p);
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, PR, 0, Math.PI * 2);
-      ctx.fillStyle = colorFor(!!c.value);
+      ctx.fillStyle = colorFor(!!(c.values && c.values[p]));
       ctx.fill();
       ctx.strokeStyle = '#0b0e16';
       ctx.lineWidth = 1.5;
       ctx.stroke();
+    }
+
+    /* rótulos das portas — flip-flops (D/CLK/J/K · Q/Q̄) */
+    if (def.kind === 'ff') {
+      ctx.font = '9px monospace';
+      ctx.fillStyle = '#8b97ad';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      def.inLabels.forEach((lbl, p) => {
+        const pos = inPortPos(c, p);
+        ctx.fillText(lbl, c.x + 8, pos.y);
+      });
+      ctx.textAlign = 'right';
+      def.outLabels.forEach((lbl, p) => {
+        const pos = outPortPos(c, p);
+        ctx.fillText(lbl, c.x + W - 8, pos.y);
+      });
+      ctx.textAlign = 'center';
     }
   }
 }
@@ -225,9 +248,9 @@ function buildExample(key) {
     const b = addComponent(c, 'IN', 70, 320);
     const g = addComponent(c, 'AND', 360, 210);
     const o = addComponent(c, 'OUT', 640, 224);
-    addWire(c, a.id, g.id, 0);
-    addWire(c, b.id, g.id, 1);
-    addWire(c, g.id, o.id, 0);
+    addWire(c, a.id, 0, g.id, 0);
+    addWire(c, b.id, 0, g.id, 1);
+    addWire(c, g.id, 0, o.id, 0);
   } else if (key === 'half-adder') {
     const a = addComponent(c, 'IN', 70, 120);
     const b = addComponent(c, 'IN', 70, 330);
@@ -235,12 +258,12 @@ function buildExample(key) {
     const an = addComponent(c, 'AND', 380, 320);
     const soma = addComponent(c, 'OUT', 680, 164);
     const carry = addComponent(c, 'OUT', 680, 334);
-    addWire(c, a.id, x.id, 0);
-    addWire(c, b.id, x.id, 1);
-    addWire(c, a.id, an.id, 0);
-    addWire(c, b.id, an.id, 1);
-    addWire(c, x.id, soma.id, 0);
-    addWire(c, an.id, carry.id, 0);
+    addWire(c, a.id, 0, x.id, 0);
+    addWire(c, b.id, 0, x.id, 1);
+    addWire(c, a.id, 0, an.id, 0);
+    addWire(c, b.id, 0, an.id, 1);
+    addWire(c, x.id, 0, soma.id, 0);
+    addWire(c, an.id, 0, carry.id, 0);
   } else if (key === 'sr-latch') {
     const s = addComponent(c, 'IN', 70, 120);
     const r = addComponent(c, 'IN', 70, 360);
@@ -248,12 +271,22 @@ function buildExample(key) {
     const n2 = addComponent(c, 'NOR', 360, 330);
     const q = addComponent(c, 'OUT', 660, 164);
     const qn = addComponent(c, 'OUT', 660, 344);
-    addWire(c, s.id, n1.id, 0);
-    addWire(c, n2.id, n1.id, 1);
-    addWire(c, n1.id, n2.id, 0);
-    addWire(c, r.id, n2.id, 1);
-    addWire(c, n1.id, q.id, 0);
-    addWire(c, n2.id, qn.id, 0);
+    addWire(c, s.id, 0, n1.id, 0);
+    addWire(c, n2.id, 0, n1.id, 1);
+    addWire(c, n1.id, 0, n2.id, 0);
+    addWire(c, r.id, 0, n2.id, 1);
+    addWire(c, n1.id, 0, q.id, 0);
+    addWire(c, n2.id, 0, qn.id, 0);
+  } else if (key === 'd-ff') {
+    const d = addComponent(c, 'IN', 70, 120);
+    const clk = addComponent(c, 'CLOCK', 70, 340);
+    const ff = addComponent(c, 'DFF', 380, 210);
+    const q = addComponent(c, 'OUT', 700, 190);
+    const qn = addComponent(c, 'OUT', 700, 320);
+    addWire(c, d.id, 0, ff.id, 0);    /* D   → entrada 0 */
+    addWire(c, clk.id, 0, ff.id, 1);  /* CLK → entrada 1 */
+    addWire(c, ff.id, 0, q.id, 0);    /* Q  → OUT */
+    addWire(c, ff.id, 1, qn.id, 0);   /* Q̄ → OUT */
   }
   return c;
 }
@@ -280,10 +313,10 @@ export function logicSimPage() {
       h('h1', { className: 'page-header__title' }, '⊻ Simulador de Lógica Digital'),
       h('p', { className: 'page-header__description' },
         'Coloque componentes, ligue saída → entrada com fios e veja os sinais ',
-        'propagarem em tempo real. ',
-        h('span', { className: 'u-text-cyan' }, '14 portas'),
-        ' (incluindo BUFFER e versões de 3 entradas). Funciona com ',
-        'realimentação — dá pra montar travas e flip-flops com portas.')
+        'propagarem em tempo real. 14 portas lógicas + ',
+        h('span', { className: 'u-text-cyan' }, 'flip-flops D, JK e T'),
+        ' (lógica sequencial disparada na borda do clock). ',
+        'Salve e reabra seus circuitos.')
     )
   );
 
@@ -334,6 +367,40 @@ export function logicSimPage() {
     }, label);
   }
 
+  /* ===== Salvar / abrir circuitos (localStorage) ===== */
+  const SAVED_KEY = 'logic-sim:saved';
+  const getSaved = () => storage.get(SAVED_KEY) || {};
+
+  const savedSelect = h('select', { className: 'lsim-select input' });
+  function refreshSaved() {
+    empty(savedSelect);
+    savedSelect.appendChild(h('option', { value: '' }, '⭱ Abrir salvo…'));
+    Object.keys(getSaved()).sort().forEach((name) =>
+      savedSelect.appendChild(h('option', { value: name }, name)));
+  }
+  savedSelect.onchange = () => {
+    const name = savedSelect.value;
+    savedSelect.value = '';
+    if (!name) return;
+    const loaded = deserialize(getSaved()[name]);
+    if (loaded) { circuit = loaded; save(); toast('Circuito aberto: ' + name, { type: 'info' }); }
+    else toast('Não foi possível abrir o circuito', { type: 'danger' });
+  };
+  refreshSaved();
+
+  const saveBtn = h('button', {
+    className: 'btn btn--ghost btn--sm',
+    onclick: () => {
+      const name = prompt('Nome para salvar este circuito:');
+      if (!name || !name.trim()) return;
+      const all = getSaved();
+      all[name.trim()] = serialize(circuit);
+      storage.set(SAVED_KEY, all);
+      refreshSaved();
+      toast('Circuito salvo: ' + name.trim(), { type: 'success' });
+    }
+  }, '⭳ Salvar');
+
   page.appendChild(
     h('div', { className: 'lsim-bar' },
       palette,
@@ -348,8 +415,10 @@ export function logicSimPage() {
         }, '⌫ Limpar'),
         exampleBtn('and', 'AND'),
         exampleBtn('half-adder', 'Meio-somador'),
-        exampleBtn('sr-latch', 'Trava SR')
-      )
+        exampleBtn('sr-latch', 'Trava SR'),
+        exampleBtn('d-ff', 'D Flip-Flop')
+      ),
+      h('div', { className: 'lsim-group' }, saveBtn, savedSelect)
     )
   );
 
@@ -384,7 +453,7 @@ export function logicSimPage() {
     }
     /* tool wire */
     const op = outPortAt(x, y);
-    if (op) { wiring = { from: op.id, mx: x, my: y }; return; }
+    if (op) { wiring = { from: op.comp.id, fromPort: op.port, mx: x, my: y }; return; }
     const c = compAt(x, y);
     if (c) { drag = { comp: c, dx: x - c.x, dy: y - c.y, moved: false }; }
   });
@@ -407,7 +476,7 @@ export function logicSimPage() {
     const { x, y } = mousePos(e);
     if (wiring) {
       const ip = inPortAt(x, y);
-      if (ip) { addWire(circuit, wiring.from, ip.comp.id, ip.port); save(); }
+      if (ip) { addWire(circuit, wiring.from, wiring.fromPort, ip.comp.id, ip.port); save(); }
       wiring = null;
     }
     if (drag) {

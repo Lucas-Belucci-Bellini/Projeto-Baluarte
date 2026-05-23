@@ -33,7 +33,7 @@ const TOOLS = [
   { id: 'calc-saude', name: 'Saúde', category: 'calculo', icon: '♥', phase: 1, desc: 'IMC + classificação, TMB Mifflin, macros, FC máxima e zonas Karvonen, hidratação.' },
   { id: 'calc-numerica', name: 'Numérica (Bin/Hex/Oct)', category: 'calculo', icon: '01', phase: 1, desc: 'Conversões Dec/Bin/Hex/Oct simultâneas. Bit ops (AND/OR/XOR/NOT/shift). IEEE 754 visualizer.' },
   { id: 'tabela-verdade', name: 'Tabela Verdade', category: 'calculo', icon: '⊨', phase: 1, desc: 'Parser de expressões lógicas (AND/OR/NOT/XOR/IMPLIES/IFF), tabela completa, K-map (até 4 vars), SOP/POS canônicas, simplificação Quine-McCluskey.' },
-  { id: 'logic-sim', name: 'Logic Sim', category: 'calculo', icon: '⊞', phase: 1, tag: 'novo', desc: 'Simulador de lógica digital interativo: monte circuitos com portas no canvas, ligue com fios e veja os sinais propagarem em tempo real. Salva no navegador.' },
+  { id: 'logic-sim', name: 'Logic Sim', category: 'calculo', icon: '⊞', phase: 1, tag: 'novo', desc: 'Simulador de lógica digital interativo: 14 portas + flip-flops D/JK/T (lógica sequencial), ligados com fios no canvas. Salve e reabra circuitos.' },
 
   /* === Criptografia (8) === */
   { id: 'cripto-cesar', name: 'Cifra de César', category: 'cripto', icon: 'C', phase: 1, desc: 'Cifra clássica com shift 0-25, brute force ranqueado por score PT.' },
@@ -48,7 +48,7 @@ const TOOLS = [
   /* === Visualização (4) === */
   { id: 'graficos', name: 'Gerador de Gráficos', category: 'visualizacao', icon: '◢', phase: 1, desc: '12 tipos em Canvas 2D puro: linha, barra V/H, pizza, donut, área, radar, scatter, bolha, heatmap, histograma, gauge. Export PNG.' },
   { id: 'fft', name: 'Visualizador FFT', category: 'visualizacao', icon: '~', phase: 1, desc: '6 modos (barras/curva/waveform/radial/spectrogram/partículas) via Web Audio API. Mic, arquivo ou tom de teste.' },
-  { id: 'colorpicker', name: 'Color Studio', category: 'visualizacao', icon: '◐', phase: 2, desc: 'HEX/RGB/HSL/OKLCH, paletas geradas, gradient builder.' },
+  { id: 'colorpicker', name: 'Color Studio', category: 'visualizacao', icon: '◐', phase: 1, tag: 'novo', desc: 'Conversor HEX/RGB/HSL/OKLCH, gerador de paletas, construtor de gradiente e verificador de contraste WCAG.' },
   { id: 'simbolos', name: 'Hub de Símbolos', category: 'visualizacao', icon: '✦', phase: 1, desc: '1200+ caracteres Unicode em 14 categorias. Busca por code point ou nome, favoritos persistidos, click copia.' },
 
   /* === Mídia (7) === */
@@ -147,7 +147,7 @@ const TOOL_ROUTES = {
   'ia-proprietaria': '/ia-proprietaria',
   config: '/perfil',
   'git-helper': '/git-helper',
-  /* Sem rota dedicada (futuras): colorpicker */
+  colorpicker: '/color-studio'
 };
 
 /* ============================================================ */

@@ -1,14 +1,17 @@
 /**
- * Motor do Simulador de Lógica Digital (v2.0.0).
+ * Motor do Simulador de Lógica Digital (v2.1.0).
  *
  * Um circuito é { comps, wires, seq }.
- *  - comp: { id, type, x, y, on, value } — `on` é o estado das fontes
- *    (IN/CLOCK, alternado pelo usuário/clock); `value` é a saída calculada.
- *  - wire: { id, from, to, toPort } — liga a saída de `from` à entrada
- *    `toPort` de `to`.
+ *  - comp: { id, type, x, y, on, values, q, prevClk }
+ *      `on`      — estado das fontes (IN/CLOCK), alternado pelo usuário/clock.
+ *      `values`  — vetor de saídas calculadas (1 para portas, 2 para flip-flops).
+ *      `q`/`prevClk` — estado interno dos flip-flops (bit guardado + borda).
+ *  - wire: { id, from, fromPort, to, toPort } — liga a saída `fromPort` de
+ *    `from` à entrada `toPort` de `to`.
  *
- * simulate() propaga os sinais iterativamente, então circuitos com
- * realimentação (latches e flip-flops montados com portas) estabilizam.
+ * simulate() estabiliza a lógica combinacional, atualiza os flip-flops nas
+ * bordas de subida do clock e re-estabiliza — então circuitos com
+ * realimentação (latches montados com portas) e flip-flops funcionam.
  */
 
 export const GATES = {
@@ -28,14 +31,19 @@ export const GATES = {
   NAND3:  { ins: 3, outs: 1, label: 'NAND3', kind: 'gate' },
   NOR3:   { ins: 3, outs: 1, label: 'NOR3',  kind: 'gate' },
   XOR3:   { ins: 3, outs: 1, label: 'XOR3',  kind: 'gate' },
-  XNOR3:  { ins: 3, outs: 1, label: 'XNOR3', kind: 'gate' }
+  XNOR3:  { ins: 3, outs: 1, label: 'XNOR3', kind: 'gate' },
+  /* Flip-flops disparados na borda de subida — 2 saídas (Q e Q̄). */
+  DFF:    { ins: 2, outs: 2, label: 'D-FF',  kind: 'ff', inLabels: ['D', 'CLK'],      outLabels: ['Q', 'Q̄'] },
+  TFF:    { ins: 2, outs: 2, label: 'T-FF',  kind: 'ff', inLabels: ['T', 'CLK'],      outLabels: ['Q', 'Q̄'] },
+  JKFF:   { ins: 3, outs: 2, label: 'JK-FF', kind: 'ff', inLabels: ['J', 'K', 'CLK'], outLabels: ['Q', 'Q̄'] }
 };
 
 /** Ordem da paleta de componentes. */
 export const PALETTE = [
   'IN', 'CLOCK', 'OUT', 'BUFFER', 'NOT',
   'AND', 'OR', 'NAND', 'NOR', 'XOR', 'XNOR',
-  'AND3', 'OR3', 'NAND3', 'NOR3', 'XOR3', 'XNOR3'
+  'AND3', 'OR3', 'NAND3', 'NOR3', 'XOR3', 'XNOR3',
+  'DFF', 'TFF', 'JKFF'
 ];
 
 /**
@@ -73,7 +81,7 @@ export function createCircuit() {
 }
 
 export function addComponent(circuit, type, x, y) {
-  const comp = { id: 'c' + (circuit.seq++), type, x, y, on: false, value: false };
+  const comp = { id: 'c' + (circuit.seq++), type, x, y, on: false };
   circuit.comps.push(comp);
   return comp;
 }
@@ -83,11 +91,11 @@ export function removeComponent(circuit, id) {
   circuit.wires = circuit.wires.filter((w) => w.from !== id && w.to !== id);
 }
 
-/** Liga a saída de fromId à entrada toPort de toId. Uma entrada só aceita um fio. */
-export function addWire(circuit, fromId, toId, toPort) {
+/** Liga a saída fromPort de fromId à entrada toPort de toId. Uma entrada só aceita um fio. */
+export function addWire(circuit, fromId, fromPort, toId, toPort) {
   if (fromId === toId) return null;
   circuit.wires = circuit.wires.filter((w) => !(w.to === toId && w.toPort === toPort));
-  const wire = { id: 'w' + (circuit.seq++), from: fromId, to: toId, toPort };
+  const wire = { id: 'w' + (circuit.seq++), from: fromId, fromPort: fromPort || 0, to: toId, toPort };
   circuit.wires.push(wire);
   return wire;
 }
@@ -97,47 +105,96 @@ export function removeWire(circuit, id) {
 }
 
 /**
- * Propaga os sinais e define `value` em cada componente.
- * Itera até 40 vezes para circuitos realimentados estabilizarem.
+ * Propaga os sinais e define `values` em cada componente.
+ * Fluxo: estabiliza a lógica combinacional, atualiza os flip-flops nas
+ * bordas de subida do clock, então re-estabiliza para propagar o resultado.
  */
 export function simulate(circuit) {
   const byId = {};
   for (const c of circuit.comps) byId[c.id] = c;
 
+  /* Inicializa `values` (e o estado dos flip-flops) onde faltar. */
   for (const c of circuit.comps) {
-    if (c.type === 'IN' || c.type === 'CLOCK') c.value = !!c.on;
-    else if (typeof c.value !== 'boolean') c.value = false;
+    const def = GATES[c.type] || { ins: 0, outs: 0 };
+    if (!Array.isArray(c.values)) c.values = new Array(def.outs).fill(false);
+    if (def.kind === 'source') c.values = [!!c.on];
+    if (def.kind === 'ff') {
+      if (typeof c.q !== 'boolean') c.q = false;
+      if (typeof c.prevClk !== 'boolean') c.prevClk = false;
+      c.values = [c.q, !c.q];
+    }
   }
 
-  for (let pass = 0; pass < 40; pass++) {
-    let changed = false;
+  /* Lê o valor que chega na entrada `port` de um componente. */
+  function readInput(comp, port) {
+    const w = circuit.wires.find((x) => x.to === comp.id && x.toPort === port);
+    if (!w) return false;
+    const src = byId[w.from];
+    if (!src || !src.values) return false;
+    return !!src.values[w.fromPort || 0];
+  }
+
+  /* Estabiliza a lógica combinacional — flip-flops mantêm o estado atual. */
+  function settle() {
+    for (let pass = 0; pass < 40; pass++) {
+      let changed = false;
+      for (const c of circuit.comps) {
+        const def = GATES[c.type];
+        if (!def || def.kind === 'source' || def.kind === 'ff') continue;
+        const inv = [];
+        for (let p = 0; p < def.ins; p++) inv.push(readInput(c, p));
+        const next = c.type === 'OUT' ? !!inv[0] : applyGate(c.type, inv);
+        if (next !== c.values[0]) { c.values[0] = next; changed = true; }
+      }
+      if (!changed) break;
+    }
+  }
+
+  /* Atualiza os flip-flops nas bordas de subida do clock.
+     Lê todas as entradas antes de atualizar qualquer estado, para que
+     cascatas de flip-flops vejam o valor anterior (atraso de propagação). */
+  function updateFlipFlops() {
+    const snapshot = [];
     for (const c of circuit.comps) {
-      if (c.type === 'IN' || c.type === 'CLOCK') continue;
       const def = GATES[c.type];
-      const inv = new Array(Math.max(def.ins, 1)).fill(false);
-      for (const w of circuit.wires) {
-        if (w.to === c.id && w.toPort < def.ins) {
-          const src = byId[w.from];
-          if (src) inv[w.toPort] = !!src.value;
+      if (!def || def.kind !== 'ff') continue;
+      const ins = [];
+      for (let p = 0; p < def.ins; p++) ins.push(readInput(c, p));
+      snapshot.push({ c, ins });
+    }
+    for (const { c, ins } of snapshot) {
+      const clk = ins[ins.length - 1];     /* CLK é sempre a última entrada */
+      if (clk && !c.prevClk) {             /* borda de subida */
+        if (c.type === 'DFF') c.q = !!ins[0];
+        else if (c.type === 'TFF') c.q = ins[0] ? !c.q : c.q;
+        else if (c.type === 'JKFF') {
+          const j = ins[0], k = ins[1];
+          if (j && k) c.q = !c.q;
+          else if (j) c.q = true;
+          else if (k) c.q = false;
         }
       }
-      const next = c.type === 'OUT' ? inv[0] : applyGate(c.type, inv);
-      if (next !== c.value) { c.value = next; changed = true; }
+      c.prevClk = clk;
+      c.values = [c.q, !c.q];
     }
-    if (!changed) break;
   }
+
+  settle();
+  updateFlipFlops();
+  settle();
   return circuit;
 }
 
 /** Valores das entradas de um componente — usado para colorir os fios. */
 export function inputValues(circuit, comp) {
-  const def = GATES[comp.type];
+  const def = GATES[comp.type] || { ins: 0 };
   const byId = {};
   for (const c of circuit.comps) byId[c.id] = c;
   const vals = [];
   for (let p = 0; p < def.ins; p++) {
     const w = circuit.wires.find((x) => x.to === comp.id && x.toPort === p);
-    vals.push(w && byId[w.from] ? !!byId[w.from].value : false);
+    const src = w ? byId[w.from] : null;
+    vals.push(src && src.values ? !!src.values[w.fromPort || 0] : false);
   }
   return vals;
 }
@@ -145,7 +202,9 @@ export function inputValues(circuit, comp) {
 export function serialize(circuit) {
   return JSON.stringify({
     comps: circuit.comps.map((c) => ({ id: c.id, type: c.type, x: c.x, y: c.y, on: !!c.on })),
-    wires: circuit.wires.map((w) => ({ id: w.id, from: w.from, to: w.to, toPort: w.toPort })),
+    wires: circuit.wires.map((w) => ({
+      id: w.id, from: w.from, fromPort: w.fromPort || 0, to: w.to, toPort: w.toPort
+    })),
     seq: circuit.seq
   });
 }
@@ -155,11 +214,11 @@ export function deserialize(json) {
     const d = typeof json === 'string' ? JSON.parse(json) : json;
     if (!d || !Array.isArray(d.comps)) return null;
     return {
-      comps: d.comps.map((c) => ({
-        id: c.id, type: c.type, x: c.x, y: c.y, on: !!c.on, value: false
+      comps: d.comps.map((c) => ({ id: c.id, type: c.type, x: c.x, y: c.y, on: !!c.on })),
+      wires: (d.wires || []).map((w) => ({
+        id: w.id, from: w.from, fromPort: w.fromPort || 0, to: w.to, toPort: w.toPort
       })),
-      wires: (d.wires || []).map((w) => ({ id: w.id, from: w.from, to: w.to, toPort: w.toPort })),
-      seq: d.seq || (d.comps.length + d.wires?.length + 2)
+      seq: d.seq || (d.comps.length + (d.wires ? d.wires.length : 0) + 2)
     };
   } catch {
     return null;

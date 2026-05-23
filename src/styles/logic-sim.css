@@ -56,6 +56,13 @@
   font-weight: 700;
 }
 
+.lsim-select {
+  width: auto;
+  min-width: 150px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
 .lsim-canvas-wrap {
   overflow: auto;
   border: 1px solid var(--color-cyan-edge);

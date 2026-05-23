@@ -1,0 +1,183 @@
+/* ============================================================
+ * Color Studio (/color-studio) — v2.1.0
+ * ============================================================ */
+
+.cs-card {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-lg);
+}
+
+/* ===== Conversor ===== */
+.cs-converter {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.cs-preview {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md), var(--shadow-inset);
+}
+
+.cs-fields {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.cs-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.cs-field__label {
+  width: 56px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.cs-field__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.cs-picker {
+  width: 44px;
+  height: 34px;
+  padding: 2px;
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.cs-input { width: 120px; }
+.cs-num { width: 76px; }
+
+.cs-oklch {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.cs-copy {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  color: var(--color-cyan);
+  font-size: var(--font-size-sm);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.cs-copy:hover {
+  border-color: var(--color-cyan);
+  background: var(--color-cyan-soft);
+}
+
+/* ===== Paletas ===== */
+.cs-palette-label {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  margin: var(--space-md) 0 var(--space-xs);
+}
+
+.cs-swatches {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.cs-swatch {
+  flex: 1;
+  min-width: 92px;
+  height: 72px;
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: var(--space-xs);
+  gap: 2px;
+  transition: transform var(--transition-fast);
+}
+.cs-swatch:hover { transform: translateY(-2px); }
+
+.cs-swatch__hex,
+.cs-swatch__tag {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  background: rgba(10, 10, 10, 0.7);
+  color: #fff;
+}
+.cs-swatch__tag {
+  background: rgba(10, 10, 10, 0.55);
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking-wide);
+}
+
+/* ===== Gradiente / Contraste — controles ===== */
+.cs-grad-controls {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.cs-gradient-bar {
+  height: 72px;
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+
+.cs-gradient-css {
+  font-size: var(--font-size-sm);
+}
+
+/* ===== Contraste ===== */
+.cs-contrast-sample {
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-sm);
+}
+.cs-contrast-sample__big {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-xs);
+}
+.cs-contrast-sample__small {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}
+
+.cs-ratio {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.cs-badges {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
