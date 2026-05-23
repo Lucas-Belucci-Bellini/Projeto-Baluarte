@@ -1,0 +1,799 @@
+/* ============================================================
+   10 temas do Baluarte — tudo via CSS vars + flags em data-attrs
+   Cada bloco define a personalidade completa de um tema.
+   ============================================================ */
+
+:root {
+  /* defaults sobrescritos por cada tema */
+  --bg:           #0F1419;
+  --surface:      #161B22;
+  --surface-2:    #1C232D;
+  --border:       rgba(255,255,255,0.06);
+  --border-hi:    rgba(255,255,255,0.12);
+  --text:         #E6EDF3;
+  --text-sub:     #9BA9BA;
+  --text-muted:   #6E7C8E;
+  --accent:       #3FB8DC;
+  --accent-2:     #7DD3FC;        /* opcional, p/ gradiente do logo */
+  --accent-soft:  rgba(63,184,220,0.12);
+  --accent-edge:  rgba(63,184,220,0.4);
+  --on-accent:    #001016;        /* texto em cima do accent */
+  --success:      #3FB87E;
+  --warning:      #D4A23C;
+  --danger:       #D85A6C;
+  --font-ui:      'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --font-display: var(--font-ui);
+  --radius-sm:    4px;
+  --radius:       10px;
+  --radius-lg:    14px;
+  --case-titles:  none;           /* uppercase pra temas tipo TRON */
+  --case-badges:  uppercase;
+  --letter-titles: -0.02em;
+  --weight-h1:    700;
+  --glow:         none;
+  --logo-grad:    linear-gradient(135deg, var(--accent), var(--accent-2));
+  --grid-bg:      none;
+}
+
+/* ---------- 1 · ORIGINAL CYAN (deploy v1.0.0 ao vivo) ---------- */
+[data-theme="original"] {
+  --bg:           #0a0e1a;
+  --surface:      #0e1322;
+  --surface-2:    #131a2e;
+  --border:       rgba(0,229,255,0.14);
+  --border-hi:    rgba(0,229,255,0.34);
+  --text:         #d9f5ff;
+  --text-sub:     #8ba8c4;
+  --text-muted:   #5c7491;
+  --accent:       #00E5FF;
+  --accent-2:     #FF2A8A;
+  --accent-soft:  rgba(0,229,255,0.10);
+  --accent-edge:  rgba(0,229,255,0.55);
+  --on-accent:    #001218;
+  --case-titles:  uppercase;
+  --letter-titles: 0.08em;
+  --glow:         0 0 18px rgba(0,229,255,0.45);
+  --logo-grad:    linear-gradient(135deg, #00E5FF, #FF2A8A);
+}
+
+/* ---------- 2 · CALM MATERIAL (default em cima) ---------- */
+[data-theme="calm"] {
+  --bg:           #0F1419;
+  --surface:      #161B22;
+  --surface-2:    #1C232D;
+  --accent:       #3FB8DC;
+  --accent-2:     #7DD3FC;
+  --accent-soft:  rgba(63,184,220,0.12);
+  --accent-edge:  rgba(63,184,220,0.4);
+}
+
+/* ---------- 3 · TRON ---------- */
+[data-theme="tron"] {
+  --bg:           #020608;
+  --surface:      rgba(0,240,255,0.03);
+  --surface-2:    rgba(0,240,255,0.06);
+  --border:       rgba(0,240,255,0.18);
+  --border-hi:    rgba(0,240,255,0.45);
+  --text:         #D9F5FF;
+  --text-sub:     rgba(180,220,240,0.7);
+  --text-muted:   rgba(180,220,240,0.4);
+  --accent:       #00F0FF;
+  --accent-2:     #FF2A8A;
+  --accent-soft:  rgba(0,240,255,0.12);
+  --accent-edge:  rgba(0,240,255,0.55);
+  --on-accent:    #001218;
+  --success:      #00FF94;
+  --warning:      #FFCB47;
+  --case-titles:  uppercase;
+  --letter-titles: 0.12em;
+  --radius:       2px;
+  --radius-sm:    0px;
+  --radius-lg:    2px;
+  --glow:         0 0 14px rgba(0,240,255,0.5);
+  --font-display: var(--font-mono);
+}
+
+/* ---------- 4 · BRUTALIST PHOSPHOR (CRT verde) ---------- */
+[data-theme="brutalist"] {
+  --bg:           #050a05;
+  --surface:      #050a05;
+  --surface-2:    #081208;
+  --border:       #2a4a2a;
+  --border-hi:    #4a8a4a;
+  --text:         #9bff9b;
+  --text-sub:     #5a8a5a;
+  --text-muted:   #3a5a3a;
+  --accent:       #b6ff00;
+  --accent-2:     #ffcc00;
+  --accent-soft:  rgba(182,255,0,0.10);
+  --accent-edge:  rgba(182,255,0,0.55);
+  --on-accent:    #050a05;
+  --success:      #b6ff00;
+  --warning:      #ffcc00;
+  --danger:       #ff5555;
+  --font-ui:      'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, monospace;
+  --case-titles:  uppercase;
+  --letter-titles: 0.06em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --weight-h1:    700;
+  --glow:         0 0 6px rgba(155,255,155,0.45);
+}
+
+/* ---------- 5 · AMBER CRT (PDP-11 / 3270) ---------- */
+[data-theme="amber"] {
+  --bg:           #110800;
+  --surface:      #1a0c00;
+  --surface-2:    #221100;
+  --border:       rgba(255,170,40,0.18);
+  --border-hi:    rgba(255,170,40,0.45);
+  --text:         #ffb454;
+  --text-sub:     #c98a2a;
+  --text-muted:   #7a5318;
+  --accent:       #ffd166;
+  --accent-2:     #ff8c42;
+  --accent-soft:  rgba(255,209,102,0.12);
+  --accent-edge:  rgba(255,209,102,0.5);
+  --on-accent:    #110800;
+  --success:      #d6f25b;
+  --warning:      #ffd166;
+  --danger:       #ff6b3d;
+  --font-ui:      'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, monospace;
+  --case-titles:  uppercase;
+  --letter-titles: 0.16em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --glow:         0 0 10px rgba(255,180,80,0.45);
+}
+
+/* ---------- 6 · SOLARPUNK (papel + sálvia + terracota) ---------- */
+[data-theme="solarpunk"] {
+  --bg:           #f4ede0;
+  --surface:      #faf5ec;
+  --surface-2:    #ece2cd;
+  --border:       rgba(60,50,30,0.14);
+  --border-hi:    rgba(60,50,30,0.30);
+  --text:         #2b2418;
+  --text-sub:     #6b5e44;
+  --text-muted:   #968764;
+  --accent:       #5a7a3a;
+  --accent-2:     #c46a3b;
+  --accent-soft:  rgba(90,122,58,0.14);
+  --accent-edge:  rgba(90,122,58,0.5);
+  --on-accent:    #f4ede0;
+  --success:      #5a7a3a;
+  --warning:      #c89c2b;
+  --danger:       #b8442d;
+  --font-ui:      'Inter', system-ui, sans-serif;
+  --font-display: 'Fraunces', 'Inter', serif;
+  --radius:       12px;
+  --radius-lg:    16px;
+  --weight-h1:    600;
+  --letter-titles: -0.01em;
+}
+
+/* ---------- 7 · SYNTHWAVE / OUTRUN ---------- */
+[data-theme="synthwave"] {
+  --bg:           #1a0b2e;
+  --surface:      #2b1450;
+  --surface-2:    #3a1d6b;
+  --border:       rgba(255,90,200,0.20);
+  --border-hi:    rgba(255,90,200,0.45);
+  --text:         #f8e8ff;
+  --text-sub:     #c4a8e8;
+  --text-muted:   #8a73b8;
+  --accent:       #ff4dd1;
+  --accent-2:     #00f0ff;
+  --accent-soft:  rgba(255,77,209,0.16);
+  --accent-edge:  rgba(255,77,209,0.55);
+  --on-accent:    #1a0b2e;
+  --success:      #4dff9f;
+  --warning:      #ffd166;
+  --danger:       #ff4d6d;
+  --case-titles:  uppercase;
+  --letter-titles: 0.04em;
+  --radius:       6px;
+  --glow:         0 0 16px rgba(255,77,209,0.5);
+  --logo-grad:    linear-gradient(135deg, #ff4dd1, #00f0ff);
+  --grid-bg:      linear-gradient(180deg, transparent 60%, rgba(255,77,209,0.06) 100%),
+                  repeating-linear-gradient(0deg, rgba(0,240,255,0.05) 0 1px, transparent 1px 28px);
+}
+
+/* ---------- 8 · CARBON STEALTH (F-117) ---------- */
+[data-theme="stealth"] {
+  --bg:           #0a0a0a;
+  --surface:      #111111;
+  --surface-2:    #181818;
+  --border:       rgba(255,255,255,0.06);
+  --border-hi:    rgba(255,255,255,0.14);
+  --text:         #e8e8e8;
+  --text-sub:     #888888;
+  --text-muted:   #555555;
+  --accent:       #d92638;
+  --accent-2:     #ff5a48;
+  --accent-soft:  rgba(217,38,56,0.10);
+  --accent-edge:  rgba(217,38,56,0.4);
+  --on-accent:    #ffffff;
+  --success:      #44dd77;
+  --warning:      #ffaa22;
+  --danger:       #ff3344;
+  --case-titles:  uppercase;
+  --letter-titles: 0.18em;
+  --radius:       2px;
+  --radius-sm:    0;
+  --radius-lg:    2px;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --weight-h1:    800;
+  --logo-grad:    linear-gradient(135deg, #d92638, #ff5a48);
+}
+
+/* ---------- 9 · ARCTIC TACTICAL (light) ---------- */
+[data-theme="arctic"] {
+  --bg:           #e8eef4;
+  --surface:      #ffffff;
+  --surface-2:    #f1f5fa;
+  --border:       rgba(40,80,120,0.10);
+  --border-hi:    rgba(40,80,120,0.25);
+  --text:         #122033;
+  --text-sub:     #4a6075;
+  --text-muted:   #7a8ea3;
+  --accent:       #1c6dd0;
+  --accent-2:     #5aa0ff;
+  --accent-soft:  rgba(28,109,208,0.10);
+  --accent-edge:  rgba(28,109,208,0.4);
+  --on-accent:    #ffffff;
+  --success:      #2d9d6a;
+  --warning:      #d4880c;
+  --danger:       #c93838;
+  --radius:       8px;
+  --case-titles:  none;
+  --letter-titles: -0.02em;
+  --weight-h1:    700;
+}
+
+/* ---------- 10 · NEWSPRINT (cream + ink + slab) ---------- */
+[data-theme="newsprint"] {
+  --bg:           #f5f1e8;
+  --surface:      #fdfaf2;
+  --surface-2:    #ede7d6;
+  --border:       rgba(20,15,5,0.16);
+  --border-hi:    rgba(20,15,5,0.40);
+  --text:         #1a1a14;
+  --text-sub:     #4a4438;
+  --text-muted:   #7a7060;
+  --accent:       #8a1810;
+  --accent-2:     #c43020;
+  --accent-soft:  rgba(138,24,16,0.08);
+  --accent-edge:  rgba(138,24,16,0.5);
+  --on-accent:    #f5f1e8;
+  --success:      #2d6638;
+  --warning:      #a06614;
+  --danger:       #8a1810;
+  --font-ui:      'Inter', system-ui, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --weight-h1:    800;
+  --letter-titles: -0.03em;
+  --logo-grad:    none;
+}
+
+/* ---------- 11 · CYBERPUNK 2077 ---------- */
+[data-theme="cyberpunk"] {
+  --bg:           #0d0d0a;
+  --surface:      #14140d;
+  --surface-2:    #1f1f12;
+  --border:       rgba(252,238,10,0.16);
+  --border-hi:    rgba(252,238,10,0.40);
+  --text:         #fcee0a;
+  --text-sub:     #c4b830;
+  --text-muted:   #7a7320;
+  --accent:       #00ffe7;
+  --accent-2:     #fcee0a;
+  --accent-soft:  rgba(0,255,231,0.10);
+  --accent-edge:  rgba(0,255,231,0.55);
+  --on-accent:    #0d0d0a;
+  --success:      #00ffe7;
+  --warning:      #fcee0a;
+  --danger:       #ff003c;
+  --case-titles:  uppercase;
+  --letter-titles: 0.14em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --weight-h1:    800;
+  --glow:         0 0 18px rgba(0,255,231,0.5);
+  --logo-grad:    linear-gradient(135deg, #fcee0a, #00ffe7);
+}
+
+/* ---------- 12 · MATRIX ---------- */
+[data-theme="matrix"] {
+  --bg:           #000000;
+  --surface:      #030a03;
+  --surface-2:    #051405;
+  --border:       rgba(0,255,65,0.18);
+  --border-hi:    rgba(0,255,65,0.45);
+  --text:         #00ff41;
+  --text-sub:     #008f20;
+  --text-muted:   #006014;
+  --accent:       #00ff41;
+  --accent-2:     #b6ffae;
+  --accent-soft:  rgba(0,255,65,0.10);
+  --accent-edge:  rgba(0,255,65,0.55);
+  --on-accent:    #000000;
+  --success:      #00ff41;
+  --warning:      #b6ff00;
+  --danger:       #ff2222;
+  --font-ui:      'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, monospace;
+  --case-titles:  uppercase;
+  --letter-titles: 0.04em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --glow:         0 0 8px rgba(0,255,65,0.6);
+}
+
+/* ---------- 13 · DRACULA ---------- */
+[data-theme="dracula"] {
+  --bg:           #282a36;
+  --surface:      #2e303e;
+  --surface-2:    #383a4a;
+  --border:       rgba(248,248,242,0.08);
+  --border-hi:    rgba(248,248,242,0.20);
+  --text:         #f8f8f2;
+  --text-sub:     #babcc6;
+  --text-muted:   #6272a4;
+  --accent:       #bd93f9;
+  --accent-2:     #ff79c6;
+  --accent-soft:  rgba(189,147,249,0.14);
+  --accent-edge:  rgba(189,147,249,0.5);
+  --on-accent:    #282a36;
+  --success:      #50fa7b;
+  --warning:      #f1fa8c;
+  --danger:       #ff5555;
+  --logo-grad:    linear-gradient(135deg, #bd93f9, #ff79c6);
+}
+
+/* ---------- 14 · NORD ---------- */
+[data-theme="nord"] {
+  --bg:           #2e3440;
+  --surface:      #3b4252;
+  --surface-2:    #434c5e;
+  --border:       rgba(216,222,233,0.10);
+  --border-hi:    rgba(216,222,233,0.24);
+  --text:         #eceff4;
+  --text-sub:     #d8dee9;
+  --text-muted:   #81a1c1;
+  --accent:       #88c0d0;
+  --accent-2:     #8fbcbb;
+  --accent-soft:  rgba(136,192,208,0.14);
+  --accent-edge:  rgba(136,192,208,0.5);
+  --on-accent:    #2e3440;
+  --success:      #a3be8c;
+  --warning:      #ebcb8b;
+  --danger:       #bf616a;
+  --letter-titles: -0.01em;
+}
+
+/* ---------- 15 · GRUVBOX ---------- */
+[data-theme="gruvbox"] {
+  --bg:           #282828;
+  --surface:      #32302f;
+  --surface-2:    #3c3836;
+  --border:       rgba(235,219,178,0.10);
+  --border-hi:    rgba(235,219,178,0.26);
+  --text:         #ebdbb2;
+  --text-sub:     #bdae93;
+  --text-muted:   #928374;
+  --accent:       #fabd2f;
+  --accent-2:     #fe8019;
+  --accent-soft:  rgba(250,189,47,0.12);
+  --accent-edge:  rgba(250,189,47,0.5);
+  --on-accent:    #282828;
+  --success:      #b8bb26;
+  --warning:      #fabd2f;
+  --danger:       #fb4934;
+  --logo-grad:    linear-gradient(135deg, #fabd2f, #fe8019);
+}
+
+/* ---------- 16 · TOKYO NIGHT ---------- */
+[data-theme="tokyo"] {
+  --bg:           #1a1b26;
+  --surface:      #1f2335;
+  --surface-2:    #292e42;
+  --border:       rgba(192,202,245,0.08);
+  --border-hi:    rgba(192,202,245,0.22);
+  --text:         #c0caf5;
+  --text-sub:     #a9b1d6;
+  --text-muted:   #565f89;
+  --accent:       #7aa2f7;
+  --accent-2:     #bb9af7;
+  --accent-soft:  rgba(122,162,247,0.14);
+  --accent-edge:  rgba(122,162,247,0.5);
+  --on-accent:    #1a1b26;
+  --success:      #9ece6a;
+  --warning:      #e0af68;
+  --danger:       #f7768e;
+  --logo-grad:    linear-gradient(135deg, #7aa2f7, #bb9af7);
+  --letter-titles: -0.01em;
+}
+
+/* ---------- 17 · SOLARIZED DARK ---------- */
+[data-theme="solarized"] {
+  --bg:           #002b36;
+  --surface:      #073642;
+  --surface-2:    #094856;
+  --border:       rgba(147,161,161,0.14);
+  --border-hi:    rgba(147,161,161,0.32);
+  --text:         #fdf6e3;
+  --text-sub:     #93a1a1;
+  --text-muted:   #586e75;
+  --accent:       #268bd2;
+  --accent-2:     #2aa198;
+  --accent-soft:  rgba(38,139,210,0.14);
+  --accent-edge:  rgba(38,139,210,0.5);
+  --on-accent:    #fdf6e3;
+  --success:      #859900;
+  --warning:      #b58900;
+  --danger:       #dc322f;
+}
+
+/* ---------- 18 · VAPORWAVE ---------- */
+[data-theme="vaporwave"] {
+  --bg:           #f8d8ff;
+  --surface:      #ffe8fb;
+  --surface-2:    #c4f3ff;
+  --border:       rgba(120,20,140,0.16);
+  --border-hi:    rgba(120,20,140,0.34);
+  --text:         #4a1a5a;
+  --text-sub:     #8a4a8a;
+  --text-muted:   #b07ab0;
+  --accent:       #ff71ce;
+  --accent-2:     #01cdfe;
+  --accent-soft:  rgba(255,113,206,0.16);
+  --accent-edge:  rgba(255,113,206,0.55);
+  --on-accent:    #ffffff;
+  --success:      #05ffa1;
+  --warning:      #fffb96;
+  --danger:       #ff71ce;
+  --case-titles:  uppercase;
+  --letter-titles: 0.12em;
+  --radius:       6px;
+  --logo-grad:    linear-gradient(135deg, #ff71ce, #01cdfe);
+  --grid-bg:      linear-gradient(180deg, transparent 50%, rgba(1,205,254,0.10) 100%),
+                  repeating-linear-gradient(0deg, rgba(255,113,206,0.06) 0 1px, transparent 1px 32px);
+}
+
+/* ---------- 19 · GITHUB DARK ---------- */
+[data-theme="github"] {
+  --bg:           #0d1117;
+  --surface:      #161b22;
+  --surface-2:    #21262d;
+  --border:       rgba(240,246,252,0.10);
+  --border-hi:    rgba(240,246,252,0.22);
+  --text:         #e6edf3;
+  --text-sub:     #7d8590;
+  --text-muted:   #6e7681;
+  --accent:       #58a6ff;
+  --accent-2:     #79c0ff;
+  --accent-soft:  rgba(56,139,253,0.15);
+  --accent-edge:  rgba(56,139,253,0.5);
+  --on-accent:    #0d1117;
+  --success:      #3fb950;
+  --warning:      #d29922;
+  --danger:       #f85149;
+  --radius:       6px;
+  --letter-titles: -0.02em;
+}
+
+/* ---------- 20 · VERCEL MONO ---------- */
+[data-theme="vercel"] {
+  --bg:           #000000;
+  --surface:      #0a0a0a;
+  --surface-2:    #141414;
+  --border:       rgba(255,255,255,0.10);
+  --border-hi:    rgba(255,255,255,0.28);
+  --text:         #fafafa;
+  --text-sub:     #a1a1a1;
+  --text-muted:   #666666;
+  --accent:       #ffffff;
+  --accent-2:     #ffffff;
+  --accent-soft:  rgba(255,255,255,0.08);
+  --accent-edge:  rgba(255,255,255,0.40);
+  --on-accent:    #000000;
+  --success:      #50e3c2;
+  --warning:      #f5a623;
+  --danger:       #ee0000;
+  --radius:       8px;
+  --case-titles:  none;
+  --letter-titles: -0.03em;
+  --weight-h1:    700;
+}
+
+/* ---------- 21 · PIP-BOY ---------- */
+[data-theme="pipboy"] {
+  --bg:           #001a04;
+  --surface:      #002308;
+  --surface-2:    #003110;
+  --border:       rgba(74,255,128,0.18);
+  --border-hi:    rgba(74,255,128,0.40);
+  --text:         #4aff80;
+  --text-sub:     #2fb058;
+  --text-muted:   #1a7038;
+  --accent:       #4aff80;
+  --accent-2:     #b6ffae;
+  --accent-soft:  rgba(74,255,128,0.10);
+  --accent-edge:  rgba(74,255,128,0.55);
+  --on-accent:    #001a04;
+  --success:      #4aff80;
+  --warning:      #ffd166;
+  --danger:       #ff3838;
+  --font-ui:      'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, monospace;
+  --case-titles:  uppercase;
+  --letter-titles: 0.14em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --glow:         0 0 10px rgba(74,255,128,0.5);
+}
+
+/* ---------- 22 · LCARS (Star Trek) ---------- */
+[data-theme="lcars"] {
+  --bg:           #000000;
+  --surface:      #0a0a0a;
+  --surface-2:    #141414;
+  --border:       rgba(255,153,102,0.20);
+  --border-hi:    rgba(255,153,102,0.45);
+  --text:         #ffcc99;
+  --text-sub:     #cc99cc;
+  --text-muted:   #9999cc;
+  --accent:       #ff9966;
+  --accent-2:     #cc99cc;
+  --accent-soft:  rgba(255,153,102,0.14);
+  --accent-edge:  rgba(255,153,102,0.55);
+  --on-accent:    #000000;
+  --success:      #99ccff;
+  --warning:      #ffcc66;
+  --danger:       #cc6666;
+  --case-titles:  uppercase;
+  --letter-titles: 0.18em;
+  --radius:       20px;
+  --radius-lg:    24px;
+  --weight-h1:    800;
+  --logo-grad:    linear-gradient(135deg, #ff9966, #cc99cc);
+}
+
+/* ---------- 23 · BLUEPRINT ---------- */
+[data-theme="blueprint"] {
+  --bg:           #0a3a6b;
+  --surface:      #0d4480;
+  --surface-2:    #115299;
+  --border:       rgba(220,240,255,0.18);
+  --border-hi:    rgba(220,240,255,0.40);
+  --text:         #e8f4ff;
+  --text-sub:     #a8c8e8;
+  --text-muted:   #6a8ec0;
+  --accent:       #ffffff;
+  --accent-2:     #80d8ff;
+  --accent-soft:  rgba(255,255,255,0.12);
+  --accent-edge:  rgba(255,255,255,0.5);
+  --on-accent:    #0a3a6b;
+  --success:      #80ffea;
+  --warning:      #ffd166;
+  --danger:       #ff8a8a;
+  --font-ui:      'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, monospace;
+  --case-titles:  uppercase;
+  --letter-titles: 0.14em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --grid-bg:      repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 40px),
+                  repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 40px);
+}
+
+/* ---------- 24 · SEPIA MANUSCRIPT ---------- */
+[data-theme="sepia"] {
+  --bg:           #e8dcc0;
+  --surface:      #f0e6ce;
+  --surface-2:    #d8c8a0;
+  --border:       rgba(80,40,10,0.18);
+  --border-hi:    rgba(80,40,10,0.40);
+  --text:         #3a2410;
+  --text-sub:     #6b4e2c;
+  --text-muted:   #9c7a48;
+  --accent:       #8a1810;
+  --accent-2:     #c46a3b;
+  --accent-soft:  rgba(138,24,16,0.08);
+  --accent-edge:  rgba(138,24,16,0.5);
+  --on-accent:    #f0e6ce;
+  --success:      #4a6b2a;
+  --warning:      #a8741c;
+  --danger:       #8a1810;
+  --font-ui:      'Fraunces', Georgia, serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --weight-h1:    600;
+  --radius:       2px;
+  --letter-titles: -0.01em;
+}
+
+/* ---------- 25 · HI-VIS (safety) ---------- */
+[data-theme="hivis"] {
+  --bg:           #0a0a0a;
+  --surface:      #141414;
+  --surface-2:    #1e1e1e;
+  --border:       rgba(255,235,30,0.20);
+  --border-hi:    rgba(255,235,30,0.50);
+  --text:         #ffeb1e;
+  --text-sub:     #c4b820;
+  --text-muted:   #6a6310;
+  --accent:       #ffeb1e;
+  --accent-2:     #ff7800;
+  --accent-soft:  rgba(255,235,30,0.12);
+  --accent-edge:  rgba(255,235,30,0.6);
+  --on-accent:    #0a0a0a;
+  --success:      #ffeb1e;
+  --warning:      #ff7800;
+  --danger:       #ff003c;
+  --case-titles:  uppercase;
+  --letter-titles: 0.16em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --weight-h1:    900;
+}
+
+/* ---------- 26 · MEMPHIS 80s ---------- */
+[data-theme="memphis"] {
+  --bg:           #fff8e8;
+  --surface:      #ffffff;
+  --surface-2:    #ffe8d0;
+  --border:       rgba(20,20,20,0.20);
+  --border-hi:    rgba(20,20,20,0.45);
+  --text:         #1a1a1a;
+  --text-sub:     #4a4a4a;
+  --text-muted:   #7a7a7a;
+  --accent:       #ff3d8b;
+  --accent-2:     #00b8d4;
+  --accent-soft:  rgba(255,61,139,0.12);
+  --accent-edge:  rgba(255,61,139,0.55);
+  --on-accent:    #ffffff;
+  --success:      #00b8d4;
+  --warning:      #ffc500;
+  --danger:       #ff3d8b;
+  --case-titles:  uppercase;
+  --letter-titles: 0.04em;
+  --radius:       3px;
+  --weight-h1:    900;
+  --logo-grad:    linear-gradient(135deg, #ff3d8b, #00b8d4);
+}
+
+/* ---------- 27 · MONDRIAN ---------- */
+[data-theme="mondrian"] {
+  --bg:           #f5f3ec;
+  --surface:      #ffffff;
+  --surface-2:    #ffe800;
+  --border:       #0a0a0a;
+  --border-hi:    #0a0a0a;
+  --text:         #0a0a0a;
+  --text-sub:     #2a2a2a;
+  --text-muted:   #6a6a6a;
+  --accent:       #dd1d20;
+  --accent-2:     #0040b0;
+  --accent-soft:  rgba(221,29,32,0.10);
+  --accent-edge:  #dd1d20;
+  --on-accent:    #ffffff;
+  --success:      #0040b0;
+  --warning:      #ffe800;
+  --danger:       #dd1d20;
+  --case-titles:  uppercase;
+  --letter-titles: -0.02em;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --weight-h1:    900;
+}
+
+/* ---------- 28 · Y2K CHROME ---------- */
+[data-theme="y2k"] {
+  --bg:           #d8dde8;
+  --surface:      #eef1f8;
+  --surface-2:    #c0c8d8;
+  --border:       rgba(40,60,100,0.20);
+  --border-hi:    rgba(40,60,100,0.40);
+  --text:         #0c1a3a;
+  --text-sub:     #3a4a72;
+  --text-muted:   #6878a0;
+  --accent:       #2858c8;
+  --accent-2:     #b0b8d0;
+  --accent-soft:  rgba(40,88,200,0.12);
+  --accent-edge:  rgba(40,88,200,0.5);
+  --on-accent:    #ffffff;
+  --success:      #229966;
+  --warning:      #cc8800;
+  --danger:       #cc2244;
+  --radius:       14px;
+  --radius-lg:    18px;
+  --weight-h1:    700;
+  --logo-grad:    linear-gradient(135deg, #4080ff, #b0b8d0 50%, #2858c8);
+}
+
+/* ---------- 29 · HACKER NEWS ---------- */
+[data-theme="hackernews"] {
+  --bg:           #f6f6ef;
+  --surface:      #ffffff;
+  --surface-2:    #e8e8d8;
+  --border:       rgba(20,20,20,0.14);
+  --border-hi:    rgba(20,20,20,0.30);
+  --text:         #1a1a1a;
+  --text-sub:     #5a5a5a;
+  --text-muted:   #828282;
+  --accent:       #ff6600;
+  --accent-2:     #ff8a3d;
+  --accent-soft:  rgba(255,102,0,0.10);
+  --accent-edge:  rgba(255,102,0,0.5);
+  --on-accent:    #ffffff;
+  --success:      #2d9d6a;
+  --warning:      #ff6600;
+  --danger:       #c93838;
+  --font-ui:      Verdana, Geneva, sans-serif;
+  --font-display: Verdana, Geneva, sans-serif;
+  --radius:       0;
+  --radius-sm:    0;
+  --radius-lg:    0;
+  --case-titles:  none;
+  --letter-titles: 0;
+  --weight-h1:    700;
+}
+
+/* ---------- 30 · MATERIAL YOU (Android 13 dynamic) ---------- */
+[data-theme="materialyou"] {
+  --bg:           #1d1b20;
+  --surface:      #2b2930;
+  --surface-2:    #36343b;
+  --border:       rgba(230,225,229,0.08);
+  --border-hi:    rgba(230,225,229,0.20);
+  --text:         #e6e1e5;
+  --text-sub:     #cac4d0;
+  --text-muted:   #938f99;
+  --accent:       #d0bcff;
+  --accent-2:     #efb8c8;
+  --accent-soft:  rgba(208,188,255,0.16);
+  --accent-edge:  rgba(208,188,255,0.5);
+  --on-accent:    #381e72;
+  --success:      #a6d49a;
+  --warning:      #ffb78a;
+  --danger:       #f2b8b5;
+  --radius:       16px;
+  --radius-lg:    24px;
+  --radius-sm:    8px;
+  --weight-h1:    600;
+  --letter-titles: -0.01em;
+  --logo-grad:    linear-gradient(135deg, #d0bcff, #efb8c8);
+}
+
+/* ============================================================
+   Scanlines / grid overlays — só os temas com data-scanlines
+   ============================================================ */
+.theme-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 50; }
+[data-scanlines="cyan"]   .theme-overlay { background-image: repeating-linear-gradient(0deg, rgba(0,240,255,0.04) 0, rgba(0,240,255,0.04) 1px, transparent 1px, transparent 3px); }
+[data-scanlines="green"]  .theme-overlay { background-image: repeating-linear-gradient(0deg, rgba(155,255,155,0.05) 0 1px, transparent 1px 3px); }
+[data-scanlines="amber"]  .theme-overlay { background-image: repeating-linear-gradient(0deg, rgba(255,180,80,0.06) 0 1px, transparent 1px 3px); }
+[data-scanlines="matrix"] .theme-overlay { background-image: repeating-linear-gradient(0deg, rgba(0,255,65,0.05) 0 1px, transparent 1px 3px); }
+[data-scanlines="pipboy"] .theme-overlay { background-image: repeating-linear-gradient(0deg, rgba(74,255,128,0.05) 0 1px, transparent 1px 3px); }
+[data-vignette="on"]::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 51;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%);
+}
+[data-grid-bg="on"]::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: var(--grid-bg);
+}

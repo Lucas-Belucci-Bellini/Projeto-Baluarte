@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⬡ Baluarte · Canvas dos 30 temas</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="switcher/tokens.css" />
+  <link rel="stylesheet" href="switcher/home.css" />
+
+  <style>
+    html, body, #root {
+      margin: 0; padding: 0;
+      width: 100%; height: 100vh;
+      background: #f0eee9;
+      overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    /* Reseta os defaults do :root pra cor neutra do canvas (pra não vazar dark) */
+    :root {
+      --bg: #f0eee9;
+      --text: #2a251f;
+    }
+    /* O scopo do tema só vale DENTRO de [data-theme="..."] — então o root continua claro. */
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- design canvas (figma-ish pan/zoom) -->
+  <script type="text/babel" src="design-canvas.jsx"></script>
+
+  <!-- conteúdo + home temável -->
+  <script type="text/babel" src="redesigns/home-data.jsx"></script>
+  <script type="text/babel" src="switcher/home.jsx"></script>
+
+  <!-- 30 temas -->
+  <script type="text/babel" src="switcher/themes-list.jsx"></script>
+
+  <!-- canvas app -->
+  <script type="text/babel" src="switcher/canvas-app.jsx"></script>
+</body>
+</html>
