@@ -16,6 +16,7 @@ import { h, cx, mount, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { toBase, fromBase, bitOps, ieee754, formatResult } from '../utils/calc-engine.js';
+import { setStatus } from '../utils/baluarte-status.js';
 
 const STORAGE_KEY = 'calc:numerica';
 
@@ -43,6 +44,7 @@ function persist() {
 /* ===== Display update ===== */
 
 function refreshDisplays() {
+  setStatus('calcNumerica', { valor: state.value, bits: state.bits });
   if (displayDecEl) displayDecEl.textContent = state.value.toString();
   if (displayBinEl) displayBinEl.textContent = toBase(state.value, 2, state.bits);
   if (displayHexEl) displayHexEl.textContent = '0x' + toBase(state.value, 16, state.bits);

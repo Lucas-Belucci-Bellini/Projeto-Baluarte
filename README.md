@@ -60,6 +60,8 @@ São **36 rotas**, todas implementadas. O menu lateral organiza tudo em 6 grupos
   conversores, estatística, engenharia e saúde.
 - **Tabela Verdade** — parser lógico, Mapa de Karnaugh e Quine-McCluskey.
 - **Lab de Cripto** — César, Base64/32, SHA, AES-GCM, Vigenère, Atbash, OTP.
+- **Esteganografia** — esconde/revela texto em imagens via LSB (Canvas), com
+  opção de cifrar com AES-256 antes de esconder. Exporta PNG sem perda.
 - **Lab de Regex** — tester com destaque de matches e cheatsheet.
 - **Gerador de Gráficos** — 12 tipos em Canvas 2D puro.
 - **Símbolos** — 1200+ caracteres Unicode pesquisáveis.
@@ -93,7 +95,9 @@ São **36 rotas**, todas implementadas. O menu lateral organiza tudo em 6 grupos
 - **Economia** — cotações de câmbio e cripto ao vivo.
 
 ### Sistema
-- **J.A.R.V.I.S.** — assistente em 4 modos (local, Claude API, Ollama, agente).
+- **J.A.R.V.I.S.** — assistente em 6 modos (local, Navegador/WebLLM, Claude API,
+  Ollama, Servidor/Gemini, agente). O modo Navegador roda um LLM real 100% no
+  cliente via WebGPU; o modo Servidor usa o backend Python opcional com busca web.
 - **IA Proprietária Mark 11** — sistema de Skills modular.
 - **Perfil** — identidade do operador, estatísticas e configurações.
 - **Sobre o Projeto** — a história das 13 iterações.

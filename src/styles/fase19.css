@@ -460,3 +460,68 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ===== Respostas com código realçado + copiar (doc 05) ===== */
+.jv-rt {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.jv-code__wrap {
+  margin: 8px 0;
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+}
+.jv-code__wrap:first-child { margin-top: 0; }
+.jv-code__wrap:last-child { margin-bottom: 0; }
+.jv-code__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 4px 10px;
+  background: var(--color-surface);
+  border-bottom: var(--border-thin);
+}
+.jv-code__lang {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+.jv-code__copy {
+  background: transparent;
+  border: 0;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  transition: var(--transition-fast);
+}
+.jv-code__copy:hover { background: var(--color-cyan-soft); }
+.jv-code {
+  margin: 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+.jv-code__src { font-family: inherit; }
+
+/* Perfil da IA (Tático / Engenheiro) */
+.jv-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0;
+}
+.jv-profile > span {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}

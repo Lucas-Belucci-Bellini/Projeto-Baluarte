@@ -1,7 +1,7 @@
 /**
  * Página /jarvis — J.A.R.V.I.S. completo (Fase 20).
  *
- * 4 modos: local, claude, ollama, agente.
+ * 6 modos: local, webllm (navegador), claude, ollama, servidor (gemini), agente.
  * Sessões múltiplas em IndexedDB. Tool calls visíveis no modo agente.
  */
 
@@ -10,8 +10,14 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import {
   loadConfig, saveConfig,
-  processLocal, processClaude, processOllama, processAgent
+  processLocal, processClaude, processOllama, processServer, processAgent
 } from '../utils/jarvis-engine.js';
+import {
+  processWebLLM, isWebGPUAvailable, WEBLLM_MODELS
+} from '../utils/jarvis-webllm.js';
+import { highlight } from '../utils/syntax-highlight.js';
+import { LANGS, langForExt } from '../data/editor-langs.js';
+import { getStatusText } from '../utils/baluarte-status.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
   addMessage, getMessages, isUsingFallback
@@ -19,8 +25,10 @@ import {
 
 const MODES = [
   { id: 'local',  label: 'Local',  icon: '◆', badge: 'cyan',    desc: 'Assistente de regras. Offline, sem custo. Navega e consulta o Baluarte.' },
+  { id: 'webllm', label: 'Navegador', icon: '⬡', badge: 'cyan', desc: 'IA real 100% no navegador via WebLLM (WebGPU). Sem servidor, sem API key. 1º uso baixa o modelo; depois roda offline.' },
   { id: 'claude', label: 'Claude', icon: '◉', badge: 'magenta', desc: 'Conversa livre via Claude API. Requer API key da Anthropic.' },
   { id: 'ollama', label: 'Ollama', icon: '⬢', badge: 'success', desc: 'Modelo local via Ollama (ollama serve). 100% privado.' },
+  { id: 'servidor', label: 'Servidor', icon: '⊛', badge: 'success', desc: 'Backend Python + Gemini com busca web real (Google). Habilita a camada 2 do raciocínio. Requer rodar backend/server.py.' },
   { id: 'agente', label: 'Agente', icon: '⚛', badge: 'warning', desc: 'Claude com ferramentas: navega, consulta e executa ações reais.' }
 ];
 
@@ -104,7 +112,7 @@ function renderMessages() {
         h('div', { className: 'jarvis-welcome__icon' }, '◉'),
         h('div', { className: 'jarvis-welcome__title' }, 'J.A.R.V.I.S. ONLINE'),
         h('div', { className: 'jarvis-welcome__text u-text-muted' },
-          'Crie uma conversa ou digite abaixo. 4 modos: Local, Claude, Ollama e Agente.')
+          'Crie uma conversa ou digite abaixo. 6 modos: Local, Navegador, Claude, Ollama, Servidor e Agente.')
       )
     );
     return;
@@ -125,6 +133,81 @@ function renderMessages() {
   scrollDown();
 }
 
+/* ===== Perfis de system prompt (doc 05: conversa → engenheiro) ===== */
+const SYSTEM_PROMPTS = {
+  tatico: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.',
+  engenheiro: 'Você é o J.A.R.V.I.S. em modo engenheiro de software sênior do Projeto Baluarte. Responda em português com código limpo, otimizado e comentários quando ajudarem. Sempre coloque código em blocos markdown com a linguagem (```js, ```python…). Prefira o estilo do Baluarte: JavaScript puro (ES2022), sem framework e sem TypeScript.',
+  nucleo: [
+    'Você é o núcleo do Projeto Baluarte Mark XIII. Responda em português.',
+    'Sua tomada de decisão segue ESTRITAMENTE esta ordem (raciocínio em 3 camadas):',
+    '1. VERIFICAÇÃO LOCAL: tente resolver com o estado e as funções do próprio site (use o estado fornecido no contexto e as ferramentas, quando disponíveis).',
+    '2. BUSCA WEB: se o site não tiver a resposta, busque documentação real na internet — só quando houver busca configurada (servidor/Gemini); caso não haja, declare que a busca web está indisponível.',
+    '3. DEDUÇÃO LÓGICA: se a resposta exata não existir em lugar nenhum, é PROIBIDO inventar ("alucinar") ou dizer apenas "não sei". Junte as pistas e monte uma hipótese, estruturando assim:',
+    '   - "Evidência A: [fato conhecido]"',
+    '   - "Evidência B: [comportamento conhecido]"',
+    '   - "Conclusão/Hipótese: com base em A e B, a causa provável é Z; tente fazer …"',
+    'Regras: nunca alucine; extrapole apenas regras lógicas conhecidas; mostre o raciocínio para o operador entender de onde veio a solução.'
+  ].join('\n')
+};
+
+/* ===== Render de respostas com blocos de código realçados (doc 05) ===== */
+
+const LANG_ALIASES = {
+  js: 'javascript', mjs: 'javascript', ts: 'typescript', py: 'python',
+  sh: 'shell', bash: 'shell', zsh: 'shell', shell: 'shell', console: 'shell',
+  html: 'html', htm: 'html', xml: 'html', md: 'markdown', markdown: 'markdown',
+  'c++': 'cpp', cpp: 'cpp', 'c#': 'csharp', cs: 'csharp', yml: 'yaml'
+};
+
+function resolveLang(tag) {
+  if (!tag) return LANGS[0];
+  const t = String(tag).toLowerCase();
+  const id = LANG_ALIASES[t] || t;
+  return LANGS.find((l) => l.id === id) || langForExt(t) || LANGS[0];
+}
+
+function codeBlock(code, langTag) {
+  const lang = resolveLang(langTag);
+  const codeEl = h('code', { className: 'jv-code__src' });
+  /* highlight() escapa o HTML do código antes de colorir — seguro p/ saída da IA */
+  codeEl.innerHTML = highlight(code, lang);
+  const copyBtn = h('button', {
+    className: 'jv-code__copy', title: 'Copiar código', type: 'button',
+    onclick: async () => {
+      try { await navigator.clipboard.writeText(code); toast('Código copiado.', { type: 'success' }); }
+      catch { toast('Não consegui copiar.', { type: 'warning' }); }
+    }
+  }, '⧉ Copiar');
+  return h('div', { className: 'jv-code__wrap' },
+    h('div', { className: 'jv-code__bar' },
+      h('span', { className: 'jv-code__lang u-mono' }, lang.name || langTag || 'texto'),
+      copyBtn),
+    h('pre', { className: 'jv-code' }, codeEl)
+  );
+}
+
+/** Converte texto com fences markdown ``` em nós: texto + blocos de código. */
+function renderRich(text) {
+  const frag = document.createDocumentFragment();
+  const parts = String(text).split('```');
+  parts.forEach((part, i) => {
+    if (i % 2 === 0) {
+      const clean = part.replace(/^\n+|\n+$/g, '');
+      if (clean) frag.appendChild(h('span', { className: 'jv-rt' }, clean));
+    } else {
+      const nl = part.indexOf('\n');
+      let langTag = '';
+      let code = part;
+      if (nl >= 0) {
+        const first = part.slice(0, nl).trim();
+        if (/^[a-z0-9+#.\-]{0,15}$/i.test(first)) { langTag = first; code = part.slice(nl + 1); }
+      }
+      frag.appendChild(codeBlock(code.replace(/\n$/, ''), langTag));
+    }
+  });
+  return frag;
+}
+
 function renderBubble(role, text) {
   if (role === 'tool') {
     messagesEl.appendChild(
@@ -136,12 +219,15 @@ function renderBubble(role, text) {
     return;
   }
   const isJarvis = role === 'jarvis';
+  const textEl = h('div', { className: 'jarvis-msg__text' });
+  if (isJarvis) textEl.appendChild(renderRich(text));
+  else textEl.textContent = text;
   messagesEl.appendChild(
     h('div', { className: cx('jarvis-msg', isJarvis ? 'jarvis-msg--ai' : 'jarvis-msg--user') },
       h('div', { className: 'jarvis-msg__avatar' }, isJarvis ? '◉' : '◔'),
       h('div', { className: 'jarvis-msg__body' },
         h('div', { className: 'jarvis-msg__role' }, isJarvis ? 'J.A.R.V.I.S.' : 'Operador'),
-        h('div', { className: 'jarvis-msg__text' }, text)
+        textEl
       )
     )
   );
@@ -192,6 +278,12 @@ async function handleSend() {
   try {
     const convo = messages.filter((m) => m.role === 'user' || m.role === 'jarvis');
 
+    /* doc 07: injeta o estado vivo do site como contexto oculto (somente
+     * leitura). Cópia por chamada — não persiste no systemPrompt salvo. */
+    const callConfig = config.mode === 'local'
+      ? config
+      : { ...config, systemPrompt: `${config.systemPrompt}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}` };
+
     if (config.mode === 'local') {
       await new Promise((r) => setTimeout(r, 220));
       const result = processLocal(text);
@@ -203,19 +295,56 @@ async function handleSend() {
         setTimeout(() => router.navigate(result.action.payload), 600);
       }
     } else if (config.mode === 'claude') {
-      const reply = await processClaude(convo, config);
+      const reply = await processClaude(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       renderBubble('jarvis', reply);
     } else if (config.mode === 'ollama') {
-      const reply = await processOllama(convo, config);
+      const reply = await processOllama(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       renderBubble('jarvis', reply);
+    } else if (config.mode === 'servidor') {
+      const reply = await processServer(convo, callConfig);
+      removeTyping();
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
+      renderBubble('jarvis', reply);
+    } else if (config.mode === 'webllm') {
+      /* Streaming: bolha que cresce a cada token; durante o download do
+       * modelo, a bolha de "digitando" mostra o progresso. */
+      let liveText = null;
+      const ensureBubble = () => {
+        if (liveText) return;
+        removeTyping();
+        liveText = h('div', { className: 'jarvis-msg__text' }, '');
+        messagesEl.appendChild(
+          h('div', { className: 'jarvis-msg jarvis-msg--ai' },
+            h('div', { className: 'jarvis-msg__avatar' }, '◉'),
+            h('div', { className: 'jarvis-msg__body' },
+              h('div', { className: 'jarvis-msg__role' }, 'J.A.R.V.I.S.'),
+              liveText
+            )
+          )
+        );
+      };
+      const reply = await processWebLLM(convo, callConfig, {
+        onProgress: (text) => {
+          const tx = document.getElementById('jv-typing')?.querySelector('.jarvis-msg__text');
+          if (tx) { tx.classList.remove('jarvis-typing'); tx.textContent = '⬇ Carregando modelo… ' + text; }
+          scrollDown();
+        },
+        onToken: (partial) => { ensureBubble(); liveText.textContent = partial; scrollDown(); }
+      });
+      removeTyping();
+      if (liveText) { empty(liveText); liveText.appendChild(renderRich(reply)); }
+      else renderBubble('jarvis', reply);
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
     } else if (config.mode === 'agente') {
-      const reply = await processAgent(convo, config, async (toolName, input, result) => {
+      const reply = await processAgent(convo, callConfig, async (toolName, input, result) => {
         removeTyping();
         const summary = `${toolName}(${JSON.stringify(input).slice(0, 50)}) → ${result.ok ? 'ok' : 'erro'}`;
         renderBubble('tool', summary);
@@ -320,6 +449,32 @@ function renderConfigPanel() {
           '⬢ Requer Ollama rodando ("ollama serve"). 100% local. ' +
           'Pode precisar de OLLAMA_ORIGINS=* para aceitar requests do browser.')
       );
+    } else if (config.mode === 'servidor') {
+      const urlInput = h('input', {
+        className: 'input', type: 'text', value: config.serverUrl || 'http://127.0.0.1:8000',
+        oninput: (e) => { config.serverUrl = e.target.value.trim(); saveConfig(config); }
+      });
+      bodyEl.append(
+        h('label', null, h('span', null, 'URL DO SERVIDOR'), urlInput),
+        h('p', { className: 'jarvis-config__warn u-text-muted' },
+          '⊛ Requer o backend Python: cd backend, pip install -r requirements.txt, ' +
+          'defina GEMINI_API_KEY e rode python server.py. Habilita busca web real (Gemini + Google) — a camada 2 do raciocínio.')
+      );
+    } else if (config.mode === 'webllm') {
+      const modelSel = h('select', { className: 'input',
+        onchange: (e) => { config.webllmModel = e.target.value; saveConfig(config); } },
+        ...WEBLLM_MODELS.map((m) =>
+          h('option', { value: m.id, selected: (config.webllmModel || WEBLLM_MODELS[0].id) === m.id }, m.label))
+      );
+      bodyEl.append(
+        h('label', null, h('span', null, 'MODELO (roda no navegador)'), modelSel)
+      );
+      if (!isWebGPUAvailable()) {
+        bodyEl.appendChild(h('p', { className: 'jarvis-config__warn u-text-muted' },
+          '⚠ Este navegador não tem WebGPU. Use Chrome ou Edge atualizados para o modo Navegador.'));
+      }
+      bodyEl.appendChild(h('p', { className: 'jarvis-config__warn u-text-muted' },
+        '⬡ A IA roda na sua máquina via WebGPU. O 1º uso baixa o modelo (~2–4 GB) e guarda em cache; depois funciona offline. Nada é enviado a servidores.'));
     } else {
       bodyEl.appendChild(
         h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: 0 } },
@@ -328,9 +483,26 @@ function renderConfigPanel() {
     }
   }
 
+  function profileRow() {
+    const current = config.profile || 'tatico';
+    return h('label', { className: 'jv-profile' },
+      h('span', null, 'PERFIL DA IA'),
+      h('select', { className: 'input',
+        onchange: (e) => {
+          config.profile = e.target.value;
+          config.systemPrompt = SYSTEM_PROMPTS[e.target.value] || SYSTEM_PROMPTS.tatico;
+          saveConfig(config);
+        } },
+        h('option', { value: 'tatico', selected: current === 'tatico' }, 'Tático — conversa concisa'),
+        h('option', { value: 'engenheiro', selected: current === 'engenheiro' }, 'Engenheiro de código'),
+        h('option', { value: 'nucleo', selected: current === 'nucleo' }, 'Núcleo — raciocínio em 3 camadas')
+      )
+    );
+  }
+
   renderModes();
   renderBody();
-  panel.append(modeBar, bodyEl);
+  panel.append(modeBar, profileRow(), bodyEl);
   return panel;
 }
 
@@ -353,8 +525,8 @@ export function jarvisPage() {
       h('h1', { className: 'page-header__title' }, '◉ J.A.R.V.I.S.'),
       h('p', { className: 'page-header__description' },
         'Assistente de IA do Baluarte — ',
-        h('span', { className: 'u-text-cyan' }, '4 modos'),
-        ': Local, Claude API, Ollama e Agente (com ferramentas). Sessões em IndexedDB.')
+        h('span', { className: 'u-text-cyan' }, '6 modos'),
+        ': Local, Navegador (WebLLM), Claude API, Ollama, Servidor (Gemini + web) e Agente. Sessões em IndexedDB.')
     )
   );
 

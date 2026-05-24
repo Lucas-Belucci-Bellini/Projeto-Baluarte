@@ -29,6 +29,7 @@ import {
 } from '../utils/editor-engine.js';
 import { getLang, langForExt } from '../data/editor-langs.js';
 import * as vfs from '../utils/vfs.js';
+import { setStatus } from '../utils/baluarte-status.js';
 
 let state = null;
 let editorEl = null;
@@ -233,6 +234,7 @@ function renderEditorArea() {
       updateHighlight();
       updateLineNumbers();
       persist();
+      publishStatus();
       /* atualiza char count na toolbar sem rebuildar */
       const meta = document.querySelector('.editor-toolbar__meta .u-mono');
       if (meta) meta.textContent = `${e.target.value.length} chars`;
@@ -263,10 +265,23 @@ function renderEditorArea() {
     lineNumbersEl.textContent = html;
   }
 
+  /* doc 07: publica o resumo do editor para a IA ler (somente leitura). */
+  function publishStatus() {
+    if (!editorEl) return;
+    const val = editorEl.value;
+    setStatus('editor', {
+      linguagem: lang.name,
+      linhas: val ? val.split('\n').length : 0,
+      caracteres: val.length,
+      abaAtiva: activeTab.name
+    });
+  }
+
   /* Inicial */
   setTimeout(() => {
     updateHighlight();
     updateLineNumbers();
+    publishStatus();
   }, 0);
 
   return h(

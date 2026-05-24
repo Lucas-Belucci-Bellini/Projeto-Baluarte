@@ -7,6 +7,7 @@
 
 import { h, cx, empty } from '../../utils/helpers.js';
 import { storage } from '../../core/storage.js';
+import { setStatus } from '../../utils/baluarte-status.js';
 import { caesarPanel } from './caesar.js';
 import { basePanel } from './base.js';
 import { hashPanel } from './hash.js';
@@ -46,6 +47,7 @@ function loadActive() {
 function setActive(id) {
   stopMorse(); /* sempre para áudio ao trocar tab */
   activeId = id;
+  setStatus('cripto', { cifra: id });
   storage.set(STORAGE_KEY, id);
   renderTabs();
   renderPanel();

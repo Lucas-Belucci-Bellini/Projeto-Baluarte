@@ -32,6 +32,7 @@ export const NAV_GROUPS = [
       { path: '/calc-numerica', label: 'Calc. Numérica', icon: '⊞', phase: 1 },
       { path: '/tabela-verdade', label: 'Tabela Verdade', icon: '⊨', phase: 1 },
       { path: '/cripto', label: 'Lab de Cripto', icon: '⚿', phase: 1 },
+      { path: '/esteganografia', label: 'Esteganografia', icon: '⬚', phase: 1 },
       { path: '/regex', label: 'Lab de Regex', icon: '✱', phase: 1 },
       { path: '/graficos', label: 'Gráficos', icon: '◢', phase: 1 },
       { path: '/simbolos', label: 'Símbolos', icon: '❖', phase: 1 },

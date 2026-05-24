@@ -12,6 +12,7 @@
 
 import { h, cx, debounce, mount, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
+import { setStatus } from '../utils/baluarte-status.js';
 import { toast } from '../utils/toast.js';
 import {
   compile,
@@ -265,6 +266,7 @@ function helpRow(op, syms, ex) {
 
 function refresh() {
   if (!outputArea) return;
+  setStatus('tabelaVerdade', { expressao: state.expr });
   empty(outputArea);
 
   const compiled = compile(state.expr);

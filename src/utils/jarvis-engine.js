@@ -16,7 +16,7 @@ import { ARSENAL, TOTAL } from '../data/arsenal.js';
 import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
-import { TOOL_SCHEMAS, runTool } from './jarvis-tools.js';
+import { getToolSchemas, runTool } from './jarvis-tools.js';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
@@ -31,6 +31,8 @@ export function loadConfig() {
     model: 'claude-sonnet-4-6',
     ollamaUrl: 'http://localhost:11434',
     ollamaModel: 'llama3.2',
+    webllmModel: 'Phi-3-mini-4k-instruct-q4f16_1-MLC',
+    serverUrl: 'http://127.0.0.1:8000',
     systemPrompt: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.'
   };
 }
@@ -292,6 +294,40 @@ export async function processOllama(messages, config) {
   return data.message?.content || '(resposta vazia)';
 }
 
+/* ===== Modo SERVIDOR — backend Python + Gemini (busca web) ===== */
+
+/**
+ * Chama o backend Python (backend/server.py) que usa Gemini com busca no
+ * Google. Stateless: envia a conversa inteira; o servidor responde com a
+ * camada 2 (web) habilitada. Requer o servidor rodando em config.serverUrl.
+ * @returns {Promise<string>}
+ */
+export async function processServer(messages, config) {
+  const url = (config.serverUrl || 'http://127.0.0.1:8000').replace(/\/$/, '');
+  const body = {
+    system: config.systemPrompt,
+    messages: messages.map((m) => ({
+      role: m.role === 'jarvis' ? 'assistant' : 'user',
+      content: m.text
+    }))
+  };
+
+  let res;
+  try {
+    res = await fetch(`${url}/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch (e) {
+    throw new Error('Servidor da IA inacessível. Rode backend/server.py e confira a URL nas configurações.');
+  }
+
+  if (!res.ok) throw new Error(`Servidor HTTP ${res.status}`);
+  const data = await res.json();
+  return data.resposta || '(resposta vazia)';
+}
+
 /* ===== Modo AGENTE — Claude API + tool use ===== */
 
 /**
@@ -323,7 +359,7 @@ export async function processAgent(messages, config, onToolCall) {
       max_tokens: 1536,
       system: config.systemPrompt +
         ' Você tem ferramentas para navegar e consultar o Baluarte. Use-as quando fizer sentido.',
-      tools: TOOL_SCHEMAS,
+      tools: getToolSchemas(),
       messages: apiMessages
     };
 
