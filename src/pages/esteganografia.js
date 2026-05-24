@@ -12,6 +12,7 @@
 
 import { h, mount, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
+import { setStatus } from '../utils/baluarte-status.js';
 import {
   textToBytes,
   bytesToText,
@@ -176,6 +177,7 @@ function hidePanel() {
       if (!file) return;
       try {
         carrier = await fileToImageData(file);
+        setStatus('esteganografia', { portadora: `${carrier.width}x${carrier.height}` });
         const maxChars = Math.floor(capacityBits(carrier) / 8) - HEADER_BYTES;
         capacityEl.innerHTML = `Portadora <b>${carrier.width}×${carrier.height}</b> — cabe até <b class="u-text-cyan">${maxChars.toLocaleString('pt-BR')}</b> bytes de mensagem.`;
         capacityEl.classList.remove('u-text-muted');

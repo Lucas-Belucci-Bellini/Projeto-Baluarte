@@ -7,6 +7,7 @@
 
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
+import { setStatus } from '../utils/baluarte-status.js';
 import {
   RENDER_MODES,
   connectMicrophone,
@@ -205,6 +206,7 @@ export function fftPage() {
         onclick: () => {
           activeMode = m.id;
           setMode(m.id);
+          setStatus('fft', { modoVisual: m.id, fonte: getSourceType() });
           document.querySelectorAll('.fft-mode').forEach((b) =>
             b.classList.toggle('is-active', b.dataset.m === m.id)
           );
