@@ -12,3 +12,9 @@ Thumbs.db
 .vscode/
 *.tmp
 *.swp
+
+# Python (backend)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
