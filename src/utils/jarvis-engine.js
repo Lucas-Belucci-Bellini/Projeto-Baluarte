@@ -16,7 +16,7 @@ import { ARSENAL, TOTAL } from '../data/arsenal.js';
 import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
-import { TOOL_SCHEMAS, runTool } from './jarvis-tools.js';
+import { getToolSchemas, runTool } from './jarvis-tools.js';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
@@ -324,7 +324,7 @@ export async function processAgent(messages, config, onToolCall) {
       max_tokens: 1536,
       system: config.systemPrompt +
         ' Você tem ferramentas para navegar e consultar o Baluarte. Use-as quando fizer sentido.',
-      tools: TOOL_SCHEMAS,
+      tools: getToolSchemas(),
       messages: apiMessages
     };
 

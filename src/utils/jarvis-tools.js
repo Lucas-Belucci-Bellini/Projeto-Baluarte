@@ -97,6 +97,17 @@ export const TOOL_SCHEMAS = [
     name: 'read_site_state',
     description: 'Lê um snapshot (somente leitura) do estado vivo do site: página ativa e resumos publicados pelas ferramentas abertas (editor, color studio, logic sim…). Use para diagnosticar sem o operador precisar descrever o que está na tela.',
     input_schema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'set_color',
+    description: 'Define a cor ativa do Color Studio e abre a ferramenta. Use quando o operador pedir para ver, usar ou analisar uma cor específica (hex).',
+    input_schema: {
+      type: 'object',
+      properties: {
+        hex: { type: 'string', description: 'Cor em hexadecimal, ex: #00f0ff' }
+      },
+      required: ['hex']
+    }
   }
 ];
 
@@ -184,15 +195,51 @@ const IMPLEMENTATIONS = {
 
   read_site_state() {
     return { ok: true, state: getStatusSnapshot() };
+  },
+
+  set_color({ hex }) {
+    const m = /^#?([0-9a-fA-F]{6})$/.exec(String(hex || '').trim());
+    if (!m) return { ok: false, error: 'hex inválido (use #rrggbb)' };
+    const norm = '#' + m[1].toLowerCase();
+    storage.set('color-studio:color', norm);
+    setTimeout(() => router.navigate('/color-studio'), 400);
+    return { ok: true, color: norm };
   }
 };
 
+/* ===== Catálogo central extensível (doc 06) =====
+ * Os built-ins acima formam o catálogo base. Outras partes do site podem
+ * registrar novas ferramentas em runtime via registerTool() — elas passam a
+ * ficar automaticamente disponíveis para o agente, sem editar este arquivo. */
+
+const dynamicTools = new Map();
+
 /**
- * Executa uma ferramenta pelo nome.
+ * Registra uma ferramenta nova no catálogo do agente.
+ * @param {{name:string, description:string, input_schema:object, run:Function}} tool
+ */
+export function registerTool(tool) {
+  if (!tool || !tool.name || typeof tool.run !== 'function') return false;
+  dynamicTools.set(tool.name, tool);
+  return true;
+}
+
+/** Schemas (formato Claude) de TODAS as ferramentas: built-ins + registradas. */
+export function getToolSchemas() {
+  const extra = [...dynamicTools.values()].map((t) => ({
+    name: t.name,
+    description: t.description,
+    input_schema: t.input_schema || { type: 'object', properties: {} }
+  }));
+  return [...TOOL_SCHEMAS, ...extra];
+}
+
+/**
+ * Executa uma ferramenta pelo nome (built-in ou registrada).
  * @returns {object} resultado serializável
  */
 export function runTool(name, input) {
-  const impl = IMPLEMENTATIONS[name];
+  const impl = IMPLEMENTATIONS[name] || dynamicTools.get(name)?.run;
   if (!impl) return { ok: false, error: `ferramenta desconhecida: ${name}` };
   try {
     return impl(input || {});
