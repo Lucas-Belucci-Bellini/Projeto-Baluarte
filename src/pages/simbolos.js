@@ -11,6 +11,7 @@ import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { SYMBOL_CATEGORIES, describe, getAllSymbols, countTotal } from '../data/symbols.js';
+import { setStatus } from '../utils/baluarte-status.js';
 
 const STORAGE_KEY = 'simbolos:state';
 
@@ -45,6 +46,7 @@ function toggleFavorite(char) {
 
 function render() {
   if (!gridEl) return;
+  setStatus('simbolos', { categoria: state.activeCat, busca: state.search });
   empty(gridEl);
 
   let pool;

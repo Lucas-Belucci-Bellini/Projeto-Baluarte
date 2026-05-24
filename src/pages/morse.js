@@ -10,6 +10,7 @@
 import { h, cx } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { setStatus } from '../utils/baluarte-status.js';
 import {
   MORSE_TABLE,
   textToMorse,
@@ -219,6 +220,7 @@ export function morsePage() {
   }
 
   function render() {
+    setStatus('morse', { modo: mode, caracteres: inputArea.value.length });
     const result = mode === 'encode'
       ? textToMorse(inputArea.value)
       : morseToText(inputArea.value);

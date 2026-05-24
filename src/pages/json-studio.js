@@ -8,6 +8,7 @@
 import { h, cx, empty, debounce } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { setStatus as publishStatus } from '../utils/baluarte-status.js';
 
 const STORAGE_KEY = 'json-studio:input';
 
@@ -118,6 +119,7 @@ export function jsonStudioPage() {
   /* Revalida o conteúdo atual e atualiza status + árvore. */
   function revalidate() {
     const text = inputArea.value.trim();
+    publishStatus('jsonStudio', { caracteres: text.length });
     empty(treeWrap);
     if (!text) {
       setStatus('idle', 'Aguardando JSON…');
