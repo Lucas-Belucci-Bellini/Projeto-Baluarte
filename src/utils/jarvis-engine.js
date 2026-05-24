@@ -32,6 +32,7 @@ export function loadConfig() {
     ollamaUrl: 'http://localhost:11434',
     ollamaModel: 'llama3.2',
     webllmModel: 'Phi-3-mini-4k-instruct-q4f16_1-MLC',
+    serverUrl: 'http://127.0.0.1:8000',
     systemPrompt: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.'
   };
 }
@@ -291,6 +292,40 @@ export async function processOllama(messages, config) {
   if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
   const data = await res.json();
   return data.message?.content || '(resposta vazia)';
+}
+
+/* ===== Modo SERVIDOR — backend Python + Gemini (busca web) ===== */
+
+/**
+ * Chama o backend Python (backend/server.py) que usa Gemini com busca no
+ * Google. Stateless: envia a conversa inteira; o servidor responde com a
+ * camada 2 (web) habilitada. Requer o servidor rodando em config.serverUrl.
+ * @returns {Promise<string>}
+ */
+export async function processServer(messages, config) {
+  const url = (config.serverUrl || 'http://127.0.0.1:8000').replace(/\/$/, '');
+  const body = {
+    system: config.systemPrompt,
+    messages: messages.map((m) => ({
+      role: m.role === 'jarvis' ? 'assistant' : 'user',
+      content: m.text
+    }))
+  };
+
+  let res;
+  try {
+    res = await fetch(`${url}/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch (e) {
+    throw new Error('Servidor da IA inacessível. Rode backend/server.py e confira a URL nas configurações.');
+  }
+
+  if (!res.ok) throw new Error(`Servidor HTTP ${res.status}`);
+  const data = await res.json();
+  return data.resposta || '(resposta vazia)';
 }
 
 /* ===== Modo AGENTE — Claude API + tool use ===== */

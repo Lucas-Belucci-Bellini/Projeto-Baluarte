@@ -1,7 +1,7 @@
 /**
  * Página /jarvis — J.A.R.V.I.S. completo (Fase 20).
  *
- * 5 modos: local, webllm (navegador), claude, ollama, agente.
+ * 6 modos: local, webllm (navegador), claude, ollama, servidor (gemini), agente.
  * Sessões múltiplas em IndexedDB. Tool calls visíveis no modo agente.
  */
 
@@ -10,7 +10,7 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import {
   loadConfig, saveConfig,
-  processLocal, processClaude, processOllama, processAgent
+  processLocal, processClaude, processOllama, processServer, processAgent
 } from '../utils/jarvis-engine.js';
 import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS
@@ -28,6 +28,7 @@ const MODES = [
   { id: 'webllm', label: 'Navegador', icon: '⬡', badge: 'cyan', desc: 'IA real 100% no navegador via WebLLM (WebGPU). Sem servidor, sem API key. 1º uso baixa o modelo; depois roda offline.' },
   { id: 'claude', label: 'Claude', icon: '◉', badge: 'magenta', desc: 'Conversa livre via Claude API. Requer API key da Anthropic.' },
   { id: 'ollama', label: 'Ollama', icon: '⬢', badge: 'success', desc: 'Modelo local via Ollama (ollama serve). 100% privado.' },
+  { id: 'servidor', label: 'Servidor', icon: '⊛', badge: 'success', desc: 'Backend Python + Gemini com busca web real (Google). Habilita a camada 2 do raciocínio. Requer rodar backend/server.py.' },
   { id: 'agente', label: 'Agente', icon: '⚛', badge: 'warning', desc: 'Claude com ferramentas: navega, consulta e executa ações reais.' }
 ];
 
@@ -111,7 +112,7 @@ function renderMessages() {
         h('div', { className: 'jarvis-welcome__icon' }, '◉'),
         h('div', { className: 'jarvis-welcome__title' }, 'J.A.R.V.I.S. ONLINE'),
         h('div', { className: 'jarvis-welcome__text u-text-muted' },
-          'Crie uma conversa ou digite abaixo. 5 modos: Local, Navegador, Claude, Ollama e Agente.')
+          'Crie uma conversa ou digite abaixo. 6 modos: Local, Navegador, Claude, Ollama, Servidor e Agente.')
       )
     );
     return;
@@ -305,6 +306,12 @@ async function handleSend() {
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       renderBubble('jarvis', reply);
+    } else if (config.mode === 'servidor') {
+      const reply = await processServer(convo, callConfig);
+      removeTyping();
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
+      renderBubble('jarvis', reply);
     } else if (config.mode === 'webllm') {
       /* Streaming: bolha que cresce a cada token; durante o download do
        * modelo, a bolha de "digitando" mostra o progresso. */
@@ -442,6 +449,17 @@ function renderConfigPanel() {
           '⬢ Requer Ollama rodando ("ollama serve"). 100% local. ' +
           'Pode precisar de OLLAMA_ORIGINS=* para aceitar requests do browser.')
       );
+    } else if (config.mode === 'servidor') {
+      const urlInput = h('input', {
+        className: 'input', type: 'text', value: config.serverUrl || 'http://127.0.0.1:8000',
+        oninput: (e) => { config.serverUrl = e.target.value.trim(); saveConfig(config); }
+      });
+      bodyEl.append(
+        h('label', null, h('span', null, 'URL DO SERVIDOR'), urlInput),
+        h('p', { className: 'jarvis-config__warn u-text-muted' },
+          '⊛ Requer o backend Python: cd backend, pip install -r requirements.txt, ' +
+          'defina GEMINI_API_KEY e rode python server.py. Habilita busca web real (Gemini + Google) — a camada 2 do raciocínio.')
+      );
     } else if (config.mode === 'webllm') {
       const modelSel = h('select', { className: 'input',
         onchange: (e) => { config.webllmModel = e.target.value; saveConfig(config); } },
@@ -507,8 +525,8 @@ export function jarvisPage() {
       h('h1', { className: 'page-header__title' }, '◉ J.A.R.V.I.S.'),
       h('p', { className: 'page-header__description' },
         'Assistente de IA do Baluarte — ',
-        h('span', { className: 'u-text-cyan' }, '5 modos'),
-        ': Local, Navegador (WebLLM), Claude API, Ollama e Agente (com ferramentas). Sessões em IndexedDB.')
+        h('span', { className: 'u-text-cyan' }, '6 modos'),
+        ': Local, Navegador (WebLLM), Claude API, Ollama, Servidor (Gemini + web) e Agente. Sessões em IndexedDB.')
     )
   );
 
