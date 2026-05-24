@@ -10,7 +10,8 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import {
   loadConfig, saveConfig,
-  processLocal, processClaude, processOllama, processServer, processAgent
+  processLocal, processClaude, processOllama, processServer, processAgent,
+  healthCheckServer
 } from '../utils/jarvis-engine.js';
 import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS
@@ -359,10 +360,37 @@ async function handleSend() {
     }
   } catch (e) {
     removeTyping();
-    const errText = '⚠ Erro: ' + e.message;
-    renderBubble('jarvis', errText);
-    await addMessage(activeSession.id, 'jarvis', errText);
-    toast(e.message, { type: 'danger' });
+    /* Erros de configuração/conexão (servidor/ollama fora do ar, sem API key,
+     * sem WebGPU) não são "falha" — são setup. Mostramos um aviso acionável
+     * com a opção de responder agora no modo Local, que sempre funciona. */
+    const isSetup = config.mode !== 'local' &&
+      /inacess|não configurada|nao configurada|webgpu|timeout/i.test(e.message);
+    const prefix = isSetup ? '⚙ ' : '⚠ ';
+    const msgText = prefix + e.message;
+
+    const textEl = h('div', { className: 'jarvis-msg__text' }, h('div', null, msgText));
+    if (isSetup) {
+      textEl.appendChild(h('button', {
+        className: 'btn btn--ghost btn--sm', style: { marginTop: '8px' },
+        onclick: async () => {
+          const r = processLocal(text);
+          const jm = await addMessage(activeSession.id, 'jarvis', r.text);
+          messages.push(jm);
+          renderBubble('jarvis', r.text);
+          if (r.action?.type === 'navigate') setTimeout(() => router.navigate(r.action.payload), 600);
+          scrollDown();
+        }
+      }, '↩ Responder agora no modo Local'));
+    }
+    messagesEl.appendChild(
+      h('div', { className: 'jarvis-msg jarvis-msg--ai' },
+        h('div', { className: 'jarvis-msg__avatar' }, '◉'),
+        h('div', { className: 'jarvis-msg__body' },
+          h('div', { className: 'jarvis-msg__role' }, 'J.A.R.V.I.S.'),
+          textEl))
+    );
+    await addMessage(activeSession.id, 'jarvis', msgText);
+    toast(e.message, { type: isSetup ? 'warning' : 'danger' });
   } finally {
     busy = false;
     scrollDown();
@@ -454,8 +482,25 @@ function renderConfigPanel() {
         className: 'input', type: 'text', value: config.serverUrl || 'http://127.0.0.1:8000',
         oninput: (e) => { config.serverUrl = e.target.value.trim(); saveConfig(config); }
       });
+      const testStatus = h('span', { className: 'u-text-muted', style: { fontSize: '12px' } }, '');
+      const testBtn = h('button', {
+        className: 'btn btn--ghost btn--sm',
+        onclick: async () => {
+          testStatus.textContent = 'testando…';
+          testStatus.className = 'u-text-muted';
+          try {
+            const info = await healthCheckServer(config.serverUrl);
+            testStatus.textContent = info.hasKey ? '✓ online · chave Gemini OK' : '✓ online · falta GEMINI_API_KEY';
+            testStatus.className = info.hasKey ? 'u-text-cyan' : 'u-text-warning';
+          } catch {
+            testStatus.textContent = '✗ offline — rode backend/server.py';
+            testStatus.className = 'u-text-muted';
+          }
+        }
+      }, 'Testar conexão');
       bodyEl.append(
         h('label', null, h('span', null, 'URL DO SERVIDOR'), urlInput),
+        h('div', { style: { display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' } }, testBtn, testStatus),
         h('p', { className: 'jarvis-config__warn u-text-muted' },
           '⊛ Requer o backend Python: cd backend, pip install -r requirements.txt, ' +
           'defina GEMINI_API_KEY e rode python server.py. Habilita busca web real (Gemini + Google) — a camada 2 do raciocínio.')
