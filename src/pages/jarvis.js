@@ -1,7 +1,7 @@
 /**
  * Página /jarvis — J.A.R.V.I.S. completo (Fase 20).
  *
- * 4 modos: local, claude, ollama, agente.
+ * 5 modos: local, webllm (navegador), claude, ollama, agente.
  * Sessões múltiplas em IndexedDB. Tool calls visíveis no modo agente.
  */
 
@@ -13,12 +13,16 @@ import {
   processLocal, processClaude, processOllama, processAgent
 } from '../utils/jarvis-engine.js';
 import {
+  processWebLLM, isWebGPUAvailable, WEBLLM_MODELS
+} from '../utils/jarvis-webllm.js';
+import {
   createSession, listSessions, updateSession, deleteSession,
   addMessage, getMessages, isUsingFallback
 } from '../utils/jarvis-memory.js';
 
 const MODES = [
   { id: 'local',  label: 'Local',  icon: '◆', badge: 'cyan',    desc: 'Assistente de regras. Offline, sem custo. Navega e consulta o Baluarte.' },
+  { id: 'webllm', label: 'Navegador', icon: '⬡', badge: 'cyan', desc: 'IA real 100% no navegador via WebLLM (WebGPU). Sem servidor, sem API key. 1º uso baixa o modelo; depois roda offline.' },
   { id: 'claude', label: 'Claude', icon: '◉', badge: 'magenta', desc: 'Conversa livre via Claude API. Requer API key da Anthropic.' },
   { id: 'ollama', label: 'Ollama', icon: '⬢', badge: 'success', desc: 'Modelo local via Ollama (ollama serve). 100% privado.' },
   { id: 'agente', label: 'Agente', icon: '⚛', badge: 'warning', desc: 'Claude com ferramentas: navega, consulta e executa ações reais.' }
@@ -104,7 +108,7 @@ function renderMessages() {
         h('div', { className: 'jarvis-welcome__icon' }, '◉'),
         h('div', { className: 'jarvis-welcome__title' }, 'J.A.R.V.I.S. ONLINE'),
         h('div', { className: 'jarvis-welcome__text u-text-muted' },
-          'Crie uma conversa ou digite abaixo. 4 modos: Local, Claude, Ollama e Agente.')
+          'Crie uma conversa ou digite abaixo. 5 modos: Local, Navegador, Claude, Ollama e Agente.')
       )
     );
     return;
@@ -214,6 +218,37 @@ async function handleSend() {
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       renderBubble('jarvis', reply);
+    } else if (config.mode === 'webllm') {
+      /* Streaming: bolha que cresce a cada token; durante o download do
+       * modelo, a bolha de "digitando" mostra o progresso. */
+      let liveText = null;
+      const ensureBubble = () => {
+        if (liveText) return;
+        removeTyping();
+        liveText = h('div', { className: 'jarvis-msg__text' }, '');
+        messagesEl.appendChild(
+          h('div', { className: 'jarvis-msg jarvis-msg--ai' },
+            h('div', { className: 'jarvis-msg__avatar' }, '◉'),
+            h('div', { className: 'jarvis-msg__body' },
+              h('div', { className: 'jarvis-msg__role' }, 'J.A.R.V.I.S.'),
+              liveText
+            )
+          )
+        );
+      };
+      const reply = await processWebLLM(convo, config, {
+        onProgress: (text) => {
+          const tx = document.getElementById('jv-typing')?.querySelector('.jarvis-msg__text');
+          if (tx) { tx.classList.remove('jarvis-typing'); tx.textContent = '⬇ Carregando modelo… ' + text; }
+          scrollDown();
+        },
+        onToken: (partial) => { ensureBubble(); liveText.textContent = partial; scrollDown(); }
+      });
+      removeTyping();
+      if (liveText) liveText.textContent = reply;
+      else renderBubble('jarvis', reply);
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
     } else if (config.mode === 'agente') {
       const reply = await processAgent(convo, config, async (toolName, input, result) => {
         removeTyping();
@@ -320,6 +355,21 @@ function renderConfigPanel() {
           '⬢ Requer Ollama rodando ("ollama serve"). 100% local. ' +
           'Pode precisar de OLLAMA_ORIGINS=* para aceitar requests do browser.')
       );
+    } else if (config.mode === 'webllm') {
+      const modelSel = h('select', { className: 'input',
+        onchange: (e) => { config.webllmModel = e.target.value; saveConfig(config); } },
+        ...WEBLLM_MODELS.map((m) =>
+          h('option', { value: m.id, selected: (config.webllmModel || WEBLLM_MODELS[0].id) === m.id }, m.label))
+      );
+      bodyEl.append(
+        h('label', null, h('span', null, 'MODELO (roda no navegador)'), modelSel)
+      );
+      if (!isWebGPUAvailable()) {
+        bodyEl.appendChild(h('p', { className: 'jarvis-config__warn u-text-muted' },
+          '⚠ Este navegador não tem WebGPU. Use Chrome ou Edge atualizados para o modo Navegador.'));
+      }
+      bodyEl.appendChild(h('p', { className: 'jarvis-config__warn u-text-muted' },
+        '⬡ A IA roda na sua máquina via WebGPU. O 1º uso baixa o modelo (~2–4 GB) e guarda em cache; depois funciona offline. Nada é enviado a servidores.'));
     } else {
       bodyEl.appendChild(
         h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: 0 } },
@@ -353,8 +403,8 @@ export function jarvisPage() {
       h('h1', { className: 'page-header__title' }, '◉ J.A.R.V.I.S.'),
       h('p', { className: 'page-header__description' },
         'Assistente de IA do Baluarte — ',
-        h('span', { className: 'u-text-cyan' }, '4 modos'),
-        ': Local, Claude API, Ollama e Agente (com ferramentas). Sessões em IndexedDB.')
+        h('span', { className: 'u-text-cyan' }, '5 modos'),
+        ': Local, Navegador (WebLLM), Claude API, Ollama e Agente (com ferramentas). Sessões em IndexedDB.')
     )
   );
 

@@ -74,7 +74,7 @@ const TOOLS = [
 
   /* === Sistema (4) === */
   { id: 'cotacoes', name: 'Cotações Live', category: 'sistema', icon: '$', phase: 1, desc: 'Câmbio (AwesomeAPI) + crypto (CoinGecko) em tempo real + conversor.' },
-  { id: 'jarvis', name: 'J.A.R.V.I.S.', category: 'sistema', icon: '◉', phase: 1, desc: 'Assistente IA — modo local (regras) ou Claude API. 4 modos completos na Fase 20.' },
+  { id: 'jarvis', name: 'J.A.R.V.I.S.', category: 'sistema', icon: '◉', phase: 1, tag: 'novo', desc: 'Assistente IA em 5 modos: Local (regras), Navegador (WebLLM — IA real offline via WebGPU, sem API), Claude API, Ollama e Agente (com ferramentas).' },
   { id: 'ia-proprietaria', name: 'IA Proprietária Mark 11', category: 'sistema', icon: '◎', phase: 1, desc: 'Sistema de Skills dinâmico (SKILL.md). Capacidades modulares e componíveis da IA embarcada do Baluarte.' },
   { id: 'config', name: 'Configurações', category: 'sistema', icon: '⚙', phase: 1, desc: 'Tema, atalhos, idioma, limpeza de cache.' }
 ];

@@ -95,7 +95,8 @@ São **36 rotas**, todas implementadas. O menu lateral organiza tudo em 6 grupos
 - **Economia** — cotações de câmbio e cripto ao vivo.
 
 ### Sistema
-- **J.A.R.V.I.S.** — assistente em 4 modos (local, Claude API, Ollama, agente).
+- **J.A.R.V.I.S.** — assistente em 5 modos (local, Navegador/WebLLM, Claude API,
+  Ollama, agente). O modo Navegador roda um LLM real 100% no cliente via WebGPU.
 - **IA Proprietária Mark 11** — sistema de Skills modular.
 - **Perfil** — identidade do operador, estatísticas e configurações.
 - **Sobre o Projeto** — a história das 13 iterações.
