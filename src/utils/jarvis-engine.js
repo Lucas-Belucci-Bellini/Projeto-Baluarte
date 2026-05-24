@@ -22,6 +22,30 @@ const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
 const MAX_HISTORY = 100;
 
+/* ===== Rede com timeout (robustez) ===== */
+
+/** fetch com timeout via AbortController. Lança Error('timeout') ao estourar. */
+async function fetchWithTimeout(url, options = {}, ms = 30000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: ctrl.signal });
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('timeout');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Testa o backend Python (modo Servidor). Retorna o JSON de /health. */
+export async function healthCheckServer(serverUrl) {
+  const url = (serverUrl || 'http://127.0.0.1:8000').replace(/\/$/, '');
+  const res = await fetchWithTimeout(`${url}/health`, {}, 8000);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
 /* ===== Config ===== */
 
 export function loadConfig() {
@@ -280,12 +304,13 @@ export async function processOllama(messages, config) {
 
   let res;
   try {
-    res = await fetch(`${url}/api/chat`, {
+    res = await fetchWithTimeout(`${url}/api/chat`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body)
     });
   } catch (e) {
+    if (e.message === 'timeout') throw new Error('Ollama demorou demais a responder (timeout). O modelo pode estar carregando — tente de novo.');
     throw new Error('Ollama inacessível. Rode "ollama serve" e verifique a URL nas configurações.');
   }
 
@@ -314,12 +339,13 @@ export async function processServer(messages, config) {
 
   let res;
   try {
-    res = await fetch(`${url}/chat`, {
+    res = await fetchWithTimeout(`${url}/chat`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body)
     });
   } catch (e) {
+    if (e.message === 'timeout') throw new Error('O servidor da IA demorou demais a responder (timeout). Tente de novo.');
     throw new Error('Servidor da IA inacessível. Rode backend/server.py e confira a URL nas configurações.');
   }
 
