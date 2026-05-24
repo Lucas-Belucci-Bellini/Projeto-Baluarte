@@ -15,6 +15,8 @@ import {
 import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS
 } from '../utils/jarvis-webllm.js';
+import { highlight } from '../utils/syntax-highlight.js';
+import { LANGS, langForExt } from '../data/editor-langs.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
   addMessage, getMessages, isUsingFallback
@@ -129,6 +131,70 @@ function renderMessages() {
   scrollDown();
 }
 
+/* ===== Perfis de system prompt (doc 05: conversa → engenheiro) ===== */
+const SYSTEM_PROMPTS = {
+  tatico: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.',
+  engenheiro: 'Você é o J.A.R.V.I.S. em modo engenheiro de software sênior do Projeto Baluarte. Responda em português com código limpo, otimizado e comentários quando ajudarem. Sempre coloque código em blocos markdown com a linguagem (```js, ```python…). Prefira o estilo do Baluarte: JavaScript puro (ES2022), sem framework e sem TypeScript.'
+};
+
+/* ===== Render de respostas com blocos de código realçados (doc 05) ===== */
+
+const LANG_ALIASES = {
+  js: 'javascript', mjs: 'javascript', ts: 'typescript', py: 'python',
+  sh: 'shell', bash: 'shell', zsh: 'shell', shell: 'shell', console: 'shell',
+  html: 'html', htm: 'html', xml: 'html', md: 'markdown', markdown: 'markdown',
+  'c++': 'cpp', cpp: 'cpp', 'c#': 'csharp', cs: 'csharp', yml: 'yaml'
+};
+
+function resolveLang(tag) {
+  if (!tag) return LANGS[0];
+  const t = String(tag).toLowerCase();
+  const id = LANG_ALIASES[t] || t;
+  return LANGS.find((l) => l.id === id) || langForExt(t) || LANGS[0];
+}
+
+function codeBlock(code, langTag) {
+  const lang = resolveLang(langTag);
+  const codeEl = h('code', { className: 'jv-code__src' });
+  /* highlight() escapa o HTML do código antes de colorir — seguro p/ saída da IA */
+  codeEl.innerHTML = highlight(code, lang);
+  const copyBtn = h('button', {
+    className: 'jv-code__copy', title: 'Copiar código', type: 'button',
+    onclick: async () => {
+      try { await navigator.clipboard.writeText(code); toast('Código copiado.', { type: 'success' }); }
+      catch { toast('Não consegui copiar.', { type: 'warning' }); }
+    }
+  }, '⧉ Copiar');
+  return h('div', { className: 'jv-code__wrap' },
+    h('div', { className: 'jv-code__bar' },
+      h('span', { className: 'jv-code__lang u-mono' }, lang.name || langTag || 'texto'),
+      copyBtn),
+    h('pre', { className: 'jv-code' }, codeEl)
+  );
+}
+
+/** Converte texto com fences markdown ``` em nós: texto + blocos de código. */
+function renderRich(text) {
+  const frag = document.createDocumentFragment();
+  const parts = String(text).split('```');
+  parts.forEach((part, i) => {
+    if (i % 2 === 0) {
+      const clean = part.replace(/^\n+|\n+$/g, '');
+      if (clean) frag.appendChild(h('span', { className: 'jv-rt' }, clean));
+    } else {
+      const nl = part.indexOf('\n');
+      let langTag = '';
+      let code = part;
+      if (nl >= 0) {
+        const first = part.slice(0, nl).trim();
+        if (/^[a-z0-9+#.\-]{0,15}$/i.test(first)) { langTag = first; code = part.slice(nl + 1); }
+      }
+      frag.appendChild(codeBlock(code.replace(/\n$/, ''), langTag));
+    }
+  });
+  return frag;
+}
+
 function renderBubble(role, text) {
   if (role === 'tool') {
     messagesEl.appendChild(
@@ -140,12 +206,15 @@ function renderBubble(role, text) {
     return;
   }
   const isJarvis = role === 'jarvis';
+  const textEl = h('div', { className: 'jarvis-msg__text' });
+  if (isJarvis) textEl.appendChild(renderRich(text));
+  else textEl.textContent = text;
   messagesEl.appendChild(
     h('div', { className: cx('jarvis-msg', isJarvis ? 'jarvis-msg--ai' : 'jarvis-msg--user') },
       h('div', { className: 'jarvis-msg__avatar' }, isJarvis ? '◉' : '◔'),
       h('div', { className: 'jarvis-msg__body' },
         h('div', { className: 'jarvis-msg__role' }, isJarvis ? 'J.A.R.V.I.S.' : 'Operador'),
-        h('div', { className: 'jarvis-msg__text' }, text)
+        textEl
       )
     )
   );
@@ -245,7 +314,7 @@ async function handleSend() {
         onToken: (partial) => { ensureBubble(); liveText.textContent = partial; scrollDown(); }
       });
       removeTyping();
-      if (liveText) liveText.textContent = reply;
+      if (liveText) { empty(liveText); liveText.appendChild(renderRich(reply)); }
       else renderBubble('jarvis', reply);
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
@@ -378,9 +447,25 @@ function renderConfigPanel() {
     }
   }
 
+  function profileRow() {
+    const current = config.profile || 'tatico';
+    return h('label', { className: 'jv-profile' },
+      h('span', null, 'PERFIL DA IA'),
+      h('select', { className: 'input',
+        onchange: (e) => {
+          config.profile = e.target.value;
+          config.systemPrompt = SYSTEM_PROMPTS[e.target.value] || SYSTEM_PROMPTS.tatico;
+          saveConfig(config);
+        } },
+        h('option', { value: 'tatico', selected: current === 'tatico' }, 'Tático — conversa concisa'),
+        h('option', { value: 'engenheiro', selected: current === 'engenheiro' }, 'Engenheiro de código')
+      )
+    );
+  }
+
   renderModes();
   renderBody();
-  panel.append(modeBar, bodyEl);
+  panel.append(modeBar, profileRow(), bodyEl);
   return panel;
 }
 
