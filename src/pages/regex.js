@@ -10,6 +10,7 @@
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { setStatus } from '../utils/baluarte-status.js';
 
 const STORAGE_KEY = 'regex:state';
 
@@ -94,6 +95,7 @@ function escapeHtml(s) {
 
 function render() {
   if (!resultArea) return;
+  setStatus('regex', { padrao: state.pattern, flags: state.flags });
   empty(resultArea);
 
   if (!state.pattern) {

@@ -12,6 +12,7 @@ import { h, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { encodeQR } from '../utils/qr-encoder.js';
+import { setStatus } from '../utils/baluarte-status.js';
 
 const STORAGE_KEY = 'qr-studio:text';
 const MODE_KEY = 'qr-studio:mode';
@@ -99,6 +100,7 @@ export function qrStudioPage() {
   function setMode(mode) {
     if (current && current.stop) current.stop();
     storage.set(MODE_KEY, mode);
+    setStatus('qrStudio', { modo: mode });
     Object.entries(modeBtns).forEach(([id, btn]) =>
       btn.classList.toggle('is-active', id === mode));
     current = mode === 'ler' ? buildReadView() : buildGenerateView();
