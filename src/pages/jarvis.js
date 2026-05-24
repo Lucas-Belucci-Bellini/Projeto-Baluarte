@@ -17,6 +17,7 @@ import {
 } from '../utils/jarvis-webllm.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
+import { getStatusText } from '../utils/baluarte-status.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
   addMessage, getMessages, isUsingFallback
@@ -265,6 +266,12 @@ async function handleSend() {
   try {
     const convo = messages.filter((m) => m.role === 'user' || m.role === 'jarvis');
 
+    /* doc 07: injeta o estado vivo do site como contexto oculto (somente
+     * leitura). Cópia por chamada — não persiste no systemPrompt salvo. */
+    const callConfig = config.mode === 'local'
+      ? config
+      : { ...config, systemPrompt: `${config.systemPrompt}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}` };
+
     if (config.mode === 'local') {
       await new Promise((r) => setTimeout(r, 220));
       const result = processLocal(text);
@@ -276,13 +283,13 @@ async function handleSend() {
         setTimeout(() => router.navigate(result.action.payload), 600);
       }
     } else if (config.mode === 'claude') {
-      const reply = await processClaude(convo, config);
+      const reply = await processClaude(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       renderBubble('jarvis', reply);
     } else if (config.mode === 'ollama') {
-      const reply = await processOllama(convo, config);
+      const reply = await processOllama(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
@@ -305,7 +312,7 @@ async function handleSend() {
           )
         );
       };
-      const reply = await processWebLLM(convo, config, {
+      const reply = await processWebLLM(convo, callConfig, {
         onProgress: (text) => {
           const tx = document.getElementById('jv-typing')?.querySelector('.jarvis-msg__text');
           if (tx) { tx.classList.remove('jarvis-typing'); tx.textContent = '⬇ Carregando modelo… ' + text; }
@@ -319,7 +326,7 @@ async function handleSend() {
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
     } else if (config.mode === 'agente') {
-      const reply = await processAgent(convo, config, async (toolName, input, result) => {
+      const reply = await processAgent(convo, callConfig, async (toolName, input, result) => {
         removeTyping();
         const summary = `${toolName}(${JSON.stringify(input).slice(0, 50)}) → ${result.ok ? 'ok' : 'erro'}`;
         renderBubble('tool', summary);

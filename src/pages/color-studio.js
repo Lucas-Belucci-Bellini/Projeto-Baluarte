@@ -8,6 +8,7 @@
 import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { setStatus } from '../utils/baluarte-status.js';
 
 const STORAGE_KEY = 'color-studio:color';
 
@@ -145,6 +146,7 @@ export function colorStudioPage() {
       b: clamp(Math.round(rgb.b), 0, 255)
     };
     storage.set(STORAGE_KEY, rgbToHex(color));
+    setStatus('colorStudio', { corAtual: rgbToHex(color), rgb: `${color.r},${color.g},${color.b}` });
     syncFns.forEach((fn) => fn());
   }
 

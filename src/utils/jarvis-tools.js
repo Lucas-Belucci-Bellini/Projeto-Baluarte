@@ -12,6 +12,8 @@ import { EQUIPES, findEquipe, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, findArc, ARCS_TOTAL } from '../data/cronicas.js';
 import { storage } from '../core/storage.js';
 import { evaluate } from './calc-engine.js';
+import { getStatusSnapshot } from './baluarte-status.js';
+import { VERSION } from '../data/version.js';
 
 /* ===== Schema das ferramentas (formato Claude API) ===== */
 
@@ -90,6 +92,11 @@ export const TOOL_SCHEMAS = [
     name: 'system_status',
     description: 'Retorna o status atual do sistema Baluarte (fase, contagens, módulos).',
     input_schema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'read_site_state',
+    description: 'Lê um snapshot (somente leitura) do estado vivo do site: página ativa e resumos publicados pelas ferramentas abertas (editor, color studio, logic sim…). Use para diagnosticar sem o operador precisar descrever o que está na tela.',
+    input_schema: { type: 'object', properties: {} }
   }
 ];
 
@@ -166,14 +173,17 @@ const IMPLEMENTATIONS = {
     return {
       ok: true,
       status: {
-        version: 'v0.20.0',
-        phase: '20/21',
+        version: `v${VERSION}`,
         arsenal: TOTAL,
         equipes: TOTAL_EQUIPES,
         arcos: ARCS_TOTAL,
         nucleo: 'ONLINE'
       }
     };
+  },
+
+  read_site_state() {
+    return { ok: true, state: getStatusSnapshot() };
   }
 };
 

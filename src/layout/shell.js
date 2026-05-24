@@ -8,6 +8,7 @@ import { renderHeader } from './header.js';
 import { renderSidebar, wireSidebar, updateActiveNav } from './sidebar.js';
 import { bus } from '../core/events.js';
 import { appState } from '../core/state.js';
+import { setCurrentFunction } from '../utils/baluarte-status.js';
 
 let mainInner = null;
 let shellRefs = null;
@@ -52,6 +53,7 @@ export function renderPage(pageEl, route) {
     updateActiveNav(route);
     document.title = pageTitleForRoute(route) + ' · Baluarte';
     appState.set({ route });
+    setCurrentFunction(route);
     mainInner.scrollTop = 0;
   }
 }
