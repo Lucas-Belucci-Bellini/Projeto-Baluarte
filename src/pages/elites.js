@@ -10,6 +10,7 @@
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
+import { ROSTERS } from '../data/elites-rosters.js';
 import { EQUIPES, STATUS_OPTIONS, SPECIALTIES, TOTAL_EQUIPES, ACTIVE_COUNT, findEquipe, statusInfo } from '../data/elites.js';
 import { findArc } from '../data/cronicas.js';
 
@@ -148,6 +149,18 @@ function renderDetail() {
       )
     )
   );
+
+  const roster = ROSTERS[e.code];
+  if (roster && roster.length) {
+    detailEl.appendChild(
+      h('div', { className: 'elite-detail__section' },
+        h('div', { className: 'elite-detail__section-title' }, `★ Integrantes (${roster.length})`),
+        h('div', { className: 'elite-roster' },
+          ...roster.map((n) => h('span', { className: 'elite-roster__member' }, n))
+        )
+      )
+    );
+  }
 
   detailEl.appendChild(
     h('div', { className: 'elite-detail__section' },
