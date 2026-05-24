@@ -10,6 +10,7 @@
 import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { setStatus } from '../utils/baluarte-status.js';
 import {
   GATES, PALETTE, createCircuit, addComponent, removeComponent,
   addWire, removeWire, simulate, inputValues, serialize, deserialize
@@ -93,6 +94,7 @@ function wireAt(x, y) {
 
 function save() {
   storage.set(STORAGE_KEY, serialize(circuit));
+  setStatus('logicSim', { componentes: circuit.comps.length, fios: circuit.wires.length });
 }
 
 /* ===== Desenho ===== */

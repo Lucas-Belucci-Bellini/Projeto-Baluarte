@@ -13,6 +13,7 @@
 import { h, empty, mount } from '../utils/helpers.js';
 import { execute, autocomplete, createContext } from '../utils/terminal-engine.js';
 import { COMMANDS } from '../data/terminal-commands.js';
+import { setStatus } from '../utils/baluarte-status.js';
 
 const ANSI_COLORS = {
   '30': '#000', '31': '#ff3355', '32': '#00ff88', '33': '#ffaa00',
@@ -115,6 +116,7 @@ async function runLine(line) {
   } finally {
     processing = false;
     updatePrompt();
+    setStatus('terminal', { diretorio: ctx.cwd, ultimoComando: line });
     inputEl.value = '';
     historyIdx = -1;
     inputEl.focus();
