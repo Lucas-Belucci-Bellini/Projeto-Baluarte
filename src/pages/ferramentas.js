@@ -23,6 +23,7 @@ const TOOLS = [
   { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 1, desc: 'Tester JS com highlight de matches, grupos nomeados, replace preview, 10 exemplos e cheatsheet completa.' },
   { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 1, desc: 'Formata, minifica e valida JSON, com árvore navegável, erros com linha/coluna e estatísticas da estrutura.' },
   { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 1, desc: 'Cheatsheet de comandos Git agrupados (clique copia) e modelos de .gitignore.' },
+  { id: 'utilidades', name: 'Caixa de Ferramentas', category: 'desenvolvimento', icon: '🧰', phase: 1, tag: 'novo', desc: 'Utilidades rápidas: gerador de senhas, gerador de UUID, contador de texto, conversor timestamp↔data e calculadora de porcentagem.' },
 
   /* === Cálculo (9) === */
   { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 1, desc: 'Trigonometria (deg/rad), hiperbólicas, logaritmos, fatoriais, memória, histórico.' },
@@ -151,7 +152,8 @@ const TOOL_ROUTES = {
   'ia-proprietaria': '/ia-proprietaria',
   config: '/perfil',
   'git-helper': '/git-helper',
-  colorpicker: '/color-studio'
+  colorpicker: '/color-studio',
+  utilidades: '/utilidades'
 };
 
 /* ============================================================ */
