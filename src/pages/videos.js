@@ -146,6 +146,15 @@ function renderPlayer() {
       allowfullscreen: true
     });
     playerEl.appendChild(iframe);
+  } else if (v.source === 'youtube-playlist' && v.playlistId) {
+    playerEl.appendChild(h('iframe', {
+      className: 'videos-iframe',
+      src: `https://www.youtube-nocookie.com/embed/videoseries?list=${v.playlistId}&modestbranding=1&rel=0`,
+      title: v.title,
+      frameborder: '0',
+      allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+      allowfullscreen: true
+    }));
   } else {
     playerEl.appendChild(
       h('div', { className: 'media-empty u-text-muted' },

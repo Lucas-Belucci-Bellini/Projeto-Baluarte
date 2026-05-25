@@ -70,6 +70,17 @@ export const PLAYLISTS = [
       { id: 'au-3', title: 'Coro de Vanadis', duration: '5:45', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['Vanadis'] },
       { id: 'au-4', title: "Back To Earth — Assassin's Creed [GMV] · TeaTime", duration: '—', source: 'youtube', ytId: 'vyQwj7_l2N0', tags: ['trilha', 'GMV'] }
     ]
+  },
+  {
+    id: 'musica-yt',
+    title: 'Músicas (Playlists)',
+    icon: '♫',
+    color: '#ff00aa',
+    description: 'Playlists de música do operador, direto do YouTube.',
+    videos: [
+      { id: 'myt-1', title: 'Mix de Música 1', duration: 'playlist', source: 'youtube-playlist', playlistId: 'PLb-ZStpDcG_v1pylb4a2Go-DMQ8mhD8j9', tags: ['música', 'playlist'] },
+      { id: 'myt-2', title: 'Mix de Música 2', duration: 'playlist', source: 'youtube-playlist', playlistId: 'PLb-ZStpDcG_vOKD7tJAoGOBqmLdgcRCJV', tags: ['música', 'playlist'] }
+    ]
   }
 ];
 
