@@ -41,8 +41,43 @@ o servidor pesquisa no Google e responde.
 O servidor é **stateless**: o site envia a conversa inteira a cada chamada (o
 histórico vive no site, em IndexedDB), evitando dessincronização.
 
-## Deploy (opcional)
+## Deploy com HTTPS (para usar no site PUBLICADO)
 
-Para uso fora da sua máquina, hospede este servidor (Render, Railway, Fly, uma
-VM…) e aponte a URL do modo "Servidor" para o endereço público. Mantenha a
-`GEMINI_API_KEY` apenas no ambiente do servidor — nunca no front.
+> **Por que precisa de HTTPS:** o site publicado (Vercel) é HTTPS. O navegador
+> **bloqueia** uma página HTTPS de chamar um backend `http://` local (mixed
+> content). Por isso, para usar o modo Servidor no site no ar, o backend
+> precisa estar **hospedado com HTTPS**. (Rodando o site localmente via
+> `npm run dev` em `http://localhost`, o backend local `http://127.0.0.1` funciona.)
+
+### Opção A — Render (blueprint, recomendado)
+
+Já existe um `render.yaml` na raiz do repo.
+
+1. [render.com](https://render.com) → **New → Blueprint** → conecte este repositório.
+2. O Render lê o `render.yaml` e cria o serviço **baluarte-ia-backend** (pasta `backend/`).
+3. No serviço, em **Environment**, defina `GEMINI_API_KEY` (chave do Google AI Studio).
+4. Depois do deploy, copie a URL pública — algo como
+   `https://baluarte-ia-backend.onrender.com`.
+5. No site: **J.A.R.V.I.S. → ⚙ Modos & Config → modo Servidor → URL DO SERVIDOR**,
+   cole a URL. Clique **Testar conexão** (deve dar "✓ online · chave Gemini OK").
+
+> Plano free do Render hiberna após inatividade — a 1ª mensagem depois de um
+> tempo parado pode demorar alguns segundos (cold start). O timeout do site cobre isso.
+
+### Opção B — Docker (Railway, Fly, Cloud Run, VM…)
+
+Há um `backend/Dockerfile`. Em plataformas com Docker, aponte o serviço para
+a pasta `backend/`, defina `GEMINI_API_KEY` e exponha a porta `$PORT`.
+
+```bash
+# build/run local de teste:
+cd backend
+docker build -t baluarte-ia .
+docker run -p 8000:8000 -e GEMINI_API_KEY="sua-chave" baluarte-ia
+```
+
+### Regras
+
+- A `GEMINI_API_KEY` fica **só** no ambiente do servidor — nunca no front.
+- CORS já está liberado (`*`), então o site (qualquer origem) consegue chamar.
+- A URL pública precisa ser **HTTPS** para o site publicado conseguir usá-la.

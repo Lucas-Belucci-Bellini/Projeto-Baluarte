@@ -103,4 +103,7 @@ def chat(req: ChatRequest):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # Hosts (Render/Railway/Fly) injetam PORT e exigem bind em 0.0.0.0.
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "8000"))
+    uvicorn.run(app, host=host, port=port)

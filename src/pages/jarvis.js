@@ -519,8 +519,8 @@ function renderConfigPanel() {
         h('label', null, h('span', null, 'URL DO SERVIDOR'), urlInput),
         h('div', { style: { display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' } }, testBtn, testStatus),
         h('p', { className: 'jarvis-config__warn u-text-muted' },
-          '⊛ Requer o backend Python: cd backend, pip install -r requirements.txt, ' +
-          'defina GEMINI_API_KEY e rode python server.py. Habilita busca web real (Gemini + Google) — a camada 2 do raciocínio.')
+          '⊛ Local: rode backend/server.py e use http://127.0.0.1:8000 (só funciona com o site aberto em http://localhost). ' +
+          'No site publicado (HTTPS), hospede o backend com HTTPS e cole a URL pública aqui — veja backend/README.md (blueprint do Render incluso).')
       );
     } else if (config.mode === 'webllm') {
       const modelSel = h('select', { className: 'input',
