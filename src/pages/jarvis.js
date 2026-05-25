@@ -370,8 +370,23 @@ async function handleSend() {
 
     const textEl = h('div', { className: 'jarvis-msg__text' }, h('div', null, msgText));
     if (isSetup) {
-      textEl.appendChild(h('button', {
-        className: 'btn btn--ghost btn--sm', style: { marginTop: '8px' },
+      const actions = h('div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' } });
+      /* Caminho sem instalar/rodar nada: a IA roda no próprio navegador. */
+      if (config.mode !== 'webllm') {
+        actions.appendChild(h('button', {
+          className: 'btn btn--primary btn--sm',
+          onclick: () => {
+            config.mode = 'webllm';
+            saveConfig(config);
+            updateModeBadge();
+            inputEl.value = text;
+            inputEl.focus();
+            toast('Modo Navegador ativado (IA no navegador, sem servidor). Enter para enviar.', { type: 'info', duration: 4500 });
+          }
+        }, '⬡ Usar modo Navegador (sem servidor)'));
+      }
+      actions.appendChild(h('button', {
+        className: 'btn btn--ghost btn--sm',
         onclick: async () => {
           const r = processLocal(text);
           const jm = await addMessage(activeSession.id, 'jarvis', r.text);
@@ -380,7 +395,8 @@ async function handleSend() {
           if (r.action?.type === 'navigate') setTimeout(() => router.navigate(r.action.payload), 600);
           scrollDown();
         }
-      }, '↩ Responder agora no modo Local'));
+      }, '↩ Responder no modo Local'));
+      textEl.appendChild(actions);
     }
     messagesEl.appendChild(
       h('div', { className: 'jarvis-msg jarvis-msg--ai' },

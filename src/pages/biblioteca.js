@@ -26,6 +26,7 @@ let sagaCountEl = null;
 
 let sagaArcos = [];
 let sagaStatus = 'loading'; /* loading | ok | error */
+let keyNavBound = false;
 
 /** Saga (carregada) + arcos de cenário (síncronos). */
 function allArcs() {
@@ -180,6 +181,29 @@ function openChapter(arcId, chapterId) {
   document.querySelectorAll('.arc-card').forEach((c) =>
     c.classList.toggle('is-active', c.dataset.id === arcId)
   );
+  /* leitura: começa o capítulo do topo */
+  document.querySelector('.main__inner')?.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/** Capítulo anterior/seguinte; cruza para o arco vizinho no fim/início de um
+ *  arco, para leitura contínua da saga. dir = +1 (próximo) | -1 (anterior). */
+function gotoAdjacentChapter(dir) {
+  const arc = findArc(state.selectedArc);
+  if (!arc) return;
+  const idx = arc.chapters.findIndex((c) => c.id === state.selectedChapter);
+  const target = idx + dir;
+  if (target >= 0 && target < arc.chapters.length) {
+    openChapter(arc.id, arc.chapters[target].id);
+    return;
+  }
+  const arcs = allArcs();
+  const aIdx = arcs.findIndex((a) => a.id === arc.id);
+  const adjArc = arcs[aIdx + dir];
+  if (adjArc && adjArc.chapters.length) {
+    const ch = dir > 0 ? adjArc.chapters[0] : adjArc.chapters[adjArc.chapters.length - 1];
+    openChapter(adjArc.id, ch.id);
+    renderList();
+  }
 }
 
 function renderViewer() {
@@ -267,16 +291,43 @@ function renderViewer() {
     )
   );
 
-  /* Lista de capítulos */
+  /* Lista de capítulos (com busca quando há muitos) */
   const chaptersList = h('div', { className: 'viewer-chapters' });
   arc.chapters.forEach((c) => {
     chaptersList.appendChild(
       h('button', {
         className: cx('viewer-chapter-tab', c.id === chapter.id && 'is-active'),
+        'data-search': normalize(c.title),
         onclick: () => openChapter(arc.id, c.id)
       }, c.title.replace(/^Capítulo [\dIVX]+ [—-] /, ''))
     );
   });
+
+  const chaptersWrap = h('div', { className: 'viewer-chapters-wrap' });
+  if (arc.chapters.length > 10) {
+    const counter = h('span', { className: 'viewer-chapters__count u-text-muted' }, `${arc.chapters.length} capítulos`);
+    chaptersWrap.appendChild(
+      h('div', { className: 'viewer-chapters__bar' },
+        h('input', {
+          className: 'input viewer-chapters__search',
+          type: 'search',
+          placeholder: 'Buscar capítulo (número ou título)…',
+          oninput: (e) => {
+            const term = normalize(e.target.value);
+            let shown = 0;
+            chaptersList.querySelectorAll('.viewer-chapter-tab').forEach((btn) => {
+              const match = !term || btn.dataset.search.includes(term);
+              btn.style.display = match ? '' : 'none';
+              if (match) shown++;
+            });
+            counter.textContent = term ? `${shown} de ${arc.chapters.length}` : `${arc.chapters.length} capítulos`;
+          }
+        }),
+        counter
+      )
+    );
+  }
+  chaptersWrap.appendChild(chaptersList);
 
   /* Conteúdo do capítulo */
   const body = h('div', {
@@ -302,23 +353,29 @@ function renderViewer() {
 
   /* Navegação prev/next */
   const idx = arc.chapters.findIndex((c) => c.id === chapter.id);
+  const allA = allArcs();
+  const aIdx = allA.findIndex((a) => a.id === arc.id);
+  const atStart = idx <= 0 && aIdx <= 0;
+  const atEnd = idx >= arc.chapters.length - 1 && aIdx >= allA.length - 1;
   const nav = h('div', { className: 'viewer-nav' },
     h('button', {
       className: 'btn btn--ghost btn--sm',
-      disabled: idx === 0,
-      onclick: () => idx > 0 && openChapter(arc.id, arc.chapters[idx - 1].id)
+      disabled: atStart,
+      title: 'Capítulo anterior (←)',
+      onclick: () => gotoAdjacentChapter(-1)
     }, '← anterior'),
     h('span', { className: 'u-text-muted u-mono' }, `${idx + 1} / ${arc.chapters.length}`),
     h('button', {
       className: 'btn btn--ghost btn--sm',
-      disabled: idx === arc.chapters.length - 1,
-      onclick: () => idx < arc.chapters.length - 1 && openChapter(arc.id, arc.chapters[idx + 1].id)
+      disabled: atEnd,
+      title: 'Próximo capítulo (→)',
+      onclick: () => gotoAdjacentChapter(1)
     }, 'próximo →')
   );
 
   viewerEl.appendChild(tools);
   viewerEl.appendChild(header);
-  viewerEl.appendChild(chaptersList);
+  viewerEl.appendChild(chaptersWrap);
   viewerEl.appendChild(body);
   viewerEl.appendChild(nav);
 }
@@ -329,6 +386,20 @@ export function bibliotecaPage() {
   state = loadState();
   sagaArcos = [];
   sagaStatus = 'loading';
+
+  /* Navegação por teclado (← →) entre capítulos — vinculada uma única vez;
+   * só age quando a Biblioteca está montada e o foco não está num campo. */
+  if (!keyNavBound) {
+    keyNavBound = true;
+    window.addEventListener('keydown', (e) => {
+      if (!viewerEl || !document.body.contains(viewerEl)) return;
+      if (!state || !state.selectedChapter) return;
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); gotoAdjacentChapter(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); gotoAdjacentChapter(1); }
+    });
+  }
 
   const fullPage = h('div', { className: 'page-biblioteca' });
 

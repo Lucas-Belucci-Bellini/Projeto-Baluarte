@@ -235,12 +235,27 @@
   margin-top: 6px;
 }
 
+.viewer-chapters-wrap {
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--border-thin);
+}
+.viewer-chapters__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+.viewer-chapters__search { flex: 1; min-width: 0; }
+.viewer-chapters__count {
+  font-size: 11px;
+  white-space: nowrap;
+}
 .viewer-chapters {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding-bottom: var(--space-sm);
-  border-bottom: var(--border-thin);
+  max-height: 168px;
+  overflow-y: auto;
 }
 .viewer-chapter-tab {
   background: var(--color-surface);

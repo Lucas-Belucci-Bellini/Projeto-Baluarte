@@ -240,3 +240,19 @@
   text-align: center;
   padding: var(--space-xl);
 }
+
+/* Integrantes (roster completo) */
+.elite-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs, 6px);
+}
+.elite-roster__member {
+  font-size: var(--font-size-sm, 13px);
+  padding: 3px 10px;
+  border: var(--border-thin);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
