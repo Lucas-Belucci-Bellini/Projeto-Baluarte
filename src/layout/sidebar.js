@@ -158,7 +158,15 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
-      `v${VERSION} · ${CODENAME}`
+      h('a', {
+        className: 'sidebar__ext', href: 'https://www.youtube.com/@Spartan_Gamer_BR',
+        target: '_blank', rel: 'noopener', title: 'Canal no YouTube — Spartan Gamer BR'
+      }, '▶ @Spartan_Gamer_BR'),
+      h('a', {
+        className: 'sidebar__ext', href: 'https://llbr-innovations-constructions.vercel.app/',
+        target: '_blank', rel: 'noopener', title: 'LLBR Innovations & Constructions'
+      }, '⬡ LLBR Innovations'),
+      h('div', { className: 'sidebar__ver' }, `v${VERSION} · ${CODENAME}`)
     )
   );
 

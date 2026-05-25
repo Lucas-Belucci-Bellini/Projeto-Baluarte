@@ -303,6 +303,21 @@
 .sidebar.is-collapsed .sidebar__foot {
   font-size: 9px;
 }
+.sidebar__ext {
+  display: block;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+  padding: 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--transition-fast);
+}
+.sidebar__ext:hover { color: var(--color-cyan); }
+.sidebar__ver { margin-top: 6px; }
 
 /* ============== MAIN ============== */
 .main {

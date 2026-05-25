@@ -38,9 +38,22 @@ async function fetchWithTimeout(url, options = {}, ms = 30000) {
   }
 }
 
-/** Testa o backend Python (modo Servidor). Retorna o JSON de /health. */
+/** Resolve a base do backend do modo Servidor.
+ * No site publicado (HTTPS), se a URL salva estiver vazia ou apontar para um
+ * backend local (que o navegador bloquearia), usa as funções serverless do
+ * próprio site (/api) — mesmo domínio, sem mixed-content nem URL separada. */
+export function resolveServerBase(serverUrl) {
+  const base = (serverUrl || '').replace(/\/$/, '');
+  if (typeof location !== 'undefined' && location.protocol === 'https:' &&
+      (!base || /^https?:\/\/(localhost|127\.0\.0\.1)/i.test(base))) {
+    return '/api';
+  }
+  return base || 'http://127.0.0.1:8000';
+}
+
+/** Testa o backend do modo Servidor. Retorna o JSON de /health. */
 export async function healthCheckServer(serverUrl) {
-  const url = (serverUrl || 'http://127.0.0.1:8000').replace(/\/$/, '');
+  const url = resolveServerBase(serverUrl);
   const res = await fetchWithTimeout(`${url}/health`, {}, 8000);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
@@ -56,7 +69,7 @@ export function loadConfig() {
     ollamaUrl: 'http://localhost:11434',
     ollamaModel: 'llama3.2',
     webllmModel: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
-    serverUrl: 'http://127.0.0.1:8000',
+    serverUrl: '',
     systemPrompt: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.'
   };
 }
@@ -328,12 +341,12 @@ export async function processOllama(messages, config) {
  * @returns {Promise<string>}
  */
 export async function processServer(messages, config) {
-  const url = (config.serverUrl || 'http://127.0.0.1:8000').replace(/\/$/, '');
+  const url = resolveServerBase(config.serverUrl);
 
-  /* Mixed content: uma página HTTPS (site publicado) não consegue chamar um
-   * servidor http:// local — o navegador bloqueia. Avisa com clareza. */
+  /* Mixed content: se ainda assim a URL for um http:// externo num site HTTPS,
+   * o navegador bloqueia. (URLs locais já caem em /api via resolveServerBase.) */
   if (typeof location !== 'undefined' && location.protocol === 'https:' && /^http:\/\//i.test(url)) {
-    throw new Error(`Servidor inacessível: a URL configurada (${url}) é um backend http:// local, e o site é HTTPS — o navegador bloqueia. Se você já hospedou o backend (ex.: Render), cole a URL pública https://… no campo "URL DO SERVIDOR" em ⚙ Modos & Config. Ou use o modo Navegador (não precisa de servidor).`);
+    throw new Error(`Servidor inacessível: a URL "${url}" é http:// e o site é HTTPS — o navegador bloqueia. Use uma URL https://, ou deixe o campo vazio para usar o backend embutido do site (/api).`);
   }
 
   const body = {

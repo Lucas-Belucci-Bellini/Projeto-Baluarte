@@ -6,12 +6,26 @@ de verdade** (Google Search via Gemini) — a *camada 2* do raciocínio em 3 cam
 pesquisa web real; para uso local sem chave, o modo **Ollama** já existe, e o
 modo **Navegador (WebLLM)** roda 100% no cliente.
 
-> **Isto NÃO faz parte do site.** A Vercel só empacota `src/` + `public/`. O site
-> continua estático; este servidor roda à parte e o site fala com ele por uma URL
-> configurável. Por isso nenhuma reescrita do site foi necessária — o backend é
-> aditivo (entra como mais um *modo* do J.A.R.V.I.S., igual ao Ollama).
+> Há **dois caminhos** para o modo Servidor: (1) **embutido na Vercel** como
+> função serverless em `api/` — roda no mesmo domínio do site (recomendado); ou
+> (2) este **servidor Python** rodando à parte (local ou hospedado no Render),
+> que o site chama por uma URL configurável.
 
-## Deploy em 1 clique (HTTPS — para o site publicado)
+## ✅ Recomendado: backend embutido na Vercel (`/api`)
+
+As funções `api/chat.py` e `api/health.py` (na raiz do repo) rodam no **mesmo
+domínio do site** — sem mixed-content e sem URL separada.
+
+1. Pegue uma chave Gemini (grátis): <https://aistudio.google.com/apikey> → **Create API key**.
+2. Na Vercel: **projeto-baluarte → Settings → Environment Variables** → adicione
+   `GEMINI_API_KEY` = sua chave (marque **Production**) → **Save**.
+3. **Redeploy** (Deployments → ⋯ no deploy mais recente → **Redeploy**) para a função pegar a variável.
+4. No site: **J.A.R.V.I.S. → ⚙ Modos & Config → modo Servidor** → deixe a **URL vazia**
+   (usa `/api`) → **Testar conexão** → deve dar **"✓ online · chave Gemini OK"**.
+
+> Função serverless tem limite de ~60s por requisição — a busca do Gemini cabe.
+
+## Alternativa: Render (servidor Python à parte)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte)
 
