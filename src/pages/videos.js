@@ -149,7 +149,7 @@ function renderPlayer() {
   } else if (v.source === 'youtube-playlist' && v.playlistId) {
     playerEl.appendChild(h('iframe', {
       className: 'videos-iframe',
-      src: `https://www.youtube-nocookie.com/embed/videoseries?list=${v.playlistId}&modestbranding=1&rel=0`,
+      src: `https://www.youtube.com/embed/videoseries?list=${v.playlistId}&modestbranding=1&rel=0`,
       title: v.title,
       frameborder: '0',
       allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
