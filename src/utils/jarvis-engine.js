@@ -333,7 +333,7 @@ export async function processServer(messages, config) {
   /* Mixed content: uma página HTTPS (site publicado) não consegue chamar um
    * servidor http:// local — o navegador bloqueia. Avisa com clareza. */
   if (typeof location !== 'undefined' && location.protocol === 'https:' && /^http:\/\//i.test(url)) {
-    throw new Error('Servidor inacessível: o site publicado é HTTPS e o navegador bloqueia um backend http:// local. Use o modo Navegador (sem servidor), ou rode o site localmente, ou hospede o backend com HTTPS.');
+    throw new Error(`Servidor inacessível: a URL configurada (${url}) é um backend http:// local, e o site é HTTPS — o navegador bloqueia. Se você já hospedou o backend (ex.: Render), cole a URL pública https://… no campo "URL DO SERVIDOR" em ⚙ Modos & Config. Ou use o modo Navegador (não precisa de servidor).`);
   }
 
   const body = {
