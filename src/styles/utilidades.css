@@ -121,6 +121,29 @@
 .util-diff__line.del { color: var(--color-danger); background: var(--color-danger-soft, rgba(255,59,59,.12)); }
 .util-diff__line.ins { color: var(--color-success); background: var(--color-success-soft, rgba(0,255,102,.12)); }
 
+/* Tabela ASCII */
+.util-ascii {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.util-ascii__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.util-ascii__cell:hover { border-color: var(--color-cyan); }
+.util-ascii__ch { font-family: var(--font-mono); font-size: 15px; color: var(--color-text-primary); }
+.util-ascii__code { font-size: 9px; }
+
 /* Preview de imagem (base64) */
 .util-imgprev:empty { display: none; }
 .util-imgprev img {

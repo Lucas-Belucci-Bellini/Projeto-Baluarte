@@ -298,6 +298,125 @@ function toolSorteador() {
     res);
 }
 
+/* ===== 11) Conversor de Caso ===== */
+function toolCaso() {
+  const inp = h('textarea', { className: 'input util-textarea', rows: 2, placeholder: 'Digite um texto...' });
+  const out = h('div', { className: 'util-body' });
+  function row(label, value) {
+    const v = h('input', { className: 'input util-out u-mono', readonly: true, value });
+    return h('div', { className: 'util-row' }, h('span', null, label), v,
+      h('button', { className: 'btn btn--ghost btn--sm', onclick: () => copy(value) }, '⧉'));
+  }
+  function titleCase(s) { return s.toLowerCase().replace(/\b\p{L}/gu, (c) => c.toUpperCase()); }
+  function camel(s) {
+    const w = s.normalize('NFD').replace(/[̀-ͯ]/g, '').match(/[a-zA-Z0-9]+/g) || [];
+    return w.map((x, i) => i === 0 ? x.toLowerCase() : x.charAt(0).toUpperCase() + x.slice(1).toLowerCase()).join('');
+  }
+  function joinCase(s, sep) {
+    const w = s.normalize('NFD').replace(/[̀-ͯ]/g, '').match(/[a-zA-Z0-9]+/g) || [];
+    return w.map((x) => x.toLowerCase()).join(sep);
+  }
+  function update() {
+    const t = inp.value;
+    empty(out);
+    out.append(
+      row('MAIÚSCULAS', t.toUpperCase()),
+      row('minúsculas', t.toLowerCase()),
+      row('Título', titleCase(t)),
+      row('camelCase', camel(t)),
+      row('snake_case', joinCase(t, '_')),
+      row('kebab-case', joinCase(t, '-')));
+  }
+  inp.oninput = update; update();
+  return h('div', { className: 'util-body' }, inp, out);
+}
+
+/* ===== 12) Gerador de Slug ===== */
+function toolSlug() {
+  const inp = h('input', { className: 'input', type: 'text', placeholder: 'Título do artigo: Olá, Mundo!' });
+  const out = h('input', { className: 'input util-out u-mono', readonly: true });
+  const slugify = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  inp.oninput = () => { out.value = slugify(inp.value); };
+  return h('div', { className: 'util-body' }, inp,
+    h('div', { className: 'util-row' }, out, h('button', { className: 'btn btn--ghost btn--sm', onclick: () => copy(out.value) }, '⧉')));
+}
+
+/* ===== 13) Tabela ASCII ===== */
+function toolAscii() {
+  const lookup = h('input', { className: 'input', type: 'text', maxlength: '1', placeholder: 'Digite 1 caractere' });
+  const lookOut = h('div', { className: 'util-result u-mono' }, '—');
+  lookup.oninput = () => {
+    const ch = lookup.value;
+    lookOut.textContent = ch ? `'${ch}' → dec ${ch.codePointAt(0)} · hex 0x${ch.codePointAt(0).toString(16)} · &#${ch.codePointAt(0)};` : '—';
+  };
+  const grid = h('div', { className: 'util-ascii' });
+  for (let code = 32; code <= 126; code++) {
+    grid.appendChild(h('button', {
+      className: 'util-ascii__cell', title: `dec ${code} · hex ${code.toString(16)}`,
+      onclick: () => copy(String.fromCharCode(code))
+    },
+      h('span', { className: 'util-ascii__ch' }, String.fromCharCode(code)),
+      h('span', { className: 'util-ascii__code u-text-muted' }, String(code))));
+  }
+  return h('div', { className: 'util-body' },
+    h('div', { className: 'util-row' }, h('span', null, 'Caractere'), lookup, lookOut),
+    grid);
+}
+
+/* ===== 14) Números Romanos ===== */
+function toolRomanos() {
+  const MAP = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+  const toRoman = (n) => { let r = ''; for (const [v, s] of MAP) while (n >= v) { r += s; n -= v; } return r; };
+  const fromRoman = (s) => {
+    const val = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+    let n = 0; s = s.toUpperCase();
+    for (let i = 0; i < s.length; i++) {
+      if (!(s[i] in val)) return NaN;
+      n += (val[s[i + 1]] > val[s[i]]) ? -val[s[i]] : val[s[i]];
+    }
+    return n;
+  };
+  const ar = h('input', { className: 'input', type: 'number', min: '1', max: '3999', placeholder: 'Arábico (1–3999)' });
+  const arOut = h('div', { className: 'util-result u-mono' }, '—');
+  ar.oninput = () => { const n = parseInt(ar.value, 10); arOut.textContent = (n >= 1 && n <= 3999) ? toRoman(n) : '—'; };
+  const ro = h('input', { className: 'input u-mono', type: 'text', placeholder: 'Romano (ex: MMXXIV)' });
+  const roOut = h('div', { className: 'util-result u-mono' }, '—');
+  ro.oninput = () => { const n = fromRoman(ro.value.trim()); roOut.textContent = (ro.value.trim() && !isNaN(n)) ? String(n) : '—'; };
+  return h('div', { className: 'util-body' },
+    h('div', { className: 'util-field' }, h('span', null, 'Arábico → Romano'), ar, arOut),
+    h('div', { className: 'util-field' }, h('span', null, 'Romano → Arábico'), ro, roOut));
+}
+
+/* ===== 15) Calculadora de Datas ===== */
+function toolDatas() {
+  const d1 = h('input', { className: 'input', type: 'date' });
+  const d2 = h('input', { className: 'input', type: 'date' });
+  const diffOut = h('div', { className: 'util-result u-text-cyan' }, '—');
+  const calcDiff = () => {
+    if (!d1.value || !d2.value) { diffOut.textContent = '—'; return; }
+    const ms = new Date(d2.value) - new Date(d1.value);
+    const dias = Math.round(ms / 86400000);
+    diffOut.textContent = `${Math.abs(dias)} dia(s)` + (dias < 0 ? ' (d2 antes de d1)' : '');
+  };
+  d1.oninput = d2.oninput = calcDiff;
+  const base = h('input', { className: 'input', type: 'date' });
+  const n = h('input', { className: 'input util-qty', type: 'number', value: '30', placeholder: 'dias' });
+  const addOut = h('div', { className: 'util-result u-text-cyan' }, '—');
+  const calcAdd = () => {
+    if (!base.value) { addOut.textContent = '—'; return; }
+    const d = new Date(base.value);
+    d.setDate(d.getDate() + (parseInt(n.value, 10) || 0));
+    addOut.textContent = d.toLocaleDateString('pt-BR');
+  };
+  base.oninput = n.oninput = calcAdd;
+  return h('div', { className: 'util-body' },
+    h('div', { className: 'util-field' }, h('span', null, 'Diferença entre datas'),
+      h('div', { className: 'util-row' }, d1, h('span', null, '→'), d2), diffOut),
+    h('div', { className: 'util-field' }, h('span', null, 'Somar/subtrair dias'),
+      h('div', { className: 'util-row' }, base, h('span', null, '+'), n, h('span', null, 'dias')), addOut));
+}
+
 export function utilidadesPage() {
   const page = h('div', { className: 'page-utilidades' });
   page.appendChild(
@@ -308,8 +427,8 @@ export function utilidadesPage() {
       h('h1', { className: 'page-header__title' }, '🧰 Caixa de Ferramentas'),
       h('p', { className: 'page-header__description' },
         'Utilidades rápidas do dia a dia — ',
-        h('span', { className: 'u-text-cyan' }, '10 ferramentas técnicas'),
-        ' (senhas, UUID, texto, datas, diff, lorem, sorteio…). Tudo no navegador.'))
+        h('span', { className: 'u-text-cyan' }, '15 ferramentas técnicas'),
+        ' (senhas, UUID, texto, datas, diff, slug, ASCII, romanos…). Tudo no navegador.'))
   );
   page.appendChild(
     h('div', { className: 'util-grid' },
@@ -322,7 +441,12 @@ export function utilidadesPage() {
       section('Lorem Ipsum', '📝', toolLorem()),
       section('Número por Extenso', '🔡', toolExtenso()),
       section('Base64 de Imagem', '🖼', toolImgBase64()),
-      section('Sorteador / Roleta', '🎲', toolSorteador()))
+      section('Sorteador / Roleta', '🎲', toolSorteador()),
+      section('Conversor de Caso', '🔤', toolCaso()),
+      section('Gerador de Slug', '🔗', toolSlug()),
+      section('Tabela ASCII', '🔠', toolAscii()),
+      section('Números Romanos', 'Ⅻ', toolRomanos()),
+      section('Calculadora de Datas', '📅', toolDatas()))
   );
   return page;
 }
