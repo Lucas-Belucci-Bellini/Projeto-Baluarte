@@ -57,6 +57,7 @@ import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { initToast } from './utils/toast.js';
+import { initTheme } from './utils/theme.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
 
@@ -140,6 +141,7 @@ function boot() {
   }
 
   appState.set({ bootedAt: Date.now() });
+  initTheme();
 
   mountShell(root);
   initToast();

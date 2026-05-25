@@ -9,6 +9,7 @@ import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { router } from '../core/router.js';
 import { VERSION } from '../data/version.js';
+import { THEMES, getThemeId, setTheme } from '../utils/theme.js';
 
 const STORAGE_KEY = 'perfil:config';
 
@@ -155,6 +156,28 @@ export function perfilPage() {
         h('span', null, 'NOME'), nomeInput),
       h('label', { className: 'perfil-config-field' },
         h('span', null, 'CALLSIGN'), callsignInput),
+      h('div', { className: 'perfil-config-field' },
+        h('span', null, 'TEMA'),
+        h('div', { className: 'perfil-themes' },
+          ...THEMES.map((t) => h('button', {
+            className: 'perfil-theme' + (t.id === getThemeId() ? ' is-active' : ''),
+            'data-theme': t.id,
+            title: t.label,
+            onclick: () => {
+              setTheme(t.id);
+              document.querySelectorAll('.perfil-theme').forEach((b) =>
+                b.classList.toggle('is-active', b.dataset.theme === t.id));
+              toast('Tema: ' + t.label, { type: 'info' });
+            }
+          },
+            h('span', {
+              className: 'perfil-theme__sw',
+              style: { background: `linear-gradient(135deg, ${t.primary} 0 50%, ${t.secondary} 50% 100%)` }
+            }),
+            t.label
+          ))
+        )
+      ),
       toggle('reduceMotion', 'Reduzir animações', 'Desativa transições e efeitos de movimento.'),
       toggle('confirmActions', 'Confirmar ações destrutivas', 'Pede confirmação antes de limpar dados.'),
       h('div', { className: 'perfil-danger' },
