@@ -66,6 +66,7 @@ function pageTitleForRoute(path) {
     '/json-studio': 'JSON Studio',
     '/qr-studio': 'QR Code Studio',
     '/git-helper': 'Git Helper',
+    '/utilidades': 'Caixa de Ferramentas',
     '/terminal': 'Terminal',
     '/calculadoras': 'Calculadoras',
     '/calc-cientifica': 'Calculadora Científica',

@@ -1,0 +1,94 @@
+/* ============================================================
+ * Caixa de Ferramentas / Utilidades (v2.0.0)
+ * ============================================================ */
+
+.util-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.util-card { padding: var(--space-md); }
+.util-card__title {
+  margin: 0 0 var(--space-md);
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+}
+
+.util-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.util-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+.util-row > .util-out { flex: 1; min-width: 0; }
+.util-row > span:first-child { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+
+.util-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+.util-checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.util-out, .util-textarea { width: 100%; }
+.util-textarea { resize: vertical; }
+.util-qty { width: 90px; }
+.util-strength { font-size: var(--font-size-sm); }
+
+.util-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-xs);
+}
+.util-stat {
+  text-align: center;
+  padding: var(--space-sm);
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+}
+.util-stat__v { font-size: var(--font-size-lg); font-weight: 600; }
+.util-stat__k { font-size: 10px; text-transform: uppercase; letter-spacing: var(--tracking-wide); }
+
+.util-field { display: flex; flex-direction: column; gap: 4px; }
+.util-field > span {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+.util-result {
+  padding: 6px 10px;
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  word-break: break-all;
+}
+
+.util-pct {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+.util-pct .util-qty { width: 80px; }
+.util-pct .util-result { padding: 4px 8px; }
