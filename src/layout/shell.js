@@ -94,6 +94,7 @@ function pageTitleForRoute(path) {
     '/musicas': 'Central de Música',
     '/media': 'Media Hub',
     '/videos': 'Central de Vídeos',
+    '/tv': 'TV do Baluarte',
     '/elites': 'Elites',
     '/arsenal': 'Arsenal',
     '/ciberseg': 'CiberSeg',
