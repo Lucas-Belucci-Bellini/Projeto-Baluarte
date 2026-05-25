@@ -329,6 +329,13 @@ export async function processOllama(messages, config) {
  */
 export async function processServer(messages, config) {
   const url = (config.serverUrl || 'http://127.0.0.1:8000').replace(/\/$/, '');
+
+  /* Mixed content: uma página HTTPS (site publicado) não consegue chamar um
+   * servidor http:// local — o navegador bloqueia. Avisa com clareza. */
+  if (typeof location !== 'undefined' && location.protocol === 'https:' && /^http:\/\//i.test(url)) {
+    throw new Error('Servidor inacessível: o site publicado é HTTPS e o navegador bloqueia um backend http:// local. Use o modo Navegador (sem servidor), ou rode o site localmente, ou hospede o backend com HTTPS.');
+  }
+
   const body = {
     system: config.systemPrompt,
     messages: messages.map((m) => ({
