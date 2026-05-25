@@ -5,6 +5,8 @@
  * Organizados em playlists temáticas.
  */
 
+import { MUSICAS_YT } from './musicas-yt.js';
+
 export const PLAYLISTS = [
   {
     id: 'tutoriais',
@@ -73,14 +75,11 @@ export const PLAYLISTS = [
   },
   {
     id: 'musica-yt',
-    title: 'Músicas (Playlists)',
+    title: 'Músicas',
     icon: '♫',
     color: '#ff00aa',
-    description: 'Playlists de música do operador, direto do YouTube.',
-    videos: [
-      { id: 'myt-1', title: 'Mix de Música 1', duration: 'playlist', source: 'youtube-playlist', playlistId: 'PLb-ZStpDcG_v1pylb4a2Go-DMQ8mhD8j9', tags: ['música', 'playlist'] },
-      { id: 'myt-2', title: 'Mix de Música 2', duration: 'playlist', source: 'youtube-playlist', playlistId: 'PLb-ZStpDcG_vOKD7tJAoGOBqmLdgcRCJV', tags: ['música', 'playlist'] }
-    ]
+    description: 'Faixas das playlists de música do operador (vídeos individuais).',
+    videos: MUSICAS_YT
   }
 ];
 
