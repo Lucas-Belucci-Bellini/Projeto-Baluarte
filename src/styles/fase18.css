@@ -237,6 +237,36 @@
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
 }
+.perfil-themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.perfil-theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 6px;
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-pill, 999px);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.perfil-theme:hover { color: var(--color-text-primary); border-color: var(--color-cyan-edge); }
+.perfil-theme.is-active {
+  color: var(--color-cyan);
+  border-color: var(--color-cyan);
+  box-shadow: var(--shadow-glow-cyan);
+}
+.perfil-theme__sw {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
 .perfil-config-row {
   display: flex;
   justify-content: space-between;
