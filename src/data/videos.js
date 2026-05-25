@@ -67,7 +67,8 @@ export const PLAYLISTS = [
     videos: [
       { id: 'au-1', title: 'Tema do Núcleo Infinity', duration: '4:32', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['trilha'] },
       { id: 'au-2', title: 'Som de Drift (Pacific Rim BR)', duration: '6:00', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['drift'] },
-      { id: 'au-3', title: 'Coro de Vanadis', duration: '5:45', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['Vanadis'] }
+      { id: 'au-3', title: 'Coro de Vanadis', duration: '5:45', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['Vanadis'] },
+      { id: 'au-4', title: "Back To Earth — Assassin's Creed [GMV] · TeaTime", duration: '—', source: 'youtube', ytId: 'vyQwj7_l2N0', tags: ['trilha', 'GMV'] }
     ]
   }
 ];
