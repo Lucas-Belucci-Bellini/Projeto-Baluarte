@@ -14,7 +14,7 @@ function tune(ch) {
   empty(screenEl);
   screenEl.appendChild(h('iframe', {
     className: 'tv-screen__iframe',
-    src: `https://www.youtube.com/embed/videoseries?list=${ch.playlistId}&autoplay=1&modestbranding=1&rel=0`,
+    src: `https://www.youtube.com/embed/videoseries?list=${ch.playlistId}&autoplay=1&loop=1&modestbranding=1&rel=0`,
     title: ch.name,
     frameborder: '0',
     allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
