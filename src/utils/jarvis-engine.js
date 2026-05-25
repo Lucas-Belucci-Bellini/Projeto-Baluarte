@@ -55,7 +55,7 @@ export function loadConfig() {
     model: 'claude-sonnet-4-6',
     ollamaUrl: 'http://localhost:11434',
     ollamaModel: 'llama3.2',
-    webllmModel: 'Phi-3-mini-4k-instruct-q4f16_1-MLC',
+    webllmModel: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
     serverUrl: 'http://127.0.0.1:8000',
     systemPrompt: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.'
   };

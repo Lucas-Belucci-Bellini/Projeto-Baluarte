@@ -12,9 +12,11 @@
 const WEBLLM_CDN = 'https://esm.run/@mlc-ai/web-llm';
 
 export const WEBLLM_MODELS = [
-  { id: 'Phi-3-mini-4k-instruct-q4f16_1-MLC', label: 'Phi-3 mini (~2 GB · leve)' },
+  { id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC', label: 'Llama 3.2 1B (~1 GB · rápido)' },
+  { id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC', label: 'Qwen2.5 0.5B (~0,6 GB · o mais rápido)' },
+  { id: 'Phi-3-mini-4k-instruct-q4f16_1-MLC', label: 'Phi-3 mini (~2 GB · equilibrado)' },
   { id: 'Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC', label: 'Qwen2.5 Coder 1.5B (código)' },
-  { id: 'Llama-3-8B-Instruct-q4f16_1-MLC', label: 'Llama 3 8B (~4 GB · conversa)' }
+  { id: 'Llama-3-8B-Instruct-q4f16_1-MLC', label: 'Llama 3 8B (~4 GB · mais capaz, lento)' }
 ];
 
 export const DEFAULT_WEBLLM_MODEL = WEBLLM_MODELS[0].id;
