@@ -496,7 +496,8 @@ function renderConfigPanel() {
       );
     } else if (config.mode === 'servidor') {
       const urlInput = h('input', {
-        className: 'input', type: 'text', value: config.serverUrl || 'http://127.0.0.1:8000',
+        className: 'input', type: 'text', value: config.serverUrl || '',
+        placeholder: 'vazio = backend embutido (/api)',
         oninput: (e) => { config.serverUrl = e.target.value.trim(); saveConfig(config); }
       });
       const testStatus = h('span', { className: 'u-text-muted', style: { fontSize: '12px' } }, '');
@@ -519,8 +520,8 @@ function renderConfigPanel() {
         h('label', null, h('span', null, 'URL DO SERVIDOR'), urlInput),
         h('div', { style: { display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' } }, testBtn, testStatus),
         h('p', { className: 'jarvis-config__warn u-text-muted' },
-          '⊛ Local: rode backend/server.py e use http://127.0.0.1:8000 (só funciona com o site aberto em http://localhost). ' +
-          'No site publicado (HTTPS), hospede o backend com HTTPS e cole a URL pública aqui — veja backend/README.md (blueprint do Render incluso).')
+          '⊛ No site publicado: deixe a URL VAZIA — usa o backend embutido na Vercel (/api). Só defina GEMINI_API_KEY nas Environment Variables do projeto na Vercel e faça redeploy. ' +
+          'Local (npm run dev): use http://127.0.0.1:8000 com backend/server.py rodando.')
       );
     } else if (config.mode === 'webllm') {
       const modelSel = h('select', { className: 'input',
