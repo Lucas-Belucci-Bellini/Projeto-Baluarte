@@ -291,16 +291,43 @@ function renderViewer() {
     )
   );
 
-  /* Lista de capítulos */
+  /* Lista de capítulos (com busca quando há muitos) */
   const chaptersList = h('div', { className: 'viewer-chapters' });
   arc.chapters.forEach((c) => {
     chaptersList.appendChild(
       h('button', {
         className: cx('viewer-chapter-tab', c.id === chapter.id && 'is-active'),
+        'data-search': normalize(c.title),
         onclick: () => openChapter(arc.id, c.id)
       }, c.title.replace(/^Capítulo [\dIVX]+ [—-] /, ''))
     );
   });
+
+  const chaptersWrap = h('div', { className: 'viewer-chapters-wrap' });
+  if (arc.chapters.length > 10) {
+    const counter = h('span', { className: 'viewer-chapters__count u-text-muted' }, `${arc.chapters.length} capítulos`);
+    chaptersWrap.appendChild(
+      h('div', { className: 'viewer-chapters__bar' },
+        h('input', {
+          className: 'input viewer-chapters__search',
+          type: 'search',
+          placeholder: 'Buscar capítulo (número ou título)…',
+          oninput: (e) => {
+            const term = normalize(e.target.value);
+            let shown = 0;
+            chaptersList.querySelectorAll('.viewer-chapter-tab').forEach((btn) => {
+              const match = !term || btn.dataset.search.includes(term);
+              btn.style.display = match ? '' : 'none';
+              if (match) shown++;
+            });
+            counter.textContent = term ? `${shown} de ${arc.chapters.length}` : `${arc.chapters.length} capítulos`;
+          }
+        }),
+        counter
+      )
+    );
+  }
+  chaptersWrap.appendChild(chaptersList);
 
   /* Conteúdo do capítulo */
   const body = h('div', {
@@ -348,7 +375,7 @@ function renderViewer() {
 
   viewerEl.appendChild(tools);
   viewerEl.appendChild(header);
-  viewerEl.appendChild(chaptersList);
+  viewerEl.appendChild(chaptersWrap);
   viewerEl.appendChild(body);
   viewerEl.appendChild(nav);
 }
