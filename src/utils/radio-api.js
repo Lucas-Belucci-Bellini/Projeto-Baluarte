@@ -54,7 +54,49 @@ export const COUNTRY_OPTIONS = [
   { value: 'JP', label: 'Japão' },
   { value: 'CA', label: 'Canadá' },
   { value: 'MX', label: 'México' },
-  { value: 'AU', label: 'Austrália' }
+  { value: 'AU', label: 'Austrália' },
+  /* Américas */
+  { value: 'CL', label: 'Chile' },
+  { value: 'CO', label: 'Colômbia' },
+  { value: 'PE', label: 'Peru' },
+  { value: 'UY', label: 'Uruguai' },
+  { value: 'PY', label: 'Paraguai' },
+  { value: 'BO', label: 'Bolívia' },
+  { value: 'VE', label: 'Venezuela' },
+  { value: 'EC', label: 'Equador' },
+  /* Europa */
+  { value: 'NL', label: 'Países Baixos' },
+  { value: 'BE', label: 'Bélgica' },
+  { value: 'CH', label: 'Suíça' },
+  { value: 'AT', label: 'Áustria' },
+  { value: 'IE', label: 'Irlanda' },
+  { value: 'SE', label: 'Suécia' },
+  { value: 'NO', label: 'Noruega' },
+  { value: 'DK', label: 'Dinamarca' },
+  { value: 'FI', label: 'Finlândia' },
+  { value: 'PL', label: 'Polônia' },
+  { value: 'CZ', label: 'Tchéquia' },
+  { value: 'GR', label: 'Grécia' },
+  { value: 'RO', label: 'Romênia' },
+  { value: 'UA', label: 'Ucrânia' },
+  { value: 'RU', label: 'Rússia' },
+  { value: 'TR', label: 'Turquia' },
+  /* Ásia / Oceania */
+  { value: 'CN', label: 'China' },
+  { value: 'KR', label: 'Coreia do Sul' },
+  { value: 'IN', label: 'Índia' },
+  { value: 'ID', label: 'Indonésia' },
+  { value: 'PH', label: 'Filipinas' },
+  { value: 'TH', label: 'Tailândia' },
+  { value: 'VN', label: 'Vietnã' },
+  { value: 'NZ', label: 'Nova Zelândia' },
+  /* África / Oriente Médio */
+  { value: 'ZA', label: 'África do Sul' },
+  { value: 'AO', label: 'Angola' },
+  { value: 'MZ', label: 'Moçambique' },
+  { value: 'MA', label: 'Marrocos' },
+  { value: 'EG', label: 'Egito' },
+  { value: 'NG', label: 'Nigéria' }
 ];
 
 /** Gêneros do seletor de busca (value = tag da Radio Browser). */
@@ -74,7 +116,22 @@ export const GENRE_OPTIONS = [
   { value: 'reggae',    label: 'Reggae' },
   { value: 'gospel',    label: 'Gospel' },
   { value: 'news',      label: 'Notícias' },
-  { value: '80s',       label: 'Anos 80' }
+  { value: '80s',       label: 'Anos 80' },
+  { value: '90s',       label: 'Anos 90' },
+  { value: 'funk',      label: 'Funk' },
+  { value: 'samba',     label: 'Samba' },
+  { value: 'forro',     label: 'Forró' },
+  { value: 'pagode',    label: 'Pagode' },
+  { value: 'country',   label: 'Country' },
+  { value: 'blues',     label: 'Blues' },
+  { value: 'soul',      label: 'Soul / R&B' },
+  { value: 'salsa',     label: 'Salsa' },
+  { value: 'k-pop',     label: 'K-Pop' },
+  { value: 'anime',     label: 'Anime / J-Pop' },
+  { value: 'ambient',   label: 'Ambient / Chill' },
+  { value: 'oldies',    label: 'Oldies' },
+  { value: 'punk',      label: 'Punk' },
+  { value: 'indie',     label: 'Indie' }
 ];
 
 function normalizeStation(raw) {
@@ -105,7 +162,7 @@ function httpsFirst(a, b) {
  * @param {{name?:string, countryCode?:string, tag?:string, limit?:number}} opts
  * @returns {Promise<Array>} estações normalizadas (sem duplicatas, populares primeiro)
  */
-export async function searchStations({ name = '', countryCode = '', tag = '', limit = 40 } = {}) {
+export async function searchStations({ name = '', countryCode = '', tag = '', limit = 100 } = {}) {
   const params = new URLSearchParams({
     limit: String(limit),
     hidebroken: 'true',

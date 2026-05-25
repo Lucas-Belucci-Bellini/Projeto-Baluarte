@@ -592,7 +592,7 @@ function buildOnlineView(state) {
         name: state.query.name,
         countryCode: state.query.country,
         tag: state.query.tag,
-        limit: 40
+        limit: 100
       });
       renderResults(list);
     } catch (err) {
