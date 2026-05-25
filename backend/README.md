@@ -11,6 +11,18 @@ modo **Navegador (WebLLM)** roda 100% no cliente.
 > configurável. Por isso nenhuma reescrita do site foi necessária — o backend é
 > aditivo (entra como mais um *modo* do J.A.R.V.I.S., igual ao Ollama).
 
+## Deploy em 1 clique (HTTPS — para o site publicado)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte)
+
+1. Pegue uma chave Gemini (grátis): <https://aistudio.google.com/apikey> → **Create API key**.
+2. Clique no botão acima → o Render lê o `render.yaml` e cria o serviço **baluarte-ia-backend**.
+3. No serviço (Render) → **Environment** → defina `GEMINI_API_KEY` com a sua chave.
+4. Quando ficar **Live**, copie a URL pública (`https://…onrender.com`) e cole em
+   **J.A.R.V.I.S. → ⚙ Modos & Config → modo Servidor → URL DO SERVIDOR** → **Testar conexão**.
+
+Detalhes, alternativas (Docker/Railway) e execução local estão abaixo.
+
 ## Como rodar
 
 ```bash
