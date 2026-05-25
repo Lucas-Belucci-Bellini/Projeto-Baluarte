@@ -363,8 +363,9 @@ async function handleSend() {
     /* Erros de configuração/conexão (servidor/ollama fora do ar, sem API key,
      * sem WebGPU) não são "falha" — são setup. Mostramos um aviso acionável
      * com a opção de responder agora no modo Local, que sempre funciona. */
-    const isSetup = config.mode !== 'local' &&
-      /inacess|não configurada|nao configurada|webgpu|timeout/i.test(e.message);
+    /* Qualquer falha num modo que não seja o Local oferece os atalhos de
+     * fallback (Navegador/Local), que sempre têm como funcionar. */
+    const isSetup = config.mode !== 'local';
     const prefix = isSetup ? '⚙ ' : '⚠ ';
     const msgText = prefix + e.message;
 
