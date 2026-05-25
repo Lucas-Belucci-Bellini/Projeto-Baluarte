@@ -8,11 +8,14 @@
  * até algum responder — assim a busca não cai se um servidor sair do ar.
  */
 
+/* all.api.* é o round-robin oficial (sempre aponta para um servidor vivo);
+ * vem primeiro. Os nomeados são fallback — alguns saem do ar de tempos em tempos. */
 const MIRRORS = [
+  'https://all.api.radio-browser.info',
   'https://de1.api.radio-browser.info',
-  'https://de2.api.radio-browser.info',
+  'https://fi1.api.radio-browser.info',
   'https://nl1.api.radio-browser.info',
-  'https://at1.api.radio-browser.info'
+  'https://de2.api.radio-browser.info'
 ];
 
 const TIMEOUT_MS = 8000;
