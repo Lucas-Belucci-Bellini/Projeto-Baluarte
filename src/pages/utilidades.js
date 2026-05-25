@@ -162,6 +162,142 @@ function toolPorcentagem() {
     h('div', { className: 'util-pct' }, h('span', null, 'variação de'), a3, h('span', null, 'para'), b3, h('span', null, '='), r3));
 }
 
+/* ===== 6) Diff de Texto (LCS por linha) ===== */
+function toolDiff() {
+  const a = h('textarea', { className: 'input util-textarea', rows: 5, placeholder: 'Texto A' });
+  const b = h('textarea', { className: 'input util-textarea', rows: 5, placeholder: 'Texto B' });
+  const out = h('div', { className: 'util-diff' });
+  function run() {
+    const A = a.value.split('\n'), B = b.value.split('\n');
+    const m = A.length, n = B.length;
+    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = m - 1; i >= 0; i--)
+      for (let j = n - 1; j >= 0; j--)
+        dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    empty(out);
+    const add = (cls, txt) => out.appendChild(h('div', { className: 'util-diff__line ' + cls }, txt || ' '));
+    let i = 0, j = 0;
+    while (i < m && j < n) {
+      if (A[i] === B[j]) { add('eq', '  ' + A[i]); i++; j++; }
+      else if (dp[i + 1][j] >= dp[i][j + 1]) { add('del', '- ' + A[i]); i++; }
+      else { add('ins', '+ ' + B[j]); j++; }
+    }
+    while (i < m) add('del', '- ' + A[i++]);
+    while (j < n) add('ins', '+ ' + B[j++]);
+    if (!out.children.length) add('eq', '(idêntico ou vazio)');
+  }
+  a.oninput = b.oninput = run; run();
+  return h('div', { className: 'util-body' }, h('div', { className: 'util-diff-inputs' }, a, b), out);
+}
+
+/* ===== 7) Lorem Ipsum ===== */
+function toolLorem() {
+  const W = ('lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et '
+    + 'dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo '
+    + 'consequat duis aute irure voluptate velit esse cillum eu fugiat nulla pariatur excepteur sint occaecat cupidatat '
+    + 'non proident sunt culpa qui officia deserunt mollit anim id est laborum').split(' ');
+  const out = h('textarea', { className: 'input util-out', rows: 6, readonly: true });
+  const qty = h('input', { className: 'input util-qty', type: 'number', min: '1', max: '20', value: '3' });
+  const sentence = () => {
+    const len = 6 + Math.floor(Math.random() * 10), s = [];
+    for (let i = 0; i < len; i++) s.push(W[Math.floor(Math.random() * W.length)]);
+    const t = s.join(' ');
+    return t.charAt(0).toUpperCase() + t.slice(1) + '.';
+  };
+  function gen() {
+    const p = Math.max(1, Math.min(20, parseInt(qty.value, 10) || 1)), paras = [];
+    for (let i = 0; i < p; i++) {
+      const ns = 3 + Math.floor(Math.random() * 4), arr = [];
+      for (let k = 0; k < ns; k++) arr.push(sentence());
+      paras.push(arr.join(' '));
+    }
+    out.value = paras.join('\n\n');
+  }
+  gen();
+  return h('div', { className: 'util-body' },
+    h('div', { className: 'util-row' }, h('span', null, 'Parágrafos'), qty,
+      h('button', { className: 'btn btn--primary btn--sm', onclick: gen }, '↻ Gerar'),
+      h('button', { className: 'btn btn--ghost btn--sm', onclick: () => copy(out.value) }, '⧉')),
+    out);
+}
+
+/* ===== 8) Número por extenso (pt-BR, aproximado) ===== */
+function porExtenso(n) {
+  if (!Number.isFinite(n)) return '—';
+  n = Math.trunc(n);
+  if (n === 0) return 'zero';
+  const neg = n < 0; n = Math.abs(n);
+  if (n > 999999999999) return 'número muito grande';
+  const u = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+  const d = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+  const c = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+  const tres = (x) => {
+    if (x === 0) return '';
+    if (x === 100) return 'cem';
+    const p = []; const h_ = Math.floor(x / 100), r = x % 100;
+    if (h_) p.push(c[h_]);
+    if (r < 20 && r > 0) p.push(u[r]);
+    else if (r >= 20) { const dd = Math.floor(r / 10), uu = r % 10; p.push(uu ? d[dd] + ' e ' + u[uu] : d[dd]); }
+    return p.join(' e ');
+  };
+  const g = []; let x = n;
+  while (x > 0) { g.push(x % 1000); x = Math.floor(x / 1000); }
+  const esc = [['', ''], ['mil', 'mil'], ['milhão', 'milhões'], ['bilhão', 'bilhões']];
+  const partes = [];
+  for (let k = g.length - 1; k >= 0; k--) {
+    const v = g[k];
+    if (!v) continue;
+    if (k === 1) partes.push(v === 1 ? 'mil' : tres(v) + ' mil');
+    else if (k === 0) partes.push(tres(v));
+    else partes.push(tres(v) + ' ' + (v === 1 ? esc[k][0] : esc[k][1]));
+  }
+  return ((neg ? 'menos ' : '') + partes.join(' e ')).replace(/\s+/g, ' ').trim();
+}
+function toolExtenso() {
+  const inp = h('input', { className: 'input', type: 'number', placeholder: 'Digite um número inteiro' });
+  const out = h('div', { className: 'util-result' }, '—');
+  inp.oninput = () => { out.textContent = inp.value.trim() === '' ? '—' : porExtenso(parseInt(inp.value, 10)); };
+  return h('div', { className: 'util-body' }, inp, out);
+}
+
+/* ===== 9) Base64 de Imagem ===== */
+function toolImgBase64() {
+  const out = h('textarea', { className: 'input util-out u-mono', rows: 4, readonly: true, placeholder: 'data:image/...;base64,...' });
+  const prev = h('div', { className: 'util-imgprev' });
+  const file = h('input', {
+    className: 'input', type: 'file', accept: 'image/*',
+    onchange: (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => { out.value = String(r.result); empty(prev); prev.appendChild(h('img', { src: r.result, alt: 'preview' })); };
+      r.readAsDataURL(f);
+    }
+  });
+  return h('div', { className: 'util-body' }, file, prev,
+    h('button', { className: 'btn btn--ghost btn--sm', onclick: () => copy(out.value) }, '⧉ Copiar data URI'),
+    out);
+}
+
+/* ===== 10) Sorteador / Roleta ===== */
+function toolSorteador() {
+  const ta = h('textarea', { className: 'input util-textarea', rows: 5, placeholder: 'Um item por linha...' });
+  const res = h('div', { className: 'util-result u-text-cyan' }, '—');
+  const items = () => ta.value.split('\n').map((s) => s.trim()).filter(Boolean);
+  return h('div', { className: 'util-body' }, ta,
+    h('div', { className: 'util-row' },
+      h('button', { className: 'btn btn--primary btn--sm', onclick: () => {
+        const it = items();
+        res.textContent = it.length ? '🎲 ' + it[Math.floor(Math.random() * it.length)] : 'Adicione itens.';
+      } }, '🎲 Sortear 1'),
+      h('button', { className: 'btn btn--ghost btn--sm', onclick: () => {
+        const it = items();
+        for (let i = it.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [it[i], it[j]] = [it[j], it[i]]; }
+        ta.value = it.join('\n');
+      } }, '🔀 Embaralhar')),
+    res);
+}
+
 export function utilidadesPage() {
   const page = h('div', { className: 'page-utilidades' });
   page.appendChild(
@@ -172,8 +308,8 @@ export function utilidadesPage() {
       h('h1', { className: 'page-header__title' }, '🧰 Caixa de Ferramentas'),
       h('p', { className: 'page-header__description' },
         'Utilidades rápidas do dia a dia — ',
-        h('span', { className: 'u-text-cyan' }, 'senhas, UUID, contador de texto, timestamp e porcentagem'),
-        '. Tudo no navegador.'))
+        h('span', { className: 'u-text-cyan' }, '10 ferramentas técnicas'),
+        ' (senhas, UUID, texto, datas, diff, lorem, sorteio…). Tudo no navegador.'))
   );
   page.appendChild(
     h('div', { className: 'util-grid' },
@@ -181,7 +317,12 @@ export function utilidadesPage() {
       section('Gerador de UUID', '🆔', toolUuid()),
       section('Contador de Texto', '🔢', toolContador()),
       section('Timestamp ↔ Data', '🕔', toolTimestamp()),
-      section('Calculadora de Porcentagem', '％', toolPorcentagem()))
+      section('Calculadora de Porcentagem', '％', toolPorcentagem()),
+      section('Diff de Texto', '🔀', toolDiff()),
+      section('Lorem Ipsum', '📝', toolLorem()),
+      section('Número por Extenso', '🔡', toolExtenso()),
+      section('Base64 de Imagem', '🖼', toolImgBase64()),
+      section('Sorteador / Roleta', '🎲', toolSorteador()))
   );
   return page;
 }
