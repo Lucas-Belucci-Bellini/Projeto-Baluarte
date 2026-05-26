@@ -7,10 +7,13 @@
 
 import { MUSICAS_YT } from './musicas-yt.js';
 
-/* Vídeos removidos da seção Músicas (a pedido do operador). */
+/* Vídeos removidos da seção Músicas (a pedido do operador) + funks. */
 const MUSICAS_EXCLUIDAS = new Set([
+  /* removidos manualmente */
   '8RuVs8SxvoY', 'HriLV5NhIoM', '1k6f5VxcJPs', 'rnpNj9UxJb0',
-  'ZeLTtmrZwkY', 'BK-s6lPmFws', '3zGT8-PMXeE', 'qPGe7YeiPto'
+  'ZeLTtmrZwkY', 'BK-s6lPmFws', '3zGT8-PMXeE', 'qPGe7YeiPto',
+  /* funks (sem funk nos vídeos) */
+  '8IfniIytzIQ', 'KQUD0YVnFM8', 'fLELt1TueHw', '-UDWqs7TsTg'
 ]);
 
 export const PLAYLISTS = [
