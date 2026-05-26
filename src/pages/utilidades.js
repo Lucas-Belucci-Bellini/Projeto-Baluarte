@@ -540,6 +540,96 @@ function toolMarkdown() {
       h('div', { className: 'util-row' }, src, h('button', { className: 'btn btn--ghost btn--sm', onclick: () => copy(src.value) }, '⧉'))));
 }
 
+/* ===== Texto ↔ Binário ===== */
+function toolBinario() {
+  const t = h('input', { className: 'input', type: 'text', placeholder: 'Texto' });
+  const b = h('input', { className: 'input u-mono', type: 'text', placeholder: 'Binário (8 bits por byte)' });
+  t.oninput = () => { b.value = [...new TextEncoder().encode(t.value)].map((x) => x.toString(2).padStart(8, '0')).join(' '); };
+  b.oninput = () => {
+    try {
+      const bytes = b.value.trim().split(/\s+/).filter(Boolean).map((x) => parseInt(x, 2));
+      t.value = new TextDecoder().decode(new Uint8Array(bytes));
+    } catch { t.value = '—'; }
+  };
+  return h('div', { className: 'util-body' },
+    h('div', { className: 'util-field' }, h('span', null, 'Texto → Binário'), t),
+    h('div', { className: 'util-field' }, h('span', null, 'Binário → Texto'), b));
+}
+
+/* ===== JSON ↔ CSV ===== */
+function toolJsonCsv() {
+  const json = h('textarea', { className: 'input util-textarea u-mono', rows: 5, placeholder: '[{"nome":"Ana","idade":30}]' });
+  const csv = h('textarea', { className: 'input util-textarea u-mono', rows: 5, placeholder: 'nome,idade' });
+  json.oninput = () => {
+    try {
+      const arr = JSON.parse(json.value);
+      if (!Array.isArray(arr) || !arr.length) { csv.value = ''; return; }
+      const keys = [...new Set(arr.flatMap((o) => Object.keys(o)))];
+      const esc = (v) => { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+      csv.value = [keys.join(','), ...arr.map((o) => keys.map((k) => esc(o[k])).join(','))].join('\n');
+    } catch { csv.value = '(JSON inválido — use um array de objetos)'; }
+  };
+  csv.oninput = () => {
+    try {
+      const lines = csv.value.trim().split('\n');
+      if (lines.length < 1 || !lines[0]) { json.value = ''; return; }
+      const keys = lines[0].split(',').map((s) => s.trim());
+      const rows = lines.slice(1).map((l) => { const v = l.split(','); const o = {}; keys.forEach((k, i) => (o[k] = (v[i] || '').trim())); return o; });
+      json.value = JSON.stringify(rows, null, 2);
+    } catch { json.value = '(CSV inválido)'; }
+  };
+  return h('div', { className: 'util-body' },
+    h('div', { className: 'util-field' }, h('span', null, 'JSON → CSV'), json),
+    h('div', { className: 'util-field' }, h('span', null, 'CSV → JSON'), csv));
+}
+
+/* ===== Regra de Três ===== */
+function toolRegraTres() {
+  const ni = (ph) => h('input', { className: 'input util-qty', type: 'number', placeholder: ph });
+  const a = ni('A'), b = ni('B'), c = ni('C'), x = h('span', { className: 'util-result u-text-cyan' }, '—');
+  const calc = () => { const va = +a.value, vb = +b.value, vc = +c.value; x.textContent = va ? String(Math.round((vb * vc / va) * 1e6) / 1e6) : '—'; };
+  a.oninput = b.oninput = c.oninput = calc;
+  return h('div', { className: 'util-body' },
+    h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: 0 } }, 'A está para B, assim como C está para X'),
+    h('div', { className: 'util-pct' }, a, h('span', null, '↔'), b, h('span', null, ' · '), c, h('span', null, '↔'), x));
+}
+
+/* ===== Conversor de Bytes ===== */
+function toolBytes() {
+  const UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const val = h('input', { className: 'input util-qty', type: 'number', value: '1024' });
+  const unit = h('select', { className: 'input util-qty' }, ...UNITS.map((u, i) => h('option', { value: String(1024 ** i) }, u)));
+  const out = h('div', { className: 'util-stats' });
+  const update = () => {
+    const bytes = (parseFloat(val.value) || 0) * (+unit.value);
+    empty(out);
+    UNITS.forEach((u, i) => {
+      const v = bytes / (1024 ** i);
+      out.appendChild(h('div', { className: 'util-stat' },
+        h('div', { className: 'util-stat__v u-text-cyan' }, String(Math.round(v * 1000) / 1000)),
+        h('div', { className: 'util-stat__k u-text-muted' }, u)));
+    });
+  };
+  val.oninput = update; unit.onchange = update; update();
+  return h('div', { className: 'util-body' }, h('div', { className: 'util-row' }, val, unit), out);
+}
+
+/* ===== Frequência de Palavras ===== */
+function toolFreq() {
+  const ta = h('textarea', { className: 'input util-textarea', rows: 4, placeholder: 'Cole um texto...' });
+  const out = h('div', { className: 'util-freq' });
+  ta.oninput = () => {
+    const words = ta.value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').match(/[a-z0-9]+/g) || [];
+    const freq = {}; words.forEach((w) => (freq[w] = (freq[w] || 0) + 1));
+    const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 15);
+    empty(out);
+    if (!top.length) { out.appendChild(h('div', { className: 'u-text-muted' }, '—')); return; }
+    top.forEach(([w, n]) => out.appendChild(h('div', { className: 'util-freq__row' },
+      h('span', null, w), h('span', { className: 'u-text-cyan u-mono' }, String(n)))));
+  };
+  return h('div', { className: 'util-body' }, ta, out);
+}
+
 export function utilidadesPage() {
   const page = h('div', { className: 'page-utilidades' });
   page.appendChild(
@@ -550,8 +640,8 @@ export function utilidadesPage() {
       h('h1', { className: 'page-header__title' }, '🧰 Caixa de Ferramentas'),
       h('p', { className: 'page-header__description' },
         'Utilidades rápidas do dia a dia — ',
-        h('span', { className: 'u-text-cyan' }, '20 ferramentas técnicas'),
-        ' (senhas, UUID, texto, datas, diff, slug, ASCII, CPF/CNPJ, fusos, Markdown…). Tudo no navegador.'))
+        h('span', { className: 'u-text-cyan' }, '25 ferramentas técnicas'),
+        ' (senhas, UUID, texto, datas, CPF/CNPJ, fusos, Markdown, binário, JSON↔CSV, bytes…). Tudo no navegador.'))
   );
   page.appendChild(
     h('div', { className: 'util-grid' },
@@ -573,7 +663,12 @@ export function utilidadesPage() {
       section('CPF / CNPJ', '🪪', toolDocs()),
       section('px ↔ rem', '📐', toolPxRem()),
       section('Relógio Mundial', '🌐', toolFusos()),
-      section('Markdown → HTML', '📄', toolMarkdown()))
+      section('Markdown → HTML', '📄', toolMarkdown()),
+      section('Texto ↔ Binário', '🔟', toolBinario()),
+      section('JSON ↔ CSV', '📊', toolJsonCsv()),
+      section('Regra de Três', '➗', toolRegraTres()),
+      section('Conversor de Bytes', '💾', toolBytes()),
+      section('Frequência de Palavras', '📈', toolFreq()))
   );
   return page;
 }

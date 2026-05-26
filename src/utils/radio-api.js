@@ -99,7 +99,48 @@ export const COUNTRY_OPTIONS = [
   { value: 'MZ', label: 'Moçambique' },
   { value: 'MA', label: 'Marrocos' },
   { value: 'EG', label: 'Egito' },
-  { value: 'NG', label: 'Nigéria' }
+  { value: 'NG', label: 'Nigéria' },
+  { value: 'KE', label: 'Quênia' },
+  { value: 'GH', label: 'Gana' },
+  { value: 'ET', label: 'Etiópia' },
+  { value: 'TN', label: 'Tunísia' },
+  { value: 'DZ', label: 'Argélia' },
+  /* Oriente Médio / Ásia Central */
+  { value: 'IR', label: 'Irã' },
+  { value: 'AF', label: 'Afeganistão' },
+  { value: 'IL', label: 'Israel' },
+  { value: 'SA', label: 'Arábia Saudita' },
+  { value: 'AE', label: 'Emirados Árabes' },
+  { value: 'QA', label: 'Catar' },
+  { value: 'IQ', label: 'Iraque' },
+  { value: 'LB', label: 'Líbano' },
+  { value: 'PK', label: 'Paquistão' },
+  { value: 'BD', label: 'Bangladesh' },
+  { value: 'KZ', label: 'Cazaquistão' },
+  /* Ásia / Oceania (mais) */
+  { value: 'KP', label: 'Coreia do Norte' },
+  { value: 'TW', label: 'Taiwan' },
+  { value: 'HK', label: 'Hong Kong' },
+  { value: 'MY', label: 'Malásia' },
+  { value: 'SG', label: 'Singapura' },
+  { value: 'LK', label: 'Sri Lanka' },
+  { value: 'NP', label: 'Nepal' },
+  /* Europa (mais) */
+  { value: 'HU', label: 'Hungria' },
+  { value: 'HR', label: 'Croácia' },
+  { value: 'RS', label: 'Sérvia' },
+  { value: 'BG', label: 'Bulgária' },
+  { value: 'SK', label: 'Eslováquia' },
+  { value: 'LT', label: 'Lituânia' },
+  { value: 'LV', label: 'Letônia' },
+  { value: 'EE', label: 'Estônia' },
+  { value: 'IS', label: 'Islândia' },
+  /* Américas (mais) */
+  { value: 'CU', label: 'Cuba' },
+  { value: 'CR', label: 'Costa Rica' },
+  { value: 'PA', label: 'Panamá' },
+  { value: 'GT', label: 'Guatemala' },
+  { value: 'DO', label: 'Rep. Dominicana' }
 ];
 
 /** Gêneros do seletor de busca (value = tag da Radio Browser). */
@@ -179,11 +220,15 @@ export async function searchStations({ name = '', countryCode = '', tag = '', li
   const raw = await apiGet('/json/stations/search?' + params.toString());
   if (!Array.isArray(raw)) return [];
 
+  /* No site publicado (HTTPS), streams http:// são bloqueados (mixed content)
+   * e não tocam — então só listamos estações HTTPS, que funcionam em qualquer rede. */
+  const httpsPage = typeof location !== 'undefined' && location.protocol === 'https:';
   const seen = new Set();
   const stations = [];
   for (const item of raw) {
     const station = normalizeStation(item);
     if (!station.url || seen.has(station.uuid)) continue;
+    if (httpsPage && station.url.startsWith('http://')) continue;
     seen.add(station.uuid);
     stations.push(station);
   }

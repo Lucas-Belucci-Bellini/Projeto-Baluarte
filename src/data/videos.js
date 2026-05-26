@@ -7,6 +7,12 @@
 
 import { MUSICAS_YT } from './musicas-yt.js';
 
+/* Vídeos removidos da seção Músicas (a pedido do operador). */
+const MUSICAS_EXCLUIDAS = new Set([
+  '8RuVs8SxvoY', 'HriLV5NhIoM', '1k6f5VxcJPs', 'rnpNj9UxJb0',
+  'ZeLTtmrZwkY', 'BK-s6lPmFws', '3zGT8-PMXeE', 'qPGe7YeiPto'
+]);
+
 export const PLAYLISTS = [
   {
     id: 'tutoriais',
@@ -79,7 +85,7 @@ export const PLAYLISTS = [
     icon: '♫',
     color: '#ff00aa',
     description: 'Faixas das playlists de música do operador (vídeos individuais).',
-    videos: MUSICAS_YT
+    videos: MUSICAS_YT.filter((v) => !MUSICAS_EXCLUIDAS.has(v.ytId))
   }
 ];
 
