@@ -10,6 +10,9 @@ import { h } from '../utils/helpers.js';
 const TRACK_ID = '6Hv4AhlMTDgb6HGTvI0xlH';
 const PLAYLIST_ID = '5wVcAsTvq2dQFZcqw3GJWN';
 
+/* Faixas avulsas exibidas na seção "Músicas". Adicione mais IDs aqui. */
+const EXTRA_TRACKS = ['4WZYBWngq9ODEqPB05WW7S'];
+
 /* Carrega a IFrame API do Spotify uma única vez e compartilha. */
 function ensureSpotifyAPI(cb) {
   if (window.__spotifyAPI) { cb(window.__spotifyAPI); return; }
@@ -111,6 +114,18 @@ export function musicasPage() {
       'estiver nesta aba. Se o player não tocar a faixa inteira, é limite do ',
       'Spotify para quem não está logado.')
   );
+
+  /* ===== Músicas (faixas avulsas) ===== */
+  if (EXTRA_TRACKS.length) {
+    fullPage.appendChild(
+      h('div', { className: 'section-header' },
+        h('h2', { className: 'section-header__title' }, '♫ Músicas'))
+    );
+    const grid = h('div', { className: 'musica-grid' });
+    EXTRA_TRACKS.forEach((id) => grid.appendChild(
+      h('div', { className: 'musica-host' }, plainEmbed('track', id, 152))));
+    fullPage.appendChild(grid);
+  }
 
   /* ===== Playlist ===== */
   fullPage.appendChild(

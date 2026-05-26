@@ -10,6 +10,12 @@
   overflow: hidden;
 }
 
+.musica-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-sm);
+}
+
 .musica-embed {
   display: block;
   width: 100%;
