@@ -13,8 +13,33 @@ const MUSICAS_EXCLUIDAS = new Set([
   '8RuVs8SxvoY', 'HriLV5NhIoM', '1k6f5VxcJPs', 'rnpNj9UxJb0',
   'ZeLTtmrZwkY', 'BK-s6lPmFws', '3zGT8-PMXeE', 'qPGe7YeiPto',
   /* funks (sem funk nos vídeos) */
-  '8IfniIytzIQ', 'KQUD0YVnFM8', 'fLELt1TueHw', '-UDWqs7TsTg'
+  '8IfniIytzIQ', 'KQUD0YVnFM8', 'fLELt1TueHw', '-UDWqs7TsTg',
+  /* removidos manualmente (2ª leva) */
+  '0vVE2tx7wMc', 'Yh9AlMpelJI', 'EvVvkK9Iajs', 'Kz2WjqV9Dc8', 'KUwh_hAW2BY'
 ]);
+
+/* Músicas agrupadas por gênero (uma playlist por gênero). */
+const GENRE_META = [
+  ['sertanejo',  'Sertanejo',          '🤠', '#ffaa00'],
+  ['forro',      'Forró & Pisadinha',  '🪗', '#ff8c00'],
+  ['pagode',     'Pagode & Samba',     '🥁', '#ff00aa'],
+  ['rock',       'Rock',               '🎸', '#ff3355'],
+  ['pop',        'Pop & Internacional','🌎', '#00f0ff'],
+  ['eletronica', 'Eletrônica',         '🎛', '#7c4dff'],
+  ['rap-geek',   'Rap & Geek',         '🎮', '#00ff88'],
+  ['trilhas',    'Trilhas & Hinos',    '🎬', '#66ddff'],
+  ['outros',     'Outras Músicas',     '🎵', '#93a4bf']
+];
+function buildMusicaPlaylists() {
+  const disp = MUSICAS_YT.filter((v) => !MUSICAS_EXCLUIDAS.has(v.ytId));
+  return GENRE_META
+    .map(([g, title, icon, color]) => ({
+      id: 'mus-' + g, title, icon, color,
+      description: `Músicas — ${title}.`,
+      videos: disp.filter((v) => v.genero === g)
+    }))
+    .filter((p) => p.videos.length);
+}
 
 export const PLAYLISTS = [
   {
@@ -81,16 +106,8 @@ export const PLAYLISTS = [
       { id: 'au-3', title: 'Coro de Vanadis', duration: '5:45', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['Vanadis'] },
       { id: 'au-4', title: "Back To Earth — Assassin's Creed [GMV] · TeaTime", duration: '—', source: 'youtube', ytId: 'vyQwj7_l2N0', tags: ['trilha', 'GMV'] }
     ]
-  },
-  {
-    id: 'musica-yt',
-    title: 'Músicas',
-    icon: '♫',
-    color: '#ff00aa',
-    description: 'Faixas das playlists de música do operador (vídeos individuais).',
-    videos: MUSICAS_YT.filter((v) => !MUSICAS_EXCLUIDAS.has(v.ytId))
   }
-];
+].concat(buildMusicaPlaylists());
 
 export const TOTAL_VIDEOS = PLAYLISTS.reduce((s, p) => s + p.videos.length, 0);
 export const TOTAL_PLAYLISTS = PLAYLISTS.length;
