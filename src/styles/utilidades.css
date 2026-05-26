@@ -144,6 +144,18 @@
 .util-ascii__ch { font-family: var(--font-mono); font-size: 15px; color: var(--color-text-primary); }
 .util-ascii__code { font-size: 9px; }
 
+/* Frequência de palavras */
+.util-freq { display: flex; flex-direction: column; gap: 2px; max-height: 220px; overflow-y: auto; }
+.util-freq__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 3px 8px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-sm);
+}
+
 /* Markdown preview */
 .util-mdprev {
   padding: var(--space-sm) var(--space-md);
