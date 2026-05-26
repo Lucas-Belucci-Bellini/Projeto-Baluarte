@@ -72,6 +72,7 @@ const TOOLS = [
   { id: 'portas', name: 'Lógica Digital', category: 'referencia', icon: '∧', phase: 1, tag: 'novo', desc: 'Enciclopédia de lógica digital: portas fundamentais com símbolo, expressão e tabela verdade, blocos construtivos e catálogo de CIs 7400/4000.' },
   { id: 'ciberseg', name: 'CiberSeg', category: 'referencia', icon: '⊘', phase: 1, tag: 'novo', desc: 'Enciclopédia de cibersegurança — catálogo de ataques, defesas e ferramentas com filtro por categoria e ficha detalhada.' },
   { id: 'academia', name: 'Academia', category: 'referencia', icon: '</>', phase: 1, tag: 'novo', desc: 'Trilhas de linguagens de programação com módulos de código e atalho "abrir no Editor", mais recursos de aprendizado e carreiras de tecnologia.' },
+  { id: 'jogos', name: 'Jogos de Aprendizado', category: 'referencia', icon: '🎮', phase: 1, tag: 'novo', desc: 'Aprenda programação jogando: JavaScript ("qual a saída?"), HTML (múltipla escolha) e CSS ("acerte o layout" com Flexbox), com pontuação.' },
   { id: 'robotica', name: 'Robótica', category: 'referencia', icon: '⊙', phase: 1, tag: 'novo', desc: 'Currículo de robótica em 12 módulos, do básico ao avançado, com rail de navegação e painel de conteúdo.' },
 
   /* === Sistema (4) === */
@@ -145,6 +146,7 @@ const TOOL_ROUTES = {
   portas: '/portas',
   ciberseg: '/ciberseg',
   academia: '/academia',
+  jogos: '/jogos',
   robotica: '/robotica',
   /* Sistema */
   cotacoes: '/economia',

@@ -1,0 +1,115 @@
+/* ============================================================
+ * Jogos de Aprendizado (v2.0.0)
+ * ============================================================ */
+
+.jogo-tabs {
+  display: flex;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+.jogo-tab {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.jogo-tab:hover { color: var(--color-text-primary); }
+.jogo-tab.is-active {
+  background: var(--color-cyan-soft);
+  color: var(--color-cyan);
+  border-color: var(--color-cyan);
+}
+
+.jogo-host {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-height: 320px;
+}
+
+.jogo-prog {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  border-bottom: var(--border-thin);
+  padding-bottom: var(--space-xs);
+}
+.jogo-q { margin: 0; font-size: var(--font-size-md); color: var(--color-text-primary); }
+
+.jogo-code {
+  margin: 0;
+  padding: var(--space-md);
+  background: var(--color-bg-deep, #06080d);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.jogo-row { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.jogo-input { flex: 1; min-width: 180px; }
+
+.jogo-fb { min-height: 20px; font-size: var(--font-size-sm); font-weight: 500; }
+.jogo-fb.is-ok { color: var(--color-success); }
+.jogo-fb.is-no { color: var(--color-danger); }
+
+/* HTML — opções */
+.jogo-opcoes { display: flex; flex-direction: column; gap: var(--space-xs); }
+.jogo-opcao {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.jogo-opcao:hover { border-color: var(--color-cyan-edge); }
+.jogo-opcao.is-ok { border-color: var(--color-success); background: var(--color-success-soft, rgba(0,255,102,.12)); color: var(--color-success); }
+.jogo-opcao.is-no { border-color: var(--color-danger); background: var(--color-danger-soft, rgba(255,59,59,.12)); color: var(--color-danger); }
+
+/* fim de jogo */
+.jogo-fim { text-align: center; padding: var(--space-lg); }
+.jogo-fim__big { font-size: 48px; font-weight: 700; font-family: var(--font-mono); }
+
+/* CSS — flexbox */
+.jogo-flex-pair { display: flex; gap: var(--space-lg); flex-wrap: wrap; }
+.jogo-flex-lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: var(--tracking-widest); margin-bottom: 4px; }
+.jogo-flex {
+  display: flex;
+  width: 200px;
+  height: 130px;
+  padding: 8px;
+  gap: 6px;
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-sm);
+}
+.jogo-flex.is-player { border-color: var(--color-cyan); }
+.jogo-box {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-xs);
+  background: linear-gradient(135deg, var(--color-cyan), var(--color-magenta));
+  flex: 0 0 auto;
+}
+.jogo-flex .jogo-box { background: var(--color-cyan); }
+.jogo-flex:not(.is-player) .jogo-box { background: var(--color-magenta); }
+
+.jogo-ctrl { display: flex; flex-direction: column; gap: 4px; }
+.jogo-ctrl__lbl { font-size: 11px; }
+.jogo-btns { display: flex; flex-wrap: wrap; gap: var(--space-2xs); }

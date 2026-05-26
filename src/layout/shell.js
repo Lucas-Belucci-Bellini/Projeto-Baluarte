@@ -85,6 +85,7 @@ function pageTitleForRoute(path) {
     '/filmes': 'Cinema do Baluarte',
     '/biblioteca': 'Biblioteca',
     '/academia': 'Academia',
+    '/jogos': 'Jogos de Aprendizado',
     '/robotica': 'Currículo de Robótica',
     '/universo': 'Universo',
     '/tabela-periodica': 'Tabela Periódica',
