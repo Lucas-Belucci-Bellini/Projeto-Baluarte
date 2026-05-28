@@ -1,6 +1,6 @@
 /**
  * Página /tv — TV do Baluarte.
- * 16 canais (playlists do YouTube). Abre tocando o canal "no ar agora"
+ * 34 canais (playlists do YouTube). Abre tocando o canal "no ar agora"
  * (definido pela hora), lista de canais para trocar, e a grade do dia.
  */
 
@@ -9,12 +9,23 @@ import { TV_CHANNELS, channelForHour, dailySchedule, TOTAL_CHANNELS } from '../d
 
 let screenEl = null;
 
+function buildEmbedSrc(ch) {
+  /* Se o canal tem videoIds custom (ex: ordem reversa), monta sequência
+     usando o primeiro vídeo + ?playlist=resto, que respeita a ordem dada. */
+  if (Array.isArray(ch.videoIds) && ch.videoIds.length > 0) {
+    const [first, ...rest] = ch.videoIds;
+    const tail = rest.length ? `&playlist=${rest.join(',')}` : '';
+    return `https://www.youtube.com/embed/${first}?autoplay=1&loop=1&modestbranding=1&rel=0${tail}`;
+  }
+  return `https://www.youtube.com/embed/videoseries?list=${ch.playlistId}&autoplay=1&loop=1&modestbranding=1&rel=0`;
+}
+
 function tune(ch) {
   if (!screenEl) return;
   empty(screenEl);
   screenEl.appendChild(h('iframe', {
     className: 'tv-screen__iframe',
-    src: `https://www.youtube.com/embed/videoseries?list=${ch.playlistId}&autoplay=1&loop=1&modestbranding=1&rel=0`,
+    src: buildEmbedSrc(ch),
     title: ch.name,
     frameborder: '0',
     allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
