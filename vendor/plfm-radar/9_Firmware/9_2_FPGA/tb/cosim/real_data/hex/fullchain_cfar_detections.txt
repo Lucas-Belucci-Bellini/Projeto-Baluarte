@@ -1,0 +1,8 @@
+# AERIS-10 Full-Chain CFAR Detection List
+# Chain: decim -> MTI -> Doppler -> DC notch(w=2) -> CA-CFAR
+# CFAR: guard=2, train=8, alpha=0x30, mode=CA
+# Format: range_bin doppler_bin magnitude threshold
+2 27 40172 38280
+2 28 65534 40749
+2 29 58080 31302
+2 30 16565 13386
