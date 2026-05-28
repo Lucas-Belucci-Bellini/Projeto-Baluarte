@@ -1,0 +1,154 @@
+{
+    "name": "eusonlito/gps-tracker",
+    "type": "project",
+    "description": "GPS Tracker platform for Sinotrack ST-90x and OsmAnd devices built with Laravel 12 + PHP 8.2 and MySQL 8. Plataforma GPS Tracker para dispositivos Sinotrack ST-90x y OsmAnd creada con Laravel 12 + PHP 8.2 y MySQL 8.",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "eusonlito/captcha": "^1.1.1",
+        "eusonlito/laravel-meta": "^3.3",
+        "laravel/framework": "^13.0",
+        "laravel/helpers": "^1.8",
+        "predis/predis": "^2.1.1",
+        "sentry/sentry-laravel": "^4.1",
+        "sibyx/phpgpx": "^1.2.1"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^4.0",
+        "brianium/paratest": "^7.8",
+        "fakerphp/faker": "^1.24",
+        "friendsofphp/php-cs-fixer": "^3.70",
+        "larastan/larastan": "^3.9",
+        "laravel/pint": "dev-main",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "nunomaduro/phpinsights": "dev-master",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "phpunit/phpunit": "^12.0",
+        "psalm/plugin-laravel": "^4.0",
+        "spatie/laravel-ignition": "dev-main",
+        "squizlabs/php_codesniffer": "^3.7",
+        "vimeo/psalm": "dev-master"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true
+        }
+    },
+    "autoload": {
+        "classmap": [
+            "database/migrations"
+        ],
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\": "database/"
+        },
+        "files": [
+            "app/Services/Helper/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "post-install-cmd": [
+            "@composer dump-autoload",
+            "@composer artisan-cache --ansi"
+        ],
+
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+
+        "post-update-cmd": [
+            "@php artisan test"
+        ],
+
+        "artisan-cache-clear": [
+            "@php artisan optimize:clear --ansi"
+        ],
+
+        "artisan-cache": [
+            "@php artisan optimize --ansi",
+            "@php artisan view:cache --ansi"
+        ],
+
+        "artisan-server-start-all": [
+            "@php artisan server:start:all --reset || true"
+        ],
+
+        "deploy": [
+            "Composer\\Config::disableProcessTimeout",
+            "rm -f bootstrap/cache/*.php",
+            "git checkout .",
+            "git pull",
+            "@composer install --no-dev --optimize-autoloader --classmap-authoritative --ansi",
+            "@php artisan migrate --force --ansi",
+            "@php artisan db:seed --force --ansi --class=\"Database\\Seeders\\Database\"",
+            "@php artisan tool:manifest:generate",
+            "@php artisan queue:restart --ansi",
+            "@composer artisan-server-start-all"
+        ],
+
+        "deploy-dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "rm -f bootstrap/cache/*.php",
+            "@composer install --optimize-autoloader --classmap-authoritative --ansi",
+            "@php artisan migrate --force --ansi",
+            "@php artisan db:seed --class=\"Database\\Seeders\\Database\"",
+            "@php artisan tool:manifest:generate",
+            "@composer artisan-cache-clear",
+            "@php artisan queue:restart --ansi",
+            "@composer artisan-server-start-all"
+        ],
+
+        "deploy-docker": [
+            "Composer\\Config::disableProcessTimeout",
+            "rm -f bootstrap/cache/*.php",
+            "@composer install --no-dev --optimize-autoloader --classmap-authoritative --ansi",
+            "@php artisan migrate --force --ansi",
+            "@php artisan db:seed --class=\"Database\\Seeders\\Database\" --force",
+            "@php artisan tool:manifest:generate",
+            "@php artisan queue:restart --ansi",
+            "@composer artisan-server-start-all"
+        ],
+
+        "fix": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php ./vendor/bin/php-cs-fixer fix -v --ansi",
+            "@php ./vendor/bin/pint -v"
+        ],
+
+        "quality": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan insights -v --ansi || true",
+            "@php ./vendor/bin/phpstan analyse --ansi || true",
+            "@php ./vendor/bin/psalm --no-cache || true"
+        ],
+
+        "setup": [
+            "Composer\\Config::disableProcessTimeout",
+            "echo n | cp -vip .env.example .env",
+            "@composer install --no-scripts --no-dev --optimize-autoloader --classmap-authoritative --ansi"
+        ],
+
+        "translation": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan core:translation:fix --ansi",
+            "@php artisan core:translation:fill --ansi",
+            "@php artisan core:translation:clean --ansi",
+            "@php artisan core:translation:unused --ansi",
+            "git checkout resources/lang/*/validation.php"
+        ]
+    }
+}

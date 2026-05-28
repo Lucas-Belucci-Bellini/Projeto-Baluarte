@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<psalm errorLevel="7" resolveFromConfigFile="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://getpsalm.org/schema/config" xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd">
+    <projectFiles>
+        <directory name="app" />
+        <directory name="config" />
+        <directory name="database" />
+
+        <ignoreFiles>
+            <file name="config/insights.php" />
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <MissingPureAnnotation>
+            <errorLevel type="suppress">
+                <directory name="app" />
+                <directory name="database" />
+            </errorLevel>
+        </MissingPureAnnotation>
+
+        <MissingImmutableAnnotation>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </MissingImmutableAnnotation>
+
+        <MissingTemplateParam>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </MissingTemplateParam>
+
+        <MissingOverrideAttribute>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </MissingOverrideAttribute>
+
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </PossiblyUnusedMethod>
+
+        <PossiblyUnusedProperty>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </PossiblyUnusedProperty>
+
+        <PossiblyUnusedReturnValue>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </PossiblyUnusedReturnValue>
+
+        <UndefinedConstant>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </UndefinedConstant>
+
+        <MissingAbstractPureAnnotation>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </MissingAbstractPureAnnotation>
+
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="app" />
+            </errorLevel>
+        </UnusedClass>
+    </issueHandlers>
+</psalm>

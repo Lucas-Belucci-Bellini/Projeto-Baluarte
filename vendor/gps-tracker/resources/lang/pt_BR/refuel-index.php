@@ -1,0 +1,16 @@
+<?php return [
+    'create' => 'Criar',
+    'date_at' => 'Data',
+    'distance' => 'Distância',
+    'distance_total' => 'Distância total',
+    'end_at' => 'Fim',
+    'filter' => 'Filtrar...',
+    'map' => 'Mapa',
+    'meta-title' => 'Reabastecimentos',
+    'price' => 'Preço',
+    'quantity' => 'Quantidade',
+    'start_at' => 'Início',
+    'total' => 'Valor Total',
+    'user' => 'Usuário',
+    'vehicle' => 'Veículo',
+];
