@@ -61,7 +61,7 @@ const TOOLS = [
   { id: 'radio', name: 'Rádio', category: 'midia', icon: '∿', phase: 1, tag: 'novo', desc: 'Receptor de rádio com dois modos: sintetizador via Web Audio (100% offline) e Online com estações reais da internet pela Radio Browser API.' },
   { id: 'musicas', name: 'Central de Música', category: 'midia', icon: '♫', phase: 1, tag: 'novo', desc: 'Faixa em destaque em loop infinito e playlist temática, via embeds do Spotify.' },
   { id: 'filmes', name: 'Cinema', category: 'midia', icon: '▣', phase: 1, tag: 'novo', desc: 'Cinema do Baluarte — catálogo de filmes do acervo; cada título abre num player modal integrado.' },
-  { id: 'tv', name: 'TV do Baluarte', category: 'midia', icon: '📺', phase: 1, tag: 'novo', desc: '16 canais em rotação (playlists do YouTube) com grade de programação por horário — o canal "no ar agora" toca ao abrir.' },
+  { id: 'tv', name: 'TV do Baluarte', category: 'midia', icon: '📺', phase: 1, tag: 'novo', desc: '34 canais em rotação (playlists do YouTube) com grade de programação por horário — o canal "no ar agora" toca ao abrir.' },
 
   /* === Referência (9) === */
   { id: 'tabela-periodica', name: 'Tabela Periódica', category: 'referencia', icon: '⚛', phase: 1, desc: '118 elementos com massa, configuração eletrônica e categoria. Filtro por categoria, grid 18×10.' },
