@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Navtrack.Api.Model.Common;
+using Navtrack.Api.Model.Teams;
+using Navtrack.Api.Services.Common.Exceptions;
+using Navtrack.Api.Services.Common.Mappers;
+using Navtrack.Api.Services.Common.RequestContext;
+using Navtrack.Api.Services.Requests;
+using Navtrack.Api.Services.Teams.Mappers;
+using Navtrack.Database.Model.Organizations;
+using Navtrack.Database.Model.Teams;
+using Navtrack.Database.Services.Organizations;
+using Navtrack.Database.Services.Teams;
+using Navtrack.Shared.Library.DI;
+
+namespace Navtrack.Api.Services.Teams;
+
+[Service(typeof(IRequestHandler<GetTeamsRequest, ListModel<TeamModel>>))]
+public class GetTeamsRequestHandler(
+    ITeamRepository teamRepository,
+    IOrganizationRepository organizationRepository,
+    INavtrackRequestContextAccessor navtrackRequestContextAccessor)
+    : BaseRequestHandler<GetTeamsRequest, ListModel<TeamModel>>
+{
+    private OrganizationEntity? organization;
+    
+    public override async Task Validate(RequestValidationContext<GetTeamsRequest> context)
+    {
+        organization = await organizationRepository.GetById(context.Request.OrganizationId);
+        organization.Return404IfNull();
+    }
+
+    public override async Task<ListModel<TeamModel>> Handle(GetTeamsRequest request)
+    {
+        List<TeamEntity> teams = await GetTeams(organization!.Id);
+
+        ListModel<TeamModel> result = ListMapper.Map(teams, TeamMapper.Map);
+
+        return result;
+    }
+
+    private Task<List<TeamEntity>> GetTeams(Guid organizationId)
+    {
+        if (navtrackRequestContextAccessor.NavtrackContext.HasOrganizationUserRole(OrganizationUserRole.Owner))
+        {
+            return teamRepository.GetByOrganizationId(organizationId);
+        }
+
+        List<Guid> teamIds = navtrackRequestContextAccessor.NavtrackContext.CurrentUser?.Teams
+            .Where(x => x.OrganizationId == organizationId)
+            .Select(x => x.Id).ToList() ?? [];
+
+        return teamRepository.GetByIds(teamIds);
+    }
+}

@@ -1,0 +1,23 @@
+FROM ubuntu:24.04 AS build
+
+RUN apt-get update
+RUN apt-get install -y curl gnupg
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+RUN apt-get update
+RUN apt-get install -y nodejs libicu-dev libssl-dev zlib1g
+
+RUN curl -fsSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
+    chmod +x dotnet-install.sh && \
+    ./dotnet-install.sh --channel 10.0 --install-dir /usr/share/dotnet && \
+    ./dotnet-install.sh --channel 9.0 --install-dir /usr/share/dotnet 
+
+ENV PATH="/usr/share/dotnet:/root/.dotnet:$PATH"
+
+WORKDIR /src
+COPY . .
+
+RUN npm install
+RUN npm run build
+RUN dotnet build

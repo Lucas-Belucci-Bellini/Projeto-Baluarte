@@ -1,0 +1,27 @@
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  getTeamsAssetsListQueryKey,
+  getTeamsGetQueryKey,
+  useTeamsAssetsDelete
+} from "../../../api";
+
+export function useDeleteTeamAssetMutation() {
+  const queryClient = useQueryClient();
+
+  const mutation = useTeamsAssetsDelete({
+    mutation: {
+      onSuccess: async (_, variables) => {
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: getTeamsAssetsListQueryKey(variables.teamId)
+          }),
+          queryClient.invalidateQueries({
+            queryKey: getTeamsGetQueryKey(variables.teamId)
+          })
+        ]);
+      }
+    }
+  });
+
+  return mutation;
+}
