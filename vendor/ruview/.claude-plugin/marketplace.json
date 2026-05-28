@@ -1,0 +1,15 @@
+{
+  "name": "ruview",
+  "description": "RuView Marketplace: Claude Code + Codex plugins for WiFi sensing — configuration, applications, model training, and onboarding, from practical to advanced",
+  "owner": {
+    "name": "ruvnet",
+    "url": "https://github.com/ruvnet/RuView"
+  },
+  "plugins": [
+    {
+      "name": "ruview",
+      "source": "./plugins/ruview",
+      "description": "End-to-end RuView toolkit: getting started, ESP32 hardware setup, configuration, sensing applications (presence / vitals / pose / sleep / MAT), camera-free + camera-supervised model training, advanced multistatic sensing, CLI / API / WASM, mmWave radar, and witness verification"
+    }
+  ]
+}

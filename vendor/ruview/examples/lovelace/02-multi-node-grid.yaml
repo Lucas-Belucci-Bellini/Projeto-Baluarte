@@ -1,0 +1,82 @@
+# RuView — Multi-node grid Lovelace dashboard
+#
+# For deployments with multiple RuView nodes (typical: one per room,
+# all behind a Cognitum Seed bridge). Shows a top-level grid of every
+# room's presence + person count + activity, with drill-in links.
+#
+# Replace `_bedroom`, `_living`, `_kitchen`, `_office`, `_bathroom`
+# with your actual room slugs from the friendly_name resolution.
+
+title: RuView — Whole house
+path: ruview-house
+icon: mdi:home-search
+
+cards:
+  - type: markdown
+    content: >
+      ## RuView — Whole house view
+      Each tile is one room; tap to drill into raw vitals + semantic
+      primitives for that room.
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: tile
+        entity: binary_sensor.ruview_bedroom_presence
+        name: 🛏 Bedroom
+        features:
+          - type: target-temperature
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ruview-bedroom
+
+      - type: tile
+        entity: binary_sensor.ruview_living_presence
+        name: 🛋 Living
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ruview-living
+
+      - type: tile
+        entity: binary_sensor.ruview_kitchen_presence
+        name: 🍳 Kitchen
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ruview-kitchen
+
+      - type: tile
+        entity: binary_sensor.ruview_office_presence
+        name: 💻 Office
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ruview-office
+
+      - type: tile
+        entity: binary_sensor.ruview_bathroom_occupied
+        name: 🚿 Bathroom
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/ruview-bathroom
+
+  - type: glance
+    title: House-wide counts
+    entities:
+      - entity: sensor.ruview_bedroom_person_count
+        name: Bedroom
+      - entity: sensor.ruview_living_person_count
+        name: Living
+      - entity: sensor.ruview_kitchen_person_count
+        name: Kitchen
+      - entity: sensor.ruview_office_person_count
+        name: Office
+
+  - type: logbook
+    title: Recent semantic events
+    hours_to_show: 24
+    entities:
+      - event.ruview_bedroom_fall
+      - event.ruview_bedroom_bed_exit
+      - event.ruview_living_fall
+      - event.ruview_kitchen_fall
+      - event.ruview_office_multi_room_transition

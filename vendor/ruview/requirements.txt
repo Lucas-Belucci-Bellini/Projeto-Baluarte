@@ -1,0 +1,38 @@
+# Core dependencies
+numpy>=1.21.0
+scipy>=1.7.0
+torch>=1.12.0
+torchvision>=0.13.0
+
+# API dependencies
+fastapi>=0.95.0
+uvicorn>=0.20.0
+websockets>=15.0.1
+pydantic>=1.10.0
+python-jose[cryptography]>=3.3.0
+python-multipart>=0.0.6
+passlib[bcrypt]>=1.7.4
+httpx>=0.24.0
+pydantic-settings>=2.0.0
+
+# Database dependencies
+sqlalchemy>=2.0.0
+asyncpg>=0.28.0
+aiosqlite>=0.22.1
+redis>=4.5.0
+
+# CLI dependencies
+click>=8.0.0
+alembic>=1.10.0
+
+# Hardware interface dependencies
+asyncio-mqtt>=0.16.2
+aiohttp>=3.13.5
+paramiko>=3.0.0
+
+# Data processing dependencies
+opencv-python>=4.7.0
+scikit-learn>=1.2.0
+
+# Monitoring dependencies
+prometheus-client>=0.16.0

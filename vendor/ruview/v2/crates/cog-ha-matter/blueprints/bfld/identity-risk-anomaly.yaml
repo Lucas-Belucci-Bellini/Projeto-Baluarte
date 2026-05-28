@@ -1,0 +1,76 @@
+blueprint:
+  name: BFLD Identity-Risk Anomaly Notification
+  description: >
+    Notify the operator when BFLD's identity-risk score deviates significantly
+    from its rolling 7-day baseline — a signal that the RF environment has
+    shifted toward a higher-leakage regime (new AP firmware, attacker-grade
+    sniffer in range, unusual propagation). Sourced from ADR-122 §2.6 and
+    ADR-121 §2.4.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/v2/crates/cog-ha-matter/blueprints/bfld/identity-risk-anomaly.yaml
+  input:
+    bfld_identity_risk:
+      name: BFLD Identity Risk sensor
+      description: The `sensor.<node>_bfld_identity_risk` entity (only present at privacy_class = Anonymous).
+      selector:
+        entity:
+          domain: sensor
+          integration: mqtt
+    notify_target:
+      name: Notify target service
+      description: HA notify service to call (e.g., notify.mobile_app_<phone>).
+      selector:
+        text: {}
+    spike_threshold:
+      name: Absolute spike threshold
+      description: Trigger immediately when raw score >= this value.
+      default: 0.8
+      selector:
+        number:
+          min: 0.5
+          max: 0.99
+          step: 0.01
+    z_score_threshold:
+      name: Rolling z-score threshold
+      description: Trigger when deviation from 7-day mean exceeds this many sigmas.
+      default: 3.0
+      selector:
+        number:
+          min: 1.5
+          max: 6.0
+          step: 0.5
+    statistics_entity:
+      name: Statistics helper entity for the 7-day baseline
+      description: >
+        An HA `statistics` integration entity computing mean + standard
+        deviation of the BFLD identity-risk sensor over a 7-day window.
+        Configure via Settings → Devices & Services → Helpers → Statistics.
+      selector:
+        entity:
+          domain: sensor
+
+trigger:
+  - platform: numeric_state
+    entity_id: !input bfld_identity_risk
+    above: !input spike_threshold
+    id: absolute_spike
+  - platform: template
+    value_template: >
+      {% set raw = states(trigger.entity_id) | float(0) %}
+      {% set mean = state_attr(!input statistics_entity, 'mean') | float(0) %}
+      {% set sigma = state_attr(!input statistics_entity, 'standard_deviation') | float(0.01) %}
+      {{ (raw - mean) / sigma >= z_score_threshold }}
+    id: z_score_spike
+
+variables:
+  z_score_threshold: !input z_score_threshold
+
+action:
+  - service: !input notify_target
+    data:
+      title: BFLD Identity-Risk Anomaly
+      message: >
+        Node {{ trigger.entity_id }} identity-risk score is {{ states(trigger.entity_id) }}.
+        Investigate possible RF-environment shift (new AP firmware, nearby sniffer,
+        unusual multipath). See ADR-118 / ADR-121 for context.
+mode: single

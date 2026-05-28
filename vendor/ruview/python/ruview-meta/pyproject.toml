@@ -1,0 +1,62 @@
+# ADR-117 sibling release — `ruview` meta-package.
+#
+# Pure-Python wheel that re-exports everything from `wifi-densepose`
+# under the alias `ruview`. They're the same code, distributed under
+# two PyPI names so users can `pip install ruview` (the brand) or
+# `pip install wifi-densepose` (the technical name) — both end up
+# with the same compiled DSP available.
+#
+# Build:
+#   cd python/ruview-meta
+#   python -m build
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ruview"
+version = "2.0.0a1"
+description = "RuView — ambient intelligence from WiFi CSI. Meta-package; installs `wifi-densepose` and re-exports it under the `ruview` namespace. See https://github.com/ruvnet/RuView."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "rUv", email = "ruv@ruv.net" }]
+keywords = [
+    "wifi", "csi", "pose-estimation", "vital-signs",
+    "biometric", "ambient-intelligence", "home-assistant", "matter",
+    "ruview",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+dependencies = [
+    # Pin to the matching v2 release so an alpha-pin `pip install ruview`
+    # always gets a compatible wifi-densepose.
+    "wifi-densepose==2.0.0a1",
+]
+
+[project.optional-dependencies]
+client = ["wifi-densepose[client]==2.0.0a1"]
+
+[project.urls]
+Homepage = "https://github.com/ruvnet/RuView"
+Repository = "https://github.com/ruvnet/RuView"
+Issues = "https://github.com/ruvnet/RuView/issues"
+Documentation = "https://github.com/ruvnet/RuView/tree/main/docs"
+
+[tool.setuptools]
+packages = ["ruview"]
+package-dir = { "" = "src" }
