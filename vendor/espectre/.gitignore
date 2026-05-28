@@ -1,0 +1,56 @@
+# PlatformIO
+test/.pio/
+test/.vscode/
+test/.clang_complete
+test/.gcc-flags.json
+*.elf
+*.bin
+*.map
+
+# Code Coverage
+*.profraw
+*.profdata
+coverage.lcov
+.coverage
+htmlcov/
+
+# Pytest
+.pytest_cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.cache
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# ESPHome
+.esphome/
+secrets.yaml
+
+# Editor
+.tmp/
+.vscode/
+.kiro/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+.log.
+
+# Documentation
+.papers/
+
+# Generated documentation (built by CI)
+docs/documentation/
+docs/_pagefind/
+docs/sitemap.xml
