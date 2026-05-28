@@ -1,0 +1,611 @@
+# GeoPulse Helm Chart Values
+# For detailed configuration information, see: https://github.com/tess1o/geopulse
+
+# Global settings
+global:
+  # Image pull policy for all containers
+  imagePullPolicy: IfNotPresent
+  # Image pull secrets (if using private registry)
+  imagePullSecrets: []
+  # storageClass: ""
+
+# Backend configuration
+backend:
+  image:
+    repository: tess1o/geopulse-backend
+    tag: 1.30.0-native
+    pullPolicy: IfNotPresent
+
+  replicaCount: 1
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+    requests:
+      memory: 512Mi
+      cpu: 500m
+
+  # Health check configuration
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /api/health
+      port: 8080
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /api/health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  # Graceful shutdown configuration.
+  # terminationGracePeriodSeconds should be longer than the preStop sleep so
+  # Kubernetes can let in-flight requests drain before SIGTERM lands.
+  # Leave both unset to fall back to Kubernetes defaults.
+  # Example:
+  #   terminationGracePeriodSeconds: 60
+  #   lifecycle:
+  #     preStop:
+  #       exec:
+  #         command: ["sh", "-c", "sleep 15"]
+  terminationGracePeriodSeconds: null
+  lifecycle: {}
+
+  # Security context
+  # Both JVM and native images support running as non-root with arbitrary UIDs
+  # Using fsGroup: 0 (root group) enables OpenShift compatibility
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000  # Can be any UID >= 1000
+
+  # Node selector
+  nodeSelector: {}
+
+  # Tolerations
+  tolerations: []
+
+  # Affinity
+  affinity: {}
+
+# Frontend configuration
+frontend:
+  image:
+    repository: tess1o/geopulse-ui
+    tag: 1.30.0
+    pullPolicy: IfNotPresent
+
+  replicaCount: 1
+
+  service:
+    type: ClusterIP
+    port: 80  # External port - keep at 80 for backward compatibility with Ingress
+    nodePort: null  # Optional fixed NodePort (only used when type=NodePort)
+
+  # Nginx configuration
+  nginx:
+    # Maximum upload file size (for imports, backups)
+    clientMaxBodySize: "200M"
+    # DNS resolver for OSM tile servers
+    osmResolver: "127.0.0.11 8.8.8.8"
+
+  resources:
+    limits:
+      memory: 128Mi
+      cpu: 100m
+    requests:
+      memory: 64Mi
+      cpu: 50m
+
+  # Health check configuration
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+  # Security context
+  # Frontend runs as non-root on port 8080 (uses world-writable dirs - any UID:GID works)
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 101  # nginx user (can be changed to any UID)
+    runAsGroup: 101  # can be changed to any GID
+
+  # Node selector
+  nodeSelector: {}
+
+  # Tolerations
+  tolerations: []
+
+  # Affinity
+  affinity: {}
+
+# PostgreSQL (PostGIS) configuration
+postgres:
+  # Set to false if using external PostgreSQL
+  enabled: true
+
+  image:
+    repository: postgis/postgis
+    tag: "17-3.5"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 5432
+
+  # Database configuration
+  database: geopulse
+  username: geopulse-user
+  # Password is generated if not provided (see secrets section)
+  # password: ""
+
+  # Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    annotations: {}
+
+  # PostgreSQL tuning parameters
+  # Values optimized for minimal resource usage (1-2 users)
+  # For production with 10+ users, increase these values
+  config:
+    sharedBuffers: "256MB"
+    workMem: "8MB"
+    maintenanceWorkMem: "64MB"
+    effectiveCacheSize: "1GB"
+    maxWalSize: "512MB"
+    checkpointCompletionTarget: "0.9"
+    walBuffers: "16MB"
+    randomPageCost: "1.1"
+    effectiveIoConcurrency: "100"
+    autovacuumNaptime: "60s"
+    autovacuumVacuumScaleFactor: "0.2"
+    logMinDurationStatement: "5000"
+
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+    requests:
+      memory: 512Mi
+      cpu: 250m
+
+  # Health check configuration
+  livenessProbe:
+    enabled: true
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - pg_isready -U geopulse-user -d geopulse
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+  readinessProbe:
+    enabled: true
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - pg_isready -U geopulse-user -d geopulse
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  # Security context
+  # PostgreSQL runs as non-root user (UID 999) with fsGroup for volume access
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    fsGroup: 999
+
+  # Node selector
+  nodeSelector: {}
+
+  # Tolerations
+  tolerations: []
+
+  # Affinity
+  affinity: {}
+
+# External PostgreSQL configuration (if postgres.enabled = false)
+externalPostgres:
+  host: ""
+  port: 5432
+  database: geopulse
+  username: geopulse-user
+  password: ""
+
+# MQTT Broker (Mosquitto) configuration - OPTIONAL
+mosquitto:
+  # Set to true to enable MQTT broker
+  enabled: false
+
+  image:
+    repository: iegomez/mosquitto-go-auth
+    tag: "3.0.0-mosquitto_2.0.18"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: NodePort
+    port: 1883
+    nodePort: 31883  # Fixed port for external access (optional, auto-assigned if not set)
+
+  # MQTT admin credentials
+  username: geopulse_mqtt_admin
+  # Password is generated if not provided
+  # password: ""
+
+  # Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: ""
+
+    # Data persistence
+    data:
+      accessMode: ReadWriteOnce
+      size: 1Gi
+
+    # Log persistence
+    logs:
+      accessMode: ReadWriteOnce
+      size: 1Gi
+
+    # Config persistence
+    config:
+      accessMode: ReadWriteOnce
+      size: 100Mi
+
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 200m
+    requests:
+      memory: 128Mi
+      cpu: 100m
+
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1883
+    fsGroup: 1883
+
+  # Node selector
+  nodeSelector: {}
+
+  # Tolerations
+  tolerations: []
+
+  # Affinity
+  affinity: {}
+
+# Key generation
+keygen:
+  image:
+    repository: alpine
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  # Standalone keygen Job (deprecated by default)
+  job:
+    enabled: false
+
+  # Persistence for generated keys
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 10Mi
+
+  resources:
+    limits:
+      memory: 128Mi
+      cpu: 100m
+    requests:
+      memory: 64Mi
+      cpu: 50m
+
+# Application configuration
+config:
+  # Frontend URL (legacy fallback)
+  # Examples:
+  # - Local: http://localhost:5555
+  # - Production: https://geopulse.yourdomain.com
+  # Deprecated: prefer config.cors.origins and config.publicBaseUrl
+  uiUrl: "http://localhost:5555"
+
+  # Public base URL for callback/link generation (optional)
+  # Example: https://geopulse.yourdomain.com
+  publicBaseUrl: ""
+
+  # CORS configuration
+  cors:
+    # Keep true for backward compatibility with existing Helm deployments.
+    # Enable it when backend and frontend are on different origins
+    enabled: false
+    # Comma-separated allowed origins when CORS is enabled.
+    origins: "http://localhost:5555"
+
+  # Cookie domain for authentication
+  # IMPORTANT: Keep empty for standard nginx-based deployments (recommended for 99% of cases)
+  # GeoPulse uses nginx as a proxy, creating same-origin context where cookies work automatically
+  # Only set this (e.g., ".yourdomain.com") if deploying WITHOUT nginx AND using separate subdomains
+  # Examples that should use empty value:
+  #   - Localhost: http://localhost:5555
+  #   - Production: https://geopulse.yourdomain.com
+  # For more details, see: docs/DEPLOYMENT_GUIDE.md "Understanding GEOPULSE_COOKIE_DOMAIN"
+  cookieDomain: ""
+
+  # Set to true in production to ensure auth cookies are only sent over HTTPS
+  authSecureCookies: false
+
+  # Admin Configuration
+  admin:
+    # Email address to automatically promote to admin role on first login
+    # Leave empty if you don't want to set an initial admin
+    email: ""
+
+  # Authentication & Registration Configuration
+  auth:
+    # Enable/disable user registration (default: true)
+    registrationEnabled: true
+    # Enable password-based registration (default: true)
+    passwordRegistrationEnabled: true
+    # Enable OIDC-based registration (default: true)
+    oidcRegistrationEnabled: true
+
+    # Login Control (default: true for all)
+    # Note: Admin bypass behavior is configurable via adminLoginBypassEnabled
+    # Enable/disable all login methods (master switch)
+    loginEnabled: true
+    # Enable password-based login (default: true)
+    passwordLoginEnabled: true
+    # Enable OIDC-based login (default: true)
+    oidcLoginEnabled: true
+    # Enable admin login bypass (default: true)
+    # When true, admins can bypass login restrictions to prevent lockout
+    # When false, admins are subject to the same restrictions as regular users
+    # WARNING: Disabling this can result in complete system lockout
+    adminLoginBypassEnabled: true
+
+  # JWT Configuration
+  jwt:
+    # Access token lifespan in seconds (default: 1800 = 30 minutes)
+    accessTokenLifespan: 1800
+    # Refresh token lifespan in seconds (default: 604800 = 7 days)
+    refreshTokenLifespan: 604800
+    # JWT issuer URL (should match your backend URL)
+    issuer: "http://localhost:8080"
+    # Public key location for JWT verification
+    publicKeyLocation: "file:/app/keys/jwt-public-key.pem"
+    # Private key location for JWT signing
+    privateKeyLocation: "file:/app/keys/jwt-private-key.pem"
+
+  # GPS Filtering Configuration
+  gps:
+    # Reject GPS points with negative accuracy values
+    # Default: true (can be disabled for legacy integrations)
+    filterNegativeAccuracy: true
+    # Enable filtering of inaccurate GPS data (default: true)
+    filterInaccurateData: true
+    # Maximum allowed accuracy in meters (points with worse accuracy are filtered)
+    # Default: 100 meters
+    maxAllowedAccuracy: 100
+    # Maximum allowed speed in m/s (points with higher speed are filtered)
+    # Default: 250 m/s (900 km/h - filters unrealistic speeds)
+    maxAllowedSpeed: 250
+
+  # Prometheus Metrics Configuration
+  prometheus:
+    # Enable custom Prometheus metrics collection (default: false)
+    # Note: The /api/prometheus/metrics endpoint is always available
+    # This setting controls whether GeoPulse collects and exposes custom application metrics
+    enabled: false
+    # Refresh interval for metrics collection (default: 10m)
+    refreshInterval: "10m"
+    # Per-metric-class control (all enabled by default when prometheus.enabled=true)
+    gpsPoints:
+      enabled: true
+    userMetrics:
+      enabled: true
+    timeline:
+      enabled: true
+    favorites:
+      enabled: true
+    geocoding:
+      enabled: true
+    memory:
+      enabled: true
+
+  # Geocoding Configuration
+  # Note: Most geocoding settings can also be configured via Admin Panel UI
+  # These values serve as initial defaults or for environments without Admin Panel access
+  geocoding:
+    # Primary geocoding provider (nominatim, photon, googlemaps, mapbox)
+    primaryProvider: "nominatim"
+    # Fallback geocoding provider (optional, leave empty for none)
+    fallbackProvider: ""
+    # Delay between geocoding requests in milliseconds (default: 1000)
+    # Used for rate limiting to respect provider terms of service
+    delayMs: 1000
+    # Maximum bounding box area in km² for cache containment matching.
+    # Oversized provider bboxes are dropped and matching falls back to coordinate tolerance.
+    cacheMaxBboxAreaKm2: 5000
+
+    # Nominatim (OpenStreetMap) - Free, enabled by default
+    nominatim:
+      enabled: true
+      url: "https://nominatim.openstreetmap.org"
+      language: ""  # Optional: BCP 47 language tag (e.g., "en-US", "de", "uk", "ja")
+
+    # Photon (Komoot) - Free alternative
+    photon:
+      enabled: false
+      url: "https://photon.komoot.io"
+      language: ""  # Optional: BCP 47 language tag (e.g., "en-US", "de", "uk", "ja")
+
+    # Google Maps - Requires API key
+    googleMaps:
+      enabled: false
+      apiKey: ""  # Stored in secret if provided
+      language: ""  # Optional: Google supported language code (e.g., "en", "uk", "pt-BR", "zh-CN")
+
+    # Mapbox - Requires access token
+    mapbox:
+      enabled: false
+      accessToken: ""  # Stored in secret if provided
+
+  # Location Sharing Configuration
+  share:
+    # Override base URL for share links (optional)
+    # If not set, uses window.location.origin
+    # Example: "https://geopulse.example.com" or "https://share.example.com"
+    baseUrl: ""
+
+  # User Invitation Configuration
+  invitation:
+    # Override base URL for user invitation links (optional)
+    # If not set, uses window.location.origin
+    # Example: "https://geopulse.example.com" or "https://user-invite.example.com"
+    baseUrl: ""
+
+  # OwnTracks Configuration
+  owntracks:
+    # Override ping message timestamps with server time (default: false)
+    # Enable if OwnTracks ping messages have incorrect timestamps
+    pingTimestampOverride: false
+
+  # OIDC Configuration (Optional)
+  oidc:
+    enabled: false
+    # Explicit callback base URL (recommended for stable OIDC callback generation)
+    callbackBaseUrl: ""
+    # Auto-link OIDC accounts with existing accounts by email (default: false)
+    autoLinkAccounts: false
+    # Enable cleanup of stale OIDC sessions (default: true)
+    cleanupEnabled: true
+    # JWKS (JSON Web Key Set) cache TTL in hours (default: 24)
+    # Controls how often OIDC provider's public keys are refreshed for token validation
+    jwksCacheTtlHours: 24
+
+    # Google OIDC
+    google:
+      enabled: false
+      clientId: ""
+      clientSecret: ""
+
+    # Microsoft OIDC
+    microsoft:
+      enabled: false
+      clientId: ""
+      clientSecret: ""
+
+    # Generic OIDC (Keycloak, Authentik, Okta, etc.)
+    generic:
+      enabled: false
+      name: "Custom OIDC"
+      clientId: ""
+      clientSecret: ""
+      discoveryUrl: ""
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+    # Example annotations (uncomment and modify as needed):
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+  # Hostname for the ingress
+  hostname: geopulse.example.com
+
+  # TLS configuration
+  tls:
+    enabled: false
+    secretName: geopulse-tls
+
+  # Additional paths (for load balancers, etc.)
+  extraPaths: []
+
+# Service Account
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Pod Disruption Budget (for high availability)
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# Autoscaling (optional)
+autoscaling:
+  enabled: false
+  backend:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  frontend:
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+
+# Network Policies (optional)
+networkPolicy:
+  enabled: false
+  policyTypes:
+    - Ingress
+    - Egress
+
+# Secrets configuration
+secrets:
+  # If true, use existing secret instead of creating one
+  useExistingSecret: false
+  existingSecretName: ""
+
+  # Generate passwords if not provided
+  # These are used only if not using existing secret
+  postgres:
+    password: ""  # Auto-generated if empty
+
+  mosquitto:
+    password: ""  # Auto-generated if empty

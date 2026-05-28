@@ -1,0 +1,95 @@
+package org.github.tess1o.geopulse.geocoding;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.eclipse.microprofile.faulttolerance.exceptions.CircuitBreakerOpenException;
+import org.github.tess1o.geopulse.geocoding.client.GoogleMapsRestClient;
+import org.github.tess1o.geopulse.geocoding.client.MapboxRestClient;
+import org.github.tess1o.geopulse.geocoding.client.NominatimRestClient;
+import org.github.tess1o.geopulse.geocoding.client.PhotonRestClient;
+import org.github.tess1o.geopulse.geocoding.config.GeocodingConfigurationService;
+import org.github.tess1o.geopulse.geocoding.dto.*;
+import org.github.tess1o.geopulse.geocoding.model.GeonamesCityRecord;
+import org.github.tess1o.geopulse.geocoding.model.GeonamesCountryRecord;
+import org.github.tess1o.geopulse.geocoding.model.GeonamesNormalizedLocation;
+import org.github.tess1o.geopulse.geocoding.model.NormalizationRuleType;
+import org.github.tess1o.geopulse.geocoding.model.ReconciliationJobProgress;
+import org.github.tess1o.geopulse.geocoding.model.ReverseGeocodingLocationEntity;
+import org.github.tess1o.geopulse.geocoding.model.UserLocationNormalizationRuleEntity;
+import org.github.tess1o.geopulse.geocoding.model.common.FormattableGeocodingResult;
+import org.github.tess1o.geopulse.geocoding.model.common.GeocodingSearchResult;
+import org.github.tess1o.geopulse.geocoding.model.common.SimpleFormattableResult;
+import org.github.tess1o.geopulse.geocoding.model.googlemaps.*;
+import org.github.tess1o.geopulse.geocoding.model.mapbox.*;
+import org.github.tess1o.geopulse.geocoding.model.nominatim.NominatimAddress;
+import org.github.tess1o.geopulse.geocoding.model.nominatim.NominatimResponse;
+import org.github.tess1o.geopulse.geocoding.model.photon.PhotonResponse;
+import org.github.tess1o.geopulse.geocoding.rest.ReverseGeocodingResource;
+import org.github.tess1o.geopulse.geocoding.service.ReverseGeocodingManagementService;
+import org.github.tess1o.geopulse.geocoding.service.UserLocationNormalizationService;
+
+@RegisterForReflection(targets = {
+        ReverseGeocodingLocationEntity.class,
+        FormattableGeocodingResult.class,
+        SimpleFormattableResult.class,
+        GeocodingSearchResult.class,
+        GoogleMapsAddressComponent.class,
+        GoogleMapsGeometry.class,
+        GoogleMapsLocation.class,
+        GoogleMapsPlusCode.class,
+        GoogleMapsResponse.class,
+        GoogleMapsResult.class,
+        GoogleMapsViewport.class,
+
+        MapboxContext.class,
+        MapboxFeature.class,
+        MapboxGeometry.class,
+        MapboxProperties.class,
+        MapboxResponse.class,
+
+        NominatimAddress.class,
+        NominatimResponse.class,
+
+        GeocodingConfigurationService.class,
+        MapboxRestClient.class,
+        GoogleMapsRestClient.class,
+        NominatimRestClient.class,
+        PhotonRestClient.class,
+
+        PhotonResponse.class,
+        PhotonResponse.Feature.class,
+        PhotonResponse.Geometry.class,
+        PhotonResponse.Properties.class,
+
+        // Management DTOs
+        ReverseGeocodingDTO.class,
+        ReverseGeocodingUpdateDTO.class,
+        ReverseGeocodingReconcileRequest.class,
+        ReverseGeocodingSummaryDTO.class,
+        GeocodingProviderDTO.class,
+        ReverseGeocodingReconcileResult.class,
+        ReverseGeocodingReconcileResult.ReconcileError.class,
+
+        // Management REST and Service
+        ReverseGeocodingResource.class,
+        ReverseGeocodingManagementService.class,
+        ReconciliationJobProgress.class,
+        GeonamesCityRecord.class,
+        GeonamesCountryRecord.class,
+        GeonamesNormalizedLocation.class,
+
+        BulkUpdateGeocodingDto.class,
+        BulkUpdateGeocodingResult.class,
+        DistinctValuesDto.class,
+        NormalizationRuleDto.class,
+        CreateNormalizationRuleRequest.class,
+        UpdateNormalizationRuleRequest.class,
+        ApplyNormalizationRulesRequest.class,
+        ApplyNormalizationRulesResponse.class,
+        UserLocationNormalizationRuleEntity.class,
+        NormalizationRuleType.class,
+        UserLocationNormalizationService.class,
+        UserLocationNormalizationService.NormalizedLocation.class,
+        CircuitBreakerOpenException.class,
+})
+public class GeocodingNativeConfig {
+}

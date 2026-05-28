@@ -1,0 +1,31 @@
+package org.github.tess1o.geopulse.user.model;
+
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UpdateProfileRequest {
+    @Size(min = 1, max = 100, message = "Full name must be between 1 and 100 characters")
+    private String fullName;
+
+    @Size(max = 500, message = "Avatar URL cannot exceed 500 characters")
+    private String avatar;
+
+    @Size(max = 255, message = "Timezone cannot exceed 255 characters")
+    private String timezone;
+
+    private MeasureUnit measureUnit;
+
+    @Size(max = 1000, message = "Default redirect URL cannot exceed 1000 characters")
+    private String defaultRedirectUrl;
+
+    @Pattern(regexp = "^(MDY|DMY|YMD)$", message = "Date format must be one of: MDY, DMY, YMD")
+    private String dateFormat;
+
+    @Pattern(regexp = "^(24h|12h)$", message = "Time format must be one of: 24h, 12h")
+    private String timeFormat;
+}

@@ -1,0 +1,425 @@
+package org.github.tess1o.geopulse.streaming.service;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.github.tess1o.geopulse.ai.model.*;
+import org.github.tess1o.geopulse.gps.repository.GpsPointRepository;
+import org.github.tess1o.geopulse.streaming.model.dto.MovementTimelineDTO;
+import org.github.tess1o.geopulse.streaming.model.dto.TimelineDataGapDTO;
+import org.github.tess1o.geopulse.streaming.model.dto.TimelineStayLocationDTO;
+import org.github.tess1o.geopulse.streaming.model.dto.TimelineTripDTO;
+import org.github.tess1o.geopulse.streaming.repository.TimelineDataGapRepository;
+import org.github.tess1o.geopulse.streaming.repository.TimelineDataGapStayOverrideRepository;
+import org.github.tess1o.geopulse.streaming.repository.TimelineStayRepository;
+import org.github.tess1o.geopulse.streaming.repository.TimelineTripRepository;
+import org.github.tess1o.geopulse.streaming.service.converters.StreamingTimelineConverter;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@ApplicationScoped
+@Slf4j
+public class StreamingTimelineAggregator {
+
+    @Inject
+    TimelineStayRepository timelineStayRepository;
+
+    @Inject
+    TimelineTripRepository timelineTripRepository;
+
+    @Inject
+    TimelineDataGapRepository timelineDataGapRepository;
+
+    @Inject
+    TimelineDataGapStayOverrideRepository dataGapStayOverrideRepository;
+
+    @Inject
+    StreamingTimelineConverter converter;
+
+    @Inject
+    GpsPointRepository gpsPointRepository;
+
+    public MovementTimelineDTO getTimelineFromDb(UUID userId, Instant startTime, Instant endTime) {
+        return getExistingTimelineEvents(userId, startTime, endTime);
+    }
+
+    /**
+     * Get timeline item counts for a given time range without fetching full data.
+     * Used for checking if dataset is too large for Timeline page.
+     *
+     * @param userId user ID
+     * @param startTime start of time range
+     * @param endTime end of time range
+     * @return Map with counts for stays, trips, dataGaps, and totalItems
+     */
+    public Map<String, Long> getTimelineItemCounts(UUID userId, Instant startTime, Instant endTime) {
+        log.debug("Getting timeline item counts for user {} from {} to {}", userId, startTime, endTime);
+
+        long staysCount = timelineStayRepository.countByUserIdAndTimeRange(userId, startTime, endTime);
+        long tripsCount = timelineTripRepository.countByUserIdAndTimeRange(userId, startTime, endTime);
+        long dataGapsCount = timelineDataGapRepository.countByUserIdAndTimeRange(userId, startTime, endTime);
+        long totalItems = staysCount + tripsCount + dataGapsCount;
+
+        Map<String, Long> counts = new HashMap<>();
+        counts.put("stays", staysCount);
+        counts.put("trips", tripsCount);
+        counts.put("dataGaps", dataGapsCount);
+        counts.put("totalItems", totalItems);
+
+        log.debug("Timeline counts for user {}: {} stays, {} trips, {} gaps (total: {})",
+                userId, staysCount, tripsCount, dataGapsCount, totalItems);
+
+        return counts;
+    }
+
+    /**
+     * Get AI-optimized timeline data with enriched location information.
+     * Includes city/country data from joins and trip origin/destination names.
+     * 
+     * @param userId user ID
+     * @param startTime start of time range
+     * @param endTime end of time range
+     * @return AI-optimized timeline with enriched data
+     */
+    public AIMovementTimelineDTO getTimelineForAI(UUID userId, Instant startTime, Instant endTime) {
+        log.debug("Retrieving AI timeline events for user {} from {} to {}", userId, startTime, endTime);
+
+        AIMovementTimelineDTO timeline = new AIMovementTimelineDTO(userId);
+        timeline.setLastUpdated(Instant.now());
+
+        // Get stays with city/country information via SQL joins
+        var aiStays = timelineStayRepository.findAITimelineStaysWithLocationData(userId, startTime, endTime);
+        timeline.setStays(aiStays);
+
+        // Get trips without GPS path data
+        var aiTrips = timelineTripRepository.findAITimelineTripsWithoutPath(userId, startTime, endTime);
+        
+        // Populate origin/destination information for trips
+        populateOriginDestination(aiTrips, aiStays);
+        
+        timeline.setTrips(aiTrips);
+
+        log.debug("Retrieved {} AI stays, {} AI trips", timeline.getStaysCount(), timeline.getTripsCount());
+
+        return timeline;
+    }
+
+    /**
+     * Populate origin and destination location names for trips based on nearby stays.
+     * Origin: stay that ended closest to (but before) the trip start
+     * Destination: stay that started closest to (but after) the trip end
+     * 
+     * @param aiTrips list of AI trips to populate
+     * @param aiStays list of AI stays to use for origin/destination lookup
+     */
+    private void populateOriginDestination(java.util.List<AITimelineTripDTO> aiTrips, java.util.List<AITimelineStayDTO> aiStays) {
+        for (AITimelineTripDTO trip : aiTrips) {
+            Instant tripStart = trip.getTimestamp();
+            Instant tripEnd = tripStart.plusSeconds(trip.getTripDuration());
+
+            // Find origin: stay that ended closest to (but before) trip start
+            AITimelineStayDTO origin = null;
+            long minOriginGap = Long.MAX_VALUE;
+            
+            for (AITimelineStayDTO stay : aiStays) {
+                Instant stayEnd = stay.getTimestamp().plusSeconds(stay.getStayDurationSeconds());
+                if (stayEnd.isBefore(tripStart) || stayEnd.equals(tripStart)) {
+                    long gap = java.time.Duration.between(stayEnd, tripStart).toSeconds();
+                    if (gap < minOriginGap) {
+                        minOriginGap = gap;
+                        origin = stay;
+                    }
+                }
+            }
+
+            // Find destination: stay that started closest to (but after) trip end
+            AITimelineStayDTO destination = null;
+            long minDestinationGap = Long.MAX_VALUE;
+            
+            for (AITimelineStayDTO stay : aiStays) {
+                Instant stayStart = stay.getTimestamp();
+                if (stayStart.isAfter(tripEnd) || stayStart.equals(tripEnd)) {
+                    long gap = java.time.Duration.between(tripEnd, stayStart).toSeconds();
+                    if (gap < minDestinationGap) {
+                        minDestinationGap = gap;
+                        destination = stay;
+                    }
+                }
+            }
+
+            // Set origin and destination names
+            if (origin != null) {
+                trip.setOriginLocationName(origin.getLocationName());
+            }
+            if (destination != null) {
+                trip.setDestinationLocationName(destination.getLocationName());
+            }
+        }
+    }
+
+    private MovementTimelineDTO getExistingTimelineEvents(UUID userId, Instant startTime, Instant endTime) {
+        log.debug("Retrieving existing timeline events for user {} from {} to {}", userId, startTime, endTime);
+
+        MovementTimelineDTO timeline = new MovementTimelineDTO(userId);
+        timeline.setLastUpdated(Instant.now());
+
+        // Get stays with boundary expansion
+        var stayEntities = timelineStayRepository.findByUserIdAndTimeRangeWithExpansion(userId, startTime, endTime);
+        for (var stayEntity : stayEntities) {
+            TimelineStayLocationDTO stayDTO = converter.convertStayEntityToDto(stayEntity);
+            timeline.getStays().add(stayDTO);
+        }
+        attachDataGapOverrideMetadata(userId, timeline.getStays());
+
+        // Get trips with boundary expansion
+        var tripEntities = timelineTripRepository.findByUserIdAndTimeRangeWithExpansion(userId, startTime, endTime);
+        for (var tripEntity : tripEntities) {
+            TimelineTripDTO tripDTO = converter.convertTripEntityToDto(tripEntity);
+            timeline.getTrips().add(tripDTO);
+        }
+
+        // Align trip start/end pins with nearby favorite stays when available.
+        // This keeps trip pins consistent with anchored stay pins on map.
+        snapTripEndpointsToAdjacentFavoriteStays(timeline.getTrips(), timeline.getStays());
+
+        // Get data gaps with boundary expansion
+        Instant latestGpsTimestamp = gpsPointRepository.findLatest(userId)
+                .map(point -> point.getTimestamp())
+                .orElse(null);
+        var gapEntities = timelineDataGapRepository.findByUserIdAndTimeRangeWithExpansion(userId, startTime, endTime);
+        for (var gapEntity : gapEntities) {
+            boolean ongoing = latestGpsTimestamp != null
+                    && gapEntity.getStartTime() != null
+                    && gapEntity.getStartTime().equals(latestGpsTimestamp);
+            var gapDTO = new TimelineDataGapDTO(
+                    gapEntity.getId(), gapEntity.getStartTime(), gapEntity.getEndTime(), ongoing);
+            timeline.getDataGaps().add(gapDTO);
+        }
+
+        log.debug("Retrieved {} stays, {} trips, {} data gaps",
+                timeline.getStaysCount(), timeline.getTripsCount(), timeline.getDataGapsCount());
+
+        return timeline;
+    }
+
+    private void attachDataGapOverrideMetadata(UUID userId, List<TimelineStayLocationDTO> stays) {
+        if (stays == null || stays.isEmpty()) {
+            return;
+        }
+
+        List<Long> stayIds = stays.stream()
+                .map(TimelineStayLocationDTO::getId)
+                .filter(Objects::nonNull)
+                .toList();
+        if (stayIds.isEmpty()) {
+            return;
+        }
+
+        Map<Long, Long> firstOverrideByStayId = new HashMap<>();
+        dataGapStayOverrideRepository.findByUserIdAndStayIds(userId, stayIds).forEach(override -> {
+            if (override.getStay() == null || override.getStay().getId() == null || override.getId() == null) {
+                return;
+            }
+            firstOverrideByStayId.putIfAbsent(override.getStay().getId(), override.getId());
+        });
+
+        if (firstOverrideByStayId.isEmpty()) {
+            return;
+        }
+
+        stays.forEach(stay -> {
+            if (stay.getId() == null) {
+                return;
+            }
+            stay.setDataGapOverrideId(firstOverrideByStayId.get(stay.getId()));
+        });
+    }
+
+    private void snapTripEndpointsToAdjacentFavoriteStays(
+            List<TimelineTripDTO> trips,
+            List<TimelineStayLocationDTO> stays
+    ) {
+        if (trips == null || trips.isEmpty() || stays == null || stays.isEmpty()) {
+            return;
+        }
+
+        for (TimelineTripDTO trip : trips) {
+            if (trip == null || trip.getTimestamp() == null) {
+                continue;
+            }
+
+            Instant tripStart = trip.getTimestamp();
+            Instant tripEnd = tripStart.plusSeconds(Math.max(0L, trip.getTripDuration()));
+
+            TimelineStayLocationDTO origin = findClosestOriginStay(stays, tripStart);
+            if (origin != null && origin.getFavoriteId() != null) {
+                trip.setLatitude(origin.getLatitude());
+                trip.setLongitude(origin.getLongitude());
+            }
+
+            TimelineStayLocationDTO destination = findClosestDestinationStay(stays, tripEnd);
+            if (destination != null && destination.getFavoriteId() != null) {
+                trip.setEndLatitude(destination.getLatitude());
+                trip.setEndLongitude(destination.getLongitude());
+            }
+        }
+    }
+
+    private TimelineStayLocationDTO findClosestOriginStay(List<TimelineStayLocationDTO> stays, Instant tripStart) {
+        TimelineStayLocationDTO origin = null;
+        long minGapSeconds = Long.MAX_VALUE;
+
+        for (TimelineStayLocationDTO stay : stays) {
+            if (stay == null || stay.getTimestamp() == null) {
+                continue;
+            }
+
+            Instant stayEnd = stay.getTimestamp().plusSeconds(Math.max(0L, stay.getStayDuration()));
+            if (stayEnd.isAfter(tripStart)) {
+                continue;
+            }
+
+            long gap = Duration.between(stayEnd, tripStart).toSeconds();
+            if (gap < minGapSeconds) {
+                minGapSeconds = gap;
+                origin = stay;
+            }
+        }
+
+        return origin;
+    }
+
+    private TimelineStayLocationDTO findClosestDestinationStay(List<TimelineStayLocationDTO> stays, Instant tripEnd) {
+        TimelineStayLocationDTO destination = null;
+        long minGapSeconds = Long.MAX_VALUE;
+
+        for (TimelineStayLocationDTO stay : stays) {
+            if (stay == null || stay.getTimestamp() == null) {
+                continue;
+            }
+
+            Instant stayStart = stay.getTimestamp();
+            if (stayStart.isBefore(tripEnd)) {
+                continue;
+            }
+
+            long gap = Duration.between(tripEnd, stayStart).toSeconds();
+            if (gap < minGapSeconds) {
+                minGapSeconds = gap;
+                destination = stay;
+            }
+        }
+
+        return destination;
+    }
+
+    /**
+     * Get aggregated stay statistics grouped by the specified criteria.
+     * 
+     * @param userId    user ID
+     * @param startTime start of time range
+     * @param endTime   end of time range
+     * @param groupBy   how to group the statistics
+     * @return list of stay statistics ordered by significance
+     */
+    public List<AIStayStatsDTO> getStayStats(UUID userId, Instant startTime, Instant endTime, StayGroupBy groupBy) {
+        log.debug("Getting stay statistics for user {} from {} to {} grouped by {}", userId, startTime, endTime, groupBy);
+        
+        List<AIStayStatsDTO> stats = timelineStayRepository.findStayStatistics(userId, startTime, endTime, groupBy);
+        
+        log.debug("Retrieved {} stay statistics groups", stats.size());
+        return stats;
+    }
+
+    /**
+     * Get aggregated trip statistics grouped by the specified criteria.
+     * Handles complex origin/destination grouping at the service layer.
+     * 
+     * @param userId    user ID
+     * @param startTime start of time range
+     * @param endTime   end of time range
+     * @param groupBy   how to group the statistics
+     * @return list of trip statistics ordered by significance
+     */
+    public List<AITripStatsDTO> getTripStats(UUID userId, Instant startTime, Instant endTime, TripGroupBy groupBy) {
+        log.debug("Getting trip statistics for user {} from {} to {} grouped by {}", userId, startTime, endTime, groupBy);
+        
+        // For simple groupings, delegate to repository
+        if (groupBy != TripGroupBy.ORIGIN_LOCATION_NAME && groupBy != TripGroupBy.DESTINATION_LOCATION_NAME) {
+            List<AITripStatsDTO> stats = timelineTripRepository.findTripStatistics(userId, startTime, endTime, groupBy);
+            log.debug("Retrieved {} trip statistics groups", stats.size());
+            return stats;
+        }
+        
+        // For origin/destination grouping, we need to compute these at service layer
+        return getTripStatsWithOriginDestination(userId, startTime, endTime, groupBy);
+    }
+
+    /**
+     * Handle complex origin/destination trip statistics by computing origin/destination in memory.
+     */
+    private List<AITripStatsDTO> getTripStatsWithOriginDestination(UUID userId, Instant startTime, Instant endTime, TripGroupBy groupBy) {
+        log.debug("Computing trip statistics with origin/destination grouping");
+        
+        // Get all trips and stays to compute origin/destination
+        var aiTrips = timelineTripRepository.findAITimelineTripsWithoutPath(userId, startTime, endTime);
+        var aiStays = timelineStayRepository.findAITimelineStaysWithLocationData(userId, startTime, endTime);
+        
+        // Populate origin/destination information
+        populateOriginDestination(aiTrips, aiStays);
+        
+        // Group trips by the specified field
+        String groupType = groupBy.getValue();
+        Map<String, List<AITimelineTripDTO>> groupedTrips = aiTrips.stream()
+                .collect(Collectors.groupingBy(trip -> {
+                    return switch (groupBy) {
+                        case ORIGIN_LOCATION_NAME -> 
+                            trip.getOriginLocationName() != null ? trip.getOriginLocationName() : "Unknown Origin";
+                        case DESTINATION_LOCATION_NAME -> 
+                            trip.getDestinationLocationName() != null ? trip.getDestinationLocationName() : "Unknown Destination";
+                        default -> "Unknown";
+                    };
+                }));
+        
+        // Calculate statistics for each group
+        return groupedTrips.entrySet().stream()
+                .map(entry -> {
+                    String groupKey = entry.getKey();
+                    List<AITimelineTripDTO> trips = entry.getValue();
+                    
+                    long tripCount = trips.size();
+                    long totalDistance = trips.stream().mapToLong(AITimelineTripDTO::getDistanceMeters).sum();
+                    long totalDuration = trips.stream().mapToLong(AITimelineTripDTO::getTripDuration).sum();
+                    
+                    double avgDistance = tripCount > 0 ? (double) totalDistance / tripCount : 0.0;
+                    double avgDuration = tripCount > 0 ? (double) totalDuration / tripCount : 0.0;
+                    
+                    long minDistance = trips.stream().mapToLong(AITimelineTripDTO::getDistanceMeters).min().orElse(0L);
+                    long maxDistance = trips.stream().mapToLong(AITimelineTripDTO::getDistanceMeters).max().orElse(0L);
+                    long minDuration = trips.stream().mapToLong(AITimelineTripDTO::getTripDuration).min().orElse(0L);
+                    long maxDuration = trips.stream().mapToLong(AITimelineTripDTO::getTripDuration).max().orElse(0L);
+                    
+                    double avgSpeedKmh = totalDuration > 0 ? (totalDistance * 3.6) / totalDuration : 0.0;
+                    
+                    return AITripStatsDTO.builder()
+                        .groupKey(groupKey)
+                        .groupType(groupType)
+                        .tripCount(tripCount)
+                        .totalDistanceMeters(totalDistance)
+                        .avgDistanceMeters(avgDistance)
+                        .minDistanceMeters(minDistance)
+                        .maxDistanceMeters(maxDistance)
+                        .totalDurationSeconds(totalDuration)
+                        .avgDurationSeconds(avgDuration)
+                        .minDurationSeconds(minDuration)
+                        .maxDurationSeconds(maxDuration)
+                        .avgSpeedKmh(avgSpeedKmh)
+                        .build();
+                })
+                .sorted((a, b) -> Long.compare(b.getTripCount(), a.getTripCount())) // Order by count desc
+                .toList();
+    }
+}

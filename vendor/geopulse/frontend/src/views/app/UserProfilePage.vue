@@ -1,0 +1,614 @@
+<template>
+  <AppLayout>
+    <PageContainer>
+      <div class="user-profile-page">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="header-content">
+            <div class="header-text">
+              <h1 class="page-title">User Profile</h1>
+              <p class="page-description">
+                Manage your personal information and security settings
+              </p>
+            </div>
+            <div class="header-actions">
+              <SettingsSearchTrigger
+                page-key="profile"
+                placeholder="Search profile settings..."
+                @navigate="handleSettingsSearchNavigate"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+          <TabContainer
+            :tabs="tabItems"
+            :activeIndex="activeTabIndex"
+            :equalWidth="true"
+            @tab-change="handleTabChange"
+            class="profile-tabs"
+          >
+            <keep-alive>
+              <component
+                :is="currentTabComponent"
+                v-bind="currentTabProps"
+                v-on="currentTabHandlers"
+              />
+            </keep-alive>
+          </TabContainer>
+        </div>
+
+        <Toast />
+      </div>
+    </PageContainer>
+  </AppLayout>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useToast } from 'primevue/usetoast'
+import { useRoute, useRouter } from 'vue-router'
+
+// Layout components
+import AppLayout from '@/components/ui/layout/AppLayout.vue'
+import PageContainer from '@/components/ui/layout/PageContainer.vue'
+import TabContainer from '@/components/ui/layout/TabContainer.vue'
+
+// Tab components
+import ProfileTab from '@/components/profile/ProfileTab.vue'
+import SecurityTab from '@/components/profile/SecurityTab.vue'
+import AIAssistantTab from '@/components/profile/AIAssistantTab.vue'
+import ImmichTab from '@/components/profile/ImmichTab.vue'
+import TimelineDisplayTab from '@/components/profile/TimelineDisplayTab.vue'
+import SettingsSearchTrigger from '@/components/search/SettingsSearchTrigger.vue'
+
+// Store
+import { useAuthStore } from '@/stores/auth'
+import { useImmichStore } from '@/stores/immich'
+import apiService from "@/utils/apiService"
+import { PROFILE_SETTINGS_SEARCH_INDEX } from '@/constants/profileSettingsSearchIndex'
+import { jumpToSetting } from '@/utils/settingJump'
+
+// Composables
+const toast = useToast()
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const immichStore = useImmichStore()
+
+// Store refs
+const { userId, userName, userAvatar, userEmail, hasPassword, userTimezone, customMapTileUrl, customMapStyleUrl, mapRenderMode, measureUnit, defaultRedirectUrl, dateFormat, timeFormat, defaultDateRangePreset } = storeToRefs(authStore)
+const { config: immichConfig, configLoading: immichLoading } = storeToRefs(immichStore)
+
+// State
+const activeTab = ref('profile')
+const validTabs = ['profile', 'security', 'timelineDisplay', 'ai', 'immich']
+const settingHintsById = Object.fromEntries(
+  PROFILE_SETTINGS_SEARCH_INDEX
+    .filter((item) => item.visibilityHint)
+    .map((item) => [item.id, item.visibilityHint])
+)
+
+// AI Settings state
+const aiSettings = ref({
+  enabled: false,
+  openaiApiKey: '',
+  openaiApiUrl: 'https://api.openai.com/v1',
+  openaiModel: 'gpt-3.5-turbo',
+  openaiApiKeyConfigured: false,
+  customSystemMessage: null,
+})
+
+// Timeline Display Preferences state
+const timelineDisplayPrefs = ref({
+  customMapTileUrl: customMapTileUrl.value || '',
+  customMapStyleUrl: customMapStyleUrl.value || '',
+  mapRenderMode: mapRenderMode.value || 'VECTOR',
+  pathSimplificationEnabled: true,
+  pathSimplificationTolerance: 15.0,
+  pathMaxPoints: 0,
+  pathAdaptiveSimplification: true,
+  defaultDateRangePreset: defaultDateRangePreset.value || '',
+  showCurrentLocationTelemetry: true
+})
+
+// Tab configuration
+const tabItems = ref([
+  {
+    label: 'Profile',
+    icon: 'pi pi-user',
+    key: 'profile'
+  },
+  {
+    label: 'Security',
+    icon: 'pi pi-shield',
+    key: 'security'
+  },
+  {
+    label: 'Display',
+    icon: 'pi pi-eye',
+    key: 'timelineDisplay'
+  },
+  {
+    label: 'AI Assistant',
+    icon: 'pi pi-sparkles',
+    key: 'ai'
+  },
+  {
+    label: 'Immich',
+    icon: 'pi pi-images',
+    key: 'immich'
+  }
+])
+
+const activeTabIndex = computed(() => {
+  return tabItems.value.findIndex(tab => tab.key === activeTab.value)
+})
+
+// Stable map from key → component definition so keep-alive can cache by component name
+const tabComponents = {
+  profile: ProfileTab,
+  security: SecurityTab,
+  timelineDisplay: TimelineDisplayTab,
+  ai: AIAssistantTab,
+  immich: ImmichTab,
+}
+
+const currentTabComponent = computed(() => tabComponents[activeTab.value] || null)
+
+const currentTabProps = computed(() => {
+  const allProps = {
+    profile: {
+      userName: userName.value,
+      userEmail: userEmail.value,
+      userAvatar: userAvatar.value,
+      userTimezone: userTimezone.value,
+      userMeasureUnit: measureUnit.value || 'METRIC',
+      userDefaultRedirectUrl: defaultRedirectUrl.value || '',
+      userDateFormat: dateFormat.value || 'MDY',
+      userTimeFormat: timeFormat.value || '24h',
+    },
+    security: {
+      hasPassword: hasPassword.value,
+    },
+    timelineDisplay: {
+      initialPreferences: timelineDisplayPrefs.value,
+    },
+    ai: {
+      initialSettings: aiSettings.value,
+    },
+    immich: {
+      config: immichConfig.value,
+      loading: immichLoading.value,
+    },
+  }
+  return allProps[activeTab.value] || {}
+})
+
+const currentTabHandlers = computed(() => {
+  const handlers = {
+    profile: { save: handleProfileSave },
+    security: { save: handlePasswordSave },
+    timelineDisplay: { save: handleTimelineDisplaySave },
+    ai: { save: handleAISave },
+    immich: { save: handleImmichSave },
+  }
+  return handlers[activeTab.value] || {}
+})
+
+// Methods
+const handleTabChange = (event) => {
+  const selectedTab = tabItems.value[event.index]
+  if (selectedTab) {
+    activeTab.value = selectedTab.key
+    const nextQuery = { ...route.query, tab: selectedTab.key }
+    delete nextQuery.setting
+    router.replace({ query: nextQuery })
+  }
+}
+
+const getErrorMessage = (error) => {
+  if (error.response?.data?.message) {
+    return error.response.data.message
+  }
+
+  if (error.response?.status === 403) {
+    return 'Current password is incorrect'
+  }
+
+  if (error.response?.status === 400) {
+    return 'Please check your information and try again'
+  }
+
+  return error.message || 'An unexpected error occurred'
+}
+
+const jumpToRouteSetting = async (settingId, hintOverride = null) => {
+  if (!settingId || route.path !== '/app/profile') return false
+
+  const hint = hintOverride || settingHintsById[settingId]
+  return jumpToSetting(settingId, {
+    onMissing: () => {
+      toast.add({
+        severity: 'info',
+        summary: 'Setting not visible',
+        detail: hint || 'This setting is not currently visible. Enable related options to edit it.',
+        life: 4000
+      })
+    }
+  })
+}
+
+const handleSettingsSearchNavigate = async (item) => {
+  if (!item?.setting) return
+
+  const nextTab = item.tab || activeTab.value
+  const currentTab = typeof route.query.tab === 'string' ? route.query.tab : activeTab.value
+  const currentSetting = typeof route.query.setting === 'string' ? route.query.setting : ''
+
+  if (currentTab === nextTab && currentSetting === item.setting) {
+    await jumpToRouteSetting(item.setting)
+    return
+  }
+
+  const nextQuery = {
+    ...route.query,
+    tab: nextTab,
+    setting: item.setting
+  }
+
+  router.replace({ query: nextQuery })
+}
+
+// Profile Save Handler
+const handleProfileSave = async (data) => {
+  try {
+    let avatarToSave = data.avatar
+    if (data.avatarFile) {
+      avatarToSave = await authStore.uploadAvatar(data.avatarFile)
+    }
+
+    await authStore.updateProfile({
+      fullName: data.fullName,
+      avatar: avatarToSave,
+      timezone: data.timezone,
+      measureUnit: data.measureUnit,
+      defaultRedirectUrl: data.defaultRedirectUrl,
+      dateFormat: data.dateFormat,
+      timeFormat: data.timeFormat
+    })
+
+    toast.add({
+      severity: 'success',
+      summary: 'Profile Updated',
+      detail: 'Your profile has been updated successfully',
+      life: 3000
+    })
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Update Failed',
+      detail: getErrorMessage(error),
+      life: 5000
+    })
+    throw error // Re-throw to let component handle loading state
+  }
+}
+
+// Timeline Display Save Handler
+const handleTimelineDisplaySave = async (displayPrefs) => {
+  try {
+    const savedDisplayPrefs = await authStore.updateTimelineDisplayPreferences(displayPrefs)
+
+    // Update local state from canonical backend response when available
+    timelineDisplayPrefs.value = {
+      ...timelineDisplayPrefs.value,
+      ...(savedDisplayPrefs || displayPrefs)
+    }
+
+    toast.add({
+      severity: 'success',
+      summary: 'Display Settings Updated',
+      detail: 'Your timeline display preferences have been saved. Changes are visible immediately.',
+      life: 3000
+    })
+
+    return true // Success
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Update Failed',
+      detail: getErrorMessage(error),
+      life: 5000
+    })
+    return false // Failure
+  }
+}
+
+// Password Save Handler
+const handlePasswordSave = async (data) => {
+  try {
+    await authStore.changePassword(
+      data.currentPassword,
+      data.newPassword
+    )
+
+    toast.add({
+      severity: 'success',
+      summary: hasPassword.value ? 'Password Changed' : 'Password Set',
+      detail: hasPassword.value ? 'Your password has been changed successfully' : 'Your password has been set successfully',
+      life: 3000
+    })
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: hasPassword.value ? 'Password Change Failed' : 'Password Set Failed',
+      detail: getErrorMessage(error),
+      life: 5000
+    })
+    throw error
+  }
+}
+
+// AI Settings Save Handler
+const handleAISave = async (payload) => {
+  try {
+    await apiService.post('/ai/settings', payload)
+
+    // Reload settings to get updated configuration status
+    await loadAISettings()
+
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'AI settings saved successfully',
+      life: 3000
+    })
+  } catch (error) {
+    console.error('Error saving AI settings:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      life: 5000,
+      detail: getErrorMessage(error)
+    })
+    throw error
+  }
+}
+
+// Immich Save Handler
+const handleImmichSave = async (configData) => {
+  try {
+    // Handle special case where we want to keep existing API key
+    if (configData.apiKey === 'KEEP_EXISTING') {
+      configData.apiKey = immichConfig.value?.apiKey || null
+    }
+
+    await immichStore.updateConfig(configData)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Immich Settings Updated',
+      detail: 'Your Immich integration settings have been saved successfully',
+      life: 3000
+    })
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Save Failed',
+      detail: getErrorMessage(error),
+      life: 5000
+    })
+    throw error
+  }
+}
+
+// Load AI Settings
+const loadAISettings = async () => {
+  try {
+    const response = await apiService.get('/ai/settings')
+
+    // Update AI settings with loaded data
+    const data = response.data || response
+    if (data) {
+      aiSettings.value = {
+        enabled: data.enabled === true,
+        openaiApiKey: '', // Always empty since backend doesn't send actual key
+        openaiApiUrl: data.openaiApiUrl || 'https://api.openai.com/v1',
+        openaiModel: data.openaiModel || 'gpt-3.5-turbo',
+        openaiApiKeyConfigured: data.openaiApiKeyConfigured === true,
+        customSystemMessage: data.customSystemMessage,
+        apiKeyRequired: data.apiKeyRequired,
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load AI settings:', error)
+  }
+}
+
+// Load Timeline Display Preferences
+const loadTimelineDisplayPreferences = async () => {
+  try {
+    const response = await apiService.get('/users/preferences/timeline/display')
+    const data = response.data || response
+
+    if (data) {
+      timelineDisplayPrefs.value = {
+        customMapTileUrl: data.customMapTileUrl || '',
+        customMapStyleUrl: data.customMapStyleUrl || '',
+        mapRenderMode: data.mapRenderMode || 'VECTOR',
+        pathSimplificationEnabled: data.pathSimplificationEnabled ?? true,
+        pathSimplificationTolerance: data.pathSimplificationTolerance ?? 15.0,
+        pathMaxPoints: data.pathMaxPoints ?? 0,
+        pathAdaptiveSimplification: data.pathAdaptiveSimplification ?? true,
+        defaultDateRangePreset: data.defaultDateRangePreset || '',
+        showCurrentLocationTelemetry: data.showCurrentLocationTelemetry ?? true
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load timeline display preferences:', error)
+  }
+}
+
+watch(() => route.query.tab, (newTab) => {
+  if (newTab && validTabs.includes(newTab)) {
+    activeTab.value = newTab
+  }
+})
+
+watch(
+  () => [route.query.tab, route.query.setting],
+  ([tab, setting]) => {
+    if (route.path !== '/app/profile') return
+    if (!setting || typeof setting !== 'string') return
+
+    const tabChanged = typeof tab === 'string' && tab !== activeTab.value
+    const delayMs = tabChanged ? 240 : 80
+    window.setTimeout(() => {
+      void jumpToRouteSetting(setting)
+    }, delayMs)
+  },
+  { immediate: true }
+)
+
+// Lifecycle
+onMounted(async () => {
+  // Fetch fresh profile data from backend first
+  try {
+    await authStore.fetchCurrentUserProfile()
+  } catch (error) {
+    console.warn('Failed to fetch current user profile from backend, using cached data:', error)
+    // Show a toast notification to inform user about using cached data
+    toast.add({
+      severity: 'warn',
+      summary: 'Using Cached Data',
+      detail: 'Unable to fetch latest profile data. Showing cached information.',
+      life: 4000
+    })
+  }
+
+  // Load Immich config
+  try {
+    await immichStore.fetchConfig()
+  } catch (error) {
+    console.warn('Failed to load Immich config:', error)
+  }
+
+  // Load AI settings
+  await loadAISettings()
+
+  // Load Timeline Display Preferences
+  await loadTimelineDisplayPreferences()
+
+  // Handle tab query parameter
+  const tabParam = route.query.tab
+  if (tabParam && validTabs.includes(tabParam)) {
+    activeTab.value = tabParam
+  }
+})
+</script>
+
+<style scoped>
+.user-profile-page {
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.header-actions {
+  flex-shrink: 0;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--gp-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.page-description {
+  font-size: 1.1rem;
+  color: var(--gp-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Profile Content */
+.profile-content {
+  margin-bottom: 2rem;
+}
+
+.profile-tabs {
+  width: 100%;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-profile-page {
+    padding: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .page-header {
+    padding: 0 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-profile-page {
+    padding: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .page-header {
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .page-title {
+    font-size: 1.3rem;
+  }
+
+  .page-description {
+    font-size: 1rem;
+  }
+}
+
+</style>

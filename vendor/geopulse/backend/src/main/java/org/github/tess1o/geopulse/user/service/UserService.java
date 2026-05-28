@@ -1,0 +1,890 @@
+package org.github.tess1o.geopulse.user.service;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.github.tess1o.geopulse.admin.model.Role;
+import org.github.tess1o.geopulse.auth.config.AuthConfigurationService;
+import org.github.tess1o.geopulse.auth.exceptions.InvalidPasswordException;
+import org.github.tess1o.geopulse.geofencing.service.DefaultNotificationTemplateService;
+import org.github.tess1o.geopulse.streaming.events.TimelinePreferencesUpdatedEvent;
+import org.github.tess1o.geopulse.streaming.events.TravelClassificationUpdatedEvent;
+import org.github.tess1o.geopulse.streaming.events.TimelineStructureUpdatedEvent;
+import org.github.tess1o.geopulse.streaming.service.AsyncTimelineGenerationService;
+import org.github.tess1o.geopulse.shared.map.MapRenderMode;
+import org.github.tess1o.geopulse.user.exceptions.UserNotFoundException;
+import org.github.tess1o.geopulse.user.model.*;
+import org.github.tess1o.geopulse.user.repository.UserAvatarRepository;
+import org.github.tess1o.geopulse.user.repository.UserRepository;
+
+import java.net.URI;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+/**
+ * Service for user management operations.
+ */
+@ApplicationScoped
+@Slf4j
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final UserAvatarRepository userAvatarRepository;
+    private final SecurePasswordUtils securePasswordUtils;
+    private final TimelinePreferencesUpdater preferencesUpdater;
+    private final Event<TimelinePreferencesUpdatedEvent> preferencesUpdatedEvent;
+    private final Event<TravelClassificationUpdatedEvent> classificationUpdatedEvent;
+    private final Event<TimelineStructureUpdatedEvent> structureUpdatedEvent;
+    private final AuthConfigurationService authConfigurationService;
+    private final AsyncTimelineGenerationService asyncTimelineGenerationService;
+    private final DefaultNotificationTemplateService defaultNotificationTemplateService;
+
+    @ConfigProperty(name = "geopulse.admin.email")
+    Optional<String> adminEmail;
+
+    @ConfigProperty(name = "geopulse.coverage.enabled-by-default", defaultValue = "false")
+    boolean coverageEnabledByDefault;
+
+    @ConfigProperty(name = "geopulse.avatar.max-size-bytes", defaultValue = "204800")
+    int maxAvatarSizeBytes;
+
+    private static final Pattern VALID_DEFAULT_AVATAR_PATTERN = Pattern.compile("^/avatars/avatar(1[0-9]|20|[1-9])\\.png$");
+    private static final Pattern VALID_CUSTOM_AVATAR_PATTERN = Pattern.compile("^/api/users/[0-9a-fA-F\\-]{36}/avatar$");
+
+    private static final Set<String> ALLOWED_AVATAR_CONTENT_TYPES = Set.of(
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+    );
+
+    // Mapping for timezone names that differ between JavaScript and Java
+    private static final Map<String, String> TIMEZONE_MAPPING = Map.of(
+            "Europe/Kiev", "Europe/Kyiv"  // JavaScript may send old name, normalize to new name
+    );
+
+    @Inject
+    public UserService(UserRepository userRepository,
+                       UserAvatarRepository userAvatarRepository,
+                       SecurePasswordUtils securePasswordUtils,
+                       TimelinePreferencesUpdater preferencesUpdater,
+                       Event<TimelinePreferencesUpdatedEvent> preferencesUpdatedEvent,
+                       Event<TravelClassificationUpdatedEvent> classificationUpdatedEvent,
+                       Event<TimelineStructureUpdatedEvent> structureUpdatedEvent,
+                       AuthConfigurationService authConfigurationService,
+                       AsyncTimelineGenerationService asyncTimelineGenerationService,
+                       DefaultNotificationTemplateService defaultNotificationTemplateService) {
+        this.userRepository = userRepository;
+        this.userAvatarRepository = userAvatarRepository;
+        this.securePasswordUtils = securePasswordUtils;
+        this.preferencesUpdater = preferencesUpdater;
+        this.preferencesUpdatedEvent = preferencesUpdatedEvent;
+        this.classificationUpdatedEvent = classificationUpdatedEvent;
+        this.structureUpdatedEvent = structureUpdatedEvent;
+        this.authConfigurationService = authConfigurationService;
+        this.asyncTimelineGenerationService = asyncTimelineGenerationService;
+        this.defaultNotificationTemplateService = defaultNotificationTemplateService;
+    }
+
+    /**
+     * Register a new user.
+     *
+     * @param email    The user email
+     * @param password The password (will be hashed)
+     * @param fullName The user's full name
+     * @param timezone The user's timezone (IANA format)
+     * @return The created user entity
+     * @throws IllegalArgumentException if the user already exists
+     */
+    @Transactional
+    public UserEntity registerUser(String email, String password, String fullName, String timezone) {
+        if (!authConfigurationService.isPasswordRegistrationEnabled()) {
+            throw new IllegalArgumentException("Registration is disabled");
+        }
+        // Check if the user already exists
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("User with email " + email + " already exists");
+        }
+
+        // Validate and set timezone (defaults to UTC if null/invalid)
+        String validatedTimezone = validateTimezone(timezone);
+
+        // Determine role - check if email matches admin email
+        Role role = Role.USER;
+        if (adminEmail.isPresent() && !adminEmail.get().isBlank() && adminEmail.get().equalsIgnoreCase(email)) {
+            role = Role.ADMIN;
+            log.info("Promoting user {} to ADMIN role (matches admin email)", email);
+        }
+
+        // Create a new user entity
+        UserEntity user = UserEntity.builder()
+                .email(email)
+                .fullName(fullName)
+                .role(role)
+                .isActive(true)
+                .emailVerified(false)
+                .passwordHash(securePasswordUtils.hashPassword(password))
+                .timezone(validatedTimezone)
+                .measureUnit(MeasureUnit.METRIC)
+                .coverageEnabled(coverageEnabledByDefault)
+                .build();
+
+        persist(user);
+        return user;
+    }
+
+    /**
+     * Register a new user via invitation.
+     * This method bypasses the registration enabled check to allow invited users
+     * to register even when public registration is disabled.
+     *
+     * @param invitationToken The invitation token (for validation)
+     * @param email           The user email
+     * @param password        The password (will be hashed)
+     * @param fullName        The user's full name
+     * @param timezone        The user's timezone (IANA format)
+     * @return The created user entity
+     * @throws IllegalArgumentException if the user already exists
+     */
+    @Transactional
+    public UserEntity registerUserViaInvitation(String invitationToken, String email, String password, String fullName, String timezone) {
+        // NOTE: This method intentionally bypasses the isPasswordRegistrationEnabled() check
+        // to allow invited users to register even when public registration is disabled.
+
+        // Check if the user already exists
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("User with email " + email + " already exists");
+        }
+
+        // Validate and set timezone (defaults to UTC if null/invalid)
+        String validatedTimezone = validateTimezone(timezone);
+
+        // Determine role - check if email matches admin email
+        Role role = Role.USER;
+        if (adminEmail.isPresent() && !adminEmail.get().isBlank() && adminEmail.get().equalsIgnoreCase(email)) {
+            role = Role.ADMIN;
+            log.info("Promoting user {} to ADMIN role (matches admin email) via invitation", email);
+        }
+
+        // Create a new user entity
+        UserEntity user = UserEntity.builder()
+                .email(email)
+                .fullName(fullName)
+                .role(role)
+                .isActive(true)
+                .emailVerified(false)
+                .passwordHash(securePasswordUtils.hashPassword(password))
+                .timezone(validatedTimezone)
+                .measureUnit(MeasureUnit.METRIC)
+                .coverageEnabled(coverageEnabledByDefault)
+                .build();
+
+        persist(user);
+        log.info("User {} registered via invitation token {}", email, invitationToken.substring(0, 8) + "...");
+        return user;
+    }
+
+    public Optional<UserEntity> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<UserEntity> findById(UUID id) {
+        return Optional.ofNullable(userRepository.findById(id));
+    }
+
+    public void persist(UserEntity user) {
+        boolean isNewUser = user.getId() == null;
+        if (isNewUser) {
+            this.userRepository.persistAndFlush(user);
+        } else {
+            this.userRepository.persist(user);
+        }
+        if (isNewUser) {
+            defaultNotificationTemplateService.ensureDefaultsForUser(user.getId());
+        }
+    }
+
+    /**
+     * Updates the role of an existing user.
+     * Fetches the user within this transaction to ensure the entity is managed.
+     *
+     * @param userId the user ID
+     * @param role   the new role
+     * @return the updated user entity, or empty if user not found
+     */
+    @Transactional
+    public Optional<UserEntity> updateRole(UUID userId, Role role) {
+        UserEntity user = userRepository.findById(userId);
+        if (user != null) {
+            user.setRole(role);
+            // No explicit persist needed - dirty checking handles it within transaction
+            return Optional.of(user);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Validates timezone to ensure it's a valid IANA timezone identifier.
+     * Returns UTC as default if timezone is null or invalid.
+     * Also handles timezone name mapping (e.g., Europe/Kiev -> Europe/Kyiv).
+     *
+     * @param timezone the timezone to validate
+     * @return validated timezone or "UTC" as default
+     */
+    private String validateTimezone(String timezone) {
+        if (timezone == null || timezone.trim().isEmpty()) {
+            return "UTC";
+        }
+
+        String normalizedTimezone = timezone.trim();
+
+        // Apply timezone mapping if needed
+        normalizedTimezone = TIMEZONE_MAPPING.getOrDefault(normalizedTimezone, normalizedTimezone);
+
+        try {
+            java.time.ZoneId.of(normalizedTimezone);
+            return normalizedTimezone;
+        } catch (java.time.DateTimeException e) {
+            log.warn("Invalid timezone provided: {}, defaulting to UTC", timezone);
+            return "UTC";
+        }
+    }
+
+    private String validateDateFormat(String dateFormat) {
+        if (dateFormat == null || dateFormat.trim().isEmpty()) {
+            return null;
+        }
+
+        String normalized = dateFormat.trim().toUpperCase();
+        return switch (normalized) {
+            case "MDY", "DMY", "YMD" -> normalized;
+            default -> throw new IllegalArgumentException("Invalid date format. Allowed values: MDY, DMY, YMD");
+        };
+    }
+
+    private String validateTimeFormat(String timeFormat) {
+        if (timeFormat == null || timeFormat.trim().isEmpty()) {
+            return null;
+        }
+
+        String normalized = timeFormat.trim().toLowerCase(Locale.ROOT);
+        return switch (normalized) {
+            case "24h", "12h" -> normalized;
+            default -> throw new IllegalArgumentException("Invalid time format. Allowed values: 24h, 12h");
+        };
+    }
+
+    private String validateDefaultDateRangePreset(String defaultDateRangePreset) {
+        if (defaultDateRangePreset == null || defaultDateRangePreset.trim().isEmpty()) {
+            return null;
+        }
+
+        return switch (defaultDateRangePreset.trim().toLowerCase(Locale.ENGLISH)) {
+            case "today" -> "today";
+            case "yesterday" -> "yesterday";
+            case "lastweek" -> "lastWeek";
+            case "lastmonth" -> "lastMonth";
+            default -> throw new IllegalArgumentException(
+                    "Invalid default date range preset. Allowed values: today, yesterday, lastWeek, lastMonth");
+        };
+    }
+
+    /**
+     * Validates custom map tile URL to ensure it's a safe and valid tile URL.
+     * Must contain {z}, {x}, {y} placeholders and use HTTP/HTTPS protocols.
+     *
+     * @param tileUrl the tile URL to validate
+     * @throws IllegalArgumentException if the tile URL is invalid
+     */
+    private void validateCustomMapTileUrl(String tileUrl) {
+        if (tileUrl == null || tileUrl.trim().isEmpty()) {
+            return; // Allow null/empty to use default tiles
+        }
+
+        String normalizedUrl = tileUrl.trim().toLowerCase();
+
+        // Security: Only allow http:// and https:// protocols
+        if (!normalizedUrl.startsWith("http://") && !normalizedUrl.startsWith("https://")) {
+            log.warn("Invalid tile URL protocol: {}", tileUrl);
+            throw new IllegalArgumentException("Custom map tile URL must use HTTP or HTTPS protocol");
+        }
+
+        // Security: Prevent dangerous protocols
+        if (normalizedUrl.contains("javascript:") || normalizedUrl.contains("data:") ||
+                normalizedUrl.contains("file:") || normalizedUrl.contains("ftp:")) {
+            log.warn("Dangerous protocol detected in tile URL: {}", tileUrl);
+            throw new IllegalArgumentException("Invalid tile URL protocol");
+        }
+
+        // Validate required placeholders for tile coordinates
+        if (!tileUrl.contains("{z}") || !tileUrl.contains("{x}") || !tileUrl.contains("{y}")) {
+            log.warn("Tile URL missing required placeholders: {}", tileUrl);
+            throw new IllegalArgumentException("Custom map tile URL must contain {z}, {x}, and {y} placeholders");
+        }
+
+        // Security: Basic path traversal check
+        if (tileUrl.contains("..")) {
+            log.warn("Path traversal attempt in tile URL: {}", tileUrl);
+            throw new IllegalArgumentException("Invalid tile URL format");
+        }
+
+        // Optional: Validate URL length (already enforced by @Size, but double-check)
+        if (tileUrl.length() > 1000) {
+            throw new IllegalArgumentException("Custom map tile URL is too long (max 1000 characters)");
+        }
+    }
+
+    /**
+     * Validates custom vector map style URL to ensure it's a safe and valid URL.
+     * Must use HTTP/HTTPS protocols and should point to a style JSON document.
+     *
+     * @param styleUrl the style URL to validate
+     * @throws IllegalArgumentException if the style URL is invalid
+     */
+    private void validateCustomMapStyleUrl(String styleUrl) {
+        if (styleUrl == null || styleUrl.trim().isEmpty()) {
+            return; // Allow null/empty to use default style
+        }
+
+        String normalizedUrl = styleUrl.trim().toLowerCase();
+
+        if (!normalizedUrl.startsWith("http://") && !normalizedUrl.startsWith("https://")) {
+            log.warn("Invalid style URL protocol: {}", styleUrl);
+            throw new IllegalArgumentException("Custom map style URL must use HTTP or HTTPS protocol");
+        }
+
+        if (normalizedUrl.contains("javascript:") || normalizedUrl.contains("data:") ||
+                normalizedUrl.contains("file:") || normalizedUrl.contains("ftp:")) {
+            log.warn("Dangerous protocol detected in style URL: {}", styleUrl);
+            throw new IllegalArgumentException("Invalid style URL protocol");
+        }
+
+        if (styleUrl.contains("..")) {
+            log.warn("Path traversal attempt in style URL: {}", styleUrl);
+            throw new IllegalArgumentException("Invalid style URL format");
+        }
+
+        if (styleUrl.length() > 1000) {
+            throw new IllegalArgumentException("Custom map style URL is too long (max 1000 characters)");
+        }
+
+        if (styleUrl.contains("{z}") || styleUrl.contains("{x}") || styleUrl.contains("{y}")) {
+            throw new IllegalArgumentException("Custom map style URL must not contain raster tile placeholders");
+        }
+
+        if (!looksLikeVectorStyleEndpoint(styleUrl)) {
+            throw new IllegalArgumentException("Custom map style URL should point to a style JSON endpoint");
+        }
+    }
+
+    private boolean looksLikeVectorStyleEndpoint(String styleUrl) {
+        try {
+            URI parsedUrl = URI.create(styleUrl.trim());
+            String path = parsedUrl.getPath() != null ? parsedUrl.getPath().toLowerCase(Locale.ENGLISH) : "";
+            return path.endsWith(".json") || path.contains("/style") || path.contains("/styles/");
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
+    }
+
+    /**
+     * Validates default redirect URL to ensure it's a safe internal path.
+     * Must start with / and not contain dangerous patterns.
+     *
+     * @param redirectUrl the redirect URL to validate
+     * @throws IllegalArgumentException if the redirect URL is invalid
+     */
+    private void validateDefaultRedirectUrl(String redirectUrl) {
+        if (redirectUrl == null || redirectUrl.trim().isEmpty()) {
+            return; // Allow null/empty to use default behavior
+        }
+
+        String normalizedUrl = redirectUrl.trim();
+
+        // Security: Only allow relative paths (internal redirects)
+        if (!normalizedUrl.startsWith("/")) {
+            log.warn("Invalid redirect URL - must start with /: {}", redirectUrl);
+            throw new IllegalArgumentException("Default redirect URL must be an internal path starting with /");
+        }
+
+        // Security: Prevent absolute URLs and external redirects
+        if (normalizedUrl.startsWith("//") ||
+                normalizedUrl.toLowerCase().contains("http:") ||
+                normalizedUrl.toLowerCase().contains("https:") ||
+                normalizedUrl.toLowerCase().contains("javascript:") ||
+                normalizedUrl.toLowerCase().contains("data:")) {
+            log.warn("Dangerous pattern detected in redirect URL: {}", redirectUrl);
+            throw new IllegalArgumentException("Default redirect URL must be an internal path, not an external URL");
+        }
+
+        // Security: Basic path traversal check
+        if (normalizedUrl.contains("..")) {
+            log.warn("Path traversal attempt in redirect URL: {}", redirectUrl);
+            throw new IllegalArgumentException("Invalid redirect URL format");
+        }
+
+        // Validate URL length (already enforced by @Size, but double-check)
+        if (normalizedUrl.length() > 1000) {
+            throw new IllegalArgumentException("Default redirect URL is too long (max 1000 characters)");
+        }
+    }
+
+    /**
+     * Validates avatar path to ensure it matches the expected format.
+     * Only allows paths like /avatars/avatar1.png through /avatars/avatar20.png
+     *
+     * @param avatarPath the avatar path to validate
+     * @throws IllegalArgumentException if the avatar path is invalid
+     */
+    private void validateAvatarPath(String avatarPath) {
+        if (avatarPath == null || avatarPath.trim().isEmpty()) {
+            return; // Allow null/empty to remove avatar
+        }
+
+        String normalizedPath = avatarPath.trim();
+
+        // Additional security checks
+        if (normalizedPath.contains("..") || normalizedPath.contains("//")) {
+            log.warn("Path traversal attempt in avatar path: {}", normalizedPath);
+            throw new IllegalArgumentException("Invalid avatar path. Path traversal not allowed.");
+        }
+
+        boolean isDefaultAvatar = VALID_DEFAULT_AVATAR_PATTERN.matcher(normalizedPath).matches();
+        boolean isCustomAvatar = VALID_CUSTOM_AVATAR_PATTERN.matcher(normalizedPath).matches();
+        if (!isDefaultAvatar && !isCustomAvatar) {
+            log.warn("Invalid avatar path attempted: {}", normalizedPath);
+            throw new IllegalArgumentException("Invalid avatar path. Allowed values: /avatars/avatar{1-20}.png or /api/users/{uuid}/avatar");
+        }
+    }
+
+    private String normalizeAvatarContentType(String contentType) {
+        if (contentType == null || contentType.trim().isEmpty()) {
+            throw new IllegalArgumentException("Avatar content type is required");
+        }
+
+        String normalized = contentType.trim().toLowerCase(Locale.ENGLISH);
+        int separatorIndex = normalized.indexOf(';');
+        if (separatorIndex > 0) {
+            normalized = normalized.substring(0, separatorIndex).trim();
+        }
+
+        if ("image/jpg".equals(normalized)) {
+            normalized = "image/jpeg";
+        }
+
+        if (!ALLOWED_AVATAR_CONTENT_TYPES.contains(normalized)) {
+            throw new IllegalArgumentException("Unsupported avatar format. Allowed formats: JPEG, PNG, WEBP");
+        }
+
+        return normalized;
+    }
+
+    private boolean hasJpegSignature(byte[] imageBytes) {
+        return imageBytes.length >= 3 &&
+                (imageBytes[0] & 0xFF) == 0xFF &&
+                (imageBytes[1] & 0xFF) == 0xD8 &&
+                (imageBytes[2] & 0xFF) == 0xFF;
+    }
+
+    private boolean hasPngSignature(byte[] imageBytes) {
+        return imageBytes.length >= 8 &&
+                (imageBytes[0] & 0xFF) == 0x89 &&
+                imageBytes[1] == 0x50 &&
+                imageBytes[2] == 0x4E &&
+                imageBytes[3] == 0x47 &&
+                imageBytes[4] == 0x0D &&
+                imageBytes[5] == 0x0A &&
+                imageBytes[6] == 0x1A &&
+                imageBytes[7] == 0x0A;
+    }
+
+    private boolean hasWebpSignature(byte[] imageBytes) {
+        return imageBytes.length >= 12 &&
+                imageBytes[0] == 0x52 &&
+                imageBytes[1] == 0x49 &&
+                imageBytes[2] == 0x46 &&
+                imageBytes[3] == 0x46 &&
+                imageBytes[8] == 0x57 &&
+                imageBytes[9] == 0x45 &&
+                imageBytes[10] == 0x42 &&
+                imageBytes[11] == 0x50;
+    }
+
+    private boolean matchesImageSignature(byte[] imageBytes, String contentType) {
+        return switch (contentType) {
+            case "image/jpeg" -> hasJpegSignature(imageBytes);
+            case "image/png" -> hasPngSignature(imageBytes);
+            case "image/webp" -> hasWebpSignature(imageBytes);
+            default -> false;
+        };
+    }
+
+    public String buildCustomAvatarPath(UUID userId) {
+        return "/api/users/" + userId + "/avatar";
+    }
+
+    public boolean isCustomAvatarPath(String avatarPath) {
+        if (avatarPath == null || avatarPath.trim().isEmpty()) {
+            return false;
+        }
+        return VALID_CUSTOM_AVATAR_PATTERN.matcher(avatarPath.trim()).matches();
+    }
+
+    private void removeStoredCustomAvatar(UUID userId) {
+        UserAvatarEntity existingAvatar = userAvatarRepository.findById(userId);
+        if (existingAvatar != null) {
+            userAvatarRepository.delete(existingAvatar);
+        }
+    }
+
+    @Transactional
+    public String upsertCustomAvatar(UUID userId, byte[] imageBytes, String contentType) {
+        UserEntity user = userRepository.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        if (imageBytes == null || imageBytes.length == 0) {
+            throw new IllegalArgumentException("Avatar image is required");
+        }
+
+        if (imageBytes.length > maxAvatarSizeBytes) {
+            throw new IllegalArgumentException("Avatar image is too large. Maximum size is " + maxAvatarSizeBytes + " bytes");
+        }
+
+        String normalizedContentType = normalizeAvatarContentType(contentType);
+        if (!matchesImageSignature(imageBytes, normalizedContentType)) {
+            throw new IllegalArgumentException("Avatar file content does not match declared image type");
+        }
+
+        UserAvatarEntity avatar = userAvatarRepository.findById(userId);
+        boolean isNewAvatar = avatar == null;
+        if (avatar == null) {
+            avatar = UserAvatarEntity.builder()
+                    .userId(userId)
+                    .build();
+        }
+
+        avatar.setContentType(normalizedContentType);
+        avatar.setSizeBytes(imageBytes.length);
+        avatar.setImageData(imageBytes);
+        if (isNewAvatar) {
+            userAvatarRepository.persist(avatar);
+        }
+
+        String avatarPath = buildCustomAvatarPath(userId);
+        user.setAvatar(avatarPath);
+
+        log.info("Stored custom avatar for user {} ({} bytes, type: {})", userId, imageBytes.length, normalizedContentType);
+        return avatarPath;
+    }
+
+    public Optional<UserAvatarEntity> findUserAvatar(UUID userId) {
+        return Optional.ofNullable(userAvatarRepository.findById(userId));
+    }
+
+    @Transactional
+    public UserEntity updateProfile(UUID userId, UpdateProfileRequest request) {
+        UserEntity user = userRepository.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        // Update full name
+        user.setFullName(request.getFullName());
+
+        // Validate and update avatar path
+        if (request.getAvatar() != null) {
+            String normalizedAvatar = request.getAvatar().trim();
+            validateAvatarPath(normalizedAvatar);
+            if (!isCustomAvatarPath(normalizedAvatar)) {
+                removeStoredCustomAvatar(userId);
+            }
+            user.setAvatar(normalizedAvatar.isEmpty() ? null : normalizedAvatar);
+            log.debug("Updated avatar for user {} to {}", user.getId(), normalizedAvatar);
+        }
+
+        // Validate and update timezone
+        if (request.getTimezone() != null) {
+            String validatedTimezone = validateTimezone(request.getTimezone());
+            user.setTimezone(validatedTimezone);
+            log.debug("Updated timezone for user {} to {}", user.getId(), validatedTimezone);
+        }
+
+        if (request.getMeasureUnit() != null) {
+            user.setMeasureUnit(request.getMeasureUnit());
+            log.debug("Updated measure unit for user {}", user.getId());
+        }
+
+        if (request.getDefaultRedirectUrl() != null) {
+            validateDefaultRedirectUrl(request.getDefaultRedirectUrl());
+            user.setDefaultRedirectUrl(request.getDefaultRedirectUrl().trim().isEmpty() ? null : request.getDefaultRedirectUrl().trim());
+            log.debug("Updated default redirect URL for user {}", user.getId());
+        }
+
+        if (request.getDateFormat() != null) {
+            user.setDateFormat(validateDateFormat(request.getDateFormat()));
+            log.debug("Updated date format for user {}", user.getId());
+        }
+
+        if (request.getTimeFormat() != null) {
+            user.setTimeFormat(validateTimeFormat(request.getTimeFormat()));
+            log.debug("Updated time format for user {}", user.getId());
+        }
+
+        return user;
+    }
+
+    @Transactional
+    public void changePassword(UUID userId, UpdateUserPasswordRequest request) {
+        UserEntity user = userRepository.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        // If user has an existing password, validate the old password
+        // If oldPassword is null/blank, it means user is setting password for the first time (OIDC scenario)
+        if (user.getPasswordHash() != null && !user.getPasswordHash().trim().isEmpty()) {
+            if (request.getOldPassword() == null || request.getOldPassword().trim().isEmpty()) {
+                throw new InvalidPasswordException("Current password is required to change password");
+            }
+            if (!securePasswordUtils.isPasswordValid(request.getOldPassword(), user.getPasswordHash())) {
+                throw new InvalidPasswordException("Old password is incorrect");
+            }
+        }
+
+        // Set new password using bcrypt
+        user.setPasswordHash(securePasswordUtils.hashPassword(request.getNewPassword()));
+    }
+
+    /**
+     * Update timeline preferences and return type of change made.
+     *
+     * @return "classification" for classification-only changes, "structural" for full regeneration needed, null for no changes
+     */
+    @Transactional
+    public String updateTimelinePreferences(UUID userId, UpdateTimelinePreferencesRequest update) {
+        UserEntity user = userRepository.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        if (user.timelinePreferences == null) {
+            user.timelinePreferences = new TimelinePreferences();
+        }
+
+        // Use registry-based updater - eliminates all the manual if/else logic
+        preferencesUpdater.updatePreferences(user.timelinePreferences, update);
+
+        // Determine which type of event to fire based on parameter types
+        boolean hasClassificationChanges = hasClassificationParameters(update);
+        boolean hasStructuralChanges = hasStructuralParameters(update);
+
+        if (hasClassificationChanges && !hasStructuralChanges) {
+            // Synchronous trip type recalculation (fast, no job needed)
+            log.info("Firing travel classification updated event for user {} (classification-only changes)", userId);
+            classificationUpdatedEvent.fire(new TravelClassificationUpdatedEvent(
+                    userId,
+                    user.timelinePreferences,
+                    false // wasResetToDefaults = false
+            ));
+            return "classification"; // Classification-only changes
+        } else if (hasStructuralChanges) {
+            // Structural changes require full timeline regeneration
+            log.info("Structural timeline changes detected for user {}", userId);
+            return "structural"; // Full regeneration needed
+        } else {
+            // No timeline changes needed
+            log.info("No timeline regeneration needed for user {} (no parameter changes detected)", userId);
+            return null;
+        }
+    }
+
+    /**
+     * Reset preferences to defaults.
+     *
+     * @return true if timeline regeneration is needed, false otherwise
+     */
+    @Transactional
+    public boolean resetTimelinePreferencesToDefaults(UUID userId) {
+        UserEntity user = userRepository.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+        user.timelinePreferences = null;
+        log.info("Reset timeline preferences to defaults for user {}", userId);
+        return true; // Always need timeline regeneration when resetting
+    }
+
+    /**
+     * Create async job for timeline regeneration.
+     * This method is NOT transactional and should be called after the transaction commits.
+     */
+    public UUID createTimelineRegenerationJob(UUID userId) {
+        try {
+            UUID jobId = asyncTimelineGenerationService.regenerateTimelineAsync(userId);
+            log.info("Created async timeline regeneration job {} for user {}", jobId, userId);
+            return jobId;
+        } catch (IllegalStateException e) {
+            log.warn("Could not create regeneration job for user {}: {}", userId, e.getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * Check if the update contains travel classification parameters.
+     * Must match frontend implementation in TimelinePreferencesPage.vue:hasClassificationParameters
+     */
+    private boolean hasClassificationParameters(UpdateTimelinePreferencesRequest update) {
+        return update.getWalkingMaxAvgSpeed() != null ||
+                update.getWalkingMaxMaxSpeed() != null ||
+                update.getCarEnabled() != null ||
+                update.getCarMinAvgSpeed() != null ||
+                update.getCarMinMaxSpeed() != null ||
+                update.getShortDistanceKm() != null ||
+                // Bicycle
+                update.getBicycleEnabled() != null ||
+                update.getBicycleMinAvgSpeed() != null ||
+                update.getBicycleMaxAvgSpeed() != null ||
+                update.getBicycleMaxMaxSpeed() != null ||
+
+                // Running
+                update.getRunningEnabled() != null ||
+                update.getRunningMaxAvgSpeed() != null ||
+                update.getRunningMinAvgSpeed() != null ||
+                update.getRunningMaxMaxSpeed() != null ||
+
+                // Train
+                update.getTrainEnabled() != null ||
+                update.getTrainMinAvgSpeed() != null ||
+                update.getTrainMaxAvgSpeed() != null ||
+                update.getTrainMinMaxSpeed() != null ||
+                update.getTrainMaxMaxSpeed() != null ||
+                update.getTrainMaxSpeedVariance() != null ||
+                // Flight
+                update.getFlightEnabled() != null ||
+                update.getFlightMinAvgSpeed() != null ||
+                update.getFlightMinMaxSpeed() != null;
+    }
+
+    /**
+     * Check if the update contains structural timeline parameters.
+     *
+     * NOTE: Path simplification settings have been removed from this check as they are now
+     * display-only settings that don't affect timeline generation. They are stored in separate
+     * columns and updated via updateTimelineDisplayPreferences() method.
+     */
+    private boolean hasStructuralParameters(UpdateTimelinePreferencesRequest update) {
+        return update.getStaypointVelocityThreshold() != null ||
+                update.getStaypointRadiusMeters() != null ||
+                update.getStaypointMinDurationMinutes() != null ||
+                update.getTripDetectionAlgorithm() != null ||
+                update.getUseVelocityAccuracy() != null ||
+                update.getStaypointMaxAccuracyThreshold() != null ||
+                update.getStaypointMinAccuracyRatio() != null ||
+                update.getIsMergeEnabled() != null ||
+                update.getMergeMaxDistanceMeters() != null ||
+                update.getMergeMaxTimeGapMinutes() != null ||
+                update.getDataGapThresholdSeconds() != null ||
+                update.getDataGapMinDurationSeconds() != null ||
+                update.getGapStayInferenceEnabled() != null ||
+                update.getGapStayInferenceMaxGapHours() != null ||
+                update.getTripSustainedStopMinDurationSeconds() != null ||
+                update.getTripArrivalDetectionMinDurationSeconds() != null ||
+                update.getGapTripInferenceEnabled() != null ||
+                update.getGapTripInferenceMaxGapHours() != null ||
+                update.getGapTripInferenceMinDistanceMeters() != null ||
+                update.getGapTripInferenceMinGapHours() != null;
+    }
+
+    /**
+     * Update timeline display preferences.
+     * These settings affect ONLY how timelines are rendered in the UI.
+     * Changing these settings does NOT trigger timeline regeneration.
+     *
+     * @param userId the user ID
+     * @param request the display preferences update request
+     */
+    @Transactional
+    public void updateTimelineDisplayPreferences(UUID userId, UpdateTimelineDisplayPreferencesRequest request) {
+        UserEntity user = userRepository.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        // Update custom map tile URL if provided
+        if (request.getCustomMapTileUrl() != null) {
+            validateCustomMapTileUrl(request.getCustomMapTileUrl());
+            user.setCustomMapTileUrl(request.getCustomMapTileUrl().trim().isEmpty() ? null : request.getCustomMapTileUrl().trim());
+            log.debug("Updated custom map tile URL for user {}", userId);
+        }
+        if (request.getCustomMapStyleUrl() != null) {
+            validateCustomMapStyleUrl(request.getCustomMapStyleUrl());
+            user.setCustomMapStyleUrl(request.getCustomMapStyleUrl().trim().isEmpty() ? null : request.getCustomMapStyleUrl().trim());
+            log.debug("Updated custom map style URL for user {}", userId);
+        }
+        if (request.getMapRenderMode() != null) {
+            user.setMapRenderMode(request.getMapRenderMode());
+            log.debug("Updated map render mode for user {} to {}", userId, request.getMapRenderMode());
+        }
+
+        // Update display preference columns (no event firing, no regeneration)
+        if (request.getPathSimplificationEnabled() != null) {
+            user.setTimelineDisplayPathSimplificationEnabled(request.getPathSimplificationEnabled());
+        }
+        if (request.getPathSimplificationTolerance() != null) {
+            user.setTimelineDisplayPathSimplificationTolerance(request.getPathSimplificationTolerance());
+        }
+        if (request.getPathMaxPoints() != null) {
+            user.setTimelineDisplayPathMaxPoints(request.getPathMaxPoints());
+        }
+        if (request.getPathAdaptiveSimplification() != null) {
+            user.setTimelineDisplayPathAdaptiveSimplification(request.getPathAdaptiveSimplification());
+        }
+        if (request.getDefaultDateRangePreset() != null) {
+            user.setDefaultDateRangePreset(validateDefaultDateRangePreset(request.getDefaultDateRangePreset()));
+        }
+        if (request.getShowCurrentLocationTelemetry() != null) {
+            user.setTimelineDisplayShowCurrentLocationTelemetry(request.getShowCurrentLocationTelemetry());
+        }
+
+        log.info("Updated timeline display preferences for user {} (no regeneration required)", userId);
+    }
+
+    /**
+     * Get timeline display preferences for a user.
+     *
+     * @param userId the user ID
+     * @return the user's timeline display preferences with defaults applied for null values
+     */
+    public TimelineDisplayPreferences getTimelineDisplayPreferences(UUID userId) {
+        UserEntity user = userRepository.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        return TimelineDisplayPreferences.builder()
+                .customMapTileUrl(user.getCustomMapTileUrl())
+                .customMapStyleUrl(user.getCustomMapStyleUrl())
+                .mapRenderMode(user.getMapRenderMode() != null ? user.getMapRenderMode() : MapRenderMode.RASTER)
+                .pathSimplificationEnabled(user.getTimelineDisplayPathSimplificationEnabled() != null
+                        ? user.getTimelineDisplayPathSimplificationEnabled() : true)
+                .pathSimplificationTolerance(user.getTimelineDisplayPathSimplificationTolerance() != null
+                        ? user.getTimelineDisplayPathSimplificationTolerance() : 15.0)
+                .pathMaxPoints(user.getTimelineDisplayPathMaxPoints() != null
+                        ? user.getTimelineDisplayPathMaxPoints() : 0)
+                .pathAdaptiveSimplification(user.getTimelineDisplayPathAdaptiveSimplification() != null
+                        ? user.getTimelineDisplayPathAdaptiveSimplification() : true)
+                .defaultDateRangePreset(user.getDefaultDateRangePreset())
+                .showCurrentLocationTelemetry(user.getTimelineDisplayShowCurrentLocationTelemetry() != null
+                        ? user.getTimelineDisplayShowCurrentLocationTelemetry() : true)
+                .build();
+    }
+}

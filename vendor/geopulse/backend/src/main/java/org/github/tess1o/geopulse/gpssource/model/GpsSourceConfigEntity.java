@@ -1,0 +1,62 @@
+package org.github.tess1o.geopulse.gpssource.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.github.tess1o.geopulse.shared.gps.GpsSourceType;
+import org.github.tess1o.geopulse.user.model.UserEntity;
+
+import java.util.UUID;
+
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "gps_source_config")
+public class GpsSourceConfigEntity {
+
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private UserEntity user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source_type", nullable = false)
+    private GpsSourceType sourceType; // OWNTRACKS, OVERLAND
+
+    private String username;      // For OwnTracks
+
+    @Column(name = "password_hash")
+    private String passwordHash;  // For OwnTracks
+    private String token;         // For Overland
+    @Column(name = "device_id")
+    private String deviceId;      // Optional Traccar device uniqueId filter
+    private boolean active;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "connection_type", nullable = false)
+    @Builder.Default
+    private ConnectionType connectionType = ConnectionType.HTTP;
+
+    @Column(name = "filter_inaccurate_data")
+    private boolean filterInaccurateData = false;
+
+    @Column(name = "max_allowed_accuracy")
+    private Integer maxAllowedAccuracy;
+
+    @Column(name = "max_allowed_speed")
+    private Integer maxAllowedSpeed;
+
+    @Column(name = "enable_duplicate_detection")
+    private boolean enableDuplicateDetection = false;
+
+    @Column(name = "duplicate_detection_threshold_minutes")
+    private Integer duplicateDetectionThresholdMinutes;
+
+    public enum ConnectionType {
+        HTTP, MQTT
+    }
+}
