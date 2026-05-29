@@ -63,6 +63,7 @@ function buildConsole() {
   modeBtns = h('div', { className: 'rdr-modes' },
     modeButton('mock', 'MOCK'),
     modeButton('acoustic', '🎙 ACÚSTICO'),
+    modeButton('passive', 'PASSIVO'),
     modeButton('replay', 'REPLAY'),
     modeButton('bridge', 'BRIDGE')
   );
