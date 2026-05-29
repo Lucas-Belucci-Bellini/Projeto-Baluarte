@@ -22,8 +22,9 @@ import { getStatusText } from '../utils/baluarte-status.js';
 import { humanize } from '../utils/jarvis-style.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
-  addMessage, getMessages, isUsingFallback
+  addMessage, getMessages, getAllMessages, isUsingFallback
 } from '../utils/jarvis-memory.js';
+import { recall, summarizeSession } from '../utils/jarvis-recall.js';
 
 const MODES = [
   { id: 'local',  label: 'Local',  icon: '◆', badge: 'cyan',    desc: 'Assistente de regras. Offline, sem custo. Navega e consulta o Baluarte.' },
@@ -254,6 +255,25 @@ function scrollDown() { if (messagesEl) messagesEl.scrollTop = messagesEl.scroll
 
 /* ===== Envio ===== */
 
+/** Corpus de memória: um resumo por sessão anterior (estilo claude-mem). */
+async function buildMemoryCorpus(excludeSessionId) {
+  const all = await getAllMessages();
+  const bySession = new Map();
+  for (const m of all) {
+    if (m.sessionId === excludeSessionId) continue;
+    if (m.role !== 'user' && m.role !== 'jarvis') continue;
+    if (!bySession.has(m.sessionId)) bySession.set(m.sessionId, []);
+    bySession.get(m.sessionId).push(m);
+  }
+  const docs = [];
+  for (const [sid, msgs] of bySession) {
+    msgs.sort((a, b) => a.ts - b.ts);
+    const summary = summarizeSession(msgs);
+    if (summary) docs.push({ text: summary, sessionId: sid });
+  }
+  return docs;
+}
+
 async function handleSend() {
   if (busy) return;
   const text = inputEl.value.trim();
@@ -286,6 +306,20 @@ async function handleSend() {
     const callConfig = config.mode === 'local'
       ? config
       : { ...config, systemPrompt: `${config.systemPrompt}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}` };
+
+    /* Memória entre conversas (claude-mem): injeta resumos relevantes de
+     * sessões anteriores. Best-effort, só nos modos de IA. */
+    if (config.mode !== 'local' && config.memoryOn) {
+      try {
+        const recalled = recall(text, await buildMemoryCorpus(activeSession.id), 3);
+        if (recalled.length) {
+          callConfig.systemPrompt += '\n\n## MEMÓRIA (resumos de conversas anteriores, relevantes à pergunta)\n'
+            + recalled.map((r) => `- ${r.text}`).join('\n');
+          renderBubble('tool', `🧠 lembrei de ${recalled.length} conversa(s) anterior(es)`);
+          scrollDown();
+        }
+      } catch { /* memória é best-effort */ }
+    }
 
     if (config.mode === 'local') {
       await new Promise((r) => setTimeout(r, 220));
@@ -577,9 +611,21 @@ function renderConfigPanel() {
         cb));
   }
 
+  function memoryRow() {
+    const cb = h('input', {
+      type: 'checkbox', checked: !!config.memoryOn,
+      onchange: (e) => { config.memoryOn = e.target.checked; saveConfig(config); }
+    });
+    return h('label', { className: 'jv-profile', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' } },
+      h('span', null, 'MEMÓRIA ENTRE CONVERSAS'),
+      h('span', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+        h('span', { className: 'u-text-muted', style: { fontSize: '11px' } }, 'lembra de conversas anteriores'),
+        cb));
+  }
+
   renderModes();
   renderBody();
-  panel.append(modeBar, profileRow(), humanizeRow(), bodyEl);
+  panel.append(modeBar, profileRow(), humanizeRow(), memoryRow(), bodyEl);
   return panel;
 }
 
@@ -588,6 +634,7 @@ function renderConfigPanel() {
 export function jarvisPage() {
   config = loadConfig();
   if (config.humanizeOn === undefined) config.humanizeOn = true;
+  if (config.memoryOn === undefined) config.memoryOn = true;
   activeSession = null;
   messages = [];
 
