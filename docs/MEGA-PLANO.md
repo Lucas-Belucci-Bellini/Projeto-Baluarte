@@ -249,6 +249,12 @@ Curado (enxutos/relevantes), fora da `main`: `fazendo-um-llm-do-zero` (pt-BR),
 e `mlabonne/llm-course` (pesados), e `HKUDS/AutoAgent` (111 MB — dá para vendorizar
 enxuto se quiser usar no modo Agente).
 
-> O Jarvis "de verdade" tem **duas frentes**: (a) este **mini-LLM do zero**
-> (educacional, roda sempre) e (b) o modo **Navegador (WebLLM/WebGPU)**, que roda
-> um LLM real offline — próximo passo é reforçar esse modo.
+> O Jarvis "de verdade" tem **duas frentes**, ambas entregues: (a) este
+> **mini-LLM do zero** (educacional, roda sempre) e (b) o modo **Navegador
+> (WebLLM/WebGPU)**, que roda um LLM real offline.
+
+### ✅ WebLLM reforçado
+- **Baixar/pré-carregar o modelo** por um botão, com **barra de progresso** e
+  status — a 1ª resposta deixa de travar (o download de ~1–4 GB acontece antes).
+- **Controle de temperatura** da geração.
+- `preloadWebLLM()` / `getLoadedModel()` em `jarvis-webllm.js`.
