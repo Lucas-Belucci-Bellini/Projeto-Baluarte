@@ -14,6 +14,7 @@ import { storage } from '../core/storage.js';
 import { evaluate } from './calc-engine.js';
 import { getStatusSnapshot } from './baluarte-status.js';
 import { VERSION } from '../data/version.js';
+import { recall, getMemoryCache } from './jarvis-recall.js';
 
 /* ===== Schema das ferramentas (formato Claude API) ===== */
 
@@ -26,7 +27,7 @@ export const TOOL_SCHEMAS = [
       properties: {
         route: {
           type: 'string',
-          description: 'Rota destino. Opções: /home, /ferramentas, /editor, /terminal, /calc-cientifica, /calc-numerica, /calculadoras, /tabela-verdade, /cripto, /graficos, /simbolos, /regex, /arsenal, /biblioteca, /elites, /ciberseg, /academia, /fft, /media, /videos, /universo, /tabela-periodica, /modpack, /guia-pc, /logic-sim, /perfil, /shadow, /economia'
+          description: 'Rota destino. Opções: /home, /ferramentas, /editor, /terminal, /calc-cientifica, /calc-numerica, /calculadoras, /tabela-verdade, /cripto, /esteganografia, /graficos, /simbolos, /color-studio, /regex, /qr-studio, /json-studio, /git-helper, /arsenal, /biblioteca, /elites, /ciberseg, /academia, /robotica, /fft, /radio, /musicas, /media, /videos, /tv, /jogos, /universo, /tabela-periodica, /modpack, /guia-pc, /logic-sim, /portas, /morse, /memes, /filmes, /perfil, /economia, /jarvis, /radar, /geo, /find, /triangulacao, /sobre'
         }
       },
       required: ['route']
@@ -107,6 +108,17 @@ export const TOOL_SCHEMAS = [
         hex: { type: 'string', description: 'Cor em hexadecimal, ex: #00f0ff' }
       },
       required: ['hex']
+    }
+  },
+  {
+    name: 'recall_memory',
+    description: 'Busca na memória de conversas ANTERIORES do operador (resumos por sessão). Use quando ele se referir a algo já discutido ("aquilo que falamos", "o que decidimos sobre X") para recuperar o contexto.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'O assunto a relembrar' }
+      },
+      required: ['query']
     }
   }
 ];
@@ -204,6 +216,12 @@ const IMPLEMENTATIONS = {
     storage.set('color-studio:color', norm);
     setTimeout(() => router.navigate('/color-studio'), 400);
     return { ok: true, color: norm };
+  },
+
+  recall_memory({ query }) {
+    const hits = recall(query || '', getMemoryCache(), 4);
+    if (!hits.length) return { ok: true, total: 0, memories: [], note: 'nenhuma conversa anterior relevante' };
+    return { ok: true, total: hits.length, memories: hits.map((h) => h.text) };
   }
 };
 
