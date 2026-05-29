@@ -12,6 +12,7 @@
 import { h, cx, empty } from '../utils/helpers.js';
 import { makeSource } from '../utils/radar-source.js';
 import { cfar2d, rangeMeters, velocityMs } from '../utils/radar-dsp.js';
+import { createTracker } from '../utils/radar-tracker.js';
 import { toast } from '../utils/toast.js';
 
 let source = null;
@@ -20,7 +21,8 @@ let cfg = { cfarK: 4.0, mtiOn: false, dcNotchOn: true, frozen: false };
 let lastFrame = null;
 let prevMag = null;
 let fpsCounter = { count: 0, last: performance.now(), value: 0 };
-let detectionsCache = [];
+let tracker = createTracker();
+let tracksCache = [];
 
 /* Refs DOM. */
 let rdCanvas, waterfallCanvas, detListEl, statusBar, modeBtns, freezeBtn;
@@ -192,6 +194,8 @@ function setStatus(key, val) {
 
 function switchSource(kind) {
   if (source) source.stop();
+  tracker.reset();
+  tracksCache = [];
   mode = kind;
   modeBtns?.querySelectorAll('.rdr-mode').forEach((b) =>
     b.classList.toggle('is-active', b.dataset.kind === kind));
@@ -255,12 +259,13 @@ function onFrame(pkt) {
   }
   prevMag = new Float32Array(mag);
 
-  /* CFAR-CA 2D. */
+  /* CFAR-CA 2D → rastreio multi-alvo (tracks persistentes com ID). */
   const cfar = cfar2d(mag, rows, cols, { guard: 1, ref: 3, k: cfg.cfarK });
-  detectionsCache = cfar.detections.slice(0, 8);
+  tracksCache = tracker.update(cfar.detections);
 
   /* Pinta. */
   drawRD(mag, rows, cols, cfar.mask);
+  drawTrackOverlay(tracksCache, rows, cols);
   shiftWaterfall(mag, rows, cols);
   renderDetections();
 
@@ -273,7 +278,7 @@ function onFrame(pkt) {
     fpsCounter.last = now;
     setStatus('fps', String(fpsCounter.value));
   }
-  setStatus('tgt', String(detectionsCache.length));
+  setStatus('tgt', String(tracksCache.length));
   setStatus('frame', String(pkt.index));
 }
 
@@ -370,20 +375,54 @@ function shiftWaterfall(mag, rows, cols) {
   }
 }
 
+/* Desenha rastros + marcadores + ID dos alvos rastreados sobre o range-Doppler. */
+function drawTrackOverlay(tracks, rows, cols) {
+  if (!rdCanvas) return;
+  const ctx = rdCanvas.getContext('2d');
+  const W = rdCanvas.width, H = rdCanvas.height;
+  const cellW = W / cols, cellH = H / rows;
+  ctx.lineWidth = 1.5;
+  ctx.font = '11px "JetBrains Mono", monospace';
+  tracks.forEach((t) => {
+    const x = (t.c + 0.5) * cellW, y = (t.r + 0.5) * cellH;
+    const coasting = t.misses > 0;
+
+    /* rastro */
+    ctx.strokeStyle = coasting ? 'rgba(255,0,170,0.35)' : 'rgba(255,0,170,0.6)';
+    ctx.beginPath();
+    t.trail.forEach((p, i) => {
+      const px = (p[1] + 0.5) * cellW, py = (p[0] + 0.5) * cellH;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    /* marcador */
+    ctx.strokeStyle = coasting ? 'rgba(255,0,170,0.6)' : '#ff00aa';
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(5, cellW * 0.7), 0, Math.PI * 2);
+    ctx.stroke();
+
+    /* id */
+    ctx.fillStyle = '#ff00aa';
+    ctx.fillText('T' + String(t.id).padStart(2, '0'), x + 7, y - 7);
+  });
+}
+
 function renderDetections() {
   empty(detListEl);
-  if (detectionsCache.length === 0) {
+  if (tracksCache.length === 0) {
     detListEl.appendChild(h('div', { className: 'u-text-muted u-mono' }, 'sem alvos'));
     return;
   }
-  detectionsCache.forEach((d, i) => {
-    const range = rangeMeters(d.r, { fftN: lastFrame?.rows ?? 64 });
-    const vel = velocityMs(d.c, { dopplerN: lastFrame?.cols ?? 32 });
-    detListEl.appendChild(h('div', { className: 'rdr-det-row' },
-      h('span', { className: 'rdr-det-row__id u-mono' }, `T${String(i + 1).padStart(2, '0')}`),
+  tracksCache.forEach((t) => {
+    const range = rangeMeters(t.r, { fftN: lastFrame?.rows ?? 64 });
+    const vel = velocityMs(t.c, { dopplerN: lastFrame?.cols ?? 32 });
+    const coasting = t.misses > 0;
+    detListEl.appendChild(h('div', { className: cx('rdr-det-row', coasting && 'is-coasting') },
+      h('span', { className: 'rdr-det-row__id u-mono' }, `T${String(t.id).padStart(2, '0')}`),
       h('span', { className: 'rdr-det-row__range u-mono' }, `${range.toFixed(1)} m`),
       h('span', { className: 'rdr-det-row__vel u-mono' }, `${vel >= 0 ? '+' : ''}${vel.toFixed(1)} m/s`),
-      h('span', { className: 'rdr-det-row__snr u-mono u-text-cyan' }, `${(20 * Math.log10(d.snr)).toFixed(1)} dB`)
+      h('span', { className: 'rdr-det-row__snr u-mono u-text-cyan' }, `${(20 * Math.log10(Math.max(t.snr, 1e-6))).toFixed(1)} dB`)
     ));
   });
 }
@@ -392,6 +431,8 @@ function renderDetections() {
 
 function cleanup() {
   if (source) { source.stop(); source = null; }
+  tracker.reset();
+  tracksCache = [];
   prevMag = null;
   lastFrame = null;
 }

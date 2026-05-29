@@ -242,6 +242,9 @@
 .rdr-det-row__vel { color: var(--color-text, #c8d3e6); }
 .rdr-det-row__snr { text-align: right; }
 
+/* alvo rastreado sem medida no frame (seguindo por inércia) */
+.rdr-det-row.is-coasting { opacity: 0.55; border-left-style: dashed; }
+
 /* ===== Celular: status quebra em 3 colunas e modos empilham melhor ===== */
 @media (max-width: 520px) {
   .rdr-status { grid-template-columns: repeat(3, 1fr); }
