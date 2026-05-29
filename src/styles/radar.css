@@ -1,0 +1,243 @@
+/* ============================================================
+ * RADAR — console tático Range-Doppler
+ * ============================================================ */
+
+.page-radar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rdr-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .rdr-layout { grid-template-columns: 1fr; }
+}
+
+.rdr-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rdr-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== Status ===== */
+
+.rdr-status {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.04), rgba(0, 0, 0, 0.3));
+  border: 1px solid rgba(0, 240, 255, 0.18);
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.rdr-status__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 2px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.rdr-status__label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted, #93a4bf);
+}
+
+.rdr-status__val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-cyan, #00f0ff);
+  margin-top: 2px;
+}
+
+/* ===== Controles ===== */
+
+.rdr-controls__row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.rdr-controls__row:last-child { margin-bottom: 0; }
+
+.rdr-controls__label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted, #93a4bf);
+  min-width: 50px;
+}
+
+.rdr-modes {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.rdr-mode {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(150, 180, 255, 0.2);
+  color: var(--color-text, #c8d3e6);
+  padding: 6px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rdr-mode:hover {
+  border-color: var(--color-cyan, #00f0ff);
+  color: var(--color-cyan, #00f0ff);
+}
+
+.rdr-mode.is-active {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: var(--color-cyan, #00f0ff);
+  color: var(--color-cyan, #00f0ff);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+}
+
+.rdr-toggle {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(150, 180, 255, 0.2);
+  color: var(--color-text-muted, #93a4bf);
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.rdr-toggle.is-on {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: var(--color-cyan, #00f0ff);
+  color: var(--color-cyan, #00f0ff);
+}
+
+.rdr-freeze {
+  margin-left: auto;
+}
+
+.rdr-freeze.is-active {
+  background: rgba(255, 0, 170, 0.12);
+  border-color: var(--color-magenta, #ff00aa);
+  color: var(--color-magenta, #ff00aa);
+}
+
+.rdr-slider-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rdr-slider {
+  flex: 1;
+  accent-color: var(--color-cyan, #00f0ff);
+}
+
+.rdr-slider__val {
+  min-width: 32px;
+  color: var(--color-cyan, #00f0ff);
+  font-size: 12px;
+  text-align: right;
+}
+
+/* ===== Scopes (canvas) ===== */
+
+.rdr-scope {
+  padding: 0;
+  overflow: hidden;
+}
+
+.rdr-scope__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.06), transparent);
+}
+
+.rdr-scope__title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-cyan, #00f0ff);
+}
+
+.rdr-scope__legend {
+  font-size: 10px;
+}
+
+.rdr-rd,
+.rdr-waterfall {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #020409;
+  image-rendering: pixelated;
+}
+
+.rdr-rd { aspect-ratio: 16 / 10; }
+.rdr-waterfall { aspect-ratio: 16 / 5; }
+
+/* ===== Lista de detecções ===== */
+
+.rdr-det {
+  padding: 0;
+}
+
+.rdr-det-list {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.rdr-det-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 1fr 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 2px solid var(--color-cyan, #00f0ff);
+  border-radius: 3px;
+  font-size: 11px;
+  animation: rdr-blip 0.3s ease;
+}
+
+@keyframes rdr-blip {
+  from { background: rgba(0, 240, 255, 0.25); }
+  to   { background: rgba(0, 0, 0, 0.25); }
+}
+
+.rdr-det-row__id { color: var(--color-magenta, #ff00aa); font-weight: 700; }
+.rdr-det-row__range { color: var(--color-text, #c8d3e6); }
+.rdr-det-row__vel { color: var(--color-text, #c8d3e6); }
+.rdr-det-row__snr { text-align: right; }
