@@ -59,6 +59,7 @@ import { iaProprietariaPage } from './pages/ia-proprietaria.js';
 import { radarPage } from './pages/radar.js';
 import { geopulsePage } from './pages/geopulse.js';
 import { findPage } from './pages/find.js';
+import { triangulacaoPage } from './pages/triangulacao.js';
 import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
 import { initShadowGate } from './utils/shadow-gate.js';
@@ -118,6 +119,7 @@ router.register('/ia-proprietaria', () => iaProprietariaPage());
 router.register('/radar', () => radarPage());
 router.register('/geo', () => geopulsePage());
 router.register('/find', () => findPage());
+router.register('/triangulacao', () => triangulacaoPage());
 
 router.register('/sobre', () => sobrePage());
 

@@ -127,6 +127,13 @@ O modelo é sempre o mesmo: **conceito → módulo pequeno em JS puro**, sem inc
    então roda no navegador sem hardware. Você grava a assinatura de cada cômodo e
    o app classifica onde você está (vizinho-mais-próximo por cosseno + confiança).
    Verificado em Node: classifica o local certo com 100% de confiança no caso de teste.
+5. **Triangulação** (`src/utils/triangulation.js` + `src/pages/triangulacao.js`,
+   rota `/triangulacao`) — dos repos **alexflint/triangulation** e
+   **vandroogenbroeck/triangulation**: estações em posições conhecidas medem o
+   ÂNGULO até um alvo e a posição vem do cruzamento das retas, resolvido por
+   **mínimos quadrados** (robusto a ruído). Demo interativa: arraste o alvo e veja
+   a estimativa acompanhar. Verificado em Node: sem ruído acerta exato (resíduo 0);
+   com 3° de ruído o erro médio fica ~13 px.
 
 ### Recomendação (importante)
 **Não fundir os repositórios gigantes na `main`.** O site é um app Vite estático
