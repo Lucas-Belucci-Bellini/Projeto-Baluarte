@@ -184,7 +184,7 @@ Os 4 repositórios indicados encaixam assim:
 
 | Repositório | O que é | Como usar no Jarvis | Fase |
 |-------------|---------|---------------------|------|
-| **conorbronsdon/avoid-ai-writing** | "skill" que detecta/remove padrões de texto de IA (43 categorias) | **Humanizador**: portar o detector para `src/utils/jarvis-style.js` e passar a resposta do Jarvis por ele → português mais natural | **P1** (rápido, isolado) |
+| **conorbronsdon/avoid-ai-writing** | "skill" que detecta/remove padrões de texto de IA (43 categorias) | **Humanizador**: `src/utils/jarvis-style.js` limpa aberturas-clichê, frases de preenchimento, vocabulário inflado e fechos genéricos (pt-BR + inglês). Aplicado só na PROSA exibida (não toca em blocos de código), com toggle no painel. | **✅ P1 feito** |
 | **thedotmack/claude-mem** | memória persistente (resumo + busca semântica) | Evoluir o `jarvis-memory.js`: resumo de sessão, recall por relevância, "disclosure progressivo" para gastar menos tokens | **P2** |
 | **NousResearch/hermes-agent** | framework de agente / function-calling (formato Hermes) | Reforçar o **modo Agente**: laço de tool-use e schema de funções mais robustos | **P3** |
 | **EKKOLearnAI/hermes-web-ui** | UI web de chat | Polir a interface do Jarvis (streaming, componentes de mensagem) | **P4** |

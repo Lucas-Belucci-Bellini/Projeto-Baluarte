@@ -19,6 +19,7 @@ import {
 import { highlight } from '../utils/syntax-highlight.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import { getStatusText } from '../utils/baluarte-status.js';
+import { humanize } from '../utils/jarvis-style.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
   addMessage, getMessages, isUsingFallback
@@ -193,7 +194,8 @@ function renderRich(text) {
   const parts = String(text).split('```');
   parts.forEach((part, i) => {
     if (i % 2 === 0) {
-      const clean = part.replace(/^\n+|\n+$/g, '');
+      let clean = part.replace(/^\n+|\n+$/g, '');
+      if (config && config.humanizeOn) clean = humanize(clean);
       if (clean) frag.appendChild(h('span', { className: 'jv-rt' }, clean));
     } else {
       const nl = part.indexOf('\n');
@@ -563,9 +565,21 @@ function renderConfigPanel() {
     );
   }
 
+  function humanizeRow() {
+    const cb = h('input', {
+      type: 'checkbox', checked: !!config.humanizeOn,
+      onchange: (e) => { config.humanizeOn = e.target.checked; saveConfig(config); renderMessages(); }
+    });
+    return h('label', { className: 'jv-profile', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' } },
+      h('span', null, 'HUMANIZAR RESPOSTAS'),
+      h('span', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+        h('span', { className: 'u-text-muted', style: { fontSize: '11px' } }, 'remove clichês de IA'),
+        cb));
+  }
+
   renderModes();
   renderBody();
-  panel.append(modeBar, profileRow(), bodyEl);
+  panel.append(modeBar, profileRow(), humanizeRow(), bodyEl);
   return panel;
 }
 
@@ -573,6 +587,7 @@ function renderConfigPanel() {
 
 export function jarvisPage() {
   config = loadConfig();
+  if (config.humanizeOn === undefined) config.humanizeOn = true;
   activeSession = null;
   messages = [];
 
