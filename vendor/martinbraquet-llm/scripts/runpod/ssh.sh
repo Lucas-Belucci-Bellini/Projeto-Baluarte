@@ -1,1 +1,0 @@
-ssh dcajb7e1283yqb-64410c6a@ssh.runpod.io -i ~/.ssh/runpod
