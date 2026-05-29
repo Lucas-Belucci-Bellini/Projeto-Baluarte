@@ -141,6 +141,16 @@ export async function getMessages(sessionId) {
   }
 }
 
+/** Todas as mensagens de todas as sessões (para recall entre conversas). */
+export async function getAllMessages() {
+  try {
+    const store = await tx('messages');
+    return await reqAsync(store.getAll());
+  } catch {
+    return [...memFallback.messages];
+  }
+}
+
 export async function clearAll() {
   try {
     const sStore = await tx('sessions', 'readwrite');
