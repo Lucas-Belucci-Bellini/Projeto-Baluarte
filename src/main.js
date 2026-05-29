@@ -57,6 +57,7 @@ import { economiaPage } from './pages/economia.js';
 import { jarvisPage } from './pages/jarvis.js';
 import { iaProprietariaPage } from './pages/ia-proprietaria.js';
 import { radarPage } from './pages/radar.js';
+import { geopulsePage } from './pages/geopulse.js';
 import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
 import { initShadowGate } from './utils/shadow-gate.js';
@@ -114,6 +115,7 @@ router.register('/economia', () => economiaPage());
 router.register('/jarvis', () => jarvisPage());
 router.register('/ia-proprietaria', () => iaProprietariaPage());
 router.register('/radar', () => radarPage());
+router.register('/geo', () => geopulsePage());
 
 router.register('/sobre', () => sobrePage());
 
