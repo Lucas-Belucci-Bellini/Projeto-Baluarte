@@ -226,14 +226,36 @@ function renderBubble(role, text) {
   const textEl = h('div', { className: 'jarvis-msg__text' });
   if (isJarvis) textEl.appendChild(renderRich(text));
   else textEl.textContent = text;
+  const copyBtn = isJarvis ? h('button', {
+    className: 'jv-msg-copy', title: 'Copiar resposta', type: 'button',
+    style: { marginLeft: 'auto', background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer', opacity: '0.55', fontSize: '12px' },
+    onclick: async () => {
+      try { await navigator.clipboard.writeText(text); toast('Resposta copiada.', { type: 'success' }); }
+      catch { toast('Não consegui copiar.', { type: 'warning' }); }
+    }
+  }, '⧉ copiar') : null;
   messagesEl.appendChild(
     h('div', { className: cx('jarvis-msg', isJarvis ? 'jarvis-msg--ai' : 'jarvis-msg--user') },
       h('div', { className: 'jarvis-msg__avatar' }, isJarvis ? '◉' : '◔'),
       h('div', { className: 'jarvis-msg__body' },
-        h('div', { className: 'jarvis-msg__role' }, isJarvis ? 'J.A.R.V.I.S.' : 'Operador'),
+        h('div', { className: 'jarvis-msg__role', style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+          h('span', null, isJarvis ? 'J.A.R.V.I.S.' : 'Operador'), copyBtn),
         textEl
       )
     )
+  );
+}
+
+/* Tool-call expansível (padrão do hermes-web-ui): resumo + input/result. */
+function renderToolCall(toolName, input, result) {
+  const ok = !!(result && result.ok);
+  messagesEl.appendChild(
+    h('details', { className: 'jv-tool-call', style: { cursor: 'default' } },
+      h('summary', { className: 'jv-tool-call__sum', style: { cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' } },
+        h('span', { className: 'jv-tool-call__icon' }, '⚙'),
+        h('span', { className: 'jv-tool-call__text u-mono' }, `${toolName} ${ok ? '✓' : '✗'}`)),
+      h('pre', { className: 'u-mono', style: { margin: '6px 0 0', whiteSpace: 'pre-wrap', fontSize: '11px', opacity: '0.85', maxHeight: '160px', overflow: 'auto' } },
+        `input: ${JSON.stringify(input)}\nresult: ${JSON.stringify(result)}`.slice(0, 1200)))
   );
 }
 
@@ -385,8 +407,8 @@ async function handleSend() {
     } else if (config.mode === 'agente') {
       const reply = await processAgent(convo, callConfig, async (toolName, input, result) => {
         removeTyping();
-        const summary = `${toolName}(${JSON.stringify(input).slice(0, 50)}) → ${result.ok ? 'ok' : 'erro'}`;
-        renderBubble('tool', summary);
+        renderToolCall(toolName, input, result);
+        const summary = `${toolName} → ${result && result.ok ? 'ok' : 'erro'}`;
         await addMessage(activeSession.id, 'tool', summary);
         renderTyping();
         scrollDown();
