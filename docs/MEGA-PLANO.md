@@ -223,3 +223,32 @@ nos modos Claude/Ollama/Servidor e skills definidas pelo operador.
 7. **Radar C — bridge por Wi-Fi + PWA** (celular ↔ servidor de casa).
 
 > Diga qual item puxar primeiro que eu sigo — cada um vira uma branch + PR.
+
+---
+
+## 8. 🧠 Mini-LLM do Zero (LLM client-side) — ✅ feito
+
+Inspirado nos repositórios de "LLM from scratch" indicados, mas com um ponto
+honesto: **não dá para treinar um LLM grande (PyTorch/GPU) dentro de um site
+estático**. Esses repos são Python/educacionais. O que **dá** para rodar no
+navegador é um modelo pequeno — e foi isso que entregamos, de verdade:
+
+- **`src/utils/llm-mini.js`** + **`/llm-lab`** ("Mini-LLM do Zero"):
+  - **Rede neural bigrama** treinada por **descida de gradiente** (softmax +
+    cross-entropy + backprop manual, JS puro) — a **loss cai ao vivo** (verificado:
+    3.30 → 1.98 em 150 passos). É o "aprendizado de verdade", do zero.
+  - **Modelo de n-gramas** (estatístico, ordem 1–4) — treino instantâneo, gera
+    frases plausíveis.
+  - Treina num corpus (exemplos embutidos ou texto colado), mostra a curva de
+    loss e **gera texto** com controle de temperatura.
+
+### Repositórios vendorizados como referência (branches `vendor/*`)
+Curado (enxutos/relevantes), fora da `main`: `fazendo-um-llm-do-zero` (pt-BR),
+`create-llm`, `train-llm-from-scratch`, `martinbraquet-llm`, `analyticalrohit-llms`.
+**Pulados** por tamanho/relevância: `n8n` (automação, gigante), `rasbt/LLMs-from-scratch`
+e `mlabonne/llm-course` (pesados), e `HKUDS/AutoAgent` (111 MB — dá para vendorizar
+enxuto se quiser usar no modo Agente).
+
+> O Jarvis "de verdade" tem **duas frentes**: (a) este **mini-LLM do zero**
+> (educacional, roda sempre) e (b) o modo **Navegador (WebLLM/WebGPU)**, que roda
+> um LLM real offline — próximo passo é reforçar esse modo.
