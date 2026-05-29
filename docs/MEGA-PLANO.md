@@ -187,14 +187,16 @@ Os 4 repositórios indicados encaixam assim:
 | **conorbronsdon/avoid-ai-writing** | "skill" que detecta/remove padrões de texto de IA (43 categorias) | **Humanizador**: `src/utils/jarvis-style.js` limpa aberturas-clichê, frases de preenchimento, vocabulário inflado e fechos genéricos (pt-BR + inglês). Aplicado só na PROSA exibida (não toca em blocos de código), com toggle no painel. | **✅ P1 feito** |
 | **thedotmack/claude-mem** | memória persistente (resumo + busca semântica) | `src/utils/jarvis-recall.js`: resume cada conversa em 1 linha e faz **recall por relevância** (TF-IDF + cosseno) entre sessões; injeta só os resumos relevantes (econômico). Toggle "Memória entre conversas" + chip "🧠 lembrei de N". | **✅ P2 feito** |
 | **NousResearch/hermes-agent** | agente com skills + memória procedural + muitas ferramentas | Reforçado o **modo Agente**: `navigate` agora conhece todas as páginas novas e o agente ganhou **memória procedural** — a ferramenta `recall_memory` busca em conversas anteriores (liga o P2 ao agente). | **✅ P3 feito** |
-| **EKKOLearnAI/hermes-web-ui** | dashboard de chat (Vue) com streaming e UI de tool-calls | Polir a interface do Jarvis (streaming, painel de tool-calls) | **P4** |
+| **EKKOLearnAI/hermes-web-ui** | dashboard de chat (Vue) com streaming e UI de tool-calls | Polido o chat: **botão copiar** nas respostas e **tool-calls expansíveis** (clique para ver input/result) — padrões adaptados para o JS puro do Baluarte. | **✅ P4 feito** |
 
 > ✅ Acesso verificado: os 4 repositórios são **públicos** (hermes-agent é MIT;
 > hermes-web-ui tem 6,6k★). hermes-web-ui é Vue/TS — aqui adaptamos só os
 > PADRÕES de UI para o JS puro do Baluarte, sem importar o código.
 
-**Primeira tarefa recomendada (P1):** o **humanizador** do `avoid-ai-writing` —
-é client-side, sem servidor, melhora todos os modos e dá para entregar rápido.
+**✅ As 4 fases (P1–P4) estão concluídas** — humanizador, memória entre conversas,
+agente reforçado e UI polida. O Jarvis usa os conceitos dos 4 repositórios, tudo
+em JS puro e client-side. Evoluções futuras possíveis: streaming token-a-token
+nos modos Claude/Ollama/Servidor e skills definidas pelo operador.
 
 ---
 
