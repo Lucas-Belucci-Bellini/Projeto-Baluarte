@@ -14,7 +14,7 @@ import {
   healthCheckServer
 } from '../utils/jarvis-engine.js';
 import {
-  processWebLLM, isWebGPUAvailable, WEBLLM_MODELS
+  processWebLLM, isWebGPUAvailable, WEBLLM_MODELS, preloadWebLLM, getLoadedModel
 } from '../utils/jarvis-webllm.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
@@ -589,15 +589,45 @@ function renderConfigPanel() {
         ...WEBLLM_MODELS.map((m) =>
           h('option', { value: m.id, selected: (config.webllmModel || WEBLLM_MODELS[0].id) === m.id }, m.label))
       );
+      const tCur = typeof config.webllmTemp === 'number' ? config.webllmTemp : 0.7;
+      const tOut = h('span', { className: 'u-mono u-text-cyan', style: { minWidth: '30px', textAlign: 'right' } }, tCur.toFixed(1));
+      const tSlider = h('input', {
+        type: 'range', min: 0.1, max: 1.2, step: 0.1, value: tCur, style: { flex: '1', accentColor: 'var(--color-cyan)' },
+        oninput: (e) => { config.webllmTemp = parseFloat(e.target.value); tOut.textContent = config.webllmTemp.toFixed(1); saveConfig(config); }
+      });
+      const dlBar = h('span', { style: { display: 'block', height: '100%', width: getLoadedModel() ? '100%' : '0%', background: 'linear-gradient(90deg, var(--color-cyan), var(--color-magenta))', transition: 'width .2s' } });
+      const dlWrap = h('div', { style: { height: '6px', borderRadius: '999px', background: 'var(--color-bg-elevated)', overflow: 'hidden', margin: '6px 0', display: getLoadedModel() ? 'block' : 'none' } }, dlBar);
+      const dlStatus = h('span', { className: 'u-text-muted', style: { fontSize: '11px' } }, getLoadedModel() ? '✓ modelo carregado' : 'modelo não carregado');
+      const dlBtn = h('button', {
+        className: 'btn btn--ghost btn--sm',
+        onclick: async () => {
+          if (!isWebGPUAvailable()) { toast('Sem WebGPU neste navegador.', { type: 'warning' }); return; }
+          dlBtn.disabled = true; dlWrap.style.display = 'block'; dlStatus.textContent = 'baixando/carregando…';
+          try {
+            await preloadWebLLM(config.webllmModel || WEBLLM_MODELS[0].id, (txt, frac) => {
+              dlBar.style.width = Math.round((frac || 0) * 100) + '%';
+              if (txt) dlStatus.textContent = txt;
+            });
+            dlBar.style.width = '100%'; dlStatus.textContent = '✓ modelo carregado — pronto pra conversar';
+            toast('Modelo carregado no navegador.', { type: 'success' });
+          } catch (e) { dlStatus.textContent = '✗ ' + (e.message || 'falhou'); toast(e.message || 'Falha ao carregar.', { type: 'warning' }); }
+          finally { dlBtn.disabled = false; }
+        }
+      }, '⬇ Baixar / carregar modelo');
       bodyEl.append(
-        h('label', null, h('span', null, 'MODELO (roda no navegador)'), modelSel)
+        h('label', null, h('span', null, 'MODELO (roda no navegador)'), modelSel),
+        h('label', { style: { display: 'flex', flexDirection: 'column', gap: '4px' } },
+          h('span', null, 'TEMPERATURA'),
+          h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } }, tSlider, tOut)),
+        h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' } }, dlBtn, dlStatus),
+        dlWrap
       );
       if (!isWebGPUAvailable()) {
         bodyEl.appendChild(h('p', { className: 'jarvis-config__warn u-text-muted' },
           '⚠ Este navegador não tem WebGPU. Use Chrome ou Edge atualizados para o modo Navegador.'));
       }
       bodyEl.appendChild(h('p', { className: 'jarvis-config__warn u-text-muted' },
-        '⬡ A IA roda na sua máquina via WebGPU. O 1º uso baixa o modelo (~2–4 GB) e guarda em cache; depois funciona offline. Nada é enviado a servidores.'));
+        '⬡ A IA roda na sua máquina via WebGPU. Baixe o modelo uma vez (botão acima) — fica em cache e depois funciona offline. Nada é enviado a servidores.'));
     } else {
       bodyEl.appendChild(
         h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: 0 } },

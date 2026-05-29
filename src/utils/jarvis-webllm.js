@@ -57,6 +57,18 @@ export function resetWebLLM() {
   activeModel = null;
 }
 
+/** Pré-carrega (baixa/aquece) um modelo sem gerar nada — 1ª resposta fica instantânea. */
+export async function preloadWebLLM(modelId, onProgress) {
+  if (!isWebGPUAvailable()) {
+    throw new Error('Seu navegador não suporta WebGPU. Use Chrome ou Edge atualizados.');
+  }
+  await getEngine(modelId || DEFAULT_WEBLLM_MODEL, onProgress);
+  return activeModel;
+}
+
+/** Modelo atualmente carregado em memória (ou null). */
+export function getLoadedModel() { return activeModel; }
+
 /**
  * Processa a conversa no modo WebLLM, com streaming.
  * @param {Array<{role:string,text:string}>} messages histórico (user/jarvis)
@@ -82,7 +94,11 @@ export async function processWebLLM(messages, config, cbs = {}) {
     }))
   ];
 
-  const stream = await engine.chat.completions.create({ messages: chat, stream: true });
+  const stream = await engine.chat.completions.create({
+    messages: chat, stream: true,
+    temperature: typeof config.webllmTemp === 'number' ? config.webllmTemp : 0.7,
+    max_tokens: 1024
+  });
   let full = '';
   for await (const chunk of stream) {
     const delta = chunk.choices?.[0]?.delta?.content || '';
