@@ -70,6 +70,12 @@ export function recall(query, docs, k = 3) {
   return scored.filter((s) => s.score > 0.04).slice(0, k);
 }
 
+/* Cache do corpus de memória (resumos por sessão), para a ferramenta síncrona
+ * recall_memory do agente — preenchido pela página do Jarvis. */
+let _memCache = [];
+export function setMemoryCache(docs) { _memCache = Array.isArray(docs) ? docs : []; }
+export function getMemoryCache() { return _memCache; }
+
 /** Resume uma sessão (lista de mensagens {role, text, ts}) em uma linha. */
 export function summarizeSession(messages) {
   const msgs = messages || [];

@@ -186,12 +186,12 @@ Os 4 repositórios indicados encaixam assim:
 |-------------|---------|---------------------|------|
 | **conorbronsdon/avoid-ai-writing** | "skill" que detecta/remove padrões de texto de IA (43 categorias) | **Humanizador**: `src/utils/jarvis-style.js` limpa aberturas-clichê, frases de preenchimento, vocabulário inflado e fechos genéricos (pt-BR + inglês). Aplicado só na PROSA exibida (não toca em blocos de código), com toggle no painel. | **✅ P1 feito** |
 | **thedotmack/claude-mem** | memória persistente (resumo + busca semântica) | `src/utils/jarvis-recall.js`: resume cada conversa em 1 linha e faz **recall por relevância** (TF-IDF + cosseno) entre sessões; injeta só os resumos relevantes (econômico). Toggle "Memória entre conversas" + chip "🧠 lembrei de N". | **✅ P2 feito** |
-| **NousResearch/hermes-agent** | framework de agente / function-calling (formato Hermes) | Reforçar o **modo Agente**: laço de tool-use e schema de funções mais robustos | **P3** |
-| **EKKOLearnAI/hermes-web-ui** | UI web de chat | Polir a interface do Jarvis (streaming, componentes de mensagem) | **P4** |
+| **NousResearch/hermes-agent** | agente com skills + memória procedural + muitas ferramentas | Reforçado o **modo Agente**: `navigate` agora conhece todas as páginas novas e o agente ganhou **memória procedural** — a ferramenta `recall_memory` busca em conversas anteriores (liga o P2 ao agente). | **✅ P3 feito** |
+| **EKKOLearnAI/hermes-web-ui** | dashboard de chat (Vue) com streaming e UI de tool-calls | Polir a interface do Jarvis (streaming, painel de tool-calls) | **P4** |
 
-> ⚠️ Verificar acesso: `claude-mem` e `avoid-ai-writing` são públicos (confirmado).
-> Os dois `hermes-*` precisam ser validados (podem ser privados/404) antes de
-> depender deles — se não abrirem, busco equivalentes públicos.
+> ✅ Acesso verificado: os 4 repositórios são **públicos** (hermes-agent é MIT;
+> hermes-web-ui tem 6,6k★). hermes-web-ui é Vue/TS — aqui adaptamos só os
+> PADRÕES de UI para o JS puro do Baluarte, sem importar o código.
 
 **Primeira tarefa recomendada (P1):** o **humanizador** do `avoid-ai-writing` —
 é client-side, sem servidor, melhora todos os modos e dá para entregar rápido.

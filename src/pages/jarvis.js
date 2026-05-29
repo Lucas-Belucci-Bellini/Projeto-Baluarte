@@ -24,7 +24,7 @@ import {
   createSession, listSessions, updateSession, deleteSession,
   addMessage, getMessages, getAllMessages, isUsingFallback
 } from '../utils/jarvis-memory.js';
-import { recall, summarizeSession } from '../utils/jarvis-recall.js';
+import { recall, summarizeSession, setMemoryCache } from '../utils/jarvis-recall.js';
 
 const MODES = [
   { id: 'local',  label: 'Local',  icon: '◆', badge: 'cyan',    desc: 'Assistente de regras. Offline, sem custo. Navega e consulta o Baluarte.' },
@@ -311,7 +311,9 @@ async function handleSend() {
      * sessões anteriores. Best-effort, só nos modos de IA. */
     if (config.mode !== 'local' && config.memoryOn) {
       try {
-        const recalled = recall(text, await buildMemoryCorpus(activeSession.id), 3);
+        const fullCorpus = await buildMemoryCorpus(null);
+        setMemoryCache(fullCorpus); /* memória disponível p/ a ferramenta do agente */
+        const recalled = recall(text, fullCorpus.filter((d) => d.sessionId !== activeSession.id), 3);
         if (recalled.length) {
           callConfig.systemPrompt += '\n\n## MEMÓRIA (resumos de conversas anteriores, relevantes à pergunta)\n'
             + recalled.map((r) => `- ${r.text}`).join('\n');
@@ -637,6 +639,8 @@ export function jarvisPage() {
   if (config.memoryOn === undefined) config.memoryOn = true;
   activeSession = null;
   messages = [];
+  /* Preenche o cache de memória p/ a ferramenta recall_memory do agente. */
+  buildMemoryCorpus(null).then(setMemoryCache).catch(() => {});
 
   const fullPage = h('div', { className: 'page-jarvis' });
 
