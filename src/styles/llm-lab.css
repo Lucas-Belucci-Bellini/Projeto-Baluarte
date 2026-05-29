@@ -1,0 +1,40 @@
+/* ============================================================
+ * Mini-LLM do Zero
+ * ============================================================ */
+.page-llm { display: flex; flex-direction: column; gap: 14px; }
+.llm-card { padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-sm); }
+.llm-h2 { margin: 0 0 4px; font-size: var(--font-size-md); color: var(--color-text-primary); }
+
+.llm-lbl { display: flex; flex-direction: column; gap: 4px; font-size: 10px; letter-spacing: 0.1em; color: var(--color-text-muted, #93a4bf); }
+.llm-lbl--inline { flex: 1; }
+.llm-corpus { font-family: var(--font-mono); font-size: 12px; resize: vertical; min-height: 110px; width: 100%; }
+
+.llm-seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.llm-seg__btn {
+  flex: 1; min-width: 160px; background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(150, 180, 255, 0.2); color: var(--color-text, #c8d3e6);
+  padding: 8px 10px; border-radius: 4px; cursor: pointer;
+  font-family: var(--font-mono); font-size: 12px;
+}
+.llm-seg__btn.is-active { background: rgba(0, 240, 255, 0.12); border-color: var(--color-cyan, #00f0ff); color: var(--color-cyan, #00f0ff); }
+.llm-params { min-height: 8px; }
+
+.llm-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.llm-status { font-size: 12px; }
+.llm-loss { display: block; width: 100%; height: auto; aspect-ratio: 4 / 1; background: #020409; border-radius: 6px; border: 1px solid rgba(0,240,255,0.15); }
+
+.llm-slider-wrap { display: flex; align-items: center; gap: 8px; }
+.llm-slider { flex: 1; accent-color: var(--color-cyan, #00f0ff); min-width: 120px; }
+.llm-slider__val { min-width: 30px; color: var(--color-cyan, #00f0ff); }
+
+.llm-out {
+  margin: 0; padding: var(--space-md); min-height: 60px;
+  background: var(--color-bg-deep, #06080d); border: var(--border-thin);
+  border-radius: var(--radius-sm); white-space: pre-wrap; word-break: break-word;
+  font-size: 13px; line-height: 1.6; color: var(--color-text-primary);
+}
+.llm-explain p { margin: 0; font-size: var(--font-size-sm); line-height: 1.7; color: var(--color-text-secondary); }
+
+@media (max-width: 620px) {
+  .llm-seg__btn { min-width: 0; }
+}
