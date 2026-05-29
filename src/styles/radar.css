@@ -241,3 +241,11 @@
 .rdr-det-row__range { color: var(--color-text, #c8d3e6); }
 .rdr-det-row__vel { color: var(--color-text, #c8d3e6); }
 .rdr-det-row__snr { text-align: right; }
+
+/* ===== Celular: status quebra em 3 colunas e modos empilham melhor ===== */
+@media (max-width: 520px) {
+  .rdr-status { grid-template-columns: repeat(3, 1fr); }
+  .rdr-modes { flex-wrap: wrap; }
+  .rdr-mode { flex: 1 0 40%; }
+  .rdr-det-list { max-height: 200px; }
+}
