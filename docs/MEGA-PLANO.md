@@ -102,13 +102,20 @@ Os PRs **#71–#86** adicionam, cada um, **um repositório inteiro de terceiros*
 em `vendor/<nome>`. Alguns são **enormes** (PLFM_RADAR ~185 MB, RuView ~154 MB,
 SDR-GB-SAR ~92 MB). Somados passam de **500 MB**.
 
-### ✅ Já integrado (primeiro conceito extraído)
-**Rastreio multi-alvo** (`src/utils/radar-tracker.js`), trazido do
-**passiveRadar** (`multitarget_kalman_tracker.py`): as detecções soltas do CFAR
-viram **alvos persistentes com ID** (T01, T02…), velocidade suavizada por filtro
-alfa-beta, rastro na tela e estado *coasting* quando somem por alguns frames.
-Funciona em todas as fontes (mock/acústico/replay/bridge) — JS puro, sem inchar
-a `main`. É o modelo de como os outros repos entram: **conceito → módulo pequeno**.
+### ✅ Já integrado (conceitos extraídos)
+O modelo é sempre o mesmo: **conceito → módulo pequeno em JS puro**, sem inchar a
+`main` com os ~500 MB dos vendors.
+
+1. **Rastreio multi-alvo** (`src/utils/radar-tracker.js`) — do **passiveRadar**
+   (`multitarget_kalman_tracker.py`): as detecções soltas do CFAR viram **alvos
+   persistentes com ID** (T01, T02…), velocidade suavizada por filtro alfa-beta,
+   rastro na tela e estado *coasting* ao perder sinal. Vale para todas as fontes.
+2. **Radar PASSIVO** (`crossAmbiguity` em `radar-dsp.js` + `PassiveSource` em
+   `radar-source.js`) — do **espectre / passiveRadar**: a Cross-Ambiguidade (CAF)
+   pelo "algoritmo de batches" correlaciona referência × vigilância e gera o mapa
+   range-Doppler. O modo **PASSIVO** sintetiza um cenário (iluminador + ecos I/Q
+   móveis) e roda o algoritmo real (verificado: pico cai no range/Doppler certo).
+   Trocar a síntese por um SDR de verdade é só plugar no modo BRIDGE.
 
 ### Recomendação (importante)
 **Não fundir os repositórios gigantes na `main`.** O site é um app Vite estático

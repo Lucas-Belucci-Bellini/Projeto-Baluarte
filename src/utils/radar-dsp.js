@@ -177,3 +177,57 @@ export function velocityMs(bin, opts = {}) {
   const k = bin - M / 2;
   return (k * (PRF / M) * lambda) / 2;
 }
+
+/* ===================== Cross-Ambiguity (radar passivo) ===================== */
+
+/**
+ * Função de Cross-Ambiguidade (CAF) — o coração do radar PASSIVO.
+ * Conceito do espectre / passiveRadar (Max-Manning): em vez de transmitir um
+ * sinal próprio, correlaciona um canal de REFERÊNCIA (o "iluminador" ambiente,
+ * ex. rádio FM) com o canal de VIGILÂNCIA (os ecos). Picos no mapa
+ * range × Doppler = alvos: o atraso (range) e o desvio Doppler (velocidade).
+ *
+ * Usa o "algoritmo de batches" (rápido e padrão em SDR passivo):
+ *   - para cada atraso τ: correlaciona ref atrasado com surv em D blocos
+ *     (colapsa o tempo rápido) → 1 valor por bloco;
+ *   - FFT desses D valores = espectro Doppler daquele τ.
+ *
+ * @param {Float32Array} ref  canal de referência
+ * @param {Float32Array} surv canal de vigilância
+ * @param {object} opts { rangeBins, dopplerBins } (dopplerBins potência de 2)
+ * @returns {{ mag: Float32Array, rows:number, cols:number }} mapa range-Doppler
+ */
+export function crossAmbiguity(ref, surv, opts = {}) {
+  const R = opts.rangeBins ?? 64;
+  const D = opts.dopplerBins ?? 32;
+  const refIm = opts.refIm || null;   /* parte imaginária (I/Q) opcional */
+  const survIm = opts.survIm || null;
+  const N = Math.min(ref.length, surv.length);
+  const B = Math.max(1, Math.floor(N / D)); /* amostras por bloco */
+  const mag = new Float32Array(R * D);
+  const re = new Float32Array(D), im = new Float32Array(D);
+  const halfD = D >> 1;
+
+  for (let tau = 0; tau < R; tau++) {
+    for (let m = 0; m < D; m++) {
+      let accRe = 0, accIm = 0;
+      const base = m * B;
+      for (let k = 0; k < B; k++) {
+        const i = base + k, j = i - tau;
+        if (j < 0) continue;
+        const sR = surv[i], sI = survIm ? survIm[i] : 0;
+        const rR = ref[j], rI = refIm ? refIm[j] : 0;
+        /* surv * conj(ref) — correlação complexa */
+        accRe += sR * rR + sI * rI;
+        accIm += sI * rR - sR * rI;
+      }
+      re[m] = accRe; im[m] = accIm;
+    }
+    fft(re, im); /* FFT length D, in-place */
+    for (let d = 0; d < D; d++) {
+      const ds = (d + halfD) % D; /* fftshift: Doppler zero no centro */
+      mag[tau * D + d] = Math.hypot(re[ds], im[ds]);
+    }
+  }
+  return { mag, rows: R, cols: D };
+}

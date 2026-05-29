@@ -8,6 +8,8 @@
  * Todas implementam: start(onFrame), stop(), kind, fps, frameSize.
  */
 
+import { crossAmbiguity } from './radar-dsp.js';
+
 const RANGE_BINS = 64;
 const DOPPLER_BINS = 32;
 
@@ -259,6 +261,82 @@ export class AcousticSource {
   }
 }
 
+/* ===================== PassiveSource ===================== */
+
+/**
+ * Radar PASSIVO (demo) — conceito do espectre / passiveRadar.
+ *
+ * Não transmite nada: sintetiza um sinal de REFERÊNCIA (iluminador ambiente,
+ * tipo rádio FM = ruído de banda larga) e um sinal de VIGILÂNCIA contendo o
+ * caminho direto + ecos de alvos em movimento (cada eco = cópia atrasada e com
+ * desvio Doppler). Roda a Cross-Ambiguidade (CAF) de verdade a cada frame, então
+ * a tela mostra o mesmo processamento de um radar passivo real — só que com
+ * dados simulados (substituíveis por um SDR via modo BRIDGE).
+ */
+export class PassiveSource {
+  constructor(opts = {}) {
+    this.kind = 'passive';
+    this.rangeBins = RANGE_BINS;
+    this.dopplerBins = DOPPLER_BINS;
+    this.frameSize = RANGE_BINS * DOPPLER_BINS;
+    this.fps = opts.fps ?? 12;
+    this.N = opts.N ?? 2048;            /* amostras por frame */
+    this.timer = null;
+    this.frameIdx = 0;
+    /* alvos: delay = range (bins), dop = bin Doppler alvo, vel = deriva */
+    this.targets = [
+      { delay: 12, dop: 21, vel: -0.05, amp: 0.9 },
+      { delay: 30, dop: 12, vel: +0.07, amp: 0.7 },
+      { delay: 47, dop: 18, vel: +0.02, amp: 0.5 }
+    ];
+  }
+
+  start(onFrame) {
+    const dt = 1000 / this.fps;
+    this.timer = setInterval(() => {
+      this.frameIdx++;
+      const { ref, surv, survIm } = this._synthesize();
+      const ca = crossAmbiguity(ref, surv, { rangeBins: this.rangeBins, dopplerBins: this.dopplerBins, survIm });
+      onFrame({
+        index: this.frameIdx, timestamp: performance.now(),
+        rows: ca.rows, cols: ca.cols, mag: ca.mag
+      });
+    }, dt);
+  }
+
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+
+  _synthesize() {
+    const N = this.N, R = this.rangeBins, D = this.dopplerBins;
+    const B = Math.floor(N / D);
+
+    /* Referência: ruído de banda larga (iluminador ambiente). */
+    const ref = new Float32Array(N);
+    for (let n = 0; n < N; n++) ref[n] = Math.random() * 2 - 1;
+
+    /* Vigilância (I/Q): caminho direto forte (range 0) + ruído de fundo. */
+    const surv = new Float32Array(N);   /* parte real */
+    const survIm = new Float32Array(N); /* parte imaginária */
+    for (let n = 0; n < N; n++) surv[n] = 0.9 * ref[n] + (Math.random() * 2 - 1) * 0.05;
+
+    /* Ecos: cópia atrasada (range) + Doppler complexo (e^{j2πfn}) → pico único. */
+    for (const t of this.targets) {
+      t.dop += t.vel;
+      if (t.dop < 4 || t.dop > D - 4) t.vel *= -1;
+      const tau = t.delay | 0;
+      const q = t.dop - (D >> 1);          /* offset Doppler relativo ao centro */
+      const f = q / (B * D);               /* freq normalizada → cai no bin certo */
+      for (let n = tau; n < N; n++) {
+        const a = t.amp * ref[n - tau];
+        const ph = 2 * Math.PI * f * n;
+        surv[n] += a * Math.cos(ph);
+        survIm[n] += a * Math.sin(ph);
+      }
+    }
+    return { ref, surv, survIm };
+  }
+}
+
 /* ===================== Factory ===================== */
 
 export function makeSource(kind, opts) {
@@ -267,6 +345,7 @@ export function makeSource(kind, opts) {
     case 'replay':   return new ReplaySource(opts);
     case 'bridge':   return new BridgeSource(opts);
     case 'acoustic': return new AcousticSource(opts);
+    case 'passive':  return new PassiveSource(opts);
     default:         return new MockSource(opts);
   }
 }
