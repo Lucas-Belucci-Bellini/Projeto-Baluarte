@@ -1,0 +1,32 @@
+/* ============================================================
+ * Onde Estou? — posição indoor por impressão acústica
+ * ============================================================ */
+.page-find { display: flex; flex-direction: column; gap: 14px; }
+.find-panel { padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-md); }
+.find-row { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.find-row .input { flex: 1; min-width: 160px; }
+.find-row .btn { min-width: 140px; }
+
+.find-result { display: flex; flex-direction: column; gap: var(--space-sm); }
+.find-best {
+  display: flex; flex-direction: column; gap: 2px; align-items: center;
+  padding: var(--space-md); border-radius: var(--radius-md);
+  background: var(--color-cyan-soft); border: 1px solid var(--color-cyan-edge, rgba(0,240,255,.4));
+}
+.find-best__lbl { font-size: 10px; letter-spacing: var(--tracking-widest); }
+.find-best__name { font-size: 28px; font-weight: 700; }
+.find-best__conf { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+.find-ranks { display: flex; flex-direction: column; gap: 6px; }
+.find-rank { display: grid; grid-template-columns: 1fr 2fr auto; gap: var(--space-sm); align-items: center; font-size: var(--font-size-sm); }
+.find-rank__bar { height: 8px; border-radius: 999px; background: var(--color-bg-elevated); overflow: hidden; }
+.find-rank__bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta)); }
+.find-rank__pct { font-size: var(--font-size-xs); }
+
+.find-locs__head { display: flex; align-items: center; justify-content: space-between; font-weight: 600; }
+.find-locs { display: flex; flex-direction: column; gap: 6px; }
+.find-loc {
+  display: grid; grid-template-columns: 1fr auto auto; gap: var(--space-sm); align-items: center;
+  padding: 6px 10px; background: rgba(0,0,0,.2); border-radius: var(--radius-xs); font-size: var(--font-size-sm);
+}
+.find-loc__name { font-weight: 500; }

@@ -121,6 +121,12 @@ O modelo é sempre o mesmo: **conceito → módulo pequeno em JS puro**, sem inc
    desenha a **trajetória** num canvas auto-escalado e mostra distância, duração
    e velocidade média/máxima. A trilha é persistida (fecha e continua). Funciona
    no celular.
+4. **Onde Estou?** (`src/utils/fingerprint-engine.js` + `src/pages/find.js`, rota
+   `/find`) — do **find** (schollz/find): posição **indoor por impressão digital**.
+   A assinatura é o **espectro acústico** do ambiente (microfone + tom de prova),
+   então roda no navegador sem hardware. Você grava a assinatura de cada cômodo e
+   o app classifica onde você está (vizinho-mais-próximo por cosseno + confiança).
+   Verificado em Node: classifica o local certo com 100% de confiança no caso de teste.
 
 ### Recomendação (importante)
 **Não fundir os repositórios gigantes na `main`.** O site é um app Vite estático
