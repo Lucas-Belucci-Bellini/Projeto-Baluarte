@@ -74,6 +74,7 @@ export const NAV_GROUPS = [
     items: [
       { path: '/elites', label: 'Elites', icon: '◆', phase: 1 },
       { path: '/arsenal', label: 'Arsenal', icon: '⌖', phase: 1 },
+      { path: '/radar', label: 'Radar Tático', icon: '⌬', phase: 1 },
       { path: '/ciberseg', label: 'CiberSeg', icon: '⚿', phase: 1 },
       { path: '/economia', label: 'Economia', icon: '◈', phase: 1 }
     ]

@@ -99,6 +99,7 @@ function pageTitleForRoute(path) {
     '/tv': 'TV do Baluarte',
     '/elites': 'Elites',
     '/arsenal': 'Arsenal',
+    '/radar': 'Radar Tático',
     '/ciberseg': 'CiberSeg',
     '/economia': 'Economia',
     '/jarvis': 'J.A.R.V.I.S.',

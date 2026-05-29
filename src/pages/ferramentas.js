@@ -62,6 +62,7 @@ const TOOLS = [
   { id: 'musicas', name: 'Central de Música', category: 'midia', icon: '♫', phase: 1, tag: 'novo', desc: 'Faixa em destaque em loop infinito e playlist temática, via embeds do Spotify.' },
   { id: 'filmes', name: 'Cinema', category: 'midia', icon: '▣', phase: 1, tag: 'novo', desc: 'Cinema do Baluarte — catálogo de filmes do acervo; cada título abre num player modal integrado.' },
   { id: 'tv', name: 'TV do Baluarte', category: 'midia', icon: '📺', phase: 1, tag: 'novo', desc: '34 canais em rotação (playlists do YouTube) com grade de programação por horário — o canal "no ar agora" toca ao abrir.' },
+  { id: 'radar', name: 'Radar Tático', category: 'visualizacao', icon: '⌬', phase: 1, tag: 'novo', desc: 'Console range-Doppler com CFAR-CA, MTI, DC notch e waterfall. Modo mock funciona sem hardware; modos replay e bridge (WebSocket ws://127.0.0.1:8765) plugam em CSI de roteador, ESP32 ou SDR.' },
 
   /* === Referência (9) === */
   { id: 'tabela-periodica', name: 'Tabela Periódica', category: 'referencia', icon: '⚛', phase: 1, desc: '118 elementos com massa, configuração eletrônica e categoria. Filtro por categoria, grid 18×10.' },
