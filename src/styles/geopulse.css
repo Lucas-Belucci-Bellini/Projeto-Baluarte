@@ -1,0 +1,54 @@
+/* ============================================================
+ * GeoPulse — trilha de localização
+ * ============================================================ */
+.page-geo { display: flex; flex-direction: column; gap: 14px; }
+
+.geo-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 10px;
+}
+.geo-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 4px; border-radius: 6px; background: rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+.geo-stat__lbl { font-size: 9px; letter-spacing: 0.12em; color: var(--color-text-muted, #93a4bf); }
+.geo-stat__val { font-size: 13px; font-weight: 700; color: var(--color-cyan, #00f0ff); word-break: break-word; }
+
+.geo-controls { display: flex; gap: 10px; padding: 10px; flex-wrap: wrap; }
+.geo-controls .btn { flex: 1; min-width: 130px; }
+.btn.is-rec {
+  background: rgba(255, 0, 170, 0.15) !important;
+  border-color: var(--color-magenta, #ff00aa) !important;
+  color: var(--color-magenta, #ff00aa) !important;
+  animation: geo-pulse 1.4s ease-in-out infinite;
+}
+@keyframes geo-pulse { 0%, 100% { box-shadow: 0 0 0 rgba(255, 0, 170, 0); } 50% { box-shadow: 0 0 14px rgba(255, 0, 170, 0.5); } }
+
+.geo-scope, .geo-panel { padding: 0; overflow: hidden; }
+.geo-scope__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.06), transparent);
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; color: var(--color-cyan, #00f0ff);
+}
+.geo-canvas {
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 16 / 9; background: #020409;
+}
+
+.geo-list { padding: 8px; display: flex; flex-direction: column; gap: 4px; max-height: 280px; overflow-y: auto; }
+.geo-row {
+  display: grid; grid-template-columns: 90px 1fr auto; gap: 8px; align-items: center;
+  padding: 5px 8px; background: rgba(0, 0, 0, 0.25);
+  border-left: 2px solid var(--color-cyan, #00f0ff); border-radius: 3px; font-size: 11px;
+}
+
+@media (max-width: 620px) {
+  .geo-stats { grid-template-columns: repeat(3, 1fr); }
+  .geo-row { grid-template-columns: 70px 1fr; }
+  .geo-row__s { display: none; }
+}

@@ -116,6 +116,11 @@ O modelo é sempre o mesmo: **conceito → módulo pequeno em JS puro**, sem inc
    range-Doppler. O modo **PASSIVO** sintetiza um cenário (iluminador + ecos I/Q
    móveis) e roda o algoritmo real (verificado: pico cai no range/Doppler certo).
    Trocar a síntese por um SDR de verdade é só plugar no modo BRIDGE.
+3. **GeoPulse** (`src/utils/geo-tracker.js` + `src/pages/geopulse.js`, rota `/geo`)
+   — do **geopulse**: registra sua localização no tempo (Geolocation API),
+   desenha a **trajetória** num canvas auto-escalado e mostra distância, duração
+   e velocidade média/máxima. A trilha é persistida (fecha e continua). Funciona
+   no celular.
 
 ### Recomendação (importante)
 **Não fundir os repositórios gigantes na `main`.** O site é um app Vite estático
