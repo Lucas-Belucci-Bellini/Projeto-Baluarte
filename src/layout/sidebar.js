@@ -77,6 +77,7 @@ export const NAV_GROUPS = [
       { path: '/radar', label: 'Radar Tático', icon: '⌬', phase: 1 },
       { path: '/geo', label: 'GeoPulse', icon: '🛰', phase: 1 },
       { path: '/find', label: 'Onde Estou?', icon: '🧭', phase: 1 },
+      { path: '/triangulacao', label: 'Triangulação', icon: '△', phase: 1 },
       { path: '/ciberseg', label: 'CiberSeg', icon: '⚿', phase: 1 },
       { path: '/economia', label: 'Economia', icon: '◈', phase: 1 }
     ]

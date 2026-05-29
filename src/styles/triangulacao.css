@@ -1,0 +1,45 @@
+/* ============================================================
+ * Triangulação — localização por rumos
+ * ============================================================ */
+.page-tri { display: flex; flex-direction: column; gap: 14px; }
+
+.tri-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; }
+.tri-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 4px; border-radius: 6px; background: rgba(0, 0, 0, 0.25); text-align: center;
+}
+.tri-stat__lbl { font-size: 9px; letter-spacing: 0.12em; color: var(--color-text-muted, #93a4bf); }
+.tri-stat__val { font-size: 13px; font-weight: 700; color: var(--color-cyan, #00f0ff); }
+
+.tri-controls { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.tri-ctrl-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tri-ctrl__lbl { font-size: 10px; letter-spacing: 0.1em; color: var(--color-text-muted, #93a4bf); min-width: 70px; }
+.tri-seg { display: flex; gap: 4px; flex: 1; }
+.tri-seg__btn {
+  flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(150, 180, 255, 0.2);
+  color: var(--color-text, #c8d3e6); padding: 6px 8px; border-radius: 4px; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+}
+.tri-seg__btn.is-active {
+  background: rgba(0, 240, 255, 0.12); border-color: var(--color-cyan, #00f0ff); color: var(--color-cyan, #00f0ff);
+}
+.tri-slider-wrap { flex: 1; display: flex; align-items: center; gap: 8px; }
+.tri-slider { flex: 1; accent-color: var(--color-cyan, #00f0ff); }
+.tri-slider__val { min-width: 38px; text-align: right; color: var(--color-cyan, #00f0ff); font-size: 12px; }
+
+.tri-scope { padding: 0; overflow: hidden; }
+.tri-scope__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.06), transparent);
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; color: var(--color-cyan, #00f0ff);
+}
+.tri-canvas {
+  display: block; width: 100%; height: auto; aspect-ratio: 16 / 10.5;
+  background: #020409; touch-action: none; cursor: crosshair;
+}
+
+@media (max-width: 620px) {
+  .tri-stats { grid-template-columns: repeat(2, 1fr); }
+}
