@@ -155,13 +155,118 @@ export class BridgeSource {
   }
 }
 
+/* ===================== AcousticSource ===================== */
+
+/**
+ * Radar ACÚSTICO — funciona em qualquer celular/notebook, SEM hardware extra.
+ *
+ * Princípio (CW Doppler sonar): o alto-falante emite um tom contínuo quase
+ * inaudível (~19 kHz) e o microfone capta o eco. Objetos em movimento deslocam
+ * a frequência do eco (efeito Doppler): aproximando → sobe; afastando → desce.
+ * As bandas laterais em torno do tom = micro-Doppler do movimento.
+ *
+ * Mapeamento para o pipeline range-Doppler já existente:
+ *   - cols (eixo Doppler/velocidade) = bins de FFT em torno do tom emitido
+ *   - rows (eixo vertical)           = histórico temporal (espectrograma rolante)
+ * Assim o mesmo CFAR/heatmap/waterfall destaca alvos em movimento de verdade.
+ *
+ * Requer gesto do usuário (clique no modo) para liberar áudio + microfone.
+ */
+export class AcousticSource {
+  constructor(opts = {}) {
+    this.kind = 'acoustic';
+    this.rangeBins = RANGE_BINS;
+    this.dopplerBins = DOPPLER_BINS;
+    this.frameSize = RANGE_BINS * DOPPLER_BINS;
+    this.fps = opts.fps ?? 20;
+    this.freq = opts.freq ?? 19000;   /* tom emitido (Hz). 19k ~ inaudível p/ adultos */
+    this.volume = opts.volume ?? 0.06; /* baixo: evita incômodo e clipping */
+    this._onError = opts.onError || (() => {});
+    this.connected = false;
+    this.ctx = null; this.osc = null; this.analyser = null; this.stream = null;
+    this.timer = null; this.frameIdx = 0; this.history = null;
+  }
+
+  async start(onFrame) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC || !navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Áudio do navegador indisponível neste dispositivo.');
+      }
+      this.ctx = new AC();
+      if (this.ctx.state === 'suspended') await this.ctx.resume();
+
+      /* Microfone (sem filtros que apagariam o Doppler). */
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+      });
+      const micSrc = this.ctx.createMediaStreamSource(this.stream);
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 16384;
+      this.analyser.smoothingTimeConstant = 0;
+      micSrc.connect(this.analyser);
+
+      /* Tom emitido pelo alto-falante. */
+      this.osc = this.ctx.createOscillator();
+      this.osc.type = 'sine';
+      this.osc.frequency.value = this.freq;
+      const gain = this.ctx.createGain();
+      gain.gain.value = this.volume;
+      this.osc.connect(gain); gain.connect(this.ctx.destination);
+      this.osc.start();
+      this.connected = true;
+
+      const binHz = this.ctx.sampleRate / this.analyser.fftSize;
+      const centerBin = Math.round(this.freq / binHz);
+      const spec = new Float32Array(this.analyser.frequencyBinCount);
+      const R = this.rangeBins, D = this.dopplerBins, half = D >> 1;
+      this.history = new Float32Array(R * D);
+
+      const dt = 1000 / this.fps;
+      this.timer = setInterval(() => {
+        this.analyser.getFloatFrequencyData(spec); /* dB (~ -140..0) */
+        const line = new Float32Array(D);
+        for (let k = 0; k < D; k++) {
+          const b = centerBin - half + k;
+          const db = (b >= 0 && b < spec.length) ? spec[b] : -140;
+          line[k] = Math.max(0, db + 140) / 140; /* normaliza p/ 0..1 */
+        }
+        /* Empurra histórico uma linha para baixo; linha nova no topo. */
+        this.history.copyWithin(D, 0, (R - 1) * D);
+        this.history.set(line, 0);
+        this.frameIdx++;
+        onFrame({
+          index: this.frameIdx, timestamp: performance.now(),
+          rows: R, cols: D, mag: new Float32Array(this.history)
+        });
+      }, dt);
+    } catch (err) {
+      this.connected = false;
+      const msg = err && err.name === 'NotAllowedError'
+        ? 'Microfone negado. Permita o acesso para usar o radar acústico.'
+        : (err?.message || 'Falha ao iniciar o áudio.');
+      this._onError(msg);
+    }
+  }
+
+  stop() {
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+    try { this.osc && this.osc.stop(); } catch { /* já parado */ }
+    this.osc = null;
+    if (this.stream) { this.stream.getTracks().forEach((t) => t.stop()); this.stream = null; }
+    if (this.ctx) { this.ctx.close().catch(() => {}); this.ctx = null; }
+    this.connected = false;
+  }
+}
+
 /* ===================== Factory ===================== */
 
 export function makeSource(kind, opts) {
   switch (kind) {
-    case 'mock':   return new MockSource(opts);
-    case 'replay': return new ReplaySource(opts);
-    case 'bridge': return new BridgeSource(opts);
-    default:       return new MockSource(opts);
+    case 'mock':     return new MockSource(opts);
+    case 'replay':   return new ReplaySource(opts);
+    case 'bridge':   return new BridgeSource(opts);
+    case 'acoustic': return new AcousticSource(opts);
+    default:         return new MockSource(opts);
   }
 }

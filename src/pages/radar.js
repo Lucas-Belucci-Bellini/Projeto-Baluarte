@@ -50,8 +50,8 @@ function buildHeader() {
     h('h1', { className: 'page-header__title' }, '⌖ Radar Tático'),
     h('p', { className: 'page-header__description' },
       'Console range-Doppler com CFAR. ',
-      h('span', { className: 'u-text-cyan' }, 'Modo mock funciona sem hardware'),
-      ' — modos replay e bridge se ativam com fixture ou WebSocket local.'
+      h('span', { className: 'u-text-cyan' }, 'Modo ACÚSTICO funciona no celular'),
+      ' (microfone + alto-falante, efeito Doppler). Mock roda sem nada; replay e bridge usam fixture ou WebSocket local.'
     )
   );
 }
@@ -60,6 +60,7 @@ function buildConsole() {
   /* Bar de controle: modo + CFAR + filtros + freeze. */
   modeBtns = h('div', { className: 'rdr-modes' },
     modeButton('mock', 'MOCK'),
+    modeButton('acoustic', '🎙 ACÚSTICO'),
     modeButton('replay', 'REPLAY'),
     modeButton('bridge', 'BRIDGE')
   );
@@ -195,11 +196,11 @@ function switchSource(kind) {
   modeBtns?.querySelectorAll('.rdr-mode').forEach((b) =>
     b.classList.toggle('is-active', b.dataset.kind === kind));
   setStatus('mode', kind.toUpperCase());
-  setStatus('link', kind === 'bridge' ? 'conectando…' : '─');
+  setStatus('link', kind === 'bridge' ? 'conectando…' : (kind === 'acoustic' ? 'iniciando…' : '─'));
 
   source = makeSource(kind, {
     onError: (msg) => {
-      toast(msg, 'warn');
+      toast(msg, { type: 'warning' });
       setStatus('link', 'OFFLINE');
     }
   });
@@ -211,10 +212,22 @@ function switchSource(kind) {
       if (source && source.kind === 'bridge') {
         setStatus('link', source.connected ? 'LIVE' : 'OFFLINE');
         if (!source.connected) {
-          toast('Bridge offline. Rode tools/radar-bridge/bridge.py.', 'warn');
+          toast('Bridge offline. Rode tools/radar-bridge/bridge.py.', { type: 'warning' });
         }
       }
     }, 1500);
+  }
+
+  if (kind === 'acoustic') {
+    /* getUserMedia é assíncrono: confirma o link após liberar o microfone. */
+    setTimeout(() => {
+      if (source && source.kind === 'acoustic') {
+        setStatus('link', source.connected ? 'LIVE' : 'OFFLINE');
+        if (source.connected) {
+          toast('Radar acústico ativo. Mexa a mão perto do aparelho.', { type: 'success' });
+        }
+      }
+    }, 1200);
   }
 }
 
