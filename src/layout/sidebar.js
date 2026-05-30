@@ -120,7 +120,10 @@ export const NAV_GROUPS = [
       { path: '/organizacao-militar',  label: 'Organização Militar',     icon: '⚙', phase: 1 },
       { path: '/tecnologia-militar',   label: 'Tecnologia Militar',      icon: '🚀', phase: 1 },
       { path: '/taticas-estrategias',  label: 'Táticas & Estratégias',   icon: '🗺', phase: 1 },
-      { path: '/historia-militar',     label: 'História Militar',        icon: '📜', phase: 1 }
+      { path: '/historia-militar',     label: 'História Militar',        icon: '📜', phase: 1 },
+      { path: '/armas-por-pais',       label: 'Armas por País',          icon: '🔫', phase: 1 },
+      { path: '/guerras-conflitos',    label: 'Guerras & Conflitos',     icon: '🌐', phase: 1 },
+      { path: '/batalhas-historicas',  label: 'Batalhas Históricas',     icon: '🔰', phase: 1 }
     ]
   },
   {

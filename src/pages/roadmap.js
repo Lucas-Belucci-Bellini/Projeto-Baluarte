@@ -138,7 +138,7 @@ const ROADMAP_SITE = [
   {
     area: 'Seção Militar',
     icon: '⌖',
-    status: 'active',
+    status: 'stable',
     isNew: true,
     done: [
       'Forças Armadas do Mundo — 30 países, efetivos e orçamento',
@@ -149,13 +149,12 @@ const ROADMAP_SITE = [
       'Organização Militar — ranks OTAN OF/OR + estrutura de unidades',
       'Tecnologia Militar — 25 sistemas por domínio (terra/ar/mar/espaço)',
       'Táticas & Estratégias — princípios, 12 táticas, 6 estrategistas',
-      'História Militar — linha do tempo de 7 eras'
-    ],
-    next: [
+      'História Militar — linha do tempo de 7 eras',
       'Armas por País — catálogo interativo com filtros',
-      'Guerras & Conflitos — linha do tempo histórica',
-      'Batalhas Históricas — das guerras antigas às modernas'
-    ]
+      'Guerras & Conflitos — 15 conflitos na linha do tempo',
+      'Batalhas Históricas — 16 batalhas decisivas'
+    ],
+    next: ['Seção militar completa — 12/12 páginas ✓']
   },
   {
     area: 'Infraestrutura',
