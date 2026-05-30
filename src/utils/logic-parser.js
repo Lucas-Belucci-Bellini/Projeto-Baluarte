@@ -48,7 +48,7 @@ function tokenize(input) {
     /* Símbolos unicode */
     if (c === '↔') { tokens.push({ type: 'op', value: 'iff' }); i++; continue; }
     if (c === '→') { tokens.push({ type: 'op', value: 'implies' }); i++; continue; }
-    if (c === '∧') { tokens.push({ type: 'op', value: 'and' }); i++; continue; }
+    if (c === '∧' || c === '·' || c === '•' || c === '×' || c === '⋅') { tokens.push({ type: 'op', value: 'and' }); i++; continue; }
     if (c === '∨') { tokens.push({ type: 'op', value: 'or' }); i++; continue; }
     if (c === '¬') { tokens.push({ type: 'op', value: 'not' }); i++; continue; }
     if (c === '⊕') { tokens.push({ type: 'op', value: 'xor' }); i++; continue; }
