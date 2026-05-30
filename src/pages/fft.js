@@ -22,7 +22,8 @@ import {
   setGain,
   startRender,
   stopRender,
-  getSourceType
+  getSourceType,
+  onStreamEnded
 } from '../utils/fft-engine.js';
 
 let canvasEl = null;
@@ -282,6 +283,19 @@ export function fftPage() {
   );
 
   attachUnmountWatcher();
+
+  /* Notifica o usuário quando o stream do sistema/mic é encerrado externamente
+   * (ex.: usuário clicou "Parar" no banner de compartilhamento do Chrome). */
+  onStreamEnded((type) => {
+    setStatus('PARADO — stream encerrado', 'muted');
+    stopRender();
+    toast(
+      type === 'system'
+        ? 'Compartilhamento de aba encerrado. Clique "Áudio do PC" para reconectar.'
+        : 'Microfone desconectado.',
+      { type: 'warning', duration: 6000 }
+    );
+  });
 
   return fullPage;
 }
