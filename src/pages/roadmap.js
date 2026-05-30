@@ -21,34 +21,34 @@ const NIVEIS_JARVIS = [
   {
     num: 2,
     label: 'Nível 2 — Inteligência',
-    status: 'next',
+    status: 'done',
     items: [
       'Integração com LLM (Claude API ou modelo local)',
-      'Memória de contexto por sessão',
-      'Processamento de linguagem natural',
-      'Respostas com síntese de voz'
+      'Memória de contexto por sessão persistida em JSON',
+      'Fatos permanentes entre sessões',
+      'Auto-resumo via LLM quando contexto fica grande'
     ]
   },
   {
     num: 3,
     label: 'Nível 3 — Infraestrutura',
-    status: 'planned',
+    status: 'done',
     items: [
-      'Git como banco de dados do Jarvis',
-      'Pipeline Google Drive → GitHub → Site',
-      'n8n orquestrando automações',
-      'Histórico versionado de interações'
+      'Git como banco de dados append-only',
+      'Cada sessão/evento vira um commit versionado',
+      'n8n bridge: sessões → Sheets, alertas → email, memória → Drive',
+      'Template de workflow n8n exportável'
     ]
   },
   {
     num: 4,
     label: 'Nível 4 — Site Auto-alimentado',
-    status: 'planned',
+    status: 'done',
     items: [
-      'Site consome dados do Git automaticamente',
-      'Site commita dados de volta (loop)',
-      'GitNexus/Gitea integrado',
-      'Baluarte como banco de dados vivo'
+      'Backend expõe Git DB via API REST',
+      'Dashboard vivo no site lê dados em tempo real',
+      'Auto-atualização a cada 30s com MutationObserver',
+      'Sessões, memória, eventos e commits visíveis no Baluarte'
     ]
   }
 ];
@@ -58,8 +58,16 @@ const ROADMAP_SITE = [
     area: 'IA & Jarvis',
     icon: '◉',
     status: 'active',
-    done: ['J.A.R.V.I.S. web (6 modos)', 'Mini-LLM do Zero', 'IA Proprietária', 'Jarvis Python Nível 1'],
-    next: ['Jarvis Nível 2 (LLM + memória)', 'Reconhecimento de gestos', 'Integração câmera ↔ site']
+    done: [
+      'J.A.R.V.I.S. web (6 modos: local, WebLLM, Claude, Ollama, Servidor, Agente)',
+      'Mini-LLM do Zero', 'IA Proprietária',
+      'Jarvis N1 — câmera, rosto, voz',
+      'Jarvis N2 — LLM + memória persistida',
+      'Jarvis N3 — Git DB + n8n automações',
+      'Jarvis N4 — Dashboard vivo no site',
+      'Sentinel — rastreamento oculto de acessos'
+    ],
+    next: ['Reconhecimento de gestos', 'Integração câmera ↔ site ao vivo', 'Jarvis N5 — autonomia total']
   },
   {
     area: 'Código & Dev',
@@ -102,6 +110,26 @@ const ROADMAP_SITE = [
     status: 'growing',
     done: ['Elites', 'Arsenal', 'Radar Tático', 'GeoPulse', 'Onde Estou?', 'Triangulação'],
     next: ['Mapa interativo em tempo real', 'Integração GPS']
+  },
+  {
+    area: 'Seção Militar — NOVA',
+    icon: '⌖',
+    status: 'active',
+    done: [],
+    next: [
+      '🌍 Forças Armadas do Mundo — exércitos por país, efetivos, orçamento (% PIB)',
+      '📜 História Militar — da pré-história ao moderno (por era)',
+      '⚔ Arsenal Expandido — armas por categoria: infantaria, artilharia, blindados, naval, aéreo, mísseis',
+      '🪖 Elites & Forças Especiais — SOF de todos os países',
+      '🗺 Táticas & Estratégias — clássicas ao moderno, do Sun Tzu ao drone warfare',
+      '🚀 Tecnologia Militar — veículos, aviões, navios, sistemas de combate',
+      '🏅 Rankings de Poder — GFP index, gasto militar, efetivos, poder nuclear',
+      '⚙ Organização Militar — ranks comparativos, estrutura de unidades por país',
+      '🔫 Armas por País — catálogo interativo com filtros por tipo/época/nação',
+      '📊 Orçamentos Militares — tabela SIPRI 2024 interativa',
+      '🌐 Guerras & Conflitos — linha do tempo histórica interativa',
+      '🔰 Batalhas Históricas — das guerras antigas às modernas'
+    ]
   },
   {
     area: 'Infraestrutura',
