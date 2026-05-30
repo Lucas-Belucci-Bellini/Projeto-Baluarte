@@ -143,12 +143,12 @@ const ROADMAP_SITE = [
     done: [
       'Forças Armadas do Mundo — 30 países, efetivos e orçamento',
       'Orçamentos Militares SIPRI 2024 — tabela + gráfico interativo',
-      'Rankings de Poder — GFP index, nuclear, aéreo, naval, terrestre'
+      'Rankings de Poder — GFP index, nuclear, aéreo, naval, terrestre',
+      'Arsenal Expandido — 6 categorias, 40+ sistemas de armas',
+      'Forças Especiais — 22 unidades SOF de elite mundial',
+      'Organização Militar — ranks OTAN OF/OR + estrutura de unidades'
     ],
     next: [
-      'Arsenal Expandido — infantaria, artilharia, blindados, naval, aéreo',
-      'Elites & Forças Especiais — SOF de todos os países',
-      'Organização Militar — ranks e estrutura por país',
       'Tecnologia Militar — veículos, aviões, navios',
       'Táticas & Estratégias — do Sun Tzu ao drone warfare',
       'História Militar — da pré-história ao moderno',
