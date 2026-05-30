@@ -69,7 +69,6 @@ function ensureAnalyser() {
     analyserNode.connect(keepAliveGain);
     gainNode.connect(ctx.destination);
     keepAliveGain.connect(ctx.destination);
-
     resizeBuffers();
   }
   return analyserNode;
