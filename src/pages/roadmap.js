@@ -146,12 +146,12 @@ const ROADMAP_SITE = [
       'Rankings de Poder — GFP index, nuclear, aéreo, naval, terrestre',
       'Arsenal Expandido — 6 categorias, 40+ sistemas de armas',
       'Forças Especiais — 22 unidades SOF de elite mundial',
-      'Organização Militar — ranks OTAN OF/OR + estrutura de unidades'
+      'Organização Militar — ranks OTAN OF/OR + estrutura de unidades',
+      'Tecnologia Militar — 25 sistemas por domínio (terra/ar/mar/espaço)',
+      'Táticas & Estratégias — princípios, 12 táticas, 6 estrategistas',
+      'História Militar — linha do tempo de 7 eras'
     ],
     next: [
-      'Tecnologia Militar — veículos, aviões, navios',
-      'Táticas & Estratégias — do Sun Tzu ao drone warfare',
-      'História Militar — da pré-história ao moderno',
       'Armas por País — catálogo interativo com filtros',
       'Guerras & Conflitos — linha do tempo histórica',
       'Batalhas Históricas — das guerras antigas às modernas'

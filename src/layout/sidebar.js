@@ -117,7 +117,10 @@ export const NAV_GROUPS = [
       { path: '/poder-militar',        label: 'Rankings de Poder',       icon: '🏅', phase: 1 },
       { path: '/arsenal-expandido',    label: 'Arsenal Expandido',       icon: '⚔', phase: 1 },
       { path: '/forcas-especiais',     label: 'Forças Especiais',        icon: '🪖', phase: 1 },
-      { path: '/organizacao-militar',  label: 'Organização Militar',     icon: '⚙', phase: 1 }
+      { path: '/organizacao-militar',  label: 'Organização Militar',     icon: '⚙', phase: 1 },
+      { path: '/tecnologia-militar',   label: 'Tecnologia Militar',      icon: '🚀', phase: 1 },
+      { path: '/taticas-estrategias',  label: 'Táticas & Estratégias',   icon: '🗺', phase: 1 },
+      { path: '/historia-militar',     label: 'História Militar',        icon: '📜', phase: 1 }
     ]
   },
   {
