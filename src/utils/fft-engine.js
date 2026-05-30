@@ -240,13 +240,10 @@ export function getSourceType() {
 
 export function setMode(mode) {
   renderMode = mode;
-  /* Reset estado por modo */
-  if (mode === 'spectrogram') {
-    spectrogramHistory = null;
-  }
-  if (mode === 'particles' || mode === 'bloom') {
-    particles = null;
-  }
+  /* Reset de estado ao trocar de modo — evita buffers inconsistentes que
+   * causam exceção em getImageData (spectrogram/waterfall) ou partículas. */
+  spectrogramHistory = null;
+  particles = null;
 }
 
 let visibilityHandler = null;
@@ -279,26 +276,49 @@ export function startRender(canvas, opts = {}) {
 
   function frame() {
     if (!analyserNode) return;
-    /* Auto-resume a cada 30 frames — browsers suspendem o contexto em segundo plano. */
-    resumeCheck++;
-    if (audioCtx && audioCtx.state === 'suspended' && resumeCheck % 30 === 0) {
-      audioCtx.resume().catch(() => {});
-    }
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    if (canvas.width !== Math.round(rect.width * dpr) || canvas.height !== Math.round(rect.height * dpr)) {
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    const W = rect.width;
-    const H = rect.height;
+    /* O agendamento do próximo frame acontece SEMPRE, mesmo se um modo lançar
+     * exceção. Sem isto, um único erro de desenho (ex.: getImageData com
+     * dimensão 0 ao trocar de modo) mataria o loop e exigiria recarregar a
+     * página — exatamente o bug relatado ao clicar em outro modo. */
+    try {
+      /* Auto-resume a cada 30 frames — browsers suspendem o contexto em segundo plano. */
+      resumeCheck++;
+      if (audioCtx && audioCtx.state === 'suspended' && resumeCheck % 30 === 0) {
+        audioCtx.resume().catch(() => {});
+      }
+      const rect = canvas.getBoundingClientRect();
+      const W = rect.width;
+      const H = rect.height;
 
-    const drawer = MODES[renderMode] || MODES.bars;
-    drawer(ctx, W, H, opts);
+      /* Canvas ainda sem layout (largura/altura 0) — pula o desenho neste frame
+       * para não passar dimensões inválidas a getImageData/fillRect. */
+      if (W >= 1 && H >= 1) {
+        const dpr = window.devicePixelRatio || 1;
+        if (canvas.width !== Math.round(W * dpr) || canvas.height !== Math.round(H * dpr)) {
+          canvas.width = Math.round(W * dpr);
+          canvas.height = Math.round(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          /* Buffers de scrolling (spectrogram/waterfall) ficam inválidos após
+           * resize — força reinício para evitar getImageData inconsistente. */
+          spectrogramHistory = null;
+        }
 
-    if (renderCallback) {
-      try { renderCallback({ peak: getPeak() }); } catch {}
+        const drawer = MODES[renderMode] || MODES.bars;
+        try {
+          drawer(ctx, W, H, opts);
+        } catch {
+          /* Modo falhou neste frame (ex.: buffer de imagem inconsistente na
+           * troca). Limpa estado do modo e segue — o próximo frame se recupera. */
+          spectrogramHistory = null;
+          particles = null;
+        }
+
+        if (renderCallback) {
+          try { renderCallback({ peak: getPeak() }); } catch {}
+        }
+      }
+    } catch {
+      /* Nunca deixa o loop morrer. */
     }
 
     animationId = requestAnimationFrame(frame);
