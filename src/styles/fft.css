@@ -98,3 +98,16 @@
   flex: 1;
   accent-color: var(--color-cyan);
 }
+
+/* Dica de captura de aba (YouTube etc.) */
+.fft-source-hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  background: rgba(0, 240, 255, 0.04);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  border-radius: var(--radius-sm, 6px);
+  padding: 6px 10px;
+  margin: 0;
+  line-height: 1.5;
+}
+.fft-source-hint b { color: var(--color-cyan); }

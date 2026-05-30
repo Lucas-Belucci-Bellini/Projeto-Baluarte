@@ -97,17 +97,33 @@ export function fftPage() {
     className: 'btn',
     onclick: async () => {
       try {
-        setStatus('Solicitando áudio do sistema…', 'warning');
+        /* Instrução aparece ANTES do diálogo, enquanto o usuário ainda pode agir. */
+        toast(
+          '📌 No diálogo: selecione "Aba" (não Tela/Janela), escolha a aba com o YouTube e marque ✓ "Compartilhar áudio da aba".',
+          { type: 'info', duration: 12000 }
+        );
+        setStatus('Aguardando seleção de aba…', 'warning');
         await connectSystemAudio();
         setStatus('● ÁUDIO DO PC', 'danger');
         startRender(canvasEl);
-        toast('Capturando o som do PC. Escolha a aba/tela e marque "compartilhar áudio".', { type: 'info' });
+        toast('Capturando. Visualizador ativo.', { type: 'success' });
       } catch (e) {
         setStatus('PARADO', 'muted');
-        toast('Erro: ' + e.message, { type: 'danger' });
+        const msg = e.message || '';
+        if (msg.includes('áudio')) {
+          toast('Nenhum áudio capturado — abra o diálogo de novo, selecione uma ABA e marque "Compartilhar áudio da aba".', { type: 'danger', duration: 8000 });
+        } else {
+          toast('Erro: ' + msg, { type: 'danger' });
+        }
       }
     }
-  }, '🖥 Áudio do PC');
+  }, '🖥 Áudio do PC (YouTube/Spotify…)');
+
+  /* Dica estática visível no painel — reforça a instrução. */
+  const systemHint = h('p', { className: 'fft-source-hint' },
+    '💡 Para capturar YouTube: clique no botão acima → selecione ', h('b', null, 'Aba'),
+    ' no diálogo → escolha a aba com o vídeo → marque ', h('b', null, '✓ Compartilhar áudio da aba'), '.'
+  );
 
   const fileInput = h('input', {
     type: 'file',
@@ -236,6 +252,8 @@ export function fftPage() {
       statusBadge
     )
   );
+
+  fullPage.appendChild(systemHint);
 
   fullPage.appendChild(modeBar);
 
