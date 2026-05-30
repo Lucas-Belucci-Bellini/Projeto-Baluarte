@@ -1,15 +1,13 @@
 /**
  * Página /roadmap — Roadmap do Projeto Baluarte + Jarvis.
- * Mostra o estado atual, o que está sendo construído e o que vem a seguir.
  */
 
-import { h, empty } from '../utils/helpers.js';
-import { router } from '../core/router.js';
+import { h } from '../utils/helpers.js';
 
 const NIVEIS_JARVIS = [
   {
     num: 1,
-    label: 'Nível 1 — Presença',
+    label: 'Presença',
     status: 'done',
     items: [
       'Detecção de movimento pela câmera',
@@ -20,7 +18,7 @@ const NIVEIS_JARVIS = [
   },
   {
     num: 2,
-    label: 'Nível 2 — Inteligência',
+    label: 'Inteligência',
     status: 'done',
     items: [
       'Integração com LLM (Claude API ou modelo local)',
@@ -31,7 +29,7 @@ const NIVEIS_JARVIS = [
   },
   {
     num: 3,
-    label: 'Nível 3 — Infraestrutura',
+    label: 'Infraestrutura',
     status: 'done',
     items: [
       'Git como banco de dados append-only',
@@ -42,13 +40,24 @@ const NIVEIS_JARVIS = [
   },
   {
     num: 4,
-    label: 'Nível 4 — Site Auto-alimentado',
+    label: 'Site Auto-alimentado',
     status: 'done',
     items: [
       'Backend expõe Git DB via API REST',
       'Dashboard vivo no site lê dados em tempo real',
       'Auto-atualização a cada 30s com MutationObserver',
       'Sessões, memória, eventos e commits visíveis no Baluarte'
+    ]
+  },
+  {
+    num: 5,
+    label: 'Autonomia Total',
+    status: 'next',
+    items: [
+      'Reconhecimento de gestos via câmera',
+      'Integração câmera ↔ site ao vivo',
+      'Modo agente: executa tarefas sem supervisão',
+      'Auto-deploy de atualizações via Git'
     ]
   }
 ];
@@ -58,8 +67,9 @@ const ROADMAP_SITE = [
     area: 'IA & Jarvis',
     icon: '◉',
     status: 'active',
+    isNew: false,
     done: [
-      'J.A.R.V.I.S. web (6 modos: local, WebLLM, Claude, Ollama, Servidor, Agente)',
+      'J.A.R.V.I.S. web (6 modos)',
       'Mini-LLM do Zero', 'IA Proprietária',
       'Jarvis N1 — câmera, rosto, voz',
       'Jarvis N2 — LLM + memória persistida',
@@ -73,6 +83,7 @@ const ROADMAP_SITE = [
     area: 'Código & Dev',
     icon: '⌨',
     status: 'stable',
+    isNew: false,
     done: ['Editor de código', 'Terminal', 'JSON Studio', 'Git Helper', 'Lab de Regex'],
     next: ['Debugger integrado', 'Diff viewer']
   },
@@ -80,6 +91,7 @@ const ROADMAP_SITE = [
     area: 'Ciência & Lógica',
     icon: '∑',
     status: 'stable',
+    isNew: false,
     done: ['Calculadoras (5 abas)', 'Calc. Científica', 'Calc. Numérica', 'Tabela Verdade', 'Logic Sim', 'Portas Lógicas', 'Gráficos', 'Tabela Periódica'],
     next: ['Simulador de circuitos', 'Plotagem 3D']
   },
@@ -87,6 +99,7 @@ const ROADMAP_SITE = [
     area: 'Segurança & Cripto',
     icon: '⚿',
     status: 'stable',
+    isNew: false,
     done: ['Cripto Lab (8 algoritmos)', 'Esteganografia', 'CiberSeg', 'Código Morse'],
     next: ['Análise de tráfego', 'Scanner de portas web']
   },
@@ -94,6 +107,7 @@ const ROADMAP_SITE = [
     area: 'Conhecimento',
     icon: '◫',
     status: 'growing',
+    isNew: false,
     done: ['Biblioteca', 'Academia', 'Universo', 'Tabela Periódica', 'Robótica', 'Guia para Montar PC'],
     next: ['Wiki integrada', 'Cursos interativos']
   },
@@ -101,6 +115,7 @@ const ROADMAP_SITE = [
     area: 'Mídia & Entretenimento',
     icon: '♪',
     status: 'stable',
+    isNew: false,
     done: ['Rádio', 'Música', 'Vídeos', 'TV', 'Cinema', 'Memes', 'FFT', 'Media Hub', 'Arcade'],
     next: ['Player sincronizado', 'Recomendações por IA']
   },
@@ -108,80 +123,97 @@ const ROADMAP_SITE = [
     area: 'Campo & Tático',
     icon: '◆',
     status: 'growing',
-    done: ['Elites', 'Arsenal', 'Radar Tático', 'GeoPulse', 'Onde Estou?', 'Triangulação'],
-    next: ['Mapa interativo em tempo real', 'Integração GPS']
+    isNew: false,
+    done: ['Elites', 'Arsenal', 'Radar Tático', 'GeoPulse', 'Onde Estou?', 'Triangulação', 'Mapa Mundial (tráfego aéreo + radar chuva)'],
+    next: ['Integração GPS em tempo real', 'Alertas de tempestade']
   },
   {
-    area: 'Seção Militar — NOVA',
+    area: 'Visão & Câmera',
+    icon: '👁',
+    status: 'active',
+    isNew: true,
+    done: ['Detecção de movimento (canvas diff)', 'Rastreamento de olhar (MediaPipe Face Mesh)'],
+    next: ['Reconhecimento de gestos', 'Identificação de objetos']
+  },
+  {
+    area: 'Seção Militar',
     icon: '⌖',
     status: 'active',
-    done: [],
+    isNew: true,
+    done: [
+      'Forças Armadas do Mundo — 30 países, efetivos e orçamento',
+      'Orçamentos Militares SIPRI 2024 — tabela + gráfico interativo',
+      'Rankings de Poder — GFP index, nuclear, aéreo, naval, terrestre'
+    ],
     next: [
-      '🌍 Forças Armadas do Mundo — exércitos por país, efetivos, orçamento (% PIB)',
-      '📜 História Militar — da pré-história ao moderno (por era)',
-      '⚔ Arsenal Expandido — armas por categoria: infantaria, artilharia, blindados, naval, aéreo, mísseis',
-      '🪖 Elites & Forças Especiais — SOF de todos os países',
-      '🗺 Táticas & Estratégias — clássicas ao moderno, do Sun Tzu ao drone warfare',
-      '🚀 Tecnologia Militar — veículos, aviões, navios, sistemas de combate',
-      '🏅 Rankings de Poder — GFP index, gasto militar, efetivos, poder nuclear',
-      '⚙ Organização Militar — ranks comparativos, estrutura de unidades por país',
-      '🔫 Armas por País — catálogo interativo com filtros por tipo/época/nação',
-      '📊 Orçamentos Militares — tabela SIPRI 2024 interativa',
-      '🌐 Guerras & Conflitos — linha do tempo histórica interativa',
-      '🔰 Batalhas Históricas — das guerras antigas às modernas'
+      'Arsenal Expandido — infantaria, artilharia, blindados, naval, aéreo',
+      'Elites & Forças Especiais — SOF de todos os países',
+      'Organização Militar — ranks e estrutura por país',
+      'Tecnologia Militar — veículos, aviões, navios',
+      'Táticas & Estratégias — do Sun Tzu ao drone warfare',
+      'História Militar — da pré-história ao moderno',
+      'Armas por País — catálogo interativo com filtros',
+      'Guerras & Conflitos — linha do tempo histórica',
+      'Batalhas Históricas — das guerras antigas às modernas'
     ]
   },
   {
     area: 'Infraestrutura',
     icon: '⚙',
     status: 'planned',
+    isNew: false,
     done: ['Roteamento SPA (hash-based)', 'IndexedDB para memória', 'Sistema de temas'],
     next: ['Git como DB', 'Pipeline n8n', 'Auto-commit de dados', 'GitNexus integrado']
   }
 ];
 
-const STATUS_LABEL = {
-  done: { text: 'Concluído', cls: 'badge--success' },
-  next: { text: 'Em andamento', cls: 'badge--warning' },
-  planned: { text: 'Planejado', cls: 'badge--muted' },
-  active: { text: 'Ativo', cls: 'badge--primary' },
-  stable: { text: 'Estável', cls: 'badge--success' },
-  growing: { text: 'Crescendo', cls: 'badge--warning' }
+const STATUS_META = {
+  done:    { text: 'Concluído',   cls: 'done' },
+  next:    { text: 'Em breve',    cls: 'next' },
+  planned: { text: 'Planejado',   cls: 'planned' },
+  active:  { text: 'Ativo',       cls: 'next' },
+  stable:  { text: 'Estável',     cls: 'done' },
+  growing: { text: 'Crescendo',   cls: 'next' }
 };
 
-function badge(status) {
-  const s = STATUS_LABEL[status] || { text: status, cls: 'badge--muted' };
-  return h('span', { className: `badge ${s.cls}` }, s.text);
-}
+const SITE_STATUS_BADGE = {
+  active:  { text: 'Ativo',     cls: 'active' },
+  stable:  { text: 'Estável',   cls: 'stable' },
+  growing: { text: 'Crescendo', cls: 'growing' },
+  planned: { text: 'Planejado', cls: 'planned' }
+};
 
 function jarvisCard(nivel) {
-  const s = STATUS_LABEL[nivel.status];
-  return h('div', { className: `roadmap-card roadmap-card--${nivel.status}` },
-    h('div', { className: 'roadmap-card__head' },
-      h('span', { className: 'roadmap-card__num' }, `N${nivel.num}`),
-      h('strong', null, nivel.label),
-      badge(nivel.status)
+  const m = STATUS_META[nivel.status] || STATUS_META.planned;
+  return h('div', { className: `jarvis-level jarvis-level--${nivel.status}` },
+    h('div', { className: 'jarvis-level__num' }, `Nível ${nivel.num}`),
+    h('div', { className: 'jarvis-level__title' }, nivel.label),
+    h('span', { className: `jarvis-level__badge jarvis-level__badge--${m.cls}` },
+      nivel.status === 'done' ? '✓ ' : nivel.status === 'next' ? '◎ ' : '◌ ',
+      m.text
     ),
-    h('ul', { className: 'roadmap-card__list' },
+    h('ul', { className: 'jarvis-level__list' },
       ...nivel.items.map(i => h('li', null, i))
     )
   );
 }
 
 function siteCard(area) {
-  return h('div', { className: 'roadmap-card' },
-    h('div', { className: 'roadmap-card__head' },
-      h('span', { className: 'roadmap-card__icon' }, area.icon),
-      h('strong', null, area.area),
-      badge(area.status)
+  const sb = SITE_STATUS_BADGE[area.status] || SITE_STATUS_BADGE.planned;
+  const bodyClass = area.done.length === 0 ? 'site-card__body site-card__body--full' : 'site-card__body';
+  return h('div', { className: `site-card${area.isNew ? ' site-card--new' : ''}` },
+    h('div', { className: 'site-card__head' },
+      h('span', { className: 'site-card__icon' }, area.icon),
+      h('span', { className: 'site-card__name' }, area.area),
+      h('span', { className: `site-card__status site-card__status--${sb.cls}` }, sb.text)
     ),
-    h('div', { className: 'roadmap-card__cols' },
-      h('div', { className: 'roadmap-card__col' },
-        h('div', { className: 'roadmap-card__col-label' }, '✓ Feito'),
+    h('div', { className: bodyClass },
+      area.done.length > 0 && h('div', { className: 'site-card__col site-card__col--done' },
+        h('div', { className: 'site-card__col-label' }, 'Concluído'),
         h('ul', null, ...area.done.map(i => h('li', null, i)))
       ),
-      area.next.length && h('div', { className: 'roadmap-card__col' },
-        h('div', { className: 'roadmap-card__col-label' }, '→ A seguir'),
+      area.next.length > 0 && h('div', { className: 'site-card__col site-card__col--next' },
+        h('div', { className: 'site-card__col-label' }, 'A seguir'),
         h('ul', null, ...area.next.map(i => h('li', null, i)))
       )
     )
@@ -189,60 +221,71 @@ function siteCard(area) {
 }
 
 export function roadmapPage() {
-  return h('div', { className: 'page-wrap roadmap-page' },
+  return h('div', { className: 'roadmap-page' },
 
-    h('div', { className: 'page-hero' },
-      h('h1', null, '⬡ Roadmap'),
-      h('p', { className: 'u-text-muted' },
-        'Estado atual e próximos passos do Baluarte e do Jarvis.'
-      )
+    h('div', { className: 'roadmap-hero' },
+      h('span', { className: 'roadmap-hero__glyph' }, '⬡'),
+      h('h1', null, 'Roadmap'),
+      h('p', null, 'Estado atual e próximos passos do Baluarte e do Jarvis.')
     ),
 
     h('section', { className: 'roadmap-section' },
-      h('h2', null, 'J.A.R.V.I.S. — Construção por Níveis'),
-      h('p', { className: 'u-text-muted' },
-        'O Jarvis é construído em 4 níveis progressivos. Cada nível adiciona uma camada de inteligência.'
+      h('div', { className: 'roadmap-section__header' },
+        h('div', { className: 'roadmap-section__icon' }, '◉'),
+        h('div', null,
+          h('h2', { className: 'roadmap-section__title' }, 'J.A.R.V.I.S. — Construção por Níveis'),
+          h('p', { className: 'roadmap-section__sub' }, 'Cada nível adiciona uma camada de inteligência ao sistema.')
+        )
       ),
-      h('div', { className: 'roadmap-grid roadmap-grid--jarvis' },
+      h('div', { className: 'roadmap-grid--jarvis' },
         ...NIVEIS_JARVIS.map(jarvisCard)
       )
     ),
 
     h('section', { className: 'roadmap-section' },
-      h('h2', null, 'Site Baluarte — Áreas'),
-      h('p', { className: 'u-text-muted' },
-        'O que cada área do site já tem e o que vem a seguir.'
+      h('div', { className: 'roadmap-section__header' },
+        h('div', { className: 'roadmap-section__icon' }, '⬡'),
+        h('div', null,
+          h('h2', { className: 'roadmap-section__title' }, 'Site Baluarte — Áreas'),
+          h('p', { className: 'roadmap-section__sub' }, 'O que cada área já tem e o que vem a seguir.')
+        )
       ),
-      h('div', { className: 'roadmap-grid' },
+      h('div', { className: 'roadmap-grid--site' },
         ...ROADMAP_SITE.map(siteCard)
       )
     ),
 
-    h('section', { className: 'roadmap-section roadmap-section--vision' },
-      h('h2', null, 'Visão Final'),
+    h('section', { className: 'roadmap-section' },
+      h('div', { className: 'roadmap-section__header' },
+        h('div', { className: 'roadmap-section__icon' }, '◈'),
+        h('div', null,
+          h('h2', { className: 'roadmap-section__title' }, 'Visão Final'),
+          h('p', { className: 'roadmap-section__sub' }, 'O Baluarte como sistema autônomo integrado.')
+        )
+      ),
       h('div', { className: 'roadmap-vision' },
         h('div', { className: 'roadmap-vision__step' },
-          h('span', { className: 'roadmap-vision__icon' }, '📷'),
+          h('div', { className: 'roadmap-vision__icon' }, '📷'),
           h('p', null, 'Câmera detecta sua presença')
         ),
-        h('div', { className: 'roadmap-vision__arrow' }, '→'),
+        h('span', { className: 'roadmap-vision__arrow' }, '→'),
         h('div', { className: 'roadmap-vision__step' },
-          h('span', { className: 'roadmap-vision__icon' }, '◉'),
+          h('div', { className: 'roadmap-vision__icon' }, '◉'),
           h('p', null, 'Jarvis reconhece você e acorda')
         ),
-        h('div', { className: 'roadmap-vision__arrow' }, '→'),
+        h('span', { className: 'roadmap-vision__arrow' }, '→'),
         h('div', { className: 'roadmap-vision__step' },
-          h('span', { className: 'roadmap-vision__icon' }, '🧠'),
+          h('div', { className: 'roadmap-vision__icon' }, '🧠'),
           h('p', null, 'LLM processa seu comando')
         ),
-        h('div', { className: 'roadmap-vision__arrow' }, '→'),
+        h('span', { className: 'roadmap-vision__arrow' }, '→'),
         h('div', { className: 'roadmap-vision__step' },
-          h('span', { className: 'roadmap-vision__icon' }, '⬡'),
+          h('div', { className: 'roadmap-vision__icon' }, '⬡'),
           h('p', null, 'Baluarte executa e registra no Git')
         ),
-        h('div', { className: 'roadmap-vision__arrow' }, '→'),
+        h('span', { className: 'roadmap-vision__arrow' }, '→'),
         h('div', { className: 'roadmap-vision__step' },
-          h('span', { className: 'roadmap-vision__icon' }, '🔄'),
+          h('div', { className: 'roadmap-vision__icon' }, '🔄'),
           h('p', null, 'Site se auto-atualiza com o histórico')
         )
       )

@@ -1,0 +1,361 @@
+/* ═══════════════════════════════════
+   Seção Militar — Baluarte Mark XIII
+   Compartilhado entre todas as páginas militares
+   ═══════════════════════════════════ */
+
+/* ── Tabela geral ── */
+.forcas-page, .orca-page, .poder-page {
+  padding: var(--space-md);
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.forcas-stats {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+.forcas-stat {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 140px;
+}
+.forcas-stat__val {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+}
+.forcas-stat__lbl {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.forcas-controls {
+  margin-bottom: var(--space-md);
+}
+.forcas-search {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  padding: var(--space-xs) var(--space-md);
+  width: 100%;
+  max-width: 360px;
+  transition: border-color var(--transition-base);
+}
+.forcas-search:focus { outline: none; border-color: rgba(0,240,255,.4); }
+
+.forcas-table-wrap {
+  overflow-x: auto;
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.forcas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+.forcas-th {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom: var(--border-thin);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition-base);
+}
+.forcas-th:hover, .forcas-th.is-sorted { color: var(--color-cyan); }
+.forcas-row { transition: background var(--transition-base); }
+.forcas-row:hover { background: rgba(255,255,255,.03); }
+.forcas-row + .forcas-row { border-top: var(--border-thin); }
+.forcas-td {
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  vertical-align: middle;
+}
+.forcas-td--pais {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+.forcas-bar {
+  height: 3px;
+  background: rgba(255,255,255,.06);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.forcas-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  border-radius: 2px;
+  transition: width .4s ease;
+}
+
+/* ── Orçamentos ── */
+.orca-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.orca-mode-bar { display: flex; gap: var(--space-xs); }
+.orca-mode-btn {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-xs) var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+.orca-mode-btn.is-active, .orca-mode-btn:hover {
+  background: var(--color-cyan-soft);
+  border-color: rgba(0,240,255,.3);
+  color: var(--color-cyan);
+}
+.orca-source {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.orca-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.orca-bar {
+  height: 8px;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width .3s ease;
+}
+.orca-bar-val {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.orca-var--up   { color: var(--color-success); font-family: var(--font-mono); }
+.orca-var--down { color: var(--color-error, #ff4444); font-family: var(--font-mono); }
+
+.orca-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+}
+.orca-chart-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.orca-chart-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  min-width: 160px;
+  white-space: nowrap;
+}
+.orca-chart-bar-wrap {
+  flex: 1;
+  background: rgba(255,255,255,.04);
+  border-radius: 4px;
+  height: 24px;
+  overflow: hidden;
+}
+.orca-chart-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--space-xs);
+  transition: width .4s ease;
+  min-width: 48px;
+}
+.orca-chart-bar-val {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: #000;
+  font-weight: 700;
+}
+
+/* ── Poder Militar ── */
+.poder-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+.poder-cat-btn {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  padding: var(--space-xs) var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+.poder-cat-btn small { opacity: .7; }
+.poder-cat-btn.is-active, .poder-cat-btn:hover {
+  background: var(--color-cyan-soft);
+  border-color: rgba(0,240,255,.3);
+  color: var(--color-cyan);
+}
+
+.poder-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.poder-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  transition: border-color var(--transition-base);
+}
+.poder-card:hover { border-color: rgba(0,240,255,.2); }
+.poder-card--top1 { border-color: rgba(255,215,0,.4); background: rgba(255,215,0,.04); }
+.poder-card--top2 { border-color: rgba(192,192,192,.4); background: rgba(192,192,192,.04); }
+.poder-card--top3 { border-color: rgba(205,127,50,.4); background: rgba(205,127,50,.04); }
+
+.poder-card__rank {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  min-width: 32px;
+  text-align: center;
+}
+.poder-card--top1 .poder-card__rank { color: #ffd700; }
+.poder-card--top2 .poder-card__rank { color: #c0c0c0; }
+.poder-card--top3 .poder-card__rank { color: #cd7f32; }
+
+.poder-card__flag { font-size: 1.8rem; flex-shrink: 0; }
+.poder-card__info { flex: 1; min-width: 0; }
+.poder-card__name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+.poder-card__tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: var(--space-xs); }
+.poder-tag {
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  background: rgba(255,255,255,.06);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-pill);
+  padding: 1px 6px;
+}
+.poder-tag--nuclear { background: rgba(255,80,0,.15); color: #ff8040; }
+.poder-bar-wrap {
+  height: 4px;
+  background: rgba(255,255,255,.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.poder-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  border-radius: 2px;
+  transition: width .4s ease;
+}
+.poder-card__val {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cyan);
+  min-width: 80px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.poder-section { margin-top: var(--space-xl); }
+.poder-section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.poder-nuke-box {
+  background: rgba(255,80,0,.07);
+  border: 1px solid rgba(255,80,0,.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg) var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+.poder-nuke-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: #ff8040;
+  margin-bottom: var(--space-md);
+}
+.poder-nuke-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+.poder-nuke-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+  background: rgba(255,80,0,.08);
+  border: 1px solid rgba(255,80,0,.15);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+}
+.poder-nuke-val {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: #ff8040;
+}
+.poder-nuke-total {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .poder-card { flex-wrap: wrap; }
+  .poder-card__val { min-width: auto; }
+  .orca-chart-label { min-width: 100px; }
+}
