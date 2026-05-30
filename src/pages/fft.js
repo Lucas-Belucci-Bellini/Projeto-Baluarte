@@ -61,9 +61,9 @@ export function fftPage() {
       ),
       h('h1', { className: 'page-header__title' }, '~ Visualizador FFT'),
       h('p', { className: 'page-header__description' },
-        h('span', { className: 'u-text-cyan' }, '6 modos'),
-        ' de visualização em Canvas 2D via Web Audio API: barras, curva, forma de onda, radial, spectrogram, partículas. ',
-        'Captura microfone, áudio do sistema (o som do PC), arquivo de áudio ou oscilador de teste.'
+        h('span', { className: 'u-text-cyan' }, '16 modos'),
+        ' de visualização em Canvas 2D via Web Audio API: barras, curva, onda, radial, spectrogram, partículas, espelho, blob, VU, Lissajous, anéis, waterfall, dual, pontos, terreno 3D e bloom. ',
+        'Captura microfone, áudio do sistema (o som do PC), arquivo de áudio ou oscilador de teste. Reativa automaticamente quando o navegador suspende o áudio.'
       )
     )
   );
@@ -206,7 +206,6 @@ export function fftPage() {
         onclick: () => {
           activeMode = m.id;
           setMode(m.id);
-          setStatus('fft', { modoVisual: m.id, fonte: getSourceType() });
           document.querySelectorAll('.fft-mode').forEach((b) =>
             b.classList.toggle('is-active', b.dataset.m === m.id)
           );
