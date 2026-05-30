@@ -65,6 +65,11 @@ import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
 import { roadmapPage } from './pages/roadmap.js';
 import { jarvisDashboardPage } from './pages/jarvis-dashboard.js';
+import { mapaPage } from './pages/mapa.js';
+import { visaoPage } from './pages/visao.js';
+import { forcasArmadasPage } from './pages/forcas-armadas.js';
+import { orcamentosMilitaresPage } from './pages/orcamentos-militares.js';
+import { poderMilitarPage } from './pages/poder-militar.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
@@ -129,6 +134,11 @@ router.register('/llm-lab', () => llmLabPage());
 router.register('/sobre', () => sobrePage());
 router.register('/roadmap', () => roadmapPage());
 router.register('/jarvis-dashboard', () => jarvisDashboardPage());
+router.register('/mapa', () => mapaPage());
+router.register('/visao', () => visaoPage());
+router.register('/forcas-armadas', () => forcasArmadasPage());
+router.register('/orcamentos-militares', () => orcamentosMilitaresPage());
+router.register('/poder-militar', () => poderMilitarPage());
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.

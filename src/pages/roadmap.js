@@ -124,26 +124,35 @@ const ROADMAP_SITE = [
     icon: '◆',
     status: 'growing',
     isNew: false,
-    done: ['Elites', 'Arsenal', 'Radar Tático', 'GeoPulse', 'Onde Estou?', 'Triangulação'],
-    next: ['Mapa interativo em tempo real', 'Integração GPS']
+    done: ['Elites', 'Arsenal', 'Radar Tático', 'GeoPulse', 'Onde Estou?', 'Triangulação', 'Mapa Mundial (tráfego aéreo + radar chuva)'],
+    next: ['Integração GPS em tempo real', 'Alertas de tempestade']
+  },
+  {
+    area: 'Visão & Câmera',
+    icon: '👁',
+    status: 'active',
+    isNew: true,
+    done: ['Detecção de movimento (canvas diff)', 'Rastreamento de olhar (MediaPipe Face Mesh)'],
+    next: ['Reconhecimento de gestos', 'Identificação de objetos']
   },
   {
     area: 'Seção Militar',
     icon: '⌖',
     status: 'active',
     isNew: true,
-    done: [],
+    done: [
+      'Forças Armadas do Mundo — 30 países, efetivos e orçamento',
+      'Orçamentos Militares SIPRI 2024 — tabela + gráfico interativo',
+      'Rankings de Poder — GFP index, nuclear, aéreo, naval, terrestre'
+    ],
     next: [
-      'Forças Armadas do Mundo — exércitos por país',
-      'História Militar — da pré-história ao moderno',
       'Arsenal Expandido — infantaria, artilharia, blindados, naval, aéreo',
       'Elites & Forças Especiais — SOF de todos os países',
-      'Táticas & Estratégias — do Sun Tzu ao drone warfare',
-      'Tecnologia Militar — veículos, aviões, navios',
-      'Rankings de Poder — GFP index, gasto militar',
       'Organização Militar — ranks e estrutura por país',
-      'Armas por País — catálogo interativo',
-      'Orçamentos Militares — tabela SIPRI 2024',
+      'Tecnologia Militar — veículos, aviões, navios',
+      'Táticas & Estratégias — do Sun Tzu ao drone warfare',
+      'História Militar — da pré-história ao moderno',
+      'Armas por País — catálogo interativo com filtros',
       'Guerras & Conflitos — linha do tempo histórica',
       'Batalhas Históricas — das guerras antigas às modernas'
     ]
