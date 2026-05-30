@@ -20,6 +20,12 @@ const OPENMETEO = 'https://api.open-meteo.com/v1/forecast';
 const AIS_DIGITRAFFIC = 'https://meri.digitraffic.fi/api/ais/v1/locations';
 const CABOS = 'https://www.submarinecablemap.com/api/v3/cable/cable-geo.json';
 
+/* Data de ontem (UTC) — imagem de satélite NASA GIBS mais recente disponível. */
+function gibsDate() {
+  const d = new Date(Date.now() - 36 * 3600 * 1000);
+  return d.toISOString().slice(0, 10);
+}
+
 /* ── Estado do módulo ── */
 let _map = null;
 let _timers = [];
@@ -60,9 +66,23 @@ function buildStyle() {
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     sources: {
       sat: {
-        type: 'raster', tileSize: 256, maxzoom: 19,
+        type: 'raster', tileSize: 256, maxzoom: 21,
         tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
         attribution: '© Esri'
+      },
+      labels: {
+        type: 'raster', tileSize: 256, maxzoom: 20,
+        tiles: [
+          'https://cartodb-basemaps-a.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png',
+          'https://cartodb-basemaps-b.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png',
+          'https://cartodb-basemaps-c.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png'
+        ],
+        attribution: '© CARTO'
+      },
+      gibs: {
+        type: 'raster', tileSize: 256, maxzoom: 9,
+        tiles: [`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${gibsDate()}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`],
+        attribution: '© NASA GIBS / MODIS Terra'
       },
       dark: {
         type: 'raster', tileSize: 256, maxzoom: 19,
@@ -92,8 +112,10 @@ function buildStyle() {
       { id: 'base-dark', type: 'raster', source: 'dark', layout: { visibility: 'none' } },
       { id: 'base-terreno', type: 'raster', source: 'terreno', layout: { visibility: 'none' } },
       { id: 'base-sat', type: 'raster', source: 'sat' },
+      { id: 'gibs-layer', type: 'raster', source: 'gibs', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.85 } },
       { id: 'gebco-layer', type: 'raster', source: 'gebco', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.7 } },
-      { id: 'hillshade', type: 'hillshade', source: 'dem', layout: { visibility: 'none' }, paint: { 'hillshade-exaggeration': 0.5 } }
+      { id: 'hillshade', type: 'hillshade', source: 'dem', layout: { visibility: 'none' }, paint: { 'hillshade-exaggeration': 0.5 } },
+      { id: 'labels-layer', type: 'raster', source: 'labels', layout: { visibility: 'visible' } }
     ],
     terrain: undefined
   };
@@ -377,6 +399,7 @@ async function initMap(mapEl, refs) {
     zoom: 3.5,
     pitch: 0,
     maxPitch: 85,
+    maxZoom: 20,
     attributionControl: { compact: true }
   });
   const map = _map;
@@ -420,7 +443,8 @@ export function mapaPage() {
 
   const mk = (checked = false) => h('input', { type: 'checkbox', checked });
   const air = mk(true), naval = mk(false), temp = mk(false), radar = mk(true),
-        cabos = mk(false), grid = mk(false), gebco = mk(false), hill = mk(false);
+        cabos = mk(false), grid = mk(false), gebco = mk(false), hill = mk(false),
+        gibs = mk(false), labels = mk(true);
 
   const refs = { air, naval, temp, radar, statusEl, coordEl, counts: { air: 0, naval: 0 } };
 
@@ -432,6 +456,9 @@ export function mapaPage() {
     setVis(_map, ['base-sat'], b === 'sat');
     setVis(_map, ['base-dark'], b === 'dark');
     setVis(_map, ['base-terreno'], b === 'terreno');
+    /* Rótulos: úteis sobre satélite/terreno (modo híbrido); o tático escuro já tem rótulos. */
+    const showLabels = labels.checked && b !== 'dark';
+    setVis(_map, ['labels-layer'], showLabels);
   }
 
   const baseBtns = h('div', { className: 'mapa-base-group' },
@@ -488,6 +515,10 @@ export function mapaPage() {
   wire(grid, ['grid-layer']);
   wire(hill, ['hillshade']);
   wire(gebco, ['gebco-layer']);
+  wire(gibs, ['gibs-layer']);
+  labels.addEventListener('change', () => {
+    if (_map) setVis(_map, ['labels-layer'], labels.checked && base !== 'dark');
+  });
   cabos.addEventListener('change', async () => {
     if (_map) setVis(_map, ['cabos-layer'], cabos.checked);
     if (cabos.checked && _map?.getSource('cabos')) {
@@ -503,7 +534,8 @@ export function mapaPage() {
   const panel = h('div', { className: 'mapa-panel' },
     h('div', { className: 'mapa-panel__sec' },
       h('div', { className: 'mapa-panel__title' }, 'Base'),
-      baseBtns
+      baseBtns,
+      layerToggle(labels, '🏷 Rótulos (modo híbrido)')
     ),
     h('div', { className: 'mapa-panel__sec' },
       h('div', { className: 'mapa-panel__title' }, 'Relevo'),
@@ -520,13 +552,17 @@ export function mapaPage() {
       layerToggle(gebco, '🌊 Batimetria (subaquático)'),
       layerToggle(temp, '🌡 Temperatura'),
       layerToggle(radar, '🌧 Radar de Chuva'),
+      layerToggle(gibs, '🛰 Satélite NASA (nuvens)', 'tempo quase real'),
       layerToggle(grid, '⊞ Grid de Coordenadas')
     ),
     h('div', { className: 'mapa-panel__sec' },
       h('button', { className: 'mapa-btn mapa-btn--full', onclick: () => {
         if (_map && navigator.geolocation) navigator.geolocation.getCurrentPosition(
-          p => _map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 11 }));
-      }}, '◉ Minha posição'),
+          p => _map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 18 }));
+      }}, '◉ Minha posição (zoom rua)'),
+      h('button', { className: 'mapa-btn mapa-btn--full', onclick: () => {
+        if (_map) _map.zoomTo(Math.min(_map.getZoom() + 4, 20), { duration: 900 });
+      }}, '🔍 Zoom nível rua (~250 m)'),
       h('button', { className: 'mapa-btn mapa-btn--full', onclick: () => {
         if (_map) _map.flyTo({ center: [22, 59.5], zoom: 6 });
       }}, '🚢 Ver navios (Báltico)')

@@ -35,7 +35,7 @@ const EXAMPLES = [
   { label: 'Maioria 3', expr: '(A·B) + (B·C) + (A·C)' },
   { label: 'Mux 2:1', expr: '(NOT S · A) + (S · B)' },
   { label: 'Half adder (sum)', expr: 'A XOR B' },
-  { label: 'Full adder (Cout)', expr: '(A·B) + (Cin·(A XOR B))' },
+  { label: 'Full adder (Cout)', expr: '(A·B) + (C·(A XOR B))' },
   { label: 'Compl. sempre verdade', expr: 'A OR NOT A' },
   { label: 'Distributiva', expr: 'A·(B+C)' }
 ];
