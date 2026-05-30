@@ -116,14 +116,19 @@ export async function connectSystemAudio() {
   let stream;
   try {
     stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+      /* video: true é obrigatório em todos os browsers — pedimos resolução mínima para não impactar. */
+      video: { width: 1, height: 1, frameRate: 1 },
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+      /* Chrome 94+: abre o seletor com a aba atual pré-selecionada. */
+      preferCurrentTab: false,
+      selfBrowserSurface: 'include',
     });
   } catch {
     throw new Error('Captura cancelada ou bloqueada pelo navegador.');
   }
+  /* Para a track de vídeo imediatamente — só queremos o áudio. */
+  stream.getVideoTracks().forEach(t => t.stop());
   if (!stream.getAudioTracks().length) {
-    stream.getTracks().forEach((t) => t.stop());
     throw new Error('Nenhum áudio capturado — marque "compartilhar áudio" ao escolher a aba/tela.');
   }
   microphoneStream = stream;
