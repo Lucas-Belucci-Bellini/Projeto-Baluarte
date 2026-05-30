@@ -15,6 +15,7 @@
 let audioCtx = null;
 let analyserNode = null;
 let gainNode = null;
+let keepAliveGain = null;
 let sourceNode = null;
 let sourceType = null;
 let mediaElement = null;
@@ -27,6 +28,7 @@ let particles = null;
 let animationId = null;
 let renderMode = 'bars';
 let renderCallback = null;
+let onStreamEndedCb = null;
 
 const PALETTE = {
   primary: '#00f0ff',
@@ -53,25 +55,31 @@ function ensureAnalyser() {
     analyserNode = ctx.createAnalyser();
     analyserNode.fftSize = 2048;
     analyserNode.smoothingTimeConstant = 0.8;
+
     gainNode = ctx.createGain();
     gainNode.gain.value = 0.5;
+
+    /* keepAliveGain: gain fixo em 0.0001 (-80 dB, inaudível).
+     * Chrome otimiza e para de processar AnalyserNode quando gain=0 (assintótico).
+     * Este caminho paralelo garante que o analyser nunca sai do grafo. */
+    keepAliveGain = ctx.createGain();
+    keepAliveGain.gain.value = 0.0001;
+
     analyserNode.connect(gainNode);
-    gainNode.connect(ctx.destination); /* SEMPRE conectado — nunca desconectar */
+    analyserNode.connect(keepAliveGain);
+    gainNode.connect(ctx.destination);
+    keepAliveGain.connect(ctx.destination);
     resizeBuffers();
   }
   return analyserNode;
 }
 
-/**
- * REGRA CRÍTICA (Web Audio API):
- * O AnalyserNode só recebe dados se houver um caminho completo até o
- * AudioDestinationNode. NÃO desconecte gainNode do destination.
- * Para evitar feedback/eco nos modos mic e sistema, zeramos o gain em vez
- * de desconectar o nó.
- */
+/* Ativa/desativa o ganho principal de saída.
+ * keepAliveGain permanece em 0.0001 independente disso — garante que o
+ * AnalyserNode nunca é removido do grafo pela engine do Chrome. */
 function setPlayback(on) {
   if (!gainNode) return;
-  gainNode.gain.setTargetAtTime(on ? 0.5 : 0, gainNode.context.currentTime, 0.02);
+  gainNode.gain.value = on ? 0.5 : 0;
 }
 
 function resizeBuffers() {
@@ -113,10 +121,11 @@ export async function connectMicrophone() {
     audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
   });
   microphoneStream = stream;
+  stream.getAudioTracks().forEach((t) => {
+    t.onended = () => { if (onStreamEndedCb) onStreamEndedCb('mic'); };
+  });
   sourceNode = ctx.createMediaStreamSource(stream);
   sourceNode.connect(analyserNode);
-  /* Mudo o gain pra evitar feedback do microfone — mas MANTEMOS o nó conectado
-   * ao destination pra o grafo continuar processando e o analyser receber dados. */
   setPlayback(false);
   if (ctx.state === 'suspended') await ctx.resume();
   sourceType = 'mic';
@@ -148,9 +157,12 @@ export async function connectSystemAudio() {
   if (ctx.state === 'suspended') await ctx.resume();
 
   microphoneStream = stream;
+  /* Notifica quando o usuário clica "Parar" no banner de compartilhamento. */
+  stream.getAudioTracks().forEach((t) => {
+    t.onended = () => { if (onStreamEndedCb) onStreamEndedCb('system'); };
+  });
   sourceNode = ctx.createMediaStreamSource(stream);
   sourceNode.connect(analyserNode);
-  /* Mudo para evitar eco — mas MANTEMOS gainNode → destination no grafo. */
   setPlayback(false);
   sourceType = 'system';
   return true;
@@ -301,6 +313,10 @@ export function stopRender() {
 
 export function onRenderTick(cb) {
   renderCallback = cb;
+}
+
+export function onStreamEnded(cb) {
+  onStreamEndedCb = cb;
 }
 
 function getPeak() {
