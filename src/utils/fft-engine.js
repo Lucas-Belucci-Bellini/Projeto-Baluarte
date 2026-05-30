@@ -116,20 +116,19 @@ export async function connectSystemAudio() {
   let stream;
   try {
     stream = await navigator.mediaDevices.getDisplayMedia({
-      /* video: true é obrigatório em todos os browsers — pedimos resolução mínima para não impactar. */
-      video: { width: 1, height: 1, frameRate: 1 },
+      /* video:true é obrigatório. IMPORTANTE: no Chrome/Opera GX o áudio da aba
+       * fica ATRELADO à track de vídeo — se a track de vídeo parar, o áudio para
+       * junto. Por isso NÃO paramos a track de vídeo; só ignoramos os frames. */
+      video: true,
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
-      /* Chrome 94+: abre o seletor com a aba atual pré-selecionada. */
-      preferCurrentTab: false,
       selfBrowserSurface: 'include',
     });
   } catch {
     throw new Error('Captura cancelada ou bloqueada pelo navegador.');
   }
-  /* Para a track de vídeo imediatamente — só queremos o áudio. */
-  stream.getVideoTracks().forEach(t => t.stop());
   if (!stream.getAudioTracks().length) {
-    throw new Error('Nenhum áudio capturado — marque "compartilhar áudio" ao escolher a aba/tela.');
+    stream.getTracks().forEach((t) => t.stop());
+    throw new Error('Nenhum áudio capturado — escolha uma ABA e marque "Compartilhar áudio da aba".');
   }
   microphoneStream = stream;
   sourceNode = ctx.createMediaStreamSource(stream);
@@ -140,6 +139,11 @@ export async function connectSystemAudio() {
   return true;
 }
 
+/* createMediaElementSource só pode ser chamado UMA vez por elemento na vida do
+ * AudioContext — chamar de novo lança erro e trava tudo. Por isso cacheamos o
+ * node por elemento (WeakMap) e reusamos ao reconectar. */
+const _mediaElSources = new WeakMap();
+
 export function connectMediaElement(el) {
   disconnect();
   const ctx = getAudioCtx();
@@ -147,8 +151,13 @@ export function connectMediaElement(el) {
   ensureAnalyser();
 
   mediaElement = el;
-  sourceNode = ctx.createMediaElementSource(el);
-  sourceNode.connect(analyserNode);
+  let node = _mediaElSources.get(el);
+  if (!node) {
+    node = ctx.createMediaElementSource(el);
+    _mediaElSources.set(el, node);
+  }
+  sourceNode = node;
+  try { sourceNode.connect(analyserNode); } catch {}
   /* Reconnecta gain → destination pra ouvir o áudio */
   try { gainNode.connect(ctx.destination); } catch {}
   sourceType = 'media';
