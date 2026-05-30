@@ -56,10 +56,22 @@ function ensureAnalyser() {
     gainNode = ctx.createGain();
     gainNode.gain.value = 0.5;
     analyserNode.connect(gainNode);
-    gainNode.connect(ctx.destination);
+    gainNode.connect(ctx.destination); /* SEMPRE conectado — nunca desconectar */
     resizeBuffers();
   }
   return analyserNode;
+}
+
+/**
+ * REGRA CRÍTICA (Web Audio API):
+ * O AnalyserNode só recebe dados se houver um caminho completo até o
+ * AudioDestinationNode. NÃO desconecte gainNode do destination.
+ * Para evitar feedback/eco nos modos mic e sistema, zeramos o gain em vez
+ * de desconectar o nó.
+ */
+function setPlayback(on) {
+  if (!gainNode) return;
+  gainNode.gain.setTargetAtTime(on ? 0.5 : 0, gainNode.context.currentTime, 0.02);
 }
 
 function resizeBuffers() {
@@ -82,7 +94,11 @@ export function setSmoothing(value) {
 
 export function setGain(value) {
   ensureAnalyser();
-  if (gainNode) gainNode.gain.value = Math.max(0, Math.min(2, value));
+  /* Só altera gain se o modo atual usa playback (arquivo / tom de teste).
+   * Em mic/sistema o gain está em 0 para evitar feedback — não sobrescrever. */
+  if (gainNode && (sourceType === 'media' || sourceType === 'test')) {
+    gainNode.gain.value = Math.max(0, Math.min(2, value));
+  }
 }
 
 /* ===== Sources ===== */
@@ -98,10 +114,11 @@ export async function connectMicrophone() {
   });
   microphoneStream = stream;
   sourceNode = ctx.createMediaStreamSource(stream);
-  /* Microfone NÃO conecta ao destination pra evitar feedback */
   sourceNode.connect(analyserNode);
-  /* Mas desconecta o gain do destination pra microfone só visualizar */
-  try { gainNode.disconnect(ctx.destination); } catch {}
+  /* Mudo o gain pra evitar feedback do microfone — mas MANTEMOS o nó conectado
+   * ao destination pra o grafo continuar processando e o analyser receber dados. */
+  setPlayback(false);
+  if (ctx.state === 'suspended') await ctx.resume();
   sourceType = 'mic';
   return true;
 }
@@ -110,15 +127,11 @@ export async function connectMicrophone() {
 export async function connectSystemAudio() {
   disconnect();
   const ctx = getAudioCtx();
-  if (ctx.state === 'suspended') await ctx.resume();
   ensureAnalyser();
 
   let stream;
   try {
     stream = await navigator.mediaDevices.getDisplayMedia({
-      /* video:true é obrigatório. IMPORTANTE: no Chrome/Opera GX o áudio da aba
-       * fica ATRELADO à track de vídeo — se a track de vídeo parar, o áudio para
-       * junto. Por isso NÃO paramos a track de vídeo; só ignoramos os frames. */
       video: true,
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
       selfBrowserSurface: 'include',
@@ -130,11 +143,15 @@ export async function connectSystemAudio() {
     stream.getTracks().forEach((t) => t.stop());
     throw new Error('Nenhum áudio capturado — escolha uma ABA e marque "Compartilhar áudio da aba".');
   }
+  /* Resume DEPOIS do dialog (o AudioContext pode ter suspenso enquanto o usuário
+   * interagia com o seletor de tela). */
+  if (ctx.state === 'suspended') await ctx.resume();
+
   microphoneStream = stream;
   sourceNode = ctx.createMediaStreamSource(stream);
-  /* não conecta ao destination — evita eco */
   sourceNode.connect(analyserNode);
-  try { gainNode.disconnect(ctx.destination); } catch {}
+  /* Mudo para evitar eco — mas MANTEMOS gainNode → destination no grafo. */
+  setPlayback(false);
   sourceType = 'system';
   return true;
 }
@@ -158,8 +175,8 @@ export function connectMediaElement(el) {
   }
   sourceNode = node;
   try { sourceNode.connect(analyserNode); } catch {}
-  /* Reconnecta gain → destination pra ouvir o áudio */
-  try { gainNode.connect(ctx.destination); } catch {}
+  /* Arquivo: ouvimos o áudio, então gain = 0.5 */
+  setPlayback(true);
   sourceType = 'media';
   return el;
 }
@@ -175,7 +192,7 @@ export async function connectTestTone(frequency = 440) {
   testOscillator.frequency.value = frequency;
   testOscillator.connect(analyserNode);
   testOscillator.start();
-  try { gainNode.connect(ctx.destination); } catch {}
+  setPlayback(true);
   sourceType = 'test';
   return testOscillator;
 }
@@ -250,8 +267,9 @@ export function startRender(canvas, opts = {}) {
 
   function frame() {
     if (!analyserNode) return;
-    /* Auto-resume: navegadores suspendem o contexto; reativa a cada ~30 frames. */
-    if (audioCtx && audioCtx.state === 'suspended' && (resumeCheck++ % 30 === 0)) {
+    /* Auto-resume a cada 30 frames — browsers suspendem o contexto em segundo plano. */
+    resumeCheck++;
+    if (audioCtx && audioCtx.state === 'suspended' && resumeCheck % 30 === 0) {
       audioCtx.resume().catch(() => {});
     }
     const rect = canvas.getBoundingClientRect();
