@@ -63,6 +63,7 @@ import { triangulacaoPage } from './pages/triangulacao.js';
 import { llmLabPage } from './pages/llm-lab.js';
 import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
+import { roadmapPage } from './pages/roadmap.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
@@ -124,6 +125,7 @@ router.register('/triangulacao', () => triangulacaoPage());
 router.register('/llm-lab', () => llmLabPage());
 
 router.register('/sobre', () => sobrePage());
+router.register('/roadmap', () => roadmapPage());
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.
