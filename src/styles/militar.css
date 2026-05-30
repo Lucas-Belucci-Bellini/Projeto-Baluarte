@@ -359,3 +359,108 @@
   .poder-card__val { min-width: auto; }
   .orca-chart-label { min-width: 100px; }
 }
+
+/* ════════════════════════════════════
+   Arsenal Expandido
+   ════════════════════════════════════ */
+.arsx-page { padding: var(--space-md); max-width: 1300px; margin: 0 auto; }
+.arsx-tabs { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-md); }
+.arsx-tab {
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-sm);
+  color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);
+  padding: var(--space-xs) var(--space-md); cursor: pointer; transition: all var(--transition-base);
+}
+.arsx-tab.is-active, .arsx-tab:hover {
+  background: var(--color-cyan-soft); border-color: rgba(0,240,255,.3); color: var(--color-cyan);
+}
+.arsx-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md);
+}
+.arsx-card {
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg); transition: border-color var(--transition-base), transform var(--transition-base);
+}
+.arsx-card:hover { border-color: rgba(0,240,255,.25); transform: translateY(-2px); }
+.arsx-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); }
+.arsx-card__name { font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.arsx-card__year { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.arsx-card__origem { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: 2px; }
+.arsx-card__type {
+  display: inline-block; font-size: var(--font-size-xs); color: var(--color-cyan);
+  background: var(--color-cyan-soft); border-radius: var(--radius-pill); padding: 1px 8px; margin: var(--space-xs) 0;
+}
+.arsx-specs { display: flex; gap: var(--space-md); margin: var(--space-sm) 0; }
+.arsx-spec { display: flex; flex-direction: column; gap: 1px; }
+.arsx-spec span { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--color-text-muted); }
+.arsx-spec strong { font-size: var(--font-size-sm); color: var(--color-text-primary); font-family: var(--font-mono); }
+.arsx-card__nota { font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0; line-height: 1.4; }
+.arsx-empty { color: var(--color-text-muted); padding: var(--space-xl); text-align: center; }
+
+/* ════════════════════════════════════
+   Forças Especiais (SOF)
+   ════════════════════════════════════ */
+.sof-page { padding: var(--space-md); max-width: 1300px; margin: 0 auto; }
+.sof-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-md); }
+.sof-card {
+  background: var(--color-surface); border: var(--border-thin); border-left: 3px solid var(--color-cyan);
+  border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg);
+  transition: transform var(--transition-base), border-color var(--transition-base);
+}
+.sof-card:hover { transform: translateY(-2px); }
+.sof-card--eua { border-left-color: #3b6cff; }
+.sof-card--uk  { border-left-color: #cf2b30; }
+.sof-card--rus { border-left-color: #d52b1e; }
+.sof-card--isr { border-left-color: #0099ff; }
+.sof-card--fra { border-left-color: #6b8cff; }
+.sof-card--ger { border-left-color: #ffcc00; }
+.sof-card--pol { border-left-color: #dc143c; }
+.sof-card--pak { border-left-color: #01411c; }
+.sof-card--chn { border-left-color: #de2910; }
+.sof-card--ind { border-left-color: #ff9933; }
+.sof-card--can { border-left-color: #ff0000; }
+.sof-card--aus { border-left-color: #00843d; }
+.sof-card--ita { border-left-color: #009246; }
+.sof-card--bra { border-left-color: #009c3b; }
+.sof-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); }
+.sof-card__nome { font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.sof-card__ano { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-text-muted); white-space: nowrap; }
+.sof-card__meta { display: flex; gap: var(--space-sm); margin: var(--space-xs) 0; flex-wrap: wrap; }
+.sof-card__pais { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.sof-card__ramo { font-size: var(--font-size-xs); color: var(--color-text-muted); background: rgba(255,255,255,.05); border-radius: var(--radius-pill); padding: 1px 8px; }
+.sof-card__papel { font-size: var(--font-size-sm); color: var(--color-cyan); margin-bottom: var(--space-xs); }
+.sof-card__lema { font-size: var(--font-size-xs); font-style: italic; color: var(--color-text-secondary); margin-bottom: var(--space-xs); }
+.sof-card__nota { font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 0; line-height: 1.4; }
+
+/* ════════════════════════════════════
+   Organização Militar
+   ════════════════════════════════════ */
+.org-page { padding: var(--space-md); max-width: 1100px; margin: 0 auto; }
+.org-tabs { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-lg); }
+.org-tab {
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-sm);
+  color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);
+  padding: var(--space-xs) var(--space-md); cursor: pointer; transition: all var(--transition-base);
+}
+.org-tab.is-active, .org-tab:hover {
+  background: var(--color-cyan-soft); border-color: rgba(0,240,255,.3); color: var(--color-cyan);
+}
+.org-insignia { font-family: var(--font-mono); color: var(--color-cyan); letter-spacing: 2px; }
+.org-units { display: flex; flex-direction: column; gap: var(--space-xs); }
+.org-unit {
+  position: relative; display: flex; align-items: center; gap: var(--space-md);
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+}
+.org-unit__symbol {
+  font-family: var(--font-mono); font-size: var(--font-size-sm); font-weight: 700; color: var(--color-cyan);
+  min-width: 56px; text-align: center; background: var(--color-cyan-soft); border-radius: var(--radius-sm); padding: 4px;
+}
+.org-unit__info { flex: 1; }
+.org-unit__name { font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); }
+.org-unit__cmd { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.org-unit__efetivo { font-family: var(--font-mono); font-size: var(--font-size-base); font-weight: 700; color: var(--color-cyan); text-align: right; }
+.org-unit__efetivo small { font-size: 10px; color: var(--color-text-muted); font-weight: 400; }
+.org-unit__arrow {
+  position: absolute; bottom: -14px; left: 28px; z-index: 1;
+  color: var(--color-text-muted); font-size: var(--font-size-sm);
+}

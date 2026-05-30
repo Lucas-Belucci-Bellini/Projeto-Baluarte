@@ -70,6 +70,9 @@ import { visaoPage } from './pages/visao.js';
 import { forcasArmadasPage } from './pages/forcas-armadas.js';
 import { orcamentosMilitaresPage } from './pages/orcamentos-militares.js';
 import { poderMilitarPage } from './pages/poder-militar.js';
+import { arsenalExpandidoPage } from './pages/arsenal-expandido.js';
+import { forcasEspeciaisPage } from './pages/forcas-especiais.js';
+import { organizacaoMilitarPage } from './pages/organizacao-militar.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
@@ -139,6 +142,9 @@ router.register('/visao', () => visaoPage());
 router.register('/forcas-armadas', () => forcasArmadasPage());
 router.register('/orcamentos-militares', () => orcamentosMilitaresPage());
 router.register('/poder-militar', () => poderMilitarPage());
+router.register('/arsenal-expandido', () => arsenalExpandidoPage());
+router.register('/forcas-especiais', () => forcasEspeciaisPage());
+router.register('/organizacao-militar', () => organizacaoMilitarPage());
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.
