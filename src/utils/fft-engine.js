@@ -140,6 +140,11 @@ export async function connectSystemAudio() {
   return true;
 }
 
+/* createMediaElementSource só pode ser chamado UMA vez por elemento na vida do
+ * AudioContext — chamar de novo lança erro e trava tudo. Por isso cacheamos o
+ * node por elemento (WeakMap) e reusamos ao reconectar. */
+const _mediaElSources = new WeakMap();
+
 export function connectMediaElement(el) {
   disconnect();
   const ctx = getAudioCtx();
@@ -147,8 +152,13 @@ export function connectMediaElement(el) {
   ensureAnalyser();
 
   mediaElement = el;
-  sourceNode = ctx.createMediaElementSource(el);
-  sourceNode.connect(analyserNode);
+  let node = _mediaElSources.get(el);
+  if (!node) {
+    node = ctx.createMediaElementSource(el);
+    _mediaElSources.set(el, node);
+  }
+  sourceNode = node;
+  try { sourceNode.connect(analyserNode); } catch {}
   /* Reconnecta gain → destination pra ouvir o áudio */
   try { gainNode.connect(ctx.destination); } catch {}
   sourceType = 'media';
