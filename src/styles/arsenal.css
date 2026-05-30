@@ -236,6 +236,35 @@
   gap: 4px;
 }
 
+.arsenal-detail__media {
+  position: relative;
+  margin: var(--space-sm) 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: var(--border-thin);
+  background: var(--color-bg);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.arsenal-detail__media.is-loading { padding: var(--space-md); }
+.arsenal-detail__media-hint { font-size: 11px; font-family: var(--font-mono); }
+.arsenal-detail__img {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  display: block;
+}
+.arsenal-detail__credit {
+  position: absolute;
+  bottom: 4px; right: 6px;
+  font-size: 9px;
+  background: rgba(0,0,0,.6);
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+}
+
 .arsenal-detail__stats {
   display: grid;
   grid-template-columns: 1fr 1fr;

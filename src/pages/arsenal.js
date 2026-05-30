@@ -47,6 +47,40 @@ function fmt(v) {
   return typeof v === 'number' ? v.toLocaleString('pt-BR') : v;
 }
 
+/* ===== Imagens via Wikipedia REST (grátis, CORS, sem chave) ===== */
+const _imgCache = new Map(); /* título -> url | null */
+
+/** Busca a melhor página por texto e devolve a miniatura (pageimages). */
+async function wikiSearchImage(lang, query) {
+  const params = new URLSearchParams({
+    action: 'query', format: 'json', origin: '*',
+    prop: 'pageimages', piprop: 'thumbnail', pithumbsize: '500',
+    generator: 'search', gsrsearch: query, gsrlimit: '1', gsrnamespace: '0'
+  });
+  const r = await fetch(`https://${lang}.wikipedia.org/w/api.php?${params}`, { signal: AbortSignal.timeout(6000) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  const pages = j?.query?.pages;
+  if (!pages) return null;
+  for (const k of Object.keys(pages)) {
+    const src = pages[k]?.thumbnail?.source;
+    if (src) return src;
+  }
+  return null;
+}
+
+/** Retorna a URL de uma imagem do item, tentando EN depois PT. */
+async function fetchWeaponImage(w) {
+  const query = w.wiki || w.name;
+  if (_imgCache.has(query)) return _imgCache.get(query);
+  let src = null;
+  for (const lang of ['en', 'pt']) {
+    try { src = await wikiSearchImage(lang, query); if (src) break; } catch { /* tenta próximo */ }
+  }
+  _imgCache.set(query, src);
+  return src;
+}
+
 /* ===== Filtros ===== */
 
 function renderCategoryChips() {
@@ -227,6 +261,28 @@ function renderDetail(w) {
       )
     )
   );
+
+  /* Imagem do item (Wikipedia) — carrega assíncrono, oculta se não houver. */
+  const imgWrap = h('div', { className: 'arsenal-detail__media is-loading' },
+    h('span', { className: 'arsenal-detail__media-hint u-text-muted' }, '⟳ buscando imagem…'));
+  detailEl.appendChild(imgWrap);
+  const reqId = w.id;
+  fetchWeaponImage(w).then((src) => {
+    /* Evita aplicar imagem se o usuário já trocou de seleção. */
+    if (state.selectedId !== reqId || !imgWrap.isConnected) return;
+    empty(imgWrap);
+    imgWrap.classList.remove('is-loading');
+    if (src) {
+      const img = h('img', {
+        className: 'arsenal-detail__img', src, alt: w.name, loading: 'lazy',
+        onerror: () => { imgWrap.style.display = 'none'; }
+      });
+      imgWrap.appendChild(img);
+      imgWrap.appendChild(h('span', { className: 'arsenal-detail__credit u-text-muted' }, 'fonte: Wikipedia'));
+    } else {
+      imgWrap.style.display = 'none';
+    }
+  });
 
   /* Itens com `specs` próprias (aeronaves, naval, etc.) usam essa ficha;
      o armamento clássico mantém o grid padrão calibre/alcance/peso. */
