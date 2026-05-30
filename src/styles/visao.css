@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════
-   Visão & Câmera — Baluarte Mark XIII
+   Visão & Câmera — Baluarte Mark XIV
    ═══════════════════════════════════ */
 
 .visao-page {
@@ -10,10 +10,11 @@
 
 .visao-tabs {
   display: flex;
-  gap: var(--space-xs);
+  gap: 2px;
   margin-bottom: var(--space-lg);
   border-bottom: var(--border-thin);
   padding-bottom: var(--space-xs);
+  flex-wrap: wrap;
 }
 .visao-tab {
   background: none;
@@ -152,6 +153,19 @@
 }
 .visao-info-box p:last-child { margin: 0; }
 
+/* Canvas que ocupa toda a viewport (modos hand/night/thermal/clarity) */
+.visao-canvas--full {
+  position: static;
+  display: block;
+  width: 640px;
+  max-width: 100%;
+  height: auto;
+  pointer-events: none;
+  border-radius: var(--radius-md);
+}
+
 @media (max-width: 680px) {
-  .visao-viewport, .visao-video, .visao-canvas, .visao-overlay { width: 100%; }
+  .visao-viewport, .visao-video, .visao-canvas, .visao-overlay,
+  .visao-canvas--full { width: 100%; }
+  .visao-tab { font-size: 11px; padding: 4px 8px; }
 }
