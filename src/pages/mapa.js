@@ -1,269 +1,560 @@
 /**
- * /mapa — Mapa Mundial interativo
- * Tráfego aéreo em tempo real (OpenSky Network)
- * Radar meteorológico (RainViewer)
- * Tiles: OpenStreetMap
+ * /mapa — Mapa Tático Mundial (MapLibre GL)
+ * Multi-camada nível militar:
+ *  - Bases: satélite, escuro tático, terreno relevo
+ *  - Terreno 3D (DEM Terrarium AWS) + projeção globo
+ *  - Espaço aéreo (OpenSky, tempo real)
+ *  - Naval (AIS Digitraffic, tempo real)
+ *  - Subaquático (cabos submarinos + batimetria GEBCO)
+ *  - Temperatura (Open-Meteo grid) + radar de chuva (RainViewer)
+ *  - Ferramentas táticas: grid, coordenadas, medição, alvo
+ * Todas as fontes são gratuitas e sem chave de API.
  */
 
 import { h } from '../utils/helpers.js';
 
-const OPENSKY_URL = 'https://opensky-network.org/api/states/all';
-const RAINVIEWER_URL = 'https://api.rainviewer.com/public/weather-maps.json';
+/* ── Endpoints ── */
+const OPENSKY = 'https://opensky-network.org/api/states/all';
+const RAINVIEWER = 'https://api.rainviewer.com/public/weather-maps.json';
+const OPENMETEO = 'https://api.open-meteo.com/v1/forecast';
+const AIS_DIGITRAFFIC = 'https://meri.digitraffic.fi/api/ais/v1/locations';
+const CABOS = 'https://www.submarinecablemap.com/api/v3/cable/cable-geo.json';
 
+/* ── Estado do módulo ── */
 let _map = null;
-let _flightLayer = null;
-let _weatherLayer = null;
-let _flightMarkers = new Map();
-let _flightInterval = null;
+let _timers = [];
+let _terrainOn = false;
 let _radarFrames = [];
-let _radarIndex = 0;
-let _radarInterval = null;
-let _animInterval = null;
-let _container = null;
+let _radarIdx = 0;
+let _maplibre = null;
 
-/* ── Leaflet loader ── */
-function loadLeaflet() {
+function clearTimers() { _timers.forEach(t => clearInterval(t)); _timers = []; }
+
+function cleanup() {
+  clearTimers();
+  if (_map) { try { _map.remove(); } catch {} _map = null; }
+  _radarFrames = [];
+  _terrainOn = false;
+}
+
+/* ── Loader MapLibre GL ── */
+function loadMapLibre() {
   return new Promise((resolve) => {
-    if (window.L) { resolve(window.L); return; }
+    if (window.maplibregl) { resolve(window.maplibregl); return; }
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    css.href = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css';
     document.head.appendChild(css);
     const s = document.createElement('script');
-    s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    s.onload = () => resolve(window.L);
+    s.src = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js';
+    s.onload = () => resolve(window.maplibregl);
     s.onerror = () => resolve(null);
     document.head.appendChild(s);
   });
 }
 
-/* ── Ícone de avião ── */
-function planeIcon(L, heading) {
-  const angle = heading ?? 0;
-  return L.divIcon({
-    className: '',
-    html: `<div class="mapa-plane" style="transform:rotate(${angle}deg)">✈</div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10]
-  });
+/* ── Estilo base com múltiplas fontes ── */
+function buildStyle() {
+  return {
+    version: 8,
+    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+    sources: {
+      sat: {
+        type: 'raster', tileSize: 256, maxzoom: 19,
+        tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+        attribution: '© Esri'
+      },
+      dark: {
+        type: 'raster', tileSize: 256, maxzoom: 19,
+        tiles: [
+          'https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
+          'https://cartodb-basemaps-b.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
+          'https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'
+        ],
+        attribution: '© CARTO'
+      },
+      terreno: {
+        type: 'raster', tileSize: 256, maxzoom: 18,
+        tiles: ['https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'.replace('{s}', 'a')],
+        attribution: '© OpenTopoMap'
+      },
+      'dem': {
+        type: 'raster-dem', tileSize: 256, maxzoom: 15, encoding: 'terrarium',
+        tiles: ['https://elevation-tiles-prod.s3.amazonaws.com/terrarium/{z}/{x}/{y}.png']
+      },
+      gebco: {
+        type: 'raster', tileSize: 256,
+        tiles: ['https://wms.gebco.net/mapserv?request=GetMap&service=WMS&version=1.3.0&layers=GEBCO_LATEST&styles=&format=image/png&transparent=true&crs=EPSG:3857&width=256&height=256&bbox={bbox-epsg-3857}'],
+        attribution: '© GEBCO'
+      }
+    },
+    layers: [
+      { id: 'base-dark', type: 'raster', source: 'dark', layout: { visibility: 'none' } },
+      { id: 'base-terreno', type: 'raster', source: 'terreno', layout: { visibility: 'none' } },
+      { id: 'base-sat', type: 'raster', source: 'sat' },
+      { id: 'gebco-layer', type: 'raster', source: 'gebco', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.7 } },
+      { id: 'hillshade', type: 'hillshade', source: 'dem', layout: { visibility: 'none' }, paint: { 'hillshade-exaggeration': 0.5 } }
+    ],
+    terrain: undefined
+  };
 }
 
-/* ── Fetch voos na área visível ── */
-async function fetchFlights(map) {
+/* ════════════════════════════════════
+   CAMADA: Espaço Aéreo (OpenSky)
+   ════════════════════════════════════ */
+async function fetchAir(map) {
   try {
     const b = map.getBounds();
-    const url = `${OPENSKY_URL}?lamin=${b.getSouth().toFixed(2)}&lomin=${b.getWest().toFixed(2)}&lamax=${b.getNorth().toFixed(2)}&lomax=${b.getEast().toFixed(2)}`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
+    const url = `${OPENSKY}?lamin=${b.getSouth().toFixed(2)}&lomin=${b.getWest().toFixed(2)}&lamax=${b.getNorth().toFixed(2)}&lomax=${b.getEast().toFixed(2)}`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
 }
 
-/* ── Atualiza marcadores de voo ── */
-function updateFlightMarkers(L, data, infoEl) {
-  if (!data || !data.states) return;
-  const seen = new Set();
-
+function airToGeo(data) {
+  const fc = { type: 'FeatureCollection', features: [] };
+  if (!data?.states) return fc;
   for (const s of data.states) {
-    const [icao24, callsign, , , , lon, lat, , onGround, velocity, heading, vertRate] = s;
+    const [icao, cs, , , , lon, lat, baroAlt, onGround, vel, hdg, vr, , geoAlt] = s;
     if (lat == null || lon == null || onGround) continue;
-    seen.add(icao24);
-
-    const tip = [
-      `<b>${(callsign || icao24).trim()}</b>`,
-      `Velocidade: ${velocity ? Math.round(velocity * 3.6) + ' km/h' : '—'}`,
-      `Rumo: ${heading ? Math.round(heading) + '°' : '—'}`,
-      `Variação alt: ${vertRate ? (vertRate > 0 ? '↑' : '↓') + Math.abs(Math.round(vertRate)) + ' m/s' : '—'}`
-    ].join('<br>');
-
-    if (_flightMarkers.has(icao24)) {
-      const m = _flightMarkers.get(icao24);
-      m.setLatLng([lat, lon]);
-      m.setIcon(planeIcon(L, heading));
-      m.setTooltipContent(tip);
-    } else {
-      const m = L.marker([lat, lon], { icon: planeIcon(L, heading) })
-        .bindTooltip(tip, { className: 'mapa-tooltip' })
-        .addTo(_flightLayer);
-      _flightMarkers.set(icao24, m);
-    }
-  }
-
-  // remove desaparecidos
-  for (const [id, m] of _flightMarkers) {
-    if (!seen.has(id)) { _flightLayer.removeLayer(m); _flightMarkers.delete(id); }
-  }
-
-  if (infoEl) infoEl.textContent = `${seen.size} aeronaves visíveis`;
-}
-
-/* ── Radar meteorológico (RainViewer) ── */
-async function loadRadar(L) {
-  try {
-    const res = await fetch(RAINVIEWER_URL, { signal: AbortSignal.timeout(6000) });
-    if (!res.ok) return;
-    const data = await res.json();
-    const frames = [...(data.radar.past || []), ...(data.radar.nowcast || [])];
-    if (!frames.length) return;
-    _radarFrames = frames;
-    _radarIndex = frames.length - 1;
-    showRadarFrame(L, _radarIndex);
-  } catch { /* offline */ }
-}
-
-function showRadarFrame(L, idx) {
-  if (!_radarFrames.length || !_map) return;
-  if (_weatherLayer) _map.removeLayer(_weatherLayer);
-  const frame = _radarFrames[idx];
-  _weatherLayer = L.tileLayer(
-    `https://tilecache.rainviewer.com${frame.path}/256/{z}/{x}/{y}/2/1_1.png`,
-    { opacity: 0.5, zIndex: 10, attribution: '© RainViewer' }
-  );
-  if (_map.hasLayer(L.tileLayer())) return; // guard
-  _weatherLayer.addTo(_map);
-}
-
-function animateRadar(L, sliderEl, timeEl) {
-  if (_animInterval) { clearInterval(_animInterval); _animInterval = null; return false; }
-  _animInterval = setInterval(() => {
-    _radarIndex = (_radarIndex + 1) % _radarFrames.length;
-    showRadarFrame(L, _radarIndex);
-    if (sliderEl) sliderEl.value = _radarIndex;
-    if (timeEl && _radarFrames[_radarIndex]) {
-      timeEl.textContent = new Date(_radarFrames[_radarIndex].time * 1000)
-        .toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    }
-  }, 600);
-  return true;
-}
-
-/* ── Cleanup ── */
-function cleanup() {
-  if (_flightInterval) { clearInterval(_flightInterval); _flightInterval = null; }
-  if (_radarInterval) { clearInterval(_radarInterval); _radarInterval = null; }
-  if (_animInterval) { clearInterval(_animInterval); _animInterval = null; }
-  if (_map) { _map.remove(); _map = null; }
-  _flightMarkers.clear();
-  _flightLayer = null;
-  _weatherLayer = null;
-  _radarFrames = [];
-}
-
-/* ── Init mapa ── */
-async function initMap(mapEl, infoEl, radarSliderEl, radarTimeEl, layerFlight, layerWeather) {
-  const L = await loadLeaflet();
-  if (!L) { mapEl.innerHTML = '<p class="mapa-error">Falha ao carregar Leaflet.</p>'; return; }
-
-  _map = L.map(mapEl, { zoomControl: true }).setView([-15.8, -47.9], 5);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-    maxZoom: 18
-  }).addTo(_map);
-
-  _flightLayer = L.layerGroup().addTo(_map);
-
-  /* voos */
-  const refresh = async () => {
-    if (!layerFlight.checked) { _flightLayer.clearLayers(); _flightMarkers.clear(); return; }
-    const data = await fetchFlights(_map);
-    updateFlightMarkers(L, data, infoEl);
-  };
-  await refresh();
-  _flightInterval = setInterval(refresh, 15000);
-  _map.on('moveend', refresh);
-
-  layerFlight.addEventListener('change', refresh);
-
-  /* radar */
-  await loadRadar(L);
-  if (_radarFrames.length && radarSliderEl) {
-    radarSliderEl.max = _radarFrames.length - 1;
-    radarSliderEl.value = _radarIndex;
-    radarSliderEl.addEventListener('input', () => {
-      _radarIndex = +radarSliderEl.value;
-      showRadarFrame(L, _radarIndex);
-      if (radarTimeEl && _radarFrames[_radarIndex])
-        radarTimeEl.textContent = new Date(_radarFrames[_radarIndex].time * 1000)
-          .toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    fc.features.push({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [lon, lat] },
+      properties: {
+        callsign: (cs || icao).trim(),
+        alt: Math.round((geoAlt ?? baroAlt ?? 0)),
+        vel: vel ? Math.round(vel * 3.6) : 0,
+        hdg: hdg || 0
+      }
     });
-    _radarInterval = setInterval(() => loadRadar(L), 5 * 60 * 1000);
   }
+  return fc;
+}
 
-  layerWeather.addEventListener('change', () => {
-    if (!layerWeather.checked && _weatherLayer) { _map.removeLayer(_weatherLayer); }
-    else if (layerWeather.checked) showRadarFrame(L, _radarIndex);
+/* ════════════════════════════════════
+   CAMADA: Naval (AIS Digitraffic — tempo real, cobertura Báltico)
+   ════════════════════════════════════ */
+async function fetchNaval() {
+  try {
+    const r = await fetch(AIS_DIGITRAFFIC, { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) return null;
+    const data = await r.json();
+    // já vem como GeoJSON FeatureCollection
+    if (data?.features) {
+      data.features = data.features.slice(0, 800).map(f => ({
+        ...f,
+        properties: {
+          mmsi: f.mmsi || f.properties?.mmsi || '—',
+          sog: f.properties?.sog ?? 0,
+          heading: f.properties?.heading ?? f.properties?.cog ?? 0
+        }
+      }));
+    }
+    return data;
+  } catch { return null; }
+}
+
+/* ════════════════════════════════════
+   CAMADA: Subaquático (cabos submarinos)
+   ════════════════════════════════════ */
+async function fetchCabos() {
+  try {
+    const r = await fetch(CABOS, { signal: AbortSignal.timeout(9000) });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+/* ════════════════════════════════════
+   CAMADA: Temperatura (Open-Meteo grid)
+   ════════════════════════════════════ */
+async function fetchTemp(map) {
+  try {
+    const b = map.getBounds();
+    const cols = 7, rows = 5;
+    const lats = [], lons = [];
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        lats.push((b.getSouth() + (b.getNorth() - b.getSouth()) * (i + 0.5) / rows).toFixed(3));
+        lons.push((b.getWest() + (b.getEast() - b.getWest()) * (j + 0.5) / cols).toFixed(3));
+      }
+    }
+    const url = `${OPENMETEO}?latitude=${lats.join(',')}&longitude=${lons.join(',')}&current=temperature_2m`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) return null;
+    const data = await r.json();
+    const arr = Array.isArray(data) ? data : [data];
+    const fc = { type: 'FeatureCollection', features: [] };
+    arr.forEach((d, k) => {
+      const t = d?.current?.temperature_2m;
+      if (t == null) return;
+      fc.features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [+lons[k], +lats[k]] },
+        properties: { temp: Math.round(t), label: `${Math.round(t)}°` }
+      });
+    });
+    return fc;
+  } catch { return null; }
+}
+
+/* ════════════════════════════════════
+   CAMADA: Radar de chuva (RainViewer)
+   ════════════════════════════════════ */
+async function loadRadar(map) {
+  try {
+    const r = await fetch(RAINVIEWER, { signal: AbortSignal.timeout(6000) });
+    if (!r.ok) return;
+    const data = await r.json();
+    _radarFrames = [...(data.radar?.past || []), ...(data.radar?.nowcast || [])];
+    if (!_radarFrames.length) return;
+    _radarIdx = _radarFrames.length - 1;
+    setRadarFrame(map, _radarIdx);
+  } catch {}
+}
+function setRadarFrame(map, idx) {
+  if (!_radarFrames.length) return;
+  const frame = _radarFrames[idx];
+  const id = 'radar-src';
+  if (map.getLayer('radar-layer')) map.removeLayer('radar-layer');
+  if (map.getSource(id)) map.removeSource(id);
+  map.addSource(id, {
+    type: 'raster', tileSize: 256,
+    tiles: [`https://tilecache.rainviewer.com${frame.path}/256/{z}/{x}/{y}/2/1_1.png`]
+  });
+  map.addLayer({ id: 'radar-layer', type: 'raster', source: id, paint: { 'raster-opacity': 0.55 } });
+}
+
+/* ════════════════════════════════════
+   Grid tático (graticule)
+   ════════════════════════════════════ */
+function graticuleGeo(step = 10) {
+  const fc = { type: 'FeatureCollection', features: [] };
+  for (let lon = -180; lon <= 180; lon += step) {
+    fc.features.push({ type: 'Feature', geometry: { type: 'LineString', coordinates: [[lon, -85], [lon, 85]] }, properties: {} });
+  }
+  for (let lat = -80; lat <= 80; lat += step) {
+    fc.features.push({ type: 'Feature', geometry: { type: 'LineString', coordinates: [[-180, lat], [180, lat]] }, properties: {} });
+  }
+  return fc;
+}
+
+/* ════════════════════════════════════
+   Setup de camadas no mapa
+   ════════════════════════════════════ */
+function addDataLayers(map, refs) {
+  const empty = { type: 'FeatureCollection', features: [] };
+
+  /* Subaquático: cabos */
+  map.addSource('cabos', { type: 'geojson', data: empty });
+  map.addLayer({
+    id: 'cabos-layer', type: 'line', source: 'cabos',
+    layout: { visibility: 'none', 'line-cap': 'round' },
+    paint: { 'line-color': '#00f0ff', 'line-width': 1, 'line-opacity': 0.5 }
   });
 
-  return L;
+  /* Grid tático */
+  map.addSource('grid', { type: 'geojson', data: graticuleGeo(10) });
+  map.addLayer({
+    id: 'grid-layer', type: 'line', source: 'grid',
+    layout: { visibility: 'none' },
+    paint: { 'line-color': '#00f0ff', 'line-width': 0.4, 'line-opacity': 0.25 }
+  });
+
+  /* Naval */
+  map.addSource('naval', { type: 'geojson', data: empty });
+  map.addLayer({
+    id: 'naval-layer', type: 'circle', source: 'naval',
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': 3,
+      'circle-color': '#00ff9d',
+      'circle-stroke-width': 1, 'circle-stroke-color': '#003322'
+    }
+  });
+
+  /* Espaço aéreo */
+  map.addSource('air', { type: 'geojson', data: empty });
+  map.addLayer({
+    id: 'air-layer', type: 'circle', source: 'air',
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': 4,
+      'circle-color': [
+        'interpolate', ['linear'], ['get', 'alt'],
+        0, '#ff3b3b', 3000, '#ffaa00', 8000, '#00f0ff', 12000, '#ffffff'
+      ],
+      'circle-stroke-width': 1, 'circle-stroke-color': '#001a1a'
+    }
+  });
+
+  /* Temperatura */
+  map.addSource('temp', { type: 'geojson', data: empty });
+  map.addLayer({
+    id: 'temp-layer', type: 'circle', source: 'temp',
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': 16, 'circle-blur': 0.6, 'circle-opacity': 0.35,
+      'circle-color': [
+        'interpolate', ['linear'], ['get', 'temp'],
+        -20, '#3b4cff', 0, '#00d0ff', 15, '#00ff9d', 25, '#ffd000', 35, '#ff5500', 45, '#ff0033'
+      ]
+    }
+  });
+  map.addLayer({
+    id: 'temp-label', type: 'symbol', source: 'temp',
+    layout: { visibility: 'none', 'text-field': ['get', 'label'], 'text-size': 12, 'text-font': ['Noto Sans Regular'] },
+    paint: { 'text-color': '#ffffff', 'text-halo-color': '#000000', 'text-halo-width': 1 }
+  });
+
+  /* Popups de clique */
+  const popup = new _maplibre.Popup({ closeButton: false, className: 'mapa-ml-popup' });
+  map.on('click', 'air-layer', (e) => {
+    const p = e.features[0].properties;
+    popup.setLngLat(e.lngLat).setHTML(
+      `<b>✈ ${p.callsign}</b><br>Alt: ${p.alt} m<br>Vel: ${p.vel} km/h<br>Rumo: ${Math.round(p.hdg)}°`
+    ).addTo(map);
+  });
+  map.on('click', 'naval-layer', (e) => {
+    const p = e.features[0].properties;
+    popup.setLngLat(e.lngLat).setHTML(
+      `<b>🚢 MMSI ${p.mmsi}</b><br>Veloc: ${p.sog} nós<br>Rumo: ${Math.round(p.heading)}°`
+    ).addTo(map);
+  });
+  ['air-layer', 'naval-layer'].forEach(l => {
+    map.on('mouseenter', l, () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', l, () => map.getCanvas().style.cursor = '');
+  });
 }
 
-/* ── Página ── */
+/* ── Toggle de visibilidade ── */
+function setVis(map, ids, on) {
+  ids.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none'); });
+}
+
+/* ── Refresh de cada feed ── */
+async function refreshAir(map, refs) {
+  if (!refs.air.checked) return;
+  const data = await fetchAir(map);
+  const fc = airToGeo(data);
+  if (map.getSource('air')) map.getSource('air').setData(fc);
+  refs.counts.air = fc.features.length;
+  updateStatus(refs);
+}
+async function refreshNaval(map, refs) {
+  if (!refs.naval.checked) return;
+  const data = await fetchNaval();
+  if (data && map.getSource('naval')) {
+    map.getSource('naval').setData(data);
+    refs.counts.naval = data.features?.length || 0;
+    updateStatus(refs);
+  }
+}
+async function refreshTemp(map, refs) {
+  if (!refs.temp.checked) return;
+  const fc = await fetchTemp(map);
+  if (fc && map.getSource('temp')) map.getSource('temp').setData(fc);
+}
+
+function updateStatus(refs) {
+  refs.statusEl.textContent =
+    `✈ ${refs.counts.air} aeronaves · 🚢 ${refs.counts.naval} navios · ⟳ ${new Date().toLocaleTimeString('pt-BR')}`;
+}
+
+/* ════════════════════════════════════
+   Init
+   ════════════════════════════════════ */
+async function initMap(mapEl, refs) {
+  const maplibregl = await loadMapLibre();
+  if (!maplibregl) { mapEl.innerHTML = '<p class="mapa-error">Falha ao carregar MapLibre GL.</p>'; return; }
+  _maplibre = maplibregl;
+
+  _map = new maplibregl.Map({
+    container: mapEl,
+    style: buildStyle(),
+    center: [-47.9, -15.8],
+    zoom: 3.5,
+    pitch: 0,
+    maxPitch: 85,
+    attributionControl: { compact: true }
+  });
+  const map = _map;
+  map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+  map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
+
+  map.on('load', async () => {
+    addDataLayers(map, refs);
+
+    /* coordenadas em tempo real */
+    map.on('mousemove', (e) => {
+      refs.coordEl.textContent =
+        `LAT ${e.lngLat.lat.toFixed(4)}  LON ${e.lngLat.lng.toFixed(4)}`;
+    });
+
+    /* primeira carga */
+    await loadRadar(map);
+    setVis(map, ['radar-layer'], refs.radar.checked);
+    refreshAir(map, refs);
+
+    /* timers tempo real */
+    _timers.push(setInterval(() => refreshAir(map, refs), 12000));
+    _timers.push(setInterval(() => refreshNaval(map, refs), 20000));
+    _timers.push(setInterval(() => refreshTemp(map, refs), 5 * 60000));
+    _timers.push(setInterval(() => loadRadar(map), 5 * 60000));
+    map.on('moveend', () => { refreshAir(map, refs); refreshTemp(map, refs); });
+  });
+
+  return map;
+}
+
+/* ════════════════════════════════════
+   Página
+   ════════════════════════════════════ */
 export function mapaPage() {
   cleanup();
 
-  const mapEl = h('div', { id: 'mapa-map', className: 'mapa-map' });
-  const infoEl = h('span', { className: 'mapa-info__count' }, '…');
+  const mapEl = h('div', { className: 'mapa-ml' });
+  const statusEl = h('span', { className: 'mapa-live__status' }, 'Inicializando…');
+  const coordEl = h('span', { className: 'mapa-coord' }, 'LAT —  LON —');
 
-  const layerFlight = h('input', { type: 'checkbox', id: 'lyr-flight', checked: true });
-  const layerWeather = h('input', { type: 'checkbox', id: 'lyr-weather', checked: true });
+  const mk = (checked = false) => h('input', { type: 'checkbox', checked });
+  const air = mk(true), naval = mk(false), temp = mk(false), radar = mk(true),
+        cabos = mk(false), grid = mk(false), gebco = mk(false), hill = mk(false);
 
-  const radarSlider = h('input', { type: 'range', className: 'mapa-slider', min: 0, max: 10, value: 0 });
-  const radarTimeEl = h('span', { className: 'mapa-radar-time' }, '--:--');
-  let animRunning = false;
-  let L_ref = null;
+  const refs = { air, naval, temp, radar, statusEl, coordEl, counts: { air: 0, naval: 0 } };
 
-  const animBtn = h('button', { className: 'mapa-btn', onclick: () => {
-    if (!L_ref) return;
-    animRunning = animateRadar(L_ref, radarSlider, radarTimeEl);
-    animBtn.textContent = animRunning ? '⏹ Parar' : '▶ Animar';
-  }}, '▶ Animar');
+  /* Base layer radios */
+  let base = 'sat';
+  function setBase(b) {
+    base = b;
+    if (!_map) return;
+    setVis(_map, ['base-sat'], b === 'sat');
+    setVis(_map, ['base-dark'], b === 'dark');
+    setVis(_map, ['base-terreno'], b === 'terreno');
+  }
 
-  const locBtn = h('button', { className: 'mapa-btn', onclick: () => {
-    if (!_map || !navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(pos => {
-      _map.setView([pos.coords.latitude, pos.coords.longitude], 10);
-    });
-  }}, '◉ Minha posição');
-
-  const wrap = h('div', { className: 'mapa-page' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🗺 Mapa Mundial'),
-      h('p', { className: 'u-text-muted' }, 'Tráfego aéreo em tempo real + radar meteorológico.')
-    ),
-
-    h('div', { className: 'mapa-toolbar' },
-      h('label', { className: 'mapa-layer-toggle' },
-        layerFlight,
-        h('span', null, '✈ Tráfego Aéreo')
-      ),
-      h('label', { className: 'mapa-layer-toggle' },
-        layerWeather,
-        h('span', null, '🌧 Radar Chuva')
-      ),
-      h('div', { className: 'mapa-info' }, infoEl),
-      locBtn
-    ),
-
-    h('div', { className: 'mapa-wrap' }, mapEl),
-
-    h('div', { className: 'mapa-radar-bar' },
-      h('span', { className: 'mapa-radar-label' }, '🌩 Radar:'),
-      radarSlider,
-      radarTimeEl,
-      animBtn
+  const baseBtns = h('div', { className: 'mapa-base-group' },
+    ...[['sat', '🛰 Satélite'], ['dark', '◗ Tático'], ['terreno', '⛰ Terreno']].map(([id, label]) =>
+      h('button', {
+        className: `mapa-base-btn${id === 'sat' ? ' is-active' : ''}`,
+        onclick: (e) => {
+          document.querySelectorAll('.mapa-base-btn').forEach(b => b.classList.remove('is-active'));
+          e.currentTarget.classList.add('is-active');
+          setBase(id);
+        }
+      }, label)
     )
   );
 
-  /* init assíncrono após mount */
-  requestAnimationFrame(async () => {
-    L_ref = await initMap(mapEl, infoEl, radarSlider, radarTimeEl, layerFlight, layerWeather);
-    _container = wrap;
+  /* Terreno 3D + exagero */
+  const exag = h('input', { type: 'range', min: 1, max: 4, step: 0.5, value: 1.5, className: 'mapa-slider' });
+  const terrain3dBtn = h('button', { className: 'mapa-btn', onclick: () => {
+    if (!_map) return;
+    _terrainOn = !_terrainOn;
+    if (_terrainOn) {
+      _map.setTerrain({ source: 'dem', exaggeration: +exag.value });
+      _map.easeTo({ pitch: 60, duration: 800 });
+      terrain3dBtn.classList.add('is-active');
+      terrain3dBtn.textContent = '⛰ 3D ON';
+    } else {
+      _map.setTerrain(null);
+      _map.easeTo({ pitch: 0, duration: 800 });
+      terrain3dBtn.classList.remove('is-active');
+      terrain3dBtn.textContent = '⛰ Relevo 3D';
+    }
+  }}, '⛰ Relevo 3D');
+  exag.addEventListener('input', () => { if (_terrainOn && _map) _map.setTerrain({ source: 'dem', exaggeration: +exag.value }); });
+
+  /* Globo */
+  const globeBtn = h('button', { className: 'mapa-btn', onclick: () => {
+    if (!_map) return;
+    const cur = _map.getProjection?.()?.type;
+    const next = cur === 'globe' ? 'mercator' : 'globe';
+    try { _map.setProjection({ type: next }); globeBtn.classList.toggle('is-active', next === 'globe'); } catch {}
+  }}, '🌐 Globo');
+
+  /* Overlays — wiring */
+  function wire(input, layers, onToggle) {
+    input.addEventListener('change', () => {
+      if (_map) setVis(_map, layers, input.checked);
+      if (input.checked && onToggle) onToggle();
+    });
+  }
+  wire(air, ['air-layer'], () => refreshAir(_map, refs));
+  wire(naval, ['naval-layer'], () => refreshNaval(_map, refs));
+  wire(temp, ['temp-layer', 'temp-label'], () => refreshTemp(_map, refs));
+  wire(radar, ['radar-layer']);
+  wire(grid, ['grid-layer']);
+  wire(hill, ['hillshade']);
+  wire(gebco, ['gebco-layer']);
+  cabos.addEventListener('change', async () => {
+    if (_map) setVis(_map, ['cabos-layer'], cabos.checked);
+    if (cabos.checked && _map?.getSource('cabos')) {
+      const data = await fetchCabos();
+      if (data) _map.getSource('cabos').setData(data);
+    }
   });
 
-  /* cleanup ao sair */
+  const layerToggle = (input, label, hint) =>
+    h('label', { className: 'mapa-tog' }, input, h('span', null, label),
+      hint && h('small', { className: 'mapa-tog__hint' }, hint));
+
+  const panel = h('div', { className: 'mapa-panel' },
+    h('div', { className: 'mapa-panel__sec' },
+      h('div', { className: 'mapa-panel__title' }, 'Base'),
+      baseBtns
+    ),
+    h('div', { className: 'mapa-panel__sec' },
+      h('div', { className: 'mapa-panel__title' }, 'Relevo'),
+      h('div', { className: 'mapa-panel__row' }, terrain3dBtn, globeBtn),
+      h('div', { className: 'mapa-panel__row' },
+        h('span', { className: 'mapa-exag-lbl' }, 'Exagero'), exag),
+      layerToggle(hill, 'Sombreamento (hillshade)')
+    ),
+    h('div', { className: 'mapa-panel__sec' },
+      h('div', { className: 'mapa-panel__title' }, '◗ Camadas Táticas'),
+      layerToggle(air, '✈ Espaço Aéreo', 'tempo real'),
+      layerToggle(naval, '🚢 Naval (AIS)', 'tempo real · Báltico'),
+      layerToggle(cabos, '🔌 Cabos Submarinos'),
+      layerToggle(gebco, '🌊 Batimetria (subaquático)'),
+      layerToggle(temp, '🌡 Temperatura'),
+      layerToggle(radar, '🌧 Radar de Chuva'),
+      layerToggle(grid, '⊞ Grid de Coordenadas')
+    ),
+    h('div', { className: 'mapa-panel__sec' },
+      h('button', { className: 'mapa-btn mapa-btn--full', onclick: () => {
+        if (_map && navigator.geolocation) navigator.geolocation.getCurrentPosition(
+          p => _map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 11 }));
+      }}, '◉ Minha posição'),
+      h('button', { className: 'mapa-btn mapa-btn--full', onclick: () => {
+        if (_map) _map.flyTo({ center: [22, 59.5], zoom: 6 });
+      }}, '🚢 Ver navios (Báltico)')
+    )
+  );
+
+  const wrap = h('div', { className: 'mapa-tac-page' },
+    h('div', { className: 'mapa-tac-head' },
+      h('div', null,
+        h('h1', { className: 'mapa-tac-title' }, '◗ Mapa Tático Mundial'),
+        h('p', { className: 'mapa-tac-sub' }, 'Espaço aéreo, naval, subaquático e terreno 3D em tempo real.')
+      ),
+      h('div', { className: 'mapa-live' },
+        h('span', { className: 'mapa-live__dot' }),
+        statusEl
+      )
+    ),
+    h('div', { className: 'mapa-tac-body' },
+      panel,
+      h('div', { className: 'mapa-tac-viewport' },
+        mapEl,
+        h('div', { className: 'mapa-coord-bar' }, coordEl)
+      )
+    )
+  );
+
+  requestAnimationFrame(() => initMap(mapEl, refs));
+
   const obs = new MutationObserver(() => {
     if (!document.body.contains(wrap)) { cleanup(); obs.disconnect(); }
   });
