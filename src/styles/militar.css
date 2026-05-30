@@ -464,3 +464,106 @@
   position: absolute; bottom: -14px; left: 28px; z-index: 1;
   color: var(--color-text-muted); font-size: var(--font-size-sm);
 }
+
+/* ════════════════════════════════════
+   Tecnologia Militar
+   ════════════════════════════════════ */
+.tech-page { padding: var(--space-md); max-width: 1300px; margin: 0 auto; }
+.tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-md); }
+.tech-card {
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg); transition: border-color var(--transition-base);
+}
+.tech-card:hover { border-color: rgba(0,240,255,.25); }
+.tech-card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-sm); margin-bottom: var(--space-xs); }
+.tech-card__nome { font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.tech-status { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; border-radius: var(--radius-pill); padding: 2px 8px; white-space: nowrap; }
+.tech-status--op    { background: var(--color-success-soft); color: var(--color-success); }
+.tech-status--impl  { background: var(--color-cyan-soft); color: var(--color-cyan); }
+.tech-status--teste { background: var(--color-warning-soft); color: var(--color-warning); }
+.tech-status--pesq  { background: rgba(255,255,255,.06); color: var(--color-text-muted); }
+.tech-status--contro{ background: rgba(255,80,0,.15); color: #ff8040; }
+.tech-card__desc { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0 0 var(--space-sm); line-height: 1.45; }
+.tech-card__ex-label { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.tech-chip {
+  display: inline-block; font-size: 11px; color: var(--color-cyan); background: var(--color-cyan-soft);
+  border-radius: var(--radius-pill); padding: 1px 8px; margin: 2px 3px 0 0;
+}
+
+/* ════════════════════════════════════
+   Táticas & Estratégias
+   ════════════════════════════════════ */
+.tat-page { padding: var(--space-md); max-width: 1300px; margin: 0 auto; }
+.tat-section { margin-bottom: var(--space-2xl); }
+.tat-section-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-md); }
+.tat-princ-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-md); }
+.tat-princ {
+  background: var(--color-surface); border: var(--border-thin); border-left: 3px solid var(--color-cyan);
+  border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg);
+}
+.tat-princ__nome { font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: 4px; }
+.tat-princ__desc { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0 0 var(--space-xs); line-height: 1.4; }
+.tat-princ__origem { font-size: var(--font-size-xs); color: var(--color-cyan); font-style: italic; }
+.tat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-md); }
+.tat-card {
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg); transition: transform var(--transition-base);
+  border-top: 3px solid var(--color-text-muted);
+}
+.tat-card:hover { transform: translateY(-2px); }
+.tat-card--ant  { border-top-color: #c9a227; }
+.tat-card--mod  { border-top-color: #4a90d9; }
+.tat-card--irr  { border-top-color: #2ecc71; }
+.tat-card--cont { border-top-color: var(--color-magenta); }
+.tat-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); }
+.tat-card__nome { font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.tat-card__era { font-size: var(--font-size-xs); color: var(--color-text-muted); font-family: var(--font-mono); white-space: nowrap; }
+.tat-card__desc { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: var(--space-xs) 0; line-height: 1.45; }
+.tat-card__ex { font-size: var(--font-size-xs); color: var(--color-cyan); }
+.tat-estr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); }
+.tat-estr { background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg); }
+.tat-estr__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); }
+.tat-estr__nome { font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.tat-estr__epoca { font-size: var(--font-size-xs); color: var(--color-text-muted); font-family: var(--font-mono); }
+.tat-estr__obra { font-size: var(--font-size-sm); color: var(--color-cyan); margin: 2px 0 var(--space-xs); }
+.tat-estr__ideia { font-size: var(--font-size-sm); color: var(--color-text-secondary); font-style: italic; margin: 0; line-height: 1.45; }
+
+/* ════════════════════════════════════
+   História Militar (timeline)
+   ════════════════════════════════════ */
+.hist-page { padding: var(--space-md); max-width: 900px; margin: 0 auto; }
+.hist-timeline { position: relative; padding-left: var(--space-lg); }
+.hist-timeline::before {
+  content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px;
+  background: linear-gradient(var(--color-cyan), var(--color-magenta)); opacity: .4;
+}
+.hist-era { position: relative; margin-bottom: var(--space-md); }
+.hist-era__dot {
+  position: absolute; left: calc(-1 * var(--space-lg) + 1px); top: 14px;
+  width: 14px; height: 14px; border-radius: 50%; background: var(--color-bg);
+  border: 2px solid var(--color-cyan); z-index: 1;
+}
+.hist-era--era1 .hist-era__dot { border-color: #c9a227; }
+.hist-era--era2 .hist-era__dot { border-color: #d98a4a; }
+.hist-era--era3 .hist-era__dot { border-color: #a05a8a; }
+.hist-era--era4 .hist-era__dot { border-color: #4a6fd9; }
+.hist-era--era5 .hist-era__dot { border-color: #4a9dd9; }
+.hist-era--era6 .hist-era__dot { border-color: #d94a4a; }
+.hist-era--era7 .hist-era__dot { border-color: var(--color-magenta); }
+.hist-era__body { background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md); overflow: hidden; }
+.hist-era.is-open .hist-era__body { border-color: rgba(0,240,255,.3); }
+.hist-era__header {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  background: none; border: none; cursor: pointer; padding: var(--space-md) var(--space-lg); text-align: left;
+}
+.hist-era__nome { font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); }
+.hist-era__periodo { font-size: var(--font-size-xs); color: var(--color-text-muted); font-family: var(--font-mono); margin-top: 2px; }
+.hist-era__toggle { color: var(--color-cyan); font-size: var(--font-size-base); transition: transform var(--transition-base); }
+.hist-era.is-open .hist-era__toggle { transform: rotate(180deg); }
+.hist-detail { padding: 0 var(--space-lg) var(--space-md); }
+.hist-detail__resumo { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; margin: 0 0 var(--space-sm); }
+.hist-detail__marcos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.hist-detail__marcos li {
+  font-size: var(--font-size-sm); color: var(--color-text-secondary); padding-left: var(--space-md); position: relative; line-height: 1.4;
+}
+.hist-detail__marcos li::before { content: '▸'; position: absolute; left: 0; color: var(--color-cyan); }
