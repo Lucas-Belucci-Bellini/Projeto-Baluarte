@@ -567,3 +567,103 @@
   font-size: var(--font-size-sm); color: var(--color-text-secondary); padding-left: var(--space-md); position: relative; line-height: 1.4;
 }
 .hist-detail__marcos li::before { content: '▸'; position: absolute; left: 0; color: var(--color-cyan); }
+
+/* ════════════════════════════════════
+   Armas por País
+   ════════════════════════════════════ */
+.apais-page { padding: var(--space-md); max-width: 1300px; margin: 0 auto; }
+.apais-filters { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: center; margin-bottom: var(--space-lg); }
+.apais-filter { display: flex; flex-direction: column; gap: 2px; }
+.apais-filter span { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--color-text-muted); }
+.apais-select {
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-sm);
+  color: var(--color-text-primary); font-size: var(--font-size-sm); padding: var(--space-xs) var(--space-sm); cursor: pointer;
+}
+.apais-select:focus { outline: none; border-color: rgba(0,240,255,.4); }
+.apais-count { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-cyan); margin-left: auto; }
+.apais-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-sm); }
+.apais-card {
+  display: flex; align-items: center; gap: var(--space-md);
+  background: var(--color-surface); border: var(--border-thin); border-left: 3px solid var(--color-text-muted);
+  border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); transition: transform var(--transition-base);
+}
+.apais-card:hover { transform: translateY(-2px); }
+.apais-card--infantaria { border-left-color: #2ecc71; }
+.apais-card--blindado   { border-left-color: #e67e22; }
+.apais-card--aéreo      { border-left-color: #4a9dd9; }
+.apais-card--naval      { border-left-color: #3b6cff; }
+.apais-card--míssil     { border-left-color: var(--color-magenta); }
+.apais-card--artilharia { border-left-color: #c0392b; }
+.apais-card__flag { font-size: 1.6rem; flex-shrink: 0; }
+.apais-card__info { flex: 1; min-width: 0; }
+.apais-card__nome { font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.apais-card__pais { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.apais-card__tags { display: flex; flex-direction: column; gap: 3px; align-items: flex-end; }
+.apais-tag { font-size: 10px; font-family: var(--font-mono); color: var(--color-text-muted); background: rgba(255,255,255,.05); border-radius: var(--radius-pill); padding: 1px 6px; white-space: nowrap; }
+.apais-tag--tipo  { color: var(--color-cyan); background: var(--color-cyan-soft); }
+.apais-tag--ativo { color: var(--color-success); }
+.apais-tag--legado{ color: var(--color-text-muted); }
+
+/* ════════════════════════════════════
+   Guerras & Conflitos (timeline)
+   ════════════════════════════════════ */
+.guerra-page { padding: var(--space-md); max-width: 1000px; margin: 0 auto; }
+.guerra-filters { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-lg); }
+.guerra-filter {
+  background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-pill);
+  color: var(--color-text-muted); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);
+  padding: var(--space-xs) var(--space-md); cursor: pointer; transition: all var(--transition-base);
+}
+.guerra-filter.is-active, .guerra-filter:hover { background: var(--color-cyan-soft); border-color: rgba(0,240,255,.3); color: var(--color-cyan); }
+.guerra-timeline { position: relative; padding-left: var(--space-lg); }
+.guerra-timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(var(--color-cyan), var(--color-magenta)); opacity: .35; }
+.guerra-item { position: relative; margin-bottom: var(--space-md); }
+.guerra-item__dot { position: absolute; left: calc(-1 * var(--space-lg) + 1px); top: 16px; width: 14px; height: 14px; border-radius: 50%; background: var(--color-bg); border: 2px solid var(--color-cyan); z-index: 1; }
+.guerra-item--ant .guerra-item__dot  { border-color: #c9a227; }
+.guerra-item--med .guerra-item__dot  { border-color: #a05a8a; }
+.guerra-item--pol .guerra-item__dot  { border-color: #4a6fd9; }
+.guerra-item--ind .guerra-item__dot  { border-color: #4a9dd9; }
+.guerra-item--ww .guerra-item__dot   { border-color: #d94a4a; }
+.guerra-item--gf .guerra-item__dot   { border-color: #e67e22; }
+.guerra-item--cont .guerra-item__dot { border-color: var(--color-magenta); }
+.guerra-item__card { background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg); transition: border-color var(--transition-base); }
+.guerra-item__card:hover { border-color: rgba(0,240,255,.25); }
+.guerra-item__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); flex-wrap: wrap; }
+.guerra-item__nome { font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.guerra-item__periodo { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-cyan); }
+.guerra-item__meta { display: flex; gap: var(--space-sm); margin: var(--space-xs) 0; }
+.guerra-item__era { font-size: var(--font-size-xs); color: var(--color-text-muted); background: rgba(255,255,255,.05); border-radius: var(--radius-pill); padding: 1px 8px; }
+.guerra-item__baixas { font-size: var(--font-size-xs); color: #ff8040; }
+.guerra-item__desc { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; line-height: 1.45; }
+
+/* ════════════════════════════════════
+   Batalhas Históricas
+   ════════════════════════════════════ */
+.batalha-page { padding: var(--space-md); max-width: 1300px; margin: 0 auto; }
+.batalha-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-md); }
+.batalha-card {
+  background: var(--color-surface); border: var(--border-thin); border-top: 3px solid var(--color-text-muted);
+  border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg); transition: transform var(--transition-base);
+}
+.batalha-card:hover { transform: translateY(-2px); }
+.batalha-card--ant  { border-top-color: #c9a227; }
+.batalha-card--med  { border-top-color: #a05a8a; }
+.batalha-card--pol  { border-top-color: #4a6fd9; }
+.batalha-card--ind  { border-top-color: #4a9dd9; }
+.batalha-card--ww   { border-top-color: #d94a4a; }
+.batalha-card--gf   { border-top-color: #e67e22; }
+.batalha-card--cont { border-top-color: var(--color-magenta); }
+.batalha-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-sm); }
+.batalha-card__nome { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+.batalha-card__ano { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-cyan); }
+.batalha-card__local { font-size: var(--font-size-xs); color: var(--color-text-muted); margin: 2px 0 var(--space-sm); }
+.batalha-card__vs { display: flex; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+.batalha-vs { flex: 1; border-radius: var(--radius-sm); padding: var(--space-xs) var(--space-sm); }
+.batalha-vs--win  { background: var(--color-success-soft); }
+.batalha-vs--lose { background: rgba(255,80,0,.08); }
+.batalha-vs__lbl { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: .5px; color: var(--color-text-muted); }
+.batalha-vs__nome { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); }
+.batalha-vs--win .batalha-vs__nome  { color: var(--color-success); }
+.batalha-card__tatica { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: var(--space-xs); }
+.batalha-card__tatica-lbl { color: var(--color-cyan); }
+.batalha-card__impacto { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; line-height: 1.45; }
