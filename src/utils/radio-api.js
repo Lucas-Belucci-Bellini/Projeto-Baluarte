@@ -8,38 +8,81 @@
  * até algum responder — assim a busca não cai se um servidor sair do ar.
  */
 
-/* all.api.* é o round-robin oficial (sempre aponta para um servidor vivo);
- * vem primeiro. Os nomeados são fallback — alguns saem do ar de tempos em tempos. */
+/* all.api.* é o round-robin oficial (sempre aponta para um servidor vivo).
+ * Os nomeados são mirrors diretos — úteis se a rede resolver um host e não outro. */
 const MIRRORS = [
   'https://all.api.radio-browser.info',
   'https://de1.api.radio-browser.info',
   'https://fi1.api.radio-browser.info',
   'https://nl1.api.radio-browser.info',
-  'https://de2.api.radio-browser.info'
+  'https://de2.api.radio-browser.info',
+  'https://at1.api.radio-browser.info'
 ];
 
-const TIMEOUT_MS = 8000;
+/* Proxies CORS públicos — último recurso quando a rede bloqueia o domínio
+ * radio-browser.info por completo (DNS/firewall). Recebem a URL alvo
+ * codificada e a repassam, contornando o bloqueio do domínio original. */
+const CORS_PROXIES = [
+  (u) => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+  (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+  (u) => 'https://thingproxy.freeboard.io/fetch/' + u
+];
 
-function fetchWithTimeout(url) {
+const TIMEOUT_MS = 6000;
+
+/* Último mirror que respondeu — tentado primeiro nas chamadas seguintes. */
+let preferredMirror = null;
+
+function fetchWithTimeout(url, ms = TIMEOUT_MS) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), ms);
   return fetch(url, { signal: controller.signal, headers: { Accept: 'application/json' } })
     .finally(() => clearTimeout(timer));
 }
 
-/** Tenta cada mirror em ordem até um responder com JSON válido. */
+async function tryFetchJson(url, ms) {
+  const res = await fetchWithTimeout(url, ms);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Busca em todos os mirrors. Estratégia:
+ *  1. Se já há um mirror preferido (que funcionou antes), tenta ele primeiro.
+ *  2. Corrida paralela em todos os mirrors — o primeiro a responder vence
+ *     (rede que resolve qualquer um dos hosts já funciona, sem esperar timeouts).
+ *  3. Se TODOS falharem (domínio bloqueado na rede), passa por proxies CORS.
+ */
 async function apiGet(path) {
-  let lastError = null;
-  for (const base of MIRRORS) {
-    try {
-      const res = await fetchWithTimeout(base + path);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
-    } catch (err) {
-      lastError = err;
-    }
+  /* 1. Mirror preferido (resposta rápida no caso comum) */
+  if (preferredMirror) {
+    try { return await tryFetchJson(preferredMirror + path); }
+    catch { preferredMirror = null; }
   }
-  throw new Error('Radio Browser indisponível — ' + (lastError ? lastError.message : 'sem resposta'));
+
+  /* 2. Corrida paralela — primeiro a resolver vence */
+  try {
+    return await new Promise((resolve, reject) => {
+      let pending = MIRRORS.length;
+      let lastErr = null;
+      MIRRORS.forEach((base) => {
+        tryFetchJson(base + path)
+          .then((json) => { preferredMirror = base; resolve(json); })
+          .catch((err) => {
+            lastErr = err;
+            if (--pending === 0) reject(lastErr || new Error('sem resposta'));
+          });
+      });
+    });
+  } catch (directErr) {
+    /* 3. Domínio provavelmente bloqueado — tenta via proxies CORS */
+    const target = MIRRORS[0] + path;
+    for (const proxy of CORS_PROXIES) {
+      try { return await tryFetchJson(proxy(target), TIMEOUT_MS + 3000); }
+      catch { /* tenta o próximo proxy */ }
+    }
+    throw new Error('Radio Browser indisponível nesta rede — ' + (directErr.message || 'sem resposta'));
+  }
 }
 
 /** Países do seletor de busca (value = código ISO usado no parâmetro countrycode). */
