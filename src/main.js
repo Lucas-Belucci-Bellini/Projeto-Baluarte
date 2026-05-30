@@ -64,6 +64,7 @@ import { llmLabPage } from './pages/llm-lab.js';
 import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
 import { roadmapPage } from './pages/roadmap.js';
+import { jarvisDashboardPage } from './pages/jarvis-dashboard.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
@@ -127,6 +128,7 @@ router.register('/llm-lab', () => llmLabPage());
 
 router.register('/sobre', () => sobrePage());
 router.register('/roadmap', () => roadmapPage());
+router.register('/jarvis-dashboard', () => jarvisDashboardPage());
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.

@@ -20,8 +20,12 @@ Depois, no site: J.A.R.V.I.S. -> ⚙ -> modo "Servidor" (URL http://127.0.0.1:80
 """
 
 import os
+import json
+import glob
+from pathlib import Path
+from datetime import datetime
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from google import genai
@@ -98,6 +102,147 @@ def chat(req: ChatRequest):
         return {"resposta": f"[erro no servidor da IA: {e}]"}
 
     return {"resposta": resp.text or "(resposta vazia)"}
+
+
+# ══════════════════════════════════════════════════════════════════
+#  Jarvis DB — endpoints para o site ler o Git DB em tempo real
+# ══════════════════════════════════════════════════════════════════
+
+JARVIS_DB = Path(os.environ.get("JARVIS_DB_PATH", Path.home() / ".jarvis-db"))
+
+
+def _db_exists():
+    return JARVIS_DB.exists()
+
+
+@app.get("/jarvis-db/status")
+def jarvis_db_status():
+    """Status geral do Git DB do Jarvis."""
+    if not _db_exists():
+        return {"online": False, "path": str(JARVIS_DB)}
+
+    sessions_count = len(list(JARVIS_DB.glob("sessions/**/*.json")))
+    users = [p.stem for p in (JARVIS_DB / "memory").glob("*.json")] if (JARVIS_DB / "memory").exists() else []
+    events_today = 0
+    today_log = JARVIS_DB / "events" / f"{datetime.now().strftime('%Y-%m-%d')}.jsonl"
+    if today_log.exists():
+        events_today = sum(1 for _ in open(today_log))
+
+    # último commit via git log
+    last_commit = "—"
+    try:
+        from git import Repo
+        repo = Repo(JARVIS_DB)
+        c = next(repo.iter_commits(), None)
+        if c:
+            last_commit = f"{c.message.strip()[:60]} ({datetime.fromtimestamp(c.committed_date).strftime('%d/%m %H:%M')})"
+    except Exception:
+        pass
+
+    return {
+        "online": True,
+        "path": str(JARVIS_DB),
+        "sessions": sessions_count,
+        "users": users,
+        "events_today": events_today,
+        "last_commit": last_commit,
+    }
+
+
+@app.get("/jarvis-db/sessions")
+def jarvis_sessions(limit: int = 20, user: str = None):
+    """Lista sessões recentes do Jarvis."""
+    if not _db_exists():
+        raise HTTPException(404, "Jarvis DB não encontrado")
+
+    files = sorted(JARVIS_DB.glob("sessions/**/*.json"), reverse=True)
+    result = []
+    for f in files:
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+            if user and data.get("user") != user:
+                continue
+            result.append({
+                "user":     data.get("user", "—"),
+                "started":  data.get("started", ""),
+                "messages": data.get("message_count", 0),
+                "summary":  data.get("summary", "")[:120],
+                "file":     f.name,
+            })
+            if len(result) >= limit:
+                break
+        except Exception:
+            continue
+
+    return {"sessions": result, "total": len(result)}
+
+
+@app.get("/jarvis-db/sessions/{filename}")
+def jarvis_session_detail(filename: str):
+    """Retorna transcrição completa de uma sessão."""
+    matches = list(JARVIS_DB.glob(f"sessions/**/{filename}"))
+    if not matches:
+        raise HTTPException(404, "Sessão não encontrada")
+    try:
+        return json.loads(matches[0].read_text(encoding="utf-8"))
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
+@app.get("/jarvis-db/memory/{user}")
+def jarvis_memory(user: str):
+    """Fatos persistentes de um usuário."""
+    mem_file = JARVIS_DB / "memory" / f"{user}.json"
+    if not mem_file.exists():
+        return {"user": user, "facts": {}}
+    try:
+        data = json.loads(mem_file.read_text(encoding="utf-8"))
+        return {"user": user, "facts": data}
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
+@app.get("/jarvis-db/events")
+def jarvis_events(date: str = None, limit: int = 50):
+    """Eventos do dia (ou de uma data específica)."""
+    if not _db_exists():
+        raise HTTPException(404, "Jarvis DB não encontrado")
+
+    target = date or datetime.now().strftime("%Y-%m-%d")
+    log_file = JARVIS_DB / "events" / f"{target}.jsonl"
+    if not log_file.exists():
+        return {"date": target, "events": []}
+
+    events = []
+    for line in log_file.read_text(encoding="utf-8").splitlines():
+        try:
+            events.append(json.loads(line))
+        except Exception:
+            continue
+
+    return {"date": target, "events": events[-limit:]}
+
+
+@app.get("/jarvis-db/commits")
+def jarvis_commits(limit: int = 30):
+    """Últimos commits do Git DB."""
+    if not _db_exists():
+        raise HTTPException(404, "Jarvis DB não encontrado")
+    try:
+        from git import Repo
+        repo = Repo(JARVIS_DB)
+        commits = [
+            {
+                "hash":    c.hexsha[:8],
+                "message": c.message.strip()[:80],
+                "date":    datetime.fromtimestamp(c.committed_date).strftime("%d/%m %H:%M"),
+                "author":  c.author.name,
+            }
+            for c in list(repo.iter_commits())[:limit]
+        ]
+        return {"commits": commits}
+    except Exception as e:
+        raise HTTPException(500, str(e))
 
 
 if __name__ == "__main__":

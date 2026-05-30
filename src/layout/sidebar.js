@@ -24,9 +24,10 @@ export const NAV_GROUPS = [
   {
     label: 'IA & Jarvis',
     items: [
-      { path: '/jarvis',          label: 'J.A.R.V.I.S.',      icon: '◉', phase: 1 },
-      { path: '/llm-lab',         label: 'Mini-LLM do Zero',   icon: '🧠', phase: 1 },
-      { path: '/ia-proprietaria', label: 'IA Proprietária',    icon: '◎', phase: 1 }
+      { path: '/jarvis',           label: 'J.A.R.V.I.S.',      icon: '◉', phase: 1 },
+      { path: '/jarvis-dashboard', label: 'Jarvis Dashboard',   icon: '⬡', phase: 1 },
+      { path: '/llm-lab',          label: 'Mini-LLM do Zero',   icon: '🧠', phase: 1 },
+      { path: '/ia-proprietaria',  label: 'IA Proprietária',    icon: '◎', phase: 1 }
     ]
   },
   {
