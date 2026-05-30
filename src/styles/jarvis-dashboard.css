@@ -5,6 +5,7 @@
 .jd-header h1 { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
 .jd-header__meta { display: flex; align-items: center; gap: var(--space-3); font-size: 0.8rem; }
 .jd-badge--online { color: #22c55e; }
+.jd-badge--demo { color: #f0c000; }
 
 /* Grid */
 .jd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--space-4); }

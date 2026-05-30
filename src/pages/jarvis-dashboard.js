@@ -44,15 +44,76 @@ function statBox(label, value, sub = '') {
 
 function offlineBanner() {
   return h('div', { className: 'jd-offline' },
-    h('span', null, '⚠'),
+    h('span', null, '◐'),
     h('div', null,
-      h('strong', null, 'Backend offline'),
+      h('strong', null, 'Modo demonstração'),
       h('p', null,
-        'Para ver o dashboard vivo, inicie o servidor: ',
+        'Mostrando dados de exemplo. Para o dashboard vivo conectado ao Git DB, inicie o backend local: ',
         h('code', null, 'cd backend && python server.py')
       )
     )
   );
+}
+
+/* Dados de exemplo — usados quando o backend local não está rodando
+ * (ex.: no site publicado), para o dashboard ficar vivo mesmo offline. */
+function demoData() {
+  const now = Date.now();
+  const t = (m) => new Date(now - m * 60000).toISOString();
+  return {
+    status: {
+      online: true,
+      demo: true,
+      sessions: 7,
+      users: ['lucas'],
+      events_today: 14,
+      last_commit: 'feat: jarvis N4 — dashboard vivo'
+    },
+    sessions: [
+      { user: 'lucas', messages: 23, started: t(35), summary: 'Planejamento da seção militar e mapa tático.' },
+      { user: 'lucas', messages: 11, started: t(180), summary: 'Ajustes no visualizador FFT e rádio.' },
+      { user: 'lucas', messages: 6, started: t(600), summary: 'Revisão do roadmap e níveis do Jarvis.' }
+    ],
+    events: [
+      { type: 'voz', ts: t(2), user: 'lucas', input: 'Jarvis, status do sistema' },
+      { type: 'rosto', ts: t(5), user: 'lucas', input: 'reconhecimento facial confirmado' },
+      { type: 'movimento', ts: t(8), input: 'presença detectada pela câmera' },
+      { type: 'comando', ts: t(20), user: 'lucas', input: 'abrir mapa tático mundial' }
+    ],
+    memories: {
+      lucas: {
+        nome: 'Lucas',
+        projeto: 'Projeto Baluarte',
+        preferencia: 'tema neon escuro',
+        meta: 'Jarvis nível 5 — autonomia total'
+      }
+    },
+    commits: [
+      { hash: '91aaadb', message: 'feat: mapa tático MapLibre 3D', date: 'hoje' },
+      { hash: '7469130', message: 'feat: seção militar 12/12', date: 'ontem' },
+      { hash: 'd515d25', message: 'feat: tecnologia, táticas, história', date: 'há 2 dias' }
+    ]
+  };
+}
+
+function renderDashboard(root, status, sessions, events, memoriesMap, commits) {
+  empty(root);
+  if (status.demo) root.appendChild(offlineBanner());
+  root.appendChild(h('div', { className: 'jd-header' },
+    h('h1', null, '◉ Jarvis Dashboard'),
+    h('div', { className: 'jd-header__meta' },
+      h('span', { className: `jd-badge ${status.demo ? 'jd-badge--demo' : 'jd-badge--online'}` },
+        status.demo ? '◐ demonstração' : '● online'),
+      h('span', { className: 'u-text-muted' }, `Atualiza em ${POLL_INTERVAL / 1000}s`)
+    )
+  ));
+  const grid = h('div', { className: 'jd-grid' });
+  grid.appendChild(renderStatus(status));
+  grid.appendChild(renderSessions(sessions));
+  grid.appendChild(renderMemory(status.users || [], memoriesMap));
+  grid.appendChild(renderEvents(events));
+  grid.appendChild(renderCommits(commits));
+  root.appendChild(grid);
 }
 
 // ──────────────── Seções ────────────────
@@ -161,14 +222,15 @@ async function loadDashboard(root) {
   try {
     status = await api('/jarvis-db/status');
   } catch {
-    empty(root);
-    root.appendChild(offlineBanner());
+    /* Backend offline → modo demonstração com dados de exemplo. */
+    const d = demoData();
+    renderDashboard(root, d.status, d.sessions, d.events, d.memories, d.commits);
     return;
   }
 
   if (!status.online) {
-    empty(root);
-    root.appendChild(offlineBanner());
+    const d = demoData();
+    renderDashboard(root, d.status, d.sessions, d.events, d.memories, d.commits);
     return;
   }
 
@@ -192,25 +254,7 @@ async function loadDashboard(root) {
     } catch { memoriesMap[user] = {}; }
   }));
 
-  empty(root);
-
-  // header
-  root.appendChild(h('div', { className: 'jd-header' },
-    h('h1', null, '◉ Jarvis Dashboard'),
-    h('div', { className: 'jd-header__meta' },
-      h('span', { className: 'jd-badge jd-badge--online' }, '● online'),
-      h('span', { className: 'u-text-muted' }, `Atualiza em ${POLL_INTERVAL / 1000}s`)
-    )
-  ));
-
-  // grid principal
-  const grid = h('div', { className: 'jd-grid' });
-  grid.appendChild(renderStatus(status));
-  grid.appendChild(renderSessions(sessions));
-  grid.appendChild(renderMemory(status.users || [], memoriesMap));
-  grid.appendChild(renderEvents(events));
-  grid.appendChild(renderCommits(commits));
-  root.appendChild(grid);
+  renderDashboard(root, status, sessions, events, memoriesMap, commits);
 }
 
 // ──────────────── Ciclo de atualização ────────────────
