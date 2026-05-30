@@ -65,6 +65,7 @@ import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
 import { roadmapPage } from './pages/roadmap.js';
 import { initShadowGate } from './utils/shadow-gate.js';
+import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
 import { $ } from './utils/helpers.js';
@@ -165,6 +166,7 @@ function boot() {
   initToast();
   initShadowGate();
   router.start('/home');
+  setTimeout(() => hxBeacon(), 2000);
 
   console.log(
     `%c⬡ BALUARTE — Mark XIII · v${VERSION}`,
