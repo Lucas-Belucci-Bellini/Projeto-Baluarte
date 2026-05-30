@@ -26,6 +26,185 @@ let tracksCache = [];
 
 /* Refs DOM. */
 let rdCanvas, waterfallCanvas, detListEl, statusBar, modeBtns, freezeBtn;
+let rdMainEl = null; /* wrapper com RD + waterfall */
+let satCanvas = null;
+
+/* ===================== Satélites (CelesTrak + satellite.js) ===================== */
+
+let satLib = null;
+let satTles = [];
+let satLoopTimer = null;
+let satObserver = { lat: -15.8, lon: -47.9, alt: 0 }; /* Brasília como padrão */
+
+function loadSatLib() {
+  return new Promise(resolve => {
+    if (window.satellite) { resolve(window.satellite); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js';
+    s.onload = () => resolve(window.satellite);
+    s.onerror = () => resolve(null);
+    document.head.appendChild(s);
+  });
+}
+
+async function fetchTLE() {
+  const r = await fetch(
+    'https://celestrak.org/gp/query?GROUP=visual&FORMAT=JSON',
+    { signal: AbortSignal.timeout(14000) }
+  );
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+async function initSatMode() {
+  setStatus('link', 'carregando…');
+  setStatus('mode', 'SATÉLITE');
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      p => { satObserver = { lat: p.coords.latitude, lon: p.coords.longitude, alt: (p.coords.altitude || 0) / 1000 }; },
+      () => {}
+    );
+  }
+
+  satLib = await loadSatLib();
+  if (!satLib) {
+    toast('Falha ao carregar satellite.js', { type: 'warning' });
+    setStatus('link', 'ERRO');
+    return;
+  }
+
+  try {
+    const data = await fetchTLE();
+    satTles = data.map(d => {
+      try { return { name: (d.OBJECT_NAME || d.name || '???').trim(), satrec: satLib.twoline2satrec(d.TLE_LINE1, d.TLE_LINE2) }; }
+      catch { return null; }
+    }).filter(Boolean);
+    setStatus('link', 'LIVE');
+    toast(`${satTles.length} satélites carregados (CelesTrak)`, { type: 'success' });
+  } catch {
+    toast('Falha ao buscar TLEs da CelesTrak. Verifique a conexão.', { type: 'warning' });
+    setStatus('link', 'OFFLINE');
+    return;
+  }
+
+  function loop() {
+    if (mode !== 'satellite') return;
+    drawSatScope();
+    satLoopTimer = setTimeout(loop, 2000);
+  }
+  loop();
+}
+
+function stopSatMode() {
+  if (satLoopTimer) { clearTimeout(satLoopTimer); satLoopTimer = null; }
+}
+
+function drawSatScope() {
+  if (!satCanvas || !satLib || !satTles.length) return;
+  const ctx = satCanvas.getContext('2d');
+  const W = satCanvas.width, H = satCanvas.height;
+  const cx = W / 2, cy = H / 2;
+  const R = Math.min(cx, cy) - 28;
+
+  ctx.fillStyle = '#020409';
+  ctx.fillRect(0, 0, W, H);
+
+  /* Círculos de elevação: borda=0°, centro=90° */
+  const elToR = el => R * (1 - el / 90);
+  ctx.strokeStyle = 'rgba(0,240,255,0.12)';
+  ctx.lineWidth = 1;
+  [0, 30, 60].forEach(el => {
+    ctx.beginPath(); ctx.arc(cx, cy, elToR(el), 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = 'rgba(0,240,255,0.35)';
+    ctx.font = '9px "JetBrains Mono",monospace';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(`${el}°`, cx + elToR(el) + 3, cy);
+  });
+
+  /* Cruz + pontos cardeais */
+  ctx.strokeStyle = 'rgba(0,240,255,0.1)';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
+  ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
+  ctx.stroke();
+
+  ctx.fillStyle = '#00f0ff';
+  ctx.font = 'bold 10px "JetBrains Mono",monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  [['N', 0], ['L', 90], ['S', 180], ['O', 270]].forEach(([lbl, az]) => {
+    const rad = (az - 90) * Math.PI / 180;
+    ctx.fillText(lbl, cx + (R + 16) * Math.cos(rad), cy + (R + 16) * Math.sin(rad));
+  });
+
+  /* Propagação dos satélites */
+  const now = new Date();
+  const gmst = satLib.gstime(now);
+  const obGd = {
+    latitude:  satObserver.lat * Math.PI / 180,
+    longitude: satObserver.lon * Math.PI / 180,
+    height: satObserver.alt
+  };
+
+  const visible = [];
+  for (const { name, satrec } of satTles) {
+    try {
+      const pv = satLib.propagate(satrec, now);
+      if (!pv.position) continue;
+      const ecf = satLib.eciToEcf(pv.position, gmst);
+      const look = satLib.ecfToLookAngles(obGd, ecf);
+      const el = look.elevation * 180 / Math.PI;
+      const az = look.azimuth * 180 / Math.PI;
+      if (el < 0) continue;
+      visible.push({ name, el, az, range: look.rangeSat });
+    } catch {}
+  }
+
+  visible.sort((a, b) => b.el - a.el);
+  setStatus('tgt', String(visible.length));
+
+  visible.forEach(({ name, el, az }, i) => {
+    const r = elToR(el);
+    const rad = (az - 90) * Math.PI / 180;
+    const x = cx + r * Math.cos(rad);
+    const y = cy + r * Math.sin(rad);
+    const hi = el > 60;
+    ctx.fillStyle = hi ? '#ff00aa' : '#00f0ff';
+    ctx.beginPath(); ctx.arc(x, y, hi ? 4 : 2.5, 0, Math.PI * 2); ctx.fill();
+    if (i < 10 || hi) {
+      ctx.fillStyle = hi ? '#ff00aa' : 'rgba(0,240,255,0.75)';
+      ctx.font = '9px "JetBrains Mono",monospace';
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText(name.slice(0, 14), x + 6, y - 3);
+    }
+  });
+
+  /* Ponto no centro = zênite */
+  ctx.fillStyle = '#ffffff88';
+  ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
+
+  /* Info no canto */
+  ctx.fillStyle = 'rgba(0,240,255,0.5)';
+  ctx.font = '9px "JetBrains Mono",monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText(`OBS ${satObserver.lat.toFixed(1)}°, ${satObserver.lon.toFixed(1)}°`, 6, 6);
+  ctx.fillText(now.toLocaleTimeString('pt-BR'), 6, 18);
+
+  /* Lista de detecções */
+  empty(detListEl);
+  if (!visible.length) {
+    detListEl.appendChild(h('div', { className: 'u-text-muted u-mono' }, 'nenhum satélite acima do horizonte'));
+    return;
+  }
+  visible.slice(0, 15).forEach(({ name, el, az, range }) => {
+    detListEl.appendChild(h('div', { className: 'rdr-det-row' },
+      h('span', { className: 'rdr-det-row__id u-mono', style: 'max-width:90px;overflow:hidden' }, name.slice(0, 10)),
+      h('span', { className: 'rdr-det-row__range u-mono' }, `El ${el.toFixed(0)}°`),
+      h('span', { className: 'rdr-det-row__vel u-mono' }, `Az ${az.toFixed(0)}°`),
+      h('span', { className: 'rdr-det-row__snr u-mono u-text-cyan' }, `${Math.round(range)} km`)
+    ));
+  });
+}
 
 /* ===================== Render principal ===================== */
 
@@ -65,7 +244,8 @@ function buildConsole() {
     modeButton('acoustic', '🎙 ACÚSTICO'),
     modeButton('passive', 'PASSIVO'),
     modeButton('replay', 'REPLAY'),
-    modeButton('bridge', 'BRIDGE')
+    modeButton('bridge', 'BRIDGE'),
+    modeButton('satellite', '🛰 SATÉLITE')
   );
 
   const cfarSlider = h('input', {
@@ -137,6 +317,18 @@ function buildConsole() {
     waterfallCanvas
   );
 
+  /* Canvas Satélite (visível somente no modo satellite). */
+  satCanvas = h('canvas', { className: 'rdr-sat-scope', width: 512, height: 480, style: 'display:none' });
+  const satScope = h('div', { className: 'rdr-scope card', id: 'sat-scope-card', style: 'display:none' },
+    h('div', { className: 'rdr-scope__head' },
+      h('div', { className: 'rdr-scope__title' }, '🛰 RADAR DE SATÉLITES'),
+      h('div', { className: 'rdr-scope__legend u-mono u-text-muted' },
+        'AZ/EL da sua posição · centro=zênite · borda=horizonte'
+      )
+    ),
+    satCanvas
+  );
+
   /* Lista de detecções. */
   detListEl = h('div', { className: 'rdr-det-list' },
     h('div', { className: 'u-text-muted u-mono' }, 'sem alvos')
@@ -151,9 +343,10 @@ function buildConsole() {
     detListEl
   );
 
+  rdMainEl = h('div', { className: 'rdr-main' }, rdScope, wfScope, satScope);
   return h('div', { className: 'rdr-layout' },
     h('div', { className: 'rdr-side' }, statusBar, controls, detPanel),
-    h('div', { className: 'rdr-main' }, rdScope, wfScope)
+    rdMainEl
   );
 }
 
@@ -194,12 +387,32 @@ function setStatus(key, val) {
 /* ===================== Fonte ===================== */
 
 function switchSource(kind) {
+  /* Para modo satélite anterior, restaura RD/waterfall. */
+  if (mode === 'satellite' && kind !== 'satellite') {
+    stopSatMode();
+    if (rdCanvas) rdCanvas.parentElement.style.display = '';
+    if (waterfallCanvas) waterfallCanvas.parentElement.style.display = '';
+    const sc = document.getElementById('sat-scope-card');
+    if (sc) sc.style.display = 'none';
+  }
+
   if (source) source.stop();
   tracker.reset();
   tracksCache = [];
   mode = kind;
   modeBtns?.querySelectorAll('.rdr-mode').forEach((b) =>
     b.classList.toggle('is-active', b.dataset.kind === kind));
+
+  /* Satélite: esconde RD/waterfall, mostra sat scope. */
+  if (kind === 'satellite') {
+    if (rdCanvas) rdCanvas.parentElement.style.display = 'none';
+    if (waterfallCanvas) waterfallCanvas.parentElement.style.display = 'none';
+    const sc = document.getElementById('sat-scope-card');
+    if (sc) sc.style.display = '';
+    initSatMode();
+    return;
+  }
+
   setStatus('mode', kind.toUpperCase());
   setStatus('link', kind === 'bridge' ? 'conectando…' : (kind === 'acoustic' ? 'iniciando…' : '─'));
 
@@ -432,6 +645,7 @@ function renderDetections() {
 
 function cleanup() {
   if (source) { source.stop(); source = null; }
+  stopSatMode();
   tracker.reset();
   tracksCache = [];
   prevMag = null;

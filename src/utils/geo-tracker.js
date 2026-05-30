@@ -85,5 +85,10 @@ export function createGeoTracker() {
     return { count: points.length, dist, dur, avg, maxSpd, cur: points[points.length - 1] || null };
   }
 
-  return { start, stop, isRunning, clear, getPoints, stats };
+  function _injectPoint(p) {
+    points.push(p);
+    persist();
+  }
+
+  return { start, stop, isRunning, clear, getPoints, stats, _injectPoint };
 }

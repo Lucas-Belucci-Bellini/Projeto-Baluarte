@@ -66,9 +66,14 @@ function buildStyle() {
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     sources: {
       sat: {
-        type: 'raster', tileSize: 256, maxzoom: 21,
-        tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-        attribution: '© Esri'
+        type: 'raster', tileSize: 256, maxzoom: 22,
+        tiles: [
+          'https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+          'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+          'https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+          'https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+        ],
+        attribution: '© Google'
       },
       labels: {
         type: 'raster', tileSize: 256, maxzoom: 20,
@@ -399,7 +404,7 @@ async function initMap(mapEl, refs) {
     zoom: 3.5,
     pitch: 0,
     maxPitch: 85,
-    maxZoom: 20,
+    maxZoom: 22,
     attributionControl: { compact: true }
   });
   const map = _map;
@@ -561,8 +566,8 @@ export function mapaPage() {
           p => _map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 18 }));
       }}, '◉ Minha posição (zoom rua)'),
       h('button', { className: 'mapa-btn mapa-btn--full', onclick: () => {
-        if (_map) _map.zoomTo(Math.min(_map.getZoom() + 4, 20), { duration: 900 });
-      }}, '🔍 Zoom nível rua (~250 m)'),
+        if (_map) _map.zoomTo(Math.min(_map.getZoom() + 6, 22), { duration: 900 });
+      }}, '🔍 Zoom máximo (~5 m)'),
       h('button', { className: 'mapa-btn mapa-btn--full', onclick: () => {
         if (_map) _map.flyTo({ center: [22, 59.5], zoom: 6 });
       }}, '🚢 Ver navios (Báltico)')

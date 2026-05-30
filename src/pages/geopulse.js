@@ -60,7 +60,17 @@ export function geopulsePage() {
     }
   }, '🗑 Limpar');
 
-  const controls = h('div', { className: 'geo-controls card' }, startBtn, clearBtn);
+  const demoBtn = h('button', {
+    className: 'btn btn--ghost', onclick: () => {
+      if (tracker.isRunning()) { toast('Pare a trilha antes de simular.', { type: 'warning' }); return; }
+      tracker.clear();
+      simulateDemoTrack(tracker);
+      refresh();
+      toast('Trilha de demonstração carregada.', { type: 'success' });
+    }
+  }, '◉ Demo');
+
+  const controls = h('div', { className: 'geo-controls card' }, startBtn, clearBtn, demoBtn);
 
   function toggle() {
     if (tracker.isRunning()) {
@@ -150,6 +160,21 @@ function drawTrack(canvas, pts) {
   const b = proj(pts[pts.length - 1]);
   ctx.fillStyle = '#ff00aa';
   ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, Math.PI * 2); ctx.fill();
+}
+
+/* ===== Demo: simula uma trilha em Brasília ===== */
+function simulateDemoTrack(tracker) {
+  const baseLat = -15.7942, baseLon = -47.8825;
+  const now = Date.now();
+  let lat = baseLat, lon = baseLon;
+  let heading = 0.3;
+  for (let i = 0; i < 80; i++) {
+    heading += (Math.random() - 0.5) * 0.4;
+    lat += Math.cos(heading) * 0.00008 + (Math.random() - 0.5) * 0.00004;
+    lon += Math.sin(heading) * 0.00012 + (Math.random() - 0.5) * 0.00004;
+    const spd = 2 + Math.random() * 3;
+    tracker._injectPoint({ lat, lon, acc: 5, spd, t: now - (80 - i) * 8000 });
+  }
 }
 
 /* ===== Lista de pontos (mais recentes primeiro) ===== */

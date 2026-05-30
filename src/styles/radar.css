@@ -245,6 +245,15 @@
 /* alvo rastreado sem medida no frame (seguindo por inércia) */
 .rdr-det-row.is-coasting { opacity: 0.55; border-left-style: dashed; }
 
+/* ===== Satélite scope ===== */
+.rdr-sat-scope {
+  width: 100%;
+  max-width: 512px;
+  height: auto;
+  aspect-ratio: 512 / 480;
+  display: block;
+}
+
 /* ===== Celular: status quebra em 3 colunas e modos empilham melhor ===== */
 @media (max-width: 520px) {
   .rdr-status { grid-template-columns: repeat(3, 1fr); }
