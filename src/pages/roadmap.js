@@ -124,7 +124,7 @@ const ROADMAP_SITE = [
     icon: '◆',
     status: 'growing',
     isNew: false,
-    done: ['Elites', 'Arsenal', 'Radar Tático', 'GeoPulse', 'Onde Estou?', 'Triangulação', 'Mapa Mundial (tráfego aéreo + radar chuva)'],
+    done: ['Elites', 'Arsenal', 'Radar Tático', 'GeoPulse', 'Onde Estou?', 'Triangulação', 'Mapa Tático Mundial (MapLibre 3D)'],
     next: ['Integração GPS em tempo real', 'Alertas de tempestade']
   },
   {
