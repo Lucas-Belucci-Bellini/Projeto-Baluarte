@@ -43,6 +43,63 @@ const POSE_CONNECTIONS = [
 ];
 
 /* ══════════════════════════════════════
+   LATERALIDADE (handedness) — 4 funções dedicadas
+   ──────────────────────────────────────
+   O vídeo é espelhado (selfie). O MediaPipe rotula da perspectiva da
+   câmera, então o rótulo cru fica invertido na tela. Em vez de um
+   ternário único, separamos em 4 responsabilidades:
+
+     resolveLeft  / resolveRight  → produzem o rótulo de display
+     conferirLeft / conferirRight → validam o rótulo contra a posição
+                                    real do pulso na tela (cross-check)
+
+   O cross-check é a fonte da verdade: como a imagem é espelhada, a mão
+   que aparece no lado ESQUERDO da tela é a mão DIREITA da pessoa, e
+   vice-versa. Usamos a posição do pulso (x espelhado) para confirmar.
+   ══════════════════════════════════════ */
+
+/** Rótulo cru "Left" → display "RIGHT" (mão direita da pessoa). */
+function resolveLeft(rawLabel) {
+  return rawLabel === 'Left' ? 'RIGHT' : null;
+}
+
+/** Rótulo cru "Right" → display "LEFT" (mão esquerda da pessoa). */
+function resolveRight(rawLabel) {
+  return rawLabel === 'Right' ? 'LEFT' : null;
+}
+
+/**
+ * Confere se o display "RIGHT" bate com a posição.
+ * Com vídeo espelhado, a mão direita da pessoa aparece à ESQUERDA da
+ * tela → x espelhado (1 - wristX) < 0.5. Retorna true se consistente.
+ */
+function conferirRight(wristX) {
+  const screenX = 1 - wristX;        // x já espelhado no canvas
+  return screenX < 0.5;
+}
+
+/**
+ * Confere se o display "LEFT" bate com a posição.
+ * Mão esquerda da pessoa aparece à DIREITA da tela → x espelhado >= 0.5.
+ */
+function conferirLeft(wristX) {
+  const screenX = 1 - wristX;
+  return screenX >= 0.5;
+}
+
+/**
+ * Decide o rótulo final de uma mão combinando rótulo + cross-check de
+ * posição. Se o rótulo do MediaPipe contradiz a posição na tela,
+ * confiamos na POSIÇÃO (mais robusta com imagem espelhada).
+ */
+function decidirLado(rawLabel, wristX) {
+  let label = resolveLeft(rawLabel) || resolveRight(rawLabel) || rawLabel.toUpperCase();
+  if (label === 'RIGHT' && !conferirRight(wristX)) label = 'LEFT';
+  else if (label === 'LEFT' && !conferirLeft(wristX)) label = 'RIGHT';
+  return label;
+}
+
+/* ══════════════════════════════════════
    ENGINE — uma câmera, várias camadas
    ══════════════════════════════════════ */
 
@@ -107,7 +164,15 @@ class JarvisVision {
 
     if (this.opts.body) {
       this.pose = new window.Pose({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
-      this.pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      /* modelComplexity 2 = modelo mais preciso (heavy); smoothLandmarks
+       * suaviza tremores entre frames; segmentação desligada por custo. */
+      this.pose.setOptions({
+        modelComplexity: 2,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        minDetectionConfidence: 0.6,
+        minTrackingConfidence: 0.6
+      });
       this.pose.onResults(r => { this.poseResults = r; });
       await this.pose.initialize();
     }
@@ -201,19 +266,36 @@ class JarvisVision {
     if (!lm) return;
     const ctx = this.ctx;
     const X = (p) => (1 - p.x) * W, Y = (p) => p.y * H;
+    const VIS = 0.4;   // limiar de visibilidade um pouco mais alto = menos ruído
 
-    ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 10;
-    ctx.strokeStyle = 'rgba(0,240,255,0.8)'; ctx.lineWidth = 3;
+    /* Conexões — linha externa grossa translúcida + núcleo fino brilhante
+     * (efeito de "feixe de energia" estilo JARVIS). */
     for (const [a, b] of POSE_CONNECTIONS) {
       if (!lm[a] || !lm[b]) continue;
-      if ((lm[a].visibility ?? 1) < 0.3 || (lm[b].visibility ?? 1) < 0.3) continue;
-      ctx.beginPath(); ctx.moveTo(X(lm[a]), Y(lm[a])); ctx.lineTo(X(lm[b]), Y(lm[b])); ctx.stroke();
+      if ((lm[a].visibility ?? 1) < VIS || (lm[b].visibility ?? 1) < VIS) continue;
+      const x1 = X(lm[a]), y1 = Y(lm[a]), x2 = X(lm[b]), y2 = Y(lm[b]);
+      ctx.strokeStyle = 'rgba(0,240,255,0.18)'; ctx.lineWidth = 7; ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.strokeStyle = 'rgba(120,250,255,0.95)'; ctx.lineWidth = 2;
+      ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     }
+
+    /* Articulações principais (ombros, cotovelos, quadris, joelhos…) com
+     * halo maior; pontos do rosto (0..10) menores. */
+    const MAJOR = new Set([11,12,13,14,15,16,23,24,25,26,27,28]);
     for (let i = 0; i < lm.length; i++) {
-      if ((lm[i].visibility ?? 1) < 0.3) continue;
-      ctx.beginPath();
-      ctx.arc(X(lm[i]), Y(lm[i]), i <= 10 ? 3 : 5, 0, Math.PI * 2);
-      ctx.fillStyle = '#00f0ff'; ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 12;
+      if ((lm[i].visibility ?? 1) < VIS) continue;
+      const x = X(lm[i]), y = Y(lm[i]);
+      const major = MAJOR.has(i);
+      const r = i <= 10 ? 2.5 : major ? 6 : 4;
+      if (major) {
+        ctx.beginPath(); ctx.arc(x, y, r + 4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,240,255,0.18)'; ctx.shadowBlur = 0; ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = major ? '#7afaff' : '#00f0ff';
+      ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = major ? 16 : 10;
       ctx.fill();
     }
     ctx.shadowBlur = 0;
@@ -243,11 +325,10 @@ class JarvisVision {
         ctx.shadowBlur = wrist ? 16 : 10;
         ctx.fill();
       }
-      /* MediaPipe rotula da perspectiva da câmera. Como espelhamos o vídeo
-       * (ctx.scale(-1,1) para visão selfie), os lados ficam invertidos na
-       * tela — corrigimos trocando Left ↔ Right no display. */
+      /* Lado decidido pelas 4 funções dedicadas (rótulo + cross-check de
+       * posição). A posição do pulso na tela é a fonte da verdade. */
       const raw = this.handResults.multiHandedness?.[hi]?.label || '';
-      const label = raw === 'Left' ? 'RIGHT' : raw === 'Right' ? 'LEFT' : raw.toUpperCase();
+      const label = decidirLado(raw, lm[0].x);
       ctx.shadowBlur = 0; ctx.font = 'bold 13px monospace';
       const lx = X(lm[0]) - 20, ly = Y(lm[0]) + 28;
       ctx.fillStyle = 'rgba(0,12,24,0.55)';
