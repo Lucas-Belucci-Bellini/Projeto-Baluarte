@@ -243,9 +243,17 @@ class JarvisVision {
         ctx.shadowBlur = wrist ? 16 : 10;
         ctx.fill();
       }
-      const label = this.handResults.multiHandedness?.[hi]?.label || '';
-      ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(0,255,136,0.9)'; ctx.font = 'bold 14px monospace';
-      ctx.fillText(label.toUpperCase(), X(lm[0]) - 18, Y(lm[0]) + 28);
+      /* MediaPipe rotula da perspectiva da câmera. Como espelhamos o vídeo
+       * (ctx.scale(-1,1) para visão selfie), os lados ficam invertidos na
+       * tela — corrigimos trocando Left ↔ Right no display. */
+      const raw = this.handResults.multiHandedness?.[hi]?.label || '';
+      const label = raw === 'Left' ? 'RIGHT' : raw === 'Right' ? 'LEFT' : raw.toUpperCase();
+      ctx.shadowBlur = 0; ctx.font = 'bold 13px monospace';
+      const lx = X(lm[0]) - 20, ly = Y(lm[0]) + 28;
+      ctx.fillStyle = 'rgba(0,12,24,0.55)';
+      ctx.fillRect(lx - 2, ly - 13, ctx.measureText(label).width + 6, 17);
+      ctx.fillStyle = 'rgba(0,255,136,0.95)';
+      ctx.fillText(label, lx, ly);
     }
     ctx.shadowBlur = 0;
   }
