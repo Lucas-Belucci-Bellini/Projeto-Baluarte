@@ -129,7 +129,8 @@ export const NAV_GROUPS = [
   {
     label: 'Visão & Câmera',
     items: [
-      { path: '/visao', label: 'Visão & Câmera', icon: '👁', phase: 1 }
+      { path: '/visao', label: 'Visão & Câmera', icon: '👁', phase: 1 },
+      { path: '/jarvis-vision', label: 'JARVIS · Corpo Total', icon: '🤖', phase: 1 }
     ]
   },
   {
