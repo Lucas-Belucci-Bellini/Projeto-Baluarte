@@ -1,0 +1,124 @@
+/* ═══════════════════════════════════
+   JARVIS · Rastreamento Corporal Total
+   ═══════════════════════════════════ */
+
+.jv-page {
+  padding: var(--space-md);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.jv-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+
+.jv-toggle {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.jv-toggle:hover { color: var(--color-text-primary); border-color: var(--color-cyan); }
+.jv-toggle.is-on {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+}
+
+.jv-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+.jv-select {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  padding: 5px 8px;
+}
+
+.jv-status {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-cyan);
+}
+
+.jv-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  min-height: 14px;
+}
+.jv-metrics b { color: var(--color-cyan); font-weight: var(--font-weight-bold); }
+
+.jv-viewport {
+  position: relative;
+  border: 1px solid var(--color-cyan-edge, rgba(0,240,255,0.3));
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #000;
+  margin-top: var(--space-sm);
+  box-shadow: inset 0 0 40px rgba(0, 240, 255, 0.06);
+}
+.jv-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.jv-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+.jv-legend span { display: flex; align-items: center; gap: 6px; }
+.jv-legend i {
+  width: 12px; height: 12px; border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.jv-info {
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-left: 3px solid var(--color-cyan);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-top: var(--space-md);
+}
+.jv-info p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-xs);
+  line-height: var(--line-height-base);
+}
+.jv-info p:last-child { margin: 0; }
+
+@media (max-width: 680px) {
+  .jv-status { margin-left: 0; width: 100%; }
+}
