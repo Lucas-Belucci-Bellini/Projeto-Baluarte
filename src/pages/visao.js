@@ -11,6 +11,22 @@
 import { h } from '../utils/helpers.js';
 
 /* ══════════════════════════════════════
+   LATERALIDADE (handedness) — 4 funções dedicadas
+   Vídeo espelhado: o rótulo cru do MediaPipe fica invertido na tela.
+   A POSIÇÃO do pulso (x espelhado) é a fonte da verdade.
+   ══════════════════════════════════════ */
+function resolveLeft(raw)  { return raw === 'Left'  ? 'RIGHT' : null; }
+function resolveRight(raw) { return raw === 'Right' ? 'LEFT'  : null; }
+function conferirRight(wristX) { return (1 - wristX) < 0.5; }   // mão direita → esquerda da tela
+function conferirLeft(wristX)  { return (1 - wristX) >= 0.5; }  // mão esquerda → direita da tela
+function decidirLado(raw, wristX) {
+  let label = resolveLeft(raw) || resolveRight(raw) || raw.toUpperCase();
+  if (label === 'RIGHT' && !conferirRight(wristX)) label = 'LEFT';
+  else if (label === 'LEFT' && !conferirLeft(wristX)) label = 'RIGHT';
+  return label;
+}
+
+/* ══════════════════════════════════════
    MOTION DETECTION
    ══════════════════════════════════════ */
 
@@ -350,8 +366,8 @@ class HandTracker {
     for (let hi = 0; hi < this.lastResults.multiHandLandmarks.length; hi++) {
       const lm = this.lastResults.multiHandLandmarks[hi];
       const raw = this.lastResults.multiHandedness?.[hi]?.label || '';
-      /* Vídeo espelhado → Left/Right da câmera ficam invertidos na tela */
-      const label = raw === 'Left' ? 'RIGHT' : raw === 'Right' ? 'LEFT' : raw;
+      /* Lado decidido pelas 4 funções (rótulo + cross-check de posição) */
+      const label = decidirLado(raw, lm[0].x);
       this._drawHand(ctx, lm, W, H, label);
     }
   }
