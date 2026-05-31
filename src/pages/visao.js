@@ -349,7 +349,9 @@ class HandTracker {
     if (!this.lastResults?.multiHandLandmarks) return;
     for (let hi = 0; hi < this.lastResults.multiHandLandmarks.length; hi++) {
       const lm = this.lastResults.multiHandLandmarks[hi];
-      const label = this.lastResults.multiHandedness?.[hi]?.label || '';
+      const raw = this.lastResults.multiHandedness?.[hi]?.label || '';
+      /* Vídeo espelhado → Left/Right da câmera ficam invertidos na tela */
+      const label = raw === 'Left' ? 'RIGHT' : raw === 'Right' ? 'LEFT' : raw;
       this._drawHand(ctx, lm, W, H, label);
     }
   }
@@ -375,9 +377,12 @@ class HandTracker {
       ctx.fill();
     }
     ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(0,240,255,0.9)';
     ctx.font = 'bold 13px monospace';
-    ctx.fillText(label.toUpperCase(), (1 - lm[0].x) * W - 20, lm[0].y * H + 26);
+    const lx = (1 - lm[0].x) * W - 20, ly = lm[0].y * H + 26;
+    ctx.fillStyle = 'rgba(0,12,24,0.55)';
+    ctx.fillRect(lx - 2, ly - 12, ctx.measureText(label).width + 6, 16);
+    ctx.fillStyle = 'rgba(0,240,255,0.95)';
+    ctx.fillText(label, lx, ly);
   }
 
   _drawHUD(ctx, W, H) {
