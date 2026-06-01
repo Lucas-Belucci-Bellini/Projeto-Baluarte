@@ -11,19 +11,19 @@
 import { h } from '../utils/helpers.js';
 
 /* ══════════════════════════════════════
-   LATERALIDADE (handedness) — 4 funções dedicadas
-   Vídeo espelhado: o rótulo cru do MediaPipe fica invertido na tela.
-   A POSIÇÃO do pulso (x espelhado) é a fonte da verdade.
+   LATERALIDADE (handedness) — 100% posicional
+   O rótulo cru do MediaPipe é instável (fazia LEFT/RIGHT aparecerem
+   juntos). Decidimos só pela posição do pulso na tela espelhada:
+     mão direita → esquerda da tela; mão esquerda → direita da tela.
    ══════════════════════════════════════ */
-function resolveLeft(raw)  { return raw === 'Left'  ? 'RIGHT' : null; }
-function resolveRight(raw) { return raw === 'Right' ? 'LEFT'  : null; }
-function conferirRight(wristX) { return (1 - wristX) < 0.5; }   // mão direita → esquerda da tela
-function conferirLeft(wristX)  { return (1 - wristX) >= 0.5; }  // mão esquerda → direita da tela
-function decidirLado(raw, wristX) {
-  let label = resolveLeft(raw) || resolveRight(raw) || raw.toUpperCase();
-  if (label === 'RIGHT' && !conferirRight(wristX)) label = 'LEFT';
-  else if (label === 'LEFT' && !conferirLeft(wristX)) label = 'RIGHT';
-  return label;
+function telaX(wristX) { return 1 - wristX; }
+function decidirLadoPosicional(wristX) { return telaX(wristX) < 0.5 ? 'RIGHT' : 'LEFT'; }
+function rotularMaos(maos) {
+  if (maos.length === 2) {
+    const aMaisEsq = telaX(maos[0].wristX) < telaX(maos[1].wristX);
+    return [aMaisEsq ? 'RIGHT' : 'LEFT', aMaisEsq ? 'LEFT' : 'RIGHT'];
+  }
+  return maos.map(m => decidirLadoPosicional(m.wristX));
 }
 
 /* ══════════════════════════════════════
@@ -363,12 +363,11 @@ class HandTracker {
     ctx.save(); ctx.scale(-1, 1); ctx.drawImage(this.video, -W, 0, W, H); ctx.restore();
     this._drawHUD(ctx, W, H);
     if (!this.lastResults?.multiHandLandmarks) return;
-    for (let hi = 0; hi < this.lastResults.multiHandLandmarks.length; hi++) {
-      const lm = this.lastResults.multiHandLandmarks[hi];
-      const raw = this.lastResults.multiHandedness?.[hi]?.label || '';
-      /* Lado decidido pelas 4 funções (rótulo + cross-check de posição) */
-      const label = decidirLado(raw, lm[0].x);
-      this._drawHand(ctx, lm, W, H, label);
+    const list = this.lastResults.multiHandLandmarks;
+    /* Rótulos por posição (sem o rótulo instável do MediaPipe), únicos p/ 2 mãos */
+    const labels = rotularMaos(list.map(lm => ({ wristX: lm[0].x })));
+    for (let hi = 0; hi < list.length; hi++) {
+      this._drawHand(ctx, list[hi], W, H, labels[hi]);
     }
   }
 
