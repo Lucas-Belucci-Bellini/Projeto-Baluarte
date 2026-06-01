@@ -178,7 +178,7 @@ class JarvisVision {
     this._fpsN++;
     const now = performance.now();
     if (now - this._fpsT >= 500) {
-      this._fps = Math.round((this._fpsN * 1000) / (now - this._fpsT));
+      this._fps  = Math.round((this._fpsN * 1000) / (now - this._fpsT));
       this._fpsN = 0; this._fpsT = now;
       this._updateMetrics();
     }
