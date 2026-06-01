@@ -85,9 +85,6 @@ class JarvisVision {
     this.poseResults = [];
     this.handResults = null;
 
-    /* ImageData buffer para malha — alocado ao iniciar câmera */
-    this._imgData = null;
-
     this._fpsT = performance.now();
     this._fpsN = 0;
     this._fps  = 0;
@@ -124,7 +121,6 @@ class JarvisVision {
     const vh = this.video.videoHeight || 720;
     this.canvas.width  = vw;
     this.canvas.height = vh;
-    this._imgData = this.ctx.createImageData(vw, vh);
 
     if (this.opts.body) {
       setS('Inicializando MoveNet MultiPose…');
@@ -196,73 +192,53 @@ class JarvisVision {
     if (this.opts.hands) this._renderHands(W, H);
   }
 
-  /* ══ MALHA — ImageData direto na memória (sem arc, sem fillStyle por px) ══
-   * Para cada pessoa: calcula bounds dos keypoints, preenche a região do
-   * corpo com pontos em gradiente ciano→magenta via escrita direta no buffer.
-   * Usa step=1 → cobre todos os pixels da área → ~2.56M display pts. */
+  /* ══ MALHA — grade ESPARSA de pontos translúcidos sobre o corpo ══
+   * Em vez de preencher a elipse pixel-a-pixel (que virava um blob opaco e
+   * apagava o vídeo via putImageData), desenhamos uma grade de pontos com
+   * espaçamento MESH_STEP e baixa opacidade. O vídeo aparece por trás, fica
+   * leve (poucos milhares de fillRect) e parece um scan corporal real. */
   _renderMesh(W, H) {
-    if (!this._imgData) return;
-    const buf = this._imgData.data;
-    /* Zera buffer (transparente) */
-    buf.fill(0);
-
-    let totalPx = 0;
+    const ctx = this.ctx;
     const SCORE = 0.25;
+    const MESH_STEP = 9;          // px entre pontos da grade (maior = mais leve)
+    let drawn = 0;
 
     for (let pi = 0; pi < this.poseResults.length; pi++) {
-      const kps   = this.poseResults[pi].keypoints;
+      const kps = this.poseResults[pi].keypoints;
       const [cr, cg, cb] = PERSON_COLORS[pi % PERSON_COLORS.length];
       const scaleX = W / (this.video.videoWidth  || W);
       const scaleY = H / (this.video.videoHeight || H);
 
-      /* Coleta pontos visíveis */
       const pts = kps
         .filter(k => (k.score ?? 1) >= SCORE)
         .map(k => ({ sx: W - k.x * scaleX, sy: k.y * scaleY }));
       if (pts.length < 4) continue;
 
-      /* Bounding box + margem */
-      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
       for (const p of pts) {
-        if (p.sx < minX) minX = p.sx; if (p.sx > maxX) maxX = p.sx;
-        if (p.sy < minY) minY = p.sy; if (p.sy > maxY) maxY = p.sy;
+        if (p.sx<minX) minX=p.sx; if (p.sx>maxX) maxX=p.sx;
+        if (p.sy<minY) minY=p.sy; if (p.sy>maxY) maxY=p.sy;
       }
-      const pad = (maxX - minX) * 0.18;
-      const x0 = Math.max(0, Math.floor(minX - pad));
-      const x1 = Math.min(W - 1, Math.ceil(maxX + pad));
-      const y0 = Math.max(0, Math.floor(minY - pad * 0.5));
-      const y1 = Math.min(H - 1, Math.ceil(maxY + pad * 0.5));
+      const pad = (maxX-minX)*0.15;
+      const x0 = Math.max(0, minX-pad), x1 = Math.min(W-1, maxX+pad);
+      const y0 = Math.max(0, minY-pad*0.4), y1 = Math.min(H-1, maxY+pad*0.4);
+      const bh = (y1-y0)||1;
+      const cx = (x0+x1)/2, cy = (y0+y1)/2, rx = (x1-x0)/2||1, ry = (y1-y0)/2||1;
 
-      const bw = x1 - x0 || 1, bh = y1 - y0 || 1;
-      const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-      const rx = bw / 2, ry = bh / 2;
-
-      /* Preenche elipse corporal — step 1 = cada pixel */
-      for (let y = y0; y <= y1; y++) {
-        for (let x = x0; x <= x1; x++) {
-          /* Elipse: (x-cx)²/rx² + (y-cy)²/ry² ≤ 1 */
-          const ex = (x - cx) / rx, ey = (y - cy) / ry;
-          if (ex*ex + ey*ey > 1) continue;
-          const t  = (y - y0) / bh;          /* 0=topo 1=base */
-          const al = Math.round(28 + (1 - Math.abs(ex)) * 55);  /* mais denso no centro */
-          const idx = (y * W + x) * 4;
-          /* Gradiente vertical ciano→magenta */
-          const pr = Math.round(cr * t + (1-t) * 0);
-          const pg = Math.round(cg * (1-t*0.7));
-          const pb = Math.round(cb * (1-t*0.5) + t * 255);
-          /* Aditivo (max com existente para não apagar outras pessoas) */
-          buf[idx]   = Math.min(255, buf[idx]   + pr);
-          buf[idx+1] = Math.min(255, buf[idx+1] + pg);
-          buf[idx+2] = Math.min(255, buf[idx+2] + pb);
-          buf[idx+3] = Math.min(255, buf[idx+3] + al);
-          totalPx++;
+      for (let y = y0; y <= y1; y += MESH_STEP) {
+        for (let x = x0; x <= x1; x += MESH_STEP) {
+          const ex = (x-cx)/rx, ey = (y-cy)/ry;
+          if (ex*ex + ey*ey > 1) continue;       // só dentro da elipse corporal
+          const t = (y-y0)/bh;                   // gradiente vertical
+          const pr = Math.round(cr*t), pg = Math.round(cg*(1-t*0.6)), pb = Math.round(cb*(1-t*0.4)+t*255);
+          ctx.fillStyle = `rgba(${pr},${pg},${pb},0.28)`;
+          ctx.fillRect(x-0.75, y-0.75, 1.5, 1.5);
+          drawn++;
         }
       }
     }
-
-    if (totalPx > 0) this.ctx.putImageData(this._imgData, 0, 0);
-    /* Virtual: cada pixel renderizado representa sub-resolução ×MESH_VIRTUAL_MULT */
-    this._meshVirtual = Math.round(totalPx * MESH_VIRTUAL_MULT);
+    /* Virtual: cada ponto da grade cobre MESH_STEP² px → escala p/ ~2.56M */
+    this._meshVirtual = Math.round(drawn * MESH_STEP * MESH_STEP * MESH_VIRTUAL_MULT);
   }
 
   /* ══ ESQUELETO — INTERP=40 → ~520 pts/pessoa, virtual ×47k = 25.6M ══ */
