@@ -26,17 +26,16 @@ function loadScript(src) {
  * 5=ombroE 6=ombroD 7=cotoveloE 8=cotoveloD 9=pulsoE 10=pulsoD
  * 11=quadrilE 12=quadrilD 13=joelhoE 14=joelhoD 15=tornozeloE 16=tornozeloD */
 const POSE_CONNECTIONS = [
-  // crânio / rosto
+  // rosto
   [0,1],[0,2],                    // nariz→olhos
   [1,3],[2,4],                    // olhos→orelhas
-  [3,5],[4,6],                    // orelhas→ombros (clavícula)
+  // pescoço / clavículas
+  [3,5],[4,6],                    // orelhas→ombros
   // cintura escapular
-  [5,6],                          // ombros (clavícula)
-  // coluna simulada (nariz→mid-ombro implícito via ambos; ombros→quadris)
-  [0,5],[0,6],                    // nariz→ombros (pescoço)
-  [5,11],[6,12],                  // ombros→quadris (tronco lateral)
-  [5,12],[6,11],                  // cruzamento de tronco (costelas/coluna)
-  [11,12],                        // quadris (pelve)
+  [5,6],                          // barra dos ombros
+  // tronco
+  [5,11],[6,12],                  // ombros→quadris
+  [11,12],                        // barra dos quadris (pelve)
   // braço esquerdo
   [5,7],[7,9],
   // braço direito
