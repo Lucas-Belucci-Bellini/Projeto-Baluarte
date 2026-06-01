@@ -122,7 +122,7 @@ function _isSixGesture(lm) {
    médio, anelar e mindinho estendidos. */
 function _isOkGesture(lm) {
   const dx = lm[4].x - lm[8].x, dy = lm[4].y - lm[8].y;
-  const pinch = Math.sqrt(dx*dx + dy*dy) < 0.06;   // pontas próximas = círculo
+  const pinch = Math.sqrt(dx*dx + dy*dy) < 0.10;  // relaxado: 0.06 → 0.10
   return (
     pinch &&
     _isFingerUp(lm, 12, 10) &&   // médio ↑
@@ -133,11 +133,10 @@ function _isOkGesture(lm) {
 /* Gesto "shaka" / hang loose: polegar e mindinho estendidos,
    indicador, médio e anelar dobrados. */
 function _isShakaGesture(lm) {
-  /* Polegar estendido: ponta (4) longe da base do indicador (5) */
-  const tdx = lm[4].x - lm[5].x, tdy = lm[4].y - lm[5].y;
-  const thumbOut = Math.sqrt(tdx*tdx + tdy*tdy) > 0.18;
+  /* Polegar apontando para cima: ponta (4) acima do nó (2) no eixo y */
+  const thumbUp = lm[4].y < lm[2].y - 0.04;
   return (
-    thumbOut &&
+    thumbUp &&
     _isFingerDown(lm,  8, 6)  &&   // indicador ↓
     _isFingerDown(lm, 12, 10) &&   // médio ↓
     _isFingerDown(lm, 16, 14) &&   // anelar ↓
