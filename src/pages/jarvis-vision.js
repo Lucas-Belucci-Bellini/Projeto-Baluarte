@@ -100,6 +100,15 @@ function _isLGesture(lm) {
     _isFingerDown(lm, 20, 18)      // mindinho abaixado
   );
 }
+/* Mão aberta: indicador, médio, anelar e mindinho todos levantados. */
+function _isOpenHand(lm) {
+  return (
+    _isFingerUp(lm,  8, 6)  &&
+    _isFingerUp(lm, 12, 10) &&
+    _isFingerUp(lm, 16, 14) &&
+    _isFingerUp(lm, 20, 18)
+  );
+}
 
 /* ══════════════════════════════════════
    ENGINE
@@ -134,6 +143,11 @@ class JarvisVision {
     this._lAudio.preload = 'auto';
     this._lCooldown     = 0;
 
+    /* Áudio "welcome to the mato" — gesto do 67 (duas mãos abertas) */
+    this._matoAudio     = new Audio('/welcome-mato.mp3');
+    this._matoAudio.preload = 'auto';
+    this._matoCooldown  = 0;
+
     this._fpsT = performance.now();
     this._fpsN = 0;
     this._fps  = 0;
@@ -144,7 +158,7 @@ class JarvisVision {
 
   /* Destrava reprodução: toca mudo brevemente dentro do gesto do usuário */
   _unlockAudio() {
-    for (const a of [this._teiaAudio, this._lAudio]) {
+    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio]) {
       try {
         a.muted = true;
         a.play().then(() => {
@@ -469,6 +483,21 @@ class JarvisVision {
       this._lCooldown = now + 2000;
       this._lAudio.currentTime = 0;
       this._lAudio.play().catch(() => {});
+    }
+    /* Gesto "67": duas mãos abertas simultaneamente */
+    const openCount = list.reduce((n, lm) => n + (_isOpenHand(lm) ? 1 : 0), 0);
+    if (openCount >= 2) {
+      ctx.font = 'bold 28px monospace';
+      ctx.fillStyle = '#ffcc00';
+      ctx.shadowColor = '#ff8800'; ctx.shadowBlur = 14;
+      ctx.textAlign = 'center';
+      ctx.fillText('6️⃣7️⃣ WELCOME TO THE MATO', W / 2, 70);
+      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
+      if (now > this._matoCooldown) {
+        this._matoCooldown = now + 2000;
+        this._matoAudio.currentTime = 0;
+        this._matoAudio.play().catch(() => {});
+      }
     }
   }
 
