@@ -153,7 +153,7 @@ class JarvisVision {
         locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
       });
       this.hands.setOptions({
-        maxNumHands: this.opts.maxHands || 8,
+        maxNumHands: this.opts.maxHands || 40,
         modelComplexity: 1,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5
@@ -405,7 +405,7 @@ function cleanup() {
 export function jarvisVisionPage() {
   cleanup();
 
-  const opts = { body: true, hands: true, hud: true, maxHands: 8 };
+  const opts = { body: true, hands: true, hud: true, maxHands: 40 };
 
   const canvas  = h('canvas', { className: 'jv-canvas' });
   const status  = h('span',  { className: 'jv-status' }, 'Câmera parada.');
@@ -449,15 +449,15 @@ export function jarvisVisionPage() {
     if (_engine && _engine.hands)
       _engine.hands.setOptions({ maxNumHands: opts.maxHands });
   } },
-    ...[2, 4, 6, 8, 10, 16, 20].map(n =>
-      h('option', { value: String(n), selected: n === 8 }, `${n} mãos`))
+    ...[2, 4, 8, 10, 16, 20, 30, 40].map(n =>
+      h('option', { value: String(n), selected: n === 40 }, `${n} mãos`))
   );
 
   const wrap = h('div', { className: 'jv-page page-wrap' },
     h('div', { className: 'page-hero' },
       h('h1', null, '🤖 JARVIS · Rastreamento Multi-Corporal'),
       h('p', { className: 'u-text-muted' },
-        'Até 6 pessoas simultâneas (MoveNet MultiPose LIGHTNING) com esqueleto de ≥173 pontos por pessoa + curvas suaves + múltiplas mãos, tudo em tempo real.'
+        'Até 20 pessoas simultâneas (MoveNet MultiPose LIGHTNING) com esqueleto de ≥173 pontos por pessoa + curvas suaves + até 40 mãos, tudo em tempo real.'
       )
     ),
     h('div', { className: 'jv-bar' },
