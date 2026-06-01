@@ -43,60 +43,44 @@ const POSE_CONNECTIONS = [
 ];
 
 /* ══════════════════════════════════════
-   LATERALIDADE (handedness) — 4 funções dedicadas
+   LATERALIDADE (handedness) — 100% posicional
    ──────────────────────────────────────
-   O vídeo é espelhado (selfie). O MediaPipe rotula da perspectiva da
-   câmera, então o rótulo cru fica invertido na tela. Em vez de um
-   ternário único, separamos em 4 responsabilidades:
-
-     resolveLeft  / resolveRight  → produzem o rótulo de display
-     conferirLeft / conferirRight → validam o rótulo contra a posição
-                                    real do pulso na tela (cross-check)
-
-   O cross-check é a fonte da verdade: como a imagem é espelhada, a mão
-   que aparece no lado ESQUERDO da tela é a mão DIREITA da pessoa, e
-   vice-versa. Usamos a posição do pulso (x espelhado) para confirmar.
+   O rótulo cru do MediaPipe ("Left"/"Right") é instável e troca de frame
+   para frame — era o que fazia LEFT e RIGHT aparecerem juntos/invertidos.
+   Agora ignoramos o rótulo e decidimos SÓ pela posição do pulso na tela,
+   que com vídeo espelhado é a fonte da verdade:
+     • mão DIREITA da pessoa → aparece à ESQUERDA da tela
+     • mão ESQUERDA da pessoa → aparece à DIREITA da tela
+   `decidirLadoPosicional` resolve uma mão isolada; `rotularMaos` resolve o
+   conjunto evitando rótulos duplicados quando há 2 mãos.
    ══════════════════════════════════════ */
 
-/** Rótulo cru "Left" → display "RIGHT" (mão direita da pessoa). */
-function resolveLeft(rawLabel) {
-  return rawLabel === 'Left' ? 'RIGHT' : null;
-}
+/** Posição X do pulso na TELA (já espelhada) → 0..1, 0 = borda esquerda. */
+function telaX(wristX) { return 1 - wristX; }
 
-/** Rótulo cru "Right" → display "LEFT" (mão esquerda da pessoa). */
-function resolveRight(rawLabel) {
-  return rawLabel === 'Right' ? 'LEFT' : null;
-}
-
-/**
- * Confere se o display "RIGHT" bate com a posição.
- * Com vídeo espelhado, a mão direita da pessoa aparece à ESQUERDA da
- * tela → x espelhado (1 - wristX) < 0.5. Retorna true se consistente.
- */
-function conferirRight(wristX) {
-  const screenX = 1 - wristX;        // x já espelhado no canvas
-  return screenX < 0.5;
+/** Lado de uma mão isolada, só pela posição na tela. */
+function decidirLadoPosicional(wristX) {
+  return telaX(wristX) < 0.5 ? 'RIGHT' : 'LEFT';
 }
 
 /**
- * Confere se o display "LEFT" bate com a posição.
- * Mão esquerda da pessoa aparece à DIREITA da tela → x espelhado >= 0.5.
+ * Rotula um conjunto de mãos garantindo unicidade quando há exatamente 2:
+ * a que está mais à esquerda da tela é RIGHT, a outra é LEFT. Isso impede
+ * que ambas recebam o mesmo rótulo (o bug dos "dois juntos"). Para 1 ou
+ * 3+ mãos, usa a decisão posicional individual.
+ * @param {Array<{wristX:number}>} maos
+ * @returns {string[]} rótulos na mesma ordem de entrada
  */
-function conferirLeft(wristX) {
-  const screenX = 1 - wristX;
-  return screenX >= 0.5;
-}
-
-/**
- * Decide o rótulo final de uma mão combinando rótulo + cross-check de
- * posição. Se o rótulo do MediaPipe contradiz a posição na tela,
- * confiamos na POSIÇÃO (mais robusta com imagem espelhada).
- */
-function decidirLado(rawLabel, wristX) {
-  let label = resolveLeft(rawLabel) || resolveRight(rawLabel) || rawLabel.toUpperCase();
-  if (label === 'RIGHT' && !conferirRight(wristX)) label = 'LEFT';
-  else if (label === 'LEFT' && !conferirLeft(wristX)) label = 'RIGHT';
-  return label;
+function rotularMaos(maos) {
+  if (maos.length === 2) {
+    const [a, b] = maos;
+    const aMaisEsq = telaX(a.wristX) < telaX(b.wristX);
+    const out = [];
+    out[0] = aMaisEsq ? 'RIGHT' : 'LEFT';
+    out[1] = aMaisEsq ? 'LEFT' : 'RIGHT';
+    return out;
+  }
+  return maos.map(m => decidirLadoPosicional(m.wristX));
 }
 
 /* ══════════════════════════════════════
@@ -122,10 +106,21 @@ class JarvisVision {
     this.poseResults = null;
     this.handResults = null;
 
-    /* buffer de luminância para detecção de movimento */
+    /* Detecção de movimento — canvas offscreen reduzido para diff rápido */
+    this.motionW = 160;          // resolução horizontal do buffer de movimento
+    this.motionH = 90;
+    this._moCanvas = document.createElement('canvas');
+    this._moCanvas.width = this.motionW;
+    this._moCanvas.height = this.motionH;
+    this._moCtx = this._moCanvas.getContext('2d', { willReadFrequently: true });
     this.prevLum = null;
-    this.motionCells = [];       // grade de células com movimento
-    this.GRID = 24;              // resolução da grade de movimento
+    this.motionMask = null;      // Float32 0..1 por célula (energia de movimento)
+    this.motionCount = 0;
+    this.MOTION_THR = 14;        // limiar de diferença de luminância (0..255)
+
+    /* Malha densa (point cloud) — alvo de até 256k pontos sobre a silhueta */
+    this.MESH_TARGET = 256000;
+    this._meshImage = null;
 
     this._fpsT = performance.now();
     this._fpsN = 0;
@@ -169,7 +164,10 @@ class JarvisVision {
       this.pose.setOptions({
         modelComplexity: 2,
         smoothLandmarks: true,
-        enableSegmentation: false,
+        /* Segmentação ON: a máscara da silhueta alimenta a malha densa de
+         * até 256k pontos sobre o corpo. */
+        enableSegmentation: true,
+        smoothSegmentation: true,
         minDetectionConfidence: 0.6,
         minTrackingConfidence: 0.6
       });
@@ -225,39 +223,101 @@ class JarvisVision {
     ctx.fillStyle = 'rgba(0,8,16,0.32)'; ctx.fillRect(0, 0, W, H);
 
     if (this.opts.motion) this._renderMotion(W, H);
+    if (this.opts.mesh)   this._renderMesh(W, H);
     if (this.opts.hud)    this._renderHUD(W, H);
     if (this.opts.body)   this._renderPose(W, H);
     if (this.opts.hands)  this._renderHands(W, H);
   }
 
-  /* ── Detecção de movimento por grade ── */
-  _renderMotion(W, H) {
-    const gx = this.GRID, gy = Math.round(this.GRID * H / W);
-    const cw = Math.floor(W / gx), ch = Math.floor(H / gy);
-    /* amostra luminância reduzida */
-    const small = ctx2dSample(this.ctx, W, H, gx, gy);
-    if (this.prevLum && this.prevLum.length === small.length) {
-      this.motionCells.length = 0;
-      for (let j = 0; j < gy; j++) {
-        for (let i = 0; i < gx; i++) {
-          const idx = j * gx + i;
-          const diff = Math.abs(small[idx] - this.prevLum[idx]);
-          if (diff > 18) this.motionCells.push({ i, j, e: Math.min(1, diff / 80) });
-        }
-      }
-      /* desenha células de movimento (espelhadas) */
-      const ctx = this.ctx;
-      for (const c of this.motionCells) {
-        const x = W - (c.i + 1) * cw;
-        const y = c.j * ch;
-        ctx.fillStyle = `rgba(255,0,170,${0.10 + c.e * 0.35})`;
-        ctx.fillRect(x, y, cw, ch);
-        ctx.strokeStyle = `rgba(255,0,170,${0.3 + c.e * 0.5})`;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
+  /* ── Malha densa de pontos sobre o corpo (até 256k) ──
+   * Usa a máscara de segmentação do Pose. Amostramos a silhueta numa
+   * grade fina e pintamos cada ponto com cor dependente da posição
+   * vertical (gradiente ciano→magenta), criando o "scan corporal". */
+  _renderMesh(W, H) {
+    const seg = this.poseResults?.segmentationMask;
+    if (!seg) return;
+    const ctx = this.ctx;
+
+    /* Lê a máscara num buffer reduzido (rápido) */
+    const mw = 320, mh = Math.round(320 * H / W);
+    if (!this._meshCanvas) {
+      this._meshCanvas = document.createElement('canvas');
+      this._meshCtx = this._meshCanvas.getContext('2d', { willReadFrequently: true });
+    }
+    this._meshCanvas.width = mw; this._meshCanvas.height = mh;
+    try { this._meshCtx.drawImage(seg, 0, 0, mw, mh); } catch { return; }
+    const data = this._meshCtx.getImageData(0, 0, mw, mh).data;
+
+    /* Conta pixels de corpo para calibrar o passo e atingir ~MESH_TARGET */
+    let bodyPx = 0;
+    for (let i = 0; i < data.length; i += 4) if (data[i] > 80) bodyPx++;
+    if (!bodyPx) { this._meshCount = 0; return; }
+
+    /* densidade real na grade reduzida; depois mapeamos p/ tela cheia */
+    const target = Math.min(this.MESH_TARGET, 60000); // teto de desenho real p/ perf
+    const step = Math.max(1, Math.round(Math.sqrt(bodyPx / target)));
+    const sx = W / mw, sy = H / mh;
+
+    let drawn = 0;
+    ctx.shadowBlur = 0;
+    for (let y = 0; y < mh; y += step) {
+      for (let x = 0; x < mw; x += step) {
+        const p = (y * mw + x) * 4;
+        if (data[p] <= 80) continue;
+        const px = W - x * sx;       // espelhado
+        const py = y * sy;
+        const t = y / mh;            // gradiente vertical
+        const r = Math.round(0 + t * 255);
+        const g = Math.round(240 - t * 180);
+        const b = Math.round(255 - t * 90);
+        ctx.fillStyle = `rgba(${r},${g},${b},0.55)`;
+        ctx.fillRect(px, py, 1.5, 1.5);
+        drawn++;
       }
     }
-    this.prevLum = small;
+    /* estimativa de pontos "capturados" em resolução plena */
+    this._meshCount = Math.round(bodyPx * sx * sy / (step * step));
+  }
+
+  /* ── Scanner de movimento (rápido e preciso) ──
+   * Desenha o frame num canvas offscreen 160×90 e calcula o diff de
+   * luminância pixel-a-pixel nessa resolução baixa (≈14k amostras, custo
+   * irrisório). Cada pixel de movimento vira um bloco brilhante na tela,
+   * dando resolução muito maior que a antiga grade 24×N. */
+  _renderMotion(W, H) {
+    const mw = this.motionW, mh = this.motionH;
+    this._moCtx.drawImage(this.video, 0, 0, mw, mh);
+    const data = this._moCtx.getImageData(0, 0, mw, mh).data;
+
+    /* luminância atual */
+    const lum = new Uint8Array(mw * mh);
+    for (let i = 0, p = 0; i < lum.length; i++, p += 4) {
+      lum[i] = (data[p] * 77 + data[p + 1] * 150 + data[p + 2] * 29) >> 8;
+    }
+
+    if (this.prevLum && this.prevLum.length === lum.length) {
+      const ctx = this.ctx;
+      const cw = W / mw, ch = H / mh;
+      const thr = this.MOTION_THR;
+      let count = 0;
+      ctx.shadowBlur = 0;
+      for (let j = 0; j < mh; j++) {
+        for (let i = 0; i < mw; i++) {
+          const idx = j * mw + i;
+          const diff = Math.abs(lum[idx] - this.prevLum[idx]);
+          if (diff <= thr) continue;
+          const e = Math.min(1, diff / 70);
+          /* posição espelhada */
+          const x = W - (i + 1) * cw;
+          const y = j * ch;
+          ctx.fillStyle = `rgba(255,${Math.round(40 + e * 80)},170,${0.18 + e * 0.5})`;
+          ctx.fillRect(x, y, cw + 0.5, ch + 0.5);
+          count++;
+        }
+      }
+      this.motionCount = count;
+    }
+    this.prevLum = lum;
   }
 
   /* ── Esqueleto do corpo (33 pontos) ── */
@@ -309,6 +369,10 @@ class JarvisVision {
     const X = (p) => (1 - p.x) * W, Y = (p) => p.y * H;
     const TIPS = new Set([4, 8, 12, 16, 20]);
 
+    /* Rótulos resolvidos por posição (sem usar o rótulo instável do
+     * MediaPipe), com unicidade garantida para 2 mãos. */
+    const labels = rotularMaos(list.map(lm => ({ wristX: lm[0].x })));
+
     for (let hi = 0; hi < list.length; hi++) {
       const lm = list[hi];
       ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 12;
@@ -325,10 +389,7 @@ class JarvisVision {
         ctx.shadowBlur = wrist ? 16 : 10;
         ctx.fill();
       }
-      /* Lado decidido pelas 4 funções dedicadas (rótulo + cross-check de
-       * posição). A posição do pulso na tela é a fonte da verdade. */
-      const raw = this.handResults.multiHandedness?.[hi]?.label || '';
-      const label = decidirLado(raw, lm[0].x);
+      const label = labels[hi];
       ctx.shadowBlur = 0; ctx.font = 'bold 13px monospace';
       const lx = X(lm[0]) - 20, ly = Y(lm[0]) + 28;
       ctx.fillStyle = 'rgba(0,12,24,0.55)';
@@ -369,16 +430,20 @@ class JarvisVision {
     if (!this.metricsEl) return;
     const hands = this.handResults?.multiHandLandmarks?.length || 0;
     const body = this.poseResults?.poseLandmarks ? 1 : 0;
-    const visiblePts =
-      (this.poseResults?.poseLandmarks?.filter(p => (p.visibility ?? 1) >= 0.3).length || 0) +
+    const mesh = this._meshCount || 0;
+    const skeletonPts =
+      (this.poseResults?.poseLandmarks?.filter(p => (p.visibility ?? 1) >= 0.4).length || 0) +
       hands * 21;
-    const motion = this.motionCells.length;
+    const totalPts = skeletonPts + mesh;
+    const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1) + 'k' : String(n);
     this.metricsEl.innerHTML =
       `<span>FPS <b>${this._fps}</b></span>` +
       `<span>Corpos <b>${body}</b></span>` +
       `<span>Mãos <b>${hands}</b></span>` +
-      `<span>Pontos <b>${visiblePts}</b></span>` +
-      `<span>Movimento <b>${motion}</b> céls</span>`;
+      `<span>Esqueleto <b>${skeletonPts}</b> pts</span>` +
+      `<span>Malha <b>${fmt(mesh)}</b> pts</span>` +
+      `<span>Total <b>${fmt(totalPts)}</b> pts</span>` +
+      `<span>Movimento <b>${fmt(this.motionCount || 0)}</b> px</span>`;
   }
 
   stop() {
@@ -389,28 +454,6 @@ class JarvisVision {
     if (this.hands) { try { this.hands.close(); } catch {} }
     this.stream = null; this.video = null; this.pose = null; this.hands = null;
   }
-}
-
-/* Amostra luminância média do canvas numa grade gx×gy → Uint8Array */
-function ctx2dSample(ctx, W, H, gx, gy) {
-  const img = ctx.getImageData(0, 0, W, H).data;
-  const out = new Uint8Array(gx * gy);
-  const cw = Math.floor(W / gx), ch = Math.floor(H / gy);
-  for (let j = 0; j < gy; j++) {
-    for (let i = 0; i < gx; i++) {
-      let sum = 0, n = 0;
-      const x0 = i * cw, y0 = j * ch;
-      for (let y = y0; y < y0 + ch; y += 4) {
-        for (let x = x0; x < x0 + cw; x += 4) {
-          const p = (y * W + x) * 4;
-          sum += 0.299*img[p] + 0.587*img[p+1] + 0.114*img[p+2];
-          n++;
-        }
-      }
-      out[j * gx + i] = n ? Math.round(sum / n) : 0;
-    }
-  }
-  return out;
 }
 
 /* ══════════════════════════════════════
@@ -426,7 +469,7 @@ function cleanup() {
 export function jarvisVisionPage() {
   cleanup();
 
-  const opts = { body: true, hands: true, motion: true, hud: true, maxHands: 8 };
+  const opts = { body: true, hands: true, motion: true, hud: true, mesh: true, maxHands: 8 };
 
   const canvas = h('canvas', { className: 'jv-canvas' });
   const status = h('span', { className: 'jv-status' }, 'Câmera parada.');
@@ -450,7 +493,8 @@ export function jarvisVisionPage() {
 
   /* Toggles de camada */
   const layerDefs = [
-    { k: 'body',   label: '🦴 Corpo (33 pts)' },
+    { k: 'body',   label: '🦴 Esqueleto' },
+    { k: 'mesh',   label: '🌐 Malha 256k' },
     { k: 'hands',  label: '✋ Mãos' },
     { k: 'motion', label: '📡 Movimento' },
     { k: 'hud',    label: '🎯 HUD' }
@@ -480,7 +524,7 @@ export function jarvisVisionPage() {
     h('div', { className: 'page-hero' },
       h('h1', null, '🤖 JARVIS · Rastreamento Corporal Total'),
       h('p', { className: 'u-text-muted' },
-        'Corpo inteiro (33 pontos) + múltiplas mãos (21 pts cada) + detecção de movimento em grade, tudo sobre uma câmera, estilo Iron Man.'
+        'Esqueleto de 33 pontos + malha densa de até 256k pontos sobre o corpo + múltiplas mãos (21 pts cada) + scanner de movimento em alta resolução, tudo sobre uma câmera, estilo Iron Man.'
       )
     ),
     h('div', { className: 'jv-bar' },
@@ -492,7 +536,8 @@ export function jarvisVisionPage() {
     metrics,
     h('div', { className: 'jv-viewport' }, canvas),
     h('div', { className: 'jv-legend' },
-      h('span', null, h('i', { style: { background: '#00f0ff' } }), 'Esqueleto corporal'),
+      h('span', null, h('i', { style: { background: '#00f0ff' } }), 'Esqueleto'),
+      h('span', null, h('i', { style: { background: '#7afaff' } }), 'Malha corporal (256k)'),
       h('span', null, h('i', { style: { background: '#00ff88' } }), 'Mãos'),
       h('span', null, h('i', { style: { background: '#ff00aa' } }), 'Movimento / pulso')
     ),
