@@ -94,6 +94,8 @@ class JarvisVision {
     this._fpsN = 0;
     this._fps  = 0;
     this._totalSkPts = 0;
+    this._lastFrameT = 0;   // para cap de 60fps
+    this._lastMetrics = ''; // evita innerHTML se não mudou
   }
 
   async start() {
@@ -170,9 +172,14 @@ class JarvisVision {
 
   setOpt(k, v) { this.opts[k] = v; }
 
-  _loop() {
+  _loop(ts = 0) {
     if (!this.running) return;
-    this.raf = requestAnimationFrame(() => this._loop());
+    this.raf = requestAnimationFrame((t) => this._loop(t));
+    /* Cap a 60fps: pula frames se monitor for 120/144Hz */
+    if (ts - this._lastFrameT < 14) return;
+    this._lastFrameT = ts;
+    /* Não renderiza se aba estiver oculta */
+    if (document.hidden) return;
     if (!this.video || this.video.readyState < 2) return;
     this.frame++;
 
@@ -393,12 +400,18 @@ class JarvisVision {
     if (!this.metricsEl) return;
     const pessoas = this.poseResults?.length || 0;
     const maos    = this.handResults?.multiHandLandmarks?.length || 0;
+    const pts     = this._totalSkPts + maos * 21;
     const fmt = (n) => n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
-    this.metricsEl.innerHTML =
+    const html =
       `<span>FPS <b>${this._fps}</b></span>` +
       `<span>Pessoas <b>${pessoas}/20</b></span>` +
       `<span>Mãos <b>${maos}</b></span>` +
-      `<span>Pontos <b>${fmt(this._totalSkPts + maos * 21)}</b></span>`;
+      `<span>Pontos <b>${fmt(pts)}</b></span>`;
+    /* Só atualiza DOM se o conteúdo mudou */
+    if (html !== this._lastMetrics) {
+      this.metricsEl.innerHTML = html;
+      this._lastMetrics = html;
+    }
   }
 
   stop() {
