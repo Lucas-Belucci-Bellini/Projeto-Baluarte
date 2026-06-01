@@ -226,11 +226,7 @@ class JarvisVision {
     ctx.fillStyle = 'rgba(0,8,16,0.32)'; ctx.fillRect(0, 0, W, H);
 
     if (this.opts.motion) this._renderMotion(W, H);
-<<<<<<< HEAD
     if (this.opts.mesh && this.frame % 4 === 2) this._renderMesh(W, H);
-=======
-    if (this.opts.mesh)   this._renderMesh(W, H);
->>>>>>> origin/main
     if (this.opts.hud)    this._renderHUD(W, H);
     if (this.opts.body)   this._renderPose(W, H);
     if (this.opts.hands)  this._renderHands(W, H);
@@ -525,11 +521,7 @@ function cleanup() {
 export function jarvisVisionPage() {
   cleanup();
 
-<<<<<<< HEAD
   const opts = { body: true, hands: true, motion: true, hud: true, mesh: false, maxHands: 8 };
-=======
-  const opts = { body: true, hands: true, motion: true, hud: true, mesh: true, maxHands: 8 };
->>>>>>> origin/main
 
   const canvas = h('canvas', { className: 'jv-canvas' });
   const status = h('span', { className: 'jv-status' }, 'Câmera parada.');
