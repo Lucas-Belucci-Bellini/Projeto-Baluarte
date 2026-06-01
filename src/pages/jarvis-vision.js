@@ -280,6 +280,7 @@ class JarvisVision {
         }
       }
 
+<<<<<<< HEAD
       /* Camada 4 — articulações */
       const MAJOR = new Set([5,6,7,8,9,10,11,12,13,14,15,16]);
       for (let i = 0; i < kps.length; i++) {
@@ -304,6 +305,91 @@ class JarvisVision {
         ctx.shadowBlur = 0; ctx.font = 'bold 11px monospace';
         ctx.fillStyle = color;
         ctx.fillText(`P${pi + 1}`, nx - 8, ny);
+=======
+  /* ── Esqueleto do corpo — mínimo 256 pontos interpolados ──
+   * 33 landmarks nativos + ~10 pontos interpolados por conexão ao longo da
+   * curva de Bezier quadrática → total ≥ 303 pontos visíveis por frame.
+   * Cada ponto interpolado recebe um halo proporcional à sua posição no
+   * segmento, criando o efeito de "energia fluindo pelos membros". */
+  _renderPose(W, H) {
+    const lm = this.poseResults?.poseLandmarks;
+    if (!lm) return;
+    const ctx = this.ctx;
+    const X = (p) => (1 - p.x) * W, Y = (p) => p.y * H;
+    const VIS = 0.4;
+    const INTERP = 10;   // pontos interpolados por segmento (27 seg × 10 = 270 pts extras)
+    const MAJOR = new Set([11,12,13,14,15,16,23,24,25,26,27,28]);
+
+    /* Avalia ponto na bezier quadrática parametrizada em t (0..1) */
+    const qx = (x1, cx, x2, t) => (1-t)*(1-t)*x1 + 2*(1-t)*t*cx + t*t*x2;
+    const qy = (y1, cy, y2, t) => (1-t)*(1-t)*y1 + 2*(1-t)*t*cy + t*t*y2;
+
+    /* Camada 1 — halo exterior (linha grossa translúcida) */
+    ctx.shadowBlur = 0;
+    for (const [a, b] of POSE_CONNECTIONS) {
+      if (!lm[a] || !lm[b]) continue;
+      if ((lm[a].visibility ?? 1) < VIS || (lm[b].visibility ?? 1) < VIS) continue;
+      const x1 = X(lm[a]), y1 = Y(lm[a]), x2 = X(lm[b]), y2 = Y(lm[b]);
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      const cpx = mx - (dy / len) * len * 0.06;
+      const cpy = my + (dx / len) * len * 0.06;
+      ctx.strokeStyle = 'rgba(0,240,255,0.15)'; ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
+    }
+
+    /* Camada 2 — linha núcleo brilhante */
+    ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 8;
+    ctx.strokeStyle = 'rgba(120,250,255,0.9)'; ctx.lineWidth = 1.5;
+    for (const [a, b] of POSE_CONNECTIONS) {
+      if (!lm[a] || !lm[b]) continue;
+      if ((lm[a].visibility ?? 1) < VIS || (lm[b].visibility ?? 1) < VIS) continue;
+      const x1 = X(lm[a]), y1 = Y(lm[a]), x2 = X(lm[b]), y2 = Y(lm[b]);
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      const cpx = mx - (dy / len) * len * 0.06;
+      const cpy = my + (dx / len) * len * 0.06;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
+    }
+
+    /* Camada 3 — pontos interpolados ao longo de cada bezier (densidade: INTERP) */
+    let skPts = 0;
+    for (const [a, b] of POSE_CONNECTIONS) {
+      if (!lm[a] || !lm[b]) continue;
+      if ((lm[a].visibility ?? 1) < VIS || (lm[b].visibility ?? 1) < VIS) continue;
+      const x1 = X(lm[a]), y1 = Y(lm[a]), x2 = X(lm[b]), y2 = Y(lm[b]);
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      const cpx = mx - (dy / len) * len * 0.06;
+      const cpy = my + (dx / len) * len * 0.06;
+      for (let k = 1; k < INTERP; k++) {
+        const t = k / INTERP;
+        const px = qx(x1, cpx, x2, t);
+        const py = qy(y1, cpy, y2, t);
+        /* oscila entre ciano e branco conforme t — efeito de pulso de energia */
+        const g = Math.round(200 + t * 55);
+        ctx.beginPath(); ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,${g},255,0.75)`;
+        ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 6;
+        ctx.fill();
+        skPts++;
+      }
+    }
+    this._skeletonPts = 33 + skPts;   // exposto para métricas
+
+    /* Camada 4 — articulações originais (landmarks nativos) */
+    for (let i = 0; i < lm.length; i++) {
+      if ((lm[i].visibility ?? 1) < VIS) continue;
+      const x = X(lm[i]), y = Y(lm[i]);
+      const major = MAJOR.has(i);
+      const r = i <= 10 ? 2.5 : major ? 6 : 4;
+      if (major) {
+        ctx.beginPath(); ctx.arc(x, y, r + 4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,240,255,0.2)'; ctx.shadowBlur = 0; ctx.fill();
+>>>>>>> origin/main
       }
     }
     ctx.shadowBlur = 0;
@@ -370,9 +456,18 @@ class JarvisVision {
 
   _updateMetrics() {
     if (!this.metricsEl) return;
+<<<<<<< HEAD
     const pessoas = this.poseResults?.length || 0;
     const maos    = this.handResults?.multiHandLandmarks?.length || 0;
     const fmt = (n) => n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
+=======
+    const hands = this.handResults?.multiHandLandmarks?.length || 0;
+    const body = this.poseResults?.poseLandmarks ? 1 : 0;
+    const mesh = this._meshCount || 0;
+    const skeletonPts = (this._skeletonPts || 0) + hands * 21;
+    const totalPts = skeletonPts + mesh;
+    const fmt = (n) => n >= 1000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1) + 'k' : String(n);
+>>>>>>> origin/main
     this.metricsEl.innerHTML =
       `<span>FPS <b>${this._fps}</b></span>` +
       `<span>Pessoas <b>${pessoas}/6</b></span>` +
@@ -403,7 +498,11 @@ function cleanup() {
 export function jarvisVisionPage() {
   cleanup();
 
+<<<<<<< HEAD
   const opts = { body: true, hands: true, hud: true, maxHands: 8 };
+=======
+  const opts = { body: true, hands: true, motion: true, hud: true, mesh: false, maxHands: 8 };
+>>>>>>> origin/main
 
   const canvas  = h('canvas', { className: 'jv-canvas' });
   const status  = h('span',  { className: 'jv-status' }, 'Câmera parada.');
