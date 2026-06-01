@@ -172,28 +172,6 @@ class JarvisVision {
     this._teiaAudio.preload = 'auto';
     this._teiaCooldown  = 0;   // timestamp mínimo para tocar novamente
 
-    /* Áudio "jingobeu" — gesto de L (pou-estourado.mp3 mantido no repo) */
-    this._lAudio        = new Audio('/jingobeu.mp3');
-    this._lAudio.preload = 'auto';
-    this._lCooldown     = 0;
-
-    /* Áudio "welcome to the mato" — gesto do 67 (duas mãos abertas) */
-    this._matoAudio     = new Audio('/welcome-mato.mp3');
-    this._matoAudio.preload = 'auto';
-    this._matoCooldown  = 0;
-
-    /* Áudio "deco pão na mão" — gesto "6" nas duas mãos (tesoura dupla) */
-    this._decoAudio     = new Audio('/deco-pao.mp3');
-    /* Tesoura dupla 2 (reserva): trocar a linha acima por esta se a atual der problema:
-       this._decoAudio  = new Audio('/deco-pao-2.mp3'); */
-    this._decoAudio.preload = 'auto';
-    this._decoCooldown  = 0;
-
-    /* Áudio "bad to the bone" — gesto OK */
-    this._okAudio       = new Audio('/bad-to-the-bone.mp3');
-    this._okAudio.preload = 'auto';
-    this._okCooldown    = 0;
-
     /* Áudio shaka — gesto hang loose (polegar + mindinho) */
     this._shakaAudio    = new Audio('/shaka.mp3');
     this._shakaAudio.preload = 'auto';
@@ -209,7 +187,7 @@ class JarvisVision {
 
   /* Destrava reprodução: toca mudo brevemente dentro do gesto do usuário */
   _unlockAudio() {
-    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio, this._decoAudio, this._okAudio, this._shakaAudio]) {
+    for (const a of [this._teiaAudio, this._shakaAudio]) {
       try {
         a.muted = true;
         a.play().then(() => {
@@ -465,12 +443,12 @@ class JarvisVision {
     for (let hi = 0; hi < list.length; hi++) {
       const lm = list[hi];
       const spidey = _isSpideyGesture(lm);
-      const lGest  = _isLGesture(lm);
+      const shaka  = _isShakaGesture(lm);
 
-      const lineColor = spidey ? '#ff3300' : lGest ? '#00aaff' : 'rgba(0,255,136,0.8)';
-      const dotColor  = spidey ? '#ff6600' : lGest ? '#33ccff' : '#00ff88';
-      const glowColor = spidey ? '#ff2200' : lGest ? '#0088ff' : '#00ff88';
-      const fancy     = spidey || lGest;
+      const lineColor = spidey ? '#ff3300' : shaka ? '#ffaa00' : 'rgba(0,255,136,0.8)';
+      const dotColor  = spidey ? '#ff6600' : shaka ? '#ffcc44' : '#00ff88';
+      const glowColor = spidey ? '#ff2200' : shaka ? '#ff7700' : '#00ff88';
+      const fancy     = spidey || shaka;
 
       /* Linhas de conexão (path único) */
       ctx.shadowColor = glowColor; ctx.shadowBlur = fancy ? 18 : 8;
@@ -510,14 +488,20 @@ class JarvisVision {
       const lx = X(lm[0]) - 20, ly = Y(lm[0]) + 28;
       ctx.fillStyle = 'rgba(0,12,24,0.6)';
       ctx.fillRect(lx - 2, ly - 13, ctx.measureText(label).width + 6, 17);
-      ctx.fillStyle = spidey ? '#ff4400' : lGest ? '#00aaff' : 'rgba(0,255,136,0.95)';
+      ctx.fillStyle = spidey ? '#ff4400' : shaka ? '#ffaa00' : 'rgba(0,255,136,0.95)';
       ctx.fillText(label, lx, ly);
 
-      if (spidey || lGest) {
+      if (spidey) {
         ctx.font = 'bold 15px monospace';
-        ctx.fillStyle = spidey ? '#ff4400' : '#00aaff';
-        ctx.shadowColor = spidey ? '#ff2200' : '#0088ff'; ctx.shadowBlur = 10;
-        ctx.fillText(spidey ? '🕷 VAI TEIA!' : '🅛 POU!', X(lm[0]) - 40, Y(lm[0]) - 40);
+        ctx.fillStyle = '#ff4400';
+        ctx.shadowColor = '#ff2200'; ctx.shadowBlur = 10;
+        ctx.fillText('🕷 VAI TEIA!', X(lm[0]) - 40, Y(lm[0]) - 40);
+        ctx.shadowBlur = 0;
+      } else if (shaka) {
+        ctx.font = 'bold 15px monospace';
+        ctx.fillStyle = '#ffaa00';
+        ctx.shadowColor = '#ff7700'; ctx.shadowBlur = 10;
+        ctx.fillText('🤙 SHAKA!', X(lm[0]) - 40, Y(lm[0]) - 40);
         ctx.shadowBlur = 0;
       }
     }
@@ -530,68 +514,10 @@ class JarvisVision {
       this._teiaAudio.currentTime = 0;
       this._teiaAudio.play().catch(() => {});
     }
-    if (list.some(lm => _isLGesture(lm)) && now > this._lCooldown) {
-      this._lCooldown = now + 2000;
-      this._lAudio.currentTime = 0;
-      this._lAudio.play().catch(() => {});
-    }
-    /* Gesto "67": duas mãos abertas simultaneamente */
-    const openCount = list.reduce((n, lm) => n + (_isOpenHand(lm) ? 1 : 0), 0);
-    if (openCount >= 2) {
-      ctx.font = 'bold 28px monospace';
-      ctx.fillStyle = '#ffcc00';
-      ctx.shadowColor = '#ff8800'; ctx.shadowBlur = 14;
-      ctx.textAlign = 'center';
-      ctx.fillText('6️⃣7️⃣ WELCOME TO THE MATO', W / 2, 70);
-      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
-      if (now > this._matoCooldown) {
-        this._matoCooldown = now + 2000;
-        this._matoAudio.currentTime = 0;
-        this._matoAudio.play().catch(() => {});
-      }
-    }
-    /* Gesto "6" duplo (tesoura nas duas mãos) */
-    const sixCount = list.reduce((n, lm) => n + (_isSixGesture(lm) ? 1 : 0), 0);
-    if (sixCount >= 2) {
-      ctx.font = 'bold 26px monospace';
-      ctx.fillStyle = '#ff44cc';
-      ctx.shadowColor = '#cc00ff'; ctx.shadowBlur = 14;
-      ctx.textAlign = 'center';
-      ctx.fillText('✌✌ DECO PÃO NA MÃO!', W / 2, 110);
-      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
-      if (now > this._decoCooldown) {
-        this._decoCooldown = now + 2000;
-        this._decoAudio.currentTime = 0;
-        this._decoAudio.play().catch(() => {});
-      }
-    }
-    /* Gesto OK (uma mão basta) */
-    if (list.some(lm => _isOkGesture(lm))) {
-      ctx.font = 'bold 26px monospace';
-      ctx.fillStyle = '#88ff44';
-      ctx.shadowColor = '#44cc00'; ctx.shadowBlur = 14;
-      ctx.textAlign = 'center';
-      ctx.fillText('👌 BAD TO THE BONE', W / 2, 150);
-      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
-      if (now > this._okCooldown) {
-        this._okCooldown = now + 2000;
-        this._okAudio.currentTime = 0;
-        this._okAudio.play().catch(() => {});
-      }
-    }
-    /* Gesto shaka / hang loose (uma mão) */
-    if (list.some(lm => _isShakaGesture(lm))) {
-      ctx.font = 'bold 26px monospace';
-      ctx.fillStyle = '#ffaa00';
-      ctx.shadowColor = '#ff7700'; ctx.shadowBlur = 14;
-      ctx.textAlign = 'center';
-      ctx.fillText('🤙 SHAKA!', W / 2, 190);
-      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
-      if (now > this._shakaCooldown) {
-        this._shakaCooldown = now + 2000;
-        this._shakaAudio.currentTime = 0;
-        this._shakaAudio.play().catch(() => {});
-      }
+    if (list.some(lm => _isShakaGesture(lm)) && now > this._shakaCooldown) {
+      this._shakaCooldown = now + 2000;
+      this._shakaAudio.currentTime = 0;
+      this._shakaAudio.play().catch(() => {});
     }
   }
 
