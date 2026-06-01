@@ -63,9 +63,24 @@ function resolve() {
   if (found) {
     currentMatch = { path, query, params: found.params, route: found.route };
     bus.emit('route:before', currentMatch);
+    const token = currentMatch;   // detecta navegação concorrente durante await
     try {
       const view = found.route.handler({ ...found.params, query });
-      bus.emit('route:change', { ...currentMatch, view });
+      /* Handlers podem retornar um Promise (rotas lazy via import dinâmico).
+       * Resolvemos antes de emitir; ignoramos se o usuário já navegou p/ outra. */
+      if (view && typeof view.then === 'function') {
+        view
+          .then((resolved) => {
+            if (currentMatch !== token) return;   // navegação obsoleta
+            bus.emit('route:change', { ...currentMatch, view: resolved });
+          })
+          .catch((err) => {
+            console.error(`[router] Erro ao carregar "${path}":`, err);
+            bus.emit('route:error', { path, error: err });
+          });
+      } else {
+        bus.emit('route:change', { ...currentMatch, view });
+      }
     } catch (err) {
       console.error(`[router] Erro ao renderizar "${path}":`, err);
       bus.emit('route:error', { path, error: err });

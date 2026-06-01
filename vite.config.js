@@ -16,11 +16,12 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        /* Code-splitting: separa os datasets e as páginas do núcleo,
-         * para chunks menores, download paralelo e cache mais granular. */
+        /* Code-splitting por rota: cada página é importada dinamicamente em
+         * main.js, então o Rollup gera um chunk próprio por página
+         * automaticamente. NÃO agrupamos as páginas num único chunk (isso
+         * anularia o lazy-load). Mantemos só libs de terceiros juntas. */
         manualChunks(id) {
-          if (id.includes('/src/data/')) return 'data';
-          if (id.includes('/src/pages/')) return 'pages';
+          if (id.includes('/node_modules/')) return 'vendor';
           return undefined;
         }
       }
