@@ -184,6 +184,8 @@ class JarvisVision {
 
     /* Áudio "deco pão na mão" — gesto "6" nas duas mãos (tesoura dupla) */
     this._decoAudio     = new Audio('/deco-pao.mp3');
+    /* Tesoura dupla 2 (reserva): trocar a linha acima por esta se a atual der problema:
+       this._decoAudio  = new Audio('/deco-pao-2.mp3'); */
     this._decoAudio.preload = 'auto';
     this._decoCooldown  = 0;
 
