@@ -176,15 +176,15 @@ class JarvisVision {
     if (!this.video || this.video.readyState < 2) return;
     this.frame++;
 
-    /* Pose: async, não bloqueia o loop de render */
-    if (this.opts.body && this.detector && this.frame % 2 === 0) {
+    /* Pose: async a cada 3 frames (era 2) — poupa ~33% GPU de inferência */
+    if (this.opts.body && this.detector && this.frame % 3 === 0) {
       this.detector.estimatePoses(this.video, { flipHorizontal: false, maxPoses: 20 })
         .then(poses => { this.poseResults = poses || []; })
         .catch(() => {});
     }
 
-    /* Hands: envia a cada 3 frames */
-    if (this.opts.hands && this.hands && this.frame % 3 === 0) {
+    /* Hands: a cada 4 frames (era 3) */
+    if (this.opts.hands && this.hands && this.frame % 4 === 0) {
       try { this.hands.send({ image: this.video }); } catch {}
     }
 
@@ -329,11 +329,15 @@ class JarvisVision {
 
     for (let hi = 0; hi < list.length; hi++) {
       const lm = list[hi];
-      ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 10;
+      ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 8;
       ctx.strokeStyle = 'rgba(0,255,136,0.8)'; ctx.lineWidth = 1.8;
-      for (const [a, b] of HAND_CONNECTIONS) {
-        ctx.beginPath(); ctx.moveTo(X(lm[a]), Y(lm[a])); ctx.lineTo(X(lm[b]), Y(lm[b])); ctx.stroke();
+      /* Todas as conexões em path único por mão */
+      ctx.beginPath();
+      for (let ci = 0; ci < HAND_CONNECTIONS.length; ci++) {
+        const [a, b] = HAND_CONNECTIONS[ci];
+        ctx.moveTo(X(lm[a]), Y(lm[a])); ctx.lineTo(X(lm[b]), Y(lm[b]));
       }
+      ctx.stroke();
       for (let i = 0; i < lm.length; i++) {
         const wrist = i === 0, tip = TIPS.has(i);
         ctx.beginPath(); ctx.arc(X(lm[i]), Y(lm[i]), wrist ? 6 : tip ? 4.5 : 2.5, 0, Math.PI*2);
@@ -353,24 +357,33 @@ class JarvisVision {
     ctx.shadowBlur = 0;
   }
 
-  /* ── HUD tático ── */
+  /* ── HUD tático (grid em path único) ── */
   _renderHUD(W, H) {
     const ctx = this.ctx;
+    /* Grid em path único — eram 20 beginPath/stroke individuais */
+    ctx.shadowBlur = 0;
     ctx.strokeStyle = 'rgba(0,240,255,0.04)'; ctx.lineWidth = 1;
-    for (let x = 0; x < W; x += W/12) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-    for (let y = 0; y < H; y += H/8)  { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-    const c = 'rgba(0,240,255,0.35)', L = 32;
-    ctx.strokeStyle = c; ctx.lineWidth = 2;
-    for (const [px, py, sx, sy] of [[0,0,1,1],[W-1,0,-1,1],[0,H-1,1,-1],[W-1,H-1,-1,-1]]) {
-      ctx.beginPath(); ctx.moveTo(px+sx*L, py); ctx.lineTo(px, py); ctx.lineTo(px, py+sy*L); ctx.stroke();
-    }
-    ctx.strokeStyle = 'rgba(0,240,255,0.22)';
-    ctx.beginPath(); ctx.arc(W/2, H/2, 26, 0, Math.PI*2); ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(W/2-36,H/2); ctx.lineTo(W/2-12,H/2);
-    ctx.moveTo(W/2+12,H/2); ctx.lineTo(W/2+36,H/2);
-    ctx.moveTo(W/2,H/2-36); ctx.lineTo(W/2,H/2-12);
-    ctx.moveTo(W/2,H/2+12); ctx.lineTo(W/2,H/2+36); ctx.stroke();
+    for (let x = 0; x <= W; x += W/12) { ctx.moveTo(x,0); ctx.lineTo(x,H); }
+    for (let y = 0; y <= H; y += H/8)  { ctx.moveTo(0,y); ctx.lineTo(W,y); }
+    ctx.stroke();
+    /* Cantos e mira em path único */
+    const L = 32, hx = W/2, hy = H/2;
+    ctx.strokeStyle = 'rgba(0,240,255,0.35)'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(L,0); ctx.lineTo(0,0); ctx.lineTo(0,L);
+    ctx.moveTo(W-L,0); ctx.lineTo(W,0); ctx.lineTo(W,L);
+    ctx.moveTo(0,H-L); ctx.lineTo(0,H); ctx.lineTo(L,H);
+    ctx.moveTo(W,H-L); ctx.lineTo(W,H); ctx.lineTo(W-L,H);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(0,240,255,0.22)';
+    ctx.beginPath();
+    ctx.arc(hx, hy, 26, 0, Math.PI*2);
+    ctx.moveTo(hx-36,hy); ctx.lineTo(hx-12,hy);
+    ctx.moveTo(hx+12,hy); ctx.lineTo(hx+36,hy);
+    ctx.moveTo(hx,hy-36); ctx.lineTo(hx,hy-12);
+    ctx.moveTo(hx,hy+12); ctx.lineTo(hx,hy+36);
+    ctx.stroke();
     ctx.fillStyle = 'rgba(0,240,255,0.6)'; ctx.font = '13px monospace';
     ctx.fillText('J.A.R.V.I.S · MULTI-BODY TRACKING', 14, 24);
     ctx.fillText(new Date().toLocaleTimeString(), W - 96, 24);
