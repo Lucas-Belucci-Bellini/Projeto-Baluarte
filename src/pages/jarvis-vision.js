@@ -87,6 +87,19 @@ function _isSpideyGesture(lm) {
     _isFingerUp(lm,  20, 18)       // mindinho levantado
   );
 }
+/* Gesto "L": polegar estendido para o lado + indicador levantado,
+   médio, anelar e mindinho abaixados. */
+function _isLGesture(lm) {
+  /* Polegar estendido lateralmente: distância horizontal entre ponta (4) e base (2) */
+  const thumbOut = Math.abs(lm[4].x - lm[2].x) > 0.08;
+  return (
+    thumbOut &&
+    _isFingerUp(lm,   8, 6)  &&   // indicador levantado
+    _isFingerDown(lm, 12, 10) &&  // médio abaixado
+    _isFingerDown(lm, 16, 14) &&  // anelar abaixado
+    _isFingerDown(lm, 20, 18)      // mindinho abaixado
+  );
+}
 
 /* ══════════════════════════════════════
    ENGINE
@@ -115,6 +128,11 @@ class JarvisVision {
     this._teiaAudio     = new Audio('vai-teia.mp3');
     this._teiaAudio.preload = 'auto';
     this._teiaCooldown  = 0;   // timestamp mínimo para tocar novamente
+
+    /* Áudio "pou estourado" — gesto de L */
+    this._lAudio        = new Audio('pou-estourado.mp3');
+    this._lAudio.preload = 'auto';
+    this._lCooldown     = 0;
 
     this._fpsT = performance.now();
     this._fpsN = 0;
@@ -367,14 +385,16 @@ class JarvisVision {
     for (let hi = 0; hi < list.length; hi++) {
       const lm = list[hi];
       const spidey = _isSpideyGesture(lm);
+      const lGest  = _isLGesture(lm);
 
-      const lineColor = spidey ? '#ff3300' : 'rgba(0,255,136,0.8)';
-      const dotColor  = spidey ? '#ff6600' : '#00ff88';
-      const glowColor = spidey ? '#ff2200' : '#00ff88';
+      const lineColor = spidey ? '#ff3300' : lGest ? '#00aaff' : 'rgba(0,255,136,0.8)';
+      const dotColor  = spidey ? '#ff6600' : lGest ? '#33ccff' : '#00ff88';
+      const glowColor = spidey ? '#ff2200' : lGest ? '#0088ff' : '#00ff88';
+      const fancy     = spidey || lGest;
 
       /* Linhas de conexão (path único) */
-      ctx.shadowColor = glowColor; ctx.shadowBlur = spidey ? 18 : 8;
-      ctx.strokeStyle = lineColor; ctx.lineWidth = spidey ? 2.5 : 1.8;
+      ctx.shadowColor = glowColor; ctx.shadowBlur = fancy ? 18 : 8;
+      ctx.strokeStyle = lineColor; ctx.lineWidth = fancy ? 2.5 : 1.8;
       ctx.beginPath();
       for (let ci = 0; ci < HAND_CONNECTIONS.length; ci++) {
         const [a, b] = HAND_CONNECTIONS[ci];
@@ -400,7 +420,7 @@ class JarvisVision {
         ctx.beginPath(); ctx.arc(X(lm[i]), Y(lm[i]), wrist ? 6 : tip ? 4.5 : 2.5, 0, Math.PI*2);
         ctx.fillStyle = wrist ? '#ff00aa' : dotColor;
         ctx.shadowColor = wrist ? '#ff00aa' : glowColor;
-        ctx.shadowBlur = wrist ? 14 : (spidey ? 12 : 6);
+        ctx.shadowBlur = wrist ? 14 : (fancy ? 12 : 6);
         ctx.fill();
       }
 
@@ -410,25 +430,30 @@ class JarvisVision {
       const lx = X(lm[0]) - 20, ly = Y(lm[0]) + 28;
       ctx.fillStyle = 'rgba(0,12,24,0.6)';
       ctx.fillRect(lx - 2, ly - 13, ctx.measureText(label).width + 6, 17);
-      ctx.fillStyle = spidey ? '#ff4400' : 'rgba(0,255,136,0.95)';
+      ctx.fillStyle = spidey ? '#ff4400' : lGest ? '#00aaff' : 'rgba(0,255,136,0.95)';
       ctx.fillText(label, lx, ly);
 
-      if (spidey) {
+      if (spidey || lGest) {
         ctx.font = 'bold 15px monospace';
-        ctx.fillStyle = '#ff4400';
-        ctx.shadowColor = '#ff2200'; ctx.shadowBlur = 10;
-        ctx.fillText('🕷 VAI TEIA!', X(lm[0]) - 40, Y(lm[0]) - 40);
+        ctx.fillStyle = spidey ? '#ff4400' : '#00aaff';
+        ctx.shadowColor = spidey ? '#ff2200' : '#0088ff'; ctx.shadowBlur = 10;
+        ctx.fillText(spidey ? '🕷 VAI TEIA!' : '🅛 POU!', X(lm[0]) - 40, Y(lm[0]) - 40);
         ctx.shadowBlur = 0;
       }
     }
     ctx.shadowBlur = 0;
 
-    /* Dispara áudio se gesto detectado em qualquer mão (cooldown 2s) */
-    const anySpidey = list.some(lm => _isSpideyGesture(lm));
-    if (anySpidey && performance.now() > this._teiaCooldown) {
-      this._teiaCooldown = performance.now() + 2000;
+    /* Dispara áudios por gesto (cooldown 2s cada) */
+    const now = performance.now();
+    if (list.some(lm => _isSpideyGesture(lm)) && now > this._teiaCooldown) {
+      this._teiaCooldown = now + 2000;
       this._teiaAudio.currentTime = 0;
       this._teiaAudio.play().catch(() => {});
+    }
+    if (list.some(lm => _isLGesture(lm)) && now > this._lCooldown) {
+      this._lCooldown = now + 2000;
+      this._lAudio.currentTime = 0;
+      this._lAudio.play().catch(() => {});
     }
   }
 
