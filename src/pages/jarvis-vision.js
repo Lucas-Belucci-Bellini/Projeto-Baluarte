@@ -130,6 +130,20 @@ function _isOkGesture(lm) {
     _isFingerUp(lm, 20, 18)       // mindinho ↑
   );
 }
+/* Gesto "shaka" / hang loose: polegar e mindinho estendidos,
+   indicador, médio e anelar dobrados. */
+function _isShakaGesture(lm) {
+  /* Polegar estendido: ponta (4) longe da base do indicador (5) */
+  const tdx = lm[4].x - lm[5].x, tdy = lm[4].y - lm[5].y;
+  const thumbOut = Math.sqrt(tdx*tdx + tdy*tdy) > 0.18;
+  return (
+    thumbOut &&
+    _isFingerDown(lm,  8, 6)  &&   // indicador ↓
+    _isFingerDown(lm, 12, 10) &&   // médio ↓
+    _isFingerDown(lm, 16, 14) &&   // anelar ↓
+    _isFingerUp(lm,  20, 18)        // mindinho ↑
+  );
+}
 
 /* ══════════════════════════════════════
    ENGINE
@@ -179,6 +193,11 @@ class JarvisVision {
     this._okAudio.preload = 'auto';
     this._okCooldown    = 0;
 
+    /* Áudio shaka — gesto hang loose (polegar + mindinho) */
+    this._shakaAudio    = new Audio('/shaka.mp3');
+    this._shakaAudio.preload = 'auto';
+    this._shakaCooldown = 0;
+
     this._fpsT = performance.now();
     this._fpsN = 0;
     this._fps  = 0;
@@ -189,7 +208,7 @@ class JarvisVision {
 
   /* Destrava reprodução: toca mudo brevemente dentro do gesto do usuário */
   _unlockAudio() {
-    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio, this._decoAudio, this._okAudio]) {
+    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio, this._decoAudio, this._okAudio, this._shakaAudio]) {
       try {
         a.muted = true;
         a.play().then(() => {
@@ -557,6 +576,20 @@ class JarvisVision {
         this._okCooldown = now + 2000;
         this._okAudio.currentTime = 0;
         this._okAudio.play().catch(() => {});
+      }
+    }
+    /* Gesto shaka / hang loose (uma mão) */
+    if (list.some(lm => _isShakaGesture(lm))) {
+      ctx.font = 'bold 26px monospace';
+      ctx.fillStyle = '#ffaa00';
+      ctx.shadowColor = '#ff7700'; ctx.shadowBlur = 14;
+      ctx.textAlign = 'center';
+      ctx.fillText('🤙 SHAKA!', W / 2, 190);
+      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
+      if (now > this._shakaCooldown) {
+        this._shakaCooldown = now + 2000;
+        this._shakaAudio.currentTime = 0;
+        this._shakaAudio.play().catch(() => {});
       }
     }
   }
