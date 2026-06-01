@@ -118,6 +118,18 @@ function _isSixGesture(lm) {
     _isFingerDown(lm, 20, 18)      // mindinho ↓
   );
 }
+/* Gesto "OK": ponta do polegar (4) encosta na ponta do indicador (8),
+   médio, anelar e mindinho estendidos. */
+function _isOkGesture(lm) {
+  const dx = lm[4].x - lm[8].x, dy = lm[4].y - lm[8].y;
+  const pinch = Math.sqrt(dx*dx + dy*dy) < 0.06;   // pontas próximas = círculo
+  return (
+    pinch &&
+    _isFingerUp(lm, 12, 10) &&   // médio ↑
+    _isFingerUp(lm, 16, 14) &&   // anelar ↑
+    _isFingerUp(lm, 20, 18)       // mindinho ↑
+  );
+}
 
 /* ══════════════════════════════════════
    ENGINE
@@ -162,6 +174,11 @@ class JarvisVision {
     this._decoAudio.preload = 'auto';
     this._decoCooldown  = 0;
 
+    /* Áudio "bad to the bone" — gesto OK */
+    this._okAudio       = new Audio('/bad-to-the-bone.mp3');
+    this._okAudio.preload = 'auto';
+    this._okCooldown    = 0;
+
     this._fpsT = performance.now();
     this._fpsN = 0;
     this._fps  = 0;
@@ -172,7 +189,7 @@ class JarvisVision {
 
   /* Destrava reprodução: toca mudo brevemente dentro do gesto do usuário */
   _unlockAudio() {
-    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio, this._decoAudio]) {
+    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio, this._decoAudio, this._okAudio]) {
       try {
         a.muted = true;
         a.play().then(() => {
@@ -526,6 +543,20 @@ class JarvisVision {
         this._decoCooldown = now + 2000;
         this._decoAudio.currentTime = 0;
         this._decoAudio.play().catch(() => {});
+      }
+    }
+    /* Gesto OK (uma mão basta) */
+    if (list.some(lm => _isOkGesture(lm))) {
+      ctx.font = 'bold 26px monospace';
+      ctx.fillStyle = '#88ff44';
+      ctx.shadowColor = '#44cc00'; ctx.shadowBlur = 14;
+      ctx.textAlign = 'center';
+      ctx.fillText('👌 BAD TO THE BONE', W / 2, 150);
+      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
+      if (now > this._okCooldown) {
+        this._okCooldown = now + 2000;
+        this._okAudio.currentTime = 0;
+        this._okAudio.play().catch(() => {});
       }
     }
   }
