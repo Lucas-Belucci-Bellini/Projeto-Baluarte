@@ -68,6 +68,27 @@ function rotularMaos(maos) {
 }
 
 /* ══════════════════════════════════════
+   GESTO HOMEM-ARANHA
+   Indicador (8) e mindinho (20) levantados,
+   médio (12) e anelar (16) abaixados,
+   polegar (4) estendido para o lado.
+   ══════════════════════════════════════ */
+function _isFingerUp(lm, tip, pip) {
+  return lm[tip].y < lm[pip].y - 0.03;
+}
+function _isFingerDown(lm, tip, pip) {
+  return lm[tip].y > lm[pip].y + 0.02;
+}
+function _isSpideyGesture(lm) {
+  return (
+    _isFingerUp(lm,   8, 6)  &&   // indicador levantado
+    _isFingerDown(lm, 12, 10) &&  // médio abaixado
+    _isFingerDown(lm, 16, 14) &&  // anelar abaixado
+    _isFingerUp(lm,  20, 18)       // mindinho levantado
+  );
+}
+
+/* ══════════════════════════════════════
    ENGINE
    ══════════════════════════════════════ */
 
@@ -87,8 +108,13 @@ class JarvisVision {
     this.raf      = null;
     this.frame    = 0;
 
-    this.poseResults  = [];   // array de poses (multi-pessoa)
+    this.poseResults  = [];
     this.handResults  = null;
+
+    /* Áudio "vai teia" — gesto Homem-Aranha */
+    this._teiaAudio     = new Audio('vai-teia.mp3');
+    this._teiaAudio.preload = 'auto';
+    this._teiaCooldown  = 0;   // timestamp mínimo para tocar novamente
 
     this._fpsT = performance.now();
     this._fpsN = 0;
@@ -328,43 +354,82 @@ class JarvisVision {
     this._totalSkPts = totalPts;
   }
 
-  /* ── Mãos (21 pontos cada) ── */
+  /* ── Mãos (21 pontos + interpolação) ── */
   _renderHands(W, H) {
     const list = this.handResults?.multiHandLandmarks;
     if (!list) return;
     const ctx = this.ctx;
     const X = (p) => (1 - p.x) * W, Y = (p) => p.y * H;
     const TIPS = new Set([4, 8, 12, 16, 20]);
+    const HAND_INTERP = 18; // pontos interpolados por segmento de mão
     const labels = rotularMaos(list.map(lm => ({ wristX: lm[0].x })));
 
     for (let hi = 0; hi < list.length; hi++) {
       const lm = list[hi];
-      ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 8;
-      ctx.strokeStyle = 'rgba(0,255,136,0.8)'; ctx.lineWidth = 1.8;
-      /* Todas as conexões em path único por mão */
+      const spidey = _isSpideyGesture(lm);
+
+      const lineColor = spidey ? '#ff3300' : 'rgba(0,255,136,0.8)';
+      const dotColor  = spidey ? '#ff6600' : '#00ff88';
+      const glowColor = spidey ? '#ff2200' : '#00ff88';
+
+      /* Linhas de conexão (path único) */
+      ctx.shadowColor = glowColor; ctx.shadowBlur = spidey ? 18 : 8;
+      ctx.strokeStyle = lineColor; ctx.lineWidth = spidey ? 2.5 : 1.8;
       ctx.beginPath();
       for (let ci = 0; ci < HAND_CONNECTIONS.length; ci++) {
         const [a, b] = HAND_CONNECTIONS[ci];
         ctx.moveTo(X(lm[a]), Y(lm[a])); ctx.lineTo(X(lm[b]), Y(lm[b]));
       }
       ctx.stroke();
+
+      /* Pontos interpolados nas conexões (mais pontos = traço mais denso) */
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = dotColor;
+      for (let ci = 0; ci < HAND_CONNECTIONS.length; ci++) {
+        const [a, b] = HAND_CONNECTIONS[ci];
+        const ax = X(lm[a]), ay = Y(lm[a]), bx = X(lm[b]), by = Y(lm[b]);
+        for (let k = 1; k < HAND_INTERP; k++) {
+          const t = k / HAND_INTERP;
+          ctx.fillRect(ax + (bx-ax)*t - 1, ay + (by-ay)*t - 1, 2, 2);
+        }
+      }
+
+      /* Articulações */
       for (let i = 0; i < lm.length; i++) {
         const wrist = i === 0, tip = TIPS.has(i);
         ctx.beginPath(); ctx.arc(X(lm[i]), Y(lm[i]), wrist ? 6 : tip ? 4.5 : 2.5, 0, Math.PI*2);
-        ctx.fillStyle = wrist ? '#ff00aa' : '#00ff88';
-        ctx.shadowColor = wrist ? '#ff00aa' : '#00ff88';
-        ctx.shadowBlur = wrist ? 14 : 8;
+        ctx.fillStyle = wrist ? '#ff00aa' : dotColor;
+        ctx.shadowColor = wrist ? '#ff00aa' : glowColor;
+        ctx.shadowBlur = wrist ? 14 : (spidey ? 12 : 6);
         ctx.fill();
       }
+
+      /* Label + alerta gesto */
       const label = labels[hi];
       ctx.shadowBlur = 0; ctx.font = 'bold 13px monospace';
       const lx = X(lm[0]) - 20, ly = Y(lm[0]) + 28;
       ctx.fillStyle = 'rgba(0,12,24,0.6)';
       ctx.fillRect(lx - 2, ly - 13, ctx.measureText(label).width + 6, 17);
-      ctx.fillStyle = 'rgba(0,255,136,0.95)';
+      ctx.fillStyle = spidey ? '#ff4400' : 'rgba(0,255,136,0.95)';
       ctx.fillText(label, lx, ly);
+
+      if (spidey) {
+        ctx.font = 'bold 15px monospace';
+        ctx.fillStyle = '#ff4400';
+        ctx.shadowColor = '#ff2200'; ctx.shadowBlur = 10;
+        ctx.fillText('🕷 VAI TEIA!', X(lm[0]) - 40, Y(lm[0]) - 40);
+        ctx.shadowBlur = 0;
+      }
     }
     ctx.shadowBlur = 0;
+
+    /* Dispara áudio se gesto detectado em qualquer mão (cooldown 2s) */
+    const anySpidey = list.some(lm => _isSpideyGesture(lm));
+    if (anySpidey && performance.now() > this._teiaCooldown) {
+      this._teiaCooldown = performance.now() + 2000;
+      this._teiaAudio.currentTime = 0;
+      this._teiaAudio.play().catch(() => {});
+    }
   }
 
   /* ── HUD tático (grid em path único) ── */
