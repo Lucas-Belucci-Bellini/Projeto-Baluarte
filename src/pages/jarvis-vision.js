@@ -74,7 +74,7 @@ function rotularMaos(maos) {
 class JarvisVision {
   constructor(canvas, opts, statusEl, metricsEl) {
     this.canvas   = canvas;
-    this.ctx      = canvas.getContext('2d');
+    this.ctx      = canvas.getContext('2d', { alpha: false, willReadFrequently: false });
     this.opts     = opts;
     this.statusEl = statusEl;
     this.metricsEl = metricsEl;
@@ -117,7 +117,7 @@ class JarvisVision {
       this.video = document.createElement('video');
       this.video.muted = true; this.video.playsInline = true;
       this.stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 1280, height: 720, facingMode: 'user' }
+        video: { width: { ideal: 1280, max: 1280 }, height: { ideal: 720, max: 720 }, frameRate: { ideal: 30, max: 30 }, facingMode: 'user' }
       });
       this.video.srcObject = this.stream;
       await this.video.play();
@@ -199,7 +199,7 @@ class JarvisVision {
 
     this._fpsN++;
     const now = performance.now();
-    if (now - this._fpsT >= 500) {
+    if (now - this._fpsT >= 1000) {
       this._fps  = Math.round((this._fpsN * 1000) / (now - this._fpsT));
       this._fpsN = 0; this._fpsT = now;
       this._updateMetrics();
@@ -420,7 +420,9 @@ class JarvisVision {
     if (this.stream)   this.stream.getTracks().forEach(t => t.stop());
     if (this.detector) { try { this.detector.dispose(); } catch {} }
     if (this.hands)    { try { this.hands.close(); }     catch {} }
+    try { window.tf?.disposeVariables(); } catch {}
     this.stream = null; this.video = null; this.detector = null; this.hands = null;
+    this.poseResults = []; this.handResults = null;
   }
 }
 
