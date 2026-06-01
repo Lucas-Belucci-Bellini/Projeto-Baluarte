@@ -159,17 +159,13 @@ class JarvisVision {
 
     if (this.opts.body) {
       this.pose = new window.Pose({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
-      /* modelComplexity 2 = modelo mais preciso (heavy); smoothLandmarks
-       * suaviza tremores entre frames; segmentação desligada por custo. */
       this.pose.setOptions({
-        modelComplexity: 2,
+        modelComplexity: 1,
         smoothLandmarks: true,
-        /* Segmentação ON: a máscara da silhueta alimenta a malha densa de
-         * até 256k pontos sobre o corpo. */
-        enableSegmentation: true,
-        smoothSegmentation: true,
-        minDetectionConfidence: 0.6,
-        minTrackingConfidence: 0.6
+        enableSegmentation: this.opts.mesh,
+        smoothSegmentation: false,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
       });
       this.pose.onResults(r => { this.poseResults = r; });
       await this.pose.initialize();
@@ -187,7 +183,15 @@ class JarvisVision {
     return true;
   }
 
-  setOpt(k, v) { this.opts[k] = v; }
+  setOpt(k, v) {
+    this.opts[k] = v;
+    /* Segmentação só roda quando malha está ativa — reconfigurar o pose */
+    if (k === 'mesh' && this.pose) {
+      try {
+        this.pose.setOptions({ enableSegmentation: v, smoothSegmentation: false });
+      } catch {}
+    }
+  }
 
   _loop() {
     if (!this.running) return;
@@ -195,11 +199,10 @@ class JarvisVision {
     if (!this.video || this.video.readyState < 2) return;
 
     this.frame++;
-    /* Alterna envio de frames aos modelos (custo alto) — pose e hands em
-     * frames distintos para manter fluidez. */
+    /* Throttle: pose a cada 3 frames, hands nos outros frames — mantém fluidez */
     try {
-      if (this.opts.body && this.pose && this.frame % 2 === 0)  this.pose.send({ image: this.video });
-      if (this.opts.hands && this.hands && this.frame % 2 === 1) this.hands.send({ image: this.video });
+      if (this.opts.body  && this.pose  && this.frame % 3 === 0) this.pose.send({ image: this.video });
+      if (this.opts.hands && this.hands && this.frame % 3 === 1) this.hands.send({ image: this.video });
     } catch {}
 
     try { this._render(); } catch {}
@@ -223,7 +226,7 @@ class JarvisVision {
     ctx.fillStyle = 'rgba(0,8,16,0.32)'; ctx.fillRect(0, 0, W, H);
 
     if (this.opts.motion) this._renderMotion(W, H);
-    if (this.opts.mesh)   this._renderMesh(W, H);
+    if (this.opts.mesh && this.frame % 4 === 2) this._renderMesh(W, H);
     if (this.opts.hud)    this._renderHUD(W, H);
     if (this.opts.body)   this._renderPose(W, H);
     if (this.opts.hands)  this._renderHands(W, H);
@@ -328,17 +331,23 @@ class JarvisVision {
     const X = (p) => (1 - p.x) * W, Y = (p) => p.y * H;
     const VIS = 0.4;   // limiar de visibilidade um pouco mais alto = menos ruído
 
-    /* Conexões — linha externa grossa translúcida + núcleo fino brilhante
-     * (efeito de "feixe de energia" estilo JARVIS). */
+    /* Conexões — curvas quadráticas suaves (Bezier via ponto de controle no
+     * meio deslocado perpendicularmente) + halo exterior estilo JARVIS. */
     for (const [a, b] of POSE_CONNECTIONS) {
       if (!lm[a] || !lm[b]) continue;
       if ((lm[a].visibility ?? 1) < VIS || (lm[b].visibility ?? 1) < VIS) continue;
       const x1 = X(lm[a]), y1 = Y(lm[a]), x2 = X(lm[b]), y2 = Y(lm[b]);
+      /* ponto de controle: meio + offset perpendicular leve (3% do comprimento) */
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      const cx = mx - (dy / len) * len * 0.06;
+      const cy = my + (dx / len) * len * 0.06;
       ctx.strokeStyle = 'rgba(0,240,255,0.18)'; ctx.lineWidth = 7; ctx.shadowBlur = 0;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cx, cy, x2, y2); ctx.stroke();
       ctx.strokeStyle = 'rgba(120,250,255,0.95)'; ctx.lineWidth = 2;
       ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 8;
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cx, cy, x2, y2); ctx.stroke();
     }
 
     /* Articulações principais (ombros, cotovelos, quadris, joelhos…) com
@@ -469,7 +478,7 @@ function cleanup() {
 export function jarvisVisionPage() {
   cleanup();
 
-  const opts = { body: true, hands: true, motion: true, hud: true, mesh: true, maxHands: 8 };
+  const opts = { body: true, hands: true, motion: true, hud: true, mesh: false, maxHands: 8 };
 
   const canvas = h('canvas', { className: 'jv-canvas' });
   const status = h('span', { className: 'jv-status' }, 'Câmera parada.');
