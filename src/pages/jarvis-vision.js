@@ -4,7 +4,7 @@
  * Engine de visão computacional estilo Iron Man:
  *   • Corpo (TF.js MoveNet MultiPose LIGHTNING) — até 20 pessoas, 17 pts cada
  *   • Mãos (MediaPipe Hands)                   — até N mãos, 21 pts cada
- *   • Esqueleto interpolado                    — ≥256 pontos por pessoa
+ *   • Esqueleto interpolado                    — até 2670 pontos por pessoa
  *   • HUD tático                               — cantos, grade, relógio, métricas
  */
 
@@ -228,7 +228,8 @@ class JarvisVision {
     /* Bezier quadrática */
     const qx = (x1, cx, x2, t) => (1-t)*(1-t)*x1 + 2*(1-t)*t*cx + t*t*x2;
     const qy = (y1, cy, y2, t) => (1-t)*(1-t)*y1 + 2*(1-t)*t*cy + t*t*y2;
-    const INTERP = 10;   // reduzido de 12 → 10 (17% menos fillRect por segmento)
+    /* 12 conexões × 221 + 17 articulações ≈ 2670 pontos por pessoa (máx) */
+    const INTERP = 221;
     const SCORE  = 0.35; // limiar ligeiramente maior → filtra ruído e reduz desenho
     const MAJOR  = new Uint8Array([0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1]);
     let totalPts = 0;
@@ -493,7 +494,7 @@ export function jarvisVisionPage() {
     h('div', { className: 'page-hero' },
       h('h1', null, '🤖 JARVIS · Rastreamento Multi-Corporal'),
       h('p', { className: 'u-text-muted' },
-        'Até 20 pessoas simultâneas (MoveNet MultiPose LIGHTNING) com esqueleto de ≥173 pontos por pessoa + curvas suaves + até 80 mãos, tudo em tempo real.'
+        'Até 20 pessoas simultâneas (MoveNet MultiPose LIGHTNING) com esqueleto de até 2670 pontos por pessoa + curvas suaves + até 80 mãos, tudo em tempo real.'
       )
     ),
     h('div', { className: 'jv-bar' },
