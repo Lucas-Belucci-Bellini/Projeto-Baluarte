@@ -218,94 +218,100 @@ class JarvisVision {
     if (!poses.length) return;
     const ctx = this.ctx;
 
-    /* Avalia bezier quadrática em t */
+    /* Bezier quadrática */
     const qx = (x1, cx, x2, t) => (1-t)*(1-t)*x1 + 2*(1-t)*t*cx + t*t*x2;
     const qy = (y1, cy, y2, t) => (1-t)*(1-t)*y1 + 2*(1-t)*t*cy + t*t*y2;
-    const INTERP  = 12;   // pontos por segmento → 12 × 13 conn = 156 + 17 orig = 173/pessoa
-    const SCORE   = 0.3;  // limiar de confiança
-    let totalPts  = 0;
+    const INTERP = 12;
+    const SCORE  = 0.3;
+    const MAJOR  = new Uint8Array([0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1]); // idx 5-16 = major
+    let totalPts = 0;
+
+    /* Escala calculada uma vez por frame */
+    const scaleX = W / (this.video.videoWidth  || W);
+    const scaleY = H / (this.video.videoHeight || H);
+    const toX = (kp) => W - kp.x * scaleX;
+    const toY = (kp) => kp.y * scaleY;
 
     for (let pi = 0; pi < poses.length; pi++) {
       const kps   = poses[pi].keypoints;
       const color = PERSON_COLORS[pi % PERSON_COLORS.length];
 
-      /* Converte: MoveNet dá x,y em pixels do frame original (não espelhado) */
-      const X = (kp) => W - kp.x * (W / (this.video.videoWidth  || W));
-      const Y = (kp) => kp.y * (H  / (this.video.videoHeight || H));
-
-      /* Camada 1 — halo */
-      ctx.shadowBlur = 0;
-      ctx.strokeStyle = color.replace(')', ',0.15)').replace('rgb', 'rgba').replace('#', 'rgba(').replace(')', ',0.12)');
-      /* halo simples */
-      ctx.strokeStyle = 'rgba(0,240,255,0.12)';
-      ctx.lineWidth = 8;
-      for (const [a, b] of POSE_CONNECTIONS) {
-        if (!kps[a] || !kps[b]) continue;
-        if ((kps[a].score ?? 1) < SCORE || (kps[b].score ?? 1) < SCORE) continue;
-        const x1 = X(kps[a]), y1 = Y(kps[a]), x2 = X(kps[b]), y2 = Y(kps[b]);
-        const mx = (x1+x2)/2, my = (y1+y2)/2;
-        const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy)||1;
-        const cpx = mx-(dy/len)*len*0.07, cpy = my+(dx/len)*len*0.07;
-        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.quadraticCurveTo(cpx,cpy,x2,y2); ctx.stroke();
+      /* Pré-calcula coords válidos uma vez */
+      const px = new Float32Array(17);
+      const py = new Float32Array(17);
+      const ok = new Uint8Array(17);
+      for (let i = 0; i < 17; i++) {
+        if (kps[i] && (kps[i].score ?? 1) >= SCORE) {
+          px[i] = toX(kps[i]); py[i] = toY(kps[i]); ok[i] = 1;
+        }
       }
 
-      /* Camada 2 — linha núcleo */
+      /* Camada 1 — halo (shadowBlur=0, lineWidth=8, cor única) */
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(0,240,255,0.10)';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      for (let ci = 0; ci < POSE_CONNECTIONS.length; ci++) {
+        const [a, b] = POSE_CONNECTIONS[ci];
+        if (!ok[a] || !ok[b]) continue;
+        const x1 = px[a], y1 = py[a], x2 = px[b], y2 = py[b];
+        const mx = (x1+x2)*0.5, my = (y1+y2)*0.5;
+        const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy)||1;
+        ctx.moveTo(x1,y1); ctx.quadraticCurveTo(mx-(dy/len)*len*0.07, my+(dx/len)*len*0.07, x2,y2);
+      }
+      ctx.stroke();
+
+      /* Camada 2 — linha núcleo (shadowBlur=10) */
       ctx.shadowColor = color; ctx.shadowBlur = 10;
       ctx.strokeStyle = color; ctx.lineWidth = 1.5;
-      for (const [a, b] of POSE_CONNECTIONS) {
-        if (!kps[a] || !kps[b]) continue;
-        if ((kps[a].score ?? 1) < SCORE || (kps[b].score ?? 1) < SCORE) continue;
-        const x1 = X(kps[a]), y1 = Y(kps[a]), x2 = X(kps[b]), y2 = Y(kps[b]);
-        const mx = (x1+x2)/2, my = (y1+y2)/2;
+      ctx.beginPath();
+      for (let ci = 0; ci < POSE_CONNECTIONS.length; ci++) {
+        const [a, b] = POSE_CONNECTIONS[ci];
+        if (!ok[a] || !ok[b]) continue;
+        const x1 = px[a], y1 = py[a], x2 = px[b], y2 = py[b];
+        const mx = (x1+x2)*0.5, my = (y1+y2)*0.5;
         const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy)||1;
-        const cpx = mx-(dy/len)*len*0.07, cpy = my+(dx/len)*len*0.07;
-        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.quadraticCurveTo(cpx,cpy,x2,y2); ctx.stroke();
+        ctx.moveTo(x1,y1); ctx.quadraticCurveTo(mx-(dy/len)*len*0.07, my+(dx/len)*len*0.07, x2,y2);
       }
+      ctx.stroke();
 
-      /* Camada 3 — pontos interpolados (≥156 por conexão ativa) */
-      for (const [a, b] of POSE_CONNECTIONS) {
-        if (!kps[a] || !kps[b]) continue;
-        if ((kps[a].score ?? 1) < SCORE || (kps[b].score ?? 1) < SCORE) continue;
-        const x1 = X(kps[a]), y1 = Y(kps[a]), x2 = X(kps[b]), y2 = Y(kps[b]);
-        const mx = (x1+x2)/2, my = (y1+y2)/2;
+      /* Camada 3 — pontos interpolados sem shadowBlur (fillRect = 10× mais rápido que arc) */
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = color;
+      for (let ci = 0; ci < POSE_CONNECTIONS.length; ci++) {
+        const [a, b] = POSE_CONNECTIONS[ci];
+        if (!ok[a] || !ok[b]) continue;
+        const x1 = px[a], y1 = py[a], x2 = px[b], y2 = py[b];
+        const mx = (x1+x2)*0.5, my = (y1+y2)*0.5;
         const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy)||1;
         const cpx = mx-(dy/len)*len*0.07, cpy = my+(dx/len)*len*0.07;
         for (let k = 1; k < INTERP; k++) {
-          const t  = k / INTERP;
-          const px = qx(x1, cpx, x2, t);
-          const py = qy(y1, cpy, y2, t);
-          ctx.beginPath(); ctx.arc(px, py, 1.6, 0, Math.PI*2);
-          ctx.fillStyle = color;
-          ctx.shadowColor = color; ctx.shadowBlur = 5;
-          ctx.fill();
+          const t = k / INTERP;
+          ctx.fillRect(qx(x1,cpx,x2,t)-1.5, qy(y1,cpy,y2,t)-1.5, 3, 3);
           totalPts++;
         }
       }
 
       /* Camada 4 — articulações */
-      const MAJOR = new Set([5,6,7,8,9,10,11,12,13,14,15,16]);
-      for (let i = 0; i < kps.length; i++) {
-        if ((kps[i].score ?? 1) < SCORE) continue;
-        const x = X(kps[i]), y = Y(kps[i]);
-        const major = MAJOR.has(i);
+      for (let i = 0; i < 17; i++) {
+        if (!ok[i]) continue;
+        const major = MAJOR[i];
         const r = major ? 5 : 3;
         if (major) {
-          ctx.beginPath(); ctx.arc(x, y, r+4, 0, Math.PI*2);
+          ctx.beginPath(); ctx.arc(px[i], py[i], r+4, 0, Math.PI*2);
           ctx.fillStyle = 'rgba(0,240,255,0.15)'; ctx.shadowBlur = 0; ctx.fill();
         }
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-        ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = major ? 14 : 8;
+        ctx.beginPath(); ctx.arc(px[i], py[i], r, 0, Math.PI*2);
+        ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = major ? 12 : 6;
         ctx.fill();
         totalPts++;
       }
 
-      /* ID da pessoa */
-      const nose = kps[0];
-      if (nose && (nose.score ?? 1) >= SCORE) {
-        const nx = X(nose), ny = Y(nose) - 24;
+      /* Label */
+      if (ok[0]) {
         ctx.shadowBlur = 0; ctx.font = 'bold 11px monospace';
         ctx.fillStyle = color;
-        ctx.fillText(`P${pi + 1}`, nx - 8, ny);
+        ctx.fillText(`P${pi + 1}`, px[0] - 8, py[0] - 24);
       }
     }
     ctx.shadowBlur = 0;
