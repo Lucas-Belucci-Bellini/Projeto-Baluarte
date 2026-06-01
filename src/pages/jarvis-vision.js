@@ -124,13 +124,13 @@ class JarvisVision {
     this.poseResults  = [];
     this.handResults  = null;
 
-    /* Áudio "vai teia" — gesto Homem-Aranha */
-    this._teiaAudio     = new Audio('vai-teia.mp3');
+    /* Áudio "vai teia" — gesto Homem-Aranha (caminho absoluto p/ rotas hash) */
+    this._teiaAudio     = new Audio('/vai-teia.mp3');
     this._teiaAudio.preload = 'auto';
     this._teiaCooldown  = 0;   // timestamp mínimo para tocar novamente
 
     /* Áudio "pou estourado" — gesto de L */
-    this._lAudio        = new Audio('pou-estourado.mp3');
+    this._lAudio        = new Audio('/pou-estourado.mp3');
     this._lAudio.preload = 'auto';
     this._lCooldown     = 0;
 
@@ -142,8 +142,23 @@ class JarvisVision {
     this._lastMetrics = ''; // evita innerHTML se não mudou
   }
 
+  /* Destrava reprodução: toca mudo brevemente dentro do gesto do usuário */
+  _unlockAudio() {
+    for (const a of [this._teiaAudio, this._lAudio]) {
+      try {
+        a.muted = true;
+        a.play().then(() => {
+          a.pause(); a.currentTime = 0; a.muted = false;
+        }).catch(() => { a.muted = false; });
+      } catch {}
+    }
+  }
+
   async start() {
     const setS = (t) => { if (this.statusEl) this.statusEl.textContent = t; };
+
+    /* Destrava áudio na política de autoplay — start() vem de um clique */
+    this._unlockAudio();
 
     setS('Carregando TF.js…');
     try {
