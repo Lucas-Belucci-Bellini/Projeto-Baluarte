@@ -109,6 +109,15 @@ function _isOpenHand(lm) {
     _isFingerUp(lm, 20, 18)
   );
 }
+/* Gesto "6" / tesoura / paz: indicador + médio levantados, anelar + mindinho abaixados. */
+function _isSixGesture(lm) {
+  return (
+    _isFingerUp(lm,   8, 6)  &&   // indicador ↑
+    _isFingerUp(lm,  12, 10) &&   // médio ↑
+    _isFingerDown(lm, 16, 14) &&  // anelar ↓
+    _isFingerDown(lm, 20, 18)      // mindinho ↓
+  );
+}
 
 /* ══════════════════════════════════════
    ENGINE
@@ -148,6 +157,11 @@ class JarvisVision {
     this._matoAudio.preload = 'auto';
     this._matoCooldown  = 0;
 
+    /* Áudio "deco pão na mão" — gesto "6" nas duas mãos (tesoura dupla) */
+    this._decoAudio     = new Audio('/deco-pao.mp3');
+    this._decoAudio.preload = 'auto';
+    this._decoCooldown  = 0;
+
     this._fpsT = performance.now();
     this._fpsN = 0;
     this._fps  = 0;
@@ -158,7 +172,7 @@ class JarvisVision {
 
   /* Destrava reprodução: toca mudo brevemente dentro do gesto do usuário */
   _unlockAudio() {
-    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio]) {
+    for (const a of [this._teiaAudio, this._lAudio, this._matoAudio, this._decoAudio]) {
       try {
         a.muted = true;
         a.play().then(() => {
@@ -497,6 +511,21 @@ class JarvisVision {
         this._matoCooldown = now + 2000;
         this._matoAudio.currentTime = 0;
         this._matoAudio.play().catch(() => {});
+      }
+    }
+    /* Gesto "6" duplo (tesoura nas duas mãos) */
+    const sixCount = list.reduce((n, lm) => n + (_isSixGesture(lm) ? 1 : 0), 0);
+    if (sixCount >= 2) {
+      ctx.font = 'bold 26px monospace';
+      ctx.fillStyle = '#ff44cc';
+      ctx.shadowColor = '#cc00ff'; ctx.shadowBlur = 14;
+      ctx.textAlign = 'center';
+      ctx.fillText('✌✌ DECO PÃO NA MÃO!', W / 2, 110);
+      ctx.textAlign = 'left'; ctx.shadowBlur = 0;
+      if (now > this._decoCooldown) {
+        this._decoCooldown = now + 2000;
+        this._decoAudio.currentTime = 0;
+        this._decoAudio.play().catch(() => {});
       }
     }
   }
