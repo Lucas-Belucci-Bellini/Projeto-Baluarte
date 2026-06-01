@@ -147,8 +147,8 @@ class JarvisVision {
     this._teiaAudio.preload = 'auto';
     this._teiaCooldown  = 0;   // timestamp mínimo para tocar novamente
 
-    /* Áudio "pou estourado" — gesto de L */
-    this._lAudio        = new Audio('/pou-estourado.mp3');
+    /* Áudio "jingobeu" — gesto de L (pou-estourado.mp3 mantido no repo) */
+    this._lAudio        = new Audio('/jingobeu.mp3');
     this._lAudio.preload = 'auto';
     this._lCooldown     = 0;
 
