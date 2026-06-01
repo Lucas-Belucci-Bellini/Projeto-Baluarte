@@ -2,7 +2,7 @@
  * /jarvis-vision — JARVIS · Rastreamento Corporal Total
  *
  * Engine de visão computacional estilo Iron Man:
- *   • Corpo (TF.js MoveNet MultiPose LIGHTNING) — até 10 pessoas, 17 pts cada
+ *   • Corpo (TF.js MoveNet MultiPose LIGHTNING) — até 20 pessoas, 17 pts cada
  *   • Mãos (MediaPipe Hands)                   — até N mãos, 21 pts cada
  *   • Esqueleto interpolado                    — ≥256 pontos por pessoa
  *   • HUD tático                               — cantos, grade, relógio, métricas
@@ -43,11 +43,12 @@ const HAND_CONNECTIONS = [
   [13,17],[0,17],[17,18],[18,19],[19,20]
 ];
 
-/* Cores por pessoa (10 max) — gradiente ciano→magenta */
+/* Cores por pessoa (20 max) — gradiente ciano→magenta */
 const PERSON_COLORS = [
-  '#00f0ff', '#00c8ff', '#00ffaa',
-  '#aaff00', '#ff00aa', '#ff8800',
-  '#ff4400', '#cc00ff', '#ffff00', '#00ff44'
+  '#00f0ff', '#00c8ff', '#00ffaa', '#aaff00', '#ff00aa',
+  '#ff8800', '#ff4400', '#cc00ff', '#ffff00', '#00ff44',
+  '#ff0055', '#00aaff', '#88ff00', '#ff6600', '#9900ff',
+  '#00ffcc', '#ff0099', '#44ff00', '#0055ff', '#ffaa00'
 ];
 
 /* ══════════════════════════════════════
@@ -177,7 +178,7 @@ class JarvisVision {
 
     /* Pose: async, não bloqueia o loop de render */
     if (this.opts.body && this.detector && this.frame % 2 === 0) {
-      this.detector.estimatePoses(this.video, { flipHorizontal: false, maxPoses: 10 })
+      this.detector.estimatePoses(this.video, { flipHorizontal: false, maxPoses: 20 })
         .then(poses => { this.poseResults = poses || []; })
         .catch(() => {});
     }
@@ -376,7 +377,7 @@ class JarvisVision {
     const fmt = (n) => n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
     this.metricsEl.innerHTML =
       `<span>FPS <b>${this._fps}</b></span>` +
-      `<span>Pessoas <b>${pessoas}/10</b></span>` +
+      `<span>Pessoas <b>${pessoas}/20</b></span>` +
       `<span>Mãos <b>${maos}</b></span>` +
       `<span>Pontos <b>${fmt(this._totalSkPts + maos * 21)}</b></span>`;
   }
