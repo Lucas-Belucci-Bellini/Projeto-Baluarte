@@ -26,24 +26,12 @@ function loadScript(src) {
  * 5=ombroE 6=ombroD 7=cotoveloE 8=cotoveloD 9=pulsoE 10=pulsoD
  * 11=quadrilE 12=quadrilD 13=joelhoE 14=joelhoD 15=tornozeloE 16=tornozeloD */
 const POSE_CONNECTIONS = [
-  // rosto
-  [0,1],[0,2],                    // nariz→olhos
-  [1,3],[2,4],                    // olhos→orelhas
-  // pescoço / clavículas
-  [3,5],[4,6],                    // orelhas→ombros
-  // cintura escapular
-  [5,6],                          // barra dos ombros
-  // tronco
-  [5,11],[6,12],                  // ombros→quadris
-  [11,12],                        // barra dos quadris (pelve)
-  // braço esquerdo
-  [5,7],[7,9],
-  // braço direito
-  [6,8],[8,10],
-  // perna esquerda
-  [11,13],[13,15],
-  // perna direita
-  [12,14],[14,16]
+  [5,6],                          // ombros
+  [5,7],[7,9],                    // braço esquerdo
+  [6,8],[8,10],                   // braço direito
+  [5,11],[6,12],[11,12],          // tronco
+  [11,13],[13,15],                // perna esquerda
+  [12,14],[14,16]                 // perna direita
 ];
 
 /* Conexões dos 21 pontos da mão (MediaPipe Hands) */
