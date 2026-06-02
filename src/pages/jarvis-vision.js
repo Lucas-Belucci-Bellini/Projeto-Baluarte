@@ -26,16 +26,13 @@ function loadScript(src) {
  * 5=ombroE 6=ombroD 7=cotoveloE 8=cotoveloD 9=pulsoE 10=pulsoD
  * 11=quadrilE 12=quadrilD 13=joelhoE 14=joelhoD 15=tornozeloE 16=tornozeloD */
 const POSE_CONNECTIONS = [
-  // rosto
-  [0,1],[0,2],                    // nariz→olhos
+  // cabeça (inspirado no MediaPipe Pose 33-pt)
+  [1,2],                          // olho esq ↔ olho dir
   [1,3],[2,4],                    // olhos→orelhas
-  // pescoço / clavículas
-  [3,5],[4,6],                    // orelhas→ombros
-  // cintura escapular
-  [5,6],                          // barra dos ombros
+  [3,5],[4,6],                    // orelhas→ombros (clavícula)
   // tronco
-  [5,11],[6,12],                  // ombros→quadris
-  [11,12],                        // barra dos quadris (pelve)
+  [5,6],                          // barra dos ombros
+  [5,11],[6,12],[11,12],          // tronco + pelve
   // braço esquerdo
   [5,7],[7,9],
   // braço direito
@@ -342,7 +339,7 @@ class JarvisVision {
     /* Bezier quadrática */
     const qx = (x1, cx, x2, t) => (1-t)*(1-t)*x1 + 2*(1-t)*t*cx + t*t*x2;
     const qy = (y1, cy, y2, t) => (1-t)*(1-t)*y1 + 2*(1-t)*t*cy + t*t*y2;
-    /* 18 conexões × 4167 + 17 articulações ≈ 75000 pontos por pessoa */
+    /* 16 conexões × 4167 + 17 articulações ≈ 67000 pontos por pessoa */
     const INTERP = 4167;
     const SCORE  = 0.35; // limiar ligeiramente maior → filtra ruído e reduz desenho
     const MAJOR  = new Uint8Array([0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1]);
