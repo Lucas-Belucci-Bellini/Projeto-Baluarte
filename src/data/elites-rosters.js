@@ -126,5 +126,16 @@ export const ROSTERS = {
     "Elite Imperial",
     "Papa",
     "Quebec"
+  ],
+  "ROMEO": [
+    "Sierra",
+    "Thomas Andre",
+    "COM SUA GUILDA",
+    "Liu Zhigang",
+    "COM 1000 caçadores de rank S (5 estrelas)",
+    "Christopher Reed",
+    "Lennart Niermann",
+    "Baek Yoonho",
+    "Choi Jong-In"
   ]
 };
