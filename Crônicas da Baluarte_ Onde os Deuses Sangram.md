@@ -1527,7 +1527,7 @@ Ele estava atrás de um **Núcleo de Energia (Power Core)** valioso de um antigo
 
 **Jake Pentecost:** (Falando baixo para si mesmo, enquanto usava uma ferramenta para extrair a peça) "Rápido e silencioso. Papai não precisa saber que estou transformando sucata em ouro."
 
-De repente, um ruído metálico cortou o silêncio. Um pequeno e desajeitado robô, mal com **$8$ metros** de altura e montado a partir de peças de sucata, bloqueou a saída.
+De repente, um ruído metálico cortou o silêncio. Um pequeno e desajeitado robô, mal com **8 metros** de altura e montado a partir de peças de sucata, bloqueou a saída.
 
 De dentro do mini-Jaeger clandestino, chamado **Scrapper**, uma voz feminina e firme ecoou no rádio.
 
