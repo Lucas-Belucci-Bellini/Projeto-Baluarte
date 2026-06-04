@@ -2,20 +2,20 @@
  * Atualiza o fanfic.json a partir dos .md das Crônicas (sincronizados
  * dos Google Docs por scripts/sync-cronicas.mjs).
  *
- * Um documento pode conter VÁRIOS arcos. A formatação de nível de
- * título varia entre docs, então NÃO confiamos no nível (#, ##, ###):
+ * A marcação de título nos docs é irregular (capítulos aparecem como
+ * #, ## ou ###; às vezes um arco tem dois # seguidos). Por isso NÃO
+ * inferimos arco pelo nível do título. Em vez disso usamos a LISTA
+ * OFICIAL de arcos (scripts/arcos.json — as "guias" do documento):
  *
- *   - ARCO     = título de nível 1 (#) que NÃO parece um capítulo
- *   - CAPÍTULO = qualquer título cujo texto começa com "Capítulo N"
- *                ou "Cap N" (em qualquer nível: ##, ### …)
+ *   - ARCO     = título (em qualquer nível) que está na lista oficial
+ *   - CAPÍTULO = título "Capítulo N" / "Cap N" entre dois arcos
  *   - bloco 'h'= demais títulos (subtítulos dentro do capítulo)
  *   - bloco 'p'= parágrafos
  *
- * Estratégia MERGE + trava anti-regressão:
- *   - arco existente (por título) -> substitui capítulos, MAS só se o
- *     novo conteúdo não encolher drasticamente (proteção contra parse ruim)
- *   - arco novo -> adiciona ao fim
- *   - arcos ausentes nos .md -> permanecem intactos
+ * Reconstrói os arcos NA ORDEM da lista oficial. Aliases permitem
+ * absorver nomes antigos (ex.: "O Renascimento de Cybertron" → o arco
+ * oficial "GUERRA MULTIVERSAL"). Trava anti-regressão: se o doc trouxer
+ * menos capítulos do que o fanfic já tinha para o arco, mantém o fanfic.
  *
  * Uso:  node scripts/gen-fanfic-from-docs.mjs
  * ============================================================ */
@@ -29,80 +29,76 @@ const MD_FILES = [
   'Crônicas da Baluarte_ Onde os Deuses Sangram (continuação 4).md',
 ];
 
-const clean = (s) => s.replace(/\*\*/g, '').replace(/\\/g, '').replace(/\s+/g, ' ').trim();
-const isChapter = (txt) => /^cap(?:[íi]tulo)?\.?\s*\d+/i.test(txt);
+const ARCS = JSON.parse(readFileSync('scripts/arcos.json', 'utf8'));
 
-/* Separa o markdown em arcos -> capítulos -> blocos. */
-function parseArcs(md) {
-  const arcs = [];
-  let arc = null, cur = null;
-  for (const raw of md.split('\n')) {
+// Arco oficial -> títulos antigos no fanfic.json que devem ser absorvidos por ele.
+const ALIASES = { 'GUERRA MULTIVERSAL': ['O Renascimento de Cybertron'] };
+
+const clean = (s) => s.replace(/\*\*/g, '').replace(/\\/g, '').replace(/\s+/g, ' ').trim();
+const norm = (s) => clean(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const isChapter = (t) => /^cap(?:[íi]tulo)?\.?\s*\d+/i.test(t);
+
+const arcByNorm = new Map(ARCS.map((t) => [norm(t), t]));
+
+/* 1) Varre todos os .md e agrupa os capítulos por arco oficial. */
+const capsByArc = new Map(ARCS.map((t) => [t, []]));
+let current = null, curChap = null;
+for (const file of MD_FILES) {
+  if (!existsSync(file)) { console.warn('• ausente:', file); continue; }
+  for (const raw of readFileSync(file, 'utf8').split('\n')) {
     const line = raw.replace(/\r$/, '');
-    const m = line.match(/^(#{1,6})\s+(.+?)\s*$/);
+    const m = line.match(/^#{1,6}\s+(.+?)\s*$/);
     if (m) {
-      const level = m[1].length;
-      const txt = clean(m[2]);
-      if (!txt) continue;
-      if (isChapter(txt)) {                         // CAPÍTULO (qualquer nível)
-        if (!arc) { arc = { title: 'Prólogo', chapters: [] }; arcs.push(arc); }
-        cur = { id: '', title: txt, blocks: [] };
-        arc.chapters.push(cur);
+      const txt = clean(m[1]);
+      const oficial = arcByNorm.get(norm(txt));
+      if (oficial) { current = oficial; curChap = null; continue; }   // âncora de arco
+      if (isChapter(txt)) {                                            // capítulo
+        if (!current) continue;
+        curChap = { id: '', title: txt, blocks: [] };
+        capsByArc.get(current).push(curChap);
         continue;
       }
-      if (level === 1) {                            // H1 não-capítulo = ARCO
-        arc = { title: txt, chapters: [] };
-        arcs.push(arc); cur = null;
-        continue;
-      }
-      if (cur) cur.blocks.push({ t: 'h', v: txt }); // subtítulo
+      if (curChap) curChap.blocks.push({ t: 'h', v: txt });            // subtítulo
       continue;
     }
     const p = clean(line);
-    if (p && cur) cur.blocks.push({ t: 'p', v: p });
+    if (p && curChap) curChap.blocks.push({ t: 'p', v: p });
   }
-  return arcs.filter((a) => a.chapters.length);
 }
 
+/* 2) Reconstrói os arcos na ordem oficial, com anti-regressão. */
 const data = JSON.parse(readFileSync('src/data/fanfic.json', 'utf8'));
-data.arcos = data.arcos || [];
-const byTitle = new Map(data.arcos.map((a) => [clean(a.title), a]));
-let maxN = data.arcos.reduce(
-  (m, a) => Math.max(m, parseInt(String(a.id || '').replace('arco-', ''), 10) || 0), 0);
+const fanficByNorm = new Map((data.arcos || []).map((a) => [norm(a.title), a]));
+const findExisting = (titulo) => {
+  let e = fanficByNorm.get(norm(titulo));
+  if (!e && ALIASES[titulo]) for (const a of ALIASES[titulo]) { e = fanficByNorm.get(norm(a)); if (e) break; }
+  return e;
+};
 
-let updated = 0, added = 0, skipped = 0, parsedCount = 0;
 const log = [];
-
-for (const file of MD_FILES) {
-  if (!existsSync(file)) { console.warn('• ausente:', file); continue; }
-  for (const parsed of parseArcs(readFileSync(file, 'utf8'))) {
-    parsedCount++;
-    const key = clean(parsed.title);
-    const existing = byTitle.get(key);
-    if (existing) {
-      const before = existing.chapters.length;
-      // Trava: o arco nunca encolhe (protege contra capítulos com título fora do padrão).
-      if (before > 0 && parsed.chapters.length < before) {
-        log.push(`  ! "${existing.title}": ${before}→${parsed.chapters.length} cap. — IGNORADO (anti-regressão)`);
-        skipped++;
-        continue;
-      }
-      const pfx = String(existing.id || 'arco').replace('arco-', 'a');
-      parsed.chapters.forEach((c, i) => { c.id = `${pfx}-c${i + 1}`; });
-      existing.chapters = parsed.chapters;
-      if (parsed.chapters.length !== before) log.push(`  ~ ${existing.id} "${existing.title}": ${before}→${parsed.chapters.length} cap.`);
-      updated++;
-    } else {
-      const n = ++maxN;
-      parsed.chapters.forEach((c, i) => { c.id = `a${n}-c${i + 1}`; });
-      data.arcos.push({ id: `arco-${n}`, title: parsed.title, chapters: parsed.chapters });
-      byTitle.set(key, { id: `arco-${n}`, title: parsed.title });
-      log.push(`  + arco-${n} "${parsed.title}" (NOVO) → ${parsed.chapters.length} cap.`);
-      added++;
-    }
+const novos = ARCS.map((titulo, idx) => {
+  const doc = capsByArc.get(titulo) || [];
+  const existing = findExisting(titulo);
+  const before = existing ? existing.chapters.length : 0;
+  let chapters;
+  if (doc.length >= before) {
+    chapters = doc;
+    if (doc.length !== before) log.push(`  ~ ${titulo}: ${before} → ${doc.length} cap.`);
+  } else {
+    chapters = existing.chapters;
+    log.push(`  = ${titulo}: doc ${doc.length} < fanfic ${before} → mantém fanfic`);
   }
-}
+  chapters.forEach((c, i) => { c.id = `a${idx + 1}-c${i + 1}`; });
+  return { id: `arco-${idx + 1}`, title: titulo, chapters };
+});
 
+const aliasNorms = Object.values(ALIASES).flat().map(norm);
+const removidos = (data.arcos || []).filter(
+  (a) => !arcByNorm.has(norm(a.title)) && !aliasNorms.includes(norm(a.title)));
+
+data.arcos = novos;
 writeFileSync('src/data/fanfic.json', JSON.stringify(data));
+
 if (log.length) console.log(log.join('\n'));
-console.log(`\nArcos lidos dos .md: ${parsedCount} | atualizados: ${updated} | novos: ${added} | ignorados: ${skipped}`);
-console.log(`Total de arcos no fanfic.json: ${data.arcos.length}`);
+if (removidos.length) console.log('\n⚠ Arcos não-oficiais removidos:', removidos.map((a) => `"${a.title}"`).join(', '));
+console.log(`\nTotal de arcos: ${data.arcos.length} (lista oficial) | capítulos: ${data.arcos.reduce((s, a) => s + a.chapters.length, 0)}`);
