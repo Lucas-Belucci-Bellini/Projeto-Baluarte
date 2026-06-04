@@ -1,12 +1,12 @@
 name: Sincronizar Crônicas (Google Docs)
 
 # Mantém as Crônicas da Baluarte sempre em dia com os Google Docs (a fonte).
-# Roda a cada 6 horas e também pode ser disparada manualmente. Se algum doc
+# Roda a cada 12 horas e também pode ser disparada manualmente. Se algum doc
 # mudou, regenera os dados, commita no main e a Vercel republica sozinha.
 
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */12 * * *'
   workflow_dispatch:
 
 permissions:
