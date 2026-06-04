@@ -25,6 +25,8 @@ import {
   addMessage, getMessages, getAllMessages, isUsingFallback
 } from '../utils/jarvis-memory.js';
 import { recall, summarizeSession, setMemoryCache } from '../utils/jarvis-recall.js';
+import { initSkills, removeSkill } from '../utils/jarvis-tools.js';
+import { listSkillSummaries } from '../utils/jarvis-skills.js';
 
 const MODES = [
   { id: 'local',  label: 'Local',  icon: '◆', badge: 'cyan',    desc: 'Assistente de regras. Offline, sem custo. Navega e consulta o Baluarte.' },
@@ -677,9 +679,49 @@ function renderConfigPanel() {
         cb));
   }
 
+  /* Skills auto-criadas (hermes): lista o que o JARVIS aprendeu + apagar. */
+  function skillsRow() {
+    const wrap = h('div', { className: 'jv-profile', style: { display: 'block' } });
+    function render() {
+      empty(wrap);
+      const skills = listSkillSummaries();
+      wrap.appendChild(
+        h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: skills.length ? '6px' : '0' } },
+          h('span', null, '🧬 SKILLS APRENDIDAS'),
+          h('span', { className: 'u-text-muted', style: { fontSize: '11px' } },
+            skills.length ? `${skills.length} habilidade${skills.length > 1 ? 's' : ''}` : 'nenhuma ainda'))
+      );
+      if (!skills.length) {
+        wrap.appendChild(h('p', { className: 'u-text-muted', style: { fontSize: '11px', margin: 0 } },
+          'No modo Agente, peça: "crie uma skill que…". O JARVIS escreve, salva e passa a usá-la sozinho.'));
+        return;
+      }
+      skills.forEach((s) => {
+        wrap.appendChild(
+          h('div', { style: { display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '6px 0', borderTop: '1px solid rgba(255,255,255,.08)' } },
+            h('div', { style: { flex: '1', minWidth: '0' } },
+              h('div', { className: 'u-mono u-text-cyan', style: { fontSize: '12px' } }, s.name),
+              h('div', { className: 'u-text-muted', style: { fontSize: '11px' } }, s.description),
+              h('div', { className: 'u-text-muted', style: { fontSize: '10px', opacity: '0.7' } }, `usada ${s.runs || 0}×`)),
+            h('button', {
+              className: 'jv-session__del', title: 'Apagar skill',
+              onclick: () => {
+                if (!confirm(`Apagar a skill "${s.name}"?`)) return;
+                removeSkill(s.name);
+                render();
+                toast(`Skill "${s.name}" apagada.`, { type: 'info' });
+              }
+            }, '×'))
+        );
+      });
+    }
+    render();
+    return wrap;
+  }
+
   renderModes();
   renderBody();
-  panel.append(modeBar, profileRow(), humanizeRow(), memoryRow(), bodyEl);
+  panel.append(modeBar, profileRow(), humanizeRow(), memoryRow(), skillsRow(), bodyEl);
   return panel;
 }
 
@@ -691,6 +733,7 @@ export function jarvisPage() {
   if (config.memoryOn === undefined) config.memoryOn = true;
   activeSession = null;
   messages = [];
+  initSkills(); /* registra as skills aprendidas como ferramentas do agente */
   /* Preenche o cache de memória p/ a ferramenta recall_memory do agente. */
   buildMemoryCorpus(null).then(setMemoryCache).catch(() => {});
 
@@ -722,10 +765,13 @@ export function jarvisPage() {
     }
   }, '⚙ Modos & Config');
 
+  const skillCount = listSkillSummaries().length;
   fullPage.appendChild(
     h('div', { className: 'jarvis-toolbar' },
       modeBadgeEl,
       isUsingFallback() && h('span', { className: 'badge badge--warning' }, 'MEMÓRIA VOLÁTIL'),
+      skillCount > 0 && h('span', { className: 'badge badge--cyan', title: 'Habilidades que o JARVIS aprendeu' },
+        `🧬 ${skillCount} skill${skillCount > 1 ? 's' : ''}`),
       h('div', { style: { marginLeft: 'auto' } }, configToggle)
     )
   );

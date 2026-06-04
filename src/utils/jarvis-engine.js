@@ -396,7 +396,7 @@ export async function processAgent(messages, config, onToolCall) {
     content: m.text
   }));
 
-  const MAX_TURNS = 6;
+  const MAX_TURNS = 8;
   let finalText = '';
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
@@ -404,7 +404,8 @@ export async function processAgent(messages, config, onToolCall) {
       model: config.model || 'claude-sonnet-4-6',
       max_tokens: 1536,
       system: config.systemPrompt +
-        ' Você tem ferramentas para navegar e consultar o Baluarte. Use-as quando fizer sentido.',
+        ' Você tem ferramentas para navegar e consultar o Baluarte. Use-as quando fizer sentido.' +
+        ' Você também pode APRENDER habilidades novas: se precisar de uma capacidade repetível que ainda não existe, crie-a com create_skill (JS puro, fica salva e disponível nas próximas conversas) e então use-a. Confira o que já aprendeu com list_skills.',
       tools: getToolSchemas(),
       messages: apiMessages
     };

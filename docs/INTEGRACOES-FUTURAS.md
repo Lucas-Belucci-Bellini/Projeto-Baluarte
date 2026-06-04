@@ -16,7 +16,13 @@ Cada item traz **o que é**, **como encaixa no Baluarte** e o **status**.
 - **Encaixe no Baluarte:** evoluir o **JARVIS** — `src/utils/jarvis-engine.js`,
   `jarvis-memory.js`, `jarvis-recall.js`, `jarvis-tools.js` e o backend
   `jarvis-python/`. Trazer conceitos de skills auto-criadas, memória e subagentes.
-- **Status:** ⏳ a planejar · **Prioridade sugerida: ALTA** (maior impacto)
+- **Status:** 🟢 **em progresso** · Prioridade: ALTA
+  - ✅ **Skills auto-criadas (V1)** — o JARVIS cria, salva e reusa habilidades
+    próprias via `create_skill` / `list_skills` / `delete_skill` (modo Agente).
+    Sandbox de 3 camadas (denylist + shadowing de globais + strict, sem segredos),
+    persistência no `localStorage` e UI das skills aprendidas. Módulo:
+    `src/utils/jarvis-skills.js`. Guia: [`docs/JARVIS-SKILLS.md`](./JARVIS-SKILLS.md).
+  - ⏳ **Próximos:** memória/perfil do operador, subagentes isolados, scheduler.
 
 ## 2. 💎 gemini-cli — ferramentas de IA no terminal/editor
 - **Repo:** https://github.com/google-gemini/gemini-cli
