@@ -52,6 +52,7 @@ router.register('/regex', lazy(() => import('./pages/regex.js'), 'regexPage'));
 router.register('/arsenal', lazy(() => import('./pages/arsenal.js'), 'arsenalPage'));
 router.register('/biblioteca', lazy(() => import('./pages/biblioteca.js'), 'bibliotecaPage'));
 router.register('/elites', lazy(() => import('./pages/elites.js'), 'elitesPage'));
+router.register('/dossie', lazy(() => import('./pages/dossie.js'), 'dossiePage'));
 router.register('/ciberseg', lazy(() => import('./pages/ciberseg.js'), 'cibersegPage'));
 router.register('/academia', lazy(() => import('./pages/academia.js'), 'academiaPage'));
 router.register('/robotica', lazy(() => import('./pages/robotica.js'), 'roboticaPage'));

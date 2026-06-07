@@ -98,6 +98,7 @@ function pageTitleForRoute(path) {
     '/videos': 'Central de Vídeos',
     '/tv': 'TV do Baluarte',
     '/elites': 'Elites',
+    '/dossie': 'Dossiê',
     '/arsenal': 'Arsenal',
     '/radar': 'Radar Tático',
     '/ciberseg': 'CiberSeg',

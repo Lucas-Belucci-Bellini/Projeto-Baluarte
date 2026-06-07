@@ -101,6 +101,7 @@ export const NAV_GROUPS = [
     label: 'Campo & Tático',
     items: [
       { path: '/elites',       label: 'Elites',         icon: '◆',  phase: 1 },
+      { path: '/dossie',       label: 'Dossiê de Forças', icon: '▣', phase: 1 },
       { path: '/arsenal',      label: 'Arsenal',        icon: '⌖',  phase: 1 },
       { path: '/radar',        label: 'Radar Tático',   icon: '⌬',  phase: 1 },
       { path: '/geo',          label: 'GeoPulse',       icon: '🛰', phase: 1 },

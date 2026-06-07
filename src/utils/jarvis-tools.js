@@ -30,7 +30,7 @@ export const TOOL_SCHEMAS = [
       properties: {
         route: {
           type: 'string',
-          description: 'Rota destino. Opções: /home, /ferramentas, /editor, /terminal, /calc-cientifica, /calc-numerica, /calculadoras, /tabela-verdade, /cripto, /esteganografia, /graficos, /simbolos, /color-studio, /regex, /qr-studio, /json-studio, /git-helper, /arsenal, /biblioteca, /elites, /ciberseg, /academia, /robotica, /fft, /radio, /musicas, /media, /videos, /tv, /jogos, /universo, /tabela-periodica, /modpack, /guia-pc, /logic-sim, /portas, /morse, /memes, /filmes, /perfil, /economia, /jarvis, /radar, /geo, /find, /triangulacao, /sobre'
+          description: 'Rota destino. Opções: /home, /ferramentas, /editor, /terminal, /calc-cientifica, /calc-numerica, /calculadoras, /tabela-verdade, /cripto, /esteganografia, /graficos, /simbolos, /color-studio, /regex, /qr-studio, /json-studio, /git-helper, /arsenal, /biblioteca, /elites, /dossie, /ciberseg, /academia, /robotica, /fft, /radio, /musicas, /media, /videos, /tv, /jogos, /universo, /tabela-periodica, /modpack, /guia-pc, /logic-sim, /portas, /morse, /memes, /filmes, /perfil, /economia, /jarvis, /radar, /geo, /find, /triangulacao, /sobre'
         }
       },
       required: ['route']

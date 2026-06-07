@@ -111,6 +111,7 @@ const ROUTES_INDEX = {
   'arsenal': '/arsenal', 'armas': '/arsenal',
   'biblioteca': '/biblioteca', 'crônicas': '/biblioteca', 'arcos': '/biblioteca',
   'elites': '/elites', 'equipes': '/elites',
+  'dossiê': '/dossie', 'dossie': '/dossie', 'forças': '/dossie', 'dreadnought': '/dossie',
   'ciberseg': '/ciberseg', 'segurança': '/ciberseg',
   'academia': '/academia', 'linguagens': '/academia',
   'fft': '/fft', 'áudio': '/fft', 'espectro': '/fft',

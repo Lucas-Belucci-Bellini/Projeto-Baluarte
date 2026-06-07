@@ -12,6 +12,7 @@ const QUICK_LINKS = [
   { label: 'Biblioteca', path: '/biblioteca', icon: '◫', desc: 'Crônicas da Baluarte' },
   { label: 'Arsenal', path: '/arsenal', icon: '⌖', desc: '159 armas + veículos' },
   { label: 'Elites', path: '/elites', icon: '◆', desc: 'Equipes ALFA → ZULU' },
+  { label: 'Dossiê de Forças', path: '/dossie', icon: '▣', desc: 'A nave, equipes e frotas' },
   { label: 'J.A.R.V.I.S.', path: '/jarvis', icon: '◉', desc: 'Assistente de IA' },
   { label: 'Sobre o Projeto', path: '/sobre', icon: '◇', desc: 'História e mapa do site' }
 ];
