@@ -157,6 +157,20 @@ const ROADMAP_SITE = [
     next: ['Seção militar completa — 12/12 páginas ✓']
   },
   {
+    area: 'Identidade Visual & Temas',
+    icon: '◐',
+    status: 'active',
+    isNew: true,
+    done: ['Sistema de temas (6 paletas de acento)'],
+    next: [
+      'Motor de Universos — um skin completo por universo das Crônicas',
+      'Pilotos: DOOM (infernal) e Warhammer 40k (gótico-imperial)',
+      'Ícones de linha minimalistas e únicos no menu lateral',
+      'Tipografia, formas e atmosfera próprias de cada universo',
+      'Skins dos 17 universos (entrega em lote)'
+    ]
+  },
+  {
     area: 'Infraestrutura',
     icon: '⚙',
     status: 'planned',

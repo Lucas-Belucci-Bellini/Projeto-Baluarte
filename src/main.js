@@ -20,6 +20,7 @@ import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
+import { initUniverse } from './utils/universe-theme.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
 
@@ -137,6 +138,7 @@ function boot() {
 
   appState.set({ bootedAt: Date.now() });
   initTheme();
+  initUniverse();
 
   mountShell(root);
   initToast();
