@@ -7596,3 +7596,761 @@ Blaine Glayder ergueu-se uma última vez, e sua voz fechou o anúncio que mudari
 
 E sobre o continente inteiro — sobre Xyrus, sobre Etistin, sobre Elenoir e Darv, sobre a multidão que aplaudia e a Infinity Dreadnought que pairava revelada contra o céu — uma nova era começava. Uma era de raças unidas, de um continente preparando-se para o desconhecido além do oceano, e de uma nova geração que, sem saber, já carregava nos ombros o peso do futuro.
 
+## **Capítulo 21 — Um Baile, Uma Mente Brilhante e a Senhorita Presidente**
+
+A casa dos Helstea fervilhava de preparativos, mas no andar de cima, no quarto que ocupava sempre que ficava por lá, Arthur Leywin se ajustava diante do espelho com uma quietude que destoava de toda a agitação lá embaixo.
+
+Era de noite. E era o aniversário de Eleanor.
+
+---
+
+### **O Terno do Agente 47**
+
+Arthur ajeitou os punhos do traje escuro — elegante, cortado com precisão impecável, do tipo que parecia simples até se notar o quão perfeitamente caía no corpo.
+
+— Blz. — disse ele, virando-se de lado diante do espelho. — O terno que ganhei do Agente 47 esconde bem as lâminas do Sung Jin Woo.
+
+As adagas estavam ali, invisíveis sob o corte do tecido, dispostas exatamente onde mãos rápidas as alcançariam num piscar de olhos. Um terno feito por um assassino profissional tinha esse tipo de utilidade discreta.
+
+— O que achou, Sylvie? — perguntou ele.
+
+*Ficou bom, papai,* respondeu a dragoa pela mente, do alto da cômoda.
+
+— Fica no meu ombro e vamos descer. — Arthur estendeu o braço para ela. — Por que hoje é aniversário da minha irmã, e eu não quero entrar nos jogos envolvendo bebida da Baluarte. Então me pare se eu for pensar em entrar.
+
+*Pode confiar em mim, papai.*
+
+---
+
+### **A Festa Surpresa**
+
+Algum tempo depois, com os convidados chegando, Arthur havia assumido seu lugar à porta, recebendo as famílias com a cortesia natural de quem fora criado entre nobres em outra vida.
+
+— Bem-vindos. — dizia ele. — Por favor, entrem.
+
+Uma das convidadas, uma senhora de boa família, sussurrou para a filha logo após cruzar a porta:
+
+— Não esqueça de pedir àquele garoto para dançar depois\!
+
+— Mãe\! — protestou a garota, vermelha.
+
+De dentro, a voz de Reynolds Leywin cortou o burburinho.
+
+— Elas estão vindo\! — anunciou ele. — Pessoal, se preparem\!
+
+E Eleanor, sendo conduzida pela mãe e completamente alheia ao que a aguardava, resmungava sua indignação.
+
+— Pensei que a gente estava apenas tendo uma festa em família\! — reclamava ela, puxando o tecido do vestido. — Por que preciso usar esse vestido desconfortável?
+
+— Devagar... — disse Alice, escondendo um sorriso. — É por isso\!
+
+As portas do salão se abriram.
+
+— FELIZ ANIVERSÁRIO, ELEANOR\!
+
+A menina parou no lugar, os olhos arregalando-se diante do salão cheio de gente reunida só por causa dela.
+
+---
+
+### **A Primeira Dança**
+
+Algum tempo depois, com a festa em pleno andamento, Reynolds Leywin cometeu o erro de pegar um microfone. E o pior: ele havia bebido.
+
+— Antes que a próxima parte da festa comece — começou ele, com a eloquência levemente comprometida de quem está alegre demais —, gostaria de agradecer a todos aqui... em nome da minha preciosa filha... por virem celebrar o aniversário dela\! Eu fui muito abençoado nessa vida.
+
+Eleanor já estava envergonhada. Mas isso estava prestes a piorar consideravelmente.
+
+— Mas nada me daria orgulho maior — continuou Reynolds, com um sorriso de pai orgulhoso — do que ter meus amados filhos realizando a primeira dança\!
+
+Eleanor entrou em choque.
+
+— Não sei se a Ellie e o Art deveriam dançar — comentou Tabitha, hesitante. — Eles praticaram alguma coisa...?
+
+*Eu vou matá-lo,* pensou Alice, mantendo o sorriso. Em voz alta, disse apenas:
+
+— Nem um pouco.
+
+Eleanor se aproximou da mãe, a voz baixa e desesperada.
+
+— Mãe, o que vamos fazer? Não sei dançar\!
+
+Mas Arthur já estava ali. Estendeu a mão para a irmã, com uma reverência leve e um sorriso tranquilo.
+
+— Eleanor, me daria a honra da sua mão para essa dança?
+
+— Irmão? — Eleanor olhou para a mão estendida. — M-mas...
+
+Arthur fez aquele leve aceno de cabeça — *confia em mim* — que dispensava palavras.
+
+— Comecem a música\! — ordenou Reynolds.
+
+E então Arthur começou a conduzir.
+
+Não houve hesitação, não houve passos errados. Ele liderou a dança de forma esplêndida, guiando a irmã com uma firmeza gentil que fazia parecer que ela sempre soubera dançar — quando, na verdade, era ele quem cobria cada movimento dela com a própria perícia.
+
+— Pensei que eles não tivessem praticado — disse Tabitha, boquiaberta.
+
+— M-mas não praticaram... — murmurou Alice, igualmente atônita.
+
+E Arthur, percebendo o público encantado, decidiu se exibir um pouco. Com um gesto sutil de magia de vento, ele fez a irmã flutuar num giro elegante, o vestido dela esvoaçando como se a gravidade tivesse, por um instante, decidido fazer uma exceção.
+
+*Acho que as aulas de valsa da minha vida anterior tiveram alguma utilidade no fim das contas,* pensou Arthur, com um leve sorriso interno.
+
+Quando a música terminou, os aplausos foram genuínos. E de um canto do salão, uma voz familiar e ranzinza se fez ouvir.
+
+— Que performance maravilhosa...
+
+Arthur se virou. Era Gideon.
+
+— Se importaria de conversarmos um pouco? — perguntou o inventor.
+
+---
+
+### **Tessia ao Longe**
+
+Do lado de fora da mansão, numa carruagem discreta, uma jovem elfa observava as luzes da festa.
+
+— Me falaram que você é bem próxima ao Arthur Leywin — disse a empregada da família real de Elenoir, cuidadosa. — Está tudo bem a gente ir embora depois de deixar um presente para a irmã dele?
+
+Tessia Eralith olhou para a mansão iluminada, e havia uma mistura complicada de sentimentos no rosto dela.
+
+— O foco do Arthur deve ser a irmã dele hoje — disse ela, decidindo. — Além disso... em breve eu o verei na escola.
+
+E a carruagem partiu na noite, deixando para trás uma festa que ela observara de longe e um reencontro que ela ensaiava na mente sem parar.
+
+---
+
+### **O Velho Rabugento**
+
+No jardim, longe do calor da festa, Arthur encontrou Gideon.
+
+— Está fazendo um monólogo ou algo assim? — provocou o inventor.
+
+— Espero que não tenha invadido a festa da minha irmã só para conversar comigo — respondeu Arthur.
+
+— Ei\! — Gideon ergueu um dedo. — Eu trouxe um presente para ela também\!
+
+— Tudo bem. — Arthur cruzou os braços. — Que prazer devo pela visita do artesão número um de Dicathen?
+
+— Ei, consigo sentir o sarcasmo nas suas palavras. — Gideon bufou. — Só pensei que você poderia gostar de saber que o conselho aprovou o design melhorado que fiz do seu projeto, e que está sendo construído agora.
+
+— Parabéns. — disse Arthur. — Tenho certeza que recebeu uma recompensa maravilhosa por isso.
+
+— Dinheiro? Fama? Poder? — Gideon deu de ombros. — São apenas meios para um fim. O que eu quero, nem o conselho pode...
+
+— C-com licença? — Duas convidadas se aproximaram timidamente.
+
+— Mestre Gideon, sou uma grande fã do seu trabalho\! — disse uma delas.
+
+— Sim\! — acrescentou a outra. — Ouvimos falar do enorme navio que desenvolveu\!
+
+— Sim, sim. — Gideon se ajeitou, subitamente importante. — Estou bem ocupado no momento, mas... — Ele apontou para Arthur. — Não ouse fugir, Arthur\! Já volto\!
+
+Arthur observou a festa enquanto esperava.
+
+— Parece que os convidados estão indo embora aos poucos.
+
+---
+
+### **Lilia**
+
+— Arthur\!
+
+A voz veio de trás, e Lilia Helstea atravessou o jardim correndo.
+
+— Eu... sinto muito por não poder te cumprimentar antes\! — disse ela, um pouco ofegante. — Cheguei tarde na festa e queria... dar os parabéns para a Ellie primeiro.
+
+— Está tudo bem\! — Arthur sorriu. — Seus pais estavam se gabando sobre como você está ocupada como secretária do conselho estudantil. Deixando isso de lado... já faz um tempo, Lilia.
+
+— S-sim... — Lilia desviou levemente o olhar. — Já faz um tempo.
+
+*Ele sempre foi mais alto que eu?* — pensou ela.
+
+— Parece que a garotinha que se escondia dos pais e comia com os empregados cresceu agora — provocou Arthur.
+
+— Te mostrei meu precioso esconderijo — Lilia fez bico — e ainda está me zoando por isso?
+
+— Não é difícil falar isso depois de mostrar como seu futuro é brilhante. — disse Arthur. — Você está indo muito bem na mais prestigiada academia de magos de Dicathen. — Ele inclinou levemente a cabeça. — E pelo número de garotos que te olharam com tanta vontade durante a nossa conversa, você deve ser bem popular também.
+
+— O-o quê?\! — Lilia corou violentamente. — Eu... não tenho namorado nem nada disso\! Além disso, tudo que mudou na minha vida foi por sua causa.
+
+— Se esse é o caso... — Arthur deu um sorriso protetor. — Então é melhor que eu aprove o garoto que você escolher trazer para casa\! Não vou ser mais fácil de agradar do que o tio Vincent\!
+
+— Ah... c-claro.
+
+— Ahem\! — Gideon retornou. — Perdão, jovem dama, mas se importaria se eu pegar esse garoto emprestado?
+
+— M-mestre Gideon? — Lilia se recompôs. — Claro. — Ela se voltou para Arthur. — Então te vejo depois, Art.
+
+Quando ela saiu, Gideon deu um sorriso satisfeito.
+
+— Viu? Te falei que todo mundo me conhece.
+
+— Que humildade... — comentou Arthur.
+
+— Mas você é bem popular com as damas — observou Gideon. — Aquela garota parecia gostar de você.
+
+— Ela é alguém que teve a vida mudada por minha causa. — disse Arthur, com uma calma reflexiva que não combinava com a idade dele. — Os sentimentos dela por mim não são de gostar ou de amor, mas algo mais parecido com gratidão. Ela não sabe disso agora, mas no futuro ela com certeza vai saber diferenciar... que o que está sentindo agora é a paixão que uma donzela sente por um herói.
+
+Gideon o encarou com algo entre o espanto e o desconforto.
+
+— Sua maturidade nesse tipo de situação é nojenta.
+
+— Independente disso — Arthur retomou —, tenho certeza que você não está aqui para me dar conselhos amorosos. O que mais quer discutir?
+
+---
+
+### **Dar e Receber**
+
+— Sim. — Gideon ficou sério. — O que queria falar antes... é que quero usar o dinheiro, a fama e o poder que o conselho me deu... para conseguir algo que não posso conseguir em outro lugar. Seu conhecimento.
+
+Arthur balançou a cabeça.
+
+— Já mudei de ideia depois de te dar o projeto da máquina a vapor. — disse ele. — Não quero mudar como o mundo funciona mais do que já mudei. Esse continente está bem sem minha intervenção.
+
+— Então você tem mais ideias de invenções capazes de mudar o mundo\! — Gideon agarrou-se à frase errada, os olhos brilhando.
+
+*Os ouvidos dele só pegam o que ele quer ouvir,* pensou Arthur, com um suspiro interno.
+
+Então mudou o tom — aquele registro frio e adulto que destoava completamente do garoto que aparentava ser.
+
+— Senhor Gideon, vou deixar claro que não estou aqui para satisfazer suas curiosidades egotistas.
+
+Gideon piscou, e o entusiasmo cego deu lugar à lucidez.
+
+— Bem, isso me deixou muito mais lúcido. Entendi. — disse ele. — Se esse é o caso, o que acha sobre dar e receber? Não estou pedindo por invenções que possam mudar o mundo, mas talvez seu conhecimento de tempos em tempos. Em troca, vou ser seu benfeitor pessoal para qualquer tipo de artefato ou material que precisar.
+
+Ele estendeu a mão.
+
+— O que acha? Temos um acordo?
+
+Arthur considerou por um instante, então apertou a mão do inventor.
+
+— Fechado.
+
+---
+
+### **O Presente de Tessia**
+
+Mais tarde, Arthur entrou no quarto da irmã, onde a montanha de presentes era examinada por Sylvie, Alice, Eleanor, Lilia, Reynolds, Vincent e Tabitha.
+
+— Esse é lindo\! — exclamava Alice, abrindo um pacote.
+
+— Outro vestido...? — Eleanor revirou os olhos com o desinteresse de quem já tinha vestidos demais.
+
+Arthur notou um presente diferente dos outros — embrulhado com um cuidado distinto, com um estilo que não combinava com os demais.
+
+— Oh? — disse ele, pegando-o. — Esse parece um pouco diferente.
+
+— Traz aqui, traz aqui\! — pediu Eleanor.
+
+— De quem é? — perguntou Alice.
+
+— Não tenho certeza — disse Arthur —, mas tem uma carta.
+
+Eleanor rasgou o embrulho.
+
+— Uaau\! É um arco\!
+
+— Que arco maravilhoso\! — admirou Tabitha.
+
+— O design parece élfico\! — observou Vincent.
+
+— Quem mandou ele? — perguntou Reynolds.
+
+Arthur olhou para a carta, e um leve sorriso surgiu no canto da boca dele ao reconhecer de quem se tratava.
+
+— Eu até sei quem mandou ele — disse ele. — Uma amiga.
+
+— Presente, por favor, querido irmão\! — pediu Eleanor, esticando as mãos.
+
+— Você está sendo mal educada, Eleanor — repreendeu Alice.
+
+— Hehe.
+
+— O que quer dizer com "hehe"?
+
+Arthur, então, entregou seus próprios presentes — os colares com o "gostinho da Baluarte". Eram os pingentes da wyrm fênix, agora aprimorados com a tecnologia Argent da Baluarte: se algo acontecesse, eles teletransportariam quem os usasse direto para a Infinity Dreadnought. Era exatamente por isso que Arthur não os pegara de imediato lá no primeiro encontro com Gideon — como só tinha uma chance, quisera ter certeza absoluta de que o upgrade daria certo antes de presentear a mãe e a irmã.
+
+— Uaaau\! — Eleanor levantou o colar. — O que é?
+
+— Ah? — Alice segurou o seu. — É para mim?
+
+— Um colar\! — disse Eleanor.
+
+— Eles vão te proteger em qualquer caso que o papai e nem eu pudermos — disse Arthur.
+
+— São maravilhosos\! — disse Tabitha. — Onde conseguiu?
+
+— Vou ter que te decepcionar, querida — disse Vincent —, mas esses dois são os únicos que existem.
+
+Arthur olhou para a irmã com afeto genuíno.
+
+— Feliz aniversário, irmã.
+
+---
+
+### **O Presente Atrasado**
+
+Sete dias depois, Arthur foi chamado por Gideon para ver o progresso do projeto. Dessa vez, acompanharam Ghost, Dante, o Doom Slayer e Lindow Amamiya.
+
+— Não precisava me arrastar até aqui, sabe — reclamou Arthur, ao chegar.
+
+— Você sabe que ninguém além dos funcionários e do conselho é permitido entrar aqui, né? — disse Gideon, com orgulho.
+
+— Sim. — Arthur pegou um copo d'água. — Você já me falou isso oito vezes. Estou muito agradecido e impressionado.
+
+— Não pode expressar isso um pouco? — resmungou Gideon. — Porque tudo que vejo é um moleque que está morrendo de tédio.
+
+— É difícil ficar animado quando você está me incomodando em cada passo desse projeto.
+
+— Acho que todas aquelas ligações tarde da noite não nos aproximaram em nada — disse Gideon.
+
+— Faça amizade com pessoas da sua idade, velhote — retrucou Arthur.
+
+— Ouvi que foi seu aniversário não faz muito tempo. — Gideon mudou de assunto. — Não acredito que já faz quatro meses.
+
+— Sim. — Arthur deu de ombros. — Caiu em esquecimento depois do aniversário da Ellie.
+
+— Bem, o aniversário dela foi uma festa bem chamativa. — disse Gideon. — O seu foi assim também?
+
+— Não. — disse Arthur. — Pedi por uma pequena festa em família.
+
+— Estou surpreso, depois de ver como você era entrosado na festa da sua irmã. — Gideon pegou algo. — De qualquer forma, aqui...
+
+Ele estendeu um objeto.
+
+— Feliz aniversário atrasado, moleque.
+
+— O que é isso? — perguntou Arthur.
+
+— Apenas abra.
+
+— Você nem embrulhou...
+
+— Seu maldito, devolva\! — Gideon estendeu a mão.
+
+— Tô te zoando\! — Arthur recuou, segurando o presente.
+
+Era o que ele havia pedido: uma simples hidden blade, igual à dos assassinos como Ezio, Connor e Edward — uma lâmina retrátil oculta no antebraço, capaz de resistir aos quatro elementos.
+
+— Isso não é nada comparado com a sua ajuda da máquina a vapor — disse Gideon. — Mas estou curioso em relação ao porquê de você querer algo que pudesse aguentar quatro elementos. — Ele estreitou os olhos. — Não me diga que você é um mago quadra-elemental ou algo assim.
+
+— Eu sou um mago quadra-elementar — respondeu Arthur, com naturalidade absoluta.
+
+— Está falando sério que é um... — Gideon parou. — Espera. Se queria esse troço, significa que... que quer passar despercebido das outras pessoas. Por que me contou?
+
+— Porque quanto mais você souber o quanto sou especial — disse Arthur, com um sorriso esperto —, mais coisas de graça posso conseguir.
+
+— Menino maluquinho. — Gideon balançou a cabeça. — Me contando algo que desafia a lógica de uma forma tão casual. Vou querer alguma prova eventualmente.
+
+— Com prazer.
+
+— Mas é bem impressionante como esse navio está sendo construído rápido — comentou Arthur, observando a estrutura colossal.
+
+— Sim. — Gideon estufou o peito. — Quando você estiver feliz no seu primeiro dia de aula, dias depois... O DICATHEOUS IRÁ ZARPAR\!\!\!
+
+— Bom, tô voltando para casa. — disse Arthur. — Simbora, povo.
+
+— Deixa eu abrir um portal com o VEGA, que a gente chega mais rápido — ofereceu o Doom Slayer.
+
+---
+
+### **O Uniforme da Baluarte**
+
+Em frente à casa dos Helstea, um portal se abriu, e Ghost, Dante, o Doom Slayer, Lindow Amamiya e Arthur saíram dele.
+
+Quando Arthur abriu a porta de casa, Sylvie e Eleanor pularam nele.
+
+— Irmão\! — gritou Eleanor.
+
+— Kuaaahh\! — fez Sylvie.
+
+— Cheguei. — disse Arthur, usando um pulso de magia de vento para amortecer o impacto duplo.
+
+— Não é justo... — resmungou Eleanor, frustrada por ele ter se defendido.
+
+— Onde o papai e a mamãe estão?
+
+— Estão na sala de estar com o Elijah\! — disse Eleanor. — Vocês receberam alguma coisa da Academia Xyrus\!
+
+Eleanor o puxou pela mão até a sala de estar, com Ghost, Dante, o Doom Slayer e Lindow seguindo atrás.
+
+— Filho, você chegou\! — disse Reynolds.
+
+— Olha\! — Elijah ergueu uma caixa. — Recebemos nossos uniformes\!
+
+Arthur pegou a própria caixa e a abriu, examinando o uniforme.
+
+— Slayer, escaneia isso e manda para todas as equipes. — disse ele. — A diretora aceitou meu pedido: o pessoal da Baluarte não precisa usar uniformes iguais aos dos outros alunos.
+
+---
+
+### **O Primeiro Dia**
+
+No dia seguinte, Elijah tentou acordar Arthur.
+
+— Vamos, Art\! Acorda\! — chacoalhou ele. — Não podemos atrasar no nosso primeiro...
+
+Mas quem ele acabou acordando foi Sylvie — e a deixou furiosa.
+
+— Gahh\!\!\! — Elijah recuou, segurando o rosto arranhado. — Isso dói, Sylvie\!
+
+— Acordei — disse Arthur, sentando-se. — Vou estar pronto em cinco minutos.
+
+E começou a vestir seu traje — escuro, prático, elegante de um jeito moderno, igual ao do Rover de Wuthering Waves.
+
+— Ainda não acredito que você escolheu frequentar a Academia de Xyrus como um mago erudito — comentou Elijah.
+
+— Por que não escolheria? — Arthur ajustou as luvas. — Já te falei que quero aprender mais sobre a teoria da magia.
+
+— Sim, mas você pode fazer isso com matérias eletivas — argumentou Elijah —, e não centralizar toda a sua vida acadêmica em torno disso.
+
+— Lutar contra garotos da minha idade não me interessa nem um pouco — disse Arthur. — Além disso, ainda vou ter algumas disciplinas sobre magias de batalha.
+
+— Eu sei, mas... — Elijah hesitou. — Ouvi que magos eruditos tendem a ser subestimados por magos de batalha.
+
+— Awn. — Arthur sorriu. — Está se preocupando comigo?
+
+— Sem chance. — Elijah cruzou os braços. — Estou preocupado com os estudantes que vão ser enviados para a enfermaria por te subestimar.
+
+— Hahaha. — Arthur riu. — Não se preocupe, eu vou pegar leve com eles.
+
+Na sala de jantar, Reynolds os chamou.
+
+— Venham logo comer, vocês dois\!
+
+— Não é justo\! — protestou Eleanor. — Quero ir para a Academia Xyrus também\!
+
+— Então pare de enrolar no seu treinamento — disse Arthur.
+
+— Tia Alice — pediu Elijah —, se importaria de curar meu rosto?
+
+— O que você e a Sylvie aprontaram dessa vez? — Alice suspirou. — Venha aqui.
+
+— Não acredito que o meu garoto vai frequentar a famosa Academia Xyrus\! — disse Reynolds, transbordando orgulho. — Parece que o criamos bem, certo, querida?
+
+— O que quer dizer com "nós"? — Alice arqueou uma sobrancelha. — Fui eu quem o criou.
+
+— Acho que a única hora que criei meus filhos foi quando tiveram problemas, então? — tentou Reynolds.
+
+— Contanto que saiba — disse Alice.
+
+---
+
+### **A Despedida**
+
+Depois do almoço, Arthur, Elijah, Sylvie, Reynolds, Alice e Eleanor foram para o lado de fora, onde a equipe Charlie esperava — junto com todas as equipes de Alfa a Sierra.
+
+Arthur abraçou os pais.
+
+— Vou tentar voltar para casa quando puder.
+
+Depois, fez carinho na cabeça da irmã.
+
+— Se comporte e cuide da mamãe e do papai, ok?
+
+— Sim, sim... — disse Eleanor, segurando as lágrimas.
+
+Antes de subir no carro onde Sylvie e Elijah já esperavam, Arthur se virou.
+
+— Vocês estão com os colares que dei, né? — disse ele. — Usem sempre\!
+
+— Sem últimas palavras para seu pai? — provocou Reynolds.
+
+— Sim. — Arthur sorriu. — Não queime a casa enquanto treina, pai\!
+
+— Moleque atrevido.
+
+---
+
+### **Chegada à Academia Xyrus**
+
+Depois de um tempo, a Baluarte chegou à Academia Xyrus.
+
+— Chegamos — anunciou o Doom Slayer. — Guardem os veículos e vamos entrar.
+
+As equipes deixaram os veículos na Infinity Dreadnought, e se prepararam para entrar.
+
+— Façam uma fila única em frente ao prédio branco central que fica logo ali\! — instruía um estudante veterano. — Comparecer à cerimônia de entrada é obrigatório\!
+
+Na recepção, uma funcionária conferia os registros.
+
+— Estudante Elijah Knight, candidato a mago de batalha, afinidade com magia de terra. Bem-vindo. — Ela passou ao próximo. — Estudante Arthur Leywin, candidato a mago erudito, afinidade com... magia de terra, vento, água e fogo.
+
+Ela parou, os olhos arregalando-se.
+
+— Sou eu. — disse Arthur. — Algum problema?
+
+— Ela só está surpresa que você é um mago de quatro elementos — explicou Elijah.
+
+— N-não\! — a funcionária se recompôs. — Por favor, sigam em frente. — Ela então baixou a voz. — Vejo que o senhor faz parte da Baluarte. A diretoria pediu para avisar que o prédio está pronto, e que vocês poderiam assistir à cerimônia da nave de vocês, por conta de que não caberiam todos no teatro.
+
+— Slayer, vamos assistir da nave — disse Arthur.
+
+— É bom saber — respondeu o Doom Slayer.
+
+---
+
+### **A Senhorita Presidente**
+
+A cerimônia começou, e a diretora Cynthia Goodsky apareceu no palco. Seu olhar foi direto para um pequeno drone-espião da Baluarte que havia entrado discretamente no teatro — silencioso, invisível —, sabendo perfeitamente que a Baluarte assistia através dele.
+
+Ela deu um estalo com os dedos, e todo o teatro foi envolvido em magia de som.
+
+— Peço perdão pela grosseria — disse ela, a voz agora amplificada por toda parte sem que precisasse erguê-la —, mas odeio falar alto. Não é bom para minha garganta... ainda mais na minha idade. Gostaria de dar as boas-vindas para todos... os futuros líderes, eruditos e forças de Dicathen a essa modesta academia.
+
+Ela percorreu o auditório com o olhar.
+
+— Eu sou a diretora Cynthia Goodsky. Enquanto pensava em fazer um discurso longo e chato, percebi que esse é um ano muito especial... — Ela abriu um sorriso. — Estou orgulhosa de falar que, desde a fundação dessa instituição, nunca tivemos tantos elfos e anões comparecendo como hoje\!
+
+Um murmúrio de aprovação percorreu o teatro.
+
+— Por isso, nada melhor para dar as boas-vindas do que os estudantes que vão liderá-los, e que darão voz para cada um de vocês. — disse ela. — Por favor, deem calorosas boas-vindas ao conselho estudantil da Academia Xyrus\!
+
+E então, ela subiu ao palco. Tessia Eralith.
+
+— Saudações a todos. — A voz dela era firme, presidencial. — Meu nome é Tessia Eralith, sua presidente do conselho estudantil. Antes de tudo, parabéns por serem admitidos no melhor instituto de magos que esse continente tem a oferecer.
+
+Ela fez uma pausa, e o tom adquiriu peso.
+
+— Enquanto estava no primeiro ano como todos vocês, tive o privilégio de observar a academia por um ano a mais. Junto com as lições e relações ganhas nesse campus, também presenciei a discriminação que alguns magos eruditos em particular sofreram. Se meras diferenças nos uniformes podem dividir vocês, temo o que as diferenças entre as raças vão causar...
+
+Ela ergueu o olhar, e havia uma convicção genuína nele.
+
+— Hoje, estou de pé diante de todos vocês, estudantes da nova geração, e rogo... para que esqueçam o pensamento da antiga geração que alimenta a hostilidade entre as diferentes raças. Assim como as famílias reais se juntaram para formar um conselho, nós deveríamos fazer o mesmo pelo futuro deste continente\!
+
+---
+
+### **O Duelo dos Calouros**
+
+Algum tempo depois, Arthur e Elijah saíram do prédio da Baluarte — onde o Slayer coordenava uma entrada de suprimentos.
+
+— Sei que falam de coisas importantes — comentou Elijah —, mas, cara, aquilo foi chato...
+
+*Ele não percebe ou não se importa?* — pensou Elijah, olhando para Arthur, que parecia genuinamente indiferente ao discurso inteiro.
+
+Foi quando uma cena chamou a atenção dos dois. Um estudante de postura arrogante provocava outro.
+
+— Ha\! Acorda\! — zombava ele. — Não vejo como um anão nanico como você pode sonhar em virar um ampliador de verdade. Por que não se limita a forjar armas para verdadeiros guerreiros como eu?
+
+— O que disse? — rosnou o anão provocado. — Quem pensa que é?\!
+
+— Vamos, vamos ver o que está acontecendo\! — disse Elijah, interessado.
+
+— Meu nome é Nicolas Dreyl. — disse o arrogante. — Por que não declara um duelo, nanico? Ou só consegue latir?
+
+— Tch\! — O anão cerrou os punhos. — Você vai se arrepender\! Eu, Broznean Boor, declaro um duelo entre mim e Nicolas Dreyl\!
+
+— Eu, Nicolas Dreyl, aceito esse duelo.
+
+O combate foi rápido e desigual. Broznean Boor, mago de terra, atacou com força bruta e honestidade.
+
+— Arreie o poder da terra e desencadeie aqueles que estão no meu caminho\! — bradou o anão.
+
+— Se reúna e seja minhas mãos e pés\! — respondeu Nicolas, movendo-se com uma técnica escorregadia, evasiva, atacando pelos flancos.
+
+— Você luta como um covarde\! — protestou Broznean.
+
+— Disse que eu luto como um covarde? — Nicolas sorriu com desdém. — E daí? Vitória é vitória, nanico\!
+
+O duelo terminou com Broznean derrotado. Mas Nicolas, querendo demonstrar superioridade, tentaria algo completamente errado.
+
+— Vamos ver seu ano escolar ir com um braço despedaçado, novato\! — disse ele, agarrando o braço do anão caído para quebrá-lo, muito além do que o duelo permitia.
+
+— Ah, não... — disse Arthur, em voz alta e displicente. — É a presidente do conselho estudantil ali?
+
+Nicolas congelou no meio da ação.
+
+— A presidente?\! — Ele soltou o braço de Broznean e olhou em volta, em pânico. — Onde?\!
+
+— Opa. — Arthur deu de ombros. — Parece que vi errado.
+
+— Você arruinou totalmente minha chance de brilhar — reclamou Elijah.
+
+— Sua chance? — Arthur ergueu uma sobrancelha. — Você só ia espancar aquele garoto que fica balançando a espada.
+
+E foi aí que Nicolas Dreyl cometeu o erro de puxar Arthur pelo ombro.
+
+— Está querendo brigar comigo, seu nerd maldito? — rosnou ele. — Como ousa arruinar meu duelo?\!
+
+— Primeiro, irmão — disse Arthur, com calma perigosa —, o duelo acabou e...
+
+— Eu decido quando um duelo acaba, seu merda.
+
+Arthur tirou a mão do garoto do próprio ombro. E, ao fazê-lo, já estava pronto para acionar a hidden blade.
+
+— Vamos ver o que um bosta como você pode fazer.
+
+---
+
+### **A Confusão da Presidente**
+
+Momentos antes, no salão do conselho estudantil, Tessia tentava se concentrar numa reunião.
+
+— Temos que organizar os tópicos antes da reunião... — dizia Clive Graves, o vice-presidente.
+
+*Não consegui encontrar o Art durante o discurso,* pensava Tessia, distraída. *Será que ele faltou à cerimônia...? Mas a mestra Goodsky disse que ele está na academia... Como devo reagir quando me encontrar com ele? Parecer ser legal? Talvez... mais amigável? E se ele me encontrar primeiro?*
+
+— ...sidente? Presidente? PRESIDENTE\!
+
+— S-sim? — Tessia se sobressaltou. — O que foi?
+
+— Está passando mal, presidente? — perguntou Clive, preocupado. — Podemos cancelar as outras reuniões se—
+
+— Não, está tudo bem. — disse Tessia, recompondo-se. — Temos muito o que fazer hoje.
+
+Foi quando se depararam com a cena: Nicolas Dreyl, ameaçando Arthur.
+
+— Não me deixe te pegar entre as aulas, moleque. — dizia Nicolas. — Se ajoelhe e peça perdão que eu deixo isso passar.
+
+— Aquele é o Nicolas, da casa Dreyl. — comentou Clive. — É um dos alunos mais promissores que entraram ano passado. — Ele olhou para Arthur. — O ruivo parece ser um calouro, mas não me lembro de ter visto ele em nenhuma das festas de prospecção de estudantes nobres. Deve ser um plebeu.
+
+E foi nesse momento que Nicolas desafiou Arthur — e Arthur, calmamente, se preparava para jogar uma granada de fumaça e usar a hidden blade.
+
+Tessia e Lilia, vendo a cena de longe, tiveram exatamente o mesmo pensamento:
+
+*Ah, não\! Aquele estudante está morto se deixar o Art puto\! Mas acho que ele já tá morto.*
+
+— Você ousa...? — começou Nicolas, encarando Arthur.
+
+— Você ousa? — A voz de Tessia cortou o ar.
+
+Nicolas congelou pela segunda vez, e dessa vez não era um truque.
+
+— P-presidente do conselho estudantil\! — gaguejou ele, virando-se. — Isso é um mal-entendido\! Aceitei um duelo desse an... desse Broznean... quando esse calouro nos interrompeu\!
+
+— Oi, Tess... — disse Arthur, com uma naturalidade que fez o coração da presidente parar.
+
+— Arthur, o que aconteceu? — perguntou Lilia, aproximando-se.
+
+— Vocês se conhecem? — Tessia olhou de um para o outro.
+
+— Ah, sim. — disse Lilia. — O pai do Arthur trabalha com o meu pai há anos, então somos amigos já faz um tem—
+
+— Já faz um tempo que moramos juntos — completou Arthur.
+
+— Hã? — Tessia entrou em curto-circuito mental.
+
+— A-Art, o que você disse pode confundir as coisas\! — Lilia ficou vermelha.
+
+— Hã? — Arthur piscou, genuinamente sem entender. — Mas não é mentira.
+
+Tessia ficou ainda mais confusa, a mente fabricando todo tipo de cenário.
+
+— Nicolas — interveio Clive, voltando ao assunto —, qual o significado disso? Mesmo que tenha sido interrompido, isso não te dá o direito de sacar sua arma contra ele.
+
+— E eu só queria assustá-lo — defendeu-se Nicolas. — Claro que não iria atacar para acertar.
+
+— Se esse é o caso — Clive começou a ceder —, então acho que podemos deixar você ir...
+
+— Apontar uma arma para alguém fora de um duelo sancionado é uma violação das normas da academia. — A voz de Tessia foi gélida, presidencial. — Tente parar sua arma antes de me acertar. Só essa ação te dará uma suspensão. E se tocar mesmo só em um fio do meu cabelo, a expulsão seria o menor dos seus problemas.
+
+Ela deu um passo à frente.
+
+— Então, vou te perguntar de novo. Você ousa?
+
+— Perdão. — Nicolas baixou a cabeça. — Eu estava cego por causa da minha raiva.
+
+— Suas ações serão registradas. — disse Tessia. — Agora vá. Serve para todos. — Ela se voltou para Arthur. — E você... por que está brigando no primeiro dia na academia?
+
+— O quê? — Arthur a encarou. — Está mesmo supondo coisas depois de ver os últimos cinco segundos da situação?
+
+— Não importa. — disse Tessia. — Não sabe a repercussão que isso teria se fosse além?
+
+— Nicolas estava prestes a feri-lo gravemente, mesmo depois que a barreira protetora se desfez. — respondeu Arthur, sem recuar. — Se eu não tivesse feito isso, você teria um problema bem maior.
+
+— Qual é, deixa pra lá, cara. — interveio Elijah, conciliador. — A presidente não está errada também.
+
+Arthur considerou por um momento, então virou as costas e saiu andando em direção ao prédio da Baluarte.
+
+Mas sempre tem um burro no conselho estudantil.
+
+— Espera aí, calouro\! — chamou Clive.
+
+Arthur parou.
+
+— Você foi criado em um celeiro? Hein? — provocou Clive.
+
+— Clive, para\! — Tessia tentou contê-lo, pressentindo o desastre.
+
+— Não posso fazer isso, presidente\! — insistiu Clive. — É inaceitável que alguém do tamanho dele fale com você dessa forma\! E além disso, ele nem está usando o uniforme adequado. Ele sem dúvidas não aprendeu as maneiras apropriadas com os pais.
+
+Algo mudou no ar ao redor de Arthur.
+
+— Cara... — disse ele, a voz baixa e perigosa. — Estou ficando muito puto das pessoas ficarem me segurando assim.
+
+— O quê? — Clive piscou. — O que você...
+
+Arthur o agarrou e o arremessou uns seis metros pelo ar.
+
+— Clive\! — Lilia correu. — Você está bem?
+
+E Tessia olhou para Arthur com a expressão de quem achava que tinha perdido o amigo para sempre.
+
+---
+
+#### **A Crise da Presidente**
+
+Já de tarde, no próprio quarto, Tessia estava em crise.
+
+— Está tudo arruinado... — murmurava ela, batendo a cabeça de leve contra a parede. — Acabou.
+
+Ela caminhou até a cama e se jogou nela.
+
+— É minha culpa?\! — gemeu, contra o travesseiro. — Eu só estava preocupada com o Arthur, certo? Se ele realmente causar confusão como normalmente faz, então não só vai perder o acesso à biblioteca, mas às instalações de treinamento também.
+
+Ela rolou de costas.
+
+— Mas talvez eu não deveria ter sido tão dura. Afinal, não era ele segurando uma arma. — Ela parou, considerando. — Mas o Arthur em si é uma arma\!
+
+Ela cobriu o rosto com as mãos.
+
+— E mais importante...
+
+Ela se sentou de uma vez, com um grito.
+
+— COMO O ARTHUR ACABOU MORANDO COM A LILIA?\! ELE ENCONTRA GAROTAS NO MATO PARA PODER MORAR NA CASA DELAS?\!
+
+Ela se jogou de volta na cama, fervendo.
+
+— É tudo culpa da mestra Goodsky por me fazer ser a presidente do conselho estudantil. Se eu não fosse, não teria que me preocupar em tratar todos os estudantes da mesma forma. Poderíamos ter nos reunido assim\!
+
+Ela soltou um gemido frustrado.
+
+— Que saco.
+
+Uma batida na porta a interrompeu.
+
+— Presidente, é o Clive. — disse a voz do outro lado. — Vim ver como você está. Você pareceu exausta durante nossas reuniões depois da gente se encontrar com aquele calouro.
+
+— Estou bem. — disse Tessia. — Não fui eu quem foi arremessada pelo cóccix.
+
+— Q-quem era ele, no fim das contas? — perguntou Clive. — Como ele pode falar com você assim, quando estava só tentando dar um conselho a ele?\! Devo falar diretamente com a diretora sobre...
+
+— Clive\! — cortou Tessia. — O assunto morreu\! Me dá um tempo.
+
+Ela ouviu os passos se afastarem e soltou um suspiro.
+
+— Ugh, que bagunça. — murmurou. Então, mais baixo, com um rubor irritado: — Além disso... por que ele tinha que ficar tão bonito para nada? Quantas colegas de turma irão atrás dele?\!
+
+---
+
+### **Uma Visita Inesperada**
+
+Enquanto isso, nos alojamentos, Arthur e Elijah estavam em seus quartos — que a Baluarte havia modificado discretamente para terem wifi, PCs de última geração, e um armário com equipamentos, armas e munições.
+
+— Cara, esse campus é enorme\! — comentou Elijah, jogando-se numa cadeira. — Não pensei que iria demorar tanto para ver tudo. — Ele olhou para Arthur. — Ainda está pesando sobre ter arremessado nosso vice-presidente?
+
+— Ugh... sim. — admitiu Arthur. — E tem mais.
+
+— É raro te ver tão puto assim. — observou Elijah. — Normalmente você ignora e sai andando.
+
+Foi quando o sistema VEGA, instalado no quarto de Arthur, emitiu um alerta discreto: *Diretora no recinto.*
+
+E então, batidas soaram à porta.
+
+— Quem é? — perguntou Arthur.
+
+— Boa noite, Arthur. — veio a voz da diretora Cynthia Goodsky do outro lado. — Posso entrar?
+
