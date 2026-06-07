@@ -93,6 +93,26 @@ export function clearHistory() {
   storage.remove(HISTORY_KEY);
 }
 
+/* ===== Briefing do Baluarte (contexto p/ os modos de IA) ===== */
+
+/**
+ * Resumo conciso do universo Baluarte para injetar como contexto da IA — dá ao
+ * J.A.R.V.I.S. conhecimento do projeto (identidade, operador, contagens,
+ * universos e equipes) sem depender de busca externa. Usado nos modos de IA.
+ */
+export function getBaluarteBriefing() {
+  const universos = UNIVERSOS.map((u) => `${u.name} — ${u.tagline}`).join('; ');
+  const equipes = EQUIPES.map((e) => `${e.code} (${e.name})`).join(', ');
+  return [
+    '## DOSSIÊ DO BALUARTE (use para falar do universo)',
+    'Identidade: você é o J.A.R.V.I.S., núcleo de IA do Projeto Baluarte Mark XIII. Operador-líder: Lucas Belucci Bellini.',
+    `Plataforma v${VERSION}: ${TOTAL} itens no Arsenal · ${TOTAL_EQUIPES} equipes de elite · ${ARCS_TOTAL} arcos nas Crônicas · ${UNIVERSOS.length} universos.`,
+    `Crônicas "Onde os Deuses Sangram" — universos: ${universos}.`,
+    `Equipes (alfabeto OTAN): ${equipes}.`,
+    'Para o universo Baluarte, baseie-se neste dossiê e no estado do site. Para fatos recentes do mundo real, use a busca na internet quando disponível.'
+  ].join('\n');
+}
+
 /* ===== Modo LOCAL — assistente de regras ===== */
 
 const ROUTES_INDEX = {

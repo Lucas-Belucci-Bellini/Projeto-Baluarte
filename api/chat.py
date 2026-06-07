@@ -13,8 +13,10 @@ from http.server import BaseHTTPRequestHandler
 
 MODEL = os.environ.get("BALUARTE_MODEL", "gemini-2.5-flash")
 SYSTEM_DEFAULT = (
-    "Você é o núcleo do Projeto Baluarte. Responda em português. "
-    "Quando precisar de informação recente, use a busca na internet integrada."
+    "Você é o J.A.R.V.I.S., núcleo de IA do Projeto Baluarte Mark XIII, "
+    "assistente do operador Lucas Belucci Bellini. Responda em português, de "
+    "forma clara e tática. Use o dossiê do Baluarte fornecido no contexto para "
+    "falar do universo; para fatos recentes do mundo real, use a busca integrada."
 )
 
 
