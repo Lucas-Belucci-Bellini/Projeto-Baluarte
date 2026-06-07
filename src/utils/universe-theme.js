@@ -39,7 +39,9 @@ const FONTS = {
   inter: "'Inter', system-ui, sans-serif",
   oswald: "'Oswald', 'Inter', sans-serif",
   cinzel: "'Cinzel', 'Times New Roman', serif",
-  mono: "'JetBrains Mono', 'Fira Code', monospace"
+  mono: "'JetBrains Mono', 'Fira Code', monospace",
+  titillium: "'Titillium Web', 'Inter', sans-serif",
+  rajdhani: "'Rajdhani', 'Oswald', sans-serif"
 };
 const RADII = {
   sharp: { xs: '0', sm: '0', md: '1px', lg: '2px', xl: '3px' },
@@ -90,20 +92,22 @@ function deriveVars(primary, secondary, { font, radius } = {}) {
 /* ===== Configuração por universo (primary/label vêm de universos.js) =====
  * primary opcional sobrescreve a cor base quando um tom afinado fica melhor. */
 const SKIN = {
-  doom:            { primary: '#ff3b1d', secondary: '#ff8a00', font: 'oswald', radius: 'sharp' },
-  'warhammer-40k': { primary: '#e0a92e', secondary: '#9e2b25', font: 'cinzel', radius: 'sharp' },
-  halo:            { secondary: '#2b6cff', font: 'oswald', radius: 'soft' },
-  'pacific-rim':   { secondary: '#00e0ff', font: 'oswald', radius: 'mid' },
-  'solo-leveling': { secondary: '#7c4dff', font: 'cinzel', radius: 'mid' },
+  // Identidades inspiradas nas franquias (paleta/tipografia/atmosfera autênticas).
+  doom:            { primary: '#e01510', secondary: '#ff7a18', font: 'oswald', radius: 'sharp' },     // vermelho-sangue + Argent
+  'warhammer-40k': { primary: '#d8a32a', secondary: '#8c1f1f', font: 'cinzel', radius: 'sharp' },     // dourado imperial gótico
+  halo:            { primary: '#56a8e6', secondary: '#74c043', font: 'titillium', radius: 'soft' },   // azul UNSC + verde Chief
+  transformers:    { primary: '#2474d8', secondary: '#d4242e', font: 'rajdhani', radius: 'mid' },     // azul/vermelho Autobot
+  'pacific-rim':   { primary: '#1f8fd6', secondary: '#ff9d00', font: 'rajdhani', radius: 'mid' },     // azul Jaeger + âmbar
+  'solo-leveling': { primary: '#7b3ff2', secondary: '#3fc7ff', font: 'cinzel', radius: 'mid' },       // roxo Monarca + azul sombra
   vanadis:         { secondary: '#c81e1e', font: 'cinzel', radius: 'mid' },
   arifureta:       { secondary: '#ffc83d', font: 'cinzel', radius: 'mid' },
   horror:          { primary: '#a64dff', secondary: '#6bff8f', font: 'inter', radius: 'soft' },
-  endfield:        { secondary: '#ffa726', font: 'oswald', radius: 'mid' },
+  endfield:        { primary: '#3fd0d0', secondary: '#ffa726', font: 'titillium', radius: 'mid' },    // ciano Arknights
   'cronicas-zulu': { secondary: '#ffcc33', font: 'cinzel', radius: 'sharp' },
-  gundam:          { secondary: '#ff4d4d', font: 'oswald', radius: 'mid' },
-  evangelion:      { secondary: '#7cff52', font: 'inter', radius: 'sharp' },
-  'mass-effect':   { primary: '#3d8bff', secondary: '#ff7b29', font: 'oswald', radius: 'soft' },
-  cyberpunk:       { secondary: '#00f0ff', font: 'mono', radius: 'sharp' }
+  gundam:          { primary: '#3a6fe0', secondary: '#ff4d4d', font: 'rajdhani', radius: 'mid' },     // mecha Federação
+  evangelion:      { primary: '#7b4fd4', secondary: '#7cff52', font: 'rajdhani', radius: 'sharp' },   // roxo NERV + verde
+  'mass-effect':   { primary: '#3d8bff', secondary: '#ff7b29', font: 'titillium', radius: 'soft' },
+  cyberpunk:       { primary: '#ff0a78', secondary: '#00f0ff', font: 'mono', radius: 'sharp' }        // neon magenta/ciano
 };
 
 /** Mapa id → skin (label + cores), construído a partir de universos.js + SKIN. */

@@ -65,3 +65,18 @@
 [data-universe="vanadis"] .page-header__title {
   letter-spacing: 0.06em;
 }
+
+/* Tech / mecha / sci-fi — caixa-alta técnica (a fonte já vem do token) */
+[data-universe="transformers"] .page-header__title,
+[data-universe="transformers"] .section-header__title,
+[data-universe="halo"] .page-header__title,
+[data-universe="halo"] .section-header__title,
+[data-universe="pacific-rim"] .page-header__title,
+[data-universe="gundam"] .page-header__title,
+[data-universe="evangelion"] .page-header__title,
+[data-universe="mass-effect"] .page-header__title,
+[data-universe="endfield"] .page-header__title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
