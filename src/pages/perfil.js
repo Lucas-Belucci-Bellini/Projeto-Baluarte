@@ -202,7 +202,7 @@ export function perfilPage() {
         )
       ),
       h('p', { className: 'u-text-muted', style: { fontSize: '11px', margin: '-4px 0 4px' } },
-        '🌌 Skins de universo prontos: Baluarte, DOOM e Warhammer 40k. Mais a caminho.'),
+        '🌌 15 universos com skin completo — cor, tipografia, formas e atmosfera próprias.'),
       toggle('reduceMotion', 'Reduzir animações', 'Desativa transições e efeitos de movimento.'),
       toggle('confirmActions', 'Confirmar ações destrutivas', 'Pede confirmação antes de limpar dados.'),
       h('div', { className: 'perfil-danger' },

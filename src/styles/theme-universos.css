@@ -1,66 +1,67 @@
 /* ============================================================
  *  Motor de Universos — atmosfera por skin (data-universe)
- *  As cores/fontes/raios vêm dos tokens (universe-theme.js).
- *  Aqui ficam só os reforços de clima — tudo seguro (fundo +
- *  tipografia), sem cobrir conteúdo nem bloquear cliques.
+ *  Cores/fontes/raios vêm dos tokens (universe-theme.js). Aqui
+ *  ficam reforços de clima GENÉRICOS (valem p/ qualquer universo,
+ *  usando os tokens já tematizados) + toques específicos.
+ *  Tudo seguro: só fundo e tipografia, sem cobrir conteúdo.
  * ============================================================ */
 
-/* Transição suave ao trocar de universo */
-[data-universe] .sidebar,
-[data-universe] .card,
-[data-universe] .page-header__title { transition: border-color .3s, color .3s, text-shadow .3s; }
-
-/* ===================== DOOM — inferno ===================== */
-[data-universe="doom"] body {
+/* ===== Genérico — qualquer universo ativo (≠ Baluarte) ===== */
+[data-universe] body {
   background-color: var(--color-bg);
   background-image:
-    radial-gradient(circle at 50% -5%, rgba(255, 59, 29, 0.13), transparent 55%),
-    radial-gradient(circle at 92% 108%, rgba(255, 120, 0, 0.08), transparent 50%);
+    radial-gradient(circle at 50% -8%, var(--color-cyan-soft), transparent 55%),
+    radial-gradient(circle at 95% 105%, var(--color-magenta-soft), transparent 50%);
   background-attachment: fixed;
+  transition: background-color .35s ease;
 }
-[data-universe="doom"] .page-header__title,
-[data-universe="doom"] .roadmap-hero h1,
-[data-universe="doom"] .section-header__title {
+[data-universe] .page-header__title,
+[data-universe] .section-header__title,
+[data-universe] .roadmap-hero h1,
+[data-universe] .roadmap-section__title {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 700;
-  text-shadow: 0 0 18px rgba(255, 59, 29, 0.5);
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 16px var(--color-cyan-soft);
+  transition: color .3s, text-shadow .3s;
 }
-[data-universe="doom"] .sidebar { border-right: 1px solid rgba(255, 59, 29, 0.35); }
-[data-universe="doom"] .sidebar__item.is-active {
-  box-shadow: inset 2px 0 0 var(--color-cyan), 0 0 14px rgba(255, 59, 29, 0.25);
+[data-universe] .sidebar { border-right: 1px solid var(--color-cyan-edge); transition: border-color .3s; }
+[data-universe] .sidebar__item.is-active {
+  box-shadow: inset 2px 0 0 var(--color-cyan), 0 0 12px var(--color-cyan-soft);
+}
+[data-universe] .card,
+[data-universe] .site-card,
+[data-universe] .metric-card { transition: border-color .3s; }
+
+/* ===== Toques específicos de mood ===== */
+
+/* DOOM — brutal, caixa-alta */
+[data-universe="doom"] .page-header__title,
+[data-universe="doom"] .section-header__title {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 18px rgba(255, 59, 29, 0.5);
 }
 [data-universe="doom"] .brand__title,
 [data-universe="doom"] .topbar__brand { letter-spacing: 0.12em; }
 
-/* ================ Warhammer 40k — gótico imperial ================ */
-[data-universe="warhammer-40k"] body {
-  background-color: var(--color-bg);
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(224, 169, 46, 0.10), transparent 55%),
-    linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.45));
-  background-attachment: fixed;
-}
+/* Warhammer 40k — gótico imperial, tracking largo */
 [data-universe="warhammer-40k"] .page-header__title,
-[data-universe="warhammer-40k"] .roadmap-hero h1,
 [data-universe="warhammer-40k"] .section-header__title {
-  font-family: var(--font-display);
   text-transform: uppercase;
-  letter-spacing: 0.10em;
-  color: var(--color-cyan); /* dourado imperial */
-  text-shadow: 0 0 14px rgba(224, 169, 46, 0.35);
-}
-[data-universe="warhammer-40k"] .sidebar { border-right: 1px solid rgba(224, 169, 46, 0.35); }
-[data-universe="warhammer-40k"] .card,
-[data-universe="warhammer-40k"] .site-card,
-[data-universe="warhammer-40k"] .metric-card {
-  border-color: rgba(224, 169, 46, 0.22);
-}
-[data-universe="warhammer-40k"] .sidebar__item.is-active {
-  box-shadow: inset 2px 0 0 var(--color-cyan), 0 0 12px rgba(224, 169, 46, 0.22);
+  letter-spacing: 0.11em;
 }
 
-/* Indicador "novo universo" suave ao aplicar (ambos) */
-[data-universe="doom"] .page-header__description,
-[data-universe="warhammer-40k"] .page-header__description { opacity: 0.92; }
+/* Cyberpunk — techy, caixa-alta */
+[data-universe="cyberpunk"] .page-header__title,
+[data-universe="cyberpunk"] .section-header__title {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* Solo Leveling / Convergência / Vanadis — épico (serif já vem do token) */
+[data-universe="solo-leveling"] .page-header__title,
+[data-universe="cronicas-zulu"] .page-header__title,
+[data-universe="vanadis"] .page-header__title {
+  letter-spacing: 0.06em;
+}

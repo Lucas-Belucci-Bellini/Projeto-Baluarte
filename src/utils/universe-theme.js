@@ -1,28 +1,53 @@
 /**
  * Motor de Universos — skin completo do site por universo das Crônicas.
  *
- * Vai além do tema de acento (theme.js): cada universo redefine um KIT de
- * design tokens — cor + glow, fundo/superfícies, tipografia (display) e
- * formas (raios) — aplicados como CSS custom properties no <html>, mais um
- * `data-universe` que liga a atmosfera (texturas/overlays em theme-universos.css).
+ * Cada universo redefine um KIT de design tokens (cor + glow, fundos/superfícies,
+ * texto, tipografia e formas) aplicado como CSS custom properties no <html>,
+ * mais um `data-universe` que liga a atmosfera (theme-universos.css).
  *
- * Nenhuma função do site é tocada: é uma camada 100% visual sobre os tokens.
- * `baluarte` = estado padrão (sem overrides) e devolve o tema de acento.
+ * Os fundos/superfícies/textos são DERIVADOS da cor primária (mistura com preto/
+ * branco), então adicionar um universo custa só { primary, secondary, font, radius }.
+ * Nenhuma função do site é tocada — é uma camada 100% visual. `baluarte` = padrão.
  */
 
 import { storage } from '../core/storage.js';
 import { applyTheme, getThemeId } from './theme.js';
+import { UNIVERSOS } from '../data/universos.js';
 
 const KEY = 'ui:universe';
 
+/* ===== util de cor ===== */
 function hexToRgb(hex) {
   const m = /^#?([0-9a-f]{6})$/i.exec(String(hex).trim());
   const n = m ? parseInt(m[1], 16) : 0x00f0ff;
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 const rgba = (c, a) => `rgba(${c.r}, ${c.g}, ${c.b}, ${a})`;
+const mix = (a, b, t) => ({
+  r: Math.round(a.r * (1 - t) + b.r * t),
+  g: Math.round(a.g * (1 - t) + b.g * t),
+  b: Math.round(a.b * (1 - t) + b.b * t)
+});
+const toHex = (c) => '#' + [c.r, c.g, c.b].map((x) => Math.max(0, Math.min(255, x)).toString(16).padStart(2, '0')).join('');
 
-/** Deriva as variantes de cor/glow a partir da primária e secundária. */
+const BLACK = { r: 8, g: 8, b: 11 };
+const WHITE = { r: 236, g: 243, b: 255 };
+const MUTED = { r: 130, g: 142, b: 160 };
+const MUTED_DK = { r: 84, g: 96, b: 116 };
+
+const FONTS = {
+  inter: "'Inter', system-ui, sans-serif",
+  oswald: "'Oswald', 'Inter', sans-serif",
+  cinzel: "'Cinzel', 'Times New Roman', serif",
+  mono: "'JetBrains Mono', 'Fira Code', monospace"
+};
+const RADII = {
+  sharp: { xs: '0', sm: '0', md: '1px', lg: '2px', xl: '3px' },
+  mid: { xs: '1px', sm: '2px', md: '3px', lg: '4px', xl: '6px' },
+  soft: null /* mantém o padrão do CSS */
+};
+
+/** Variantes de cor/glow a partir da primária e secundária. */
 function colorVars(primary, secondary) {
   const p = hexToRgb(primary), s = hexToRgb(secondary);
   return {
@@ -39,52 +64,66 @@ function colorVars(primary, secondary) {
   };
 }
 
-/**
- * Skins prontos. Cada um casa com um id de universos.js.
- * `extra` traz os tokens não-cromáticos (fundo, texto, formas, tipografia).
- */
-export const UNIVERSE_THEMES = {
-  doom: {
-    label: 'DOOM',
-    primary: '#ff3b1d',
-    secondary: '#ff8a00',
-    extra: {
-      '--color-bg': '#0a0403',
-      '--color-bg-elevated': '#170806',
-      '--color-surface': '#210b07',
-      '--color-surface-2': '#2c0f09',
-      '--color-surface-3': '#380f0a',
-      '--color-text-primary': '#ffe9e2',
-      '--color-text-secondary': '#d99f93',
-      '--color-text-muted': '#9c6f66',
-      '--radius-xs': '1px', '--radius-sm': '2px', '--radius-md': '3px', '--radius-lg': '4px', '--radius-xl': '6px',
-      '--font-display': "'Oswald', 'Inter', sans-serif"
-    }
-  },
-  'warhammer-40k': {
-    label: 'Warhammer 40k',
-    primary: '#e0a92e',
-    secondary: '#9e2b25',
-    extra: {
-      '--color-bg': '#080604',
-      '--color-bg-elevated': '#13100a',
-      '--color-surface': '#1b160d',
-      '--color-surface-2': '#241d12',
-      '--color-surface-3': '#2e2416',
-      '--color-text-primary': '#f1e7c9',
-      '--color-text-secondary': '#bdae87',
-      '--color-text-muted': '#8c7f5d',
-      '--radius-xs': '0', '--radius-sm': '0', '--radius-md': '1px', '--radius-lg': '2px', '--radius-xl': '3px',
-      '--font-display': "'Cinzel', 'Times New Roman', serif"
-    }
+/** Kit completo de tokens, com fundos/textos derivados da cor primária. */
+function deriveVars(primary, secondary, { font, radius } = {}) {
+  const p = hexToRgb(primary);
+  const v = {
+    ...colorVars(primary, secondary),
+    '--color-bg': toHex(mix(BLACK, p, 0.05)),
+    '--color-bg-elevated': toHex(mix(BLACK, p, 0.10)),
+    '--color-surface': toHex(mix(BLACK, p, 0.15)),
+    '--color-surface-2': toHex(mix(BLACK, p, 0.20)),
+    '--color-surface-3': toHex(mix(BLACK, p, 0.26)),
+    '--color-text-primary': toHex(mix(WHITE, p, 0.08)),
+    '--color-text-secondary': toHex(mix(MUTED, p, 0.28)),
+    '--color-text-muted': toHex(mix(MUTED_DK, p, 0.22))
+  };
+  if (font && FONTS[font]) v['--font-display'] = FONTS[font];
+  const r = radius && RADII[radius];
+  if (r) {
+    v['--radius-xs'] = r.xs; v['--radius-sm'] = r.sm; v['--radius-md'] = r.md;
+    v['--radius-lg'] = r.lg; v['--radius-xl'] = r.xl;
   }
+  return v;
+}
+
+/* ===== Configuração por universo (primary/label vêm de universos.js) =====
+ * primary opcional sobrescreve a cor base quando um tom afinado fica melhor. */
+const SKIN = {
+  doom:            { primary: '#ff3b1d', secondary: '#ff8a00', font: 'oswald', radius: 'sharp' },
+  'warhammer-40k': { primary: '#e0a92e', secondary: '#9e2b25', font: 'cinzel', radius: 'sharp' },
+  halo:            { secondary: '#2b6cff', font: 'oswald', radius: 'soft' },
+  'pacific-rim':   { secondary: '#00e0ff', font: 'oswald', radius: 'mid' },
+  'solo-leveling': { secondary: '#7c4dff', font: 'cinzel', radius: 'mid' },
+  vanadis:         { secondary: '#c81e1e', font: 'cinzel', radius: 'mid' },
+  arifureta:       { secondary: '#ffc83d', font: 'cinzel', radius: 'mid' },
+  horror:          { primary: '#a64dff', secondary: '#6bff8f', font: 'inter', radius: 'soft' },
+  endfield:        { secondary: '#ffa726', font: 'oswald', radius: 'mid' },
+  'cronicas-zulu': { secondary: '#ffcc33', font: 'cinzel', radius: 'sharp' },
+  gundam:          { secondary: '#ff4d4d', font: 'oswald', radius: 'mid' },
+  evangelion:      { secondary: '#7cff52', font: 'inter', radius: 'sharp' },
+  'mass-effect':   { primary: '#3d8bff', secondary: '#ff7b29', font: 'oswald', radius: 'soft' },
+  cyberpunk:       { secondary: '#00f0ff', font: 'mono', radius: 'sharp' }
 };
 
-/** Universos selecionáveis na UI (skin pronto). Demais ficam "em breve". */
+/** Mapa id → skin (label + cores), construído a partir de universos.js + SKIN. */
+export const UNIVERSE_THEMES = {};
+for (const u of UNIVERSOS) {
+  const cfg = SKIN[u.id];
+  if (!cfg) continue; /* baluarte e sem-config ficam no padrão */
+  UNIVERSE_THEMES[u.id] = {
+    label: u.name,
+    primary: cfg.primary || u.color,
+    secondary: cfg.secondary,
+    font: cfg.font,
+    radius: cfg.radius
+  };
+}
+
+/** Lista para o seletor: Baluarte (padrão) + todos os skins. */
 export const UNIVERSE_SKINS = [
   { id: 'baluarte', label: 'Baluarte', primary: '#00f0ff', secondary: '#ff00aa' },
-  { id: 'doom', label: 'DOOM', primary: '#ff3b1d', secondary: '#ff8a00' },
-  { id: 'warhammer-40k', label: 'Warhammer 40k', primary: '#e0a92e', secondary: '#9e2b25' }
+  ...Object.entries(UNIVERSE_THEMES).map(([id, s]) => ({ id, label: s.label, primary: s.primary, secondary: s.secondary }))
 ];
 
 let appliedKeys = [];
@@ -98,11 +137,11 @@ export function applyUniverse(id) {
   const skin = UNIVERSE_THEMES[id];
   if (!skin) {
     delete root.dataset.universe;
-    applyTheme(getThemeId()); /* volta ao tema de acento do Baluarte */
+    applyTheme(getThemeId());
     return 'baluarte';
   }
 
-  const vars = { ...colorVars(skin.primary, skin.secondary), ...(skin.extra || {}) };
+  const vars = deriveVars(skin.primary, skin.secondary, { font: skin.font, radius: skin.radius });
   Object.entries(vars).forEach(([k, v]) => { root.style.setProperty(k, v); appliedKeys.push(k); });
   root.dataset.universe = id;
   return id;
@@ -110,14 +149,12 @@ export function applyUniverse(id) {
 
 export function getUniverseId() { return storage.get(KEY) || 'baluarte'; }
 
-/** Define e persiste o universo ativo. */
 export function setUniverse(id) {
   const applied = applyUniverse(id);
   storage.set(KEY, applied);
   return applied;
 }
 
-/** Aplica o universo salvo (chamar no boot, após initTheme). */
 export function initUniverse() {
   applyUniverse(getUniverseId());
 }
