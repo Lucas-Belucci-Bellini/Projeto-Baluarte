@@ -290,6 +290,25 @@ export const UNIVERSOS = [
     threats: ['Ciberpsicose', 'Guerra corporativa', 'IAs hostis além do Blackwall'],
     media: ['Contra-inteligência corporativa (ROMEO)'],
     arcs: []
+  },
+  {
+    id: 'transformers',
+    name: 'Transformers',
+    tagline: 'Autobots, transformar e avançar!',
+    color: '#2474d8',
+    icon: '◈',
+    type: 'crossover',
+    summary: 'Robôs alienígenas sencientes de Cybertron — Autobots contra Decepticons. A equipe ALFA do Baluarte conta com Optimus Prime e Bumblebee (Bayverse) entre os ativos pesados.',
+    keyFacts: [
+      'Cybertronianos — máquinas vivas que se reconfiguram',
+      'Autobots (Optimus Prime) × Decepticons (Megatron)',
+      'AllSpark — fonte de vida cybertroniana',
+      'Ativos pesados acoplados à equipe ALFA'
+    ],
+    factions: ['Autobots', 'Decepticons', 'ALFA Baluarte'],
+    threats: ['Megatron', 'Decepticons', 'Predacons'],
+    media: ['Crônicas: ativos ALFA (Optimus, Bumblebee)'],
+    arcs: []
   }
 ];
 

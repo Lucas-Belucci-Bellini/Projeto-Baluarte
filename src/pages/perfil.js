@@ -10,6 +10,7 @@ import { toast } from '../utils/toast.js';
 import { router } from '../core/router.js';
 import { VERSION } from '../data/version.js';
 import { THEMES, getThemeId, setTheme } from '../utils/theme.js';
+import { UNIVERSE_SKINS, getUniverseId, setUniverse } from '../utils/universe-theme.js';
 
 const STORAGE_KEY = 'perfil:config';
 
@@ -178,6 +179,30 @@ export function perfilPage() {
           ))
         )
       ),
+      h('div', { className: 'perfil-config-field' },
+        h('span', null, 'UNIVERSO (skin do site)'),
+        h('div', { className: 'perfil-themes' },
+          ...UNIVERSE_SKINS.map((u) => h('button', {
+            className: 'perfil-theme' + (u.id === getUniverseId() ? ' is-active' : ''),
+            'data-universe-btn': u.id,
+            title: u.label,
+            onclick: () => {
+              setUniverse(u.id);
+              document.querySelectorAll('[data-universe-btn]').forEach((b) =>
+                b.classList.toggle('is-active', b.dataset.universeBtn === u.id));
+              toast('Universo: ' + u.label, { type: 'info' });
+            }
+          },
+            h('span', {
+              className: 'perfil-theme__sw',
+              style: { background: `linear-gradient(135deg, ${u.primary} 0 50%, ${u.secondary} 50% 100%)` }
+            }),
+            u.label
+          ))
+        )
+      ),
+      h('p', { className: 'u-text-muted', style: { fontSize: '11px', margin: '-4px 0 4px' } },
+        '🌌 15 universos com skin completo — cor, tipografia, formas e atmosfera próprias.'),
       toggle('reduceMotion', 'Reduzir animações', 'Desativa transições e efeitos de movimento.'),
       toggle('confirmActions', 'Confirmar ações destrutivas', 'Pede confirmação antes de limpar dados.'),
       h('div', { className: 'perfil-danger' },

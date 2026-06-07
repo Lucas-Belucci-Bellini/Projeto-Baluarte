@@ -266,6 +266,15 @@
   flex-shrink: 0;
   font-size: 16px;
 }
+/* Ícones de linha (SVG) — herdam a cor do item via currentColor */
+.sidebar__item-icon .nav-ico {
+  width: 18px;
+  height: 18px;
+  opacity: 0.78;
+  transition: opacity .15s ease, transform .15s ease;
+}
+.sidebar__item:hover .nav-ico { opacity: 1; transform: translateX(1px); }
+.sidebar__item.is-active .nav-ico { opacity: 1; }
 .sidebar__item-label {
   flex: 1;
   overflow: hidden;

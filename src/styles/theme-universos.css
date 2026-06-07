@@ -1,0 +1,82 @@
+/* ============================================================
+ *  Motor de Universos — atmosfera por skin (data-universe)
+ *  Cores/fontes/raios vêm dos tokens (universe-theme.js). Aqui
+ *  ficam reforços de clima GENÉRICOS (valem p/ qualquer universo,
+ *  usando os tokens já tematizados) + toques específicos.
+ *  Tudo seguro: só fundo e tipografia, sem cobrir conteúdo.
+ * ============================================================ */
+
+/* ===== Genérico — qualquer universo ativo (≠ Baluarte) ===== */
+[data-universe] body {
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(circle at 50% -8%, var(--color-cyan-soft), transparent 55%),
+    radial-gradient(circle at 95% 105%, var(--color-magenta-soft), transparent 50%);
+  background-attachment: fixed;
+  transition: background-color .35s ease;
+}
+[data-universe] .page-header__title,
+[data-universe] .section-header__title,
+[data-universe] .roadmap-hero h1,
+[data-universe] .roadmap-section__title {
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 16px var(--color-cyan-soft);
+  transition: color .3s, text-shadow .3s;
+}
+[data-universe] .sidebar { border-right: 1px solid var(--color-cyan-edge); transition: border-color .3s; }
+[data-universe] .sidebar__item.is-active {
+  box-shadow: inset 2px 0 0 var(--color-cyan), 0 0 12px var(--color-cyan-soft);
+}
+[data-universe] .card,
+[data-universe] .site-card,
+[data-universe] .metric-card { transition: border-color .3s; }
+
+/* ===== Toques específicos de mood ===== */
+
+/* DOOM — brutal, caixa-alta */
+[data-universe="doom"] .page-header__title,
+[data-universe="doom"] .section-header__title {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 18px rgba(255, 59, 29, 0.5);
+}
+[data-universe="doom"] .brand__title,
+[data-universe="doom"] .topbar__brand { letter-spacing: 0.12em; }
+
+/* Warhammer 40k — gótico imperial, tracking largo */
+[data-universe="warhammer-40k"] .page-header__title,
+[data-universe="warhammer-40k"] .section-header__title {
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+}
+
+/* Cyberpunk — techy, caixa-alta */
+[data-universe="cyberpunk"] .page-header__title,
+[data-universe="cyberpunk"] .section-header__title {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* Solo Leveling / Convergência / Vanadis — épico (serif já vem do token) */
+[data-universe="solo-leveling"] .page-header__title,
+[data-universe="cronicas-zulu"] .page-header__title,
+[data-universe="vanadis"] .page-header__title {
+  letter-spacing: 0.06em;
+}
+
+/* Tech / mecha / sci-fi — caixa-alta técnica (a fonte já vem do token) */
+[data-universe="transformers"] .page-header__title,
+[data-universe="transformers"] .section-header__title,
+[data-universe="halo"] .page-header__title,
+[data-universe="halo"] .section-header__title,
+[data-universe="pacific-rim"] .page-header__title,
+[data-universe="gundam"] .page-header__title,
+[data-universe="evangelion"] .page-header__title,
+[data-universe="mass-effect"] .page-header__title,
+[data-universe="endfield"] .page-header__title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}

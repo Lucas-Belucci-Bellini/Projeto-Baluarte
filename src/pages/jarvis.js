@@ -11,7 +11,7 @@ import { toast } from '../utils/toast.js';
 import {
   loadConfig, saveConfig,
   processLocal, processClaude, processOllama, processServer, processAgent,
-  healthCheckServer
+  healthCheckServer, getBaluarteBriefing
 } from '../utils/jarvis-engine.js';
 import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS, preloadWebLLM, getLoadedModel
@@ -329,7 +329,7 @@ async function handleSend() {
      * leitura). Cópia por chamada — não persiste no systemPrompt salvo. */
     const callConfig = config.mode === 'local'
       ? config
-      : { ...config, systemPrompt: `${config.systemPrompt}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}` };
+      : { ...config, systemPrompt: `${config.systemPrompt}\n\n${getBaluarteBriefing()}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}` };
 
     /* Memória entre conversas (claude-mem): injeta resumos relevantes de
      * sessões anteriores. Best-effort, só nos modos de IA. */

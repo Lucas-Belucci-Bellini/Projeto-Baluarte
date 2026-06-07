@@ -9,6 +9,7 @@ import { appState } from '../core/state.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
 import { VERSION, CODENAME } from '../data/version.js';
+import { iconForPath, iconByPath } from '../utils/icons.js';
 
 /* ===== Grupos de navegação do menu lateral — todas as rotas ===== */
 export const NAV_GROUPS = [
@@ -149,6 +150,11 @@ function navItem(item, currentPath) {
   const isActive = currentPath === item.path;
   const isReady = item.phase <= CURRENT_PHASE;
 
+  /* Ícone de linha (SVG) por rota; fallback para o glifo antigo. */
+  const iconEl = h('span', { className: 'sidebar__item-icon' });
+  if (iconByPath[item.path]) iconEl.innerHTML = iconForPath(item.path);
+  else iconEl.textContent = item.icon;
+
   const el = h(
     'a',
     {
@@ -161,7 +167,7 @@ function navItem(item, currentPath) {
         bus.emit('sidebar:close-mobile');
       }
     },
-    h('span', { className: 'sidebar__item-icon' }, item.icon),
+    iconEl,
     h('span', { className: 'sidebar__item-label' }, item.label),
     !isReady && h('span', { className: 'sidebar__item-badge' }, `F${item.phase}`)
   );
