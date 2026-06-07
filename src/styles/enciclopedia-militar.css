@@ -1,0 +1,108 @@
+/* ============================================================
+ *  Enciclopédia Militar — /enciclopedia-militar
+ * ============================================================ */
+
+.page-militar-enc { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.mil-layout {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .mil-layout { grid-template-columns: 1fr; }
+  .mil-nav { flex-direction: row !important; flex-wrap: wrap; max-height: none !important; }
+}
+
+/* Navegação por categoria */
+.mil-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.mil-nav__item {
+  display: flex; align-items: center; gap: 8px;
+  text-align: left; width: 100%;
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s);
+}
+.mil-nav__item:hover { background: var(--color-surface); color: var(--color-text-primary); }
+.mil-nav__item.is-active { background: var(--color-cyan-soft); border-color: var(--color-cyan-edge); color: var(--color-cyan); }
+.mil-nav__icon { width: 18px; text-align: center; }
+
+/* Painel de conteúdo */
+.mil-view {
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}
+.mil-view__title {
+  margin: 0 0 var(--space-md);
+  font-size: var(--font-size-xl);
+  color: var(--color-cyan);
+}
+
+.mil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-sm);
+}
+.mil-card {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 3px solid var(--color-cyan-edge);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+.mil-card__head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+.mil-card__icon { font-size: 16px; }
+.mil-card__name { font-weight: 600; color: var(--color-text-primary); }
+.mil-card__desc { margin: 2px 0 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; }
+.mil-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.mil-tag {
+  font-size: 11px; padding: 1px 8px; border-radius: var(--radius-pill);
+  background: var(--color-cyan-soft); color: var(--color-cyan);
+}
+
+/* Tabela de unidades */
+.mil-table { display: flex; flex-direction: column; gap: 2px; }
+.mil-table__row {
+  display: grid; grid-template-columns: 1.6fr 1fr 1.4fr 0.6fr;
+  gap: 8px; align-items: center;
+  padding: 8px 10px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-sm);
+}
+.mil-table__row--head { background: transparent; color: var(--color-text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* Timeline (eras) */
+.mil-timeline { display: flex; flex-direction: column; gap: 0; border-left: 2px solid var(--color-cyan-edge); margin-left: 8px; }
+.mil-tl__item { display: flex; gap: 12px; padding: 0 0 var(--space-md) var(--space-md); position: relative; }
+.mil-tl__dot { position: absolute; left: -7px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--color-cyan); box-shadow: 0 0 8px var(--color-cyan-soft); }
+.mil-tl__era { font-weight: 700; color: var(--color-text-primary); }
+.mil-tl__marco { font-size: var(--font-size-sm); line-height: 1.5; }
+
+/* Ranking (gastos) */
+.mil-rank { display: flex; flex-direction: column; gap: 4px; }
+.mil-rank__row { display: grid; grid-template-columns: 28px 1.4fr 2fr auto; gap: 10px; align-items: center; }
+.mil-rank__pos { color: var(--color-text-muted); font-size: 12px; }
+.mil-rank__pais { font-size: var(--font-size-sm); color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mil-rank__track { height: 8px; background: var(--color-bg); border-radius: var(--radius-pill); overflow: hidden; }
+.mil-rank__bar { display: block; height: 100%; background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta)); border-radius: var(--radius-pill); }
+.mil-rank__val { font-size: var(--font-size-sm); text-align: right; }
+
+.mil-fontes { margin-top: var(--space-lg); font-size: 11px; border-top: 1px solid rgba(255, 255, 255, 0.07); padding-top: var(--space-sm); }

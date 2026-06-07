@@ -107,7 +107,12 @@ const SKIN = {
   gundam:          { primary: '#3a6fe0', secondary: '#ff4d4d', font: 'rajdhani', radius: 'mid' },     // mecha Federação
   evangelion:      { primary: '#7b4fd4', secondary: '#7cff52', font: 'rajdhani', radius: 'sharp' },   // roxo NERV + verde
   'mass-effect':   { primary: '#3d8bff', secondary: '#ff7b29', font: 'titillium', radius: 'soft' },
-  cyberpunk:       { primary: '#ff0a78', secondary: '#00f0ff', font: 'mono', radius: 'sharp' }        // neon magenta/ciano
+  cyberpunk:       { primary: '#ff0a78', secondary: '#00f0ff', font: 'mono', radius: 'sharp' },       // neon magenta/ciano
+  monsterverse:    { primary: '#5ad84a', secondary: '#ff8a3c', font: 'oswald', radius: 'mid' },       // verde-atômico + calor
+  titanfall:       { primary: '#ff7a1a', secondary: '#38b6ff', font: 'rajdhani', radius: 'mid' },     // laranja Militia + azul
+  'god-of-war':    { primary: '#c0392b', secondary: '#d4af37', font: 'cinzel', radius: 'sharp' },     // vermelho-sangue + dourado grego
+  'devil-may-cry': { primary: '#d11f2d', secondary: '#2a6cff', font: 'oswald', radius: 'sharp' },     // Dante vermelho / Vergil azul
+  fate:            { primary: '#2e6fd0', secondary: '#d4af37', font: 'cinzel', radius: 'mid' }        // azul Saber + dourado
 };
 
 /** Mapa id → skin (label + cores), construído a partir de universos.js + SKIN. */

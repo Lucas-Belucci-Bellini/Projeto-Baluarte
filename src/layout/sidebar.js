@@ -126,7 +126,8 @@ export const NAV_GROUPS = [
       { path: '/historia-militar',     label: 'História Militar',        icon: '📜', phase: 1 },
       { path: '/armas-por-pais',       label: 'Armas por País',          icon: '🔫', phase: 1 },
       { path: '/guerras-conflitos',    label: 'Guerras & Conflitos',     icon: '🌐', phase: 1 },
-      { path: '/batalhas-historicas',  label: 'Batalhas Históricas',     icon: '🔰', phase: 1 }
+      { path: '/batalhas-historicas',  label: 'Batalhas Históricas',     icon: '🔰', phase: 1 },
+      { path: '/enciclopedia-militar', label: 'Enciclopédia Militar',    icon: '🎖', phase: 1 }
     ]
   },
   {

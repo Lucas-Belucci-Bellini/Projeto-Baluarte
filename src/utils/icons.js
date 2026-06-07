@@ -99,7 +99,8 @@ export const iconByPath = {
   '/arsenal-expandido': 'swords', '/forcas-especiais': 'helmet', '/organizacao-militar': 'sitemap',
   '/tecnologia-militar': 'rocket', '/taticas-estrategias': 'strategy', '/historia-militar': 'scroll',
   '/armas-por-pais': 'crosshair', '/guerras-conflitos': 'globe', '/batalhas-historicas': 'shield',
-  '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear'
+  '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
+  '/enciclopedia-militar': 'book'
 };
 
 /** Markup do ícone de linha pelo nome (ou hex de fallback). */

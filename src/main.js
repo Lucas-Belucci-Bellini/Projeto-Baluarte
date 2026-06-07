@@ -104,6 +104,7 @@ router.register('/historia-militar', lazy(() => import('./pages/historia-militar
 router.register('/armas-por-pais', lazy(() => import('./pages/armas-por-pais.js'), 'armasPorPaisPage'));
 router.register('/guerras-conflitos', lazy(() => import('./pages/guerras-conflitos.js'), 'guerrasConflitosPage'));
 router.register('/batalhas-historicas', lazy(() => import('./pages/batalhas-historicas.js'), 'batalhasHistoricasPage'));
+router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia-militar.js'), 'enciclopediaMilitarPage'));
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.

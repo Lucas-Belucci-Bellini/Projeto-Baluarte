@@ -309,6 +309,101 @@ export const UNIVERSOS = [
     threats: ['Megatron', 'Decepticons', 'Predacons'],
     media: ['Crônicas: ativos ALFA (Optimus, Bumblebee)'],
     arcs: []
+  },
+  {
+    id: 'monsterverse',
+    name: 'Monsterverse · Titãs',
+    tagline: 'Que os deuses-monstro reinem.',
+    color: '#5ad84a',
+    icon: '☢',
+    type: 'crossover',
+    summary: 'Titãs colossais — Godzilla, Kong, Shimo e Mothra. O Setor Gaia do Baluarte mantém habitats de contenção e os mobiliza como dissuasão estratégica.',
+    keyFacts: [
+      'Setor Gaia — contenção e habitat de Titãs',
+      'Godzilla em habitat geotérmico',
+      'Kong no bioma da Ilha da Caveira',
+      'Mobilização como dissuasão de nível continental'
+    ],
+    factions: ['Setor Gaia Baluarte', 'Monarch (referência)', 'Titãs aliados'],
+    threats: ['Titãs hostis', 'MUTOs', 'Desequilíbrio do ecossistema'],
+    media: ['Dossiê: Setor Gaia (Godzilla, Kong, Shimo, Mothra)'],
+    arcs: []
+  },
+  {
+    id: 'titanfall',
+    name: 'Titanfall',
+    tagline: 'Standby for Titanfall.',
+    color: '#ff7a1a',
+    icon: '⬡',
+    type: 'crossover',
+    summary: 'Pilotos de mobilidade extrema vinculados a Titãs de combate com IA (BT-7274). O Baluarte integra o protocolo de vínculo piloto-Titã às unidades mecanizadas.',
+    keyFacts: [
+      'Titãs de combate com IA (BT-7274)',
+      'Pilotos com parkour / wall-run',
+      'Vínculo neural piloto-Titã',
+      'Protocolo 3: Proteger o Piloto'
+    ],
+    factions: ['Militia da Fronteira', 'IMC (hostil)', 'Unidades Titã Baluarte'],
+    threats: ['IMC', 'Titãs renegados'],
+    media: ['Integração: vínculo piloto-Titã'],
+    arcs: []
+  },
+  {
+    id: 'god-of-war',
+    name: 'God of War',
+    tagline: 'A fúria de Esparta não se apaga.',
+    color: '#c0392b',
+    icon: '⚔',
+    type: 'crossover',
+    summary: 'Kratos, o Fantasma de Esparta e matador de panteões. Integra a equipe ALFA como ativo de nível divino contra ameaças mitológicas.',
+    keyFacts: [
+      'Kratos — o Fantasma de Esparta',
+      'Lâminas do Caos · Machado Leviatã',
+      'Matador de panteões (grego, nórdico)',
+      'Ativo de nível divino da ALFA'
+    ],
+    factions: ['ALFA Baluarte', 'Panteões (hostis)'],
+    threats: ['Deuses do Olimpo', 'Deuses de Asgard', 'Titãs mitológicos'],
+    media: ['Dossiê: ALFA (Kratos)'],
+    arcs: []
+  },
+  {
+    id: 'devil-may-cry',
+    name: 'Devil May Cry',
+    tagline: 'Estiloso até o inferno e de volta.',
+    color: '#d11f2d',
+    icon: '◉',
+    type: 'crossover',
+    summary: 'Os filhos de Sparda — Dante e Vergil — caçadores de demônios. Reforçam a equipe ALFA contra incursões demoníacas, com estilo letal.',
+    keyFacts: [
+      'Dante e Vergil, filhos de Sparda',
+      'Rebellion · Yamato · Devil Trigger',
+      'Caça a demônios de alto nível',
+      'Ativos ALFA de combate sobrenatural'
+    ],
+    factions: ['ALFA Baluarte', 'Legião demoníaca (hostil)'],
+    threats: ['Demônios maiores', 'Mundus', 'O Mundo Demônio'],
+    media: ['Dossiê: ALFA (Dante, Vergil)'],
+    arcs: []
+  },
+  {
+    id: 'fate',
+    name: 'Fate',
+    tagline: 'Espíritos heroicos respondem ao chamado.',
+    color: '#2e6fd0',
+    icon: '⚔',
+    type: 'crossover',
+    summary: 'Magos e Espíritos Heroicos da Guerra do Graal — Shirou, Saber, Rin e Archer. Núcleo místico da ALFA, com projeção de armas e nobres fantasmas.',
+    keyFacts: [
+      'Guerra do Santo Graal',
+      'Saber (Artoria) — Excalibur',
+      'Shirou Emiya — projeção de armas',
+      'Servos heroicos invocados'
+    ],
+    factions: ['ALFA Baluarte', 'Servos aliados', 'Mestres rivais'],
+    threats: ['Servos inimigos', 'Corrupção do Graal'],
+    media: ['Dossiê: ALFA — Magos e Espíritos Heroicos'],
+    arcs: []
   }
 ];
 
