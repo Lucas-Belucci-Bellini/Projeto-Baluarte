@@ -1,0 +1,96 @@
+/* ============================================================
+ *  Radar do Câmbio — /dolar (Dólar, Euro, Bitcoin)
+ * ============================================================ */
+
+.page-dolar { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+/* Abas de moeda */
+.dolar-coins { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-bottom: var(--space-md); }
+.dolar-coin {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm); font-weight: 600;
+  cursor: pointer; transition: all var(--transition-fast, 0.15s);
+}
+.dolar-coin:hover { color: var(--color-text-primary); border-color: var(--coin); }
+.dolar-coin.is-active { color: var(--coin); background: color-mix(in srgb, var(--coin) 12%, transparent); box-shadow: 0 0 12px color-mix(in srgb, var(--coin) 30%, transparent); }
+.dolar-coin__icon { font-size: 16px; }
+
+/* Card de destaque */
+.dolar-hero {
+  display: grid; grid-template-columns: 1fr auto; gap: var(--space-md);
+  align-items: center;
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 4px solid var(--coin, var(--color-cyan));
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.dolar-hero__label { font-size: var(--font-size-sm); margin-bottom: 4px; }
+.dolar-hero__value {
+  font-size: clamp(28px, 6vw, 44px); font-weight: 700; line-height: 1;
+  font-family: var(--font-mono); color: var(--color-text-primary);
+}
+.dolar-hero__pct { font-size: var(--font-size-sm); margin-top: 6px; font-weight: 600; }
+.dolar-hero__quick { display: flex; gap: var(--space-md); }
+.dolar-quick { text-align: right; }
+.dolar-quick__label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.dolar-quick__val { font-size: var(--font-size-md); font-weight: 700; font-family: var(--font-mono); }
+@media (max-width: 680px) {
+  .dolar-hero { grid-template-columns: 1fr; }
+  .dolar-hero__quick { justify-content: space-between; }
+}
+
+/* Abas de período */
+.dolar-ranges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: var(--space-sm); }
+.dolar-range {
+  background: transparent; border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm); padding: 5px 14px;
+  color: var(--color-text-secondary); font-size: var(--font-size-sm);
+  cursor: pointer; transition: all var(--transition-fast, 0.15s);
+}
+.dolar-range:hover { color: var(--color-text-primary); }
+.dolar-range.is-active { background: var(--color-cyan-soft); border-color: var(--color-cyan-edge); color: var(--color-cyan); }
+
+/* Gráfico */
+.dolar-chart-wrap {
+  position: relative;
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.dolar-chart { width: 100%; }
+.dolar-chart__svg { width: 100%; height: 260px; display: block; }
+.dolar-chart__empty { padding: var(--space-2xl); text-align: center; }
+.dolar-chart__axis { position: absolute; right: var(--space-md); font-size: 11px; }
+.dolar-chart__axis--max { top: 8px; }
+.dolar-chart__axis--min { bottom: 22px; }
+.dolar-chart__dates { display: flex; justify-content: space-between; font-size: 11px; margin-top: 4px; }
+
+/* Stats */
+.dolar-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
+@media (max-width: 680px) { .dolar-stats { grid-template-columns: repeat(2, 1fr); } }
+.dolar-stat {
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-md);
+}
+.dolar-stat__label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+.dolar-stat__value { font-size: var(--font-size-md); color: var(--color-text-primary); }
+
+/* Relatórios */
+.dolar-reports {
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md); padding: var(--space-md);
+}
+.dolar-reports__title { font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px; }
+
+.dolar-note { padding: var(--space-2xl) var(--space-md); text-align: center; font-size: var(--font-size-sm); }

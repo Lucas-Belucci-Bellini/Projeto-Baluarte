@@ -5,7 +5,8 @@
  * O loop usa a IFrame API do Spotify: ao chegar perto do fim, reinicia.
  */
 
-import { h } from '../utils/helpers.js';
+import { h, empty } from '../utils/helpers.js';
+import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
 
 const TRACK_ID = '6Hv4AhlMTDgb6HGTvI0xlH';
 const PLAYLIST_ID = '5wVcAsTvq2dQFZcqw3GJWN';
@@ -43,6 +44,76 @@ function plainEmbed(type, id, height) {
     allow: 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture',
     loading: 'lazy'
   });
+}
+
+/* ===== SoundCloud — faixas avulsas em loop (issues #167–#171) ===== */
+
+/** Carrega a Widget API do SoundCloud uma única vez. */
+function ensureSoundCloudAPI(cb) {
+  if (window.SC && window.SC.Widget) { cb(); return; }
+  window.__scCbs = window.__scCbs || [];
+  window.__scCbs.push(cb);
+  if (window.__scLoading) return;
+  window.__scLoading = true;
+  const s = document.createElement('script');
+  s.src = 'https://w.soundcloud.com/player/api.js';
+  s.async = true;
+  s.onload = () => { (window.__scCbs || []).forEach((fn) => { try { fn(); } catch {} }); window.__scCbs = []; };
+  document.head.appendChild(s);
+}
+
+/** Lista de faixas do SoundCloud + um player que toca a escolhida em LOOP. */
+function soundcloudSection() {
+  const wrap = h('div', { className: 'sc-section' });
+  const playerHost = h('div', { className: 'sc-player' });
+  const nowPlaying = h('div', { className: 'sc-now u-text-muted' },
+    'Clique numa faixa: ela toca e recomeça sozinha (loop) até você pausar ou escolher outra.');
+  let widget = null;
+  let activeEl = null;
+
+  function play(track, el) {
+    if (activeEl) activeEl.classList.remove('is-active');
+    activeEl = el;
+    el.classList.add('is-active');
+    nowPlaying.textContent = '♫ Em loop: ' + track.title + ' — ' + track.artist;
+    if (!widget) {
+      const src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(track.url)
+        + '&color=%2300f0ff&auto_play=true&hide_related=true&show_comments=false&show_user=true&visual=false';
+      const iframe = h('iframe', {
+        className: 'sc-iframe', width: '100%', height: '140',
+        allow: 'autoplay', frameborder: 'no', scrolling: 'no', src
+      });
+      empty(playerHost);
+      playerHost.appendChild(iframe);
+      ensureSoundCloudAPI(() => {
+        try {
+          widget = window.SC.Widget(iframe);
+          /* loop: ao terminar, volta ao início e toca de novo (issue #171) */
+          widget.bind(window.SC.Widget.Events.FINISH, () => {
+            try { widget.seekTo(0); widget.play(); } catch {}
+          });
+        } catch {}
+      });
+    } else {
+      try { widget.load(track.url, { auto_play: true, color: '#00f0ff', hide_related: true, show_comments: false }); } catch {}
+    }
+  }
+
+  const list = h('div', { className: 'sc-list' });
+  SOUNDCLOUD_TRACKS.forEach((t) => {
+    const el = h('button', { className: 'sc-track', type: 'button', onclick: () => play(t, el) },
+      t.cover
+        ? h('img', { className: 'sc-track__cover', src: t.cover, loading: 'lazy', alt: '', referrerpolicy: 'no-referrer' })
+        : h('span', { className: 'sc-track__cover sc-track__cover--icon' }, '♪'),
+      h('div', { className: 'sc-track__meta' },
+        h('div', { className: 'sc-track__title' }, t.title),
+        h('div', { className: 'sc-track__artist u-text-muted' }, t.artist)),
+      h('span', { className: 'sc-track__play' }, '▶'));
+    list.appendChild(el);
+  });
+
+  wrap.append(playerHost, nowPlaying, list);
+  return wrap;
 }
 
 export function musicasPage() {
@@ -114,6 +185,14 @@ export function musicasPage() {
       'estiver nesta aba. Se o player não tocar a faixa inteira, é limite do ',
       'Spotify para quem não está logado.')
   );
+
+  /* ===== SoundCloud — minhas faixas (loop ao clicar) ===== */
+  fullPage.appendChild(
+    h('div', { className: 'section-header' },
+      h('h2', { className: 'section-header__title' }, '♫ SoundCloud — Minhas Faixas'),
+      h('span', { className: 'section-header__count' }, String(SOUNDCLOUD_TRACKS.length)))
+  );
+  fullPage.appendChild(soundcloudSection());
 
   /* ===== Músicas (faixas avulsas) ===== */
   if (EXTRA_TRACKS.length) {

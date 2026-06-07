@@ -15,6 +15,9 @@ import { evaluate } from './calc-engine.js';
 import { getStatusSnapshot } from './baluarte-status.js';
 import { VERSION } from '../data/version.js';
 import { recall, getMemoryCache } from './jarvis-recall.js';
+import {
+  createSkill, deleteSkill, listSkillSummaries, loadSkills, runSkill
+} from './jarvis-skills.js';
 
 /* ===== Schema das ferramentas (formato Claude API) ===== */
 
@@ -27,7 +30,7 @@ export const TOOL_SCHEMAS = [
       properties: {
         route: {
           type: 'string',
-          description: 'Rota destino. Opções: /home, /ferramentas, /editor, /terminal, /calc-cientifica, /calc-numerica, /calculadoras, /tabela-verdade, /cripto, /esteganografia, /graficos, /simbolos, /color-studio, /regex, /qr-studio, /json-studio, /git-helper, /arsenal, /biblioteca, /elites, /ciberseg, /academia, /robotica, /fft, /radio, /musicas, /media, /videos, /tv, /jogos, /universo, /tabela-periodica, /modpack, /guia-pc, /logic-sim, /portas, /morse, /memes, /filmes, /perfil, /economia, /jarvis, /radar, /geo, /find, /triangulacao, /sobre'
+          description: 'Rota destino. Opções: /home, /ferramentas, /editor, /terminal, /calc-cientifica, /calc-numerica, /calculadoras, /tabela-verdade, /cripto, /esteganografia, /graficos, /simbolos, /color-studio, /regex, /qr-studio, /json-studio, /git-helper, /arsenal, /biblioteca, /elites, /dossie, /ciberseg, /academia, /robotica, /fft, /radio, /musicas, /media, /videos, /tv, /jogos, /universo, /tabela-periodica, /modpack, /guia-pc, /logic-sim, /portas, /morse, /memes, /filmes, /perfil, /economia, /dolar, /jarvis, /radar, /geo, /find, /triangulacao, /sobre'
         }
       },
       required: ['route']
@@ -120,8 +123,41 @@ export const TOOL_SCHEMAS = [
       },
       required: ['query']
     }
+  },
+  {
+    name: 'create_skill',
+    description: 'Cria uma NOVA habilidade (skill) reutilizável e a salva permanentemente — fica disponível como ferramenta nesta e nas próximas conversas. Use quando precisar de uma capacidade repetível que ainda não existe (ex: conversão, fórmula do universo Baluarte, relatório). A skill é JS PURO: recebe `input` (os argumentos) e `sdk` (capacidades seguras) e usa `return` para devolver o resultado. sdk disponível: sdk.calc(expr), sdk.arsenal(query), sdk.equipe(code), sdk.equipes(), sdk.arco(code), sdk.arcos(), sdk.log(...), sdk.now(). PROIBIDO (não compila): rede (fetch), DOM (document/window), storage, eval/Function, timers, async/await. Depois de criar, CHAME a skill para usá-la.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'Identificador snake_case, 3–40 chars, começa com letra. Ex: converter_moeda' },
+        description: { type: 'string', description: 'O que a skill faz e quando usá-la (vira a descrição da ferramenta).' },
+        input_schema: { type: 'object', description: 'JSON Schema de objeto com as properties (argumentos) da skill. Ex: { "type":"object", "properties": { "valor": {"type":"number"} }, "required": ["valor"] }' },
+        code: { type: 'string', description: 'Corpo JS da função (input, sdk) => resultado. Ex: const taxa = 5.1; return { reais: input.valor * taxa };' }
+      },
+      required: ['name', 'description', 'code']
+    }
+  },
+  {
+    name: 'list_skills',
+    description: 'Lista as habilidades (skills) que o JARVIS já aprendeu, com nome, descrição e quantas vezes foram usadas.',
+    input_schema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'delete_skill',
+    description: 'Apaga permanentemente uma skill aprendida, pelo nome.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'Nome da skill a apagar' }
+      },
+      required: ['name']
+    }
   }
 ];
+
+/** Nomes reservados (ferramentas built-in): não podem virar nome de skill. */
+const BUILTIN_NAMES = TOOL_SCHEMAS.map((t) => t.name);
 
 /* ===== Implementação ===== */
 
@@ -222,6 +258,29 @@ const IMPLEMENTATIONS = {
     const hits = recall(query || '', getMemoryCache(), 4);
     if (!hits.length) return { ok: true, total: 0, memories: [], note: 'nenhuma conversa anterior relevante' };
     return { ok: true, total: hits.length, memories: hits.map((h) => h.text) };
+  },
+
+  create_skill({ name, description, input_schema, code }) {
+    const res = createSkill({ name, description, input_schema, code }, { reserved: BUILTIN_NAMES });
+    if (!res.ok) return { ok: false, error: res.error };
+    registerSkillAsTool(res.skill);
+    return {
+      ok: true,
+      [res.updated ? 'updated' : 'created']: res.skill.name,
+      note: 'Skill salva e registrada. Já pode chamá-la como ferramenta agora.'
+    };
+  },
+
+  list_skills() {
+    const skills = listSkillSummaries();
+    return { ok: true, total: skills.length, skills };
+  },
+
+  delete_skill({ name }) {
+    const removed = removeSkill(String(name || ''));
+    return removed
+      ? { ok: true, deleted: name }
+      : { ok: false, error: `skill "${name}" não encontrada` };
   }
 };
 
@@ -244,6 +303,7 @@ export function registerTool(tool) {
 
 /** Schemas (formato Claude) de TODAS as ferramentas: built-ins + registradas. */
 export function getToolSchemas() {
+  initSkills();
   const extra = [...dynamicTools.values()].map((t) => ({
     name: t.name,
     description: t.description,
@@ -264,4 +324,38 @@ export function runTool(name, input) {
   } catch (e) {
     return { ok: false, error: e.message };
   }
+}
+
+/* ===== Skills auto-criadas (jarvis-skills.js) =====
+ * As skills que o agente cria viram ferramentas dinâmicas: persistidas no
+ * storage e re-registradas no boot, ficam disponíveis nas próximas conversas. */
+
+/** Remove uma ferramenta dinâmica do catálogo (usado ao apagar skills). */
+export function unregisterTool(name) {
+  return dynamicTools.delete(name);
+}
+
+/** Registra uma skill persistida como ferramenta dinâmica do agente. */
+export function registerSkillAsTool(skill) {
+  return registerTool({
+    name: skill.name,
+    description: skill.description + ' · [skill aprendida]',
+    input_schema: skill.input_schema || { type: 'object', properties: {} },
+    run: (input) => runSkill(skill, input)
+  });
+}
+
+let skillsInited = false;
+/** Carrega e registra as skills salvas. Idempotente — seguro chamar várias vezes. */
+export function initSkills() {
+  if (skillsInited) return;
+  skillsInited = true;
+  for (const skill of loadSkills()) registerSkillAsTool(skill);
+}
+
+/** Apaga uma skill do storage e desregistra a ferramenta. @returns {boolean} */
+export function removeSkill(name) {
+  const ok = deleteSkill(name);
+  if (ok) unregisterTool(name);
+  return ok;
 }

@@ -80,7 +80,8 @@ export const NAV_GROUPS = [
       { path: '/robotica',      label: 'Robótica',           icon: '⊕',  phase: 1 },
       { path: '/guia-pc',       label: 'Guia para Montar PC',icon: '◨',  phase: 1 },
       { path: '/modpack',       label: 'Modpack Minecraft',  icon: '◧',  phase: 1 },
-      { path: '/economia',      label: 'Economia',           icon: '◈',  phase: 1 }
+      { path: '/economia',      label: 'Economia',           icon: '◈',  phase: 1 },
+      { path: '/dolar',         label: 'Radar do Câmbio',    icon: '💹', phase: 1 }
     ]
   },
   {
@@ -101,6 +102,7 @@ export const NAV_GROUPS = [
     label: 'Campo & Tático',
     items: [
       { path: '/elites',       label: 'Elites',         icon: '◆',  phase: 1 },
+      { path: '/dossie',       label: 'Dossiê de Forças', icon: '▣', phase: 1 },
       { path: '/arsenal',      label: 'Arsenal',        icon: '⌖',  phase: 1 },
       { path: '/radar',        label: 'Radar Tático',   icon: '⌬',  phase: 1 },
       { path: '/geo',          label: 'GeoPulse',       icon: '🛰', phase: 1 },

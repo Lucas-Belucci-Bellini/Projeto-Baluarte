@@ -33,6 +33,7 @@ jobs:
           node scripts/sync-cronicas.mjs
           node scripts/gen-fanfic-from-docs.mjs
           node scripts/gen-elites-rosters.mjs
+          node scripts/gen-dossie-from-doc.mjs
 
       - name: Commitar mudanças (se houver)
         run: |

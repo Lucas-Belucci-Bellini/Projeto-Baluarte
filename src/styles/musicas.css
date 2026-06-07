@@ -35,3 +35,45 @@
   line-height: var(--line-height-loose);
   margin: var(--space-sm) 0 var(--space-md);
 }
+
+/* ===== SoundCloud — faixas em loop (issues #167–#171) ===== */
+.sc-section { display: flex; flex-direction: column; gap: var(--space-sm); }
+.sc-player:empty { display: none; }
+.sc-iframe {
+  display: block; width: 100%; border: 0;
+  border-radius: var(--radius-md); background: var(--color-surface);
+}
+.sc-now { font-size: var(--font-size-sm); padding: 2px 2px var(--space-xs); }
+
+.sc-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 6px;
+}
+.sc-track {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 8px; cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast, 0.15s);
+}
+.sc-track:hover { background: var(--color-surface); color: var(--color-text-primary); transform: translateX(2px); }
+.sc-track.is-active {
+  border-color: var(--color-cyan-edge); background: var(--color-cyan-soft);
+  color: var(--color-text-primary); box-shadow: 0 0 10px var(--color-cyan-soft);
+}
+.sc-track__cover {
+  width: 44px; height: 44px; border-radius: var(--radius-sm);
+  object-fit: cover; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.sc-track__cover--icon {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-surface-2); color: var(--color-cyan); font-size: 18px;
+}
+.sc-track__meta { flex: 1; min-width: 0; }
+.sc-track__title { font-size: var(--font-size-sm); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-track__artist { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-track__play { color: var(--color-cyan); font-size: 12px; flex-shrink: 0; }
+.sc-track.is-active .sc-track__play { color: var(--color-magenta); }

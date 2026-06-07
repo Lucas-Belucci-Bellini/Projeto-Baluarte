@@ -1,0 +1,46 @@
+name: Radar do Câmbio (Dólar, Euro, Bitcoin)
+
+# Coleta USD, EUR e BTC (em BRL) e atualiza o banco de dados + os relatórios
+# a cada 12h. Se algo mudou, commita no main e a Vercel republica sozinha.
+# Também pode ser disparado manualmente (Run workflow).
+
+on:
+  schedule:
+    - cron: '30 */12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cambio
+  cancel-in-progress: false
+
+jobs:
+  cambio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Coletar câmbio e gerar relatórios
+        run: |
+          node scripts/fetch-cambio.mjs
+          node scripts/gen-cambio-report.mjs
+
+      - name: Commitar mudanças (se houver)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Sem mudanças no câmbio — nada a fazer."
+          else
+            git commit -m "Atualiza câmbio (dólar, euro, bitcoin) [automático]"
+            git push
+          fi

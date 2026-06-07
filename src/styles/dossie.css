@@ -1,0 +1,140 @@
+/* ============================================================
+ *  Dossiê das Forças — documento-fonte (Google Docs) das Equipes
+ *  Layout: sumário navegável + leitor da seção.
+ * ============================================================ */
+
+.page-dossie {
+  min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+}
+
+.dossie-controls {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.dossie-main {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--space-md);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .dossie-main { grid-template-columns: 1fr; }
+  .dossie-toc { max-height: 260px !important; }
+}
+
+/* ===== Sumário ===== */
+.dossie-toc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: calc(100vh - 230px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.dossie-toc__item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s);
+  line-height: 1.3;
+}
+.dossie-toc__item:hover {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+.dossie-toc__item.is-active {
+  background: var(--color-cyan-soft);
+  border-color: var(--color-cyan-edge);
+  color: var(--color-text-primary);
+}
+.dossie-toc__bullet {
+  color: var(--color-cyan);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+/* ===== Leitor ===== */
+.dossie-viewer {
+  background: var(--color-bg-elevated);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  max-height: calc(100vh - 230px);
+  overflow-y: auto;
+}
+.dossie-viewer__head {
+  position: sticky;
+  top: calc(var(--space-lg) * -1);
+  margin: calc(var(--space-lg) * -1) calc(var(--space-lg) * -1) var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(180deg, var(--color-surface), var(--color-bg-elevated));
+  border-bottom: var(--border-base);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.dossie-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-cyan);
+  font-family: var(--font-display);
+}
+
+.dossie-h {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: var(--space-md) 0 var(--space-xs);
+  line-height: 1.3;
+}
+.dossie-h--2 { font-size: var(--font-size-lg); color: var(--color-cyan); }
+.dossie-h--3 {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  border-left: 3px solid var(--color-cyan-edge);
+  padding-left: var(--space-sm);
+}
+.dossie-h--4 { font-size: var(--font-size-base); color: var(--color-text-secondary); }
+
+.dossie-p {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin: 0 0 var(--space-sm);
+  font-size: var(--font-size-base);
+}
+.dossie-list {
+  margin: 0 0 var(--space-sm);
+  padding-left: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dossie-list li {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  font-size: var(--font-size-base);
+}
+.dossie-list li::marker { color: var(--color-cyan-edge); }
+
+.dossie-hr {
+  border: none;
+  border-top: var(--border-thin);
+  margin: var(--space-md) 0;
+}
+
+.dossie-note {
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  font-size: var(--font-size-sm);
+}
