@@ -124,7 +124,8 @@ const ROUTES_INDEX = {
   'simulador': '/logic-sim', 'logic sim': '/logic-sim',
   'perfil': '/perfil',
   'shadow': '/shadow', 'shadow bridge': '/shadow',
-  'economia': '/economia', 'cotações': '/economia'
+  'economia': '/economia', 'cotações': '/economia',
+  'dólar': '/dolar', 'dolar': '/dolar', 'câmbio': '/dolar', 'cambio': '/dolar', 'bitcoin': '/dolar'
 };
 
 function normalize(s) {

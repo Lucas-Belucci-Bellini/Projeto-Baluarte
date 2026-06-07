@@ -76,6 +76,7 @@ router.register('/filmes', lazy(() => import('./pages/filmes.js'), 'filmesPage')
 router.register('/shadow', lazy(() => import('./pages/shadow.js'), 'shadowPage'));
 router.register('/perfil', lazy(() => import('./pages/perfil.js'), 'perfilPage'));
 router.register('/economia', lazy(() => import('./pages/economia.js'), 'economiaPage'));
+router.register('/dolar', lazy(() => import('./pages/dolar.js'), 'dolarPage'));
 router.register('/jarvis', lazy(() => import('./pages/jarvis.js'), 'jarvisPage'));
 router.register('/ia-proprietaria', lazy(() => import('./pages/ia-proprietaria.js'), 'iaProprietariaPage'));
 router.register('/radar', lazy(() => import('./pages/radar.js'), 'radarPage'));

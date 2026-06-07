@@ -103,6 +103,7 @@ function pageTitleForRoute(path) {
     '/radar': 'Radar Tático',
     '/ciberseg': 'CiberSeg',
     '/economia': 'Economia',
+    '/dolar': 'Radar do Câmbio',
     '/jarvis': 'J.A.R.V.I.S.',
     '/ia-proprietaria': 'IA Proprietária Mark 11',
     '/perfil': 'Perfil',
