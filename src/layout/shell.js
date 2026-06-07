@@ -107,6 +107,7 @@ function pageTitleForRoute(path) {
     '/jarvis': 'J.A.R.V.I.S.',
     '/ia-proprietaria': 'IA Proprietária Mark 11',
     '/perfil': 'Perfil',
+    '/enciclopedia-militar': 'Enciclopédia Militar',
     '/sobre': 'Sobre o Projeto'
   };
   return map[path] || 'Mark XIII';
