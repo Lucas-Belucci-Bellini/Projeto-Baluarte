@@ -1,0 +1,35 @@
+/* ============================================================
+ *  Segurança do Agente — /seguranca (Sponsio-inspired)
+ * ============================================================ */
+
+.page-seguranca { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.seg-toggle { margin-bottom: var(--space-md); }
+.seg-switch {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: var(--radius-pill); cursor: pointer;
+  font: inherit; font-weight: 600; border: 1px solid transparent;
+}
+.seg-switch.is-on { color: #00ff88; background: rgba(0, 255, 136, 0.12); border-color: rgba(0, 255, 136, 0.4); }
+.seg-switch.is-off { color: #ff5b7a; background: rgba(255, 91, 122, 0.12); border-color: rgba(255, 91, 122, 0.4); }
+.seg-switch__dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+
+.seg-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
+@media (max-width: 600px) { .seg-stats { grid-template-columns: repeat(2, 1fr); } }
+.seg-stat { background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: var(--radius-md); padding: var(--space-sm); text-align: center; }
+.seg-stat__v { font-size: var(--font-size-xl); color: var(--color-cyan); font-weight: 700; }
+.seg-stat__l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-secondary); }
+
+.seg-card { background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-md); }
+.seg-card__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: var(--space-sm); }
+.seg-card__title { font-weight: 600; color: var(--color-text-primary); }
+
+.seg-pol { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
+.seg-pol__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 8px; background: var(--color-bg); border-radius: var(--radius-sm); }
+
+.seg-log { display: flex; flex-direction: column; gap: 4px; max-height: 420px; overflow-y: auto; }
+.seg-log__row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: var(--font-size-sm); }
+.seg-log__tool { flex-shrink: 0; color: var(--color-text-primary); }
+.seg-log__why { flex: 1; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seg-log__time { flex-shrink: 0; font-size: 11px; }
+.seg-empty { padding: var(--space-lg); text-align: center; border: 1px dashed rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); }

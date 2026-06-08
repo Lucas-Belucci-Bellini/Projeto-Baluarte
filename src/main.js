@@ -115,6 +115,7 @@ router.register('/cerebro', lazy(() => import('./pages/cerebro.js'), 'cerebroPag
 router.register('/ocr', lazy(() => import('./pages/ocr.js'), 'ocrPage'));
 router.register('/memoria', lazy(() => import('./pages/memoria.js'), 'memoriaPage'));
 router.register('/terminal-ia', lazy(() => import('./pages/terminal-ia.js'), 'terminalIaPage'));
+router.register('/seguranca', lazy(() => import('./pages/seguranca.js'), 'segurancaPage'));
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.

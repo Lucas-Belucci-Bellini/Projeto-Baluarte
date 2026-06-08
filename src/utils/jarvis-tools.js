@@ -18,6 +18,7 @@ import { recall, getMemoryCache } from './jarvis-recall.js';
 import {
   createSkill, deleteSkill, listSkillSummaries, loadSkills, runSkill
 } from './jarvis-skills.js';
+import { guardEnabled, evaluateToolCall, logDecision } from './jarvis-guard.js';
 
 /* ===== Schema das ferramentas (formato Claude API) ===== */
 
@@ -319,6 +320,14 @@ export function getToolSchemas() {
 export function runTool(name, input) {
   const impl = IMPLEMENTATIONS[name] || dynamicTools.get(name)?.run;
   if (!impl) return { ok: false, error: `ferramenta desconhecida: ${name}` };
+  /* Segurança do agente (Sponsio): avalia e registra antes de executar. */
+  if (guardEnabled()) {
+    const verdict = evaluateToolCall(name, input);
+    logDecision(verdict);
+    if (verdict.level === 'block') {
+      return { ok: false, blocked: true, error: `🛡️ Bloqueado pela segurança do agente: ${verdict.reason}` };
+    }
+  }
   try {
     return impl(input || {});
   } catch (e) {

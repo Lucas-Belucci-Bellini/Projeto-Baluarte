@@ -33,6 +33,7 @@ export const NAV_GROUPS = [
       { path: '/cerebro',          label: 'Segundo Cérebro',    icon: '🧠', phase: 1 },
       { path: '/memoria',          label: 'Memória do JARVIS',  icon: '🧠', phase: 1 },
       { path: '/terminal-ia',      label: 'Terminal-IA',        icon: '💻', phase: 1 },
+      { path: '/seguranca',        label: 'Segurança do Agente', icon: '🛡', phase: 1 },
       { path: '/ia-proprietaria',  label: 'IA Proprietária',    icon: '◎', phase: 1 }
     ]
   },

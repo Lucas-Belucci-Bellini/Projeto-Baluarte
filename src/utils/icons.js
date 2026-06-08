@@ -107,7 +107,7 @@ export const iconByPath = {
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
   '/enciclopedia-militar': 'book',
   '/codigo': 'network', '/projetos': 'folder', '/cerebro': 'brain', '/ocr': 'scantext',
-  '/memoria': 'database', '/terminal-ia': 'terminal'
+  '/memoria': 'database', '/terminal-ia': 'terminal', '/seguranca': 'shield'
 };
 
 /** Markup do ícone de linha pelo nome (ou hex de fallback). */
