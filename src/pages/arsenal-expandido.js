@@ -5,7 +5,10 @@
  */
 
 import { h } from '../utils/helpers.js';
-import { ARSX_CATEGORIAS as CATEGORIAS, ARSX_ARSENAL as ARSENAL } from '../data/arsenal-expandido-db.js';
+import arsenalData from '../data/arsenal-expandido.json';
+
+const CATEGORIAS = arsenalData.categorias;
+const ARSENAL = arsenalData.arsenal;
 
 export function arsenalExpandidoPage() {
   let activeCat = 'infantaria';
