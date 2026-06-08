@@ -107,6 +107,12 @@ router.register('/batalhas-historicas', lazy(() => import('./pages/batalhas-hist
 router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia-militar.js'), 'enciclopediaMilitarPage'));
 
 /* ==============================================================
+ *  Dev & Projetos — auto-análise do próprio site
+ * ============================================================== */
+router.register('/codigo', lazy(() => import('./pages/codigo.js'), 'codigoPage'));
+router.register('/projetos', lazy(() => import('./pages/projetos.js'), 'projetosPage'));
+
+/* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.
  * ============================================================== */
 router.setNotFound((path) => notFoundPage(path));

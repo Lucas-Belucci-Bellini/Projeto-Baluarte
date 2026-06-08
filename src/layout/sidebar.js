@@ -18,6 +18,7 @@ export const NAV_GROUPS = [
     items: [
       { path: '/home',        label: 'Ponte de Comando',   icon: '⬡', phase: 1 },
       { path: '/perfil',      label: 'Perfil',             icon: '◔', phase: 1 },
+      { path: '/projetos',    label: 'Projetos',           icon: '📁', phase: 1 },
       { path: '/roadmap',     label: 'Roadmap',            icon: '◈', phase: 1 },
       { path: '/sobre',       label: 'Sobre o Projeto',    icon: '◇', phase: 1 }
     ]
@@ -39,6 +40,7 @@ export const NAV_GROUPS = [
       { path: '/json-studio', label: 'JSON Studio',        icon: '⟦⟧', phase: 1 },
       { path: '/git-helper',  label: 'Git Helper',         icon: '⎇',  phase: 1 },
       { path: '/regex',       label: 'Lab de Regex',       icon: '✱',  phase: 1 },
+      { path: '/codigo',      label: 'Raio-X do Código',   icon: '◇',  phase: 1 },
       { path: '/utilidades',  label: 'Caixa de Ferramentas', icon: '🧰', phase: 1 }
     ]
   },

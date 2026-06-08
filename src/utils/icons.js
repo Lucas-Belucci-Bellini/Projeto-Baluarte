@@ -75,6 +75,8 @@ const PATHS = {
   eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>',
   scan: '<path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="11" r="2"/><path d="M9 15.5a3.5 3.5 0 0 1 6 0"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  network: '<circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="7" r="2.2"/><circle cx="12" cy="17.5" r="2.2"/><path d="m7.7 7.5 3.2 8.2M16.4 8.8 13 16M8.1 6.2l8 .6"/>',
+  folder: '<path d="M4 7a2 2 0 0 1 2-2h3l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/>',
   hex: '<path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z"/>'
 };
 
@@ -100,7 +102,8 @@ export const iconByPath = {
   '/tecnologia-militar': 'rocket', '/taticas-estrategias': 'strategy', '/historia-militar': 'scroll',
   '/armas-por-pais': 'crosshair', '/guerras-conflitos': 'globe', '/batalhas-historicas': 'shield',
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
-  '/enciclopedia-militar': 'book'
+  '/enciclopedia-militar': 'book',
+  '/codigo': 'network', '/projetos': 'folder'
 };
 
 /** Markup do ícone de linha pelo nome (ou hex de fallback). */

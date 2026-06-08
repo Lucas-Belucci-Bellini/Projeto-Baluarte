@@ -1,0 +1,43 @@
+/* ============================================================
+ *  Raio-X do Código — /codigo (auto-análise)
+ * ============================================================ */
+
+.page-codigo { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.cod-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
+@media (max-width: 600px) { .cod-metrics { grid-template-columns: repeat(2, 1fr); } }
+.cod-metric {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); text-align: center;
+}
+.cod-metric__v { font-size: var(--font-size-xl); color: var(--color-cyan); font-weight: 700; }
+.cod-metric__l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.cod-legend { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+.cod-leg { display: flex; align-items: center; gap: 5px; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.cod-leg__dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.cod-graph {
+  position: relative; width: 100%;
+  background: radial-gradient(circle at 50% 40%, var(--color-bg-elevated), var(--color-bg));
+  border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md);
+  overflow: hidden; margin-bottom: var(--space-md);
+}
+.cod-canvas { display: block; width: 100%; height: 520px; cursor: crosshair; }
+.cod-tip {
+  position: absolute; display: none; pointer-events: none;
+  background: var(--color-surface); border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-sm); padding: 4px 8px; font-size: 11px;
+  font-family: var(--font-mono); color: var(--color-text-primary); max-width: 240px; z-index: 2;
+}
+
+.cod-lists { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+@media (max-width: 700px) { .cod-lists { grid-template-columns: 1fr; } }
+.cod-list {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-md); padding: var(--space-md);
+}
+.cod-list__title { font-weight: 600; color: var(--color-text-primary); margin-bottom: var(--space-sm); }
+.cod-list__row { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: var(--font-size-sm); }
+.cod-list__a { color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cod-list__b { flex-shrink: 0; }

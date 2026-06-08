@@ -1,0 +1,11 @@
+{
+  "projetos": [
+    { "nome": "JARVIS — IA real", "desc": "Assistente com Gemini (IA de verdade), Skills auto-criadas e memória entre conversas.", "rota": "/jarvis", "status": "ativo", "data": "2026-06", "tags": ["IA", "hermes"] },
+    { "nome": "Crônicas & Dossiê", "desc": "Saga sincronizada dos Google Docs (12h) + dossiê completo das forças.", "rota": "/biblioteca", "status": "ativo", "data": "2026-06", "tags": ["narrativa", "sync"] },
+    { "nome": "Radar do Câmbio", "desc": "Histórico de Dólar, Euro e Bitcoin com relatórios automáticos a cada 12h.", "rota": "/dolar", "status": "ativo", "data": "2026-06", "tags": ["dados", "cron"] },
+    { "nome": "Motor de Universos", "desc": "21 skins completos (cor/tipografia/atmosfera) por universo + ícones de linha.", "rota": "/perfil", "status": "ativo", "data": "2026-06", "tags": ["design", "temas"] },
+    { "nome": "Enciclopédia Militar", "desc": "Banco de conhecimento militar com 13 categorias (ramos, doutrina, gastos SIPRI).", "rota": "/enciclopedia-militar", "status": "ativo", "data": "2026-06", "tags": ["militar", "dados"] },
+    { "nome": "Arsenal Expandido", "desc": "Banco de 671 armas reais geradas por famílias (gerador extensível).", "rota": "/arsenal-expandido", "status": "ativo", "data": "2026-06", "tags": ["militar", "dados"] },
+    { "nome": "Raio-X do Código", "desc": "Auto-análise: grafo interativo dos arquivos e imports do próprio site.", "rota": "/codigo", "status": "novo", "data": "2026-06", "tags": ["dev", "grafo"] }
+  ]
+}

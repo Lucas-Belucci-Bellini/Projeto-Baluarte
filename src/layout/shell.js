@@ -108,6 +108,8 @@ function pageTitleForRoute(path) {
     '/ia-proprietaria': 'IA Proprietária Mark 11',
     '/perfil': 'Perfil',
     '/enciclopedia-militar': 'Enciclopédia Militar',
+    '/codigo': 'Raio-X do Código',
+    '/projetos': 'Projetos',
     '/sobre': 'Sobre o Projeto'
   };
   return map[path] || 'Mark XIII';
