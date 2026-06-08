@@ -18,6 +18,7 @@ import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { getToolSchemas, runTool } from './jarvis-tools.js';
 import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
+import { addMemory, searchMemories, conceptLabel, codeContext } from './jarvis-brain.js';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
@@ -113,6 +114,8 @@ export function getBaluarteBriefing() {
     'Para o universo Baluarte, baseie-se neste dossiê e no estado do site. Para fatos recentes do mundo real, use a busca na internet quando disponível.',
     '',
     capabilitiesText(),
+    '',
+    codeContext(),
     '',
     '## GRÁFICOS: para MOSTRAR um gráfico ao operador, inclua no fim da resposta um bloco cercado ```chart``` contendo JSON {"type":"bar|line|pie|donut|area|hbar|radar","title":"...","labels":[...],"values":[...]}. A interface desenha a imagem automaticamente — não descreva o JSON, apenas inclua o bloco.'
   ].join('\n');
@@ -210,6 +213,26 @@ export function processLocal(message) {
       text: `Gerando o gráfico com ${chart.data.values.length} pontos…`,
       action: { type: 'chart', payload: chart }
     };
+  }
+
+  /* Memória durável (supermemory): gravar um fato. */
+  const cap = message.match(/^\s*(?:lembre|lembra-se|anote|anota|memorize|memoriza|guarde|guarda|n[ãa]o\s+esque[çc]a)\b\s*(?:-se\s*)?(?:que|de|do|da)?\s*[:,-]?\s*(.+)$/i);
+  if (cap && cap[1].trim().length > 2) {
+    const item = addMemory({ text: cap[1].trim(), source: 'local' });
+    if (item) {
+      const cs = (item.conceptIds || []).map(conceptLabel);
+      return { text: `Memorizado. 🧠${cs.length ? ' Liguei ao Segundo Cérebro: ' + cs.join(', ') + '.' : ''} Veja tudo em /memoria.` };
+    }
+  }
+
+  /* Memória durável: recuperar fatos. */
+  if (/\b(o que (voce|vc) sabe sobre|o que sabe sobre|memorias? sobre|memorias? de|lembra (de|do|da)|voce lembra|o que voce lembra)\b/.test(msg)) {
+    const q = message.replace(/^.*?\b(sobre|de|do|da)\b/i, '').trim() || message;
+    const hits = searchMemories(q, 6);
+    if (hits.length) {
+      return { text: 'Do que eu lembro:\n' + hits.map((m) => `• ${m.text}`).join('\n') };
+    }
+    return { text: 'Ainda não guardei memórias sobre isso. Diga "lembre que ..." para eu memorizar (veja em /memoria).' };
   }
 
   /* Saudações */

@@ -111,6 +111,7 @@ function pageTitleForRoute(path) {
     '/codigo': 'Raio-X do Código',
     '/projetos': 'Projetos',
     '/cerebro': 'Segundo Cérebro',
+    '/memoria': 'Memória do JARVIS',
     '/ocr': 'Leitor OCR',
     '/sobre': 'Sobre o Projeto'
   };

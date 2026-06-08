@@ -10,8 +10,22 @@
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import cerebro from '../data/cerebro.json';
+import { getMemories } from '../utils/jarvis-brain.js';
 
 const TIPOS = cerebro.tipos;
+
+/* Memórias do JARVIS entram no grafo como nós ligados aos seus conceitos. */
+function memoryGraph() {
+  const ids = new Set(cerebro.nodes.map((n) => n.id));
+  const nodes = [], links = [];
+  getMemories().forEach((m, i) => {
+    const id = 'mem-' + (m.id || i);
+    nodes.push({ id, tipo: 'memoria', rota: '/memoria', label: m.text.length > 22 ? m.text.slice(0, 20) + '…' : m.text });
+    const t = (m.conceptIds || []).filter((c) => ids.has(c));
+    (t.length ? t : ['p-cerebro']).forEach((c) => links.push({ source: id, target: c }));
+  });
+  return { nodes, links };
+}
 
 export function cerebroPage() {
   const page = h('div', { className: 'page-cerebro' });
@@ -25,14 +39,14 @@ export function cerebroPage() {
         ' Clique num nó para abrir a página.'))
   );
 
-  /* Métricas */
+  /* Métricas (incluindo as memórias do JARVIS já ligadas ao cérebro) */
+  const mg = memoryGraph();
   const nDom = cerebro.nodes.filter((n) => n.tipo === 'dominio').length;
-  const nProj = cerebro.nodes.filter((n) => n.tipo === 'projeto').length;
   const metrics = h('div', { className: 'cer-metrics' },
-    metric(cerebro.nodes.length, 'nós'),
-    metric(cerebro.links.length, 'conexões'),
+    metric(cerebro.nodes.length + mg.nodes.length, 'nós'),
+    metric(cerebro.links.length + mg.links.length, 'conexões'),
     metric(nDom, 'domínios'),
-    metric(nProj, 'projetos'));
+    metric(mg.nodes.length, 'memórias'));
   page.appendChild(metrics);
 
   /* Legenda */
@@ -59,7 +73,7 @@ export function cerebroPage() {
   );
 
   /* ===== Simulação força-dirigida ===== */
-  requestAnimationFrame(() => initGraph(canvas, tip));
+  requestAnimationFrame(() => initGraph(canvas, tip, mg));
 
   return page;
 }
@@ -70,13 +84,15 @@ function metric(v, l) {
     h('div', { className: 'cer-metric__l' }, l));
 }
 
-function initGraph(canvas, tip) {
+function initGraph(canvas, tip, extra) {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   let W = 0, H = 0;
 
+  const srcNodes = cerebro.nodes.concat((extra && extra.nodes) || []);
+  const srcLinks = cerebro.links.concat((extra && extra.links) || []);
   const idMap = new Map();
-  const nodes = cerebro.nodes.map((n, i) => {
+  const nodes = srcNodes.map((n, i) => {
     const o = {
       ...n,
       r: (TIPOS[n.tipo] || {}).r || 8,
@@ -86,7 +102,7 @@ function initGraph(canvas, tip) {
     idMap.set(n.id, o);
     return o;
   });
-  const links = cerebro.links
+  const links = srcLinks
     .map((l) => ({ s: idMap.get(l.source), t: idMap.get(l.target) }))
     .filter((l) => l.s && l.t);
   links.forEach((l) => { l.s.deg++; l.t.deg++; });

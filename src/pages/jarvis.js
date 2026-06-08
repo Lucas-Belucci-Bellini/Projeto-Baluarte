@@ -18,6 +18,7 @@ import {
 } from '../utils/jarvis-webllm.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { drawChart } from '../utils/chart-engine.js';
+import { memoryContext } from '../utils/jarvis-brain.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import { getStatusText } from '../utils/baluarte-status.js';
 import { humanize } from '../utils/jarvis-style.js';
@@ -393,6 +394,14 @@ async function handleSend() {
           scrollDown();
         }
       } catch { /* memória é best-effort */ }
+    }
+
+    /* Memória durável (supermemory): fatos curados ligados ao Segundo Cérebro. */
+    if (config.mode !== 'local') {
+      try {
+        const durable = memoryContext(text, 5);
+        if (durable) callConfig.systemPrompt += '\n\n' + durable;
+      } catch { /* best-effort */ }
     }
 
     if (config.mode === 'local') {

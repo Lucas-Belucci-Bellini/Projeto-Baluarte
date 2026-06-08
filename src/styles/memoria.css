@@ -1,0 +1,46 @@
+/* ============================================================
+ *  Memória do JARVIS — /memoria (durável, estilo supermemory)
+ * ============================================================ */
+
+.page-memoria { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.mem-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
+.mem-stat {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); text-align: center;
+}
+.mem-stat__v { font-size: var(--font-size-xl); color: var(--color-cyan); font-weight: 700; }
+.mem-stat__l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-secondary); }
+
+.mem-add { display: flex; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+.mem-tools { display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-md); }
+.mem-input {
+  flex: 1; min-width: 0;
+  background: var(--color-bg-elevated); color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--radius-sm);
+  padding: 9px 12px; font-size: var(--font-size-sm);
+}
+.mem-input:focus { outline: none; border-color: var(--color-cyan-edge); }
+
+.mem-list { display: flex; flex-direction: column; gap: 8px; }
+.mem-card {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 3px solid var(--color-cyan-edge); border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+}
+.mem-card__text { color: var(--color-text-primary); line-height: 1.5; margin-bottom: 6px; }
+.mem-card__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mem-card__chips { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+.mem-chip {
+  font-size: 10px; padding: 1px 8px; border-radius: var(--radius-pill);
+  background: var(--color-cyan-soft); color: var(--color-cyan); cursor: pointer;
+}
+.mem-chip:hover { background: var(--color-cyan); color: #001016; }
+.mem-card__date { font-size: 11px; }
+.mem-card__del {
+  background: transparent; border: none; color: var(--color-text-secondary);
+  cursor: pointer; font-size: 13px; padding: 2px 6px; border-radius: var(--radius-sm);
+}
+.mem-card__del:hover { color: #ff5b7a; background: rgba(255, 91, 122, 0.1); }
+
+.mem-empty { padding: var(--space-lg); text-align: center; border: 1px dashed rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); }
