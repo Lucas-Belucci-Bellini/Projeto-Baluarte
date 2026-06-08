@@ -1,10 +1,11 @@
 /**
- * /codigo — Raio-X do Código (auto-análise, estilo GitNexus).
+ * /codigo — Raio-X do Código (auto-análise, estilo GitNexus) — agora em 3D.
  * Lê src/data/codemap.json (gerado por scripts/gen-codemap.mjs) e desenha um
- * grafo force-directed dos arquivos e seus imports, + métricas do próprio site.
+ * grafo force-directed 3D dos arquivos e seus imports, projetado em canvas com
+ * rotação automática (arraste para girar), + métricas do próprio site.
  */
 
-import { h, empty } from '../utils/helpers.js';
+import { h } from '../utils/helpers.js';
 import codemap from '../data/codemap.json';
 
 /* cor por pasta de topo */
@@ -31,7 +32,8 @@ export function codigoPage() {
       h('h1', { className: 'page-header__title' }, '🔬 Raio-X do Código'),
       h('p', { className: 'page-header__description' },
         'O site analisa o ', h('span', { className: 'u-text-cyan' }, 'próprio código'),
-        ': cada ponto é um arquivo, cada linha é um import. Passe o mouse para destacar as conexões.'))
+        ' em 3D: cada esfera é um arquivo, cada linha é um import. ',
+        'Arraste para girar · passe o mouse para destacar as conexões.'))
   );
 
   const m = codemap.meta;
@@ -63,18 +65,35 @@ export function codigoPage() {
   lists.appendChild(listCard('▦ Maiores arquivos', codemap.topLoc.map((x) => [x.label, x.loc + ' ln'])));
   page.appendChild(lists);
 
-  /* ===== Força + render ===== */
-  const N = codemap.nodes.map((n) => ({ ...n, x: 0, y: 0, vx: 0, vy: 0,
-    r: Math.min(11, 3 + Math.sqrt(n.importedBy) * 1.6), color: colorOf(n.dir) }));
+  /* ===== Grafo 3D: força + projeção em perspectiva ===== */
+  const N = codemap.nodes.map((n) => ({
+    ...n, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0,
+    r: Math.min(12, 3 + Math.sqrt(n.importedBy) * 1.7), color: colorOf(n.dir),
+    sx: 0, sy: 0, sc: 1, zr: 0
+  }));
   const idx = new Map(N.map((n, i) => [n.id, i]));
   const L = codemap.links.map((l) => ({ s: idx.get(l.source), t: idx.get(l.target) }))
     .filter((l) => l.s != null && l.t != null);
   const adj = N.map(() => new Set());
   for (const l of L) { adj[l.s].add(l.t); adj[l.t].add(l.s); }
 
+  /* posições iniciais: esfera de Fibonacci (espalha bem em 3D) */
+  const R0 = 150, GA = Math.PI * (1 + Math.sqrt(5));
+  N.forEach((n, i) => {
+    const phi = Math.acos(1 - 2 * (i + 0.5) / N.length);
+    const th = GA * (i + 0.5);
+    n.x = R0 * Math.sin(phi) * Math.cos(th);
+    n.y = R0 * Math.sin(phi) * Math.sin(th);
+    n.z = R0 * Math.cos(phi);
+  });
+
   let W = 800, Hc = 520, dpr = Math.min(2, window.devicePixelRatio || 1);
   const ctx = canvas.getContext('2d');
-  let hover = -1;
+  const FOCAL = 620;
+  let hover = -1, alpha = 1, raf = 0;
+  let yaw = 0.6, pitch = -0.35, autoSpin = true;
+  let dragging = false, lastX = 0, lastY = 0, moved = false;
+  const order = N.map((_, i) => i);
 
   function size() {
     W = wrap.clientWidth || 800;
@@ -82,78 +101,113 @@ export function codigoPage() {
     canvas.style.width = W + 'px'; canvas.style.height = Hc + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  /* posições iniciais: anel por grupo */
-  const groups = [...new Set(N.map((n) => GROUP(n.dir)))];
-  N.forEach((n) => {
-    const gi = groups.indexOf(GROUP(n.dir));
-    const a = (gi / groups.length) * Math.PI * 2 + Math.random();
-    n.x = 400 + Math.cos(a) * 150 + (Math.random() - 0.5) * 80;
-    n.y = 260 + Math.sin(a) * 150 + (Math.random() - 0.5) * 80;
-  });
 
-  let alpha = 1, raf = 0;
-  function step() {
-    const cx = W / 2, cy = Hc / 2;
-    /* repulsão O(n²) */
+  function forces() {
+    /* repulsão 3D O(n²) */
     for (let i = 0; i < N.length; i++) {
+      const a = N[i];
       for (let j = i + 1; j < N.length; j++) {
-        let dx = N[i].x - N[j].x, dy = N[i].y - N[j].y;
-        let d2 = dx * dx + dy * dy || 0.01;
-        const f = 240 / d2;
-        const d = Math.sqrt(d2);
-        const ux = dx / d, uy = dy / d;
-        N[i].vx += ux * f; N[i].vy += uy * f;
-        N[j].vx -= ux * f; N[j].vy -= uy * f;
+        const b = N[j];
+        let dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+        let d2 = dx * dx + dy * dy + dz * dz || 0.01;
+        const d = Math.sqrt(d2), f = 720 / d2;
+        const ux = dx / d, uy = dy / d, uz = dz / d;
+        a.vx += ux * f; a.vy += uy * f; a.vz += uz * f;
+        b.vx -= ux * f; b.vy -= uy * f; b.vz -= uz * f;
       }
     }
     /* atração das arestas */
     for (const l of L) {
       const a = N[l.s], b = N[l.t];
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const f = 0.012;
-      a.vx += dx * f; a.vy += dy * f;
-      b.vx -= dx * f; b.vy -= dy * f;
+      const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z, f = 0.013;
+      a.vx += dx * f; a.vy += dy * f; a.vz += dz * f;
+      b.vx -= dx * f; b.vy -= dy * f; b.vz -= dz * f;
     }
-    /* gravidade ao centro + integra */
+    /* gravidade à origem + integra */
     for (const n of N) {
-      n.vx += (cx - n.x) * 0.006; n.vy += (cy - n.y) * 0.006;
-      n.vx *= 0.86; n.vy *= 0.86;
-      n.x += n.vx * alpha; n.y += n.vy * alpha;
+      n.vx += -n.x * 0.008; n.vy += -n.y * 0.008; n.vz += -n.z * 0.008;
+      n.vx *= 0.85; n.vy *= 0.85; n.vz *= 0.85;
+      n.x += n.vx * alpha; n.y += n.vy * alpha; n.z += n.vz * alpha;
     }
-    alpha *= 0.985;
-    draw();
-    if (alpha > 0.02) raf = requestAnimationFrame(step);
+    alpha *= 0.99;
+  }
+
+  function project() {
+    const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+    const cosX = Math.cos(pitch), sinX = Math.sin(pitch);
+    const cx = W / 2, cy = Hc / 2;
+    for (const n of N) {
+      /* rotação Y depois X */
+      const x1 = n.x * cosY - n.z * sinY;
+      const z1 = n.x * sinY + n.z * cosY;
+      const y2 = n.y * cosX - z1 * sinX;
+      const z2 = n.y * sinX + z1 * cosX;
+      const sc = FOCAL / (FOCAL + z2);
+      n.sx = cx + x1 * sc; n.sy = cy + y2 * sc; n.sc = sc; n.zr = z2;
+    }
+    order.sort((a, b) => N[b].zr - N[a].zr); /* longe primeiro */
   }
 
   function draw() {
     ctx.clearRect(0, 0, W, Hc);
     /* arestas */
-    ctx.lineWidth = 0.5;
     for (const l of L) {
+      const a = N[l.s], b = N[l.t];
       const on = hover === l.s || hover === l.t;
-      ctx.strokeStyle = on ? 'rgba(0,240,255,0.55)' : 'rgba(255,255,255,0.06)';
-      ctx.beginPath(); ctx.moveTo(N[l.s].x, N[l.s].y); ctx.lineTo(N[l.t].x, N[l.t].y); ctx.stroke();
+      const front = Math.max(0, Math.min(1, ((a.sc + b.sc) / 2 - 0.6) / 0.7));
+      ctx.lineWidth = on ? 1.3 : 0.5;
+      ctx.strokeStyle = on ? 'rgba(0,240,255,0.6)' : `rgba(150,170,200,${0.04 + front * 0.10})`;
+      ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke();
     }
-    /* nós */
-    for (let i = 0; i < N.length; i++) {
+    /* nós (já ordenados longe→perto) */
+    for (const i of order) {
       const n = N[i];
       const dim = hover >= 0 && hover !== i && !adj[hover].has(i);
-      ctx.globalAlpha = dim ? 0.2 : 1;
-      ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      const depth = Math.max(0.35, Math.min(1, (n.sc - 0.55) / 0.7));
+      ctx.globalAlpha = dim ? 0.12 : depth;
+      ctx.beginPath(); ctx.arc(n.sx, n.sy, Math.max(1.5, n.r * n.sc), 0, Math.PI * 2);
       ctx.fillStyle = n.color; ctx.fill();
-      if (hover === i) { ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke(); }
+      if (hover === i) { ctx.globalAlpha = 1; ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke(); }
     }
     ctx.globalAlpha = 1;
   }
 
+  function frame() {
+    if (alpha > 0.02) forces();
+    if (autoSpin && !dragging) yaw += 0.0024;
+    project();
+    draw();
+    raf = requestAnimationFrame(frame);
+  }
+
+  /* ===== interação ===== */
+  function pick(mx, my) {
+    let best = -1, bd = 16 * 16;
+    /* de perto para longe (fim do order) para priorizar nós da frente */
+    for (let k = order.length - 1; k >= 0; k--) {
+      const i = order[k], n = N[i];
+      const dx = n.sx - mx, dy = n.sy - my, d = dx * dx + dy * dy;
+      const rr = Math.max(7, n.r * n.sc + 5);
+      if (d < rr * rr && d < bd) { bd = d; best = i; break; }
+    }
+    return best;
+  }
+  canvas.addEventListener('mousedown', (e) => {
+    dragging = true; moved = false;
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  window.addEventListener('mouseup', () => { dragging = false; });
   canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    let best = -1, bd = 14 * 14;
-    for (let i = 0; i < N.length; i++) {
-      const dx = N[i].x - mx, dy = N[i].y - my, d = dx * dx + dy * dy;
-      if (d < bd) { bd = d; best = i; }
+    if (dragging) {
+      moved = true;
+      yaw += (e.clientX - lastX) * 0.008;
+      pitch += (e.clientY - lastY) * 0.008;
+      pitch = Math.max(-1.4, Math.min(1.4, pitch));
+      lastX = e.clientX; lastY = e.clientY;
     }
+    const best = pick(mx, my);
     if (best !== hover) {
       hover = best;
       if (best >= 0) {
@@ -162,14 +216,24 @@ export function codigoPage() {
         tip.style.left = Math.min(mx + 12, W - 220) + 'px'; tip.style.top = (my + 12) + 'px';
         tip.style.display = 'block';
       } else tip.style.display = 'none';
-      if (alpha <= 0.02) draw();
     }
   });
-  canvas.addEventListener('mouseleave', () => { hover = -1; tip.style.display = 'none'; if (alpha <= 0.02) draw(); });
+  canvas.addEventListener('mouseleave', () => { hover = -1; tip.style.display = 'none'; });
 
   /* inicia após o layout existir */
-  setTimeout(() => { size(); step(); }, 60);
-  window.addEventListener('resize', () => { size(); if (alpha <= 0.02) draw(); });
+  setTimeout(() => { size(); frame(); }, 60);
+  const onResize = () => size();
+  window.addEventListener('resize', onResize);
+
+  /* limpeza ao sair do DOM (cancela rAF e listeners) */
+  const obs = new MutationObserver(() => {
+    if (!document.body.contains(page)) {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', onResize);
+      obs.disconnect();
+    }
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
 
   return page;
 }
