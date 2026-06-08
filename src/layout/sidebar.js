@@ -10,6 +10,7 @@ import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
 import { VERSION, CODENAME } from '../data/version.js';
 import { iconForPath, iconByPath } from '../utils/icons.js';
+import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
 
 /* ===== Grupos de navegação do menu lateral — todas as rotas ===== */
 export const NAV_GROUPS = [
@@ -198,6 +199,21 @@ export function renderSidebar() {
   const collapsed = storage.get('ui:sidebarCollapsed', false);
   appState.set({ sidebarCollapsed: collapsed });
 
+  /* Botão "Instalar app" (PWA) — só aparece quando o navegador permite. */
+  const installBtn = h('button', {
+    className: 'sidebar__install',
+    title: 'Instalar o Baluarte na tela inicial',
+    style: {
+      display: canInstall() ? 'block' : 'none',
+      width: '100%', textAlign: 'left', cursor: 'pointer', font: 'inherit',
+      margin: '0 0 8px', padding: '7px 10px', borderRadius: '7px',
+      color: '#00f0ff', border: '1px solid rgba(0,240,255,0.35)',
+      background: 'linear-gradient(90deg, rgba(0,240,255,0.16), rgba(0,240,255,0.02))'
+    },
+    onclick: () => promptInstall()
+  }, '⬇ Instalar app');
+  onInstallChange((can) => { installBtn.style.display = can ? 'block' : 'none'; });
+
   const sidebar = h(
     'aside',
     {
@@ -228,6 +244,7 @@ export function renderSidebar() {
     h(
       'div',
       { className: 'sidebar__foot' },
+      installBtn,
       h('a', {
         className: 'sidebar__ext', href: 'https://www.youtube.com/@Spartan_Gamer_BR',
         target: '_blank', rel: 'noopener', title: 'Canal no YouTube — Spartan Gamer BR'
