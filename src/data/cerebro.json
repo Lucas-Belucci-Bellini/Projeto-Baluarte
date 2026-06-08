@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "titulo": "Segundo Cérebro do Baluarte",
+    "desc": "Mapa de conhecimento que liga domínios, projetos, conceitos e fontes do Mark XIII."
+  },
+  "tipos": {
+    "dominio":  { "label": "Domínio",  "cor": "#00f0ff", "r": 16 },
+    "projeto":  { "label": "Projeto",  "cor": "#ff3b8d", "r": 11 },
+    "conceito": { "label": "Conceito", "cor": "#ffaa00", "r": 8 },
+    "fonte":    { "label": "Fonte",    "cor": "#00ff88", "r": 8 }
+  },
+  "nodes": [
+    { "id": "d-ia",         "label": "IA & JARVIS",   "tipo": "dominio" },
+    { "id": "d-narrativa",  "label": "Narrativa",     "tipo": "dominio" },
+    { "id": "d-militar",    "label": "Militar",       "tipo": "dominio" },
+    { "id": "d-dev",        "label": "Dev & Código",  "tipo": "dominio" },
+    { "id": "d-dados",      "label": "Dados & Cron",  "tipo": "dominio" },
+    { "id": "d-midia",      "label": "Mídia",         "tipo": "dominio" },
+
+    { "id": "p-jarvis",      "label": "JARVIS",             "tipo": "projeto", "rota": "/jarvis" },
+    { "id": "p-cronicas",    "label": "Crônicas & Dossiê",  "tipo": "projeto", "rota": "/biblioteca" },
+    { "id": "p-cambio",      "label": "Radar do Câmbio",    "tipo": "projeto", "rota": "/dolar" },
+    { "id": "p-universos",   "label": "Motor de Universos", "tipo": "projeto", "rota": "/perfil" },
+    { "id": "p-enciclopedia","label": "Enciclopédia Militar","tipo": "projeto","rota": "/enciclopedia-militar" },
+    { "id": "p-arsenal",     "label": "Arsenal Expandido",  "tipo": "projeto", "rota": "/arsenal-expandido" },
+    { "id": "p-codigo",      "label": "Raio-X do Código",   "tipo": "projeto", "rota": "/codigo" },
+    { "id": "p-projetos",    "label": "Aba Projetos",       "tipo": "projeto", "rota": "/projetos" },
+    { "id": "p-cerebro",     "label": "Segundo Cérebro",    "tipo": "projeto", "rota": "/cerebro" },
+
+    { "id": "c-gemini",   "label": "Gemini 2.5",            "tipo": "conceito" },
+    { "id": "c-skills",   "label": "Skills auto-criadas",   "tipo": "conceito" },
+    { "id": "c-memoria",  "label": "Memória entre conversas","tipo": "conceito" },
+    { "id": "c-universos","label": "21 Universos",          "tipo": "conceito" },
+    { "id": "c-icones",   "label": "Ícones de linha",       "tipo": "conceito" },
+    { "id": "c-equipes",  "label": "Dossiê das Equipes",    "tipo": "conceito" },
+    { "id": "c-grafo",    "label": "Grafo força-dirigida",  "tipo": "conceito" },
+    { "id": "c-codemap",  "label": "Codemap (158 arquivos)","tipo": "conceito" },
+    { "id": "c-pwa",      "label": "PWA / Sistema Móvel",   "tipo": "conceito" },
+
+    { "id": "f-docs",       "label": "Google Docs",         "tipo": "fonte" },
+    { "id": "f-actions",    "label": "GitHub Actions (12h)","tipo": "fonte" },
+    { "id": "f-cambio-api", "label": "Frankfurter + CoinGecko","tipo": "fonte" },
+    { "id": "f-sipri",      "label": "SIPRI / dados públicos","tipo": "fonte" },
+    { "id": "f-github",     "label": "GitHub",              "tipo": "fonte" }
+  ],
+  "links": [
+    { "source": "p-jarvis",       "target": "d-ia" },
+    { "source": "p-cronicas",     "target": "d-narrativa" },
+    { "source": "p-cambio",       "target": "d-dados" },
+    { "source": "p-universos",    "target": "d-narrativa" },
+    { "source": "p-universos",    "target": "d-dev" },
+    { "source": "p-enciclopedia", "target": "d-militar" },
+    { "source": "p-arsenal",      "target": "d-militar" },
+    { "source": "p-codigo",       "target": "d-dev" },
+    { "source": "p-projetos",     "target": "d-dev" },
+    { "source": "p-cerebro",      "target": "d-dev" },
+    { "source": "p-cerebro",      "target": "d-ia" },
+
+    { "source": "c-gemini",   "target": "p-jarvis" },
+    { "source": "c-gemini",   "target": "d-ia" },
+    { "source": "c-skills",   "target": "p-jarvis" },
+    { "source": "c-memoria",  "target": "p-jarvis" },
+    { "source": "c-memoria",  "target": "p-cerebro" },
+    { "source": "c-universos","target": "p-universos" },
+    { "source": "c-icones",   "target": "p-universos" },
+    { "source": "c-icones",   "target": "d-dev" },
+    { "source": "c-equipes",  "target": "p-cronicas" },
+    { "source": "c-equipes",  "target": "d-narrativa" },
+    { "source": "c-grafo",    "target": "p-codigo" },
+    { "source": "c-grafo",    "target": "p-cerebro" },
+    { "source": "c-codemap",  "target": "p-codigo" },
+    { "source": "c-pwa",      "target": "d-dev" },
+    { "source": "c-pwa",      "target": "p-cerebro" },
+
+    { "source": "f-docs",       "target": "p-cronicas" },
+    { "source": "f-docs",       "target": "c-equipes" },
+    { "source": "f-actions",    "target": "p-cambio" },
+    { "source": "f-actions",    "target": "p-cronicas" },
+    { "source": "f-actions",    "target": "d-dados" },
+    { "source": "f-cambio-api", "target": "p-cambio" },
+    { "source": "f-sipri",      "target": "p-enciclopedia" },
+    { "source": "f-github",     "target": "p-codigo" },
+    { "source": "f-github",     "target": "p-projetos" },
+    { "source": "f-github",     "target": "f-actions" },
+
+    { "source": "d-ia",        "target": "d-dev" },
+    { "source": "d-narrativa", "target": "d-militar" },
+    { "source": "d-narrativa", "target": "d-ia" },
+    { "source": "d-dados",     "target": "d-dev" },
+    { "source": "d-midia",     "target": "d-narrativa" }
+  ]
+}

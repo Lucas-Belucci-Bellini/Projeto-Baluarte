@@ -111,6 +111,7 @@ router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia
  * ============================================================== */
 router.register('/codigo', lazy(() => import('./pages/codigo.js'), 'codigoPage'));
 router.register('/projetos', lazy(() => import('./pages/projetos.js'), 'projetosPage'));
+router.register('/cerebro', lazy(() => import('./pages/cerebro.js'), 'cerebroPage'));
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.

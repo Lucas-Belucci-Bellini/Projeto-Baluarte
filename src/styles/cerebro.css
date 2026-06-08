@@ -1,0 +1,33 @@
+/* ============================================================
+ *  Segundo Cérebro — /cerebro (knowledge graph)
+ * ============================================================ */
+
+.page-cerebro { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.cer-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
+@media (max-width: 600px) { .cer-metrics { grid-template-columns: repeat(2, 1fr); } }
+.cer-metric {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); text-align: center;
+}
+.cer-metric__v { font-size: var(--font-size-xl); color: var(--color-cyan); font-weight: 700; }
+.cer-metric__l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.cer-legend { display: flex; flex-wrap: wrap; gap: var(--space-md); margin-bottom: var(--space-sm); }
+.cer-leg { display: flex; align-items: center; gap: 6px; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.cer-leg__dot { width: 11px; height: 11px; border-radius: 50%; }
+
+.cer-graph {
+  position: relative; width: 100%;
+  background: radial-gradient(circle at 50% 42%, var(--color-bg-elevated), var(--color-bg));
+  border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.cer-canvas { display: block; width: 100%; height: 560px; cursor: crosshair; touch-action: none; }
+@media (max-width: 600px) { .cer-canvas { height: 440px; } }
+.cer-tip {
+  position: absolute; display: none; pointer-events: none;
+  background: var(--color-surface); border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-sm); padding: 5px 9px; font-size: 11px;
+  line-height: 1.5; color: var(--color-text-primary); max-width: 200px; z-index: 2;
+}

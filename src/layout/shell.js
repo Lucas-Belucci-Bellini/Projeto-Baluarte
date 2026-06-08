@@ -110,6 +110,7 @@ function pageTitleForRoute(path) {
     '/enciclopedia-militar': 'Enciclopédia Militar',
     '/codigo': 'Raio-X do Código',
     '/projetos': 'Projetos',
+    '/cerebro': 'Segundo Cérebro',
     '/sobre': 'Sobre o Projeto'
   };
   return map[path] || 'Mark XIII';
