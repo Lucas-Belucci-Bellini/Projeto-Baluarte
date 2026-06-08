@@ -17,6 +17,7 @@ import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS, preloadWebLLM, getLoadedModel
 } from '../utils/jarvis-webllm.js';
 import { highlight } from '../utils/syntax-highlight.js';
+import { drawChart } from '../utils/chart-engine.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import { getStatusText } from '../utils/baluarte-status.js';
 import { humanize } from '../utils/jarvis-style.js';
@@ -134,7 +135,7 @@ function renderMessages() {
     );
     return;
   }
-  messages.forEach((m) => renderBubble(m.role, m.text));
+  messages.forEach((m) => (m.role === 'jarvis' ? emitJarvis(m.text) : renderBubble(m.role, m.text)));
   scrollDown();
 }
 
@@ -248,6 +249,53 @@ function renderBubble(role, text) {
   );
 }
 
+/* Desenha um gráfico como "imagem" dentro de uma bolha do JARVIS (issue #175). */
+function renderChartBubble(payload) {
+  if (!messagesEl || !payload || !payload.data) return;
+  const canvas = h('canvas', { style: { width: '100%', height: '240px', display: 'block' } });
+  messagesEl.appendChild(
+    h('div', { className: 'jarvis-msg jarvis-msg--ai' },
+      h('div', { className: 'jarvis-msg__avatar' }, '◉'),
+      h('div', { className: 'jarvis-msg__body' },
+        h('div', { className: 'jarvis-msg__role' }, 'J.A.R.V.I.S.'),
+        h('div', {
+          style: { background: 'var(--color-bg)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-sm)', padding: '8px', marginTop: '4px' }
+        }, canvas)))
+  );
+  requestAnimationFrame(() => {
+    try { drawChart(canvas, payload.type || 'bar', payload.data, { title: payload.title || '' }); }
+    catch (e) { console.warn('[jarvis] chart:', e); }
+  });
+}
+
+/* Extrai blocos ```chart``` (JSON) do texto da IA → desenha imagem; devolve o texto limpo. */
+function extractCharts(text) {
+  const charts = [];
+  const clean = String(text || '').replace(/```chart\s*([\s\S]*?)```/gi, (whole, body) => {
+    try {
+      const spec = JSON.parse(body.trim());
+      const values = (spec.values || []).map(Number).filter((n) => !Number.isNaN(n));
+      if (values.length) {
+        charts.push({
+          type: spec.type || 'bar', title: spec.title || '',
+          data: { labels: spec.labels && spec.labels.length ? spec.labels : values.map((_, i) => '#' + (i + 1)), values }
+        });
+        return '';
+      }
+    } catch { /* não é JSON válido — mantém o bloco no texto */ }
+    return whole;
+  }).trim();
+  return { clean, charts };
+}
+
+/* Renderiza uma resposta do JARVIS: texto (limpo) + eventuais gráficos. */
+function emitJarvis(text) {
+  const { clean, charts } = extractCharts(text);
+  if (clean) renderBubble('jarvis', clean);
+  else if (!charts.length) renderBubble('jarvis', text);
+  charts.forEach(renderChartBubble);
+}
+
 /* Tool-call expansível (padrão do hermes-web-ui): resumo + input/result. */
 function renderToolCall(toolName, input, result) {
   const ok = !!(result && result.ok);
@@ -356,25 +404,28 @@ async function handleSend() {
       renderBubble('jarvis', result.text);
       if (result.action?.type === 'navigate') {
         setTimeout(() => router.navigate(result.action.payload), 600);
+      } else if (result.action?.type === 'chart') {
+        renderChartBubble(result.action.payload);
+        scrollDown();
       }
     } else if (config.mode === 'claude') {
       const reply = await processClaude(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
-      renderBubble('jarvis', reply);
+      emitJarvis(reply);
     } else if (config.mode === 'ollama') {
       const reply = await processOllama(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
-      renderBubble('jarvis', reply);
+      emitJarvis(reply);
     } else if (config.mode === 'servidor') {
       const reply = await processServer(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
-      renderBubble('jarvis', reply);
+      emitJarvis(reply);
     } else if (config.mode === 'webllm') {
       /* Streaming: bolha que cresce a cada token; durante o download do
        * modelo, a bolha de "digitando" mostra o progresso. */

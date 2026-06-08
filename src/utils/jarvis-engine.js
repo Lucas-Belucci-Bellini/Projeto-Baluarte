@@ -17,6 +17,7 @@ import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { getToolSchemas, runTool } from './jarvis-tools.js';
+import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
@@ -109,7 +110,11 @@ export function getBaluarteBriefing() {
     `Plataforma v${VERSION}: ${TOTAL} itens no Arsenal · ${TOTAL_EQUIPES} equipes de elite · ${ARCS_TOTAL} arcos nas Crônicas · ${UNIVERSOS.length} universos.`,
     `Crônicas "Onde os Deuses Sangram" — universos: ${universos}.`,
     `Equipes (alfabeto OTAN): ${equipes}.`,
-    'Para o universo Baluarte, baseie-se neste dossiê e no estado do site. Para fatos recentes do mundo real, use a busca na internet quando disponível.'
+    'Para o universo Baluarte, baseie-se neste dossiê e no estado do site. Para fatos recentes do mundo real, use a busca na internet quando disponível.',
+    '',
+    capabilitiesText(),
+    '',
+    '## GRÁFICOS: para MOSTRAR um gráfico ao operador, inclua no fim da resposta um bloco cercado ```chart``` contendo JSON {"type":"bar|line|pie|donut|area|hbar|radar","title":"...","labels":[...],"values":[...]}. A interface desenha a imagem automaticamente — não descreva o JSON, apenas inclua o bloco.'
   ].join('\n');
 }
 
@@ -153,11 +158,59 @@ function normalize(s) {
 }
 
 /**
+ * Reconhece um pedido de gráfico no modo local e extrai tipo + dados.
+ * Ex.: "gráfico de barras: jan 10, fev 20, mar 30" · "gráfico de 5, 8, 13".
+ * @returns {{type:string,title:string,data:{labels:string[],values:number[]}}|null}
+ */
+function parseChartRequest(message) {
+  const m = normalize(message);
+  if (!/\b(grafico|chart|plota|plote|plotar|diagrama)\b/.test(m)) return null;
+  let type = 'bar';
+  if (/\b(linha|line|tendencia)\b/.test(m)) type = 'line';
+  else if (/\b(pizza|torta|pie)\b/.test(m)) type = 'pie';
+  else if (/\b(rosca|donut|doughnut)\b/.test(m)) type = 'donut';
+  else if (/\barea\b/.test(m)) type = 'area';
+  else if (/\bradar\b/.test(m)) type = 'radar';
+  else if (/\b(horizontal|hbar)\b/.test(m)) type = 'hbar';
+
+  let body = message.replace(/^[\s\S]*?\b(gr[áa]ficos?|charts?|diagramas?|plot\w*|plote|plota)\b/i, '');
+  body = body.replace(/\b(de|da|do|com|os|as|um|uma|por favor|favor|me|faz|faça|faca|gera|gere|cria|crie)\b/gi, ' ');
+  body = body.replace(/\b(barras?|colunas?|linhas?|pizza|torta|area|setores?|rosca|donut|radar|horizontal)\b/gi, ' ');
+  body = body.replace(/^[\s:,;.\-]+/, '');
+
+  const labels = [], values = [];
+  for (const tok of body.split(/[,;\n]+/)) {
+    const t = tok.trim();
+    if (!t) continue;
+    const pair = t.match(/^(.*?[a-zà-úA-ZÀ-Ú].*?)[\s:=]+(-?\d+(?:[.,]\d+)?)\s*%?$/);
+    if (pair && pair[1].trim()) {
+      values.push(parseFloat(pair[2].replace(',', '.')));
+      labels.push(pair[1].replace(/[:=]+/g, ' ').trim());
+    } else {
+      const nums = t.match(/-?\d+(?:[.,]\d+)?/g);
+      if (nums) for (const n of nums) { values.push(parseFloat(n.replace(',', '.'))); labels.push('#' + values.length); }
+    }
+  }
+  if (values.length < 2) return null;
+  const hasLabels = labels.some((l) => !/^#\d+$/.test(l));
+  return { type, title: 'Gráfico', data: { labels: hasLabels ? labels : values.map((_, i) => '#' + (i + 1)), values } };
+}
+
+/**
  * Processa uma mensagem no modo local.
  * @returns {{ text: string, action?: {type, payload} }}
  */
 export function processLocal(message) {
   const msg = normalize(message);
+
+  /* Geração de gráfico (issue #175): JARVIS desenha e mostra a imagem. */
+  const chart = parseChartRequest(message);
+  if (chart) {
+    return {
+      text: `Gerando o gráfico com ${chart.data.values.length} pontos…`,
+      action: { type: 'chart', payload: chart }
+    };
+  }
 
   /* Saudações */
   if (/\b(oi|ola|opa|eai|e ai|bom dia|boa tarde|boa noite)\b/.test(msg)) {
@@ -199,7 +252,15 @@ export function processLocal(message) {
         };
       }
     }
-    return { text: 'Não identifiquei o destino. Tente: "abra o editor", "vai pro arsenal", "mostra as equipes".' };
+    /* Fallback: reconhece QUALQUER página do site (auto-atualizado pelo menu). */
+    const cap = findCapability(message);
+    if (cap) {
+      return {
+        text: `Navegando para ${cap.label}…`,
+        action: { type: 'navigate', payload: cap.path }
+      };
+    }
+    return { text: 'Não identifiquei o destino. Tente: "abra o editor", "vai pro arsenal", "mostra a enciclopédia militar".' };
   }
 
   /* Consultas — equipes */
