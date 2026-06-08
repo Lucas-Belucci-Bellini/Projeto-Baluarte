@@ -7,6 +7,7 @@
     { "nome": "Enciclopédia Militar", "desc": "Banco de conhecimento militar com 13 categorias (ramos, doutrina, gastos SIPRI).", "rota": "/enciclopedia-militar", "status": "ativo", "data": "2026-06", "tags": ["militar", "dados"] },
     { "nome": "Arsenal Expandido", "desc": "Banco de 671 armas reais geradas por famílias (gerador extensível).", "rota": "/arsenal-expandido", "status": "ativo", "data": "2026-06", "tags": ["militar", "dados"] },
     { "nome": "Raio-X do Código", "desc": "Auto-análise: grafo interativo dos arquivos e imports do próprio site.", "rota": "/codigo", "status": "novo", "data": "2026-06", "tags": ["dev", "grafo"] },
-    { "nome": "Segundo Cérebro", "desc": "Knowledge graph que liga domínios, projetos, conceitos e fontes do Baluarte.", "rota": "/cerebro", "status": "novo", "data": "2026-06", "tags": ["IA", "grafo"] }
+    { "nome": "Segundo Cérebro", "desc": "Knowledge graph que liga domínios, projetos, conceitos e fontes do Baluarte.", "rota": "/cerebro", "status": "novo", "data": "2026-06", "tags": ["IA", "grafo"] },
+    { "nome": "Leitor OCR", "desc": "Extrai texto de imagens 100% no navegador (Tesseract.js): upload, colar, arrastar ou câmera.", "rota": "/ocr", "status": "novo", "data": "2026-06", "tags": ["visão", "IA"] }
   ]
 }

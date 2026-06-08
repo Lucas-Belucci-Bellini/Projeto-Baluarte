@@ -111,6 +111,7 @@ function pageTitleForRoute(path) {
     '/codigo': 'Raio-X do Código',
     '/projetos': 'Projetos',
     '/cerebro': 'Segundo Cérebro',
+    '/ocr': 'Leitor OCR',
     '/sobre': 'Sobre o Projeto'
   };
   return map[path] || 'Mark XIII';

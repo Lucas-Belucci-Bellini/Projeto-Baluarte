@@ -1,0 +1,46 @@
+/* ============================================================
+ *  Leitor OCR — /ocr (Tesseract.js no navegador)
+ * ============================================================ */
+
+.page-ocr { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.ocr-controls { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-md); }
+.ocr-select {
+  background: var(--color-bg-elevated); color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--radius-sm);
+  padding: 7px 10px; font-size: var(--font-size-sm);
+}
+
+.ocr-drop {
+  position: relative; width: 100%; min-height: 280px;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 40%, var(--color-bg-elevated), var(--color-bg));
+  border: 1.5px dashed rgba(255, 255, 255, 0.18); border-radius: var(--radius-md);
+  overflow: hidden; cursor: pointer; margin-bottom: var(--space-md); transition: border-color 0.15s, background 0.15s;
+}
+.ocr-drop.is-over { border-color: var(--color-cyan); background: var(--color-cyan-soft); }
+.ocr-drop__hint { text-align: center; color: var(--color-text-secondary); padding: var(--space-lg); display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.ocr-drop.has-image .ocr-drop__hint,
+.ocr-drop.has-cam .ocr-drop__hint { display: none; }
+
+.ocr-preview, .ocr-video { display: none; max-width: 100%; max-height: 480px; border-radius: var(--radius-sm); }
+.ocr-drop.has-image .ocr-preview { display: block; }
+.ocr-drop.has-cam .ocr-video { display: block; }
+
+.ocr-prog { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.ocr-prog__bar { flex: 1; height: 8px; background: var(--color-bg-elevated); border-radius: var(--radius-pill); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); }
+.ocr-prog__fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta, #ff3b8d)); transition: width 0.2s ease; }
+.ocr-prog__label { font-size: var(--font-size-sm); color: var(--color-text-secondary); min-width: 140px; text-align: right; }
+
+.ocr-result { background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: var(--radius-md); padding: var(--space-md); }
+.ocr-result__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: var(--space-sm); flex-wrap: wrap; }
+.ocr-result__title { font-weight: 600; color: var(--color-text-primary); }
+.ocr-result__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ocr-result__stat { font-size: 11px; }
+.ocr-out {
+  width: 100%; min-height: 200px; resize: vertical;
+  background: var(--color-bg); color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md); font-family: var(--font-mono); font-size: var(--font-size-sm); line-height: 1.6;
+}
+.btn--sm { padding: 4px 10px; font-size: var(--font-size-sm); }

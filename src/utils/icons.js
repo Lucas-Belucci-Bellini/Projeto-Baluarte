@@ -78,6 +78,7 @@ const PATHS = {
   network: '<circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="7" r="2.2"/><circle cx="12" cy="17.5" r="2.2"/><path d="m7.7 7.5 3.2 8.2M16.4 8.8 13 16M8.1 6.2l8 .6"/>',
   brain: '<path d="M12 5.5A2.5 2.5 0 0 0 7.3 6.6 2.6 2.6 0 0 0 5 11a2.5 2.5 0 0 0 1.4 4.4A2.5 2.5 0 0 0 12 18.2Z"/><path d="M12 5.5a2.5 2.5 0 0 1 4.7 1.1A2.6 2.6 0 0 1 19 11a2.5 2.5 0 0 1-1.4 4.4A2.5 2.5 0 0 1 12 18.2"/><path d="M12 5.5v12.7"/>',
   folder: '<path d="M4 7a2 2 0 0 1 2-2h3l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/>',
+  scantext: '<path d="M5 7.5V6a1.5 1.5 0 0 1 1.5-1.5H9M15 4.5h1.5A1.5 1.5 0 0 1 18 6v1.5M18 16.5V18a1.5 1.5 0 0 1-1.5 1.5H15M9 19.5H6.5A1.5 1.5 0 0 1 5 18v-1.5"/><path d="M8 9.5h7M8 12h7M8 14.5h4"/>',
   hex: '<path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z"/>'
 };
 
@@ -104,7 +105,7 @@ export const iconByPath = {
   '/armas-por-pais': 'crosshair', '/guerras-conflitos': 'globe', '/batalhas-historicas': 'shield',
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
   '/enciclopedia-militar': 'book',
-  '/codigo': 'network', '/projetos': 'folder', '/cerebro': 'brain'
+  '/codigo': 'network', '/projetos': 'folder', '/cerebro': 'brain', '/ocr': 'scantext'
 };
 
 /** Markup do ícone de linha pelo nome (ou hex de fallback). */
