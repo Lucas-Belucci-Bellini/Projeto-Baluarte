@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-07
 
+### PR #174 — Arsenal Expandido vira banco de dados (44 → 140 armas)
+- ⚔ **Arsenal Expandido:** dados movidos para `src/data/arsenal-expandido-db.js` (banco extensível), expandidos de ~44 para **140 armas** reais.
+- 🛩 Nova categoria **Drones**. Total: Infantaria 35 · Blindados 19 · Artilharia 13 · Aéreo 23 · Naval 16 · Mísseis 23 · Drones 11.
+- 🛡️ Backup: `backup/2026-06-07-pre-merge-pr174`.
+
 ### PR #173 — +5 universos (21 skins) + Banco de dados e Enciclopédia Militar
 - 🌌 **Universos:** +Monsterverse, Titanfall, God of War, Devil May Cry, Fate (16 → 21 skins).
 - 🎖️ **Seção Militar:** novo banco de dados `src/data/militar-db.js` (13 categorias) + página `/enciclopedia-militar` navegável.
