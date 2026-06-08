@@ -12,6 +12,7 @@ import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { loadConfig, processServer } from '../utils/jarvis-engine.js';
 import { highlight } from '../utils/syntax-highlight.js';
+import { addMemory } from '../utils/jarvis-brain.js';
 
 const LANGS = [
   ['javascript', 'JavaScript', 'js'], ['python', 'Python', 'py'], ['typescript', 'TypeScript', 'ts'],
@@ -87,6 +88,8 @@ export function gerarCodigoPage() {
       const reply = await processServer([{ role: 'user', text: prompt }], { ...loadConfig(), systemPrompt: sys });
       const code = stripFences(reply);
       lastCode = code;
+      /* Conecta ao mesmo sistema de memória do JARVIS (Cérebro + Raio-X). */
+      try { addMemory({ text: `Gerou código (${lang}): ${prompt}`, source: 'gerador' }); } catch { /* best-effort */ }
       empty(codeBlock);
       codeBlock.innerHTML = highlight(code, lang);
       out.style.display = 'block';
