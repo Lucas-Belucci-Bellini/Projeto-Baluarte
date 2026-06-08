@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Auto-captura de conversas → memória viva (PR #179)
+- 🧠 **`jarvis-brain.captureConversation()`**: toda mensagem do chat e do Terminal-IA vira memória durável (`source: conversa`/`terminal`), com filtro leve de ruído.
+- 🔗 **`linkCode()`**: memórias se ligam também a arquivos do `codemap` → no **Raio-X** (`/codigo`) os arquivos comentados ganham halo roxo + contagem no tooltip.
+- 🕸️ **Segundo Cérebro**: memórias entram como nós (cap nas 50 mais recentes para legibilidade).
+- 📓 **`/memoria`**: badge de origem (manual / conversa / terminal) por memória.
+- 🛡️ Backup: `backup/2026-06-08-pre-merge-autocaptura`.
+
 ### Terminal-IA — o "terminal do Claude Code" (PR #178)
 - 💻 **`/terminal-ia`**: REPL com comandos `:go` (navega p/ qualquer página), `:mem` (memória durável), `:code` (codemap/Raio-X), `:chart` (gráficos), `:brain` (Segundo Cérebro), `:help`, `:clear` + histórico (↑↓).
 - 🤖 Texto livre → JARVIS (Gemini) com briefing + memória no contexto; fallback determinístico no modo local. Reaproveita `jarvis-engine`, `jarvis-brain`, `site-capabilities` e `chart-engine` (zero duplicação).
