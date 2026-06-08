@@ -11,7 +11,7 @@ import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { loadConfig, processLocal, processServer, getBaluarteBriefing } from '../utils/jarvis-engine.js';
 import { findCapability } from '../data/site-capabilities.js';
-import { addMemory, searchMemories, getMemories, clearMemories, memoryContext, conceptLabel } from '../utils/jarvis-brain.js';
+import { addMemory, searchMemories, getMemories, clearMemories, memoryContext, conceptLabel, captureConversation } from '../utils/jarvis-brain.js';
 import { drawChart } from '../utils/chart-engine.js';
 import cerebro from '../data/cerebro.json';
 import codemap from '../data/codemap.json';
@@ -91,6 +91,7 @@ export function terminalIaPage() {
 
   /* ===== JARVIS (linguagem natural) ===== */
   async function ask(text) {
+    captureConversation(text); /* auto-memória: tudo que se escreve no terminal vira memória */
     const pending = h('div', { className: 'tia-row tia-dim' }, 'JARVIS pensando…');
     echoEl(pending);
     const cfg = loadConfig();

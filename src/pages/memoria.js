@@ -90,6 +90,7 @@ export function memoriaPage() {
       h('div', { className: 'mem-card__text' }, m.text),
       h('div', { className: 'mem-card__meta' },
         h('div', { className: 'mem-card__chips' }, ...(m.conceptIds || []).map(chip)),
+        h('span', { className: 'mem-card__src' }, m.source || 'jarvis'),
         h('span', { className: 'mem-card__date u-mono u-text-muted' }, fmtDate(m.ts)),
         h('button', {
           className: 'mem-card__del', title: 'Apagar memória',

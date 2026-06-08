@@ -18,7 +18,7 @@ const TIPOS = cerebro.tipos;
 function memoryGraph() {
   const ids = new Set(cerebro.nodes.map((n) => n.id));
   const nodes = [], links = [];
-  getMemories().forEach((m, i) => {
+  getMemories().slice(0, 50).forEach((m, i) => {
     const id = 'mem-' + (m.id || i);
     nodes.push({ id, tipo: 'memoria', rota: '/memoria', label: m.text.length > 22 ? m.text.slice(0, 20) + '…' : m.text });
     const t = (m.conceptIds || []).filter((c) => ids.has(c));

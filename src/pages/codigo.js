@@ -7,6 +7,7 @@
 
 import { h } from '../utils/helpers.js';
 import codemap from '../data/codemap.json';
+import { codeMemoryCounts } from '../utils/jarvis-brain.js';
 
 /* cor por pasta de topo */
 const GROUP = (dir) => (dir || '').split('/')[0] || '(raiz)';
@@ -37,6 +38,7 @@ export function codigoPage() {
   );
 
   const m = codemap.meta;
+  const memCounts = codeMemoryCounts(); /* arquivos comentados pelo JARVIS (auto-memória) */
   page.appendChild(h('div', { className: 'cod-metrics' },
     metric('arquivos', m.files),
     metric('linhas', m.loc.toLocaleString('pt-BR')),
@@ -51,6 +53,9 @@ export function codigoPage() {
       h('span', { className: 'cod-leg__dot', style: { background: c } }), g));
   }
   page.appendChild(leg);
+  const commented = Object.keys(memCounts).length;
+  if (commented) page.appendChild(h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: '0 0 8px' } },
+    `🧠 ${commented} arquivo(s) com memórias do JARVIS (halo roxo) — a auto-memória liga as conversas ao código.`));
 
   /* Canvas do grafo */
   const wrap = h('div', { className: 'cod-graph' });
@@ -69,7 +74,7 @@ export function codigoPage() {
   const N = codemap.nodes.map((n) => ({
     ...n, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0,
     r: Math.min(12, 3 + Math.sqrt(n.importedBy) * 1.7), color: colorOf(n.dir),
-    sx: 0, sy: 0, sc: 1, zr: 0
+    mem: memCounts[n.id] || 0, sx: 0, sy: 0, sc: 1, zr: 0
   }));
   const idx = new Map(N.map((n, i) => [n.id, i]));
   const L = codemap.links.map((l) => ({ s: idx.get(l.source), t: idx.get(l.target) }))
@@ -165,8 +170,13 @@ export function codigoPage() {
       const dim = hover >= 0 && hover !== i && !adj[hover].has(i);
       const depth = Math.max(0.35, Math.min(1, (n.sc - 0.55) / 0.7));
       ctx.globalAlpha = dim ? 0.12 : depth;
-      ctx.beginPath(); ctx.arc(n.sx, n.sy, Math.max(1.5, n.r * n.sc), 0, Math.PI * 2);
+      const rr = Math.max(1.5, n.r * n.sc);
+      ctx.beginPath(); ctx.arc(n.sx, n.sy, rr, 0, Math.PI * 2);
       ctx.fillStyle = n.color; ctx.fill();
+      if (n.mem && !dim) { /* halo roxo: arquivo com memórias do JARVIS */
+        ctx.globalAlpha = depth; ctx.lineWidth = 1.5; ctx.strokeStyle = '#9b7bff';
+        ctx.beginPath(); ctx.arc(n.sx, n.sy, rr + 3, 0, Math.PI * 2); ctx.stroke();
+      }
       if (hover === i) { ctx.globalAlpha = 1; ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke(); }
     }
     ctx.globalAlpha = 1;
@@ -212,7 +222,7 @@ export function codigoPage() {
       hover = best;
       if (best >= 0) {
         const n = N[best];
-        tip.textContent = `${n.id} · ${n.loc} ln · importado ${n.importedBy}×`;
+        tip.textContent = `${n.id} · ${n.loc} ln · importado ${n.importedBy}×${n.mem ? ' · 🧠 ' + n.mem : ''}`;
         tip.style.left = Math.min(mx + 12, W - 220) + 'px'; tip.style.top = (my + 12) + 'px';
         tip.style.display = 'block';
       } else tip.style.display = 'none';

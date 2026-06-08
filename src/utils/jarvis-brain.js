@@ -25,6 +25,13 @@ const CONCEPTS = cerebro.nodes.map((n) => ({
   toks: new Set(tokenize(n.label))
 }));
 
+/* Arquivos do código (Raio-X) indexados — liga memórias ao codemap. */
+const CODE_SKIP = new Set(['index', 'page', 'pages', 'main', 'style', 'styles', 'data', 'core', 'util', 'utils']);
+const CODE = (codemap.nodes || []).map((n) => ({
+  id: n.id,
+  toks: new Set(tokenize((n.label || n.id).replace(/\.[a-z]+$/i, '')).filter((t) => !CODE_SKIP.has(t)))
+}));
+
 function load() { return storage.get(KEY, []); }
 function persist(list) { storage.set(KEY, list); }
 
@@ -41,6 +48,17 @@ export function linkConcepts(text) {
   return ids;
 }
 
+/** Liga um texto a arquivos do código (ids do codemap → Raio-X). */
+export function linkCode(text) {
+  const toks = new Set(tokenize(text));
+  const ids = [];
+  for (const c of CODE) {
+    for (const t of c.toks) { if (t.length > 3 && toks.has(t)) { ids.push(c.id); break; } }
+    if (ids.length >= 6) break;
+  }
+  return ids;
+}
+
 export function getMemories() { return load().slice().sort((a, b) => b.ts - a.ts); }
 
 /** Grava uma memória durável (dedup por texto), ligando aos conceitos. */
@@ -53,7 +71,8 @@ export function addMemory({ text, source = 'jarvis', tags = [] }) {
   const item = {
     id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     text: clean, tags, source, ts: Date.now(),
-    conceptIds: linkConcepts(clean)
+    conceptIds: linkConcepts(clean),
+    codeIds: linkCode(clean)
   };
   list.push(item);
   persist(list);
@@ -86,6 +105,26 @@ export function memoryStats() {
   const byConcept = {};
   for (const m of list) for (const id of (m.conceptIds || [])) byConcept[id] = (byConcept[id] || 0) + 1;
   return { total: list.length, byConcept };
+}
+
+/** Contagem de memórias por arquivo do código (para destacar no Raio-X). */
+export function codeMemoryCounts() {
+  const counts = {};
+  for (const m of load()) for (const id of (m.codeIds || [])) counts[id] = (counts[id] || 0) + 1;
+  return counts;
+}
+
+const GREET = /^(oi|ola|opa|eai|e ai|bom dia|boa tarde|boa noite|tchau|valeu|obrigad|blz|beleza)\b/i;
+/**
+ * Captura automática: tudo que o operador escreve vira memória durável
+ * (com filtro leve de ruído), ligada ao Cérebro e ao Raio-X.
+ */
+export function captureConversation(text) {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (t.length < 6) return null;       // curto demais
+  if (t.startsWith(':')) return null;  // comando de terminal
+  if (GREET.test(t) && t.length < 24) return null; // saudação curta
+  return addMemory({ text: t, source: 'conversa' });
 }
 
 export function conceptLabel(id) {

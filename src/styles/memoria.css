@@ -37,6 +37,7 @@
 }
 .mem-chip:hover { background: var(--color-cyan); color: #001016; }
 .mem-card__date { font-size: 11px; }
+.mem-card__src { font-size: 10px; padding: 1px 6px; border-radius: var(--radius-pill); background: rgba(155, 123, 255, 0.15); color: #9b7bff; text-transform: uppercase; letter-spacing: 0.03em; }
 .mem-card__del {
   background: transparent; border: none; color: var(--color-text-secondary);
   cursor: pointer; font-size: 13px; padding: 2px 6px; border-radius: var(--radius-sm);

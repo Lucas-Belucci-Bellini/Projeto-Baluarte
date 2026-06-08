@@ -18,7 +18,7 @@ import {
 } from '../utils/jarvis-webllm.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { drawChart } from '../utils/chart-engine.js';
-import { memoryContext } from '../utils/jarvis-brain.js';
+import { memoryContext, captureConversation } from '../utils/jarvis-brain.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import { getStatusText } from '../utils/baluarte-status.js';
 import { humanize } from '../utils/jarvis-style.js';
@@ -361,6 +361,7 @@ async function handleSend() {
   const userMsg = await addMessage(activeSession.id, 'user', text);
   messages.push(userMsg);
   renderBubble('user', text);
+  captureConversation(text); /* auto-memória: tudo que o operador escreve vira memória durável */
   scrollDown();
 
   if (messages.filter((m) => m.role === 'user').length === 1) {
