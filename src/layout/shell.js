@@ -114,6 +114,7 @@ function pageTitleForRoute(path) {
     '/memoria': 'Memória do JARVIS',
     '/terminal-ia': 'Terminal-IA',
     '/seguranca': 'Segurança do Agente',
+    '/gerar-codigo': 'Gerador de Código',
     '/ocr': 'Leitor OCR',
     '/sobre': 'Sobre o Projeto'
   };

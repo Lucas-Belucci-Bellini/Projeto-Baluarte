@@ -77,6 +77,7 @@ const PATHS = {
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
   network: '<circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="7" r="2.2"/><circle cx="12" cy="17.5" r="2.2"/><path d="m7.7 7.5 3.2 8.2M16.4 8.8 13 16M8.1 6.2l8 .6"/>',
   brain: '<path d="M12 5.5A2.5 2.5 0 0 0 7.3 6.6 2.6 2.6 0 0 0 5 11a2.5 2.5 0 0 0 1.4 4.4A2.5 2.5 0 0 0 12 18.2Z"/><path d="M12 5.5a2.5 2.5 0 0 1 4.7 1.1A2.6 2.6 0 0 1 19 11a2.5 2.5 0 0 1-1.4 4.4A2.5 2.5 0 0 1 12 18.2"/><path d="M12 5.5v12.7"/>',
+  wand: '<path d="M5 19 15 9"/><path d="m15 4 .8 2.2L18 7l-2.2.8L15 10l-.8-2.2L12 7l2.2-.8L15 4Z"/><path d="m19.5 12 .5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5.5-1.5Z"/>',
   folder: '<path d="M4 7a2 2 0 0 1 2-2h3l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/>',
   scantext: '<path d="M5 7.5V6a1.5 1.5 0 0 1 1.5-1.5H9M15 4.5h1.5A1.5 1.5 0 0 1 18 6v1.5M18 16.5V18a1.5 1.5 0 0 1-1.5 1.5H15M9 19.5H6.5A1.5 1.5 0 0 1 5 18v-1.5"/><path d="M8 9.5h7M8 12h7M8 14.5h4"/>',
   database: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
@@ -107,7 +108,8 @@ export const iconByPath = {
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
   '/enciclopedia-militar': 'book',
   '/codigo': 'network', '/projetos': 'folder', '/cerebro': 'brain', '/ocr': 'scantext',
-  '/memoria': 'database', '/terminal-ia': 'terminal', '/seguranca': 'shield'
+  '/memoria': 'database', '/terminal-ia': 'terminal', '/seguranca': 'shield',
+  '/gerar-codigo': 'wand'
 };
 
 /** Markup do ícone de linha pelo nome (ou hex de fallback). */

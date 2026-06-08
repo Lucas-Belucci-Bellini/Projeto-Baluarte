@@ -11,6 +11,7 @@
     { "nome": "Leitor OCR", "desc": "Extrai texto de imagens 100% no navegador (Tesseract.js): upload, colar, arrastar ou câmera.", "rota": "/ocr", "status": "novo", "data": "2026-06", "tags": ["visão", "IA"] },
     { "nome": "Memória do JARVIS", "desc": "Memória durável (estilo supermemory): fatos curados ligados ao Segundo Cérebro e ao Raio-X do Código.", "rota": "/memoria", "status": "novo", "data": "2026-06", "tags": ["IA", "memória"] },
     { "nome": "Terminal-IA", "desc": "O 'terminal do Claude Code' no site: REPL com :go :mem :code :chart :brain + linguagem natural (Gemini).", "rota": "/terminal-ia", "status": "novo", "data": "2026-06", "tags": ["IA", "terminal"] },
-    { "nome": "Segurança do Agente", "desc": "Guarda de segurança (estilo Sponsio): veta cada ação do modo agente, bloqueia o perigoso e registra tudo.", "rota": "/seguranca", "status": "novo", "data": "2026-06", "tags": ["IA", "segurança"] }
+    { "nome": "Segurança do Agente", "desc": "Guarda de segurança (estilo Sponsio): veta cada ação do modo agente, bloqueia o perigoso e registra tudo.", "rota": "/seguranca", "status": "novo", "data": "2026-06", "tags": ["IA", "segurança"] },
+    { "nome": "Gerador de Código", "desc": "O site e a IA criam código: descreva e o JARVIS (Gemini) gera, com realce + abrir no Editor.", "rota": "/gerar-codigo", "status": "novo", "data": "2026-06", "tags": ["IA", "dev"] }
   ]
 }

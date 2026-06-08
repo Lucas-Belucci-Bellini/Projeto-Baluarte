@@ -41,6 +41,7 @@ export const NAV_GROUPS = [
     label: 'Código & Dev',
     items: [
       { path: '/editor',      label: 'Editor de Código',   icon: '⌨',  phase: 1 },
+      { path: '/gerar-codigo', label: 'Gerador de Código',  icon: '🧬', phase: 1 },
       { path: '/terminal',    label: 'Terminal',           icon: '▸',  phase: 1 },
       { path: '/json-studio', label: 'JSON Studio',        icon: '⟦⟧', phase: 1 },
       { path: '/git-helper',  label: 'Git Helper',         icon: '⎇',  phase: 1 },
