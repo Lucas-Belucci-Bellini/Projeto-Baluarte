@@ -112,6 +112,7 @@ function pageTitleForRoute(path) {
     '/projetos': 'Projetos',
     '/cerebro': 'Segundo Cérebro',
     '/memoria': 'Memória do JARVIS',
+    '/terminal-ia': 'Terminal-IA',
     '/ocr': 'Leitor OCR',
     '/sobre': 'Sobre o Projeto'
   };
