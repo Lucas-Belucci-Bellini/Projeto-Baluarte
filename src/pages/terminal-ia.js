@@ -11,7 +11,7 @@ import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { loadConfig, processLocal, processServer, getBaluarteBriefing } from '../utils/jarvis-engine.js';
 import { findCapability } from '../data/site-capabilities.js';
-import { addMemory, searchMemories, getMemories, clearMemories, memoryContext, conceptLabel, captureConversation } from '../utils/jarvis-brain.js';
+import { addMemory, searchMemories, getMemories, clearMemories, memoryContext, conceptLabel, captureConversation, captureReply } from '../utils/jarvis-brain.js';
 import { drawChart } from '../utils/chart-engine.js';
 import cerebro from '../data/cerebro.json';
 import codemap from '../data/codemap.json';
@@ -102,6 +102,7 @@ export function terminalIaPage() {
     try {
       const reply = await processServer([{ role: 'user', text }], callConfig);
       pending.remove();
+      captureReply(reply);
       const clean = renderCharts(reply);
       if (clean) echo(clean, 'tia-ai');
     } catch {

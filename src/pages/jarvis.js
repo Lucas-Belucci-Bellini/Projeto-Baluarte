@@ -18,7 +18,7 @@ import {
 } from '../utils/jarvis-webllm.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { drawChart } from '../utils/chart-engine.js';
-import { memoryContext, captureConversation } from '../utils/jarvis-brain.js';
+import { memoryContext, captureConversation, captureReply } from '../utils/jarvis-brain.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import { getStatusText } from '../utils/baluarte-status.js';
 import { humanize } from '../utils/jarvis-style.js';
@@ -424,18 +424,21 @@ async function handleSend() {
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
+      captureReply(reply);
     } else if (config.mode === 'ollama') {
       const reply = await processOllama(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
+      captureReply(reply);
     } else if (config.mode === 'servidor') {
       const reply = await processServer(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
+      captureReply(reply);
     } else if (config.mode === 'webllm') {
       /* Streaming: bolha que cresce a cada token; durante o download do
        * modelo, a bolha de "digitando" mostra o progresso. */

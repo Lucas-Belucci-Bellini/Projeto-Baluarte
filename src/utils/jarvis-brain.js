@@ -127,6 +127,14 @@ export function captureConversation(text) {
   return addMemory({ text: t, source: 'conversa' });
 }
 
+/** Captura a RESPOSTA da IA na memória (resumida, sem blocos de código). */
+export function captureReply(text) {
+  let t = String(text || '').replace(/```[\s\S]*?```/g, ' [código] ').replace(/\s+/g, ' ').trim();
+  if (t.length < 12) return null;
+  if (t.length > 400) t = t.slice(0, 400).trim() + '…';
+  return addMemory({ text: t, source: 'resposta' });
+}
+
 export function conceptLabel(id) {
   const c = CONCEPTS.find((x) => x.id === id);
   return c ? c.label : id;
