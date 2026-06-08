@@ -8,6 +8,10 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Arsenal 2631 — infantaria moderna + classes navais
+- ⚔️ **Arsenal 2468 → 2631 armas:** fabricantes de pistolas/fuzis modernos, fuzis de serviço da OTAN/regionais, snipers/SMG/MG modernos; classes navais (destróieres/fragatas/submarinos/anfíbios por nação); treinadores e helicópteros modernos; hipersônicos e drones de IA. Rumo a 3560.
+- 🛡️ Backup: `backup/2026-06-08-pre-merge-arsenal2631`.
+
 ### Arsenal 2468 — leva histórica/regional
 - ⚔️ **Arsenal 2189 → 2468 armas:** famílias da 1ª/2ª Guerra e Guerra Fria (fuzis de ferrolho/semiauto, SMG/MG históricas, AT clássicos; tanques pioneiros; artilharia histórica; caças a pistão/jato e plataformas derivadas de comerciais; couraçados/porta-aviões e combatentes modernos; bombas/mísseis guiados; UCAV/FPV). Rumo a 3560.
 - 🛡️ Backup: `backup/2026-06-08-pre-merge-arsenal2468`.

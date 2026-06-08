@@ -922,6 +922,69 @@ fam('drones','RQ-170 / RQ-180','🇺🇸 EUA','UAV furtivo de reconhecimento','S
 fam('drones','Hermes (mais) / WK450','🇮🇱🇬🇧','UAV MALE/tático','Sensores/mísseis','1000 km',2005,'Família Elbit Hermes/Watchkeeper',['Hermes 450','Hermes 900','Hermes StarLiner','Watchkeeper']);
 fam('drones','Mugin / FPV','🌍 Diversos','Drone FPV de ataque','Ogiva leve','20 km',2022,'Drones FPV de combate (Ucrânia/Rússia)',['FPV kamikaze','Mugin-5','Vampire (heavy)']);
 
+/* ===================== EXPANSÃO 5 — + famílias reais ===================== */
+/* --- Infantaria: pistolas modernas (fabricantes) --- */
+fam('infantaria','STI / Staccato','🇺🇸 EUA','Pistola 2011','9×19mm','50 m',2017,'2011 de competição/serviço',['P','C2','XC','XL','HD']);
+fam('infantaria','Wilson Combat','🇺🇸 EUA','Pistola 1911/2011','9 / .45','50 m',1977,'Pistolas custom de elite',['CQB','EDC X9','SFX9','Beretta 92 Brigadier']);
+fam('infantaria','Dan Wesson','🇺🇸 EUA','Pistola 1911','.45 / 9mm','50 m',1996,'1911 de alta qualidade',['Valor','Vigil','TCP','DWX']);
+fam('infantaria','Rock Island (RIA)','🇵🇭 Filipinas','Pistola 1911','.45 / 9 / 10mm','50 m',1985,'1911 de custo acessível',['GI','TAC','MS','XT22']);
+fam('infantaria','Sarsilmaz','🇹🇷 Turquia','Pistola','9×19mm','50 m',2004,'Pistolas de serviço turcas',['SAR9','K2','B6','ST10','SAR109']);
+fam('infantaria','Girsan','🇹🇷 Turquia','Pistola','9×19mm','50 m',2010,'Clones e originais turcos',['MC9','MC28','MC P35','Regard']);
+fam('infantaria','EAA Witness / Tanfoglio','🇮🇹 Itália','Pistola','9 / .45 / 10mm','50 m',1990,'CZ-pattern de competição',['Witness','Stock III','Limited','Match']);
+fam('infantaria','Laugo Alien','🇨🇿 Tchéquia','Pistola','9×19mm','50 m',2019,'Cano fixo de baixíssimo recuo',['']);
+fam('infantaria','Archon Type B','🇺🇸 EUA','Pistola','9×19mm','50 m',2018,'Mecanismo de baixo levantamento',['']);
+fam('infantaria','Smith & Wesson metal','🇺🇸 EUA','Pistola','9×19mm','50 m',1955,'Série metálica clássica (39/59/5906)',['Model 39','Model 59','5906','4006','910']);
+fam('infantaria','HK P7 / P9','🇩🇪 Alemanha','Pistola','9×19mm','50 m',1976,'Travamento por gás (squeeze cocker)',['P7','P7M8','P7M13','P9S']);
+/* --- Infantaria: fuzis de serviço (OTAN e regionais) --- */
+fam('infantaria','SA80 / L85','🇬🇧 Reino Unido','Fuzil bullpup','5.56×45mm','500 m',1985,'Fuzil padrão britânico',['L85A1','L85A2','L85A3','L86 LSW']);
+fam('infantaria','Colt Canada','🇨🇦 Canadá','Fuzil de assalto','5.56×45mm','500 m',1984,'C7/C8 (Diemaco) da OTAN',['C7','C7A2','C8','C8 IUR']);
+fam('infantaria','Ak 5 / AG-3','🇸🇪🇳🇴','Fuzil de assalto/batalha','5.56 / 7.62mm','500 m',1964,'FNC sueco e G3 norueguês',['Ak 5','Ak 5C','AG-3','AG-3F2']);
+fam('infantaria','Valmet RK','🇫🇮 Finlândia','Fuzil de assalto','7.62×39 / 5.56','400 m',1962,'AK finlandês (base do Galil)',['RK 62','RK 95','M76']);
+fam('infantaria','EF88 / F90','🇦🇺 Austrália','Fuzil bullpup','5.56×45mm','500 m',2015,'AUG australiano (Austeyr)',['F88','EF88','F90']);
+fam('infantaria','Aero / PSA AR','🇺🇸 EUA','Carabina AR-15','5.56×45mm','500 m',2010,'ARs de fabricantes populares',['Aero M4E1','PSA PA-15','Anderson AM-15','Ruger AR-556','S&W M&P15']);
+fam('infantaria','Geissele / BCM','🇺🇸 EUA','Carabina AR de elite','5.56×45mm','500 m',2011,'ARs premium de SOF',['Geissele URGI','BCM RECCE','Noveske N4','POF Revolution']);
+fam('infantaria','IWI Carmel / Tavor 7','🇮🇱 Israel','Fuzil de assalto','5.56 / 7.62mm','600 m',2019,'Novos fuzis da IWI',['Carmel','Tavor 7','Zion-15']);
+/* --- Infantaria: SMG/MG/sniper/AT modernos --- */
+fam('infantaria','Grand Power Stribog','🇸🇰 Eslováquia','Submetralhadora','9×19mm','150 m',2017,'PCC/SMG popular',['SP9','A1','A3','SR9']);
+fam('infantaria','CMMG Banshee','🇺🇸 EUA','Carabina PCC','9 / .45 / 5.7','150 m',2018,'AR-pattern em calibres de pistola',['Mk9','Mk57','Mk45','Mk4']);
+fam('infantaria','US Ordnance / Mk48','🇺🇸 EUA','Metralhadora','5.56 / 7.62mm','1000 m',2003,'Minimi de SOF (Mk46/Mk48)',['Mk46','Mk48','M240 (US Ord)']);
+fam('infantaria','RPK-16','🇷🇺 Rússia','Metralhadora leve','5.45×39mm','800 m',2016,'LMG modular russa moderna',['']);
+fam('infantaria','SIG Cross / SSG','🇺🇸 EUA','Fuzil de precisão','.277 / 7.62 / .338','1500 m',2020,'Snipers modernos da SIG',['Cross','SSG 3000','TANGO']);
+fam('infantaria','Cadex / Surgeon','🇨🇦🇺🇸','Fuzil de precisão','.338 / .50','2000 m',2010,'Sistemas de precisão de competição',['Cadex CDX-40','Cadex CDX-50','Surgeon 591','Surgeon CSR']);
+fam('infantaria','Bergara / Tikka','🇪🇸🇫🇮','Fuzil de precisão','7.62 / 6.5','1200 m',2013,'Precisão de custo-benefício',['Bergara B-14','Bergara HMR','Tikka T3x TAC','Tikka T3x CTR']);
+fam('infantaria','Armbrust / Miniman','🇩🇪🇸🇪','Lança-foguetes descartável','67 / 74mm','300 m',1979,'AT leves descartáveis',['Armbrust','Miniman','Pskott m/68']);
+/* --- Naval: destróieres/fragatas/submarinos/anfíbios por nação --- */
+fam('naval','Destroyer Hobart','🇦🇺 Austrália','Destróier Aegis','VLS 48','Global',2017,'Defesa aérea da RAN',['']);
+fam('naval','Destroyer Mogami','🇯🇵 Japão','Fragata furtiva','VLS/canhão','Global',2022,'Fragata multifunção japonesa (FFM)',['']);
+fam('naval','Destroyer Daegu / FFX','🇰🇷 Coreia do Sul','Fragata','VLS/anti-navio','Global',2016,'Fragatas FFX coreanas',['Incheon','Daegu','Chungnam']);
+fam('naval','Fragata De Zeven Provinciën','🇳🇱 Holanda','Fragata de defesa aérea','SM-2/ESSM','Global',2002,'LCF holandesa',['']);
+fam('naval','Fragata Fridtjof Nansen','🇳🇴 Noruega','Fragata Aegis','SM-2/NSM','Global',2006,'Fragata norueguesa',['']);
+fam('naval','Fragata Karel Doorman','🇳🇱 Holanda','Fragata multifunção','SM-1/Harpoon','Global',1991,'Exportada (Bélgica, Portugal, Chile)',['']);
+fam('naval','Fragata Bergamini (FREMM IT)','🇮🇹 Itália','Fragata multifunção','Aster/canhão','Global',2013,'FREMM italiana',['ASW','GP']);
+fam('naval','Submarino S-80 Plus','🇪🇸 Espanha','Submarino AIP','Torpedos/Tomahawk','Global',2023,'Isaac Peral, AIP espanhol',['']);
+fam('naval','Submarino KSS-III Dosan','🇰🇷 Coreia do Sul','Submarino','Torpedos/SLBM','Global',2021,'SSK coreano com VLS',['Batch I','Batch II']);
+fam('naval','Submarino Lada','🇷🇺 Rússia','Submarino diesel-elétrico','Torpedos/Kalibr','Global',2010,'SSK russo de 4ª geração',['Project 677']);
+fam('naval','LHD Canberra / Juan Carlos','🇦🇺🇪🇸','Navio de assalto anfíbio','F-35B/helos','Global',2010,'Plataforma anfíbia de exportação',['Canberra','Juan Carlos I','Trieste']);
+fam('naval','LHD Dokdo','🇰🇷 Coreia do Sul','Navio de assalto anfíbio','Helos/docas','Global',2007,'Anfíbio coreano',['Dokdo','Marado']);
+fam('naval','Porta-helicópteros Izumo/Hyuga','🇯🇵 Japão','"Destróier" porta-helicópteros','Helos/F-35B','Global',2009,'JMSDF (Izumo será portador de F-35B)',['Hyuga','Ise','Izumo','Kaga']);
+fam('naval','Corveta Gowind','🇫🇷 França','Corveta furtiva','Exocet/VL MICA','Litoral',2014,'Exportada (Egito, EAU, Malásia)',['Gowind 2500','El Fateh']);
+fam('naval','Navio-patrulha River/OPV','🌍 Diversos','Navio-patrulha oceânico','Canhão/helo','Global',2003,'OPVs de muitas marinhas',['River','Holland','Khareef','Amazonas (BR)']);
+/* --- Aéreo: treinadores e helicópteros modernos --- */
+fam('aereo','Hongdu L-15 / JL-8','🇨🇳 China','Treinador/ataque leve','Leve','3000 km',1994,'Treinadores a jato chineses',['JL-8 (K-8)','L-15 Falcon']);
+fam('aereo','Leonardo M-346','🇮🇹 Itália','Treinador avançado','Leve','2000 km',2011,'Treinador/ataque leve (T-100/M-346FA)',['M-346','M-346FA','T-100']);
+fam('aereo','Textron AT-6 / Scorpion','🇺🇸 EUA','Ataque leve','Ar-terra','2400 km',2017,'COIN e treinamento dos EUA',['AT-6 Wolverine','Scorpion']);
+fam('aereo','Airbus Helicopters militar','🇪🇺 Europa','Helicóptero militar','Utilitário/ataque','800 km',2014,'H145M/H160M/H225M Caracal',['H145M','H160M','H225M Caracal']);
+fam('aereo','Bell militar moderno','🇺🇸 EUA','Helicóptero','Utilitário/ataque','700 km',2018,'360 Invictus / 525 / V-280 (FLRAA)',['360 Invictus','V-280 Valor','429']);
+fam('aereo','Mil Mi-38 / Mi-171Sh','🇷🇺 Rússia','Helicóptero de transporte','Tropas/armado','900 km',2015,'Transporte russo moderno',['Mi-38','Mi-171Sh','Mi-8AMTSh']);
+/* --- Mísseis/Drones: adições finais --- */
+fam('misseis','AGM-183 ARRW / HACM','🇺🇸 EUA','Hipersônico ar-lançado','Mach 5+','1600 km',2023,'Hipersônicos dos EUA',['AGM-183 ARRW','HACM']);
+fam('misseis','SOM / Atmaca / Bora','🇹🇷 Turquia','Cruzeiro/anti-navio/balístico','Subsônico/Mach 5','280 km',2011,'Família de mísseis turcos (Roketsan)',['SOM','Atmaca','Bora','Tayfun']);
+fam('misseis','Sea Venom / Marte','🇬🇧🇮🇹','Anti-navio leve (helicóptero)','Subsônico','110 km',2020,'Anti-navio de helicóptero',['Sea Venom','Marte ER','Marte Mk2']);
+fam('drones','Anduril Ghost / Roadrunner','🇺🇸 EUA','UAS autônomo/interceptor','Sensores/ogiva','—',2020,'Drones de IA da Anduril',['Ghost','Ghost-X','Roadrunner','Altius (Anduril)']);
+fam('drones','Shield AI V-BAT','🇺🇸 EUA','UAV VTOL autônomo','Sensores','—',2016,'VTOL de IA (Hivemind)',['V-BAT','V-BAT 128']);
+fam('drones','ASN (China)','🇨🇳 China','UAV ISR','Sensores','3000 km',2000,'Família ASN muito exportada',['ASN-209','ASN-216','ASN-301']);
+fam('drones','Korsar / Orlan (mais)','🇷🇺 Rússia','UAV tático ISR','Sensores/EW','250 km',2018,'ISR e correção de fogo russos',['Korsar','Orlan-10','Orlan-30','Orlan-50']);
+
 /* ===== Expansão ===== */
 const joinName = (base, suf) => {
   if (!suf) return base;
