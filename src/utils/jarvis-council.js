@@ -112,9 +112,21 @@ export async function runCouncil(question, { onMember } = {}) {
     }
   }
 
-  /* O conselho alimenta a memória compartilhada (o "cérebro comum"). */
+  /* O conselho joga TUDO na memória compartilhada: a pergunta E as respostas
+   * geradas (cada membro + o consenso), ligadas ao Cérebro e ao Raio-X. */
+  const trim = (t) => String(t || '')
+    .replace(/```[\s\S]*?```/g, ' [código] ')
+    .replace(/\s+/g, ' ').trim().slice(0, 400);
+  const qShort = question.replace(/\s+/g, ' ').trim().slice(0, 80);
   try { captureConversation(question); } catch { /* ok */ }
-  try { addMemory({ text: `Conselho de IAs sobre: ${question}`, source: 'conselho' }); } catch { /* ok */ }
+  try {
+    for (const m of usable) {
+      addMemory({ text: `Conselho — ${m.name} sobre "${qShort}": ${trim(m.text)}`, source: 'conselho' });
+    }
+    if (consensus) {
+      addMemory({ text: `Conselho — consenso sobre "${qShort}": ${trim(consensus)}`, source: 'conselho' });
+    }
+  } catch { /* memória é best-effort */ }
 
   return { members, consensus };
 }
