@@ -480,6 +480,35 @@ export async function processServer(messages, config) {
   return data.resposta || '(resposta vazia)';
 }
 
+/* ===== Modo HERMES (servidor) — Nous Hermes via /api/hermes (Vercel → OpenRouter) =====
+ * Mesmo formato do processServer, mas no endpoint /hermes. Roda em qualquer
+ * device (sem WebGPU): a Vercel intermedia o provedor que hospeda o Hermes. */
+export async function processHermes(messages, config) {
+  const url = resolveServerBase(config && config.serverUrl);
+  if (typeof location !== 'undefined' && location.protocol === 'https:' && /^http:\/\//i.test(url)) {
+    throw new Error(`URL "${url}" é http:// num site HTTPS — bloqueada pelo navegador.`);
+  }
+  const body = {
+    system: config && config.systemPrompt,
+    model: (config && config.hermesModel) || undefined,
+    messages: messages.map((m) => ({ role: m.role === 'jarvis' ? 'assistant' : 'user', content: m.text }))
+  };
+  let res;
+  try {
+    res = await fetchWithTimeout(`${url}/hermes`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    }, 60000);
+  } catch (e) {
+    if (e.message === 'timeout') throw new Error('O Hermes (servidor) demorou demais a responder. Tente de novo.');
+    throw new Error('Servidor Hermes inacessível.');
+  }
+  if (!res.ok) throw new Error(`Servidor HTTP ${res.status}`);
+  const data = await res.json();
+  return data.resposta || '(resposta vazia)';
+}
+
 /* ===== Modo AGENTE — Claude API + tool use ===== */
 
 /**

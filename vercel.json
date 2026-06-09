@@ -1,6 +1,7 @@
 {
   "functions": {
     "api/chat.py": { "maxDuration": 60 },
+    "api/hermes.py": { "maxDuration": 60 },
     "api/health.py": { "maxDuration": 15 }
   }
 }

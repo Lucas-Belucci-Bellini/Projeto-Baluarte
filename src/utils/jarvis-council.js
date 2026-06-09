@@ -8,7 +8,7 @@
  * então o conselho também alimenta o cérebro comum.
  */
 
-import { loadConfig, processLocal, processServer, getBaluarteBriefing } from './jarvis-engine.js';
+import { loadConfig, processLocal, processServer, processHermes, getBaluarteBriefing } from './jarvis-engine.js';
 import { processWebLLM, getLoadedModel } from './jarvis-webllm.js';
 import { memoryContext, captureConversation, addMemory } from './jarvis-brain.js';
 import { getStatusText } from './baluarte-status.js';
@@ -79,10 +79,24 @@ export async function runCouncil(question, { onMember } = {}) {
     })());
   }
 
+  /* Membro 4 — Hermes (servidor): Nous Hermes via Vercel→OpenRouter (qualquer device) */
+  tasks.push((async () => {
+    try {
+      const reply = await processHermes(
+        [{ role: 'user', text: question }],
+        { ...cfg, systemPrompt: `${base}\n\n${ctx}\n\nVocê é um MEMBRO do conselho de IAs do Baluarte (modelo Nous Hermes).` }
+      );
+      const ok = !!reply && !reply.startsWith('[') && !reply.startsWith('(');
+      announce({ id: 'hermes', name: 'Hermes (servidor)', text: reply, ok });
+    } catch {
+      announce({ id: 'hermes', name: 'Hermes (servidor)', text: '(indisponível)', ok: false });
+    }
+  })());
+
   await Promise.all(tasks);
 
   /* Síntese — o moderador (Gemini) combina o melhor de cada membro */
-  const usable = members.filter((m) => m.ok && m.text && !m.text.startsWith('('));
+  const usable = members.filter((m) => m.ok && m.text && !m.text.startsWith('(') && !m.text.startsWith('['));
   let consensus = '';
   if (usable.length <= 1) {
     consensus = usable[0]?.text || 'Nenhum membro respondeu.';
