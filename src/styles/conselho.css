@@ -1,0 +1,39 @@
+/* ============================================================
+ *  Conselho de IAs — /conselho
+ * ============================================================ */
+
+.page-conselho { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.cons-ask { display: flex; gap: var(--space-sm); align-items: flex-start; margin-bottom: var(--space-sm); }
+.cons-input {
+  flex: 1; resize: vertical; min-height: 46px;
+  background: var(--color-bg-elevated); color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--radius-sm);
+  padding: 10px 12px; font-size: var(--font-size-sm); line-height: 1.5; font-family: inherit;
+}
+.cons-input:focus { outline: none; border-color: var(--color-cyan-edge); }
+.cons-ask .btn { white-space: nowrap; }
+
+.cons-status { margin-bottom: var(--space-sm); font-size: var(--font-size-sm); }
+
+.cons-members { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-sm); margin-bottom: var(--space-md); }
+.cons-card {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 2px solid var(--color-cyan-edge); border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md); animation: fadeIn 0.25s ease;
+}
+.cons-card.is-fail { border-top-color: #ff5b7a; opacity: 0.7; }
+.cons-card__name { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 6px; font-size: var(--font-size-sm); }
+.cons-card__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-cyan); box-shadow: 0 0 6px var(--color-cyan); }
+.cons-card.is-fail .cons-card__dot { background: #ff5b7a; box-shadow: none; }
+.cons-card__text { color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: 1.55; white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow-y: auto; }
+
+.cons-consensus {
+  background: linear-gradient(180deg, var(--color-cyan-soft), var(--color-bg-elevated));
+  border: 1px solid var(--color-cyan-edge); border-radius: var(--radius-md);
+  padding: var(--space-md); animation: fadeIn 0.3s ease;
+}
+.cons-consensus__title { font-weight: 700; color: var(--color-cyan); margin-bottom: var(--space-sm); }
+.cons-consensus__text { color: var(--color-text-primary); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }

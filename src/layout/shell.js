@@ -115,6 +115,7 @@ function pageTitleForRoute(path) {
     '/terminal-ia': 'Terminal-IA',
     '/seguranca': 'Segurança do Agente',
     '/gerar-codigo': 'Gerador de Código',
+    '/conselho': 'Conselho de IAs',
     '/ocr': 'Leitor OCR',
     '/sobre': 'Sobre o Projeto'
   };
