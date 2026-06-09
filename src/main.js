@@ -159,6 +159,9 @@ function boot() {
   initShadowGate();
   router.start('/home');
   setTimeout(() => hxBeacon(), 2000);
+  /* Sincroniza a memória versionada do repositório (best-effort, sob demanda;
+   * dynamic import mantém o jarvis-brain/codemap fora do bundle inicial). */
+  setTimeout(() => { import('./utils/jarvis-brain.js').then((m) => m.syncRepoMemories()).catch(() => {}); }, 1500);
 
   console.log(
     `%c⬡ BALUARTE — Mark XIII · v${VERSION}`,

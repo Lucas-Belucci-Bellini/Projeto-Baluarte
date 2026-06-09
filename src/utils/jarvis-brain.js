@@ -14,6 +14,7 @@
 
 import { storage } from '../core/storage.js';
 import { recall, tokenize } from './jarvis-recall.js';
+import { saveEntry, listEntries } from './jarvis-repo-memory.js';
 import cerebro from '../data/cerebro.json';
 import codemap from '../data/codemap.json';
 
@@ -34,6 +35,32 @@ const CODE = (codemap.nodes || []).map((n) => ({
 
 function load() { return storage.get(KEY, []); }
 function persist(list) { storage.set(KEY, list); }
+
+/* ===== Camada do repositório (memória versionada via /api/memory) =====
+ * As memórias do repo são mescladas às locais em TODA leitura, então elas
+ * aparecem no recall, no Segundo Cérebro e no Raio-X automaticamente. */
+let repoCache = [];
+
+/** Memórias locais + do repositório, deduplicadas por texto. */
+function allMemories() {
+  const local = load();
+  const seen = new Set(local.map((m) => (m.text || '').toLowerCase()));
+  const merged = local.slice();
+  for (const r of repoCache) {
+    const k = (r.text || '').toLowerCase();
+    if (k && !seen.has(k)) { seen.add(k); merged.push(r); }
+  }
+  return merged;
+}
+
+/** Puxa a memória versionada do repositório (branch jarvis-memory) para o cache. */
+export async function syncRepoMemories() {
+  const entries = await listEntries();
+  if (Array.isArray(entries)) repoCache = entries;
+  return repoCache.length;
+}
+
+export function repoMemoryCount() { return repoCache.length; }
 
 /** Liga um texto aos conceitos do Segundo Cérebro (ids de cerebro.json). */
 export function linkConcepts(text) {
@@ -59,7 +86,7 @@ export function linkCode(text) {
   return ids;
 }
 
-export function getMemories() { return load().slice().sort((a, b) => b.ts - a.ts); }
+export function getMemories() { return allMemories().sort((a, b) => (b.ts || 0) - (a.ts || 0)); }
 
 /** Grava uma memória durável (dedup por texto), ligando aos conceitos. */
 export function addMemory({ text, source = 'jarvis', tags = [] }) {
@@ -76,6 +103,8 @@ export function addMemory({ text, source = 'jarvis', tags = [] }) {
   };
   list.push(item);
   persist(list);
+  /* Commita no repositório (branch jarvis-memory) — serializado e best-effort. */
+  try { saveEntry({ text: item.text, source: item.source, conceptIds: item.conceptIds, codeIds: item.codeIds, ts: item.ts }); } catch { /* ok */ }
   return item;
 }
 
@@ -84,11 +113,10 @@ export function clearMemories() { persist([]); }
 
 /** Busca memórias relevantes por TF-IDF (reaproveita o motor do recall). */
 export function searchMemories(query, k = 5) {
-  const list = load();
+  const list = allMemories();
   if (!list.length) return [];
-  const docs = list.map((m) => ({ text: m.text, sessionId: m.id }));
-  const byId = new Map(list.map((m) => [m.id, m]));
-  return recall(query, docs, k).map((h) => ({ ...byId.get(h.sessionId), score: h.score })).filter(Boolean);
+  const docs = list.map((m, i) => ({ text: m.text, sessionId: String(i) }));
+  return recall(query, docs, k).map((h) => ({ ...list[Number(h.sessionId)], score: h.score })).filter(Boolean);
 }
 
 /** Bloco de memória durável para injetar no contexto da IA. */
@@ -101,7 +129,7 @@ export function memoryContext(query, k = 5) {
 
 /** Estatísticas (total + memórias por conceito) — usado pela página e pelo grafo. */
 export function memoryStats() {
-  const list = load();
+  const list = allMemories();
   const byConcept = {};
   for (const m of list) for (const id of (m.conceptIds || [])) byConcept[id] = (byConcept[id] || 0) + 1;
   return { total: list.length, byConcept };
@@ -110,7 +138,7 @@ export function memoryStats() {
 /** Contagem de memórias por arquivo do código (para destacar no Raio-X). */
 export function codeMemoryCounts() {
   const counts = {};
-  for (const m of load()) for (const id of (m.codeIds || [])) counts[id] = (counts[id] || 0) + 1;
+  for (const m of allMemories()) for (const id of (m.codeIds || [])) counts[id] = (counts[id] || 0) + 1;
   return counts;
 }
 

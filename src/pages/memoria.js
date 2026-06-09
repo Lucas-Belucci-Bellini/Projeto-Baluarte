@@ -10,7 +10,8 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import {
   getMemories, addMemory, deleteMemory, clearMemories,
-  searchMemories, memoryStats, conceptLabel, conceptRoute
+  searchMemories, memoryStats, conceptLabel, conceptRoute,
+  syncRepoMemories
 } from '../utils/jarvis-brain.js';
 
 function fmtDate(ts) {
@@ -57,7 +58,17 @@ export function memoriaPage() {
       if (confirm('Apagar TODAS as memórias do JARVIS?')) { clearMemories(); refresh(); toast('Memória limpa', { type: 'warning' }); }
     }
   }, '🗑 Apagar tudo');
-  page.appendChild(h('div', { className: 'mem-tools' }, searchEl, clearBtn));
+  const syncBtn = h('button', {
+    className: 'btn btn--ghost btn--sm', title: 'Puxar a memória versionada do repositório (branch jarvis-memory)',
+    onclick: async () => {
+      syncBtn.disabled = true; syncBtn.textContent = '⏳…';
+      const n = await syncRepoMemories();
+      refresh();
+      syncBtn.disabled = false; syncBtn.textContent = '☁️ Repo';
+      toast(`Repositório: ${n} memória(s)`, { type: 'success' });
+    }
+  }, '☁️ Repo');
+  page.appendChild(h('div', { className: 'mem-tools' }, searchEl, syncBtn, clearBtn));
 
   const listEl = h('div', { className: 'mem-list' });
   page.appendChild(listEl);
@@ -126,5 +137,7 @@ export function memoriaPage() {
   }
 
   refresh();
+  /* Abre já puxando a memória versionada do repositório (best-effort). */
+  syncRepoMemories().then(() => refresh()).catch(() => {});
   return page;
 }
