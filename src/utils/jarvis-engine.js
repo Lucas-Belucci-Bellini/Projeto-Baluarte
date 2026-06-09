@@ -509,6 +509,44 @@ export async function processHermes(messages, config) {
   return data.resposta || '(resposta vazia)';
 }
 
+/* ===== Modo OPENCLAW — assistente self-hosted (gateway local) =====
+ * OpenClaw é self-hosted (como o Ollama). O gateway nativo é RPC; esta conexão
+ * espera um endpoint de chat compatível com OpenAI (nativo ou via bridge).
+ * Parsing tolerante a vários formatos de resposta. URL configurável. */
+export async function processOpenClaw(messages, config) {
+  const url = ((config && config.openclawUrl) || 'http://localhost:18789').replace(/\/$/, '');
+  const path = (config && config.openclawPath) || '/v1/chat/completions';
+  if (typeof location !== 'undefined' && location.protocol === 'https:' &&
+      /^http:\/\//i.test(url) && !/^https?:\/\/(localhost|127\.0\.0\.1)/i.test(url)) {
+    throw new Error(`A URL do OpenClaw ("${url}") é http:// num site HTTPS — o navegador bloqueia. Use https:// (ex.: um túnel) ou rode o site localmente.`);
+  }
+  const body = {
+    model: (config && config.openclawModel) || 'openclaw',
+    stream: false,
+    messages: [
+      { role: 'system', content: (config && config.systemPrompt) || '' },
+      ...messages.map((m) => ({ role: m.role === 'jarvis' ? 'assistant' : 'user', content: m.text }))
+    ]
+  };
+  let res;
+  try {
+    res = await fetchWithTimeout(`${url}${path}`, {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body)
+    }, 60000);
+  } catch (e) {
+    if (e.message === 'timeout') throw new Error('OpenClaw demorou demais a responder (timeout).');
+    throw new Error('OpenClaw inacessível. Rode o gateway ("openclaw gateway --port 18789") e confira a URL/endpoint.');
+  }
+  if (!res.ok) throw new Error(`OpenClaw HTTP ${res.status}`);
+  const data = await res.json();
+  return (
+    (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) ||
+    (data && data.message && data.message.content) ||
+    (data && (data.reply || data.response || data.content || data.text || data.resposta)) ||
+    '(resposta vazia)'
+  );
+}
+
 /* ===== Modo AGENTE — Claude API + tool use ===== */
 
 /**

@@ -8,7 +8,7 @@
  * então o conselho também alimenta o cérebro comum.
  */
 
-import { loadConfig, processLocal, processServer, processHermes, getBaluarteBriefing } from './jarvis-engine.js';
+import { loadConfig, processLocal, processServer, processHermes, processOpenClaw, getBaluarteBriefing } from './jarvis-engine.js';
 import { processWebLLM, getLoadedModel } from './jarvis-webllm.js';
 import { memoryContext, captureConversation, addMemory } from './jarvis-brain.js';
 import { getStatusText } from './baluarte-status.js';
@@ -92,6 +92,22 @@ export async function runCouncil(question, { onMember } = {}) {
       announce({ id: 'hermes', name: 'Hermes (servidor)', text: '(indisponível)', ok: false });
     }
   })());
+
+  /* Membro 5 — OpenClaw (self-hosted): só entra se a URL estiver configurada. */
+  if (cfg && cfg.openclawUrl) {
+    tasks.push((async () => {
+      try {
+        const reply = await processOpenClaw(
+          [{ role: 'user', text: question }],
+          { ...cfg, systemPrompt: `${base}\n\n${ctx}\n\nVocê é um MEMBRO do conselho de IAs do Baluarte (assistente OpenClaw).` }
+        );
+        const ok = !!reply && !reply.startsWith('[') && !reply.startsWith('(');
+        announce({ id: 'openclaw', name: 'OpenClaw', text: reply, ok });
+      } catch {
+        announce({ id: 'openclaw', name: 'OpenClaw', text: '(indisponível)', ok: false });
+      }
+    })());
+  }
 
   await Promise.all(tasks);
 

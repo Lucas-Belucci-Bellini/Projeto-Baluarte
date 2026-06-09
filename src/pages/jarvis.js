@@ -10,7 +10,7 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import {
   loadConfig, saveConfig,
-  processLocal, processClaude, processOllama, processServer, processHermes, processAgent,
+  processLocal, processClaude, processOllama, processServer, processHermes, processOpenClaw, processAgent,
   healthCheckServer, getBaluarteBriefing
 } from '../utils/jarvis-engine.js';
 import {
@@ -37,6 +37,7 @@ const MODES = [
   { id: 'ollama', label: 'Ollama', icon: '⬢', badge: 'success', desc: 'Modelo local via Ollama (ollama serve). 100% privado.' },
   { id: 'servidor', label: 'Servidor', icon: '⊛', badge: 'success', desc: 'Backend Python + Gemini com busca web real (Google). Habilita a camada 2 do raciocínio. Requer rodar backend/server.py.' },
   { id: 'hermes', label: 'Hermes (servidor)', icon: '⬢', badge: 'success', desc: 'Nous Hermes via servidor (Vercel → OpenRouter): roda em qualquer device, sem WebGPU. Requer OPENROUTER_API_KEY nas envs da Vercel.' },
+  { id: 'openclaw', label: 'OpenClaw', icon: '🐾', badge: 'cyan', desc: 'Assistente self-hosted OpenClaw (gateway local). Espera um endpoint de chat compatível (OpenAI); configure a URL. O gateway nativo é RPC — pode precisar de bridge.' },
   { id: 'agente', label: 'Agente', icon: '⚛', badge: 'warning', desc: 'Claude com ferramentas: navega, consulta e executa ações reais.' }
 ];
 
@@ -447,6 +448,13 @@ async function handleSend() {
       messages.push(jMsg);
       emitJarvis(reply);
       captureReply(reply);
+    } else if (config.mode === 'openclaw') {
+      const reply = await processOpenClaw(convo, callConfig);
+      removeTyping();
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
+      emitJarvis(reply);
+      captureReply(reply);
     } else if (config.mode === 'webllm') {
       /* Streaming: bolha que cresce a cada token; durante o download do
        * modelo, a bolha de "digitando" mostra o progresso. */
@@ -627,6 +635,21 @@ function renderConfigPanel() {
         h('p', { className: 'jarvis-config__warn u-text-muted' },
           '⬢ Requer Ollama rodando ("ollama serve"). 100% local. ' +
           'Pode precisar de OLLAMA_ORIGINS=* para aceitar requests do browser.')
+      );
+    } else if (config.mode === 'openclaw') {
+      const ocUrl = h('input', {
+        className: 'input', type: 'text', value: config.openclawUrl || 'http://localhost:18789',
+        oninput: (e) => { config.openclawUrl = e.target.value.trim(); saveConfig(config); }
+      });
+      const ocPath = h('input', {
+        className: 'input', type: 'text', value: config.openclawPath || '/v1/chat/completions',
+        oninput: (e) => { config.openclawPath = e.target.value.trim(); saveConfig(config); }
+      });
+      bodyEl.append(
+        h('label', null, h('span', null, 'OPENCLAW URL'), ocUrl),
+        h('label', null, h('span', null, 'ENDPOINT (chat)'), ocPath),
+        h('p', { className: 'jarvis-config__warn u-text-muted' },
+          '🐾 OpenClaw é self-hosted (gateway na porta 18789). Espera um endpoint de chat compatível com OpenAI; o gateway nativo é RPC, então pode precisar de um bridge (ver docs/OPENCLAW.md). Definir a URL aqui também faz o OpenClaw entrar no Conselho.')
       );
     } else if (config.mode === 'servidor') {
       const urlInput = h('input', {
