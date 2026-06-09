@@ -16,7 +16,11 @@ export const WEBLLM_MODELS = [
   { id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC', label: 'Qwen2.5 0.5B (~0,6 GB · o mais rápido)' },
   { id: 'Phi-3-mini-4k-instruct-q4f16_1-MLC', label: 'Phi-3 mini (~2 GB · equilibrado)' },
   { id: 'Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC', label: 'Qwen2.5 Coder 1.5B (código)' },
-  { id: 'Llama-3-8B-Instruct-q4f16_1-MLC', label: 'Llama 3 8B (~4 GB · mais capaz, lento)' }
+  { id: 'Llama-3-8B-Instruct-q4f16_1-MLC', label: 'Llama 3 8B (~4 GB · mais capaz, lento)' },
+  /* Nous Hermes — a "IA da hermes" rodando 100% no navegador (WebGPU). */
+  { id: 'Hermes-3-Llama-3.2-3B-q4f16_1-MLC', label: 'Nous Hermes 3 · 3B (~2,5 GB · hermes leve)' },
+  { id: 'Hermes-2-Pro-Mistral-7B-q4f16_1-MLC', label: 'Nous Hermes 2 Pro · Mistral 7B (~4,5 GB · hermes)' },
+  { id: 'Hermes-3-Llama-3.1-8B-q4f16_1-MLC', label: 'Nous Hermes 3 · Llama 3.1 8B (~5 GB · hermes, mais novo)' }
 ];
 
 export const DEFAULT_WEBLLM_MODEL = WEBLLM_MODELS[0].id;
