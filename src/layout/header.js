@@ -82,6 +82,16 @@ export function renderHeader() {
     h(
       'div',
       { className: 'header__right' },
+      h(
+        'button',
+        {
+          className: 'btn btn--ghost btn--icon',
+          title: 'Sobrepor: manter esta página rodando numa janela flutuante (o áudio não para ao navegar)',
+          'aria-label': 'Sobrepor página',
+          onclick: () => bus.emit('page:pin')
+        },
+        '📌'
+      ),
       dateEl,
       clockEl,
       h(

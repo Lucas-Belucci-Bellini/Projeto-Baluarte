@@ -9,6 +9,7 @@ import { renderSidebar, wireSidebar, updateActiveNav } from './sidebar.js';
 import { bus } from '../core/events.js';
 import { appState } from '../core/state.js';
 import { setCurrentFunction } from '../utils/baluarte-status.js';
+import { pinElement } from './overlay.js';
 
 let mainInner = null;
 let shellRefs = null;
@@ -41,6 +42,7 @@ export function mountShell(rootEl) {
 
   shellRefs = { shell, sidebar, header, main, overlay };
   wireSidebar(shellRefs);
+  bus.on('page:pin', pinCurrentPage);
 
   return shellRefs;
 }
@@ -124,4 +126,23 @@ function pageTitleForRoute(path) {
 
 export function getShellRefs() {
   return shellRefs;
+}
+
+/**
+ * "Sobrepor": move a página atual para uma janela flutuante que sobrevive à
+ * navegação (mantém áudio/estado rodando). Deixa um aviso na área principal.
+ */
+export function pinCurrentPage() {
+  if (!mainInner) return false;
+  const pageEl = mainInner.firstElementChild;
+  if (!pageEl || pageEl.classList.contains('pin-placeholder')) return false;
+  const route = appState.get('route');
+  const title = pageTitleForRoute(route);
+  pinElement(pageEl, title);
+  mount(mainInner, h('div', { className: 'pin-placeholder' },
+    h('div', { className: 'pin-placeholder__icon' }, '📌'),
+    h('div', null, `"${title}" está sobreposta e continua rodando.`),
+    h('p', { className: 'u-text-muted', style: { fontSize: '13px', marginTop: '6px' } },
+      'Navegue à vontade — a janela flutuante segue ativa. Arraste pelo topo; feche pelo ✕.')));
+  return true;
 }
