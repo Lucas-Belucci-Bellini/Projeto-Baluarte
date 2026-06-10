@@ -8,6 +8,9 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### #186 (fase 2): documentação do núcleo
+- 💬 Comentei a fundo os módulos-núcleo que todo contribuidor usa primeiro: `h()` em `helpers.js` (chaves especiais `className`/`style`/`dataset`/`on*`/`html` + cada ramo do corpo), o event bus (`events.js`: retorno de cancelamento + isolamento de erros no `emit`) e o store (`state.js`: corrigido o cabeçalho — é merge raso + listeners, não Proxy). Issue #186 segue aberto (próximas fases: páginas/utils).
+
 ### Mural — rede social leve (#187) + docs do roteador (#186)
 - 📣 **Mural** (`/mural`, issue #187): rede social leve — recados salvos no localStorage **e** commitados no repositório (`mural/posts.json` via `api/social.py`, branch `jarvis-memory`), então ficam **compartilhados e versionados**, sem backend/login. Sem `GITHUB_TOKEN`, fica só local (single-device).
 - 💬 **#186 (fase):** comentários explicativos no `router.js` (compile/match). O core já tinha cabeçalhos JSDoc; o guia para contribuidores está em `CONTRIBUTING.md`.

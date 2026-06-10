@@ -1,8 +1,12 @@
 /**
- * Store reativo simples baseado em Proxy + listeners.
+ * Store reativo simples: estado imutável por substituição (merge raso) + listeners.
+ * `get()` sem chave devolve uma cópia do estado inteiro; com chave, o valor.
+ * `set(patch)` faz merge raso e notifica os inscritos com (novoEstado, antigo).
+ * `subscribe(fn)` devolve uma função para cancelar a inscrição.
+ *
  * Uso:
  *   const store = createStore({ count: 0 });
- *   store.subscribe((newState, oldState) => { ... });
+ *   const off = store.subscribe((novo, antigo) => { ... });
  *   store.set({ count: 1 });
  *   const v = store.get('count');
  */
@@ -17,8 +21,8 @@ export function createStore(initial = {}) {
 
   function set(patch) {
     const old = { ...state };
-    state = { ...state, ...patch };
-    listeners.forEach((fn) => {
+    state = { ...state, ...patch };   // merge raso: cria um novo objeto de estado
+    listeners.forEach((fn) => {       // notifica todos, isolando erros de cada um
       try {
         fn(state, old);
       } catch (err) {

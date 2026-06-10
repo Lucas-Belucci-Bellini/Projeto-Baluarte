@@ -11,36 +11,47 @@ export const $$ = (selector, scope = document) =>
   Array.from(scope.querySelectorAll(selector));
 
 /**
- * Cria um elemento HTML com atributos e filhos.
- * @param {string} tag
- * @param {object} [attrs] - className, dataset, onClick, style, ...
- * @param {(Node|string|Array)} [...children]
+ * Hyperscript: cria um elemento DOM com atributos e filhos. É a BASE de toda a
+ * UI do Baluarte (o projeto não usa framework).
+ *
+ * Chaves especiais em `attrs`:
+ *   - `className` / `class` (string) -> el.className
+ *   - `style` (objeto)               -> Object.assign(el.style, …)  ex.: { color: 'red' }
+ *   - `dataset` (objeto)             -> data-* attributes
+ *   - `onX` (função)                 -> addEventListener('x', fn)   ex.: onclick, oninput
+ *   - `html` (string)                -> innerHTML (⚠ use só com conteúdo confiável)
+ * Outras chaves viram propriedade nativa do elemento (se existir) ou atributo HTML.
+ * Valores null/false/undefined são ignorados — ótimo para filhos/atributos condicionais.
+ *
+ * @param {string} tag  ex.: 'div', 'button'
+ * @param {object} [attrs]
+ * @param {...(Node|string|number|Array|false|null)} children  arrays são achatados; falsy é ignorado
  * @returns {HTMLElement}
  */
 export function h(tag, attrs = {}, ...children) {
   const el = document.createElement(tag);
 
   for (const [key, value] of Object.entries(attrs || {})) {
-    if (value == null || value === false) continue;
+    if (value == null || value === false) continue;            // pula atributos "desligados"
 
     if (key === 'className' || key === 'class') {
       el.className = value;
     } else if (key === 'style' && typeof value === 'object') {
-      Object.assign(el.style, value);
+      Object.assign(el.style, value);                          // estilo inline via objeto
     } else if (key === 'dataset' && typeof value === 'object') {
-      Object.assign(el.dataset, value);
+      Object.assign(el.dataset, value);                        // data-* attributes
     } else if (key.startsWith('on') && typeof value === 'function') {
-      el.addEventListener(key.slice(2).toLowerCase(), value);
+      el.addEventListener(key.slice(2).toLowerCase(), value);  // onclick -> evento 'click'
     } else if (key === 'html') {
-      el.innerHTML = value;
+      el.innerHTML = value;                                    // ⚠ só com conteúdo confiável
     } else if (key in el && typeof value !== 'object') {
-      el[key] = value;
+      el[key] = value;                                         // propriedade nativa (value, checked, href…)
     } else {
-      el.setAttribute(key, value);
+      el.setAttribute(key, value);                             // atributo HTML genérico (aria-*, role…)
     }
   }
 
-  appendChildren(el, children);
+  appendChildren(el, children);   // achata arrays, ignora null/false, texto vira textNode
   return el;
 }
 
