@@ -64,11 +64,11 @@ export function conselhoPage() {
     statusEl.style.display = 'block';
     statusEl.textContent = 'Convocando: JARVIS Local · Gemini' + (loaded ? ' · Navegador (' + loaded.split('-')[0] + ')' : '') + '…';
     try {
-      const { consensus } = await runCouncil(q, {
+      const { consensus, synthesizedBy } = await runCouncil(q, {
         onMember: (m) => { membersEl.appendChild(memberCard(m)); }
       });
       consensusEl.append(
-        h('div', { className: 'cons-consensus__title' }, '⚖️ Consenso do conselho'),
+        h('div', { className: 'cons-consensus__title' }, '⚖️ Consenso do conselho' + (synthesizedBy ? ' · por ' + synthesizedBy : '')),
         h('div', { className: 'cons-consensus__text' }, consensus));
       consensusEl.style.display = 'block';
       statusEl.style.display = 'none';

@@ -208,11 +208,40 @@ function drawSatScope() {
 
 /* ===================== Render principal ===================== */
 
+/* Painel "Fontes de Detecção" — radar sem antena, via fusão multi-sensor (#183). */
+function buildSensorSources() {
+  const SOURCES = [
+    { icon: '👁️', name: 'Óptico / Térmico + IA', rota: '/visao', desc: 'Câmera com detecção e rastreio por visão computacional.' },
+    { icon: '🛰️', name: 'Satélites (orbital)', rota: '/radar', desc: 'TLE do CelesTrak — modo Satélites deste console.' },
+    { icon: '🧭', name: 'Geo / Posição', rota: '/geo', desc: 'GeoPulse e localização do operador.' },
+    { icon: '🔐', name: 'RF passivo / SIGINT', rota: '/ciberseg', desc: 'Escuta de emissões e ameaças.' },
+    { icon: '📡', name: 'Triangulação', rota: '/triangulacao', desc: 'Localização por múltiplos pontos.' },
+    { icon: '🚀', name: 'Doutrina de sensores', rota: '/tecnologia-militar', desc: 'Referência: SAR, LIDAR, acústico, sísmico.' }
+  ];
+  const grid = h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '8px', marginTop: '8px' } });
+  for (const s of SOURCES) {
+    grid.appendChild(h('a', {
+      href: '#' + s.rota,
+      style: { display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '8px 10px', borderRadius: 'var(--radius-sm)', background: 'var(--color-bg-elevated)', border: '1px solid rgba(255,255,255,0.07)', color: 'inherit', textDecoration: 'none' }
+    },
+      h('span', { style: { fontSize: '18px' } }, s.icon),
+      h('div', null,
+        h('div', { style: { fontWeight: '600', fontSize: 'var(--font-size-sm)' } }, s.name),
+        h('div', { className: 'u-text-muted', style: { fontSize: '12px' } }, s.desc))));
+  }
+  return h('div', { className: 'card', style: { marginTop: 'var(--space-md)' } },
+    h('h3', { style: { margin: '0 0 4px' } }, '📡 Fontes de Detecção · fusão multi-sensor'),
+    h('p', { className: 'u-text-muted', style: { fontSize: '13px', margin: '0 0 4px' } },
+      'O radar não depende de uma antena dedicada: o panorama tático é montado por fusão de sensores — cada fonte abaixo alimenta a imagem. (issue #183)'),
+    grid);
+}
+
 export function radarPage() {
   const page = h('div', { className: 'page-radar' });
 
   page.appendChild(buildHeader());
   page.appendChild(buildConsole());
+  page.appendChild(buildSensorSources());
 
   /* Inicia fonte default (mock). */
   setTimeout(() => switchSource('mock'), 0);

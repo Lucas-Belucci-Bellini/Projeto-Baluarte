@@ -1,11 +1,14 @@
 /**
  * JARVIS Council — várias IAs trabalhando juntas, compartilhando a memória.
  *
- * Faz a mesma pergunta a vários "membros" (JARVIS Local, Gemini/servidor e o
- * modelo do Navegador/Hermes se estiver carregado), cada um recebendo o MESMO
- * contexto compartilhado (dossiê + memória durável + estado vivo do site), e
- * depois sintetiza uma resposta de consenso. O resultado volta para a memória,
- * então o conselho também alimenta o cérebro comum.
+ * Faz a mesma pergunta a vários "membros" (JARVIS Local, Gemini, Hermes no
+ * navegador/servidor, OpenClaw), todos com o MESMO contexto (dossiê + memória
+ * durável + estado do site), e sintetiza um consenso.
+ *
+ * Sintetizador (resposta final): o HERMES é o moderador — primeiro o modelo no
+ * navegador (sem limites), depois o Hermes servidor; o Gemini fica só de
+ * reserva (ele costuma estourar o limite de tokens). Se um membro não responde
+ * por limite, o moderador é avisado e diz isso. O resultado volta para a memória.
  */
 
 import { loadConfig, processLocal, processServer, processHermes, processOpenClaw, getBaluarteBriefing } from './jarvis-engine.js';
@@ -26,11 +29,45 @@ function sharedContext(question) {
   ].filter(Boolean).join('\n\n');
 }
 
+/** Detecta erro/limite de tokens e devolve mensagem limpa em vez do erro cru. */
+function memberResult(reply) {
+  const r = String(reply || '').trim();
+  if (!r) return { text: '(sem resposta)', ok: false };
+  if (/429|RESOURCE_EXHAUSTED|quota|rate.?limit|exceeded|too many requests/i.test(r)) {
+    return { text: '⚠ Limite de tokens atingido — não conseguiu responder.', ok: false, rateLimited: true };
+  }
+  if (r.startsWith('[')) return { text: '⚠ Indisponível.', ok: false };
+  if (r.startsWith('(')) return { text: r, ok: false };
+  return { text: r, ok: true };
+}
+
+const SYNTH_SYS =
+  'Você é o MODERADOR de um conselho de IAs do Projeto Baluarte (de preferência o Nous Hermes). '
+  + 'Sintetize UMA resposta final consensual, aproveitando o melhor de cada membro e apontando '
+  + 'concordâncias e divergências relevantes. Se algum membro NÃO respondeu (ex.: o Gemini por '
+  + 'limite de tokens), diga isso explicitamente em uma linha. Seja direto; não repita as respostas na íntegra.';
+
+const isBad = (r) => !r || typeof r !== 'string' || !r.trim()
+  || r.startsWith('[') || r.startsWith('(') || /429|RESOURCE_EXHAUSTED|quota|exceeded/i.test(r);
+
+/** Sintetizador: Hermes (navegador → servidor) primeiro; Gemini só de reserva. */
+async function synthesize(question, body, cfg) {
+  const msg = [{ role: 'user', text: `Pergunta do operador:\n${question}\n\n${body}` }];
+
+  const loaded = getLoadedModel();
+  if (loaded) {
+    try { const r = await processWebLLM(msg, { webllmModel: loaded, systemPrompt: SYNTH_SYS }); if (!isBad(r)) return { text: r, by: 'Hermes (navegador)' }; } catch { /* segue */ }
+  }
+  try { const r = await processHermes(msg, { ...cfg, systemPrompt: SYNTH_SYS }); if (!isBad(r)) return { text: r, by: 'Hermes (servidor)' }; } catch { /* segue */ }
+  try { const r = await processServer(msg, { ...cfg, systemPrompt: SYNTH_SYS }); if (!isBad(r)) return { text: r, by: 'Gemini (reserva)' }; } catch { /* segue */ }
+  return null;
+}
+
 /**
  * Roda o conselho.
  * @param {string} question
- * @param {{onMember?:(m)=>void}} cbs  chamado a cada membro que responde
- * @returns {Promise<{members:Array, consensus:string}>}
+ * @param {{onMember?:(m)=>void}} cbs
+ * @returns {Promise<{members:Array, consensus:string, synthesizedBy:string}>}
  */
 export async function runCouncil(question, { onMember } = {}) {
   const ctx = sharedContext(question);
@@ -38,6 +75,7 @@ export async function runCouncil(question, { onMember } = {}) {
   const base = (cfg && cfg.systemPrompt) || 'Você é o J.A.R.V.I.S. do Projeto Baluarte. Seja direto e técnico.';
   const members = [];
   const announce = (m) => { members.push(m); if (onMember) onMember(m); return m; };
+  const memberSys = (papel) => `${base}\n\n${ctx}\n\nVocê é um MEMBRO do conselho de IAs do Baluarte${papel ? ' (' + papel + ')' : ''}. Dê sua própria resposta, fundamentada.`;
 
   /* Membro 1 — JARVIS Local (instantâneo, fundamentado nos dados do site) */
   try {
@@ -47,49 +85,41 @@ export async function runCouncil(question, { onMember } = {}) {
     announce({ id: 'local', name: 'JARVIS Local', text: '(falhou)', ok: false });
   }
 
-  /* Membros assíncronos (em paralelo) */
   const tasks = [];
 
-  /* Membro 2 — Gemini (servidor), com web + contexto compartilhado */
+  /* Membro 2 — Gemini (servidor/web) */
   tasks.push((async () => {
     try {
-      const reply = await processServer(
-        [{ role: 'user', text: question }],
-        { ...cfg, systemPrompt: `${base}\n\n${ctx}\n\nVocê é um MEMBRO do conselho de IAs. Dê sua própria resposta, fundamentada. Outros membros responderão em paralelo.` }
-      );
-      announce({ id: 'gemini', name: 'Gemini (web)', text: reply, ok: true });
+      const reply = await processServer([{ role: 'user', text: question }], { ...cfg, systemPrompt: memberSys() });
+      const r = memberResult(reply);
+      announce({ id: 'gemini', name: 'Gemini (web)', text: r.text, ok: r.ok, rateLimited: r.rateLimited });
     } catch {
-      announce({ id: 'gemini', name: 'Gemini (web)', text: '(servidor indisponível)', ok: false });
+      announce({ id: 'gemini', name: 'Gemini (web)', text: '⚠ Indisponível.', ok: false });
     }
   })());
 
-  /* Membro 3 — Navegador/Hermes, só se um modelo já estiver carregado */
+  /* Membro 3 — Hermes no Navegador (se um modelo estiver carregado) */
   const loaded = getLoadedModel();
   if (loaded) {
     tasks.push((async () => {
       try {
-        const reply = await processWebLLM(
-          [{ role: 'user', text: question }],
-          { webllmModel: loaded, systemPrompt: `${base}\n\n${ctx}\n\nVocê é um MEMBRO do conselho de IAs do Baluarte.` }
-        );
-        announce({ id: 'webllm', name: 'Navegador · ' + loaded.split('-')[0], text: reply, ok: true });
+        const reply = await processWebLLM([{ role: 'user', text: question }], { webllmModel: loaded, systemPrompt: memberSys('modelo no navegador') });
+        const r = memberResult(reply);
+        announce({ id: 'webllm', name: 'Navegador · ' + loaded.split('-')[0], text: r.text, ok: r.ok });
       } catch {
-        announce({ id: 'webllm', name: 'Navegador', text: '(falhou)', ok: false });
+        announce({ id: 'webllm', name: 'Navegador', text: '⚠ Indisponível.', ok: false });
       }
     })());
   }
 
-  /* Membro 4 — Hermes (servidor): Nous Hermes via Vercel→OpenRouter (qualquer device) */
+  /* Membro 4 — Hermes (servidor): Nous Hermes via Vercel→OpenRouter */
   tasks.push((async () => {
     try {
-      const reply = await processHermes(
-        [{ role: 'user', text: question }],
-        { ...cfg, systemPrompt: `${base}\n\n${ctx}\n\nVocê é um MEMBRO do conselho de IAs do Baluarte (modelo Nous Hermes).` }
-      );
-      const ok = !!reply && !reply.startsWith('[') && !reply.startsWith('(');
-      announce({ id: 'hermes', name: 'Hermes (servidor)', text: reply, ok });
+      const reply = await processHermes([{ role: 'user', text: question }], { ...cfg, systemPrompt: memberSys('modelo Nous Hermes') });
+      const r = memberResult(reply);
+      announce({ id: 'hermes', name: 'Hermes (servidor)', text: r.text, ok: r.ok, rateLimited: r.rateLimited });
     } catch {
-      announce({ id: 'hermes', name: 'Hermes (servidor)', text: '(indisponível)', ok: false });
+      announce({ id: 'hermes', name: 'Hermes (servidor)', text: '⚠ Indisponível.', ok: false });
     }
   })());
 
@@ -97,52 +127,45 @@ export async function runCouncil(question, { onMember } = {}) {
   if (cfg && cfg.openclawUrl) {
     tasks.push((async () => {
       try {
-        const reply = await processOpenClaw(
-          [{ role: 'user', text: question }],
-          { ...cfg, systemPrompt: `${base}\n\n${ctx}\n\nVocê é um MEMBRO do conselho de IAs do Baluarte (assistente OpenClaw).` }
-        );
-        const ok = !!reply && !reply.startsWith('[') && !reply.startsWith('(');
-        announce({ id: 'openclaw', name: 'OpenClaw', text: reply, ok });
+        const reply = await processOpenClaw([{ role: 'user', text: question }], { ...cfg, systemPrompt: memberSys('assistente OpenClaw') });
+        const r = memberResult(reply);
+        announce({ id: 'openclaw', name: 'OpenClaw', text: r.text, ok: r.ok });
       } catch {
-        announce({ id: 'openclaw', name: 'OpenClaw', text: '(indisponível)', ok: false });
+        announce({ id: 'openclaw', name: 'OpenClaw', text: '⚠ Indisponível.', ok: false });
       }
     })());
   }
 
   await Promise.all(tasks);
 
-  /* Síntese — o moderador (Gemini) combina o melhor de cada membro */
-  const usable = members.filter((m) => m.ok && m.text && !m.text.startsWith('(') && !m.text.startsWith('['));
+  /* ===== Síntese — o HERMES é o moderador (Gemini só de reserva) ===== */
+  const usable = members.filter((m) => m.ok && m.text);
+  const failed = members.filter((m) => !m.ok);
+  const rateNote = failed.some((f) => f.rateLimited)
+    ? '\n\n⚠ O Gemini não respondeu (limite de tokens atingido).' : '';
   let consensus = '';
-  if (usable.length <= 1) {
-    consensus = usable[0]?.text || 'Nenhum membro respondeu.';
+  let synthesizedBy = '';
+  if (usable.length === 0) {
+    consensus = 'Nenhum membro conseguiu responder agora.' + rateNote;
+  } else if (usable.length === 1) {
+    consensus = usable[0].text + rateNote;
   } else {
-    const body = usable.map((m) => `### ${m.name}\n${m.text}`).join('\n\n');
-    try {
-      consensus = await processServer(
-        [{ role: 'user', text: `Pergunta do operador:\n${question}\n\nRespostas dos membros do conselho:\n\n${body}` }],
-        { ...cfg, systemPrompt: 'Você é o MODERADOR de um conselho de IAs do Projeto Baluarte. Sintetize UMA resposta final consensual, aproveitando o melhor de cada membro e apontando concordâncias e divergências relevantes. Seja direto e objetivo; não repita as respostas na íntegra.' }
-      );
-    } catch {
-      consensus = usable.map((m) => `• ${m.name}: ${m.text}`).join('\n\n');
-    }
+    const body = 'Respostas dos membros do conselho:\n\n'
+      + usable.map((m) => `### ${m.name}\n${m.text}`).join('\n\n')
+      + (failed.length ? '\n\n## Membros que NÃO responderam\n' + failed.map((m) => `- ${m.name}${m.rateLimited ? ': limite de tokens atingido' : ''}`).join('\n') : '');
+    const syn = await synthesize(question, body, cfg);
+    if (syn) { consensus = syn.text; synthesizedBy = syn.by; }
+    else { consensus = usable.map((m) => `• ${m.name}: ${m.text}`).join('\n\n') + rateNote; }
   }
 
-  /* O conselho joga TUDO na memória compartilhada: a pergunta E as respostas
-   * geradas (cada membro + o consenso), ligadas ao Cérebro e ao Raio-X. */
-  const trim = (t) => String(t || '')
-    .replace(/```[\s\S]*?```/g, ' [código] ')
-    .replace(/\s+/g, ' ').trim().slice(0, 400);
+  /* O conselho joga TUDO na memória compartilhada: pergunta + respostas geradas. */
+  const trim = (t) => String(t || '').replace(/```[\s\S]*?```/g, ' [código] ').replace(/\s+/g, ' ').trim().slice(0, 400);
   const qShort = question.replace(/\s+/g, ' ').trim().slice(0, 80);
   try { captureConversation(question); } catch { /* ok */ }
   try {
-    for (const m of usable) {
-      addMemory({ text: `Conselho — ${m.name} sobre "${qShort}": ${trim(m.text)}`, source: 'conselho' });
-    }
-    if (consensus) {
-      addMemory({ text: `Conselho — consenso sobre "${qShort}": ${trim(consensus)}`, source: 'conselho' });
-    }
+    for (const m of usable) addMemory({ text: `Conselho — ${m.name} sobre "${qShort}": ${trim(m.text)}`, source: 'conselho' });
+    if (consensus) addMemory({ text: `Conselho — consenso sobre "${qShort}": ${trim(consensus)}`, source: 'conselho' });
   } catch { /* memória é best-effort */ }
 
-  return { members, consensus };
+  return { members, consensus, synthesizedBy };
 }
