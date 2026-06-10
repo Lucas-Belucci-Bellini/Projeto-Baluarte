@@ -8,6 +8,9 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Banco de Dados visível na Memória (#190)
+- 🗄️ `/memoria` ganhou a visão **Banco de Dados (repo)**: detalhamento das memórias **por origem** (conversa/resposta/conselho/…) + links direto pro **`banco.json`** e pros **commits** da branch `jarvis-memory` no GitHub — pra ver o **"1 commit por pergunta"** acontecendo. O núcleo do #190 (salvar pergunta+resposta no repo, compartilhado/retroalimentado, lido por todas as IAs/Cérebro/Raio-X) já existia.
+
 ### #186 (fase 3): documentação do layout + storage
 - 💬 Comentei a camada de **layout**: `shell.renderPage` (o ponto único de troca de tela — pipeline mount → nav → título → estado), `sidebar.NAV_GROUPS` (passo a passo de como adicionar um item ao menu) e `navItem`; + nota no `storage.js` sobre o fallback em memória (modo privado). Núcleo + roteador + layout agora documentados; #186 segue aberto (páginas/utils nas próximas fases).
 

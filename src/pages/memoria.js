@@ -37,6 +37,11 @@ export function memoriaPage() {
   const statsEl = h('div', { className: 'mem-stats' });
   page.appendChild(statsEl);
 
+  /* Banco de Dados versionado no repositório (issue #190) */
+  const REPO_BASE = 'https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte';
+  const dbEl = h('div', { className: 'mem-db', style: { background: 'var(--color-bg-elevated)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md)', marginBottom: 'var(--space-md)' } });
+  page.appendChild(dbEl);
+
   /* Adicionar memória */
   const input = h('input', {
     className: 'mem-input', type: 'text',
@@ -118,6 +123,24 @@ export function memoriaPage() {
     if (item) toast('Memorizado 🧠', { type: 'success' });
   }
 
+  /* Visão "Banco de Dados": detalha por origem + links pro repo (issue #190). */
+  function renderDB() {
+    empty(dbEl);
+    const bySource = {};
+    for (const m of getMemories()) { const s = m.source || 'jarvis'; bySource[s] = (bySource[s] || 0) + 1; }
+    dbEl.append(
+      h('div', { style: { fontWeight: '600', color: 'var(--color-text-primary)', marginBottom: '6px' } }, '🗄️ Banco de Dados (repo · branch jarvis-memory)'),
+      h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '5px' } },
+        ...Object.entries(bySource).sort((a, b) => b[1] - a[1]).map(([s, n]) =>
+          h('span', { style: { fontSize: '11px', padding: '2px 8px', borderRadius: 'var(--radius-pill)', background: 'var(--color-cyan-soft)', color: 'var(--color-cyan)' } }, `${s}: ${n}`))),
+      h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: '6px 0' } },
+        'Cada pergunta/resposta vira ', h('b', null, '1 commit'), ' aqui — o banco compartilhado que ',
+        h('b', null, 'retroalimenta'), ' as IAs, o Segundo Cérebro e o Raio-X (issue #190).'),
+      h('div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap' } },
+        h('a', { className: 'btn btn--ghost btn--sm', href: REPO_BASE + '/blob/jarvis-memory/memoria/banco.json', target: '_blank', rel: 'noopener' }, '📄 banco.json'),
+        h('a', { className: 'btn btn--ghost btn--sm', href: REPO_BASE + '/commits/jarvis-memory', target: '_blank', rel: 'noopener' }, '📜 commits (1/pergunta)')));
+  }
+
   function refresh() {
     const st = memoryStats();
     empty(statsEl);
@@ -125,6 +148,7 @@ export function memoriaPage() {
       statBox(st.total, 'memórias'),
       statBox(Object.keys(st.byConcept).length, 'conceitos ligados'),
       statBox(getMemories().filter((m) => m.source === 'manual').length, 'manuais'));
+    renderDB();
 
     const items = query ? searchMemories(query, 50) : getMemories();
     empty(listEl);
