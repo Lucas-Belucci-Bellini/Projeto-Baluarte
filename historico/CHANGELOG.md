@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Batalha Naval (#181) + Sobrepor em segundo plano
+- 🚢 **Batalha Naval** (`/batalha-naval`): jogo clássico vs. computador — frota posicionada automaticamente, IA de "caça" (ao acertar mira nas células vizinhas), tabuleiros 10×10, afunde a frota inimiga antes que ela afunde a sua. Resolve o issue #181.
+- 📌 **Sobrepor em segundo plano:** janelas sobrepostas com áudio/vídeo nativo agora usam a **Media Session API** → controles na tela de bloqueio e reprodução em segundo plano no celular (melhor ainda como PWA instalado). Players em iframe (SoundCloud) seguem a própria media session.
+- 🛡️ Backup: `backup/2026-06-08-pre-merge-batalha`.
+
 ### Sobrepor — janelas flutuantes que mantêm a página viva
 - 📌 Botão **Sobrepor** no header: fixa a página atual numa **janela flutuante** (arrastável por mouse/toque, minimizável) que **sobrevive à navegação**. Assim o rádio/música continua tocando enquanto você lê a Biblioteca — tudo numa guia só. A página é movida para fora do `main` (mas dentro do `<body>`), então o roteador não a destrói. `src/layout/overlay.js` + `pinCurrentPage()` no shell.
 - 🛡️ Backup: `backup/2026-06-08-pre-merge-sobrepor`.

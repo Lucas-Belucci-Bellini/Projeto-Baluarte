@@ -88,6 +88,7 @@ function pageTitleForRoute(path) {
     '/biblioteca': 'Biblioteca',
     '/academia': 'Academia',
     '/jogos': 'Jogos de Aprendizado',
+    '/batalha-naval': 'Batalha Naval',
     '/robotica': 'Currículo de Robótica',
     '/universo': 'Universo',
     '/tabela-periodica': 'Tabela Periódica',

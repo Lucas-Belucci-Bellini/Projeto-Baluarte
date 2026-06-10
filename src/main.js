@@ -65,6 +65,7 @@ router.register('/videos', lazy(() => import('./pages/videos.js'), 'videosPage')
 router.register('/tv', lazy(() => import('./pages/tv.js'), 'tvPage'));
 router.register('/utilidades', lazy(() => import('./pages/utilidades.js'), 'utilidadesPage'));
 router.register('/jogos', lazy(() => import('./pages/jogos.js'), 'jogosPage'));
+router.register('/batalha-naval', lazy(() => import('./pages/batalha-naval.js'), 'batalhaNavalPage'));
 router.register('/universo', lazy(() => import('./pages/universo.js'), 'universoPage'));
 router.register('/tabela-periodica', lazy(() => import('./pages/tabela-periodica.js'), 'tabelaPeriodicaPage'));
 router.register('/modpack', lazy(() => import('./pages/modpack.js'), 'modpackPage'));

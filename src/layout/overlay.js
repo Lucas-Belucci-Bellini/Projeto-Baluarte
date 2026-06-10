@@ -62,7 +62,34 @@ export function pinElement(el, title) {
 
   r.appendChild(panel);
   panels.add(panel);
+  wireMediaSession(body, title);
   return panel;
+}
+
+/**
+ * Liga o áudio/vídeo nativo da página sobreposta à Media Session API: dá
+ * controles na tela de bloqueio e ajuda o navegador a manter a reprodução em
+ * segundo plano (especialmente no celular / como PWA instalado).
+ * (Players em iframe — ex.: SoundCloud — têm a própria media session.)
+ */
+function wireMediaSession(container, title) {
+  if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+  const media = container.querySelector('audio, video');
+  if (!media) return;
+  try {
+    if (typeof MediaMetadata !== 'undefined') {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: title || 'Baluarte', artist: 'Projeto Baluarte', album: 'Sobrepor (segundo plano)'
+      });
+    }
+    navigator.mediaSession.setActionHandler('play', () => { media.play().catch(() => {}); });
+    navigator.mediaSession.setActionHandler('pause', () => { media.pause(); });
+    navigator.mediaSession.setActionHandler('stop', () => { media.pause(); });
+    const sync = () => { try { navigator.mediaSession.playbackState = media.paused ? 'paused' : 'playing'; } catch { /* ok */ } };
+    media.addEventListener('play', sync);
+    media.addEventListener('pause', sync);
+    sync();
+  } catch { /* ok */ }
 }
 
 function makeDraggable(panel, handle) {

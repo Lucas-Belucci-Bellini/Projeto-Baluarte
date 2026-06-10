@@ -105,7 +105,8 @@ export const NAV_GROUPS = [
       { path: '/tv',      label: 'TV',                 icon: '▤',  phase: 1 },
       { path: '/filmes',  label: 'Cinema',             icon: '◰',  phase: 1 },
       { path: '/memes',   label: 'Arquivo de Memes',   icon: '◱',  phase: 1 },
-      { path: '/jogos',   label: 'Arcade Baluarte',    icon: '🎮', phase: 1 }
+      { path: '/jogos',   label: 'Arcade Baluarte',    icon: '🎮', phase: 1 },
+      { path: '/batalha-naval', label: 'Batalha Naval', icon: '🚢', phase: 1 }
     ]
   },
   {
