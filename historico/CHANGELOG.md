@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Mural — rede social leve (#187) + docs do roteador (#186)
+- 📣 **Mural** (`/mural`, issue #187): rede social leve — recados salvos no localStorage **e** commitados no repositório (`mural/posts.json` via `api/social.py`, branch `jarvis-memory`), então ficam **compartilhados e versionados**, sem backend/login. Sem `GITHUB_TOKEN`, fica só local (single-device).
+- 💬 **#186 (fase):** comentários explicativos no `router.js` (compile/match). O core já tinha cabeçalhos JSDoc; o guia para contribuidores está em `CONTRIBUTING.md`.
+- 🛡️ Backup: `backup/2026-06-08-pre-merge-mural`.
+
 ### Git Nexus ao vivo (#189) + Guia de contribuição (#186)
 - 🗺️ **Raio-X — Git Nexus ao vivo** (`/codigo`, issue #189): botão que lê o repositório **inteiro agora** pela API do GitHub (não o `codemap` pré-gerado) — métricas ao vivo + todos os arquivos por pasta, marcando os novos (🆕). Sem token (API pública).
 - 💬 **`CONTRIBUTING.md`** (issue #186, fase 1): guia de arquitetura e convenções para futuros contribuidores (pastas, helpers, como adicionar página, sistema de IA, envs, fluxo de git). O código já tem cabeçalhos JSDoc; comentários por módulo seguem em fases.

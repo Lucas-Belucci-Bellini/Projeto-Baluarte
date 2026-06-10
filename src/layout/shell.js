@@ -113,6 +113,7 @@ function pageTitleForRoute(path) {
     '/enciclopedia-militar': 'Enciclopédia Militar',
     '/codigo': 'Raio-X do Código',
     '/projetos': 'Projetos',
+    '/mural': 'Mural do Baluarte',
     '/cerebro': 'Segundo Cérebro',
     '/memoria': 'Memória do JARVIS',
     '/terminal-ia': 'Terminal-IA',

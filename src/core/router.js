@@ -16,6 +16,9 @@ let currentMatch = null;
 let started = false;
 let notFoundHandler = null;
 
+/* Converte um padrão de rota num regex + lista de nomes de parâmetro.
+ * Ex.: '/perfil/:id' -> regex /^\/perfil\/([^/]+)\/?$/ e keys=['id'].
+ * Cada ':nome' vira um grupo de captura ([^/]+); a '/' final é opcional. */
 function compile(pattern) {
   const keys = [];
   const regex = new RegExp(
@@ -44,6 +47,8 @@ function parseHash() {
   return { path: path || '/', query };
 }
 
+/* Acha a PRIMEIRA rota cujo regex casa com o path e extrai os params
+ * nomeados (decodificando %20 etc.). Retorna null se nada casar. */
 function match(path) {
   for (const route of routes) {
     const m = route.regex.exec(path);

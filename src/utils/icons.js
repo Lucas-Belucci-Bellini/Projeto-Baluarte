@@ -80,6 +80,7 @@ const PATHS = {
   wand: '<path d="M5 19 15 9"/><path d="m15 4 .8 2.2L18 7l-2.2.8L15 10l-.8-2.2L12 7l2.2-.8L15 4Z"/><path d="m19.5 12 .5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5.5-1.5Z"/>',
   council: '<circle cx="7" cy="8" r="2.2"/><circle cx="17" cy="8" r="2.2"/><circle cx="12" cy="17" r="2.2"/><path d="M9.2 8h5.6M8 9.8l3 5.4M16 9.8l-3 5.4"/>',
   anchor: '<circle cx="12" cy="4.5" r="2"/><path d="M12 6.5V21M7 9.5h10M5 14a7 7 0 0 0 14 0M5 14H3M21 14h-2"/>',
+  chat: '<path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 3V6a1 1 0 0 1 1-1Z"/><path d="M8 9h8M8 12h5"/>',
   folder: '<path d="M4 7a2 2 0 0 1 2-2h3l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/>',
   scantext: '<path d="M5 7.5V6a1.5 1.5 0 0 1 1.5-1.5H9M15 4.5h1.5A1.5 1.5 0 0 1 18 6v1.5M18 16.5V18a1.5 1.5 0 0 1-1.5 1.5H15M9 19.5H6.5A1.5 1.5 0 0 1 5 18v-1.5"/><path d="M8 9.5h7M8 12h7M8 14.5h4"/>',
   database: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
@@ -110,7 +111,7 @@ export const iconByPath = {
   '/armas-por-pais': 'crosshair', '/guerras-conflitos': 'globe', '/batalhas-historicas': 'shield',
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
   '/enciclopedia-militar': 'book',
-  '/codigo': 'network', '/projetos': 'folder', '/cerebro': 'brain', '/ocr': 'scantext',
+  '/codigo': 'network', '/projetos': 'folder', '/mural': 'chat', '/cerebro': 'brain', '/ocr': 'scantext',
   '/memoria': 'database', '/terminal-ia': 'terminal', '/seguranca': 'shield',
   '/gerar-codigo': 'wand', '/conselho': 'council'
 };

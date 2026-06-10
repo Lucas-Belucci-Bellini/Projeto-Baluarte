@@ -1,0 +1,35 @@
+/* ============================================================
+ *  Mural do Baluarte — /mural (rede social leve)
+ * ============================================================ */
+
+.page-mural { min-height: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+
+.mural-compose {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-md);
+  display: flex; flex-direction: column; gap: var(--space-sm);
+}
+.mural-compose__row { display: flex; gap: var(--space-sm); align-items: flex-start; }
+.mural-name, .mural-text {
+  background: var(--color-bg); color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--radius-sm);
+  padding: 9px 12px; font-size: var(--font-size-sm); font-family: inherit;
+}
+.mural-name { max-width: 220px; }
+.mural-text { flex: 1; min-width: 0; resize: vertical; line-height: 1.5; }
+.mural-name:focus, .mural-text:focus { outline: none; border-color: var(--color-cyan-edge); }
+.mural-compose__row .btn { white-space: nowrap; }
+
+.mural-status { font-size: var(--font-size-sm); margin-bottom: var(--space-sm); }
+
+.mural-feed { display: flex; flex-direction: column; gap: var(--space-sm); }
+.mural-post {
+  background: var(--color-bg-elevated); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 3px solid var(--color-cyan-edge); border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+}
+.mural-post__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.mural-post__author { font-weight: 600; color: var(--color-cyan); }
+.mural-post__time { font-size: 11px; }
+.mural-post__text { color: var(--color-text-primary); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+.mural-empty { padding: var(--space-lg); text-align: center; border: 1px dashed rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); }

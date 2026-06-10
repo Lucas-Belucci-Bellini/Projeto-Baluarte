@@ -13,6 +13,7 @@
     { "nome": "Terminal-IA", "desc": "O 'terminal do Claude Code' no site: REPL com :go :mem :code :chart :brain + linguagem natural (Gemini).", "rota": "/terminal-ia", "status": "novo", "data": "2026-06", "tags": ["IA", "terminal"] },
     { "nome": "Segurança do Agente", "desc": "Guarda de segurança (estilo Sponsio): veta cada ação do modo agente, bloqueia o perigoso e registra tudo.", "rota": "/seguranca", "status": "novo", "data": "2026-06", "tags": ["IA", "segurança"] },
     { "nome": "Gerador de Código", "desc": "O site e a IA criam código: descreva e o JARVIS (Gemini) gera, com realce + abrir no Editor.", "rota": "/gerar-codigo", "status": "novo", "data": "2026-06", "tags": ["IA", "dev"] },
-    { "nome": "Conselho de IAs", "desc": "Várias IAs (Local + Gemini + Hermes no navegador) respondem juntas, compartilham a memória e sintetizam um consenso.", "rota": "/conselho", "status": "novo", "data": "2026-06", "tags": ["IA", "multi-agente"] }
+    { "nome": "Conselho de IAs", "desc": "Várias IAs (Local + Gemini + Hermes no navegador) respondem juntas, compartilham a memória e sintetizam um consenso.", "rota": "/conselho", "status": "novo", "data": "2026-06", "tags": ["IA", "multi-agente"] },
+    { "nome": "Mural", "desc": "Rede social leve: recados salvos no repositório (mural/posts.json), compartilhados e versionados, sem backend.", "rota": "/mural", "status": "novo", "data": "2026-06", "tags": ["social", "repo"] }
   ]
 }
