@@ -1,0 +1,38 @@
+# Análise de segurança CodeQL (issue #192) — o único template aplicável da
+# lista: os de deploy (Azure/AWS/GKE…) não servem porque o site deploya na
+# Vercel. Roda SÓ em push/PR no main (sem cron — sem agente em segundo plano).
+# Resultados na aba Security → Code scanning do repositório.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  security-events: write
+  actions: read
+  contents: read
+
+jobs:
+  analyze:
+    name: Analisar (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, python]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Iniciar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Analisar
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

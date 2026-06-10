@@ -158,8 +158,9 @@ export async function runCouncil(question, { onMember } = {}) {
     else { consensus = usable.map((m) => `• ${m.name}: ${m.text}`).join('\n\n') + rateNote; }
   }
 
-  /* O conselho joga TUDO na memória compartilhada: pergunta + respostas geradas. */
-  const trim = (t) => String(t || '').replace(/```[\s\S]*?```/g, ' [código] ').replace(/\s+/g, ' ').trim().slice(0, 400);
+  /* O conselho joga TUDO na memória compartilhada: pergunta + respostas geradas
+   * em texto INTEGRAL (coleta bruta, issue #190) — só com teto de segurança. */
+  const trim = (t) => String(t || '').trim().slice(0, 4000);
   const qShort = question.replace(/\s+/g, ' ').trim().slice(0, 80);
   try { captureConversation(question); } catch { /* ok */ }
   try {

@@ -90,8 +90,9 @@ export function getMemories() { return allMemories().sort((a, b) => (b.ts || 0) 
 
 /** Grava uma memória durável (dedup por texto), ligando aos conceitos. */
 export function addMemory({ text, source = 'jarvis', tags = [] }) {
-  const clean = String(text || '').replace(/\s+/g, ' ').trim();
-  if (clean.length < 3) return null;
+  /* Bruto: preserva o texto como veio (inclusive quebras de linha/código). */
+  const clean = String(text || '').trim();
+  if (!clean) return null;
   const list = load();
   const dup = list.find((m) => m.text.toLowerCase() === clean.toLowerCase());
   if (dup) return dup;
@@ -102,7 +103,9 @@ export function addMemory({ text, source = 'jarvis', tags = [] }) {
     codeIds: linkCode(clean)
   };
   list.push(item);
-  persist(list);
+  /* Teto local: mantém as 2000 mais recentes (o histórico completo segue no
+   * repositório, que não tem esse limite). */
+  persist(list.length > 2000 ? list.slice(-2000) : list);
   /* Commita no repositório (branch jarvis-memory) — serializado e best-effort. */
   try { saveEntry({ text: item.text, source: item.source, conceptIds: item.conceptIds, codeIds: item.codeIds, ts: item.ts }); } catch { /* ok */ }
   return item;
@@ -142,25 +145,23 @@ export function codeMemoryCounts() {
   return counts;
 }
 
-const GREET = /^(oi|ola|opa|eai|e ai|bom dia|boa tarde|boa noite|tchau|valeu|obrigad|blz|beleza)\b/i;
-/**
- * Captura automática: tudo que o operador escreve vira memória durável
- * (com filtro leve de ruído), ligada ao Cérebro e ao Raio-X.
- */
+/* Coleta BRUTA (issue #190): captura TUDO, sem filtro de saudação/tamanho e
+ * sem remover blocos de código — o dado vai inteiro pro banco. Único teto é
+ * RAW_MAX por memória (proteção do localStorage), bem acima do uso normal. */
+const RAW_MAX = 4000;
+
+/** Captura automática: tudo que o operador escreve vira memória durável (bruto). */
 export function captureConversation(text) {
-  const t = String(text || '').replace(/\s+/g, ' ').trim();
-  if (t.length < 6) return null;       // curto demais
-  if (t.startsWith(':')) return null;  // comando de terminal
-  if (GREET.test(t) && t.length < 24) return null; // saudação curta
-  return addMemory({ text: t, source: 'conversa' });
+  const t = String(text || '').trim();
+  if (!t) return null;                                  // só ignora vazio
+  return addMemory({ text: t.slice(0, RAW_MAX), source: 'conversa' });
 }
 
-/** Captura a RESPOSTA da IA na memória (resumida, sem blocos de código). */
+/** Captura a RESPOSTA da IA na memória — texto integral (bruto). */
 export function captureReply(text) {
-  let t = String(text || '').replace(/```[\s\S]*?```/g, ' [código] ').replace(/\s+/g, ' ').trim();
-  if (t.length < 12) return null;
-  if (t.length > 400) t = t.slice(0, 400).trim() + '…';
-  return addMemory({ text: t, source: 'resposta' });
+  const t = String(text || '').trim();
+  if (!t) return null;
+  return addMemory({ text: t.slice(0, RAW_MAX), source: 'resposta' });
 }
 
 export function conceptLabel(id) {

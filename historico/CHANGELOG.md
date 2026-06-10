@@ -6,6 +6,14 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-10
+
+### Coleta bruta (#190/#191) + sem agente do Google + CodeQL (#192)
+- 🥩 **Coleta de dados BRUTA** (pedido do operador no #190): a captura automática agora guarda **tudo, integral e sem filtros** — sem filtro de saudação/tamanho, sem remover blocos de código, preservando quebras de linha; pergunta, resposta e deliberações do Conselho inteiras (teto de segurança de 4000 chars/memória e 2000 memórias locais — o histórico completo segue no repositório).
+- 🛑 **Agente do Google Docs desligado**: o cron de 12h do `sync-cronicas.yml` foi removido a pedido — a sincronização das Crônicas agora é **só manual** (botão "Run workflow" na aba Actions).
+- 🛡️ **CodeQL** (`.github/workflows/codeql.yml`, issue #192): análise de segurança do GitHub para o JS do site e o Python do `api/`, em todo push/PR no main (único template aplicável da lista — os de deploy não servem, o site deploya na Vercel).
+- 🛡️ Backup: `backup/2026-06-10-pre-merge-bruto`.
+
 ## 2026-06-08
 
 ### Banco de Dados visível na Memória (#190)
