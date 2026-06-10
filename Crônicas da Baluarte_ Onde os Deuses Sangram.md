@@ -13718,7 +13718,7 @@ O Slayer olhou para Kratos e Optimus. Um entendimento silencioso passou entre os
 
 Enquanto o comboio da **Equipe Charlie** se afastava da cela de Megatron, o som do portão de segurança máxima se fechando parecia um veredito. O mundo agora sabia o que estava preso lá embaixo, e quem eram os carcereiros.
 
-A audiência de **8 bilhões** estava em um estado de transe coletivo. A hashtag `#TheLastCouncil` (O Conselho dos Últimos) dominava todas as redes. A percepção pública havia mudado: não era mais sobre "nós contra eles", mas sobre "o que restou contra o que virá".
+A audiência de **8 bilhões** estava em um estado de transe coletivo. A hashtag \#TheLastCouncil (O Conselho dos Últimos) dominava todas as redes. A percepção pública havia mudado: não era mais sobre "nós contra eles", mas sobre "o que restou contra o que virá".
 
 ---
 
