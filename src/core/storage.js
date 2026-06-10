@@ -17,6 +17,9 @@ function isStorageAvailable() {
   }
 }
 
+/* Em modo privado / cookies bloqueados, o localStorage lança ao escrever — aí
+ * caímos num Map em memória, então o app nunca quebra (mas não persiste entre
+ * sessões). `storage.hasLocalStorage` diz qual está em uso. */
 const HAS_LS = typeof window !== 'undefined' && isStorageAvailable();
 
 function key(k) {

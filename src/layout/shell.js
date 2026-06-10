@@ -47,16 +47,20 @@ export function mountShell(rootEl) {
   return shellRefs;
 }
 
-/** Renderiza uma página (HTMLElement) na área principal. */
+/**
+ * Renderiza uma página (HTMLElement) na área principal.
+ * É o ponto único de troca de tela: o router emite 'route:change' (ver main.js)
+ * e o shell chama isto. A página anterior é destruída ao trocar o conteúdo.
+ */
 export function renderPage(pageEl, route) {
   if (!mainInner) return;
-  mount(mainInner, pageEl);
+  mount(mainInner, pageEl);              // troca o conteúdo do <main> (descarta a página antiga)
   if (route) {
-    updateActiveNav(route);
+    updateActiveNav(route);              // realça o item ativo na sidebar
     document.title = pageTitleForRoute(route) + ' · Baluarte';
-    appState.set({ route });
-    setCurrentFunction(route);
-    mainInner.scrollTop = 0;
+    appState.set({ route });             // publica a rota atual no store global
+    setCurrentFunction(route);           // atualiza o status do site (HUD/JARVIS)
+    mainInner.scrollTop = 0;             // volta ao topo na navegação
   }
 }
 

@@ -8,6 +8,9 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### #186 (fase 3): documentação do layout + storage
+- 💬 Comentei a camada de **layout**: `shell.renderPage` (o ponto único de troca de tela — pipeline mount → nav → título → estado), `sidebar.NAV_GROUPS` (passo a passo de como adicionar um item ao menu) e `navItem`; + nota no `storage.js` sobre o fallback em memória (modo privado). Núcleo + roteador + layout agora documentados; #186 segue aberto (páginas/utils nas próximas fases).
+
 ### #186 (fase 2): documentação do núcleo
 - 💬 Comentei a fundo os módulos-núcleo que todo contribuidor usa primeiro: `h()` em `helpers.js` (chaves especiais `className`/`style`/`dataset`/`on*`/`html` + cada ramo do corpo), o event bus (`events.js`: retorno de cancelamento + isolamento de erros no `emit`) e o store (`state.js`: corrigido o cabeçalho — é merge raso + listeners, não Proxy). Issue #186 segue aberto (próximas fases: páginas/utils).
 

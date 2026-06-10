@@ -12,7 +12,14 @@ import { VERSION, CODENAME } from '../data/version.js';
 import { iconForPath, iconByPath } from '../utils/icons.js';
 import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
 
-/* ===== Grupos de navegação do menu lateral — todas as rotas ===== */
+/* ===== Grupos de navegação do menu lateral =====
+ * Para ADICIONAR um item ao menu, inclua { path, label, icon, phase } no grupo
+ * desejado:
+ *   - `path`  rota (#/path) — precisa estar registrada em main.js
+ *   - `label` texto exibido
+ *   - `icon`  glifo de fallback (o ícone de linha vem de icons.js por `path`)
+ *   - `phase` liberação: <= CURRENT_PHASE fica ativo; senão aparece bloqueado
+ */
 export const NAV_GROUPS = [
   {
     label: 'Início',
@@ -159,6 +166,7 @@ export const NAV_GROUPS = [
 
 const CURRENT_PHASE = 21;
 
+/** Monta um link do menu: ícone (de linha ou glifo) + rótulo + badge de fase. */
 function navItem(item, currentPath) {
   const isActive = currentPath === item.path;
   const isReady = item.phase <= CURRENT_PHASE;
