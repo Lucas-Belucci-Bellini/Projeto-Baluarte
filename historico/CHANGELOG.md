@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Música: "Suas Faixas" por URL (#184) + #182 já estava feito
+- ➕ **Suas Faixas** (`/musicas`, issue #184): adicione faixas do **Spotify ou SoundCloud** colando o link — salvas localmente (neste navegador), com player embutido e botão de remover. (Tocar Spotify completo só com Premium logado — limite do Spotify, não do site.)
+- ✅ **#182** ("guardar memórias num repo, commit por dado, acessível por todas as IAs") já estava implementado: é a Memória versionada no repositório (`api/memory.py` + branch `jarvis-memory`). Fechado como concluído.
+- 🛡️ Backup: `backup/2026-06-08-pre-merge-184`.
+
 ### Batalha Naval (#181) + Sobrepor em segundo plano
 - 🚢 **Batalha Naval** (`/batalha-naval`): jogo clássico vs. computador — frota posicionada automaticamente, IA de "caça" (ao acertar mira nas células vizinhas), tabuleiros 10×10, afunde a frota inimiga antes que ela afunde a sua. Resolve o issue #181.
 - 📌 **Sobrepor em segundo plano:** janelas sobrepostas com áudio/vídeo nativo agora usam a **Media Session API** → controles na tela de bloqueio e reprodução em segundo plano no celular (melhor ainda como PWA instalado). Players em iframe (SoundCloud) seguem a própria media session.

@@ -6,6 +6,8 @@
  */
 
 import { h, empty } from '../utils/helpers.js';
+import { storage } from '../core/storage.js';
+import { toast } from '../utils/toast.js';
 import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
 
 const TRACK_ID = '6Hv4AhlMTDgb6HGTvI0xlH';
@@ -116,6 +118,66 @@ function soundcloudSection() {
   return wrap;
 }
 
+/* ===== Suas faixas — adicionar por URL (Spotify/SoundCloud), salvas localmente (issue #184) ===== */
+function parseMusicUrl(url) {
+  const u = String(url || '').trim();
+  let m;
+  if ((m = u.match(/open\.spotify\.com\/(track|album|playlist|artist|episode|show)\/([A-Za-z0-9]+)/))) {
+    return { kind: 'spotify', type: m[1], id: m[2], url: u };
+  }
+  if (/soundcloud\.com\//i.test(u)) return { kind: 'soundcloud', url: u };
+  return null;
+}
+
+function customTracksSection() {
+  const KEY = 'musicas:custom';
+  const inputBox = h('input', {
+    type: 'text', placeholder: 'Cole um link do Spotify (faixa/álbum/playlist) ou SoundCloud…',
+    style: { flex: '1', minWidth: '0', background: 'var(--color-bg-elevated)', color: 'var(--color-text-primary)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 'var(--radius-sm)', padding: '9px 12px', fontSize: 'var(--font-size-sm)' }
+  });
+  const addBtn = h('button', { className: 'btn btn--primary', onclick: add }, '➕ Adicionar');
+  const list = h('div', { style: { display: 'grid', gap: 'var(--space-md)', marginTop: 'var(--space-sm)' } });
+  inputBox.addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
+
+  const load = () => storage.get(KEY, []);
+  const save = (a) => storage.set(KEY, a);
+
+  function embedFor(item) {
+    if (item.kind === 'spotify') return plainEmbed(item.type, item.id, item.type === 'track' ? 152 : 380);
+    return h('iframe', {
+      className: 'sc-iframe', width: '100%', height: '140', allow: 'autoplay', frameborder: 'no', scrolling: 'no',
+      src: 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(item.url) + '&color=%2300f0ff&hide_related=true&show_comments=false&show_user=true'
+    });
+  }
+  function render() {
+    empty(list);
+    const arr = load();
+    if (!arr.length) { list.appendChild(h('p', { className: 'u-text-muted', style: { fontSize: '13px' } }, 'Nenhuma faixa sua ainda — cole um link acima e ela fica salva neste navegador.')); return; }
+    arr.forEach((item, i) => {
+      list.appendChild(h('div', { style: { position: 'relative' } },
+        h('button', {
+          title: 'Remover', onclick: () => { const a = load(); a.splice(i, 1); save(a); render(); toast('Removida'); },
+          style: { position: 'absolute', top: '4px', right: '4px', zIndex: '2', background: 'rgba(0,0,0,0.6)', color: '#ff5b7a', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '24px', height: '24px' }
+        }, '✕'),
+        h('div', { className: 'musica-host' }, embedFor(item))));
+    });
+  }
+  function add() {
+    const parsed = parseMusicUrl(inputBox.value);
+    if (!parsed) { toast('Cole um link válido do Spotify ou SoundCloud', { type: 'warning' }); return; }
+    const arr = load();
+    if (arr.some((x) => x.url === parsed.url)) { toast('Essa já está na lista', { type: 'warning' }); inputBox.value = ''; return; }
+    arr.unshift(parsed); save(arr); inputBox.value = ''; render();
+    toast('Faixa adicionada', { type: 'success' });
+  }
+
+  const wrap = h('div', { className: 'musica-custom' },
+    h('div', { style: { display: 'flex', gap: 'var(--space-sm)' } }, inputBox, addBtn),
+    list);
+  render();
+  return wrap;
+}
+
 export function musicasPage() {
   const fullPage = h('div', { className: 'page-musicas' });
 
@@ -185,6 +247,13 @@ export function musicasPage() {
       'estiver nesta aba. Se o player não tocar a faixa inteira, é limite do ',
       'Spotify para quem não está logado.')
   );
+
+  /* ===== Suas faixas (adicione Spotify/SoundCloud por URL) — issue #184 ===== */
+  fullPage.appendChild(
+    h('div', { className: 'section-header' },
+      h('h2', { className: 'section-header__title' }, '➕ Suas Faixas'))
+  );
+  fullPage.appendChild(customTracksSection());
 
   /* ===== SoundCloud — minhas faixas (loop ao clicar) ===== */
   fullPage.appendChild(
