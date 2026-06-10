@@ -8,6 +8,10 @@ aqui o que mudou.
 
 ## 2026-06-10
 
+### #186 (fase 4): documentação do bootstrap + contagem dinâmica de rotas
+- 💬 `main.js`: cabeçalho reescrito como guia (fluxo do boot + como adicionar uma rota com `lazy()`); `icons.js`: instruções de como adicionar um ícone. Comentários defasados ("31/46 rotas") removidos.
+- 🔢 `router.count()` novo: o console do boot agora mostra o número **real** de rotas (dinâmico — nunca mais desatualiza).
+
 ### Coleta bruta (#190/#191) + sem agente do Google + CodeQL (#192)
 - 🥩 **Coleta de dados BRUTA** (pedido do operador no #190): a captura automática agora guarda **tudo, integral e sem filtros** — sem filtro de saudação/tamanho, sem remover blocos de código, preservando quebras de linha; pergunta, resposta e deliberações do Conselho inteiras (teto de segurança de 4000 chars/memória e 2000 memórias locais — o histórico completo segue no repositório).
 - 🛑 **Agente do Google Docs desligado**: o cron de 12h do `sync-cronicas.yml` foi removido a pedido — a sincronização das Crônicas agora é **só manual** (botão "Run workflow" na aba Actions).

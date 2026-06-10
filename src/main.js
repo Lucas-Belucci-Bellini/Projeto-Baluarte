@@ -1,10 +1,15 @@
 /**
- * Bootstrap principal — Baluarte Mark XIII.
- * 1. Monta o shell (sidebar + header + main).
- * 2. Registra as 31 rotas.
- * 3. Conecta o router ao shell.
- * 4. Inicializa toast + gateway oculto da Ponte Shadow.
- * 5. Inicia.
+ * Bootstrap principal — Baluarte Mark XIII (ponto de entrada da SPA).
+ *
+ * Fluxo do boot(): monta o shell (sidebar + header + main) → liga o router ao
+ * shell via event bus → inicializa tema/universo/toast/gateway oculto →
+ * router.start() pinta a primeira tela.
+ *
+ * Para ADICIONAR uma rota, registre-a abaixo:
+ *   router.register('/x', lazy(() => import('./pages/x.js'), 'xPage'));
+ * O lazy() faz code-splitting: cada página vira um chunk próprio, baixado só
+ * quando acessada. Lembre de também colocar a rota em sidebar.js (menu),
+ * shell.js (título) e icons.js (ícone) — ver CONTRIBUTING.md.
  */
 
 import { router } from './core/router.js';
@@ -122,7 +127,7 @@ router.register('/gerar-codigo', lazy(() => import('./pages/gerar-codigo.js'), '
 router.register('/conselho', lazy(() => import('./pages/conselho.js'), 'conselhoPage'));
 
 /* ==============================================================
- *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.
+ *  Todas as rotas acima são reais (sem placeholders). Fallback 404:
  * ============================================================== */
 router.setNotFound((path) => notFoundPage(path));
 
@@ -170,7 +175,7 @@ function boot() {
     'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
-    '%c46 rotas ativas · JS puro + Vite 5',
+    `%c${router.count()} rotas ativas · JS puro + Vite 5`,
     'color: #93a4bf; font-family: monospace;'
   );
 }

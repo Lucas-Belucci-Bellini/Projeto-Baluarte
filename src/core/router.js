@@ -128,4 +128,4 @@ function current() {
   return currentMatch;
 }
 
-export const router = { register, setNotFound, navigate, start, current };
+export const router = { register, setNotFound, navigate, start, current, count: () => routes.length };

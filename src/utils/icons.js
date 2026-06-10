@@ -4,6 +4,10 @@
  * Todos no mesmo grid, fill none + stroke currentColor, então herdam a cor
  * do tema/universo automaticamente. `lineIcon(name)` devolve o markup do SVG;
  * `iconByPath` mapeia cada rota a um ícone. Sem dependências externas.
+ *
+ * Para ADICIONAR um ícone: crie a entrada em PATHS (só o conteúdo interno do
+ * <svg>, ex.: '<path d="…"/>') e mapeie a rota em iconByPath (ex.: '/x': 'meu').
+ * Rotas sem entrada caem no fallback 'hex'.
  */
 
 /* Conteúdo interno de cada ícone (o <svg> é montado por lineIcon). */
