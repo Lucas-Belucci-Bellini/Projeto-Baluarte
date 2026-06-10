@@ -9,6 +9,7 @@ import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
+import { ALBUNS } from '../data/albuns.js';
 
 const TRACK_ID = '6Hv4AhlMTDgb6HGTvI0xlH';
 const PLAYLIST_ID = '5wVcAsTvq2dQFZcqw3GJWN';
@@ -178,6 +179,42 @@ function customTracksSection() {
   return wrap;
 }
 
+/* ===== Álbuns musicais — capa + artista/ano + faixas (issue #185) ===== */
+function albunsSection() {
+  const grid = h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-md)' } });
+  ALBUNS.forEach((al) => {
+    const player = h('div', { style: { marginTop: '8px' } });
+    const tracks = h('div', { style: { display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '8px' } });
+    (al.faixas || []).forEach((f, i) => {
+      tracks.appendChild(h('button', {
+        type: 'button',
+        style: { display: 'flex', gap: '8px', alignItems: 'center', textAlign: 'left', background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: f.url ? 'pointer' : 'default', padding: '4px 6px', borderRadius: 'var(--radius-sm)', fontSize: 'var(--font-size-sm)' },
+        onclick: () => {
+          if (!f.url) return;
+          empty(player);
+          if (/spotify\.com/.test(f.url)) {
+            const m = f.url.match(/(track|album|playlist)\/([A-Za-z0-9]+)/);
+            if (m) player.appendChild(plainEmbed(m[1], m[2], 80));
+          } else {
+            player.appendChild(h('iframe', { className: 'sc-iframe', width: '100%', height: '120', allow: 'autoplay', frameborder: 'no', scrolling: 'no', src: 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(f.url) + '&color=%2300f0ff&auto_play=true&hide_related=true&show_comments=false' }));
+          }
+        }
+      }, h('span', { className: 'u-mono u-text-muted', style: { width: '18px' } }, String(i + 1)), h('span', null, f.titulo)));
+    });
+    grid.appendChild(h('div', { className: 'card', style: { padding: 'var(--space-md)' } },
+      h('div', { style: { display: 'flex', gap: '12px' } },
+        al.capa
+          ? h('img', { src: al.capa, loading: 'lazy', referrerpolicy: 'no-referrer', alt: '', style: { width: '88px', height: '88px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: '0' } })
+          : h('div', { style: { width: '88px', height: '88px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-sm)', fontSize: '28px' } }, '♪'),
+        h('div', null,
+          h('div', { style: { fontWeight: '700', color: 'var(--color-text-primary)' } }, al.titulo),
+          h('div', { className: 'u-text-muted', style: { fontSize: 'var(--font-size-sm)' } }, al.artista),
+          h('div', { className: 'u-text-muted', style: { fontSize: '12px' } }, String(al.ano)))),
+      tracks, player));
+  });
+  return grid;
+}
+
 export function musicasPage() {
   const fullPage = h('div', { className: 'page-musicas' });
 
@@ -247,6 +284,16 @@ export function musicasPage() {
       'estiver nesta aba. Se o player não tocar a faixa inteira, é limite do ',
       'Spotify para quem não está logado.')
   );
+
+  /* ===== Álbuns (issue #185) ===== */
+  if (ALBUNS.length) {
+    fullPage.appendChild(
+      h('div', { className: 'section-header' },
+        h('h2', { className: 'section-header__title' }, '💿 Álbuns'),
+        h('span', { className: 'section-header__count' }, String(ALBUNS.length)))
+    );
+    fullPage.appendChild(albunsSection());
+  }
 
   /* ===== Suas faixas (adicione Spotify/SoundCloud por URL) — issue #184 ===== */
   fullPage.appendChild(

@@ -8,6 +8,10 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Álbuns Musicais (#185)
+- 💿 **Álbuns** na Música (`/musicas`, issue #185): seção data-driven (`src/data/albuns.js`) com cartões de álbum (capa + artista + ano + faixas); clicar numa faixa toca o player embutido (Spotify/SoundCloud). Exemplo incluso ("Hinos do Imperador" W40K, com a capa que o operador enviou).
+- 🛡️ Backup: `backup/2026-06-08-pre-merge-albuns`.
+
 ### Conselho: Hermes sintetiza + Fontes de Detecção no radar (#183)
 - ⚖️ **Conselho de IAs:** o **Hermes** vira o **moderador** que dá a resposta final (navegador → servidor); o **Gemini** passa a ser só reserva (ele estourava o limite de tokens). Membro que cai por limite mostra "⚠ Limite de tokens atingido" (não o 429 cru) e o moderador avisa isso no consenso. A página mostra por quem o consenso foi sintetizado.
 - 📡 **Radar — Fontes de Detecção** (`/radar`, issue #183): painel de fusão multi-sensor ligando as fontes reais que o site já tem (`/visao`, `/geo`, `/ciberseg`, `/triangulacao`, satélites) — o radar não depende de antena dedicada.
