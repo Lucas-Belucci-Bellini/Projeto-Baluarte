@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-08
 
+### Git Nexus ao vivo (#189) + Guia de contribuição (#186)
+- 🗺️ **Raio-X — Git Nexus ao vivo** (`/codigo`, issue #189): botão que lê o repositório **inteiro agora** pela API do GitHub (não o `codemap` pré-gerado) — métricas ao vivo + todos os arquivos por pasta, marcando os novos (🆕). Sem token (API pública).
+- 💬 **`CONTRIBUTING.md`** (issue #186, fase 1): guia de arquitetura e convenções para futuros contribuidores (pastas, helpers, como adicionar página, sistema de IA, envs, fluxo de git). O código já tem cabeçalhos JSDoc; comentários por módulo seguem em fases.
+- 🛡️ Backup: `backup/2026-06-08-pre-merge-nexus`.
+
 ### Álbuns Musicais (#185)
 - 💿 **Álbuns** na Música (`/musicas`, issue #185): seção data-driven (`src/data/albuns.js`) com cartões de álbum (capa + artista + ano + faixas); clicar numa faixa toca o player embutido (Spotify/SoundCloud). Exemplo incluso ("Hinos do Imperador" W40K, com a capa que o operador enviou).
 - 🛡️ Backup: `backup/2026-06-08-pre-merge-albuns`.

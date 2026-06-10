@@ -5,7 +5,7 @@
  * rotação automática (arraste para girar), + métricas do próprio site.
  */
 
-import { h } from '../utils/helpers.js';
+import { h, empty } from '../utils/helpers.js';
 import codemap from '../data/codemap.json';
 import { codeMemoryCounts } from '../utils/jarvis-brain.js';
 
@@ -69,6 +69,7 @@ export function codigoPage() {
   lists.appendChild(listCard('★ Mais importados', codemap.topImported.map((x) => [x.label, x.importedBy + '×'])));
   lists.appendChild(listCard('▦ Maiores arquivos', codemap.topLoc.map((x) => [x.label, x.loc + ' ln'])));
   page.appendChild(lists);
+  page.appendChild(buildLiveNexus());
 
   /* ===== Grafo 3D: força + projeção em perspectiva ===== */
   const N = codemap.nodes.map((n) => ({
@@ -254,4 +255,62 @@ function listCard(title, rows) {
     ...rows.map(([a, b]) => h('div', { className: 'cod-list__row' },
       h('span', { className: 'cod-list__a' }, a),
       h('span', { className: 'cod-list__b u-mono u-text-cyan' }, b))));
+}
+
+/* Git Nexus ao vivo: lê TODO o repo agora pela API do GitHub (não o codemap
+ * pré-gerado) — reflete o estado atual, inclusive arquivos novos. (issue #189) */
+function buildLiveNexus() {
+  const REPO = 'Lucas-Belucci-Bellini/Projeto-Baluarte';
+  const status = h('span', { className: 'u-text-muted', style: { fontSize: '12px' } }, '');
+  const btn = h('button', { className: 'btn btn--ghost btn--sm', onclick: load }, '🛰️ Ler o repo ao vivo');
+  const body = h('div', { style: { marginTop: '8px' } });
+  const card = h('div', { className: 'cod-list', style: { marginTop: 'var(--space-md)' } },
+    h('div', { className: 'cod-list__title', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' } },
+      h('span', null, '🗺️ Git Nexus ao vivo'), btn),
+    h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: '4px 0' } },
+      'Busca a árvore inteira do repositório agora pela API do GitHub (não o codemap pré-gerado), incluindo arquivos novos.'),
+    status, body);
+
+  async function load() {
+    btn.disabled = true; status.textContent = ' buscando a árvore do repo…';
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/main?recursive=1`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      render((data.tree || []).filter((t) => t.type === 'blob'));
+      status.textContent = '';
+    } catch {
+      status.textContent = ' ⚠ não consegui ler o repo agora (limite da API pública do GitHub? tente daqui a pouco).';
+    } finally { btn.disabled = false; }
+  }
+
+  function render(blobs) {
+    empty(body);
+    const totalKB = Math.round(blobs.reduce((s, b) => s + (b.size || 0), 0) / 1024);
+    const byDir = {};
+    for (const b of blobs) {
+      const dir = b.path.includes('/') ? b.path.split('/')[0] : '(raiz)';
+      (byDir[dir] = byDir[dir] || []).push(b);
+    }
+    const known = new Set((codemap.nodes || []).map((n) => n.id));
+    body.appendChild(h('div', { className: 'cod-metrics', style: { marginBottom: 'var(--space-sm)' } },
+      metric('arquivos (repo)', blobs.length),
+      metric('KB totais', totalKB),
+      metric('pastas', Object.keys(byDir).length),
+      metric('no codemap', (codemap.meta || {}).files || 0)));
+    for (const [dir, files] of Object.entries(byDir).sort((a, b) => b[1].length - a[1].length)) {
+      files.sort((a, b) => (b.size || 0) - (a.size || 0));
+      const det = h('details', { className: 'cod-list', style: { marginBottom: '6px' } },
+        h('summary', { style: { cursor: 'pointer', fontWeight: '600' } }, `${dir} · ${files.length} arquivos`));
+      for (const f of files) {
+        const isNew = !known.has(f.path) && /\.(js|mjs)$/.test(f.path);
+        det.appendChild(h('div', { className: 'cod-list__row' },
+          h('span', { className: 'cod-list__a' }, f.path + (isNew ? '  🆕' : '')),
+          h('span', { className: 'cod-list__b u-mono u-text-cyan' }, (Math.round((f.size || 0) / 102.4) / 10) + ' KB')));
+      }
+      body.appendChild(det);
+    }
+  }
+
+  return card;
 }
