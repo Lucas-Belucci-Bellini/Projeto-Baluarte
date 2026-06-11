@@ -14,6 +14,16 @@ aqui o que mudou.
 - ✅ Verificado no navegador (Playwright) rodando os handlers serverless reais com chaves falsas: detecção achou `Claude_Fable`, teste do `/claude` chegou na Anthropic (401 esperado), cofre mascara o valor e configura o JARVIS.
 - 🛡️ Backup: `backup/2026-06-11-pre-merge-apis`.
 
+### Agente do Google removido de vez
+- 🗑️ A pedido do operador (não vai mais mexer no portfólio, não precisa de agente puxando do Google): **removido o workflow `sync-cronicas.yml`** (que rodava sob demanda) **e os 4 scripts** que liam do Google Docs (`sync-cronicas.mjs`, `gen-fanfic-from-docs.mjs`, `gen-dossie-from-doc.mjs`, `gen-elites-rosters.mjs`). O cron de 12h já tinha sido desligado em 10/06; agora não sobra **nenhuma** automação de coleta do Google.
+- ✅ Os dados já sincronizados continuam no repo (`cronicas.js`, `dossie.json`, `fanfic.json`, `elites*`), então as páginas seguem funcionando — só não se atualizam mais sozinhas. `gen-fanfic-from-md.mjs` (lê markdown local, não Google) foi mantido. Restam só os workflows `cambio.yml` (cotações) e `codeql.yml` (segurança).
+- 🛡️ Backup: `backup/2026-06-11-remove-google-agent`.
+
+### Arsenal: 2813 armas + correção de nomenclatura
+- 🔫 **+184 famílias/variantes reais** adicionadas (todas dados públicos, sem inventar): infantaria 1003, blindados 361, artilharia 155, aéreo 524, naval 231, mísseis 366, drones 173 → **2813** no total (era 2629). Inclui NGSW (SIG MCX-Spear/XM7), HK433, Gepárd/NTW-20, MAC-10/11, caças da WWII (P-38, P-40, F6F Hellcat, Ki-84, Macchi C.205), Kfir/Nesher/Cheetah, fragatas Constellation/F125/F126, "3 T" navais (Talos/Terrier/Tartar), SAMs britânicos (Sea Dart/Sea Wolf/Bloodhound), MQ-28 Ghost Bat, Eurodrone, etc.
+- 🔤 **Nomes corrigidos** no gerador (`joinName`): marcas/palavras agora recebem espaço — **Glock 17**, **SIG Sauer P226**, **MRAP MaxxPro**, **CheyTac M200 Intervention**, **MRAP RG-33/M-ATV/JLTV** — enquanto designadores reais seguem colados (**AKM**, **M16A1**, **MP5SD**, **CZ 75**). Regra nova: sufixo que é Palavra (Maiúscula+minúsculas) ou base com sigla de 4+ letras → separa.
+- 🧹 Variante redundante do **DShK** removida (gerava "DShKDShKM"); suporte a **nome absoluto** com prefixo `*` no gerador (variante que não concatena com a base).
+
 ### Skill de execução pra agentes + CodeQL manual
 - 🤖 **`.claude/skills/run-projeto-baluarte/`** novo: ensina o Claude Code (e qualquer agente futuro) a rodar e dirigir o site sozinho. O `driver.mjs` sobe o vite e controla um navegador de verdade: `smoke` (boot + regressões do editor #197), `shot` (screenshot de qualquer rota) e `eval` (roda JS dentro da página). Verificado de ponta a ponta neste container.
 - 🛡️ **`codeql.yml` + `workflow_dispatch`**: os commits automáticos do câmbio não disparam CodeQL (push de bot), então a main fica sem análise e o check dos PRs seguintes marca alerta **antigo** como "novo" (foi o que aconteceu no PR #199). Agora dá pra re-analisar a main manualmente na aba Actions.
