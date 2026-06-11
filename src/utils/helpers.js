@@ -133,7 +133,15 @@ export function mount(container, child) {
   if (child) container.appendChild(child);
 }
 
+/** n bytes aleatórios em hex — criptograficamente fortes (crypto, não
+ *  Math.random): ids gerados aqui são persistidos no mesmo storage de dados
+ *  sensíveis (ex: cofre do /apis), e o CodeQL exige aleatoriedade forte. */
+export function randHex(bytes = 4) {
+  const b = crypto.getRandomValues(new Uint8Array(bytes));
+  return Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+}
+
 /** Gera um id curto. */
 export function uid(prefix = 'id') {
-  return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
+  return `${prefix}_${randHex(6)}`;
 }

@@ -11,6 +11,8 @@
  * Fallback: se IndexedDB falhar, opera em memória (perde no reload).
  */
 
+import { randHex } from './helpers.js';
+
 const DB_NAME = 'baluarte-jarvis';
 const DB_VERSION = 1;
 
@@ -51,7 +53,7 @@ function tx(storeName, mode = 'readonly') {
 }
 
 function uid(prefix) {
-  return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  return prefix + '_' + Date.now().toString(36) + randHex(3);
 }
 
 /* ===== Sessions ===== */

@@ -16,6 +16,7 @@ const DESCRICOES = {
   '/projetos': 'Índice de tudo feito com o Claude Code.',
   '/cerebro': 'Segundo Cérebro — knowledge graph dos domínios e projetos.',
   '/jarvis': 'Este assistente (J.A.R.V.I.S.), com IA real, skills e memória.',
+  '/apis': 'Central de APIs — detecta, testa e gerencia as chaves de IA (Claude, Gemini, Hermes/OpenRouter, Ollama).',
   '/codigo': 'Raio-X do Código — grafo 3D do próprio código do site.',
   '/ocr': 'Leitor OCR — extrai texto de imagens no navegador.',
   '/editor': 'Editor de código com realce de sintaxe.',
@@ -44,6 +45,7 @@ const DESCRICOES = {
 
 /* Sinônimos extras para o reconhecedor de navegação (além do rótulo/rota). */
 const SINONIMOS = {
+  '/apis': ['api', 'apis', 'chave', 'chaves', 'api key', 'openrouter', 'anthropic'],
   '/editor': ['código', 'codigo', 'programar'],
   '/cripto': ['cifra', 'criptografia', 'aes', 'rsa'],
   '/dolar': ['câmbio', 'cambio', 'bitcoin', 'btc', 'euro', 'dólar', 'dolar'],

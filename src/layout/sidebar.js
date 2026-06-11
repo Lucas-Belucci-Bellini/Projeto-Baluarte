@@ -37,6 +37,7 @@ export const NAV_GROUPS = [
     items: [
       { path: '/jarvis',           label: 'J.A.R.V.I.S.',      icon: '◉', phase: 1 },
       { path: '/conselho',         label: 'Conselho de IAs',    icon: '⚖', phase: 1 },
+      { path: '/apis',             label: 'Central de APIs',    icon: '🔑', phase: 1 },
       { path: '/jarvis-dashboard', label: 'Jarvis Dashboard',   icon: '⬡', phase: 1 },
       { path: '/llm-lab',          label: 'Mini-LLM do Zero',   icon: '🧠', phase: 1 },
       { path: '/cerebro',          label: 'Segundo Cérebro',    icon: '🧠', phase: 1 },

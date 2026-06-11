@@ -11,6 +11,7 @@ import { ARSENAL, search as searchArsenal, TOTAL } from '../data/arsenal.js';
 import { EQUIPES, findEquipe, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, findArc, ARCS_TOTAL } from '../data/cronicas.js';
 import { storage } from '../core/storage.js';
+import { randHex } from './helpers.js';
 import { evaluate } from './calc-engine.js';
 import { getStatusSnapshot } from './baluarte-status.js';
 import { VERSION } from '../data/version.js';
@@ -217,7 +218,7 @@ const IMPLEMENTATIONS = {
     const editorState = storage.get('editor:state') || { tabs: [], activeId: null };
     if (!Array.isArray(editorState.tabs)) editorState.tabs = [];
     const tab = {
-      id: 'tab_' + Math.random().toString(36).slice(2, 8),
+      id: 'tab_' + randHex(4),
       name: `jarvis.${lang === 'python' ? 'py' : lang === 'rust' ? 'rs' : 'js'}`,
       lang: lang || 'javascript',
       content: code || ''

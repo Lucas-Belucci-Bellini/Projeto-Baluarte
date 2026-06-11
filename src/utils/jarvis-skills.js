@@ -25,6 +25,7 @@
  */
 
 import { storage } from '../core/storage.js';
+import { randHex } from './helpers.js';
 import { evaluate } from './calc-engine.js';
 import { search as searchArsenal } from '../data/arsenal.js';
 import { EQUIPES, findEquipe } from '../data/elites.js';
@@ -274,7 +275,7 @@ export function createSkill(spec, { reserved = [] } = {}) {
     return { ok: false, error: `limite de ${MAX_SKILLS} skills atingido. Apague alguma com delete_skill.` };
   }
   const skill = {
-    id: 'skill_' + now.toString(36) + Math.random().toString(36).slice(2, 6),
+    id: 'skill_' + now.toString(36) + randHex(3),
     ...v.skill,
     origin: 'jarvis',
     runs: 0,

@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-11
 
+### Central de APIs + Claude no servidor (#200)
+- 🔑 **`/apis` — Central de APIs** nova (menu IA & Jarvis): detecta, testa e gerencia as IAs do site num painel só. **Detecção no servidor**: o `/api/health` agora informa quais chaves existem na Vercel (só existe/não-existe — o valor nunca sai do servidor) e **qual env** a chave Claude usa. **Testes por provedor**: JARVIS Local, Claude (navegador, 1 token), Claude (servidor), Gemini, Hermes e Ollama, com latência e erro legível. **Cofre local**: chaves nomeadas mascaradas no localStorage (👁/copiar/excluir) e botão "Usar no JARVIS" que vira a apiKey do modo Claude.
+- 🤖 **`/api/claude` novo**: Claude pelo servidor do site — a chave fica nas Environment Variables da Vercel, nunca no navegador. A detecção aceita **nome personalizado** (ex: `Claude_Fable`): qualquer env com valor `sk-ant-…` ou nome contendo claude/anthropic. Antes, essas chaves na Vercel eram invisíveis pro site (o código só lia GEMINI_API_KEY/OPENROUTER_API_KEY).
+- ✅ Verificado no navegador (Playwright) rodando os handlers serverless reais com chaves falsas: detecção achou `Claude_Fable`, teste do `/claude` chegou na Anthropic (401 esperado), cofre mascara o valor e configura o JARVIS.
+- 🎲 **Aleatoriedade forte em todos os ids persistidos** (achado real do CodeQL neste PR): `uid()` e os geradores de id do jarvis-brain/tools/skills/memory, mural, academia e gerar-código trocaram `Math.random` por `crypto.getRandomValues` (novo `randHex()` em helpers). Restou só o alerta antigo do `h(html:)` (padrão deliberado do site, documentado no código) — dá pra dispensar em Security → Code scanning.
+- 🛡️ Backup: `backup/2026-06-11-pre-merge-apis`.
+
 ### Agente do Google removido de vez
 - 🗑️ A pedido do operador (não vai mais mexer no portfólio, não precisa de agente puxando do Google): **removido o workflow `sync-cronicas.yml`** (que rodava sob demanda) **e os 4 scripts** que liam do Google Docs (`sync-cronicas.mjs`, `gen-fanfic-from-docs.mjs`, `gen-dossie-from-doc.mjs`, `gen-elites-rosters.mjs`). O cron de 12h já tinha sido desligado em 10/06; agora não sobra **nenhuma** automação de coleta do Google.
 - ✅ Os dados já sincronizados continuam no repo (`cronicas.js`, `dossie.json`, `fanfic.json`, `elites*`), então as páginas seguem funcionando — só não se atualizam mais sozinhas. `gen-fanfic-from-md.mjs` (lê markdown local, não Google) foi mantido. Restam só os workflows `cambio.yml` (cotações) e `codeql.yml` (segurança).

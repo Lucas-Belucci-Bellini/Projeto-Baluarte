@@ -13,6 +13,7 @@
  */
 
 import { storage } from '../core/storage.js';
+import { randHex } from './helpers.js';
 import { recall, tokenize } from './jarvis-recall.js';
 import { saveEntry, listEntries } from './jarvis-repo-memory.js';
 import cerebro from '../data/cerebro.json';
@@ -97,7 +98,7 @@ export function addMemory({ text, source = 'jarvis', tags = [] }) {
   const dup = list.find((m) => m.text.toLowerCase() === clean.toLowerCase());
   if (dup) return dup;
   const item = {
-    id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    id: 'm' + Date.now().toString(36) + randHex(3),
     text: clean, tags, source, ts: Date.now(),
     conceptIds: linkConcepts(clean),
     codeIds: linkCode(clean)

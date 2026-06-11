@@ -7,7 +7,7 @@
  * aí viram compartilhados e versionados. Sem backend/banco/login.
  */
 
-import { h, empty } from '../utils/helpers.js';
+import { h, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 
@@ -107,7 +107,7 @@ export function muralPage() {
     const text = textInput.value.trim();
     if (text.length < 1) { toast('Escreva algo', { type: 'warning' }); return; }
     const author = nameInput.value.trim() || 'Operador';
-    const post = { id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), author, text, ts: Date.now() };
+    const post = { id: 'p' + Date.now().toString(36) + randHex(3), author, text, ts: Date.now() };
     saveLocal([...localPosts(), post]);
     textInput.value = '';
     render();

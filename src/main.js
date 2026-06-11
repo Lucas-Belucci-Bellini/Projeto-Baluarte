@@ -125,6 +125,7 @@ router.register('/terminal-ia', lazy(() => import('./pages/terminal-ia.js'), 'te
 router.register('/seguranca', lazy(() => import('./pages/seguranca.js'), 'segurancaPage'));
 router.register('/gerar-codigo', lazy(() => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));
 router.register('/conselho', lazy(() => import('./pages/conselho.js'), 'conselhoPage'));
+router.register('/apis', lazy(() => import('./pages/apis.js'), 'apisPage'));
 
 /* ==============================================================
  *  Todas as rotas acima são reais (sem placeholders). Fallback 404:
