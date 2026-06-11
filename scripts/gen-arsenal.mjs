@@ -303,7 +303,7 @@ fam('infantaria','Saiga-12','🇷🇺 Rússia','Espingarda semiautomática','Cal
 fam('infantaria','Franchi SPAS','🇮🇹 Itália','Espingarda de combate','Calibre 12','50 m',1979,'SPAS-12/15 dupla ação',['SPAS-12','SPAS-15']);
 fam('infantaria','M60','🇺🇸 EUA','Metralhadora de uso geral','7.62×51mm','1100 m',1957,'"The Pig" do Vietnã',['','E3','E4','E6']);
 fam('infantaria','MG3 / MG42','🇩🇪 Alemanha','Metralhadora de uso geral','7.62×51mm','1200 m',1942,'Alta cadência ("Hitler\'s buzzsaw")',['MG42','MG3','MG3A1']);
-fam('infantaria','DShK','🇷🇺 URSS','Metralhadora pesada','12.7×108mm','2000 m',1938,'HMG soviética antiaérea/terra',['','M','DShKM']);
+fam('infantaria','DShK','🇷🇺 URSS','Metralhadora pesada','12.7×108mm','2000 m',1938,'HMG soviética antiaérea/terra',['','M']);
 fam('infantaria','NSV / Kord','🇷🇺 Rússia','Metralhadora pesada','12.7×108mm','2000 m',1971,'HMG soviética/russa moderna',['NSV','Kord','6P50']);
 fam('infantaria','KPV','🇷🇺 URSS','Metralhadora pesada','14.5×114mm','3000 m',1949,'Calibre antimaterial pesado',['','ZPU-1','ZPU-2','ZPU-4']);
 fam('infantaria','M134 Minigun','🇺🇸 EUA','Metralhadora rotativa','7.62×51mm','1000 m',1963,'Gatling elétrica de alta cadência',['','GAU-17']);
@@ -985,11 +985,144 @@ fam('drones','Shield AI V-BAT','🇺🇸 EUA','UAV VTOL autônomo','Sensores','�
 fam('drones','ASN (China)','🇨🇳 China','UAV ISR','Sensores','3000 km',2000,'Família ASN muito exportada',['ASN-209','ASN-216','ASN-301']);
 fam('drones','Korsar / Orlan (mais)','🇷🇺 Rússia','UAV tático ISR','Sensores/EW','250 km',2018,'ISR e correção de fogo russos',['Korsar','Orlan-10','Orlan-30','Orlan-50']);
 
+/* ===================== LOTE EXTRA (famílias reais adicionais) ===================== */
+/* --- Infantaria --- */
+fam('infantaria','SIG Spear / XM7','🇺🇸 EUA','Fuzil de assalto','6.8×51mm','600 m',2022,'Vencedor do programa NGSW, substituto do M4',['*SIG MCX-Spear','*XM7','*SIG XM250','*MCX-Spear LT']);
+fam('infantaria','HK433','🇩🇪 Alemanha','Fuzil de assalto','5.56×45mm','500 m',2017,'Fuzil modular HK, herdeiro do G36/HK416',['','A1']);
+fam('infantaria','Beretta Px4 / APX','🇮🇹 Itália','Pistola','9×19mm','50 m',2004,'Pistolas de serviço Beretta',['*Beretta Px4 Storm','*Beretta Px4 Compact','*Beretta APX','*Beretta APX A1','*Beretta 8000 Cougar']);
+fam('infantaria','CZ Scorpion EVO 3','🇨🇿 Tchéquia','Submetralhadora','9×19mm','100 m',2009,'SMG moderna da CZ',['',' S1',' S2 Micro']);
+fam('infantaria','Arsenal AR','🇧🇬 Bulgária','Fuzil de assalto','7.62×39mm','400 m',1990,'AK búlgaro de exportação',['*Arsenal AR-M1','*Arsenal SLR-106','*Arsenal SAM7','*Arsenal SLR-107']);
+fam('infantaria','Stoner 63','🇺🇸 EUA','Sistema de armas modular','5.56×45mm','800 m',1963,'Sistema modular de Eugene Stoner',['','A1']);
+fam('infantaria','Savage 110','🇺🇸 EUA','Fuzil de ferrolho','.308 Win','800 m',1958,'Fuzil de precisão/caça econômico',['','*Savage Axis','*Savage 10 FCP','*Savage 110 BA']);
+fam('infantaria','Weatherby Mark V','🇺🇸 EUA','Fuzil de ferrolho','.300 Wby','900 m',1957,'Fuzil de alta potência',['','*Weatherby Vanguard']);
+fam('infantaria','Gepárd (antimaterial)','🇭🇺 Hungria','Fuzil antimaterial','12.7×108mm','2000 m',1987,'Família húngara de fuzis antimaterial',['*Gepárd M1','*Gepárd M2','*Gepárd M3','*Gepárd M6']);
+fam('infantaria','Denel NTW-20','🇿🇦 África do Sul','Fuzil antimaterial','20×82mm','1500 m',1995,'Antimaterial sul-africano',['','*Truvelo SR']);
+fam('infantaria','Beretta M12','🇮🇹 Itália','Submetralhadora','9×19mm','100 m',1959,'SMG italiana compacta',['','S']);
+fam('infantaria','Walther MPL / MPK','🇩🇪 Alemanha','Submetralhadora','9×19mm','100 m',1963,'SMG alemã',['*Walther MPL','*Walther MPK']);
+fam('infantaria','VHS-2','🇭🇷 Croácia','Fuzil de assalto bullpup','5.56×45mm','500 m',2013,'Bullpup croata',['','*VHS-K2']);
+fam('infantaria','HK45 / P30','🇩🇪 Alemanha','Pistola','.45 ACP / 9×19mm','50 m',2006,'Pistolas de serviço HK',['*HK45','*HK45 Compact','*HK P30','*HK P30L','*HK P2000']);
+fam('infantaria','Lewis Gun','🇬🇧 Reino Unido','Metralhadora leve','.303 British','800 m',1911,'LMG da Primeira Guerra',['']);
+fam('infantaria','Madsen (metralhadora)','🇩🇰 Dinamarca','Metralhadora leve','vários','1000 m',1902,'Primeira LMG produzida em série',['']);
+fam('infantaria','MAC-10 / MAC-11','🇺🇸 EUA','Submetralhadora','.45 ACP / .380','50 m',1970,'SMG compacta Ingram',['*MAC-10 (.45)','*MAC-10 (9mm)','*MAC-11 (.380)']);
+fam('infantaria','Calico','🇺🇸 EUA','Submetralhadora','9×19mm','100 m',1985,'SMG de carregador helicoidal',['*Calico M960','*Calico M951']);
+fam('infantaria','TEC-9','🇺🇸 EUA','Pistola semiautomática','9×19mm','50 m',1985,'Pistola de grande capacidade Intratec',['*Intratec TEC-9','*Intratec TEC-DC9']);
+
+/* --- Blindados --- */
+fam('blindados','Type 16 MCV','🇯🇵 Japão','Veículo de combate de rodas','105mm','2000 m',2016,'Veículo de combate manobrável japonês 8x8',['']);
+fam('blindados','AMX-10 RC','🇫🇷 França','Veículo de reconhecimento','105mm','2000 m',1981,'Recon blindado francês de rodas',['','*AMX-10 RCR']);
+fam('blindados','EBRC Jaguar','🇫🇷 França','Veículo de combate de rodas','40mm','2500 m',2020,'Recon/combate do programa Scorpion',['']);
+fam('blindados','Pandur','🇦🇹 Áustria','APC de rodas','vários','1500 m',1985,'APC 6x6/8x8 austríaco',['*Pandur I','*Pandur II']);
+fam('blindados','Rosomak','🇵🇱 Polônia','APC de rodas','30mm','2000 m',2004,'Patria AMV produzido na Polônia',['']);
+fam('blindados','Terrex','🇸🇬 Singapura','APC de rodas','vários','1500 m',2009,'APC anfíbio 8x8 de Singapura',['']);
+fam('blindados','M10 Booker','🇺🇸 EUA','Veículo de apoio blindado','105mm','2500 m',2022,'Blindado leve do US Army (ex-MPF)',['']);
+fam('blindados','Engesa EE-11 Urutu','🇧🇷 Brasil','APC de rodas','12.7mm','1000 m',1974,'APC anfíbio brasileiro 6x6',['']);
+fam('blindados','BTR-4','🇺🇦 Ucrânia','APC de rodas','30mm','2000 m',2008,'APC 8x8 ucraniano',['']);
+fam('blindados','FV432','🇬🇧 Reino Unido','APC de lagartas','7.62mm','1000 m',1963,'APC britânico clássico',['','*FV430 Bulldog']);
+fam('blindados','Saxon','🇬🇧 Reino Unido','APC de rodas','7.62mm','1000 m',1976,'APC britânico de rodas',['']);
+
+/* --- Artilharia --- */
+fam('artilharia','2S35 Koalitsiya-SV','🇷🇺 Rússia','Obuseiro autopropulsado','152mm','40 km',2015,'SPG russo de nova geração',['']);
+fam('artilharia','RCH 155','🇩🇪 Alemanha','Obuseiro autopropulsado de rodas','155mm','40 km',2021,'Howitzer 155mm sobre chassi Boxer',['']);
+fam('artilharia','M119 / L118','🇺🇸🇬🇧','Obuseiro rebocado leve','105mm','19 km',1989,'Howitzer leve 105mm',['*M119','*L118 Light Gun']);
+fam('artilharia','OTO Melara Mod 56','🇮🇹 Itália','Obuseiro de montanha','105mm','10 km',1957,'Howitzer leve transportável',['']);
+fam('artilharia','Type 99 HSP','🇯🇵 Japão','Obuseiro autopropulsado','155mm','30 km',1999,'SPG japonês de lagartas',['']);
+fam('artilharia','M107 / M110','🇺🇸 EUA','Obuseiro autopropulsado pesado','175/203mm','30 km',1962,'SPGs pesados da Guerra Fria',['*M107 (175mm)','*M110 (203mm)','*M110A2']);
+fam('artilharia','Bofors 40mm','🇸🇪 Suécia','Canhão antiaéreo','40mm','4 km',1934,'Canhão AA clássico',['*Bofors L60','*Bofors L70']);
+fam('artilharia','Oerlikon AA','🇨🇭 Suíça','Canhão antiaéreo','20/35mm','4 km',1940,'Canhões AA suíços',['*Oerlikon 20mm','*Oerlikon GDF 35mm']);
+fam('artilharia','Flak 88','🇩🇪 Alemanha','Canhão antiaéreo/antitanque','88mm','10 km',1936,'O famoso 88 alemão',['*Flak 18','*Flak 36','*Flak 37']);
+fam('artilharia','Brandt (morteiros)','🇫🇷 França','Morteiro','60/81/120mm','8 km',1935,'Morteiros Brandt franceses',['*Brandt 60mm','*Brandt 81mm','*Brandt MO-120']);
+fam('artilharia','S-23','🇷🇺 URSS','Canhão pesado rebocado','180mm','30 km',1955,'Canhão soviético de longo alcance',['']);
+
+/* --- Aéreo --- */
+fam('aereo','F-15EX Eagle II','🇺🇸 EUA','Caça multifunção','—','1800 km',2021,'F-15 de nova geração para a USAF',['']);
+fam('aereo','IAI Kfir','🇮🇱 Israel','Caça multifunção','—','1000 km',1975,'Derivado israelense do Mirage 5 com motor J79',['*Kfir C2','*Kfir C7','*Kfir C10 (Block 60)']);
+fam('aereo','IAI Nesher','🇮🇱 Israel','Caça','—','1000 km',1971,'Mirage 5 produzido em Israel',['']);
+fam('aereo','Atlas Cheetah','🇿🇦 África do Sul','Caça','—','1000 km',1986,'Mirage III sul-africano modernizado',['*Cheetah C','*Cheetah D','*Cheetah E']);
+fam('aereo','Nanchang Q-5','🇨🇳 China','Avião de ataque ao solo','—','2000 km',1970,'Ataque chinês derivado do MiG-19',['','*A-5 (exportação)']);
+fam('aereo','SOKO J-22 Orao / IAR-93','🇷🇸 Iugoslávia/Romênia','Avião de ataque','—','1300 km',1974,'Ataque ítalo... luso-iugoslavo-romeno conjunto',['*SOKO J-22 Orao','*IAR-93 Vultur']);
+fam('aereo','IAR-99 Șoim','🇷🇴 Romênia','Treinador/ataque leve','—','1100 km',1985,'Jato de treino romeno',['']);
+fam('aereo','PZL-130 Orlik','🇵🇱 Polônia','Treinador turboélice','—','1000 km',1984,'Treinador básico polonês',['']);
+fam('aereo','Jatos de treino poloneses','🇵🇱 Polônia','Treinador a jato','—','1000 km',1964,'TS-11 e Iryda',['*TS-11 Iskra','*PZL I-22 Iryda']);
+fam('aereo','Aero L-29 Delfín','🇨🇿 Tchecoslováquia','Treinador a jato','—','900 km',1959,'Treinador padrão do Pacto de Varsóvia',['']);
+fam('aereo','Yakovlev Yak-130','🇷🇺 Rússia','Treinador/ataque leve a jato','—','2000 km',2009,'Treinador avançado russo',['']);
+fam('aereo','Treinadores britânicos a jato','🇬🇧 Reino Unido','Treinador/ataque leve','—','1400 km',1955,'Jet Provost e Strikemaster',['*Jet Provost','*BAC Strikemaster']);
+fam('aereo','Fouga Magister','🇫🇷 França','Treinador a jato','—','900 km',1952,'Treinador de cauda em V',['']);
+fam('aereo','Grumman F6F Hellcat','🇺🇸 EUA','Caça embarcado','—','1500 km',1943,'Caça naval da WWII',['']);
+fam('aereo','Grumman F4F Wildcat','🇺🇸 EUA','Caça embarcado','—','1300 km',1940,'Caça naval inicial da WWII',['']);
+fam('aereo','Curtiss P-40 Warhawk','🇺🇸 EUA','Caça','—','1100 km',1939,'Caça dos Flying Tigers',['']);
+fam('aereo','Bell P-39 Airacobra','🇺🇸 EUA','Caça','—','840 km',1940,'Caça de motor central',['','*P-63 Kingcobra']);
+fam('aereo','Lockheed P-38 Lightning','🇺🇸 EUA','Caça','—','2100 km',1941,'Caça bicaudal da WWII',['']);
+fam('aereo','Caças do exército japonês','🇯🇵 Japão','Caça','—','1700 km',1941,'Ki-43 e Ki-84',['*Nakajima Ki-43 Hayabusa','*Nakajima Ki-84 Hayate']);
+fam('aereo','Kawasaki Ki-61 Hien','🇯🇵 Japão','Caça','—','1100 km',1943,'Caça japonês de motor em linha',['']);
+fam('aereo','Caças italianos da WWII','🇮🇹 Itália','Caça','—','1000 km',1941,'Macchi série 5',['*Macchi C.202 Folgore','*Macchi C.205 Veltro']);
+fam('aereo','Hawker Typhoon / Tempest','🇬🇧 Reino Unido','Caça-bombardeiro','—','1100 km',1941,'Caças britânicos de ataque',['*Hawker Typhoon','*Hawker Tempest']);
+
+/* --- Naval --- */
+fam('naval','Submarino Walrus','🇳🇱 Holanda','Submarino de ataque','—','—',1990,'Submarino diesel-elétrico holandês',['']);
+fam('naval','Submarino Gotland','🇸🇪 Suécia','Submarino AIP','—','—',1996,'Primeiro submarino AIP Stirling',['']);
+fam('naval','Fragata Constellation','🇺🇸 EUA','Fragata','—','—',2026,'Nova fragata da US Navy (FFG-62, base FREMM)',['']);
+fam('naval','Fragata F125','🇩🇪 Alemanha','Fragata','—','—',2019,'Fragata alemã de estabilização',['']);
+fam('naval','Fragata F126','🇩🇪 Alemanha','Fragata','—','—',2028,'Próxima fragata alemã (MKS-180)',['']);
+fam('naval','Corveta Type 056','🇨🇳 China','Corveta','—','—',2013,'Corveta chinesa classe Jiangdao',['','*Type 056A']);
+fam('naval','Cruzador Long Beach','🇺🇸 EUA','Cruzador de mísseis nuclear','—','—',1961,'Primeiro cruzador de propulsão nuclear',['']);
+fam('naval','Cruzadores Leahy / Belknap','🇺🇸 EUA','Cruzador de mísseis','—','—',1962,'Cruzadores da Guerra Fria',['*Leahy','*Belknap']);
+fam('naval','Couraçado Richelieu','🇫🇷 França','Couraçado','—','—',1940,'Couraçado francês da WWII',['']);
+fam('naval','Porta-aviões Clemenceau','🇫🇷 França','Porta-aviões','—','—',1961,'Porta-aviões francês da Guerra Fria',['*Clemenceau','*Foch']);
+fam('naval','Porta-aviões Invincible','🇬🇧 Reino Unido','Porta-aviões V/STOL','—','—',1980,'Porta-aviões leve britânico',['']);
+fam('naval','Submarino Rubis','🇫🇷 França','Submarino de ataque nuclear','—','—',1983,'SSN francês compacto',['']);
+fam('naval','Fragata Halifax','🇨🇦 Canadá','Fragata','—','—',1992,'Fragata canadense classe Halifax',['']);
+fam('naval','Fragata Formidable','🇸🇬 Singapura','Fragata furtiva','—','—',2007,'Fragata de Singapura (base La Fayette)',['']);
+fam('naval','Destroyers britânicos County','🇬🇧 Reino Unido','Destroyer','—','—',1962,'Destroyers da Guerra Fria',['*County','*Type 82 Bristol']);
+fam('naval','Lancha CB90','🇸🇪 Suécia','Lancha de assalto rápido','—','—',1991,'Embarcação de assalto costeiro',['']);
+
+/* --- Mísseis --- */
+fam('misseis','Otomat / Teseo','🇮🇹 Itália','Míssil antinavio','Subsônico','180 km',1977,'Antinavio ítalo-francês',['*Otomat Mk2','*Teseo Mk2/E']);
+fam('misseis','SS.11 / SS.12','🇫🇷 França','Míssil antitanque','—','3.5 km',1956,'ATGM franceses iniciais',['*SS.11','*SS.12']);
+fam('misseis','ENTAC','🇫🇷 França','Míssil antitanque','—','2 km',1957,'ATGM francês guiado por fio',['']);
+fam('misseis','Shillelagh','🇺🇸 EUA','Míssil antitanque lançado por canhão','—','3 km',1968,'MGM-51 do Sheridan/M60A2',['']);
+fam('misseis','Swingfire','🇬🇧 Reino Unido','Míssil antitanque','—','4 km',1969,'ATGM britânico',['']);
+fam('misseis','Vigilant','🇬🇧 Reino Unido','Míssil antitanque','—','1.6 km',1963,'ATGM britânico inicial',['']);
+fam('misseis','Bloodhound / Thunderbird','🇬🇧 Reino Unido','Míssil terra-ar','—','80 km',1958,'SAMs britânicos da Guerra Fria',['*Bloodhound','*Thunderbird']);
+fam('misseis','Sea Dart / Sea Slug','🇬🇧 Reino Unido','Míssil naval superfície-ar','—','75 km',1973,'SAMs navais britânicos',['*Sea Dart','*Sea Slug']);
+fam('misseis','Sea Wolf','🇬🇧 Reino Unido','Míssil naval de defesa pontual','—','10 km',1979,'SAM naval britânico',['']);
+fam('misseis','Masurca','🇫🇷 França','Míssil naval superfície-ar','—','40 km',1968,'SAM naval francês',['']);
+fam('misseis','Talos / Terrier / Tartar','🇺🇸 EUA','Míssil naval superfície-ar','—','—',1956,'Os "3 T" navais dos EUA',['*RIM-8 Talos','*RIM-2 Terrier','*RIM-24 Tartar']);
+fam('misseis','ASROC','🇺🇸 EUA','Míssil antissubmarino','—','22 km',1961,'Foguete antissubmarino',['*RUR-5 ASROC','*RUM-139 VL-ASROC']);
+fam('misseis','Ikara / Malafon','🌍 Aliados','Míssil antissubmarino','—','—',1964,'Sistemas ASW ocidentais',['*Ikara','*Malafon']);
+fam('misseis','Sea Eagle / Martel','🇬🇧 Reino Unido','Míssil antinavio aéreo','—','110 km',1985,'Antinavio britânicos',['*Sea Eagle','*Martel']);
+fam('misseis','Kh-22 / Kh-32','🇷🇺 URSS','Míssil de cruzeiro antinavio','Mach 4+','600 km',1962,'Grande antinavio soviético',['*Kh-22','*Kh-32']);
+fam('misseis','Kh-15','🇷🇺 URSS','Míssil balístico ar-superfície','Mach 5','300 km',1980,'Míssil aerobalístico soviético',['']);
+fam('misseis','Osa / Strela-10','🇷🇺 URSS','Míssil terra-ar móvel','—','10 km',1972,'SAMs táticos soviéticos',['*9K33 Osa (SA-8)','*9K35 Strela-10 (SA-13)']);
+fam('misseis','Krug / Kub','🇷🇺 URSS','Míssil terra-ar','—','50 km',1965,'SAMs soviéticos de média altitude',['*2K11 Krug (SA-4)','*2K12 Kub (SA-6)']);
+fam('misseis','Blowpipe / Javelin (UK)','🇬🇧 Reino Unido','Míssil terra-ar portátil','—','5 km',1975,'MANPADS britânicos',['*Blowpipe','*Javelin (UK)']);
+
+/* --- Drones --- */
+fam('drones','Boeing MQ-28 Ghost Bat','🇦🇺 Austrália','UAV leal wingman','Sensores','—',2021,'Loyal wingman australiano',['']);
+fam('drones','Airbus Eurodrone','🇪🇺 Europa','UAV MALE','Sensores/armas','—',2025,'UAV de média altitude europeu',['']);
+fam('drones','BlueBird / Aerostar','🇮🇱 Israel','UAV tático','Sensores','—',2000,'UAVs táticos israelenses',['*Aerostar','*WanderB','*ThunderB']);
+fam('drones','Comercial militarizado','🌍 Diversos','Quadricóptero comercial adaptado','Câmera/granadas','—',2016,'Drones comerciais usados em combate',['*DJI Mavic','*DJI Matrice','*Autel EVO']);
+fam('drones','VTOL de mapeamento','🇩🇪 Alemanha','UAV VTOL de asa fixa','Sensores','—',2019,'UAVs de recon/mapeamento VTOL',['*Quantum Vector','*Trinity Pro']);
+fam('drones','Schiebel Camcopter S-100','🇦🇹 Áustria','UAV helicóptero','Sensores','—',2005,'VTOL UAV de reconhecimento naval',['']);
+fam('drones','HESA Karrar / Kaman','🇮🇷 Irã','UAV de ataque','Bombas/mísseis','—',2010,'UAVs iranianos',['*Karrar','*Kaman-12','*Kaman-22']);
+
 /* ===== Expansão ===== */
+/* Junta base+variante com espaçamento correto:
+ *   - sufixo começando com ' ' ou '/' → cola como veio ("Tiger I", "MP5/10")
+ *   - base composta ("A / B")        → separa com espaço
+ *   - base termina em minúscula      → separa ("Glock 17", "Beretta 92FS")
+ *   - base MAIÚSCULA + sufixo dígito → separa ("CZ 75", "UMP 45")
+ *   - sufixo é Palavra (Cap+minúsc.) → separa ("M200 Intervention", "MRAP MaxxPro")
+ *   - base sigla longa (4+ MAIÚSC.)  → separa ("MRAP RG-33", "MRAP M-ATV")
+ *   - resto                          → cola direto ("AKM", "M16A1", "MP5SD") */
 const joinName = (base, suf) => {
   if (!suf) return base;
   if (suf.startsWith(' ') || suf.startsWith('/')) return base + suf;
-  if (/^[A-Za-z0-9]/.test(suf) && /[A-Za-z0-9)]$/.test(base)) return base + suf; // AKM, F-16A
+  if (base.includes('/')) return base + ' ' + suf;
+  const lastB = base[base.length - 1];
+  if (/[a-zà-ú]/.test(lastB)) return base + ' ' + suf;
+  if (/[A-Z]/.test(lastB) && /[0-9]/.test(suf[0])) return base + ' ' + suf;
+  if (/^[A-Z][a-zà-ú]/.test(suf)) return base + ' ' + suf;
+  if (/^[A-Z]{4,}$/.test(base)) return base + ' ' + suf;
   return base + suf;
 };
 
@@ -998,7 +1131,8 @@ for (const c of CATS) arsenal[c.id] = [];
 let total = 0;
 for (const f of FAM) {
   for (const v of f.variantes) {
-    const o = typeof v === 'string' ? { s: v } : v;
+    /* string '*Nome Completo' = nome absoluto (não concatena com a base) */
+    const o = typeof v === 'string' ? (v.startsWith('*') ? { nome: v.slice(1) } : { s: v }) : v;
     const nome = o.nome || joinName(f.nome, o.s || '');
     arsenal[f.cat].push({
       nome,
