@@ -15,6 +15,7 @@
 import { h, cx, debounce, mount, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { highlight } from '../utils/syntax-highlight.js';
+import { createAutocomplete } from '../utils/editor-autocomplete.js';
 import {
   LANGS,
   loadState,
@@ -39,6 +40,7 @@ let previewEl = null;
 let tabsBarEl = null;
 let toolbarLangEl = null;
 let kbHandler = null;
+let autocompleteCtl = null;
 
 const persist = debounce(() => saveState(state), 400);
 
@@ -235,6 +237,8 @@ function renderEditorArea() {
       updateLineNumbers();
       persist();
       publishStatus();
+      /* sugestões estilo IntelliSense conforme digita (issue #197) */
+      if (autocompleteCtl) autocompleteCtl.refresh();
       /* atualiza char count na toolbar sem rebuildar */
       const meta = document.querySelector('.editor-toolbar__meta .u-mono');
       if (meta) meta.textContent = `${e.target.value.length} chars`;
@@ -249,6 +253,8 @@ function renderEditorArea() {
     highlightEl.scrollTop = editorEl.scrollTop;
     highlightEl.scrollLeft = editorEl.scrollLeft;
     if (lineNumbersEl) lineNumbersEl.scrollTop = editorEl.scrollTop;
+    /* rolar com o dropdown aberto deixaria ele "flutuando" no lugar errado */
+    if (autocompleteCtl) autocompleteCtl.close();
   }
 
   function updateHighlight() {
@@ -284,16 +290,25 @@ function renderEditorArea() {
     publishStatus();
   }, 0);
 
+  const mainEl = h(
+    'div',
+    { className: 'editor-area__main' },
+    highlightEl,
+    editorEl
+  );
+
+  /* Autocomplete (issue #197): dropdown ancorado na área do editor */
+  autocompleteCtl = createAutocomplete({
+    textarea: editorEl,
+    anchor: mainEl,
+    getLang: () => getLang(getActiveTab(state).lang)
+  });
+
   return h(
     'div',
     { className: 'editor-area' },
     lineNumbersEl,
-    h(
-      'div',
-      { className: 'editor-area__main' },
-      highlightEl,
-      editorEl
-    ),
+    mainEl,
     buildFindPanel()
   );
 }
@@ -304,11 +319,16 @@ const EDITOR_CLOSERS = new Set([')', ']', '}']);
 
 /**
  * Teclado do editor — recursos estilo VS Code:
+ *  autocomplete (↑↓ navega, Tab/Enter aceita, Esc fecha, Ctrl+Espaço abre) ·
  *  Tab/Shift+Tab (indenta bloco) · auto-fechamento de pares · pula o
  *  fechamento · backspace apaga par vazio · Enter com auto-indentação ·
  *  Ctrl+/ comenta · Alt+↑↓ move linha · Shift+Alt+↑↓ duplica linha.
  */
 function handleEditorKeydown(e) {
+  /* Autocomplete tem prioridade: com o dropdown aberto, Tab/Enter/setas
+     navegam e aceitam a sugestão em vez de indentar/quebrar linha. */
+  if (autocompleteCtl && autocompleteCtl.handleKey(e)) return;
+
   const ta = e.target;
   const val = ta.value;
   const start = ta.selectionStart;
@@ -888,7 +908,21 @@ export function editorPage() {
         { className: 'page-header__description' },
         'Multi-tabs · 26 linguagens · runners JS/HTML/CSS/Markdown. ',
         h('span', { className: 'u-text-cyan' }, 'Edição estilo VS Code'),
-        ': auto-fechamento de pares, auto-indentação, ',
+        ': autocomplete com snippets enquanto digita (',
+        h('span', { className: 'u-mono' }, 'psvm'),
+        ', ',
+        h('span', { className: 'u-mono' }, 'sout'),
+        ', ',
+        h('span', { className: 'u-mono' }, 'fori'),
+        ', ',
+        h('span', { className: 'u-mono' }, 'log'),
+        '… — ',
+        h('kbd', null, 'Tab'),
+        '/',
+        h('kbd', null, 'Enter'),
+        ' aceita · ',
+        h('kbd', null, 'Ctrl+Espaço'),
+        ' abre), auto-fechamento de pares, auto-indentação, ',
         h('kbd', null, 'Ctrl+/'),
         ' comenta · ',
         h('kbd', null, 'Alt+↑↓'),

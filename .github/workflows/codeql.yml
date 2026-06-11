@@ -2,6 +2,11 @@
 # lista: os de deploy (Azure/AWS/GKE…) não servem porque o site deploya na
 # Vercel. Roda SÓ em push/PR no main (sem cron — sem agente em segundo plano).
 # Resultados na aba Security → Code scanning do repositório.
+#
+# workflow_dispatch: os commits automáticos (câmbio) usam GITHUB_TOKEN e NÃO
+# disparam workflows — a main fica sem análise e o check dos PRs seguintes
+# compara contra nada, marcando alerta antigo como "novo". Se isso acontecer,
+# rode manualmente na aba Actions (botão "Run workflow") pra re-criar a base.
 name: CodeQL
 
 on:
@@ -9,6 +14,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   security-events: write
