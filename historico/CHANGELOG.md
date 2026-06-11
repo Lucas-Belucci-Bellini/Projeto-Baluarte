@@ -13,6 +13,17 @@ aqui o que mudou.
 - 🔤 **Nomes corrigidos** no gerador (`joinName`): marcas/palavras agora recebem espaço — **Glock 17**, **SIG Sauer P226**, **MRAP MaxxPro**, **CheyTac M200 Intervention**, **MRAP RG-33/M-ATV/JLTV** — enquanto designadores reais seguem colados (**AKM**, **M16A1**, **MP5SD**, **CZ 75**). Regra nova: sufixo que é Palavra (Maiúscula+minúsculas) ou base com sigla de 4+ letras → separa.
 - 🧹 Variante redundante do **DShK** removida (gerava "DShKDShKM"); suporte a **nome absoluto** com prefixo `*` no gerador (variante que não concatena com a base).
 
+### Skill de execução pra agentes + CodeQL manual
+- 🤖 **`.claude/skills/run-projeto-baluarte/`** novo: ensina o Claude Code (e qualquer agente futuro) a rodar e dirigir o site sozinho. O `driver.mjs` sobe o vite e controla um navegador de verdade: `smoke` (boot + regressões do editor #197), `shot` (screenshot de qualquer rota) e `eval` (roda JS dentro da página). Verificado de ponta a ponta neste container.
+- 🛡️ **`codeql.yml` + `workflow_dispatch`**: os commits automáticos do câmbio não disparam CodeQL (push de bot), então a main fica sem análise e o check dos PRs seguintes marca alerta **antigo** como "novo" (foi o que aconteceu no PR #199). Agora dá pra re-analisar a main manualmente na aba Actions.
+
+### Editor de Código consertado + autocomplete estilo VS Code (#197)
+- 🐛 **Highlight quebrado corrigido**: o realce de sintaxe estourava em qualquer código Java/JS com números — o regex de keywords casava com o `class=` do HTML que o próprio highlighter gerava (por isso o código aparecia todo de uma cor só no print do issue). `syntax-highlight.js` foi reescrito como **tokenizador de passada única**: nunca re-escaneia HTML gerado, então números, strings, comentários e keywords saem sempre certos.
+- ⌨️ **Autocomplete IntelliSense** (`editor-autocomplete.js` novo): dropdown perto do cursor enquanto digita, com **snippets** (gatilhos rápidos tipo VS Code/IntelliJ: `psvm`, `sout`, `fori` no Java; `log`, `func`, `fetch` no JS; `ifmain` no Python; `html5`, `flexcenter`…), **keywords** da linguagem e **palavras do próprio arquivo**. `↑↓` navega · `Tab`/`Enter` aceita · `Esc` fecha · `Ctrl+Espaço` abre manual. Snippets multi-linha respeitam a indentação e deixam o cursor no `$0`. Novos gatilhos: é só editar `src/data/editor-snippets.js`.
+- 🎨 Chamadas de função ganharam cor própria (`tk--func`, verde), como no VS Code.
+- ✅ Testado de ponta a ponta no navegador (Playwright): highlight íntegro, `psvm`/`sout` expandindo e cursor caindo dentro dos parênteses.
+- 🛡️ Backup: `backup/2026-06-11-pre-merge-editor`.
+
 ## 2026-06-10
 
 ### #186 (fase 4): documentação do bootstrap + contagem dinâmica de rotas
