@@ -1,0 +1,99 @@
+/* ===== /apis — Central de APIs (issue #200) ===== */
+
+/* --- Detecção do servidor --- */
+.apis-server {
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+}
+.apis-server__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xs);
+}
+.apis-server__head h2 { font-size: 16px; margin: 0; }
+.apis-server__rows { display: flex; flex-direction: column; gap: 6px; }
+.apis-server__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-sm);
+}
+.apis-server__label { font-weight: 600; }
+.apis-server__hint { margin-left: auto; color: var(--color-text-muted); font-size: 12px; }
+.apis-server__note { font-size: 12px; margin-top: 4px; }
+
+/* --- Grid de provedores --- */
+.apis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.apis-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+}
+.apis-card__head { display: flex; align-items: center; gap: 10px; }
+.apis-card__icon { font-size: 22px; }
+.apis-card__name { font-weight: 700; }
+.apis-card__where { font-size: 11px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.apis-card__desc { font-size: 13px; color: var(--color-text-muted); margin: 0; flex: 1; }
+.apis-card__extra .input { width: 100%; }
+.apis-card__foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* --- Status de teste --- */
+.apis-status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.apis-status--ok   { color: #7ee787; }
+.apis-status--fail { color: #ff5577; }
+.apis-status--wait { color: var(--color-cyan); }
+
+/* --- Cofre local --- */
+.apis-vault {
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+}
+.apis-vault h2 { font-size: 16px; margin: 0 0 4px; }
+.apis-vault__empty { padding: 8px 0; }
+.apis-vault__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  margin-top: 6px;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+.apis-vault__name { font-weight: 700; min-width: 140px; }
+.apis-vault__value { color: var(--color-text-muted); font-size: 12px; word-break: break-all; }
+.apis-vault__actions { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.apis-vault__form {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr auto;
+  gap: 8px;
+  margin-top: var(--space-sm);
+}
+
+@media (max-width: 720px) {
+  .apis-vault__form { grid-template-columns: 1fr; }
+  .apis-vault__actions { margin-left: 0; }
+}
