@@ -133,9 +133,15 @@ export function mount(container, child) {
   if (child) container.appendChild(child);
 }
 
-/** Gera um id curto. Usa crypto (não Math.random): ids podem viver perto de
- *  dados sensíveis (ex: cofre do /apis), e o CodeQL exige aleatoriedade forte. */
+/** n bytes aleatórios em hex — criptograficamente fortes (crypto, não
+ *  Math.random): ids gerados aqui são persistidos no mesmo storage de dados
+ *  sensíveis (ex: cofre do /apis), e o CodeQL exige aleatoriedade forte. */
+export function randHex(bytes = 4) {
+  const b = crypto.getRandomValues(new Uint8Array(bytes));
+  return Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+}
+
+/** Gera um id curto. */
 export function uid(prefix = 'id') {
-  const bytes = crypto.getRandomValues(new Uint8Array(6));
-  return `${prefix}_${Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')}`;
+  return `${prefix}_${randHex(6)}`;
 }
