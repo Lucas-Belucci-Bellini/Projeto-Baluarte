@@ -6,7 +6,7 @@
  * Reaproveita o jarvis-engine (processServer) e o syntax-highlight.
  */
 
-import { h, empty } from '../utils/helpers.js';
+import { h, empty, randHex } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
@@ -116,7 +116,7 @@ export function gerarCodigoPage() {
     const ext = (LANGS.find((l) => l[0] === lang) || [, , 'txt'])[2];
     const st = storage.get('editor:state') || { tabs: [], activeId: null };
     if (!Array.isArray(st.tabs)) st.tabs = [];
-    const tab = { id: 'tab_' + Math.random().toString(36).slice(2, 8), name: `gerado.${ext}`, lang, content: lastCode };
+    const tab = { id: 'tab_' + randHex(4), name: `gerado.${ext}`, lang, content: lastCode };
     st.tabs.push(tab); st.activeId = tab.id;
     storage.set('editor:state', st);
     toast('Aberto no Editor', { type: 'success' });
