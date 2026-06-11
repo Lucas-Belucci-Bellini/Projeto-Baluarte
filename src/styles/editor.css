@@ -219,6 +219,55 @@
   white-space: pre;
 }
 
+/* ===== Autocomplete — IntelliSense estilo VS Code (issue #197) ===== */
+.editor-autocomplete {
+  position: absolute;
+  z-index: 6;
+  min-width: 260px;
+  max-width: 420px;
+  max-height: 270px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.editor-autocomplete__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.editor-autocomplete__item.is-active {
+  background: rgba(0, 240, 255, 0.12);
+}
+
+.editor-autocomplete__kind {
+  flex: none;
+  width: 18px;
+  text-align: center;
+}
+.editor-autocomplete__kind--snippet { color: var(--color-magenta); }
+.editor-autocomplete__kind--keyword { color: var(--color-cyan); }
+.editor-autocomplete__kind--word    { color: var(--color-text-muted); }
+
+.editor-autocomplete__label { color: var(--color-text-primary); }
+.editor-autocomplete__label b { color: var(--color-cyan); font-weight: 700; }
+
+.editor-autocomplete__detail {
+  margin-left: auto;
+  padding-left: 16px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ===== Find & Replace ===== */
 .editor-find {
   position: absolute;
@@ -302,6 +351,7 @@
 .tk--number  { color: #ff9d6b; }
 .tk--comment { color: var(--color-text-muted); font-style: italic; }
 .tk--punct   { color: #93a4bf; }
+.tk--func    { color: #7ee787; }
 .tk--attr    { color: var(--color-cyan); font-style: italic; }
 .tk--heading { color: var(--color-cyan); font-weight: 700; }
 .tk--bold    { color: var(--color-text-primary); font-weight: 700; }

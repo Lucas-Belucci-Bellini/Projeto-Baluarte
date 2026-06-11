@@ -3,11 +3,17 @@
  * Funciona razoavelmente bem para todas as 26 linguagens definidas em editor-langs.js
  * sem precisar de dependência externa.
  *
- * Estratégia:
- * 1. Tokeniza em ordem de prioridade (comments → strings → numbers → keywords → identifiers).
- * 2. Cada token recebe um span com classe `tk tk--<type>`.
- * 3. Para HTML/XML: regras especiais para tags e atributos.
- * 4. Para Markdown: regras para headings, bold, italic, code, links.
+ * Estratégia (issue #197 — reescrito como tokenizador de passada única):
+ * 1. Um ÚNICO regex combinado encontra cada token no texto cru, em ordem de
+ *    prioridade (comments → strings → numbers → palavras → pontuação).
+ * 2. Cada token é escapado e vira um span `tk tk--<type>`; o texto entre
+ *    tokens é só escapado. Nunca re-escaneamos HTML já gerado — era isso que
+ *    quebrava o highlight antes (o regex de keywords casava com o `class=`
+ *    dos spans de número, estourando o HTML em Java/JS/etc).
+ * 3. Palavras seguidas de `(` ganham `tk--func` (cor de chamada de função,
+ *    como no VS Code).
+ * 4. Para HTML/XML: regras especiais para tags e atributos.
+ * 5. Para Markdown: regras para headings, bold, italic, code, links.
  *
  * Saída: HTML escapado e com spans de cor.
  */
@@ -89,71 +95,90 @@ function highlightMarkdown(text) {
   return out;
 }
 
-function highlightGeneric(text, lang) {
-  /* 1. Escape HTML */
-  let out = escapeHtml(text);
+/* Cache do regex combinado + set de keywords por linguagem (montar isso a
+   cada tecla seria desperdício — a definição da linguagem nunca muda). */
+const tokenizerCache = new Map();
 
-  /* 2. Comentários (fazemos com placeholders pra não conflitar) */
-  const placeholders = [];
-  function stash(html) {
-    const idx = placeholders.length;
-    placeholders.push(html);
-    return `\x01${idx}\x02`;
-  }
+function getTokenizer(lang) {
+  const cached = tokenizerCache.get(lang.id);
+  if (cached) return cached;
 
-  /* Block comments */
+  /* Alternativas em ordem de prioridade. Grupos nomeados dizem o tipo. */
+  const parts = [];
+
   if (lang.blockComment) {
-    const open = escapeRegex(escapeHtml(lang.blockComment.open));
-    const close = escapeRegex(escapeHtml(lang.blockComment.close));
-    out = out.replace(
-      new RegExp(`${open}[\\s\\S]*?${close}`, 'g'),
-      (m) => stash(`<span class="tk tk--comment">${m}</span>`)
-    );
+    const open = escapeRegex(lang.blockComment.open);
+    const close = escapeRegex(lang.blockComment.close);
+    /* `|$` deixa um bloco ainda não fechado (usuário digitando) já colorido */
+    parts.push(`(?<bcomment>${open}[\\s\\S]*?(?:${close}|$))`);
   }
-
-  /* Line comments */
   if (lang.lineComment) {
-    const lc = escapeRegex(escapeHtml(lang.lineComment));
-    out = out.replace(
-      new RegExp(`${lc}[^\\n]*`, 'g'),
-      (m) => stash(`<span class="tk tk--comment">${m}</span>`)
-    );
+    parts.push(`(?<lcomment>${escapeRegex(lang.lineComment)}[^\\n]*)`);
   }
-
-  /* Strings (vários delimitadores) */
-  for (const delim of lang.stringDelimiters || []) {
-    const d = escapeHtml(delim);
-    /* Permite escape \x dentro da string */
-    out = out.replace(
-      new RegExp(`${escapeRegex(d)}(?:\\\\.|[^${escapeRegex(d)}\\\\\\n])*${escapeRegex(d)}`, 'g'),
-      (m) => stash(`<span class="tk tk--string">${m}</span>`)
-    );
+  if (lang.stringDelimiters && lang.stringDelimiters.length) {
+    const alts = lang.stringDelimiters.map((delim) => {
+      const d = escapeRegex(delim);
+      /* Permite escape \x dentro da string */
+      return `${d}(?:\\\\.|[^${d}\\\\\\n])*${d}`;
+    });
+    parts.push(`(?<string>${alts.join('|')})`);
   }
+  parts.push('(?<number>\\b(?:0[xX][0-9a-fA-F]+|0[bB][01]+|0[oO][0-7]+|\\d+\\.?\\d*(?:[eE][+-]?\\d+)?)\\b)');
+  parts.push('(?<word>[A-Za-z_$][\\w$]*)');
+  parts.push('(?<punct>[{}()\\[\\];,])');
 
-  /* Números */
-  out = out.replace(
-    /\b(0x[0-9a-fA-F]+|0b[01]+|0o[0-7]+|\d+\.?\d*(?:[eE][+-]?\d+)?)\b/g,
-    '<span class="tk tk--number">$1</span>'
+  const keywords = new Set(
+    (lang.keywords || '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((k) => (lang.caseInsensitive ? k.toLowerCase() : k))
   );
 
-  /* Keywords */
-  if (lang.keywords) {
-    const kws = lang.keywords.split(/\s+/).filter(Boolean).map(escapeRegex);
-    if (kws.length) {
-      const flags = lang.caseInsensitive ? 'gi' : 'g';
-      const re = new RegExp(`\\b(${kws.join('|')})\\b`, flags);
-      out = out.replace(re, '<span class="tk tk--keyword">$1</span>');
+  const tokenizer = { re: new RegExp(parts.join('|'), 'g'), keywords };
+  tokenizerCache.set(lang.id, tokenizer);
+  return tokenizer;
+}
+
+function highlightGeneric(text, lang) {
+  const { re, keywords } = getTokenizer(lang);
+  re.lastIndex = 0;
+
+  let out = '';
+  let last = 0;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    /* Texto entre tokens: só escapa */
+    out += escapeHtml(text.slice(last, m.index));
+
+    const tok = m[0];
+    const esc = escapeHtml(tok);
+    const g = m.groups;
+
+    if (g.bcomment != null || g.lcomment != null) {
+      out += `<span class="tk tk--comment">${esc}</span>`;
+    } else if (g.string != null) {
+      out += `<span class="tk tk--string">${esc}</span>`;
+    } else if (g.number != null) {
+      out += `<span class="tk tk--number">${esc}</span>`;
+    } else if (g.word != null) {
+      const key = lang.caseInsensitive ? tok.toLowerCase() : tok;
+      if (keywords.has(key)) {
+        out += `<span class="tk tk--keyword">${esc}</span>`;
+      } else if (/^[ \t]*\(/.test(text.slice(re.lastIndex, re.lastIndex + 16))) {
+        /* identificador seguido de "(" = chamada/definição de função */
+        out += `<span class="tk tk--func">${esc}</span>`;
+      } else {
+        out += esc;
+      }
+    } else {
+      out += `<span class="tk tk--punct">${esc}</span>`;
     }
+
+    last = re.lastIndex;
+    /* Segurança contra match vazio (não deve acontecer, mas evita loop) */
+    if (re.lastIndex === m.index) re.lastIndex++;
   }
-
-  /* Operadores e pontuação simples */
-  out = out.replace(
-    /([{}()\[\];,])/g,
-    '<span class="tk tk--punct">$1</span>'
-  );
-
-  /* Restaura placeholders */
-  out = out.replace(/\x01(\d+)\x02/g, (_m, i) => placeholders[Number(i)]);
+  out += escapeHtml(text.slice(last));
 
   return out;
 }
