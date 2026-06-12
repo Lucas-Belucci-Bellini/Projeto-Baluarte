@@ -1,0 +1,218 @@
+/**
+ * Direct CLI Tool Commands
+ *
+ * Exposes GitNexus tools (query, context, impact, cypher) as direct CLI commands.
+ * Bypasses MCP entirely — invokes LocalBackend directly for minimal overhead.
+ *
+ * Usage:
+ *   gitnexus query "authentication flow"
+ *   gitnexus context --name "validateUser"
+ *   gitnexus impact --target "AuthService" --direction upstream
+ *   gitnexus cypher "MATCH (n:Function) RETURN n.name LIMIT 10"
+ *
+ * Note: Output goes to stdout via fs.writeSync(fd 1), bypassing LadybugDB's
+ * native module which captures the Node.js process.stdout stream during init.
+ * See the output() function for details (#324).
+ */
+
+import { writeSync } from 'node:fs';
+import { LocalBackend, VALID_NODE_LABELS } from '../mcp/local/local-backend.js';
+import { cliErrorKey, cliWarnKey } from './cli-message.js';
+import { formatDetectChangesResult } from './detect-changes-format.js';
+
+let _backend: LocalBackend | null = null;
+
+async function getBackend(): Promise<LocalBackend> {
+  if (_backend) return _backend;
+  _backend = new LocalBackend();
+  const ok = await _backend.init();
+  if (!ok) {
+    cliErrorKey('tool.noIndexed');
+    process.exit(1);
+  }
+  return _backend;
+}
+
+/**
+ * Write tool output to stdout using low-level fd write.
+ *
+ * LadybugDB's native module captures Node.js process.stdout during init,
+ * but the underlying OS file descriptor 1 (stdout) remains intact.
+ * By using fs.writeSync(1, ...) we bypass the Node.js stream layer
+ * and write directly to the real stdout fd (#324).
+ *
+ * Falls back to stderr if the fd write fails (e.g., broken pipe).
+ */
+function output(data: any): void {
+  const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  try {
+    writeSync(1, text + '\n');
+  } catch (err: any) {
+    if (err?.code === 'EPIPE') {
+      // Consumer closed the pipe (e.g., `gitnexus cypher ... | head -1`)
+      // Exit cleanly per Unix convention
+      process.exit(0);
+    }
+    // Fallback: stderr (previous behavior, works on all platforms)
+    process.stderr.write(text + '\n');
+  }
+}
+
+export async function queryCommand(
+  queryText: string,
+  options?: {
+    repo?: string;
+    context?: string;
+    goal?: string;
+    limit?: string;
+    content?: boolean;
+  },
+): Promise<void> {
+  if (!queryText?.trim()) {
+    cliErrorKey('tool.usage.query');
+    process.exit(1);
+  }
+
+  const backend = await getBackend();
+  const result = await backend.callTool('query', {
+    query: queryText,
+    task_context: options?.context,
+    goal: options?.goal,
+    limit: options?.limit ? parseInt(options.limit) : undefined,
+    include_content: options?.content ?? false,
+    repo: options?.repo,
+  });
+  output(result);
+}
+
+export async function contextCommand(
+  name: string,
+  options?: {
+    repo?: string;
+    file?: string;
+    uid?: string;
+    content?: boolean;
+  },
+): Promise<void> {
+  // Reject a `--`-prefixed uid swallowed from a following flag (see impactCommand).
+  if (options?.uid?.startsWith('--')) {
+    cliErrorKey('tool.usage.context');
+    process.exit(1);
+  }
+  if (!name?.trim() && !options?.uid) {
+    cliErrorKey('tool.usage.context');
+    process.exit(1);
+  }
+
+  const backend = await getBackend();
+  const result = await backend.callTool('context', {
+    name: name || undefined,
+    uid: options?.uid,
+    file_path: options?.file,
+    include_content: options?.content ?? false,
+    repo: options?.repo,
+  });
+  output(result);
+}
+
+export async function impactCommand(
+  target?: string,
+  options?: {
+    direction?: string;
+    repo?: string;
+    uid?: string;
+    file?: string;
+    kind?: string;
+    depth?: string;
+    includeTests?: boolean;
+    limit?: string;
+    offset?: string;
+    summaryOnly?: boolean;
+  },
+): Promise<void> {
+  // A `--`-prefixed uid means Commander swallowed a following flag as the uid
+  // value (e.g. `impact --uid --file x` → uid === '--file'). Reject it rather
+  // than forwarding a garbage uid that would silently resolve to not-found.
+  if (options?.uid?.startsWith('--')) {
+    cliErrorKey('tool.usage.impact');
+    process.exit(1);
+  }
+  // Target is an optional positional: a uid alone is enough to resolve (parity
+  // with `context [name]`). Only error when neither a target nor a uid is given.
+  if (!target?.trim() && !options?.uid) {
+    cliErrorKey('tool.usage.impact');
+    process.exit(1);
+  }
+  // Soft-validate --kind: an unknown kind is a no-op hint (the backend scores
+  // it but it matches nothing), so warn and proceed rather than rejecting —
+  // parity with the lenient MCP surface and forward-compatible with new labels.
+  if (options?.kind && !VALID_NODE_LABELS.has(options.kind)) {
+    cliWarnKey('tool.warn.unknownKind', { kind: options.kind });
+  }
+
+  try {
+    const backend = await getBackend();
+    const rawLimit = parseInt(options?.limit ?? '', 10);
+    const rawOffset = parseInt(options?.offset ?? '', 10);
+    const parsedLimit = Number.isFinite(rawLimit) ? rawLimit : undefined;
+    const parsedOffset = Number.isFinite(rawOffset) ? rawOffset : undefined;
+    const result = await backend.callTool('impact', {
+      target: target || undefined,
+      target_uid: options?.uid,
+      file_path: options?.file,
+      kind: options?.kind,
+      direction: options?.direction || 'upstream',
+      maxDepth: options?.depth ? parseInt(options.depth, 10) : undefined,
+      includeTests: options?.includeTests ?? false,
+      repo: options?.repo,
+      limit: parsedLimit,
+      offset: parsedOffset,
+      summaryOnly: options?.summaryOnly ?? undefined,
+    });
+    output(result);
+  } catch (err: unknown) {
+    // Belt-and-suspenders: catch infrastructure failures (getBackend, callTool transport)
+    // The backend's impact() already returns structured errors for graph query failures
+    output({
+      error:
+        (err instanceof Error ? err.message : String(err)) || 'Impact analysis failed unexpectedly',
+      target: { name: target },
+      direction: options?.direction || 'upstream',
+      suggestion: 'Try reducing --depth or using gitnexus context <symbol> as a fallback',
+    });
+    process.exit(1);
+  }
+}
+
+export async function cypherCommand(
+  query: string,
+  options?: {
+    repo?: string;
+  },
+): Promise<void> {
+  if (!query?.trim()) {
+    cliErrorKey('tool.usage.cypher');
+    process.exit(1);
+  }
+
+  const backend = await getBackend();
+  const result = await backend.callTool('cypher', {
+    query,
+    repo: options?.repo,
+  });
+  output(result);
+}
+
+export async function detectChangesCommand(options?: {
+  scope?: string;
+  baseRef?: string;
+  repo?: string;
+}): Promise<void> {
+  const backend = await getBackend();
+  const result = await backend.callTool('detect_changes', {
+    scope: options?.scope || 'unstaged',
+    base_ref: options?.baseRef,
+    repo: options?.repo,
+  });
+  output(formatDetectChangesResult(result));
+}
