@@ -509,6 +509,35 @@ export async function processHermes(messages, config) {
   return data.resposta || '(resposta vazia)';
 }
 
+/* ===== Modo CLAUDE (servidor) — Anthropic via /api/claude (issue #200) =====
+ * Mesmo formato do processHermes, mas no endpoint /claude: a chave fica nas
+ * Environment Variables da Vercel (nunca no navegador) e é detectada até com
+ * nome personalizado (ex: Claude_Fable). Status das chaves: página /apis. */
+export async function processClaudeServer(messages, config) {
+  const url = resolveServerBase(config && config.serverUrl);
+  if (typeof location !== 'undefined' && location.protocol === 'https:' && /^http:\/\//i.test(url)) {
+    throw new Error(`URL "${url}" é http:// num site HTTPS — bloqueada pelo navegador.`);
+  }
+  const body = {
+    system: config && config.systemPrompt,
+    messages: messages.map((m) => ({ role: m.role === 'jarvis' ? 'assistant' : 'user', content: m.text }))
+  };
+  let res;
+  try {
+    res = await fetchWithTimeout(`${url}/claude`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    }, 60000);
+  } catch (e) {
+    if (e.message === 'timeout') throw new Error('O Claude (servidor) demorou demais a responder. Tente de novo.');
+    throw new Error('Servidor do Claude inacessível.');
+  }
+  if (!res.ok) throw new Error(`Servidor HTTP ${res.status}`);
+  const data = await res.json();
+  return data.resposta || '(resposta vazia)';
+}
+
 /* ===== Modo OPENCLAW — assistente self-hosted (gateway local) =====
  * OpenClaw é self-hosted (como o Ollama). O gateway nativo é RPC; esta conexão
  * espera um endpoint de chat compatível com OpenAI (nativo ou via bridge).

@@ -2,16 +2,17 @@
  * JARVIS Council — várias IAs trabalhando juntas, compartilhando a memória.
  *
  * Faz a mesma pergunta a vários "membros" (JARVIS Local, Gemini, Hermes no
- * navegador/servidor, OpenClaw), todos com o MESMO contexto (dossiê + memória
- * durável + estado do site), e sintetiza um consenso.
+ * navegador/servidor, Claude no servidor, OpenClaw), todos com o MESMO contexto
+ * (dossiê + memória durável + estado do site), e sintetiza um consenso.
  *
  * Sintetizador (resposta final): o HERMES é o moderador — primeiro o modelo no
- * navegador (sem limites), depois o Hermes servidor; o Gemini fica só de
- * reserva (ele costuma estourar o limite de tokens). Se um membro não responde
- * por limite, o moderador é avisado e diz isso. O resultado volta para a memória.
+ * navegador (sem limites), depois o Hermes servidor; o Claude (servidor) e o
+ * Gemini ficam de reserva (o Gemini costuma estourar o limite de tokens). Se um
+ * membro não responde por limite, o moderador é avisado e diz isso. O resultado
+ * volta para a memória.
  */
 
-import { loadConfig, processLocal, processServer, processHermes, processOpenClaw, getBaluarteBriefing } from './jarvis-engine.js';
+import { loadConfig, processLocal, processServer, processHermes, processClaudeServer, processOpenClaw, getBaluarteBriefing } from './jarvis-engine.js';
 import { processWebLLM, getLoadedModel } from './jarvis-webllm.js';
 import { memoryContext, captureConversation, addMemory } from './jarvis-brain.js';
 import { getStatusText } from './baluarte-status.js';
@@ -50,7 +51,7 @@ const SYNTH_SYS =
 const isBad = (r) => !r || typeof r !== 'string' || !r.trim()
   || r.startsWith('[') || r.startsWith('(') || /429|RESOURCE_EXHAUSTED|quota|exceeded/i.test(r);
 
-/** Sintetizador: Hermes (navegador → servidor) primeiro; Gemini só de reserva. */
+/** Sintetizador: Hermes (navegador → servidor) primeiro; Claude e Gemini de reserva. */
 async function synthesize(question, body, cfg) {
   const msg = [{ role: 'user', text: `Pergunta do operador:\n${question}\n\n${body}` }];
 
@@ -59,6 +60,7 @@ async function synthesize(question, body, cfg) {
     try { const r = await processWebLLM(msg, { webllmModel: loaded, systemPrompt: SYNTH_SYS }); if (!isBad(r)) return { text: r, by: 'Hermes (navegador)' }; } catch { /* segue */ }
   }
   try { const r = await processHermes(msg, { ...cfg, systemPrompt: SYNTH_SYS }); if (!isBad(r)) return { text: r, by: 'Hermes (servidor)' }; } catch { /* segue */ }
+  try { const r = await processClaudeServer(msg, { ...cfg, systemPrompt: SYNTH_SYS }); if (!isBad(r)) return { text: r, by: 'Claude (reserva)' }; } catch { /* segue */ }
   try { const r = await processServer(msg, { ...cfg, systemPrompt: SYNTH_SYS }); if (!isBad(r)) return { text: r, by: 'Gemini (reserva)' }; } catch { /* segue */ }
   return null;
 }
@@ -123,7 +125,19 @@ export async function runCouncil(question, { onMember } = {}) {
     }
   })());
 
-  /* Membro 5 — OpenClaw (self-hosted): só entra se a URL estiver configurada. */
+  /* Membro 5 — Claude (servidor): Anthropic via /api/claude, chave na Vercel
+   * (issue #200). Sem chave, o endpoint responde "[...]" → "⚠ Indisponível." */
+  tasks.push((async () => {
+    try {
+      const reply = await processClaudeServer([{ role: 'user', text: question }], { ...cfg, systemPrompt: memberSys('modelo Claude da Anthropic') });
+      const r = memberResult(reply);
+      announce({ id: 'claude-servidor', name: 'Claude (servidor)', text: r.text, ok: r.ok, rateLimited: r.rateLimited });
+    } catch {
+      announce({ id: 'claude-servidor', name: 'Claude (servidor)', text: '⚠ Indisponível.', ok: false });
+    }
+  })());
+
+  /* Membro 6 — OpenClaw (self-hosted): só entra se a URL estiver configurada. */
   if (cfg && cfg.openclawUrl) {
     tasks.push((async () => {
       try {

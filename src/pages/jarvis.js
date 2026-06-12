@@ -10,7 +10,7 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import {
   loadConfig, saveConfig,
-  processLocal, processClaude, processOllama, processServer, processHermes, processOpenClaw, processAgent,
+  processLocal, processClaude, processOllama, processServer, processHermes, processClaudeServer, processOpenClaw, processAgent,
   healthCheckServer, getBaluarteBriefing
 } from '../utils/jarvis-engine.js';
 import {
@@ -37,6 +37,7 @@ const MODES = [
   { id: 'ollama', label: 'Ollama', icon: '⬢', badge: 'success', desc: 'Modelo local via Ollama (ollama serve). 100% privado.' },
   { id: 'servidor', label: 'Servidor', icon: '⊛', badge: 'success', desc: 'Backend Python + Gemini com busca web real (Google). Habilita a camada 2 do raciocínio. Requer rodar backend/server.py.' },
   { id: 'hermes', label: 'Hermes (servidor)', icon: '⬢', badge: 'success', desc: 'Nous Hermes via servidor (Vercel → OpenRouter): roda em qualquer device, sem WebGPU. Requer OPENROUTER_API_KEY nas envs da Vercel.' },
+  { id: 'claude-servidor', label: 'Claude (servidor)', icon: '🛰', badge: 'magenta', desc: 'Claude pelo servidor do site (Vercel → Anthropic): a chave fica nas envs da Vercel, nunca no navegador — detecta até nome personalizado (ex: Claude_Fable). Status das chaves em /apis.' },
   { id: 'openclaw', label: 'OpenClaw', icon: '🐾', badge: 'cyan', desc: 'Assistente self-hosted OpenClaw (gateway local). Espera um endpoint de chat compatível (OpenAI); configure a URL. O gateway nativo é RPC — pode precisar de bridge.' },
   { id: 'agente', label: 'Agente', icon: '⚛', badge: 'warning', desc: 'Claude com ferramentas: navega, consulta e executa ações reais.' }
 ];
@@ -443,6 +444,13 @@ async function handleSend() {
       captureReply(reply);
     } else if (config.mode === 'hermes') {
       const reply = await processHermes(convo, callConfig);
+      removeTyping();
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
+      emitJarvis(reply);
+      captureReply(reply);
+    } else if (config.mode === 'claude-servidor') {
+      const reply = await processClaudeServer(convo, callConfig);
       removeTyping();
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);

@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-11
 
+### Claude (servidor) vira modo do JARVIS e membro do Conselho (#200, parte 2)
+- 🛰 **Modo novo no `/jarvis`**: "Claude (servidor)" — conversa com o Claude pelo `/api/claude`, com a chave na Vercel (nunca no navegador). É só escolher o modo no ⚙ e conversar.
+- ⚖️ **Conselho de IAs com mais um membro**: o Claude (servidor) agora delibera junto com JARVIS Local, Gemini e Hermes, recebendo o mesmo contexto compartilhado (dossiê + memória durável + estado do site). Sem chave no servidor, ele degrada para "⚠ Indisponível." sem quebrar o conselho.
+- 🧑‍⚖️ **Moderador-reserva do consenso**: se o Hermes (moderador titular) falhar na síntese, o Claude assume; o Gemini segue como última reserva.
+- ✅ Verificado no navegador (Playwright + mock do `/api` no contrato real): resposta do Claude no chat do JARVIS, card "Claude (servidor)" no Conselho e consenso fechado "por Claude (reserva)" com Gemini/Hermes fora do ar.
+- 🛡️ Backup: `backup/2026-06-11-pre-merge-claude-conselho`.
+
 ### Central de APIs + Claude no servidor (#200)
 - 🔑 **`/apis` — Central de APIs** nova (menu IA & Jarvis): detecta, testa e gerencia as IAs do site num painel só. **Detecção no servidor**: o `/api/health` agora informa quais chaves existem na Vercel (só existe/não-existe — o valor nunca sai do servidor) e **qual env** a chave Claude usa. **Testes por provedor**: JARVIS Local, Claude (navegador, 1 token), Claude (servidor), Gemini, Hermes e Ollama, com latência e erro legível. **Cofre local**: chaves nomeadas mascaradas no localStorage (👁/copiar/excluir) e botão "Usar no JARVIS" que vira a apiKey do modo Claude.
 - 🤖 **`/api/claude` novo**: Claude pelo servidor do site — a chave fica nas Environment Variables da Vercel, nunca no navegador. A detecção aceita **nome personalizado** (ex: `Claude_Fable`): qualquer env com valor `sk-ant-…` ou nome contendo claude/anthropic. Antes, essas chaves na Vercel eram invisíveis pro site (o código só lia GEMINI_API_KEY/OPENROUTER_API_KEY).
