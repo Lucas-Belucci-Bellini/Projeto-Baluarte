@@ -326,7 +326,7 @@ export function apisPage() {
     }),
     providerCard({
       icon: '🛰', name: 'Claude (servidor)', where: 'chave na Vercel',
-      desc: 'Novo /api/claude: usa a chave Claude das Environment Variables (detecta até nome personalizado, ex: Claude_Fable).',
+      desc: 'O /api/claude usa a chave das Environment Variables (detecta até nome personalizado, ex: Claude_Fable). É modo do JARVIS e membro do Conselho de IAs.',
       test: testClaudeServidor
     }),
     providerCard({
