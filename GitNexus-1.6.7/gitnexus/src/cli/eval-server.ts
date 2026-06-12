@@ -1,0 +1,601 @@
+/**
+ * Eval Server — Lightweight HTTP server for SWE-bench evaluation
+ *
+ * Keeps LadybugDB warm in memory so tool calls from the agent are near-instant.
+ * Designed to run inside Docker containers during SWE-bench evaluation.
+ *
+ * KEY DESIGN: Returns LLM-friendly text, not raw JSON.
+ * Raw JSON wastes tokens and is hard for models to parse. The text formatter
+ * converts structured results into compact, readable output that models
+ * can immediately act on. Next-step hints guide the agent through a
+ * productive tool-chaining workflow (query → context → impact → fix).
+ *
+ * Architecture:
+ *   Agent bash cmd → curl localhost:PORT/tool/query → eval-server → LocalBackend → format → text
+ *
+ * Usage:
+ *   gitnexus eval-server                        # default port 4848, binds 127.0.0.1
+ *   gitnexus eval-server --port 4848            # explicit port
+ *   gitnexus eval-server --host 0.0.0.0         # reachable from other VMs / containers
+ *   gitnexus eval-server --idle-timeout 300     # auto-shutdown after 300s idle
+ *
+ * READY signal format: GITNEXUS_EVAL_SERVER_READY:<host>:<port>
+ *   IPv4: GITNEXUS_EVAL_SERVER_READY:127.0.0.1:4848
+ *   IPv6: GITNEXUS_EVAL_SERVER_READY:[::1]:4848
+ *
+ * API:
+ *   POST /tool/:name   — Call a tool. Body is JSON arguments. Returns formatted text.
+ *   GET  /health       — Health check. Returns {"status":"ok","repos":[...]}
+ *   POST /shutdown     — Graceful shutdown.
+ */
+
+import http from 'http';
+import { isIPv4, isIPv6 } from 'node:net';
+import { writeSync } from 'node:fs';
+import {
+  LocalBackend,
+  type RepoListing,
+  type ListReposPagination,
+} from '../mcp/local/local-backend.js';
+import { logger } from '../core/logger.js';
+import { cliInfo, cliWarn, cliError } from './cli-message.js';
+import { formatDetectChangesResult } from './detect-changes-format.js';
+
+export { formatDetectChangesResult } from './detect-changes-format.js';
+
+export interface EvalServerOptions {
+  port?: string;
+  host?: string;
+  idleTimeout?: string;
+}
+
+/**
+ * Validate the --host value. Accepts IPv4, IPv6, or "localhost".
+ * Returns the host string unchanged, or null if invalid.
+ * "localhost" is passed through so the OS resolves it to the correct loopback
+ * address (127.0.0.1 or ::1) at bind time rather than forcing IPv4.
+ */
+export function validateHost(raw: string): string | null {
+  if (raw === 'localhost') return raw;
+  if (isIPv4(raw) || isIPv6(raw)) return raw;
+  return null;
+}
+
+// ─── Text Formatters ──────────────────────────────────────────────────
+// Convert structured JSON results into compact, LLM-friendly text.
+// Design: minimize tokens, maximize actionability.
+
+export function formatQueryResult(result: any): string {
+  if (result.error) return `Error: ${result.error}`;
+
+  const lines: string[] = [];
+  const processes = result.processes || [];
+  const symbols = result.process_symbols || [];
+  const defs = result.definitions || [];
+
+  if (processes.length === 0 && defs.length === 0) {
+    return 'No matching execution flows found. Try a different search term or use grep.';
+  }
+
+  lines.push(`Found ${processes.length} execution flow(s):\n`);
+
+  for (let i = 0; i < processes.length; i++) {
+    const p = processes[i];
+    lines.push(`${i + 1}. ${p.summary} (${p.step_count} steps, ${p.symbol_count} symbols)`);
+
+    // Show symbols belonging to this process
+    const procSymbols = symbols.filter((s: any) => s.process_id === p.id);
+    for (const s of procSymbols.slice(0, 6)) {
+      const loc = s.startLine ? `:${s.startLine}` : '';
+      lines.push(`   ${s.type} ${s.name} → ${s.filePath}${loc}`);
+    }
+    if (procSymbols.length > 6) {
+      lines.push(`   ... and ${procSymbols.length - 6} more`);
+    }
+    lines.push('');
+  }
+
+  if (defs.length > 0) {
+    lines.push(`Standalone definitions:`);
+    for (const d of defs.slice(0, 8)) {
+      lines.push(`  ${d.type || 'Symbol'} ${d.name} → ${d.filePath || '?'}`);
+    }
+    if (defs.length > 8) lines.push(`  ... and ${defs.length - 8} more`);
+  }
+
+  return lines.join('\n').trim();
+}
+
+export function formatContextResult(result: any): string {
+  if (result.error) return `Error: ${result.error}`;
+
+  if (result.status === 'ambiguous') {
+    const lines = [
+      `Multiple symbols named '${result.candidates?.[0]?.name || '?'}'. Disambiguate with file path:\n`,
+    ];
+    for (const c of result.candidates || []) {
+      lines.push(`  ${c.kind} ${c.name} → ${c.filePath}:${c.line || '?'}  (uid: ${c.uid})`);
+    }
+    lines.push(`\nRe-run: gitnexus-context "${result.candidates?.[0]?.name}" "<file_path>"`);
+    return lines.join('\n');
+  }
+
+  const sym = result.symbol;
+  if (!sym) return 'Symbol not found.';
+
+  const lines: string[] = [];
+  const loc = sym.startLine ? `:${sym.startLine}-${sym.endLine}` : '';
+  lines.push(`${sym.kind} ${sym.name} → ${sym.filePath}${loc}`);
+  lines.push('');
+
+  // Incoming refs (who calls/imports/extends this)
+  const incoming = result.incoming || {};
+  const incomingCount = Object.values(incoming).reduce(
+    (sum: number, arr: any) => sum + arr.length,
+    0,
+  ) as number;
+  if (incomingCount > 0) {
+    lines.push(`Called/imported by (${incomingCount}):`);
+    for (const [relType, refs] of Object.entries(incoming)) {
+      for (const ref of (refs as any[]).slice(0, 10)) {
+        lines.push(`  ← [${relType}] ${ref.kind} ${ref.name} → ${ref.filePath}`);
+      }
+    }
+    lines.push('');
+  }
+
+  // Outgoing refs (what this calls/imports)
+  const outgoing = result.outgoing || {};
+  const outgoingCount = Object.values(outgoing).reduce(
+    (sum: number, arr: any) => sum + arr.length,
+    0,
+  ) as number;
+  if (outgoingCount > 0) {
+    lines.push(`Calls/imports (${outgoingCount}):`);
+    for (const [relType, refs] of Object.entries(outgoing)) {
+      for (const ref of (refs as any[]).slice(0, 10)) {
+        lines.push(`  → [${relType}] ${ref.kind} ${ref.name} → ${ref.filePath}`);
+      }
+    }
+    lines.push('');
+  }
+
+  // Processes
+  const procs = result.processes || [];
+  if (procs.length > 0) {
+    lines.push(`Participates in ${procs.length} execution flow(s):`);
+    for (const p of procs) {
+      lines.push(`  • ${p.name} (step ${p.step_index}/${p.step_count})`);
+    }
+  }
+
+  if (sym.content) {
+    lines.push('');
+    lines.push(`Source:`);
+    lines.push(sym.content);
+  }
+
+  return lines.join('\n').trim();
+}
+
+export function formatImpactResult(result: any): string {
+  if (result.error) {
+    const suggestion = result.suggestion ? `\nSuggestion: ${result.suggestion}` : '';
+    return `Error: ${result.error}${suggestion}`;
+  }
+
+  const target = result.target;
+  const direction = result.direction;
+  const byDepth = result.byDepth || {};
+  const total = result.impactedCount || 0;
+
+  if (total === 0) {
+    return `${target?.name || '?'}: No ${direction} dependencies found. This symbol appears isolated.`;
+  }
+
+  const lines: string[] = [];
+  const dirLabel =
+    direction === 'upstream' ? 'depends on this (will break if changed)' : 'this depends on';
+  lines.push(
+    `Blast radius for ${target?.kind || ''} ${target?.name} (${direction}): ${total} symbol(s) ${dirLabel}`,
+  );
+  if (result.partial) {
+    lines.push('⚠️  Partial results — graph traversal was interrupted. Deeper impacts may exist.');
+  }
+  lines.push('');
+
+  const depthLabels: Record<number, string> = {
+    1: 'WILL BREAK (direct)',
+    2: 'LIKELY AFFECTED (indirect)',
+    3: 'MAY NEED TESTING (transitive)',
+  };
+
+  if (!result.byDepth && result.byDepthCounts) {
+    lines.push('(summary only — use summaryOnly: false to see symbol lists)');
+    const depthCounts = result.byDepthCounts;
+    for (const depth of [1, 2, 3]) {
+      const count = depthCounts[depth] ?? 0;
+      if (count === 0) continue;
+      lines.push(`d=${depth}: ${depthLabels[depth] || ''} (${count})`);
+    }
+    lines.push('');
+  } else {
+    const depthCounts = result.byDepthCounts || {};
+    for (const depth of [1, 2, 3]) {
+      const items = byDepth[depth] || [];
+      const trueCount = depthCounts[depth] ?? items.length;
+      if (trueCount === 0) continue;
+
+      lines.push(`d=${depth}: ${depthLabels[depth] || ''} (${trueCount})`);
+      if (items.length === 0) {
+        lines.push(`  (0 items on this page — adjust offset)`);
+      } else {
+        const shown = Math.min(items.length, 12);
+        for (const item of items.slice(0, shown)) {
+          const conf = item.confidence < 1 ? ` (conf: ${item.confidence})` : '';
+          lines.push(
+            `  ${item.type} ${item.name} → ${item.filePath} [${item.relationType}]${conf}`,
+          );
+        }
+        if (trueCount > shown) {
+          lines.push(`  ... and ${trueCount - shown} more`);
+        }
+      }
+      lines.push('');
+    }
+  }
+
+  return lines.join('\n').trim();
+}
+
+export function formatCypherResult(result: any): string {
+  if (result.error) return `Error: ${result.error}`;
+
+  if (Array.isArray(result)) {
+    if (result.length === 0) return 'Query returned 0 rows.';
+    // Format as simple table
+    const keys = Object.keys(result[0]);
+    const lines: string[] = [`${result.length} row(s):\n`];
+    for (const row of result.slice(0, 30)) {
+      const parts = keys.map((k) => `${k}: ${row[k]}`);
+      lines.push(`  ${parts.join(' | ')}`);
+    }
+    if (result.length > 30) {
+      lines.push(`  ... ${result.length - 30} more rows`);
+    }
+    return lines.join('\n');
+  }
+
+  return typeof result === 'string' ? result : JSON.stringify(result, null, 2);
+}
+
+export function formatListReposResult(result: {
+  repositories: RepoListing[];
+  pagination?: ListReposPagination;
+}): string {
+  // `list_repos` always returns the paginated { repositories, pagination } object (#2119).
+  const repos = result.repositories;
+  const pg = result.pagination;
+
+  if (repos.length === 0) {
+    return pg && pg.total > 0
+      ? `No repositories on this page (offset ${pg.offset} of ${pg.total} total).`
+      : 'No indexed repositories.';
+  }
+
+  const lines = ['Indexed repositories:\n'];
+  for (const r of repos) {
+    const stats = r.stats || {};
+    lines.push(
+      `  ${r.name} — ${stats.nodes || '?'} symbols, ${stats.edges || '?'} relationships, ${stats.processes || '?'} flows`,
+    );
+    lines.push(`    Path: ${r.path}`);
+    lines.push(`    Indexed: ${r.indexedAt}`);
+  }
+  if (pg) {
+    lines.push('');
+    lines.push(
+      `  Showing ${repos.length} of ${pg.total} (offset ${pg.offset}).` +
+        (pg.hasMore ? ` More available — re-run with offset ${pg.nextOffset}.` : ''),
+    );
+  }
+  return lines.join('\n');
+}
+
+/**
+ * Format a tool result as compact, LLM-friendly text.
+ */
+function formatToolResult(toolName: string, result: any): string {
+  switch (toolName) {
+    case 'query':
+      return formatQueryResult(result);
+    case 'context':
+      return formatContextResult(result);
+    case 'impact':
+      return formatImpactResult(result);
+    case 'cypher':
+      return formatCypherResult(result);
+    case 'detect_changes':
+      return formatDetectChangesResult(result);
+    case 'list_repos':
+      return formatListReposResult(result);
+    default:
+      return typeof result === 'string' ? result : JSON.stringify(result, null, 2);
+  }
+}
+
+// ─── Next-Step Hints ──────────────────────────────────────────────────
+// Guide the agent to the logical next tool call.
+// Critical for tool chaining: query → context → impact → fix.
+
+function getNextStepHint(toolName: string): string {
+  switch (toolName) {
+    case 'query':
+      return '\n---\nNext: Pick a symbol above and run gitnexus-context "<name>" to see all its callers, callees, and execution flows.';
+
+    case 'context':
+      return '\n---\nNext: To check what breaks if you change this, run gitnexus-impact "<name>" upstream';
+
+    case 'impact':
+      return '\n---\nNext: Review d=1 items first (WILL BREAK). Read the source with cat to understand the code, then make your fix.';
+
+    case 'cypher':
+      return '\n---\nNext: To explore a result symbol in depth, run gitnexus-context "<name>"';
+
+    case 'detect_changes':
+      return '\n---\nNext: Run gitnexus-context "<symbol>" on high-risk changed symbols to check their callers.';
+
+    case 'list_repos':
+      return '\n---\nNext: READ gitnexus://repo/{name}/context for a repo above. If pagination.hasMore is true, re-run list_repos with offset set to pagination.nextOffset to page through the rest.';
+
+    default:
+      return '';
+  }
+}
+
+// ─── Server ───────────────────────────────────────────────────────────
+
+export async function evalServerCommand(options?: EvalServerOptions): Promise<void> {
+  const port = parseInt(options?.port || '4848');
+  const idleTimeoutSec = parseInt(options?.idleTimeout || '0');
+
+  const rawHost = options?.host ?? '127.0.0.1';
+  const host = validateHost(rawHost);
+  if (!host) {
+    cliError(
+      `Invalid --host value "${rawHost}":\n` +
+        `  Must be an IP address or "localhost".\n\n` +
+        `  Examples:\n` +
+        `    gitnexus eval-server --host 127.0.0.1    (loopback only, default)\n` +
+        `    gitnexus eval-server --host 0.0.0.0      (all network interfaces)\n` +
+        `    gitnexus eval-server --host 192.168.1.5  (specific interface)\n` +
+        `    gitnexus eval-server --host localhost     (OS-resolved loopback)\n`,
+      { flag: '--host', value: rawHost },
+    );
+    process.exit(1);
+  }
+
+  const backend = new LocalBackend();
+  const ok = await backend.init();
+
+  if (!ok) {
+    // Operator-actionable but the server cannot start; warn-level so log
+    // aggregators don't trip error alerts on a configuration miss. Use
+    // cliWarn so the diagnostic reaches stderr synchronously before
+    // process.exit() — direct logger.warn would be lost to the buffered
+    // pino destination on hard exit (skips beforeExit flush).
+    cliWarn('GitNexus eval-server: No indexed repositories found. Run: gitnexus analyze');
+    process.exit(1);
+  }
+
+  const repos = await backend.listRepos();
+  logger.info(
+    { repoCount: repos.length, repos: repos.map((r) => r.name) },
+    'GitNexus eval-server: repos loaded',
+  );
+
+  let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function resetIdleTimer() {
+    if (idleTimeoutSec <= 0) return;
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(async () => {
+      logger.info({ idleTimeoutSec }, 'GitNexus eval-server: idle timeout reached, shutting down');
+      await backend.disconnect();
+      process.exit(0);
+    }, idleTimeoutSec * 1000);
+  }
+
+  const server = http.createServer(async (req, res) => {
+    resetIdleTimer();
+
+    try {
+      // Health check
+      if (req.method === 'GET' && req.url === '/health') {
+        res.setHeader('Content-Type', 'application/json');
+        res.writeHead(200);
+        res.end(JSON.stringify({ status: 'ok', repos: repos.map((r) => r.name) }));
+        return;
+      }
+
+      // Shutdown
+      if (req.method === 'POST' && req.url === '/shutdown') {
+        res.setHeader('Content-Type', 'application/json');
+        res.writeHead(200);
+        res.end(JSON.stringify({ status: 'shutting_down' }));
+        setTimeout(async () => {
+          await backend.disconnect();
+          server.close();
+          process.exit(0);
+        }, 100);
+        return;
+      }
+
+      // Tool calls: POST /tool/:name
+      const toolMatch = req.url?.match(/^\/tool\/(\w+)$/);
+      if (req.method === 'POST' && toolMatch) {
+        const toolName = toolMatch[1];
+
+        const body = await readBody(req);
+        let args: Record<string, any> = {};
+        if (body.trim()) {
+          try {
+            args = JSON.parse(body);
+          } catch {
+            res.setHeader('Content-Type', 'text/plain');
+            res.writeHead(400);
+            res.end('Error: Invalid JSON body');
+            return;
+          }
+        }
+
+        // Call tool, format result as text, append next-step hint
+        const result = await backend.callTool(toolName, args);
+        const formatted = formatToolResult(toolName, result);
+        const hint = getNextStepHint(toolName);
+
+        res.setHeader('Content-Type', 'text/plain');
+        res.writeHead(200);
+        res.end(formatted + hint);
+        return;
+      }
+
+      // 404
+      res.setHeader('Content-Type', 'text/plain');
+      res.writeHead(404);
+      res.end('Not found. Use POST /tool/:name or GET /health');
+    } catch (err: any) {
+      res.setHeader('Content-Type', 'text/plain');
+      res.writeHead(500);
+      res.end(`Error: ${err.message || 'Internal error'}`);
+    }
+  });
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      cliError(
+        `\nGitNexus eval-server failed to start:\n` +
+          `  Port ${port} is already in use.\n\n` +
+          `  Either:\n` +
+          `    1. Stop the process already using port ${port}\n` +
+          `    2. Use a different port: gitnexus eval-server --port 4849\n`,
+        { code: err.code, port, host },
+      );
+    } else if (err.code === 'EADDRNOTAVAIL') {
+      // "localhost" may resolve to ::1 on IPv6-only systems; treat it as
+      // potentially IPv6 so the user gets the right diagnostic hint.
+      const isIPv6Host = isIPv6(host) || host === 'localhost';
+      cliError(
+        `\nGitNexus eval-server failed to start:\n` +
+          `  Address ${host} is not available on this machine.\n\n` +
+          (isIPv6Host
+            ? `  Address ${host} resolved but is not reachable — IPv6 may be disabled, or the loopback interface may be unavailable.\n` +
+              `  Docker containers and many CI environments disable IPv6 by default.\n\n`
+            : `  The --host value must be an IP assigned to a local network interface.\n` +
+              `  Run \`ip addr\` (Linux) or \`ipconfig\` (Windows) to list available addresses.\n\n`) +
+          `  Common fixes:\n` +
+          `    gitnexus eval-server --host 127.0.0.1  (loopback, this machine only)\n` +
+          `    gitnexus eval-server --host 0.0.0.0    (all interfaces, reachable from other VMs)\n`,
+        { code: err.code, port, host },
+      );
+    } else if (err.code === 'EACCES') {
+      cliError(
+        `\nGitNexus eval-server failed to start:\n` +
+          `  Permission denied binding to port ${port}.\n\n` +
+          `  Ports below 1024 require elevated privileges.\n` +
+          `  Use a port above 1024: gitnexus eval-server --port 4848\n`,
+        { code: err.code, port, host },
+      );
+    } else {
+      cliError(`\nGitNexus eval-server failed to start:\n  ${err.message}\n`, {
+        code: err.code,
+        port,
+        host,
+      });
+    }
+    process.exit(1);
+  });
+
+  server.listen(port, host, () => {
+    // Plain-text banner for the human watching stderr; structured record
+    // for log aggregation (split into two so the user sees a real banner
+    // not `{"level":30,"msg":"...","port":4747,"endpoints":[...]}`).
+    // Use server.address() so the banner and READY signal reflect what the OS
+    // actually bound to, not the input host string. This matters when "localhost"
+    // is passed: the OS may resolve it to ::1 on some systems.
+    const addr = server.address();
+    // server.listen callback only fires after a successful TCP bind, so
+    // server.address() is guaranteed to return an AddressInfo object here.
+    if (typeof addr !== 'object' || addr === null) {
+      cliError(
+        `\nGitNexus eval-server: unexpected server.address() value after bind: ${JSON.stringify(addr)}\n`,
+      );
+      process.exit(1);
+    }
+    const boundPort = addr.port;
+    const boundAddress = addr.address;
+    const displayHost = boundAddress.includes(':') ? `[${boundAddress}]` : boundAddress;
+    const bannerLines = [
+      `GitNexus eval-server: listening on http://${displayHost}:${boundPort}`,
+      `  POST /tool/query    — search execution flows`,
+      `  POST /tool/context  — 360-degree symbol view`,
+      `  POST /tool/impact   — blast radius analysis`,
+      `  POST /tool/cypher   — raw Cypher query`,
+      `  GET  /health        — health check`,
+      `  POST /shutdown      — graceful shutdown`,
+    ];
+    if (idleTimeoutSec > 0) {
+      bannerLines.push(`  Auto-shutdown after ${idleTimeoutSec}s idle`);
+    }
+    cliInfo(bannerLines.join('\n'), {
+      port: boundPort,
+      host,
+      idleTimeoutSec: idleTimeoutSec > 0 ? idleTimeoutSec : undefined,
+      endpoints: [
+        'POST /tool/query',
+        'POST /tool/context',
+        'POST /tool/impact',
+        'POST /tool/cypher',
+        'GET  /health',
+        'POST /shutdown',
+      ],
+    });
+    try {
+      // Use fd 1 directly — LadybugDB captures process.stdout (#324)
+      writeSync(1, `GITNEXUS_EVAL_SERVER_READY:${displayHost}:${boundPort}\n`);
+    } catch {
+      // stdout may not be available (e.g., broken pipe)
+    }
+  });
+
+  resetIdleTimer();
+
+  const shutdown = async () => {
+    logger.info('GitNexus eval-server: shutting down...');
+    await backend.disconnect();
+    server.close();
+    process.exit(0);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+}
+
+export const MAX_BODY_SIZE = 1024 * 1024; // 1MB
+
+function readBody(req: http.IncomingMessage): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    let totalSize = 0;
+    req.on('data', (chunk: Buffer) => {
+      totalSize += chunk.length;
+      if (totalSize > MAX_BODY_SIZE) {
+        req.destroy(new Error('Request body too large (max 1MB)'));
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    req.on('error', reject);
+  });
+}
