@@ -163,3 +163,19 @@ export function analyze(codemap) {
   const metrics = graphMetrics(graph, pr, communities);
   return { graph, communities, comIdx, pr, metrics };
 }
+
+/**
+ * Sub-grafo dos top-`cap` símbolos por grau (chamadas + chamado-por), para o
+ * grafo de FUNÇÕES caber e renderizar bem em 3D. Devolve no formato do codemap
+ * (nodes + links), então passa direto pelo mesmo `analyze()`. Mantém os campos
+ * extras dos símbolos (kind, file) para a página exibir.
+ */
+export function symbolSubmap(symbolJson, cap = 240) {
+  const all = symbolJson.nodes || [];
+  const ranked = [...all]
+    .sort((a, b) => (b.imports + b.importedBy) - (a.imports + a.importedBy))
+    .slice(0, cap);
+  const keep = new Set(ranked.map((n) => n.id));
+  const links = (symbolJson.links || []).filter((e) => keep.has(e.source) && keep.has(e.target));
+  return { nodes: ranked, links, meta: symbolJson.meta };
+}

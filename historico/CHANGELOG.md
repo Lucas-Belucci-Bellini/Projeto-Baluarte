@@ -8,6 +8,15 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Git Nexus — nível de FUNÇÕES (call graph 3D) (#204/#195)
+- ƒ **Toggle "Arquivos / Funções"** no Git Nexus: além do grafo de arquivos+imports, agora tem o grafo das **principais funções/classes + as chamadas entre elas** — o nível profundo que faltava do GitNexus.
+- 🧬 **`scripts/gen-symbols.mjs` novo** (build-time, sem dependências): parser leve que extrai de `src/` **1137 funções/classes** e **2456 chamadas** (call graph), gerando `src/data/codemap-symbols.json`. Rastreia parênteses para não se confundir com params desestruturados.
+- 🌐 No modo Funções, o mesmo orbe 3D mostra as **240 funções mais conectadas**: comunidades = clusters de funções que se chamam, PageRank = funções mais centrais, e **impacto = cadeia de chamadas** (quem quebra se você mudar a função). Ex: `addMemory` é chamada por 7, chama 6, e afeta 8 funções na cadeia.
+- 🔎 Busca, seleção e painel adaptados (mostra kind/arquivo/linha da função).
+- ⚙️ `npm run gen-symbols` / `gen-codemap` adicionados aos scripts.
+- ✅ Verificado no navegador (Playwright): troca de modo, orbe de funções girando, seleção mostrando call-chain e impacto.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-gitnexus-funcoes`.
+
 ### Git Nexus em 3D — orbe que gira como o JARVIS (#195/#204)
 - 🌐 **Grafo do Git Nexus agora é 3D** (pedido do operador no #195: "tem que ter isso em 3D o jeito que ele se organiza, e ele tem que se mover igual ao jarvis"). `git-nexus-graph3d.js` novo: orbe de nós que **se auto-organiza por forças em 3D**, projetado em perspectiva no canvas, **girando sozinho** (vivo, estilo núcleo do JARVIS) — referência das imagens que o operador anexou.
 - ✨ Profundidade real: nós perto = maiores/brilhantes, longe = menores/apagados; glow por comunidade, tamanho por centralidade; pintura ordenada por profundidade.

@@ -81,3 +81,13 @@
 .gn-tool__name { font-weight: 700; font-size: 14px; margin: 4px 0 2px; }
 .gn-tool__desc { font-size: 12px; line-height: 1.35; }
 .gn-tool__stat { font-size: 11px; font-family: var(--font-mono); margin-top: 6px; }
+
+/* ===== toggle Arquivos / Funções (#195 — nível profundo) ===== */
+.gn-modes { display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-sm); flex-wrap: wrap; }
+.gn-mode { cursor: pointer; font-size: 13px; padding: 7px 16px; border-radius: var(--radius-pill);
+  background: var(--color-surface); color: var(--color-text-secondary);
+  border: 1px solid rgba(255,255,255,0.1); transition: all 0.18s; font-family: var(--font-mono); }
+.gn-mode:hover { border-color: var(--color-cyan); color: var(--color-text-primary); }
+.gn-mode.is-active { background: var(--color-cyan-soft, rgba(0,240,255,0.16)); border-color: var(--color-cyan); color: #fff; }
+.gn-modes__hint { font-size: 11px; margin-left: 4px; }
+.gn-kind { color: var(--color-magenta); }
