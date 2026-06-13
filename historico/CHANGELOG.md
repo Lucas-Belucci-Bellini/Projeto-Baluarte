@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-13
+
+### Painel de Machine Learning da Memória (#193/#194)
+- 📈 **`/aprendizado` — Machine Learning da Memória** nova (menu IA & Jarvis): painel onde dá pra **ver o aprendizado de máquina do site acontecer** sobre o banco de memórias (conversas + respostas + deliberações do conselho). Tudo roda no navegador e é **🔒 somente leitura** sobre a memória (como o #193 pede — ninguém altera o banco por aqui).
+- 🧩 **Assuntos descobertos sozinho** (`memory-ml.js` novo): **k-means não-supervisionado** sobre vetores TF-IDF (cosseno, init k-means++ determinístico) — o site lê as memórias e descobre os temas sem ninguém rotular. Controle deslizante de 2 a 8 assuntos.
+- 📊 **Curva de aprendizado** (vocabulário acumulado, lei de Heaps), **ranking TF-IDF** dos termos aprendidos e **donut por origem** dos dados — todos no motor de gráficos em canvas do site.
+- ⚙️ **Treinar modelo ao vivo**: a rede neural bigrama (`llm-mini.js`, gradiente de verdade) aprende a "falar" a partir das próprias memórias e mostra a **loss caindo** em tempo real (curva animada) + geração no estilo do Baluarte.
+- 🔗 **Conexões** com o **Segundo Cérebro** (`/cerebro`) e o **Git Nexus / Raio-X** (`/codigo`) — fecha o ciclo que o #194 pede (ML junto do knowledge graph e do código).
+- ◐ Sem memórias suficientes no navegador, o painel aprende sobre um corpus de demonstração (rotulado) e oferece sincronizar o banco versionado do repositório.
+- ✅ Verificado no navegador (Playwright): k-means rende 4→6 assuntos coerentes ao mover o controle, os 3 gráficos desenham, o treino derruba a loss (3.40 → 2.27, −33%) e a geração responde. Motor `memory-ml.js` testado direto (k-means determinístico).
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-ml-memoria`.
+
 ## 2026-06-11
 
 ### Claude (servidor) vira modo do JARVIS e membro do Conselho (#200, parte 2)
