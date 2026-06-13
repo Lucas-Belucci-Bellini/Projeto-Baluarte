@@ -17,7 +17,7 @@
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { analyze, impactOf, dependenciesOf, search } from '../utils/git-nexus-engine.js';
-import { createGraphView } from '../utils/git-nexus-graph.js';
+import { createGraphView3D } from '../utils/git-nexus-graph3d.js';
 import { memoryStats, codeMemoryCounts, getMemories } from '../utils/jarvis-brain.js';
 import codemap from '../data/codemap.json';
 
@@ -72,7 +72,7 @@ export function gitNexusPage() {
   const layout = h('div', { className: 'gn-layout' },
     h('div', { className: 'gn-graph' },
       canvas,
-      h('div', { className: 'gn-graph__hint u-text-muted' }, 'arraste o mouse para explorar · clique num nó para ver impacto e dependências')),
+      h('div', { className: 'gn-graph__hint u-text-muted' }, '🌐 grafo 3D · gira sozinho · arraste para girar · clique num nó para ver impacto e dependências')),
     h('div', { className: 'gn-side-wrap' },
       h('div', { className: 'gn-searchbox' }, searchInput, searchResults),
       sideEl));
@@ -82,7 +82,7 @@ export function gitNexusPage() {
   renderCommunities();
 
   /* grafo interativo */
-  const view = createGraphView(canvas, {
+  const view = createGraphView3D(canvas, {
     nodes: graph.nodes, edges: graph.edges, comIdx, pr,
     onSelect: (id) => { if (id) renderNodeDetail(id); else renderCommunities(); }
   });

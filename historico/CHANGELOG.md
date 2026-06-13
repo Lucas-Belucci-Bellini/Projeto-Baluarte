@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Git Nexus em 3D — orbe que gira como o JARVIS (#195/#204)
+- 🌐 **Grafo do Git Nexus agora é 3D** (pedido do operador no #195: "tem que ter isso em 3D o jeito que ele se organiza, e ele tem que se mover igual ao jarvis"). `git-nexus-graph3d.js` novo: orbe de nós que **se auto-organiza por forças em 3D**, projetado em perspectiva no canvas, **girando sozinho** (vivo, estilo núcleo do JARVIS) — referência das imagens que o operador anexou.
+- ✨ Profundidade real: nós perto = maiores/brilhantes, longe = menores/apagados; glow por comunidade, tamanho por centralidade; pintura ordenada por profundidade.
+- 🕹️ **Arraste para girar** (com inércia), hover realça a vizinhança, clique seleciona → painel de impacto. Tudo em Canvas 2D puro (sem WebGL/Three) — roda leve no navegador e na Vercel.
+- ♿ Respeita `prefers-reduced-motion` (assenta o orbe e não gira sozinho).
+- ✅ Verificado no navegador (Playwright): orbe girando (assinatura de pixels muda entre frames), seleção de `helpers.js` mostrando impacto de 92 arquivos em 3D.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-gitnexus-3d`.
+
 ### Redesign — polish do Git Nexus + Arsenal (#195/#204)
 - 🔗 **Git Nexus mais cinematográfico**: brilho (glow) nos nós do grafo, realce mais forte no hover, fundo do grafo com brilhos radiais + vinheta e título em degradê.
 - 🔫 **Arsenal alinhado ao redesign** (só visual, lógica intocada): título em degradê, linhas com glow e acento cyan no hover/seleção, painel de detalhe com fundo cyan e nome em degradê, abas em pílula.
