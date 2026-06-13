@@ -18,6 +18,7 @@ const DESCRICOES = {
   '/cerebro': 'Segundo Cérebro — knowledge graph dos domínios e projetos.',
   '/jarvis': 'Este assistente (J.A.R.V.I.S.), com IA real, skills e memória.',
   '/apis': 'Central de APIs — detecta, testa e gerencia as chaves de IA (Claude, Gemini, Hermes/OpenRouter, Ollama).',
+  '/git-nexus': 'Git Nexus — núcleo unificado de código: funde Raio-X + Memória + Segundo Cérebro + Mini-LLM num grafo de conhecimento interativo com comunidades, análise de impacto e centralidade, ligado ao Machine Learning.',
   '/aprendizado': 'Machine Learning da Memória — vê o aprendizado do site sobre o banco de memórias: curva de vocabulário, assuntos descobertos (k-means), TF-IDF e um modelo treinando ao vivo (loss caindo).',
   '/codigo': 'Raio-X do Código — grafo 3D do próprio código do site.',
   '/ocr': 'Leitor OCR — extrai texto de imagens no navegador.',
@@ -49,6 +50,7 @@ const DESCRICOES = {
 const SINONIMOS = {
   '/apis': ['api', 'apis', 'chave', 'chaves', 'api key', 'openrouter', 'anthropic'],
   '/aprendizado': ['machine learning', 'aprendizado', 'ml', 'aprendizado de maquina', 'modelo', 'treinar', 'clusters', 'assuntos', 'tf-idf'],
+  '/git-nexus': ['git nexus', 'gitnexus', 'grafo do codigo', 'grafo de conhecimento', 'impacto', 'comunidades', 'dependencias', 'centralidade'],
   '/home-3d': ['3d', 'redesign', 'novo design', 'imersivo', 'ponte 3d', 'preview', 'home 3d', 'piloto'],
   '/editor': ['código', 'codigo', 'programar'],
   '/cripto': ['cifra', 'criptografia', 'aes', 'rsa'],

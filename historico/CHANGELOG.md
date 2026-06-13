@@ -8,6 +8,15 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Git Nexus — núcleo unificado de código (#204/#194)
+- 🔗 **`/git-nexus` novo**: integração do GitNexus ao site, do jeito que **realmente roda na Vercel**. O GitNexus original é um servidor Node na porta 4747 (tree-sitter nativo, onnxruntime, LadybugDB) — não sobe num site estático, e a versão "WASM no navegador" que o README promete não existe no código. Então reimplementei os **conceitos** dele em **JS puro**: taxonomia de nós/arestas de código, **comunidades** (clusters não-supervisionados), **análise de impacto** (quem é afetado se um arquivo mudar) e **centralidade (PageRank)**.
+- 🧩 **Funde as 4 ferramentas** que viviam separadas, agora conversando pelo grafo: 🔬 Raio-X do Código (o grafo), 🧠 Memória do JARVIS (memórias ligadas a cada arquivo), 🕸️ Segundo Cérebro (conceitos) e 📈 Mini-LLM/ML (as comunidades são "assuntos do código" descobertos sozinho — o mesmo princípio do `/aprendizado`).
+- 🗺️ **Visualização interativa** (`git-nexus-graph.js`): grafo force-directed em canvas, nós coloridos por comunidade e dimensionados por centralidade; passar o mouse realça a vizinhança, clicar abre o painel de impacto/dependências/memória do arquivo. Busca por nome.
+- 🧠 **Motor** (`git-nexus-engine.js`): puro e determinístico, sobre o `codemap.json` (158 arquivos, 350 imports). Detecta 5 comunidades (pages, utils, subsistemas terminal e radar…), aponta `helpers.js` como mais central, e calcula que mudá-lo afeta 92 arquivos.
+- 🔄 **Não-destrutivo**: as 4 páginas originais seguem acessíveis; o Git Nexus é o novo hub que as une. Item "🔗 Git Nexus" no topo do menu IA & Jarvis.
+- ✅ Verificado no navegador (Playwright) e no Node (motor determinístico).
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-git-nexus`.
+
 ### Deploy da Vercel consertado — bundle das funções + submódulos (#210)
 - 🚑 **Deploy estava FALHANDO**: o build do front (Vite) passava, mas o bundle das funções Python (`api/`) estourava o limite de **245 MB** da Lambda (489,96 MB) — o builder empacotava o repositório inteiro, incluindo pastas enormes commitadas (`Humanity always first` 172 MB, `GitNexus-1.6.7` 139 MB, `.obsidian` 43 MB, `.smart-env` 19 MB) e os PDFs das Crônicas (~30 MB). Nada disso é usado pelo site (os dados de runtime ficam em `src/data/*`).
 - 📦 **`.vercelignore` novo**: exclui esse peso morto do deploy (não-destrutivo — os arquivos continuam no repositório). O bundle cai de ~490 MB para ~60 MB.
