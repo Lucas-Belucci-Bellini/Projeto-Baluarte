@@ -8,6 +8,15 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Redesign — rodada 2: atmosfera + 3D manipulável + scrollytelling (#195)
+- 🌆 **Grid de horizonte (synthwave / GTA-VI)** no herói: chão em perspectiva que recua até um horizonte com brilho, linhas "voando" em direção ao observador — fundo animado que dá profundidade cinematográfica (`hero3d.js`).
+- 🕹️ **Emblema 3D manipulável**: agora dá pra **arrastar para girar** o emblema, com inércia — ideia literal do #195 ("objetos 3D manipuláveis").
+- 📜 **Scrollytelling**: ao rolar, o herói recua e desbota suavemente (parallax de scroll).
+- ⌨️ **Tipografia cyberpunk**: efeito glitch/scramble revelando o kicker "NÚCLEO INFINITY DREADNOUGHT" ao abrir.
+- ♿ Tudo respeita `prefers-reduced-motion` (grid estático, sem glitch/inércia).
+- ✅ Verificado no navegador (Playwright): grid desenhando (49k px no chão), arraste girando o emblema (102°), scroll desbotando as camadas, glitch assentando no texto.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-redesign-r2`.
+
 ### Redesign 3D promovido a Home oficial (#195/#196)
 - 🏠 **A `/home` agora é o visual 3D imersivo** (a pedido do operador — "promover pra Home oficial"). O herói cinematográfico (campo de partículas 3D + emblema giratório + título em degradê) substitui a home antiga, com saudação ao operador e CTAs para Ferramentas e J.A.R.V.I.S.
 - 🔭 **Conteúdo da home antiga integrado ao novo visual**: os painéis de **Vigilância** (log de eventos ao vivo) e **Infraestrutura** (status do sistema) foram redesenhados no estilo do herói, em vez de descartados — agora citam Git Nexus e ML.

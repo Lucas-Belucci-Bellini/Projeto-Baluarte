@@ -27,7 +27,7 @@ const REDUCED = typeof matchMedia !== 'undefined'
 function buildHero(onCleanup, operador) {
   const canvas = h('canvas', { className: 'h3-hero__canvas' });
 
-  const emblem = h('div', { className: 'h3-emblem' },
+  const emblem = h('div', { className: 'h3-emblem', title: 'arraste para girar' },
     h('div', { className: 'h3-emblem__ring h3-emblem__ring--a' }),
     h('div', { className: 'h3-emblem__ring h3-emblem__ring--b' }),
     h('div', { className: 'h3-emblem__core' }, '⬡'));
@@ -37,10 +37,12 @@ function buildHero(onCleanup, operador) {
   tick();
   if (!REDUCED) { const t = setInterval(tick, 1000); onCleanup(() => clearInterval(t)); }
 
+  const kicker = h('div', { className: 'h3-hero__kicker u-mono' }, 'NÚCLEO INFINITY DREADNOUGHT');
+
   const layers = h('div', { className: 'h3-hero__layers' },
     h('div', { className: 'h3-hero__layer h3-hero__layer--back' }, emblem),
     h('div', { className: 'h3-hero__layer h3-hero__layer--front' },
-      h('div', { className: 'h3-hero__kicker u-mono' }, 'NÚCLEO INFINITY DREADNOUGHT'),
+      kicker,
       h('h1', { className: 'h3-hero__title' },
         h('span', { className: 'h3-hero__title-main' }, 'BALUARTE'),
         h('span', { className: 'h3-hero__title-sub' }, 'MARK XIII')),
@@ -65,6 +67,7 @@ function buildHero(onCleanup, operador) {
   onCleanup(() => fx.destroy());
 
   if (!REDUCED) {
+    /* parallax de mouse no herói (camadas + campo de partículas) */
     const onMove = (e) => {
       const r = hero.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
@@ -74,8 +77,57 @@ function buildHero(onCleanup, operador) {
     };
     hero.addEventListener('pointermove', onMove);
     onCleanup(() => hero.removeEventListener('pointermove', onMove));
+
+    /* emblema 3D MANIPULÁVEL: arraste para girar, com inércia (ideia do #195) */
+    let gx = 0, gy = 0, vgx = 0, vgy = 0, dragging = false, lastX = 0, lastY = 0, inertia = 0;
+    const applyEmblem = () => { emblem.style.setProperty('--gx', gx.toFixed(2) + 'deg'); emblem.style.setProperty('--gy', gy.toFixed(2) + 'deg'); };
+    const spin = () => {
+      if (dragging) return;
+      gx += vgx; gy += vgy; vgx *= 0.94; vgy *= 0.94; applyEmblem();
+      if (Math.abs(vgx) > 0.02 || Math.abs(vgy) > 0.02) inertia = requestAnimationFrame(spin); else inertia = 0;
+    };
+    const down = (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; if (inertia) cancelAnimationFrame(inertia); emblem.setPointerCapture?.(e.pointerId); e.preventDefault(); };
+    const move = (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY;
+      gy += dx * 0.5; gx -= dy * 0.5; vgy = dx * 0.5; vgx = -dy * 0.5; applyEmblem();
+    };
+    const up = () => { if (!dragging) return; dragging = false; inertia = requestAnimationFrame(spin); };
+    emblem.addEventListener('pointerdown', down);
+    emblem.addEventListener('pointermove', move);
+    emblem.addEventListener('pointerup', up);
+    emblem.addEventListener('pointercancel', up);
+    onCleanup(() => { if (inertia) cancelAnimationFrame(inertia); });
+
+    /* parallax de scroll (scrollytelling): o herói recua e desbota ao rolar */
+    const onScroll = () => {
+      const r = hero.getBoundingClientRect();
+      const prog = Math.max(0, Math.min(1, -r.top / (r.height || 1)));
+      layers.style.transform = `translateY(${(prog * 60).toFixed(1)}px)`;
+      layers.style.opacity = (1 - prog * 0.85).toFixed(2);
+    };
+    window.addEventListener('scroll', onScroll, true);  // capture: pega o scroll do container
+    onCleanup(() => window.removeEventListener('scroll', onScroll, true));
+
+    /* glitch/scramble no kicker (toque cyberpunk), uma vez */
+    scramble(kicker, 'NÚCLEO INFINITY DREADNOUGHT', onCleanup);
   }
   return hero;
+}
+
+/* Revela um texto com caracteres aleatórios "assentando" (efeito cyberpunk). */
+function scramble(el, text, onCleanup) {
+  const chars = '▚▞█▓▒░/\\<>*+=ABCDEF0123456789';
+  let frame = 0; const total = 28; let raf = 0;
+  const run = () => {
+    const reveal = Math.floor((frame / total) * text.length);
+    let out = '';
+    for (let i = 0; i < text.length; i++) out += i < reveal || text[i] === ' ' ? text[i] : chars[(Math.random() * chars.length) | 0];
+    el.textContent = out;
+    if (frame++ < total) raf = requestAnimationFrame(run); else el.textContent = text;
+  };
+  raf = requestAnimationFrame(run);
+  onCleanup(() => { if (raf) cancelAnimationFrame(raf); });
 }
 
 /* ===== Métricas (count-up) ===== */
