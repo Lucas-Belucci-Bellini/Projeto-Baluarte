@@ -1,0 +1,104 @@
+/* ===== /aprendizado — Machine Learning da Memória (#193/#194) ===== */
+
+.apr-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: var(--space-sm);
+  margin-bottom: var(--space-md);
+  background: var(--color-cyan-soft, rgba(0, 240, 255, 0.08));
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: var(--radius-md);
+}
+.apr-banner__icon { font-size: 22px; color: var(--color-cyan); }
+.apr-banner p { margin: 2px 0 0; font-size: 13px; }
+
+.apr-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.apr-stat {
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+.apr-stat--accent { border-color: rgba(0, 240, 255, 0.4); }
+.apr-stat__v { font-size: 28px; font-weight: 700; color: var(--color-cyan); font-family: var(--font-mono); }
+.apr-stat__l { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
+
+.apr-body { display: flex; flex-direction: column; gap: var(--space-md); }
+
+.apr-section {
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+}
+.apr-section__title { font-size: 16px; margin: 0 0 2px; }
+.apr-section__sub { font-size: 12px; margin: 0 0 12px; max-width: 70ch; }
+
+.apr-canvas {
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.apr-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.apr-slider { flex: 1; min-width: 160px; max-width: 320px; accent-color: var(--color-cyan); }
+
+/* --- clusters (assuntos descobertos) --- */
+.apr-clusters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-sm);
+}
+.apr-cluster {
+  padding: var(--space-sm);
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+}
+.apr-cluster__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.apr-cluster__badge {
+  font-family: var(--font-mono); font-weight: 700; color: var(--color-cyan);
+  background: var(--color-cyan-soft, rgba(0, 240, 255, 0.1)); padding: 1px 8px; border-radius: var(--radius-pill);
+}
+.apr-cluster__size { font-size: 11px; color: var(--color-text-muted); }
+.apr-cluster__terms { display: flex; flex-wrap: wrap; gap: 5px; }
+.apr-term {
+  font-size: 12px; padding: 2px 8px; border-radius: var(--radius-pill);
+  background: var(--color-surface-2, rgba(255, 255, 255, 0.04)); color: var(--color-text-primary);
+}
+
+/* --- treino ao vivo --- */
+.apr-train__status { font-size: 12px; }
+.apr-train__out {
+  margin-top: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.5;
+  background: var(--color-bg-elevated); border-left: 3px solid var(--color-magenta);
+  border-radius: var(--radius-sm); color: var(--color-text-primary); white-space: pre-wrap;
+}
+
+/* --- conexões --- */
+.apr-conn { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.apr-conn__col h3 { font-size: 14px; margin: 0 0 10px; }
+.apr-conn__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.apr-conn__chip {
+  font-size: 12px; padding: 3px 10px; border-radius: var(--radius-pill); cursor: pointer;
+  background: var(--color-cyan-soft, rgba(0, 240, 255, 0.08)); color: var(--color-cyan);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+}
+.apr-conn__chip:hover { background: rgba(0, 240, 255, 0.18); }
+
+@media (max-width: 720px) {
+  .apr-conn { grid-template-columns: 1fr; }
+}

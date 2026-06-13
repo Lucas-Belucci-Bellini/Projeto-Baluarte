@@ -17,6 +17,7 @@ const DESCRICOES = {
   '/cerebro': 'Segundo Cérebro — knowledge graph dos domínios e projetos.',
   '/jarvis': 'Este assistente (J.A.R.V.I.S.), com IA real, skills e memória.',
   '/apis': 'Central de APIs — detecta, testa e gerencia as chaves de IA (Claude, Gemini, Hermes/OpenRouter, Ollama).',
+  '/aprendizado': 'Machine Learning da Memória — vê o aprendizado do site sobre o banco de memórias: curva de vocabulário, assuntos descobertos (k-means), TF-IDF e um modelo treinando ao vivo (loss caindo).',
   '/codigo': 'Raio-X do Código — grafo 3D do próprio código do site.',
   '/ocr': 'Leitor OCR — extrai texto de imagens no navegador.',
   '/editor': 'Editor de código com realce de sintaxe.',
@@ -46,6 +47,7 @@ const DESCRICOES = {
 /* Sinônimos extras para o reconhecedor de navegação (além do rótulo/rota). */
 const SINONIMOS = {
   '/apis': ['api', 'apis', 'chave', 'chaves', 'api key', 'openrouter', 'anthropic'],
+  '/aprendizado': ['machine learning', 'aprendizado', 'ml', 'aprendizado de maquina', 'modelo', 'treinar', 'clusters', 'assuntos', 'tf-idf'],
   '/editor': ['código', 'codigo', 'programar'],
   '/cripto': ['cifra', 'criptografia', 'aes', 'rsa'],
   '/dolar': ['câmbio', 'cambio', 'bitcoin', 'btc', 'euro', 'dólar', 'dolar'],
