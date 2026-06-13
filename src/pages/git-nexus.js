@@ -13,7 +13,7 @@
 
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { analyze, symbolSubmap, impactOf, dependenciesOf, search } from '../utils/git-nexus-engine.js';
+import { analyze, symbolSubmap, fileSymbolGraph, impactOf, dependenciesOf, search } from '../utils/git-nexus-engine.js';
 import { createGraphView3D } from '../utils/git-nexus-graph3d.js';
 import { memoryStats, codeMemoryCounts } from '../utils/jarvis-brain.js';
 import codemap from '../data/codemap.json';
@@ -47,10 +47,15 @@ export function gitNexusPage() {
         ' e o de ', h('span', { className: 'u-text-cyan' }, 'funções'), ' (chamadas).'))
   );
 
+  /* nº de funções por arquivo (para o botão de drill-down) */
+  const fnByFile = {};
+  for (const n of symbolmap.nodes) fnByFile[n.file] = (fnByFile[n.file] || 0) + 1;
+
   /* ---- toggle de modo ---- */
   const tabFiles = h('button', { className: 'gn-mode is-active', onclick: () => switchMode('files') }, '📁 Arquivos');
   const tabFns = h('button', { className: 'gn-mode', onclick: () => switchMode('functions') }, 'ƒ Funções');
-  page.appendChild(h('div', { className: 'gn-modes' }, tabFiles, tabFns,
+  const focusCrumb = h('span', { className: 'gn-focus', style: { display: 'none' } });
+  page.appendChild(h('div', { className: 'gn-modes' }, tabFiles, tabFns, focusCrumb,
     h('span', { className: 'gn-modes__hint u-text-muted' }, `${symbolmap.meta.symbols} funções · ${symbolmap.meta.calls} chamadas no código`)));
 
   /* ---- métricas (dinâmicas) ---- */
@@ -84,20 +89,37 @@ export function gitNexusPage() {
 
   /* ===== modos ===== */
 
-  function switchMode(mode) {
-    if (cur && cur.mode === mode) return;
+  function switchMode(mode, opts = {}) {
+    const focusFile = opts.fileId || null;
+    if (cur && cur.mode === mode && cur.focusFile === focusFile) return;
     tabFiles.classList.toggle('is-active', mode === 'files');
     tabFns.classList.toggle('is-active', mode === 'functions');
     if (view) { view.destroy(); view = null; }
 
-    const submap = mode === 'functions' ? symbolSubmap(symbolmap, FN_CAP) : codemap;
+    let submap;
+    if (mode === 'file-functions') submap = fileSymbolGraph(symbolmap, focusFile);
+    else if (mode === 'functions') submap = symbolSubmap(symbolmap, FN_CAP);
+    else submap = codemap;
     const a = analyze(submap);
-    cur = { mode, ...a, rawById: new Map((submap.nodes || []).map((n) => [n.id, n])) };
+    cur = { mode, focusFile, focusIds: submap.focusIds || null, ...a, rawById: new Map((submap.nodes || []).map((n) => [n.id, n])) };
+
+    /* migalha de foco (drill-down) */
+    if (mode === 'file-functions') {
+      focusCrumb.style.display = '';
+      empty(focusCrumb);
+      focusCrumb.append(
+        h('span', null, `ƒ ${focusFile}`),
+        h('button', { className: 'gn-focus__back', onclick: () => switchMode('files') }, '← arquivos'));
+    } else {
+      focusCrumb.style.display = 'none';
+    }
 
     renderMetrics();
-    hintEl.textContent = mode === 'functions'
-      ? `🌐 grafo 3D · ${a.graph.nodes.length} principais funções · gira sozinho · arraste · clique p/ ver chamadas e impacto`
-      : '🌐 grafo 3D · gira sozinho · arraste para girar · clique num nó p/ ver impacto e dependências';
+    hintEl.textContent = mode === 'file-functions'
+      ? `🌐 funções de ${focusFile.split('/').pop()} + conexões · gira sozinho · arraste · clique p/ detalhes`
+      : mode === 'functions'
+        ? `🌐 grafo 3D · ${a.graph.nodes.length} principais funções · gira sozinho · arraste · clique p/ ver chamadas e impacto`
+        : '🌐 grafo 3D · gira sozinho · arraste para girar · clique num nó p/ ver impacto e dependências';
 
     view = createGraphView3D(canvas, {
       nodes: a.graph.nodes, edges: a.graph.edges, comIdx: a.comIdx, pr: a.pr,
@@ -109,7 +131,15 @@ export function gitNexusPage() {
 
   function renderMetrics() {
     empty(mrow);
-    if (cur.mode === 'functions') {
+    if (cur.mode === 'file-functions') {
+      const own = cur.focusIds ? cur.focusIds.size : 0;
+      mrow.append(
+        metric(own, 'funções no arquivo', true),
+        metric(cur.graph.nodes.length - own, 'conectadas'),
+        metric(cur.graph.edges.length, 'chamadas'),
+        metric(cur.communities.length, 'clusters'),
+        metric(fnByFile[cur.focusFile] || own, 'definidas'));
+    } else if (cur.mode === 'functions') {
       mrow.append(
         metric(cur.graph.nodes.length, 'funções (top)', true),
         metric(cur.graph.edges.length, 'chamadas'),
@@ -136,7 +166,7 @@ export function gitNexusPage() {
 
   function renderCommunities() {
     empty(sideEl);
-    const isFn = cur.mode === 'functions';
+    const isFn = cur.mode !== 'files';
     sideEl.append(
       h('h3', { className: 'gn-side__title' }, isFn ? '🧩 Clusters de funções' : '🧩 Comunidades do código'),
       h('p', { className: 'u-text-muted', style: { fontSize: '12px', margin: '0 0 10px' } },
@@ -161,7 +191,7 @@ export function gitNexusPage() {
     const raw = cur.rawById.get(id) || {};
     const imp = impactOf(cur.graph, id);
     const deps = dependenciesOf(cur.graph, id);
-    const isFn = cur.mode === 'functions';
+    const isFn = cur.mode !== 'files';
 
     empty(sideEl);
     sideEl.append(
@@ -193,6 +223,13 @@ export function gitNexusPage() {
         : h('p', { className: 'u-text-muted' }, isFn ? 'Não chama nenhuma função catalogada.' : 'Não importa nenhum módulo interno.')));
 
     if (!isFn) {
+      /* drill-down: ver as funções deste arquivo no grafo (#204) */
+      const fnCount = fnByFile[id] || 0;
+      if (fnCount > 0) {
+        sideEl.appendChild(h('div', { className: 'gn-block' },
+          h('button', { className: 'gn-drill', onclick: () => switchMode('file-functions', { fileId: id }) },
+            `ƒ ver as ${fnCount} funções deste arquivo →`)));
+      }
       const mem = codeMem[id] || 0;
       sideEl.appendChild(h('div', { className: 'gn-block' },
         h('div', { className: 'gn-block__title' }, '🧠 Memória ligada'),
@@ -222,7 +259,7 @@ export function gitNexusPage() {
       searchResults.appendChild(h('div', { className: 'gn-search__row', onclick: () => {
         searchInput.value = ''; searchResults.style.display = 'none';
         view.select(n.id); renderNodeDetail(n.id);
-      } }, h('span', null, n.label), h('span', { className: 'u-text-muted u-mono', style: { fontSize: '11px' } }, cur.mode === 'functions' ? (raw.file || '') : n.dir)));
+      } }, h('span', null, n.label), h('span', { className: 'u-text-muted u-mono', style: { fontSize: '11px' } }, cur.mode !== 'files' ? (raw.file || '') : n.dir)));
     });
   }
 

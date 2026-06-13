@@ -179,3 +179,31 @@ export function symbolSubmap(symbolJson, cap = 240) {
   const links = (symbolJson.links || []).filter((e) => keep.has(e.source) && keep.has(e.target));
   return { nodes: ranked, links, meta: symbolJson.meta };
 }
+
+/**
+ * Drill-down: grafo das funções de UM arquivo + seus vizinhos de 1 salto (quem
+ * elas chamam / quem as chama em outros arquivos), para ver como o arquivo se
+ * conecta. `focusIds` marca as funções do próprio arquivo (para destaque).
+ */
+export function fileSymbolGraph(symbolJson, fileId, cap = 160) {
+  const inFile = (symbolJson.nodes || []).filter((n) => n.file === fileId);
+  const focusIds = new Set(inFile.map((n) => n.id));
+  const neigh = new Set();
+  for (const e of symbolJson.links || []) {
+    if (focusIds.has(e.source)) neigh.add(e.target);
+    if (focusIds.has(e.target)) neigh.add(e.source);
+  }
+  const keep = new Set([...focusIds, ...neigh]);
+  let nodes = (symbolJson.nodes || []).filter((n) => keep.has(n.id));
+  /* se passar do teto, mantém as do arquivo + vizinhos mais conectados */
+  if (nodes.length > cap) {
+    const extra = nodes.filter((n) => !focusIds.has(n.id))
+      .sort((a, b) => (b.imports + b.importedBy) - (a.imports + a.importedBy))
+      .slice(0, Math.max(0, cap - focusIds.size));
+    const keep2 = new Set([...focusIds, ...extra.map((n) => n.id)]);
+    nodes = nodes.filter((n) => keep2.has(n.id));
+  }
+  const ids = new Set(nodes.map((n) => n.id));
+  const links = (symbolJson.links || []).filter((e) => ids.has(e.source) && ids.has(e.target));
+  return { nodes, links, focusFile: fileId, focusIds, meta: symbolJson.meta };
+}
