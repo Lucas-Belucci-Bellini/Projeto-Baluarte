@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Git Nexus — drill-down por arquivo + herança + codemap atualizado (#204/#195)
+- 🔎 **Drill-down**: no modo Arquivos, ao selecionar um arquivo aparece o botão "ƒ ver as N funções deste arquivo →" que abre um **grafo 3D focado** só nas funções daquele arquivo + suas conexões de 1 salto (quem elas chamam / quem as chama). Migalha "← arquivos" pra voltar. Navegação em dois níveis, como no GitNexus.
+- 🧬 **Herança (EXTENDS)**: o extrator agora capta `class X extends Y` e emite arestas EXTENDS (além de CALLS) — ex: `ReplaySource → MockSource` no radar.
+- 🔄 **`codemap.json` regenerado**: estava defasado (08/06, 158 arquivos); agora reflete o `src/` atual — **187 arquivos**, 438 imports, incluindo as páginas novas (aprendizado, git-nexus, apis…) e o `jarvis-brain.js`. O grafo de arquivos do Git Nexus e do Raio-X passam a mostrar o site de hoje.
+- ✅ Verificado no navegador (Playwright): drill-down de `jarvis-brain.js` (20 funções, 78 chamadas), seleção de função no foco, e volta aos 187 arquivos.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-gitnexus-drill`.
+
 ### Git Nexus — nível de FUNÇÕES (call graph 3D) (#204/#195)
 - ƒ **Toggle "Arquivos / Funções"** no Git Nexus: além do grafo de arquivos+imports, agora tem o grafo das **principais funções/classes + as chamadas entre elas** — o nível profundo que faltava do GitNexus.
 - 🧬 **`scripts/gen-symbols.mjs` novo** (build-time, sem dependências): parser leve que extrai de `src/` **1137 funções/classes** e **2456 chamadas** (call graph), gerando `src/data/codemap-symbols.json`. Rastreia parênteses para não se confundir com params desestruturados.

@@ -82,6 +82,11 @@ for (const f of files) {
           line: i + 1, loc: end - i + 1, exported: !!m[1],
           body: lines.slice(i, end + 1).join('\n')
         };
+        /* herança: class X extends Y → guarda o nome do pai */
+        if (d.kind === 'class') {
+          const ext = /\bclass\s+\w+\s+extends\s+([\w.]+)/.exec(line);
+          if (ext) sym.extendsName = ext[1].split('.').pop();
+        }
         list.push(sym); symbols.push(sym);
         break;
       }
@@ -121,6 +126,17 @@ for (const s of symbols) {
     if (seen.has(key)) continue; seen.add(key);
     edges.push({ source: s.id, target: target.id, type: 'CALLS' });
   }
+}
+
+/* arestas EXTENDS: classe → classe-pai (herança), resolvido por nome */
+for (const s of symbols) {
+  if (s.kind !== 'class' || !s.extendsName) continue;
+  const cands = (byName.get(s.extendsName) || []).filter((x) => x.kind === 'class');
+  const parent = cands[0];
+  if (!parent || parent.id === s.id) continue;
+  const key = s.id + '>' + parent.id;
+  if (seen.has(key)) continue; seen.add(key);
+  edges.push({ source: s.id, target: parent.id, type: 'EXTENDS' });
 }
 
 /* métricas por símbolo (imports = chamadas feitas; importedBy = vezes chamado) */
