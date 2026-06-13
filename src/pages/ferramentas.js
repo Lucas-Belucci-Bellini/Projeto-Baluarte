@@ -161,192 +161,115 @@ const TOOL_ROUTES = {
 
 /* ============================================================ */
 
-let activeCategory = 'all';
-let searchTerm = '';
-let gridEl = null;
-let countEl = null;
+/* Cor de destaque por categoria (acento dos cards). */
+const CAT_COLOR = {
+  desenvolvimento: '#00f0ff', calculo: '#7ee787', cripto: '#ff00aa',
+  visualizacao: '#ffaa00', midia: '#9d7bff', referencia: '#66ddff', sistema: '#ff6b6b'
+};
+
+/* Inclinação 3D no hover (estilo do redesign #195). */
+function tilt(card) {
+  if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) return card;
+  const onMove = (e) => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.setProperty('--rx', (-y * 9).toFixed(2) + 'deg');
+    card.style.setProperty('--ry', (x * 11).toFixed(2) + 'deg');
+  };
+  const reset = () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); };
+  card.addEventListener('pointermove', onMove);
+  card.addEventListener('pointerleave', reset);
+  return card;
+}
 
 function toolCard(tool) {
   const isReady = tool.phase <= 1;
   const route = TOOL_ROUTES[tool.id] || null;
+  const accent = CAT_COLOR[tool.category] || '#00f0ff';
 
-  return h(
-    'div',
-    {
-      className: 'card card--interactive tool-card',
-      'data-status': isReady ? 'ready' : 'locked',
-      'data-category': tool.category,
-      'data-id': tool.id,
-      title: route
-        ? `Abrir ${tool.name}`
-        : `${tool.name} — sem rota dedicada (chega em fase futura)`,
-      onclick: () => {
-        if (route) {
-          /* Rota existe: navega. Se for placeholder, a própria página informa fase. */
-          router.navigate(route);
-        } else {
-          /* Sem rota mapeada (ferramentas extras tipo JSON Studio, Color Picker, etc.) */
-          toast(`"${tool.name}" ainda não tem rota dedicada — chegará em fase futura.`, {
-            type: 'warning',
-            duration: 3200
-          });
-        }
-      }
-    },
-    h(
-      'div',
-      { className: 'tool-card__head' },
-      h('div', { className: 'tool-card__icon' }, tool.icon),
-      h(
-        'div',
-        { className: 'tool-card__badges' },
-        tool.tag === 'novo' && h('span', { className: 'badge badge--cyan' }, 'NOVO'),
-        isReady
-          ? h('span', { className: 'badge badge--success' }, 'PRONTO')
-          : h('span', { className: 'badge badge--magenta' }, 'ROADMAP')
-      )
-    ),
-    h('h3', { className: 'tool-card__title' }, tool.name),
-    h('p', { className: 'tool-card__desc' }, tool.desc),
-    h(
-      'div',
-      { className: 'tool-card__meta' },
-      tool.category.toUpperCase()
-    )
-  );
-}
-
-function applyFilters() {
-  if (!gridEl) return;
-  const term = normalize(searchTerm);
-  const filtered = TOOLS.filter((t) => {
-    const matchesCat = activeCategory === 'all' || t.category === activeCategory;
-    if (!matchesCat) return false;
-    if (!term) return true;
-    const haystack = normalize(`${t.name} ${t.desc} ${t.category}`);
-    return haystack.includes(term);
-  });
-
-  mount(gridEl, null);
-  if (filtered.length === 0) {
-    gridEl.appendChild(
-      h(
-        'div',
-        {
-          className: 'card',
-          style: {
-            gridColumn: '1 / -1',
-            textAlign: 'center',
-            padding: 'var(--space-xl)'
-          }
-        },
-        h('div', { style: { fontSize: '48px', marginBottom: '8px', opacity: 0.6 } }, '∅'),
-        h('div', { className: 'u-text-secondary' }, 'Nenhuma ferramenta encontrada para o filtro atual.')
-      )
-    );
-  } else {
-    filtered.forEach((tool) => gridEl.appendChild(toolCard(tool)));
-  }
-
-  if (countEl) {
-    countEl.textContent = `${filtered.length} de ${TOOLS.length}`;
-  }
-}
-
-function categoryChips() {
-  return h(
-    'div',
-    { className: 'tool-filters' },
-    ...CATEGORIES.map((cat) => {
-      const count =
-        cat.id === 'all'
-          ? TOOLS.length
-          : TOOLS.filter((t) => t.category === cat.id).length;
-      const chip = h(
-        'button',
-        {
-          className: cx('chip', activeCategory === cat.id && 'chip--active'),
-          'data-cat': cat.id,
-          onclick: () => {
-            activeCategory = cat.id;
-            document.querySelectorAll('.tool-filters .chip').forEach((c) => {
-              c.classList.toggle('chip--active', c.dataset.cat === cat.id);
-            });
-            applyFilters();
-          }
-        },
-        cat.label,
-        h('span', { className: 'u-text-muted', style: { marginLeft: '6px' } }, `(${count})`)
-      );
-      return chip;
-    })
-  );
+  return tilt(h('div', {
+    className: 'fh-card' + (isReady ? '' : ' is-locked'),
+    style: { '--accent': accent },
+    'data-category': tool.category,
+    title: route ? `Abrir ${tool.name}` : `${tool.name} — sem rota dedicada (chega em fase futura)`,
+    onclick: () => {
+      if (route) router.navigate(route);
+      else toast(`"${tool.name}" ainda não tem rota dedicada — chegará em fase futura.`, { type: 'warning', duration: 3200 });
+    }
+  },
+    h('div', { className: 'fh-card__glow' }),
+    h('div', { className: 'fh-card__top' },
+      h('span', { className: 'fh-card__icon' }, tool.icon),
+      h('div', { className: 'fh-card__badges' },
+        tool.tag === 'novo' && h('span', { className: 'fh-badge fh-badge--novo' }, 'NOVO'),
+        isReady ? h('span', { className: 'fh-badge fh-badge--ready' }, 'PRONTO')
+                : h('span', { className: 'fh-badge fh-badge--soon' }, 'ROADMAP'))),
+    h('h3', { className: 'fh-card__title' }, tool.name),
+    h('p', { className: 'fh-card__desc' }, tool.desc),
+    h('div', { className: 'fh-card__cat u-mono' }, tool.category.toUpperCase())));
 }
 
 export function ferramentasPage() {
-  /* Reset estado da página a cada montagem */
-  activeCategory = 'all';
-  searchTerm = '';
+  /* Estado LOCAL por invocação (global faria a busca/filtro atualizar o grid
+     de uma chamada anterior não-montada — a página é instanciada 2x). */
+  let activeCategory = 'all';
+  let searchTerm = '';
+  const gridEl = h('div', { className: 'fh-grid' });
+  const countEl = h('span', { className: 'fh-count u-mono' }, `${TOOLS.length} de ${TOOLS.length}`);
+
+  function applyFilters() {
+    const term = normalize(searchTerm);
+    const filtered = TOOLS.filter((t) => {
+      if (activeCategory !== 'all' && t.category !== activeCategory) return false;
+      if (!term) return true;
+      return normalize(`${t.name} ${t.desc} ${t.category}`).includes(term);
+    });
+    mount(gridEl, null);
+    if (!filtered.length) {
+      gridEl.appendChild(h('div', { className: 'fh-empty' },
+        h('div', { style: { fontSize: '46px', opacity: 0.5 } }, '∅'),
+        h('div', { className: 'u-text-secondary' }, 'Nenhuma ferramenta encontrada para o filtro atual.')));
+    } else {
+      filtered.forEach((tool) => gridEl.appendChild(toolCard(tool)));
+    }
+    countEl.textContent = `${filtered.length} de ${TOOLS.length}`;
+  }
+
+  const chips = h('div', { className: 'fh-filters' },
+    ...CATEGORIES.map((cat) => {
+      const count = cat.id === 'all' ? TOOLS.length : TOOLS.filter((t) => t.category === cat.id).length;
+      const accent = CAT_COLOR[cat.id];
+      return h('button', {
+        className: cx('fh-chip', activeCategory === cat.id && 'is-active'),
+        style: accent ? { '--accent': accent } : {},
+        'data-cat': cat.id,
+        onclick: (e) => {
+          activeCategory = cat.id;
+          chips.querySelectorAll('.fh-chip').forEach((c) => c.classList.toggle('is-active', c.dataset.cat === cat.id));
+          applyFilters();
+        }
+      }, cat.label, h('span', { className: 'fh-chip__n' }, String(count)));
+    }));
 
   const searchInput = h('input', {
-    className: 'input input--search',
-    type: 'search',
-    placeholder: 'Buscar ferramenta por nome, descrição ou categoria...',
-    'aria-label': 'Buscar ferramenta',
-    autocomplete: 'off',
-    oninput: debounce((e) => {
-      searchTerm = e.target.value;
-      applyFilters();
-    }, 120)
+    className: 'fh-search', type: 'search',
+    placeholder: '🔎 Buscar ferramenta por nome, descrição ou categoria…',
+    'aria-label': 'Buscar ferramenta', autocomplete: 'off',
+    oninput: debounce((e) => { searchTerm = e.target.value; applyFilters(); }, 120)
   });
 
-  countEl = h(
-    'span',
-    { className: 'section-header__count' },
-    `${TOOLS.length} de ${TOOLS.length}`
-  );
-
-  gridEl = h('div', { className: 'grid-cards' });
-
-  /* Build inicial */
   TOOLS.forEach((tool) => gridEl.appendChild(toolCard(tool)));
 
-  return h(
-    'div',
-    { className: 'page-ferramentas' },
-    h(
-      'div',
-      { className: 'page-header anim-fade-in' },
-      h(
-        'div',
-        { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'),
-        h('span', null, '›'),
-        h('span', null, 'HUB DE FERRAMENTAS')
-      ),
-      h('h1', { className: 'page-header__title' }, 'Hub de Ferramentas'),
-      h(
-        'p',
-        { className: 'page-header__description' },
-        'Catálogo central de todas as ferramentas técnicas do Baluarte. ',
+  return h('div', { className: 'page-ferramentas' },
+    h('div', { className: 'fh-header anim-fade-in' },
+      h('div', { className: 'page-header__crumbs' },
+        h('span', null, 'BALUARTE'), h('span', null, '›'), h('span', null, 'HUB DE FERRAMENTAS')),
+      h('h1', { className: 'fh-title' }, '⚙ Hub de Ferramentas'),
+      h('p', { className: 'fh-sub' },
+        'Catálogo central de todas as ferramentas técnicas do Baluarte — ',
         h('span', { className: 'u-text-cyan' }, `${TOOLS.length} ferramentas`),
-        ' organizadas em ',
-        h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length - 1} categorias`),
-        '. Algumas já estão prontas, outras chegam em fases futuras.'
-      )
-    ),
-
-    h('div', { className: 'tool-search-wrap anim-fade-in-up' }, searchInput),
-
-    categoryChips(),
-
-    h(
-      'div',
-      { className: 'section-header' },
-      h('h2', { className: 'section-header__title' }, 'Catálogo'),
-      countEl
-    ),
-
-    gridEl
-  );
+        ' em ', h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length - 1} categorias`), '.')),
+    h('div', { className: 'fh-toolbar' }, searchInput, countEl),
+    chips,
+    gridEl);
 }
