@@ -25,6 +25,7 @@ export const NAV_GROUPS = [
     label: 'Início',
     items: [
       { path: '/home',        label: 'Ponte de Comando',   icon: '⬡', phase: 1 },
+      { path: '/home-3d',     label: 'Ponte 3D · preview', icon: '🧊', phase: 1 },
       { path: '/perfil',      label: 'Perfil',             icon: '◔', phase: 1 },
       { path: '/projetos',    label: 'Projetos',           icon: '📁', phase: 1 },
       { path: '/mural',       label: 'Mural',              icon: '📣', phase: 1 },

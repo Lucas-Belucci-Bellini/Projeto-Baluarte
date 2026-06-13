@@ -12,6 +12,7 @@ import { NAV_GROUPS } from '../layout/sidebar.js';
 /* Descrições curtas para enriquecer as respostas (opcional por rota). */
 const DESCRICOES = {
   '/home': 'Ponte de comando — visão geral do Baluarte.',
+  '/home-3d': 'Ponte de Comando 3D (preview) — piloto do redesign imersivo: herói cinematográfico com partículas 3D, prateleiras estilo Steam e acesso rápido (issues #195/#196).',
   '/perfil': 'Perfil do operador + Motor de Universos (trocar a skin do site).',
   '/projetos': 'Índice de tudo feito com o Claude Code.',
   '/cerebro': 'Segundo Cérebro — knowledge graph dos domínios e projetos.',
@@ -48,6 +49,7 @@ const DESCRICOES = {
 const SINONIMOS = {
   '/apis': ['api', 'apis', 'chave', 'chaves', 'api key', 'openrouter', 'anthropic'],
   '/aprendizado': ['machine learning', 'aprendizado', 'ml', 'aprendizado de maquina', 'modelo', 'treinar', 'clusters', 'assuntos', 'tf-idf'],
+  '/home-3d': ['3d', 'redesign', 'novo design', 'imersivo', 'ponte 3d', 'preview', 'home 3d', 'piloto'],
   '/editor': ['código', 'codigo', 'programar'],
   '/cripto': ['cifra', 'criptografia', 'aes', 'rsa'],
   '/dolar': ['câmbio', 'cambio', 'bitcoin', 'btc', 'euro', 'dólar', 'dolar'],
