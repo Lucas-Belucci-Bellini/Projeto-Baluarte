@@ -36,6 +36,7 @@ export const NAV_GROUPS = [
   {
     label: 'IA & Jarvis',
     items: [
+      { path: '/git-nexus',        label: 'Git Nexus',          icon: '🔗', phase: 1 },
       { path: '/jarvis',           label: 'J.A.R.V.I.S.',      icon: '◉', phase: 1 },
       { path: '/conselho',         label: 'Conselho de IAs',    icon: '⚖', phase: 1 },
       { path: '/apis',             label: 'Central de APIs',    icon: '🔑', phase: 1 },

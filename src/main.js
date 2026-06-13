@@ -126,6 +126,7 @@ router.register('/seguranca', lazy(() => import('./pages/seguranca.js'), 'segura
 router.register('/gerar-codigo', lazy(() => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));
 router.register('/conselho', lazy(() => import('./pages/conselho.js'), 'conselhoPage'));
 router.register('/apis', lazy(() => import('./pages/apis.js'), 'apisPage'));
+router.register('/git-nexus', lazy(() => import('./pages/git-nexus.js'), 'gitNexusPage'));
 router.register('/aprendizado', lazy(() => import('./pages/aprendizado.js'), 'aprendizadoPage'));
 router.register('/home-3d', lazy(() => import('./pages/home3d.js'), 'home3dPage'));
 
