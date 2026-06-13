@@ -1,0 +1,10 @@
+{
+  "id": "claude-sync",
+  "name": "Claude Sync",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Automatically imports Claude chat exports from a watched folder into your vault.",
+  "author": "Claude to Obsidian",
+  "authorUrl": "https://github.com/GBAnjos/claude-to-obsidian",
+  "isDesktopOnly": true
+}

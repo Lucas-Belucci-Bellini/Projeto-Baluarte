@@ -1,0 +1,199 @@
+{
+  "apiKey": "",
+  "geminiApiKey": "",
+  "groqApiKey": "",
+  "openRouterApiKey": "",
+  "openCodeApiKey": "",
+  "ollamaApiKey": "",
+  "nvidiaApiKey": "",
+  "ollamaBaseUrl": "http://localhost:11434",
+  "ollamaMode": "local",
+  "provider": "gemini",
+  "model": "gemini-2.5-flash",
+  "aiChatModel": "gemini-2.5-flash",
+  "aiChatProvider": "gemini",
+  "aiTutorModel": "gemini-2.5-flash",
+  "aiTutorProvider": "gemini",
+  "notebookModel": "gemini-2.5-flash",
+  "notebookProvider": "gemini",
+  "saveDirectory": "/",
+  "queryBarHotkey": "",
+  "chatContextSize": 3,
+  "rateLimitSeconds": 25,
+  "embeddingModel": "text-embedding-004",
+  "lastIndexTime": 0,
+  "indexPath": ".Nexus-LM-data/vault-embeddings/embeddings.bin",
+  "excludedFolders": [],
+  "excludedFiles": [],
+  "pdfOutputDirectory": "/",
+  "modelTokenLimits": {
+    "gemini-2.5-flash": 1000000
+  },
+  "embeddingFolderPath": "ai-tutor-data",
+  "savedFeeds": [],
+  "feedFolders": [
+    {
+      "id": "general",
+      "name": "General",
+      "color": "#abcdef",
+      "isCollapsed": false
+    }
+  ],
+  "visitedEntries": [],
+  "bookmarkedEntries": [],
+  "savedConceptMaps": [],
+  "savedSlideshows": [],
+  "customModels": [
+    {
+      "provider": "ollama",
+      "id": "qwen3:4b",
+      "name": "Qwen3 4b",
+      "tokenLimit": 262144,
+      "contextWindow": 262144,
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "enabled": true,
+      "isNew": true,
+      "verificationStatus": "unverified"
+    },
+    {
+      "provider": "ollama",
+      "id": "deepseek-r1:latest",
+      "name": "Deepseek R1 Latest",
+      "tokenLimit": 131072,
+      "contextWindow": 131072,
+      "capabilities": [
+        "tools",
+        "thinking",
+        "completion"
+      ],
+      "enabled": true,
+      "isNew": true,
+      "verificationStatus": "unverified"
+    }
+  ],
+  "modelCache": {
+    "customProviders": {},
+    "ollama": [
+      {
+        "provider": "ollama",
+        "id": "qwen3:4b",
+        "name": "Qwen3 4b",
+        "tokenLimit": 262144,
+        "contextWindow": 262144,
+        "capabilities": [
+          "completion",
+          "tools",
+          "thinking"
+        ],
+        "enabled": true,
+        "isNew": true,
+        "verificationStatus": "unverified"
+      },
+      {
+        "provider": "ollama",
+        "id": "deepseek-r1:latest",
+        "name": "Deepseek R1 Latest",
+        "tokenLimit": 131072,
+        "contextWindow": 131072,
+        "capabilities": [
+          "tools",
+          "thinking",
+          "completion"
+        ],
+        "enabled": true,
+        "isNew": true,
+        "verificationStatus": "unverified"
+      }
+    ],
+    "ollamaEmbeddings": [],
+    "lastFetched": 1781319251436
+  },
+  "googleGroundingEnabled": true,
+  "enableThinkingMode": true,
+  "gemini25ThinkingMode": "dynamic",
+  "gemini3ThinkingLevel": "high",
+  "ollamaThinkingEnabled": false,
+  "ollamaGptOssThinkingLevel": "medium",
+  "groqThinkingLevel": "medium",
+  "aiChatHistoryEnabled": true,
+  "googleCustomSearchApiKey": "",
+  "googleCustomSearchEngineId": "",
+  "customEmbeddingModels": [
+    {
+      "provider": "ollama",
+      "id": "nomic-embed-text",
+      "name": "Nomic Embed Text",
+      "dimensions": 768,
+      "contextWindow": 8192,
+      "enabled": true,
+      "requestsPerMinute": 1000
+    },
+    {
+      "provider": "ollama",
+      "id": "mxbai-embed-large",
+      "name": "MixedBread AI Embed Large",
+      "dimensions": 1024,
+      "contextWindow": 512,
+      "enabled": true,
+      "requestsPerMinute": 1000
+    },
+    {
+      "provider": "ollama",
+      "id": "all-minilm",
+      "name": "All MiniLM (Ollama)",
+      "dimensions": 384,
+      "contextWindow": 256,
+      "enabled": true,
+      "requestsPerMinute": 1000
+    }
+  ],
+  "savedSystemInstructions": [],
+  "maxVaultSearchResults": 8,
+  "autoModeEnabled": false,
+  "showAutoSelectionReason": true,
+  "bm25TitleBoost": 3,
+  "bm25HeadingBoost": 2,
+  "bm25TagBoost": 1.5,
+  "embeddingIndexedFiles": 0,
+  "bm25IndexedFiles": 0,
+  "youtubeProcessingMode": "transcript",
+  "saveYoutubeTranscripts": true,
+  "youtubeTranscriptFolder": "YouTube Transcripts",
+  "indexConfigurations": [
+    {
+      "id": "default-embedding",
+      "type": "embedding",
+      "name": "Default Embedding Index",
+      "model": "text-embedding-004",
+      "enabled": true,
+      "fileCount": 0,
+      "lastUpdated": 0
+    },
+    {
+      "id": "default-bm25",
+      "type": "bm25",
+      "name": "Default BM25 Index",
+      "enabled": true,
+      "fileCount": 0,
+      "lastUpdated": 0
+    }
+  ],
+  "selectedEmbeddingIndexId": "default-embedding",
+  "selectedBM25IndexId": "default-bm25",
+  "codeExecutionAutoMode": false,
+  "templateFolder": "",
+  "mcpServers": [],
+  "mcpEnabled": true,
+  "mcpAutoConnect": true,
+  "mcpPrereqsChecked": {},
+  "chatWallpaperPath": null,
+  "chatWallpaperOpacity": 0.5,
+  "chatWallpaperResponseOpacity": 0.25,
+  "chatWallpaperHeaderOpacity": 0.2,
+  "chatWallpaperEnabled": false,
+  "customProviders": []
+}

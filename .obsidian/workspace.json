@@ -1,0 +1,279 @@
+{
+  "main": {
+    "id": "367ff27706c0baf2",
+    "type": "split",
+    "children": [
+      {
+        "id": "4ac14a0c68186086",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "34d1d292c421f988",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
+            }
+          },
+          {
+            "id": "dd39e908cfa987fb",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Projeto Baluarte.canvas",
+                "viewState": {
+                  "x": 5487.444583885983,
+                  "y": 3836.5962920302536,
+                  "zoom": -4
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Projeto Baluarte"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "e45e9cb7c89590e6",
+    "type": "split",
+    "children": [
+      {
+        "id": "0502e8181699fb0e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1d53649b092f1b6e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de arquivos"
+            }
+          },
+          {
+            "id": "1b186b21c0cafe29",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "9c61dbad241a358a",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "4566828a64593589",
+    "type": "split",
+    "children": [
+      {
+        "id": "acf425d1c023032b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8b19425c100269ee",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Links inversos"
+            }
+          },
+          {
+            "id": "7168f470969ed123",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links de saída"
+            }
+          },
+          {
+            "id": "415a5f41fc8f6c5b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "9d53300a5ae5d04a",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas as propriedades"
+            }
+          },
+          {
+            "id": "706bb907cdaa5b10",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sumário"
+            }
+          },
+          {
+            "id": "7238246115f31bf2",
+            "type": "leaf",
+            "state": {
+              "type": "NEXUS_LM_LANDING",
+              "state": {},
+              "icon": "loader-pinwheel",
+              "title": "Nexus-LM Hub"
+            }
+          },
+          {
+            "id": "6222e16d2e3d0327",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ],
+        "currentTab": 6
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir a troca rápida": false,
+      "graph:Abrir visualização em gráfico": false,
+      "canvas:Criar novo canvas": false,
+      "daily-notes:Abrir a nota de hoje": false,
+      "templates:Inserir modelo": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Criar nova base": false,
+      "nexus-ai-chat-importer:Nexus AI Chat Importer - Import new file": false,
+      "open-in-claude-code:Open in Claude Code": false,
+      "omnisearch:Omnisearch": false,
+      "nexus-lm:Open Nexus-LM": false,
+      "nexus:Open chat": false,
+      "llm-wiki:Ingest sources into wiki": false,
+      "llm-test-gen:Test dashboard": false,
+      "large-language-models:Ask a question": false,
+      "obsidian-git:Open Git source control": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "realclaudian:Open Claudian": false,
+      "claude-sync:Claude Sync": false,
+      "claude-skill-sync:Skill Sync": false,
+      "claude-sidebar:New Claude Tab": false,
+      "smart-templates:Smart Templates: Open template context": false,
+      "claude-panel-ryukyuhub:Open Claude Panel": false,
+      "claude-code-skills:Open skills panel": false,
+      "claude-anywhere:Open Claude Anywhere": false,
+      "agentfiles:Agentfiles": false,
+      "agent-client:Open agent client": false
+    }
+  },
+  "active": "34d1d292c421f988",
+  "lastOpenFiles": [
+    "GitNexus-1.6.7/GitNexus-1.6.7/CLAUDE.md",
+    "Projeto Baluarte.canvas",
+    "GitNexus-1.6.7/GitNexus-1.6.7/type-resolution-system.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/type-resolution-roadmap.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/TESTING.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/swift-ingestion-gaps.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/skills.mdm",
+    "GitNexus-1.6.7/GitNexus-1.6.7/SECURITY.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/RUNBOOK.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/README.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas/07-synthesis-critic.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas/06-docs-dod-reviewer.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas/05-security-boundary-reviewer.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas/01-pr-facts-historian.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas/04-test-ci-verifier.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas/03-risk-architect.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas/02-branch-hygiene-reviewer.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/README.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/personas",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review/orchestration.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/pr-swarm-review",
+    "GitNexus-1.6.7/GitNexus-1.6.7/package.json",
+    "GitNexus-1.6.7/GitNexus-1.6.7/package-lock.json",
+    "GitNexus-1.6.7/GitNexus-1.6.7/MIGRATION.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/llms.txt",
+    "GitNexus-1.6.7/GitNexus-1.6.7/LICENSE",
+    "GitNexus-1.6.7/GitNexus-1.6.7/GUARDRAILS.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-web/src/vendor/leiden/utils.js",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-web/src/vendor/leiden/index.d.ts",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-web/src/vendor/leiden/index.js",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-cursor-integration/README.md",
+    "GitNexus-1.6.7/GitNexus-1.6.7/gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md",
+    "Sem título 2.canvas",
+    "Sem título 1.canvas"
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "currentIndex": -1,
+  "currentView": "modal",
+  "modalSettings": {
+    "model": "gpt-3.5-turbo",
+    "modelName": "ChatGPT-3.5 turbo",
+    "modelType": "openAI",
+    "modelEndpoint": "chat",
+    "endpointURL": "/chat/completions",
+    "historyIndex": -1,
+    "historyFilePath": null,
+    "imageSettings": {
+      "numberOfImages": 1,
+      "response_format": "url",
+      "size": "1024x1024",
+      "quality": "medium"
+    },
+    "chatSettings": {
+      "maxTokens": 0,
+      "temperature": 0.65,
+      "GPT4All": {},
+      "openAI": {
+        "frequencyPenalty": 0,
+        "logProbs": false,
+        "topLogProbs": null,
+        "presencePenalty": 0,
+        "responseFormat": "",
+        "topP": 1
+      }
+    },
+    "contextSettings": {
+      "includeActiveFile": true,
+      "includeSelection": true,
+      "selectedFiles": [],
+      "maxContextTokensPercent": 70,
+      "showModelLabel": false
+    },
+    "agentSettings": {
+      "permissionMode": "ask"
+    }
+  },
+  "widgetSettings": {
+    "model": "gpt-3.5-turbo",
+    "modelName": "ChatGPT-3.5 turbo",
+    "modelType": "openAI",
+    "modelEndpoint": "chat",
+    "endpointURL": "/chat/completions",
+    "historyIndex": -1,
+    "historyFilePath": null,
+    "imageSettings": {
+      "numberOfImages": 1,
+      "response_format": "url",
+      "size": "1024x1024",
+      "quality": "medium"
+    },
+    "chatSettings": {
+      "maxTokens": 0,
+      "temperature": 0.65,
+      "GPT4All": {},
+      "openAI": {
+        "frequencyPenalty": 0,
+        "logProbs": false,
+        "topLogProbs": null,
+        "presencePenalty": 0,
+        "responseFormat": "",
+        "topP": 1
+      }
+    },
+    "contextSettings": {
+      "includeActiveFile": true,
+      "includeSelection": true,
+      "selectedFiles": [],
+      "maxContextTokensPercent": 70,
+      "showModelLabel": false
+    },
+    "agentSettings": {
+      "permissionMode": "ask"
+    }
+  },
+  "fabSettings": {
+    "model": "gpt-3.5-turbo",
+    "modelName": "ChatGPT-3.5 turbo",
+    "modelType": "openAI",
+    "modelEndpoint": "chat",
+    "endpointURL": "/chat/completions",
+    "historyIndex": -1,
+    "historyFilePath": null,
+    "imageSettings": {
+      "numberOfImages": 1,
+      "response_format": "url",
+      "size": "1024x1024",
+      "quality": "medium"
+    },
+    "chatSettings": {
+      "maxTokens": 0,
+      "temperature": 0.65,
+      "GPT4All": {},
+      "openAI": {
+        "frequencyPenalty": 0,
+        "logProbs": false,
+        "topLogProbs": null,
+        "presencePenalty": 0,
+        "responseFormat": "",
+        "topP": 1
+      }
+    },
+    "contextSettings": {
+      "includeActiveFile": true,
+      "includeSelection": true,
+      "selectedFiles": [],
+      "maxContextTokensPercent": 70,
+      "showModelLabel": false
+    },
+    "agentSettings": {
+      "permissionMode": "ask"
+    }
+  },
+  "promptHistory": [],
+  "chatHistoryEnabled": true,
+  "chatHistoryMigrated": false,
+  "chatHistoryFolder": "LLM Chats",
+  "openAIAPIKey": "",
+  "claudeAPIKey": "",
+  "mistralAPIKey": "",
+  "claudeCodeOAuthToken": "",
+  "linearWorkspaces": [],
+  "geminiAPIKey": "",
+  "GPT4AllStreaming": false,
+  "showFAB": false,
+  "showRibbonIcon": true,
+  "showAssistantLogo": true,
+  "showAgentBrandIcon": true,
+  "enableFileContext": false,
+  "defaultModel": "",
+  "defaultAgentMode": false,
+  "ollamaHost": "http://localhost:11434",
+  "ollamaModels": [],
+  "ollamaContextWindows": {},
+  "lmStudioHost": "http://localhost:1234",
+  "lmStudioModels": [],
+  "emptyChatAvatar": "llm-gal",
+  "showStatusBarButton": false,
+  "ragSettings": {
+    "enabled": false,
+    "embeddingProvider": "onnx",
+    "embeddingModel": "Xenova/all-mpnet-base-v2",
+    "excludedFolders": [],
+    "topK": 5,
+    "lastIndexed": null,
+    "indexedFileCount": 0,
+    "modelCached": false
+  },
+  "skillsSettings": {
+    "enabledSkills": {}
+  },
+  "memorySettings": {
+    "enabled": false,
+    "extractionTrigger": "manual",
+    "recallTopK": 5,
+    "recallAlways": false
+  },
+  "projectSettings": {
+    "activeProjectId": null
+  },
+  "assistantSettings": {
+    "activeAssistantId": null
+  },
+  "toolSettings": {
+    "disabledTools": [
+      "run_shell_command"
+    ],
+    "maxToolCalls": 10,
+    "shellCommandOptedIn": false
+  },
+  "obsidianAgentSettings": {
+    "enabled": false,
+    "enableWebSearch": false,
+    "availableSkills": {},
+    "availableAssistants": {},
+    "agentGuidanceFile": ""
+  },
+  "whisperSettings": {
+    "enabled": false,
+    "backend": "openai",
+    "sidecarHost": "http://localhost:8765",
+    "whisperModel": "medium.en",
+    "language": "",
+    "includeTimestamps": false,
+    "outputFolder": "Transcripts",
+    "autoOpenNote": true,
+    "autoSend": false,
+    "lastPickerDirectory": ""
+  },
+  "searxngSettings": {
+    "enabled": false,
+    "host": "http://localhost:8080",
+    "maxResults": 5
+  },
+  "rootVaultFolder": "",
+  "agentsFilePath": "AI/AGENTS.md",
+  "hasOnboarded": true,
+  "featureSettings": {
+    "obsidianAgent": false,
+    "transcription": false,
+    "projects": false,
+    "assistants": false,
+    "memory": false,
+    "vaultSearch": false
+  }
+}

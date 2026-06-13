@@ -1,0 +1,390 @@
+/* Obsidian MCP Plugin Styles */
+
+.mcp-plugin-settings {
+    padding: 20px;
+}
+
+.mcp-plugin-settings h2 {
+    margin-bottom: 20px;
+    color: var(--text-accent);
+}
+
+.mcp-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mcp-status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-success);
+}
+
+.mcp-status-indicator.error {
+    background-color: var(--text-error);
+}
+
+.mcp-status-indicator.warning {
+    background-color: var(--text-warning);
+}
+
+/* Connection Status Section */
+.mcp-status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.mcp-status-value.success {
+    color: var(--text-success);
+}
+
+.mcp-status-value.error {
+    color: var(--text-error);
+}
+
+/* Protocol Info Section */
+.mcp-protocol-info {
+    background-color: var(--background-secondary);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Config example containers */
+.protocol-command-example,
+.desktop-config-example {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+/* Code Blocks */
+.mcp-code-block {
+    display: block;
+    padding: 10px;
+    background-color: var(--background-primary);
+    margin-top: 5px;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    cursor: text;
+}
+
+.mcp-config-example {
+    display: block;
+    padding: 10px;
+    background-color: var(--background-primary);
+    margin-top: 5px;
+    overflow-x: auto;
+    font-size: 12px;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    cursor: text;
+    white-space: pre;
+}
+
+/* Action Buttons Section */
+.mcp-action-buttons {
+    margin: 20px 0;
+}
+
+.mcp-action-button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.mcp-error-message {
+    color: var(--text-error);
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--background-secondary);
+    border-radius: 5px;
+}
+
+/* Port Warning */
+.mcp-port-warning {
+    color: var(--text-warning);
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+/* Apply Button */
+.mcp-apply-button {
+    margin-left: 10px;
+}
+
+/* Utility Classes */
+/* Element-qualified so it outspecifies framework-set display (e.g. Obsidian's
+   button display) without !important; plain .mcp-hidden covers containers. */
+button.mcp-hidden,
+.mcp-hidden {
+    display: none;
+}
+
+/* Config Path Info */
+.mcp-config-path {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.mcp-config-path ul {
+    font-size: 12px;
+}
+
+/* API Key Input */
+/* input-qualified selector outspecifies container-level user-select:none
+   without !important, keeping the API key selectable/copyable. */
+input.mcp-api-key-input {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    cursor: text;
+}
+
+/* Make disabled input more readable */
+.mcp-api-key-input:disabled {
+    background-color: var(--background-secondary);
+    color: var(--text-normal);
+    opacity: 1;
+}
+
+/* Settings Input Styling */
+.mcp-monospace-input {
+    width: 300px;
+    font-family: monospace;
+}
+
+/* Notes and Warnings */
+.mcp-security-note,
+.mcp-auth-note {
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.mcp-auth-note {
+    margin-bottom: 20px;
+}
+
+
+.mcp-warning-box {
+    background-color: var(--background-modifier-error);
+    color: var(--text-error);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Status Elements */
+.mcp-status-active {
+    color: var(--text-success);
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.mcp-status-inactive {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+/* Status Bar Item States */
+.mcp-statusbar-disabled {
+    color: var(--text-muted);
+}
+
+.mcp-statusbar-running {
+    color: var(--text-success);
+}
+
+.mcp-statusbar-error {
+    color: var(--text-error);
+}
+
+/* Section Headers */
+.mcp-section-header {
+    font-weight: bold;
+}
+
+/* Certificate Note */
+.mcp-cert-note {
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+/* Copy Button Styling */
+.mcp-config-container {
+    position: relative;
+}
+
+.mcp-copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px;
+    background: var(--interactive-normal);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.mcp-copy-button:hover {
+    opacity: 1;
+    background: var(--interactive-hover);
+}
+
+.mcp-copy-button.success {
+    background: var(--interactive-success);
+}
+
+/* Tool Visibility Tree */
+.mcp-tool-tree-desc {
+    margin-bottom: 12px;
+}
+
+.mcp-tool-tree {
+    margin: 8px 0;
+}
+
+.mcp-tool-parent .setting-item-name {
+    font-weight: 600;
+}
+
+.mcp-tool-parent .setting-item-description {
+    font-size: var(--font-ui-smaller);
+    color: var(--text-muted);
+}
+
+.mcp-tool-child {
+    padding-left: 28px;
+    border-left: 2px solid var(--background-modifier-border);
+    margin-left: 14px;
+}
+
+.mcp-tool-child .setting-item-name {
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-smaller);
+}
+
+.mcp-tool-child .setting-item-description {
+    display: none;
+}
+
+.mcp-tool-child.setting-item {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: none;
+}
+
+.mcp-tool-parent.setting-item {
+    padding-top: 10px;
+    padding-bottom: 6px;
+}
+
+.mcp-tool-disabled .setting-item-name {
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.mcp-tool-count {
+    font-size: var(--font-ui-smaller);
+    color: var(--text-muted);
+    margin-left: 8px;
+}
+
+/* Easter Egg Styles */
+.mcp-version-easter-egg {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.mcp-version-easter-egg:hover {
+    color: var(--text-accent);
+}
+
+.mcp-easter-egg-modal {
+    text-align: center;
+    padding: 20px;
+}
+
+.mcp-easter-egg-modal h2 {
+    color: var(--text-accent);
+    margin-bottom: 20px;
+}
+
+.mcp-easter-egg-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.mcp-easter-egg-image {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mcp-easter-egg-fallback {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--text-accent);
+    margin: 10px 0;
+}
+
+.mcp-easter-egg-thanks {
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 15px;
+}
+/* ADR-107: network exposure verdict badge + caution banner */
+.mcp-network-badge {
+    padding: 8px 12px;
+    margin: 8px 0 12px 0;
+    border-radius: 6px;
+    border-left: 4px solid;
+    background: var(--background-secondary);
+}
+
+.mcp-network-badge-ok {
+    border-left-color: var(--color-green);
+}
+
+.mcp-network-badge-warn {
+    border-left-color: var(--color-yellow);
+    background: var(--background-modifier-warning);
+}
+
+.mcp-network-badge-jail {
+    border-left-color: var(--color-red);
+    background: var(--background-modifier-error);
+    color: var(--text-on-accent);
+}
+
+.mcp-network-caution {
+    padding: 8px 12px;
+    margin: 4px 0 12px 24px;
+    border-radius: 4px;
+    background: var(--background-modifier-error);
+    color: var(--text-on-accent);
+    font-size: 0.9em;
+}
+
+.mcp-network-badge-hint {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.9em;
+    opacity: 0.9;
+}

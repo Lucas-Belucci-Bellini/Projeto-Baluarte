@@ -1,0 +1,10 @@
+{
+	"id": "llm-wiki",
+	"name": "LLM Wiki",
+	"version": "0.1.0",
+	"minAppVersion": "1.5.0",
+	"description": "Turns raw notes into an interlinked wiki with confidence scores, memory tiers, and a knowledge graph — maintained automatically with Claude.",
+	"author": "End User",
+	"authorUrl": "https://enduser.dev",
+	"isDesktopOnly": true
+}

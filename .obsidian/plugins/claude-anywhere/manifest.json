@@ -1,0 +1,10 @@
+{
+	"id": "claude-anywhere",
+	"name": "Claude Anywhere",
+	"version": "1.0.20",
+	"minAppVersion": "1.0.0",
+	"description": "Run Claude Code from any device via remote relay server.",
+	"author": "Derek Larson",
+	"authorUrl": "https://github.com/derek-larson14",
+	"isDesktopOnly": false
+}

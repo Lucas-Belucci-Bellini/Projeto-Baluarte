@@ -1,0 +1,238 @@
+.workspace-leaf-content[data-type="claude-anywhere-terminal"] .view-content {
+	overflow: clip;
+	display: flex;
+	flex-direction: column;
+}
+
+.claude-anywhere-container {
+	height: 100%;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	padding: 8px 12px;
+	padding-bottom: calc(8px + var(--status-bar-height, 0px) + env(safe-area-inset-bottom, 0px));
+	box-sizing: border-box;
+	background-color: var(--background-secondary);
+	overflow: hidden;
+}
+
+.claude-anywhere-host {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+	position: relative;
+	background-color: var(--background-secondary);
+	overscroll-behavior: contain;
+}
+
+.claude-anywhere-host .xterm {
+	height: 100%;
+	/* DO NOT add padding here - it breaks xterm canvas character positioning */
+	background-color: var(--background-secondary) !important;
+}
+
+.claude-anywhere-host .xterm .xterm-screen {
+	background-color: var(--background-secondary) !important;
+}
+
+.claude-anywhere-host .xterm-viewport {
+	overflow-y: auto !important;
+	overflow-x: auto !important; /* Allow horizontal scroll for long filenames */
+	background-color: var(--background-secondary) !important;
+	overscroll-behavior: contain;
+	scrollbar-gutter: stable;
+}
+
+/* Ensure terminal rows don't get clipped */
+.claude-anywhere-host .xterm-rows {
+	overflow: visible;
+}
+
+/* Keep the hidden textarea invisible but focusable for mobile keyboard */
+.claude-anywhere-host .xterm .xterm-helper-textarea {
+	opacity: 0 !important;
+	caret-color: transparent !important; /* Hide iOS text cursor */
+	/* Don't use width:0/height:0 or position off-screen - breaks mobile keyboard */
+}
+
+/* Constrain IME composition preview (e.g., Gboard voice input) to terminal width */
+.claude-anywhere-host .xterm {
+	contain: layout style;
+	overflow: clip;
+}
+
+/* Force IME composition text to stay within bounds */
+.claude-anywhere-host .xterm-helper-textarea {
+	max-width: 100% !important;
+	word-wrap: break-word !important;
+	overflow-wrap: break-word !important;
+}
+
+/* Prevent composition preview from overflowing container */
+.claude-anywhere-container {
+	contain: layout;
+}
+
+.workspace-leaf-content[data-type="claude-anywhere-terminal"] {
+	contain: layout style;
+	overflow: clip;
+}
+
+/* Mobile arrow key controls */
+.mobile-arrow-controls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	padding: 8px;
+	background: var(--background-primary);
+	border-top: 1px solid var(--background-modifier-border);
+	flex-shrink: 0;
+}
+
+.mobile-arrow-controls .arrow-btn,
+.mobile-arrow-controls .special-btn {
+	width: 44px;
+	height: 44px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: 18px;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
+}
+
+.mobile-arrow-controls .special-btn {
+	width: auto;
+	padding: 0 12px;
+	font-size: 14px;
+}
+
+.mobile-arrow-controls .arrow-btn.pressed,
+.mobile-arrow-controls .special-btn.pressed {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	transform: scale(0.95);
+}
+
+.mobile-arrow-controls .arrow-btn:active,
+.mobile-arrow-controls .special-btn:active {
+	background: var(--interactive-accent);
+}
+
+/* Mobile: Font with good Unicode/box-drawing support */
+/* Android: Roboto Mono, iOS: SF Mono */
+.is-mobile .claude-anywhere-host .xterm,
+.is-mobile .claude-anywhere-host .xterm-rows {
+	font-family: "Roboto Mono", "SF Mono", Menlo, monospace !important;
+}
+
+/* Mobile: Arrow controls - bigger touch targets */
+.is-mobile .mobile-arrow-controls {
+	gap: 6px;
+	padding: 6px;
+}
+
+.is-mobile .mobile-arrow-controls .arrow-btn,
+.is-mobile .mobile-arrow-controls .special-btn {
+	width: 44px;
+	height: 44px;
+	font-size: 16px;
+}
+
+.is-mobile .mobile-arrow-controls .special-btn {
+	padding: 0 12px;
+	font-size: 13px;
+}
+
+/* Mobile: Bigger scrollbar for easier touch scrolling (Android) */
+.is-mobile .claude-anywhere-host .xterm-viewport::-webkit-scrollbar {
+	width: 24px;
+}
+
+.is-mobile .claude-anywhere-host .xterm-viewport::-webkit-scrollbar-track {
+	background: var(--background-secondary);
+}
+
+.is-mobile .claude-anywhere-host .xterm-viewport::-webkit-scrollbar-thumb {
+	background: var(--background-modifier-border);
+	border-radius: 8px;
+	border: 3px solid var(--background-secondary);
+	min-height: 60px;
+}
+
+.is-mobile .claude-anywhere-host .xterm-viewport::-webkit-scrollbar-thumb:active {
+	background: var(--text-muted);
+}
+
+/* iOS custom scrollbar (native scrollbars don't show on iOS) */
+.ios-scroll-track {
+	position: absolute;
+	top: 0;
+	right: 4px;
+	width: 24px;
+	height: 100%;
+	background: var(--background-modifier-border);
+	border-radius: 12px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	z-index: 10;
+	touch-action: none;
+}
+
+.ios-scroll-track.visible {
+	opacity: 0.4;
+}
+
+.ios-scroll-indicator {
+	position: absolute;
+	top: 0;
+	right: 4px;
+	width: 24px;
+	min-height: 80px;
+	background: var(--text-muted);
+	border-radius: 12px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	z-index: 11;
+	touch-action: none;
+}
+
+.ios-scroll-indicator.visible {
+	opacity: 0.8;
+}
+
+.ios-scroll-indicator.dragging {
+	opacity: 1;
+	background: var(--text-normal);
+}
+
+/* iOS keyboard handling - when keyboard is open, container has fixed height */
+.claude-anywhere-container.keyboard-open {
+	/* Height is set dynamically via JS to match visualViewport.height */
+	overflow: hidden;
+	/* Remove bottom padding since we're now sized to visible area */
+	padding-bottom: 8px;
+}
+
+/* Ensure mobile controls stay visible when keyboard is open */
+.claude-anywhere-container.keyboard-open .mobile-arrow-controls {
+	position: relative;
+	flex-shrink: 0;
+	/* Slightly reduce padding when keyboard is open to save space */
+	padding: 4px;
+	gap: 4px;
+}
+
+/* Make terminal host take remaining space when keyboard open */
+.claude-anywhere-container.keyboard-open .claude-anywhere-host {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}

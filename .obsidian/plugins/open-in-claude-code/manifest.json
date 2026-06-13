@@ -1,0 +1,10 @@
+{
+	"id": "open-in-claude-code",
+	"name": "Open in Claude Code",
+	"version": "1.0.0",
+	"minAppVersion": "1.12.0",
+	"description": "Open the current note's directory or vault root in Claude Code from the command palette or ribbon.",
+	"author": "wepee",
+	"authorUrl": "https://github.com/wepee",
+	"isDesktopOnly": true
+}

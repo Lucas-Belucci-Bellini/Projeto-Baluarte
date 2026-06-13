@@ -1,0 +1,10 @@
+{
+  "id": "default",
+  "name": "Default Workspace",
+  "description": "Default workspace for tool calls without explicit workspace context",
+  "rootFolder": "/",
+  "created": 1781319253172,
+  "lastAccessed": 1781319253172,
+  "isActive": true,
+  "sessions": {}
+}

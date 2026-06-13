@@ -1,0 +1,13 @@
+/* Claude Sync - Obsidian Plugin Styles */
+
+.claude-sync-status {
+  background: var(--background-secondary);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.claude-sync-status p {
+  margin: 4px 0;
+  font-size: 13px;
+}
