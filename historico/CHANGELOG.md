@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Redesign — polish do Git Nexus + Arsenal (#195/#204)
+- 🔗 **Git Nexus mais cinematográfico**: brilho (glow) nos nós do grafo, realce mais forte no hover, fundo do grafo com brilhos radiais + vinheta e título em degradê.
+- 🔫 **Arsenal alinhado ao redesign** (só visual, lógica intocada): título em degradê, linhas com glow e acento cyan no hover/seleção, painel de detalhe com fundo cyan e nome em degradê, abas em pílula.
+- 🖼️ Screenshots do Git Nexus enviados ao operador.
+- ✅ Verificado no navegador (Playwright): grafo com glow, Arsenal com 251 linhas e seleção realçada.
+
 ### Redesign — Hub de Ferramentas (#195, página 1/N)
 - ⚙ **`/ferramentas` redesenhada** no estilo do redesign: título em degradê, busca proeminente, chips de categoria com **cor própria por categoria** e contagem, e os 51 cards com **acento colorido**, badges NOVO/PRONTO/ROADMAP e **tilt 3D no hover**. Os dados/rotas/busca foram preservados — só a camada visual mudou.
 - 🧭 **#195 segue aberto como guarda-chuva** do redesign (a pedido do operador): as páginas serão redesenhadas aos poucos, uma por PR. Esta é a primeira página de conteúdo depois da Home.
