@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Deploy da Vercel consertado — bundle das funções + submódulos (#210)
+- 🚑 **Deploy estava FALHANDO**: o build do front (Vite) passava, mas o bundle das funções Python (`api/`) estourava o limite de **245 MB** da Lambda (489,96 MB) — o builder empacotava o repositório inteiro, incluindo pastas enormes commitadas (`Humanity always first` 172 MB, `GitNexus-1.6.7` 139 MB, `.obsidian` 43 MB, `.smart-env` 19 MB) e os PDFs das Crônicas (~30 MB). Nada disso é usado pelo site (os dados de runtime ficam em `src/data/*`).
+- 📦 **`.vercelignore` novo**: exclui esse peso morto do deploy (não-destrutivo — os arquivos continuam no repositório). O bundle cai de ~490 MB para ~60 MB.
+- 🧹 **Submódulos-fantasma removidos**: `gemini-cli`, `hermes-agent` e `NawfalMotii79-PLFM_RADAR-…` eram gitlinks órfãos (sem `.gitmodules`) — causavam o aviso "Failed to fetch one or more git submodules". Eram pastas vazias e nada no código os importava (só havia menções de inspiração em comentários).
+- ⬆️ **Node fixado em `22.x`** no `package.json` (era `>=18`) — remove o aviso da Vercel sobre upgrade automático de major e torna o build reproduzível.
+- ✅ Verificado: `vite build` continua passando e as funções Python compilam; nenhum código de runtime busca os arquivos excluídos.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-deploy-fix`.
+
 ### Página piloto do redesign 3D imersivo (#195/#196)
 - 🧊 **`/home-3d` — Ponte de Comando 3D (preview)** nova: página **piloto** do redesign, **não-disruptiva** (não toca na `/home` atual; tem badge "PREVIEW" e link "↩ ver a Home atual"). Junta o que os dois issues pedem — 3D imersivo e interativo (#195) com fidelidade cinematográfica + organização de conteúdo estilo Steam (#196) — em **JS/CSS puro, zero dependência** (consistência técnica).
 - ✨ **Herói cinematográfico**: campo de partículas 3D em canvas (`hero3d.js`, perspectiva + parallax de mouse + constelação), emblema giratório em CSS 3D (anéis cyan/magenta), título em degradê com glow, HUD ao vivo (relógio + status) e CTAs.

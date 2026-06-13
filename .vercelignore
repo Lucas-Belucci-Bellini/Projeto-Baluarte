@@ -1,0 +1,32 @@
+# .vercelignore — o que NÃO subir no deploy da Vercel (issue #210).
+#
+# As funções Python (api/) estavam estourando o limite de 245 MB do bundle da
+# Lambda porque o builder empacotava o repositório inteiro — incluindo pastas
+# enormes de mídia/ferramentas e os PDFs das Crônicas. NADA aqui é usado pelo
+# build do site (Vite lê de src/, public/, index.html) nem pelas funções
+# serverless; tudo continua versionado no repositório, só não vai pro deploy.
+
+# --- Pastas pesadas que não fazem parte do site publicado ---
+Humanity always first/
+GitNexus-1.6.7/
+.obsidian/
+.smart-env/
+
+# --- Documentos-fonte arquivados (os dados de runtime estão em src/data/*) ---
+*.pdf
+Crônicas da Baluarte*.md
+Equipes ALFA*.md
+*.canvas
+
+# --- Submódulos-fantasma (gitlinks órfãos) ---
+gemini-cli
+hermes-agent
+NawfalMotii79-PLFM_RADAR-8cd5464cf8f141fc973e34434ebb3e46060f67cf
+
+# --- Auxiliares de desenvolvimento (não entram no build estático) ---
+backend/
+jarvis-python/
+reports/
+docs/
+historico/
+.github/
