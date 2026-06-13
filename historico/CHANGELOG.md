@@ -8,6 +8,15 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Página piloto do redesign 3D imersivo (#195/#196)
+- 🧊 **`/home-3d` — Ponte de Comando 3D (preview)** nova: página **piloto** do redesign, **não-disruptiva** (não toca na `/home` atual; tem badge "PREVIEW" e link "↩ ver a Home atual"). Junta o que os dois issues pedem — 3D imersivo e interativo (#195) com fidelidade cinematográfica + organização de conteúdo estilo Steam (#196) — em **JS/CSS puro, zero dependência** (consistência técnica).
+- ✨ **Herói cinematográfico**: campo de partículas 3D em canvas (`hero3d.js`, perspectiva + parallax de mouse + constelação), emblema giratório em CSS 3D (anéis cyan/magenta), título em degradê com glow, HUD ao vivo (relógio + status) e CTAs.
+- 🎚️ **Faixa de métricas reais** com contagem animada (Arsenal 251 · Equipes 26 · Arcos 24 · Capítulos 33 · Universos 21).
+- 🗂️ **Prateleiras estilo Steam** (scroll horizontal, cards com **tilt 3D no hover**) alimentadas por **dados reais**: Arsenal, Equipes de Elite (cor por equipe), Universos (ícone/cor) e Crônicas. Mais grade de **acesso rápido**.
+- ♿ **Leve e acessível**: respeita `prefers-reduced-motion`, pausa o canvas com a aba oculta, scroll-reveal das seções e limpeza de rAF/observers ao sair da página. O loop do herói se auto-dimensiona e se auto-encerra (imune a remontagem da página).
+- ✅ Verificado no navegador (Playwright): partículas desenhando, métricas reais, 4 prateleiras com 12 cards cada (M9 Beretta, ALFA "Vanguarda da Manhã", universo Baluarte…), parallax e reveal funcionando. Screenshots do herói e das prateleiras.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-home3d`.
+
 ### Painel de Machine Learning da Memória (#193/#194)
 - 📈 **`/aprendizado` — Machine Learning da Memória** nova (menu IA & Jarvis): painel onde dá pra **ver o aprendizado de máquina do site acontecer** sobre o banco de memórias (conversas + respostas + deliberações do conselho). Tudo roda no navegador e é **🔒 somente leitura** sobre a memória (como o #193 pede — ninguém altera o banco por aqui).
 - 🧩 **Assuntos descobertos sozinho** (`memory-ml.js` novo): **k-means não-supervisionado** sobre vetores TF-IDF (cosseno, init k-means++ determinístico) — o site lê as memórias e descobre os temas sem ninguém rotular. Controle deslizante de 2 a 8 assuntos.
