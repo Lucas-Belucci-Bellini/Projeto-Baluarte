@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --host",
-    "sync-cronicas": "node scripts/sync-cronicas.mjs && node scripts/gen-fanfic-from-docs.mjs && node scripts/gen-elites-rosters.mjs"
+    "sync-cronicas": "node scripts/sync-cronicas.mjs && node scripts/gen-fanfic-from-docs.mjs && node scripts/gen-elites-rosters.mjs",
+    "gen-symbols": "node scripts/gen-symbols.mjs",
+    "gen-codemap": "node scripts/gen-codemap.mjs"
   },
   "devDependencies": {
     "vite": "^5.4.10"
