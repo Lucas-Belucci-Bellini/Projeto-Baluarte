@@ -102,6 +102,24 @@
 .h3-badge { pointer-events: auto; font-family: var(--font-mono); font-size: 11px; padding: 4px 10px;
   border-radius: var(--radius-pill); }
 .h3-badge--preview { background: var(--color-magenta-soft); color: var(--color-magenta); border: 1px solid var(--color-magenta-edge); }
+.h3-badge--ver { background: var(--color-cyan-soft, rgba(0,240,255,0.12)); color: var(--color-cyan); border: 1px solid var(--color-cyan-edge); }
+.h3-badge--live { background: rgba(0,255,136,0.14); color: #00ff88; border: 0; }
+
+/* ---------- STATUS (vigilância + infra) ---------- */
+.h3-status { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--space-md);
+  padding: var(--space-lg, 24px) clamp(16px, 5vw, 60px) 0; }
+@media (max-width: 860px) { .h3-status { grid-template-columns: 1fr; } }
+.h3-status__col { background: var(--color-surface); border: var(--border-thin); border-radius: var(--radius-md); padding: var(--space-md); }
+.h3-status__head { display: flex; align-items: center; justify-content: space-between; }
+.h3-vig { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+.h3-vig__dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--color-text-muted); }
+.h3-vig__dot.is-on { background: #00ff88; box-shadow: 0 0 8px #00ff88; }
+.h3-vig__tag { flex: none; min-width: 58px; font-size: 11px; color: var(--color-cyan); }
+.h3-vig__msg { color: var(--color-text-secondary); }
+.h3-infra { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.h3-infra__k { font-size: 13px; color: var(--color-text-primary); }
+.h3-infra__v { font-size: 11px; }
+.h3-infra__ok { font-size: 10px; font-family: var(--font-mono); padding: 1px 8px; border-radius: var(--radius-pill); background: rgba(0,255,136,0.14); color: #00ff88; }
 
 /* ---------- MÉTRICAS ---------- */
 .h3-metrics { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;

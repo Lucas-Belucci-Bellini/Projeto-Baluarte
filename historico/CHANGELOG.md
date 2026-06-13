@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Redesign 3D promovido a Home oficial (#195/#196)
+- 🏠 **A `/home` agora é o visual 3D imersivo** (a pedido do operador — "promover pra Home oficial"). O herói cinematográfico (campo de partículas 3D + emblema giratório + título em degradê) substitui a home antiga, com saudação ao operador e CTAs para Ferramentas e J.A.R.V.I.S.
+- 🔭 **Conteúdo da home antiga integrado ao novo visual**: os painéis de **Vigilância** (log de eventos ao vivo) e **Infraestrutura** (status do sistema) foram redesenhados no estilo do herói, em vez de descartados — agora citam Git Nexus e ML.
+- 🗂️ Mantém as **prateleiras estilo Steam** (Arsenal/Equipes/Universos/Crônicas com tilt 3D), métricas reais com count-up e acesso rápido (agora com Git Nexus e ML no topo).
+- ♻️ **Limpeza**: a rota de preview `/home-3d` foi aposentada (vira alias da home, pra não quebrar links antigos), o item "Ponte 3D · preview" saiu do menu e o `home3d.js` foi removido (o código vive na `home.js`).
+- ✅ Verificado no navegador (Playwright): herói com partículas, sem badge de preview, métricas reais, Vigilância (5) + Infra (5) integradas, 4 prateleiras com 48 cards, alias `/home-3d` funcionando.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-home-oficial`.
+
 ### Git Nexus — núcleo unificado de código (#204/#194)
 - 🔗 **`/git-nexus` novo**: integração do GitNexus ao site, do jeito que **realmente roda na Vercel**. O GitNexus original é um servidor Node na porta 4747 (tree-sitter nativo, onnxruntime, LadybugDB) — não sobe num site estático, e a versão "WASM no navegador" que o README promete não existe no código. Então reimplementei os **conceitos** dele em **JS puro**: taxonomia de nós/arestas de código, **comunidades** (clusters não-supervisionados), **análise de impacto** (quem é afetado se um arquivo mudar) e **centralidade (PageRank)**.
 - 🧩 **Funde as 4 ferramentas** que viviam separadas, agora conversando pelo grafo: 🔬 Raio-X do Código (o grafo), 🧠 Memória do JARVIS (memórias ligadas a cada arquivo), 🕸️ Segundo Cérebro (conceitos) e 📈 Mini-LLM/ML (as comunidades são "assuntos do código" descobertos sozinho — o mesmo princípio do `/aprendizado`).

@@ -128,7 +128,8 @@ router.register('/conselho', lazy(() => import('./pages/conselho.js'), 'conselho
 router.register('/apis', lazy(() => import('./pages/apis.js'), 'apisPage'));
 router.register('/git-nexus', lazy(() => import('./pages/git-nexus.js'), 'gitNexusPage'));
 router.register('/aprendizado', lazy(() => import('./pages/aprendizado.js'), 'aprendizadoPage'));
-router.register('/home-3d', lazy(() => import('./pages/home3d.js'), 'home3dPage'));
+/* /home-3d foi promovido à home oficial (/) — alias para links antigos. */
+router.register('/home-3d', lazy(() => import('./pages/home.js'), 'homePage'));
 
 /* ==============================================================
  *  Todas as rotas acima são reais (sem placeholders). Fallback 404:
