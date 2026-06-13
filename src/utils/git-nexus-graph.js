@@ -107,20 +107,24 @@ export function createGraphView(canvas, { nodes, edges, comIdx, pr, onSelect } =
       ctx.lineWidth = active ? 1.4 : 0.5;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
     }
-    /* nós */
+    /* nós (com brilho) */
     for (const n of nodes) {
       const p = toScreen(P.get(n.id));
       const r = radius(n.id) * Math.min(1.4, scale + 0.4);
       const dim = hi && n.id !== hi && !(hiSet && hiSet.has(n.id));
-      ctx.globalAlpha = dim ? 0.18 : 1;
-      ctx.fillStyle = color(n.id);
+      const c = color(n.id);
+      ctx.globalAlpha = dim ? 0.16 : 1;
+      ctx.shadowColor = c;
+      ctx.shadowBlur = dim ? 0 : (n.id === hi ? 22 : Math.min(16, r * 1.6));
+      ctx.fillStyle = c;
       ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
       if (n.id === selectedId) { ctx.globalAlpha = 1; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); }
       /* rótulo dos mais centrais / do realçado */
       if (!dim && (r > 9 || n.id === hi)) {
-        ctx.globalAlpha = 1; ctx.fillStyle = '#cdd9ee';
+        ctx.globalAlpha = 1; ctx.fillStyle = '#dfe9fb';
         ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        ctx.fillText(n.label, p.x, p.y + r + 2);
+        ctx.fillText(n.label, p.x, p.y + r + 3);
       }
     }
     ctx.globalAlpha = 1;
