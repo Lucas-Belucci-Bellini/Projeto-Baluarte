@@ -8,6 +8,19 @@ aqui o que mudou.
 
 ## 2026-06-13
 
+### Redesign — polish do Git Nexus + Arsenal (#195/#204)
+- 🔗 **Git Nexus mais cinematográfico**: brilho (glow) nos nós do grafo, realce mais forte no hover, fundo do grafo com brilhos radiais + vinheta e título em degradê.
+- 🔫 **Arsenal alinhado ao redesign** (só visual, lógica intocada): título em degradê, linhas com glow e acento cyan no hover/seleção, painel de detalhe com fundo cyan e nome em degradê, abas em pílula.
+- 🖼️ Screenshots do Git Nexus enviados ao operador.
+- ✅ Verificado no navegador (Playwright): grafo com glow, Arsenal com 251 linhas e seleção realçada.
+
+### Redesign — Hub de Ferramentas (#195, página 1/N)
+- ⚙ **`/ferramentas` redesenhada** no estilo do redesign: título em degradê, busca proeminente, chips de categoria com **cor própria por categoria** e contagem, e os 51 cards com **acento colorido**, badges NOVO/PRONTO/ROADMAP e **tilt 3D no hover**. Os dados/rotas/busca foram preservados — só a camada visual mudou.
+- 🧭 **#195 segue aberto como guarda-chuva** do redesign (a pedido do operador): as páginas serão redesenhadas aos poucos, uma por PR. Esta é a primeira página de conteúdo depois da Home.
+- 🐛 Estado da página (grid/busca/filtro) virou **local por invocação** (era global — a página é instanciada 2x e o filtro atualizava o grid errado).
+- ✅ Verificado no navegador (Playwright): 51 cards, filtro cripto → 9, busca "morse" → 1, tilt no hover.
+- 🛡️ Backup: `backup/2026-06-13-pre-merge-ferramentas`.
+
 ### Redesign — rodada 2: atmosfera + 3D manipulável + scrollytelling (#195)
 - 🌆 **Grid de horizonte (synthwave / GTA-VI)** no herói: chão em perspectiva que recua até um horizonte com brilho, linhas "voando" em direção ao observador — fundo animado que dá profundidade cinematográfica (`hero3d.js`).
 - 🕹️ **Emblema 3D manipulável**: agora dá pra **arrastar para girar** o emblema, com inércia — ideia literal do #195 ("objetos 3D manipuláveis").

@@ -13,8 +13,21 @@
 .gn-layout { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-md); margin-bottom: var(--space-md); }
 @media (max-width: 900px) { .gn-layout { grid-template-columns: 1fr; } }
 
-.gn-graph { position: relative; background: var(--color-bg);
-  border: var(--border-thin); border-radius: var(--radius-md); overflow: hidden; min-height: 480px; }
+.page-gitnexus .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, #00f0ff 60%, #ff00aa 110%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.25));
+}
+.gn-graph { position: relative; overflow: hidden; min-height: 480px;
+  border: var(--border-thin); border-radius: var(--radius-md);
+  background:
+    radial-gradient(90% 70% at 72% 12%, rgba(0, 240, 255, 0.10), transparent 55%),
+    radial-gradient(80% 70% at 14% 92%, rgba(255, 0, 170, 0.10), transparent 55%),
+    #06080d; }
+/* vinheta sutil sobre o grafo */
+.gn-graph::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: radial-gradient(120% 100% at 50% 50%, transparent 62%, rgba(0,0,0,0.5) 100%); }
+.gn-canvas { position: relative; z-index: 2; }
 .gn-canvas { display: block; width: 100%; height: 520px; }
 @media (max-width: 900px) { .gn-canvas { height: 420px; } }
 .gn-graph__hint { position: absolute; left: 12px; bottom: 10px; font-size: 11px; pointer-events: none;

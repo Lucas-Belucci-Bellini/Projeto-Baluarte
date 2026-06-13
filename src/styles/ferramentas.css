@@ -1,0 +1,54 @@
+/* ===== /ferramentas — Hub de Ferramentas (redesign #195) ===== */
+
+.fh-header { margin-bottom: var(--space-md); }
+.fh-title { font-size: clamp(26px, 4vw, 40px); font-weight: 800; margin: 6px 0 4px;
+  background: linear-gradient(92deg, #e6f1ff, #00f0ff 70%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.fh-sub { color: var(--color-text-secondary); font-size: 14px; margin: 0; max-width: 70ch; }
+
+.fh-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.fh-search { flex: 1; min-width: 240px; padding: 11px 16px; font-size: 14px;
+  background: var(--color-surface); color: var(--color-text-primary);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-pill); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s; }
+.fh-search:focus { border-color: var(--color-cyan); box-shadow: 0 0 0 3px rgba(0,240,255,0.12); }
+.fh-count { font-size: 12px; color: var(--color-text-muted); white-space: nowrap; }
+
+.fh-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--space-md); }
+.fh-chip { --accent: #00f0ff; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font-size: 13px; padding: 6px 14px; border-radius: var(--radius-pill); color: var(--color-text-secondary);
+  background: var(--color-surface); border: 1px solid rgba(255,255,255,0.1); transition: all 0.18s; }
+.fh-chip:hover { border-color: var(--accent); color: var(--color-text-primary); }
+.fh-chip.is-active { background: color-mix(in srgb, var(--accent) 18%, transparent); border-color: var(--accent); color: #fff; }
+.fh-chip__n { font-family: var(--font-mono); font-size: 11px; opacity: 0.7; }
+
+.fh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+
+.fh-card {
+  --accent: #00f0ff; --rx: 0deg; --ry: 0deg;
+  position: relative; overflow: hidden; cursor: pointer; padding: 16px;
+  background: linear-gradient(165deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md);
+  transform: perspective(800px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.12s ease-out, box-shadow 0.2s, border-color 0.2s;
+}
+.fh-card:hover { border-color: var(--accent); box-shadow: 0 14px 38px rgba(0,0,0,0.5); }
+.fh-card.is-locked { opacity: 0.6; }
+.fh-card__glow { position: absolute; inset: 0; opacity: 0; transition: opacity 0.25s; pointer-events: none;
+  background: radial-gradient(130% 90% at 50% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 62%); }
+.fh-card:hover .fh-card__glow { opacity: 1; }
+
+.fh-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.fh-card__icon { font-size: 26px; color: var(--accent); line-height: 1; }
+.fh-card__badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+.fh-badge { font-family: var(--font-mono); font-size: 10px; padding: 2px 7px; border-radius: var(--radius-pill); }
+.fh-badge--novo { background: var(--color-cyan-soft, rgba(0,240,255,0.14)); color: var(--color-cyan); }
+.fh-badge--ready { background: rgba(0,255,136,0.14); color: #00ff88; }
+.fh-badge--soon { background: var(--color-magenta-soft, rgba(255,0,170,0.14)); color: var(--color-magenta); }
+
+.fh-card__title { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: var(--color-text-primary); }
+.fh-card__desc { font-size: 12.5px; line-height: 1.45; color: var(--color-text-muted); margin: 0 0 10px;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.fh-card__cat { font-size: 10px; letter-spacing: 0.12em; color: var(--accent); opacity: 0.8; }
+
+.fh-empty { grid-column: 1 / -1; text-align: center; padding: var(--space-xl, 48px) 0;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; }

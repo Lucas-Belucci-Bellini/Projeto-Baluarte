@@ -360,3 +360,38 @@
   border-color: var(--color-text-muted);
   background: rgba(147, 164, 191, 0.08);
 }
+
+/* ===== Polish cinematográfico do redesign (#195) — só visual, sobrepõe ===== */
+.page-arsenal .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, #00f0ff 60%, #ff00aa 115%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.25));
+}
+.page-arsenal .arsenal-row {
+  border: 1px solid rgba(255,255,255,0.07);
+  background: linear-gradient(165deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
+  transition: border-color 0.18s, box-shadow 0.2s, transform 0.1s;
+}
+.page-arsenal .arsenal-row:hover {
+  border-color: var(--color-cyan); transform: translateX(3px);
+  box-shadow: -3px 0 0 0 var(--color-cyan), 0 10px 26px rgba(0,0,0,0.4);
+}
+.page-arsenal .arsenal-row.is-active {
+  border-color: var(--color-cyan);
+  box-shadow: -3px 0 0 0 var(--color-cyan), 0 0 0 1px rgba(0,240,255,0.25) inset;
+  background: linear-gradient(165deg, var(--color-surface-2, #16263b) 0%, var(--color-surface) 100%);
+}
+.page-arsenal .arsenal-detail {
+  background:
+    radial-gradient(80% 60% at 80% 0%, rgba(0,240,255,0.07), transparent 60%),
+    var(--color-surface);
+  border: 1px solid rgba(0,240,255,0.14); border-radius: var(--radius-md);
+}
+.page-arsenal .arsenal-detail__name {
+  background: linear-gradient(92deg, #e6f1ff, #00f0ff 90%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.page-arsenal .arsenal-tabs .arsenal-tab,
+.page-arsenal .arsenal-tabs button {
+  border-radius: var(--radius-pill);
+}
