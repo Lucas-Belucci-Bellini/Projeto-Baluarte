@@ -70,9 +70,12 @@
   border-color: var(--color-cyan-edge); color: #fff;
 }
 
-/* emblema 3D */
+/* emblema 3D — manipulável (arraste para girar): --gx/--gy somam à inclinação
+   do parallax do mouse (--px/--py herdados do .h3-hero). */
 .h3-emblem { position: relative; width: clamp(180px, 26vw, 320px); aspect-ratio: 1; transform-style: preserve-3d;
-  transform: rotateX(calc(var(--py) * 18deg)) rotateY(calc(var(--px) * -22deg)); transition: transform 0.2s ease-out; }
+  transform: rotateX(calc(var(--py, 0) * 18deg + var(--gx, 0deg))) rotateY(calc(var(--px, 0) * -22deg + var(--gy, 0deg)));
+  transition: transform 0.08s linear; cursor: grab; touch-action: none; }
+.h3-emblem:active { cursor: grabbing; transition: none; }
 .h3-emblem__core {
   position: absolute; inset: 22%; display: grid; place-items: center;
   font-size: clamp(48px, 9vw, 110px); color: var(--color-cyan);

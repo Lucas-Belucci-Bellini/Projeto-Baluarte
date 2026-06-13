@@ -22,11 +22,12 @@
 const REDUCED = typeof matchMedia !== 'undefined'
   && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function createHeroField(canvas, { accent = '#00f0ff', accent2 = '#ff00aa', density = 1 } = {}) {
+export function createHeroField(canvas, { accent = '#00f0ff', accent2 = '#ff00aa', density = 1, grid = true } = {}) {
   const ctx = canvas.getContext('2d');
   let raf = 0, running = false, dead = false, w = 0, h = 0, dpr = 1;
   let everConnected = false, waitFrames = 0;
   let particles = [];
+  let tt = 0; // tempo (anima o grid de horizonte)
   const pointer = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
   const FOCAL = 360;
 
@@ -59,13 +60,50 @@ export function createHeroField(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
     return { sx: w / 2 + (p.x + ox) * s, sy: h / 2 + (p.y + oy) * s, s };
   }
 
+  /* grid de horizonte (synthwave / GTA-VI): chão em perspectiva que recua até
+     um horizonte com brilho. Linhas horizontais "voam" em direção ao observador. */
+  function drawGrid(ox) {
+    const horizon = h * 0.66;
+    const vanish = w / 2 + ox * 1.2;     // ponto de fuga acompanha o parallax
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    /* brilho do horizonte */
+    const glow = ctx.createLinearGradient(0, horizon - 40, 0, horizon + 4);
+    glow.addColorStop(0, 'rgba(255,0,170,0)');
+    glow.addColorStop(1, 'rgba(255,0,170,0.22)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, horizon - 40, w, 44);
+
+    ctx.strokeStyle = accent; ctx.lineWidth = 1;
+    /* linhas horizontais com espaçamento em perspectiva, rolando com o tempo */
+    const ROWS = 16, period = 1;
+    for (let i = 0; i < ROWS; i++) {
+      const f = ((i + (tt * 0.012) % 1) / ROWS);     // 0 (horizonte) → 1 (perto)
+      const y = horizon + Math.pow(f, 2.2) * (h - horizon);
+      if (y <= horizon || y > h) continue;
+      ctx.globalAlpha = Math.min(0.32, f * 0.4);
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+    /* linhas verticais convergindo ao ponto de fuga */
+    const COLS = 14;
+    for (let i = -COLS; i <= COLS; i++) {
+      const xBottom = vanish + (i / COLS) * w * 1.4;
+      ctx.globalAlpha = 0.14;
+      ctx.beginPath(); ctx.moveTo(vanish, horizon); ctx.lineTo(xBottom, h); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
   function paint() {
     pointer.x += (pointer.tx - pointer.x) * 0.06;
     pointer.y += (pointer.ty - pointer.y) * 0.06;
     const ox = (pointer.x - 0.5) * 140;
     const oy = (pointer.y - 0.5) * 140;
+    tt += 1;
 
     ctx.clearRect(0, 0, w, h);
+    if (grid) drawGrid(ox);
     const pts = [];
     for (const p of particles) {
       p.z -= 0.45;
