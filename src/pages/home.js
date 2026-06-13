@@ -1,224 +1,273 @@
 /**
- * Home — Ponte de Comando.
- * Cards de status do sistema, métricas, vigilância e acesso rápido.
+ * Home — Ponte de Comando (redesign 3D imersivo, promovido a oficial nos
+ * issues #195/#196). Substitui a home antiga: herói cinematográfico com campo
+ * de partículas 3D + emblema giratório, métricas reais, prateleiras estilo
+ * Steam com dados reais, status do sistema (vigilância + infra) no novo visual
+ * e acesso rápido.
+ *
+ * Leve e acessível: respeita prefers-reduced-motion, pausa o canvas com a aba
+ * oculta e limpa tudo (rAF/observers) ao trocar de rota. O herói usa hero3d.js.
  */
 
-import { h, formatNumber } from '../utils/helpers.js';
+import { h, empty, formatNumber } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
+import { createHeroField } from '../utils/hero3d.js';
+import { ARSENAL, TOTAL as ARSENAL_TOTAL } from '../data/arsenal.js';
+import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
+import { ARCS, ARCS_TOTAL, CHAPTERS_TOTAL } from '../data/cronicas.js';
+import { UNIVERSOS, TOTAL_UNIVERSOS } from '../data/universos.js';
+import { VERSION } from '../data/version.js';
 
-const QUICK_LINKS = [
-  { label: 'Hub de Ferramentas', path: '/ferramentas', icon: '⚙', desc: '35+ ferramentas técnicas' },
-  { label: 'Biblioteca', path: '/biblioteca', icon: '◫', desc: 'Crônicas da Baluarte' },
-  { label: 'Arsenal', path: '/arsenal', icon: '⌖', desc: '159 armas + veículos' },
-  { label: 'Elites', path: '/elites', icon: '◆', desc: 'Equipes ALFA → ZULU' },
-  { label: 'Dossiê de Forças', path: '/dossie', icon: '▣', desc: 'A nave, equipes e frotas' },
-  { label: 'Radar do Câmbio', path: '/dolar', icon: '💹', desc: 'Dólar, euro e bitcoin' },
-  { label: 'J.A.R.V.I.S.', path: '/jarvis', icon: '◉', desc: 'Assistente de IA' },
-  { label: 'Sobre o Projeto', path: '/sobre', icon: '◇', desc: 'História e mapa do site' }
+const REDUCED = typeof matchMedia !== 'undefined'
+  && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ===== Hero ===== */
+
+function buildHero(onCleanup, operador) {
+  const canvas = h('canvas', { className: 'h3-hero__canvas' });
+
+  const emblem = h('div', { className: 'h3-emblem' },
+    h('div', { className: 'h3-emblem__ring h3-emblem__ring--a' }),
+    h('div', { className: 'h3-emblem__ring h3-emblem__ring--b' }),
+    h('div', { className: 'h3-emblem__core' }, '⬡'));
+
+  const hudClock = h('span', { className: 'h3-hud__clock u-mono' }, '--:--:--');
+  const tick = () => { hudClock.textContent = new Date().toLocaleTimeString('pt-BR'); };
+  tick();
+  if (!REDUCED) { const t = setInterval(tick, 1000); onCleanup(() => clearInterval(t)); }
+
+  const layers = h('div', { className: 'h3-hero__layers' },
+    h('div', { className: 'h3-hero__layer h3-hero__layer--back' }, emblem),
+    h('div', { className: 'h3-hero__layer h3-hero__layer--front' },
+      h('div', { className: 'h3-hero__kicker u-mono' }, 'NÚCLEO INFINITY DREADNOUGHT'),
+      h('h1', { className: 'h3-hero__title' },
+        h('span', { className: 'h3-hero__title-main' }, 'BALUARTE'),
+        h('span', { className: 'h3-hero__title-sub' }, 'MARK XIII')),
+      h('p', { className: 'h3-hero__tagline' },
+        'Bem-vindo, operador ', h('span', { className: 'u-text-cyan' }, operador),
+        '. Plataforma narrativa e tática — onde os deuses sangram.'),
+      h('div', { className: 'h3-hero__cta' },
+        h('button', { className: 'h3-btn h3-btn--primary', onclick: () => router.navigate('/ferramentas') }, '⚙ Hub de Ferramentas'),
+        h('button', { className: 'h3-btn', onclick: () => router.navigate('/jarvis') }, '◉ Falar com o J.A.R.V.I.S.'))));
+
+  const hud = h('div', { className: 'h3-hud' },
+    h('div', { className: 'h3-hud__corner h3-hud__corner--tl' },
+      h('span', { className: 'h3-badge h3-badge--ver' }, '⬡ MARK XIII · v' + VERSION)),
+    h('div', { className: 'h3-hud__corner h3-hud__corner--tr' },
+      hudClock,
+      h('span', { className: 'h3-hud__dot' }, '● NÚCLEO ONLINE')));
+
+  const hero = h('div', { className: 'h3-hero' }, canvas, hud, layers);
+
+  const fx = createHeroField(canvas, { accent: '#00f0ff', accent2: '#ff00aa' });
+  fx.start();
+  onCleanup(() => fx.destroy());
+
+  if (!REDUCED) {
+    const onMove = (e) => {
+      const r = hero.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      hero.style.setProperty('--px', (x - 0.5).toFixed(3));
+      hero.style.setProperty('--py', (y - 0.5).toFixed(3));
+      fx.setPointer(x, y);
+    };
+    hero.addEventListener('pointermove', onMove);
+    onCleanup(() => hero.removeEventListener('pointermove', onMove));
+  }
+  return hero;
+}
+
+/* ===== Métricas (count-up) ===== */
+
+function countUp(el, target) {
+  if (REDUCED) { el.textContent = String(target); return; }
+  const dur = 900, t0 = performance.now();
+  const stepFn = (t) => {
+    const k = Math.min(1, (t - t0) / dur);
+    el.textContent = String(Math.round(target * (1 - Math.pow(1 - k, 3))));
+    if (k < 1) requestAnimationFrame(stepFn);
+  };
+  requestAnimationFrame(stepFn);
+}
+
+function buildMetrics(onCleanup) {
+  const metrics = [
+    { v: ARSENAL_TOTAL, l: 'Arsenal', path: '/arsenal' },
+    { v: TOTAL_EQUIPES, l: 'Equipes de elite', path: '/elites' },
+    { v: ARCS_TOTAL, l: 'Arcos nas Crônicas', path: '/biblioteca' },
+    { v: CHAPTERS_TOTAL, l: 'Capítulos', path: '/biblioteca' },
+    { v: TOTAL_UNIVERSOS, l: 'Universos', path: '/universo' }
+  ];
+  const els = [];
+  const strip = h('div', { className: 'h3-metrics' },
+    ...metrics.map((m) => {
+      const num = h('div', { className: 'h3-metric__v u-mono' }, '0');
+      els.push([num, m.v]);
+      return h('button', { className: 'h3-metric', onclick: () => router.navigate(m.path) },
+        num, h('div', { className: 'h3-metric__l' }, m.l));
+    }),
+    h('div', { className: 'h3-metric h3-metric--ver' },
+      h('div', { className: 'h3-metric__v u-mono u-text-magenta' }, 'v' + VERSION),
+      h('div', { className: 'h3-metric__l' }, 'versão')));
+
+  if (typeof IntersectionObserver !== 'undefined') {
+    const io = new IntersectionObserver((ents, obs) => {
+      for (const e of ents) if (e.isIntersecting) { els.forEach(([el, v]) => countUp(el, v)); obs.disconnect(); }
+    }, { threshold: 0.4 });
+    io.observe(strip);
+    onCleanup(() => io.disconnect());
+  } else els.forEach(([el, v]) => { el.textContent = String(v); });
+  return strip;
+}
+
+/* ===== Status do sistema (vigilância + infra, no novo visual) ===== */
+
+function buildStatus() {
+  const vigilancia = [
+    { tag: 'NÚCLEO', msg: `Mark XIII estável — v${VERSION}.`, on: true },
+    { tag: 'ROUTER', msg: 'SPA hash router — todas as rotas operacionais.', on: true },
+    { tag: 'JARVIS', msg: 'J.A.R.V.I.S. online — modos local/servidor/Claude.', on: true },
+    { tag: 'NEXUS', msg: 'Git Nexus — grafo de código + comunidades + ML.', on: true },
+    { tag: 'PWA', msg: 'Service Worker ativo — funciona offline.', on: true }
+  ];
+  const infra = [
+    ['Frontend', 'JS ES2022 puro + Vite 5'],
+    ['Inteligência', 'J.A.R.V.I.S. + Conselho de IAs'],
+    ['Persistência', 'localStorage + IndexedDB'],
+    ['Aprendizado', 'ML da Memória + Git Nexus'],
+    ['Deploy', 'Vercel — estático + funções Python']
+  ];
+
+  return h('section', { className: 'h3-status h3-reveal' },
+    h('div', { className: 'h3-status__col' },
+      h('div', { className: 'h3-status__head' },
+        h('h2', { className: 'h3-shelf__title' }, '⌖ Vigilância'),
+        h('span', { className: 'h3-badge h3-badge--live' }, '● AO VIVO')),
+      ...vigilancia.map((e) => h('div', { className: 'h3-vig' },
+        h('span', { className: 'h3-vig__dot' + (e.on ? ' is-on' : '') }),
+        h('span', { className: 'h3-vig__tag u-mono' }, e.tag),
+        h('span', { className: 'h3-vig__msg' }, e.msg)))),
+    h('div', { className: 'h3-status__col' },
+      h('h2', { className: 'h3-shelf__title' }, '◈ Infraestrutura'),
+      ...infra.map(([k, v]) => h('div', { className: 'h3-infra' },
+        h('span', { className: 'h3-infra__k' }, k),
+        h('span', { className: 'h3-infra__v u-mono u-text-muted' }, v),
+        h('span', { className: 'h3-infra__ok' }, 'OK')))));
+}
+
+/* ===== Prateleiras estilo Steam ===== */
+
+function tiltCard(card) {
+  if (REDUCED) return card;
+  const onMove = (e) => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.setProperty('--rx', (-y * 10).toFixed(2) + 'deg');
+    card.style.setProperty('--ry', (x * 12).toFixed(2) + 'deg');
+  };
+  const reset = () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); };
+  card.addEventListener('pointermove', onMove);
+  card.addEventListener('pointerleave', reset);
+  return card;
+}
+
+function shelf(title, subtitle, cards, morePath) {
+  return h('section', { className: 'h3-shelf h3-reveal' },
+    h('div', { className: 'h3-shelf__head' },
+      h('div', null,
+        h('h2', { className: 'h3-shelf__title' }, title),
+        subtitle && h('p', { className: 'h3-shelf__sub u-text-muted' }, subtitle)),
+      morePath && h('button', { className: 'h3-shelf__more', onclick: () => router.navigate(morePath) }, 'ver tudo →')),
+    h('div', { className: 'h3-shelf__track' }, ...cards));
+}
+
+function arsenalCard(it) {
+  return tiltCard(h('div', { className: 'h3-card h3-card--arsenal', onclick: () => router.navigate('/arsenal') },
+    h('div', { className: 'h3-card__glow' }),
+    h('div', { className: 'h3-card__cat u-mono' }, (it.category || '').toUpperCase()),
+    h('div', { className: 'h3-card__name' }, it.name),
+    h('div', { className: 'h3-card__meta u-text-muted' }, [it.origin, it.year, it.caliber].filter(Boolean).join(' · '))));
+}
+function equipeCard(e) {
+  return tiltCard(h('div', { className: 'h3-card h3-card--equipe', style: { '--accent': e.color || '#00f0ff' }, onclick: () => router.navigate('/elites') },
+    h('div', { className: 'h3-card__glow' }),
+    h('div', { className: 'h3-card__code u-mono' }, e.code),
+    h('div', { className: 'h3-card__name' }, e.name),
+    h('div', { className: 'h3-card__meta u-text-muted' }, e.specialty || ''),
+    h('span', { className: 'h3-card__status' + (e.status === 'ativa' ? ' is-on' : '') }, e.status || '—')));
+}
+function universoCard(u) {
+  return tiltCard(h('div', { className: 'h3-card h3-card--universo', style: { '--accent': u.color || '#00f0ff' }, onclick: () => router.navigate('/universo') },
+    h('div', { className: 'h3-card__glow' }),
+    h('div', { className: 'h3-card__icon' }, u.icon || '◇'),
+    h('div', { className: 'h3-card__name' }, u.name),
+    h('div', { className: 'h3-card__meta u-text-muted' }, u.tagline || '')));
+}
+function arcoCard(a) {
+  return tiltCard(h('div', { className: 'h3-card h3-card--arco', onclick: () => router.navigate('/biblioteca') },
+    h('div', { className: 'h3-card__glow' }),
+    h('div', { className: 'h3-card__cat u-mono' }, a.universe || 'CRÔNICAS'),
+    h('div', { className: 'h3-card__name' }, a.title),
+    h('div', { className: 'h3-card__meta u-text-muted' }, (a.synopsis || '').slice(0, 90))));
+}
+
+/* ===== Acesso rápido ===== */
+
+const LAUNCH = [
+  { icon: '🔗', label: 'Git Nexus', path: '/git-nexus' },
+  { icon: '◉', label: 'J.A.R.V.I.S.', path: '/jarvis' },
+  { icon: '📈', label: 'ML da Memória', path: '/aprendizado' },
+  { icon: '⚙', label: 'Ferramentas', path: '/ferramentas' },
+  { icon: '⌨', label: 'Editor', path: '/editor' },
+  { icon: '◫', label: 'Biblioteca', path: '/biblioteca' },
+  { icon: '💹', label: 'Câmbio', path: '/dolar' },
+  { icon: '◇', label: 'Sobre', path: '/sobre' }
 ];
 
-function metricCard(label, value, trend, trendClass = 'u-text-success', accent = 'card') {
-  return h(
-    'div',
-    { className: `card ${accent} metric-card anim-fade-in-up` },
-    h('div', { className: 'metric-card__label' }, label),
-    h('div', { className: 'metric-card__value' }, value),
-    trend &&
-      h(
-        'div',
-        { className: `metric-card__trend ${trendClass}` },
-        h('span', { className: 'status-dot status-dot--online' }),
-        trend
-      )
-  );
+function buildLaunch() {
+  return h('section', { className: 'h3-launch h3-reveal' },
+    h('h2', { className: 'h3-shelf__title' }, 'Acesso rápido'),
+    h('div', { className: 'h3-launch__grid' },
+      ...LAUNCH.map((l) => tiltCard(h('button', { className: 'h3-tile', onclick: () => router.navigate(l.path) },
+        h('span', { className: 'h3-tile__icon' }, l.icon),
+        h('span', { className: 'h3-tile__label' }, l.label))))));
 }
 
-function quickCard(link) {
-  return h(
-    'div',
-    {
-      className: 'card card--interactive tool-card anim-fade-in-up',
-      'data-status': 'ready',
-      onclick: () => router.navigate(link.path)
-    },
-    h(
-      'div',
-      { className: 'tool-card__head' },
-      h('div', { className: 'tool-card__icon' }, link.icon),
-      h('span', { className: 'badge badge--success' }, 'PRONTO')
-    ),
-    h('h3', { className: 'tool-card__title' }, link.label),
-    h('p', { className: 'tool-card__desc' }, link.desc),
-    h('div', { className: 'tool-card__meta' }, 'Disponível agora')
-  );
-}
-
-function buildBanner() {
-  return h(
-    'div',
-    { className: 'card card--magenta home-build anim-fade-in' },
-    h('div', { className: 'home-build__badge' }, '⚠ v1.0.0 · EM CONSTRUÇÃO'),
-    h(
-      'div',
-      { className: 'home-build__body' },
-      h('p', { className: 'home-build__text' },
-        'O Baluarte chegou à v1.0.0 — sua primeira versão completa, entregue em ' +
-        '21 fases. Ainda assim, o projeto segue em construção: novas versões ' +
-        'trarão mais conteúdo. As fases são snapshots do caminho percorrido.'),
-      h('button', {
-        className: 'btn btn--primary btn--sm',
-        onclick: () => router.navigate('/sobre')
-      }, '◇ Conhecer a história do projeto')
-    )
-  );
-}
-
-function vigilanciaPanel() {
-  const events = [
-    { time: 'v1.0.0', tag: 'NÚCLEO', msg: 'Mark XIII estável — 21 fases entregues.', cls: 'u-text-cyan' },
-    { time: 'rotas', tag: 'ROUTER', msg: 'SPA hash router com 31 rotas ativas.', cls: 'u-text-success' },
-    { time: 'IA', tag: 'JARVIS', msg: 'J.A.R.V.I.S. online — 4 modos operacionais.', cls: 'u-text-success' },
-    { time: 'IA', tag: 'MARK 11', msg: 'IA Proprietária — sistema de Skills carregado.', cls: 'u-text-success' },
-    { time: 'PWA', tag: 'OFFLINE', msg: 'Service Worker ativo — site funciona offline.', cls: 'u-text-success' },
-    { time: 'lore', tag: 'CRÔNICAS', msg: 'Onde os Deuses Sangram — saga em 4 partes na Biblioteca.', cls: 'u-text-cyan' }
-  ];
-
-  const list = h(
-    'ul',
-    { style: { display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'var(--font-mono)', fontSize: '12px' } },
-    ...events.map((ev) =>
-      h(
-        'li',
-        { style: { display: 'flex', gap: '12px', alignItems: 'baseline' } },
-        h('span', { className: 'u-text-muted', style: { minWidth: '46px' } }, ev.time),
-        h('span', { className: `badge ${ev.cls === 'u-text-cyan' ? 'badge--cyan' : 'badge--success'}` }, ev.tag),
-        h('span', { style: { color: 'var(--color-text-secondary)' } }, ev.msg)
-      )
-    )
-  );
-
-  return h(
-    'div',
-    { className: 'card card--magenta anim-fade-in-up' },
-    h(
-      'div',
-      { className: 'card__header' },
-      h('h3', { className: 'card__title' }, '⌖ Vigilância — log de eventos'),
-      h('span', { className: 'badge badge--magenta anim-pulse-magenta' }, 'AO VIVO')
-    ),
-    list
-  );
-}
-
-function statusInfraPanel() {
-  const items = [
-    { label: 'Frontend', value: 'JS ES2022 puro + Vite 5', status: 'OK', cls: 'badge--success' },
-    { label: 'Roteamento', value: 'SPA hash router · 31 rotas', status: 'OK', cls: 'badge--success' },
-    { label: 'Persistência', value: 'localStorage + IndexedDB', status: 'OK', cls: 'badge--success' },
-    { label: 'PWA / Service Worker', value: 'Offline-first ativo', status: 'OK', cls: 'badge--success' },
-    { label: 'Inteligência', value: 'J.A.R.V.I.S. + IA Mark 11', status: 'ONLINE', cls: 'badge--cyan' }
-  ];
-
-  const rows = items.map((item) =>
-    h(
-      'div',
-      {
-        style: {
-          display: 'grid',
-          gridTemplateColumns: '1fr auto',
-          gap: '12px',
-          padding: '8px 0',
-          borderBottom: 'var(--border-thin)',
-          alignItems: 'center'
-        }
-      },
-      h(
-        'div',
-        null,
-        h('div', { style: { fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' } }, item.label),
-        h('div', { style: { fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' } }, item.value)
-      ),
-      h('span', { className: `badge ${item.cls}` }, item.status)
-    )
-  );
-
-  return h(
-    'div',
-    { className: 'card anim-fade-in-up' },
-    h(
-      'div',
-      { className: 'card__header' },
-      h('h3', { className: 'card__title' }, '◈ Infraestrutura'),
-      h('span', { className: 'badge badge--cyan' }, 'MARK XIII')
-    ),
-    ...rows
-  );
-}
+/* ===== Página ===== */
 
 export function homePage() {
-  const user = appState.get('user') || { name: 'Operador' };
+  const cleanups = [];
+  const onCleanup = (fn) => cleanups.push(fn);
+  const operador = (appState.get('user') || { name: 'Operador' }).name;
 
-  return h(
-    'div',
-    { className: 'page-home' },
-    h(
-      'div',
-      { className: 'page-header anim-fade-in' },
-      h(
-        'div',
-        { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'),
-        h('span', null, '›'),
-        h('span', null, 'PONTE DE COMANDO')
-      ),
-      h('h1', { className: 'page-header__title' }, 'Ponte de Comando'),
-      h(
-        'p',
-        { className: 'page-header__description' },
-        'Bem-vindo, operador ',
-        h('strong', { className: 'u-text-cyan' }, user.name),
-        '. Status do Mark XIII em tempo real. Use o menu lateral ou os cards abaixo para navegar.'
-      )
-    ),
+  const page = h('div', { className: 'page-home3d' });
+  page.appendChild(buildHero(onCleanup, operador));
+  page.appendChild(buildMetrics(onCleanup));
+  page.appendChild(buildStatus());
 
-    buildBanner(),
+  page.appendChild(h('div', { className: 'h3-shelves' },
+    shelf('🔫 Arsenal em destaque', `${formatNumber(ARSENAL_TOTAL)} armas e veículos reais por categoria`, ARSENAL.slice(0, 12).map(arsenalCard), '/arsenal'),
+    shelf('◆ Equipes de Elite', `${TOTAL_EQUIPES} esquadrões do alfabeto OTAN`, EQUIPES.slice(0, 12).map(equipeCard), '/elites'),
+    shelf('🌌 Universos', `${TOTAL_UNIVERSOS} mundos das Crônicas`, UNIVERSOS.slice(0, 12).map(universoCard), '/universo'),
+    shelf('📖 Crônicas — Onde os Deuses Sangram', `${ARCS_TOTAL} arcos · ${CHAPTERS_TOTAL} capítulos`, ARCS.slice(0, 12).map(arcoCard), '/biblioteca')));
+  page.appendChild(buildLaunch());
 
-    /* Métricas */
-    h(
-      'div',
-      { className: 'status-grid' },
-      metricCard('VERSÃO', 'v1.0.0', '21 / 21 fases entregues', 'u-text-cyan', 'card--magenta'),
-      metricCard('ROTAS ATIVAS', formatNumber(31), 'todas operacionais'),
-      metricCard('FERRAMENTAS', formatNumber(35), 'em 7 categorias'),
-      metricCard('UPTIME NÚCLEO', '∞', 'sessão ativa', 'u-text-cyan')
-    ),
+  /* scroll-reveal */
+  if (typeof IntersectionObserver !== 'undefined' && !REDUCED) {
+    const io = new IntersectionObserver((ents) => {
+      for (const e of ents) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    }, { threshold: 0.08 });
+    requestAnimationFrame(() => page.querySelectorAll('.h3-reveal').forEach((el) => io.observe(el)));
+    onCleanup(() => io.disconnect());
+  } else requestAnimationFrame(() => page.querySelectorAll('.h3-reveal').forEach((el) => el.classList.add('is-in')));
 
-    /* Acesso rápido */
-    h(
-      'div',
-      { className: 'section-header' },
-      h('h2', { className: 'section-header__title' }, 'Acesso rápido'),
-      h('span', { className: 'section-header__count' }, `${QUICK_LINKS.length} módulos`)
-    ),
-    h(
-      'div',
-      { className: 'quick-grid', style: { marginBottom: '32px' } },
-      ...QUICK_LINKS.map(quickCard)
-    ),
+  if (typeof MutationObserver !== 'undefined') {
+    const mo = new MutationObserver(() => {
+      if (!document.contains(page)) { cleanups.splice(0).forEach((fn) => { try { fn(); } catch {} }); mo.disconnect(); }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
 
-    /* Vigilância + Infra */
-    h(
-      'div',
-      {
-        style: {
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-          gap: 'var(--space-md)'
-        }
-      },
-      vigilanciaPanel(),
-      statusInfraPanel()
-    )
-  );
+  return page;
 }
