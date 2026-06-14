@@ -8,6 +8,15 @@ aqui o que mudou.
 
 ## 2026-06-14
 
+### App desktop (Baluarte Launcher) — M0: esqueleto Electron + auto-update (#222)
+- 🚀 **Novo diretório `desktop/`**: o começo do **launcher nativo** em Electron, o caminho pra rodar as versões pesadas que o site estático não roda (o motor real do GitNexus em `GitNexus-1.6.7/` é Node nativo — tree-sitter, LadybugDB — e não cabe no Vercel). Plano completo no RFC da issue **#222**.
+- 🌐 **Conexão com a web**: a janela carrega a **mesma UI Vite da produção** (`projeto-baluarte.vercel.app`) — o deploy web já é o canal de atualização instantâneo da interface. **Fallback offline** embutido (`../dist` → `resources/web`, e `offline.html` em último caso).
+- 🔄 **Auto-update da casca**: `electron-updater` apontando pras **GitHub Releases**; workflow `desktop-release.yml` builda Win/Mac/Linux e publica os instaladores numa tag `desktop-v*`. Loop: `build → tag → instalador na Release → app se atualiza sozinho`.
+- 🔒 **Segurança desde o M0**: `contextIsolation`, sem `nodeIntegration`, sandbox, navegação/links presos às origens confiáveis. `window.baluarte.native` deixa a UI detectar quando roda dentro do launcher (pro "modo nativo" futuro).
+- 🎨 Ícone arc-reactor (ciano/magenta) gerado sem dependência (`build/make-icon.mjs`).
+- 📦 `desktop/` excluído do deploy Vercel (`.vercelignore`); runtime dep (`electron-updater`) sem vulnerabilidades — os alertas do `npm audit` são todos do toolchain de build (electron-builder), que não vai pro app.
+- 🛡️ Backup: `backup/2026-06-14-pre-merge-desktop-m0`.
+
 ### Home — herói 3D imersivo em WebGL (#195)
 - 🌌 **Hero WebGL**: a home agora abre com uma cena 3D de verdade — **nebulosa volumétrica de 3.600 partículas** (disco galáctico + halo) renderizada em **WebGL 1.0 puro, sem dependência**, com *blending* aditivo (brilho real) nas cores do projeto (ciano/magenta/branco).
 - 💠 **Núcleo arc-reactor estilo JARVIS**: 5 anéis 3D de orbes luminosos girando em eixos diferentes + ponto central pulsante no miolo da nebulosa. (Render como *point-sprites* porque `gl.LINES` com espessura é ignorado na maioria das GPUs — assim o núcleo lê nítido sobre a nebulosa.)
