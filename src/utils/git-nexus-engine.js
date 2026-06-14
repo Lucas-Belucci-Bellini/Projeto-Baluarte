@@ -155,6 +155,78 @@ export function graphMetrics(graph, pr, communities) {
   };
 }
 
+/* ===== Ferramentas estilo GitNexus (Console do Nexus) ===== */
+
+/** context(X): definição + quem chama (callers) + o que chama (callees). */
+export function nexusContext(graph, id) {
+  const node = graph.index.get(id);
+  if (!node) return null;
+  return {
+    node,
+    callers: [...(graph.inc.get(id) || [])],   // quem importa/chama X
+    callees: [...(graph.out.get(id) || [])]    // o que X importa/chama
+  };
+}
+
+/** Alcançabilidade genérica: dir 'up' usa inc (quem depende), 'down' usa out. */
+function reach(graph, id, dir, maxDepth = 14) {
+  const adj = dir === 'down' ? graph.out : graph.inc;
+  const direct = new Set(adj.get(id) || []);
+  const seen = new Set();
+  const queue = [[id, 0]];
+  while (queue.length) {
+    const [cur, d] = queue.shift();
+    if (d >= maxDepth) continue;
+    for (const nx of adj.get(cur) || []) {
+      if (!seen.has(nx) && nx !== id) { seen.add(nx); queue.push([nx, d + 1]); }
+    }
+  }
+  return { affected: [...seen], direct: [...direct] };
+}
+
+/** Classifica o risco pelo raio de explosão (estilo GitNexus: ALTO/CRÍTICO). */
+export function riskLevel(n) {
+  if (n <= 0) return { label: 'NENHUM', cls: 'safe' };
+  if (n <= 3) return { label: 'BAIXO', cls: 'low' };
+  if (n <= 10) return { label: 'MÉDIO', cls: 'mid' };
+  if (n <= 30) return { label: 'ALTO', cls: 'high' };
+  return { label: 'CRÍTICO', cls: 'crit' };
+}
+
+/** impact(X, dir): raio de explosão + nível de risco. up=quem quebra, down=o que usa. */
+export function nexusImpact(graph, id, dir = 'up') {
+  const r = reach(graph, id, dir === 'down' ? 'down' : 'up');
+  return { ...r, risk: riskLevel(r.affected.length) };
+}
+
+/** path(A, B): menor caminho de chamadas/imports de A até B (BFS dirigido). */
+export function nexusPath(graph, a, b) {
+  if (a === b) return [a];
+  const prev = new Map([[a, null]]);
+  const queue = [a];
+  while (queue.length) {
+    const cur = queue.shift();
+    for (const nx of graph.out.get(cur) || []) {
+      if (!prev.has(nx)) {
+        prev.set(nx, cur);
+        if (nx === b) {
+          const path = [b]; let p = cur;
+          while (p != null) { path.unshift(p); p = prev.get(p); }
+          return path;
+        }
+        queue.push(nx);
+      }
+    }
+  }
+  return null; // sem caminho dirigido
+}
+
+/** rename(X): usos que um rename seguro tocaria (quem referencia X). */
+export function nexusRename(graph, id) {
+  return [...(graph.inc.get(id) || [])];
+}
+
+
 /** Análise completa de uma vez (conveniência para a página). */
 export function analyze(codemap) {
   const graph = buildGraph(codemap);

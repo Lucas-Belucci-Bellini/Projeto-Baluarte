@@ -6,6 +6,19 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-14
+
+### Git Nexus — Console com as ferramentas do GitNexus (#204/#195)
+- 🖥 **Console do Nexus**: terminal na página que traz as **4 ferramentas canônicas do GitNexus** sobre o grafo (arquivos ou funções), em JS puro:
+  - **`context <X>`** — definição + quem chama/importa + o que chama/importa.
+  - **`impact <X> [down]`** — raio de explosão com **nível de risco** (BAIXO→CRÍTICO, como o GitNexus exige antes de editar). Ex: `impact helpers` = risco CRÍTICO, 115 afetados.
+  - **`path <A> <B>`** — menor caminho de chamadas/imports entre dois símbolos.
+  - **`rename <X>`** — quantos usos um rename seguro tocaria (entende o grafo, não é find-and-replace). Ex: `rename toast` = 50 usos.
+  - **`query <texto>`** (ou texto livre) — busca no grafo.
+  Cada resultado vem com chips clicáveis que selecionam o nó no orbe 3D.
+- ✅ Verificado no navegador (Playwright): as 5 ferramentas respondendo, badges de risco (BAIXO/CRÍTICO) aparecendo.
+- 🛡️ Backup: `backup/2026-06-14-pre-merge-gitnexus-console`.
+
 ## 2026-06-13
 
 ### Git Nexus — drill-down por arquivo + herança + codemap atualizado (#204/#195)
