@@ -13,6 +13,7 @@ import { h, empty, formatNumber } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
 import { createHeroField } from '../utils/hero3d.js';
+import { createHeroWebGL } from '../utils/hero-webgl.js';
 import { ARSENAL, TOTAL as ARSENAL_TOTAL } from '../data/arsenal.js';
 import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL, CHAPTERS_TOTAL } from '../data/cronicas.js';
@@ -62,7 +63,12 @@ function buildHero(onCleanup, operador) {
 
   const hero = h('div', { className: 'h3-hero' }, canvas, hud, layers);
 
-  const fx = createHeroField(canvas, { accent: '#00f0ff', accent2: '#ff00aa' });
+  /* cena 3D imersiva em WebGL (nebulosa + núcleo de anéis); cai no campo de
+     partículas 2D se o WebGL faltar (issue #195 — design 3D no melhor possível). */
+  let fx = createHeroWebGL(canvas, { accent: '#00f0ff', accent2: '#ff00aa' });
+  const webglOn = !!fx;
+  if (!fx) fx = createHeroField(canvas, { accent: '#00f0ff', accent2: '#ff00aa' });
+  if (webglOn) hero.classList.add('is-webgl');   // o núcleo WebGL substitui o emblema CSS
   fx.start();
   onCleanup(() => fx.destroy());
 
@@ -78,33 +84,37 @@ function buildHero(onCleanup, operador) {
     hero.addEventListener('pointermove', onMove);
     onCleanup(() => hero.removeEventListener('pointermove', onMove));
 
-    /* emblema 3D MANIPULÁVEL: arraste para girar, com inércia (ideia do #195) */
-    let gx = 0, gy = 0, vgx = 0, vgy = 0, dragging = false, lastX = 0, lastY = 0, inertia = 0;
-    const applyEmblem = () => { emblem.style.setProperty('--gx', gx.toFixed(2) + 'deg'); emblem.style.setProperty('--gy', gy.toFixed(2) + 'deg'); };
-    const spin = () => {
-      if (dragging) return;
-      gx += vgx; gy += vgy; vgx *= 0.94; vgy *= 0.94; applyEmblem();
-      if (Math.abs(vgx) > 0.02 || Math.abs(vgy) > 0.02) inertia = requestAnimationFrame(spin); else inertia = 0;
-    };
-    const down = (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; if (inertia) cancelAnimationFrame(inertia); emblem.setPointerCapture?.(e.pointerId); e.preventDefault(); };
-    const move = (e) => {
-      if (!dragging) return;
-      const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY;
-      gy += dx * 0.5; gx -= dy * 0.5; vgy = dx * 0.5; vgx = -dy * 0.5; applyEmblem();
-    };
-    const up = () => { if (!dragging) return; dragging = false; inertia = requestAnimationFrame(spin); };
-    emblem.addEventListener('pointerdown', down);
-    emblem.addEventListener('pointermove', move);
-    emblem.addEventListener('pointerup', up);
-    emblem.addEventListener('pointercancel', up);
-    onCleanup(() => { if (inertia) cancelAnimationFrame(inertia); });
+    /* emblema 3D MANIPULÁVEL (só no fallback 2D; com WebGL o núcleo é a cena) */
+    if (!webglOn) {
+      let gx = 0, gy = 0, vgx = 0, vgy = 0, dragging = false, lastX = 0, lastY = 0, inertia = 0;
+      const applyEmblem = () => { emblem.style.setProperty('--gx', gx.toFixed(2) + 'deg'); emblem.style.setProperty('--gy', gy.toFixed(2) + 'deg'); };
+      const spin = () => {
+        if (dragging) return;
+        gx += vgx; gy += vgy; vgx *= 0.94; vgy *= 0.94; applyEmblem();
+        if (Math.abs(vgx) > 0.02 || Math.abs(vgy) > 0.02) inertia = requestAnimationFrame(spin); else inertia = 0;
+      };
+      const down = (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; if (inertia) cancelAnimationFrame(inertia); emblem.setPointerCapture?.(e.pointerId); e.preventDefault(); };
+      const move = (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY;
+        gy += dx * 0.5; gx -= dy * 0.5; vgy = dx * 0.5; vgx = -dy * 0.5; applyEmblem();
+      };
+      const up = () => { if (!dragging) return; dragging = false; inertia = requestAnimationFrame(spin); };
+      emblem.addEventListener('pointerdown', down);
+      emblem.addEventListener('pointermove', move);
+      emblem.addEventListener('pointerup', up);
+      emblem.addEventListener('pointercancel', up);
+      onCleanup(() => { if (inertia) cancelAnimationFrame(inertia); });
+    }
 
-    /* parallax de scroll (scrollytelling): o herói recua e desbota ao rolar */
+    /* parallax de scroll (scrollytelling): o herói recua e desbota; com WebGL,
+       o scroll também mergulha a câmera pela nebulosa (fly-through). */
     const onScroll = () => {
       const r = hero.getBoundingClientRect();
       const prog = Math.max(0, Math.min(1, -r.top / (r.height || 1)));
       layers.style.transform = `translateY(${(prog * 60).toFixed(1)}px)`;
       layers.style.opacity = (1 - prog * 0.85).toFixed(2);
+      if (webglOn && fx.setScroll) fx.setScroll(prog);
     };
     window.addEventListener('scroll', onScroll, true);  // capture: pega o scroll do container
     onCleanup(() => window.removeEventListener('scroll', onScroll, true));

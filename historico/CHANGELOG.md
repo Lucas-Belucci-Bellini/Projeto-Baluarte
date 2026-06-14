@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-14
 
+### Home — herói 3D imersivo em WebGL (#195)
+- 🌌 **Hero WebGL**: a home agora abre com uma cena 3D de verdade — **nebulosa volumétrica de 3.600 partículas** (disco galáctico + halo) renderizada em **WebGL 1.0 puro, sem dependência**, com *blending* aditivo (brilho real) nas cores do projeto (ciano/magenta/branco).
+- 💠 **Núcleo arc-reactor estilo JARVIS**: 5 anéis 3D de orbes luminosos girando em eixos diferentes + ponto central pulsante no miolo da nebulosa. (Render como *point-sprites* porque `gl.LINES` com espessura é ignorado na maioria das GPUs — assim o núcleo lê nítido sobre a nebulosa.)
+- 🎥 **Câmera que se move como o JARVIS**: orbita com o **parallax do mouse** e **mergulha com o scroll** (*fly-through*), além da auto-rotação contínua.
+- ♿ **Degradação graciosa**: se o WebGL não compilar/existir, cai automaticamente no campo de partículas 2D antigo (`hero3d.js`); respeita `prefers-reduced-motion` (assenta a cena, não gira) e pausa com a aba oculta. *Frame loop* auto-dimensionável e auto-encerrável (robusto a remontagem do router).
+- ✅ Verificado no navegador (Playwright/WebGL): `is-webgl` ativo, contexto `webgl`, nebulosa + anéis renderizando atrás do título.
+- 🛡️ Backup: `backup/2026-06-14-pre-merge-hero-webgl`.
+
 ### Git Nexus — Console com as ferramentas do GitNexus (#204/#195)
 - 🖥 **Console do Nexus**: terminal na página que traz as **4 ferramentas canônicas do GitNexus** sobre o grafo (arquivos ou funções), em JS puro:
   - **`context <X>`** — definição + quem chama/importa + o que chama/importa.

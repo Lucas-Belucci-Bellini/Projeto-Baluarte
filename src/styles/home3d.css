@@ -208,3 +208,7 @@
   .h3-reveal { opacity: 1; transform: none; transition: none; }
   .h3-card, .h3-tile { transition: border-color 0.2s, box-shadow 0.2s; }
 }
+
+/* WebGL ativo: o núcleo 3D da cena substitui o emblema CSS */
+.h3-hero.is-webgl .h3-hero__layer--back { display: none; }
+.h3-hero.is-webgl .h3-hero__layers { grid-template-columns: 1fr; }
