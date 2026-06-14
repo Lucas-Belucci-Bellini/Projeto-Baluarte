@@ -1,0 +1,39 @@
+{
+  "name": "baluarte-launcher",
+  "productName": "Baluarte Launcher",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Launcher desktop do Projeto Baluarte — hub nativo com conexão à web e auto-update.",
+  "author": "Lucas Belucci Bellini",
+  "license": "UNLICENSED",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "dist": "electron-builder",
+    "release": "electron-builder --publish always"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.0"
+  },
+  "build": {
+    "appId": "com.baluarte.launcher",
+    "productName": "Baluarte Launcher",
+    "publish": [
+      { "provider": "github", "owner": "Lucas-Belucci-Bellini", "repo": "Projeto-Baluarte" }
+    ],
+    "files": ["src/**/*", "package.json"],
+    "extraResources": [
+      { "from": "../dist", "to": "web", "filter": ["**/*"] }
+    ],
+    "directories": { "output": "release", "buildResources": "build" },
+    "win": { "target": "nsis" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
+    "mac": { "target": "dmg", "identity": null, "category": "public.app-category.developer-tools" },
+    "linux": { "target": "AppImage", "category": "Development" }
+  }
+}

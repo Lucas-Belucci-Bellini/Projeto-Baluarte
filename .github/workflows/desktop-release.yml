@@ -1,0 +1,43 @@
+name: Desktop Release
+
+# Builda e publica os instaladores do Baluarte Launcher (Win/Mac/Linux) quando
+# uma tag desktop-v* é empurrada. Os artefatos vão pra Release da tag e o
+# electron-updater entrega a atualização aos apps já instalados.
+on:
+  push:
+    tags:
+      - 'desktop-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build web (fallback embutido)
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install desktop deps
+        working-directory: desktop
+        run: npm ci
+
+      - name: Build & publish installer
+        working-directory: desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release
