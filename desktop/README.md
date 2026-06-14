@@ -9,7 +9,7 @@ JARVIS com modelos maiores, jogos/3D sem as travas da aba.
 > GitNexus (tree-sitter, LadybugDB, etc.) — limite de Lambda, sem disco, sem
 > processo em background. O desktop derrubа essa parede. Plano completo: issue #222.
 
-## Como funciona (M0)
+## Como funciona
 
 - **Conexão com a web:** a janela carrega `https://projeto-baluarte.vercel.app`
   (a mesma UI Vite). O deploy web já é o canal de atualização **instantâneo** da
@@ -20,6 +20,20 @@ JARVIS com modelos maiores, jogos/3D sem as travas da aba.
   instala no próximo restart (só no app empacotado).
 - **Segurança:** `contextIsolation` ligado, `nodeIntegration` desligado, sandbox,
   navegação/links presos às origens confiáveis. A ponte nativa real entra no M2.
+
+### Casca de launcher (M1)
+
+- **Splash:** janela de abertura (`splash.html`) enquanto o hub carrega; some
+  quando a página fica pronta (com trava de segurança de 12s).
+- **System tray:** ícone na bandeja com menu (Mostrar / Recarregar / Sair).
+  **Fechar a janela minimiza pra bandeja** (estilo launcher) — o app só encerra
+  de fato no "Sair". Clique no ícone alterna mostrar/esconder.
+- **Deep-link `baluarte://<rota>`:** instância única (`requestSingleInstanceLock`);
+  ex.: `baluarte://git-nexus` foca a janela e navega pra `#/git-nexus`. A rota é
+  sanitizada antes de entrar na URL.
+- **Indicador de conexão:** o preload relata `navigator.onLine`; o estado aparece
+  na **bandeja** (tooltip + linha de status) e no **título** da janela. A UI da
+  web também pode ler `window.baluarte.isOnline()`.
 
 ## Rodar em desenvolvimento
 
@@ -65,5 +79,6 @@ Quem já tem o launcher instalado recebe a atualização no próximo restart.
 
 ## Roadmap
 
-Marcos M0→M6 detalhados na issue **#222**. Este diretório está no **M0**
-(esqueleto + loop de auto-update).
+Marcos M0→M6 detalhados na issue **#222**. Estado atual: **M0** (esqueleto +
+auto-update) e **M1** (casca de launcher: splash, tray, deep-link, conexão).
+Próximo: **M2** (ponte IPC allowlisted) e **M3** (motor real do GitNexus no main).

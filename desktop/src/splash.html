@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';" />
+  <title>Baluarte Launcher</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { margin: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+    html, body { height: 100%; }
+    body {
+      display: grid; place-items: center; overflow: hidden;
+      background:
+        radial-gradient(90% 70% at 72% 12%, rgba(0, 240, 255, 0.12), transparent 55%),
+        radial-gradient(80% 70% at 14% 92%, rgba(255, 0, 170, 0.12), transparent 55%),
+        #06080d;
+      color: #e6f1ff; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      border: 1px solid rgba(0, 240, 255, 0.18);
+    }
+    .wrap { text-align: center; }
+    .core { position: relative; width: 84px; height: 84px; margin: 0 auto 26px; }
+    .ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 2px solid rgba(0, 240, 255, 0.18); border-top-color: #00f0ff;
+      animation: spin 1.05s linear infinite;
+    }
+    .ring.b { inset: 14px; border-top-color: transparent; border-right-color: #ff00aa;
+      animation-duration: 1.5s; animation-direction: reverse; }
+    .dot {
+      position: absolute; inset: 0; margin: auto; width: 16px; height: 16px; border-radius: 50%;
+      background: radial-gradient(circle, #ff3aa8, #ff00aa 60%, transparent 72%);
+      box-shadow: 0 0 18px 4px rgba(255, 0, 170, 0.5);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { transform: scale(0.85); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+    h1 {
+      font-size: 22px; letter-spacing: 4px; font-weight: 800; margin-bottom: 8px;
+      background: linear-gradient(92deg, #e6f1ff, #00f0ff 60%, #ff00aa 115%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    p { font-size: 12px; letter-spacing: 1px; color: #6f86a0; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="core">
+      <div class="ring"></div>
+      <div class="ring b"></div>
+      <div class="dot"></div>
+    </div>
+    <h1>BALUARTE LAUNCHER</h1>
+    <p>Conectando ao hub…</p>
+  </div>
+</body>
+</html>

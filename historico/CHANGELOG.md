@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-14
 
+### App desktop (Baluarte Launcher) — M1: casca de launcher (#222)
+- 🪟 **Splash de abertura** (`splash.html`): núcleo arc-reactor animado enquanto o hub carrega; some quando a página fica pronta (com trava de segurança de 12s pra nunca prender).
+- 🔔 **System tray**: ícone na bandeja com menu (Mostrar / Recarregar / Sair). **Fechar a janela minimiza pra bandeja** (estilo Steam/launcher) — o app só encerra de fato no "Sair"; clicar no ícone alterna mostrar/esconder. `before-quit` garante que Cmd+Q / shutdown saem mesmo (não ficam presos na bandeja).
+- 🔗 **Deep-link `baluarte://<rota>`**: instância única (`requestSingleInstanceLock`) + handlers de `open-url` (macOS) e `second-instance`/argv (Win/Linux). Ex.: `baluarte://git-nexus` foca a janela e navega pra `#/git-nexus`. A rota é **sanitizada** antes de entrar na URL (sem injeção).
+- 🟢 **Indicador de conexão (online/offline)**: o preload relata `navigator.onLine`; o estado aparece na **bandeja** (tooltip + linha "Conectado ao hub" / "Offline (modo local)") e no **título** da janela. A UI da web pode ler `window.baluarte.isOnline()`.
+- 🔒 Postura de segurança mantida (isolamento, sem nodeIntegration, sandbox, navegação presa às origens confiáveis).
+- 🛡️ Backup: `backup/2026-06-14-pre-merge-desktop-m1`.
+
 ### App desktop (Baluarte Launcher) — M0: esqueleto Electron + auto-update (#222)
 - 🚀 **Novo diretório `desktop/`**: o começo do **launcher nativo** em Electron, o caminho pra rodar as versões pesadas que o site estático não roda (o motor real do GitNexus em `GitNexus-1.6.7/` é Node nativo — tree-sitter, LadybugDB — e não cabe no Vercel). Plano completo no RFC da issue **#222**.
 - 🌐 **Conexão com a web**: a janela carrega a **mesma UI Vite da produção** (`projeto-baluarte.vercel.app`) — o deploy web já é o canal de atualização instantâneo da interface. **Fallback offline** embutido (`../dist` → `resources/web`, e `offline.html` em último caso).
