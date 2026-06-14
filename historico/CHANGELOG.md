@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-14
 
+### App desktop (Baluarte Launcher) — M2: ponte IPC allowlisted (#222)
+- 🔐 **Fronteira de segurança renderer↔nativo** (`desktop/src/ipc.js`): toda chamada nativa passa por **um funil único** `window.baluarte.invoke(channel, payload)` → canal `baluarte:invoke` no main, validado por três camadas: **remetente** (só a janela principal), **allowlist** explícita de canais, e **payload** validado por cada handler. O renderer nunca recebe `ipcRenderer` cru, FS ou `require`.
+- 🧩 **Canais do M2** (a UI da web pode usar em "modo nativo"): `ping`, `app:info` (nome/versão/plataforma/arch/online), `app:openExternal` (abre link http/https no navegador, validado contra `file:`/`javascript:`), `app:reload`.
+- 🧱 É o encaixe pronto pro **M3**: os handlers `nexus.*` (motor real do GitNexus) plugam direto na allowlist, sem reabrir a fronteira.
+- 🛡️ Backup: `backup/2026-06-14-pre-merge-desktop-m2`.
+
 ### App desktop (Baluarte Launcher) — M1: casca de launcher (#222)
 - 🪟 **Splash de abertura** (`splash.html`): núcleo arc-reactor animado enquanto o hub carrega; some quando a página fica pronta (com trava de segurança de 12s pra nunca prender).
 - 🔔 **System tray**: ícone na bandeja com menu (Mostrar / Recarregar / Sair). **Fechar a janela minimiza pra bandeja** (estilo Steam/launcher) — o app só encerra de fato no "Sair"; clicar no ícone alterna mostrar/esconder. `before-quit` garante que Cmd+Q / shutdown saem mesmo (não ficam presos na bandeja).

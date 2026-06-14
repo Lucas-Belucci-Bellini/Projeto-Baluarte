@@ -7,8 +7,9 @@
 // M1: relata navigator.onLine pro processo principal, que reflete o estado
 // na bandeja e no título (indicador online/offline).
 //
-// M2: vira a API allowlisted de verdade (baluarte.invoke('nexus.context', …)),
-// validada no main. Nada de `require`/FS cru atravessa a ponte.
+// M2 (este): expõe o funil `invoke(channel, payload)` — toda chamada nativa
+// passa por UM canal validado no main (allowlist + remetente). O renderer
+// nunca recebe `ipcRenderer` cru nem FS/require. M3 pluga os handlers nexus.*.
 const { contextBridge, ipcRenderer } = require('electron');
 
 const report = () => {
@@ -24,10 +25,20 @@ window.addEventListener('offline', report);
 window.addEventListener('DOMContentLoaded', report);
 report(); // reporta o estado inicial já no preload
 
+/** Funil único: resolve com os dados ou rejeita com a mensagem de erro do main. */
+async function invoke(channel, payload) {
+  const res = await ipcRenderer.invoke('baluarte:invoke', channel, payload);
+  if (!res || res.ok !== true) {
+    throw new Error((res && res.error) || 'falha no invoke');
+  }
+  return res.data;
+}
+
 contextBridge.exposeInMainWorld('baluarte', {
   native: true,
   platform: process.platform,
   isOnline: () => navigator.onLine,
+  invoke,
   versions: {
     electron: process.versions.electron,
     chrome: process.versions.chrome,
