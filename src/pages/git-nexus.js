@@ -13,7 +13,8 @@
 
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { analyze, symbolSubmap, fileSymbolGraph, impactOf, dependenciesOf, search } from '../utils/git-nexus-engine.js';
+import { analyze, symbolSubmap, fileSymbolGraph, impactOf, dependenciesOf, search,
+  nexusContext, nexusImpact, nexusPath, nexusRename } from '../utils/git-nexus-engine.js';
 import { createGraphView3D } from '../utils/git-nexus-graph3d.js';
 import { memoryStats, codeMemoryCounts } from '../utils/jarvis-brain.js';
 import codemap from '../data/codemap.json';
@@ -78,6 +79,7 @@ export function gitNexusPage() {
       h('div', { className: 'gn-searchbox' }, searchInput, searchResults),
       sideEl)));
 
+  page.appendChild(renderConsole());
   page.appendChild(renderUnifiedFooter());
 
   if (typeof MutationObserver !== 'undefined') {
@@ -261,6 +263,92 @@ export function gitNexusPage() {
         view.select(n.id); renderNodeDetail(n.id);
       } }, h('span', null, n.label), h('span', { className: 'u-text-muted u-mono', style: { fontSize: '11px' } }, cur.mode !== 'files' ? (raw.file || '') : n.dir)));
     });
+  }
+
+  /* ===== Console do Nexus — ferramentas de consulta do GitNexus ===== */
+
+  function resolve(name) {
+    const q = (name || '').trim();
+    if (!q) return null;
+    if (cur.graph.index.has(q)) return q;
+    const exact = cur.graph.nodes.find((n) => n.label.toLowerCase() === q.toLowerCase());
+    if (exact) return exact.id;
+    const r = search(cur.graph, q);
+    return r.length ? r[0].id : null;
+  }
+  const labelOf = (id) => { const n = cur.graph.index.get(id); return n ? n.label : id; };
+
+  function renderConsole() {
+    const out = h('div', { className: 'gn-console__out' });
+    const input = h('input', {
+      className: 'gn-console__in u-mono', type: 'text', spellcheck: 'false',
+      placeholder: 'context helpers · impact router · impact h down · path A B · rename toast · buscar…',
+      onkeydown: (e) => { if (e.key === 'Enter') run(input.value); }
+    });
+
+    const chip = (id) => h('span', { className: 'gn-chip', onclick: () => { view.select(id); renderNodeDetail(id); } }, labelOf(id));
+    const line = (...kids) => h('div', { className: 'gn-console__line' }, ...kids);
+
+    function run(raw) {
+      const s = (raw || '').trim();
+      if (!s) return;
+      const parts = s.split(/\s+/);
+      const cmd = parts[0].toLowerCase();
+      const block = h('div', { className: 'gn-console__block' });
+      block.appendChild(h('div', { className: 'gn-console__cmd u-mono' }, '› ' + s));
+
+      const need = (name, label) => {
+        const id = resolve(name);
+        if (!id) block.appendChild(line(h('span', { className: 'u-text-muted' }, `${label || 'símbolo'} "${name}" não encontrado no grafo atual.`)));
+        return id;
+      };
+
+      if (cmd === 'context' || cmd === 'ctx') {
+        const id = need(parts[1]); if (id) {
+          const c = nexusContext(cur.graph, id); const raw2 = cur.rawById.get(id) || {};
+          block.appendChild(line(h('b', null, labelOf(id)), ' — ', h('span', { className: 'u-text-muted' }, cur.mode !== 'files' ? `${raw2.kind || 'function'} · ${raw2.file || ''}` : id)));
+          block.appendChild(line(h('span', { className: 'u-text-muted' }, `${cur.mode !== 'files' ? 'chamada por' : 'importado por'} (${c.callers.length}): `), ...c.callers.slice(0, 12).map(chip)));
+          block.appendChild(line(h('span', { className: 'u-text-muted' }, `${cur.mode !== 'files' ? 'chama' : 'importa'} (${c.callees.length}): `), ...c.callees.slice(0, 12).map(chip)));
+        }
+      } else if (cmd === 'impact') {
+        const dir = /down|baixo|usa/.test(parts[2] || '') ? 'down' : 'up';
+        const id = need(parts[1]); if (id) {
+          const im = nexusImpact(cur.graph, id, dir);
+          block.appendChild(line(
+            h('span', { className: `gn-risk gn-risk--${im.risk.cls}` }, 'risco ' + im.risk.label),
+            ' ', h('b', { className: 'u-text-magenta' }, String(im.affected.length)),
+            dir === 'up' ? ' afetados se mudar ' : ' usados (downstream) ',
+            h('span', { className: 'u-text-muted' }, `· ${im.direct.length} diretos`)));
+          if (im.direct.length) block.appendChild(line(...im.direct.slice(0, 14).map(chip)));
+        }
+      } else if (cmd === 'path' || cmd === 'caminho') {
+        const a = need(parts[1], 'origem'), b = need(parts[2], 'destino');
+        if (a && b) {
+          const path = nexusPath(cur.graph, a, b);
+          if (!path) block.appendChild(line(h('span', { className: 'u-text-muted' }, 'sem caminho dirigido de chamadas entre os dois.')));
+          else { const els = []; path.forEach((id, i) => { if (i) els.push(h('span', { className: 'u-text-muted' }, ' → ')); els.push(chip(id)); }); block.appendChild(line(...els)); }
+        }
+      } else if (cmd === 'rename') {
+        const id = need(parts[1]); if (id) {
+          const uses = nexusRename(cur.graph, id);
+          block.appendChild(line('renomear ', h('b', null, labelOf(id)), ' tocaria ', h('b', { className: 'u-text-cyan' }, String(uses.length)), ' uso(s):'));
+          if (uses.length) block.appendChild(line(...uses.slice(0, 16).map(chip)));
+        }
+      } else {
+        const term = cmd === 'query' || cmd === 'q' ? parts.slice(1).join(' ') : s;
+        const res = search(cur.graph, term);
+        if (!res.length) block.appendChild(line(h('span', { className: 'u-text-muted' }, `nada encontrado para "${term}".`)));
+        else block.appendChild(line(h('span', { className: 'u-text-muted' }, `${res.length} resultado(s): `), ...res.slice(0, 14).map((n) => chip(n.id))));
+      }
+      out.insertBefore(block, out.firstChild);
+      input.value = '';
+    }
+
+    return h('div', { className: 'gn-console' },
+      h('div', { className: 'gn-console__head' },
+        h('h2', { className: 'gn-unified__title' }, '🖥 Console do Nexus'),
+        h('span', { className: 'u-text-muted', style: { fontSize: '12px' } }, 'ferramentas do GitNexus sobre o grafo: context · impact · path · rename · query')),
+      input, out);
   }
 
   function renderUnifiedFooter() {
