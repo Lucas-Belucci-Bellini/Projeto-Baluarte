@@ -13,6 +13,7 @@
 const { app, BrowserWindow, Tray, Menu, nativeImage, shell, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
+const { registerIpc } = require('./ipc');
 
 let autoUpdater = null;
 try {
@@ -258,6 +259,13 @@ if (!app.requestSingleInstanceLock()) {
     createMainWindow();
     setupTray();
     setupUpdates();
+
+    // Ponte IPC allowlisted (M2): o renderer fala com o nativo só por aqui.
+    registerIpc({
+      getMainWindow: () => mainWindow,
+      getOnline: () => online,
+      remoteUrl: REMOTE_URL
+    });
 
     // Deep link no lançamento inicial (Windows/Linux trazem no argv).
     const initial = deepLinkFromArgv(process.argv);

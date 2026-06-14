@@ -35,6 +35,25 @@ JARVIS com modelos maiores, jogos/3D sem as travas da aba.
   na **bandeja** (tooltip + linha de status) e no **título** da janela. A UI da
   web também pode ler `window.baluarte.isOnline()`.
 
+### Ponte IPC allowlisted (M2)
+
+A fronteira de segurança entre a UI (vinda da web) e o nativo. **Tudo passa por
+um funil único** `window.baluarte.invoke(channel, payload)` → canal `baluarte:invoke`
+no main (`src/ipc.js`), validado por: remetente = janela principal, `channel` na
+**allowlist** explícita, e payload validado por cada handler. O renderer nunca
+recebe `ipcRenderer` cru, FS ou `require`.
+
+Canais do M2 (a UI pode usar quando `window.baluarte.native`):
+
+```js
+await window.baluarte.invoke('ping');                 // 'pong'
+await window.baluarte.invoke('app:info');             // { name, version, platform, arch, online }
+await window.baluarte.invoke('app:openExternal', { url: 'https://…' });
+await window.baluarte.invoke('app:reload');
+```
+
+É aqui que o **M3 pluga os handlers `nexus.*`** (motor real do GitNexus).
+
 ## Rodar em desenvolvimento
 
 ```bash
@@ -80,5 +99,6 @@ Quem já tem o launcher instalado recebe a atualização no próximo restart.
 ## Roadmap
 
 Marcos M0→M6 detalhados na issue **#222**. Estado atual: **M0** (esqueleto +
-auto-update) e **M1** (casca de launcher: splash, tray, deep-link, conexão).
-Próximo: **M2** (ponte IPC allowlisted) e **M3** (motor real do GitNexus no main).
+auto-update), **M1** (casca de launcher: splash, tray, deep-link, conexão) e
+**M2** (ponte IPC allowlisted). Próximo: **M3** (motor real do GitNexus no main
+process — `electron-rebuild` dos nativos, sobe a 4747, o orbe 3D vira o grafo real).
