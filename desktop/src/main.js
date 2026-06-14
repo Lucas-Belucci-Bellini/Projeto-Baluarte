@@ -14,6 +14,7 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, shell, ipcMain } = require(
 const path = require('node:path');
 const fs = require('node:fs');
 const { registerIpc } = require('./ipc');
+const nexus = require('./nexus');
 
 let autoUpdater = null;
 try {
@@ -227,6 +228,7 @@ function setupUpdates() {
 // a janela (senão Cmd+Q / shutdown ficariam presos na bandeja).
 app.on('before-quit', () => {
   isQuitting = true;
+  nexus.stop(); // encerra o motor se a gente tiver subido
 });
 
 if (!app.requestSingleInstanceLock()) {
@@ -259,6 +261,7 @@ if (!app.requestSingleInstanceLock()) {
     createMainWindow();
     setupTray();
     setupUpdates();
+    nexus.maybeStart(); // M3a: sobe o motor só se BALUARTE_NEXUS_CMD apontar (opt-in)
 
     // Ponte IPC allowlisted (M2): o renderer fala com o nativo só por aqui.
     registerIpc({

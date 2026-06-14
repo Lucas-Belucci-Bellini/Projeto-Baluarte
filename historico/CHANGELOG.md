@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-14
 
+### App desktop (Baluarte Launcher) — M3a: detecção do motor real do GitNexus (#222)
+- 🔌 **`desktop/src/nexus.js`**: detecta o **motor real** do GitNexus (servidor Express do pacote `gitnexus` na **4747**) via `GET /api/health` + `/api/info`. Spawn opt-in por enquanto (`BALUARTE_NEXUS_CMD`), sem shell e com args fixos; encerra junto com o app.
+- 🧩 **Handler `nexus:status`** plugado na allowlist da ponte IPC (M2) — devolve `{ available, url, version?, nodeVersion?, spawned }`.
+- 🟢 **Badge na página `/git-nexus`**: dentro do **Baluarte Launcher**, mostra **verde** "Motor real do GitNexus conectado · vX" ou **âmbar** "Motor local indisponível — usando o mapa de build". Na **web** (sem `window.baluarte`) o badge fica oculto e a página segue com o `codemap.json` — degradação graciosa, sem fork.
+- ✅ Verificado no navegador (Playwright): web = badge oculto e página intacta; launcher simulado = badge âmbar (off) e verde (live, v1.6.7) renderizando sob o header.
+- 🧱 Próxima fatia (**M3b**): empacotar o motor + nativos (`tree-sitter` ×11, `onnxruntime-node`, `@ladybugdb/core`) com `electron-rebuild` e consumir o **grafo real** (`/api/graph`).
+- 🛡️ Backup: `backup/2026-06-14-pre-merge-desktop-m3a`.
+
 ### App desktop (Baluarte Launcher) — M2: ponte IPC allowlisted (#222)
 - 🔐 **Fronteira de segurança renderer↔nativo** (`desktop/src/ipc.js`): toda chamada nativa passa por **um funil único** `window.baluarte.invoke(channel, payload)` → canal `baluarte:invoke` no main, validado por três camadas: **remetente** (só a janela principal), **allowlist** explícita de canais, e **payload** validado por cada handler. O renderer nunca recebe `ipcRenderer` cru, FS ou `require`.
 - 🧩 **Canais do M2** (a UI da web pode usar em "modo nativo"): `ping`, `app:info` (nome/versão/plataforma/arch/online), `app:openExternal` (abre link http/https no navegador, validado contra `file:`/`javascript:`), `app:reload`.
