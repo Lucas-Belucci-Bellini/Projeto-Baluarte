@@ -23,6 +23,38 @@ import symbolmap from '../data/codemap-symbols.json';
 const PALETTE = ['#00f0ff', '#ff00aa', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
 const FN_CAP = 240;
 
+/**
+ * M3a — no Baluarte Launcher (app desktop), revela se o MOTOR REAL do GitNexus
+ * está no ar (servidor na 4747). Na web (sem `window.baluarte`) fica oculto e a
+ * página segue usando o mapa de build. O grafo ao vivo entra numa fatia futura.
+ */
+async function detectNativeEngine(el) {
+  const bridge = typeof window !== 'undefined' ? window.baluarte : null;
+  if (!bridge || !bridge.native || typeof bridge.invoke !== 'function') return;
+  let st = null;
+  try {
+    st = await bridge.invoke('nexus:status');
+  } catch {
+    return; // ponte indisponível — mantém oculto
+  }
+  el.style.display = '';
+  if (st && st.available) {
+    el.className = 'gn-engine is-live';
+    el.append(
+      h('span', { className: 'gn-engine__dot' }),
+      h('span', null, 'Motor real do GitNexus conectado'),
+      h('span', { className: 'gn-engine__v u-mono' }, st.version ? `v${st.version}` : 'ao vivo')
+    );
+  } else {
+    el.className = 'gn-engine is-off';
+    el.append(
+      h('span', { className: 'gn-engine__dot' }),
+      h('span', null, 'Motor local indisponível — usando o mapa de build.'),
+      h('span', { className: 'gn-engine__hint u-mono' }, 'gitnexus serve')
+    );
+  }
+}
+
 export function gitNexusPage() {
   const cleanups = [];
   const codeMem = codeMemoryCounts();
@@ -47,6 +79,11 @@ export function gitNexusPage() {
         'Alterne entre o grafo de ', h('span', { className: 'u-text-cyan' }, 'arquivos'),
         ' e o de ', h('span', { className: 'u-text-cyan' }, 'funções'), ' (chamadas).'))
   );
+
+  /* ---- motor nativo (M3a — só aparece dentro do Baluarte Launcher) ---- */
+  const engineBadge = h('div', { className: 'gn-engine', style: { display: 'none' } });
+  page.appendChild(engineBadge);
+  detectNativeEngine(engineBadge);
 
   /* nº de funções por arquivo (para o botão de drill-down) */
   const fnByFile = {};

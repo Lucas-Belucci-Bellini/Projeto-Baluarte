@@ -10,6 +10,7 @@
 //
 // É aqui que o M3 vai plugar os handlers `nexus.*` (motor real do GitNexus).
 const { ipcMain, shell, app } = require('electron');
+const nexus = require('./nexus');
 
 /**
  * Monta os handlers permitidos. `ctx` injeta o que vem do main:
@@ -47,7 +48,11 @@ function buildHandlers(ctx) {
       const w = ctx.getMainWindow();
       if (w && !w.isDestroyed()) w.loadURL(ctx.remoteUrl);
       return true;
-    }
+    },
+
+    // M3a: estado do motor real do GitNexus (servidor na 4747).
+    // { available, url, version?, nodeVersion?, spawned }
+    'nexus:status': async () => nexus.status()
   };
 }
 
