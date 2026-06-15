@@ -8,6 +8,10 @@ aqui o que mudou.
 
 ## 2026-06-15
 
+### Launcher v0.1.1 — bump de versão pra próxima release
+- 🔖 `desktop/package.json`: **0.1.0 → 0.1.1**. As releases do GitHub são chaveadas por versão; re-rodar o workflow com a **mesma** versão só atualiza a release existente (mantém a data original). Subir a versão = a próxima execução do workflow cria uma release **nova** (`v0.1.1`) com data atual e instaladores frescos.
+- ℹ️ A v0.1.0 já está publicada e funcional (`.exe`/`.dmg`/`.AppImage`); a página `/baixar` já serve ela.
+
 ### Novo logo — selo arcano vermelho (Baluarte Mark XIII)
 - 🔴 **Logo trocado** pelo selo do operador (`19KMF01.svg` → `public/logo.svg`): movido pra `public/` (onde o Vite serve) e **recolorido pra vermelho** (`#ff1f3a`) — o arquivo veio traçado em preto (`fill="#000000"`) e sumiria no fundo escuro.
 - 🧩 Fiado em **todos os pontos de marca**: favicon (aba do navegador), tela de boot, topo da sidebar ("Mark XIII") e o brand do header. Glifo `⬡` antigo aposentado nesses lugares; cada um ganhou um leve glow vermelho.
