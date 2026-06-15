@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-15
 
+### Novo logo — selo arcano vermelho (Baluarte Mark XIII)
+- 🔴 **Logo trocado** pelo selo do operador (`19KMF01.svg` → `public/logo.svg`): movido pra `public/` (onde o Vite serve) e **recolorido pra vermelho** (`#ff1f3a`) — o arquivo veio traçado em preto (`fill="#000000"`) e sumiria no fundo escuro.
+- 🧩 Fiado em **todos os pontos de marca**: favicon (aba do navegador), tela de boot, topo da sidebar ("Mark XIII") e o brand do header. Glifo `⬡` antigo aposentado nesses lugares; cada um ganhou um leve glow vermelho.
+- ℹ️ O ícone do PWA (manifest) ficou como estava (hexágono com fundo escuro) — o selo é detalhado e transparente, não rende bem como ícone de instalação quadrado; dá pra fazer uma versão própria depois se quiser.
+- ✅ Verificado no navegador (Playwright): `/logo.svg` servido, vermelho, e renderizando na sidebar.
+
 ### Release do app: workflow disparável + publicação direta (#222)
 - 🚀 **`desktop-release.yml` agora dispara também por `workflow_dispatch`** (botão "Run workflow" na aba Actions, ou via API) — além da tag `desktop-v*`. Permite cortar a 1ª release sem depender de push de tag.
 - 📦 **`releaseType: 'release'`** no electron-builder: a release sai **publicada** (não rascunho), então vira a "latest" e a página `/baixar` a enxerga automaticamente.

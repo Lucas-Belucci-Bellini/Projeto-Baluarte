@@ -68,7 +68,7 @@ export function renderHeader() {
       h(
         'div',
         { className: 'header__brand' },
-        h('span', { className: 'header__brand-glyph' }, '⬡'),
+        h('img', { className: 'header__brand-img', src: '/logo.svg', alt: 'Baluarte' }),
         h('span', { className: 'header__brand-text' }, 'BALUARTE')
       ),
       h(
