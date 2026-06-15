@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-15
 
+### Redesign #195 — /perfil vira o "Dossiê do Operador"
+- 🪪 **`/perfil` reconstruída** no estilo cinematográfico do redesign. A página estava praticamente sem estilo (classes `perfil-*` sem CSS); agora tem um **dossiê imersivo**: emblema **Ω** num anel ciano→magenta girando, nome em degradê, callsign com status "● ONLINE", badges de clearance (OMEGA/ALFA/TANGO) e bio, sobre um fundo com brilho radial + grid e **parallax sutil do brilho com o mouse**.
+- 📊 **Cards de estatística** com número em degradê mono, glow e *lift* no hover; **acesso rápido** em cards com glow magenta; **configurações** (nome, callsign, 27 temas/universos em pílulas, toggles, zona de perigo) repaginadas e mantidas 100% funcionais.
+- 🎨 Novo `src/styles/perfil.css` usando os design tokens (cores de marca, `--shadow-glow-*`, raios, espaçamentos) — consistente com a home e o Git Nexus.
+- ✅ Verificado no navegador (Playwright): hero + emblema, 6 stats, 4 atalhos, 27 swatches de tema/universo, tudo renderizando.
+- 🛡️ Backup: `backup/2026-06-15-pre-merge-perfil-redesign`.
+
 ### JARVIS ganha o Git Nexus como skills (#231, inspirado no OpenJarvis)
 - 🧠 **O JARVIS agora entende o código.** Pergunte *"o que quebra se eu mexer no `helpers.js`?"* e ele chama a skill `nexus_impact` e responde **"risco CRÍTICO, 115 arquivos afetados"** — usando o grafo de conhecimento do Git Nexus, não um chute.
 - 🧩 **5 skills novas** registradas no catálogo de ferramentas do agente (`src/utils/jarvis-nexus-tools.js`), no padrão de "skills" do OpenJarvis: `nexus_impact` (raio de explosão + risco), `nexus_context` (quem importa / o que importa), `nexus_path` (caminho entre dois arquivos), `nexus_deps` (dependências), `nexus_rename` (usos que um rename tocaria).
