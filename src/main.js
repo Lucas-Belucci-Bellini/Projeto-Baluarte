@@ -39,6 +39,7 @@ const lazy = (loader, fn) => (args) => loader().then((m) => m[fn](args));
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */
 router.register('/home', () => homePage());   // eager: 1º paint
+router.register('/baixar', lazy(() => import('./pages/baixar.js'), 'baixarPage'));
 router.register('/ferramentas', lazy(() => import('./pages/ferramentas.js'), 'ferramentasPage'));
 router.register('/editor', lazy(() => import('./pages/editor.js'), 'editorPage'));
 router.register('/json-studio', lazy(() => import('./pages/json-studio.js'), 'jsonStudioPage'));
