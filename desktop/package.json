@@ -24,7 +24,7 @@
     "appId": "com.baluarte.launcher",
     "productName": "Baluarte Launcher",
     "publish": [
-      { "provider": "github", "owner": "Lucas-Belucci-Bellini", "repo": "Projeto-Baluarte" }
+      { "provider": "github", "owner": "Lucas-Belucci-Bellini", "repo": "Projeto-Baluarte", "releaseType": "release" }
     ],
     "files": ["src/**/*", "package.json"],
     "extraResources": [

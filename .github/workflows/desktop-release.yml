@@ -1,12 +1,19 @@
 name: Desktop Release
 
-# Builda e publica os instaladores do Baluarte Launcher (Win/Mac/Linux) quando
-# uma tag desktop-v* é empurrada. Os artefatos vão pra Release da tag e o
-# electron-updater entrega a atualização aos apps já instalados.
+# Builda e publica os instaladores do Baluarte Launcher (Win/Mac/Linux). Dispara
+# por tag `desktop-v*` OU manualmente (workflow_dispatch — botão "Run workflow",
+# ou via API). Os artefatos vão pra Release e o electron-updater entrega a
+# atualização aos apps já instalados.
 on:
   push:
     tags:
       - 'desktop-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão (informativo; a versão real vem de desktop/package.json)'
+        required: false
+        default: '0.1.0'
 
 permissions:
   contents: write
