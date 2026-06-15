@@ -1,7 +1,9 @@
 /**
- * Página /perfil — Perfil do operador (Fase 18).
+ * Página /perfil — Dossiê do Operador (redesign #195: 3D/imersivo).
  *
- * Perfil de Lucas Belucci Bellini + estatísticas do projeto + configurações.
+ * Identidade do operador + estatísticas do projeto + configurações, no estilo
+ * cinematográfico do redesign (emblema com anel girando, brilho neon, cards com
+ * glow/lift, parallax sutil do brilho com o mouse).
  */
 
 import { h } from '../utils/helpers.js';
@@ -25,7 +27,7 @@ function loadConfig() {
 
 const STATS = [
   { label: 'Versão', value: 'v' + VERSION, icon: '◆' },
-  { label: 'Rotas ativas', value: '42', icon: '◫' },
+  { label: 'Rotas ativas', value: '60+', icon: '◫' },
   { label: 'Ferramentas', value: '40', icon: '⚙' },
   { label: 'Equipes catalogadas', value: '26', icon: '◆' },
   { label: 'Arcos das Crônicas', value: '24', icon: '◫' },
@@ -39,86 +41,84 @@ const LINKS = [
   { label: 'Ponte de Comando', route: '/home', icon: '⬡' }
 ];
 
+function sectionTitle(icon, title) {
+  return h('div', { className: 'pf-section' },
+    h('span', { className: 'pf-section__icon' }, icon),
+    h('h2', { className: 'pf-section__title' }, title));
+}
+
 export function perfilPage() {
   const config = loadConfig();
-  const fullPage = h('div', { className: 'page-perfil' });
+  const page = h('div', { className: 'page-perfil' });
 
-  fullPage.appendChild(
+  /* ---- cabeçalho ---- */
+  page.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
       h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'PERFIL')),
+        h('span', null, 'BALUARTE'), h('span', null, '›'), h('span', null, 'PERFIL')),
       h('h1', { className: 'page-header__title' }, '◔ Perfil do Operador'),
       h('p', { className: 'page-header__description' },
-        'Identidade, estatísticas do projeto e configurações da plataforma.')
-    )
+        'Identidade, estatísticas do projeto e configurações da plataforma.'))
   );
 
-  /* Cartão de identidade */
-  fullPage.appendChild(
-    h('div', { className: 'perfil-id' },
-      h('div', { className: 'perfil-id__avatar' }, '⬡'),
-      h('div', { className: 'perfil-id__body' },
-        h('div', { className: 'perfil-id__name' }, config.nome),
-        h('div', { className: 'perfil-id__callsign u-mono' }, 'Callsign: ' + config.callsign),
-        h('div', { className: 'perfil-id__badges' },
-          h('span', { className: 'badge badge--magenta' }, 'CLEARANCE OMEGA'),
-          h('span', { className: 'badge badge--cyan' }, 'EQUIPE ALFA'),
-          h('span', { className: 'badge badge--success' }, 'EQUIPE TANGO')
-        ),
-        h('p', { className: 'perfil-id__bio' },
-          'Operador-líder e arquiteto do Núcleo Infinity Dreadnought. ',
-          'Responsável pelo Mark XIII — 13ª iteração do Projeto Baluarte. ',
-          'Brasileiro. Construiu esta plataforma após 12 versões anteriores que falharam.')
-      )
-    )
+  /* ---- HERO / dossiê ---- */
+  const hero = h('div', { className: 'pf-hero anim-fade-in' },
+    h('div', { className: 'pf-emblem' },
+      h('span', { className: 'pf-emblem__ring' }),
+      h('span', { className: 'pf-emblem__core' }, h('span', { className: 'pf-emblem__glyph' }, 'Ω'))),
+    h('div', { className: 'pf-id' },
+      h('div', { className: 'pf-kicker' }, 'Dossiê do Operador · Clearance OMEGA'),
+      h('h2', { className: 'pf-name' }, config.nome),
+      h('div', { className: 'pf-callsign' },
+        h('span', { className: 'dot' }), 'CALLSIGN ', h('strong', null, config.callsign), ' · ONLINE'),
+      h('div', { className: 'pf-badges' },
+        h('span', { className: 'pf-badge pf-badge--omega' }, 'CLEARANCE OMEGA'),
+        h('span', { className: 'pf-badge pf-badge--alfa' }, 'EQUIPE ALFA'),
+        h('span', { className: 'pf-badge pf-badge--tango' }, 'EQUIPE TANGO')),
+      h('p', { className: 'pf-bio' },
+        'Operador-líder e arquiteto do Núcleo Infinity Dreadnought. ',
+        'Responsável pelo Mark XIII — 13ª iteração do Projeto Baluarte. ',
+        'Brasileiro. Construiu esta plataforma após 12 versões anteriores que falharam.'))
   );
+  /* parallax sutil do brilho com o mouse */
+  hero.addEventListener('mousemove', (e) => {
+    const r = hero.getBoundingClientRect();
+    const gx = 78 + ((e.clientX - r.left) / r.width - 0.5) * 16;
+    hero.style.setProperty('--gx', gx + '%');
+  });
+  hero.addEventListener('mouseleave', () => hero.style.setProperty('--gx', '78%'));
+  page.appendChild(hero);
 
-  /* Estatísticas do projeto */
-  fullPage.appendChild(
-    h('div', { className: 'section-header' },
-      h('h2', { className: 'section-header__title' }, 'Estatísticas do Projeto'))
-  );
-  fullPage.appendChild(
-    h('div', { className: 'perfil-stats' },
+  /* ---- estatísticas ---- */
+  page.appendChild(sectionTitle('◎', 'Estatísticas do Projeto'));
+  page.appendChild(
+    h('div', { className: 'pf-stats' },
       ...STATS.map((s) =>
-        h('div', { className: 'perfil-stat card' },
-          h('div', { className: 'perfil-stat__icon' }, s.icon),
-          h('div', { className: 'perfil-stat__value' }, s.value),
-          h('div', { className: 'perfil-stat__label' }, s.label)
-        )
-      )
-    )
+        h('div', { className: 'pf-stat' },
+          h('div', { className: 'pf-stat__icon' }, s.icon),
+          h('div', { className: 'pf-stat__value' }, s.value),
+          h('div', { className: 'pf-stat__label' }, s.label))))
   );
 
-  /* Links rápidos */
-  fullPage.appendChild(
-    h('div', { className: 'section-header' },
-      h('h2', { className: 'section-header__title' }, 'Acesso Rápido'))
-  );
-  fullPage.appendChild(
-    h('div', { className: 'perfil-links' },
+  /* ---- acesso rápido ---- */
+  page.appendChild(sectionTitle('⊳', 'Acesso Rápido'));
+  page.appendChild(
+    h('div', { className: 'pf-links' },
       ...LINKS.map((l) =>
         h('button', {
-          className: 'perfil-link',
+          className: 'pf-link',
           onclick: () => {
             if (l.url) window.open(l.url, '_blank', 'noopener');
             else if (l.route) router.navigate(l.route);
           }
         },
-          h('span', { className: 'perfil-link__icon' }, l.icon),
-          h('span', { className: 'perfil-link__label' }, l.label),
-          h('span', { className: 'perfil-link__arrow' }, l.url ? '↗' : '→')
-        )
-      )
-    )
+          h('span', { className: 'pf-link__icon' }, l.icon),
+          h('span', { className: 'pf-link__label' }, l.label),
+          h('span', { className: 'pf-link__arrow' }, l.url ? '↗' : '→'))))
   );
 
-  /* Configurações */
-  fullPage.appendChild(
-    h('div', { className: 'section-header' },
-      h('h2', { className: 'section-header__title' }, 'Configurações'))
-  );
+  /* ---- configurações ---- */
+  page.appendChild(sectionTitle('⚙', 'Configurações'));
 
   function toggle(key, label, desc) {
     const cb = h('input', {
@@ -133,59 +133,50 @@ export function perfilPage() {
         toast(`${label}: ${config[key] ? 'ativado' : 'desativado'}`, { type: 'info' });
       }
     });
-    return h('label', { className: 'perfil-config-row' },
+    return h('label', { className: 'pf-toggle' },
       h('div', null,
-        h('div', { className: 'perfil-config-row__label' }, label),
-        h('div', { className: 'perfil-config-row__desc u-text-muted' }, desc)
-      ),
-      cb
-    );
+        h('div', { className: 'pf-toggle__label' }, label),
+        h('div', { className: 'pf-toggle__desc u-text-muted' }, desc)),
+      cb);
   }
 
   const nomeInput = h('input', {
-    className: 'input', type: 'text', value: config.nome,
+    className: 'input pf-input', type: 'text', value: config.nome,
     oninput: (e) => { config.nome = e.target.value; storage.set(STORAGE_KEY, config); }
   });
   const callsignInput = h('input', {
-    className: 'input', type: 'text', value: config.callsign,
+    className: 'input pf-input', type: 'text', value: config.callsign,
     oninput: (e) => { config.callsign = e.target.value; storage.set(STORAGE_KEY, config); }
   });
 
-  fullPage.appendChild(
-    h('div', { className: 'perfil-config card' },
-      h('label', { className: 'perfil-config-field' },
-        h('span', null, 'NOME'), nomeInput),
-      h('label', { className: 'perfil-config-field' },
-        h('span', null, 'CALLSIGN'), callsignInput),
-      h('div', { className: 'perfil-config-field' },
+  page.appendChild(
+    h('div', { className: 'pf-config' },
+      h('label', { className: 'pf-field' }, h('span', null, 'NOME'), nomeInput),
+      h('label', { className: 'pf-field' }, h('span', null, 'CALLSIGN'), callsignInput),
+      h('div', { className: 'pf-field' },
         h('span', null, 'TEMA'),
-        h('div', { className: 'perfil-themes' },
+        h('div', { className: 'pf-themes' },
           ...THEMES.map((t) => h('button', {
-            className: 'perfil-theme' + (t.id === getThemeId() ? ' is-active' : ''),
-            'data-theme': t.id,
-            title: t.label,
+            className: 'pf-theme' + (t.id === getThemeId() ? ' is-active' : ''),
+            'data-theme': t.id, title: t.label,
             onclick: () => {
               setTheme(t.id);
-              document.querySelectorAll('.perfil-theme').forEach((b) =>
+              document.querySelectorAll('.pf-theme[data-theme]').forEach((b) =>
                 b.classList.toggle('is-active', b.dataset.theme === t.id));
               toast('Tema: ' + t.label, { type: 'info' });
             }
           },
             h('span', {
-              className: 'perfil-theme__sw',
+              className: 'pf-theme__sw',
               style: { background: `linear-gradient(135deg, ${t.primary} 0 50%, ${t.secondary} 50% 100%)` }
             }),
-            t.label
-          ))
-        )
-      ),
-      h('div', { className: 'perfil-config-field' },
+            t.label))) ),
+      h('div', { className: 'pf-field' },
         h('span', null, 'UNIVERSO (skin do site)'),
-        h('div', { className: 'perfil-themes' },
+        h('div', { className: 'pf-themes' },
           ...UNIVERSE_SKINS.map((u) => h('button', {
-            className: 'perfil-theme' + (u.id === getUniverseId() ? ' is-active' : ''),
-            'data-universe-btn': u.id,
-            title: u.label,
+            className: 'pf-theme' + (u.id === getUniverseId() ? ' is-active' : ''),
+            'data-universe-btn': u.id, title: u.label,
             onclick: () => {
               setUniverse(u.id);
               document.querySelectorAll('[data-universe-btn]').forEach((b) =>
@@ -194,18 +185,15 @@ export function perfilPage() {
             }
           },
             h('span', {
-              className: 'perfil-theme__sw',
+              className: 'pf-theme__sw',
               style: { background: `linear-gradient(135deg, ${u.primary} 0 50%, ${u.secondary} 50% 100%)` }
             }),
-            u.label
-          ))
-        )
-      ),
+            u.label))) ),
       h('p', { className: 'u-text-muted', style: { fontSize: '11px', margin: '-4px 0 4px' } },
         '🌌 15 universos com skin completo — cor, tipografia, formas e atmosfera próprias.'),
       toggle('reduceMotion', 'Reduzir animações', 'Desativa transições e efeitos de movimento.'),
       toggle('confirmActions', 'Confirmar ações destrutivas', 'Pede confirmação antes de limpar dados.'),
-      h('div', { className: 'perfil-danger' },
+      h('div', { className: 'pf-danger' },
         h('button', {
           className: 'btn btn--ghost btn--sm u-text-danger',
           onclick: () => {
@@ -220,10 +208,8 @@ export function perfilPage() {
               setTimeout(() => location.reload(), 1000);
             }
           }
-        }, '⚠ Limpar todos os dados locais')
-      )
-    )
+        }, '⚠ Limpar todos os dados locais')))
   );
 
-  return fullPage;
+  return page;
 }
