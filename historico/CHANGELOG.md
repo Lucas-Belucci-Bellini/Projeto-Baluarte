@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-14
 
+### App desktop (Baluarte Launcher) — M3b: orbe roda no grafo REAL do motor (#222)
+- 🧠 **Grafo de verdade no orbe 3D**: no Baluarte Launcher, a `/git-nexus` busca o grafo real do motor (`nexus:graph` → `/api/repos` + `/api/graph` do 1º repo analisado) e o **mesmo pipeline** (comunidades, PageRank, impacto, centralidade) passa a rodar nele — via `fromEngineGraph()` que converte `{nodes, relationships}` do GitNexus pro formato do `analyze()`. **Sem fork**: na web (sem launcher) ou se não houver repo analisado, segue no `codemap.json`.
+- 🔌 **Handler `nexus:graph`** na ponte IPC (M2) + `nexus.graph()` no desktop (pega o 1º repo de `/api/repos`, busca `/api/graph?repo=…`, timeout maior).
+- 🏷️ A dica do grafo vira "grafo REAL do motor" quando o motor alimenta a cena.
+- ✅ Verificado no navegador (Playwright): web = codemap (187 arquivos, badge oculto); launcher simulado com grafo do motor = orbe renderiza os 44 nós/78 arestas reais, comunidades e "mais central/importado" calculados sobre eles, badge verde, dica "grafo REAL".
+- 🧱 Falta a **fatia nativa (M3c)**: empacotar o motor + nativos (`electron-rebuild`) e subir a 4747 por padrão — aí o aceite é ponta-a-ponta na máquina.
+- 🛡️ Backup: `backup/2026-06-14-pre-merge-desktop-m3b`.
+
 ### App desktop (Baluarte Launcher) — M3a: detecção do motor real do GitNexus (#222)
 - 🔌 **`desktop/src/nexus.js`**: detecta o **motor real** do GitNexus (servidor Express do pacote `gitnexus` na **4747**) via `GET /api/health` + `/api/info`. Spawn opt-in por enquanto (`BALUARTE_NEXUS_CMD`), sem shell e com args fixos; encerra junto com o app.
 - 🧩 **Handler `nexus:status`** plugado na allowlist da ponte IPC (M2) — devolve `{ available, url, version?, nodeVersion?, spawned }`.

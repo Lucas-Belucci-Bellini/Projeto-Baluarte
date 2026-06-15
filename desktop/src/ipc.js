@@ -52,7 +52,11 @@ function buildHandlers(ctx) {
 
     // M3a: estado do motor real do GitNexus (servidor na 4747).
     // { available, url, version?, nodeVersion?, spawned }
-    'nexus:status': async () => nexus.status()
+    'nexus:status': async () => nexus.status(),
+
+    // M3b: grafo REAL do motor (1º repo analisado).
+    // { repo, nodes: GraphNode[], relationships: GraphRelationship[] }
+    'nexus:graph': async () => nexus.graph()
   };
 }
 

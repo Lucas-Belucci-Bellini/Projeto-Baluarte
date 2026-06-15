@@ -60,16 +60,21 @@ await window.baluarte.invoke('app:reload');
 ```js
 await window.baluarte.invoke('nexus:status');
 // { available, url, version?, nodeVersion?, spawned }
+await window.baluarte.invoke('nexus:graph');
+// { repo, nodes: GraphNode[], relationships: GraphRelationship[] }  (1º repo analisado)
 ```
 
-A página `/git-nexus` (no site) usa isso pra mostrar um badge: **verde** "motor real
-conectado" ou **âmbar** "motor local indisponível — usando o mapa de build". Na web
-(sem launcher) o badge fica oculto e a página segue com o `codemap.json`.
+A página `/git-nexus` (no site) usa o `status` pra mostrar um badge: **verde** "motor
+real conectado" ou **âmbar** "motor local indisponível — usando o mapa de build". E
+usa o `graph` (**M3b**): quando o motor está no ar, o orbe 3D, as comunidades, o
+PageRank e o impacto rodam no **grafo REAL** (via `fromEngineGraph` → o mesmo
+`analyze()`, sem fork); na web (sem launcher) o badge fica oculto e tudo segue com o
+`codemap.json`.
 
 Subir o motor: por ora é **opt-in** — defina `BALUARTE_NEXUS_CMD` com o caminho do
 executável `gitnexus` (ou rode `gitnexus serve` à parte). Empacotar o motor + os
 nativos (`tree-sitter` ×11, `onnxruntime-node`, `@ladybugdb/core`) com
-`electron-rebuild` e subir por padrão = **fatia nativa (M3b)**.
+`electron-rebuild` e subir por padrão = **fatia nativa (M3c)**.
 
 ## Rodar em desenvolvimento
 
@@ -116,7 +121,8 @@ Quem já tem o launcher instalado recebe a atualização no próximo restart.
 ## Roadmap
 
 Marcos M0→M6 detalhados na issue **#222**. Estado atual: **M0** (esqueleto +
-auto-update), **M1** (casca de launcher), **M2** (ponte IPC allowlisted) e
-**M3a** (detecção do motor real na 4747 + badge na página). Próximo: **M3b** —
-empacotar o motor + os nativos (`electron-rebuild`), subir a 4747 por padrão, e a
-página consumir o **grafo real** (`/api/graph`) no lugar do `codemap.json`.
+auto-update), **M1** (casca de launcher), **M2** (ponte IPC allowlisted),
+**M3a** (detecção do motor + badge) e **M3b** (consumo do **grafo real** via
+`nexus:graph` → o orbe roda no grafo do motor). Próximo: **M3c (fatia nativa)** —
+empacotar o motor + os nativos (`electron-rebuild`) e subir a 4747 por padrão, pra
+o motor existir sem o usuário rodar nada à parte.
