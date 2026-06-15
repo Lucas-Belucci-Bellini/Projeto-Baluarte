@@ -1,0 +1,115 @@
+/* ===== /sobre — Sobre o Projeto (redesign #195) ===== */
+
+.page-sobre { max-width: 1000px; }
+.page-sobre .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.22));
+}
+
+/* ---- intro ---- */
+.sobre-hero {
+  position: relative; overflow: hidden;
+  border: var(--border-base); border-radius: var(--radius-lg); padding: var(--space-xl);
+  background:
+    radial-gradient(70% 130% at 80% 0%, rgba(0, 240, 255, 0.12), transparent 55%),
+    radial-gradient(70% 130% at 20% 100%, rgba(255, 0, 170, 0.10), transparent 55%),
+    linear-gradient(180deg, var(--color-surface-2), var(--color-bg-elevated));
+  margin-bottom: var(--space-lg);
+}
+.sobre-h {
+  font-size: 22px; margin: 0 0 12px;
+  background: linear-gradient(135deg, #e6f1ff, var(--color-cyan));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sobre-hero p { font-size: 14px; line-height: 1.7; margin: 0 0 10px; color: var(--color-text-primary); }
+.sobre-hero p:last-child { margin-bottom: 0; }
+
+/* ---- section headers (acento neon) ---- */
+.page-sobre .section-header {
+  display: flex; align-items: center; gap: 12px; margin: var(--space-xl) 0 var(--space-md);
+}
+.page-sobre .section-header__title { font-size: 17px; font-weight: 700; margin: 0; white-space: nowrap; }
+.page-sobre .section-header__count {
+  font-family: var(--font-mono); font-size: 11px; color: var(--color-cyan);
+  background: var(--color-cyan-soft); border: 1px solid var(--color-cyan-edge);
+  padding: 2px 10px; border-radius: var(--radius-pill);
+}
+.page-sobre .section-header::after {
+  content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--color-cyan-edge), transparent);
+}
+
+/* ---- TIMELINE (espinha vertical) ---- */
+.sobre-timeline { position: relative; margin: var(--space-sm) 0 var(--space-md); }
+.sobre-timeline::before {
+  content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px;
+  background: linear-gradient(180deg, var(--color-cyan), var(--color-magenta)); opacity: 0.55;
+}
+.sobre-tl-item { position: relative; padding: 0 0 var(--space-lg) 32px; }
+.sobre-tl-item::before {
+  content: ''; position: absolute; left: 0; top: 3px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--color-bg-elevated); border: 2px solid var(--color-cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+.sobre-tl-item:last-child::before { border-color: var(--color-magenta); box-shadow: 0 0 12px rgba(255, 0, 170, 0.6); }
+.sobre-tl-tag {
+  display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
+  color: var(--color-cyan); background: var(--color-cyan-soft); border: 1px solid var(--color-cyan-edge);
+  padding: 2px 11px; border-radius: var(--radius-pill); margin-bottom: 6px;
+}
+.sobre-tl-item:last-child .sobre-tl-tag { color: var(--color-magenta); background: var(--color-magenta-soft); border-color: var(--color-magenta-edge); }
+.sobre-tl-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; color: var(--color-text-primary); }
+.sobre-tl-text { font-size: 13px; line-height: 1.65; color: var(--color-text-secondary); margin: 0; max-width: 70ch; }
+
+/* ---- mapa do site ---- */
+.sobre-map-group {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--color-magenta); margin: var(--space-md) 0 var(--space-sm);
+}
+.sobre-map-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: var(--space-md); }
+.sobre-map-card {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px;
+  border: var(--border-thin); border-radius: var(--radius-md); background: var(--color-surface);
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.sobre-map-card:hover { transform: translateY(-2px); border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
+.sobre-map-card__icon {
+  font-size: 22px; color: var(--color-cyan); flex: none; line-height: 1.2;
+  filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.35));
+}
+.sobre-map-card__name { font-weight: 700; font-size: 14px; margin-bottom: 3px; color: var(--color-text-primary); }
+.sobre-map-card__desc { font-size: 12.5px; line-height: 1.55; color: var(--color-text-secondary); }
+
+/* ---- educacional ---- */
+.sobre-edu {
+  border: var(--border-thin); border-radius: var(--radius-md); padding: var(--space-lg); background: var(--color-surface);
+}
+.sobre-edu > p { font-size: 14px; line-height: 1.7; margin: 0 0 var(--space-md); }
+.sobre-edu-item {
+  display: flex; gap: 12px; align-items: flex-start; padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; line-height: 1.6; color: var(--color-text-secondary);
+}
+.sobre-edu-item__icon { font-size: 18px; color: var(--color-cyan); flex: none; }
+
+/* ---- aviso "em construção" ---- */
+.sobre-build {
+  position: relative; overflow: hidden; margin-top: var(--space-xl);
+  padding: var(--space-xl); border-radius: var(--radius-lg);
+  border: 1px solid var(--color-warning-soft);
+  background:
+    radial-gradient(80% 120% at 50% 0%, rgba(255, 170, 0, 0.08), transparent 60%),
+    var(--color-bg-elevated);
+}
+.sobre-build::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+  background: repeating-linear-gradient(45deg, transparent, transparent 14px, rgba(255, 170, 0, 0.035) 14px, rgba(255, 170, 0, 0.035) 28px);
+}
+.sobre-build > * { position: relative; }
+.sobre-build__badge {
+  display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  color: var(--color-warning); background: var(--color-warning-soft); border: 1px solid rgba(255, 170, 0, 0.4);
+  padding: 4px 12px; border-radius: var(--radius-pill); margin-bottom: 12px;
+}
+.sobre-build__title { font-size: 22px; margin: 0 0 12px; color: var(--color-text-primary); }
+.sobre-build p { font-size: 14px; line-height: 1.7; margin: 0 0 10px; }
+.sobre-build__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-md); }
