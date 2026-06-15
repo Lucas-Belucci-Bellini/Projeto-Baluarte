@@ -667,3 +667,71 @@
 .batalha-card__tatica { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: var(--space-xs); }
 .batalha-card__tatica-lbl { color: var(--color-cyan); }
 .batalha-card__impacto { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; line-height: 1.45; }
+
+/* ════════════════════════════════════════════════════════════
+   Polish cinematográfico (redesign #195) — eleva as 12 páginas
+   da Seção Militar de uma vez: glow, profundidade e hover ricos.
+   Só aumenta o visual; não mexe em layout/estrutura.
+   ════════════════════════════════════════════════════════════ */
+
+/* títulos de página da seção em degradê neon */
+.forcas-page .page-header__title, .orca-page .page-header__title, .poder-page .page-header__title,
+.arsx-page .page-header__title, .sof-page .page-header__title, .org-page .page-header__title,
+.tech-page .page-header__title, .tat-page .page-header__title, .hist-page .page-header__title,
+.apais-page .page-header__title, .guerra-page .page-header__title, .batalha-page .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+}
+
+/* stat tiles: barra de acento no topo, valor com brilho, lift no hover */
+.forcas-stat {
+  position: relative; overflow: hidden;
+  background: linear-gradient(180deg, var(--color-surface-2), var(--color-surface));
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.forcas-stat::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta)); opacity: 0.75;
+}
+.forcas-stat:hover { transform: translateY(-2px); border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
+.forcas-stat__val { text-shadow: 0 0 14px rgba(0, 240, 255, 0.45); }
+
+/* cards da seção: glow ciano + lift no hover (reforça os que já sobem) */
+.tech-card, .poder-card, .org-unit, .guerra-item__card {
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.arsx-card:hover, .sof-card:hover, .tech-card:hover, .tat-card:hover, .tat-princ:hover, .tat-estr:hover,
+.poder-card:hover, .guerra-item__card:hover, .batalha-card:hover, .org-unit:hover, .apais-card:hover {
+  border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan);
+}
+.tech-card:hover, .poder-card:hover, .org-unit:hover, .guerra-item__card:hover { transform: translateY(-2px); }
+
+/* barras de progresso/orçamento ganham brilho */
+.forcas-bar__fill, .orca-bar, .orca-chart-bar, .poder-bar { box-shadow: 0 0 8px rgba(0, 240, 255, 0.35); }
+
+/* timelines: nós luminosos + espinha mais viva */
+.hist-timeline::before, .guerra-timeline::before { opacity: 0.6; }
+.hist-era__dot, .guerra-item__dot { box-shadow: 0 0 10px rgba(0, 240, 255, 0.55); }
+.hist-era--era7 .hist-era__dot, .guerra-item--cont .guerra-item__dot { box-shadow: 0 0 10px rgba(255, 0, 170, 0.55); }
+
+/* tabela: linha com leve tinta ciano no hover, país realçado */
+.forcas-row:hover { background: rgba(0, 240, 255, 0.05); }
+.forcas-row:hover .forcas-td--pais { color: var(--color-cyan); }
+
+/* chips/tags com borda neon sutil */
+.tech-chip, .arsx-card__type, .apais-tag--tipo { border: 1px solid var(--color-cyan-edge); }
+
+/* abas/filtros ativos com glow */
+.orca-mode-btn.is-active, .poder-cat-btn.is-active, .arsx-tab.is-active, .org-tab.is-active, .guerra-filter.is-active {
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+/* títulos de seção em degradê */
+.poder-section-title, .tat-section-title {
+  background: linear-gradient(135deg, #e6f1ff, var(--color-cyan));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* inputs/selects com foco neon */
+.forcas-search:focus, .apais-select:focus { border-color: var(--color-cyan); box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1); }

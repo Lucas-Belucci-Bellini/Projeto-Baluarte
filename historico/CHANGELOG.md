@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-15
 
+### Redesign #195 — Onda 1: Seção Militar inteira (12 páginas num PR)
+- ⚔️ **`militar.css` repaginada** com um *layer* de polish cinematográfico que eleva **as 12 páginas da Seção Militar de uma vez** (Forças Armadas, Orçamentos, Rankings de Poder, Arsenal Expandido, Forças Especiais, Organização, Tecnologia, Táticas, História, Armas por País, Guerras, Batalhas) — uma única folha compartilhada, máximo de alavancagem.
+- ✨ **O que ganhou glow/profundidade**: títulos em degradê neon; *stat tiles* com barra de acento no topo, valor com brilho e *lift* no hover; todos os cards com glow ciano no hover; barras de progresso/orçamento brilhando; nós das timelines (História, Guerras) luminosos; linhas de tabela com tinta ciano; abas/filtros ativos com glow; inputs com foco neon. **Só visual — nada de layout/estrutura mudou.**
+- ✅ Verificado no navegador (Playwright): Rankings de Poder, Forças Armadas (stats + tabela) e História Militar (timeline) renderizando no novo estilo.
+- 🛡️ Backup: `backup/2026-06-15-pre-merge-militar-wave1`.
+
 ### Redesign #195 — /sobre repaginada (linha do tempo cinematográfica)
 - 📖 **`/sobre` redesenhada** no estilo do redesign (a página também não tinha CSS dedicado). Destaque pra **linha do tempo** da jornada do projeto (Mark I → v1.0.0): virou uma **espinha vertical com brilho** ciano→magenta, nós luminosos e tags em pílula — o último marco em magenta.
 - 🗺 **Mapa do site** com cards de glow/lift e ícones brilhantes; seção **educacional** repaginada; e o aviso **"em construção"** num painel com acento âmbar e listras diagonais.
