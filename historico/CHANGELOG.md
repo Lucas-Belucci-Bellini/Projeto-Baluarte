@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-15
 
+### Redesign #195 — /sobre repaginada (linha do tempo cinematográfica)
+- 📖 **`/sobre` redesenhada** no estilo do redesign (a página também não tinha CSS dedicado). Destaque pra **linha do tempo** da jornada do projeto (Mark I → v1.0.0): virou uma **espinha vertical com brilho** ciano→magenta, nós luminosos e tags em pílula — o último marco em magenta.
+- 🗺 **Mapa do site** com cards de glow/lift e ícones brilhantes; seção **educacional** repaginada; e o aviso **"em construção"** num painel com acento âmbar e listras diagonais.
+- 🎨 Novo `src/styles/sobre.css` (CSS-only, sem mexer na lógica/conteúdo) usando os design tokens — consistente com home, Git Nexus e /perfil.
+- ✅ Verificado no navegador (Playwright): hero, 6 marcos na timeline, 16 cards do mapa, 5 itens educacionais e o painel final.
+- 🛡️ Backup: `backup/2026-06-15-pre-merge-sobre-redesign`.
+
 ### Redesign #195 — /perfil vira o "Dossiê do Operador"
 - 🪪 **`/perfil` reconstruída** no estilo cinematográfico do redesign. A página estava praticamente sem estilo (classes `perfil-*` sem CSS); agora tem um **dossiê imersivo**: emblema **Ω** num anel ciano→magenta girando, nome em degradê, callsign com status "● ONLINE", badges de clearance (OMEGA/ALFA/TANGO) e bio, sobre um fundo com brilho radial + grid e **parallax sutil do brilho com o mouse**.
 - 📊 **Cards de estatística** com número em degradê mono, glow e *lift* no hover; **acesso rápido** em cards com glow magenta; **configurações** (nome, callsign, 27 temas/universos em pílulas, toggles, zona de perigo) repaginadas e mantidas 100% funcionais.
