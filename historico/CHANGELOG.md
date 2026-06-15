@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-15
 
+### JARVIS ganha o Git Nexus como skills (#231, inspirado no OpenJarvis)
+- 🧠 **O JARVIS agora entende o código.** Pergunte *"o que quebra se eu mexer no `helpers.js`?"* e ele chama a skill `nexus_impact` e responde **"risco CRÍTICO, 115 arquivos afetados"** — usando o grafo de conhecimento do Git Nexus, não um chute.
+- 🧩 **5 skills novas** registradas no catálogo de ferramentas do agente (`src/utils/jarvis-nexus-tools.js`), no padrão de "skills" do OpenJarvis: `nexus_impact` (raio de explosão + risco), `nexus_context` (quem importa / o que importa), `nexus_path` (caminho entre dois arquivos), `nexus_deps` (dependências), `nexus_rename` (usos que um rename tocaria).
+- ♻️ **Reusa o motor que já existe**: cada skill resolve o alvo em linguagem natural (`search`) e chama as funções do `git-nexus-engine` (`nexusImpact`/`nexusContext`/`nexusPath`/`nexusRename`) sobre o `codemap.json`. Grafo montado uma vez (lazy) e reusado. Tudo JS puro, na web.
+- 🔌 Plugado via `import` no `jarvis-engine.js` — entram automaticamente no `getToolSchemas()` que vai pro modelo; o loop de tool-call do agente já sabe executá-las.
+- ✅ Verificado no navegador (Playwright + Vite dev): as 5 skills no catálogo, `impact helpers` = CRÍTICO/115, `context router` = 26 importadores, `path home→helpers` = 1 salto, `rename helpers` = 112 usos, e alvo inexistente devolvendo erro gracioso.
+- 🛡️ Backup: `backup/2026-06-15-pre-merge-jarvis-nexus-skills`.
+
 ### Launcher v0.1.1 — ícone do app vira o selo vermelho + bump de versão
 - 🔴 **Ícone do launcher trocado pelo selo vermelho**: o `desktop/build/icon.png` ainda era o arc-reactor ciano que eu gerei no M0; agora é o selo (renderizado de `public/logo.svg` num quadrado escuro 1024², com brilho). É o ícone que aparece na barra de tarefas, no atalho e na janela. `build/make-icon.mjs` reescrito pra gerar o ícone a partir do logo do projeto.
 - 🎬 **Telas do launcher no mesmo selo**: splash de abertura e tela offline agora mostram o selo vermelho (antes era o arc-reactor em CSS). `logo.svg` copiado pra `desktop/src/` pro app empacotado achar; CSP da splash liberou `img-src`.

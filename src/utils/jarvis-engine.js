@@ -17,6 +17,7 @@ import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { getToolSchemas, runTool } from './jarvis-tools.js';
+import './jarvis-nexus-tools.js'; // registra o Git Nexus como skills do JARVIS (#231)
 import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
 import { addMemory, searchMemories, conceptLabel, codeContext } from './jarvis-brain.js';
 
