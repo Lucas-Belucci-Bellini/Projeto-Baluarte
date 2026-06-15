@@ -14,7 +14,7 @@
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { analyze, symbolSubmap, fileSymbolGraph, impactOf, dependenciesOf, search,
-  nexusContext, nexusImpact, nexusPath, nexusRename } from '../utils/git-nexus-engine.js';
+  nexusContext, nexusImpact, nexusPath, nexusRename, fromEngineGraph } from '../utils/git-nexus-engine.js';
 import { createGraphView3D } from '../utils/git-nexus-graph3d.js';
 import { memoryStats, codeMemoryCounts } from '../utils/jarvis-brain.js';
 import codemap from '../data/codemap.json';
@@ -63,6 +63,7 @@ export function gitNexusPage() {
   /* análise ativa (recalculada ao trocar de modo) */
   let cur = null;        // { mode, graph, communities, comIdx, pr, metrics, rawById }
   let view = null;
+  let liveGraph = null;  // M3b — grafo REAL do motor (só no Baluarte Launcher)
 
   const page = h('div', { className: 'page-gitnexus' });
 
@@ -138,7 +139,7 @@ export function gitNexusPage() {
     let submap;
     if (mode === 'file-functions') submap = fileSymbolGraph(symbolmap, focusFile);
     else if (mode === 'functions') submap = symbolSubmap(symbolmap, FN_CAP);
-    else submap = codemap;
+    else submap = liveGraph || codemap;   // M3b: grafo real do motor, se houver
     const a = analyze(submap);
     cur = { mode, focusFile, focusIds: submap.focusIds || null, ...a, rawById: new Map((submap.nodes || []).map((n) => [n.id, n])) };
 
@@ -158,7 +159,9 @@ export function gitNexusPage() {
       ? `🌐 funções de ${focusFile.split('/').pop()} + conexões · gira sozinho · arraste · clique p/ detalhes`
       : mode === 'functions'
         ? `🌐 grafo 3D · ${a.graph.nodes.length} principais funções · gira sozinho · arraste · clique p/ ver chamadas e impacto`
-        : '🌐 grafo 3D · gira sozinho · arraste para girar · clique num nó p/ ver impacto e dependências';
+        : liveGraph
+          ? '🌐 grafo REAL do motor · gira sozinho · arraste · clique num nó p/ ver impacto e dependências'
+          : '🌐 grafo 3D · gira sozinho · arraste para girar · clique num nó p/ ver impacto e dependências';
 
     view = createGraphView3D(canvas, {
       nodes: a.graph.nodes, edges: a.graph.edges, comIdx: a.comIdx, pr: a.pr,
@@ -405,8 +408,23 @@ export function gitNexusPage() {
         card('📈', 'ML da Memória', 'Aprendizado sobre o que o site sabe.', '/aprendizado', `${linkedFiles} arquivos citados`)));
   }
 
+  /* M3b — no launcher, troca o codemap pelo grafo REAL do motor (degrada p/ codemap) */
+  async function maybeLoadLiveGraph() {
+    const bridge = typeof window !== 'undefined' ? window.baluarte : null;
+    if (!bridge || !bridge.native || typeof bridge.invoke !== 'function') return;
+    try {
+      const g = await bridge.invoke('nexus:graph');
+      if (!g || !Array.isArray(g.nodes) || g.nodes.length === 0) return;
+      liveGraph = fromEngineGraph(g);
+      if (cur && cur.mode === 'files') { cur = null; switchMode('files'); }
+    } catch {
+      /* sem motor / sem repo analisado — segue no codemap */
+    }
+  }
+
   /* arranca no modo Arquivos */
   switchMode('files');
+  maybeLoadLiveGraph();
   cleanups.push(() => { if (view) view.destroy(); });
 
   return page;

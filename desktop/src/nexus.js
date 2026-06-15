@@ -47,6 +47,20 @@ async function status() {
 }
 
 /**
+ * Grafo REAL do motor: pega o 1º repo analisado (`/api/repos`) e busca o grafo
+ * (`/api/graph?repo=…`). Devolve `{ repo, nodes, relationships }` no formato do
+ * GitNexus (GraphNode/GraphRelationship). Vazio se não houver repo analisado.
+ */
+async function graph() {
+  const list = await getJSON('/api/repos');
+  const repo = Array.isArray(list) && list[0] ? list[0].name || list[0].path : null;
+  const q = repo ? '?repo=' + encodeURIComponent(repo) : '';
+  const g = await getJSON('/api/graph' + q, 8000);
+  if (!g || !Array.isArray(g.nodes)) return { repo, nodes: [], relationships: [] };
+  return { repo, nodes: g.nodes, relationships: g.relationships || [] };
+}
+
+/**
  * Best-effort: sobe o motor SÓ se `BALUARTE_NEXUS_CMD` apontar pra ele (caminho
  * do executável). Sem shell e com args fixos — nada de string de comando.
  * Empacotar o motor e subir por padrão = fatia nativa (M3b).
@@ -78,4 +92,4 @@ function stop() {
   }
 }
 
-module.exports = { status, maybeStart, stop, BASE };
+module.exports = { status, graph, maybeStart, stop, BASE };

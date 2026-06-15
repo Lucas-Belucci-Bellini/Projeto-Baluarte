@@ -12,6 +12,31 @@
  */
 
 /** Constrói o grafo tipado a partir do codemap. */
+/**
+ * M3b — converte o grafo REAL do motor do GitNexus (`{ nodes: GraphNode[],
+ * relationships: GraphRelationship[] }`, vindo da ponte `nexus:graph`) no
+ * formato codemap que o `buildGraph`/`analyze` já consomem. Assim o orbe 3D, as
+ * comunidades, o PageRank e o impacto rodam no grafo real sem nenhum fork.
+ */
+export function fromEngineGraph(g) {
+  const nodes = (g.nodes || []).map((n) => {
+    const p = n.properties || {};
+    const fp = p.filePath || p.path || '';
+    return {
+      id: n.id,
+      label: p.name || (fp ? fp.split('/').pop() : '') || n.id,
+      dir: fp ? fp.split('/').slice(0, -1).join('/') || '(raiz)' : n.label || '(raiz)',
+      kind: n.label
+    };
+  });
+  const links = (g.relationships || []).map((r) => ({
+    source: r.sourceId,
+    target: r.targetId,
+    type: r.type
+  }));
+  return { nodes, links, meta: { live: true, count: nodes.length } };
+}
+
 export function buildGraph(codemap) {
   const nodes = (codemap.nodes || []).map((n) => ({
     id: n.id, label: n.label || n.id, dir: n.dir || '(raiz)',
