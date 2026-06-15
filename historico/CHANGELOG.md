@@ -8,6 +8,10 @@ aqui o que mudou.
 
 ## 2026-06-15
 
+### Release do app: workflow disparável + publicação direta (#222)
+- 🚀 **`desktop-release.yml` agora dispara também por `workflow_dispatch`** (botão "Run workflow" na aba Actions, ou via API) — além da tag `desktop-v*`. Permite cortar a 1ª release sem depender de push de tag.
+- 📦 **`releaseType: 'release'`** no electron-builder: a release sai **publicada** (não rascunho), então vira a "latest" e a página `/baixar` a enxerga automaticamente.
+
 ### Página de download do app (estilo Steam/Claude) (#222)
 - ⬇ **Nova página `/baixar`**: a pessoa clica e baixa o **Baluarte Launcher** num clique, sem entender nada de programação. Detecta o **sistema operacional** (Windows/macOS/Linux) e oferece o instalador certo como CTA principal; as outras plataformas ficam como opções secundárias.
 - 🔗 **Sempre a última versão**: busca a **release mais recente** do GitHub em runtime (API), casa o asset por extensão (`.exe`/`.dmg`/`.AppImage`) e aponta direto pro download — nada hardcoded. Some "v" duplicado e mostra **tamanho + versão**.
