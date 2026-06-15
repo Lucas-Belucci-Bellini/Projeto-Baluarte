@@ -243,7 +243,7 @@ export function renderSidebar() {
       h(
         'div',
         { className: 'sidebar__logo' },
-        h('span', { className: 'sidebar__logo-glyph' }, '⬡'),
+        h('img', { className: 'sidebar__logo-img', src: '/logo.svg', alt: 'Baluarte' }),
         h('span', null, 'Mark XIII')
       ),
       h(

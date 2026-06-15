@@ -166,6 +166,13 @@
   color: transparent;
   flex-shrink: 0;
 }
+/* ===== logo (selo) — Baluarte Mark XIII ===== */
+.sidebar__logo-img { height: 26px; width: auto; flex-shrink: 0; display: block;
+  filter: drop-shadow(0 0 6px rgba(255, 31, 58, 0.5)); }
+.header__brand-img { height: 24px; width: auto; display: block;
+  filter: drop-shadow(0 0 6px rgba(255, 31, 58, 0.5)); }
+.boot-screen__logo img { height: 104px; width: auto; display: block;
+  filter: drop-shadow(0 0 18px rgba(255, 31, 58, 0.55)); animation: pulseGlowCyan 2s ease-in-out infinite; }
 .sidebar.is-collapsed .sidebar__logo span,
 .sidebar.is-collapsed .sidebar__toggle-text {
   display: none;
