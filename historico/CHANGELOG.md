@@ -8,9 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-15
 
-### Launcher v0.1.1 — bump de versão pra próxima release
-- 🔖 `desktop/package.json`: **0.1.0 → 0.1.1**. As releases do GitHub são chaveadas por versão; re-rodar o workflow com a **mesma** versão só atualiza a release existente (mantém a data original). Subir a versão = a próxima execução do workflow cria uma release **nova** (`v0.1.1`) com data atual e instaladores frescos.
-- ℹ️ A v0.1.0 já está publicada e funcional (`.exe`/`.dmg`/`.AppImage`); a página `/baixar` já serve ela.
+### Launcher v0.1.1 — ícone do app vira o selo vermelho + bump de versão
+- 🔴 **Ícone do launcher trocado pelo selo vermelho**: o `desktop/build/icon.png` ainda era o arc-reactor ciano que eu gerei no M0; agora é o selo (renderizado de `public/logo.svg` num quadrado escuro 1024², com brilho). É o ícone que aparece na barra de tarefas, no atalho e na janela. `build/make-icon.mjs` reescrito pra gerar o ícone a partir do logo do projeto.
+- 🎬 **Telas do launcher no mesmo selo**: splash de abertura e tela offline agora mostram o selo vermelho (antes era o arc-reactor em CSS). `logo.svg` copiado pra `desktop/src/` pro app empacotado achar; CSP da splash liberou `img-src`.
+- 🩹 **Bug do M0 corrigido**: o `offline.html` estava em `desktop/` (fora de `src/`), então o `main.js` (`__dirname/offline.html`) não o achava **e** ele nem entrava no pacote (`files: src/**/*`). Movido pra `desktop/src/offline.html` — o fallback offline agora funciona de verdade.
+- 🔖 `desktop/package.json`: **0.1.0 → 0.1.1**. As releases do GitHub são chaveadas por versão; re-rodar o workflow com a **mesma** versão só atualiza a release existente (mantém a data original). Subir a versão = a próxima execução cria uma release **nova** (`v0.1.1`) com data atual, instaladores frescos **e o ícone novo**.
+- ℹ️ A v0.1.0 já está publicada e funcional (`.exe`/`.dmg`/`.AppImage`); a página `/baixar` já serve ela. O ícone novo entra na v0.1.1.
+- ✅ Verificado no navegador (Playwright): ícone 1024² renderizado; splash e offline carregando o selo (CSP ok).
 
 ### Novo logo — selo arcano vermelho (Baluarte Mark XIII)
 - 🔴 **Logo trocado** pelo selo do operador (`19KMF01.svg` → `public/logo.svg`): movido pra `public/` (onde o Vite serve) e **recolorido pra vermelho** (`#ff1f3a`) — o arquivo veio traçado em preto (`fill="#000000"`) e sumiria no fundo escuro.

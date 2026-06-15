@@ -23,12 +23,10 @@
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
     p { color: #9fb3c8; line-height: 1.6; font-size: 14px; }
-    .ring {
-      width: 64px; height: 64px; margin: 0 auto 22px; border-radius: 50%;
-      border: 2px solid rgba(0, 240, 255, 0.25); border-top-color: #00f0ff;
-      animation: spin 1.1s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .seal img { height: 120px; width: auto; display: block; margin: 0 auto 20px;
+      filter: drop-shadow(0 0 18px rgba(255, 31, 58, 0.5));
+      animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(0.96); opacity: 0.82; } 50% { transform: scale(1.04); opacity: 1; } }
     button {
       margin-top: 22px; padding: 10px 22px; font-size: 14px; cursor: pointer;
       color: #06080d; font-weight: 700; border: 0; border-radius: 999px;
@@ -38,7 +36,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="ring"></div>
+    <div class="seal"><img src="logo.svg" alt="Baluarte" /></div>
     <h1>BALUARTE LAUNCHER</h1>
     <p>Sem conexão com o hub. Verifique sua internet — o launcher reconecta à
        produção automaticamente assim que a rede voltar.</p>
