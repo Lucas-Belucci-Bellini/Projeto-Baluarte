@@ -6,6 +6,17 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-15
+
+### Página de download do app (estilo Steam/Claude) (#222)
+- ⬇ **Nova página `/baixar`**: a pessoa clica e baixa o **Baluarte Launcher** num clique, sem entender nada de programação. Detecta o **sistema operacional** (Windows/macOS/Linux) e oferece o instalador certo como CTA principal; as outras plataformas ficam como opções secundárias.
+- 🔗 **Sempre a última versão**: busca a **release mais recente** do GitHub em runtime (API), casa o asset por extensão (`.exe`/`.dmg`/`.AppImage`) e aponta direto pro download — nada hardcoded. Some "v" duplicado e mostra **tamanho + versão**.
+- 🌫️ **Degradação graciosa**: se ainda não houver instalador publicado (ou offline/rate-limit), mostra "build em breve" com link pro GitHub — nunca quebra.
+- 🎨 Visual no estilo do projeto: núcleo arc-reactor animado, CTA em degradê ciano→magenta, cards de "por que o app" e notas de instalação por SO (SmartScreen/Gatekeeper/AppImage).
+- 🧭 Entrou no menu lateral ("Baixar o App", logo abaixo da Ponte de Comando).
+- ✅ Verificado no navegador (Playwright): com release simulada = baixa o `.exe` certo (v0.1.0 · 74.9 MB); sem release = estado "em breve".
+- 🛡️ Backup: `backup/2026-06-15-pre-merge-pagina-download`.
+
 ## 2026-06-14
 
 ### App desktop (Baluarte Launcher) — M3b: orbe roda no grafo REAL do motor (#222)
