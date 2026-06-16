@@ -30,3 +30,50 @@
   padding: 6px 10px; background: rgba(0,0,0,.2); border-radius: var(--radius-xs); font-size: var(--font-size-sm);
 }
 .find-loc__name { font-weight: 500; }
+
+/* ════════════════════════════════════════════════════════════
+   Onda 2 — Geo/Tático (redesign #195): HUD cinematográfico.
+   Só visual (pseudo-elementos/glow); não muda layout nem JS.
+   ════════════════════════════════════════════════════════════ */
+
+/* título em degradê neon com brilho */
+.page-find .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 58%, var(--color-magenta) 120%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+}
+
+/* moldura HUD (colchetes nos cantos) sobre os painéis */
+.find-panel { position: relative; }
+.find-panel::after {
+  content: ''; position: absolute; inset: 6px; z-index: 2; pointer-events: none;
+  background:
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 2px 16px no-repeat;
+}
+.find-panel:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-md), var(--shadow-glow-cyan); }
+
+/* resultado em destaque: nome com glow neon + respiração suave */
+.find-best { animation: find-breathe 2.6s ease-in-out infinite; }
+.find-best__name {
+  background: linear-gradient(92deg, var(--color-cyan), var(--color-magenta));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.35));
+}
+@keyframes find-breathe {
+  0%, 100% { box-shadow: 0 0 0 rgba(0, 240, 255, 0); }
+  50% { box-shadow: var(--shadow-glow-cyan); }
+}
+
+/* barras de confiança brilhando + acento luminoso nas localizações */
+.find-rank__bar > span { box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); }
+.find-loc {
+  border-left: 2px solid var(--color-cyan-edge);
+  box-shadow: -5px 0 14px -7px rgba(0, 240, 255, 0.6);
+}

@@ -261,3 +261,66 @@
   .rdr-mode { flex: 1 0 40%; }
   .rdr-det-list { max-height: 200px; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Onda 2 — Geo/Tático (redesign #195): HUD cinematográfico.
+   Só visual (pseudo-elementos/glow); não muda layout nem JS.
+   ════════════════════════════════════════════════════════════ */
+
+/* título em degradê neon com brilho */
+.page-radar .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 58%, var(--color-magenta) 120%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+}
+
+/* status tiles: barra de acento no topo, valor com brilho e lift no hover */
+.rdr-status__item {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.rdr-status__item::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  opacity: 0.6;
+}
+.rdr-status__item:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow-cyan); }
+.rdr-status__val { text-shadow: 0 0 12px rgba(0, 240, 255, 0.45); }
+
+/* moldura HUD (colchetes nos cantos) sobre os módulos de canvas */
+.rdr-scope { position: relative; }
+.rdr-scope::after {
+  content: ''; position: absolute; inset: 6px; z-index: 2; pointer-events: none;
+  background:
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 2px 16px no-repeat;
+}
+.rdr-scope:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-md), var(--shadow-glow-cyan); }
+
+/* o próprio canvas ganha um glow interno sutil */
+.rdr-rd, .rdr-waterfall, .rdr-sat-scope { box-shadow: inset 0 0 60px rgba(0, 240, 255, 0.06); }
+
+/* cabeçalho do scope: título com brilho + linha de varredura animada */
+.rdr-scope__head { position: relative; overflow: hidden; }
+.rdr-scope__title { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+.rdr-scope__head::after {
+  content: ''; position: absolute; left: -40%; bottom: 0; width: 40%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan), transparent);
+  animation: rdr-scan 3.4s linear infinite;
+}
+@keyframes rdr-scan { to { left: 100%; } }
+
+/* modos/freeze ativos com glow reforçado */
+.rdr-mode.is-active { box-shadow: 0 0 14px rgba(0, 240, 255, 0.35); }
+.rdr-freeze.is-active { box-shadow: 0 0 14px rgba(255, 0, 170, 0.35); }
+
+/* linha de detecção: brilho no acento esquerdo */
+.rdr-det-row { box-shadow: -5px 0 14px -7px rgba(0, 240, 255, 0.6); }
+.rdr-det-row__snr { color: var(--color-cyan); text-shadow: 0 0 8px rgba(0, 240, 255, 0.4); }

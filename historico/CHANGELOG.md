@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-16
 
+### Redesign #195 — Onda 2: Geo/Tático (6 páginas num PR)
+- 🛰 **As 6 páginas Geo/Tático ganharam o estilo cinematográfico do redesign** — `/radar`, `/mapa`, `/geopulse`, `/triangulacao`, `/find` e `/visao` — cada uma na sua folha dedicada (`radar.css`, `mapa.css`, `geopulse.css`, `triangulacao.css`, `find.css`, `visao.css`), com uma linguagem visual **HUD** compartilhada.
+- ✨ **O que ganhou glow/profundidade**: títulos em degradê neon ciano→magenta com brilho; **moldura HUD** (colchetes luminosos nos cantos) emoldurando os módulos de canvas/scope (Range-Doppler, Waterfall, Trajetória, Campo de rumos, viewport do Mapa e da Câmera); *stat tiles* com barra de acento no topo, valor brilhando e *lift* no hover; *scope heads* com **linha de varredura animada** ("sensor ao vivo"); botões/modos/estações ativos com glow; linhas de detecção/pontos/locais com acento luminoso; barras de confiança e resultado de localização com brilho neon. **Só visual — nada de layout/estrutura/JS mudou** (tudo via pseudo-elementos e box-shadow, no espírito "leve" do #238).
+- ✅ Verificado no navegador (Playwright + Vite dev): `/radar` (scopes com moldura HUD + título neon), `/triangulacao` (stat tiles com acento, "4 estações" ativo com glow, campo com colchetes), `/find` (painéis emoldurados) e `/geopulse` (6 stats com barra de acento + scope "Trajetória" com cantos HUD ciano). Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-16-pre-merge-redesign-onda2`.
+
 ### Scroll-reveal global — todas as páginas ganham movimento (leve)
 - ✨ **Os blocos de cada página entram suavemente** conforme aparecem na viewport (fade + slide). Inspirado nas skills de animação (AOS / GSAP ScrollTrigger), mas em **~40 linhas e zero dependência** (IntersectionObserver) — alinhado ao "site leve" (#238).
 - ⚙️ `src/utils/scroll-reveal.js` + `reveal.css`, plugado no `renderPage()` do shell → roda a cada navegação, em **todas as páginas**. Pula a `/home` (a cena WebGL já tem movimento), respeita `prefers-reduced-motion`, e revela tudo na hora se não houver suporte (conteúdo nunca fica preso invisível).
