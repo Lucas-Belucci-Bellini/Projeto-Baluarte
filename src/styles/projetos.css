@@ -26,3 +26,25 @@
 .proj-card__tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .proj-tag { font-size: 10px; padding: 1px 7px; border-radius: var(--radius-pill); background: var(--color-cyan-soft); color: var(--color-cyan); }
 .proj-card__data { font-size: 11px; }
+
+/* ════════════════════════════════════════════════════════════
+   Páginas leves (redesign #195): polish cinematográfico — só visual.
+   ════════════════════════════════════════════════════════════ */
+
+/* título em degradê neon com brilho */
+.page-projetos .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.25));
+}
+
+/* cards com profundidade + glow no hover */
+.proj-card {
+  background: linear-gradient(165deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base), background var(--transition-base);
+}
+.proj-card:hover {
+  border-left-color: var(--color-cyan);
+  box-shadow: var(--shadow-md), var(--shadow-glow-cyan);
+}
+.proj-tag { border: 1px solid var(--color-cyan-edge); }

@@ -33,3 +33,29 @@
 .mural-post__time { font-size: 11px; }
 .mural-post__text { color: var(--color-text-primary); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
 .mural-empty { padding: var(--space-lg); text-align: center; border: 1px dashed rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); }
+
+/* ════════════════════════════════════════════════════════════
+   Páginas leves (redesign #195): polish cinematográfico — só visual.
+   ════════════════════════════════════════════════════════════ */
+
+/* título em degradê neon com brilho */
+.page-mural .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.25));
+}
+
+/* posts com profundidade + acento luminoso e lift no hover */
+.mural-post {
+  background: linear-gradient(165deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.mural-post:hover {
+  transform: translateX(3px);
+  border-left-color: var(--color-cyan);
+  box-shadow: -3px 0 0 0 var(--color-cyan), 0 10px 26px rgba(0, 0, 0, 0.4);
+}
+.mural-post__author { text-shadow: 0 0 10px rgba(0, 240, 255, 0.35); }
+
+/* caixa de composição com foco neon */
+.mural-name:focus, .mural-text:focus { box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1); }
