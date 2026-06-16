@@ -204,3 +204,40 @@
   .mapa-tac-page { height: auto; }
   .mapa-tac-viewport { min-height: 420px; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Onda 2 — Geo/Tático (redesign #195): HUD cinematográfico.
+   Só visual (pseudo-elementos/glow); não muda layout nem JS.
+   ════════════════════════════════════════════════════════════ */
+
+/* título em degradê neon com brilho */
+.mapa-tac-title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 58%, var(--color-magenta) 120%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+}
+.mapa-panel__title { text-shadow: 0 0 10px rgba(0, 240, 255, 0.4); }
+
+/* indicador "ao vivo" com leve glow ciano */
+.mapa-live { box-shadow: 0 0 14px rgba(0, 240, 255, 0.12); }
+
+/* viewport do mapa com moldura HUD (colchetes) + glow na borda */
+.mapa-tac-viewport { box-shadow: 0 0 24px rgba(0, 240, 255, 0.08); }
+.mapa-tac-viewport::after {
+  content: ''; position: absolute; inset: 8px; z-index: 4; pointer-events: none;
+  background:
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 18px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 2px 18px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 18px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 2px 18px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 18px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 2px 18px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 18px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 2px 18px no-repeat;
+}
+
+/* botões de base/camada ativos com glow */
+.mapa-base-btn.is-active, .mapa-btn.is-active { box-shadow: 0 0 14px rgba(0, 240, 255, 0.3); }
+
+/* barra de coordenadas com brilho mono */
+.mapa-coord-bar { text-shadow: 0 0 8px rgba(0, 240, 255, 0.5); box-shadow: 0 0 16px rgba(0, 240, 255, 0.12); }

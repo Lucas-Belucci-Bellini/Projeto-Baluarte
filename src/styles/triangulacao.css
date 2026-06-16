@@ -43,3 +43,58 @@
 @media (max-width: 620px) {
   .tri-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Onda 2 — Geo/Tático (redesign #195): HUD cinematográfico.
+   Só visual (pseudo-elementos/glow); não muda layout nem JS.
+   ════════════════════════════════════════════════════════════ */
+
+/* título em degradê neon com brilho */
+.page-tri .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 58%, var(--color-magenta) 120%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+}
+
+/* stat tiles: barra de acento no topo, valor com brilho e lift no hover */
+.tri-stat {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.tri-stat::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  opacity: 0.6;
+}
+.tri-stat:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow-cyan); }
+.tri-stat__val { text-shadow: 0 0 12px rgba(0, 240, 255, 0.45); }
+
+/* moldura HUD (colchetes nos cantos) sobre o campo de rumos */
+.tri-scope { position: relative; }
+.tri-scope::after {
+  content: ''; position: absolute; inset: 6px; z-index: 2; pointer-events: none;
+  background:
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top left / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) top right / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom left / 2px 16px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 16px 2px no-repeat,
+    linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 2px 16px no-repeat;
+}
+.tri-scope:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-md), var(--shadow-glow-cyan); }
+.tri-canvas { box-shadow: inset 0 0 60px rgba(0, 240, 255, 0.06); }
+
+/* cabeçalho com brilho + linha de varredura animada */
+.tri-scope__head { position: relative; overflow: hidden; text-shadow: 0 0 10px rgba(0, 240, 255, 0.45); }
+.tri-scope__head::after {
+  content: ''; position: absolute; left: -40%; bottom: 0; width: 40%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan), transparent);
+  animation: tri-scan 3.4s linear infinite;
+}
+@keyframes tri-scan { to { left: 100%; } }
+
+/* botão de estação ativo com glow */
+.tri-seg__btn.is-active { box-shadow: 0 0 14px rgba(0, 240, 255, 0.35); }
