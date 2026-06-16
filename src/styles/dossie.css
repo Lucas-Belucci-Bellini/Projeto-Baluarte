@@ -138,3 +138,36 @@
   text-align: center;
   font-size: var(--font-size-sm);
 }
+
+/* ════════════════════════════════════════════════════════════
+   Onda 3 — Campo & Tático (redesign #195): polish cinematográfico
+   de cards/leitor. Só visual; não muda layout nem JS.
+   ════════════════════════════════════════════════════════════ */
+
+/* título em degradê neon com brilho */
+.page-dossie .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.25));
+}
+
+/* sumário: item ativo com acento esquerdo luminoso + hover deslizante */
+.dossie-toc__item { transition: all var(--transition-fast, 0.15s); }
+.dossie-toc__item:hover { transform: translateX(2px); }
+.dossie-toc__item.is-active {
+  border-left: 2px solid var(--color-cyan);
+  box-shadow: -3px 0 12px -6px rgba(0, 240, 255, 0.6);
+}
+
+/* leitor: brilho radial sutil + título da seção em degradê neon */
+.dossie-viewer {
+  background:
+    radial-gradient(70% 40% at 90% 0%, rgba(0, 240, 255, 0.05), transparent 60%),
+    var(--color-bg-elevated);
+}
+.dossie-title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 85%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.25));
+}
+.dossie-h--2 { text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }

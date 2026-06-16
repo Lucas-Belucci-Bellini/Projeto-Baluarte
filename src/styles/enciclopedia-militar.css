@@ -106,3 +106,53 @@
 .mil-rank__val { font-size: var(--font-size-sm); text-align: right; }
 
 .mil-fontes { margin-top: var(--space-lg); font-size: 11px; border-top: 1px solid rgba(255, 255, 255, 0.07); padding-top: var(--space-sm); }
+
+/* ════════════════════════════════════════════════════════════
+   Onda 3 — Campo & Tático (redesign #195): polish cinematográfico
+   de cards/leitor. Só visual; não muda layout nem JS.
+   ════════════════════════════════════════════════════════════ */
+
+/* título da página + da seção em degradê neon com brilho */
+.page-militar-enc .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.25));
+}
+.mil-view__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 85%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.25));
+}
+
+/* nav: item ativo com acento esquerdo luminoso + hover deslizante */
+.mil-nav__item { transition: all var(--transition-fast, 0.15s); }
+.mil-nav__item:hover { transform: translateX(2px); }
+.mil-nav__item.is-active {
+  border-left: 2px solid var(--color-cyan);
+  box-shadow: -3px 0 12px -6px rgba(0, 240, 255, 0.6);
+}
+
+/* painel de leitura com brilho radial sutil */
+.mil-view {
+  background:
+    radial-gradient(60% 35% at 92% 0%, rgba(0, 240, 255, 0.05), transparent 60%),
+    var(--color-bg-elevated);
+}
+
+/* cards com profundidade + glow/lift no hover */
+.mil-card {
+  background: linear-gradient(165deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.mil-card:hover {
+  transform: translateY(-2px);
+  border-left-color: var(--color-cyan);
+  box-shadow: var(--shadow-md), var(--shadow-glow-cyan);
+}
+
+/* timeline com nós luminosos + barras de ranking brilhando */
+.mil-tl__dot { box-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
+.mil-rank__bar { box-shadow: 0 0 8px rgba(0, 240, 255, 0.35); }
+
+/* tags com borda neon sutil */
+.mil-tag { border: 1px solid var(--color-cyan-edge); }

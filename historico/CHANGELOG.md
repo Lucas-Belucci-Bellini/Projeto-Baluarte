@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-16
 
+### Redesign #195 — Onda 3: Campo & Tático (cards/leitor)
+- 🎖 **As páginas de Campo & Tático ganharam o estilo cinematográfico** — `/elites`, `/dossie` e `/enciclopedia-militar` repaginadas na mesma linguagem que o `/arsenal` (que já havia recebido o polish do redesign), fechando a Onda 3.
+- ✨ **O que ganhou glow/profundidade**: títulos de página e de seção em **degradê neon** ciano→magenta com brilho; **cards** com fundo em gradiente, *lift* e glow no hover (Elites deslizam, Enciclopédia sobe); **painéis de leitor/detalhe** com brilho radial e nome/título da seção em degradê; **sumário/navegação** com item ativo em acento esquerdo luminoso e hover deslizante; **timeline** da Enciclopédia com nós luminosos; barras de ranking brilhando; *stat tiles* e tags com brilho/borda neon. **Só visual — nada de layout/estrutura/JS mudou.**
+- ✅ Verificado no navegador (Playwright + Vite dev): `/elites` (cards + detalhe "Vanguarda da Manhã" com brilho), `/enciclopedia-militar` (título neon, nav ativa, cards "Ramos das Forças"), `/dossie` (título/leitor repaginados) e `/arsenal` (já no estilo, conferido pra coesão). Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-16-pre-merge-redesign-onda3`.
+
 ### Redesign #195 — Onda 2: Geo/Tático (6 páginas num PR)
 - 🛰 **As 6 páginas Geo/Tático ganharam o estilo cinematográfico do redesign** — `/radar`, `/mapa`, `/geopulse`, `/triangulacao`, `/find` e `/visao` — cada uma na sua folha dedicada (`radar.css`, `mapa.css`, `geopulse.css`, `triangulacao.css`, `find.css`, `visao.css`), com uma linguagem visual **HUD** compartilhada.
 - ✨ **O que ganhou glow/profundidade**: títulos em degradê neon ciano→magenta com brilho; **moldura HUD** (colchetes luminosos nos cantos) emoldurando os módulos de canvas/scope (Range-Doppler, Waterfall, Trajetória, Campo de rumos, viewport do Mapa e da Câmera); *stat tiles* com barra de acento no topo, valor brilhando e *lift* no hover; *scope heads* com **linha de varredura animada** ("sensor ao vivo"); botões/modos/estações ativos com glow; linhas de detecção/pontos/locais com acento luminoso; barras de confiança e resultado de localização com brilho neon. **Só visual — nada de layout/estrutura/JS mudou** (tudo via pseudo-elementos e box-shadow, no espírito "leve" do #238).
