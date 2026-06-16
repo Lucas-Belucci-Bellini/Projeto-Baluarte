@@ -6,6 +6,15 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-16
+
+### Scroll-reveal global — todas as páginas ganham movimento (leve)
+- ✨ **Os blocos de cada página entram suavemente** conforme aparecem na viewport (fade + slide). Inspirado nas skills de animação (AOS / GSAP ScrollTrigger), mas em **~40 linhas e zero dependência** (IntersectionObserver) — alinhado ao "site leve" (#238).
+- ⚙️ `src/utils/scroll-reveal.js` + `reveal.css`, plugado no `renderPage()` do shell → roda a cada navegação, em **todas as páginas**. Pula a `/home` (a cena WebGL já tem movimento), respeita `prefers-reduced-motion`, e revela tudo na hora se não houver suporte (conteúdo nunca fica preso invisível).
+- ✅ Verificado (Playwright): /perfil revela os blocos (acima da dobra na hora, o resto ao rolar); /home pulada; /radar (canvas) intacto (512px).
+- 🤝 **`docs/HANDOFF-LOCAL.md` (novo)**: playbook pra uma sessão **local** (com as skills do `claudedesignskills` + `gitnexus`) pegar e executar o que esta sessão remota não consegue — design 3D pesado, motor real do GitNexus (M3c), runtimes (M4). A divisão de trabalho que o operador propôs.
+- 🛡️ Backup: `backup/2026-06-16-pre-merge-scroll-reveal`.
+
 ## 2026-06-15
 
 ### Redesign #195 — Onda 1: Seção Militar inteira (12 páginas num PR)

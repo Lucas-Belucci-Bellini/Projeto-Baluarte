@@ -10,6 +10,7 @@ import { bus } from '../core/events.js';
 import { appState } from '../core/state.js';
 import { setCurrentFunction } from '../utils/baluarte-status.js';
 import { pinElement } from './overlay.js';
+import { revealScan } from '../utils/scroll-reveal.js';
 
 let mainInner = null;
 let shellRefs = null;
@@ -55,6 +56,7 @@ export function mountShell(rootEl) {
 export function renderPage(pageEl, route) {
   if (!mainInner) return;
   mount(mainInner, pageEl);              // troca o conteúdo do <main> (descarta a página antiga)
+  revealScan(pageEl, route);             // anima os blocos entrando na viewport (scroll-reveal)
   if (route) {
     updateActiveNav(route);              // realça o item ativo na sidebar
     document.title = pageTitleForRoute(route) + ' · Baluarte';
