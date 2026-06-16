@@ -261,7 +261,7 @@ if (!app.requestSingleInstanceLock()) {
     createMainWindow();
     setupTray();
     setupUpdates();
-    nexus.maybeStart(); // M3a: sobe o motor só se BALUARTE_NEXUS_CMD apontar (opt-in)
+    nexus.maybeStart(); // M3c: sobe o motor por padrão (override→vendored→global→npx); BALUARTE_NEXUS_DISABLE desliga
 
     // Ponte IPC allowlisted (M2): o renderer fala com o nativo só por aqui.
     registerIpc({
