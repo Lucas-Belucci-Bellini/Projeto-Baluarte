@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-16
 
+### Redesign #195 — páginas leves (/projetos, /roadmap, /mural)
+- 🪶 **As 3 páginas leves restantes ganharam o estilo cinematográfico** — `/projetos`, `/roadmap` e `/mural` — fechando o grosso da fila de redesign remota da #240.
+- ✨ **O que ganhou glow/profundidade**: títulos (de página, hero e seção) em **degradê neon** ciano→magenta com brilho; **cards** com fundo em gradiente e glow no hover (projetos sobem, posts do mural deslizam com acento luminoso); cards de nível/site do Roadmap com *lift* + glow; foco neon na caixa de composição do Mural; tags com borda neon. **Só visual — nada de layout/estrutura/JS mudou.**
+- ✅ Verificado no navegador (Playwright + Vite dev): `/projetos` (grid de cards + título neon), `/roadmap` (hero/seções neon, cards de nível) e `/mural` (título neon, composer). Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-16-pre-merge-redesign-leves`.
+
 ### Redesign #195 — Onda 3: Campo & Tático (cards/leitor)
 - 🎖 **As páginas de Campo & Tático ganharam o estilo cinematográfico** — `/elites`, `/dossie` e `/enciclopedia-militar` repaginadas na mesma linguagem que o `/arsenal` (que já havia recebido o polish do redesign), fechando a Onda 3.
 - ✨ **O que ganhou glow/profundidade**: títulos de página e de seção em **degradê neon** ciano→magenta com brilho; **cards** com fundo em gradiente, *lift* e glow no hover (Elites deslizam, Enciclopédia sobe); **painéis de leitor/detalhe** com brilho radial e nome/título da seção em degradê; **sumário/navegação** com item ativo em acento esquerdo luminoso e hover deslizante; **timeline** da Enciclopédia com nós luminosos; barras de ranking brilhando; *stat tiles* e tags com brilho/borda neon. **Só visual — nada de layout/estrutura/JS mudou.**
