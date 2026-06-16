@@ -71,10 +71,41 @@ PageRank e o impacto rodam no **grafo REAL** (via `fromEngineGraph` → o mesmo
 `analyze()`, sem fork); na web (sem launcher) o badge fica oculto e tudo segue com o
 `codemap.json`.
 
-Subir o motor: por ora é **opt-in** — defina `BALUARTE_NEXUS_CMD` com o caminho do
-executável `gitnexus` (ou rode `gitnexus serve` à parte). Empacotar o motor + os
-nativos (`tree-sitter` ×11, `onnxruntime-node`, `@ladybugdb/core`) com
-`electron-rebuild` e subir por padrão = **fatia nativa (M3c)**.
+### Subir o motor sozinho (M3c)
+
+A partir do **M3c**, o launcher **sobe o motor por padrão** — não precisa mais
+rodar `gitnexus serve` à parte. No boot, `nexus.maybeStart()`:
+
+1. **Já tem motor no ar?** Se algo responde `/api/health` na 4747, só conecta
+   (não duplica) — ex.: o operador rodou `gitnexus serve` na mão.
+2. Senão, tenta subir `gitnexus serve --port 4747` numa **cadeia de estratégias**,
+   na ordem, até uma ficar saudável (polling no `/api/health`):
+   | ordem | via | comando |
+   |---|---|---|
+   | 1 | `env` | `BALUARTE_NEXUS_CMD serve --port 4747` (override do operador) |
+   | 2 | `vendored` | Electron-as-Node em `…/gitnexus/dist/cli/index.js` (só se o `dist/` estiver **compilado** — a cópia do repo tem só `src/`) |
+   | 3 | `global` | `gitnexus serve …` (depois de `npm i -g gitnexus`) |
+   | 4 | `npx` | `npx -y gitnexus@latest serve …` (cold-start mais lento; `GITNEXUS_SKIP_OPTIONAL_GRAMMARS=1`) |
+
+- **Desligar o autostart:** `BALUARTE_NEXUS_DISABLE=1` (a UI ainda detecta um motor
+  externo, só não tenta subir um).
+- O `stderr` do motor é encaminhado pro console do main (prefixo `[nexus]`) — útil
+  pra depurar o aceite local.
+
+> **Pra ter grafo de verdade**, o repo alvo precisa ter sido indexado antes:
+> `gitnexus analyze` no repo (registra em `~/.gitnexus/registry.json`); aí
+> `/api/repos` e `/api/graph` devolvem o grafo real.
+
+**Aceite local (precisa da máquina):** instale o motor (`npm i -g gitnexus` **ou**
+deixe o npx baixar) e indexe um repo (`gitnexus analyze`); abra o launcher; em
+`/git-nexus` o badge fica **verde** e o orbe roda no **grafo real**.
+
+> **Todas as funções (M3d, próximo):** o servidor 4747 expõe REST de leitura
+> (`/api/graph`, `/api/search`, `/api/processes`, `/api/clusters`) + Cypher cru
+> (`POST /api/query`) **e** uma ponte **MCP-over-HTTP** em `POST /api/mcp`
+> (JSON-RPC) por onde saem as 16 tools (`context`, `impact`, `detect_changes`,
+> `rename`, …) — que **não** têm rota REST direta. O M3d pluga esses tools na
+> ponte IPC (`nexus:*`) + um cliente com fallback pro codemap na web.
 
 ## Rodar em desenvolvimento
 
@@ -122,7 +153,9 @@ Quem já tem o launcher instalado recebe a atualização no próximo restart.
 
 Marcos M0→M6 detalhados na issue **#222**. Estado atual: **M0** (esqueleto +
 auto-update), **M1** (casca de launcher), **M2** (ponte IPC allowlisted),
-**M3a** (detecção do motor + badge) e **M3b** (consumo do **grafo real** via
-`nexus:graph` → o orbe roda no grafo do motor). Próximo: **M3c (fatia nativa)** —
-empacotar o motor + os nativos (`electron-rebuild`) e subir a 4747 por padrão, pra
-o motor existir sem o usuário rodar nada à parte.
+**M3a** (detecção do motor + badge), **M3b** (consumo do **grafo real** via
+`nexus:graph`) e **M3c** (o launcher **sobe o motor sozinho** — cadeia
+override→vendored→global→npx com readiness no `/api/health`; aceite final é
+**local**, na máquina). Próximo: **M3d** — plugar **todas as 16 tools** na ponte
+IPC via a ponte MCP-over-HTTP (`POST /api/mcp`) + os REST de leitura, com um
+cliente que cai no `codemap.json` na web (gate `window.baluarte.native`).

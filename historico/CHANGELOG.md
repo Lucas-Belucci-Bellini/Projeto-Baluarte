@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-16
 
+### App desktop #222 — M3c: o launcher sobe o motor do GitNexus sozinho (código)
+- 🧠 **`desktop/src/nexus.js` reescrito**: `maybeStart()` deixou de ser opt-in (`BALUARTE_NEXUS_CMD`) e agora **sobe `gitnexus serve --port 4747` por padrão**. Se já há um motor no ar, só conecta (não duplica). Senão, tenta uma **cadeia de estratégias** até uma ficar saudável (polling no `/api/health`): `BALUARTE_NEXUS_CMD` (override) → cópia vendorizada via Electron-as-Node → bin `gitnexus` global → `npx -y gitnexus@latest serve`.
+- 🔌 Desligável com `BALUARTE_NEXUS_DISABLE=1`; `stderr` do motor encaminhado pro console (`[nexus]`) pra depurar o aceite local; `stop()` encerra o filho no quit.
+- 📋 **Mapeada a superfície real do `gitnexus serve`** (lendo a cópia vendorizada): REST de leitura (`/api/graph`, `/api/search`, `/api/processes`, `/api/clusters`) + Cypher (`POST /api/query`) **e** ponte **MCP-over-HTTP** (`POST /api/mcp`) por onde saem as 16 tools — base do próximo marco (**M3d**, plugar tudo na ponte IPC).
+- ⚠️ **Aceite é LOCAL** (sem Electron/máquina no remoto): instalar o motor + `gitnexus analyze` num repo → no launcher `/git-nexus` fica verde + grafo real. Passos em `desktop/README.md` e `docs/HANDOFF-LOCAL.md`. Sintaxe verificada (`node --check`); build web intacto.
+- 🛡️ Backup: `backup/2026-06-16-pre-merge-nexus-m3c`.
+
 ### Redesign #195 — páginas leves (/projetos, /roadmap, /mural)
 - 🪶 **As 3 páginas leves restantes ganharam o estilo cinematográfico** — `/projetos`, `/roadmap` e `/mural` — fechando o grosso da fila de redesign remota da #240.
 - ✨ **O que ganhou glow/profundidade**: títulos (de página, hero e seção) em **degradê neon** ciano→magenta com brilho; **cards** com fundo em gradiente e glow no hover (projetos sobem, posts do mural deslizam com acento luminoso); cards de nível/site do Roadmap com *lift* + glow; foco neon na caixa de composição do Mural; tags com borda neon. **Só visual — nada de layout/estrutura/JS mudou.**

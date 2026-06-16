@@ -50,14 +50,23 @@
 > consome o grafo via a ponte IPC). Falta o lado nativo. Refs no README do
 > upstream: `gitnexus serve` sobe um servidor HTTP na 4747 que a UI auto-detecta.
 
-- [ ] **M3c — o app sobe o motor sozinho.** Hoje `desktop/src/nexus.js` tem
-      `maybeStart()` opt-in via env `BALUARTE_NEXUS_CMD`. Fazer o app rodar
-      `gitnexus serve` por padrão. Opções:
-      - `npm i -g gitnexus` (+ `GITNEXUS_SKIP_OPTIONAL_GRAMMARS=1` p/ install rápido) e spawnar o bin;
-      - `npx -y gitnexus@latest serve` (cold-start mais lento);
-      - imagem Docker oficial `ghcr.io/abhigyanpatwari/gitnexus` (porta 4747).
-      - **Aceite:** no launcher, `/git-nexus` fica **verde** + grafo real (o
-        operador já provou isso rodando `gitnexus serve` manual).
+- [x] **M3c — o app sobe o motor sozinho (CÓDIGO PRONTO no remoto).**
+      `desktop/src/nexus.js` foi reescrito: `maybeStart()` agora sobe `gitnexus
+      serve --port 4747` por **padrão**, numa cadeia override→vendored→global→npx
+      com readiness no `/api/health` (detalhes em `desktop/README.md`). Desliga
+      com `BALUARTE_NEXUS_DISABLE=1`.
+      - **Falta (precisa da máquina):** rodar e validar de verdade. Passos:
+        1. `npm i -g gitnexus` (+ `GITNEXUS_SKIP_OPTIONAL_GRAMMARS=1`) **ou** deixe
+           o fallback `npx` baixar.
+        2. `gitnexus analyze` num repo (registra em `~/.gitnexus/registry.json`).
+        3. Abra o launcher (`cd desktop && npm start`).
+      - **Aceite:** em `/git-nexus`, badge **verde** + orbe no **grafo real**.
+        Alternativa de empacotamento: imagem Docker `ghcr.io/abhigyanpatwari/gitnexus` (4747).
+- [ ] **M3d — todas as 16 tools no app (próximo, dá pra começar no remoto).**
+      Plugar `context/impact/detect_changes/rename/query/cypher/list_repos` + grupo
+      na ponte IPC via a ponte **MCP-over-HTTP** (`POST /api/mcp`, JSON-RPC) + os
+      REST de leitura (`/api/graph`, `/api/search`, `/api/processes`,
+      `/api/clusters`). Cliente `git-nexus-client.js` com fallback pro codemap na web.
 - [ ] **M4 — runtimes próprios** (RFC #232): provisionar Node 22 + Python 3.11
       numa pasta do app (preflight), pra zero-setup; nunca tocar no sistema.
 - [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` no repo
