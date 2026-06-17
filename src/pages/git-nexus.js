@@ -16,6 +16,7 @@ import { router } from '../core/router.js';
 import { analyze, symbolSubmap, fileSymbolGraph, impactOf, dependenciesOf, search,
   nexusContext, nexusImpact, nexusPath, nexusRename, fromEngineGraph } from '../utils/git-nexus-engine.js';
 import { createGraphView3D } from '../utils/git-nexus-graph3d.js';
+import { nexusLive } from '../utils/git-nexus-client.js';
 import { memoryStats, codeMemoryCounts } from '../utils/jarvis-brain.js';
 import codemap from '../data/codemap.json';
 import symbolmap from '../data/codemap-symbols.json';
@@ -322,12 +323,79 @@ export function gitNexusPage() {
     const out = h('div', { className: 'gn-console__out' });
     const input = h('input', {
       className: 'gn-console__in u-mono', type: 'text', spellcheck: 'false',
-      placeholder: 'context helpers · impact router · impact h down · path A B · rename toast · buscar…',
+      placeholder: 'context helpers · impact router · path A B · rename toast · query · cypher · fluxos · clusters…',
       onkeydown: (e) => { if (e.key === 'Enter') run(input.value); }
     });
 
     const chip = (id) => h('span', { className: 'gn-chip', onclick: () => { view.select(id); renderNodeDetail(id); } }, labelOf(id));
     const line = (...kids) => h('div', { className: 'gn-console__line' }, ...kids);
+
+    /* ── M3d: comandos do MOTOR REAL (cypher/fluxos/clusters/busca semântica).
+       Só funcionam no app (window.baluarte.native); na web mostram o teaser. ── */
+    function liveTeaser(block, what) {
+      block.appendChild(line(
+        h('span', { className: 'u-text-muted' }, `${what} roda no motor real do GitNexus — `),
+        h('a', { href: '#/baixar', className: 'u-text-cyan' }, 'baixe o app'),
+        h('span', { className: 'u-text-muted' }, ' (Baluarte Launcher).')));
+    }
+
+    async function runLive(block, label, fn, render) {
+      if (!nexusLive.isNative()) { liveTeaser(block, label); return; }
+      const loading = line(h('span', { className: 'u-text-muted' }, `${label}…`));
+      block.appendChild(loading);
+      try {
+        const data = await fn();
+        block.removeChild(loading);
+        render(data, block);
+      } catch (e) {
+        block.removeChild(loading);
+        block.appendChild(line(h('span', { className: 'u-text-muted' }, `motor: ${(e && e.message) || e}`)));
+      }
+    }
+
+    function renderLiveSearch(data, block) {
+      const rs = (data && (data.searchResults || data.results)) || (Array.isArray(data) ? data : []);
+      if (!rs.length) { block.appendChild(line(h('span', { className: 'u-text-muted' }, 'nada no motor.'))); return; }
+      block.appendChild(line(h('span', { className: 'u-text-muted' }, `${rs.length} no motor real:`)));
+      rs.slice(0, 14).forEach((r) => {
+        const name = r.name || r.label || r.symbol || r.id || '?';
+        const file = r.filePath || r.file || r.path || '';
+        block.appendChild(line(h('b', null, String(name)),
+          h('span', { className: 'u-text-muted u-mono', style: { fontSize: '11px' } }, file ? '  ' + file : '')));
+      });
+    }
+
+    function renderCypher(data, block) {
+      const rows = Array.isArray(data) ? data : (data && (data.rows || data.results || data.data)) || [];
+      const list = Array.isArray(rows) ? rows : [];
+      block.appendChild(line(h('b', { className: 'u-text-cyan' }, String(list.length)), ' linha(s):'));
+      list.slice(0, 12).forEach((row) => block.appendChild(line(
+        h('span', { className: 'u-mono', style: { fontSize: '11px' } }, JSON.stringify(row).slice(0, 160)))));
+    }
+
+    function renderProcesses(data, block) {
+      const list = Array.isArray(data) ? data : (data && (data.processes || data.results)) || [];
+      if (!list.length) { block.appendChild(line(h('span', { className: 'u-text-muted' }, 'nenhum fluxo detectado.'))); return; }
+      block.appendChild(line(h('span', { className: 'u-text-muted' }, `${list.length} fluxo(s):`)));
+      list.slice(0, 16).forEach((p) => {
+        const name = p.heuristicLabel || p.label || p.name || p.id || '?';
+        const steps = p.stepCount != null ? p.stepCount : (Array.isArray(p.steps) ? p.steps.length : null);
+        block.appendChild(line(h('b', null, String(name)),
+          steps != null ? h('span', { className: 'u-text-muted' }, `  · ${steps} passo(s)`) : null));
+      });
+    }
+
+    function renderClusters(data, block) {
+      const list = Array.isArray(data) ? data : (data && (data.clusters || data.communities)) || [];
+      if (!list.length) { block.appendChild(line(h('span', { className: 'u-text-muted' }, 'nenhuma comunidade.'))); return; }
+      block.appendChild(line(h('span', { className: 'u-text-muted' }, `${list.length} comunidade(s):`)));
+      list.slice(0, 16).forEach((c) => {
+        const name = c.heuristicLabel || c.label || c.name || c.id || '?';
+        const sz = c.symbolCount != null ? c.symbolCount : (Array.isArray(c.symbols) ? c.symbols.length : null);
+        block.appendChild(line(h('b', null, String(name)),
+          sz != null ? h('span', { className: 'u-text-muted' }, `  · ${sz} símbolo(s)`) : null));
+      });
+    }
 
     function run(raw) {
       const s = (raw || '').trim();
@@ -374,11 +442,24 @@ export function gitNexusPage() {
           block.appendChild(line('renomear ', h('b', null, labelOf(id)), ' tocaria ', h('b', { className: 'u-text-cyan' }, String(uses.length)), ' uso(s):'));
           if (uses.length) block.appendChild(line(...uses.slice(0, 16).map(chip)));
         }
+      } else if (cmd === 'cypher' || cmd === 'cy') {
+        const q = parts.slice(1).join(' ');
+        if (!q) block.appendChild(line(h('span', { className: 'u-text-muted' }, 'uso: cypher MATCH (n) RETURN n LIMIT 10')));
+        else runLive(block, 'cypher', () => nexusLive.cypher(q), renderCypher);
+      } else if (cmd === 'processes' || cmd === 'fluxos') {
+        runLive(block, 'fluxos', () => nexusLive.processes(), renderProcesses);
+      } else if (cmd === 'clusters' || cmd === 'comunidades') {
+        runLive(block, 'comunidades', () => nexusLive.clusters(), renderClusters);
       } else {
         const term = cmd === 'query' || cmd === 'q' ? parts.slice(1).join(' ') : s;
-        const res = search(cur.graph, term);
-        if (!res.length) block.appendChild(line(h('span', { className: 'u-text-muted' }, `nada encontrado para "${term}".`)));
-        else block.appendChild(line(h('span', { className: 'u-text-muted' }, `${res.length} resultado(s): `), ...res.slice(0, 14).map((n) => chip(n.id))));
+        // no app: busca semântica do motor real; na web: busca local no grafo (codemap)
+        if ((cmd === 'query' || cmd === 'q') && nexusLive.isNative()) {
+          runLive(block, 'busca', () => nexusLive.search(term, { limit: 14 }), renderLiveSearch);
+        } else {
+          const res = search(cur.graph, term);
+          if (!res.length) block.appendChild(line(h('span', { className: 'u-text-muted' }, `nada encontrado para "${term}".`)));
+          else block.appendChild(line(h('span', { className: 'u-text-muted' }, `${res.length} resultado(s): `), ...res.slice(0, 14).map((n) => chip(n.id))));
+        }
       }
       out.insertBefore(block, out.firstChild);
       input.value = '';
@@ -387,7 +468,7 @@ export function gitNexusPage() {
     return h('div', { className: 'gn-console' },
       h('div', { className: 'gn-console__head' },
         h('h2', { className: 'gn-unified__title' }, '🖥 Console do Nexus'),
-        h('span', { className: 'u-text-muted', style: { fontSize: '12px' } }, 'ferramentas do GitNexus sobre o grafo: context · impact · path · rename · query')),
+        h('span', { className: 'u-text-muted', style: { fontSize: '12px' } }, 'grafo: context · impact · path · rename · query — e no app: cypher · fluxos · clusters (motor real)')),
       input, out);
   }
 

@@ -62,11 +62,23 @@
         3. Abra o launcher (`cd desktop && npm start`).
       - **Aceite:** em `/git-nexus`, badge **verde** + orbe no **grafo real**.
         Alternativa de empacotamento: imagem Docker `ghcr.io/abhigyanpatwari/gitnexus` (4747).
-- [ ] **M3d — todas as 16 tools no app (próximo, dá pra começar no remoto).**
-      Plugar `context/impact/detect_changes/rename/query/cypher/list_repos` + grupo
-      na ponte IPC via a ponte **MCP-over-HTTP** (`POST /api/mcp`, JSON-RPC) + os
-      REST de leitura (`/api/graph`, `/api/search`, `/api/processes`,
-      `/api/clusters`). Cliente `git-nexus-client.js` com fallback pro codemap na web.
+- [~] **M3d — tools do motor no app (REST PRONTO no remoto; MCP é o próximo).**
+      - [x] **Fatia REST (CÓDIGO PRONTO):** ponte IPC allowlisted `nexus:repos/
+        search/cypher/processes/clusters` (`desktop/src/ipc.js` → `desktop/src/
+        nexus.js`, proxy no main pra 4747 — o renderer nunca fala direto). Cliente
+        do renderer `src/utils/git-nexus-client.js` (`nexusLive`, gate por
+        `window.baluarte.native`). Console do `/git-nexus` ganhou os comandos
+        `query` (busca semântica do motor no app; cai no codemap na web), `cypher`,
+        `fluxos`/`processes` e `clusters`/`comunidades`. Verificado no remoto:
+        `node --check` nos arquivos desktop, build web limpo, e no navegador a web
+        cai no teaser "baixe o app" (cypher/fluxos) e na busca local (query).
+        - **Falta (precisa da máquina):** com o motor no ar + repo analisado (ver
+          M3c), abrir o launcher e em `/git-nexus` rodar `query <texto>`, `cypher
+          MATCH (n) RETURN n LIMIT 10`, `fluxos` e `clusters` — **aceite:** voltam
+          dados do motor real (não o teaser). PR fica **draft** até esse aceite.
+      - [ ] **Fatia MCP (próxima):** as tools "profundas" (`context/impact/
+        detect_changes/rename` com confiança) saem da ponte **MCP-over-HTTP**
+        (`POST /api/mcp`, JSON-RPC) — plugar no mesmo cliente/console.
 - [ ] **M4 — runtimes próprios** (RFC #232): provisionar Node 22 + Python 3.11
       numa pasta do app (preflight), pra zero-setup; nunca tocar no sistema.
 - [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` no repo

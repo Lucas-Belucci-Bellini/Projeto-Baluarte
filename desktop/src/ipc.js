@@ -56,7 +56,15 @@ function buildHandlers(ctx) {
 
     // M3b: grafo REAL do motor (1º repo analisado).
     // { repo, nodes: GraphNode[], relationships: GraphRelationship[] }
-    'nexus:graph': async () => nexus.graph()
+    'nexus:graph': async () => nexus.graph(),
+
+    // M3d: subset REST do motor. Cada handler passa o payload (validado em
+    // nexus.js) e lança se o motor estiver fora → a UI mostra "indisponível".
+    'nexus:repos': async () => nexus.repos(), // GET /api/repos
+    'nexus:search': async (payload) => nexus.search(payload), // POST /api/search (híbrida)
+    'nexus:cypher': async (payload) => nexus.cypher(payload), // POST /api/query (Cypher)
+    'nexus:processes': async (payload) => nexus.processes(payload), // GET /api/processes
+    'nexus:clusters': async (payload) => nexus.clusters(payload) // GET /api/clusters
   };
 }
 

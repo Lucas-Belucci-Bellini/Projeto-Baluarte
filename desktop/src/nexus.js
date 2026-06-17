@@ -279,4 +279,87 @@ function stop() {
   }
 }
 
-module.exports = { status, graph, maybeStart, stop, isAvailable, getJSON, BASE, PORT };
+// ───────────────────────────────────────────────────────────────────────────
+// M3d — subset REST do motor (consumido pela ponte IPC `nexus:*`).
+// Tudo é proxy no MAIN (o renderer nunca fala direto com a 4747). Cada método
+// lança se o motor estiver fora, pra UI mostrar "motor indisponível".
+// ───────────────────────────────────────────────────────────────────────────
+
+/** POST JSON; lança em status != 2xx ou timeout. */
+async function postJSON(pathname, body, timeoutMs = 15000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const r = await fetch(BASE + pathname, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body || {}),
+      signal: ctrl.signal
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status} em ${pathname}`);
+    return await r.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** GET JSON ou lança 'motor indisponível' (pra distinguir de "vazio"). */
+async function getOrThrow(pathname, timeoutMs = 8000) {
+  const data = await getJSON(pathname, timeoutMs);
+  if (data == null) throw new Error('motor indisponível (4747)');
+  return data;
+}
+
+/** Lista de repos indexados: GET /api/repos. */
+async function repos() {
+  return getOrThrow('/api/repos', 5000);
+}
+
+/** Busca híbrida (BM25 + semântica): POST /api/search. */
+async function search(payload = {}) {
+  const query = String((payload && payload.query) || '').trim();
+  if (!query) throw new Error('query vazia');
+  const body = { query };
+  if (payload.repo) body.repo = payload.repo;
+  if (payload.limit) body.limit = payload.limit;
+  if (payload.mode) body.mode = payload.mode;
+  if (payload.enrich != null) body.enrich = payload.enrich;
+  return postJSON('/api/search', body);
+}
+
+/** Cypher cru no grafo: POST /api/query. */
+async function cypher(payload = {}) {
+  const query = String((payload && payload.query) || '').trim();
+  if (!query) throw new Error('cypher vazio');
+  const body = { query };
+  if (payload.repo) body.repo = payload.repo;
+  return postJSON('/api/query', body);
+}
+
+/** Fluxos de execução: GET /api/processes. */
+async function processes(payload = {}) {
+  const q = payload && payload.repo ? '?repo=' + encodeURIComponent(payload.repo) : '';
+  return getOrThrow('/api/processes' + q);
+}
+
+/** Comunidades/clusters: GET /api/clusters. */
+async function clusters(payload = {}) {
+  const q = payload && payload.repo ? '?repo=' + encodeURIComponent(payload.repo) : '';
+  return getOrThrow('/api/clusters' + q);
+}
+
+module.exports = {
+  status,
+  graph,
+  maybeStart,
+  stop,
+  isAvailable,
+  getJSON,
+  repos,
+  search,
+  cypher,
+  processes,
+  clusters,
+  BASE,
+  PORT
+};
