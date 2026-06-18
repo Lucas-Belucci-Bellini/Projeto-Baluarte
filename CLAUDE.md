@@ -4,6 +4,10 @@ Plataforma narrativa/militar/ferramentas em **JavaScript puro + Vite 5** — sem
 TypeScript, sem framework (Vite só empacota). Deploy estático no Vercel. Tem
 também um **app desktop** em Electron (`desktop/`, "Baluarte Launcher").
 
+## 🗺️ Continuar o projeto? Siga a issue #240
+
+👉 **[Roadmap mestre #240](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/240)** — a fila ordenada do que falta (o que já foi feito p/ não refazer; o que vem, separado entre 🟢 **web/remoto** e 🖥 **máquina/local**). Pegue o **próximo item não-marcado** da fila certa e siga o fluxo padrão: branch → PR (draft) → CI verde → merge → atualizar `CHANGELOG` (backup branch antes do merge).
+
 ## ⚠️ Sessão LOCAL (com skills)? Leia primeiro
 
 👉 **[`docs/HANDOFF-LOCAL.md`](docs/HANDOFF-LOCAL.md)** — tarefas que dependem das
