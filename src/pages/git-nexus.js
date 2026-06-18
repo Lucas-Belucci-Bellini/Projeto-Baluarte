@@ -18,7 +18,21 @@ import { analyze, symbolSubmap, fileSymbolGraph, impactOf, dependenciesOf, searc
 import { createGraphView3D } from '../utils/git-nexus-graph3d.js';
 import { memoryStats, codeMemoryCounts } from '../utils/jarvis-brain.js';
 import codemap from '../data/codemap.json';
-import symbolmap from '../data/codemap-symbols.json';
+import symbolsMeta from '../data/codemap-symbols-meta.json';
+
+/*
+ * #238 Fase 2 (gate parcial do Git Nexus) — o grafo de símbolos completo
+ * (`codemap-symbols.json`, ~450 kB) é o maior peso da página. Em vez de importá-lo
+ * estático (entrava no chunk e baixava em TODA visita), carregamos SOB DEMANDA
+ * (modo Funções / drill-down). O companion leve `symbolsMeta` (~4 kB) cobre o que
+ * o boot precisa: contagem por arquivo (badges) + meta (hint/métricas). Assim a
+ * web fica leve e mantém o grafo de arquivos; o nível de funções carrega ao abrir.
+ */
+let _symbolmap = null;
+async function loadSymbolmap() {
+  if (!_symbolmap) _symbolmap = (await import('../data/codemap-symbols.json')).default;
+  return _symbolmap;
+}
 
 const PALETTE = ['#00f0ff', '#ff00aa', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
 const FN_CAP = 240;
@@ -86,16 +100,15 @@ export function gitNexusPage() {
   page.appendChild(engineBadge);
   detectNativeEngine(engineBadge);
 
-  /* nº de funções por arquivo (para o botão de drill-down) */
-  const fnByFile = {};
-  for (const n of symbolmap.nodes) fnByFile[n.file] = (fnByFile[n.file] || 0) + 1;
+  /* nº de funções por arquivo (badges de drill-down) — vem do companion leve */
+  const fnByFile = symbolsMeta.fnByFile;
 
   /* ---- toggle de modo ---- */
   const tabFiles = h('button', { className: 'gn-mode is-active', onclick: () => switchMode('files') }, '📁 Arquivos');
   const tabFns = h('button', { className: 'gn-mode', onclick: () => switchMode('functions') }, 'ƒ Funções');
   const focusCrumb = h('span', { className: 'gn-focus', style: { display: 'none' } });
   page.appendChild(h('div', { className: 'gn-modes' }, tabFiles, tabFns, focusCrumb,
-    h('span', { className: 'gn-modes__hint u-text-muted' }, `${symbolmap.meta.symbols} funções · ${symbolmap.meta.calls} chamadas no código`)));
+    h('span', { className: 'gn-modes__hint u-text-muted' }, `${symbolsMeta.meta.symbols} funções · ${symbolsMeta.meta.calls} chamadas no código`)));
 
   /* ---- métricas (dinâmicas) ---- */
   const mrow = h('div', { className: 'gn-metrics' });
@@ -129,7 +142,7 @@ export function gitNexusPage() {
 
   /* ===== modos ===== */
 
-  function switchMode(mode, opts = {}) {
+  async function switchMode(mode, opts = {}) {
     const focusFile = opts.fileId || null;
     if (cur && cur.mode === mode && cur.focusFile === focusFile) return;
     tabFiles.classList.toggle('is-active', mode === 'files');
@@ -137,8 +150,9 @@ export function gitNexusPage() {
     if (view) { view.destroy(); view = null; }
 
     let submap;
-    if (mode === 'file-functions') submap = fileSymbolGraph(symbolmap, focusFile);
-    else if (mode === 'functions') submap = symbolSubmap(symbolmap, FN_CAP);
+    // Funções/drill-down precisam do grafo pesado → carrega sob demanda (#238 F2).
+    if (mode === 'file-functions') { hintEl.textContent = '⏳ carregando funções…'; submap = fileSymbolGraph(await loadSymbolmap(), focusFile); }
+    else if (mode === 'functions') { hintEl.textContent = '⏳ carregando funções…'; submap = symbolSubmap(await loadSymbolmap(), FN_CAP); }
     else submap = liveGraph || codemap;   // M3b: grafo real do motor, se houver
     const a = analyze(submap);
     cur = { mode, focusFile, focusIds: submap.focusIds || null, ...a, rawById: new Map((submap.nodes || []).map((n) => [n.id, n])) };
@@ -186,8 +200,8 @@ export function gitNexusPage() {
         metric(cur.graph.nodes.length, 'funções (top)', true),
         metric(cur.graph.edges.length, 'chamadas'),
         metric(cur.communities.length, 'clusters'),
-        metric(symbolmap.meta.byKind.class || 0, 'classes'),
-        metric(symbolmap.meta.symbols, 'funções totais'));
+        metric(symbolsMeta.meta.byKind.class || 0, 'classes'),
+        metric(symbolsMeta.meta.symbols, 'funções totais'));
     } else {
       mrow.append(
         metric(cur.metrics.files, 'arquivos', true),
