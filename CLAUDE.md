@@ -4,6 +4,16 @@ Plataforma narrativa/militar/ferramentas em **JavaScript puro + Vite 5** — sem
 TypeScript, sem framework (Vite só empacota). Deploy estático no Vercel. Tem
 também um **app desktop** em Electron (`desktop/`, "Baluarte Launcher").
 
+## 🧭 Continuidade entre sessões — comece por aqui
+
+Cada conversa começa **sem o histórico** das anteriores e (se for remota) **sem as
+skills locais** do operador — o que precisa sobreviver mora no repo e nas issues.
+Antes de mexer, leia:
+
+👉 **issue #248** — Manual de operação: como eu trabalho, as regras e a divisão
+remoto/local. · 👉 **issue #240** — Roadmap mestre: a fila de continuação (pegue o
+próximo item não-marcado). **Não feche** essas issues (são referência viva).
+
 ## ⚠️ Sessão LOCAL (com skills)? Leia primeiro
 
 👉 **[`docs/HANDOFF-LOCAL.md`](docs/HANDOFF-LOCAL.md)** — tarefas que dependem das
@@ -18,7 +28,7 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 - `src/utils/` — helpers, jarvis-engine/tools, git-nexus-engine, scroll-reveal…
 - `desktop/` — app Electron (main, preload, nexus, ipc) + workflow de release
 - `historico/CHANGELOG.md` — registro do que entra no `main`
-- Issues guarda-chuva: **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign)
+- Issues guarda-chuva (**não fechar**): **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign)
 
 ## Regras do projeto
 
