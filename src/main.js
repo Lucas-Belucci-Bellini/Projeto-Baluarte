@@ -131,7 +131,9 @@ router.register('/seguranca', lazy(() => import('./pages/seguranca.js'), 'segura
 router.register('/gerar-codigo', lazy(() => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));
 router.register('/conselho', lazy(() => import('./pages/conselho.js'), 'conselhoPage'));
 router.register('/apis', lazy(() => import('./pages/apis.js'), 'apisPage'));
-router.register('/git-nexus', lazy(() => import('./pages/git-nexus.js'), 'gitNexusPage'));
+/* /git-nexus passa pelo GATE leve (#238 Fase 2): web → teaser; app → carrega a
+ * experiência completa (git-nexus.js) sob demanda. Mantém o chunk pesado fora da web. */
+router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.js'), 'gitNexusGate'));
 router.register('/aprendizado', lazy(() => import('./pages/aprendizado.js'), 'aprendizadoPage'));
 /* /home-3d foi promovido à home oficial (/) — alias para links antigos. */
 router.register('/home-3d', lazy(() => import('./pages/home.js'), 'homePage'));
