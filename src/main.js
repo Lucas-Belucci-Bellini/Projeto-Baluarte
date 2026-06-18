@@ -35,6 +35,10 @@ import { VERSION } from './data/version.js';
  * ============================================================== */
 const lazy = (loader, fn) => (args) => loader().then((m) => m[fn](args));
 
+/* Roda DENTRO do Baluarte Launcher? A ponte (`window.baluarte`) só existe no app;
+ * usado pra gatear trabalho pesado pro nativo e manter o boot da web leve (#238). */
+const isNative = () => typeof window !== 'undefined' && !!window.baluarte && window.baluarte.native === true;
+
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */
@@ -172,9 +176,13 @@ function boot() {
   initShadowGate();
   router.start('/home');
   setTimeout(() => hxBeacon(), 2000);
-  /* Sincroniza a memória versionada do repositório (best-effort, sob demanda;
-   * dynamic import mantém o jarvis-brain/codemap fora do bundle inicial). */
-  setTimeout(() => { import('./utils/jarvis-brain.js').then((m) => m.syncRepoMemories()).catch(() => {}); }, 1500);
+  /* Pré-aquece a memória versionada do repositório (best-effort) — mas só no APP
+   * (#238 Fase 2): puxar o jarvis-brain arrasta o codemap/cerebro pro boot, e o
+   * site deve ser leve. Na web, /memoria e /aprendizado já sincronizam sob demanda
+   * quando abertas; aqui ficamos fora do caminho de boot. */
+  if (isNative()) {
+    setTimeout(() => { import('./utils/jarvis-brain.js').then((m) => m.syncRepoMemories()).catch(() => {}); }, 1500);
+  }
 
   console.log(
     `%c⬡ BALUARTE — Mark XIII · v${VERSION}`,
