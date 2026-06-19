@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-19
 
+### Redesign #195 — Onda Catálogo & Lazer (/ciberseg, /robotica, /filmes, /memes, /jogos, /batalha-naval)
+- 🗂️ **6 páginas de catálogo/lazer ganharam o polish cinematográfico** — só visual (glow/profundidade/degradê), nada de layout/estrutura/JS.
+- ✨ títulos em degradê neon nas 6; **`/ciberseg`** com linhas (hover/ativa) em glow e títulos de seção/detalhe em degradê; **`/robotica`** com módulos em glow no hover, item do rail ativo brilhando e título do módulo em degradê; **`/filmes`** com cards em lift+glow e pôster com leve zoom; **`/memes`** com cards em lift+glow (mantendo a cor do tier) e filtro ativo brilhando; **`/jogos`** (escopado em `.page-arcade`) com cards em lift+glow e aba ativa; **`/batalha-naval`** com título do tabuleiro em degradê e grade com leve glow.
+- ✅ Verificado no navegador (Playwright + Vite). Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-19-pre-merge-redesign-catalogo`.
+
 ### Redesign #195 — Onda Mídia (/fft, /radio, /musicas, /media, /videos, /tv)
 - 🎬 **As 6 páginas de mídia/áudio ganharam o polish cinematográfico** — só visual (glow/profundidade/degradê), nada de layout/estrutura/JS.
 - ✨ títulos em degradê neon nas 6; **`/fft`** com moldura HUD (cantos luminosos) no canvas + modo ativo com glow; **`/radio`** com display de frequência brilhando + estações/resultados com glow no hover; **`/musicas`** com faixa ativa em acento magenta+glow; **`/media`** com linhas e dropzone neon; **`/videos`** com playlist/linha ativa em glow e títulos em degradê; **`/tv`** com tela em moldura luminosa, canal ativo com glow e slot "agora" com acento.

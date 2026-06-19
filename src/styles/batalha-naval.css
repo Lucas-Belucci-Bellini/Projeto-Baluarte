@@ -45,3 +45,8 @@
 .bn-fleet { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .bn-ship { font-size: 11px; padding: 2px 7px; border-radius: var(--radius-pill); background: var(--color-bg-elevated); color: var(--color-text-secondary); letter-spacing: 1px; }
 .bn-ship.is-sunk { color: #ff5b7a; text-decoration: line-through; letter-spacing: normal; }
+
+/* Polish cinematográfico (redesign #195) — Onda Lazer. Só visual. */
+.page-bnaval .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.bn-board__title { background: linear-gradient(135deg,#e6f1ff,var(--color-cyan)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.bn-grid-wrap { filter: drop-shadow(0 0 8px rgba(0,240,255,.15)); }
