@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-19
+
+### Mega-plano #238 — Fase 2: gate do Git Nexus (web leve, app completo)
+- 🚪 **Git Nexus agora é gated por `window.baluarte.native`**: a rota `/git-nexus` passa por um **gate leve** (`src/pages/git-nexus-gate.js`, só importa `helpers`+`router`). Na **web** mostra um **teaser** "abre no app" com CTA pro `/baixar` e atalho pro Raio-X do Código (`/codigo`); no **app desktop** faz `import()` da experiência completa sob demanda.
+- 📦 **Bundle**: a rota `/git-nexus` na web caiu de **~438 KB → 3.15 KB** (gz 1.39). O chunk pesado `git-nexus` (438 KB / 48.8 KB gz — grafo 3D + `codemap` + `codemap-symbols` ~460 KB + `jarvis-brain`) **só baixa dentro do launcher**. O `codemap-symbols.json` (461 KB) sai inteiro do caminho web.
+- 🪶 **Boot da web mais leve**: o pré-aquecimento `syncRepoMemories()` do boot (que arrastava `jarvis-brain`→`codemap`/`cerebro`) agora roda **só no app**; na web, `/memoria` e `/aprendizado` já sincronizam sob demanda ao abrir.
+- 🧩 **`git-nexus.js` intocado** (a implementação completa segue idêntica ao main): o gate vive em arquivo separado de propósito — evita renomear o arquivo analisado, o que reabriria alertas pré-existentes do CodeQL por mudança de fingerprint de caminho.
+- ✅ Verificado no navegador (Playwright): web → teaser sem o canvas pesado; com `window.baluarte.native` → grafo 3D + console carregam. Build limpo; CI verde (CodeQL js/python + Vercel).
+- 🛡️ Backup: `backup/2026-06-19-pre-merge-gitnexus-gate`.
+
 ## 2026-06-16
 
 ### App desktop #222 — M3c: o launcher sobe o motor do GitNexus sozinho (código)
