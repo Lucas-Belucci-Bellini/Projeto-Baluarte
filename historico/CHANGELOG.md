@@ -6,6 +6,15 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-18
+
+### Mega-plano #238 — Fase 2: gate parcial do Git Nexus (web mais leve)
+- 📊 **Medição (Fase 1, registrada no #238)** apontou o maior peso de `/git-nexus`: o `codemap-symbols.json` (~450 kB, 1137 funções) era **importado estático** e entrava no chunk da rota — baixado em **toda** visita, mesmo no modo Arquivos.
+- 🪶 **Gate parcial:** o boot agora carrega só um **companion leve** `codemap-symbols-meta.json` (~4 kB: `meta` + funções por arquivo); o **grafo de símbolos completo** virou **lazy** (`import()` dinâmico) — só baixa ao abrir o modo **Funções** ou um drill-down. A web mantém o grafo de **arquivos**; o nível de funções carrega sob demanda.
+- 📉 **Resultado (build):** o chunk `git-nexus` caiu de **438.5 kB → 22.6 kB** (gzip **48.8 → 8.4 kB**); os ~421 kB dos símbolos saíram pra um chunk separado, carregado só quando necessário.
+- 🛠 `scripts/gen-symbols.mjs` passou a emitir o companion junto do mapa cheio (mantém em sincronia).
+- ✅ Verificado no navegador (Playwright): modo Arquivos renderiza **sem** baixar os símbolos; ao abrir Funções, o chunk carrega sob demanda e as métricas (`1137 funções · 12 classes`) batem. Build de produção limpo.
+
 ## 2026-06-16
 
 ### App desktop #222 — M3c: o launcher sobe o motor do GitNexus sozinho (código)

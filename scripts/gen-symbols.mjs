@@ -159,4 +159,16 @@ writeFileSync('src/data/codemap-symbols.json', JSON.stringify({
   topCalled, nodes, links: edges
 }));
 
+// Companion LEVE (poucos kB): só `meta` + contagem de funções por arquivo.
+// O site carrega isto no boot (badges/hint/métricas) e só baixa o grafo cheio
+// (`codemap-symbols.json`, ~450 kB) sob demanda — modo Funções / drill-down.
+// Mantém a web leve (#238 Fase 2 — gate parcial do Git Nexus).
+const fnByFile = {};
+for (const n of nodes) fnByFile[n.file] = (fnByFile[n.file] || 0) + 1;
+writeFileSync('src/data/codemap-symbols-meta.json', JSON.stringify({
+  meta: { symbols: nodes.length, calls: edges.length, files: files.length, byKind, geradoEm: new Date().toISOString() },
+  fnByFile
+}));
+
 console.log(`✓ src/data/codemap-symbols.json — ${nodes.length} símbolos, ${edges.length} chamadas, kinds: ${JSON.stringify(byKind)}`);
+console.log(`✓ src/data/codemap-symbols-meta.json — companion leve (meta + fnByFile de ${Object.keys(fnByFile).length} arquivos)`);
