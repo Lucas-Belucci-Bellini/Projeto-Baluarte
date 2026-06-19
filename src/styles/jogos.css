@@ -286,3 +286,9 @@
   .arc-card__icon { font-size: 26px; }
   .arc-bar__xpbar { max-width: 50vw; }
 }
+
+/* Polish cinematográfico (redesign #195) — Onda Lazer. Só visual (escopado). */
+.page-arcade .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.page-arcade .arc-card { transition: transform var(--transition-fast), border-color var(--transition-base), box-shadow var(--transition-base); }
+.page-arcade .arc-card:hover { box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
+.jogo-tab.is-active { box-shadow: var(--shadow-glow-cyan); }

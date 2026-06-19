@@ -150,3 +150,9 @@
   border-radius: var(--radius-sm);
   border: var(--border-thin);
 }
+
+/* Polish cinematográfico (redesign #195) — Onda Catálogo. Só visual. */
+.page-ciberseg .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.ciberseg-row { transition: background var(--transition-fast), box-shadow var(--transition-base); }
+.ciberseg-row:hover, .ciberseg-row.is-active { box-shadow: var(--shadow-glow-cyan); }
+.ciberseg-section__title, .ciberseg-detail__title { background: linear-gradient(135deg,#e6f1ff,var(--color-cyan)); -webkit-background-clip:text; background-clip:text; color:transparent; }
