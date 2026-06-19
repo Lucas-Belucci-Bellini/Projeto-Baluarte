@@ -8,6 +8,18 @@ aqui o que mudou.
 
 ## 2026-06-19
 
+### Redesign #195 — Onda Mídia (/fft, /radio, /musicas, /media, /videos, /tv)
+- 🎬 **As 6 páginas de mídia/áudio ganharam o polish cinematográfico** — só visual (glow/profundidade/degradê), nada de layout/estrutura/JS.
+- ✨ títulos em degradê neon nas 6; **`/fft`** com moldura HUD (cantos luminosos) no canvas + modo ativo com glow; **`/radio`** com display de frequência brilhando + estações/resultados com glow no hover; **`/musicas`** com faixa ativa em acento magenta+glow; **`/media`** com linhas e dropzone neon; **`/videos`** com playlist/linha ativa em glow e títulos em degradê; **`/tv`** com tela em moldura luminosa, canal ativo com glow e slot "agora" com acento.
+- ✅ Verificado no navegador (Playwright + Vite) nas 6 rotas. Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-19-pre-merge-redesign-conteudo` (mesmo lote do PR #252).
+
+### Redesign #195 — Onda Conteúdo (/biblioteca, /universo, /academia)
+- 📚 **As 3 páginas de conteúdo/aprendizado ganharam o polish cinematográfico** (mesma linguagem do `militar.css` e das Ondas 2-3): só visual (glow/profundidade/degradê via `box-shadow`, pseudo-elementos e `background-clip`), **nada** de layout/estrutura/JS mudou.
+- ✨ **`/biblioteca`**: título e títulos do leitor (arco/capítulo) em degradê neon; cards de arco com lift+glow e capa com leve zoom no hover; faixa de acento luminoso no "continuar lendo"; busca com foco neon. **`/universo`**: título/seções em degradê, cards com lift+glow e ícone brilhando na cor do mundo, detalhe com glow. **`/academia`**: título e nome da linguagem em degradê, cards (linguagens/módulos/recursos/carreiras) com glow+lift, títulos de seção em degradê.
+- ✅ Verificado no navegador (Playwright + Vite): as 3 páginas com título neon e cards repaginados. Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-19-pre-merge-redesign-conteudo`.
+
 ### Mega-plano #238 — Fase 2: gate do Git Nexus (web leve, app completo)
 - 🚪 **Git Nexus agora é gated por `window.baluarte.native`**: a rota `/git-nexus` passa por um **gate leve** (`src/pages/git-nexus-gate.js`, só importa `helpers`+`router`). Na **web** mostra um **teaser** "abre no app" com CTA pro `/baixar` e atalho pro Raio-X do Código (`/codigo`); no **app desktop** faz `import()` da experiência completa sob demanda.
 - 📦 **Bundle**: a rota `/git-nexus` na web caiu de **~438 KB → 3.15 KB** (gz 1.39). O chunk pesado `git-nexus` (438 KB / 48.8 KB gz — grafo 3D + `codemap` + `codemap-symbols` ~460 KB + `jarvis-brain`) **só baixa dentro do launcher**. O `codemap-symbols.json` (461 KB) sai inteiro do caminho web.

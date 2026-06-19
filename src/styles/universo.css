@@ -190,3 +190,28 @@
 .univ-arc-link__arrow {
   color: var(--color-magenta);
 }
+
+/* ════════════════════════════════════════════════════════════
+   Polish cinematográfico (redesign #195) — Onda Conteúdo.
+   Só visual: glow / profundidade / degradê neon. Não mexe em
+   layout, estrutura nem JS.
+   ════════════════════════════════════════════════════════════ */
+.page-universo .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+}
+/* cards de universo: lift + glow no hover, ícone brilhando na cor do mundo */
+.univ-card { transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
+.univ-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
+.univ-card__icon { transition: filter var(--transition-base); }
+.univ-card:hover .univ-card__icon { filter: drop-shadow(0 0 10px currentColor); }
+/* títulos de seção e nome do mundo em degradê neon */
+.univ-section__title {
+  background: linear-gradient(135deg, #e6f1ff, var(--color-cyan));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.univ-detail__name { text-shadow: 0 0 18px rgba(0, 240, 255, 0.35); }
+.univ-detail__icon { filter: drop-shadow(0 0 12px currentColor); }
+/* links de arco do mundo com glow no hover */
+.univ-arc-link:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
