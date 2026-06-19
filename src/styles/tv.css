@@ -115,3 +115,10 @@
   color: var(--color-cyan);
 }
 .tv-slot.is-now .tv-slot__time { color: var(--color-cyan); }
+
+/* Polish cinematográfico (redesign #195) — Onda Mídia. Só visual. */
+.page-tv .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.tv-screen { box-shadow: 0 0 30px rgba(0,240,255,.1), inset 0 0 40px rgba(0,0,0,.5); }
+.tv-ch.is-active { box-shadow: var(--shadow-glow-cyan); }
+.tv-slot.is-now { box-shadow: inset 3px 0 0 var(--color-cyan); }
+.tv-guide .section-header__title { background: linear-gradient(135deg,#e6f1ff,var(--color-cyan)); -webkit-background-clip:text; background-clip:text; color:transparent; }
