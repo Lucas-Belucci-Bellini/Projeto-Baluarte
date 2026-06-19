@@ -272,3 +272,32 @@
   line-height: var(--line-height-base);
   margin-top: 4px;
 }
+
+/* ════════════════════════════════════════════════════════════
+   Polish cinematográfico (redesign #195) — Onda Conteúdo.
+   Só visual: glow / profundidade / degradê neon. Não mexe em
+   layout, estrutura nem JS.
+   ════════════════════════════════════════════════════════════ */
+.page-academia .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+}
+/* cards (linguagens, módulos, recursos, carreiras): glow + lift no hover */
+.academia-lang, .academia-module, .academia-resource, .academia-carreira {
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.academia-lang:hover, .academia-module:hover, .academia-resource:hover, .academia-carreira:hover {
+  border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan);
+}
+.academia-lang:hover, .academia-resource:hover { transform: translateY(-2px); }
+.academia-lang:hover .academia-lang__icon { filter: drop-shadow(0 0 8px currentColor); }
+/* nome da linguagem e títulos de seção em degradê neon */
+.academia-header__name {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 70%, var(--color-magenta) 120%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.academia-section__title {
+  background: linear-gradient(135deg, #e6f1ff, var(--color-cyan));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
