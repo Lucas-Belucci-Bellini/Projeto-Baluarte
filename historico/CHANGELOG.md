@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Núcleo de IA #231/#238 — Etapa 2: navegação unificada (IA app-only)
+- 🧭 **A seção IA & JARVIS foi unificada no Núcleo de IA.** A sidebar agora tem **uma entrada só** ("🔗 Núcleo de IA" → `/git-nexus`); as 11 ferramentas abrem como **abas** dentro do cockpit.
+- 🔀 **Rotas legadas redirecionam pro cockpit na aba certa**: `/jarvis`, `/conselho`, `/apis`, `/jarvis-dashboard`, `/aprendizado`, `/llm-lab`, `/cerebro`, `/memoria`, `/terminal-ia`, `/seguranca`, `/ia-proprietaria` → caem no Núcleo de IA na aba correspondente (bookmarks antigos seguem funcionando). **Deep-link** também via `#/git-nexus?tab=<id>`.
+- 📱 **IA é app-only** (alinhado ao #238): no app abre o cockpit; na **web** essas rotas mostram o teaser "baixe o app" (o teaser foi reescrito pra refletir o Núcleo de IA — grafo + JARVIS + memória + cérebro + ML + Mini-LLM).
+- ✅ Verificado (Playwright): web `/memoria` → teaser "O Núcleo de IA roda no app", sidebar sem `/jarvis` e com "Núcleo de IA"; app `/jarvis` → cockpit na aba JARVIS, deep-link `?tab=memoria` → aba Memória. Build limpo.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-nucleo-ia-nav`.
+
 ### Núcleo de IA #231/#238 — Etapa 1: cockpit com abas (fusão da seção IA)
 - 🧩 **O Git Nexus virou o "Núcleo de IA"**: dentro do app, agora é um **cockpit com barra de abas** (`src/pages/git-nexus-cockpit.js`). Aba **Grafo de Código** = a experiência completa atual; + 11 abas das ferramentas IA (**J.A.R.V.I.S., Conselho de IAs, Central de APIs, Dashboard, ML da Memória, Mini-LLM, Segundo Cérebro, Memória, Terminal-IA, Segurança, IA Proprietária**), cada uma **carregada sob demanda** (dynamic import) e montada reusando o render que já existe — **sem reescrever nenhuma feature**.
 - 🚪 O gate (`git-nexus-gate.js`) no app passou a carregar o cockpit (na web segue o teaser; cockpit é app-only, alinhado ao #238). Etapa **aditiva**: as rotas individuais (`/jarvis`, `/memoria`, …) seguem funcionando — a unificação de navegação/rotas vem nas próximas etapas (incremental, 1 PR por etapa).

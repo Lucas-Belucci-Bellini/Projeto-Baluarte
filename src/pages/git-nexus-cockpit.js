@@ -32,7 +32,9 @@ const TABS = [
   { id: 'ia',        label: '🦾 IA Proprietária',  load: () => import('./ia-proprietaria.js').then((m) => m.iaProprietariaPage()) }
 ];
 
-export function gitNexusCockpit() {
+export function gitNexusCockpit(args = {}) {
+  /* aba inicial: por arg direto (rota legada) ou ?tab= (deep-link); cai no grafo */
+  const wantTab = (args && (args.tab || (args.query && args.query.tab))) || 'grafo';
   const page = h('div', { className: 'page-gitnexus gn-cock' });
 
   /* cabeçalho compacto do Núcleo (cada ferramenta traz o próprio header no painel) */
@@ -84,6 +86,7 @@ export function gitNexusCockpit() {
   page.appendChild(tabbar);
   page.appendChild(panel);
 
-  activate(TABS[0]);   // arranca no Grafo de Código
+  /* arranca na aba pedida (deep-link/rota legada) ou no Grafo de Código */
+  activate(TABS.find((t) => t.id === wantTab) || TABS[0]);
   return page;
 }
