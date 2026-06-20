@@ -33,8 +33,17 @@
   .pf-hero { grid-template-columns: 1fr; justify-items: center; text-align: center; }
 }
 
+/* HUD do hero (Command Deck): scanline + colchetes nos cantos */
+.pf-hero__scan {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.4; mix-blend-mode: overlay;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.16) 3px 4px);
+}
+.pf-hud__br { position: absolute; width: 34px; height: 34px; z-index: 1; pointer-events: none; }
+.pf-hud__br--tl { top: 10px; left: 10px; border-top: 2px solid var(--color-cyan); border-left: 2px solid var(--color-cyan); }
+.pf-hud__br--br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--color-magenta); border-right: 2px solid var(--color-magenta); }
+
 /* emblema com anel girando */
-.pf-emblem { position: relative; width: 136px; height: 136px; flex: none; }
+.pf-emblem { position: relative; width: 136px; height: 136px; flex: none; z-index: 1; }
 .pf-emblem__ring {
   position: absolute; inset: 0; border-radius: 50%;
   background: conic-gradient(from 0deg, var(--color-cyan), var(--color-magenta), var(--color-cyan));
@@ -64,9 +73,12 @@
   color: var(--color-cyan); text-transform: uppercase; margin-bottom: 8px;
 }
 .pf-name {
-  font-size: 40px; font-weight: 800; line-height: 1.04; margin: 0 0 8px;
-  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 58%, var(--color-magenta) 118%);
+  font-size: 44px; font-weight: 800; line-height: 1.04; margin: 0 0 8px;
+  background: linear-gradient(100deg, #e6f1ff 0%, var(--color-cyan) 35%, #9d7bff 55%, var(--color-magenta) 80%, #e6f1ff 100%);
+  background-size: 250% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.3));
+  animation: holo-title 9s ease-in-out infinite;
 }
 .pf-callsign {
   font-family: var(--font-mono); font-size: 12px; color: var(--color-text-secondary);
@@ -102,8 +114,13 @@
 .pf-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
 .pf-stat {
   position: relative; overflow: hidden; padding: 16px; border-radius: var(--radius-md);
-  border: var(--border-thin); background: var(--color-surface);
+  border: var(--border-thin); background: linear-gradient(180deg, var(--color-surface-2), var(--color-surface));
   transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+/* barra de acento no topo (bento, igual à nova home) */
+.pf-stat::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 1;
+  background: linear-gradient(90deg, transparent, var(--color-cyan-edge), transparent); opacity: 0.7;
 }
 .pf-stat::after {
   content: ''; position: absolute; right: -20px; top: -20px; width: 70px; height: 70px; border-radius: 50%;
