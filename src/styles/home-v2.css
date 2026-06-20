@@ -1,7 +1,7 @@
 /* ============================================================
-   Home v2 — "Command Deck" (redesign novo: hero holográfico +
-   grid bento + prateleiras). Leve: CSS/canvas, sem dep pesada.
-   Preview em /home2 (#246/#195). Tokens de variables.css.
+   Home "Command Deck" (redesign novo, oficial #246/#195): hero
+   holográfico + grid bento + prateleiras. Leve: CSS/canvas.
+   Usada por src/pages/home.js (classes .page-home2 / .hv2-*).
    ============================================================ */
 
 .page-home2 { --hv2-gap: 16px; max-width: var(--content-max-width); margin: 0 auto; padding: 0 var(--space-md) var(--space-2xl); }
