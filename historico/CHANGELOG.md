@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — heróis imersivos em /arsenal e /ferramentas
+- ⌖ **`/arsenal`** (flagship #246 nº3) e ⚙ **`/ferramentas`** (hub) ganharam o **herói imersivo** (`buildImmersiveHero`): galáxia WebGL + raios + grid HUD + título holográfico + CTAs cruzadas. Tabs/filtros/catálogo (251 itens) e o grid de ferramentas seguem **intactos** logo abaixo.
+- ✅ Com isso, os **4 flagships do #246** (home, perfil, arsenal, biblioteca) + universo, elites, sobre, dossie estão no nível imersivo; toda página tem a atmosfera global.
+- 🚫 `/git-nexus` (gate) mantido **leve** de propósito (#238: web leve) — já tem orbe próprio + atmosfera global; não puxa o herói WebGL.
+- ✅ Build limpo; heróis conferidos no navegador (`/arsenal`, `/ferramentas`).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-flagship-heroes-3`.
+
 ### Redesign #246 — heróis imersivos em /elites, /sobre e /dossie
 - ◆ **`/elites`**, ◇ **`/sobre`** e ▣ **`/dossie`** trocaram o header padrão pelo **herói imersivo** (`buildImmersiveHero`): galáxia WebGL + raios + grid HUD + título holográfico + kicker + CTAs (cruzando pra Arsenal/Dossiê/Roadmap/Núcleo/Universos). Contadores dinâmicos (equipes operacionais) e todo o conteúdo seguem intactos abaixo.
 - 🎛️ Slots Spline reaproveitados (`elites`, `sobre`) — testáveis via `?spline=`.
