@@ -6,6 +6,7 @@
  */
 
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import { PLAYLISTS, TOTAL_VIDEOS, TOTAL_PLAYLISTS, findPlaylist, findVideo } from '../data/videos.js';
@@ -192,20 +193,18 @@ export function videosPage() {
   const fullPage = h('div', { className: 'page-videos' });
 
   fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'FERRAMENTAS'), h('span', null, '›'),
-        h('span', null, 'CENTRAL DE VÍDEOS')
-      ),
-      h('h1', { className: 'page-header__title' }, '▶ Central de Vídeos'),
-      h('p', { className: 'page-header__description' },
+    buildImmersiveHero({
+      kicker: 'BALUARTE · CENTRAL DE VÍDEOS',
+      title: 'Central de Vídeos',
+      sub: 'YOUTUBE & PLAYLISTS',
+      desc: [
         h('span', { className: 'u-text-cyan' }, `${TOTAL_VIDEOS} vídeos`),
         ' em ',
         h('span', { className: 'u-text-cyan' }, `${TOTAL_PLAYLISTS} playlists`),
         ' temáticas. YouTube embeds + cross-link com Media Hub para arquivos locais.'
-      )
-    )
+      ],
+      hudLeft: '▶ VÍDEOS', hudRight: 'YOUTUBE'
+    })
   );
 
   fullPage.appendChild(renderPlaylists());

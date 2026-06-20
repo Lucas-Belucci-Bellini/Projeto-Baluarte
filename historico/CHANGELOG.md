@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — heróis imersivos em 17 páginas de conteúdo (militar + mídia)
+- 🪖 **11 páginas militares** trocaram o `.page-hero`/header simples pelo **herói imersivo** (`buildImmersiveHero`): forças armadas, forças especiais, poder militar, tecnologia militar, organização militar, orçamentos militares, história militar, guerras & conflitos, batalhas históricas, táticas & estratégias, armas por país. Tabelas/timelines/grids seguem **intactos** abaixo; contadores dinâmicos preservados.
+- 🎬 **6 páginas de mídia** idem: cinema (filmes), central de música, TV, central de vídeos, rádio, media hub. Descrições com spans/contadores dinâmicos preservadas (desc como array de nós).
+- 🎛️ Cada herói tem título holográfico + galáxia WebGL + raios + grid HUD + kicker/HUD textual; auto-limpa ao trocar de rota; respeita `prefers-reduced-motion`. Sem CTAs nas militares (páginas de dado) pra manter o import enxuto.
+- ✅ Build limpo; conferido no navegador (forças armadas, tecnologia militar, cinema, rádio) — heróis + conteúdo OK, sem erros de console (só um cert externo).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-content-heroes`.
+
 ### Redesign #246 — heróis imersivos em /arsenal e /ferramentas
 - ⌖ **`/arsenal`** (flagship #246 nº3) e ⚙ **`/ferramentas`** (hub) ganharam o **herói imersivo** (`buildImmersiveHero`): galáxia WebGL + raios + grid HUD + título holográfico + CTAs cruzadas. Tabs/filtros/catálogo (251 itens) e o grid de ferramentas seguem **intactos** logo abaixo.
 - ✅ Com isso, os **4 flagships do #246** (home, perfil, arsenal, biblioteca) + universo, elites, sobre, dossie estão no nível imersivo; toda página tem a atmosfera global.

@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const PRINCIPIOS = [
   { nome: 'Concentração de Forças', desc: 'Reunir poder de combate superior no ponto decisivo.', origem: 'Clausewitz / Napoleão' },
@@ -40,10 +41,13 @@ const ESTRATEGISTAS = [
 
 export function taticasEstrategiasPage() {
   return h('div', { className: 'tat-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🗺 Táticas & Estratégias'),
-      h('p', { className: 'u-text-muted' }, 'Princípios, táticas e os grandes pensadores da guerra — do Sun Tzu ao drone warfare.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · TÁTICAS & ESTRATÉGIAS',
+      title: 'Táticas & Estratégias',
+      sub: 'A ARTE DA GUERRA',
+      desc: 'Princípios, táticas e os grandes pensadores da guerra — do Sun Tzu ao drone warfare.',
+      hudLeft: '🗺 DOUTRINA', hudRight: 'SUN TZU → DRONE'
+    }),
 
     h('section', { className: 'tat-section' },
       h('h2', { className: 'tat-section-title' }, '⚖ Princípios da Guerra'),

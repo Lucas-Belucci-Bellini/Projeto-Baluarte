@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const ERAS = [
   {
@@ -116,10 +117,13 @@ export function historiaMilitarPage() {
   }
 
   return h('div', { className: 'hist-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '📜 História Militar'),
-      h('p', { className: 'u-text-muted' }, 'Da pré-história à guerra moderna — clique em cada era para ver os marcos.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · HISTÓRIA MILITAR',
+      title: 'História Militar',
+      sub: 'DA PRÉ-HISTÓRIA À ERA MODERNA',
+      desc: 'Da pré-história à guerra moderna — clique em cada era para ver os marcos.',
+      hudLeft: '📜 LINHA DO TEMPO', hudRight: 'ERAS'
+    }),
     timeline
   );
 }

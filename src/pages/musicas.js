@@ -6,6 +6,7 @@
  */
 
 import { h, empty } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
@@ -219,18 +220,18 @@ export function musicasPage() {
   const fullPage = h('div', { className: 'page-musicas' });
 
   fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'MÍDIA'), h('span', null, '›'),
-        h('span', null, 'MÚSICA')),
-      h('h1', { className: 'page-header__title' }, '♪ Central de Música'),
-      h('p', { className: 'page-header__description' },
+    buildImmersiveHero({
+      kicker: 'BALUARTE · MÍDIA · MÚSICA',
+      title: 'Central de Música',
+      sub: 'PLAYLIST & LOOP',
+      desc: [
         'A faixa em destaque toca em ',
         h('span', { className: 'u-text-cyan' }, 'loop infinito'),
         ' e logo abaixo está a playlist completa. Tudo via player do ',
-        'Spotify — dê play em cada um.')
-    )
+        'Spotify — dê play em cada um.'
+      ],
+      hudLeft: '♪ ÁUDIO', hudRight: 'SPOTIFY'
+    })
   );
 
   /* ===== Faixa em destaque (loop) ===== */

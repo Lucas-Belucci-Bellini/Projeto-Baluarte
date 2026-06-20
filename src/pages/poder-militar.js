@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const RANKINGS = [
   {
@@ -185,10 +186,13 @@ export function poderMilitarPage() {
   );
 
   return h('div', { className: 'poder-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🏅 Rankings de Poder Militar'),
-      h('p', { className: 'u-text-muted' }, 'GFP Index 2024 · Poder aéreo, naval, terrestre e efetivos por país.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · PODER MILITAR',
+      title: 'Poder Militar',
+      sub: 'GFP INDEX 2024',
+      desc: 'GFP Index 2024 · Poder aéreo, naval, terrestre e efetivos por país.',
+      hudLeft: '🏅 RANKINGS GLOBAIS', hudRight: 'GFP 2024'
+    }),
     nukeBox,
     h('div', { className: 'poder-section' },
       h('h2', { className: 'poder-section-title' }, 'Ranking por Categoria'),

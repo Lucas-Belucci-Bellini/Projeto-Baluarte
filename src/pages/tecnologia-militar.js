@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const DOMINIOS = [
   { id: 'terra', label: 'Terrestre', icon: '🚜' },
@@ -92,10 +93,13 @@ export function tecnologiaMilitarPage() {
   render();
 
   return h('div', { className: 'tech-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🚀 Tecnologia Militar'),
-      h('p', { className: 'u-text-muted' }, 'Plataformas e sistemas de combate por domínio — do soldado conectado às armas hipersônicas.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · TECNOLOGIA MILITAR',
+      title: 'Tecnologia Militar',
+      sub: 'SISTEMAS DE COMBATE',
+      desc: 'Plataformas e sistemas de combate por domínio — do soldado conectado às armas hipersônicas.',
+      hudLeft: '🚀 PLATAFORMAS', hudRight: 'POR DOMÍNIO'
+    }),
     tabBar,
     grid
   );

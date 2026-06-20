@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const SOF = [
   { nome: 'Delta Force (1st SFOD-D)', pais: '🇺🇸 EUA', ramo: 'Exército', fundacao: 1977, papel: 'Contraterrorismo, resgate de reféns', lema: 'Tier 1', cor: 'eua',
@@ -88,10 +89,13 @@ export function forcasEspeciaisPage() {
   render();
 
   return h('div', { className: 'sof-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🪖 Elites & Forças Especiais'),
-      h('p', { className: 'u-text-muted' }, `${SOF.length} unidades de operações especiais (SOF) de elite ao redor do mundo.`)
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · FORÇAS ESPECIAIS',
+      title: 'Forças Especiais',
+      sub: 'OPERAÇÕES ESPECIAIS · SOF',
+      desc: `${SOF.length} unidades de operações especiais (SOF) de elite ao redor do mundo.`,
+      hudLeft: '🪖 UNIDADES SOF', hudRight: 'ELITE'
+    }),
     h('div', { className: 'forcas-controls' }, searchEl),
     grid
   );

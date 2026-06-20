@@ -6,6 +6,7 @@
  */
 
 import { h, cx, normalize, debounce, empty } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { FILMES, FILMES_TOTAL, filmeEmbedUrl } from '../data/filmes.js';
 
 let modalEl = null;
@@ -53,17 +54,17 @@ export function filmesPage() {
   let query = '';
 
   fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'MÍDIA'), h('span', null, '›'),
-        h('span', null, 'CINEMA')),
-      h('h1', { className: 'page-header__title' }, '▤ Cinema do Baluarte'),
-      h('p', { className: 'page-header__description' },
+    buildImmersiveHero({
+      kicker: 'BALUARTE · MÍDIA · CINEMA',
+      title: 'Cinema do Baluarte',
+      sub: 'ACERVO DE FILMES',
+      desc: [
         h('span', { className: 'u-text-cyan' }, `${FILMES_TOTAL} filmes`),
         ' no acervo. Clique num cartaz para abrir o player. ',
-        'Os vídeos são transmitidos direto do Google Drive.')
-    )
+        'Os vídeos são transmitidos direto do Google Drive.'
+      ],
+      hudLeft: '▤ CINEMA', hudRight: 'PLAYER'
+    })
   );
 
   const searchInput = h('input', {
