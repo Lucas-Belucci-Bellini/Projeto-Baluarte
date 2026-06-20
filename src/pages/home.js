@@ -62,6 +62,7 @@ function buildHero(onCleanup, operador, sceneUrl) {
 
   const hero = h('div', { className: 'hv2-hero' },
     canvas,
+    h('div', { className: 'hv2-hero__rays', 'aria-hidden': 'true' }),
     h('div', { className: 'hv2-hero__grid' }),
     h('div', { className: 'hv2-hero__scan' }),
     splineWrap,
