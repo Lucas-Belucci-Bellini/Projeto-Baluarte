@@ -6,6 +6,7 @@
 
 import { h, debounce, normalize, mount, cx } from '../utils/helpers.js';
 import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { toast } from '../utils/toast.js';
 
 /* ============================================================
@@ -209,7 +210,7 @@ function toolCard(tool) {
     h('div', { className: 'fh-card__cat u-mono' }, tool.category.toUpperCase())));
 }
 
-export function ferramentasPage() {
+export function ferramentasPage(args) {
   /* Estado LOCAL por invocação (global faria a busca/filtro atualizar o grid
      de uma chamada anterior não-montada — a página é instanciada 2x). */
   let activeCategory = 'all';
@@ -261,14 +262,23 @@ export function ferramentasPage() {
   TOOLS.forEach((tool) => gridEl.appendChild(toolCard(tool)));
 
   return h('div', { className: 'page-ferramentas' },
-    h('div', { className: 'fh-header anim-fade-in' },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'), h('span', null, 'HUB DE FERRAMENTAS')),
-      h('h1', { className: 'fh-title' }, '⚙ Hub de Ferramentas'),
-      h('p', { className: 'fh-sub' },
+    buildImmersiveHero({
+      kicker: 'BALUARTE · HUB DE FERRAMENTAS',
+      title: 'Hub de Ferramentas',
+      sub: 'CAIXA DE FERRAMENTAS TÉCNICAS',
+      desc: [
         'Catálogo central de todas as ferramentas técnicas do Baluarte — ',
         h('span', { className: 'u-text-cyan' }, `${TOOLS.length} ferramentas`),
-        ' em ', h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length - 1} categorias`), '.')),
+        ' em ', h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length - 1} categorias`), '.'
+      ],
+      ctas: [
+        { label: '⌨ Editor de Código', variant: 'primary', onClick: () => router.navigate('/editor') },
+        { label: '🔗 Núcleo de IA', onClick: () => router.navigate('/git-nexus') }
+      ],
+      hudLeft: '⚙ FERRAMENTARIA · ONLINE',
+      hudRight: `${TOOLS.length} FERRAMENTAS`,
+      query: args && args.query
+    }),
     h('div', { className: 'fh-toolbar' }, searchInput, countEl),
     chips,
     gridEl);

@@ -10,6 +10,8 @@
  */
 
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
+import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import {
@@ -398,30 +400,33 @@ function renderMainView() {
 
 /* ===== Page builder ===== */
 
-export function arsenalPage() {
+export function arsenalPage(args) {
   state = loadState();
 
   const fullPage = h('div', { className: 'page-arsenal' });
 
-  fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'),
-        h('span', null, '›'),
-        h('span', null, 'ARSENAL')
-      ),
-      h('h1', { className: 'page-header__title' }, '⌖ Arsenal'),
-      h('p', { className: 'page-header__description' },
-        h('span', { className: 'u-text-cyan' }, `${TOTAL} entradas`),
-        ' num catálogo militar completo — armas leves, artilharia, defesa aérea, ',
-        'aeronaves, frota naval, drones e veículos em ',
-        h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length} categorias`),
-        ', mais ',
-        h('span', { className: 'u-text-cyan' }, `${DOUTRINAS.length} doutrinas`),
-        ' táticas. Filtre por categoria, equipe (ALFA-SIERRA) e tier.'
-      )
-    )
-  );
+  fullPage.appendChild(buildImmersiveHero({
+    kicker: 'BALUARTE · ARSENAL',
+    title: 'Arsenal',
+    sub: 'CATÁLOGO MILITAR COMPLETO',
+    desc: [
+      h('span', { className: 'u-text-cyan' }, `${TOTAL} entradas`),
+      ' — armas leves, artilharia, defesa aérea, aeronaves, frota naval, ',
+      'drones e veículos em ',
+      h('span', { className: 'u-text-cyan' }, `${CATEGORIES.length} categorias`),
+      ', mais ',
+      h('span', { className: 'u-text-cyan' }, `${DOUTRINAS.length} doutrinas`),
+      ' táticas. Filtre por categoria, equipe (ALFA-SIERRA) e tier.'
+    ],
+    ctas: [
+      { label: '◆ Elites', variant: 'primary', onClick: () => router.navigate('/elites') },
+      { label: '▣ Dossiê das Forças', onClick: () => router.navigate('/dossie') }
+    ],
+    hudLeft: '⌖ CATÁLOGO · ARMADO',
+    hudRight: `${TOTAL} ENTRADAS`,
+    sceneKey: 'arsenal',
+    query: args && args.query
+  }));
 
   /* Tabs catalog/doutrinas */
   const tabs = h('div', { className: 'arsenal-tabs' });
