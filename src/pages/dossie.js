@@ -11,6 +11,8 @@
  */
 
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
+import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';
 import dossieUrl from '../data/dossie.json?url';
 
@@ -139,25 +141,31 @@ function renderViewer() {
 
 /* ===== Página ===== */
 
-export function dossiePage() {
+export function dossiePage(args) {
   state = loadState();
   data = null;
   status = 'loading';
 
   const fullPage = h('div', { className: 'page-dossie' });
 
-  fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'), h('span', null, 'DOSSIÊ')),
-      h('h1', { className: 'page-header__title' }, '▣ Dossiê das Forças'),
-      h('p', { className: 'page-header__description' },
-        'Documento-fonte completo — a nave ',
-        h('span', { className: 'u-text-cyan' }, 'Infinity Dreadnought'),
-        ', hierarquia de comando, equipes, colossos, arsenal e frotas. ',
-        'Sincronizado dos Google Docs a cada 12h.')
-    )
-  );
+  fullPage.appendChild(buildImmersiveHero({
+    kicker: 'BALUARTE · DOSSIÊ DAS FORÇAS',
+    title: 'Dossiê das Forças',
+    sub: 'INFINITY DREADNOUGHT',
+    desc: [
+      'Documento-fonte completo — a nave ',
+      h('span', { className: 'u-text-cyan' }, 'Infinity Dreadnought'),
+      ', hierarquia de comando, equipes, colossos, arsenal e frotas. ',
+      'Sincronizado dos Google Docs a cada 12h.'
+    ],
+    ctas: [
+      { label: '◆ Elites', variant: 'primary', onClick: () => router.navigate('/elites') },
+      { label: '⌖ Arsenal', onClick: () => router.navigate('/arsenal') }
+    ],
+    hudLeft: '▣ DOCUMENTO-FONTE',
+    hudRight: 'SYNC · 12H',
+    query: args && args.query
+  }));
 
   const searchInput = h('input', {
     className: 'input input--search', type: 'search',
