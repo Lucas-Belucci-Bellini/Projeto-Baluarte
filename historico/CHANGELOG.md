@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — camada imersiva GLOBAL (atmosfera + header HUD em todo o site)
+- 🌌 **Atmosfera global** (`src/utils/atmosphere.js` + `src/styles/atmosphere.css`): uma única camada de fundo, montada 1x pelo shell, **atrás de todo o app** — auroras volumétricas que respiram + raios de luz (conic `@property`) + grid HUD à deriva + vinheta de foco. Leva o "nível Spline" (refs do #262) pra **todas as páginas de uma vez**. Decisão do operador: as 25 cenas Spline são **referência** (alvo visual), recriadas **nativamente** — sem peso (só CSS, `pointer-events:none`, `z-index:-1`, reduced-motion ok).
+- 🎛️ **Header de página vira painel HUD** (`.page-header` em `components.css`): barra de acento luminosa à esquerda (`::before`) + linha de varredura animada embaixo (`::after`). Sem caixa de fundo (nunca briga com heróis próprios) → as **~68 páginas** com `.page-header` viram "painel de comando" **sem editar página**.
+- 📐 **Design System atualizado** (`docs/DESIGN-SYSTEM.md`): documenta a atmosfera global, o header HUD e um **mapa "cena Spline (#262) → efeito nativo"** (raios, holográfico, herói WebGL, bento, moldura HUD…). Contrato do redesign profundo.
+- ✅ Build limpo; verificado no navegador em `/home`, `/arsenal`, `/ferramentas`, `/regex`, `/biblioteca` (atmosfera + header consistentes, conteúdo legível).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-global-immersive`.
+
 ### Redesign #246 — raios volumétricos no herói da home (nível Spline, nativo)
 - 🌠 **Camada de raios volumétricos** no herói da `/home` (`.hv2-hero__rays`): leques de luz (ciano→violeta→magenta) varrendo do topo, animados com `@property --hv2-ray` (conic suave), mascarados pra somar com a galáxia WebGL sem competir com o título. Ref. "Futuristic Rays Background" (#262).
 - ⚖️ **Só CSS + 1 nó no DOM** (sem peso de runtime, sem dep): aproxima o "nível Spline" pedido pelo operador mesmo **sem** cena `.splinecode`. Some junto com canvas/grid/scanline quando uma cena Spline carrega; respeita `prefers-reduced-motion` (raios estáticos).

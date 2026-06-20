@@ -11,12 +11,15 @@ import { appState } from '../core/state.js';
 import { setCurrentFunction } from '../utils/baluarte-status.js';
 import { pinElement } from './overlay.js';
 import { revealScan } from '../utils/scroll-reveal.js';
+import { mountAtmosphere } from '../utils/atmosphere.js';
 
 let mainInner = null;
 let shellRefs = null;
 
 export function mountShell(rootEl) {
   empty(rootEl);
+
+  mountAtmosphere(rootEl);               // fundo imersivo único, atrás de todo o app (#246)
 
   mainInner = h('div', { className: 'main__inner' });
   const main = h('main', { className: 'main', id: 'main', role: 'main' }, mainInner);
