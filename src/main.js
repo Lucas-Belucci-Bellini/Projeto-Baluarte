@@ -143,6 +143,8 @@ router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.js'), 'g
 router.register('/aprendizado', lazyNexus('ml'));
 /* /home-3d foi promovido à home oficial (/) — alias para links antigos. */
 router.register('/home-3d', lazy(() => import('./pages/home.js'), 'homePage'));
+/* /home2 — PREVIEW da nova home "Command Deck" (bento + hero holográfico) p/ aprovação. */
+router.register('/home2', lazy(() => import('./pages/home-v2.js'), 'home2Page'));
 
 /* ==============================================================
  *  Todas as rotas acima são reais (sem placeholders). Fallback 404:
