@@ -11,6 +11,8 @@ import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
 import { createHeroWebGL } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
+import { mountSpline } from '../utils/spline-embed.js';
+import { sceneFor } from '../data/spline-scenes.js';
 import { ARSENAL, TOTAL as ARSENAL_TOTAL } from '../data/arsenal.js';
 import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL, CHAPTERS_TOTAL } from '../data/cronicas.js';
@@ -33,7 +35,7 @@ function countUp(el, target, onCleanup) {
 }
 
 /* ===== Hero ===== */
-function buildHero(onCleanup, operador) {
+function buildHero(onCleanup, operador, sceneUrl) {
   const canvas = h('canvas', { className: 'hv2-hero__canvas' });
   const clock = h('span', { className: 'hv2-hud__clock' }, '--:--:--');
   const tick = () => { clock.textContent = new Date().toLocaleTimeString('pt-BR'); };
@@ -54,10 +56,15 @@ function buildHero(onCleanup, operador) {
       h('button', { className: 'hv2-btn hv2-btn--app', onclick: () => router.navigate('/baixar') }, '⬇ Baixar o app'),
       h('button', { className: 'hv2-btn', onclick: () => router.navigate('/git-nexus') }, '🔗 Núcleo de IA')));
 
+  /* camada Spline (cena 3D rica) — entra por cima do herói WebGL quando há cena
+   * configurada/passada; no sucesso some o canvas/grid; na falta/falha fica o herói. */
+  const splineWrap = h('div', { className: 'hv2-hero__spline', 'aria-hidden': 'true' });
+
   const hero = h('div', { className: 'hv2-hero' },
     canvas,
     h('div', { className: 'hv2-hero__grid' }),
     h('div', { className: 'hv2-hero__scan' }),
+    splineWrap,
     h('div', { className: 'hv2-hud' },
       h('div', { className: 'hv2-hud__tl' }, '⬡ MARK XIII · v' + VERSION),
       h('div', { className: 'hv2-hud__tr' }, clock, h('div', null, h('span', { className: 'hv2-hud__dot' }, '● '), 'NÚCLEO ONLINE')),
@@ -69,6 +76,16 @@ function buildHero(onCleanup, operador) {
   if (!fx) fx = createHeroField(canvas, { accent: '#00f0ff', accent2: '#ff00aa' });
   fx.start();
   onCleanup(() => fx.destroy());
+
+  /* cena Spline por cima (se houver) — herói WebGL fica de fallback */
+  if (sceneUrl) {
+    const sp = mountSpline(splineWrap, sceneUrl, {
+      onReady: () => hero.classList.add('has-spline'),
+      onFail: () => hero.classList.remove('has-spline')
+    });
+    onCleanup(() => sp.destroy());
+  }
+
   if (!REDUCED) {
     const onMove = (e) => {
       const r = hero.getBoundingClientRect();
@@ -164,13 +181,14 @@ const scard = (cat, name, meta, path) => h('div', { className: 'hv2-scard', oncl
   h('div', { className: 'hv2-scard__meta' }, meta));
 
 /* ===== Página ===== */
-export function homePage() {
+export function homePage(args) {
   const cleanups = [];
   const onCleanup = (fn) => cleanups.push(fn);
   const operador = (appState.get('user') || { name: 'Operador' }).name;
+  const sceneUrl = sceneFor('home', args && args.query);   // config ou ?spline=URL
 
   const page = h('div', { className: 'page-home2' });
-  page.appendChild(buildHero(onCleanup, operador));
+  page.appendChild(buildHero(onCleanup, operador, sceneUrl));
   page.appendChild(buildBento(onCleanup));
   page.appendChild(shelf('🔫 Arsenal em destaque', ARSENAL.slice(0, 12).map((it) =>
     scard((it.category || '').toUpperCase(), it.name, [it.origin, it.year].filter(Boolean).join(' · '), '/arsenal')), '/arsenal'));

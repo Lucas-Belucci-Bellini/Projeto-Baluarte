@@ -48,7 +48,7 @@ const lazyNexus = (tab) => (args) =>
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */
-router.register('/home', () => homePage());   // eager: 1º paint
+router.register('/home', (args) => homePage(args));   // eager: 1º paint (args → ?spline=)
 router.register('/baixar', lazy(() => import('./pages/baixar.js'), 'baixarPage'));
 router.register('/ferramentas', lazy(() => import('./pages/ferramentas.js'), 'ferramentasPage'));
 router.register('/editor', lazy(() => import('./pages/editor.js'), 'editorPage'));
@@ -142,8 +142,8 @@ router.register('/apis', lazyNexus('apis'));
 router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.js'), 'gitNexusGate'));
 router.register('/aprendizado', lazyNexus('ml'));
 /* /home-3d e /home2 — aliases pra home oficial (links antigos / preview). */
-router.register('/home-3d', () => homePage());
-router.register('/home2', () => homePage());
+router.register('/home-3d', (args) => homePage(args));
+router.register('/home2', (args) => homePage(args));
 
 /* ==============================================================
  *  Todas as rotas acima são reais (sem placeholders). Fallback 404:
