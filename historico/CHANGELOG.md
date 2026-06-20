@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Design System #246/#195 — contrato visual (diretrizes "design first")
+- 📐 **`docs/DESIGN-SYSTEM.md` (novo)**: o contrato visual do Baluarte — tokens (de `variables.css`), componentes/padrões já firmados (título neon, cards glow/lift, moldura HUD, tabs, chips, timelines), e **diretrizes** pra iconografia (adotar **coolicons**, MIT), data-viz/charts, imagens (moodboard Pinterest) e o redesign profundo dos flagships (`/home`, `/perfil`, `/arsenal`, `/biblioteca`). Base pra "fechar o design antes de seguir com as funções".
+- 🔗 `CLAUDE.md` aponta pro doc (continuidade — todo design novo sai dele).
+- ℹ️ Os 3 Figma do #246 são *community files* e o Figma MCP exige acesso de edição; pra extrair direto, o operador precisa duplicar/compartilhar como editor. O doc define a direção a partir dos tokens reais + recursos open-source enquanto isso.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-design-system`.
+
 ### Núcleo de IA #231 — Etapa 3: aba linkável + lembra a última aba
 - 🔗 **Trocar de aba no cockpit sincroniza a URL** (`#/git-nexus?tab=<id>`) via `history.replaceState` — sem disparar navegação/re-render. A aba fica **linkável** e **sobrevive ao reload**.
 - 💾 **Lembra a última aba**: reabrir o Núcleo de IA (pela sidebar, sem `?tab=`) restaura a última aba usada (`storage` em `nexus:lastTab`); prioridade = rota legada/deep-link > última aba > Grafo.

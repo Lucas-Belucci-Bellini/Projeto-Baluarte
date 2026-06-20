@@ -28,6 +28,7 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 - `src/utils/` — helpers, jarvis-engine/tools, git-nexus-engine, scroll-reveal…
 - `desktop/` — app Electron (main, preload, nexus, ipc) + workflow de release
 - `historico/CHANGELOG.md` — registro do que entra no `main`
+- `docs/DESIGN-SYSTEM.md` — **contrato visual** (tokens/componentes/diretrizes do redesign #246/#195); todo design novo sai daqui
 - Issues guarda-chuva (**não fechar**): **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign)
 
 ## Regras do projeto
