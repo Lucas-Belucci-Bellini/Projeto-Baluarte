@@ -6,6 +6,7 @@
  */
 
 import { h, cx, debounce, empty } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { toast } from '../utils/toast.js';
 import { router } from '../core/router.js';
 
@@ -230,20 +231,18 @@ export function mediaPage() {
   const fullPage = h('div', { className: 'page-media' });
 
   fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'FERRAMENTAS'), h('span', null, '›'),
-        h('span', null, 'MEDIA HUB')
-      ),
-      h('h1', { className: 'page-header__title' }, '◫ Media Hub'),
-      h('p', { className: 'page-header__description' },
+    buildImmersiveHero({
+      kicker: 'BALUARTE · MEDIA HUB',
+      title: 'Media Hub',
+      sub: 'ÁUDIO · VÍDEO · IMAGENS',
+      desc: [
         'Player local pra ',
         h('span', { className: 'u-text-cyan' }, 'áudio, vídeo e imagens'),
         '. Arraste arquivos pra biblioteca, navegue e reproduza. ',
         h('span', { className: 'u-text-muted' }, 'Tudo em memória — não persiste entre sessões.')
-      )
-    )
+      ],
+      hudLeft: '◫ MEDIA HUB', hudRight: 'LOCAL'
+    })
   );
 
   /* Toolbar */

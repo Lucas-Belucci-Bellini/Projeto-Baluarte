@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const SIPRI_2024 = [
   { pais: 'EUA',            bandeira: '🇺🇸', valor: 858, pib: 3.5,  pop: 335,  variacao: 2.3 },
@@ -84,10 +85,13 @@ export function orcamentosMilitaresPage() {
   );
 
   return h('div', { className: 'orca-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '📊 Orçamentos Militares'),
-      h('p', { className: 'u-text-muted' }, 'Gastos militares por país — SIPRI 2024. Valores em bilhões de USD.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · ORÇAMENTOS MILITARES',
+      title: 'Orçamentos Militares',
+      sub: 'SIPRI 2024',
+      desc: 'Gastos militares por país — SIPRI 2024. Valores em bilhões de USD.',
+      hudLeft: '📊 GASTOS MILITARES', hudRight: 'USD BI'
+    }),
     stats,
     h('div', { className: 'orca-toolbar' }, btnBar,
       h('p', { className: 'orca-source' }, 'Fonte: SIPRI Military Expenditure Database 2024')

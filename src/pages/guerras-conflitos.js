@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const GUERRAS = [
   { nome: 'Guerras Greco-Persas', periodo: '499–449 a.C.', era: 'Antiga', baixas: '~300 mil', cor: 'ant',
@@ -83,10 +84,13 @@ export function guerrasConflitosPage() {
   render();
 
   return h('div', { className: 'guerra-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🌐 Guerras & Conflitos'),
-      h('p', { className: 'u-text-muted' }, 'Linha do tempo dos grandes conflitos da história — da Antiguidade ao presente.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · GUERRAS & CONFLITOS',
+      title: 'Guerras & Conflitos',
+      sub: 'LINHA DO TEMPO',
+      desc: 'Linha do tempo dos grandes conflitos da história — da Antiguidade ao presente.',
+      hudLeft: '🌐 CONFLITOS GLOBAIS', hudRight: 'TIMELINE'
+    }),
     filterBar,
     timeline
   );

@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const FORCAS = [
   { pais: 'China',          bandeira: '🇨🇳', efetivos: 2035000, reserva: 510000,  orcamento: 225,  pib: 1.7,  ramos: ['Exército','Marinha','Aeronáutica','Foguetes','Apoio'] },
@@ -121,10 +122,13 @@ export function forcasArmadasPage() {
   );
 
   return h('div', { className: 'forcas-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🌍 Forças Armadas do Mundo'),
-      h('p', { className: 'u-text-muted' }, 'Efetivos, orçamentos e ramos militares por país. Dados: GFP 2024 + SIPRI.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · FORÇAS ARMADAS',
+      title: 'Forças Armadas do Mundo',
+      sub: 'EFETIVOS & ORÇAMENTOS',
+      desc: 'Efetivos, orçamentos e ramos militares por país. Dados: GFP 2024 + SIPRI.',
+      hudLeft: '🌍 DADOS GLOBAIS', hudRight: 'GFP + SIPRI'
+    }),
     stats,
     h('div', { className: 'forcas-controls' }, searchEl),
     h('div', { className: 'forcas-table-wrap' }, tableEl)

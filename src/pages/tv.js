@@ -5,6 +5,7 @@
  */
 
 import { h, cx, empty, pad2 } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { TV_CHANNELS, channelForHour, dailySchedule, TOTAL_CHANNELS } from '../data/tv.js';
 
 let screenEl = null;
@@ -42,15 +43,16 @@ export function tvPage() {
   const page = h('div', { className: 'page-tv' });
 
   page.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'MÍDIA'), h('span', null, '›'), h('span', null, 'TV')),
-      h('h1', { className: 'page-header__title' }, '📺 TV do Baluarte'),
-      h('p', { className: 'page-header__description' },
+    buildImmersiveHero({
+      kicker: 'BALUARTE · MÍDIA · TV',
+      title: 'TV do Baluarte',
+      sub: 'ROTAÇÃO CONTÍNUA',
+      desc: [
         `${TOTAL_CHANNELS} canais em rotação contínua. `,
-        h('span', { className: 'u-text-cyan' }, `${onAir.name} no ar agora.`))
-    )
+        h('span', { className: 'u-text-cyan' }, `${onAir.name} no ar agora.`)
+      ],
+      hudLeft: '📺 CANAIS', hudRight: 'NO AR'
+    })
   );
 
   screenEl = h('div', { className: 'tv-screen' });

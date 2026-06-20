@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const ARMAS = [
   { nome: 'M16/M4', pais: 'EUA', bandeira: '🇺🇸', tipo: 'Infantaria', epoca: 'Moderna', ano: 1964, status: 'Ativo' },
@@ -107,10 +108,13 @@ export function armasPorPaisPage() {
   render();
 
   return h('div', { className: 'apais-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🔫 Armas por País'),
-      h('p', { className: 'u-text-muted' }, 'Catálogo interativo de sistemas de armas — filtre por país, tipo e época.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · ARMAS POR PAÍS',
+      title: 'Armas por País',
+      sub: 'CATÁLOGO DE SISTEMAS',
+      desc: 'Catálogo interativo de sistemas de armas — filtre por país, tipo e época.',
+      hudLeft: '🔫 SISTEMAS DE ARMAS', hudRight: 'POR PAÍS'
+    }),
     h('div', { className: 'apais-filters' },
       makeSelect('País', paises, v => { fPais = v; render(); }),
       makeSelect('Tipo', TIPOS, v => { fTipo = v; render(); }),

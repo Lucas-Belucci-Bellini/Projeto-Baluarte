@@ -13,6 +13,7 @@
  */
 
 import { h, empty } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { searchStations, COUNTRY_OPTIONS, GENRE_OPTIONS } from '../utils/radio-api.js';
@@ -58,20 +59,20 @@ export function radioPage() {
   const fullPage = h('div', { className: 'page-radio' });
 
   fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'MÍDIA'), h('span', null, '›'),
-        h('span', null, 'RÁDIO')),
-      h('h1', { className: 'page-header__title' }, '◉))) Rádio'),
-      h('p', { className: 'page-header__description' },
+    buildImmersiveHero({
+      kicker: 'BALUARTE · MÍDIA · RÁDIO',
+      title: 'Rádio',
+      sub: 'SINTETIZADOR & ONLINE',
+      desc: [
         'Dois modos: ',
         h('span', { className: 'u-text-cyan' }, 'Sintetizador'),
         ' — um receptor sintetizado via Web Audio, totalmente offline — e ',
         h('span', { className: 'u-text-cyan' }, 'Online'),
         ' — estações de rádio reais da internet via Radio Browser API. ',
-        'Rádio RF de verdade não funciona no navegador; o modo Online toca streams.')
-    )
+        'Rádio RF de verdade não funciona no navegador; o modo Online toca streams.'
+      ],
+      hudLeft: '◉))) RÁDIO', hudRight: 'WEB AUDIO'
+    })
   );
 
   /* ===== Alternador de modo ===== */

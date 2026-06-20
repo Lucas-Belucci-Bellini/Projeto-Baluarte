@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 /* Ranks de oficiais — código OTAN OF-1 a OF-10 */
 const OFICIAIS = [
@@ -127,10 +128,13 @@ export function organizacaoMilitarPage() {
   content.appendChild(renderOficiais());
 
   return h('div', { className: 'org-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '⚙ Organização Militar'),
-      h('p', { className: 'u-text-muted' }, 'Hierarquia de patentes (padrão OTAN OF/OR) e estrutura de unidades militares.')
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · ORGANIZAÇÃO MILITAR',
+      title: 'Organização Militar',
+      sub: 'PATENTES & ESTRUTURA',
+      desc: 'Hierarquia de patentes (padrão OTAN OF/OR) e estrutura de unidades militares.',
+      hudLeft: '⚙ HIERARQUIA OTAN', hudRight: 'OF/OR'
+    }),
     tabBar,
     content
   );

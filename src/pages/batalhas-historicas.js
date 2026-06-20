@@ -4,6 +4,7 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 const BATALHAS = [
   { nome: 'Maratona', ano: '490 a.C.', local: 'Grécia', vencedor: 'Atenas', perdedor: 'Pérsia',
@@ -87,10 +88,13 @@ export function batalhasHistoricasPage() {
   render();
 
   return h('div', { className: 'batalha-page page-wrap' },
-    h('div', { className: 'page-hero' },
-      h('h1', null, '🔰 Batalhas Históricas'),
-      h('p', { className: 'u-text-muted' }, `${BATALHAS.length} batalhas decisivas que mudaram o curso da história.`)
-    ),
+    buildImmersiveHero({
+      kicker: 'BALUARTE · BATALHAS HISTÓRICAS',
+      title: 'Batalhas Históricas',
+      sub: 'DECISIVAS NA HISTÓRIA',
+      desc: `${BATALHAS.length} batalhas decisivas que mudaram o curso da história.`,
+      hudLeft: '🔰 ARQUIVO DE BATALHAS', hudRight: 'HISTÓRIA'
+    }),
     h('div', { className: 'forcas-controls' }, searchEl),
     grid
   );
