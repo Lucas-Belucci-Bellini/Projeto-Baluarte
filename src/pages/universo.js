@@ -140,6 +140,7 @@ export function universoPage(args) {
     kicker: 'BALUARTE · HUB DE UNIVERSOS',
     title: 'Hub de Universos',
     sub: 'MULTIVERSO BALUARTE',
+    variant: 'planet',
     desc: [
       h('span', { className: 'u-text-cyan' }, `${TOTAL_UNIVERSOS} universos`),
       ' catalogados: 2 core (Baluarte, Convergência) + 8 crossovers (DOOM, Halo, ',

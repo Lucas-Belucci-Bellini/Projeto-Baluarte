@@ -21,7 +21,7 @@ const REDUCED = typeof matchMedia !== 'undefined'
 export function buildImmersiveHero(opts = {}) {
   const {
     kicker = '', title = '', sub = '', desc = '', ctas = [],
-    accent = '#00f0ff', accent2 = '#ff00aa',
+    accent = '#00f0ff', accent2 = '#ff00aa', variant = 'galaxy',
     sceneKey = '', query = null, hudLeft = '', hudRight = ''
   } = opts;
 
@@ -53,7 +53,7 @@ export function buildImmersiveHero(opts = {}) {
     hud,
     inner);
 
-  let fx = createHeroWebGL(canvas, { accent, accent2 });
+  let fx = createHeroWebGL(canvas, { accent, accent2, variant });
   if (!fx) fx = createHeroField(canvas, { accent, accent2 });
   fx.start();
 

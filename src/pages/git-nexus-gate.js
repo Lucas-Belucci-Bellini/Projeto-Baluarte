@@ -22,6 +22,7 @@
 
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 /** Roda DENTRO do Baluarte Launcher? (a ponte só existe no app). */
 function isNative() {
@@ -58,17 +59,20 @@ export function gitNexusGate(args) {
 function gitNexusTeaser({ failed = false } = {}) {
   const page = h('div', { className: 'page-gitnexus' });
 
-  page.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'NÚCLEO DE IA')),
-      h('h1', { className: 'page-header__title' }, '🔗 Núcleo de IA'),
-      h('p', { className: 'page-header__description' },
-        'O hub de IA do Baluarte — ', h('span', { className: 'u-text-cyan' }, 'grafo de código em 3D'),
-        ', JARVIS, memória, segundo cérebro, ML, APIs e mais, num cockpit só. ',
-        'É a parte pesada da plataforma: roda completa no app desktop.'))
-  );
+  page.appendChild(buildImmersiveHero({
+    kicker: 'BALUARTE · NÚCLEO DE IA',
+    title: 'Núcleo de IA',
+    sub: 'GRAFO · JARVIS · MEMÓRIA · ML',
+    variant: 'reactor',
+    accent2: '#9d7bff',
+    desc: [
+      'O hub de IA do Baluarte — ', h('span', { className: 'u-text-cyan' }, 'grafo de código em 3D'),
+      ', JARVIS, memória, segundo cérebro, ML, APIs e mais, num cockpit só. ',
+      'É a parte pesada da plataforma: roda completa no app desktop.'
+    ],
+    hudLeft: '🔗 NÚCLEO · IA',
+    hudRight: 'APP-ONLY'
+  }));
 
   page.appendChild(
     h('div', { className: 'gn-teaser anim-fade-in' },
