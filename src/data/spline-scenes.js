@@ -16,7 +16,10 @@ export const SPLINE_SCENES = {
   perfil: '',      // Dossiê (ex.: "Heart Health HUD")
   gitNexus: '',    // Núcleo de IA (ex.: "The Eternal ARC" / "Retrofuturistic circuit loop")
   universo: '',    // Hub de Universos (ex.: "Orbital View of Arrakis")
+  biblioteca: '',  // Crônicas (ex.: "The Eternal ARC" / "Pandemonium")
+  elites: '',      // Elites (ex.: "Sci-fi Spaceship" / "Gridcorp")
   arsenal: '',     // Arsenal (ex.: "Ducati XDiavel")
+  sobre: '',       // Sobre (ex.: "Gridcorp" / "3D Diagram")
   baixar: ''       // /baixar (ex.: "SPLYN mockups")
 };
 

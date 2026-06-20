@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — kit de herói imersivo reusável + flagships /universo e /biblioteca
+- 🦾 **`src/utils/immersive.js` + `immersive.css` (novos)**: `buildImmersiveHero({...})` generaliza o herói "Command Deck" da home pra qualquer flagship em **uma chamada** — herói WebGL (galáxia + arc-reactor, com fallback 2D) + raios + grid HUD + título holográfico + kicker + descrição + CTAs + **slot Spline** opcional. Parametrizável por `--bx-accent`. **Auto-limpa** ao sair do DOM (MutationObserver destrói WebGL/Spline) — a página não gerencia ciclo de vida. Respeita `prefers-reduced-motion`.
+- 🌌 **`/universo`**: header antigo → **herói imersivo** (galáxia, "Hub de Universos / MULTIVERSO BALUARTE", HUD, CTAs p/ Crônicas e Elites). Cards de universo seguem abaixo, intactos.
+- 📖 **`/biblioteca`**: header antigo → **herói imersivo** (acento violeta, "Crônicas da Baluarte / ONDE OS DEUSES SANGRAM", contador de capítulos dinâmico preservado, CTA p/ Universos).
+- 🎛️ Slots Spline novos em `spline-scenes.js` (`biblioteca`, `elites`, `sobre`) — testáveis via `?spline=`.
+- ✅ Build limpo; heróis conferidos no navegador (`/universo`, `/biblioteca`).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-flagship-heroes`.
+
 ### Redesign #246 — camada imersiva GLOBAL (atmosfera + header HUD em todo o site)
 - 🌌 **Atmosfera global** (`src/utils/atmosphere.js` + `src/styles/atmosphere.css`): uma única camada de fundo, montada 1x pelo shell, **atrás de todo o app** — auroras volumétricas que respiram + raios de luz (conic `@property`) + grid HUD à deriva + vinheta de foco. Leva o "nível Spline" (refs do #262) pra **todas as páginas de uma vez**. Decisão do operador: as 25 cenas Spline são **referência** (alvo visual), recriadas **nativamente** — sem peso (só CSS, `pointer-events:none`, `z-index:-1`, reduced-motion ok).
 - 🎛️ **Header de página vira painel HUD** (`.page-header` em `components.css`): barra de acento luminosa à esquerda (`::before`) + linha de varredura animada embaixo (`::after`). Sem caixa de fundo (nunca briga com heróis próprios) → as **~68 páginas** com `.page-header` viram "painel de comando" **sem editar página**.
