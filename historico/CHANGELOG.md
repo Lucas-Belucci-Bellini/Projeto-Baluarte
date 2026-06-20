@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — novas variantes 3D (helix / scope) + espalhadas pelos flagships
+- 🧬 **`hero-webgl.js` +2 variantes**: **`helix`** (dupla hélice/DNA com degraus, girando) e **`scope`** (anéis concêntricos + graduação + mira, varrendo no próprio plano via `rotZ`). Junto com galaxy/planet/reactor, são **5 tipos** de cena nativa.
+- 🗂️ **Distribuídas pra dar variedade**: `/biblioteca` → **helix** (fios narrativos), `/arsenal` → **scope** (mira/alvo), `/ferramentas` → **reactor**. `/universo` planet e Núcleo de IA reactor seguem.
+- 🪪 **`/perfil`**: ganhou fundo 3D **scope** (canvas WebGL atrás do dossiê, `pf-hero__canvas`, opacity 0.8) com fallback 2D e auto-limpeza — sem perder o card de identidade.
+- ✅ Build limpo; helix/scope/reactor conferidos no navegador (biblioteca, arsenal, ferramentas, perfil).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-variants-2`.
+
 ### Redesign #246 — variantes de herói WebGL nativas (planet / reactor)
 - 🪐 **`hero-webgl.js` ganhou `variant`**: além do `galaxy` (padrão), agora tem **`planet`** (globo holográfico com meridianos/paralelos + anel orbital + campo de estrelas — ref. "Orbital View of Arrakis") e **`reactor`** (anéis concêntricos + cruzados + núcleo pulsante — ref. "circuit loop / Eternal ARC"). Mesmo renderer (point-sprites aditivos), geometria por `buildGeometry(variant)`.
 - 🌍 **`/universo`** → herói `planet` (globo girando + anel orbital, eixo Y).

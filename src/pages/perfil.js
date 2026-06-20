@@ -7,6 +7,8 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { createHeroWebGL } from '../utils/hero-webgl.js';
+import { createHeroField } from '../utils/hero3d.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { router } from '../core/router.js';
@@ -62,7 +64,9 @@ export function perfilPage() {
   );
 
   /* ---- HERO / dossiê ---- */
+  const scopeCanvas = h('canvas', { className: 'pf-hero__canvas', 'aria-hidden': 'true' });
   const hero = h('div', { className: 'pf-hero anim-fade-in' },
+    scopeCanvas,
     h('span', { className: 'pf-hud__br pf-hud__br--tl', 'aria-hidden': 'true' }),
     h('span', { className: 'pf-hud__br pf-hud__br--br', 'aria-hidden': 'true' }),
     h('div', { className: 'pf-hero__scan', 'aria-hidden': 'true' }),
@@ -90,6 +94,19 @@ export function perfilPage() {
     hero.style.setProperty('--gx', gx + '%');
   });
   hero.addEventListener('mouseleave', () => hero.style.setProperty('--gx', '78%'));
+
+  /* fundo 3D nativo: variante 'scope' (mira/HUD, ref. Heart Health HUD #262),
+   * com fallback 2D e auto-limpeza ao trocar de rota. */
+  let pfFx = createHeroWebGL(scopeCanvas, { accent: '#00f0ff', accent2: '#ff00aa', variant: 'scope' });
+  if (!pfFx) pfFx = createHeroField(scopeCanvas, { accent: '#00f0ff', accent2: '#ff00aa' });
+  pfFx.start();
+  if (typeof MutationObserver !== 'undefined') {
+    const mo = new MutationObserver(() => {
+      if (!document.contains(hero)) { try { pfFx.destroy(); } catch {} mo.disconnect(); }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
+
   page.appendChild(hero);
 
   /* ---- estatísticas ---- */
