@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Núcleo de IA #231 — Etapa 3: aba linkável + lembra a última aba
+- 🔗 **Trocar de aba no cockpit sincroniza a URL** (`#/git-nexus?tab=<id>`) via `history.replaceState` — sem disparar navegação/re-render. A aba fica **linkável** e **sobrevive ao reload**.
+- 💾 **Lembra a última aba**: reabrir o Núcleo de IA (pela sidebar, sem `?tab=`) restaura a última aba usada (`storage` em `nexus:lastTab`); prioridade = rota legada/deep-link > última aba > Grafo.
+- ✅ Verificado (Playwright, app): trocar p/ "Segundo Cérebro" → URL `?tab=cerebro`; reabrir `/git-nexus` → volta na aba Cérebro. Build limpo.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-nucleo-ia-e3`.
+
 ### Núcleo de IA #231/#238 — Etapa 2: navegação unificada (IA app-only)
 - 🧭 **A seção IA & JARVIS foi unificada no Núcleo de IA.** A sidebar agora tem **uma entrada só** ("🔗 Núcleo de IA" → `/git-nexus`); as 11 ferramentas abrem como **abas** dentro do cockpit.
 - 🔀 **Rotas legadas redirecionam pro cockpit na aba certa**: `/jarvis`, `/conselho`, `/apis`, `/jarvis-dashboard`, `/aprendizado`, `/llm-lab`, `/cerebro`, `/memoria`, `/terminal-ia`, `/seguranca`, `/ia-proprietaria` → caem no Núcleo de IA na aba correspondente (bookmarks antigos seguem funcionando). **Deep-link** também via `#/git-nexus?tab=<id>`.

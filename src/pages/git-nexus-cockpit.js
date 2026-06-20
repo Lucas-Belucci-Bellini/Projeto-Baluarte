@@ -14,6 +14,9 @@
  */
 
 import { h, empty } from '../utils/helpers.js';
+import { storage } from '../core/storage.js';
+
+const LAST_TAB_KEY = 'nexus:lastTab';   // lembra a última aba aberta no Núcleo de IA
 
 /* Abas do cockpit. `load()` faz o import dinâmico → chunk só baixa quando a aba é
  * aberta (mantém o cockpit leve e cada ferramenta sob demanda). */
@@ -33,8 +36,9 @@ const TABS = [
 ];
 
 export function gitNexusCockpit(args = {}) {
-  /* aba inicial: por arg direto (rota legada) ou ?tab= (deep-link); cai no grafo */
-  const wantTab = (args && (args.tab || (args.query && args.query.tab))) || 'grafo';
+  /* aba inicial: arg direto (rota legada) > ?tab= (deep-link) > última aba usada > grafo */
+  const explicit = args && (args.tab || (args.query && args.query.tab));
+  const wantTab = explicit || storage.get(LAST_TAB_KEY, 'grafo') || 'grafo';
   const page = h('div', { className: 'page-gitnexus gn-cock' });
 
   /* cabeçalho compacto do Núcleo (cada ferramenta traz o próprio header no painel) */
@@ -58,6 +62,15 @@ export function gitNexusCockpit(args = {}) {
     if (activeId === tab.id) return;
     activeId = tab.id;
     Object.values(buttons).forEach((b) => b.classList.toggle('is-active', b === buttons[tab.id]));
+
+    /* lembra a aba e sincroniza a URL (?tab=) sem disparar navegação (replaceState
+     * não emite hashchange → o router não re-renderiza). Deixa a aba linkável e
+     * sobrevivendo ao reload. */
+    storage.set(LAST_TAB_KEY, tab.id);
+    try {
+      const target = tab.id === 'grafo' ? '#/git-nexus' : `#/git-nexus?tab=${tab.id}`;
+      if (window.location.hash !== target) window.history.replaceState(null, '', target);
+    } catch { /* ambiente sem history — ignora */ }
 
     const my = ++token;
     empty(panel);
