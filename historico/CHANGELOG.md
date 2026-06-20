@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Home nova "Command Deck" #246/#195 — promovida a oficial
+- 🚀 **A `/home` foi repaginada do zero** (aprovada pelo operador): hero com **título holográfico** animado sobre fundo **HUD** (grid em movimento + scanline + colchetes nos cantos) + **grid bento** (métricas count-up, Núcleo de IA com orbe, baixar app, vigilância ao vivo, crônica/equipe em destaque, acesso rápido) + **prateleiras** com scroll-snap.
+- 🪶 Leve: CSS/canvas + herói WebGL reusado (cai no campo 2D sem WebGL), JS puro; respeita `prefers-reduced-motion`. `src/pages/home.js` reescrito + `src/styles/home-v2.css`.
+- 🧹 Removido o scaffolding de preview (`home-v2.js`); `/home-3d` e `/home2` viram alias da home oficial. O `home3d.css` antigo fica órfão (limpeza futura).
+- ✅ Verificado (Playwright + build): `/home` com título holográfico, 7 células bento e 3 prateleiras. É a 1ª página da nova linguagem que vai se espalhar pras demais.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-home-command-deck`.
+
 ### Design System #246/#195 — contrato visual (diretrizes "design first")
 - 📐 **`docs/DESIGN-SYSTEM.md` (novo)**: o contrato visual do Baluarte — tokens (de `variables.css`), componentes/padrões já firmados (título neon, cards glow/lift, moldura HUD, tabs, chips, timelines), e **diretrizes** pra iconografia (adotar **coolicons**, MIT), data-viz/charts, imagens (moodboard Pinterest) e o redesign profundo dos flagships (`/home`, `/perfil`, `/arsenal`, `/biblioteca`). Base pra "fechar o design antes de seguir com as funções".
 - 🔗 `CLAUDE.md` aponta pro doc (continuidade — todo design novo sai dele).

@@ -141,8 +141,9 @@ router.register('/apis', lazyNexus('apis'));
  * experiência completa (git-nexus.js) sob demanda. Mantém o chunk pesado fora da web. */
 router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.js'), 'gitNexusGate'));
 router.register('/aprendizado', lazyNexus('ml'));
-/* /home-3d foi promovido à home oficial (/) — alias para links antigos. */
-router.register('/home-3d', lazy(() => import('./pages/home.js'), 'homePage'));
+/* /home-3d e /home2 — aliases pra home oficial (links antigos / preview). */
+router.register('/home-3d', () => homePage());
+router.register('/home2', () => homePage());
 
 /* ==============================================================
  *  Todas as rotas acima são reais (sem placeholders). Fallback 404:
