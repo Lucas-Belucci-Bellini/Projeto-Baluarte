@@ -7,6 +7,7 @@
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { UNIVERSOS, TOTAL_UNIVERSOS, findUniverso } from '../data/universos.js';
 import { findArc } from '../data/cronicas.js';
 
@@ -130,24 +131,29 @@ function renderDetail() {
   }
 }
 
-export function universoPage() {
+export function universoPage(args) {
   state = loadState();
 
   const fullPage = h('div', { className: 'page-universo' });
 
-  fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'UNIVERSO')
-      ),
-      h('h1', { className: 'page-header__title' }, '✦ Hub de Universos'),
-      h('p', { className: 'page-header__description' },
-        h('span', { className: 'u-text-cyan' }, `${TOTAL_UNIVERSOS} universos`),
-        ' catalogados: 2 core (Baluarte, Convergência) + 8 crossovers (DOOM, Halo, Pacific Rim, Solo Leveling, Vanadis, Arifureta, Horror, Endfield).'
-      )
-    )
-  );
+  fullPage.appendChild(buildImmersiveHero({
+    kicker: 'BALUARTE · HUB DE UNIVERSOS',
+    title: 'Hub de Universos',
+    sub: 'MULTIVERSO BALUARTE',
+    desc: [
+      h('span', { className: 'u-text-cyan' }, `${TOTAL_UNIVERSOS} universos`),
+      ' catalogados: 2 core (Baluarte, Convergência) + 8 crossovers (DOOM, Halo, ',
+      'Pacific Rim, Solo Leveling, Vanadis, Arifureta, Horror, Endfield).'
+    ],
+    ctas: [
+      { label: '📖 Ler as Crônicas', variant: 'primary', onClick: () => router.navigate('/biblioteca') },
+      { label: '◆ Equipes de elite', onClick: () => router.navigate('/elites') }
+    ],
+    hudLeft: '✦ MULTIVERSO · ONLINE',
+    hudRight: `${TOTAL_UNIVERSOS} REGISTROS`,
+    sceneKey: 'universo',
+    query: args && args.query
+  }));
 
   cardsEl = renderCards();
   detailEl = h('div', { className: 'univ-detail' });

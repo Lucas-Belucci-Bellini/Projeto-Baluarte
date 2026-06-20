@@ -1,0 +1,95 @@
+/* ==========================================================================
+   Herói imersivo reusável (#246/#195/#262) — usado por buildImmersiveHero()
+   (src/utils/immersive.js) nas páginas flagship. Mesma linguagem da home
+   ("Command Deck"), porém compacto e parametrizado por --bx-accent.
+   ========================================================================== */
+.bx-hero {
+  position: relative; overflow: hidden; border-radius: var(--radius-lg);
+  margin: var(--space-md) 0 var(--space-lg); min-height: 360px;
+  display: grid; place-items: center; isolation: isolate;
+  --bx-accent: var(--color-cyan); --bx-accent2: var(--color-magenta);
+  background:
+    radial-gradient(90% 80% at 70% 0%, color-mix(in srgb, var(--bx-accent) 14%, transparent), transparent 55%),
+    radial-gradient(80% 80% at 10% 100%, color-mix(in srgb, var(--bx-accent2) 12%, transparent), transparent 55%),
+    #06080d;
+  border: 1px solid color-mix(in srgb, var(--bx-accent) 26%, transparent);
+}
+.bx-hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+
+/* raios + grid (somem quando uma cena Spline carrega) */
+@property --bx-hray { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.bx-hero__rays {
+  position: absolute; inset: -40% -20% -20%; z-index: 1; pointer-events: none;
+  opacity: 0.5; mix-blend-mode: screen;
+  background: repeating-conic-gradient(from var(--bx-hray) at 50% 4%,
+    transparent 0deg 3deg,
+    color-mix(in srgb, var(--bx-accent) 60%, #bff) 3deg 4.4deg,
+    transparent 4.4deg 9deg,
+    color-mix(in srgb, var(--bx-accent2) 50%, transparent) 9deg 10deg,
+    transparent 10deg 16deg);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.6) 42%, transparent 82%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.6) 42%, transparent 82%);
+  animation: bx-hray-spin 70s linear infinite;
+}
+@keyframes bx-hray-spin { to { --bx-hray: 360deg; } }
+.bx-hero__grid {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.4;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--bx-accent) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--bx-accent) 8%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(circle at 50% 45%, #000 30%, transparent 78%);
+  animation: bx-hgrid 20s linear infinite;
+}
+@keyframes bx-hgrid { to { background-position: 44px 44px, 44px 44px; } }
+
+/* slot Spline */
+.bx-hero__spline { position: absolute; inset: 0; z-index: 2; opacity: 0; transition: opacity 0.8s ease; }
+.bx-hero.has-spline .bx-hero__spline { opacity: 1; }
+.bx-hero.has-spline .bx-hero__canvas,
+.bx-hero.has-spline .bx-hero__rays,
+.bx-hero.has-spline .bx-hero__grid { opacity: 0; transition: opacity 0.6s ease; }
+.bx-hero__spline spline-viewer { width: 100%; height: 100%; display: block; }
+
+/* colchetes HUD nos cantos */
+.bx-hero::before, .bx-hero::after { content: ''; position: absolute; width: 36px; height: 36px; z-index: 3; pointer-events: none; }
+.bx-hero::before { top: 10px; left: 10px; border-top: 2px solid var(--bx-accent); border-left: 2px solid var(--bx-accent); }
+.bx-hero::after { bottom: 10px; right: 10px; border-bottom: 2px solid var(--bx-accent2); border-right: 2px solid var(--bx-accent2); }
+
+/* HUD textual opcional */
+.bx-hero__hud { position: absolute; inset: 0; z-index: 3; pointer-events: none; padding: 14px 16px; font-family: var(--font-mono); font-size: 11px; }
+.bx-hero__hud-l { position: absolute; top: 14px; left: 18px; color: var(--bx-accent); }
+.bx-hero__hud-r { position: absolute; top: 14px; right: 18px; color: var(--color-text-secondary); text-align: right; }
+
+/* conteúdo central */
+.bx-hero__inner { position: relative; z-index: 4; text-align: center; padding: var(--space-xl); max-width: 760px; }
+.bx-hero__kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.32em; color: var(--bx-accent);
+  text-transform: uppercase; margin-bottom: 12px; opacity: 0.9; }
+.bx-hero__title { font-family: var(--font-display); font-weight: 800; line-height: 0.96; margin: 0;
+  font-size: clamp(34px, 6vw, 72px); letter-spacing: -0.02em; }
+.bx-hero__title-main {
+  display: block;
+  background: linear-gradient(100deg, #e6f1ff 0%, var(--bx-accent) 38%, #9d7bff 58%, var(--bx-accent2) 82%, #e6f1ff 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 26px color-mix(in srgb, var(--bx-accent) 38%, transparent));
+  animation: bx-holo 8s ease-in-out infinite;
+}
+@keyframes bx-holo { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.bx-hero__title-sub { display: block; font-size: clamp(13px, 1.8vw, 20px); font-weight: 600;
+  letter-spacing: 0.42em; color: var(--color-text-secondary); margin-top: 8px; text-indent: 0.42em; }
+.bx-hero__desc { margin: 16px auto 22px; max-width: 560px; color: var(--color-text-secondary); line-height: 1.6; }
+
+.bx-hero__cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.bx-hero__btn {
+  font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.04em; cursor: pointer;
+  padding: 11px 20px; border-radius: var(--radius-md); color: var(--color-text-primary);
+  background: rgba(255,255,255,0.04); border: 1px solid color-mix(in srgb, var(--bx-accent) 35%, transparent);
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.bx-hero__btn:hover { transform: translateY(-2px); box-shadow: 0 0 18px color-mix(in srgb, var(--bx-accent) 35%, transparent); }
+.bx-hero__btn--primary { background: color-mix(in srgb, var(--bx-accent) 18%, transparent); border-color: var(--bx-accent); }
+.bx-hero__btn--magenta { background: color-mix(in srgb, var(--bx-accent2) 18%, transparent); border-color: var(--bx-accent2); }
+
+@media (max-width: 600px) { .bx-hero { min-height: 300px; } .bx-hero__inner { padding: var(--space-lg); } }

@@ -12,6 +12,8 @@
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { ARCS, UNIVERSES, loadSaga } from '../data/cronicas.js';
 
 const STORAGE_KEY = 'biblioteca:state';
@@ -382,7 +384,7 @@ function renderViewer() {
 
 /* ===== Page builder ===== */
 
-export function bibliotecaPage() {
+export function bibliotecaPage(args) {
   state = loadState();
   sagaArcos = [];
   sagaStatus = 'loading';
@@ -405,24 +407,27 @@ export function bibliotecaPage() {
 
   sagaCountEl = h('span', { className: 'u-text-cyan' }, 'carregando capítulos…');
 
-  fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'),
-        h('span', null, '›'),
-        h('span', null, 'BIBLIOTECA')
-      ),
-      h('h1', { className: 'page-header__title' }, '◫ Biblioteca — Crônicas da Baluarte'),
-      h('p', { className: 'page-header__description' },
-        'A fan fic ',
-        h('span', { className: 'u-text-cyan' }, '"Onde os Deuses Sangram"'),
-        ' — uma saga de ',
-        h('span', { className: 'u-text-cyan' }, '24 arcos'),
-        ' (', sagaCountEl, '), somada aos arcos de cenário do universo. ',
-        'Retomar leitura, favoritar, tema dark/sépia e fonte ajustáveis.'
-      )
-    )
-  );
+  fullPage.appendChild(buildImmersiveHero({
+    kicker: 'BALUARTE · BIBLIOTECA',
+    title: 'Crônicas da Baluarte',
+    sub: 'ONDE OS DEUSES SANGRAM',
+    accent2: '#9d7bff',
+    desc: [
+      'A saga canônica ',
+      h('span', { className: 'u-text-cyan' }, '"Onde os Deuses Sangram"'),
+      ' — ',
+      h('span', { className: 'u-text-cyan' }, '24 arcos'),
+      ' (', sagaCountEl, '), somada aos arcos de cenário do universo. ',
+      'Retomar leitura, favoritar, tema dark/sépia e fonte ajustáveis.'
+    ],
+    ctas: [
+      { label: '✦ Explorar universos', variant: 'primary', onClick: () => router.navigate('/universo') }
+    ],
+    hudLeft: '◫ ARQUIVO NARRATIVO',
+    hudRight: '24 ARCOS',
+    sceneKey: 'biblioteca',
+    query: args && args.query
+  }));
 
   /* Controles */
   searchInput = h('input', {
