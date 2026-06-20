@@ -482,3 +482,13 @@
   color: var(--color-success);
   font-weight: 700;
 }
+
+/* Polish cinematográfico (redesign #195) — Onda Referência. Só visual. */
+.page-pt .page-header__title, .page-modpack .page-header__title, .page-pc .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.page-pt .periodic-cell { transition: transform var(--transition-base), box-shadow var(--transition-base); }
+.page-pt .periodic-cell:hover { box-shadow: 0 0 14px rgba(0,240,255,.55); transform: translateY(-2px); z-index: 3; }
+.modpack-card { transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
+.modpack-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
+.pc-preset { transition: border-color var(--transition-base), box-shadow var(--transition-base); }
+.pc-preset:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
+.pc-preset-tab.is-active { box-shadow: var(--shadow-glow-cyan); }
