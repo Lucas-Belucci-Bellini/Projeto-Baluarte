@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Spline 3D #246 — cena REAL na home (embed público my.spline.design)
+- 🌀 **Home com cena Spline de verdade**: "Retrofuturistic circuit loop" (#262) entra como fundo do herói — emblema/circuito neon atrás do wordmark holográfico BALUARTE. Escolha do operador (a única das 3 cenas free que serve de fundo; "Boxes Hover" e "Connecting Card" são designs fechados, descartadas).
+- 🧩 **`spline-embed.js` agora aceita embed público** (`my.spline.design/<slug>/`) via `<iframe>` decorativo (`pointer-events:none`, lazy, revela no load ou em ≤3,5s), além do `<spline-viewer>` (`.splinecode`). Resolve o caso real: exportar `.splinecode` é pago; o **Share/Public** é free (com selo "Built with Spline"). `sceneFor` passou a aceitar `my.spline.design`.
+- 🛟 Fallback intacto: sem cena / `prefers-reduced-motion` / falha → fica o herói WebGL (galáxia + raios). `#/home?spline=<url my.spline.design>` testa qualquer cena na hora.
+- ⚖️ Exceção consciente ao "web leve" (#238): o operador quis a cena 3D na home web; é lazy + fallback. Verificado no navegador (headless ANGLE) — cena pinta, has-spline ativa.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-home-spline-real`.
+
 ### Redesign #246 — heróis imersivos em 17 páginas de conteúdo (militar + mídia)
 - 🪖 **11 páginas militares** trocaram o `.page-hero`/header simples pelo **herói imersivo** (`buildImmersiveHero`): forças armadas, forças especiais, poder militar, tecnologia militar, organização militar, orçamentos militares, história militar, guerras & conflitos, batalhas históricas, táticas & estratégias, armas por país. Tabelas/timelines/grids seguem **intactos** abaixo; contadores dinâmicos preservados.
 - 🎬 **6 páginas de mídia** idem: cinema (filmes), central de música, TV, central de vídeos, rádio, media hub. Descrições com spans/contadores dinâmicos preservadas (desc como array de nós).

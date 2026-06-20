@@ -9,12 +9,19 @@
  *     fica no herói atual — nunca quebra/branco;
  *   - **timeout**: se a cena não carregar em ~14s, desiste e mantém o fallback.
  *
- * Como obter a URL de uma cena (operador): abrir a cena no Spline → Export →
- * Viewer → copiar a URL `https://prod.spline.design/<id>/scene.splinecode`.
+ * Como obter a URL de uma cena (operador):
+ *   • Export → Viewer/Code → `https://prod.spline.design/<id>/scene.splinecode` (web component), OU
+ *   • Share / Public → `https://my.spline.design/<slug>/` (embed) — usado via <iframe>
+ *     (não precisa exportar; funciona no plano free, com o selo "Built with Spline").
  */
 
 const VIEWER_SRC = 'https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js';
 let viewerPromise = null;
+
+/** URL de embed público (my.spline.design) → vai de <iframe>; .splinecode → <spline-viewer>. */
+function isFrameUrl(url) {
+  return /^https:\/\/my\.spline\.design\//.test(url);
+}
 
 function loadViewer() {
   if (typeof window === 'undefined') return Promise.reject(new Error('no window'));
@@ -47,7 +54,35 @@ export function mountSpline(container, url, opts = {}) {
 
   if (!url || REDUCED || typeof document === 'undefined') { fail(); return { destroy() {} }; }
 
-  const start = () => {
+  /* embed público (my.spline.design) → <iframe> puramente decorativo (sem
+   * interação/scroll-hijack). Não exige export nem o runtime via CDN. */
+  const startFrame = () => {
+    if (destroyed) return;
+    let revealed = false;
+    const reveal = () => {
+      if (revealed || destroyed) return;
+      revealed = true;
+      if (timer) clearTimeout(timer);
+      try { onReady && onReady(); } catch {}
+    };
+    const frame = document.createElement('iframe');
+    frame.src = url;
+    frame.setAttribute('frameborder', '0');
+    frame.setAttribute('loading', 'lazy');
+    frame.setAttribute('title', 'Cena 3D (Spline)');
+    frame.setAttribute('tabindex', '-1');
+    frame.setAttribute('aria-hidden', 'true');
+    Object.assign(frame.style, { width: '100%', height: '100%', display: 'block', border: '0', pointerEvents: 'none' });
+    /* a cena pesada streama assets — o evento `load` pode demorar muito; então
+     * revelamos no load OU após um teto curto (o que vier antes). O fundo do
+     * herói é escuro, então a cena pinta sem "flash". */
+    frame.addEventListener('load', () => setTimeout(reveal, 600));
+    viewer = frame;
+    container.appendChild(frame);
+    timer = setTimeout(reveal, 3500);
+  };
+
+  const startViewer = () => {
     if (destroyed) return;
     timer = setTimeout(() => fail(new Error('timeout')), 14000);
     loadViewer().then(() => {
@@ -61,6 +96,8 @@ export function mountSpline(container, url, opts = {}) {
       container.appendChild(viewer);
     }).catch((e) => { if (timer) clearTimeout(timer); fail(e); });
   };
+
+  const start = () => { if (isFrameUrl(url)) startFrame(); else startViewer(); };
 
   if (lazy && typeof IntersectionObserver !== 'undefined') {
     io = new IntersectionObserver((ents, obs) => {
