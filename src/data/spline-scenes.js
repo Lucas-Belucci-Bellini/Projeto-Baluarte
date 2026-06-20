@@ -1,18 +1,20 @@
 /**
  * Cenas Spline por página (#246/#207) — o "nível Spline" do redesign.
  *
- * COLE aqui a URL .splinecode exportada de cada cena que você escolher:
- *   Spline → abrir a cena (community: ela duplica pra sua conta) → Export →
- *   Viewer → copiar a URL  https://prod.spline.design/<id>/scene.splinecode
+ * Dois formatos aceitos:
+ *   • `https://prod.spline.design/<id>/scene.splinecode`  (Export → Viewer/Code → <spline-viewer>)
+ *   • `https://my.spline.design/<slug>/`                   (Share / Public → embed via <iframe>;
+ *      funciona no plano FREE sem exportar, com o selo "Built with Spline")
  *
  * Vazio ('') = a página usa o herói/fundo padrão (fallback WebGL/2D), sem custo.
- * Também dá pra testar QUALQUER cena na hora via querystring, sem commitar:
- *   #/home?spline=https://prod.spline.design/<id>/scene.splinecode
+ * Dá pra testar QUALQUER cena na hora via querystring, sem commitar:
+ *   #/home?spline=https://my.spline.design/<slug>/
  *
  * Referências escolhidas pelo operador estão catalogadas na issue do estudo 3D (#262).
  */
 export const SPLINE_SCENES = {
-  home: '',        // herói da Ponte de Comando (ex.: "AI Landing" / "Sci-fi Spaceship" / "Futuristic Rays")
+  // Ponte de Comando — "Retrofuturistic circuit loop" (embed público, escolha do operador)
+  home: 'https://my.spline.design/retrofuturisticcircuitloop-LFzl4kwBK0PnXffLtt4u8469/',
   perfil: '',      // Dossiê (ex.: "Heart Health HUD")
   gitNexus: '',    // Núcleo de IA (ex.: "The Eternal ARC" / "Retrofuturistic circuit loop")
   universo: '',    // Hub de Universos (ex.: "Orbital View of Arrakis")
@@ -28,6 +30,6 @@ export const SPLINE_SCENES = {
  * arbitrária a partir de um parâmetro de URL). */
 export function sceneFor(key, query) {
   const q = query && (query.spline || query.scene);
-  if (q && /^https:\/\/(prod\.)?spline\.design\/[^"'<>]+$/.test(q)) return q;
+  if (q && /^https:\/\/(prod\.|my\.)?spline\.design\/[^"'<>]+$/.test(q)) return q;
   return SPLINE_SCENES[key] || '';
 }
