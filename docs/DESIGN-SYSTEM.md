@@ -67,6 +67,8 @@ e moodboard do Pinterest.
 > Estes são os padrões que as Ondas de redesign (#242–#244, #251–#255) firmaram. Reusar,
 > não reinventar. Folha de referência: `militar.css` (bloco "Polish cinematográfico").
 
+- **Atmosfera global** — `.bx-atmosphere` (`src/utils/atmosphere.js` + `atmosphere.css`): UMA camada de fundo montada 1x pelo shell, atrás de TODO o app — auroras volumétricas que respiram + raios de luz + grid HUD à deriva + vinheta. É o que dá o "nível Spline" (#262) pra todas as páginas **de uma vez**, sem peso (só CSS, `pointer-events:none`, reduced-motion ok). Heróis de página entram **por cima** dela.
+- **Header de página = painel HUD** — `.page-header` ganhou barra de acento luminosa à esquerda (`::before`) + linha de varredura animada embaixo (`::after`), global em `components.css` → todas as ~68 páginas com `.page-header` viram "painel de comando" sem editar página.
 - **Título de página** — `.page-header__title`: degradê neon + `drop-shadow` (agora global em `components.css`).
 - **Card** (`.card` e variantes de página) — fundo em gradiente sutil, borda fina; **hover = `translateY(-2/3px)` + `--shadow-glow-cyan` + borda `--color-cyan-edge`**. Magenta para o "segundo eixo".
 - **Tile / stat** — valor em mono com `text-shadow` ciano; barra de acento no topo (`::before` gradiente).
@@ -123,6 +125,22 @@ Além do polish já aplicado, "ir mais fundo" = **layout + hierarquia + componen
 - **Hierarquia clara**: 1 título neon por página, seções com título em degradê, respiro (space-lg+).
 - **Estado vazio / loading** consistentes (orbe + texto muted).
 - **Mobile-first**: testar em ≤600px; sidebar vira drawer; grids colapsam.
+
+### Cenas Spline (#262) → efeito nativo (o operador quer o site **no nível** delas)
+As 25 cenas são o **alvo visual**, não embeds (o runtime Spline é pesado/dep externa).
+Recriamos o "nível" nativamente (CSS/WebGL/canvas) — e o slot Spline real fica de
+bônus (`spline-scenes.js`, se o operador exportar `.splinecode`). Mapa de tradução:
+
+| Referência (#262) | Efeito nativo (sem dep) | Onde |
+| --- | --- | --- |
+| *Futuristic Rays Background* | raios volumétricos (conic `@property`) | atmosfera global + herói home |
+| *text animation-Holographic* | título holográfico animado | `.page-header__title` / `.hv2-title` |
+| *AI Landing* / *Sci-fi Spaceship* | herói WebGL (galáxia + arc-reactor) | `hero-webgl.js` |
+| *The Eternal ARC* / *Retro circuit loop* | anéis/orbe + grid HUD | Núcleo de IA / cockpit |
+| *Orbital View of Arrakis* | esfera/órbita em canvas | `/universo` |
+| *AI Bot Bento UI* | grid **bento** com glow | home / flagships |
+| *Heart Health HUD* / *3D Diagram* | moldura HUD (cantos + scanline) | `/perfil`, scopes |
+| *Boxes Hover* / *Connecting Card* | cards glassy com lift + glow | padrão de card (seção 3) |
 
 ---
 
