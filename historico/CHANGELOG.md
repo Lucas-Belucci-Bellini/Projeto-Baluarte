@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — raios volumétricos no herói da home (nível Spline, nativo)
+- 🌠 **Camada de raios volumétricos** no herói da `/home` (`.hv2-hero__rays`): leques de luz (ciano→violeta→magenta) varrendo do topo, animados com `@property --hv2-ray` (conic suave), mascarados pra somar com a galáxia WebGL sem competir com o título. Ref. "Futuristic Rays Background" (#262).
+- ⚖️ **Só CSS + 1 nó no DOM** (sem peso de runtime, sem dep): aproxima o "nível Spline" pedido pelo operador mesmo **sem** cena `.splinecode`. Some junto com canvas/grid/scanline quando uma cena Spline carrega; respeita `prefers-reduced-motion` (raios estáticos).
+- ✅ Build limpo; herói verificado no navegador.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-hero-rays`.
+
 ### Spline 3D #246/#207 — integração pronta (cenas reais no nível pedido)
 - 🌌 **`src/utils/spline-embed.js` (novo)**: embute cenas 3D do **Spline** via o web component `<spline-viewer>` (CDN), **lazy** (IntersectionObserver), com **fallback seguro** (sem URL / falha / `prefers-reduced-motion` → fica o herói WebGL atual) e **timeout** de 14s.
 - 🎛️ **`src/data/spline-scenes.js` (novo)**: slot de cena por página (`home/perfil/gitNexus/universo/arsenal/baixar`) — basta colar a URL `.splinecode`. Também aceita teste na hora via `#/home?spline=<url do spline.design>` (restrito ao domínio do Spline).

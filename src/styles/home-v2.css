@@ -18,6 +18,29 @@
   border: 1px solid rgba(0,240,255,0.18);
 }
 .hv2-hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+
+/* ---- raios volumétricos (ref. "Futuristic Rays Background" #262) ----
+   leques de luz que varrem o herói; @property anima o ângulo do conic suave.
+   Onde @property não existe, ficam raios estáticos (degrada bem). */
+@property --hv2-ray { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.hv2-hero__rays {
+  position: absolute; inset: -40% -20% -20%; z-index: 1; pointer-events: none;
+  opacity: 0.55; mix-blend-mode: screen;
+  background: repeating-conic-gradient(from var(--hv2-ray) at 50% 4%,
+    transparent 0deg 3deg,
+    rgba(120,245,255,0.20) 3deg 4.4deg,
+    transparent 4.4deg 9deg,
+    rgba(157,123,255,0.13) 9deg 10deg,
+    transparent 10deg 15deg,
+    rgba(255,90,200,0.10) 15deg 16deg,
+    transparent 16deg 21deg);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.65) 42%, transparent 82%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.65) 42%, transparent 82%);
+  animation: hv2-ray-spin 70s linear infinite;
+  will-change: --hv2-ray;
+}
+@keyframes hv2-ray-spin { to { --hv2-ray: 360deg; } }
+
 .hv2-hero__grid {
   position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5;
   background-image:
@@ -36,8 +59,10 @@
 .hv2-hero__spline { position: absolute; inset: 0; z-index: 2; opacity: 0; transition: opacity 0.8s ease; }
 .hv2-hero.has-spline .hv2-hero__spline { opacity: 1; }
 .hv2-hero.has-spline .hv2-hero__canvas,
+.hv2-hero.has-spline .hv2-hero__rays,
 .hv2-hero.has-spline .hv2-hero__grid,
 .hv2-hero.has-spline .hv2-hero__scan { opacity: 0; transition: opacity 0.6s ease; }
+@media (prefers-reduced-motion: reduce) { .hv2-hero__rays { animation: none; opacity: 0.28; } }
 .hv2-hero__spline spline-viewer { width: 100%; height: 100%; display: block; }
 
 /* ---- HUD nos cantos ---- */
