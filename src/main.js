@@ -39,6 +39,12 @@ const lazy = (loader, fn) => (args) => loader().then((m) => m[fn](args));
  * usado pra gatear trabalho pesado pro nativo e manter o boot da web leve (#238). */
 const isNative = () => typeof window !== 'undefined' && !!window.baluarte && window.baluarte.native === true;
 
+/* Núcleo de IA (#231/#238): as rotas legadas da seção IA caem no cockpit do
+ * Git Nexus na aba certa. No app abre a aba; na web o gate mostra o teaser
+ * (a seção IA é app-only). Deep-link também via #/git-nexus?tab=<id>. */
+const lazyNexus = (tab) => (args) =>
+  import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab }));
+
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */
@@ -89,17 +95,17 @@ router.register('/shadow', lazy(() => import('./pages/shadow.js'), 'shadowPage')
 router.register('/perfil', lazy(() => import('./pages/perfil.js'), 'perfilPage'));
 router.register('/economia', lazy(() => import('./pages/economia.js'), 'economiaPage'));
 router.register('/dolar', lazy(() => import('./pages/dolar.js'), 'dolarPage'));
-router.register('/jarvis', lazy(() => import('./pages/jarvis.js'), 'jarvisPage'));
-router.register('/ia-proprietaria', lazy(() => import('./pages/ia-proprietaria.js'), 'iaProprietariaPage'));
+router.register('/jarvis', lazyNexus('jarvis'));
+router.register('/ia-proprietaria', lazyNexus('ia'));
 router.register('/radar', lazy(() => import('./pages/radar.js'), 'radarPage'));
 router.register('/geo', lazy(() => import('./pages/geopulse.js'), 'geopulsePage'));
 router.register('/find', lazy(() => import('./pages/find.js'), 'findPage'));
 router.register('/triangulacao', lazy(() => import('./pages/triangulacao.js'), 'triangulacaoPage'));
-router.register('/llm-lab', lazy(() => import('./pages/llm-lab.js'), 'llmLabPage'));
+router.register('/llm-lab', lazyNexus('llm'));
 
 router.register('/sobre', lazy(() => import('./pages/sobre.js'), 'sobrePage'));
 router.register('/roadmap', lazy(() => import('./pages/roadmap.js'), 'roadmapPage'));
-router.register('/jarvis-dashboard', lazy(() => import('./pages/jarvis-dashboard.js'), 'jarvisDashboardPage'));
+router.register('/jarvis-dashboard', lazyNexus('dashboard'));
 router.register('/mapa', lazy(() => import('./pages/mapa.js'), 'mapaPage'));
 router.register('/visao', lazy(() => import('./pages/visao.js'), 'visaoPage'));
 router.register('/jarvis-vision', lazy(() => import('./pages/jarvis-vision.js'), 'jarvisVisionPage'));
@@ -123,18 +129,18 @@ router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia
 router.register('/codigo', lazy(() => import('./pages/codigo.js'), 'codigoPage'));
 router.register('/projetos', lazy(() => import('./pages/projetos.js'), 'projetosPage'));
 router.register('/mural', lazy(() => import('./pages/mural.js'), 'muralPage'));
-router.register('/cerebro', lazy(() => import('./pages/cerebro.js'), 'cerebroPage'));
+router.register('/cerebro', lazyNexus('cerebro'));
 router.register('/ocr', lazy(() => import('./pages/ocr.js'), 'ocrPage'));
-router.register('/memoria', lazy(() => import('./pages/memoria.js'), 'memoriaPage'));
-router.register('/terminal-ia', lazy(() => import('./pages/terminal-ia.js'), 'terminalIaPage'));
-router.register('/seguranca', lazy(() => import('./pages/seguranca.js'), 'segurancaPage'));
+router.register('/memoria', lazyNexus('memoria'));
+router.register('/terminal-ia', lazyNexus('terminal'));
+router.register('/seguranca', lazyNexus('seguranca'));
 router.register('/gerar-codigo', lazy(() => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));
-router.register('/conselho', lazy(() => import('./pages/conselho.js'), 'conselhoPage'));
-router.register('/apis', lazy(() => import('./pages/apis.js'), 'apisPage'));
+router.register('/conselho', lazyNexus('conselho'));
+router.register('/apis', lazyNexus('apis'));
 /* /git-nexus passa pelo GATE leve (#238 Fase 2): web → teaser; app → carrega a
  * experiência completa (git-nexus.js) sob demanda. Mantém o chunk pesado fora da web. */
 router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.js'), 'gitNexusGate'));
-router.register('/aprendizado', lazy(() => import('./pages/aprendizado.js'), 'aprendizadoPage'));
+router.register('/aprendizado', lazyNexus('ml'));
 /* /home-3d foi promovido à home oficial (/) — alias para links antigos. */
 router.register('/home-3d', lazy(() => import('./pages/home.js'), 'homePage'));
 

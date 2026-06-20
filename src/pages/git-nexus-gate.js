@@ -62,13 +62,12 @@ function gitNexusTeaser({ failed = false } = {}) {
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
       h('div', { className: 'page-header__crumbs' },
         h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'IA & JARVIS'), h('span', null, '›'), h('span', null, 'GIT NEXUS')),
-      h('h1', { className: 'page-header__title' }, '🔗 Git Nexus'),
+        h('span', null, 'NÚCLEO DE IA')),
+      h('h1', { className: 'page-header__title' }, '🔗 Núcleo de IA'),
       h('p', { className: 'page-header__description' },
-        'O núcleo de código em ', h('span', { className: 'u-text-cyan' }, '3D'),
-        ' — grafo de conhecimento com comunidades, impacto e centralidade, ',
-        'ligado ao ', h('span', { className: 'u-text-cyan' }, 'motor real do GitNexus'),
-        '. É uma ferramenta pesada: roda completa no app desktop.'))
+        'O hub de IA do Baluarte — ', h('span', { className: 'u-text-cyan' }, 'grafo de código em 3D'),
+        ', JARVIS, memória, segundo cérebro, ML, APIs e mais, num cockpit só. ',
+        'É a parte pesada da plataforma: roda completa no app desktop.'))
   );
 
   page.appendChild(
@@ -78,21 +77,22 @@ function gitNexusTeaser({ failed = false } = {}) {
         h('span', { className: 'gn-teaser__ring gn-teaser__ring--b' }),
         h('span', { className: 'gn-teaser__dot' })),
       h('h2', { className: 'gn-teaser__title' },
-        failed ? 'Não deu pra abrir o Git Nexus aqui' : 'O Git Nexus completo roda no app'),
+        failed ? 'Não deu pra abrir o Núcleo de IA aqui' : 'O Núcleo de IA roda no app'),
       h('p', { className: 'gn-teaser__lead' },
-        'Pra manter o site leve e rápido, o grafo 3D, os mapas de código (~460 KB) e a ',
-        'conexão com o motor real ', h('span', { className: 'u-text-cyan' }, '(gitnexus serve)'),
-        ' ficam no ', h('strong', null, 'Baluarte Launcher'),
-        ' — onde dá pra rodar pesado sem as travas do navegador.'),
+        'Pra manter o site leve e rápido, a seção de IA inteira — grafo 3D + mapas de código, ',
+        'JARVIS, memória, segundo cérebro, ML, Mini-LLM e o ',
+        h('span', { className: 'u-text-cyan' }, 'motor real (gitnexus serve)'),
+        ' — fica no ', h('strong', null, 'Baluarte Launcher'),
+        ', onde dá pra rodar pesado sem as travas do navegador.'),
       h('div', { className: 'gn-teaser__feats' },
-        teaserFeat('🧠', 'Motor real', 'Grafo de verdade (tree-sitter + LadybugDB), não o mapa de build.'),
-        teaserFeat('🌐', 'Grafo 3D vivo', 'Orbe que gira: comunidades, impacto e centralidade.'),
-        teaserFeat('🖥', 'Console do Nexus', 'context · impact · path · rename · query sobre o grafo.')),
+        teaserFeat('🧠', 'Grafo + motor real', 'Git Nexus em 3D ligado ao motor (tree-sitter + LadybugDB).'),
+        teaserFeat('◉', 'JARVIS & cérebro', 'Assistente, memória durável e o Segundo Cérebro, num cockpit.'),
+        teaserFeat('📈', 'ML & Mini-LLM', 'Aprendizado da memória e o laboratório de LLM do zero.')),
       h('div', { className: 'gn-teaser__cta' },
         h('button', { className: 'btn btn--primary', onclick: () => router.navigate('/baixar') }, '⬇ Baixar o app'),
         h('button', { className: 'btn', onclick: () => router.navigate('/codigo') }, '🔬 Ver o Raio-X do Código (web)')),
       h('p', { className: 'gn-teaser__hint u-text-muted' },
-        'Já está no app? Abra esta página por lá que o grafo carrega automaticamente.'))
+        'Já está no app? Abra esta página por lá que o Núcleo de IA carrega automaticamente.'))
   );
 
   return page;
