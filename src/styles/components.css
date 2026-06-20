@@ -392,10 +392,13 @@
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
-  background: linear-gradient(135deg, var(--color-text-primary), var(--color-cyan));
+  /* Redesign #195 — título neon ciano→magenta com glow, padrão do site inteiro.
+     Páginas com regra própria (especificidade maior) seguem mandando na sua. */
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
   margin: 0;
 }
 .page-header__description {
@@ -455,3 +458,24 @@
     max-width: none;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Redesign #195 — Onda Ferramentas (devtools). Só visual: cards/
+   painéis/tiles dos devtools ganham glow/lift no hover. Selectores
+   por classe única de cada página (sem vazar entre rotas).
+   ════════════════════════════════════════════════════════════ */
+.calc-tile, .conv-cat, .symbol-tile, .cs-card, .cripto-tile, .porta-card,
+.regex-input-card, .regex-match-card, .qr-read__panel, .logic-card, .logic-input-card,
+.steg-panel, .morse-panel, .calc-hub-panel {
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.calc-tile:hover, .conv-cat:hover, .symbol-tile:hover, .cs-card:hover, .cripto-tile:hover,
+.porta-card:hover, .regex-input-card:hover, .regex-match-card:hover, .qr-read__panel:hover,
+.logic-card:hover, .logic-input-card:hover, .steg-panel:hover {
+  border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan);
+}
+.calc-tile:hover, .symbol-tile:hover, .cs-card:hover, .cripto-tile:hover, .porta-card:hover { transform: translateY(-2px); }
+.cs-swatch { transition: transform var(--transition-base), box-shadow var(--transition-base); }
+.cs-swatch:hover { transform: scale(1.06); box-shadow: 0 0 12px rgba(0, 240, 255, 0.35); }
+.page-regex .sec-title { background: linear-gradient(135deg, #e6f1ff, var(--color-cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kmap__cell:hover, .morse-ref__cell:hover { box-shadow: inset 0 0 0 1px var(--color-cyan-edge); }
