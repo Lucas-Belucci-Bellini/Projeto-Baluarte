@@ -20,6 +20,10 @@
     linear-gradient(180deg, var(--color-surface-2), var(--color-bg-elevated));
   transition: background-position 0.2s ease;
 }
+.pf-hero__canvas {
+  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;
+  display: block; pointer-events: none; opacity: 0.8;
+}
 .pf-hero::before {
   content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.55;
   background-image:

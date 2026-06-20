@@ -412,6 +412,7 @@ export function bibliotecaPage(args) {
     title: 'Crônicas da Baluarte',
     sub: 'ONDE OS DEUSES SANGRAM',
     accent2: '#9d7bff',
+    variant: 'helix',
     desc: [
       'A saga canônica ',
       h('span', { className: 'u-text-cyan' }, '"Onde os Deuses Sangram"'),

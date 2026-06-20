@@ -266,6 +266,7 @@ export function ferramentasPage(args) {
       kicker: 'BALUARTE · HUB DE FERRAMENTAS',
       title: 'Hub de Ferramentas',
       sub: 'CAIXA DE FERRAMENTAS TÉCNICAS',
+      variant: 'reactor',
       desc: [
         'Catálogo central de todas as ferramentas técnicas do Baluarte — ',
         h('span', { className: 'u-text-cyan' }, `${TOOLS.length} ferramentas`),

@@ -32,7 +32,8 @@ const M = {
   },
   transZ(z) { const m = M.ident(); m[14] = z; return m; },
   rotX(a) { const c = Math.cos(a), s = Math.sin(a); const m = M.ident(); m[5]=c; m[6]=s; m[9]=-s; m[10]=c; return m; },
-  rotY(a) { const c = Math.cos(a), s = Math.sin(a); const m = M.ident(); m[0]=c; m[2]=-s; m[8]=s; m[10]=c; return m; }
+  rotY(a) { const c = Math.cos(a), s = Math.sin(a); const m = M.ident(); m[0]=c; m[2]=-s; m[8]=s; m[10]=c; return m; },
+  rotZ(a) { const c = Math.cos(a), s = Math.sin(a); const m = M.ident(); m[0]=c; m[1]=s; m[4]=-s; m[5]=c; return m; }
 };
 
 const VERT = `
@@ -126,6 +127,47 @@ function buildGeometry(variant, cA, cB) {
     ring(struct, 1.4, 0, 'y', cA, 160);
     ring(struct, 1.72, 0.6, 'z', cB, 170, false);
     coreSize = 92;
+    return { field, struct, coreSize };
+  }
+
+  if (variant === 'helix') {
+    for (let i = 0; i < 520; i++) {                  // estrelas de fundo
+      const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, r = 3.4 + Math.random() * 3;
+      const rxy = Math.sqrt(1 - u * u);
+      push(field, Math.cos(th) * rxy * r, u * r, Math.sin(th) * rxy * r, Math.random() < 0.5 ? [1, 1, 1] : cA, 2 + Math.random() * 2);
+    }
+    const TURNS = 3, HH = 4.2, PTS = 230, HR = 1.05;  // dupla hélice (DNA)
+    for (let i = 0; i < PTS; i++) {
+      const f = i / PTS, y = (f - 0.5) * HH, ang = f * TURNS * Math.PI * 2;
+      push(field, Math.cos(ang) * HR, y, Math.sin(ang) * HR, cA, 7);
+      push(field, Math.cos(ang + Math.PI) * HR, y, Math.sin(ang + Math.PI) * HR, cB, 7);
+      if (i % 6 === 0) {                              // "degraus" entre as fitas
+        const ax = Math.cos(ang) * HR, az = Math.sin(ang) * HR, bx = Math.cos(ang + Math.PI) * HR, bz = Math.sin(ang + Math.PI) * HR;
+        for (let k = 1; k < 6; k++) { const tk = k / 6; push(field, ax + (bx - ax) * tk, y, az + (bz - az) * tk, [1, 1, 1], 3); }
+      }
+    }
+    coreSize = 0;
+    return { field, struct, coreSize };
+  }
+
+  if (variant === 'scope') {
+    for (let i = 0; i < 420; i++) {                  // estrelas de fundo
+      const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, r = 3.2 + Math.random() * 3;
+      const rxy = Math.sqrt(1 - u * u);
+      push(field, Math.cos(th) * rxy * r, u * r, Math.sin(th) * rxy * r, [1, 1, 1], 1.6 + Math.random() * 2);
+    }
+    for (const R of [0.6, 1.0, 1.45, 1.9]) {          // anéis concêntricos (plano XY)
+      const seg = Math.floor(R * 130);
+      for (let i = 0; i < seg; i++) { const a = (i / seg) * Math.PI * 2; push(field, Math.cos(a) * R, Math.sin(a) * R, 0, cA, 3.2); }
+    }
+    for (let k = 0; k < 48; k++) {                    // marcas radiais (graduação)
+      const a = (k / 48) * Math.PI * 2;
+      for (let r = 1.92; r < 2.1; r += 0.05) push(field, Math.cos(a) * r, Math.sin(a) * r, 0, cB, 3);
+    }
+    for (let r = -2; r <= 2; r += 0.06) {             // mira (crosshair)
+      push(field, r, 0, 0, cA, 2.4); push(field, 0, r, 0, cA, 2.4);
+    }
+    coreSize = 40;
     return { field, struct, coreSize };
   }
 
@@ -242,8 +284,9 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
     const pv = M.mul(proj, view);
     const scale = Math.min(w, h) * 0.5 * dpr;
 
-    /* nebulosa (gira devagar) */
-    const mvpNeb = M.mul(pv, M.rotY(tt * 0.6));
+    /* fundo (gira devagar) — 'scope' varre no próprio plano (rotZ), o resto gira no Y */
+    const fieldRot = (variant === 'scope') ? M.rotZ(tt * 0.25) : M.rotY(tt * 0.6);
+    const mvpNeb = M.mul(pv, fieldRot);
     gl.uniformMatrix4fv(loc.uMVP, false, mvpNeb);
     gl.uniform1f(loc.uScale, scale); gl.uniform1f(loc.uIsLine, 0);
     gl.uniform1f(loc.uPoint, 0.05);

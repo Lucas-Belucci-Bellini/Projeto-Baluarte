@@ -409,6 +409,7 @@ export function arsenalPage(args) {
     kicker: 'BALUARTE · ARSENAL',
     title: 'Arsenal',
     sub: 'CATÁLOGO MILITAR COMPLETO',
+    variant: 'scope',
     desc: [
       h('span', { className: 'u-text-cyan' }, `${TOTAL} entradas`),
       ' — armas leves, artilharia, defesa aérea, aeronaves, frota naval, ',
