@@ -674,15 +674,7 @@
    Só aumenta o visual; não mexe em layout/estrutura.
    ════════════════════════════════════════════════════════════ */
 
-/* títulos de página da seção em degradê neon */
-.forcas-page .page-header__title, .orca-page .page-header__title, .poder-page .page-header__title,
-.arsx-page .page-header__title, .sof-page .page-header__title, .org-page .page-header__title,
-.tech-page .page-header__title, .tat-page .page-header__title, .hist-page .page-header__title,
-.apais-page .page-header__title, .guerra-page .page-header__title, .batalha-page .page-header__title {
-  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
-}
+/* títulos de página da seção: herdam o holográfico animado global (#246) */
 
 /* stat tiles: barra de acento no topo, valor com brilho, lift no hover */
 .forcas-stat {

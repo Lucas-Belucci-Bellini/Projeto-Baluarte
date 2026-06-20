@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — título holográfico animado em todas as páginas
+- ✨ **A assinatura da nova home se espalhou pro site**: o `.page-header__title` global (em `components.css`) virou um **degradê holográfico animado** (ciano→roxo→magenta, shimmer lento) — então **todas** as páginas com header padrão ganham o mesmo título da home. Respeita `prefers-reduced-motion` (anima só pra quem permite).
+- 🧹 Removidos os overrides de título estático (biblioteca, universo, academia e o bloco das 12 páginas militares) → herdam o holográfico global, ficando uniforme.
+- ✅ Build limpo; verificado no navegador.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-holo-titles`.
+
 ### Home nova "Command Deck" #246/#195 — promovida a oficial
 - 🚀 **A `/home` foi repaginada do zero** (aprovada pelo operador): hero com **título holográfico** animado sobre fundo **HUD** (grid em movimento + scanline + colchetes nos cantos) + **grid bento** (métricas count-up, Núcleo de IA com orbe, baixar app, vigilância ao vivo, crônica/equipe em destaque, acesso rápido) + **prateleiras** com scroll-snap.
 - 🪶 Leve: CSS/canvas + herói WebGL reusado (cai no campo 2D sem WebGL), JS puro; respeita `prefers-reduced-motion`. `src/pages/home.js` reescrito + `src/styles/home-v2.css`.
