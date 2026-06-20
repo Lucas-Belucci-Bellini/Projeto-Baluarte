@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — heróis imersivos em /elites, /sobre e /dossie
+- ◆ **`/elites`**, ◇ **`/sobre`** e ▣ **`/dossie`** trocaram o header padrão pelo **herói imersivo** (`buildImmersiveHero`): galáxia WebGL + raios + grid HUD + título holográfico + kicker + CTAs (cruzando pra Arsenal/Dossiê/Roadmap/Núcleo/Universos). Contadores dinâmicos (equipes operacionais) e todo o conteúdo seguem intactos abaixo.
+- 🎛️ Slots Spline reaproveitados (`elites`, `sobre`) — testáveis via `?spline=`.
+- 🚫 `/baixar` mantido com o herói próprio (anel/“core” + detecção de SO) — a atmosfera global já o cobre.
+- ✅ Build limpo; heróis conferidos no navegador (`/elites`, `/sobre`, `/dossie`).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-flagship-heroes-2`.
+
 ### Redesign #246 — kit de herói imersivo reusável + flagships /universo e /biblioteca
 - 🦾 **`src/utils/immersive.js` + `immersive.css` (novos)**: `buildImmersiveHero({...})` generaliza o herói "Command Deck" da home pra qualquer flagship em **uma chamada** — herói WebGL (galáxia + arc-reactor, com fallback 2D) + raios + grid HUD + título holográfico + kicker + descrição + CTAs + **slot Spline** opcional. Parametrizável por `--bx-accent`. **Auto-limpa** ao sair do DOM (MutationObserver destrói WebGL/Spline) — a página não gerencia ciclo de vida. Respeita `prefers-reduced-motion`.
 - 🌌 **`/universo`**: header antigo → **herói imersivo** (galáxia, "Hub de Universos / MULTIVERSO BALUARTE", HUD, CTAs p/ Crônicas e Elites). Cards de universo seguem abaixo, intactos.

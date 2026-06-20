@@ -8,6 +8,7 @@
 
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 
 /* ===== Como o projeto chegou ao nível atual ===== */
 const TIMELINE = [
@@ -130,20 +131,24 @@ const EDUCACIONAL = [
       'de engenharia incremental — 21 fases, cada uma testada antes da seguinte.' }
 ];
 
-export function sobrePage() {
+export function sobrePage(args) {
   const page = h('div', { className: 'page-sobre' });
 
-  page.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'SOBRE O PROJETO')),
-      h('h1', { className: 'page-header__title' }, '◇ Sobre o Projeto Baluarte'),
-      h('p', { className: 'page-header__description' },
-        'O que é o Baluarte, como ele chegou até aqui, o que cada parte faz — ' +
-        'e por que ele ainda está em construção.')
-    )
-  );
+  page.appendChild(buildImmersiveHero({
+    kicker: 'BALUARTE · SOBRE O PROJETO',
+    title: 'Sobre o Baluarte',
+    sub: 'UMA PLATAFORMA, MUITAS',
+    desc: 'O que é o Baluarte, como ele chegou até aqui, o que cada parte faz — '
+      + 'e por que ele ainda está em construção.',
+    ctas: [
+      { label: '🗺 Roadmap', variant: 'primary', onClick: () => router.navigate('/roadmap') },
+      { label: '🔗 Núcleo de IA', onClick: () => router.navigate('/git-nexus') }
+    ],
+    hudLeft: '◇ PLATAFORMA · MARK XIII',
+    hudRight: 'JS PURO · OFFLINE-FIRST',
+    sceneKey: 'sobre',
+    query: args && args.query
+  }));
 
   /* Intro */
   page.appendChild(

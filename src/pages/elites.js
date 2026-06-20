@@ -10,6 +10,7 @@
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
+import { buildImmersiveHero } from '../utils/immersive.js';
 import { ROSTERS } from '../data/elites-rosters.js';
 import { EQUIPES, STATUS_OPTIONS, SPECIALTIES, TOTAL_EQUIPES, ACTIVE_COUNT, findEquipe, statusInfo } from '../data/elites.js';
 import { findArc } from '../data/cronicas.js';
@@ -208,27 +209,30 @@ function renderDetail() {
   }
 }
 
-export function elitesPage() {
+export function elitesPage(args) {
   state = loadState();
 
   const fullPage = h('div', { className: 'page-elites' });
 
-  fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'),
-        h('span', null, '›'),
-        h('span', null, 'ELITES')
-      ),
-      h('h1', { className: 'page-header__title' }, '◆ Elites do Baluarte'),
-      h('p', { className: 'page-header__description' },
-        h('span', { className: 'u-text-cyan' }, `${TOTAL_EQUIPES} equipes`),
-        ' catalogadas (ALFA → ZULU), ',
-        h('span', { className: 'u-text-cyan' }, `${ACTIVE_COUNT} operacionais`),
-        '. Filtre por status, especialidade ou busque por nome/líder/lema.'
-      )
-    )
-  );
+  fullPage.appendChild(buildImmersiveHero({
+    kicker: 'BALUARTE · ELITES',
+    title: 'Elites do Baluarte',
+    sub: 'ESQUADRÕES ALFA → ZULU',
+    desc: [
+      h('span', { className: 'u-text-cyan' }, `${TOTAL_EQUIPES} equipes`),
+      ' catalogadas (ALFA → ZULU), ',
+      h('span', { className: 'u-text-cyan' }, `${ACTIVE_COUNT} operacionais`),
+      '. Filtre por status, especialidade ou busque por nome/líder/lema.'
+    ],
+    ctas: [
+      { label: '⌖ Arsenal', variant: 'primary', onClick: () => router.navigate('/arsenal') },
+      { label: '▣ Dossiê das Forças', onClick: () => router.navigate('/dossie') }
+    ],
+    hudLeft: '◆ ESQUADRÕES · ATIVOS',
+    hudRight: `${ACTIVE_COUNT}/${TOTAL_EQUIPES} OPERACIONAIS`,
+    sceneKey: 'elites',
+    query: args && args.query
+  }));
 
   /* Filtros */
   const searchInput = h('input', {
