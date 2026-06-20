@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-19
 
+### Redesign #195 — Onda Referência + Economia + Hubs (/tabela-periodica, /modpack, /guia-pc, /economia, /dolar, /ferramentas, /utilidades)
+- 🧪 **7 páginas de referência/economia/hubs ganharam o polish cinematográfico** — só visual (glow/profundidade/degradê), nada de layout/estrutura/JS.
+- ✨ títulos em degradê neon nas 7; **`/tabela-periodica`** com células brilhando no hover; **`/modpack`** com cards em lift+glow; **`/guia-pc`** com presets em glow e aba ativa; **`/economia`** com cards de cotação em lift+glow, valor com brilho e seções em degradê; **`/dolar`** com moedas em glow e valores brilhando; **`/ferramentas`** com título neon (`.fh-title`) e cards com glow ciano somado; **`/utilidades`** com cards em lift+glow e stats brilhando.
+- ✅ Verificado no navegador (Playwright + Vite). Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-19-pre-merge-redesign-ref-hubs`.
+
 ### Redesign #195 — Onda Catálogo & Lazer (/ciberseg, /robotica, /filmes, /memes, /jogos, /batalha-naval)
 - 🗂️ **6 páginas de catálogo/lazer ganharam o polish cinematográfico** — só visual (glow/profundidade/degradê), nada de layout/estrutura/JS.
 - ✨ títulos em degradê neon nas 6; **`/ciberseg`** com linhas (hover/ativa) em glow e títulos de seção/detalhe em degradê; **`/robotica`** com módulos em glow no hover, item do rail ativo brilhando e título do módulo em degradê; **`/filmes`** com cards em lift+glow e pôster com leve zoom; **`/memes`** com cards em lift+glow (mantendo a cor do tier) e filtro ativo brilhando; **`/jogos`** (escopado em `.page-arcade`) com cards em lift+glow e aba ativa; **`/batalha-naval`** com título do tabuleiro em degradê e grade com leve glow.

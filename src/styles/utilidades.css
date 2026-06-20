@@ -181,3 +181,9 @@
   border-radius: var(--radius-xs);
   border: var(--border-thin);
 }
+
+/* Polish cinematográfico (redesign #195) — Onda Hubs. Só visual. */
+.page-utilidades .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.util-card { transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
+.util-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
+.util-stat__v { text-shadow: 0 0 12px rgba(0,240,255,.35); }
