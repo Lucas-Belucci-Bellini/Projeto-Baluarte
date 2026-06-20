@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Spline 3D #246/#207 — integração pronta (cenas reais no nível pedido)
+- 🌌 **`src/utils/spline-embed.js` (novo)**: embute cenas 3D do **Spline** via o web component `<spline-viewer>` (CDN), **lazy** (IntersectionObserver), com **fallback seguro** (sem URL / falha / `prefers-reduced-motion` → fica o herói WebGL atual) e **timeout** de 14s.
+- 🎛️ **`src/data/spline-scenes.js` (novo)**: slot de cena por página (`home/perfil/gitNexus/universo/arsenal/baixar`) — basta colar a URL `.splinecode`. Também aceita teste na hora via `#/home?spline=<url do spline.design>` (restrito ao domínio do Spline).
+- 🏠 **Home** ligada: se houver cena, ela entra **por cima** do herói (no load some o canvas/grid); sem cena, nada muda (fallback). Config vazia por padrão → produção intacta.
+- ⚖️ Aceite consciente do peso (decisão do operador no #246): o runtime do Spline é pesado; por isso é lazy + fallback. As páginas das cenas escolhidas estão no estudo #262.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-spline-embed`.
+
 ### Redesign #246 — /perfil no estilo "Command Deck" (rollout flagship 1)
 - 🪪 **A `/perfil` (Dossiê do Operador) ganhou a linguagem da nova home**: hero com **HUD** (grid + scanline + colchetes luminosos nos cantos), **nome holográfico animado**, e os **stats em bento** (barra de acento no topo + glow/lift). Só visual — toda a função (config, temas, skins de universo) intacta.
 - ✅ Build limpo; verificado no navegador (full-page). Primeiro flagship do rollout profundo do redesign.
