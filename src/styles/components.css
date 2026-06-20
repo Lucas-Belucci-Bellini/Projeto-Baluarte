@@ -392,15 +392,19 @@
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
-  /* Redesign #195 — título neon ciano→magenta com glow, padrão do site inteiro.
-     Páginas com regra própria (especificidade maior) seguem mandando na sua. */
-  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
+  /* Redesign #246 — título HOLOGRÁFICO animado (a assinatura da nova home,
+     espalhada pro site inteiro). Páginas com regra própria seguem na sua;
+     reduced-motion mata a animação (regra global em variables.css). */
+  background: linear-gradient(100deg, #e6f1ff 0%, var(--color-cyan) 35%, #9d7bff 55%, var(--color-magenta) 80%, #e6f1ff 100%);
+  background-size: 250% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+  animation: holo-title 9s ease-in-out infinite;
   margin: 0;
 }
+@keyframes holo-title { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 .page-header__description {
   margin-top: var(--space-sm);
   color: var(--color-text-secondary);

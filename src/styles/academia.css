@@ -278,11 +278,7 @@
    Só visual: glow / profundidade / degradê neon. Não mexe em
    layout, estrutura nem JS.
    ════════════════════════════════════════════════════════════ */
-.page-academia .page-header__title {
-  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
-}
+/* título: herda o holográfico animado global (#246) */
 /* cards (linguagens, módulos, recursos, carreiras): glow + lift no hover */
 .academia-lang, .academia-module, .academia-resource, .academia-carreira {
   transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);

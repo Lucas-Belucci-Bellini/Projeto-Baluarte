@@ -196,11 +196,7 @@
    Só visual: glow / profundidade / degradê neon. Não mexe em
    layout, estrutura nem JS.
    ════════════════════════════════════════════════════════════ */
-.page-universo .page-header__title {
-  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
-}
+/* título: herda o holográfico animado global (#246) */
 /* cards de universo: lift + glow no hover, ícone brilhando na cor do mundo */
 .univ-card { transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
 .univ-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
