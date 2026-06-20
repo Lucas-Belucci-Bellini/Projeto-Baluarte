@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Núcleo de IA #231/#238 — Etapa 1: cockpit com abas (fusão da seção IA)
+- 🧩 **O Git Nexus virou o "Núcleo de IA"**: dentro do app, agora é um **cockpit com barra de abas** (`src/pages/git-nexus-cockpit.js`). Aba **Grafo de Código** = a experiência completa atual; + 11 abas das ferramentas IA (**J.A.R.V.I.S., Conselho de IAs, Central de APIs, Dashboard, ML da Memória, Mini-LLM, Segundo Cérebro, Memória, Terminal-IA, Segurança, IA Proprietária**), cada uma **carregada sob demanda** (dynamic import) e montada reusando o render que já existe — **sem reescrever nenhuma feature**.
+- 🚪 O gate (`git-nexus-gate.js`) no app passou a carregar o cockpit (na web segue o teaser; cockpit é app-only, alinhado ao #238). Etapa **aditiva**: as rotas individuais (`/jarvis`, `/memoria`, …) seguem funcionando — a unificação de navegação/rotas vem nas próximas etapas (incremental, 1 PR por etapa).
+- ✅ Verificado no app (Playwright + `window.baluarte.native`): 12 abas; Grafo carrega por padrão; abas Memória e JARVIS carregam sob demanda. Build de produção limpo (cockpit é chunk leve; cada ferramenta só baixa ao abrir a aba).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-nucleo-ia-cockpit`.
+
 ### Redesign #195 — Onda Ferramentas (devtools) + título neon global
 - 🎛️ **Fecha o redesign do site**: a regra base `.page-header__title` (em `components.css`) virou o **título neon ciano→magenta com glow** padrão — então **todas** as ~18 páginas de ferramentas (`/editor`, `/terminal`, `/calc-cientifica`, `/calc-numerica`, `/calculadoras`, `/tabela-verdade`, `/cripto`, `/esteganografia`, `/graficos`, `/simbolos`, `/color-studio`, `/regex`, `/json-studio`, `/qr-studio`, `/git-helper`, `/logic-sim`, `/portas`, `/morse`) e qualquer página sem regra própria ganharam o título do redesign de uma vez. Páginas com regra escopada (especificidade maior) seguem mandando na sua.
 - ✨ **Glow/lift nos cards/painéis/tiles dos devtools** (escopado por classe única): `.calc-tile`, `.conv-cat`, `.symbol-tile`, `.cs-card`/`.cs-swatch`, `.cripto-tile`, `.porta-card`, `.regex-input-card`/`.regex-match-card`, `.qr-read__panel`, `.logic-card`/`.logic-input-card`, `.steg-panel`, `.morse-panel`, `.kmap__cell`. Título do `/regex` (que usa `.sec-title`) também em degradê. Só visual — nada de layout/estrutura/JS.

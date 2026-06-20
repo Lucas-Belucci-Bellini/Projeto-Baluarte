@@ -172,3 +172,21 @@
 
 .gn-teaser__cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
 .gn-teaser__hint { font-size: 12px; margin: 0; }
+
+/* ════════════════════════════════════════════════════════════
+   Núcleo de IA — cockpit com abas (#231/#238 · fusão da seção IA).
+   ════════════════════════════════════════════════════════════ */
+.gn-cock__tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 8px; }
+.gn-cock__tab { background: var(--color-surface); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-pill); color: var(--color-text-muted); font-size: 12px; font-weight: 600;
+  padding: 6px 12px; cursor: pointer; transition: all var(--transition-base); white-space: nowrap; }
+.gn-cock__tab:hover { color: var(--color-text-primary); border-color: var(--color-cyan-edge); }
+.gn-cock__tab.is-active { background: var(--color-cyan-soft); border-color: var(--color-cyan);
+  color: var(--color-cyan); box-shadow: var(--shadow-glow-cyan); }
+.gn-cock__panel { min-height: 420px; }
+.gn-cock__loading { display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; min-height: 360px; text-align: center; }
+.gn-cock__err { padding: var(--space-xl); text-align: center; }
+/* dentro do cockpit, o header de cada ferramenta vira sub-título (menos imponente) */
+.gn-cock__panel .page-header__title { font-size: var(--font-size-2xl); }

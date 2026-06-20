@@ -32,16 +32,18 @@ export function gitNexusGate(args) {
   /* Web puro: teaser leve, sem tocar no chunk pesado. */
   if (!isNative()) return gitNexusTeaser();
 
-  /* App: carrega a experiência completa sob demanda (só aqui o chunk pesado vem). */
+  /* App: carrega o cockpit do Núcleo de IA sob demanda (só aqui o pesado vem).
+   * O cockpit traz a aba "Grafo de Código" (a experiência completa) + as
+   * ferramentas IA, cada uma carregada sob demanda dentro dele. */
   const host = h('div', { className: 'page-gitnexus' },
     h('div', { className: 'gn-loading anim-fade-in' },
       h('span', { className: 'gn-loading__orb' }),
-      h('p', { className: 'u-text-muted' }, 'Acordando o Git Nexus…')));
+      h('p', { className: 'u-text-muted' }, 'Acordando o Núcleo de IA…')));
 
-  import('./git-nexus.js')
-    .then((m) => { empty(host); host.appendChild(m.gitNexusPage(args)); })
+  import('./git-nexus-cockpit.js')
+    .then((m) => { empty(host); host.appendChild(m.gitNexusCockpit(args)); })
     .catch((err) => {
-      console.error('[git-nexus] falha ao carregar a experiência completa:', err);
+      console.error('[git-nexus] falha ao carregar o Núcleo de IA:', err);
       empty(host);
       host.appendChild(gitNexusTeaser({ failed: true }));
     });
