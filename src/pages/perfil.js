@@ -63,6 +63,9 @@ export function perfilPage() {
 
   /* ---- HERO / dossiê ---- */
   const hero = h('div', { className: 'pf-hero anim-fade-in' },
+    h('span', { className: 'pf-hud__br pf-hud__br--tl', 'aria-hidden': 'true' }),
+    h('span', { className: 'pf-hud__br pf-hud__br--br', 'aria-hidden': 'true' }),
+    h('div', { className: 'pf-hero__scan', 'aria-hidden': 'true' }),
     h('div', { className: 'pf-emblem' },
       h('span', { className: 'pf-emblem__ring' }),
       h('span', { className: 'pf-emblem__core' }, h('span', { className: 'pf-emblem__glyph' }, 'Ω'))),

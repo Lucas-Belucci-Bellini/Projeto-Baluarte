@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — /perfil no estilo "Command Deck" (rollout flagship 1)
+- 🪪 **A `/perfil` (Dossiê do Operador) ganhou a linguagem da nova home**: hero com **HUD** (grid + scanline + colchetes luminosos nos cantos), **nome holográfico animado**, e os **stats em bento** (barra de acento no topo + glow/lift). Só visual — toda a função (config, temas, skins de universo) intacta.
+- ✅ Build limpo; verificado no navegador (full-page). Primeiro flagship do rollout profundo do redesign.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-perfil-hud`.
+
 ### Redesign #246 — título holográfico animado em todas as páginas
 - ✨ **A assinatura da nova home se espalhou pro site**: o `.page-header__title` global (em `components.css`) virou um **degradê holográfico animado** (ciano→roxo→magenta, shimmer lento) — então **todas** as páginas com header padrão ganham o mesmo título da home. Respeita `prefers-reduced-motion` (anima só pra quem permite).
 - 🧹 Removidos os overrides de título estático (biblioteca, universo, academia e o bloco das 12 páginas militares) → herdam o holográfico global, ficando uniforme.
