@@ -6,6 +6,14 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-20
+
+### Redesign #195 — Onda Ferramentas (devtools) + título neon global
+- 🎛️ **Fecha o redesign do site**: a regra base `.page-header__title` (em `components.css`) virou o **título neon ciano→magenta com glow** padrão — então **todas** as ~18 páginas de ferramentas (`/editor`, `/terminal`, `/calc-cientifica`, `/calc-numerica`, `/calculadoras`, `/tabela-verdade`, `/cripto`, `/esteganografia`, `/graficos`, `/simbolos`, `/color-studio`, `/regex`, `/json-studio`, `/qr-studio`, `/git-helper`, `/logic-sim`, `/portas`, `/morse`) e qualquer página sem regra própria ganharam o título do redesign de uma vez. Páginas com regra escopada (especificidade maior) seguem mandando na sua.
+- ✨ **Glow/lift nos cards/painéis/tiles dos devtools** (escopado por classe única): `.calc-tile`, `.conv-cat`, `.symbol-tile`, `.cs-card`/`.cs-swatch`, `.cripto-tile`, `.porta-card`, `.regex-input-card`/`.regex-match-card`, `.qr-read__panel`, `.logic-card`/`.logic-input-card`, `.steg-panel`, `.morse-panel`, `.kmap__cell`. Título do `/regex` (que usa `.sec-title`) também em degradê. Só visual — nada de layout/estrutura/JS.
+- ✅ Verificado no navegador (Playwright + Vite): `/calculadoras`, `/simbolos`, `/color-studio`, `/regex`, `/editor`. Build de produção limpo.
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-redesign-devtools`.
+
 ## 2026-06-19
 
 ### Redesign #195 — Onda Referência + Economia + Hubs (/tabela-periodica, /modpack, /guia-pc, /economia, /dolar, /ferramentas, /utilidades)
