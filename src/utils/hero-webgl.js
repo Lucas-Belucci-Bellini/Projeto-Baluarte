@@ -62,7 +62,90 @@ function hexToRGB(h) {
   return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
 }
 
-export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa' } = {}) {
+/**
+ * Geometria por VARIANTE (#246 — aprofundar o 3D nativo, refs do #262):
+ *   - 'galaxy'  (padrão): nebulosa em disco + anéis arc-reactor + núcleo.
+ *   - 'planet'  (/universo, ref. "Orbital View of Arrakis"): globo holográfico
+ *     (meridianos/paralelos) + anel orbital inclinado + campo de estrelas.
+ *   - 'reactor' (Núcleo de IA, ref. "circuit loop / Eternal ARC"): anéis
+ *     concêntricos + cruzados + núcleo pulsante forte.
+ * Devolve point-clouds (field = fundo; struct = anéis) + tamanho do núcleo.
+ */
+function buildGeometry(variant, cA, cB) {
+  const field = { pos: [], col: [], size: [] };
+  const struct = { pos: [], col: [], size: [] };
+  let coreSize = 60;
+  const push = (o, x, y, z, c, s) => { o.pos.push(x, y, z); o.col.push(c[0], c[1], c[2]); o.size.push(s); };
+  const ring = (o, R, tilt, axis, col, seg = 150, rivet = true) => {
+    for (let i = 0; i < seg; i++) {
+      const a = (i / seg) * Math.PI * 2;
+      let x = Math.cos(a) * R, y = Math.sin(a) * R, z = 0;
+      if (axis === 'x') { [x, y, z] = [0, x, y]; }
+      else if (axis === 'y') { [x, y, z] = [x, 0, y]; }
+      if (tilt) { const c = Math.cos(tilt), s = Math.sin(tilt); const nx = x * c - z * s; z = x * s + z * c; x = nx; }
+      push(o, x, y, z, col, 7 + (rivet && i % 12 === 0 ? 7 : 0));
+    }
+  };
+
+  if (variant === 'planet') {
+    for (let i = 0; i < 1100; i++) {                 // campo de estrelas
+      const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, r = 3.6 + Math.random() * 3;
+      const rxy = Math.sqrt(1 - u * u);
+      push(field, Math.cos(th) * rxy * r, u * r, Math.sin(th) * rxy * r, Math.random() < 0.5 ? [1, 1, 1] : cA, 2 + Math.random() * 3);
+    }
+    const GR = 1.55, SEG = 96;
+    for (let la = 1; la < 14; la++) {                // paralelos
+      const phi = (la / 14) * Math.PI - Math.PI / 2;
+      const y = Math.sin(phi) * GR, rr = Math.cos(phi) * GR;
+      for (let s = 0; s < SEG; s++) { const a = (s / SEG) * Math.PI * 2; push(field, Math.cos(a) * rr, y, Math.sin(a) * rr, cA, 3.0); }
+    }
+    for (let lo = 0; lo < 24; lo++) {                // meridianos
+      const lon = (lo / 24) * Math.PI * 2;
+      for (let s = 0; s < SEG; s++) { const t = (s / SEG) * Math.PI * 2; push(field, GR * Math.cos(t) * Math.cos(lon), GR * Math.sin(t), GR * Math.cos(t) * Math.sin(lon), cA, 2.6); }
+    }
+    for (let i = 0; i < 500; i++) {                  // brilho de superfície
+      const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, rxy = Math.sqrt(1 - u * u);
+      push(field, Math.cos(th) * rxy * GR, u * GR, Math.sin(th) * rxy * GR, Math.random() < 0.2 ? cB : cA, 2 + Math.random() * 5);
+    }
+    ring(struct, 2.5, 0.42, 'z', cB, 220, true);     // anel orbital
+    ring(struct, 2.82, 0.42, 'z', cA, 220, false);
+    coreSize = 26;
+    return { field, struct, coreSize };
+  }
+
+  if (variant === 'reactor') {
+    for (let i = 0; i < 1200; i++) {                 // nebulosa curta
+      const u = Math.random(), ang = Math.random() * Math.PI * 2, rad = Math.pow(u, 0.7) * 2.4;
+      const y = (Math.random() - 0.5) * 0.6, t = Math.random();
+      push(field, Math.cos(ang) * rad, y, Math.sin(ang) * rad, t < 0.2 ? [1, 1, 1] : (t < 0.6 ? cA : cB), 4 + Math.random() * 10);
+    }
+    ring(struct, 0.75, 0, 'z', cA, 120);             // concêntricos
+    ring(struct, 1.05, 0, 'z', cB, 140);
+    ring(struct, 1.4, 0, 'z', cA, 160);
+    ring(struct, 1.4, 0, 'x', cB, 160);              // cruzados
+    ring(struct, 1.4, 0, 'y', cA, 160);
+    ring(struct, 1.72, 0.6, 'z', cB, 170, false);
+    coreSize = 92;
+    return { field, struct, coreSize };
+  }
+
+  // galaxy (padrão)
+  for (let i = 0; i < 3600; i++) {
+    const u = Math.random(), ang = Math.random() * Math.PI * 2;
+    const rad = Math.pow(u, 0.6) * 3.4;
+    const disc = Math.random() < 0.7;
+    const y = disc ? (Math.random() - 0.5) * 0.5 : (Math.random() - 0.5) * 3.0;
+    const t = Math.random();
+    push(field, Math.cos(ang) * rad, y, Math.sin(ang) * rad, t < 0.15 ? [1, 1, 1] : (t < 0.6 ? cA : cB), 6 + Math.random() * 18);
+  }
+  for (const r of [{ ax: 'z', tilt: 0 }, { ax: 'x', tilt: 0 }, { ax: 'y', tilt: 0 }, { ax: 'z', tilt: 0.62 }, { ax: 'x', tilt: -0.62 }]) {
+    ring(struct, 1.18, r.tilt, r.ax, r.ax === 'x' ? cB : cA, 150);
+  }
+  coreSize = 60;
+  return { field, struct, coreSize };
+}
+
+export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa', variant = 'galaxy' } = {}) {
   let gl;
   try { gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true }) || canvas.getContext('experimental-webgl'); }
   catch { return null; }
@@ -92,60 +175,26 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
 
   const cA = hexToRGB(accent), cB = hexToRGB(accent2);
 
-  /* ----- geometria: nebulosa de partículas ----- */
-  const N = 3600;
-  const pPos = new Float32Array(N * 3), pCol = new Float32Array(N * 3), pSize = new Float32Array(N);
-  for (let i = 0; i < N; i++) {
-    /* disco achatado + halo esférico (galáxia) */
-    const u = Math.random(), ang = Math.random() * Math.PI * 2;
-    const rad = Math.pow(u, 0.6) * 3.4;
-    const disc = Math.random() < 0.7;
-    const y = disc ? (Math.random() - 0.5) * 0.5 : (Math.random() - 0.5) * 3.0;
-    pPos[i*3] = Math.cos(ang) * rad;
-    pPos[i*3+1] = y;
-    pPos[i*3+2] = Math.sin(ang) * rad;
-    const t = Math.random();
-    const mix = t < 0.15 ? [1,1,1] : (t < 0.6 ? cA : cB);
-    pCol[i*3] = mix[0]; pCol[i*3+1] = mix[1]; pCol[i*3+2] = mix[2];
-    pSize[i] = 6 + Math.random() * 18;
-  }
+  /* ----- geometria por variante (galaxy/planet/reactor) ----- */
+  const geo = buildGeometry(variant, cA, cB);
+
+  /* fundo (nebulosa / globo / nebulosa curta) como point-sprites */
+  const N = geo.field.pos.length / 3;
+  const pPos = new Float32Array(geo.field.pos), pCol = new Float32Array(geo.field.col), pSize = new Float32Array(geo.field.size);
   const bPos = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bPos); gl.bufferData(gl.ARRAY_BUFFER, pPos, gl.STATIC_DRAW);
   const bCol = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bCol); gl.bufferData(gl.ARRAY_BUFFER, pCol, gl.STATIC_DRAW);
   const bSize = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bSize); gl.bufferData(gl.ARRAY_BUFFER, pSize, gl.STATIC_DRAW);
 
-  /* ----- núcleo: anéis 3D (arc-reactor) como pontos brilhantes -----
-     gl.LINES com lineWidth>1 é ignorado na maioria das GPUs (vira hairline e
-     some sobre a nebulosa). Render como point-sprites = orbe luminoso nítido. */
-  const ringPts = [], ringCol = [], ringSz = [];
-  const RSEG = 150, R = 1.18;
-  const rings = [
-    { ax: 'z', tilt: 0,    col: cA },
-    { ax: 'x', tilt: 0,    col: cB },
-    { ax: 'y', tilt: 0,    col: cA },
-    { ax: 'z', tilt: 0.62, col: cB },
-    { ax: 'x', tilt: -0.62, col: cA }
-  ];
-  for (const ring of rings) {
-    for (let i = 0; i < RSEG; i++) {
-      const a = (i / RSEG) * Math.PI * 2;
-      let x = Math.cos(a) * R, y = Math.sin(a) * R, z = 0;
-      if (ring.ax === 'x') { [x, y, z] = [0, x, y]; }
-      else if (ring.ax === 'y') { [x, y, z] = [x, 0, y]; }
-      if (ring.tilt) { const c = Math.cos(ring.tilt), s = Math.sin(ring.tilt); const nx = x*c - z*s; z = x*s + z*c; x = nx; }
-      ringPts.push(x, y, z);
-      ringCol.push(ring.col[0], ring.col[1], ring.col[2]);
-      ringSz.push(7 + ((i % 12 === 0) ? 7 : 0));   // "rebites" mais brilhantes a cada 12
-    }
-  }
-  const LINES = ringPts.length / 3;
-  const lPos = new Float32Array(ringPts);
-  const lCol = new Float32Array(ringCol), lSize = new Float32Array(ringSz);
+  /* estrutura (anéis) como point-sprites — gl.LINES com lineWidth>1 é ignorado
+     na maioria das GPUs; point-sprites = orbe/anel luminoso nítido. */
+  const LINES = geo.struct.pos.length / 3;
+  const lPos = new Float32Array(geo.struct.pos), lCol = new Float32Array(geo.struct.col), lSize = new Float32Array(geo.struct.size);
   const bLPos = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bLPos); gl.bufferData(gl.ARRAY_BUFFER, lPos, gl.STATIC_DRAW);
   const bLCol = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bLCol); gl.bufferData(gl.ARRAY_BUFFER, lCol, gl.STATIC_DRAW);
   const bLSize = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bLSize); gl.bufferData(gl.ARRAY_BUFFER, lSize, gl.STATIC_DRAW);
 
   /* núcleo central (1 ponto grande pulsante) */
-  const corePos = new Float32Array([0,0,0]), coreCol = new Float32Array([...cA]), coreSize = new Float32Array([60]);
+  const corePos = new Float32Array([0,0,0]), coreCol = new Float32Array([...cA]), coreSize = new Float32Array([geo.coreSize]);
   const bCorePos = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bCorePos); gl.bufferData(gl.ARRAY_BUFFER, corePos, gl.STATIC_DRAW);
   const bCoreCol = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bCoreCol); gl.bufferData(gl.ARRAY_BUFFER, coreCol, gl.STATIC_DRAW);
   const bCoreSize = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bCoreSize); gl.bufferData(gl.ARRAY_BUFFER, coreSize, gl.STATIC_DRAW);
@@ -201,8 +250,12 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
     bindAttr(bPos, bCol, bSize);
     gl.drawArrays(gl.POINTS, 0, N);
 
-    /* núcleo: anéis de orbes girando em eixos diferentes (arc-reactor) */
-    const mvpCore = M.mul(pv, M.mul(M.rotY(tt * 1.6), M.rotX(tt * 0.9)));
+    /* estrutura: 'planet' = anel orbital girando devagar no eixo Y (mantém a
+       inclinação); 'galaxy'/'reactor' = anéis tombando em eixos diferentes. */
+    const structRot = (variant === 'planet')
+      ? M.rotY(tt * 0.45)
+      : M.mul(M.rotY(tt * 1.6), M.rotX(tt * 0.9));
+    const mvpCore = M.mul(pv, structRot);
     gl.uniformMatrix4fv(loc.uMVP, false, mvpCore);
     gl.uniform1f(loc.uIsLine, 0);
     gl.uniform1f(loc.uPoint, 0.085);

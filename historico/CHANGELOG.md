@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — variantes de herói WebGL nativas (planet / reactor)
+- 🪐 **`hero-webgl.js` ganhou `variant`**: além do `galaxy` (padrão), agora tem **`planet`** (globo holográfico com meridianos/paralelos + anel orbital + campo de estrelas — ref. "Orbital View of Arrakis") e **`reactor`** (anéis concêntricos + cruzados + núcleo pulsante — ref. "circuit loop / Eternal ARC"). Mesmo renderer (point-sprites aditivos), geometria por `buildGeometry(variant)`.
+- 🌍 **`/universo`** → herói `planet` (globo girando + anel orbital, eixo Y).
+- 🔗 **Núcleo de IA** (`/git-nexus` gate) → herói `reactor` (reator de anéis), substituindo o header simples. Continua leve (só o herói WebGL, ~nada perto do grafo pesado app-only).
+- 🔌 `buildImmersiveHero({ variant })` repassa pro engine; `galaxy` segue idêntico (home/perfil/arsenal/etc. inalterados).
+- ✅ Build limpo; planet e reactor conferidos no navegador (headless ANGLE).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-hero-variants`.
+
 ### Spline 3D #246 — cena REAL na home (embed público my.spline.design)
 - 🌀 **Home com cena Spline de verdade**: "Retrofuturistic circuit loop" (#262) entra como fundo do herói — emblema/circuito neon atrás do wordmark holográfico BALUARTE. Escolha do operador (a única das 3 cenas free que serve de fundo; "Boxes Hover" e "Connecting Card" são designs fechados, descartadas).
 - 🧩 **`spline-embed.js` agora aceita embed público** (`my.spline.design/<slug>/`) via `<iframe>` decorativo (`pointer-events:none`, lazy, revela no load ou em ≤3,5s), além do `<spline-viewer>` (`.splinecode`). Resolve o caso real: exportar `.splinecode` é pago; o **Share/Public** é free (com selo "Built with Spline"). `sceneFor` passou a aceitar `my.spline.design`.
