@@ -189,7 +189,20 @@ function buildGeometry(variant, cA, cB) {
   return { field, struct, coreSize };
 }
 
-export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa', variant = 'galaxy' } = {}) {
+/** Cores do herói a partir do UNIVERSO ativo (#246): por padrão o herói segue a
+ *  skin (--color-cyan/--color-magenta do universe-theme.js), com fallback no
+ *  visual Baluarte. Páginas podem passar accent/accent2 pra fixar uma cor. */
+export function heroSkinColors() {
+  const read = (name, fb) => {
+    try { return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fb; }
+    catch { return fb; }
+  };
+  return { accent: read('--color-cyan', '#00f0ff'), accent2: read('--color-magenta', '#ff00aa') };
+}
+
+export function createHeroWebGL(canvas, opts = {}) {
+  const _skin = heroSkinColors();
+  const { accent = _skin.accent, accent2 = _skin.accent2, variant = 'galaxy' } = opts;
   let gl;
   try { gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true }) || canvas.getContext('experimental-webgl'); }
   catch { return null; }

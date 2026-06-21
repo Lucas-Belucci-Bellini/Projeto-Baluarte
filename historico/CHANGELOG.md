@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-21
 
+### Redesign #246 — herói WebGL reativo ao universo
+- 🎨 Os acentos do **herói 3D** (campo de partículas + core + anéis) agora **seguem a skin de universo** por padrão — novo `heroSkinColors()` lê `--color-cyan`/`--color-magenta`, igual à atmosfera global (#281). Trocar de universo recolore os heróis **junto** com o fundo → coesão total (DOOM = vermelho/laranja, etc.).
+- Páginas que passam `accent`/`accent2` explícitos (biblioteca, jogos, git-nexus-gate) **mantêm** a cor própria. `home`/`perfil` deixaram de fixar cyan/magenta e agora seguem a skin (com fallback Baluarte).
+- ✅ Verificado: default inalterado (cyan/magenta); DOOM recolore o herói (`--color-cyan` → `#e01510`); sem erros de console em home/perfil/universo. Build limpo.
+- 🛡️ Backup: `backup/2026-06-21-pre-merge-hero-universe`.
+
 ### Redesign #246 — atmosfera global reativa ao universo
 - 🎨 O fundo imersivo global (auroras + raios + grid HUD, em toda página) agora **segue a skin de universo ativa**: as cores saem de `--color-cyan`/`--color-magenta` (definidas pelo `universe-theme.js`) via `color-mix`, então **trocar de universo recolore a atmosfera inteira** — DOOM vira vermelho/laranja, Halo azul/verde, Cyberpunk magenta/ciano… Antes eram cores fixas (cyan/magenta).
 - 🛡️ Fallbacks reproduzem o visual padrão (Baluarte `#00f0ff`/`#ff00aa`) onde a var não existir; `color-mix` já é usado no projeto (suporte ok). Verificado: default inalterado (`#00f0ff`), DOOM recolore (`#e01510`). `prefers-reduced-motion` já congela as animações da atmosfera.

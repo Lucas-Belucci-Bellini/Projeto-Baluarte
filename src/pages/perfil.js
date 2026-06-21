@@ -8,7 +8,7 @@
 
 import '../styles/perfil.css';
 import { h } from '../utils/helpers.js';
-import { createHeroWebGL } from '../utils/hero-webgl.js';
+import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
@@ -98,8 +98,8 @@ export function perfilPage() {
 
   /* fundo 3D nativo: variante 'scope' (mira/HUD, ref. Heart Health HUD #262),
    * com fallback 2D e auto-limpeza ao trocar de rota. */
-  let pfFx = createHeroWebGL(scopeCanvas, { accent: '#00f0ff', accent2: '#ff00aa', variant: 'scope' });
-  if (!pfFx) pfFx = createHeroField(scopeCanvas, { accent: '#00f0ff', accent2: '#ff00aa' });
+  let pfFx = createHeroWebGL(scopeCanvas, { variant: 'scope' });   // segue o universo ativo (#246)
+  if (!pfFx) pfFx = createHeroField(scopeCanvas, heroSkinColors());
   pfFx.start();
   if (typeof MutationObserver !== 'undefined') {
     const mo = new MutationObserver(() => {

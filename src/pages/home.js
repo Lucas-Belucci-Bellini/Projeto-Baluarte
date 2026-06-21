@@ -9,7 +9,7 @@
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
-import { createHeroWebGL } from '../utils/hero-webgl.js';
+import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
 import { mountSpline } from '../utils/spline-embed.js';
 import { sceneFor } from '../data/spline-scenes.js';
@@ -73,8 +73,8 @@ function buildHero(onCleanup, operador, sceneUrl) {
       h('div', { className: 'hv2-hud__br' }, 'SEC · NÍVEL ÔMEGA')),
     inner);
 
-  let fx = createHeroWebGL(canvas, { accent: '#00f0ff', accent2: '#ff00aa' });
-  if (!fx) fx = createHeroField(canvas, { accent: '#00f0ff', accent2: '#ff00aa' });
+  let fx = createHeroWebGL(canvas);                       // segue o universo ativo (#246)
+  if (!fx) fx = createHeroField(canvas, heroSkinColors());
   fx.start();
   onCleanup(() => fx.destroy());
 

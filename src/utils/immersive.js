@@ -10,7 +10,7 @@
  */
 
 import { h, cx } from './helpers.js';
-import { createHeroWebGL } from './hero-webgl.js';
+import { createHeroWebGL, heroSkinColors } from './hero-webgl.js';
 import { createHeroField } from './hero3d.js';
 import { mountSpline } from './spline-embed.js';
 import { sceneFor } from '../data/spline-scenes.js';
@@ -19,9 +19,10 @@ const REDUCED = typeof matchMedia !== 'undefined'
   && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function buildImmersiveHero(opts = {}) {
+  const _skin = heroSkinColors();
   const {
     kicker = '', title = '', sub = '', desc = '', ctas = [],
-    accent = '#00f0ff', accent2 = '#ff00aa', variant = 'galaxy',
+    accent = _skin.accent, accent2 = _skin.accent2, variant = 'galaxy',
     sceneKey = '', query = null, hudLeft = '', hudRight = ''
   } = opts;
 
