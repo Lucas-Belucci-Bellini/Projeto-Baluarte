@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — efeitos: "power-on" no herói + parallax mais vivo
+- ⚡ **Animação de entrada ("power-on")**: todo herói WebGL agora **liga** ao montar — ~900ms de zoom-in (a câmera afasta e mergulha) + fade-in de brilho (novo uniform `uIntensity` no shader, ease cúbico). Dá um arranque cinematográfico em cada troca de página. `prefers-reduced-motion` entra direto no estado final.
+- 🖱️ **Parallax do ponteiro mais forte** (faixa ampliada) + **deriva sutil** (sin/cos lento) pra cena respirar sozinha mesmo sem mouse.
+- 🌐 Vale pra **todas** as cenas (galaxy/planet/reactor/helix/scope), em todos os flagships, de graça.
+- ✅ Build limpo; estado final conferido no navegador (home Spline + universo planet em brilho cheio após o intro).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-hero-fx`.
+
 ### Redesign #246 — novas variantes 3D (helix / scope) + espalhadas pelos flagships
 - 🧬 **`hero-webgl.js` +2 variantes**: **`helix`** (dupla hélice/DNA com degraus, girando) e **`scope`** (anéis concêntricos + graduação + mira, varrendo no próprio plano via `rotZ`). Junto com galaxy/planet/reactor, são **5 tipos** de cena nativa.
 - 🗂️ **Distribuídas pra dar variedade**: `/biblioteca` → **helix** (fios narrativos), `/arsenal` → **scope** (mira/alvo), `/ferramentas` → **reactor**. `/universo` planet e Núcleo de IA reactor seguem.

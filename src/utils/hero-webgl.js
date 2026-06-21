@@ -51,11 +51,11 @@ void main() {
 const FRAG = `
 precision mediump float;
 varying vec3 vColor; varying float vDepth;
-uniform float uIsLine;
+uniform float uIsLine; uniform float uIntensity;
 void main() {
   float a = 1.0;
   if (uIsLine < 0.5) { vec2 uv = gl_PointCoord - 0.5; a = smoothstep(0.5, 0.0, length(uv)); }
-  gl_FragColor = vec4(vColor * vDepth, a * vDepth);
+  gl_FragColor = vec4(vColor * vDepth * uIntensity, a * vDepth * uIntensity);
 }`;
 
 function hexToRGB(h) {
@@ -212,7 +212,8 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
     uMVP: gl.getUniformLocation(prog, 'uMVP'),
     uScale: gl.getUniformLocation(prog, 'uScale'),
     uPoint: gl.getUniformLocation(prog, 'uPoint'),
-    uIsLine: gl.getUniformLocation(prog, 'uIsLine')
+    uIsLine: gl.getUniformLocation(prog, 'uIsLine'),
+    uIntensity: gl.getUniformLocation(prog, 'uIntensity')
   };
 
   const cA = hexToRGB(accent), cB = hexToRGB(accent2);
@@ -248,6 +249,7 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
   /* ----- estado/loop ----- */
   let raf = 0, running = false, dead = false, w = 0, h = 0, dpr = 1, tt = 0;
   let everConnected = false, waitFrames = 0;
+  let introStart = 0;                       // animação de "power-on" ao montar
   const ptr = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
   let scroll = 0, scrollTarget = 0;
   let camY = 0.4, camX = -0.18;
@@ -273,11 +275,19 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
     scroll += (scrollTarget - scroll) * 0.08;
     tt += 0.0045;
 
-    camY = 0.4 + (ptr.x - 0.5) * 1.1;
-    camX = -0.18 + (ptr.y - 0.5) * 0.7;
-    const dist = 6.2 + scroll * 5.5;       // scroll mergulha a câmera
+    /* "power-on": ~900ms zoom-in + fade-in ao montar (REDUCED entra direto) */
+    if (!introStart) introStart = performance.now();
+    const intro = REDUCED ? 1 : Math.min(1, (performance.now() - introStart) / 900);
+    const ease = 1 - Math.pow(1 - intro, 3);
+    const intensity = 0.12 + 0.88 * ease;
+
+    /* parallax do ponteiro (mais forte) + deriva sutil pra cena respirar sozinha */
+    camY = 0.4 + Math.sin(tt * 0.3) * 0.06 + (ptr.x - 0.5) * 1.3;
+    camX = -0.18 + Math.cos(tt * 0.24) * 0.04 + (ptr.y - 0.5) * 0.85;
+    const dist = (6.2 + scroll * 5.5) * (1 + (1 - ease) * 0.9);   // intro afasta e mergulha
 
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(loc.uIntensity, intensity);
 
     const proj = M.persp(1.05, w / h, 0.1, 60);
     const view = M.mul(M.transZ(-dist), M.mul(M.rotX(camX), M.rotY(camY)));
