@@ -10,12 +10,15 @@
 }
 .bx-atmosphere > div { position: absolute; inset: -12%; }
 
-/* ---- auroras volumétricas que respiram ---- */
+/* ---- auroras volumétricas que respiram ----
+   As cores seguem o UNIVERSO ativo (--color-cyan/--color-magenta vêm do
+   universe-theme.js): trocar a skin recolore a atmosfera inteira. Os fallbacks
+   reproduzem o visual padrão (Baluarte) onde a var não existir. */
 .bx-atmosphere__aurora {
   background:
-    radial-gradient(38% 44% at 78% 10%, rgba(0,240,255,0.16), transparent 60%),
-    radial-gradient(42% 48% at 12% 90%, rgba(255,0,170,0.14), transparent 62%),
-    radial-gradient(34% 40% at 50% 52%, rgba(157,123,255,0.10), transparent 64%);
+    radial-gradient(38% 44% at 78% 10%, color-mix(in srgb, var(--color-cyan, #00f0ff) 16%, transparent), transparent 60%),
+    radial-gradient(42% 48% at 12% 90%, color-mix(in srgb, var(--color-magenta, #ff00aa) 14%, transparent), transparent 62%),
+    radial-gradient(34% 40% at 50% 52%, color-mix(in srgb, color-mix(in srgb, var(--color-cyan, #00f0ff), var(--color-magenta, #ff00aa)) 10%, transparent), transparent 64%);
   filter: blur(10px);
   animation: bx-aurora 34s ease-in-out infinite alternate;
 }
@@ -31,9 +34,9 @@
   opacity: 0.18; mix-blend-mode: screen;
   background: repeating-conic-gradient(from var(--bx-ray) at 50% -6%,
     transparent 0deg 5deg,
-    rgba(120,245,255,0.16) 5deg 6deg,
+    color-mix(in srgb, var(--color-cyan, #00f0ff) 18%, transparent) 5deg 6deg,
     transparent 6deg 12deg,
-    rgba(157,123,255,0.10) 12deg 13deg,
+    color-mix(in srgb, color-mix(in srgb, var(--color-cyan, #00f0ff), var(--color-magenta, #ff00aa)) 14%, transparent) 12deg 13deg,
     transparent 13deg 19deg);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
   mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
@@ -44,8 +47,8 @@
 /* ---- grid HUD fino à deriva ---- */
 .bx-atmosphere__grid {
   background-image:
-    linear-gradient(rgba(0,240,255,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,240,255,0.05) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-cyan, #00f0ff) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-cyan, #00f0ff) 5%, transparent) 1px, transparent 1px);
   background-size: 54px 54px;
   -webkit-mask-image: radial-gradient(125% 95% at 50% 0%, #000 8%, transparent 76%);
   mask-image: radial-gradient(125% 95% at 50% 0%, #000 8%, transparent 76%);

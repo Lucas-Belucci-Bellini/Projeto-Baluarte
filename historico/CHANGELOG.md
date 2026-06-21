@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-21
 
+### Redesign #246 — atmosfera global reativa ao universo
+- 🎨 O fundo imersivo global (auroras + raios + grid HUD, em toda página) agora **segue a skin de universo ativa**: as cores saem de `--color-cyan`/`--color-magenta` (definidas pelo `universe-theme.js`) via `color-mix`, então **trocar de universo recolore a atmosfera inteira** — DOOM vira vermelho/laranja, Halo azul/verde, Cyberpunk magenta/ciano… Antes eram cores fixas (cyan/magenta).
+- 🛡️ Fallbacks reproduzem o visual padrão (Baluarte `#00f0ff`/`#ff00aa`) onde a var não existir; `color-mix` já é usado no projeto (suporte ok). Verificado: default inalterado (`#00f0ff`), DOOM recolore (`#e01510`). `prefers-reduced-motion` já congela as animações da atmosfera.
+- 🛡️ Backup: `backup/2026-06-21-pre-merge-atmosphere-universe`.
+
 ### Redesign #246 — transição de entrada de página (route transition)
 - 🎞️ Toda navegação agora faz a tela nova **deslizar pro lugar** (leve subida + escala, 480ms) — polish global que dá continuidade entre rotas. Disparo automático (o router cria um elemento novo por rota) no ponto único `renderPage` (`src/layout/shell.js`).
 - 🛡️ **Só `transform` (sem `opacity`)** de propósito: em páginas pesadas (carregar o chunk + montar o herói WebGL) a thread principal trava por um instante e atrasaria o início da animação; animando `opacity` a partir de 0, a tela ficaria **em branco** até liberar. Com só transform a página fica **sempre 100% visível** (no pior caso aparece 18px abaixo e desliza). Respeita `prefers-reduced-motion`.
