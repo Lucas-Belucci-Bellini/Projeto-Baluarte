@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-20
 
+### Redesign #246 — onda de energia (pulso) no herói WebGL
+- 💓 **Pulso de energia**: um anel de brilho sai do núcleo pra fora (~3.4s/pulso), realçando as partículas/anéis por onde passa — feito no vertex shader (uniform `uWave` + `smoothstep` no raio), com leve aumento de tamanho do ponto no anel. Dá um "batimento" vivo à cena.
+- 🌐 Vale pra **todas** as 5 variantes (galaxy/planet/reactor/helix/scope) sem custo extra (1 uniform por frame). `prefers-reduced-motion` congela num quadro.
+- ✅ Build limpo; conferido no navegador (universo, sem erros de console).
+- 🛡️ Backup: `backup/2026-06-20-pre-merge-hero-pulse`.
+
 ### Redesign #246 — efeitos: "power-on" no herói + parallax mais vivo
 - ⚡ **Animação de entrada ("power-on")**: todo herói WebGL agora **liga** ao montar — ~900ms de zoom-in (a câmera afasta e mergulha) + fade-in de brilho (novo uniform `uIntensity` no shader, ease cúbico). Dá um arranque cinematográfico em cada troca de página. `prefers-reduced-motion` entra direto no estado final.
 - 🖱️ **Parallax do ponteiro mais forte** (faixa ampliada) + **deriva sutil** (sin/cos lento) pra cena respirar sozinha mesmo sem mouse.
