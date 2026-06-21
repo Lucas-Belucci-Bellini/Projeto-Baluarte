@@ -121,3 +121,23 @@
 .stagger-4 { animation-delay: 240ms; }
 .stagger-5 { animation-delay: 300ms; }
 .stagger-6 { animation-delay: 360ms; }
+
+/* Transição de ENTRADA de página (#246) — toda navegação faz a tela nova
+   "deslizar" pro lugar (leve subida + escala). Como o router cria um elemento
+   novo a cada rota, a animação dispara sozinha uma vez.
+   IMPORTANTE: é só TRANSFORM (sem opacity). Durante a navegação de páginas
+   pesadas (carregar o chunk + montar o herói WebGL) a thread principal trava
+   por um instante e atrasa o início da animação; se animássemos opacity a
+   partir de 0, a tela ficaria EM BRANCO até a thread liberar. Com só transform
+   a página fica sempre 100% visível — no pior caso aparece 18px abaixo e desliza
+   pro lugar quando a thread libera. Respeita prefers-reduced-motion. */
+@keyframes routeEnter {
+  from { transform: translate3d(0, 18px, 0) scale(0.992); }
+  to   { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .route-enter {
+    animation: routeEnter 480ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    will-change: transform;
+  }
+}

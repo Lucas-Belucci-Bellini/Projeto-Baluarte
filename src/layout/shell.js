@@ -59,6 +59,7 @@ export function mountShell(rootEl) {
 export function renderPage(pageEl, route) {
   if (!mainInner) return;
   mount(mainInner, pageEl);              // troca o conteúdo do <main> (descarta a página antiga)
+  if (pageEl && pageEl.classList) pageEl.classList.add('route-enter'); // transição de entrada (#246)
   revealScan(pageEl, route);             // anima os blocos entrando na viewport (scroll-reveal)
   if (route) {
     updateActiveNav(route);              // realça o item ativo na sidebar

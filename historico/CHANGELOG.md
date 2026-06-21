@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-21
 
+### Redesign #246 — transição de entrada de página (route transition)
+- 🎞️ Toda navegação agora faz a tela nova **deslizar pro lugar** (leve subida + escala, 480ms) — polish global que dá continuidade entre rotas. Disparo automático (o router cria um elemento novo por rota) no ponto único `renderPage` (`src/layout/shell.js`).
+- 🛡️ **Só `transform` (sem `opacity`)** de propósito: em páginas pesadas (carregar o chunk + montar o herói WebGL) a thread principal trava por um instante e atrasaria o início da animação; animando `opacity` a partir de 0, a tela ficaria **em branco** até liberar. Com só transform a página fica **sempre 100% visível** (no pior caso aparece 18px abaixo e desliza). Respeita `prefers-reduced-motion`.
+- ✅ Verificado no navegador: `opacity` = 1 durante toda a navegação (home→universo/poder-militar/regex), `transform` assenta na identidade, conteúdo intacto, sem erros de console.
+- 🛡️ Backup: `backup/2026-06-21-pre-merge-route-transition`.
+
 ### JARVIS ↔ Nexus #231 — skills de NÍVEL DE FUNÇÃO
 - 🧠 **5 novas skills** do JARVIS sobre o **grafo de chamadas** (`codemap-symbols.json`: 1137 funções / 2457 chamadas), além das 5 por arquivo:
   - `nexus_fn_impact` — o que quebra se mudar a função X (chamadores diretos + transitivos) + nível de risco;
