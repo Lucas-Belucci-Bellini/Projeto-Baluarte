@@ -11,99 +11,153 @@
 >   nativos) + as skills/MCP do gitnexus; roda local na porta **4747**.
 > - **Build/teste do app desktop** — Electron, módulos nativos, instaladores por SO.
 >
-> Então a divisão de trabalho (ideia do operador) é: **a sessão remota faz o web
-> verificável + prepara; uma sessão LOCAL pega este doc e executa o que depende
-> das skills/da máquina.**
+> Divisão (ideia do operador): **a sessão remota faz o web verificável + prepara;
+> uma sessão LOCAL pega este doc e executa o que depende das skills/da máquina.**
 
 ## Como usar (sessão local)
 
 1. Abra este repo no **Claude Code local** (onde as skills estão instaladas).
 2. Leia este doc + as issues guarda-chuva: **#238** (app completo / site leve),
    **#222** (app desktop M0→M6), **#231** (JARVIS ↔ Git Nexus skills),
-   **#195** (redesign 3D/imersivo), **#232** (runtimes próprios / M4).
-3. Execute as tarefas abaixo invocando as skills (`/<skill>`) onde indicado.
+   **#195** (redesign 3D/imersivo), **#232** (runtimes próprios / M4) e o
+   **roadmap #240** (a fila remota está zerada; o que sobra é tudo daqui).
+3. Execute as tarefas invocando as skills (`/<skill>`) onde indicado.
 
 ---
 
 ## A. Design & animação — skills do `claudedesignskills`
 
-> **Regra do mega-plano (#238):** **web = leve.** No site, use só técnicas leves
+> **Regra do mega-plano (#238):** **web = leve.** No site, só técnicas leves
 > (GSAP ScrollTrigger, Anime.js sutil, Lottie pequeno). **3D pesado** (Three.js,
-> Vanta, R3F) entra **só no app**, atrás de `window.baluarte.native`.
+> Vanta, R3F, post-processing) entra **só no app**, atrás de `window.baluarte.native`.
+>
+> O que o remoto já fez no web (não refazer): herói WebGL com **5 variantes** +
+> power-on + pulso de energia + parallax/deriva, **atmosfera global + herói
+> reativos ao universo** (recolor por skin), **transição de entrada de página**,
+> scroll-reveal global. As ondas 2 e 3 do redesign #195 já entraram (#242/#243).
 
-- [ ] **Refinar o scroll-reveal** (`src/utils/scroll-reveal.js` já existe, na mão):
-      usar a skill **GSAP ScrollTrigger** pra parallax sutil e reveals encadeados —
-      sem trocar por lib pesada no web.
-- [ ] **Home — hero 3D do app**: skill **Three.js** pra uma cena mais rica **só no
-      app** (`window.baluarte.native`); na web continua o WebGL leve atual.
-- [ ] **Microinterações**: **Anime.js** / **Lottie** em ícones, CTAs e badges
-      (leves) nas páginas já redesenhadas (/perfil, /sobre, Seção Militar).
-- [ ] **Transições de página**: avaliar **Barba.js** — provavelmente **app-only**
-      (pesa). Medir antes.
-- [ ] Continuar as **ondas do redesign #195** com as skills: Onda 2 (Geo/Tático:
-      radar, mapa, geopulse, triangulação, visão — usar as skills de canvas/HUD),
-      Onda 3 (Elites, Dossiê, Arsenal, Enciclopédia).
+- [ ] **GSAP ScrollTrigger** refina o `src/utils/scroll-reveal.js` (hoje na mão,
+      IntersectionObserver): parallax sutil + reveals encadeados, sem trocar por
+      lib pesada no web.
+- [ ] **Three.js** — cena 3D mais rica no herói **só no app** (`window.baluarte.native`);
+      a web mantém o WebGL leve atual.
+- [ ] **Microinterações** Anime.js / Lottie leves em ícones, CTAs e badges das
+      flagships (/perfil, /sobre, Seção Militar).
+- [ ] **(Opcional, app-only) Bloom/glow** no herói WebGL via post-processing (FBO +
+      blur pass) — medir custo antes; é o "wow" 3D que falta e pesa demais pra web.
 
-## B. App / Git Nexus real — M3c & M4 (precisa da máquina)
+## B. App / Git Nexus real — M3c · M3d · M4 (precisa da máquina)
 
-> O launcher **já é um "cliente bridge"** do gitnexus (M3a/M3b: detecta a 4747,
-> consome o grafo via a ponte IPC). Falta o lado nativo. Refs no README do
-> upstream: `gitnexus serve` sobe um servidor HTTP na 4747 que a UI auto-detecta.
+> O launcher já é um "cliente bridge" do gitnexus (M3a/M3b: detecta a 4747,
+> consome o grafo via a ponte IPC). Falta validar o lado nativo na máquina.
 
-- [x] **M3c — o app sobe o motor sozinho (CÓDIGO PRONTO no remoto).**
-      `desktop/src/nexus.js` foi reescrito: `maybeStart()` agora sobe `gitnexus
-      serve --port 4747` por **padrão**, numa cadeia override→vendored→global→npx
-      com readiness no `/api/health` (detalhes em `desktop/README.md`). Desliga
-      com `BALUARTE_NEXUS_DISABLE=1`.
-      - **Falta (precisa da máquina):** rodar e validar de verdade. Passos:
-        1. `npm i -g gitnexus` (+ `GITNEXUS_SKIP_OPTIONAL_GRAMMARS=1`) **ou** deixe
-           o fallback `npx` baixar.
-        2. `gitnexus analyze` num repo (registra em `~/.gitnexus/registry.json`).
-        3. Abra o launcher (`cd desktop && npm start`).
-      - **Aceite:** em `/git-nexus`, badge **verde** + orbe no **grafo real**.
-        Alternativa de empacotamento: imagem Docker `ghcr.io/abhigyanpatwari/gitnexus` (4747).
-- [ ] **M3d — todas as 16 tools no app (próximo, dá pra começar no remoto).**
-      Plugar `context/impact/detect_changes/rename/query/cypher/list_repos` + grupo
-      na ponte IPC via a ponte **MCP-over-HTTP** (`POST /api/mcp`, JSON-RPC) + os
-      REST de leitura (`/api/graph`, `/api/search`, `/api/processes`,
-      `/api/clusters`). Cliente `git-nexus-client.js` com fallback pro codemap na web.
-- [ ] **M4 — runtimes próprios** (RFC #232): provisionar Node 22 + Python 3.11
-      numa pasta do app (preflight), pra zero-setup; nunca tocar no sistema.
-- [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` no repo
-      + `npx gitnexus setup` → dá ao agente os 16 tools MCP de grafo (context,
-      impact, rename…) pra trabalhar com consciência arquitetural.
-- [ ] **Publicar releases**: subir a versão em `desktop/package.json` →
-      Actions → **Desktop Release** → Run workflow → instaladores Win/Mac/Linux.
+### M3c — o app sobe o motor sozinho · **código em `main`, falta o aceite**
 
-## C. Mega-plano #238 — app completo / site leve (qualquer sessão)
+`desktop/src/nexus.js` já sobe `gitnexus serve --port 4747` por padrão (cadeia
+override → vendored → bin global → npx, readiness no `/api/health`).
 
-- [ ] **Fase 1 — medir** o bundle web (rollup-visualizer): achar os chunks
-      pesados (git-nexus ~441 KB, arsenal-expandido ~420 KB, jarvis-brain, ML).
-- [ ] **Fase 2 — gate + code-split**: pôr as features pesadas (IA, Git Nexus)
-      atrás de `window.baluarte.native`; no web puro vira teaser "baixe o app" e
-      o chunk pesado **não é baixado**. Piloto sugerido: Git Nexus.
+```sh
+# 1. ter o motor (escolha UMA):
+npm i -g gitnexus                                   # (A) global
+#   (B) nada: o fallback npx baixa sozinho
+#   (C) docker run -p 4747:4747 ghcr.io/abhigyanpatwari/gitnexus
+
+# 2. analisar UM repo (registra em ~/.gitnexus/registry.json):
+cd /caminho/dum/repo && gitnexus analyze
+
+# 3. (sanity, se já houver motor no ar):
+curl -s http://127.0.0.1:4747/api/health           # → {"status":"ok"}
+
+# 4. abrir o launcher (ele sobe o motor sozinho se não houver um no ar):
+cd desktop && npm start
+```
+
+**Aceite:**
+- [ ] `/git-nexus` no app: badge **VERDE** + orbe no **grafo real** (não o codemap estático).
+- [ ] DevTools → `await window.baluarte.invoke('nexus:status')` → `{ available:true, spawned:true | via:'externo' }`.
+- [ ] `BALUARTE_NEXUS_DISABLE=1 npm start` → cai no teaser/codemap (confirma o gate).
+
+Flags: `BALUARTE_NEXUS_CMD` (override do comando) · `BALUARTE_NEXUS_DISABLE=1` (não subir).
+
+### M3d — tools profundas no app · **código no PR #247 (draft), falta o aceite**
+
+O código vive na branch **`claude/git-nexus-m3d-tools` (PR #247)** — **não está em `main`**.
+Adiciona `src/utils/git-nexus-client.js` (com fallback pro codemap na web), handlers
+IPC `nexus:query/cypher/fluxos/clusters`, a ponte **MCP-over-HTTP** (`POST /api/mcp`,
+JSON-RPC) e os REST de leitura (`/api/graph`, `/api/search`, `/api/processes`, `/api/clusters`).
+
+```sh
+# 1. motor no ar + repo analisado (M3c acima)
+# 2. pegar a branch do PR #247:
+git fetch origin claude/git-nexus-m3d-tools && git checkout claude/git-nexus-m3d-tools
+# 3. rodar o app:
+cd desktop && npm start
+# 4. (sanity) o MCP responde?
+curl -s -X POST http://127.0.0.1:4747/api/mcp -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+**Aceite:**
+- [ ] No Console do `/git-nexus` (no app), `query` / `cypher` / `fluxos` / `clusters`
+      devolvem **dados reais** do motor; na web caem no codemap/teaser sem quebrar.
+- [ ] Validado → tirar o draft e **mergear o #247**.
+- [ ] Depois: plugar as 16 tools profundas de grafo via o mesmo `/api/mcp`.
+
+### M4 — runtimes próprios · **greenfield** (RFC #232)
+
+Objetivo: zero-setup — o app provê Node 22 + Python 3.11 numa pasta dele, **sem
+tocar no sistema**.
+
+- [ ] Preflight no `desktop/` que detecta runtimes em `app.getPath('userData')/runtimes/…`;
+      se faltar, baixa o tarball oficial por SO/arch e extrai lá.
+- [ ] Apontar o spawn do gitnexus (`desktop/src/nexus.js`) pro Node embutido quando existir.
+- [ ] Python só se alguma tool do motor exigir (checar o upstream).
+- **Aceite:** numa máquina limpa (sem Node/Python globais), abrir o app → `/git-nexus`
+  verde **sem nenhum `npm i -g`**.
+
+### Outros (local)
+
+- [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` + `npx gitnexus
+      setup` → dá ao agente os 16 tools MCP de grafo (context, impact, rename…).
+- [ ] **Publicar releases**: bump em `desktop/package.json` → Actions → **Desktop
+      Release** → Run workflow → instaladores Win/Mac/Linux.
+
+## C. Mega-plano #238 — app completo / site leve
+
+- [x] **Fase 1 — medir** ✅ (comentário no #238): boot web ~111 kB gz; pesados lazos por rota.
+- [x] **Fase 2 — gate + CSS split** ✅ (#278): Git Nexus atrás de `window.baluarte.native`
+      (web = teaser; chunk pesado **438 KB / ~49 kB gz** fora do boot) + CSS split por
+      rota (boot CSS **55 → 29.5 kB gz**). Verificado no navegador.
 
 ---
 
 ## O que a sessão REMOTA já deixou pronto (não refazer)
 
-- **App desktop** M0→M3b: launcher carrega a produção, auto-update, casca
-  (splash/tray/deep-link), ponte IPC allowlisted, detecção do motor (M3a) e
-  consumo do grafo real (M3b). **Release v0.1.0 publicada.**
+- **App desktop** M0→M3c: launcher carrega a produção, auto-update, casca
+  (splash/tray/deep-link), ponte IPC allowlisted, detecção do motor (M3a), grafo
+  real (M3b) e **autostart do motor** (M3c, código). **Release v0.1.0 publicada.**
 - **Página `/baixar`** (detecta SO, baixa o instalador certo).
-- **JARVIS ↔ Git Nexus**: 5 skills (`nexus_impact/context/path/deps/rename`).
-- **Redesign #195**: /perfil (Dossiê do Operador), /sobre (timeline), e as **12
-  páginas da Seção Militar** (via `militar.css`).
+- **JARVIS ↔ Git Nexus** (#231): **5 skills por arquivo** (`nexus_impact/context/path/
+  deps/rename`) + **5 skills por função** (`nexus_fn_impact/context/path/deps/hot`, #279,
+  sobre `codemap-symbols.json` — 1137 funções).
+- **Redesign #195/#246**: /perfil, /sobre, **12 págs da Seção Militar**, Ondas 2 (#242)
+  e 3 (#243), páginas leves (#244); herói WebGL (5 variantes + power-on + pulso +
+  parallax), **atmosfera + herói reativos ao universo** (#281/#282), **transição de
+  entrada de página** (#280), CSS split (#278).
 - **Scroll-reveal global** (`src/utils/scroll-reveal.js`) — base pra GSAP refinar.
-- **Logo** trocado pelo selo vermelho (favicon, boot, sidebar, header, ícone do app).
-- RFCs/issues: #222, #231, #232, #238.
+- **Logo** selo vermelho (favicon, boot, sidebar, header, ícone do app).
+- RFCs/issues: #222, #231, #232, #238 · Roadmap **#240** (fila remota zerada).
 
 ## Arquivos-chave
 
 | Arquivo | O quê |
 |---|---|
-| `desktop/src/nexus.js` | detecção + spawn opt-in do motor (M3c parte daqui) |
+| `desktop/src/nexus.js` | detecção + autostart do motor (M3c) — flags `BALUARTE_NEXUS_*` |
 | `desktop/src/ipc.js` | ponte allowlisted (handlers `nexus:*`) |
-| `src/utils/jarvis-nexus-tools.js` | skills do Nexus no JARVIS |
+| `src/utils/git-nexus-client.js` | **(no PR #247)** cliente das tools + fallback codemap |
+| `src/utils/jarvis-nexus-tools.js` | skills do Nexus no JARVIS (arquivo **e função**) |
+| `src/utils/git-nexus-engine.js` | motor de grafo em JS (serve arquivo e função) |
 | `src/utils/scroll-reveal.js` | base do scroll-reveal (GSAP refina) |
+| `src/utils/hero-webgl.js` | herói WebGL (variantes, pulso, `heroSkinColors()` p/ universo) |
+| `src/styles/atmosphere.css` | atmosfera global reativa ao universo |
 | `GitNexus-1.6.7/` | cópia vendorizada do motor (excluída do Vercel) |
