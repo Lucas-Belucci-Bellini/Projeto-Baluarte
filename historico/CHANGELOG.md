@@ -6,6 +6,17 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-21
+
+### Mega-plano #238 · Fase 2 — CSS split (boot mais leve) + verificação do gate
+- ✂️ **CSS code-split por rota**: o boot carregava **TODAS** as ~83 folhas via `<link>` no `index.html` (1 bundle de **398 KB / 55 KB gz** em toda página). Agora o boot só traz a **fundação + shell + componentes + folhas realmente compartilhadas**; cada folha específica de página é importada pelo **próprio módulo da página** (`import '../styles/x.css'`) e o Vite faz o split — ela sai do caminho inicial e só baixa quando a rota abre.
+  - **Boot CSS: 398 KB → 194 KB raw · 55 KB → 29.5 KB gz (−46%)**, em *toda* navegação. 42 folhas movidas pra 42 chunks por rota.
+  - Folhas **multi-página** (militar, cripto, calc, fase17–19, arsenal, elites, biblioteca, logic-sim, portas, morse, editor, terminal, gráficos, símbolos…) ficaram **globais** de propósito (mover quebraria páginas que dependem delas).
+  - 🗑️ Removida `home3d.css` (órfã — nenhum módulo referenciava `.page-home3d`/`.h3-*`).
+  - ✅ Conferido no navegador sem regressão: home, ferramentas, regex, git-nexus (teaser), calculadoras, jogos e o controle poder-militar (militar.css global) — todos estilizados.
+- 🔒 **Gate do Núcleo de IA verificado** (já estava no código): a rota `/git-nexus` passa pelo gate leve; o chunk pesado (`git-nexus` **438 KB / ~49 KB gz**) **não** é referenciado pelo entry do boot e só baixa no app. O `syncRepoMemories` do boot está gateado por `isNative()`. Fase 2 do #238 fechada.
+- 🛡️ Backup: `backup/2026-06-21-pre-merge-css-split`.
+
 ## 2026-06-20
 
 ### Redesign #246 — onda de energia (pulso) no herói WebGL

@@ -10,6 +10,7 @@
  *   - Botões de exemplos rápidos
  */
 
+import '../styles/tabela-verdade.css';
 import { h, cx, debounce, mount, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { setStatus } from '../utils/baluarte-status.js';

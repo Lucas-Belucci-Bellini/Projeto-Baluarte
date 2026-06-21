@@ -2,6 +2,7 @@
  * Página /roadmap — Roadmap do Projeto Baluarte + Jarvis.
  */
 
+import '../styles/roadmap.css';
 import { h } from '../utils/helpers.js';
 
 const NIVEIS_JARVIS = [

@@ -7,6 +7,7 @@
  * completos em markdown ficam em reports/cambio/.
  */
 
+import '../styles/dolar.css';
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import cambioUrl from '../data/cambio-historico.json?url';

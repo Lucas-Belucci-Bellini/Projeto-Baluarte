@@ -10,6 +10,7 @@
  * escondê-la — só quem tem a senha consegue ler o texto revelado.
  */
 
+import '../styles/esteganografia.css';
 import { h, mount, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { setStatus } from '../utils/baluarte-status.js';

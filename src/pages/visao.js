@@ -8,6 +8,7 @@
  * Tab 6: Claridade Noturna (amplificação de exposição → aspecto diurno)
  */
 
+import '../styles/visao.css';
 import { h } from '../utils/helpers.js';
 
 /* ══════════════════════════════════════

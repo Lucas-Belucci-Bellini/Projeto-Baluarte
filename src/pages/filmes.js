@@ -5,6 +5,7 @@
  * embute o vídeo via Google Drive.
  */
 
+import '../styles/filmes.css';
 import { h, cx, normalize, debounce, empty } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { FILMES, FILMES_TOTAL, filmeEmbedUrl } from '../data/filmes.js';

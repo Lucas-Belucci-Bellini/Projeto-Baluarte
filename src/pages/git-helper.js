@@ -4,6 +4,7 @@
  * Cheatsheet de comandos Git + modelos de .gitignore. Clicar copia.
  */
 
+import '../styles/git-helper.css';
 import { h } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { GIT_SECTIONS, GITIGNORE_TEMPLATES } from '../data/git-helper.js';

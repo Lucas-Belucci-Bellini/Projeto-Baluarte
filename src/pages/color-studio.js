@@ -5,6 +5,7 @@
  * gradiente e verificador de contraste WCAG. Sem dependências.
  */
 
+import '../styles/color-studio.css';
 import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

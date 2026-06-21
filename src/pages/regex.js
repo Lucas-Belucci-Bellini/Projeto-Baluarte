@@ -7,6 +7,7 @@
  * - Exemplos prontos
  */
 
+import '../styles/regex.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

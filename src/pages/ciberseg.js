@@ -4,6 +4,7 @@
  * Catálogo de ataques + defesas + ferramentas com filtros e ficha.
  */
 
+import '../styles/ciberseg.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';

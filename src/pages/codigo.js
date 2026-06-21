@@ -5,6 +5,7 @@
  * rotação automática (arraste para girar), + métricas do próprio site.
  */
 
+import '../styles/codigo.css';
 import { h, empty } from '../utils/helpers.js';
 import codemap from '../data/codemap.json';
 import { codeMemoryCounts } from '../utils/jarvis-brain.js';

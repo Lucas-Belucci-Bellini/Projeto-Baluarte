@@ -5,6 +5,7 @@
  * Cada skill é uma capacidade modular descrita em markdown.
  */
 
+import '../styles/fase21.css';
 import { h, cx, empty, debounce } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

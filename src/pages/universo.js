@@ -4,6 +4,7 @@
  * Universos catalogados: lore, personagens, conexões, link para arcos.
  */
 
+import '../styles/universo.css';
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';

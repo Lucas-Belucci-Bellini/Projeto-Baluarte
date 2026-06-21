@@ -7,6 +7,7 @@
  * aí viram compartilhados e versionados. Sem backend/banco/login.
  */
 
+import '../styles/mural.css';
 import { h, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

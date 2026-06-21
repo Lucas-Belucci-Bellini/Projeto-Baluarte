@@ -5,6 +5,7 @@
  * O loop usa a IFrame API do Spotify: ao chegar perto do fim, reinicia.
  */
 
+import '../styles/musicas.css';
 import { h, empty } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';

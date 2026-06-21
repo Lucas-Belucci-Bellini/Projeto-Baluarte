@@ -4,6 +4,7 @@
  * 12 módulos do básico ao avançado, com rail de navegação + painel.
  */
 
+import '../styles/robotica.css';
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { ROBOTICA_MODULOS, ROBOTICA_TOTAL } from '../data/robotica.js';

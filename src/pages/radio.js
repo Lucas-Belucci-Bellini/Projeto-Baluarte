@@ -12,6 +12,7 @@
  * Online toca streams de internet.
  */
 
+import '../styles/radio.css';
 import { h, empty } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';

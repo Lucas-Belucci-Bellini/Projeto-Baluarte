@@ -4,6 +4,7 @@
  * (página implementada ou placeholder).
  */
 
+import '../styles/ferramentas.css';
 import { h, debounce, normalize, mount, cx } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
