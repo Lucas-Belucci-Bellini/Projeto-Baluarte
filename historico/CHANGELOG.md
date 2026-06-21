@@ -8,6 +8,17 @@ aqui o que mudou.
 
 ## 2026-06-21
 
+### JARVIS ↔ Nexus #231 — skills de NÍVEL DE FUNÇÃO
+- 🧠 **5 novas skills** do JARVIS sobre o **grafo de chamadas** (`codemap-symbols.json`: 1137 funções / 2457 chamadas), além das 5 por arquivo:
+  - `nexus_fn_impact` — o que quebra se mudar a função X (chamadores diretos + transitivos) + nível de risco;
+  - `nexus_fn_context` — quem chama X e o que X chama;
+  - `nexus_fn_path` — cadeia de chamadas A → … → B;
+  - `nexus_fn_deps` — o que X chama (transitivo);
+  - `nexus_fn_hot` — funções mais chamadas (hotspots), no projeto ou por arquivo.
+- ♻️ Reusa o **mesmo motor** (`buildGraph`/`nexusImpact`/`nexusContext`/`nexusPath`) — a forma de nó/aresta dos símbolos é igual à do codemap. Resolver de função aceita `nome`, `arquivo::nome` ou trecho; em nome ambíguo escolhe a mais chamada e avisa.
+- 📦 **App-only**: o `codemap-symbols.json` (461 KB) fica em chunk dinâmico (cockpit/JARVIS), **fora do boot da web**. Build limpo; lógica validada (`h()` = 364 afetadas/CRÍTICO; `boot → … → h` em 2 saltos; hotspots batem com `topCalled`).
+- 🛡️ Backup: `backup/2026-06-21-pre-merge-fn-skills`.
+
 ### Mega-plano #238 · Fase 2 — CSS split (boot mais leve) + verificação do gate
 - ✂️ **CSS code-split por rota**: o boot carregava **TODAS** as ~83 folhas via `<link>` no `index.html` (1 bundle de **398 KB / 55 KB gz** em toda página). Agora o boot só traz a **fundação + shell + componentes + folhas realmente compartilhadas**; cada folha específica de página é importada pelo **próprio módulo da página** (`import '../styles/x.css'`) e o Vite faz o split — ela sai do caminho inicial e só baixa quando a rota abre.
   - **Boot CSS: 398 KB → 194 KB raw · 55 KB → 29.5 KB gz (−46%)**, em *toda* navegação. 42 folhas movidas pra 42 chunks por rota.
