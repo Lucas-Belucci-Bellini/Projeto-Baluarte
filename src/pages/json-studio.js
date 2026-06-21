@@ -5,6 +5,7 @@
  * linha/coluna e estatísticas da estrutura.
  */
 
+import '../styles/json-studio.css';
 import { h, cx, empty, debounce } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

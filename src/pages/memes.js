@@ -5,6 +5,7 @@
  * dominaram a internet em 2016. Filtro por categoria + busca.
  */
 
+import '../styles/memes.css';
 import { h, cx, normalize, debounce, empty } from '../utils/helpers.js';
 import { MEMES_2016, MEME_CATEGORIES } from '../data/memes.js';
 

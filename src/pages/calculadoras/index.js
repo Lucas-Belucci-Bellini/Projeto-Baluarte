@@ -8,6 +8,7 @@
  * - Saúde (IMC, TMB, macros, FC, hidratação)
  */
 
+import '../../styles/calculadoras.css';
 import { h, cx, mount, empty } from '../../utils/helpers.js';
 import { storage } from '../../core/storage.js';
 import { financeiraPanel } from './financeira.js';

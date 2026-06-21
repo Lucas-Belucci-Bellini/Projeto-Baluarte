@@ -5,6 +5,7 @@
  *   4) Timestamp ↔ Data   5) Calculadora de Porcentagem
  */
 
+import '../styles/utilidades.css';
 import { h, empty, pad2 } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 

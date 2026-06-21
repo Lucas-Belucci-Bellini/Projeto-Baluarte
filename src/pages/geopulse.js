@@ -6,6 +6,7 @@
  * velocidade média/máxima). A trilha fica salva — dá pra fechar e continuar.
  */
 
+import '../styles/geopulse.css';
 import { h, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { createGeoTracker } from '../utils/geo-tracker.js';

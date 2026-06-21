@@ -5,6 +5,7 @@
  * Tudo fica em memória (object URLs). Não persiste entre reloads.
  */
 
+import '../styles/media.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { toast } from '../utils/toast.js';

@@ -9,6 +9,7 @@
  * Sem hardware: Mock gera 3 alvos animados pra demo.
  */
 
+import '../styles/radar.css';
 import { h, cx, empty } from '../utils/helpers.js';
 import { makeSource } from '../utils/radar-source.js';
 import { cfar2d, rangeMeters, velocityMs } from '../utils/radar-dsp.js';

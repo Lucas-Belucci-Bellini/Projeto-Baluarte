@@ -9,6 +9,7 @@
  * "Onde estou?" para classificar. JS puro; tudo salvo no navegador.
  */
 
+import '../styles/find.css';
 import { h, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { createFingerprintDB } from '../utils/fingerprint-engine.js';

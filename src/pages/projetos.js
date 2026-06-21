@@ -3,6 +3,7 @@
  * Lê src/data/projetos.json. Cada projeto também tem sua pasta em projetos/<nome>/.
  */
 
+import '../styles/projetos.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import projetosData from '../data/projetos.json';

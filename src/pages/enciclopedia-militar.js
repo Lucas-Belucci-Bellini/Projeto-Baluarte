@@ -4,6 +4,7 @@
  * gastos SIPRI, eras tecnológicas…) e renderiza por categoria.
  */
 
+import '../styles/enciclopedia-militar.css';
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { MILITAR_CATEGORIAS, MILITAR_FONTES } from '../data/militar-db.js';

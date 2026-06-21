@@ -5,6 +5,7 @@
  * via Media Hub (cross-link).
  */
 
+import '../styles/videos.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';

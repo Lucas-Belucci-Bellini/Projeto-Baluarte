@@ -8,6 +8,7 @@
  *  • Ler — lê QR Codes pela câmera via API BarcodeDetector.
  */
 
+import '../styles/qr-studio.css';
 import { h, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

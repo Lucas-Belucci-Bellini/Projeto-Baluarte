@@ -5,6 +5,7 @@
  * Fontes: microfone, áudio do sistema (som do PC), arquivo, tom de teste.
  */
 
+import '../styles/fft.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { setStatus } from '../utils/baluarte-status.js';

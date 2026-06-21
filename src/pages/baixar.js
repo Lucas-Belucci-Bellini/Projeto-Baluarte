@@ -8,6 +8,7 @@
  * recente em runtime (API do GitHub), então sempre aponta pra última versão —
  * sem nada hardcoded. Se ainda não houver instalador, mostra "em breve".
  */
+import '../styles/baixar.css';
 import { h } from '../utils/helpers.js';
 
 const REPO = 'Lucas-Belucci-Bellini/Projeto-Baluarte';

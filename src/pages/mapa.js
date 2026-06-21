@@ -11,6 +11,7 @@
  * Todas as fontes são gratuitas e sem chave de API.
  */
 
+import '../styles/mapa.css';
 import { h } from '../utils/helpers.js';
 
 /* ── Endpoints ── */

@@ -5,6 +5,7 @@
  * Seção final: links externos para tirar dúvidas, cursos grátis e prática.
  */
 
+import '../styles/academia.css';
 import { h, cx, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';

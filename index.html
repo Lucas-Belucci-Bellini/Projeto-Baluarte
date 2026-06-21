@@ -17,6 +17,11 @@
       rel="stylesheet"
     />
 
+    <!-- CSS global do boot (#238 Fase 2 · CSS split): só a fundação, o shell,
+         os componentes e as folhas compartilhadas por VÁRIAS páginas. As folhas
+         específicas de uma página são importadas pelo próprio módulo da página
+         (`import '../styles/x.css'`) e o Vite faz code-split por rota — então
+         elas saem do caminho inicial e só baixam quando a rota é aberta. -->
     <link rel="stylesheet" href="/src/styles/reset.css" />
     <link rel="stylesheet" href="/src/styles/variables.css" />
     <link rel="stylesheet" href="/src/styles/base.css" />
@@ -26,80 +31,41 @@
     <link rel="stylesheet" href="/src/styles/components.css" />
     <link rel="stylesheet" href="/src/styles/layout.css" />
     <link rel="stylesheet" href="/src/styles/overlay.css" />
+    <link rel="stylesheet" href="/src/styles/theme-universos.css" />
+    <link rel="stylesheet" href="/src/styles/reveal.css" />
+    <link rel="stylesheet" href="/src/styles/home-v2.css" />
+
+    <!-- folhas compartilhadas por múltiplas páginas (mantidas globais) -->
     <link rel="stylesheet" href="/src/styles/editor.css" />
     <link rel="stylesheet" href="/src/styles/terminal.css" />
     <link rel="stylesheet" href="/src/styles/calc.css" />
-    <link rel="stylesheet" href="/src/styles/calculadoras.css" />
-    <link rel="stylesheet" href="/src/styles/tabela-verdade.css" />
     <link rel="stylesheet" href="/src/styles/cripto.css" />
     <link rel="stylesheet" href="/src/styles/graficos.css" />
     <link rel="stylesheet" href="/src/styles/simbolos.css" />
-    <link rel="stylesheet" href="/src/styles/regex.css" />
     <link rel="stylesheet" href="/src/styles/arsenal.css" />
     <link rel="stylesheet" href="/src/styles/biblioteca.css" />
     <link rel="stylesheet" href="/src/styles/elites.css" />
-    <link rel="stylesheet" href="/src/styles/ciberseg.css" />
-    <link rel="stylesheet" href="/src/styles/academia.css" />
-    <link rel="stylesheet" href="/src/styles/robotica.css" />
-    <link rel="stylesheet" href="/src/styles/fft.css" />
-    <link rel="stylesheet" href="/src/styles/media.css" />
-    <link rel="stylesheet" href="/src/styles/videos.css" />
-    <link rel="stylesheet" href="/src/styles/universo.css" />
+    <link rel="stylesheet" href="/src/styles/logic-sim.css" />
+    <link rel="stylesheet" href="/src/styles/portas.css" />
+    <link rel="stylesheet" href="/src/styles/morse.css" />
+    <link rel="stylesheet" href="/src/styles/militar.css" />
     <link rel="stylesheet" href="/src/styles/fase17.css" />
     <link rel="stylesheet" href="/src/styles/fase18.css" />
     <link rel="stylesheet" href="/src/styles/fase19.css" />
-    <link rel="stylesheet" href="/src/styles/fase21.css" />
-    <link rel="stylesheet" href="/src/styles/logic-sim.css" />
-    <link rel="stylesheet" href="/src/styles/json-studio.css" />
-    <link rel="stylesheet" href="/src/styles/qr-studio.css" />
-    <link rel="stylesheet" href="/src/styles/git-helper.css" />
-    <link rel="stylesheet" href="/src/styles/portas.css" />
-    <link rel="stylesheet" href="/src/styles/morse.css" />
-    <link rel="stylesheet" href="/src/styles/memes.css" />
-    <link rel="stylesheet" href="/src/styles/filmes.css" />
-    <link rel="stylesheet" href="/src/styles/radio.css" />
-    <link rel="stylesheet" href="/src/styles/musicas.css" />
-    <link rel="stylesheet" href="/src/styles/color-studio.css" />
-    <link rel="stylesheet" href="/src/styles/esteganografia.css" />
-    <link rel="stylesheet" href="/src/styles/tv.css" />
-    <link rel="stylesheet" href="/src/styles/utilidades.css" />
-    <link rel="stylesheet" href="/src/styles/jogos.css" />
-    <link rel="stylesheet" href="/src/styles/radar.css" />
-    <link rel="stylesheet" href="/src/styles/geopulse.css" />
-    <link rel="stylesheet" href="/src/styles/find.css" />
-    <link rel="stylesheet" href="/src/styles/triangulacao.css" />
-    <link rel="stylesheet" href="/src/styles/llm-lab.css" />
-    <link rel="stylesheet" href="/src/styles/roadmap.css" />
     <link rel="stylesheet" href="/src/styles/jarvis-dashboard.css" />
-    <link rel="stylesheet" href="/src/styles/mapa.css" />
-    <link rel="stylesheet" href="/src/styles/visao.css" />
     <link rel="stylesheet" href="/src/styles/jarvis-vision.css" />
-    <link rel="stylesheet" href="/src/styles/militar.css" />
-    <link rel="stylesheet" href="/src/styles/dossie.css" />
-    <link rel="stylesheet" href="/src/styles/dolar.css" />
-    <link rel="stylesheet" href="/src/styles/theme-universos.css" />
-    <link rel="stylesheet" href="/src/styles/enciclopedia-militar.css" />
-    <link rel="stylesheet" href="/src/styles/codigo.css" />
-    <link rel="stylesheet" href="/src/styles/projetos.css" />
+    <link rel="stylesheet" href="/src/styles/gerar-codigo.css" />
+
+    <!-- seção IA (app-only via cockpit; folhas pequenas, mantidas globais por ora) -->
+    <link rel="stylesheet" href="/src/styles/llm-lab.css" />
     <link rel="stylesheet" href="/src/styles/cerebro.css" />
     <link rel="stylesheet" href="/src/styles/ocr.css" />
     <link rel="stylesheet" href="/src/styles/memoria.css" />
     <link rel="stylesheet" href="/src/styles/terminal-ia.css" />
     <link rel="stylesheet" href="/src/styles/seguranca.css" />
-    <link rel="stylesheet" href="/src/styles/gerar-codigo.css" />
     <link rel="stylesheet" href="/src/styles/conselho.css" />
-    <link rel="stylesheet" href="/src/styles/batalha-naval.css" />
-    <link rel="stylesheet" href="/src/styles/mural.css" />
     <link rel="stylesheet" href="/src/styles/apis.css" />
     <link rel="stylesheet" href="/src/styles/aprendizado.css" />
-    <link rel="stylesheet" href="/src/styles/git-nexus.css" />
-    <link rel="stylesheet" href="/src/styles/ferramentas.css" />
-    <link rel="stylesheet" href="/src/styles/home3d.css" />
-    <link rel="stylesheet" href="/src/styles/home-v2.css" />
-    <link rel="stylesheet" href="/src/styles/baixar.css" />
-    <link rel="stylesheet" href="/src/styles/perfil.css" />
-    <link rel="stylesheet" href="/src/styles/sobre.css" />
-    <link rel="stylesheet" href="/src/styles/reveal.css" />
 
     <title>⬡ Baluarte — Mark XIII</title>
   </head>

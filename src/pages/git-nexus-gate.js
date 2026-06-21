@@ -20,6 +20,7 @@
  * fingerprint de caminho).
  */
 
+import '../styles/git-nexus.css';
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { buildImmersiveHero } from '../utils/immersive.js';

@@ -6,6 +6,7 @@
  * andamento. É a página que explica o Baluarte a quem chega.
  */
 
+import '../styles/sobre.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { buildImmersiveHero } from '../utils/immersive.js';

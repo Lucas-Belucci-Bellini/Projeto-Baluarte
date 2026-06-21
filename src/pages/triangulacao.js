@@ -9,6 +9,7 @@
  * ajustável e o ponto estimado (ciano) aparece junto do alvo real (magenta).
  */
 
+import '../styles/triangulacao.css';
 import { h, empty } from '../utils/helpers.js';
 import { triangulate, bearingTo, gaussianNoise, dist } from '../utils/triangulation.js';
 

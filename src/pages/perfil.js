@@ -6,6 +6,7 @@
  * glow/lift, parallax sutil do brilho com o mouse).
  */
 
+import '../styles/perfil.css';
 import { h } from '../utils/helpers.js';
 import { createHeroWebGL } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
