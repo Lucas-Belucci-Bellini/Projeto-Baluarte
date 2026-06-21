@@ -38,14 +38,16 @@ const M = {
 
 const VERT = `
 attribute vec3 aPos; attribute vec3 aColor; attribute float aSize;
-uniform mat4 uMVP; uniform float uScale; uniform float uPoint;
+uniform mat4 uMVP; uniform float uScale; uniform float uPoint; uniform float uWave;
 varying vec3 vColor; varying float vDepth;
 void main() {
   vec4 clip = uMVP * vec4(aPos, 1.0);
   gl_Position = clip;
   float w = max(0.001, clip.w);
-  gl_PointSize = clamp(aSize * uScale * uPoint / w, 1.0, 46.0);
-  vColor = aColor;
+  /* onda de energia: anel de brilho que sai do centro pra fora (uWave = raio) */
+  float ring = smoothstep(0.5, 0.0, abs(length(aPos) - uWave));
+  gl_PointSize = clamp(aSize * uScale * uPoint / w * (1.0 + ring * 0.5), 1.0, 52.0);
+  vColor = aColor * (1.0 + ring * 1.5);
   vDepth = clamp(1.4 - (w - 1.0) / 9.0, 0.12, 1.0);
 }`;
 const FRAG = `
@@ -213,7 +215,8 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
     uScale: gl.getUniformLocation(prog, 'uScale'),
     uPoint: gl.getUniformLocation(prog, 'uPoint'),
     uIsLine: gl.getUniformLocation(prog, 'uIsLine'),
-    uIntensity: gl.getUniformLocation(prog, 'uIntensity')
+    uIntensity: gl.getUniformLocation(prog, 'uIntensity'),
+    uWave: gl.getUniformLocation(prog, 'uWave')
   };
 
   const cA = hexToRGB(accent), cB = hexToRGB(accent2);
@@ -288,6 +291,8 @@ export function createHeroWebGL(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
 
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniform1f(loc.uIntensity, intensity);
+    /* onda de energia pulsando do núcleo pra fora (~3.4s por pulso) */
+    gl.uniform1f(loc.uWave, ((tt * 1.25) % 1.0) * 4.4);
 
     const proj = M.persp(1.05, w / h, 0.1, 60);
     const view = M.mul(M.transZ(-dist), M.mul(M.rotX(camX), M.rotY(camY)));
