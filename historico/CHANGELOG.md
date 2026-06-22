@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### Fix — scroll volta ao topo ao trocar de página
+- 🐛 Navegar entre páginas **mantinha o scroll onde estava** (você caía no meio da página nova). Causa: o reset usava `mainInner.scrollTop = 0`, mas o scroller real é a **janela** (o `<body>`), então era no-op.
+- ✅ Agora um `scrollToTop()` zera window/`<html>`/`<body>`/`.main__inner` e **repete no próximo frame** (cobre o reflow quando o chunk lazy da página monta). Verificado: 4/4 navegações voltam ao topo; sem erros de console.
+- 🛡️ Backup: `backup/2026-06-22-pre-merge-scroll-to-top`.
+
 ### Redesign #246 — barra de progresso de leitura
 - 📊 Uma barra fina no topo **enche conforme a página rola**, tingida pelo **acento do universo ativo** (coesa com #281/#282/#284). Some (opacity 0) em páginas que não rolam.
 - 🪶 Leve: **1** listener de `scroll` no window (rAF-throttled) + `MutationObserver(childList)` pra re-medir quando a página troca; o `scaleX(var(--sp))` acompanha o scroll 1:1 (sem transição no transform). Folha própria (`scroll-progress.css`) ligada no `index.html`; montada 1x pelo shell.
