@@ -70,8 +70,23 @@ export function renderPage(pageEl, route) {
     document.title = pageTitleForRoute(route) + ' · Baluarte';
     appState.set({ route });             // publica a rota atual no store global
     setCurrentFunction(route);           // atualiza o status do site (HUD/JARVIS)
-    mainInner.scrollTop = 0;             // volta ao topo na navegação
+    scrollToTop();                       // volta ao topo na navegação (o scroller é a janela)
   }
+}
+
+/* Volta ao topo ao trocar de página. O conteúdo rola pela JANELA (body),
+   não pelo .main__inner — e dependendo do layout/UA o scroller efetivo é o
+   <html> ou o <body>. Zeramos todos por robustez, e repetimos no próximo frame
+   pra cobrir o reflow quando o chunk lazy da página monta depois. */
+function scrollToTop() {
+  const zero = () => {
+    try { window.scrollTo(0, 0); } catch { /* noop */ }
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+    if (document.body) document.body.scrollTop = 0;
+    if (mainInner) mainInner.scrollTop = 0;   // caso o main vire o scroller em algum layout
+  };
+  zero();
+  if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(zero);
 }
 
 function pageTitleForRoute(path) {
