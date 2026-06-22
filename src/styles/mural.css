@@ -19,9 +19,10 @@
 .mural-text { flex: 1; min-width: 0; resize: vertical; line-height: 1.5; }
 .mural-name:focus, .mural-text:focus { outline: none; border-color: var(--color-cyan-edge); }
 .mural-compose__row .btn { white-space: nowrap; }
-.mural-compose--locked {
-  flex-direction: row; align-items: center; gap: var(--space-sm);
-  border-style: dashed; font-size: var(--font-size-sm);
+.mural-compose--login { border-style: dashed; }
+.mural-compose__owner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-sm); font-size: var(--font-size-sm);
 }
 
 .mural-status { font-size: var(--font-size-sm); margin-bottom: var(--space-sm); }

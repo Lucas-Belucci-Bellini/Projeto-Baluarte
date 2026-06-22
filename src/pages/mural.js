@@ -13,7 +13,7 @@ import '../styles/mural.css';
 import { h, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
-import { supabaseConfigured, dbSelect } from '../core/supabase.js';
+import { supabaseConfigured, dbSelect, dbInsert, requestOtp, verifyOtp, getAccessToken, signOut, isOwner } from '../core/supabase.js';
 
 const POSTS_KEY = 'mural:posts';
 const NAME_KEY = 'mural:author';
@@ -103,27 +103,108 @@ export function muralPage() {
 
 /* ---- Modo BANCO OFICIAL (Supabase) ------------------------------------- */
 function mountDbMode(page, status, feed) {
-  page.appendChild(h('div', { className: 'mural-compose mural-compose--locked' },
-    h('span', { className: 'u-text-muted' }, '🔒 Publicação restrita ao operador — login do dono chega no próximo passo.')));
-  page.append(status, feed);
+  const composeWrap = h('div');
+  page.append(composeWrap, status, feed);
 
-  function render(posts) {
-    empty(feed);
-    if (!posts.length) { feed.appendChild(h('div', { className: 'mural-empty u-text-muted' }, 'Nenhum recado ainda. 📣')); return; }
-    posts.forEach((p) => feed.appendChild(postEl(p.author, p.text, new Date(p.created_at).getTime())));
+  function loadFeed() {
+    dbSelect('mural_posts', 'select=id,author,text,created_at&order=created_at.desc&limit=200')
+      .then((posts) => {
+        const list = Array.isArray(posts) ? posts : [];
+        empty(feed);
+        if (!list.length) feed.appendChild(h('div', { className: 'mural-empty u-text-muted' }, 'Nenhum recado ainda. 📣'));
+        else list.forEach((p) => feed.appendChild(postEl(p.author, p.text, new Date(p.created_at).getTime())));
+        status.textContent = `🛡️ Banco oficial (Supabase) · ${list.length} recado(s).`;
+      })
+      .catch((err) => {
+        status.textContent = '⚠️ Não consegui ler o mural do banco agora. Tente recarregar.';
+        empty(feed);
+        feed.appendChild(h('div', { className: 'mural-empty u-text-muted' }, String((err && err.message) || err)));
+      });
   }
 
-  dbSelect('mural_posts', 'select=id,author,text,created_at&order=created_at.desc&limit=200')
-    .then((posts) => {
-      const list = Array.isArray(posts) ? posts : [];
-      render(list);
-      status.textContent = `🛡️ Banco oficial (Supabase) · ${list.length} recado(s).`;
-    })
-    .catch((err) => {
-      status.textContent = '⚠️ Não consegui ler o mural do banco agora. Tente recarregar.';
-      empty(feed);
-      feed.appendChild(h('div', { className: 'mural-empty u-text-muted' }, String(err && err.message || err)));
-    });
+  function renderCompose() {
+    empty(composeWrap);
+    if (isOwner()) composeWrap.appendChild(ownerComposer());
+    else composeWrap.appendChild(loginBox());
+  }
+
+  function ownerComposer() {
+    const nameInput = h('input', { className: 'mural-name', type: 'text', maxlength: '40', placeholder: 'Seu nome', value: storage.get(NAME_KEY, 'Operador') });
+    nameInput.addEventListener('input', () => storage.set(NAME_KEY, nameInput.value.trim()));
+    const textInput = h('textarea', { className: 'mural-text', rows: 2, maxlength: '1000', placeholder: 'Escreva um recado…' });
+    const postBtn = h('button', { className: 'btn btn--primary', onclick: publish }, '📣 Publicar');
+    textInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) publish(); });
+    const outBtn = h('button', { className: 'btn btn--ghost btn--sm', onclick: () => { signOut(); renderCompose(); toast('Sessão encerrada'); } }, 'Sair');
+
+    async function publish() {
+      const text = textInput.value.trim();
+      if (text.length < 1) { toast('Escreva algo', { type: 'warning' }); return; }
+      const author = nameInput.value.trim() || 'Operador';
+      postBtn.disabled = true;
+      try {
+        const token = await getAccessToken();
+        if (!token) { toast('Faça login de novo', { type: 'warning' }); signOut(); renderCompose(); return; }
+        await dbInsert('mural_posts', { author, text }, token);
+        textInput.value = '';
+        toast('Publicado 📣', { type: 'success' });
+        loadFeed();
+      } catch (err) {
+        if (err && err.status === 401) { toast('Sessão expirada — entre de novo', { type: 'error' }); signOut(); renderCompose(); }
+        else toast('Falhou: ' + ((err && err.message) || err), { type: 'error' });
+      } finally { postBtn.disabled = false; }
+    }
+
+    return h('div', { className: 'mural-compose' },
+      h('div', { className: 'mural-compose__owner u-text-muted' }, h('span', null, '🛡️ Logado como operador'), outBtn),
+      nameInput,
+      h('div', { className: 'mural-compose__row' }, textInput, postBtn));
+  }
+
+  function loginBox() {
+    const box = h('div', { className: 'mural-compose mural-compose--login' });
+    const emailInput = h('input', { className: 'mural-name', type: 'email', placeholder: 'e-mail do operador' });
+    const sendBtn = h('button', { className: 'btn btn--primary', onclick: sendCode }, 'Enviar código');
+    box.append(
+      h('span', { className: 'u-text-muted' }, '🔒 Login do operador pra publicar:'),
+      h('div', { className: 'mural-compose__row' }, emailInput, sendBtn));
+
+    async function sendCode() {
+      const email = emailInput.value.trim();
+      if (!email) { toast('Informe o e-mail', { type: 'warning' }); return; }
+      sendBtn.disabled = true;
+      try {
+        await requestOtp(email);
+        toast('Código enviado pro e-mail 📧', { type: 'success' });
+        empty(box);
+        const codeInput = h('input', { className: 'mural-name', type: 'text', inputmode: 'numeric', maxlength: '8', placeholder: 'código de 6 dígitos' });
+        const verifyBtn = h('button', { className: 'btn btn--primary', onclick: doVerify }, 'Entrar');
+        codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doVerify(); });
+        box.append(
+          h('span', { className: 'u-text-muted' }, `📧 Código enviado pra ${email}. Cole abaixo:`),
+          h('div', { className: 'mural-compose__row' }, codeInput, verifyBtn));
+        codeInput.focus();
+
+        async function doVerify() {
+          const code = codeInput.value.trim();
+          if (!code) { toast('Cole o código', { type: 'warning' }); return; }
+          verifyBtn.disabled = true;
+          try {
+            await verifyOtp(email, code);
+            toast('Bem-vindo, operador 🛡️', { type: 'success' });
+            renderCompose();
+          } catch { toast('Código inválido ou expirado', { type: 'error' }); verifyBtn.disabled = false; }
+        }
+      } catch (err) {
+        toast('Não consegui enviar: ' + ((err && err.message) || err), { type: 'error' });
+        sendBtn.disabled = false;
+      }
+    }
+
+    return box;
+  }
+
+  renderCompose();
+  loadFeed();
 }
 
 /* ---- Modo LOCAL (fallback: localStorage + repo) ------------------------ */
