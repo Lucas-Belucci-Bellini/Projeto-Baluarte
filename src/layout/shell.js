@@ -13,6 +13,7 @@ import { pinElement } from './overlay.js';
 import { revealScan } from '../utils/scroll-reveal.js';
 import { mountAtmosphere } from '../utils/atmosphere.js';
 import { mountCardSpotlight } from '../utils/card-spotlight.js';
+import { mountScrollProgress } from '../utils/scroll-progress.js';
 
 let mainInner = null;
 let shellRefs = null;
@@ -47,6 +48,7 @@ export function mountShell(rootEl) {
   rootEl.appendChild(overlay);
 
   shellRefs = { shell, sidebar, header, main, overlay };
+  mountScrollProgress();                 // barra de progresso de leitura no topo (#246)
   wireSidebar(shellRefs);
   bus.on('page:pin', pinCurrentPage);
 
