@@ -47,3 +47,11 @@ export const dbSelect = (table, query = '') => dbFetch(`${table}${query ? `?${qu
 /** INSERT: devolve a linha criada. `token` precisa ser o JWT do dono (RLS). */
 export const dbInsert = (table, row, token) =>
   dbFetch(table, { method: 'POST', body: row, token, prefer: 'return=representation' });
+
+/**
+ * RPC — chama uma função do banco (PostgREST `/rpc/<fn>`). Devolve o retorno da
+ * função. Útil pra escrita anônima SEGURA: a função roda como `SECURITY DEFINER`
+ * (ignora o RLS), então o anon executa sem ter permissão de escrever na tabela.
+ */
+export const dbRpc = (fn, args, token) =>
+  dbFetch(`rpc/${fn}`, { method: 'POST', body: args || {}, token });
