@@ -1,0 +1,21 @@
+/* ==========================================================================
+   Scroll progress (#246) — barra fina no topo, enche conforme a página rola.
+   Cor = acento do universo ativo. JS (scroll-progress.js) só escreve --sp;
+   o scaleX acompanha o scroll 1:1 (sem transição no transform). Montada 1x.
+   ========================================================================== */
+.bx-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: calc(var(--z-sticky) + 5);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--sp, 0));
+  background: linear-gradient(90deg, var(--color-cyan, #00f0ff), var(--color-magenta, #ff00aa));
+  box-shadow: 0 0 10px var(--color-cyan-edge, rgba(0, 240, 255, 0.4));
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
+  will-change: transform;
+}
