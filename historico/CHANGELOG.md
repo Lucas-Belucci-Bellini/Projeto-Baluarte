@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### 📦 App desktop 0.2.0 — "novo visual + Núcleo de IA" (abertura do release · #259)
+- ⬆️ **Bump do Baluarte Launcher `0.1.1` → `0.2.0`** (`desktop/package.json` + lock). Abre a release que leva ao usuário do app o **redesign cinematográfico** (#195) e o **Núcleo de IA** (#231).
+- 🧭 **Sidebar enxuta** (#258): a seção "IA & Jarvis" (12 entradas) virou **uma só** — `🔗 Núcleo de IA → /git-nexus`. As ferramentas (JARVIS, Conselho, APIs, Dashboard, ML, Mini-LLM, Cérebro, Memória, Terminal-IA, Segurança, IA Proprietária) abrem como **abas** no cockpit; rotas legadas redirecionam com `?tab=` (#256/#257, já no `main`).
+- 🌐 **Online o app já mostra o novo design** (carrega a produção). O **fallback offline** é o `../dist`, rebuildado pelo próprio workflow de release — então sai atualizado.
+- 🚀 **Publicação**: `Desktop Release` (Actions) corta instaladores Win/Mac/Linux e a release `v0.2.0`; `electron-updater` atualiza os apps `0.1.1`. A página `/baixar` lê a release em runtime (passa a mostrar v0.2.0 sozinha).
+- 🛡️ Branch do release preservada como ponto de retorno: `claude/release-app-v0.2.0`.
+
 ### Banco oficial (Supabase) — Mural sai do localStorage pro banco
 - 🗄️ **Primeiro dado oficial no Supabase**: o `/mural` agora lê do banco (Postgres) em vez de só localStorage. Tabela `mural_posts` com **RLS**: leitura **pública**, escrita **só do operador** (travada pelo e-mail no JWT — mesmo que alguém se cadastre, não posta).
 - 🪶 **web = leve (#238)**: sem SDK — cliente próprio (`src/core/supabase.js`) fala direto com a REST/Auth por `fetch` (peso ~zero). Config por env (`VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`) com fallback no projeto oficial; a *publishable key* é pública por design (o RLS protege).
