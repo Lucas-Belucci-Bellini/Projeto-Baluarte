@@ -58,7 +58,6 @@ export const dbInsert = (table, row, token) =>
  * recarregar a página, loga de novo (ok pra publicação eventual do operador). */
 
 let _session = null;
-export const OWNER_EMAIL = 'lucasbb2007@gmail.com';
 
 async function authFetch(path, body) {
   const res = await fetch(`${URL}/auth/v1/${path}`, {
@@ -90,10 +89,9 @@ function saveSession(d) {
 
 export function getSession() { return _session; }
 export function currentUser() { const s = getSession(); return (s && s.user) || null; }
-export function isOwner() {
-  const u = currentUser();
-  return !!(u && u.email && u.email.toLowerCase() === OWNER_EMAIL.toLowerCase());
-}
+/** "Dono" pro UI = estar logado. A autorização REAL é o RLS no banco (escrita só
+ *  do e-mail do operador), então o cliente não guarda nenhum e-mail. */
+export function isOwner() { return !!currentUser(); }
 export function signOut() { _session = null; }
 
 /** Envia o código OTP de 6 dígitos pro e-mail. */

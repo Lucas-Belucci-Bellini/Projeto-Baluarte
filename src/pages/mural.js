@@ -13,7 +13,7 @@ import '../styles/mural.css';
 import { h, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
-import { supabaseConfigured, dbSelect, dbInsert, requestOtp, verifyOtp, getAccessToken, signOut, isOwner, OWNER_EMAIL } from '../core/supabase.js';
+import { supabaseConfigured, dbSelect, dbInsert, requestOtp, verifyOtp, getAccessToken, signOut, isOwner } from '../core/supabase.js';
 
 const POSTS_KEY = 'mural:posts';
 const NAME_KEY = 'mural:author';
@@ -162,7 +162,7 @@ function mountDbMode(page, status, feed) {
 
   function loginBox() {
     const box = h('div', { className: 'mural-compose mural-compose--login' });
-    const emailInput = h('input', { className: 'mural-name', type: 'email', placeholder: 'e-mail do operador', value: OWNER_EMAIL });
+    const emailInput = h('input', { className: 'mural-name', type: 'email', placeholder: 'e-mail do operador' });
     const sendBtn = h('button', { className: 'btn btn--primary', onclick: sendCode }, 'Enviar código');
     box.append(
       h('span', { className: 'u-text-muted' }, '🔒 Login do operador pra publicar:'),

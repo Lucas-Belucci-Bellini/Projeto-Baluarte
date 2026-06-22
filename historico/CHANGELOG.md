@@ -11,7 +11,7 @@ aqui o que mudou.
 ### Banco oficial — login do dono (OTP) + publicar no mural
 - 🔐 O operador agora **loga por código OTP** (6 dígitos no e-mail) e **publica no mural** direto do site. A escrita usa o `access_token`; o **RLS só libera o dono**. "Sair" encerra a sessão. Visitante continua só lendo.
 - 🪶 Cliente em `src/core/supabase.js`: `requestOtp` / `verifyOtp` / `getAccessToken` (com refresh) — Auth REST por `fetch`, sem SDK.
-- 🔒 Sessão **só em memória** (token não vai pro `localStorage`) — sem clear-text storage / XSS-exfiltration; custo é relogar ao recarregar a página.
+- 🔒 Sessão **só em memória** (token não vai pro `localStorage`) — sem clear-text storage / XSS-exfiltration; custo é relogar ao recarregar a página. Nenhum e-mail do dono no cliente — a autorização real é o **RLS** no banco.
 - ⚙️ Requer **1 ajuste no painel** do Supabase (template de e-mail com `{{ .Token }}` pra mostrar o código) — passo-a-passo em `docs/SUPABASE.md`.
 - ✅ Verificado: UI de login (deslogado) e compositor + "Sair" (sessão do dono), feed lendo do banco, sem erros de console. Build limpo. (O round-trip do e-mail/código você testa ao vivo — daqui não recebo o e-mail.)
 - 🛡️ Backup: `backup/2026-06-22-pre-merge-mural-otp`.
