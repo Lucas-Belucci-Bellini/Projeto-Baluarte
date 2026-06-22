@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### 🗄️ Migration do contador aplicada no banco + `docs/SUPABASE.md` (#291)
+- ✅ **`0002_site_stats` aplicada no projeto Supabase oficial** (via MCP): a tabela `site_stats` e a função `bump_visits()` agora **existem de fato** — então a linha **"👁 N visitas ao Baluarte"** no Home passa a mostrar número real. Antes a migration estava só versionada no repo, **não aplicada** (era o bloqueio anotado em #290/#291).
+- 🔐 **Verificado ponta-a-ponta como anônimo** (REST pública): leitura do contador → **200**; `rpc/bump_visits` → **200** (incrementa); **escrita direta na tabela → 401** (RLS bloqueia). Contador **zerado** ao final (as visitas reais começam limpas).
+- 📄 **`docs/SUPABASE.md`** (novo) — fonte única do backend: projeto/credenciais (públicas por design), **postura RLS**, estado das migrations, **3 jeitos de aplicar** (dashboard · MCP · CLI), o **SQL copy-paste** de `0001`/`0002`, verificação por `curl` e o passo do login OTP (#288). Atende ao pedido da **#291 §2**.
+- ⚠️ **Advisor (registrado pra revisar)**: existe uma função pré-existente `public.rls_auto_enable()` (SECURITY DEFINER, executável por anon) que **não vem das migrations do repo** — origem a checar. O aviso sobre `bump_visits()` ser executável por anon é **intencional** (escrita anônima segura).
+- 🛡️ Sem mudança de código de runtime (doc + changelog); a aplicação da migration é no banco. Branch de trabalho preservada como backup.
+
 ### 🗄️ Contador de acessos no banco oficial (Supabase) — primeira escrita pública
 - 👁 **Contador global de acessos** gravado no Supabase, exibido na célula "Vigilância · ao vivo" do Home (`N visitas ao Baluarte`). Número **real**, global, cross-device e durável — não o localStorage por-navegador.
 - 🔐 **Escrita anônima SEGURA**: o visitante não escreve na tabela (RLS sem policy de escrita). Ele só chama a função `bump_visits()` (`SECURITY DEFINER`) via RPC; a leitura do total é pública. Migration versionada em `supabase/migrations/0002_site_stats.sql`.
