@@ -1,16 +1,19 @@
 /**
  * /mural — Mural do Baluarte (rede social leve, issue #187).
  *
- * Um feed onde o operador (e quem mais abrir o site) publica recados. Os posts
- * ficam salvos LOCALMENTE (localStorage) e, se houver GITHUB_TOKEN configurado,
- * também são COMMITADOS no repositório (`mural/posts.json`, via /api/social) —
- * aí viram compartilhados e versionados. Sem backend/banco/login.
+ * Dois modos:
+ *  • BANCO OFICIAL (Supabase) — quando configurado: lê os posts do banco
+ *    (leitura pública via RLS). A publicação é restrita ao operador e passa a
+ *    exigir login do dono (chega no próximo passo). Cross-device e durável.
+ *  • LOCAL (fallback) — sem Supabase: posts no localStorage + commit best-effort
+ *    no repositório (`/api/social`), como antes. Garante zero regressão.
  */
 
 import '../styles/mural.css';
 import { h, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { supabaseConfigured, dbSelect } from '../core/supabase.js';
 
 const POSTS_KEY = 'mural:posts';
 const NAME_KEY = 'mural:author';
@@ -64,20 +67,67 @@ function when(ts) {
   try { return new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }); } catch { return ''; }
 }
 
+function postEl(author, text, ts) {
+  return h('div', { className: 'mural-post' },
+    h('div', { className: 'mural-post__head' },
+      h('span', { className: 'mural-post__author' }, author || 'Anônimo'),
+      h('span', { className: 'mural-post__time u-text-muted' }, when(ts))),
+    h('div', { className: 'mural-post__text' }, text));
+}
+
 export function muralPage() {
   const page = h('div', { className: 'page-mural' });
+  const dbMode = supabaseConfigured();
 
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
       h('div', { className: 'page-header__crumbs' },
         h('span', null, 'BALUARTE'), h('span', null, '›'), h('span', null, 'MURAL')),
       h('h1', { className: 'page-header__title' }, '📣 Mural do Baluarte'),
-      h('p', { className: 'page-header__description' },
-        'Recados da comunidade. Os posts ficam salvos ', h('span', { className: 'u-text-cyan' }, 'no repositório'),
-        ' (quando o token está configurado) — compartilhados e versionados.'))
+      h('p', { className: 'page-header__description' }, dbMode
+        ? ['Recados do operador, no ', h('span', { className: 'u-text-cyan' }, 'banco oficial'), ' (Supabase). Leitura pública, publicação restrita ao dono.']
+        : ['Recados da comunidade. Os posts ficam salvos ', h('span', { className: 'u-text-cyan' }, 'no repositório'), ' (quando o token está configurado) — compartilhados e versionados.']))
   );
 
-  /* Compositor */
+  const status = h('div', { className: 'mural-status u-text-muted' }, 'Carregando o mural…');
+  const feed = h('div', { className: 'mural-feed' });
+
+  if (dbMode) {
+    mountDbMode(page, status, feed);
+  } else {
+    mountLocalMode(page, status, feed);
+  }
+
+  return page;
+}
+
+/* ---- Modo BANCO OFICIAL (Supabase) ------------------------------------- */
+function mountDbMode(page, status, feed) {
+  page.appendChild(h('div', { className: 'mural-compose mural-compose--locked' },
+    h('span', { className: 'u-text-muted' }, '🔒 Publicação restrita ao operador — login do dono chega no próximo passo.')));
+  page.append(status, feed);
+
+  function render(posts) {
+    empty(feed);
+    if (!posts.length) { feed.appendChild(h('div', { className: 'mural-empty u-text-muted' }, 'Nenhum recado ainda. 📣')); return; }
+    posts.forEach((p) => feed.appendChild(postEl(p.author, p.text, new Date(p.created_at).getTime())));
+  }
+
+  dbSelect('mural_posts', 'select=id,author,text,created_at&order=created_at.desc&limit=200')
+    .then((posts) => {
+      const list = Array.isArray(posts) ? posts : [];
+      render(list);
+      status.textContent = `🛡️ Banco oficial (Supabase) · ${list.length} recado(s).`;
+    })
+    .catch((err) => {
+      status.textContent = '⚠️ Não consegui ler o mural do banco agora. Tente recarregar.';
+      empty(feed);
+      feed.appendChild(h('div', { className: 'mural-empty u-text-muted' }, String(err && err.message || err)));
+    });
+}
+
+/* ---- Modo LOCAL (fallback: localStorage + repo) ------------------------ */
+function mountLocalMode(page, status, feed) {
   const nameInput = h('input', { className: 'mural-name', type: 'text', maxlength: '40', placeholder: 'Seu nome', value: storage.get(NAME_KEY, '') });
   nameInput.addEventListener('input', () => storage.set(NAME_KEY, nameInput.value.trim()));
   const textInput = h('textarea', { className: 'mural-text', rows: 2, maxlength: '1000', placeholder: 'Escreva um recado…' });
@@ -86,22 +136,13 @@ export function muralPage() {
   page.appendChild(h('div', { className: 'mural-compose' },
     nameInput,
     h('div', { className: 'mural-compose__row' }, textInput, postBtn)));
-
-  const status = h('div', { className: 'mural-status u-text-muted' }, 'Carregando o mural…');
-  const feed = h('div', { className: 'mural-feed' });
   page.append(status, feed);
 
   function render() {
     const posts = localPosts();
     empty(feed);
     if (!posts.length) { feed.appendChild(h('div', { className: 'mural-empty u-text-muted' }, 'Nenhum recado ainda. Seja o primeiro! 📣')); return; }
-    posts.forEach((p) => {
-      feed.appendChild(h('div', { className: 'mural-post' },
-        h('div', { className: 'mural-post__head' },
-          h('span', { className: 'mural-post__author' }, p.author || 'Anônimo'),
-          h('span', { className: 'mural-post__time u-text-muted' }, when(p.ts))),
-        h('div', { className: 'mural-post__text' }, p.text)));
-    });
+    posts.forEach((p) => feed.appendChild(postEl(p.author, p.text, p.ts)));
   }
 
   function publish() {
@@ -113,10 +154,9 @@ export function muralPage() {
     textInput.value = '';
     render();
     toast('Publicado 📣', { type: 'success' });
-    repoPost(post); /* commita no repo (best-effort) */
+    repoPost(post);
   }
 
-  /* primeira pintura local + sincroniza com o repo */
   render();
   repoList().then((posts) => {
     if (posts.length) { saveLocal(merge(localPosts(), posts)); render(); }
@@ -124,6 +164,4 @@ export function muralPage() {
       ? '💾 Mural local (defina GITHUB_TOKEN na Vercel para compartilhar — ver docs/MEMORIA-REPO.md).'
       : `🌐 ${localPosts().length} recado(s) · sincronizado com o repositório.`;
   });
-
-  return page;
 }

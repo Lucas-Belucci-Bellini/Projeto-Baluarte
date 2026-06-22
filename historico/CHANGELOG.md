@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### Banco oficial (Supabase) — Mural sai do localStorage pro banco
+- 🗄️ **Primeiro dado oficial no Supabase**: o `/mural` agora lê do banco (Postgres) em vez de só localStorage. Tabela `mural_posts` com **RLS**: leitura **pública**, escrita **só do operador** (travada pelo e-mail no JWT — mesmo que alguém se cadastre, não posta).
+- 🪶 **web = leve (#238)**: sem SDK — cliente próprio (`src/core/supabase.js`) fala direto com a REST/Auth por `fetch` (peso ~zero). Config por env (`VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`) com fallback no projeto oficial; a *publishable key* é pública por design (o RLS protege).
+- 🔁 **Zero regressão**: sem Supabase configurado, o mural cai no modo local (localStorage + commit no repo) de antes.
+- ✅ Verificado contra o banco real: leitura anônima → 200; **escrita anônima → 401 (RLS bloqueia)**; a página lista o post semente e mostra o cadeado "publicação restrita ao operador". Migration versionada em `supabase/migrations/0001_mural_posts.sql`. Build limpo.
+- ⏭️ **Próximo passo**: login do dono (magic-link/OTP) pra publicar pelo site — exige 1 ajuste no painel do Supabase (documentado no PR).
+- 🛡️ Backup: `backup/2026-06-22-pre-merge-supabase-mural`.
+
 ### Fix — scroll volta ao topo ao trocar de página
 - 🐛 Navegar entre páginas **mantinha o scroll onde estava** (você caía no meio da página nova). Causa: o reset usava `mainInner.scrollTop = 0`, mas o scroller real é a **janela** (o `<body>`), então era no-op.
 - ✅ Agora um `scrollToTop()` zera window/`<html>`/`<body>`/`.main__inner` e **repete no próximo frame** (cobre o reflow quando o chunk lazy da página monta). Verificado: 4/4 navegações voltam ao topo; sem erros de console.
