@@ -146,6 +146,28 @@
   background: linear-gradient(90deg, transparent, var(--color-cyan-edge), transparent);
   opacity: 0.5;
 }
+/* Spotlight que segue o cursor (#246) — vars --mx/--my vêm do card-spotlight.js;
+   cor do acento do universo ativo. Clipado pelo overflow:hidden do .card. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--color-cyan, #00f0ff) 16%, transparent), transparent 60%);
+  mix-blend-mode: screen;
+}
+.card:hover::after { opacity: 1; }
+.card--magenta::after {
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--color-magenta, #ff00aa) 16%, transparent), transparent 60%);
+}
+@media (prefers-reduced-motion: reduce) { .card::after { display: none; } }
+
 .card:hover {
   border-color: var(--color-cyan-edge);
   box-shadow: var(--shadow-md), var(--shadow-glow-cyan);
