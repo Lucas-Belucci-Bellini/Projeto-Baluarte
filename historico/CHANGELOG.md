@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-21
 
+### Redesign #246 — spotlight nos cards (segue o cursor)
+- ✨ Os cards compartilhados (`.card`) ganham um **brilho radial que segue o cursor** no hover, tingido pelo **acento do universo ativo** (coeso com #281/#282). Complementa o lift+glow do hover e o tilt 3D das ferramentas.
+- 🪶 Leve por construção: **UM** listener delegado no root (não por card), throttled por `requestAnimationFrame`, que só escreve `--mx`/`--my` quando o cursor está sobre um card; o visual mora no CSS (`.card::after`, `mix-blend-mode: screen`). Variante `.card--magenta` usa o acento secundário. Respeita `prefers-reduced-motion` (nem monta).
+- ✅ Verificado em `/portas` (20 cards): o glow segue o cursor, texto 100% legível, só o card sob o cursor acende, sem erros de console. Build limpo.
+- 🛡️ Backup: `backup/2026-06-21-pre-merge-card-spotlight`.
+
 ### Redesign #246 — herói WebGL reativo ao universo
 - 🎨 Os acentos do **herói 3D** (campo de partículas + core + anéis) agora **seguem a skin de universo** por padrão — novo `heroSkinColors()` lê `--color-cyan`/`--color-magenta`, igual à atmosfera global (#281). Trocar de universo recolore os heróis **junto** com o fundo → coesão total (DOOM = vermelho/laranja, etc.).
 - Páginas que passam `accent`/`accent2` explícitos (biblioteca, jogos, git-nexus-gate) **mantêm** a cor própria. `home`/`perfil` deixaram de fixar cyan/magenta e agora seguem a skin (com fallback Baluarte).
