@@ -26,6 +26,7 @@ import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
 import { initUniverse } from './utils/universe-theme.js';
+import { countPageView } from './utils/page-views.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
 
@@ -156,6 +157,10 @@ router.setNotFound((path) => notFoundPage(path));
 bus.on('route:change', ({ view, path }) => {
   if (view) renderPage(view, path);
 });
+
+/* Métrica real: conta 1 view por rota (1x/rota/sessão) no banco (Supabase).
+ * Silencioso e best-effort — não bloqueia o render nem quebra se o banco sumir. */
+bus.on('route:change', ({ path }) => { countPageView(path); });
 
 bus.on('route:notfound', ({ view, path }) => {
   if (view) renderPage(view, path);

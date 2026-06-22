@@ -14,6 +14,7 @@ import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { router } from '../core/router.js';
 import { VERSION } from '../data/version.js';
+import { readPageViews } from '../utils/page-views.js';
 import { THEMES, getThemeId, setTheme } from '../utils/theme.js';
 import { UNIVERSE_SKINS, getUniverseId, setUniverse } from '../utils/universe-theme.js';
 
@@ -112,14 +113,25 @@ export function perfilPage() {
 
   /* ---- estatísticas ---- */
   page.appendChild(sectionTitle('◎', 'Estatísticas do Projeto'));
+  /* Tile dinâmico: views reais do banco (Supabase). Some se o banco não responder. */
+  const viewsStat = h('div', { className: 'pf-stat' },
+    h('div', { className: 'pf-stat__icon' }, '👁'),
+    h('div', { className: 'pf-stat__value' }, '—'),
+    h('div', { className: 'pf-stat__label' }, 'Páginas vistas'));
   page.appendChild(
     h('div', { className: 'pf-stats' },
       ...STATS.map((s) =>
         h('div', { className: 'pf-stat' },
           h('div', { className: 'pf-stat__icon' }, s.icon),
           h('div', { className: 'pf-stat__value' }, s.value),
-          h('div', { className: 'pf-stat__label' }, s.label))))
+          h('div', { className: 'pf-stat__label' }, s.label))),
+      viewsStat)
   );
+  readPageViews(1).then((res) => {
+    if (!res || !res.total) { viewsStat.remove(); return; }
+    const v = viewsStat.querySelector('.pf-stat__value');
+    if (v) v.textContent = res.total.toLocaleString('pt-BR');
+  });
 
   /* ---- acesso rápido ---- */
   page.appendChild(sectionTitle('⊳', 'Acesso Rápido'));

@@ -46,6 +46,10 @@ Toda tabela tem **Row Level Security** ligado. As policies definem quem pode o q
   `public.bump_visits()`, marcada `SECURITY DEFINER`: ela roda como o dono e ignora o
   RLS, então o visitante anônimo consegue **incrementar pelo RPC** sem ter permissão de
   escrever a tabela. Padrão de **escrita anônima SEGURA**.
+- **Views por página** (#291) reusam a mesma `site_stats`: chaves `view:/rota`
+  incrementadas por `public.bump_view(rota)` (mesmo padrão anônimo-seguro). A função
+  **valida a rota** (`^/[a-z0-9/_-]{0,63}$`) pra não deixar criar chave-lixo. Leitura
+  pública via `?key=like.view:*`; o cliente conta **1×/rota/sessão** (`page-views.js`).
 
 > ℹ️ **Sobre o aviso do linter** "Public Can Execute SECURITY DEFINER Function"
 > para `bump_visits()`: é **intencional e seguro** — a função só faz
@@ -69,6 +73,7 @@ Versionadas em `supabase/migrations/`. Idempotentes (podem rodar mais de uma vez
 | `0001_mural_posts.sql` | tabela `mural_posts` + RLS (mural #187) | ✅ aplicada (`20260622033728 create_mural_posts`) |
 | `0002_site_stats.sql` | tabela `site_stats` + função `bump_visits()` (contador #290) | ✅ aplicada (22/06/2026, migration `site_stats`) |
 | `0003_db_hardening.sql` | revoga `EXECUTE` público do event-trigger `rls_auto_enable()` | ✅ aplicada (22/06/2026, migration `db_hardening`) |
+| `0004_page_views.sql` | função `bump_view(rota)` — views por página em `site_stats` (chaves `view:/rota`) | ✅ aplicada (22/06/2026, migration `page_views`) |
 
 Conferir o estado a qualquer momento (sessão com Supabase MCP):
 `list_tables` (tabelas + RLS) e `list_migrations` (histórico aplicado).
@@ -180,6 +185,32 @@ grant execute on function public.bump_visits() to anon, authenticated;
 -- rls_auto_enable() é função de event trigger (liga RLS em tabela nova). Não
 -- precisa ser chamável pela API. Revogar não quebra o gatilho (roda como dono).
 revoke execute on function public.rls_auto_enable() from anon, authenticated, public;
+```
+
+### 5.4 `0004_page_views.sql` — views por página (#291)
+
+```sql
+create or replace function public.bump_view(p_route text)
+returns bigint
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_key text; v_count bigint;
+begin
+  if p_route is null or p_route !~ '^/[a-z0-9/_-]{0,63}$' then
+    raise exception 'rota invalida';
+  end if;
+  v_key := 'view:' || p_route;
+  insert into public.site_stats (key, count) values (v_key, 1)
+  on conflict (key) do update set count = site_stats.count + 1, updated_at = now()
+  returning count into v_count;
+  return v_count;
+end;
+$$;
+revoke all on function public.bump_view(text) from public;
+grant execute on function public.bump_view(text) to anon, authenticated;
 ```
 
 ---

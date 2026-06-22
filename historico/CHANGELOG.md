@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### 📊 Métricas reais — views por página no banco (#291)
+- 👁 **Contagem de views por página** gravada no Supabase (reusa `site_stats`, chaves `view:/rota`), exibida no **Home** (linha "PÁGINAS · N páginas vistas · top /rota") e numa **tile do `/perfil`** ("Páginas vistas"). Número real, global e durável.
+- 🔐 **Escrita anônima SEGURA + validada**: nova função `bump_view(rota)` (`SECURITY DEFINER`) incrementa a chave da rota e **valida a rota** (`^/[a-z0-9/_-]{0,63}$`) pra não criar chave-lixo. Verificado por REST: incrementa (1→2), rota inválida → **400 "rota invalida"**, escrita direta → **401** (RLS). Migration `0004_page_views`.
+- 🪶 **web leve (#238)**: o cliente (`page-views.js`) conta **1×/rota/sessão** (guard em `sessionStorage`) no `route:change`; depois só lê. ~1 KB no boot.
+- 🛟 **Zero regressão**: sem Supabase/aplicação/offline, as métricas somem sem ruído (linha oculta no Home, tile some no `/perfil`). Verificado: build limpo + degradação graciosa quando o banco não responde.
+- 🛡️ Backup: branch de trabalho preservada.
+
 ### 🛡️ Banco — hardening: fecha a exposição do event-trigger `rls_auto_enable` (#291)
 - 🔒 **Migration `0003_db_hardening` aplicada**: revoga o `EXECUTE` (anon/authenticated/public) da função `rls_auto_enable()`. Auditando o banco, descobri que ela é um **event trigger** (`ensure_rls`, em `ddl_command_end`) que **liga RLS automaticamente em toda tabela nova** do `public` — ótimo trilho de segurança, mas que **não precisava ficar exposta como RPC** (`/rest/v1/rpc/rls_auto_enable`). Revogar **não quebra** o gatilho (event trigger roda como dono).
 - ✅ **Resultado:** os **2 avisos** do advisor de segurança pra essa função **sumiram** (5→3 lints). Os 2 restantes do `bump_visits` são **by-design** (escrita anônima segura do contador) e o de "leaked password" é toggle de Auth. Verificado: `has_function_privilege('anon',…)` → `false` depois; `bump_visits` mantém o anon.
