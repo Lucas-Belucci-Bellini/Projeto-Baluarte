@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### 🗄️ Contador de acessos no banco oficial (Supabase) — primeira escrita pública
+- 👁 **Contador global de acessos** gravado no Supabase, exibido na célula "Vigilância · ao vivo" do Home (`N visitas ao Baluarte`). Número **real**, global, cross-device e durável — não o localStorage por-navegador.
+- 🔐 **Escrita anônima SEGURA**: o visitante não escreve na tabela (RLS sem policy de escrita). Ele só chama a função `bump_visits()` (`SECURITY DEFINER`) via RPC; a leitura do total é pública. Migration versionada em `supabase/migrations/0002_site_stats.sql`.
+- 🪶 **web = leve** (#238): um RPC minúsculo **1×/sessão** (guard em `sessionStorage`); depois só lê. Cliente ganhou `dbRpc()` em `src/core/supabase.js`.
+- 🛟 **Zero regressão**: se o Supabase não estiver configurado, a tabela ainda não aplicada, ou der erro (offline), a linha some sem ruído. **Requer aplicar a migration** no banco (dashboard SQL Editor ou MCP local) pra o número aparecer.
+
 ### 📦 App desktop 0.2.0 — "novo visual + Núcleo de IA" (abertura do release · #259)
 - ⬆️ **Bump do Baluarte Launcher `0.1.1` → `0.2.0`** (`desktop/package.json` + lock). Abre a release que leva ao usuário do app o **redesign cinematográfico** (#195) e o **Núcleo de IA** (#231).
 - 🧭 **Sidebar enxuta** (#258): a seção "IA & Jarvis" (12 entradas) virou **uma só** — `🔗 Núcleo de IA → /git-nexus`. As ferramentas (JARVIS, Conselho, APIs, Dashboard, ML, Mini-LLM, Cérebro, Memória, Terminal-IA, Segurança, IA Proprietária) abrem como **abas** no cockpit; rotas legadas redirecionam com `?tab=` (#256/#257, já no `main`).

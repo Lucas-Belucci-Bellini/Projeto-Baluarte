@@ -11,6 +11,7 @@ import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
 import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
+import { countVisit } from '../utils/visit-counter.js';
 import { mountSpline } from '../utils/spline-embed.js';
 import { sceneFor } from '../data/spline-scenes.js';
 import { ARSENAL, TOTAL as ARSENAL_TOTAL } from '../data/arsenal.js';
@@ -136,6 +137,19 @@ function buildBento(onCleanup) {
     ['💹', 'Câmbio', '/dolar'], ['◇', 'Sobre', '/sobre']
   ];
 
+  // Contador de acessos ao vivo (gravado no Supabase). Só aparece se vier número
+  // — se o banco não estiver configurado/aplicado, a linha fica oculta (sem erro).
+  const acessosMsg = h('span', { className: 'hv2-vig__msg' }, '…');
+  const acessosLine = h('div', { className: 'hv2-vig', style: { display: 'none' } },
+    h('span', { className: 'hv2-vig__dot' }),
+    h('span', { className: 'hv2-vig__tag' }, 'ACESSOS'),
+    acessosMsg);
+  countVisit().then((n) => {
+    if (n == null) return;
+    acessosMsg.textContent = `${n.toLocaleString('pt-BR')} visitas ao Baluarte`;
+    acessosLine.style.display = '';
+  });
+
   return h('section', { className: 'hv2-bento' },
     metricCell(onCleanup),
     h('div', { className: 'hv2-cell hv2-cell--ai hv2-cell--link', onclick: () => router.navigate('/git-nexus') },
@@ -152,7 +166,8 @@ function buildBento(onCleanup) {
     h('div', { className: 'hv2-cell hv2-cell--wide' },
       h('div', { className: 'hv2-cell__tag' }, '⌖ Vigilância · ao vivo'),
       ...vig.map(([t, m]) => h('div', { className: 'hv2-vig' },
-        h('span', { className: 'hv2-vig__dot' }), h('span', { className: 'hv2-vig__tag' }, t), h('span', { className: 'hv2-vig__msg' }, m)))),
+        h('span', { className: 'hv2-vig__dot' }), h('span', { className: 'hv2-vig__tag' }, t), h('span', { className: 'hv2-vig__msg' }, m))),
+      acessosLine),
     h('div', { className: 'hv2-cell hv2-cell--link', onclick: () => router.navigate('/biblioteca') },
       h('div', { className: 'hv2-cell__tag' }, '📖 Crônica em destaque'),
       h('h3', { className: 'hv2-cell__title' }, arco.title || 'Onde os Deuses Sangram'),
