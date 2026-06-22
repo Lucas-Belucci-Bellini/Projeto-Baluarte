@@ -6,12 +6,15 @@
  */
 
 import '../styles/musicas.css';
-import { h, empty } from '../utils/helpers.js';
+import { h, empty, cx } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
 import { ALBUNS } from '../data/albuns.js';
+import {
+  addFiles, listTracks, getBlob, removeTrack, clearAll, formatSize, offlineAudioSupported
+} from '../utils/offline-audio.js';
 
 const TRACK_ID = '6Hv4AhlMTDgb6HGTvI0xlH';
 const PLAYLIST_ID = '5wVcAsTvq2dQFZcqw3GJWN';
@@ -217,6 +220,156 @@ function albunsSection() {
   return grid;
 }
 
+/* ===== Meu Acervo (offline) — toca em QUALQUER rede (#291 §3) =====
+ * Os arquivos de áudio do próprio usuário ficam no aparelho (IndexedDB) e
+ * tocam sem internet, mesmo em redes que bloqueiam Spotify/YouTube. */
+function meuAcervoSection() {
+  const wrap = h('div', { className: 'acervo' });
+
+  if (!offlineAudioSupported()) {
+    wrap.appendChild(h('p', { className: 'u-text-muted' },
+      'Seu navegador não suporta o armazenamento offline (IndexedDB) usado pelo acervo.'));
+    return wrap;
+  }
+
+  let tracks = [];
+  let currentId = null;
+  let currentUrl = null;
+  let loopAll = storage.get('musicas:acervoLoop', true);
+
+  const audio = h('audio', { className: 'acervo__audio', controls: true, preload: 'metadata' });
+  const listEl = h('div', { className: 'acervo__list' });
+  const statsEl = h('div', { className: 'acervo__stats u-text-muted' });
+
+  function indexOfCurrent() { return tracks.findIndex((t) => t.id === currentId); }
+
+  function markActive() {
+    listEl.querySelectorAll('.acervo__track').forEach((el) => {
+      el.classList.toggle('is-active', el.dataset.id === currentId);
+    });
+  }
+
+  async function play(id) {
+    const blob = await getBlob(id);
+    if (!blob) { toast('Faixa não encontrada no acervo', { type: 'warning' }); await refresh(); return; }
+    if (currentUrl) { URL.revokeObjectURL(currentUrl); }
+    currentUrl = URL.createObjectURL(blob);
+    currentId = id;
+    audio.src = currentUrl;
+    audio.play().catch(() => {});
+    markActive();
+  }
+
+  function playAt(offset) {
+    if (!tracks.length) return;
+    const i = indexOfCurrent();
+    let next = (i < 0 ? -1 : i) + offset;
+    if (next >= tracks.length) { if (!loopAll) return; next = 0; }
+    if (next < 0) next = loopAll ? tracks.length - 1 : 0;
+    play(tracks[next].id);
+  }
+
+  audio.addEventListener('ended', () => playAt(1));
+
+  const fileInput = h('input', {
+    type: 'file', accept: 'audio/*', multiple: true, style: { display: 'none' },
+    onchange: async (e) => { await ingest(e.target.files); e.target.value = ''; }
+  });
+  const addBtn = h('button', { className: 'btn btn--primary', onclick: () => fileInput.click() }, '➕ Adicionar músicas');
+
+  const drop = h('div', {
+    className: 'acervo__drop',
+    ondragover: (e) => { e.preventDefault(); drop.classList.add('is-drag'); },
+    ondragleave: () => drop.classList.remove('is-drag'),
+    ondrop: async (e) => { e.preventDefault(); drop.classList.remove('is-drag'); await ingest(e.dataTransfer.files); }
+  },
+    h('span', { className: 'acervo__drop-ico' }, '🎧'),
+    h('div', { className: 'acervo__drop-text' },
+      h('strong', null, 'Arraste seus arquivos de áudio aqui'),
+      h('div', { className: 'u-text-muted', style: { fontSize: '13px' } },
+        'ou clique para escolher. Ficam guardados só neste aparelho e tocam ',
+        h('span', { className: 'u-text-cyan' }, 'offline, em qualquer rede'),
+        ' — não dependem de Spotify/YouTube.')),
+    addBtn);
+
+  const prevBtn = h('button', { className: 'btn btn--ghost', title: 'Anterior', onclick: () => playAt(-1) }, '⏮');
+  const nextBtn = h('button', { className: 'btn btn--ghost', title: 'Próxima', onclick: () => playAt(1) }, '⏭');
+  const loopBtn = h('button', {
+    className: cx('btn', 'btn--ghost', 'acervo__loop', loopAll && 'is-on'),
+    title: 'Repetir a lista', onclick: () => {
+      loopAll = !loopAll; storage.set('musicas:acervoLoop', loopAll);
+      loopBtn.classList.toggle('is-on', loopAll);
+      toast(loopAll ? 'Repetir lista: ligado' : 'Repetir lista: desligado');
+    }
+  }, '🔁 Repetir');
+  const clearBtn = h('button', {
+    className: 'btn btn--ghost', title: 'Remover todas', onclick: async () => {
+      if (!tracks.length) return;
+      if (!confirm('Remover TODAS as músicas do acervo offline deste aparelho?')) return;
+      await clearAll();
+      audio.pause(); audio.removeAttribute('src'); currentId = null;
+      if (currentUrl) { URL.revokeObjectURL(currentUrl); currentUrl = null; }
+      await refresh(); toast('Acervo limpo');
+    }
+  }, '🗑 Limpar');
+
+  async function ingest(files) {
+    const added = await addFiles(files);
+    if (!added.length) { toast('Selecione arquivos de áudio (mp3, m4a, ogg, wav…)', { type: 'warning' }); return; }
+    toast(`${added.length} faixa(s) adicionada(s) ao acervo`, { type: 'success' });
+    await refresh();
+  }
+
+  function renderList() {
+    empty(listEl);
+    if (!tracks.length) {
+      listEl.appendChild(h('p', { className: 'u-text-muted', style: { fontSize: '13px', padding: '4px 2px' } },
+        'Acervo vazio — adicione suas músicas acima e elas ficam aqui pra tocar offline.'));
+      return;
+    }
+    tracks.forEach((t, i) => {
+      listEl.appendChild(h('div', { className: 'acervo__track', dataset: { id: t.id } },
+        h('button', { className: 'acervo__play', title: 'Tocar', onclick: () => play(t.id) }, '▶'),
+        h('span', { className: 'acervo__num u-mono' }, String(i + 1).padStart(2, '0')),
+        h('div', { className: 'acervo__meta' },
+          h('div', { className: 'acervo__title' }, t.name),
+          h('div', { className: 'acervo__sub u-text-muted' }, formatSize(t.size))),
+        h('button', {
+          className: 'acervo__rm', title: 'Remover', onclick: async () => {
+            await removeTrack(t.id);
+            if (currentId === t.id) { audio.pause(); currentId = null; }
+            await refresh(); toast('Removida');
+          }
+        }, '✕')));
+    });
+    markActive();
+  }
+
+  function renderStats() {
+    const total = tracks.reduce((s, t) => s + (t.size || 0), 0);
+    statsEl.textContent = tracks.length
+      ? `${tracks.length} faixa(s) · ${formatSize(total)} no aparelho · tocam offline, em qualquer rede`
+      : '';
+  }
+
+  async function refresh() {
+    tracks = await listTracks();
+    renderList();
+    renderStats();
+  }
+
+  wrap.append(
+    drop,
+    fileInput,
+    h('div', { className: 'acervo__bar' }, prevBtn, nextBtn, loopBtn, h('span', { style: { flex: '1' } }), clearBtn),
+    audio,
+    listEl,
+    statsEl
+  );
+  refresh();
+  return wrap;
+}
+
 export function musicasPage() {
   const fullPage = h('div', { className: 'page-musicas' });
 
@@ -226,14 +379,23 @@ export function musicasPage() {
       title: 'Central de Música',
       sub: 'PLAYLIST & LOOP',
       desc: [
-        'A faixa em destaque toca em ',
+        'Comece pelo ',
+        h('span', { className: 'u-text-cyan' }, 'Meu Acervo'),
+        ' — suas músicas tocam offline, em qualquer rede. Abaixo, a faixa em ',
         h('span', { className: 'u-text-cyan' }, 'loop infinito'),
-        ' e logo abaixo está a playlist completa. Tudo via player do ',
-        'Spotify — dê play em cada um.'
+        ' e a playlist completa via Spotify.'
       ],
-      hudLeft: '♪ ÁUDIO', hudRight: 'SPOTIFY'
+      hudLeft: '♪ ÁUDIO', hudRight: 'OFFLINE · SPOTIFY'
     })
   );
+
+  /* ===== Meu Acervo (offline) — primeiro, é o que toca em qualquer rede ===== */
+  fullPage.appendChild(
+    h('div', { className: 'section-header' },
+      h('h2', { className: 'section-header__title' }, '🎧 Meu Acervo'),
+      h('span', { className: 'acervo-badge' }, 'offline · qualquer rede'))
+  );
+  fullPage.appendChild(meuAcervoSection());
 
   /* ===== Faixa em destaque (loop) ===== */
   fullPage.appendChild(

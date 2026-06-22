@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### 🎧 Música — "Meu Acervo" offline, toca em qualquer rede (#291 §3)
+- 🎵 Nova seção **Meu Acervo** no topo da `/musicas`: você **adiciona seus próprios arquivos de áudio** (arrastar ou escolher) e eles tocam **offline, em qualquer rede** — inclusive nas que bloqueiam Spotify/YouTube. Cumpre o objetivo norteador do operador ("ouvir em qualquer lugar, **independente do WiFi**"), que embed de serviço externo nunca garante.
+- 🗄️ Os arquivos ficam **só no aparelho** (IndexedDB) — nada sobe pra rede, nada pesa no bundle (#238 web leve). Player nativo `<audio>` com playlist, **próxima/anterior**, **repetir lista** e **remover**; a lista e a preferência de loop persistem.
+- 🆕 `src/utils/offline-audio.js` (store IndexedDB: add/list/get/remove/clear, sem dependências) + seção em `src/pages/musicas.js` + estilos no padrão dos tokens (`musicas.css`).
+- ✅ Verificado no navegador: a seção renderiza após o herói (badge "offline · qualquer rede", dropzone, player, lista) e o **round-trip no IndexedDB funciona** (adicionar → listar → ler blob 4096 B → remover). Build limpo (chunk `musicas` 19.6 kB / 7.3 kB gz).
+- ⏭️ Próximo da §3 (separado): proxy serverless pro **Rádio** ao vivo e cache de áudio no service worker. 🛡️ Backup: branch de trabalho preservada.
+
 ### 🗄️ Migration do contador aplicada no banco + `docs/SUPABASE.md` (#291)
 - ✅ **`0002_site_stats` aplicada no projeto Supabase oficial** (via MCP): a tabela `site_stats` e a função `bump_visits()` agora **existem de fato** — então a linha **"👁 N visitas ao Baluarte"** no Home passa a mostrar número real. Antes a migration estava só versionada no repo, **não aplicada** (era o bloqueio anotado em #290/#291).
 - 🔐 **Verificado ponta-a-ponta como anônimo** (REST pública): leitura do contador → **200**; `rpc/bump_visits` → **200** (incrementa); **escrita direta na tabela → 401** (RLS bloqueia). Contador **zerado** ao final (as visitas reais começam limpas).
