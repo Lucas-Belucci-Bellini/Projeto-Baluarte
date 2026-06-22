@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### Banco oficial — login do dono (OTP) + publicar no mural
+- 🔐 O operador agora **loga por código OTP** (6 dígitos no e-mail) e **publica no mural** direto do site. A escrita usa o `access_token`; o **RLS só libera o dono**. "Sair" encerra a sessão. Visitante continua só lendo.
+- 🪶 Cliente em `src/core/supabase.js`: `requestOtp` / `verifyOtp` / `getAccessToken` (com refresh) — Auth REST por `fetch`, sem SDK.
+- ⚙️ Requer **1 ajuste no painel** do Supabase (template de e-mail com `{{ .Token }}` pra mostrar o código) — passo-a-passo em `docs/SUPABASE.md`.
+- ✅ Verificado: UI de login (deslogado) e compositor + "Sair" (sessão do dono), feed lendo do banco, sem erros de console. Build limpo. (O round-trip do e-mail/código você testa ao vivo — daqui não recebo o e-mail.)
+- 🛡️ Backup: `backup/2026-06-22-pre-merge-mural-otp`.
+
 ### Banco oficial (Supabase) — Mural sai do localStorage pro banco
 - 🗄️ **Primeiro dado oficial no Supabase**: o `/mural` agora lê do banco (Postgres) em vez de só localStorage. Tabela `mural_posts` com **RLS**: leitura **pública**, escrita **só do operador** (travada pelo e-mail no JWT — mesmo que alguém se cadastre, não posta).
 - 🪶 **web = leve (#238)**: sem SDK — cliente próprio (`src/core/supabase.js`) fala direto com a REST/Auth por `fetch` (peso ~zero). Config por env (`VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`) com fallback no projeto oficial; a *publishable key* é pública por design (o RLS protege).
