@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### 🛡️ Banco — hardening: fecha a exposição do event-trigger `rls_auto_enable` (#291)
+- 🔒 **Migration `0003_db_hardening` aplicada**: revoga o `EXECUTE` (anon/authenticated/public) da função `rls_auto_enable()`. Auditando o banco, descobri que ela é um **event trigger** (`ensure_rls`, em `ddl_command_end`) que **liga RLS automaticamente em toda tabela nova** do `public` — ótimo trilho de segurança, mas que **não precisava ficar exposta como RPC** (`/rest/v1/rpc/rls_auto_enable`). Revogar **não quebra** o gatilho (event trigger roda como dono).
+- ✅ **Resultado:** os **2 avisos** do advisor de segurança pra essa função **sumiram** (5→3 lints). Os 2 restantes do `bump_visits` são **by-design** (escrita anônima segura do contador) e o de "leaked password" é toggle de Auth. Verificado: `has_function_privilege('anon',…)` → `false` depois; `bump_visits` mantém o anon.
+- 📄 `docs/SUPABASE.md` atualizado (migration `0003` + SQL copy-paste + explicação do event trigger + status dos advisors). Auditoria completa do schema (tabelas/policies/funções/event triggers) feita via MCP.
+- 🛡️ Backup: branch de trabalho preservada.
+
 ### 🎧 Música — "Meu Acervo" offline, toca em qualquer rede (#291 §3)
 - 🎵 Nova seção **Meu Acervo** no topo da `/musicas`: você **adiciona seus próprios arquivos de áudio** (arrastar ou escolher) e eles tocam **offline, em qualquer rede** — inclusive nas que bloqueiam Spotify/YouTube. Cumpre o objetivo norteador do operador ("ouvir em qualquer lugar, **independente do WiFi**"), que embed de serviço externo nunca garante.
 - 🗄️ Os arquivos ficam **só no aparelho** (IndexedDB) — nada sobe pra rede, nada pesa no bundle (#238 web leve). Player nativo `<audio>` com playlist, **próxima/anterior**, **repetir lista** e **remover**; a lista e a preferência de loop persistem.

@@ -52,6 +52,12 @@ Toda tabela tem **Row Level Security** ligado. As policies definem quem pode o q
 > `count = count + 1` numa linha fixa (`key = 'visits'`) e devolve o total. É o
 > mecanismo que permite contar visitas sem deixar o anon escrever na tabela.
 
+**Trilho de segurança (defesa em profundidade):** existe um **event trigger**
+`ensure_rls` (função `rls_auto_enable()`) que **liga RLS automaticamente em toda
+tabela nova** do schema `public` — assim nenhuma tabela nasce sem RLS por
+esquecimento. A migration `0003` revogou o `EXECUTE` público dessa função (ela não
+precisa ser chamável pela API); o gatilho segue ativo (roda como dono).
+
 ---
 
 ## 3. Estado das migrations
@@ -62,6 +68,7 @@ Versionadas em `supabase/migrations/`. Idempotentes (podem rodar mais de uma vez
 | --- | --- | --- |
 | `0001_mural_posts.sql` | tabela `mural_posts` + RLS (mural #187) | ✅ aplicada (`20260622033728 create_mural_posts`) |
 | `0002_site_stats.sql` | tabela `site_stats` + função `bump_visits()` (contador #290) | ✅ aplicada (22/06/2026, migration `site_stats`) |
+| `0003_db_hardening.sql` | revoga `EXECUTE` público do event-trigger `rls_auto_enable()` | ✅ aplicada (22/06/2026, migration `db_hardening`) |
 
 Conferir o estado a qualquer momento (sessão com Supabase MCP):
 `list_tables` (tabelas + RLS) e `list_migrations` (histórico aplicado).
@@ -167,6 +174,14 @@ revoke all on function public.bump_visits() from public;
 grant execute on function public.bump_visits() to anon, authenticated;
 ```
 
+### 5.3 `0003_db_hardening.sql` — fecha exposição do event-trigger
+
+```sql
+-- rls_auto_enable() é função de event trigger (liga RLS em tabela nova). Não
+-- precisa ser chamável pela API. Revogar não quebra o gatilho (roda como dono).
+revoke execute on function public.rls_auto_enable() from anon, authenticated, public;
+```
+
 ---
 
 ## 6. Verificar (como anônimo, pela REST pública)
@@ -214,9 +229,11 @@ PR **#288** — hoje travado num achado de CodeQL que o operador precisa destrav
 Rodar `get_advisors` (MCP) ou o **Advisors** do dashboard após cada DDL:
 
 - ✅ **`bump_visits()` executável por anon (SECURITY DEFINER)** — **intencional** (seção 2).
-- ⚠️ **`public.rls_auto_enable()`** — função `SECURITY DEFINER` executável por anon que
-  **não vem das migrations deste repo**. Origem desconhecida — **revisar** o que faz e se
-  deve mesmo ficar exposta no schema público (revogar `execute` do anon se não for proposital).
+- ✅ **`public.rls_auto_enable()`** — **resolvido pela `0003`**. É uma função de **event
+  trigger** (`ensure_rls`, em `ddl_command_end`) que liga RLS automaticamente em toda
+  tabela nova do `public` (bom trilho de segurança). A `0003` revogou o `EXECUTE` de
+  anon/authenticated/public — o gatilho segue funcionando (roda como dono), só não fica
+  mais exposta como RPC. Os 2 avisos do linter pra ela sumiram.
 - ⚠️ **Leaked Password Protection desligado** (Auth) — opcional ligar
   ([doc](https://supabase.com/docs/guides/auth/password-security)).
 
