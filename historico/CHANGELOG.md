@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-23
 
+### 🔵 Login com Google no `/perfil` + estética sincronizada por usuário (#291)
+- 🔵 Botão **"Entrar com Google"** na nova seção **Conta** do `/perfil`: a pessoa conecta/cria a conta Google e fica logada (deslogado → botão; logado → nome/e-mail/avatar + "Sair").
+- ☁ **Estética por usuário na nuvem**: trocar **tema** ou **skin de universo** logado salva no perfil; abrir o `/perfil` logado **aplica a estética salva** (volta em qualquer dispositivo). Inicializa o perfil com a estética atual se estiver vazio.
+- 🪶 Sem SDK/deps (usa `supabase-auth.js`/`user-prefs.js`). Verificado no navegador: seção Conta + botão com o "G" colorido renderizam; build limpo. O round-trip real do Google depende do **setup do provider no painel** (passos no `docs/SUPABASE.md`).
+- 🛡️ Backup: branch de trabalho.
+
 ### 👤 Contas de usuário — fundação (login Google + preferências na nuvem) (#291)
 - 🔐 **Tabela `profiles` + RLS dono-só** no Supabase (migration `0005`): cada usuário logado terá a **sua estética** (tema + skin de universo), **favoritos** e nome salvos na nuvem, restaurados em qualquer dispositivo. Cada um lê/escreve **só a própria linha** (`auth.uid() = id`); trigger `handle_new_user` cria o perfil no cadastro. Aplicada e verificada (policies/trigger/RLS on; anon GET → `[]`; anon insert → **401**).
 - 🧩 **Cliente de auth sem SDK** (web leve #238): `src/core/supabase-auth.js` (login **Google** via `/auth/v1/authorize`, sessão em localStorage + refresh, captura do retorno OAuth no boot tratando o hash-routing) + `src/core/user-prefs.js` (`loadProfile`/`saveProfile`). Verificado offline: o parsing do retorno OAuth decodifica o JWT e guarda a sessão (`{id,email,meta}`), limpa o hash; smoke do boot ok.
