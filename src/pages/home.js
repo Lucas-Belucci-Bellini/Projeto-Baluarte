@@ -12,6 +12,7 @@ import { appState } from '../core/state.js';
 import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
 import { countVisit } from '../utils/visit-counter.js';
+import { readPageViews } from '../utils/page-views.js';
 import { mountSpline } from '../utils/spline-embed.js';
 import { sceneFor } from '../data/spline-scenes.js';
 import { ARSENAL, TOTAL as ARSENAL_TOTAL } from '../data/arsenal.js';
@@ -150,6 +151,20 @@ function buildBento(onCleanup) {
     acessosLine.style.display = '';
   });
 
+  // Views por página (métrica real no banco). Mostra total + a rota mais vista.
+  const viewsMsg = h('span', { className: 'hv2-vig__msg' }, '…');
+  const viewsLine = h('div', { className: 'hv2-vig', style: { display: 'none' } },
+    h('span', { className: 'hv2-vig__dot' }),
+    h('span', { className: 'hv2-vig__tag' }, 'PÁGINAS'),
+    viewsMsg);
+  readPageViews(1).then((res) => {
+    if (!res || !res.total) return;
+    const top = res.top && res.top[0];
+    viewsMsg.textContent = `${res.total.toLocaleString('pt-BR')} páginas vistas`
+      + (top ? ` · top ${top.route}` : '');
+    viewsLine.style.display = '';
+  });
+
   return h('section', { className: 'hv2-bento' },
     metricCell(onCleanup),
     h('div', { className: 'hv2-cell hv2-cell--ai hv2-cell--link', onclick: () => router.navigate('/git-nexus') },
@@ -167,7 +182,7 @@ function buildBento(onCleanup) {
       h('div', { className: 'hv2-cell__tag' }, '⌖ Vigilância · ao vivo'),
       ...vig.map(([t, m]) => h('div', { className: 'hv2-vig' },
         h('span', { className: 'hv2-vig__dot' }), h('span', { className: 'hv2-vig__tag' }, t), h('span', { className: 'hv2-vig__msg' }, m))),
-      acessosLine),
+      acessosLine, viewsLine),
     h('div', { className: 'hv2-cell hv2-cell--link', onclick: () => router.navigate('/biblioteca') },
       h('div', { className: 'hv2-cell__tag' }, '📖 Crônica em destaque'),
       h('h3', { className: 'hv2-cell__title' }, arco.title || 'Onde os Deuses Sangram'),

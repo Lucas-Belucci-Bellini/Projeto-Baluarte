@@ -26,6 +26,8 @@ import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
 import { initUniverse } from './utils/universe-theme.js';
+import { countPageView } from './utils/page-views.js';
+import { handleAuthRedirect } from './core/supabase-auth.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
 
@@ -129,6 +131,7 @@ router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia
 router.register('/codigo', lazy(() => import('./pages/codigo.js'), 'codigoPage'));
 router.register('/projetos', lazy(() => import('./pages/projetos.js'), 'projetosPage'));
 router.register('/mural', lazy(() => import('./pages/mural.js'), 'muralPage'));
+router.register('/banco', lazy(() => import('./pages/banco.js'), 'bancoPage'));
 router.register('/cerebro', lazyNexus('cerebro'));
 router.register('/ocr', lazy(() => import('./pages/ocr.js'), 'ocrPage'));
 router.register('/memoria', lazyNexus('memoria'));
@@ -157,6 +160,10 @@ bus.on('route:change', ({ view, path }) => {
   if (view) renderPage(view, path);
 });
 
+/* Métrica real: conta 1 view por rota (1x/rota/sessão) no banco (Supabase).
+ * Silencioso e best-effort — não bloqueia o render nem quebra se o banco sumir. */
+bus.on('route:change', ({ path }) => { countPageView(path); });
+
 bus.on('route:notfound', ({ view, path }) => {
   if (view) renderPage(view, path);
 });
@@ -183,6 +190,9 @@ function boot() {
   mountShell(root);
   initToast();
   initShadowGate();
+  /* Se o usuário voltou de um login OAuth (tokens no #fragmento), captura a
+   * sessão e limpa o hash ANTES do router interpretar a URL. No-op normalmente. */
+  handleAuthRedirect();
   router.start('/home');
   setTimeout(() => hxBeacon(), 2000);
   /* Pré-aquece a memória versionada do repositório (best-effort) — mas só no APP

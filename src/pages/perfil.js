@@ -7,15 +7,19 @@
  */
 
 import '../styles/perfil.css';
-import { h } from '../utils/helpers.js';
+import { h, empty } from '../utils/helpers.js';
 import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { router } from '../core/router.js';
 import { VERSION } from '../data/version.js';
+import { readPageViews } from '../utils/page-views.js';
 import { THEMES, getThemeId, setTheme } from '../utils/theme.js';
 import { UNIVERSE_SKINS, getUniverseId, setUniverse } from '../utils/universe-theme.js';
+import { supabaseConfigured } from '../core/supabase.js';
+import { isLoggedIn, currentUser, signInWithGoogle, signOut } from '../core/supabase-auth.js';
+import { loadProfile, saveProfile } from '../core/user-prefs.js';
 
 const STORAGE_KEY = 'perfil:config';
 
@@ -48,6 +52,52 @@ function sectionTitle(icon, title) {
   return h('div', { className: 'pf-section' },
     h('span', { className: 'pf-section__icon' }, icon),
     h('h2', { className: 'pf-section__title' }, title));
+}
+
+/* "G" oficial do Google (4 cores) pro botão de login. */
+const GOOGLE_G_SVG = '<svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+
+/* Seção Conta: login com Google (deslogado) / usuário + Sair (logado).
+ * Re-renderiza sozinha no logout; o login é redirect (recarrega já logado). */
+function accountSection() {
+  const box = h('div', { className: 'pf-account' });
+  function render() {
+    empty(box);
+    if (!supabaseConfigured()) {
+      box.appendChild(h('p', { className: 'u-text-muted', style: { fontSize: '13px' } },
+        'Login indisponível (banco não configurado neste ambiente).'));
+      return;
+    }
+    if (isLoggedIn()) {
+      const u = currentUser() || { meta: {} };
+      const meta = u.meta || {};
+      const name = meta.name || meta.full_name || (u.email || '').split('@')[0] || 'Operador';
+      const avatar = meta.avatar_url || meta.picture;
+      box.appendChild(h('div', { className: 'pf-account__card' },
+        avatar
+          ? h('img', { className: 'pf-account__avatar', src: avatar, alt: '', referrerpolicy: 'no-referrer' })
+          : h('span', { className: 'pf-account__avatar pf-account__avatar--ph' }, (name[0] || '?').toUpperCase()),
+        h('div', { className: 'pf-account__info' },
+          h('div', { className: 'pf-account__name' }, name),
+          u.email && h('div', { className: 'pf-account__email u-text-muted' }, u.email),
+          h('div', { className: 'pf-account__sync u-text-cyan' }, '☁ sua estética e favoritos sincronizam nesta conta')),
+        h('button', {
+          className: 'btn btn--ghost btn--sm',
+          onclick: async () => { await signOut(); toast('Você saiu da conta'); render(); }
+        }, 'Sair')));
+    } else {
+      box.appendChild(h('div', { className: 'pf-account__card' },
+        h('div', { className: 'pf-account__info' },
+          h('div', { className: 'pf-account__name' }, 'Entrar / criar conta'),
+          h('div', { className: 'u-text-muted', style: { fontSize: '13px' } },
+            'Conecte sua conta Google e tenha sua estética (tema + skin de universo) e favoritos salvos na nuvem — em qualquer dispositivo.')),
+        h('button', { className: 'btn-google', onclick: () => signInWithGoogle() },
+          h('span', { className: 'btn-google__g', html: GOOGLE_G_SVG }),
+          'Entrar com Google')));
+    }
+  }
+  render();
+  return box;
 }
 
 export function perfilPage() {
@@ -110,16 +160,31 @@ export function perfilPage() {
 
   page.appendChild(hero);
 
+  /* ---- conta (login Google + estética na nuvem) ---- */
+  page.appendChild(sectionTitle('◉', 'Conta'));
+  page.appendChild(accountSection());
+
   /* ---- estatísticas ---- */
   page.appendChild(sectionTitle('◎', 'Estatísticas do Projeto'));
+  /* Tile dinâmico: views reais do banco (Supabase). Some se o banco não responder. */
+  const viewsStat = h('div', { className: 'pf-stat' },
+    h('div', { className: 'pf-stat__icon' }, '👁'),
+    h('div', { className: 'pf-stat__value' }, '—'),
+    h('div', { className: 'pf-stat__label' }, 'Páginas vistas'));
   page.appendChild(
     h('div', { className: 'pf-stats' },
       ...STATS.map((s) =>
         h('div', { className: 'pf-stat' },
           h('div', { className: 'pf-stat__icon' }, s.icon),
           h('div', { className: 'pf-stat__value' }, s.value),
-          h('div', { className: 'pf-stat__label' }, s.label))))
+          h('div', { className: 'pf-stat__label' }, s.label))),
+      viewsStat)
   );
+  readPageViews(1).then((res) => {
+    if (!res || !res.total) { viewsStat.remove(); return; }
+    const v = viewsStat.querySelector('.pf-stat__value');
+    if (v) v.textContent = res.total.toLocaleString('pt-BR');
+  });
 
   /* ---- acesso rápido ---- */
   page.appendChild(sectionTitle('⊳', 'Acesso Rápido'));
@@ -185,6 +250,7 @@ export function perfilPage() {
               document.querySelectorAll('.pf-theme[data-theme]').forEach((b) =>
                 b.classList.toggle('is-active', b.dataset.theme === t.id));
               toast('Tema: ' + t.label, { type: 'info' });
+              if (isLoggedIn()) saveProfile({ theme: t.id });   // sincroniza na nuvem
             }
           },
             h('span', {
@@ -203,6 +269,7 @@ export function perfilPage() {
               document.querySelectorAll('[data-universe-btn]').forEach((b) =>
                 b.classList.toggle('is-active', b.dataset.universeBtn === u.id));
               toast('Universo: ' + u.label, { type: 'info' });
+              if (isLoggedIn()) saveProfile({ universe: u.id });   // sincroniza na nuvem
             }
           },
             h('span', {
@@ -231,6 +298,21 @@ export function perfilPage() {
           }
         }, '⚠ Limpar todos os dados locais')))
   );
+
+  /* Logado: aplica a estética salva na nuvem (e inicializa o perfil se vazio).
+   * É o que faz "cada um ter sua estética" voltar em qualquer dispositivo. */
+  if (supabaseConfigured() && isLoggedIn()) {
+    loadProfile().then((prof) => {
+      if (!prof) return;
+      if (prof.theme && prof.theme !== getThemeId()) setTheme(prof.theme);
+      if (prof.universe && prof.universe !== getUniverseId()) setUniverse(prof.universe);
+      document.querySelectorAll('.pf-theme[data-theme]').forEach((b) =>
+        b.classList.toggle('is-active', b.dataset.theme === getThemeId()));
+      document.querySelectorAll('[data-universe-btn]').forEach((b) =>
+        b.classList.toggle('is-active', b.dataset.universeBtn === getUniverseId()));
+      if (!prof.theme && !prof.universe) saveProfile({ theme: getThemeId(), universe: getUniverseId() });
+    });
+  }
 
   return page;
 }

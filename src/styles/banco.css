@@ -1,0 +1,70 @@
+/* ============================================================
+ * /banco — Painel do Banco (Baluarte ao vivo, dados do Supabase)
+ * ============================================================ */
+
+.page-banco .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, .22));
+}
+
+.banco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-md);
+}
+
+.banco-tile {
+  position: relative;
+  background: linear-gradient(160deg, var(--color-surface), var(--color-bg-elevated));
+  border: var(--border-base);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  overflow: hidden;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+.banco-tile::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan), transparent);
+  opacity: .7;
+}
+.banco-tile--mag::before { background: linear-gradient(90deg, transparent, var(--color-magenta), transparent); }
+.banco-tile:hover { transform: translateY(-2px); border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
+.banco-tile--mag:hover { border-color: var(--color-magenta-edge); box-shadow: var(--shadow-glow-magenta); }
+
+.banco-tile__icon { font-size: 22px; line-height: 1; }
+.banco-tile__value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-shadow: 0 0 12px rgba(0, 240, 255, .25);
+  margin: 6px 0 2px;
+}
+.banco-tile--mag .banco-tile__value { text-shadow: 0 0 12px rgba(255, 0, 170, .25); }
+.banco-tile__label { color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: var(--tracking-wide, .04em); }
+
+.banco-top { display: flex; flex-direction: column; gap: 8px; }
+.banco-bar { display: flex; align-items: center; gap: 10px; }
+.banco-bar__route {
+  flex: 0 0 38%; min-width: 0; font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.banco-bar__track {
+  flex: 1; height: 8px; border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, .06); overflow: hidden;
+}
+.banco-bar__fill {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  box-shadow: 0 0 8px var(--color-cyan-soft);
+}
+.banco-bar__n { flex: 0 0 auto; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+.banco-foot { line-height: var(--line-height-loose); }
+
+@media (max-width: 600px) {
+  .banco-bar__route { flex-basis: 46%; }
+}

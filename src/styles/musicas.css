@@ -82,3 +82,69 @@
 .page-musicas .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
 .sc-track { transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base); }
 .sc-track.is-active { box-shadow: inset 3px 0 0 var(--color-magenta), var(--shadow-glow-cyan); }
+
+/* ===== Meu Acervo (offline) — toca em qualquer rede (#291 §3) ===== */
+.acervo { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.acervo-badge {
+  color: var(--color-cyan); border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-pill); padding: 1px 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: var(--tracking-wide, .04em);
+  align-self: center;
+}
+
+.acervo__drop {
+  display: flex; align-items: center; gap: var(--space-md);
+  background: linear-gradient(120deg, var(--color-cyan-soft), transparent 65%), var(--color-surface);
+  border: 1px dashed var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: background var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.acervo__drop.is-drag { border-color: var(--color-cyan); background: var(--color-cyan-soft); box-shadow: var(--shadow-glow-cyan); }
+.acervo__drop-ico { font-size: 30px; line-height: 1; flex-shrink: 0; }
+.acervo__drop-text { flex: 1; min-width: 0; }
+.acervo__drop-text strong { color: var(--color-text-primary); display: block; }
+.acervo__drop .btn { margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+
+.acervo__bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.acervo__bar .btn.is-on {
+  color: var(--color-cyan); border-color: var(--color-cyan-edge);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.acervo__audio { width: 100%; height: 40px; border-radius: var(--radius-pill); }
+.acervo__audio:not([src]) { display: none; }
+
+.acervo__list { display: flex; flex-direction: column; gap: 4px; }
+.acervo__track {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--color-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+}
+.acervo__track:hover { background: var(--color-surface); transform: translateX(2px); }
+.acervo__track.is-active {
+  border-color: var(--color-cyan-edge); background: var(--color-cyan-soft);
+  box-shadow: inset 3px 0 0 var(--color-magenta), var(--shadow-glow-cyan);
+}
+.acervo__play, .acervo__rm {
+  background: transparent; border: none; cursor: pointer; flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: var(--radius-sm);
+}
+.acervo__play { color: var(--color-cyan); font-size: 12px; }
+.acervo__rm { color: var(--color-text-muted); font-size: 14px; }
+.acervo__rm:hover { color: var(--color-danger); }
+.acervo__track.is-active .acervo__play { color: var(--color-magenta); }
+.acervo__num { width: 22px; text-align: right; font-size: 12px; flex-shrink: 0; }
+.acervo__meta { flex: 1; min-width: 0; }
+.acervo__title { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acervo__sub { font-size: 11px; }
+.acervo__stats { font-size: 12px; padding: 2px; }
+
+@media (max-width: 600px) {
+  .acervo__drop { flex-wrap: wrap; }
+  .acervo__drop .btn { margin-left: 0; width: 100%; }
+}

@@ -1,0 +1,123 @@
+/**
+ * Auth de usuário — Supabase Auth por `fetch` (sem SDK, web leve #238).
+ *
+ * Login social (Google) via redirect ao endpoint `/auth/v1/authorize`. O Supabase
+ * devolve os tokens no FRAGMENTO da URL (#access_token=…); como o app usa
+ * hash-routing, `handleAuthRedirect()` (chamado no boot, antes do router) lê esses
+ * params, guarda a sessão e limpa o hash. Sessão em localStorage; `getAccessToken()`
+ * renova via refresh_token. A segurança real é o RLS no banco (o token é o JWT do
+ * usuário; `auth.uid()` identifica o dono da linha em `profiles`).
+ */
+
+import { supabaseUrl, supabaseAnonKey, supabaseConfigured } from './supabase.js';
+
+const SESSION_KEY = 'baluarte:auth:session';
+const listeners = new Set();
+
+function loadSession() {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+}
+
+function storeSession(s) {
+  try {
+    if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+    else localStorage.removeItem(SESSION_KEY);
+  } catch { /* sem storage */ }
+  listeners.forEach((fn) => { try { fn(s); } catch { /* listener falhou */ } });
+}
+
+/** Assina mudanças de sessão (login/logout). Devolve uma função pra desassinar. */
+export function onAuthChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
+
+export function isLoggedIn() {
+  const s = loadSession();
+  return !!(s && s.access_token);
+}
+
+/** Lê `{ id, email, meta }` do JWT (decode local, sem verificar — só pra UI). */
+export function currentUser() {
+  const s = loadSession();
+  if (!s || !s.access_token) return null;
+  try {
+    const part = s.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(decodeURIComponent(escape(atob(part))));
+    return {
+      id: payload.sub,
+      email: payload.email || '',
+      meta: payload.user_metadata || {}
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Inicia login com Google (redirect). O redirectTo precisa estar no allow-list do Supabase. */
+export function signInWithGoogle() {
+  if (!supabaseConfigured()) return;
+  const redirectTo = window.location.origin + window.location.pathname; // sem hash
+  window.location.href =
+    `${supabaseUrl()}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
+}
+
+/** Encerra a sessão (revoga no servidor, best-effort, e limpa local). */
+export async function signOut() {
+  const s = loadSession();
+  if (s && s.access_token) {
+    try {
+      await fetch(`${supabaseUrl()}/auth/v1/logout`, {
+        method: 'POST',
+        headers: { apikey: supabaseAnonKey(), authorization: `Bearer ${s.access_token}` }
+      });
+    } catch { /* offline: limpa local mesmo assim */ }
+  }
+  storeSession(null);
+}
+
+/** Devolve um access_token válido (renova se perto de expirar), ou null. */
+export async function getAccessToken() {
+  const s = loadSession();
+  if (!s || !s.refresh_token) return null;
+  const now = Math.floor(Date.now() / 1000);
+  if (s.access_token && s.expires_at && s.expires_at - 60 > now) return s.access_token;
+  try {
+    const res = await fetch(`${supabaseUrl()}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: { apikey: supabaseAnonKey(), 'content-type': 'application/json' },
+      body: JSON.stringify({ refresh_token: s.refresh_token })
+    });
+    if (!res.ok) { storeSession(null); return null; }
+    const data = await res.json();
+    storeSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token || s.refresh_token,
+      expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
+    });
+    return data.access_token;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Captura a sessão ao voltar do OAuth (tokens no #fragmento). No-op em navegação
+ * normal (hash de rota tipo `#/home` não casa). Chamar 1x no boot, ANTES do router.
+ * Devolve true se logou agora.
+ */
+export function handleAuthRedirect() {
+  const hash = window.location.hash || '';
+  if (!/(?:^|#|&)(access_token|error)=/.test(hash)) return false;
+
+  const params = new URLSearchParams(hash.replace(/^#/, ''));
+  const access_token = params.get('access_token');
+  const refresh_token = params.get('refresh_token');
+  const expires_in = parseInt(params.get('expires_in') || '3600', 10);
+
+  /* Limpa o hash do OAuth e manda pra home (não deixa token na URL). */
+  try { history.replaceState(null, '', window.location.pathname + window.location.search + '#/home'); } catch { /* ok */ }
+
+  if (access_token && refresh_token) {
+    storeSession({ access_token, refresh_token, expires_at: Math.floor(Date.now() / 1000) + expires_in });
+    return true;
+  }
+  return false;
+}

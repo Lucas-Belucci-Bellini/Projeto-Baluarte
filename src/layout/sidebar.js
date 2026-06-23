@@ -156,7 +156,8 @@ export const NAV_GROUPS = [
   {
     label: 'Sistema',
     items: [
-      { path: '/ferramentas', label: 'Hub de Ferramentas', icon: '⚙', phase: 1 }
+      { path: '/ferramentas', label: 'Hub de Ferramentas', icon: '⚙', phase: 1 },
+      { path: '/banco',       label: 'Painel do Banco',     icon: '🗄', phase: 1 }
     ]
   }
 ];

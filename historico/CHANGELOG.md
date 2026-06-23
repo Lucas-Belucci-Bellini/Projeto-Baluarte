@@ -6,7 +6,54 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-23
+
+### 🔵 Login com Google no `/perfil` + estética sincronizada por usuário (#291)
+- 🔵 Botão **"Entrar com Google"** na nova seção **Conta** do `/perfil`: a pessoa conecta/cria a conta Google e fica logada (deslogado → botão; logado → nome/e-mail/avatar + "Sair").
+- ☁ **Estética por usuário na nuvem**: trocar **tema** ou **skin de universo** logado salva no perfil; abrir o `/perfil` logado **aplica a estética salva** (volta em qualquer dispositivo). Inicializa o perfil com a estética atual se estiver vazio.
+- 🪶 Sem SDK/deps (usa `supabase-auth.js`/`user-prefs.js`). Verificado no navegador: seção Conta + botão com o "G" colorido renderizam; build limpo. O round-trip real do Google depende do **setup do provider no painel** (passos no `docs/SUPABASE.md`).
+- 🛡️ Backup: branch de trabalho.
+
+### 👤 Contas de usuário — fundação (login Google + preferências na nuvem) (#291)
+- 🔐 **Tabela `profiles` + RLS dono-só** no Supabase (migration `0005`): cada usuário logado terá a **sua estética** (tema + skin de universo), **favoritos** e nome salvos na nuvem, restaurados em qualquer dispositivo. Cada um lê/escreve **só a própria linha** (`auth.uid() = id`); trigger `handle_new_user` cria o perfil no cadastro. Aplicada e verificada (policies/trigger/RLS on; anon GET → `[]`; anon insert → **401**).
+- 🧩 **Cliente de auth sem SDK** (web leve #238): `src/core/supabase-auth.js` (login **Google** via `/auth/v1/authorize`, sessão em localStorage + refresh, captura do retorno OAuth no boot tratando o hash-routing) + `src/core/user-prefs.js` (`loadProfile`/`saveProfile`). Verificado offline: o parsing do retorno OAuth decodifica o JWT e guarda a sessão (`{id,email,meta}`), limpa o hash; smoke do boot ok.
+- 🛡️ Higiene: revogado o `EXECUTE` da função de trigger `handle_new_user` (igual à `0003`), pra não expor como RPC. Advisors seguem só com os by-design (`bump_visits`/`bump_view`) + o toggle de Auth.
+- 📄 `docs/SUPABASE.md`: schema `profiles` + **passos do Google no painel** (parte do operador) + fluxo de auth.
+- ⏭️ Próxima fatia: botão "Entrar com Google" no `/perfil` + sincronizar tema/universo/favoritos por usuário (testável ao vivo após o setup do Google). 🛡️ Backup: branch de trabalho.
+
 ## 2026-06-22
+
+### 🗄️ Página `/banco` — Painel do Banco (Baluarte ao vivo) (#291)
+- 📊 Nova rota **`/banco`** (sidebar → Sistema): painel que lê **números reais do Supabase** por leitura pública (RLS) — **visitas**, **páginas vistas** (total + distintas), **top páginas** (com barras) e **posts no mural**. Faz toda a fundação do banco aparecer no próprio site, sem abrir o dashboard.
+- 🪶 Read-only, sem dependências (chunk **3.2 kB / 1.4 kB gz**, lazy). Degrada em silêncio se o banco não responder (tiles viram "—" + aviso). Ícone de linha próprio na sidebar (`database`).
+- ✅ Verificado no navegador: header/tiles/seções renderizam; estado de indisponível confirmado (o browser do sandbox de teste não alcança o banco — popula em produção, igual ao contador de acessos). Build limpo.
+
+### 📊 Métricas reais — views por página no banco (#291)
+- 👁 **Contagem de views por página** gravada no Supabase (reusa `site_stats`, chaves `view:/rota`), exibida no **Home** (linha "PÁGINAS · N páginas vistas · top /rota") e numa **tile do `/perfil`** ("Páginas vistas"). Número real, global e durável.
+- 🔐 **Escrita anônima SEGURA + validada**: nova função `bump_view(rota)` (`SECURITY DEFINER`) incrementa a chave da rota e **valida a rota** (`^/[a-z0-9/_-]{0,63}$`) pra não criar chave-lixo. Verificado por REST: incrementa (1→2), rota inválida → **400 "rota invalida"**, escrita direta → **401** (RLS). Migration `0004_page_views`.
+- 🪶 **web leve (#238)**: o cliente (`page-views.js`) conta **1×/rota/sessão** (guard em `sessionStorage`) no `route:change`; depois só lê. ~1 KB no boot.
+- 🛟 **Zero regressão**: sem Supabase/aplicação/offline, as métricas somem sem ruído (linha oculta no Home, tile some no `/perfil`). Verificado: build limpo + degradação graciosa quando o banco não responde.
+- 🛡️ Backup: branch de trabalho preservada.
+
+### 🛡️ Banco — hardening: fecha a exposição do event-trigger `rls_auto_enable` (#291)
+- 🔒 **Migration `0003_db_hardening` aplicada**: revoga o `EXECUTE` (anon/authenticated/public) da função `rls_auto_enable()`. Auditando o banco, descobri que ela é um **event trigger** (`ensure_rls`, em `ddl_command_end`) que **liga RLS automaticamente em toda tabela nova** do `public` — ótimo trilho de segurança, mas que **não precisava ficar exposta como RPC** (`/rest/v1/rpc/rls_auto_enable`). Revogar **não quebra** o gatilho (event trigger roda como dono).
+- ✅ **Resultado:** os **2 avisos** do advisor de segurança pra essa função **sumiram** (5→3 lints). Os 2 restantes do `bump_visits` são **by-design** (escrita anônima segura do contador) e o de "leaked password" é toggle de Auth. Verificado: `has_function_privilege('anon',…)` → `false` depois; `bump_visits` mantém o anon.
+- 📄 `docs/SUPABASE.md` atualizado (migration `0003` + SQL copy-paste + explicação do event trigger + status dos advisors). Auditoria completa do schema (tabelas/policies/funções/event triggers) feita via MCP.
+- 🛡️ Backup: branch de trabalho preservada.
+
+### 🎧 Música — "Meu Acervo" offline, toca em qualquer rede (#291 §3)
+- 🎵 Nova seção **Meu Acervo** no topo da `/musicas`: você **adiciona seus próprios arquivos de áudio** (arrastar ou escolher) e eles tocam **offline, em qualquer rede** — inclusive nas que bloqueiam Spotify/YouTube. Cumpre o objetivo norteador do operador ("ouvir em qualquer lugar, **independente do WiFi**"), que embed de serviço externo nunca garante.
+- 🗄️ Os arquivos ficam **só no aparelho** (IndexedDB) — nada sobe pra rede, nada pesa no bundle (#238 web leve). Player nativo `<audio>` com playlist, **próxima/anterior**, **repetir lista** e **remover**; a lista e a preferência de loop persistem.
+- 🆕 `src/utils/offline-audio.js` (store IndexedDB: add/list/get/remove/clear, sem dependências) + seção em `src/pages/musicas.js` + estilos no padrão dos tokens (`musicas.css`).
+- ✅ Verificado no navegador: a seção renderiza após o herói (badge "offline · qualquer rede", dropzone, player, lista) e o **round-trip no IndexedDB funciona** (adicionar → listar → ler blob 4096 B → remover). Build limpo (chunk `musicas` 19.6 kB / 7.3 kB gz).
+- ⏭️ Próximo da §3 (separado): proxy serverless pro **Rádio** ao vivo e cache de áudio no service worker. 🛡️ Backup: branch de trabalho preservada.
+
+### 🗄️ Migration do contador aplicada no banco + `docs/SUPABASE.md` (#291)
+- ✅ **`0002_site_stats` aplicada no projeto Supabase oficial** (via MCP): a tabela `site_stats` e a função `bump_visits()` agora **existem de fato** — então a linha **"👁 N visitas ao Baluarte"** no Home passa a mostrar número real. Antes a migration estava só versionada no repo, **não aplicada** (era o bloqueio anotado em #290/#291).
+- 🔐 **Verificado ponta-a-ponta como anônimo** (REST pública): leitura do contador → **200**; `rpc/bump_visits` → **200** (incrementa); **escrita direta na tabela → 401** (RLS bloqueia). Contador **zerado** ao final (as visitas reais começam limpas).
+- 📄 **`docs/SUPABASE.md`** (novo) — fonte única do backend: projeto/credenciais (públicas por design), **postura RLS**, estado das migrations, **3 jeitos de aplicar** (dashboard · MCP · CLI), o **SQL copy-paste** de `0001`/`0002`, verificação por `curl` e o passo do login OTP (#288). Atende ao pedido da **#291 §2**.
+- ⚠️ **Advisor (registrado pra revisar)**: existe uma função pré-existente `public.rls_auto_enable()` (SECURITY DEFINER, executável por anon) que **não vem das migrations do repo** — origem a checar. O aviso sobre `bump_visits()` ser executável por anon é **intencional** (escrita anônima segura).
+- 🛡️ Sem mudança de código de runtime (doc + changelog); a aplicação da migration é no banco. Branch de trabalho preservada como backup.
 
 ### 🗄️ Contador de acessos no banco oficial (Supabase) — primeira escrita pública
 - 👁 **Contador global de acessos** gravado no Supabase, exibido na célula "Vigilância · ao vivo" do Home (`N visitas ao Baluarte`). Número **real**, global, cross-device e durável — não o localStorage por-navegador.

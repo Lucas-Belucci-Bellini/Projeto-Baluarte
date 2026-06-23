@@ -183,3 +183,37 @@
 .pf-toggle__desc { font-size: 12px; margin-top: 2px; }
 .pf-toggle input { width: 18px; height: 18px; accent-color: var(--color-cyan); flex: none; cursor: pointer; }
 .pf-danger { margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--color-danger-soft); }
+
+/* ---- Conta (login Google) ---- */
+.pf-account__card {
+  display: flex; align-items: center; gap: var(--space-md);
+  background: var(--color-surface); border: var(--border-base);
+  border-radius: var(--radius-md); padding: var(--space-md);
+}
+.pf-account__info { flex: 1; min-width: 0; }
+.pf-account__name { font-weight: 700; color: var(--color-text-primary); }
+.pf-account__email { font-size: 12px; word-break: break-all; }
+.pf-account__sync { font-size: 12px; margin-top: 2px; }
+.pf-account__avatar {
+  width: 48px; height: 48px; border-radius: 50%; flex: none; object-fit: cover;
+  border: 1px solid var(--color-cyan-edge);
+}
+.pf-account__avatar--ph {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-cyan-soft); color: var(--color-cyan);
+  font-weight: 700; font-size: 20px;
+}
+.btn-google {
+  display: inline-flex; align-items: center; gap: 10px; flex: none;
+  background: #fff; color: #1f1f1f; border: 1px solid #dadce0;
+  border-radius: var(--radius-pill); padding: 10px 18px;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+.btn-google:hover { box-shadow: 0 1px 10px rgba(0, 0, 0, 0.4); transform: translateY(-1px); }
+.btn-google__g { display: inline-flex; }
+
+@media (max-width: 560px) {
+  .pf-account__card { flex-wrap: wrap; }
+  .btn-google { width: 100%; justify-content: center; }
+}
