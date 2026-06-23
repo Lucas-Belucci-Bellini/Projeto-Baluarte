@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-22
 
+### 🗄️ Página `/banco` — Painel do Banco (Baluarte ao vivo) (#291)
+- 📊 Nova rota **`/banco`** (sidebar → Sistema): painel que lê **números reais do Supabase** por leitura pública (RLS) — **visitas**, **páginas vistas** (total + distintas), **top páginas** (com barras) e **posts no mural**. Faz toda a fundação do banco aparecer no próprio site, sem abrir o dashboard.
+- 🪶 Read-only, sem dependências (chunk **3.2 kB / 1.4 kB gz**, lazy). Degrada em silêncio se o banco não responder (tiles viram "—" + aviso). Ícone de linha próprio na sidebar (`database`).
+- ✅ Verificado no navegador: header/tiles/seções renderizam; estado de indisponível confirmado (o browser do sandbox de teste não alcança o banco — popula em produção, igual ao contador de acessos). Build limpo.
+
 ### 📊 Métricas reais — views por página no banco (#291)
 - 👁 **Contagem de views por página** gravada no Supabase (reusa `site_stats`, chaves `view:/rota`), exibida no **Home** (linha "PÁGINAS · N páginas vistas · top /rota") e numa **tile do `/perfil`** ("Páginas vistas"). Número real, global e durável.
 - 🔐 **Escrita anônima SEGURA + validada**: nova função `bump_view(rota)` (`SECURITY DEFINER`) incrementa a chave da rota e **valida a rota** (`^/[a-z0-9/_-]{0,63}$`) pra não criar chave-lixo. Verificado por REST: incrementa (1→2), rota inválida → **400 "rota invalida"**, escrita direta → **401** (RLS). Migration `0004_page_views`.
