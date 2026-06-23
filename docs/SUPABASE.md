@@ -74,6 +74,7 @@ Versionadas em `supabase/migrations/`. Idempotentes (podem rodar mais de uma vez
 | `0002_site_stats.sql` | tabela `site_stats` + função `bump_visits()` (contador #290) | ✅ aplicada (22/06/2026, migration `site_stats`) |
 | `0003_db_hardening.sql` | revoga `EXECUTE` público do event-trigger `rls_auto_enable()` | ✅ aplicada (22/06/2026, migration `db_hardening`) |
 | `0004_page_views.sql` | função `bump_view(rota)` — views por página em `site_stats` (chaves `view:/rota`) | ✅ aplicada (22/06/2026, migration `page_views`) |
+| `0005_profiles.sql` | contas de usuário: `profiles` (RLS dono-só) + trigger de criação no signup | ✅ aplicada (23/06/2026, migration `profiles`) |
 
 Conferir o estado a qualquer momento (sessão com Supabase MCP):
 `list_tables` (tabelas + RLS) e `list_migrations` (histórico aplicado).
@@ -213,6 +214,12 @@ revoke all on function public.bump_view(text) from public;
 grant execute on function public.bump_view(text) to anon, authenticated;
 ```
 
+### 5.5 `0005_profiles.sql` — contas de usuário
+
+Cria `profiles` (RLS **dono-só** por `auth.uid()`) + trigger `handle_new_user`
+(cria o perfil no cadastro) + revoga o `EXECUTE` da função de trigger. SQL completo
+no arquivo `supabase/migrations/0005_profiles.sql`.
+
 ---
 
 ## 6. Verificar (como anônimo, pela REST pública)
@@ -270,7 +277,31 @@ Rodar `get_advisors` (MCP) ou o **Advisors** do dashboard após cada DDL:
 
 ---
 
+## 9. Contas de usuário — login (Google) + preferências (#291)
+
+Cada visitante pode **logar com Google** e ter a **sua estética** (tema + skin de
+universo) e **favoritos** salvos na nuvem, restaurados em qualquer dispositivo.
+
+- **Tabela `profiles`** (`0005`): `id` (= `auth.users.id`), `display_name`, `theme`,
+  `universe`, `favorites jsonb`, `prefs jsonb`. **RLS dono-só** (`auth.uid() = id`).
+  Trigger `handle_new_user` cria o perfil no cadastro.
+- **Cliente** (sem SDK): `src/core/supabase-auth.js` (login Google via
+  `/auth/v1/authorize`, sessão em localStorage + refresh) + `src/core/user-prefs.js`
+  (`loadProfile`/`saveProfile`). Sem login → modo local, sem regressão.
+
+### ⚙️ Setup do Google (uma vez, no painel — só o operador faz)
+1. **Google Cloud Console** → APIs & Services → Credentials → **Create OAuth client ID**
+   → **Web application**. Em *Authorized redirect URIs* adicione:
+   `https://hcwzsxdcvmswebunznak.supabase.co/auth/v1/callback`. Copie **Client ID** + **Client Secret**.
+2. **Supabase** → Authentication → **Providers → Google** → ative e cole o Client ID + Secret.
+3. **Supabase** → Authentication → **URL Configuration** → *Redirect URLs* → adicione
+   `https://projeto-baluarte.vercel.app/**` e `http://localhost:5173/**`.
+
+Feito isso, o botão "Entrar com Google" (próxima fatia) funciona ponta a ponta.
+
+---
+
 ## Refs
 #187 (mural) · #287 (mural no banco) · #288 (login do dono/OTP) · #290 (contador) ·
 #291 (regras/backlog) · #238 (web leve). Código: `src/core/supabase.js` ·
-migrations: `supabase/migrations/`.
+`src/core/supabase-auth.js` · `src/core/user-prefs.js` · migrations: `supabase/migrations/`.

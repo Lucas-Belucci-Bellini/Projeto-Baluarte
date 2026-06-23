@@ -6,6 +6,15 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-23
+
+### 👤 Contas de usuário — fundação (login Google + preferências na nuvem) (#291)
+- 🔐 **Tabela `profiles` + RLS dono-só** no Supabase (migration `0005`): cada usuário logado terá a **sua estética** (tema + skin de universo), **favoritos** e nome salvos na nuvem, restaurados em qualquer dispositivo. Cada um lê/escreve **só a própria linha** (`auth.uid() = id`); trigger `handle_new_user` cria o perfil no cadastro. Aplicada e verificada (policies/trigger/RLS on; anon GET → `[]`; anon insert → **401**).
+- 🧩 **Cliente de auth sem SDK** (web leve #238): `src/core/supabase-auth.js` (login **Google** via `/auth/v1/authorize`, sessão em localStorage + refresh, captura do retorno OAuth no boot tratando o hash-routing) + `src/core/user-prefs.js` (`loadProfile`/`saveProfile`). Verificado offline: o parsing do retorno OAuth decodifica o JWT e guarda a sessão (`{id,email,meta}`), limpa o hash; smoke do boot ok.
+- 🛡️ Higiene: revogado o `EXECUTE` da função de trigger `handle_new_user` (igual à `0003`), pra não expor como RPC. Advisors seguem só com os by-design (`bump_visits`/`bump_view`) + o toggle de Auth.
+- 📄 `docs/SUPABASE.md`: schema `profiles` + **passos do Google no painel** (parte do operador) + fluxo de auth.
+- ⏭️ Próxima fatia: botão "Entrar com Google" no `/perfil` + sincronizar tema/universo/favoritos por usuário (testável ao vivo após o setup do Google). 🛡️ Backup: branch de trabalho.
+
 ## 2026-06-22
 
 ### 🗄️ Página `/banco` — Painel do Banco (Baluarte ao vivo) (#291)

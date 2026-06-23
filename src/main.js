@@ -27,6 +27,7 @@ import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
 import { initUniverse } from './utils/universe-theme.js';
 import { countPageView } from './utils/page-views.js';
+import { handleAuthRedirect } from './core/supabase-auth.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
 
@@ -189,6 +190,9 @@ function boot() {
   mountShell(root);
   initToast();
   initShadowGate();
+  /* Se o usuário voltou de um login OAuth (tokens no #fragmento), captura a
+   * sessão e limpa o hash ANTES do router interpretar a URL. No-op normalmente. */
+  handleAuthRedirect();
   router.start('/home');
   setTimeout(() => hxBeacon(), 2000);
   /* Pré-aquece a memória versionada do repositório (best-effort) — mas só no APP
