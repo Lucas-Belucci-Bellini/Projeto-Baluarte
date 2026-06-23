@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-23
 
+### 🛒 Loja do Baluarte — página `/loja` (Shopify · print-on-demand) (#291)
+- 🛍️ Nova rota **`/loja`** (sidebar → Início): lê o catálogo do **Shopify** (Storefront API, token público) e mostra os produtos com capa/preço; **Comprar** leva ao checkout seguro do Shopify. Modelo **print-on-demand / dropshipping** — vender **sem estoque** (o fornecedor produz e envia sob demanda).
+- 🪶 Web leve (#238): GraphQL via `fetch`, **sem SDK/deps** (chunk 1.1 kB). Config por env (`VITE_SHOPIFY_DOMAIN`/`VITE_SHOPIFY_STOREFRONT_TOKEN`); sem isso, mostra **"Loja em configuração"** (zero regressão). Cliente em `src/core/shopify.js`.
+- ✅ Verificado no navegador: header/estado/entrada na sidebar renderizam; build limpo. Falta só **conectar a loja Shopify** (criar loja + app de POD tipo Printful + token) pra os produtos aparecerem.
+
 ### 🔵 Login com Google no `/perfil` + estética sincronizada por usuário (#291)
 - 🔵 Botão **"Entrar com Google"** na nova seção **Conta** do `/perfil`: a pessoa conecta/cria a conta Google e fica logada (deslogado → botão; logado → nome/e-mail/avatar + "Sair").
 - ☁ **Estética por usuário na nuvem**: trocar **tema** ou **skin de universo** logado salva no perfil; abrir o `/perfil` logado **aplica a estética salva** (volta em qualquer dispositivo). Inicializa o perfil com a estética atual se estiver vazio.

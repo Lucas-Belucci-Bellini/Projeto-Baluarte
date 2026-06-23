@@ -1,0 +1,60 @@
+/* ============================================================
+ * /loja — Loja do Baluarte (Shopify Storefront, print-on-demand)
+ * ============================================================ */
+
+.page-loja .page-header__title {
+  background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, .22));
+}
+
+.loja-status { padding: 2px; }
+
+.loja-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.loja-card {
+  display: flex; flex-direction: column;
+  background: linear-gradient(160deg, var(--color-surface), var(--color-bg-elevated));
+  border: var(--border-base); border-radius: var(--radius-md);
+  overflow: hidden; text-decoration: none; color: inherit;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+.loja-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-cyan-edge);
+  box-shadow: var(--shadow-glow-cyan);
+}
+.loja-card__img {
+  position: relative; aspect-ratio: 1 / 1; overflow: hidden;
+  background: var(--color-bg-elevated);
+  display: flex; align-items: center; justify-content: center;
+}
+.loja-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.loja-card__ph { font-size: 42px; opacity: .5; }
+
+.loja-card__body { padding: var(--space-sm) var(--space-md) var(--space-md); display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.loja-card__title {
+  font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-primary);
+  line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.loja-card__foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.loja-card__price { font-weight: 700; color: var(--color-text-primary); }
+.loja-card__btn {
+  font-size: 12px; font-weight: 600; color: var(--color-cyan);
+  border: 1px solid var(--color-cyan-edge); border-radius: var(--radius-pill);
+  padding: 3px 10px; white-space: nowrap;
+}
+.loja-card:hover .loja-card__btn { background: var(--color-cyan-soft); }
+
+.loja-empty {
+  grid-column: 1 / -1;
+  text-align: center; padding: var(--space-2xl) var(--space-md);
+  border: 1px dashed var(--color-cyan-edge); border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--color-cyan-soft), transparent 70%);
+}
+.loja-empty__icon { font-size: 44px; }
+.loja-empty__title { margin: var(--space-sm) 0 4px; color: var(--color-text-primary); }
