@@ -1,0 +1,358 @@
+const PROXY_LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"])
+const DEV_APP_ORIGIN = "https://app.dev.supermemory.ai"
+const PROD_APP_ORIGIN = "https://app.supermemory.ai"
+
+export function getAppOriginForCurrentEnvironment(hostname?: string): string {
+	const currentHostname =
+		hostname ?? (typeof window !== "undefined" ? window.location.hostname : "")
+	const normalized = currentHostname.toLowerCase()
+	const isLocalOrDev =
+		process.env.NODE_ENV !== "production" ||
+		PROXY_LOCAL_HOSTS.has(normalized) ||
+		normalized.includes("app.dev.supermemory")
+
+	return isLocalOrDev ? DEV_APP_ORIGIN : PROD_APP_ORIGIN
+}
+
+export function getBillingSettingsUrl(hostname?: string): string {
+	return `${getAppOriginForCurrentEnvironment(hostname)}/settings#billing`
+}
+
+/** Reconstruct the browser-facing URL when running behind portless (or similar). */
+export function getPublicRequestUrl(request: Request): URL {
+	const internal = new URL(request.url)
+	const forwardedHost = request.headers
+		.get("x-forwarded-host")
+		?.split(",")[0]
+		?.trim()
+	if (forwardedHost) {
+		const proto = request.headers.get("x-forwarded-proto") || "https"
+		return new URL(
+			`${proto}://${forwardedHost}${internal.pathname}${internal.search}`,
+		)
+	}
+	const portlessUrl = process.env.PORTLESS_URL
+	if (portlessUrl) {
+		try {
+			const base = new URL(portlessUrl)
+			return new URL(`${base.origin}${internal.pathname}${internal.search}`)
+		} catch {}
+	}
+	return internal
+}
+
+/** Map portless proxy localhost redirects back to the current public origin. */
+export function resolveAuthRedirectUrl(
+	redirectUrl: string | null,
+	origin: string,
+): URL {
+	const fallback = new URL(origin)
+	if (!redirectUrl) return fallback
+	try {
+		const target = new URL(redirectUrl)
+		if (PROXY_LOCAL_HOSTS.has(target.hostname)) {
+			return new URL(`${target.pathname}${target.search}`, origin)
+		}
+		if (target.origin === origin) return target
+		return fallback
+	} catch {
+		return fallback
+	}
+}
+
+/**
+ * Validates if a string is a valid URL.
+ */
+export const isValidUrl = (url: string): boolean => {
+	try {
+		new URL(url)
+		return true
+	} catch {
+		return false
+	}
+}
+
+/**
+ * Normalizes a URL by adding https:// prefix if missing.
+ */
+export const normalizeUrl = (url: string): string => {
+	if (!url.trim()) return ""
+	if (url.startsWith("http://") || url.startsWith("https://")) {
+		return url
+	}
+	return `https://${url}`
+}
+
+const URL_TOKEN_REGEX =
+	/(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:[/?#][^\s<>[\]"'`]*)?/g
+const MARKDOWN_LINK_REGEX = /\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/g
+const ANGLE_LINK_REGEX = /<(https?:\/\/[^\s>]+)>/g
+
+/** Pull every distinct URL out of a free-text blob; handles markdown `[t](url)`, `<url>`, and bare links. */
+export const extractUrls = (
+	text: string,
+): { urls: string[]; duplicates: number } => {
+	if (!text.trim()) return { urls: [], duplicates: 0 }
+	const unwrapped = text
+		.replace(MARKDOWN_LINK_REGEX, " $1 ")
+		.replace(ANGLE_LINK_REGEX, " $1 ")
+	const matches = unwrapped.match(URL_TOKEN_REGEX) ?? []
+	const seen = new Set<string>()
+	const urls: string[] = []
+	let duplicates = 0
+	for (const match of matches) {
+		let trimmed = match.trim().replace(/[.,;!]+$/, "")
+		const opens = (trimmed.match(/\(/g) ?? []).length
+		const closes = (trimmed.match(/\)/g) ?? []).length
+		if (closes > opens && trimmed.endsWith(")")) {
+			trimmed = trimmed.replace(/\)+$/, "").replace(/[.,;!]+$/, "")
+		}
+		const normalized = normalizeUrl(trimmed)
+		if (!isValidUrl(normalized)) continue
+		const key = normalized.toLowerCase().replace(/\/+$/, "")
+		if (seen.has(key)) {
+			duplicates++
+			continue
+		}
+		seen.add(key)
+		urls.push(normalized)
+	}
+	return { urls, duplicates }
+}
+
+/**
+ * Checks if a URL is a Twitter/X URL.
+ */
+export const isTwitterUrl = (url: string): boolean => {
+	const normalizedUrl = url.toLowerCase()
+	return (
+		normalizedUrl.includes("twitter.com") || normalizedUrl.includes("x.com")
+	)
+}
+
+/**
+ * Checks if a URL is a LinkedIn profile URL (not a company page).
+ */
+export const isLinkedInProfileUrl = (url: string): boolean => {
+	const normalizedUrl = url.toLowerCase()
+	return (
+		normalizedUrl.includes("linkedin.com/in/") &&
+		!normalizedUrl.includes("linkedin.com/company/")
+	)
+}
+
+/**
+ * Collects and validates URLs from LinkedIn profile and other links, excluding Twitter.
+ */
+export const collectValidUrls = (
+	linkedinProfile: string,
+	otherLinks: string[],
+): string[] => {
+	const urls: string[] = []
+
+	if (linkedinProfile.trim()) {
+		const normalizedLinkedIn = normalizeUrl(linkedinProfile.trim())
+		if (
+			isValidUrl(normalizedLinkedIn) &&
+			isLinkedInProfileUrl(normalizedLinkedIn)
+		) {
+			urls.push(normalizedLinkedIn)
+		}
+	}
+
+	otherLinks
+		.filter((link) => link.trim())
+		.forEach((link) => {
+			const normalizedLink = normalizeUrl(link.trim())
+			if (isValidUrl(normalizedLink) && !isTwitterUrl(normalizedLink)) {
+				urls.push(normalizedLink)
+			}
+		})
+
+	return urls
+}
+
+/**
+ * Extracts X/Twitter handle from various input formats (URLs, handles with @, etc.).
+ */
+export function parseXHandle(input: string): string {
+	if (!input.trim()) return ""
+
+	let value = input.trim()
+
+	if (value.startsWith("@")) {
+		value = value.slice(1)
+	}
+
+	const lowerValue = value.toLowerCase()
+	if (lowerValue.includes("x.com") || lowerValue.includes("twitter.com")) {
+		try {
+			let url: URL
+			if (value.startsWith("http://") || value.startsWith("https://")) {
+				url = new URL(value)
+			} else {
+				url = new URL(`https://${value}`)
+			}
+
+			const pathSegments = url.pathname.split("/").filter(Boolean)
+			if (pathSegments.length > 0) {
+				const firstSegment = pathSegments[0]
+				if (firstSegment && firstSegment !== "status" && firstSegment !== "i") {
+					return firstSegment
+				}
+			}
+		} catch {
+			const match = value.match(/(?:x\.com|twitter\.com)\/([^/\s?#]+)/i)
+			const handle = match?.[1]
+			if (handle && handle !== "status") {
+				return handle
+			}
+		}
+	}
+
+	if (
+		value.includes("/") &&
+		!lowerValue.includes("x.com") &&
+		!lowerValue.includes("twitter.com")
+	) {
+		const parts = value.split("/").filter(Boolean)
+		const firstPart = parts[0]
+		if (firstPart) {
+			return firstPart
+		}
+	}
+
+	return value
+}
+
+/**
+ * Extracts LinkedIn handle from various input formats (URLs, handles with @, etc.).
+ */
+export function parseLinkedInHandle(input: string): string {
+	if (!input.trim()) return ""
+
+	let value = input.trim()
+
+	if (value.startsWith("@")) {
+		value = value.slice(1)
+	}
+
+	const lowerValue = value.toLowerCase()
+	if (lowerValue.includes("linkedin.com")) {
+		try {
+			let url: URL
+			if (value.startsWith("http://") || value.startsWith("https://")) {
+				url = new URL(value)
+			} else {
+				url = new URL(`https://${value}`)
+			}
+
+			const pathMatch = url.pathname.match(/\/(in|pub)\/([^/\s?#]+)/i)
+			const handle = pathMatch?.[2]
+			if (handle) {
+				return handle
+			}
+		} catch {
+			const match = value.match(/linkedin\.com\/(?:in|pub)\/([^/\s?#]+)/i)
+			const handle = match?.[1]
+			if (handle) {
+				return handle
+			}
+		}
+	}
+
+	if (value.includes("/in/") || value.includes("/pub/")) {
+		const match = value.match(/\/(?:in|pub)\/([^/\s?#]+)/i)
+		const handle = match?.[1]
+		if (handle) {
+			return handle
+		}
+	}
+
+	return value
+}
+
+/**
+ * Converts X/Twitter handle to full profile URL.
+ */
+export function toXProfileUrl(handle: string): string {
+	if (!handle.trim()) return ""
+	return `https://x.com/${handle.trim()}`
+}
+
+/**
+ * Converts LinkedIn handle to full profile URL.
+ */
+export function toLinkedInProfileUrl(handle: string): string {
+	if (!handle.trim()) return ""
+	return `https://linkedin.com/in/${handle.trim()}`
+}
+
+/**
+ * Checks if a URL points to a supermemory-hosted file.
+ * Matches the public bucket domain (files.supermemory.ai) and
+ * presigned R2 URLs whose hostname ends with `.r2.cloudflarestorage.com`.
+ *
+ * Note: The R2 check is intentionally broad — it matches any Cloudflare R2
+ * presigned URL, not only supermemory's account.  This is acceptable because
+ * the function is only called on `document.url` values returned by our own
+ * backend, where all R2 URLs originate from the supermemory bucket.
+ * If user-supplied external R2 URLs ever appear in this field, tighten the
+ * check by also validating the account-id subdomain or the bucket path prefix.
+ */
+export const isSupermemoryFileUrl = (url: string): boolean => {
+	try {
+		const parsed = new URL(url)
+		if (parsed.hostname === "files.supermemory.ai") return true
+		if (parsed.hostname.endsWith(".r2.cloudflarestorage.com")) return true
+		return false
+	} catch {
+		return false
+	}
+}
+
+/**
+ * Gets the favicon URL for a given URL.
+ */
+export function getFaviconUrl(url: string | null | undefined): string | null {
+	if (!url) return null
+	try {
+		const urlObj = new URL(url)
+		return `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=16`
+	} catch {
+		return null
+	}
+}
+
+/**
+ * Extracts the document ID from a Google Docs/Sheets/Slides URL.
+ * Works with various URL formats:
+ * - https://docs.google.com/document/d/{id}/edit
+ * - https://docs.google.com/spreadsheets/d/{id}/edit#gid=0
+ * - https://docs.google.com/presentation/d/{id}/edit
+ */
+export function extractGoogleDocId(url: string): string | null {
+	try {
+		const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/)
+		return match?.[1] ?? null
+	} catch {
+		return null
+	}
+}
+
+/**
+ * Generates the embed URL for a Google document based on its type.
+ */
+export function getGoogleEmbedUrl(
+	docId: string,
+	type: "google_doc" | "google_sheet" | "google_slide",
+): string {
+	switch (type) {
+		case "google_doc":
+			return `https://docs.google.com/document/d/${docId}/preview`
+		case "google_sheet":
+			return `https://docs.google.com/spreadsheets/d/${docId}/preview`
+		case "google_slide":
+			return `https://docs.google.com/presentation/d/${docId}/embed?start=false&loop=false&delayms=3000`
+	}
+}

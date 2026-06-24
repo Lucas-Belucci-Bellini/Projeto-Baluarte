@@ -1,0 +1,730 @@
+/**
+ * A service that provides an AI client to create a completion.
+ */
+
+/**
+ * @typedef {Object} LangChainModelConfig
+ * @property {(string|null)} baseURL - Override the default base URL process.env for this provider
+ * @property {(string|null)} apiKey - Override the default process.env for this provider
+ * @property {(number|null)} temperature - Override the default temperature
+ * @property {(string|null)} model -  Overrides model used for provider.
+ */
+
+const { v4 } = require("uuid");
+const { ChatOpenAI } = require("@langchain/openai");
+const { ChatAnthropic } = require("@langchain/anthropic");
+const { ChatOllama } = require("@langchain/community/chat_models/ollama");
+const { toValidNumber, safeJsonParse } = require("../../../http");
+const { getLLMProviderClass } = require("../../../helpers");
+const { parseLMStudioBasePath } = require("../../../AiProviders/lmStudio");
+const {
+  parseDockerModelRunnerEndpoint,
+} = require("../../../AiProviders/dockerModelRunner");
+const { parseFoundryBasePath } = require("../../../AiProviders/foundry");
+const { AzureOpenAiLLM } = require("../../../AiProviders/azureOpenAi");
+const {
+  SystemPromptVariables,
+} = require("../../../../models/systemPromptVariables");
+const { OllamaAILLM } = require("../../../AiProviders/ollama");
+
+const DEFAULT_WORKSPACE_PROMPT =
+  "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
+
+/**
+ * @typedef {Object} ProviderUsageMetrics
+ * @property {number} prompt_tokens - Number of tokens in the prompt/input
+ * @property {number} completion_tokens - Number of tokens in the completion/output
+ * @property {number} total_tokens - Total tokens used
+ * @property {number} duration - Duration in seconds
+ * @property {number} outputTps - Output tokens per second
+ * @property {string|null} model - Model name
+ * @property {string|null} provider - Provider class name
+ * @property {Date|null} timestamp - Timestamp of the completion
+ */
+
+/**
+ * @typedef {Object} AgentProviderInstance
+ * @property {string} model - The model identifier string.
+ * @property {boolean} [verbose] - Whether to log verbose introspection messages.
+ * @property {boolean} supportsAgentStreaming - Whether the provider supports streaming tool-call execution.
+ * @property {(handlerProps: Object) => void} attachHandlerProps - Attach invocation/handler context to the provider.
+ * @property {(messages: Array, functions?: Array, eventHandler?: Function) => Promise<{functionCall: any, textResponse: string}>} stream - Stream a chat completion with tool calling.
+ * @property {(messages: Array, functions?: Array) => Promise<{functionCall: any, textResponse: string, result?: string}>} complete - Non-streaming chat completion with tool calling.
+ * @property {() => ProviderUsageMetrics} getUsage - Get usage metrics from the last completion.
+ */
+
+class Provider {
+  _client;
+
+  /**
+   * The invocation object containing the user ID and other invocation details.
+   * @type {import("@prisma/client").workspace_agent_invocations}
+   */
+  invocation = {};
+
+  /**
+   * The user ID for the chat completion to send to the LLM provider for user tracking.
+   * In order for this to be set, the handler props must be attached to the provider after instantiation.
+   * ex: this.attachHandlerProps({ ..., invocation: { ..., user_id: 123 } });
+   * eg: `user_123`
+   * @type {string}
+   */
+  executingUserId = "";
+
+  /**
+   * Stores the usage metrics from the last completion call.
+   * @type {ProviderUsageMetrics}
+   */
+  lastUsage = {
+    prompt_tokens: 0,
+    completion_tokens: 0,
+    total_tokens: 0,
+    duration: 0,
+    outputTps: 0,
+    model: null,
+    provider: null,
+    timestamp: null,
+  };
+
+  /**
+   * Timestamp when the current request started (for duration calculation).
+   * @type {number}
+   */
+  _requestStartTime = 0;
+
+  /**
+   * Tag identifying this provider for ENV-based opt-out of tool calling.
+   * Subclasses should set this in their constructor.
+   * @type {string|null}
+   */
+  providerTag = null;
+
+  constructor(client) {
+    if (this.constructor == Provider) {
+      return;
+    }
+    this._client = client;
+  }
+
+  providerLog(text, ...args) {
+    console.log(
+      `\x1b[36m[AgentLLM${this?.model ? ` - ${this.model}` : ""}]\x1b[0m ${text}`,
+      ...args
+    );
+  }
+
+  /**
+   * Attaches handler props to the provider for reuse in the provider.
+   * - Explicitly sets the invocation object.
+   * - Explicitly sets the executing user ID from the invocation object.
+   * @param {Object} handlerProps - The handler props to attach to the provider.
+   */
+  attachHandlerProps(handlerProps = {}) {
+    this.invocation = handlerProps?.invocation || {};
+    this.executingUserId = this.invocation?.user_id
+      ? `user_${this.invocation.user_id}`
+      : "";
+  }
+
+  get client() {
+    return this._client;
+  }
+
+  /**
+   * Checks if the provider is disabled via the PROVIDER_DISABLE_NATIVE_TOOL_CALLING env.
+   * @param {string} providerTag - The tag of the provider to check.
+   * @returns {boolean}
+   */
+  optsOutOfNativeToolCallingViaEnv(providerTag = null) {
+    if (!providerTag) return false;
+    if (!("PROVIDER_DISABLE_NATIVE_TOOL_CALLING" in process.env)) return false;
+    const disabledProviders =
+      process.env.PROVIDER_DISABLE_NATIVE_TOOL_CALLING.split(",");
+    return disabledProviders.includes(providerTag);
+  }
+
+  /**
+   * Whether this provider supports native OpenAI-compatible tool calling.
+   * Defaults to true (opt-out via PROVIDER_DISABLE_NATIVE_TOOL_CALLING env).
+   * Override in subclass and return false only if the provider genuinely cannot support tools.
+   * @returns {boolean|Promise<boolean>}
+   */
+  supportsNativeToolCalling() {
+    if (!this.providerTag) return true;
+    return !this.optsOutOfNativeToolCallingViaEnv(this.providerTag);
+  }
+
+  /**
+   *
+   * @param {string} provider - the string key of the provider LLM being loaded.
+   * @param {LangChainModelConfig} config - Config to be used to override default connection object.
+   * @returns
+   */
+  static LangChainChatModel(provider = "openai", config = {}) {
+    switch (provider) {
+      // Cloud models
+      case "openai":
+        return new ChatOpenAI({
+          apiKey: process.env.OPEN_AI_KEY,
+          ...config,
+        });
+      case "anthropic":
+        return new ChatAnthropic({
+          apiKey: process.env.ANTHROPIC_API_KEY,
+          ...config,
+        });
+      case "groq":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.groq.com/openai/v1",
+          },
+          apiKey: process.env.GROQ_API_KEY,
+          ...config,
+        });
+      case "mistral":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.mistral.ai/v1",
+          },
+          apiKey: process.env.MISTRAL_API_KEY ?? null,
+          ...config,
+        });
+      case "openrouter":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://openrouter.ai/api/v1",
+            defaultHeaders: {
+              "HTTP-Referer": "https://anythingllm.com",
+              "X-Title": "AnythingLLM",
+            },
+          },
+          apiKey: process.env.OPENROUTER_API_KEY ?? null,
+          ...config,
+        });
+      case "perplexity":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.perplexity.ai",
+          },
+          apiKey: process.env.PERPLEXITY_API_KEY ?? null,
+          ...config,
+        });
+      case "togetherai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.together.xyz/v1",
+          },
+          apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+          ...config,
+        });
+      case "generic-openai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
+          },
+          apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
+          maxTokens: toValidNumber(
+            process.env.GENERIC_OPEN_AI_MAX_TOKENS,
+            1024
+          ),
+          ...config,
+        });
+      case "bedrock":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: `https://bedrock-mantle.${process.env.AWS_BEDROCK_LLM_REGION}.api.aws/v1`,
+          },
+          apiKey: process.env.AWS_BEDROCK_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "azure":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: AzureOpenAiLLM.formatBaseUrl(
+              process.env.AZURE_OPENAI_ENDPOINT
+            ),
+          },
+          apiKey: process.env.AZURE_OPENAI_KEY,
+          ...config,
+        });
+      case "fireworksai":
+        return new ChatOpenAI({
+          apiKey: process.env.FIREWORKS_AI_LLM_API_KEY,
+          ...config,
+        });
+      case "apipie":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://apipie.ai/v1",
+          },
+          apiKey: process.env.APIPIE_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "deepseek":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.deepseek.com/v1",
+          },
+          apiKey: process.env.DEEPSEEK_API_KEY ?? null,
+          ...config,
+        });
+      case "xai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.x.ai/v1",
+          },
+          apiKey: process.env.XAI_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "zai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.z.ai/api/paas/v4",
+          },
+          apiKey: process.env.ZAI_API_KEY ?? null,
+          ...config,
+        });
+      case "novita":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.novita.ai/v3/openai",
+          },
+          apiKey: process.env.NOVITA_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "ppio":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.ppinfra.com/v3/openai",
+          },
+          apiKey: process.env.PPIO_API_KEY ?? null,
+          ...config,
+        });
+      case "gemini":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+          },
+          apiKey: process.env.GEMINI_API_KEY ?? null,
+          ...config,
+        });
+      case "moonshotai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.moonshot.ai/v1",
+          },
+          apiKey: process.env.MOONSHOT_AI_API_KEY ?? null,
+          ...config,
+        });
+      case "cometapi":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cometapi.com/v1",
+          },
+          apiKey: process.env.COMETAPI_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "giteeai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://ai.gitee.com/v1",
+          },
+          apiKey: process.env.GITEE_AI_API_KEY ?? null,
+          ...config,
+        });
+      case "cohere":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cohere.ai/compatibility/v1",
+          },
+          apiKey: process.env.COHERE_API_KEY ?? null,
+          ...config,
+        });
+      case "privatemode":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.PRIVATEMODE_LLM_BASE_PATH,
+          },
+          apiKey: null,
+          ...config,
+        });
+      case "sambanova":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.sambanova.ai/v1",
+          },
+          apiKey: process.env.SAMBANOVA_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "minimax":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.minimax.io/v1",
+          },
+          apiKey: process.env.MINIMAX_API_KEY || null,
+          ...config,
+        });
+      case "cerebras":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.cerebras.ai/v1",
+          },
+          apiKey: process.env.CEREBRAS_API_KEY || null,
+          ...config,
+        });
+      // OSS Model Runners
+      // case "anythingllm_ollama":
+      //   return new ChatOllama({
+      //     baseUrl: process.env.PLACEHOLDER,
+      //     ...config,
+      //   });
+      case "ollama":
+        return OllamaLangchainChatModel.create(config);
+      case "lmstudio": {
+        const apiKey = process.env.LMSTUDIO_AUTH_TOKEN ?? null;
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseLMStudioBasePath(process.env.LMSTUDIO_BASE_PATH),
+          },
+          apiKey: apiKey || "not-used",
+          ...config,
+        });
+      }
+      case "koboldcpp":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.KOBOLD_CPP_BASE_PATH,
+          },
+          apiKey: "not-used",
+          ...config,
+        });
+      case "localai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LOCAL_AI_BASE_PATH,
+          },
+          apiKey: process.env.LOCAL_AI_API_KEY ?? "not-used",
+          ...config,
+        });
+      case "textgenwebui":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
+          },
+          apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? "not-used",
+          ...config,
+        });
+      case "litellm":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LITE_LLM_BASE_PATH,
+          },
+          apiKey: process.env.LITE_LLM_API_KEY ?? null,
+          ...config,
+        });
+      case "nvidia-nim":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.NVIDIA_NIM_LLM_BASE_PATH,
+          },
+          apiKey: null,
+          ...config,
+        });
+      case "foundry": {
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseFoundryBasePath(process.env.FOUNDRY_BASE_PATH),
+          },
+          apiKey: null,
+          ...config,
+        });
+      }
+      case "docker-model-runner":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: parseDockerModelRunnerEndpoint(
+              process.env.DOCKER_MODEL_RUNNER_BASE_PATH
+            ),
+          },
+          apiKey: null,
+          ...config,
+        });
+      case "lemonade":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LEMONADE_LLM_BASE_PATH,
+          },
+          apiKey: process.env.LEMONADE_LLM_API_KEY || null,
+          ...config,
+        });
+      default:
+        throw new Error(
+          `Unsupported provider ${JSON.stringify(provider)} for this task.`
+        );
+    }
+  }
+
+  /**
+   * Get the context limit for a provider/model combination using static method in AIProvider class.
+   * @param {string} provider
+   * @param {string} modelName
+   * @returns {number}
+   */
+  static contextLimit(provider = "openai", modelName) {
+    if (typeof provider !== "string") {
+      console.log(
+        `\x1b[43m\x1b[30m[.contextLimit warning] A non-string provider for .contextLimit was given — Returning fallback context limit of 8000.\x1b[0m\n\x1b[43m\x1b[30mThis is a bug and should be reported so that context windows are properly managed by AnythingLLM.\x1b[0m`
+      );
+      console.trace();
+      return 8_000;
+    }
+
+    const llm = getLLMProviderClass({ provider });
+    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) {
+      console.warn(
+        `\x1b[33m[.contextLimit warning]\x1b[0m Could not determine .promptWindowLimit for provider ${provider}. This could lead to incorrect context window management by AnythingLLM since we cannot determine the context window limit for this provider/model combination.`
+      );
+      return 8_000;
+    }
+    return llm.promptWindowLimit(modelName);
+  }
+
+  static defaultSystemPromptForProvider(provider = null) {
+    switch (provider) {
+      case "lmstudio":
+        return "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions. Tools will be handled by another assistant and you will simply receive their responses to help answer the user prompt - always try to answer the user's prompt the best you can with the context available to you and your general knowledge.";
+      default:
+        return DEFAULT_WORKSPACE_PROMPT;
+    }
+  }
+
+  /**
+   * Get the system prompt for a provider, with memories appended (when enabled).
+   * @param {object} opts
+   * @param {string} opts.provider
+   * @param {import("@prisma/client").workspaces | null} opts.workspace
+   * @param {import("@prisma/client").users | null} opts.user
+   * @param {string} [opts.prompt] - current user message, used for reranking injected memories
+   * @returns {Promise<string>}
+   */
+  static async systemPrompt({
+    provider = null,
+    workspace = null,
+    user = null,
+    prompt = "",
+  }) {
+    const { promptWithMemories } = require("../../../memories");
+    const basePrompt = !workspace?.openAiPrompt
+      ? Provider.defaultSystemPromptForProvider(provider)
+      : await SystemPromptVariables.expandSystemPromptVariables(
+          workspace.openAiPrompt,
+          user?.id || null,
+          workspace.id
+        );
+    return promptWithMemories({
+      systemPrompt: basePrompt,
+      userId: user?.id ?? null,
+      workspaceId: workspace?.id,
+      prompt,
+    });
+  }
+
+  /**
+   * Whether the provider supports agent streaming.
+   * Disabled by default and needs to be explicitly enabled in the provider
+   * This is temporary while we migrate all providers to support agent streaming
+   * @returns {boolean}
+   */
+  get supportsAgentStreaming() {
+    return false;
+  }
+
+  /**
+   * Format a single message with attachments (images) for multimodal content.
+   * Transforms a message with attachments into the OpenAI-compatible multimodal format.
+   * Can be overridden by provider subclasses for provider-specific formats.
+   * @param {Object} message - The message to format
+   * @returns {Object} - Message formatted for the API
+   */
+  formatMessageWithAttachments(message) {
+    if (!message.attachments || message.attachments.length === 0) {
+      return message;
+    }
+
+    // Transform message with attachments into multimodal format
+    const content = [{ type: "text", text: message.content }];
+    for (const attachment of message.attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+        },
+      });
+    }
+
+    // Return message without attachments property, with content as array
+    const { attachments: _, ...rest } = message;
+    return {
+      ...rest,
+      content,
+    };
+  }
+
+  /**
+   * Resets the usage metrics to zero and starts the request timer.
+   * Call this before each completion to ensure accurate per-call metrics.
+   */
+  resetUsage() {
+    this._requestStartTime = Date.now();
+    this.lastUsage = {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+      outputTps: 0,
+      duration: 0,
+      model: null,
+      provider: null,
+      timestamp: null,
+    };
+  }
+
+  /**
+   * Formats an array of messages to handle attachments (images) for multimodal content.
+   * @param {Array<{role: string, content: string, attachments?: Array}>} messages
+   * @returns {Array} - Messages formatted for the API
+   */
+  formatMessagesWithAttachments(messages = []) {
+    return messages.map((message) =>
+      this.formatMessageWithAttachments(message)
+    );
+  }
+
+  /**
+   * Updates the stored usage metrics from a provider response.
+   * Override in subclasses to handle provider-specific usage formats.
+   * @param {Object} usage - The usage object from the provider response
+   */
+  recordUsage(usage = {}) {
+    let duration = 0;
+    if (this._requestStartTime > 0) {
+      duration = (Date.now() - this._requestStartTime) / 1000;
+    }
+
+    const promptTokens = usage.prompt_tokens || usage.input_tokens || 0;
+    const completionTokens =
+      usage.completion_tokens || usage.output_tokens || 0;
+
+    this.lastUsage = {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: usage.total_tokens || promptTokens + completionTokens,
+      outputTps:
+        completionTokens && duration > 0 ? completionTokens / duration : 0,
+      duration,
+      model: this.model,
+      provider: this.constructor.name,
+      timestamp: new Date(),
+    };
+  }
+
+  /**
+   * Get the usage metrics from the last completion.
+   * @returns {ProviderUsageMetrics} The usage metrics
+   */
+  getUsage() {
+    return { ...this.lastUsage };
+  }
+
+  /**
+   * Stream a chat completion from the LLM with tool calling
+   * Note: This using the OpenAI API format and may need to be adapted for other providers.
+   *
+   * @param {any[]} messages - The messages to send to the LLM.
+   * @param {any[]} functions - The functions to use in the LLM.
+   * @param {function} eventHandler - The event handler to use to report stream events.
+   * @returns {Promise<{ functionCall: any, textResponse: string }>} - The result of the chat completion.
+   */
+  async stream(messages, functions = [], eventHandler = null) {
+    this.providerLog("Provider.stream - will process this chat completion.");
+    const msgUUID = v4();
+    const formattedMessages = this.formatMessagesWithAttachments(messages);
+    const stream = await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages: formattedMessages,
+      ...(Array.isArray(functions) && functions?.length > 0
+        ? { functions }
+        : {}),
+    });
+
+    const result = {
+      functionCall: null,
+      textResponse: "",
+    };
+
+    for await (const chunk of stream) {
+      if (!chunk?.choices?.[0]) continue; // Skip if no choices
+      const choice = chunk.choices[0];
+
+      if (choice.delta?.content) {
+        result.textResponse += choice.delta.content;
+        eventHandler?.("reportStreamEvent", {
+          type: "textResponseChunk",
+          uuid: msgUUID,
+          content: choice.delta.content,
+        });
+      }
+
+      if (choice.delta?.function_call) {
+        // accumulate the function call
+        if (result.functionCall)
+          result.functionCall.arguments += choice.delta.function_call.arguments;
+        else result.functionCall = choice.delta.function_call;
+
+        eventHandler?.("reportStreamEvent", {
+          uuid: `${msgUUID}:tool_call_invocation`,
+          type: "toolCallInvocation",
+          content: `Assembling Tool Call: ${result.functionCall.name}(${result.functionCall.arguments})`,
+        });
+      }
+    }
+
+    // If there are arguments, parse them as json so that the tools can use them
+    if (!!result.functionCall?.arguments)
+      result.functionCall.arguments = safeJsonParse(
+        result.functionCall.arguments,
+        {}
+      );
+
+    return {
+      textResponse: result.textResponse,
+      functionCall: result.functionCall,
+    };
+  }
+}
+
+// Langchain Wrappers
+
+/**
+ * Ollama Langchain Chat Model that supports passing in context window options
+ * so that context window preferences are respected between Ollama chat/agent and in
+ * Langchain tooling.
+ */
+class OllamaLangchainChatModel {
+  static create(config = {}) {
+    return new ChatOllama({
+      baseUrl: process.env.OLLAMA_BASE_PATH,
+      ...this.queryOptions(config),
+      ...config,
+    });
+  }
+
+  static queryOptions(config = {}) {
+    const model = config?.model || process.env.OLLAMA_MODEL_PREF;
+    return {
+      num_ctx: OllamaAILLM.promptWindowLimit(model),
+    };
+  }
+}
+
+module.exports = Provider;

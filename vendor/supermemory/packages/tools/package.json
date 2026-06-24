@@ -1,0 +1,73 @@
+{
+  "name": "@supermemory/tools",
+  "type": "module",
+  "version": "2.0.0",
+  "description": "Memory tools for AI SDK, OpenAI, Voltagent and Mastra with supermemory",
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch --ignore-watch .turbo",
+    "check-types": "tsc --noEmit",
+    "test": "vitest --testTimeout 100000",
+    "test:watch": "vitest --watch --testTimeout 100000"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^2.0.25",
+    "@ai-sdk/openai": "^2.0.23",
+    "ai": "^5.0.29",
+    "lru-cache": "^11.2.6",
+    "openai": "^4.104.0",
+    "supermemory": "^3.0.0-alpha.26",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@ai-sdk/provider": "^3.0.0",
+    "@anthropic-ai/sdk": "^0.65.0",
+    "@voltagent/core": "^2.6.12",
+    "@mastra/core": "^1.0.0",
+    "@total-typescript/tsconfig": "^1.0.4",
+    "@types/bun": "^1.2.21",
+    "dotenv": "^16.6.1",
+    "tsdown": "^0.14.2",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "@ai-sdk/provider": "^2.0.0 || ^3.0.0",
+    "@voltagent/core": "^2.6.12"
+  },
+  "peerDependenciesMeta": {
+    "@voltagent/core": {
+      "optional": true
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./ai-sdk": "./dist/ai-sdk.js",
+    "./claude-memory": "./dist/claude-memory.js",
+    "./mastra": "./dist/mastra.js",
+    "./openai": "./dist/openai/index.js",
+    "./voltagent": "./dist/voltagent/index.js",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "url": "https://github.com/supermemoryai/supermemory",
+    "directory": "packages/tools"
+  },
+  "keywords": [
+    "ai",
+    "sdk",
+    "openai",
+    "typescript",
+    "supermemory",
+    "memory",
+    "context",
+    "tools"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,65 @@
+---
+title: "Claude Desktop"
+description: "Manual setup for supermemory MCP in Claude Desktop with step-by-step screenshots"
+icon: "monitor"
+sidebarTitle: "Claude Desktop"
+---
+
+This guide walks through the **manual** install for [Claude Desktop](https://claude.ai/download): edit `claude_desktop_config.json`, add the supermemory server, then finish in **Connectors**. For a one-line CLI install instead, see [Setup and Usage](/supermemory-mcp/setup).
+
+<Note>
+  Config file location: **macOS** `~/Library/Application Support/Claude/claude_desktop_config.json` · **Windows** `%APPDATA%\Claude\claude_desktop_config.json`
+</Note>
+
+## Step 1 — Copy the configuration
+
+Copy the supermemory block below. You will paste it inside `mcpServers` in a later step.
+
+```json
+{
+  "mcpServers": {
+    "supermemory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.supermemory.ai/mcp"
+      ]
+    }
+  }
+}
+```
+
+This is the same configuration shown in the supermemory dashboard when you choose **Claude Desktop** for MCP setup.
+
+## Step 2 — Open Developer settings and Edit Config
+
+In Claude Desktop, open **Settings → Developer**, then click **Edit Config**.
+
+![Claude Desktop settings: Developer in the sidebar and Edit Config highlighted](/images/supermemory-mcp/claude-desktop/step-1.png)
+
+## Step 3 — Open claude_desktop_config.json
+
+When `claude_desktop_config.json` opens in your editor, keep it ready for the next step.
+
+![File list with claude_desktop_config.json selected](/images/supermemory-mcp/claude-desktop/step-2.png)
+
+## Step 4 — Paste under mcpServers and save
+
+Paste what you copied under `mcpServers` (merge with existing servers if the file already has some), then save.
+
+![JSON editor showing supermemory mcpServers configuration](/images/supermemory-mcp/claude-desktop/step-3.png)
+
+## Step 5 — Restart and configure in Connectors
+
+Restart Claude Desktop. Open **Settings → Connectors**, find **supermemory**, and click **Configure**.
+
+![Claude Desktop Connectors settings with supermemory and Configure highlighted](/images/supermemory-mcp/claude-desktop/step-4.png)
+
+## Step 6 — Done
+
+supermemory is installed in your Claude Desktop and ready to use.
+
+---
+
+**See also:** [Overview](/supermemory-mcp/mcp) · [Setup and Usage](/supermemory-mcp/setup)
