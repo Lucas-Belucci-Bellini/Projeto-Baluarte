@@ -71,6 +71,17 @@ const isNative = () => typeof window !== 'undefined' && !!window.baluarte && win
 const lazyNexus = (tab) => (args) =>
   import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab })).catch(recoverChunk);
 
+/* Rotas LEVES do Núcleo (L1 Conhecimento + L2 Memória, do `docs/OMEGA-PRISM.md`):
+ * são leves e por-usuário (Supabase), então a regra #238 as coloca na WEB (a
+ * "espinha" do Omega Prism, Fatia 1). Aqui renderizam a PÁGINA real no navegador
+ * — diferente do resto da seção IA, que é pesado e fica app-only via `lazyNexus`.
+ * No APP seguem caindo no cockpit unificado do Núcleo, na aba certa (sem regressão). */
+const lazyLeve = (tab, loader, fn) => (args) =>
+  (isNative()
+    ? import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab }))
+    : loader().then((m) => m[fn](args))
+  ).catch(recoverChunk);
+
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */
@@ -156,9 +167,9 @@ router.register('/codigo', lazy(() => import('./pages/codigo.js'), 'codigoPage')
 router.register('/projetos', lazy(() => import('./pages/projetos.js'), 'projetosPage'));
 router.register('/mural', lazy(() => import('./pages/mural.js'), 'muralPage'));
 router.register('/banco', lazy(() => import('./pages/banco.js'), 'bancoPage'));
-router.register('/cerebro', lazyNexus('cerebro'));
+router.register('/cerebro', lazyLeve('cerebro', () => import('./pages/cerebro.js'), 'cerebroPage'));
 router.register('/ocr', lazy(() => import('./pages/ocr.js'), 'ocrPage'));
-router.register('/memoria', lazyNexus('memoria'));
+router.register('/memoria', lazyLeve('memoria', () => import('./pages/memoria.js'), 'memoriaPage'));
 router.register('/terminal-ia', lazyNexus('terminal'));
 router.register('/seguranca', lazyNexus('seguranca'));
 router.register('/gerar-codigo', lazy(() => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));
@@ -227,8 +238,8 @@ function boot() {
   setTimeout(() => hxBeacon(), 2000);
   /* Pré-aquece a memória versionada do repositório (best-effort) — mas só no APP
    * (#238 Fase 2): puxar o jarvis-brain arrasta o codemap/cerebro pro boot, e o
-   * site deve ser leve. Na web, /memoria e /aprendizado já sincronizam sob demanda
-   * quando abertas; aqui ficamos fora do caminho de boot. */
+   * site deve ser leve. Na web, /memoria e /cerebro (leves, Fatia 1) puxam o
+   * jarvis-brain sob demanda quando abertas; aqui ficamos fora do caminho de boot. */
   if (isNative()) {
     setTimeout(() => { import('./utils/jarvis-brain.js').then((m) => m.syncRepoMemories()).catch(() => {}); }, 1500);
   }
