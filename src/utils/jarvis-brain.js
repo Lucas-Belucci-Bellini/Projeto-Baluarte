@@ -18,6 +18,7 @@ import { recall, tokenize } from './jarvis-recall.js';
 import { saveEntry, listEntries } from './jarvis-repo-memory.js';
 import cerebro from '../data/cerebro.json';
 import codemap from '../data/codemap.json';
+import { cloudListMemories, cloudInsertMemory, cloudDeleteMemory, cloudClearMemories } from '../core/memory-cloud.js';
 
 const KEY = 'jarvis:memories';
 
@@ -41,13 +42,16 @@ function persist(list) { storage.set(KEY, list); }
  * As memórias do repo são mescladas às locais em TODA leitura, então elas
  * aparecem no recall, no Segundo Cérebro e no Raio-X automaticamente. */
 let repoCache = [];
+/* Memórias da CONTA do usuário (Supabase, por usuário) — espelhadas e mescladas
+ * como o repoCache. Vazio quando deslogado → comportamento idêntico ao de antes. */
+let userCache = [];
 
-/** Memórias locais + do repositório, deduplicadas por texto. */
+/** Memórias locais + da conta + do repositório, deduplicadas por texto. */
 function allMemories() {
   const local = load();
   const seen = new Set(local.map((m) => (m.text || '').toLowerCase()));
   const merged = local.slice();
-  for (const r of repoCache) {
+  for (const r of userCache.concat(repoCache)) {
     const k = (r.text || '').toLowerCase();
     if (k && !seen.has(k)) { seen.add(k); merged.push(r); }
   }
@@ -62,6 +66,29 @@ export async function syncRepoMemories() {
 }
 
 export function repoMemoryCount() { return repoCache.length; }
+
+/** Sincroniza a Memória com a CONTA (Supabase) quando logado: puxa as memórias
+ *  da nuvem e empurra as locais que ainda não estão lá (backup do pré-login).
+ *  No-op deslogado. Devolve quantas memórias a conta tem. */
+export async function syncUserMemories() {
+  const cloud = await cloudListMemories();
+  if (!cloud) { userCache = []; return 0; }
+  const toItem = (r) => ({
+    id: r.id, text: r.text, source: r.source || 'jarvis', tags: r.tags || [],
+    ts: Date.parse(r.created_at) || Date.now(),
+    conceptIds: linkConcepts(r.text), codeIds: linkCode(r.text), cloud: true
+  });
+  userCache = cloud.map(toItem);
+  const have = new Set(userCache.map((m) => (m.text || '').toLowerCase()));
+  const localOnly = load().filter((m) => m.text && !have.has(m.text.toLowerCase()));
+  for (const m of localOnly.slice(0, 300)) {
+    const row = await cloudInsertMemory({ text: m.text, source: m.source, tags: m.tags });
+    if (row) userCache.unshift(toItem(row));
+  }
+  return userCache.length;
+}
+
+export function userMemoryCount() { return userCache.length; }
 
 /** Liga um texto aos conceitos do Segundo Cérebro (ids de cerebro.json). */
 export function linkConcepts(text) {
@@ -109,11 +136,28 @@ export function addMemory({ text, source = 'jarvis', tags = [] }) {
   persist(list.length > 2000 ? list.slice(-2000) : list);
   /* Commita no repositório (branch jarvis-memory) — serializado e best-effort. */
   try { saveEntry({ text: item.text, source: item.source, conceptIds: item.conceptIds, codeIds: item.codeIds, ts: item.ts }); } catch { /* ok */ }
+  /* Espelha na CONTA do usuário (Supabase), best-effort, se logado. */
+  cloudInsertMemory({ text: item.text, source: item.source, tags: item.tags }).then((row) => {
+    if (row && !userCache.some((m) => m.id === row.id)) {
+      userCache.unshift({
+        id: row.id, text: row.text, source: row.source || 'jarvis', tags: row.tags || [],
+        ts: Date.parse(row.created_at) || Date.now(),
+        conceptIds: item.conceptIds, codeIds: item.codeIds, cloud: true
+      });
+    }
+  }).catch(() => {});
   return item;
 }
 
-export function deleteMemory(id) { persist(load().filter((m) => m.id !== id)); }
-export function clearMemories() { persist([]); }
+export function deleteMemory(id) {
+  const item = load().find((m) => m.id === id) || userCache.find((m) => m.id === id);
+  persist(load().filter((m) => m.id !== id));
+  /* remove a cópia na CONTA (por id se for da nuvem; senão casa por texto). */
+  const cm = userCache.find((m) => m.id === id)
+    || (item && userCache.find((m) => (m.text || '').toLowerCase() === (item.text || '').toLowerCase()));
+  if (cm) { cloudDeleteMemory(cm.id); userCache = userCache.filter((m) => m !== cm); }
+}
+export function clearMemories() { persist([]); userCache = []; cloudClearMemories(); }
 
 /** Busca memórias relevantes por TF-IDF (reaproveita o motor do recall). */
 export function searchMemories(query, k = 5) {

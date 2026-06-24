@@ -11,8 +11,9 @@ import { toast } from '../utils/toast.js';
 import {
   getMemories, addMemory, deleteMemory, clearMemories,
   searchMemories, memoryStats, conceptLabel, conceptRoute,
-  syncRepoMemories
+  syncRepoMemories, syncUserMemories
 } from '../utils/jarvis-brain.js';
+import { isLoggedIn } from '../core/supabase-auth.js';
 
 function fmtDate(ts) {
   try { return new Date(ts).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); }
@@ -73,7 +74,24 @@ export function memoriaPage() {
       toast(`Repositório: ${n} memória(s)`, { type: 'success' });
     }
   }, '☁️ Repo');
-  page.appendChild(h('div', { className: 'mem-tools' }, searchEl, syncBtn, clearBtn));
+  /* Sincroniza a Memória com a CONTA do usuário (Supabase, cross-device). */
+  const accountBtn = h('button', {
+    className: 'btn btn--ghost btn--sm',
+    title: isLoggedIn() ? 'Sincronizar a Memória com a sua conta' : 'Entre no /perfil pra salvar na conta (cross-device)',
+    onclick: async () => {
+      if (!isLoggedIn()) {
+        toast('Entre com sua conta no /perfil pra salvar a Memória na nuvem', { type: 'info' });
+        router.navigate('/perfil');
+        return;
+      }
+      accountBtn.disabled = true; accountBtn.textContent = '⏳…';
+      const n = await syncUserMemories();
+      refresh();
+      accountBtn.disabled = false; accountBtn.textContent = '☁️ Conta';
+      toast(`Conta: ${n} memória(s) na nuvem`, { type: 'success' });
+    }
+  }, '☁️ Conta');
+  page.appendChild(h('div', { className: 'mem-tools' }, searchEl, accountBtn, syncBtn, clearBtn));
 
   const listEl = h('div', { className: 'mem-list' });
   page.appendChild(listEl);
@@ -163,5 +181,7 @@ export function memoriaPage() {
   refresh();
   /* Abre já puxando a memória versionada do repositório (best-effort). */
   syncRepoMemories().then(() => refresh()).catch(() => {});
+  /* E sincroniza com a CONTA do usuário, se logado (Supabase, cross-device). */
+  if (isLoggedIn()) syncUserMemories().then(() => refresh()).catch(() => {});
   return page;
 }
