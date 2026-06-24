@@ -48,6 +48,7 @@ const PATHS = {
   monitor: '<rect x="3.5" y="5" width="17" height="11" rx="2"/><path d="M9 20h6M12 16v4"/>',
   cube: '<path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="M4 7l8 4 8-4M12 11v10"/>',
   coins: '<ellipse cx="9" cy="7" rx="5" ry="2.5"/><path d="M4 7v4c0 1.4 2.2 2.5 5 2.5"/><ellipse cx="15" cy="13" rx="5" ry="2.5"/><path d="M10 13v4c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-4"/>',
+  cart: '<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 4h2l2.2 11.2a1.5 1.5 0 0 0 1.5 1.2h7.8a1.5 1.5 0 0 0 1.5-1.2L20 7H6"/>',
   trending: '<path d="M4 16 10 10l3 3 7-7"/><path d="M15 6h5v5"/>',
   radio: '<circle cx="12" cy="14" r="2"/><path d="M7.5 9.5a6 6 0 0 1 9 0M5 7a9.5 9.5 0 0 1 14 0M10.5 19h3"/>',
   music: '<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
@@ -115,7 +116,7 @@ export const iconByPath = {
   '/armas-por-pais': 'crosshair', '/guerras-conflitos': 'globe', '/batalhas-historicas': 'shield',
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
   '/enciclopedia-militar': 'book',
-  '/codigo': 'network', '/projetos': 'folder', '/mural': 'chat', '/banco': 'database', '/cerebro': 'brain', '/ocr': 'scantext',
+  '/codigo': 'network', '/projetos': 'folder', '/mural': 'chat', '/banco': 'database', '/loja': 'cart', '/cerebro': 'brain', '/ocr': 'scantext',
   '/memoria': 'database', '/terminal-ia': 'terminal', '/seguranca': 'shield',
   '/gerar-codigo': 'wand', '/conselho': 'council'
 };
