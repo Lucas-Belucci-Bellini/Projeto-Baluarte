@@ -8,6 +8,17 @@ aqui o que mudou.
 
 ## 2026-06-24
 
+### 🧠 Omega Prism · Fatia 1 (banco) — Segundo Cérebro + Memória por usuário (#231)
+- 🗄️ Migrations **`0006_knowledge`** (`knowledge_notes`: notas com `tags`/`links`) + **`0007_memories`** (`memories`: fatos "lembre que…", estilo supermemory) — **por usuário, RLS dono-só** (`auth.uid() = user_id`), igual `profiles`. Aplicadas no Supabase oficial.
+- 🔐 Verificado (REST anon): **GET → 200 `[]`** (não vaza) · **POST → 401** (RLS bloqueia) nas duas; estrutura: RLS on + **4 policies (CRUD dono)** cada.
+- 🧱 É a **espinha** do Omega Prism (L1 Conhecimento + L2 Memória, do `docs/OMEGA-PRISM.md`): a base pra `/cerebro` e `/memoria` saírem do localStorage e virarem **por-usuário, cross-device**. Próximo incremento: cliente (`jarvis-brain` ganha backend Supabase) + UI.
+
+### 🧠 Omega Prism · Fatia 1 (cliente) — Memória do JARVIS por usuário, cross-device (#231)
+- ☁️ A **Memória do JARVIS** (`/memoria`) agora **sincroniza com a sua conta**: logado, os fatos "lembre que…" salvam na tabela `memories` do Supabase e **voltam em qualquer dispositivo**. Deslogado segue **100% local** (localStorage) — **zero regressão**.
+- 🧩 Novo `src/core/memory-cloud.js` (CRUD por usuário, sem SDK, igual ao padrão `user-prefs`) + `jarvis-brain` ganhou `syncUserMemories()` e espelha `addMemory`/`deleteMemory`/`clearMemories` na nuvem **best-effort** (a API síncrona não muda — UI nunca trava esperando rede).
+- 🔀 **Mescla as 3 origens** sem duplicar (dedup por texto): local + **conta (sua, na nuvem)** + repo (`jarvis-memory`). Botão **☁️ Conta** no `/memoria` (logado: sincroniza; deslogado: leva ao `/perfil`); ao abrir logado, puxa a conta sozinho.
+- 🪶 Web leve (#238): sem deps, best-effort, degrada em silêncio. Verificado: build limpo + smoke ok; a página renderiza com o botão **☁️ Conta**. O round-trip real depende de estar logado (testável no preview/produção). 🛡️ Backup: branch de trabalho.
+
 ### 🐛 Navegação robusta — falha de carregamento não vira "404 falso" (rumo ao JARVIS)
 - 🧭 **Causa:** as páginas carregam sob demanda (`import()` lazy). Se o chunk falha (deploy novo trocou os hashes, cache velho do app/PWA, ou soluço de rede), o roteador caía no `route:error` e mostrava **"Rota não encontrada"** — enganoso (a rota existe; o que falhou foi *carregar*). Foi o que apareceu em `/musicas` no app.
 - 🔁 **Auto-recuperação:** quando um chunk falha e há **internet**, o app recarrega **1× sozinho** (pega `index.html` + chunks frescos) com guarda anti-loop (zera ao carregar ok). Resolve deploy novo sem o usuário fazer nada.
