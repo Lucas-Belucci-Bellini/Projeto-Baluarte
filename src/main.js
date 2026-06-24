@@ -20,7 +20,7 @@ import { mountShell, renderPage } from './layout/shell.js';
  * demanda via import() dinâmico — o Vite faz code-splitting automático, então
  * o bundle inicial fica pequeno e cada rota baixa só o seu próprio chunk. */
 import { homePage } from './pages/home.js';
-import { notFoundPage } from './pages/_placeholder.js';
+import { notFoundPage, loadErrorPage } from './pages/_placeholder.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
@@ -33,9 +33,33 @@ import { VERSION } from './data/version.js';
 
 /* ==============================================================
  *  Helper de carregamento sob demanda (code-splitting via Vite).
- *  Cada rota só baixa o JS da sua página quando acessada.
+ *  Cada rota só baixa o JS da sua página quando acessada. Se o import
+ *  falhar (deploy novo trocou os hashes dos chunks, ou soluço de rede),
+ *  recupera: 1 reload automático quando online (guarda anti-loop); senão
+ *  propaga pro route:error, que mostra "falha ao carregar" (não um 404 falso).
  * ============================================================== */
-const lazy = (loader, fn) => (args) => loader().then((m) => m[fn](args));
+const CHUNK_RELOAD_FLAG = 'baluarte:chunk-reload';
+
+function isChunkLoadError(err) {
+  const m = String((err && (err.message || err.name)) || err);
+  return /dynamically imported module|Importing a module script failed|Loading chunk|ChunkLoadError|NetworkError|Failed to fetch/i.test(m);
+}
+
+/* Recupera de falha de import (chunk velho pós-deploy): recarrega 1× quando
+ * online; se já tentou ou está offline, relança pro route:error tratar. */
+function recoverChunk(err) {
+  let already = false;
+  try { already = sessionStorage.getItem(CHUNK_RELOAD_FLAG) === '1'; } catch { /* sem storage */ }
+  if (isChunkLoadError(err) && typeof navigator !== 'undefined' && navigator.onLine && !already) {
+    try { sessionStorage.setItem(CHUNK_RELOAD_FLAG, '1'); } catch { /* ok */ }
+    location.reload();             // pega index.html + chunks frescos
+    return new Promise(() => {});  // pendura até o reload (não renderiza nada)
+  }
+  throw err;                       // route:error mostra "falha ao carregar"
+}
+
+const lazy = (loader, fn) => (args) =>
+  loader().then((m) => m[fn](args)).catch(recoverChunk);
 
 /* Roda DENTRO do Baluarte Launcher? A ponte (`window.baluarte`) só existe no app;
  * usado pra gatear trabalho pesado pro nativo e manter o boot da web leve (#238). */
@@ -45,7 +69,7 @@ const isNative = () => typeof window !== 'undefined' && !!window.baluarte && win
  * Git Nexus na aba certa. No app abre a aba; na web o gate mostra o teaser
  * (a seção IA é app-only). Deep-link também via #/git-nexus?tab=<id>. */
 const lazyNexus = (tab) => (args) =>
-  import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab }));
+  import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab })).catch(recoverChunk);
 
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
@@ -157,7 +181,11 @@ router.setNotFound((path) => notFoundPage(path));
  *  Wire router → shell
  * ============================================================== */
 bus.on('route:change', ({ view, path }) => {
-  if (view) renderPage(view, path);
+  if (view) {
+    renderPage(view, path);
+    /* carregou ok: zera a guarda de reload (cada deploy novo ganha 1 tentativa). */
+    try { sessionStorage.removeItem(CHUNK_RELOAD_FLAG); } catch { /* sem storage */ }
+  }
 });
 
 /* Métrica real: conta 1 view por rota (1x/rota/sessão) no banco (Supabase).
@@ -169,8 +197,10 @@ bus.on('route:notfound', ({ view, path }) => {
 });
 
 bus.on('route:error', ({ path, error }) => {
-  console.error(`[main] Erro na rota ${path}:`, error);
-  renderPage(notFoundPage(path), path);
+  console.error(`[main] Erro ao carregar a rota ${path}:`, error);
+  /* A rota EXISTE (senão era route:notfound); o que falhou foi o carregamento
+   * do chunk. Mostra "falha ao carregar" (com Recarregar), não um 404 falso. */
+  renderPage(loadErrorPage(path), path);
 });
 
 /* ==============================================================

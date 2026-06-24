@@ -6,6 +6,15 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-24
+
+### 🐛 Navegação robusta — falha de carregamento não vira "404 falso" (rumo ao JARVIS)
+- 🧭 **Causa:** as páginas carregam sob demanda (`import()` lazy). Se o chunk falha (deploy novo trocou os hashes, cache velho do app/PWA, ou soluço de rede), o roteador caía no `route:error` e mostrava **"Rota não encontrada"** — enganoso (a rota existe; o que falhou foi *carregar*). Foi o que apareceu em `/musicas` no app.
+- 🔁 **Auto-recuperação:** quando um chunk falha e há **internet**, o app recarrega **1× sozinho** (pega `index.html` + chunks frescos) com guarda anti-loop (zera ao carregar ok). Resolve deploy novo sem o usuário fazer nada.
+- 🩹 **Mensagem certa:** se não der pra recuperar (offline), mostra **"Falha ao carregar"** + botão **Recarregar** — não mais "rota não existe".
+- 🧰 **Service worker:** bump `baluarte-v2.0.0` → `v2.0.1` pra invalidar caches velhos.
+- 🛡️ **Por que importa pro JARVIS:** ele vai navegar/usar as ferramentas; agora uma falha de carregamento é **recuperável e clara**, não um erro mudo/404 falso. Auditoria: os **75 itens do menu batem com rotas reais** (nenhum link quebrado). Verificado: smoke ok; `loadErrorPage` renderiza "Falha ao carregar"; build limpo.
+
 ## 2026-06-23
 
 ### 🔵 Login com Google no `/perfil` + estética sincronizada por usuário (#291)

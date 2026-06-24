@@ -66,3 +66,27 @@ export function notFoundPage(path) {
     )
   );
 }
+
+/**
+ * Página de FALHA DE CARREGAMENTO (não é 404). A rota existe, mas o chunk dela
+ * não carregou — quase sempre versão nova do site (deploy trocou os hashes) ou
+ * conexão. Recarregar resolve (pega os arquivos frescos). Distinta do 404 pra
+ * não confundir o operador (nem o JARVIS) com "rota não existe".
+ */
+export function loadErrorPage(path) {
+  return h(
+    'section',
+    { className: 'empty-state anim-fade-in' },
+    h('div', { className: 'empty-state__icon' }, '⟳'),
+    h('h1', { className: 'empty-state__title' }, 'Falha ao carregar'),
+    h('p', { className: 'empty-state__subtitle' },
+      `Não consegui carregar "${path}" agora — provavelmente uma versão nova do site ou a conexão. A página existe; foi o carregamento que falhou.`),
+    h('div', { className: 'empty-state__phase' }, 'ERRO DE CARREGAMENTO'),
+    h(
+      'div',
+      { style: { display: 'flex', gap: '12px', marginTop: '24px' } },
+      h('button', { className: 'btn btn--primary', onclick: () => location.reload() }, '⟳ Recarregar'),
+      h('button', { className: 'btn', onclick: () => router.navigate('/home') }, '⬅ Início')
+    )
+  );
+}
