@@ -19,6 +19,11 @@ aqui o que mudou.
 - 🔀 **Mescla as 3 origens** sem duplicar (dedup por texto): local + **conta (sua, na nuvem)** + repo (`jarvis-memory`). Botão **☁️ Conta** no `/memoria` (logado: sincroniza; deslogado: leva ao `/perfil`); ao abrir logado, puxa a conta sozinho.
 - 🪶 Web leve (#238): sem deps, best-effort, degrada em silêncio. Verificado: build limpo + smoke ok; a página renderiza com o botão **☁️ Conta**. O round-trip real depende de estar logado (testável no preview/produção). 🛡️ Backup: branch de trabalho.
 
+### 🌐 Omega Prism · Fatia 1 na web — `/memoria` e `/cerebro` acessíveis no navegador (#231)
+- 🔓 **`/memoria` (Memória) e `/cerebro` (Segundo Cérebro) agora abrem na WEB** — antes caíam no teaser "Núcleo de IA roda no app". O `docs/OMEGA-PRISM.md` põe L1 Conhecimento + L2 Memória na coluna **web (leve)**, e a Fatia 1 ("100% web, verificável") **só fecha** se dá pra logar → criar memória → ver em outro dispositivo. Isto destrava o cliente da nuvem do PR anterior pra valer no navegador.
+- 🧱 **Sem regressão no app**: novo `lazyLeve(tab, …)` no `main.js` — na **web** renderiza a página real (leve); no **app** (`window.baluarte.native`) segue caindo no **cockpit unificado** do Núcleo na aba certa. O pesado (grafo 3D, JARVIS, ML, Mini-LLM, `codemap-symbols`) **continua app-only** via `lazyNexus`.
+- 🪶 **Boot segue leve (#238)**: o `index` quase não mudou (193,4→193,7 KB) e os chunks pesados continuam **separados/lazy**; `/memoria` e `/cerebro` puxam o `jarvis-brain` (10 KB gz) só quando abertos. Verificado no navegador (Playwright): as duas rotas renderizam a página real (header + grafo/ferramentas), **sem teaser**; build limpo. 🛡️ Backup: `backup/2026-06-24-pre-omega-fatia1`.
+
 ### 🐛 Navegação robusta — falha de carregamento não vira "404 falso" (rumo ao JARVIS)
 - 🧭 **Causa:** as páginas carregam sob demanda (`import()` lazy). Se o chunk falha (deploy novo trocou os hashes, cache velho do app/PWA, ou soluço de rede), o roteador caía no `route:error` e mostrava **"Rota não encontrada"** — enganoso (a rota existe; o que falhou foi *carregar*). Foi o que apareceu em `/musicas` no app.
 - 🔁 **Auto-recuperação:** quando um chunk falha e há **internet**, o app recarrega **1× sozinho** (pega `index.html` + chunks frescos) com guarda anti-loop (zera ao carregar ok). Resolve deploy novo sem o usuário fazer nada.
