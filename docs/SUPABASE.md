@@ -75,6 +75,8 @@ Versionadas em `supabase/migrations/`. Idempotentes (podem rodar mais de uma vez
 | `0003_db_hardening.sql` | revoga `EXECUTE` público do event-trigger `rls_auto_enable()` | ✅ aplicada (22/06/2026, migration `db_hardening`) |
 | `0004_page_views.sql` | função `bump_view(rota)` — views por página em `site_stats` (chaves `view:/rota`) | ✅ aplicada (22/06/2026, migration `page_views`) |
 | `0005_profiles.sql` | contas de usuário: `profiles` (RLS dono-só) + trigger de criação no signup | ✅ aplicada (23/06/2026, migration `profiles`) |
+| `0006_knowledge.sql` | `knowledge_notes` por usuário (Segundo Cérebro, Omega Prism) — RLS dono-só | ✅ aplicada (24/06/2026, migration `knowledge_notes`) |
+| `0007_memories.sql` | `memories` por usuário (Memória do JARVIS, Omega Prism) — RLS dono-só | ✅ aplicada (24/06/2026, migration `memories`) |
 
 Conferir o estado a qualquer momento (sessão com Supabase MCP):
 `list_tables` (tabelas + RLS) e `list_migrations` (histórico aplicado).
