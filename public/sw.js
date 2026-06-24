@@ -7,7 +7,7 @@
  * Isso evita servir assets velhos após um deploy (ex.: no Vercel).
  */
 
-const VERSION = 'baluarte-v2.0.0';
+const VERSION = 'baluarte-v2.0.1';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
