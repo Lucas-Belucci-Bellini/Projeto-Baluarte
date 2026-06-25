@@ -347,9 +347,19 @@ function initGraph(canvas, tip, extra) {
       tip.style.display = 'block';
       tip.style.left = Math.min(mx + 12, W - 180) + 'px';
       tip.style.top = (my + 12) + 'px';
+      /* Tooltip montado por DOM (textContent), NUNCA innerHTML: o label/corpo da
+       * nota é conteúdo do usuário — innerHTML aqui seria XSS (CodeQL). */
       const t = STYLE[hover.tipo];
-      const extraInfo = hover.tipo === 'nota' && hover.nota && hover.nota.body ? `<br><span style="color:#9aa6b8">${shorten(hover.nota.body, 60)}</span>` : '';
-      tip.innerHTML = `<b>${hover.label}</b><br><span style="color:${hover.cor}">${t ? t.label : ''}</span>${hover.rota ? ' · clique p/ abrir' : ''}${extraInfo}`;
+      const showBody = hover.tipo === 'nota' && hover.nota && hover.nota.body;
+      empty(tip);
+      tip.appendChild(h('span', null,
+        h('b', null, hover.label),
+        h('br', null),
+        h('span', { style: { color: hover.cor } }, t ? t.label : ''),
+        hover.rota ? ' · clique p/ abrir' : null,
+        showBody ? h('br', null) : null,
+        showBody ? h('span', { style: { color: '#9aa6b8' } }, shorten(hover.nota.body, 60)) : null
+      ));
     } else {
       tip.style.display = 'none';
     }
