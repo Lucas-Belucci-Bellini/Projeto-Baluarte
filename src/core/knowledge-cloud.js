@@ -18,13 +18,26 @@ async function ctx() {
   return token && user ? { token, user } : null;
 }
 
+/**
+ * Valida um UUID (formato do PostgREST). Barreira de REQUEST-FORGERY (CodeQL,
+ * CWE-918): o `user.id` vem da sessão (localStorage) e o id da nota vem de linhas
+ * da rede — só valores NESSE formato entram na URL do `fetch` (dbFetch). Devolve
+ * o id validado ou null; qualquer coisa fora do padrão vira no-op.
+ */
+function uuid(v) {
+  v = String(v || '');
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v) ? v : null;
+}
+
 /** Lista as notas do usuário logado (mais recentes primeiro) ou null. */
 export async function cloudListNotes() {
   const c = await ctx();
   if (!c) return null;
+  const uid = uuid(c.user.id);
+  if (!uid) return null;
   try {
     const rows = await dbFetch(
-      `knowledge_notes?select=id,title,body,tags,links,created_at,updated_at&user_id=eq.${encodeURIComponent(c.user.id)}&order=updated_at.desc&limit=2000`,
+      `knowledge_notes?select=id,title,body,tags,links,created_at,updated_at&user_id=eq.${uid}&order=updated_at.desc&limit=2000`,
       { token: c.token }
     );
     return Array.isArray(rows) ? rows : null;
@@ -37,10 +50,12 @@ export async function cloudListNotes() {
 export async function cloudInsertNote({ title, body = '', tags = [], links = [] }) {
   const c = await ctx();
   if (!c) return null;
+  const uid = uuid(c.user.id);
+  if (!uid) return null;
   try {
     const rows = await dbFetch('knowledge_notes', {
       method: 'POST',
-      body: { user_id: c.user.id, title, body, tags: tags || [], links: links || [] },
+      body: { user_id: uid, title, body, tags: tags || [], links: links || [] },
       token: c.token,
       prefer: 'return=representation'
     });
@@ -53,10 +68,12 @@ export async function cloudInsertNote({ title, body = '', tags = [], links = [] 
 /** Apaga uma nota da conta pelo id (uuid). Best-effort. */
 export async function cloudDeleteNote(id) {
   const c = await ctx();
-  if (!c || !id) return;
+  if (!c) return;
+  const nid = uuid(id), uid = uuid(c.user.id);
+  if (!nid || !uid) return;
   try {
     await dbFetch(
-      `knowledge_notes?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(c.user.id)}`,
+      `knowledge_notes?id=eq.${nid}&user_id=eq.${uid}`,
       { method: 'DELETE', token: c.token }
     );
   } catch {
