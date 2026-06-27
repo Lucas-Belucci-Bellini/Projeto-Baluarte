@@ -33,3 +33,6 @@ historico/
 
 # --- App desktop (Electron) — buildado à parte, não vai pro deploy web (#222) ---
 desktop/
+
+# --- Vendor: repos de TERCEIROS (referência/estudo), nunca no deploy ---
+vendor/

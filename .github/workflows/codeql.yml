@@ -37,6 +37,11 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
+          # vendor/ = código/textos de TERCEIROS (referência), fora do build/deploy
+          # e fora do nosso código. Excluído do CodeQL pra não poluir os PRs.
+          config: |
+            paths-ignore:
+              - vendor
 
       - name: Analisar
         uses: github/codeql-action/analyze@v3
