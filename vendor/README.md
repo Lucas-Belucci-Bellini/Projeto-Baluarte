@@ -23,7 +23,17 @@
 | `nousresearch-obsidian/` | [NousResearch/Obsidian](https://github.com/NousResearch/Obsidian) | `main` | 20 MB | Modelo de linguagem **multimodal compacto** (visão+texto) da Nous Research | **Mini-modelo multimodal** (referência) → molde do **Mini-LLM / IA Proprietária / visão** |
 | `quant-mind/` | [LLMQuant/quant-mind](https://github.com/LLMQuant/quant-mind) | `master` | 8 MB | "Quant mind" — pipeline de IA pra pesquisa/conhecimento (domínio quant) | **Pipeline LLM + conhecimento** (ingestão → raciocínio) → referência pra orquestração do Núcleo |
 
-*(Importados em 2026-06-23. Tamanhos extraídos aproximados.)*
+### Lote 2 — capacidades pro JARVIS (2026-06-25)
+
+| Pasta | Origem | Ref | Tam. | O que é | Pro que serve no Baluarte |
+|---|---|---|---:|---|---|
+| `turbovec/` | [RyanCodrai/turbovec](https://github.com/RyanCodrai/turbovec) | `main` | 1.6 MB | Índice vetorial (algoritmo TurboQuant) p/ busca por similaridade — **Rust + Python** | **Busca vetorial / memória semântica** → motor de RAG/Memória. ❗ nativo/backend, **não roda no browser** |
+| `react-bits/` | [DavidHDev/react-bits](https://github.com/DavidHDev/react-bits) | `main` | 67 MB | 130+ animações de UI (texto, fundos, componentes) — **React + TS + CSS** | **Efeitos visuais** pro redesign (#195/#246) — portar à mão p/ **CSS/canvas vanilla** (Baluarte é sem framework). ⚠️ MIT **+ Commons Clause** |
+| `agenthatch/` | [agenthatch/agenthatch](https://github.com/agenthatch/agenthatch) | `main` | 1.7 MB | Compilador `SKILL.md` → agentes Python com tools tipadas + MCP — **Python** | **Pipeline de agentes/skills** → molde do Conselho/JARVIS-tools. ❗ nativo/backend |
+
+> **CL4R1T4S** (coleção de system-prompts) foi pedido junto, mas ficou **numa branch à parte** (`vendor/cl4r1t4s-readonly`): é **AGPL-3.0** (copyleft — isolo do resto) e o conteúdo é material adversarial (prompt-injection). Guardado **só como leitura, NÃO ligado ao JARVIS**.
+
+*(Lote 1 em 2026-06-23; lote 2 em 2026-06-25. Tamanhos aproximados. `react-bits` é React/TS e os outros dois são Python/Rust — **nenhum roda no JARVIS-web como está**; ver #238: pesado = app/nativo, web = casca leve.)*
 
 ## A tese do "Omega Prism"
 
@@ -53,3 +63,7 @@ um `docs/OMEGA-PRISM.md` com o desenho concreto da 1ª fatia (a casca + a memór
 ## Licenças
 Cada pasta mantém a licença original do projeto (ver `LICENSE`/`README` dentro dela).
 Uso aqui é **referência/estudo**; qualquer reuso de código respeitará a licença de origem.
+
+Atenção especial:
+- **`react-bits/`** — MIT **+ Commons Clause**: não pode ser vendido como produto; pra portfólio/estudo e portar efeitos é ok, com atribuição.
+- **CL4R1T4S** (branch `vendor/cl4r1t4s-readonly`) — **AGPL-3.0**: copyleft forte. Por isso fica **isolado numa branch própria**, fora desta; nada de `src/` deve depender dele.

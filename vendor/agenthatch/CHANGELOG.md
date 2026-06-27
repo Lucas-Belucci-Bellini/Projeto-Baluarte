@@ -1,0 +1,174 @@
+# CHANGELOG
+
+All notable changes to agenthatch will be documented in this file.
+
+---
+
+## [v0.6.0] — 2026-06-05
+
+### Architecture Transformation: "Agent Factory"
+
+v0.6 marks a major architectural transformation from "configuration-driven" to "Agent Factory" mode. The core runtime has been extracted into a standalone `agenthatch-core` package, and the `hatch` command now includes built-in Phase 3 agent generation.
+
+### Added
+
+- **agenthatch-core**: New standalone package providing the universal agent runtime base
+  - `AHCoreAgent`: Base class for all generated agents
+  - `LLMClient`: Unified LLM call interface (OpenAI, DeepSeek, custom providers)
+  - `CapBus`: Capability bus for tool registration, routing, and execution
+  - `Sandbox`: Subprocess sandbox with command whitelisting and timeout control
+  - `ConversationLoop`: LLM ↔ Tool conversation loop with circuit breaker and retry
+  - `ContextManager`: System prompt builder, history management, auto-compaction
+  - `CompactSummary`: LLM-generated structured context compression
+  - `resolve_runtime_config()`: Environment variable resolver with `${VAR}` syntax
+- **Phase 3 Agent Generation**: `hatch` command now generates standalone, independently-runnable Agent directories
+  - Jinja2 template engine with 6 templates (pyproject.toml, agent.py, cli.py, tools.py, runtime.toml, README.md)
+  - `GenerateEngine` class for extracting AHSSPEC variables and rendering templates
+  - `generate_agent()` convenience function
+- **`agenthatch run` redesign**: Direct agent launching via in-process import with Rich Live TUI
+  - Three-level agent discovery: current dir → skillhouse index → user dir
+  - Interactive commands: `/help`, `/compact`, `/clear`, `/quit`
+- **`agenthatch migrate`**: New command for migrating v0.5 agenthatch.yaml to v0.6 format
+- **`agent.status` and `agent.generated_at` fields**: New metadata fields in agenthatch.yaml
+- **`agent_output` field**: New field in skillhouse index for tracking agent generation paths
+
+### Changed
+
+- **agenthatch.yaml format**: Runtime configuration (`agent.runtime.*`) removed and migrated to `runtime.toml`
+- **`hatch` command**: Now executes full 3-phase pipeline by default (parse → harness → generate)
+  - `--no-generate` flag to skip Phase 3 (review mode)
+  - `--force` flag to overwrite existing output
+  - `--dry-run` flag to preview without writing
+  - `--no-copy-skills` flag to exclude original SKILL.md
+- **Dependency architecture**: `agenthatch` now depends on `agenthatch-core>=0.6.0` (one-way dependency)
+- **`ConversationLoop`**: Migrated to `agenthatch-core`, now receives `llm`, `capbus`, `sandbox`, `ctx` as constructor parameters
+- **`ContextManager`**: Migrated to `agenthatch-core`, accepts `dict` or `SpecProtocol` for spec
+- **`LLMClient`**: Migrated to `agenthatch-core`, accepts provider details directly
+
+### Fixed
+
+- **Fix-1**: hatch exit code verification — exit code is now always 0 on success
+- **Fix-2**: init command version number — now reads from `agenthatch.__version__` instead of hardcoded string
+- **Fix-3**: skills list display — unhatched skills now show `[dim]not hatched[/dim]` instead of `Version ?`
+- **Fix-4**: reasoning_content handling — verified DeepSeek V4 Pro streaming with reasoning content fallback
+- **Fix-5**: TUI backspace key — Rich Live context properly paused during `Prompt.ask()` input
+- **Fix-6**: legacy `run` command logic — removed configuration-driven path, replaced with agent direct-launch
+
+### Removed
+
+- **`agent.runtime` fields** from agenthatch.yaml (provider, model, api_key, temperature, max_tokens, features, compact)
+- **Legacy `SkillAgent.from_ahspec()` runtime assembly path**: Replaced by `AHCoreAgent` + generated agent code
+- **Configuration-driven `run` path**: Replaced by agent direct-launch mode
+
+### Deprecated
+
+- `agent.runtime` in agenthatch.yaml: Issues `DeprecationWarning` on load, still functional
+- Will be removed in v1.0.0 per the deprecation schedule
+
+---
+
+## [v0.9.19] — 2026-06-22
+
+### Fixed (accumulated bug fixes)
+
+- **fix: pass through temperature/max_tokens in chat_structured fallback** — `chat_structured()` Instructor fallback path hardcoded `temperature=0.0` and `max_tokens=4096`, discarding caller-configured values. Harnesses configure per-task values (e.g. AssembleHarness uses 8192) that were silently overridden. Now passes through the function parameters.
+- **fix: remove dead harness timeout code** — `_build_harnesses()` computed `d_timeout` based on client features but never used it (only logged then discarded). Removed the dead code.
+- **fix: resolve numpy 2.5.0 mypy incompatibility in CI** — numpy 2.5.0 stubs use `type` statement (Python 3.12+) which breaks mypy when `pyproject.toml` hardcodes `python_version = "3.11"`. CI now passes `--python-version` from matrix to mypy; `pyproject.toml` adds mypy override to ignore numpy module errors.
+- **fix: remove global sys.stderr hijack in _ensure_embedder** — `_ensure_embedder` replaced process-level `sys.stderr` with `StringIO` during SentenceTransformer download (up to 60s). This silently discarded all other threads' stderr output. On timeout, the hijack persisted until the daemon thread finished. Removed the hijack; `hf_log.setLevel(ERROR)` already suppresses Python logging noise, and C-level stderr (SSL errors, etc.) is preserved as diagnostic signals.
+- **fix: checkpoint migration dead code** — `CheckpointManager.__init__` mkdirs `new_dir` before the migration check, so `not new_dir.exists()` was always `False` — the `shutil.copytree` migration never ran. Users upgrading from old checkpoint paths (`~/.agenthatch/sessions/`) silently lost history. Migration now runs before `CheckpointManager()` construction, and the condition checks `checkpoint.json` existence instead of directory existence.
+
+---
+
+## [v0.9.18] — 2026-06-21
+
+### Fixed (accumulated bug fixes)
+
+- **fix: add missing ThinkingDelta import in LLMClient.chat_stream** — `ThinkingDelta` was referenced but not imported, causing `NameError` when streaming reasoning content from DeepSeek V4 Pro. Fixed via deferred import to avoid circular dependency.
+- **fix: correct split count in MCPClient.register_with_capbus** — `split("__", 1)` should be `split("__", 2)` for three-segment MCP tool names (`mcp__<server>__<tool>`). The wrong split produced incorrect server names in the server-side tool discovery path.
+- **fix: correct escape sequence in _escape_fts5_query** — `re.sub` replacement had 6 backslashes (3 literal `\`, capture group lost) instead of 3 (1 literal `\` + capture group). FTS5 special characters were not properly escaped, silently falling back to LIKE search.
+- **fix: use getattr for reasoning_tokens in DirectLoop._record_usage** — `DirectLoop` accessed `usage.reasoning_tokens` directly, but OpenAI's `CompletionUsage` nests it under `completion_tokens_details`. This caused `AttributeError` for prompt-only skills. Now uses `getattr(usage, "reasoning_tokens", 0)` matching `ConversationLoop`.
+
+---
+
+## [v0.9.16] — 2026-06-17
+
+### Open Source Prep: Final Polish
+
+- **Remove Discord links** from README, README_CN, SUPPORT.md, CONTRIBUTING.md — defer to D+7~14 when community exists (empty room problem)
+- **Add GitHub Release auto-creation** to publish.yml via `softprops/action-gh-release@v2` — tag push now creates both PyPI artifact and GitHub Release
+- **Add .gitignore entries** for `.workbuddy/`, `campaign/`, `deliverables/` — marketing artifacts excluded from package
+
+---
+
+## [v0.9.14] — 2026-06-17
+
+### Community & CI Fixes
+
+- **Add Discord and Twitter/X links** to README, SUPPORT.md, CONTRIBUTING.md
+- **Fix CI**: add `types-PyYAML>=6.0` to `[dev]` dependencies — GitHub Actions failed on mypy with missing yaml stubs
+- **Humanizer polish**: remove AI writing patterns from README (em dash overuse, inflated language)
+
+---
+
+## [v0.9.13] — 2026-06-17
+
+### README Audit & CI Infrastructure
+
+#### Added
+- **CI workflow** (`.github/workflows/ci.yml`): ruff lint + mypy --strict + pytest on Python 3.11/12/13 matrix
+- **Publish workflow** (`.github/workflows/publish.yml`): PyPI trusted publishing via OIDC, triggered on `v*` tag push
+- **README_CN.md**: Chinese translation of README
+
+#### Fixed (README — source code audit)
+- Remove architecture diagram placeholder (CLI tools don't need diagrams; text pipeline + harness table is sufficient)
+- Remove docs site TODO (docs site deferred, README is the documentation for CLI tools)
+- Fix "generates cli.py" claim → actual output is `agent.py` + `tools.py` + `references.py`
+- Fix "run concurrently" → harnesses run sequentially (A→B→C→D→F→E)
+- Add `references.py` to output file tree (was missing)
+- Fix file paths: outputs live under `src/{package_name}/`, not root
+- Fix determinism claim: "Same SKILL.md → same agent binary" → "Same SKILL.md → same AHSSPEC structure (low-temp inference)"
+
+#### Removed
+- Demo section from README (Quick Start is the demo for CLI tools)
+- Star History chart (pre-launch anti-pattern)
+- "Coming soon" shields badges for non-existent Discord/Twitter
+
+---
+
+## [v0.5.10] — 2026-05-XX
+
+### Fixed
+- Empty response handling in OpenAI-compatible providers
+- Checkpoint TypeError in context compaction
+- Token budget inflation during conversation loop
+- MCP server URL extraction from skill body
+- Reasoning content extraction from streaming responses
+- Structured chat reasoning fallback
+- Harness E assembly confidence scoring
+- Token adjustment log level verbosity
+- Multi-format content extraction in LLM responses
+
+---
+
+## [v0.5.0] — 2025-XX-XX
+
+### Added
+- SKILL.md parsing (Phase 1): Deterministic frontmatter + content parsing
+- LLM Harness reasoning (Phase 2): 6-agent harness pipeline for AHSSPEC generation
+- agenthatch.yaml output: Structured skill specification
+- `agenthatch hatch` command: SKILL.md → agenthatch.yaml pipeline
+- `agenthatch run` command: Interactive agent conversation
+- `agenthatch init` command: First-time setup wizard
+- `agenthatch skills` command: Skill listing and management
+- Skillhouse index: Skill discovery and registration
+- Semantic search: sentence-transformers based skill retrieval
+- Rich TUI: Live streaming with tool call visualization
+
+---
+
+## [v0.2.0] — 2025-XX-XX
+
+### Added
+- Initial project scaffolding
+- Basic CLI framework with Typer
+- Configuration management

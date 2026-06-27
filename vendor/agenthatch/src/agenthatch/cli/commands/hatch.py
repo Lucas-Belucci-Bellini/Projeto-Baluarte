@@ -1,0 +1,1455 @@
+"""agenthatch hatch — Standardize a SKILL.md into AHSSPEC middleware.
+
+v0.9.8: Phase 1 (deterministic context assembly) +
+Phase 2 (AgentHarnesses inference + PlanLayer + Micro-Compaction) and outputs:
+  1. agenthatch.yaml (AHSSPEC v1.1) at <skill_dir>/agenthatch.yaml
+  2. skillhouse.json entry (registered in .agenthatch/skillhouse.json)
+
+v0.3 enhancement: name-based skill resolution with 3-layer fallback:
+  Layer 1: Direct path resolution (backward compatible)
+  Layer 2: skillhouse.json exact-match lookup (fast index path)
+  Layer 3: BFS filesystem scan (no pre-registration required)
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import subprocess
+import sys
+import time
+from collections import deque
+from pathlib import Path
+from typing import Annotated, Any
+
+import typer
+import yaml
+from rich.console import Group
+from rich.live import Live
+from rich.panel import Panel
+from rich.spinner import Spinner
+from rich.status import Status
+from rich.table import Table
+from rich.text import Text
+from rich.tree import Tree
+
+from agenthatch.cli import console
+from agenthatch.cli.commands._completion import _complete_skill_name
+from agenthatch.skill.parser import _is_skill_md, assemble_context
+from agenthatch.skill.spec import AgentConfig
+
+logger = logging.getLogger("agenthatch")
+
+# ── Filesystem scan constants ──────────────────────────────────────────────
+_MAX_NAME_SCAN_DEPTH = 4       # max directory depth to scan
+_MAX_DIRS_PER_ROOT = 500       # max dirs to visit per search root
+
+# ── Phase 3 agent generation ───────────────────────────────────────────────
+
+
+def _resolve_default_provider(config: dict[str, Any]) -> str:
+    """Resolve the default provider name from config."""
+    # v0.8.17: Read from [agenthatch].default, not [providers].default
+    return str(config.get("agenthatch", {}).get("default", "openai"))
+
+
+def _resolve_provider_cfg(config: dict[str, Any], provider_name: str) -> dict[str, Any]:
+    """Resolve provider config, handling custom.xxx nested keys."""
+    providers = config.get("providers", {})
+    if not isinstance(providers, dict):
+        return {}
+    # v0.8.17: custom.xxx providers live at [providers.custom.xxx]
+    if provider_name.startswith("custom."):
+        custom_key = provider_name.removeprefix("custom.")
+        return dict(providers.get("custom", {}).get(custom_key, {}))
+    return dict(providers.get(provider_name, {}))
+
+
+def _create_ai_chat_fn(config: dict[str, Any]) -> Any:
+    """Create a simple chat function for AI-driven tool generation.
+
+    Uses the same provider config as the harnesses but with a simpler
+    interface: (system_prompt, user_prompt) -> response_text.
+
+    v0.8.19: Fix — pass provider features to LLMClient so that
+    AnthropicAdapter is enabled for custom providers with
+    requires_anthropic_adapter = true.  Without this the AI tool
+    generation LLM call fails silently and all tools become stubs.
+    """
+    import os
+
+    from agenthatch_core.llm.client import LLMClient
+
+    from agenthatch.providers import get_provider, resolve_api_key
+
+    provider_name = _resolve_default_provider(config)
+    provider_cfg = _resolve_provider_cfg(config, provider_name)
+    if not isinstance(provider_cfg, dict):
+        return None
+
+    # v0.8.19: Use get_provider() to resolve ProviderInfo (including features)
+    # so that requires_anthropic_adapter is correctly set.
+    try:
+        provider_info = get_provider(provider_name, config)
+    except Exception:
+        provider_info = None
+
+    api_key = provider_cfg.get("api_key") or os.environ.get(
+        provider_cfg.get("api_key_env", ""), ""
+    )
+    if not api_key:
+        api_key = resolve_api_key(provider_name, config=config, prompt=False)
+    if not api_key:
+        logger.warning("No API key configured for AI tool generation")
+        return None
+
+    model = provider_cfg.get("default_model", "gpt-4o")
+    base_url = provider_cfg.get("base_url", "")
+
+    client = LLMClient(
+        provider=provider_name,
+        model=model,
+        api_key=api_key,
+        base_url=base_url or None,
+        features=provider_info.features if provider_info else None,  # type: ignore[arg-type]
+    )
+
+    def chat_fn(system_prompt: str, user_prompt: str) -> str:
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        return client.chat(messages=messages, temperature=0.3, max_tokens=16384)
+
+    return chat_fn
+
+
+def _run_phase3_generate(
+    ahs_spec: Any,
+    skill_dir: Path,
+    output: str | None,
+    force: bool,
+    dry_run: bool,
+    copy_skills: bool,
+    _framework: str,
+    ai_chat_fn: Any | None = None,
+) -> tuple[int, Path, float]:
+    """Run Phase 3: generate an independent Agent directory from AHSSPEC.
+
+    Returns:
+        (file_count, agent_output_dir, elapsed_seconds)
+    """
+    from agenthatch.generate.engine import GenerateEngine
+
+    agent_id = ahs_spec.identity.id
+    if output:
+        agent_output_dir = Path(output).expanduser().resolve()
+    else:
+        agent_output_dir = Path.cwd() / f"{agent_id}-agent"
+
+    t3_start = time.time()
+
+    spec_dict = ahs_spec.model_dump()
+
+    with Status(
+        "[accent]▸ Phase 3/3[/accent]  Agent Generation",
+        spinner="dots",
+        console=console,
+    ) as _gen_status:
+        try:
+            engine = GenerateEngine()
+            written = engine.generate(
+                ahspec=spec_dict,
+                output_dir=agent_output_dir,
+                dry_run=dry_run,
+                force=force,
+                copy_skills=copy_skills,
+                skill_dir=skill_dir,
+                ai_chat_fn=ai_chat_fn,
+            )
+        except FileExistsError as e:
+            console.print(f"[yellow]{e}[/yellow]")
+            console.print("Use --force to overwrite.")
+            raise typer.Exit(code=2) from e
+        except Exception as e:
+            # v0.8.11: Don't show error to user unless --report/trace
+            logger.error("Generation error: %s", e)
+            console.print(
+                f"[error]Generation error: {e}[/error]"
+            )
+            raise typer.Exit(code=5) from e
+
+    t3_elapsed = time.time() - t3_start
+    return len(written), agent_output_dir, t3_elapsed
+
+
+# ── CLI rendering helpers ───────────────────────────────────────────────────
+
+
+def _format_size(size_bytes: int) -> str:
+    """Format byte count as human-readable string."""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+
+def _render_confidence(ahs_spec: Any) -> None:
+    """Render confidence panel with bar chart for each harness."""
+    cr = ahs_spec.confidence_report
+    if not cr or not cr.per_harness:
+        return
+
+    from agenthatch.skill.spec import HARNESS_LABELS
+
+    BAR_WIDTH = 22
+    mcp_servers = (
+        ahs_spec.interface.mcp_servers
+        if getattr(ahs_spec.interface, "mcp_servers", None)
+        else []
+    )
+
+    lines: list[Text] = []
+    for key in ["A", "B", "C", "D", "E", "F"]:
+        if key not in cr.per_harness:
+            continue
+        name = HARNESS_LABELS.get(key, key)
+        score = cr.per_harness[key]
+        filled = max(1, int(score * BAR_WIDTH))
+
+        line = Text()
+        line.append("  ")
+        line.append(key, style="accent")
+        line.append("  ")
+        line.append(f"{name:<24}", style="dim")
+        line.append("  ")
+
+        bar = Text("▓" * filled + "░" * (BAR_WIDTH - filled))
+        bar.stylize("ok", 0, filled)
+        bar.stylize("dim", filled, BAR_WIDTH)
+        line.append_text(bar)
+
+        line.append(f"  {score:.2f}")
+
+        if key == "F" and mcp_servers:
+            s = "s" if len(mcp_servers) > 1 else ""
+            line.append(f"  mcp: {len(mcp_servers)} server{s}", style="dim")
+
+        lines.append(line)
+
+    console.print()
+    console.print(Panel(Text("\n").join(lines), title="Confidence", border_style="cyan"))
+
+
+def _render_harness_traces(harness_outputs: dict[str, Any]) -> None:
+    """Render Rich Tree for each harness trace (--trace mode)."""
+    from agenthatch.skill.spec import HARNESS_LABELS
+
+    for key in ["A", "B", "C", "D", "E", "F"]:
+        if key not in harness_outputs:
+            continue
+        h_output = harness_outputs[key]
+        label = HARNESS_LABELS.get(key, key)
+
+        tree = Tree(f"[bold]Harness {key}: {label}[/bold]")
+        for trace_line in h_output.reasoning_trace:
+            tree.add(trace_line)
+        tree.add(
+            f"[green]confidence={h_output.confidence:.2f}, "
+            f"self_check_passed={h_output.self_check_passed}, "
+            f"internal_retries={h_output.internal_retries}[/green]"
+        )
+        if h_output.degradation_applied:
+            tree.add(f"[yellow]degradations: {h_output.degradation_applied}[/yellow]")
+        console.print(tree)
+        console.print()
+
+
+def _render_summary(
+    harness_outputs: dict[str, Any],
+    archetype: Any,
+    file_count: int,
+    agent_output_dir: Path | None,
+    dry_run: bool,
+    no_generate: bool,
+) -> None:
+    """Render final summary table with harness confidence and output info."""
+    from agenthatch.skill.spec import HARNESS_LABELS
+
+    table = Table(title="Hatch Summary", border_style="cyan")
+    table.add_column("Harness", style="accent", justify="center")
+    table.add_column("Task")
+    table.add_column("Confidence", justify="right")
+    table.add_column("Self-Check", justify="center")
+
+    for key in ["A", "B", "C", "D", "F", "E"]:
+        if key not in harness_outputs:
+            continue
+        h = harness_outputs[key]
+        label = HARNESS_LABELS.get(key, key)
+        conf = f"{h.confidence:.2f}"
+        check = "[ok]✓[/ok]" if h.self_check_passed else "[error]✗[/error]"
+        table.add_row(key, label, conf, check)
+
+    if archetype:
+        arch_val = archetype.value if hasattr(archetype, "value") else str(archetype)
+        table.add_row("", "[dim]Archetype[/dim]", f"[bold]{arch_val}[/bold]", "")
+
+    if not no_generate:
+        if dry_run:
+            table.add_row("", "[dim]Output[/dim]", f"[dim]{file_count} files (dry-run)[/dim]", "")
+        elif agent_output_dir:
+            home = Path.home()
+            dest = str(agent_output_dir)
+            if dest.startswith(str(home)):
+                dest = "~" + dest[len(str(home)):]
+            table.add_row("", "[dim]Output[/dim]", f"{file_count} files → {dest}", "")
+
+    console.print()
+    console.print(table)
+
+
+def _render_phase3_result(
+    file_count: int,
+    agent_output_dir: Path,
+    elapsed: float,
+    dry_run: bool,
+    trace: bool,
+    written_files: list[Path] | None = None,
+) -> None:
+    """Render Phase 3 completion output."""
+    if dry_run:
+        console.print(
+            f"[dim]◌  Would generate {file_count} files → {agent_output_dir}[/dim]"
+        )
+    else:
+        console.print(
+            f"[ok]✓[/ok]  {file_count} files generated in {elapsed:.2f} seconds"
+        )
+        if trace and written_files:
+            for f in sorted(written_files):
+                try:
+                    rel = f.relative_to(agent_output_dir)
+                except ValueError:
+                    rel = f
+                console.print(f"    [dim]{rel}[/dim]")
+
+
+# ── Main hatch command ──────────────────────────────────────────────────────
+
+
+def hatch_command(
+    skill_path: Annotated[
+        str,
+        typer.Argument(
+            help="Path to skill directory, SKILL.md file, or skill name",
+            autocompletion=_complete_skill_name,
+        ),
+    ],
+    output: Annotated[
+        str | None,
+        typer.Option(
+            "--output", "-o",
+            help="Agent output directory (default: ./<skill-id>-agent/)",
+        ),
+    ] = None,
+    force: Annotated[
+        bool,
+        typer.Option("--force", "-f", help="Overwrite existing output directory"),
+    ] = False,
+    trace: Annotated[
+        bool,
+        typer.Option("--trace", help="Show Harness reasoning traces"),
+    ] = False,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Print generated files without writing"),
+    ] = False,
+    json_output: Annotated[
+        bool,
+        typer.Option("--json", help="Output as JSON instead of YAML"),
+    ] = False,
+    no_generate: Annotated[
+        bool,
+        typer.Option(
+            "--no-generate",
+            help="Skip Phase 3 — only produce agenthatch.yaml (review mode)",
+        ),
+    ] = False,
+    no_copy_skills: Annotated[
+        bool,
+        typer.Option("--no-copy-skills", help="Exclude original SKILL.md and resource files"),
+    ] = False,
+    no_ai_tools: Annotated[
+        bool,
+        typer.Option("--no-ai-tools", help="Skip AI-driven tool implementation generation"),
+    ] = False,
+    report: Annotated[
+        bool,
+        typer.Option(
+            "--report", "-r",
+            help="Show structured hatch report (confidence, traces, tokens, verdict). "
+                 "Use with --json for CI-friendly JSON output.",
+        ),
+    ] = False,
+    framework: Annotated[
+        str,
+        typer.Option("--framework", help="Agent framework [python-typer]"),
+    ] = "python-typer",
+) -> None:
+    """Standardize a SKILL.md into AHSSPEC middleware and generate an independent Agent.
+
+    v0.9.8: hatch now runs the full three-phase pipeline by default:
+      Phase 1: Deterministic context assembly (no AI)
+      Phase 2: 6 AgentHarnesses inference (LLM-driven)
+      Phase 3: Agent generation via Jinja2 templates (default on)
+
+    Examples:
+        agenthatch hatch ~/skills/weather-reporter/
+        agenthatch hatch ./SKILL.md --trace
+        agenthatch hatch weather-reporter
+        agenthatch hatch . --no-generate        # review mode: yaml only
+        agenthatch hatch . --dry-run            # preview without writing
+    """
+    from agenthatch.config import Config
+    from agenthatch.skill.builder import build_ahspec
+
+    # Suppress third-party log noise leaking to CLI output
+    for noisy in (
+        "sentence_transformers",
+        "huggingface_hub",
+        "urllib3",
+        "urllib3.connectionpool",
+        "urllib3.util.retry",
+        "httpx",
+        "httpcore",
+        "openai",
+    ):
+        logging.getLogger(noisy).setLevel(logging.WARNING)
+
+    config = Config.load()
+
+    # v0.9.17: When emitting the HatchReport as JSON for CI, route all Rich
+    # progress/rendering output to stderr so stdout contains only the JSON
+    # report — parseable by jq and other CI tooling. Terminal mode (--report
+    # without --json) is unchanged.
+    quiet_for_json = bool(report and json_output)
+    if quiet_for_json:
+        console.file = sys.stderr
+
+    # ── 1. Resolve skill (name or path, 3-layer fallback) ──────────────
+    skill_real_path, from_index = _resolve_skill_name(skill_path, config)
+
+    # ── 2. Early output dir resolution (for overview + conflict check) ─
+    skill_dir = _resolve_skill_dir(skill_real_path)
+    skill_name = skill_dir.name
+    if output:
+        agent_output_dir_early = Path(output).expanduser().resolve()
+    else:
+        agent_output_dir_early = Path.cwd() / f"{skill_name}-agent"
+
+    # ── 3. Provider info for overview ───────────────────────────────────
+    provider_name = _resolve_default_provider(config)
+    provider_cfg = _resolve_provider_cfg(config, provider_name)
+    if isinstance(provider_cfg, dict):
+        model_display = provider_cfg.get("default_model", "unknown")
+    else:
+        model_display = "unknown"
+
+    # ── 4. Early output dir conflict check (fail fast, before LLM cost) ─
+    if (
+        not force
+        and not no_generate
+        and not dry_run
+        and agent_output_dir_early.exists()
+    ):
+        console.print()
+        console.print(Panel(
+            f"Output directory already exists:\n"
+            f"[dim]{agent_output_dir_early}[/dim]\n\n"
+            f"Use [bold]--force[/bold] to overwrite, "
+            f"or [bold]--output[/bold] to choose a different path.",
+            title="[error]Directory Conflict[/error]",
+            border_style="red",
+        ))
+        raise typer.Exit(code=2)
+
+    # ── 5. Overview panel ───────────────────────────────────────────────
+    console.print()
+    home = Path.home()
+    dest_display = str(agent_output_dir_early)
+    if dest_display.startswith(str(home)):
+        dest_display = "~" + dest_display[len(str(home)):]
+
+    console.print(Panel(
+        f"[bold]{skill_name}[/bold] → [dim]{dest_display}[/dim]\n"
+        f"[dim]{provider_name} / {model_display}[/dim]",
+        title="[accent]agenthatch hatch[/accent]",
+        border_style="cyan",
+    ))
+
+    # ── 6. Phase 1: Context Assembly ────────────────────────────────────
+    console.print("[accent]▸ Phase 1/3[/accent]  Context Assembly")
+    t1 = time.time()
+
+    try:
+        context = assemble_context(skill_real_path)
+    except FileNotFoundError as e:
+        console.print(f"[error]Error: {e}[/error]")
+        raise typer.Exit(code=1) from e
+    except Exception as e:
+        console.print(f"[error]Parse error: {e}[/error]")
+        raise typer.Exit(code=3) from e
+
+    elapsed1 = time.time() - t1
+    total_files = len(context.file_manifest.entries)
+    total_size = sum(e.size_bytes for e in context.file_manifest.entries)
+    size_str = _format_size(total_size)
+    console.print(
+        f"[ok]✓[/ok]  {total_files} files indexed · {size_str} · {elapsed1:.1f} seconds"
+    )
+
+    if trace:
+        for entry in context.file_manifest.entries[:20]:
+            console.print(f"    [dim]{entry.path}[/dim]")
+        if total_files > 20:
+            console.print(f"    [dim]... and {total_files - 20} more[/dim]")
+        for warning in context.parse_warnings:
+            console.print(f"    [warn]⚠ {warning}[/warn]")
+
+    # ── 7. Phase 2: Agentic Inference ───────────────────────────────────
+    console.print("[accent]▸ Phase 2/3[/accent]  Agentic Inference")
+    t2 = time.time()
+
+    harness_cfg = config.get("harness", {})
+    large_model = harness_cfg.get("large_model", "") if isinstance(harness_cfg, dict) else ""
+    small_model = harness_cfg.get("small_model", "") if isinstance(harness_cfg, dict) else ""
+
+    from agenthatch.skill.spec import HARNESS_LABELS
+
+    harness_order = ["A", "B", "C", "D", "F", "E"]
+
+    _state: dict[str, Any] = {"current": "A", "completed": []}
+
+    def _render_harness_progress() -> Group:
+        renderables: list[Any] = []
+        for key in harness_order:
+            label = HARNESS_LABELS.get(key, key)
+            if key in _state["completed"]:
+                renderables.append(
+                    Text(f"     ✓ Harness {key}: {label}", style="ok")
+                )
+            elif key == _state["current"]:
+                renderables.append(
+                    Spinner("dots", text=f"Harness {key}: {label}...")
+                )
+        return Group(*renderables)
+
+    def _on_harness_done(key: str) -> None:
+        _state["completed"].append(key)
+        for k in harness_order:
+            if k not in _state["completed"]:
+                _state["current"] = k
+                break
+        live.update(
+            Panel(_render_harness_progress(), border_style="cyan", padding=(0, 1))
+        )
+
+    with Live(
+        Panel(_render_harness_progress(), border_style="cyan", padding=(0, 1)),
+        refresh_per_second=8,
+        console=console,
+        transient=False,
+    ) as live:
+        try:
+            ahs_spec, harness_outputs = build_ahspec(
+                context, config, large_model=large_model, small_model=small_model,
+                progress_callback=_on_harness_done,
+            )
+        except Exception as e:
+            console.print(f"[error]Inference error: {e}[/error]")
+            raise typer.Exit(code=4) from e
+
+    elapsed2 = time.time() - t2
+    harness_count = len(harness_outputs)
+    console.print(
+        f"[ok]✓[/ok]  {harness_count} harnesses completed · {elapsed2:.1f} seconds"
+    )
+
+    if trace:
+        _render_harness_traces(harness_outputs)
+
+    # ── 7.5. Phase 2.5: Skill Classification (v0.7) ─────────────────
+    from agenthatch_core.bricks.archetypes import classify_skill
+
+    classification = classify_skill(
+        ahs_spec.model_dump() if hasattr(ahs_spec, "model_dump") else ahs_spec
+    )
+    console.print(
+        f"     [dim]Archetype: {classification.archetype.value} "
+        f"(confidence: {classification.confidence:.0%})[/dim]"
+    )
+
+    # ── 8. Confidence panel ─────────────────────────────────────────────
+    _render_confidence(ahs_spec)
+
+    # ── 9. Dry-run YAML/JSON output ─────────────────────────────────────
+    # v0.9.17: When --report is set, the HatchReport (terminal or JSON)
+    # is emitted at the end of the run. Skip the AHSSPEC dry-run dump
+    # here to avoid double output; the AHSSPEC is still written to
+    # agenthatch.yaml on disk for inspection.
+    if dry_run and not report:
+        console.print()
+        if json_output:
+            console.print_json(ahs_spec.model_dump_json())
+        else:
+            yaml_str = yaml.dump(
+                ahs_spec.model_dump(),  # v0.7.9: direct dict, avoids json round-trip
+                allow_unicode=True,
+                default_flow_style=False,
+                sort_keys=False,
+            )
+            console.print(yaml_str)
+
+    # ── 10. Ensure v0.8.2 agent lifecycle status ────────────────────────
+    from datetime import UTC, datetime
+    if ahs_spec.agent is None:
+        ahs_spec.agent = AgentConfig(status="unhatched")
+    ahs_spec.agent.status = "hatched"
+    ahs_spec.agent.hatched_at = datetime.now(UTC)
+
+    # ── 11. Write agenthatch.yaml ───────────────────────────────────────
+    if not dry_run:
+        yaml_output_path = _resolve_yaml_path(skill_dir, output)
+        if yaml_output_path.exists() and not force:
+            console.print(
+                f"[dim]agenthatch.yaml already exists at {yaml_output_path}, "
+                "skipping yaml generation.[/dim]"
+            )
+        else:
+            yaml_output_path.parent.mkdir(parents=True, exist_ok=True)
+            yaml_str = yaml.dump(
+                ahs_spec.model_dump(
+                    exclude={"harness_traces", "confidence_report"}
+                ),
+                allow_unicode=True,
+                default_flow_style=False,
+                sort_keys=False,
+            )
+            yaml_output_path.write_text(yaml_str, encoding="utf-8")
+            console.print(f"  [dim]Written: {yaml_output_path}[/dim]")
+
+        # ── Register in skillhouse.json ─────────────────────────────────
+        _register_skillhouse(ahs_spec, yaml_output_path, config)
+
+    # ── 12. Phase 3: Readiness + Generation (silent unless --report) ──
+    # v0.9.17: Capture readiness verdict for the HatchReport.
+    readiness_verdict: Any | None = None
+    if no_generate:
+        console.print(
+            "[accent]▸ Phase 3/3[/accent]  Agent Generation  [dim](skipped)[/dim]"
+        )
+        _render_summary(
+            harness_outputs=harness_outputs,
+            archetype=getattr(classification, "archetype", None),
+            file_count=0,
+            agent_output_dir=None,
+            dry_run=False,
+            no_generate=True,
+        )
+        # v0.9.17: Emit report even when generation is skipped.
+        if report:
+            _emit_hatch_report(
+                ahs_spec=ahs_spec,
+                harness_outputs=harness_outputs,
+                phases=_build_phase_reports(
+                    elapsed1=elapsed1,
+                    elapsed2=elapsed2,
+                    elapsed3=0.0,
+                    no_generate=True,
+                    dry_run=dry_run,
+                    phase3_tokens={},
+                ),
+                readiness_verdict=readiness_verdict,
+                agent_output_dir=None,
+                file_count=0,
+                provider_name=provider_name,
+                model_display=model_display,
+                classification=classification,
+                json_output=json_output,
+            )
+        return
+
+    # Resolve agent output dir for readiness check and generation
+    agent_id = ahs_spec.identity.id
+    if output:
+        agent_output_dir = Path(output).expanduser().resolve()
+    else:
+        agent_output_dir = Path.cwd() / f"{agent_id}-agent"
+
+    if not dry_run:
+        try:
+            from agenthatch.generate.readiness import run_readiness_phase
+
+            result = run_readiness_phase(
+                skill_dir=skill_dir,
+                ahspec=ahs_spec.model_dump(),
+                agent_path=str(agent_output_dir),
+                skip_network_probe=False,
+            )
+            readiness_verdict = result.readiness
+            # v0.8.11: Silent readiness check unless --report.
+            # Agenthatch auto-resolves what it can (install mcporter)
+            # and always proceeds to generation.
+            if result.readiness.status in ("BLOCK", "WARN"):
+                # v0.9: Auto-install missing system dependencies.
+                # For each CLI tool declared in base.dependencies,
+                # try npm/pip/brew before asking the user.
+                if env_report := getattr(result, "_env_report", None):
+                    for tool, found in getattr(env_report, "system_tools", {}).items():
+                        if not found:
+                            _auto_install_dependency(console, tool)
+                    # v0.9: Also auto-install missing pip packages
+                    missing_pkgs = [
+                        pkg for pkg, found in env_report.pip_packages.items()
+                        if not found
+                    ]
+                    if missing_pkgs:
+                        for pkg in missing_pkgs:
+                            _auto_install_dependency(console, pkg)
+                if not result.readiness.mcporter_installed and result._mcp_skill:
+                    _auto_install_dependency(console, "mcporter")
+                # v0.9.17: Readiness text report is now part of HatchReport.
+                # Only print standalone if --report is NOT set (legacy behavior).
+                if not report and result.report:
+                    console.print(result.report)
+            elif not report and result.report:
+                console.print(result.report)
+        except Exception as e:
+            logger.warning("Readiness phase skipped: %s", e)
+
+    # ── 13. Phase 3: Agent Generation ────────────────────────────────
+    if dry_run:
+        console.print(
+            "[accent]▸ Phase 3/3[/accent]  Agent Generation  [dim](dry-run)[/dim]"
+        )
+
+    # v0.9: Create AI chat function for tool implementation generation
+    # v0.9.17: Wrap to capture Phase 3 token usage for the HatchReport.
+    ai_chat_fn = None
+    phase3_token_accumulator: dict[str, int] = {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+    }
+    if not no_ai_tools:
+        raw_chat_fn = _create_ai_chat_fn(config)
+        if raw_chat_fn is None:
+                # v0.9: Visible warning — user must know tools may be stubs
+                console.print(
+                    "[yellow]⚠ No API key configured.[/yellow] "
+                    "[dim]AI tool generation will be skipped — "
+                    "some tools may be non-functional stubs. "
+                    "Run [bold]agenthatch init[/bold] to configure.[/dim]"
+                )
+        else:
+            def _token_wrapped_chat_fn(system_prompt: str, user_prompt: str) -> str:
+                """Wrap ai_chat_fn to accumulate Phase 3 token usage."""
+                result: str = raw_chat_fn(system_prompt, user_prompt)
+                # raw_chat_fn closure holds `client`; read its last_usage
+                # via introspection (the closure variable).
+                # We use a module-level helper to avoid coupling.
+                _accumulate_phase3_tokens(phase3_token_accumulator, raw_chat_fn)
+                return result
+
+            ai_chat_fn = _token_wrapped_chat_fn
+
+    file_count, agent_output_dir, elapsed3 = _run_phase3_generate(
+        ahs_spec=ahs_spec,
+        skill_dir=skill_dir,
+        output=output,
+        force=force,
+        dry_run=dry_run,
+        copy_skills=not no_copy_skills,
+        _framework=framework,
+        ai_chat_fn=ai_chat_fn,
+    )
+
+    _render_phase3_result(
+        file_count=file_count,
+        agent_output_dir=agent_output_dir,
+        elapsed=elapsed3,
+        dry_run=dry_run,
+        trace=trace,
+        written_files=list(agent_output_dir.glob("**/*")) if trace and not dry_run else None,
+    )
+
+    # ── Update skillhouse index with agent output path ──────────────────
+    if not dry_run:
+        _update_skillhouse_agent_output(ahs_spec.identity.id, agent_output_dir, config)
+
+    # ── 14. Final summary ───────────────────────────────────────────────
+    _render_summary(
+        harness_outputs=harness_outputs,
+        archetype=getattr(classification, "archetype", None),
+        file_count=file_count if not dry_run else 0,
+        agent_output_dir=agent_output_dir if not dry_run else None,
+        dry_run=dry_run,
+        no_generate=False,
+    )
+
+    # ── 15. Hatch Report (v0.9.17) ──────────────────────────────────────
+    # Emitted after all phases complete. Never blocks — verdict is advisory.
+    if report:
+        _emit_hatch_report(
+            ahs_spec=ahs_spec,
+            harness_outputs=harness_outputs,
+            phases=_build_phase_reports(
+                elapsed1=elapsed1,
+                elapsed2=elapsed2,
+                elapsed3=elapsed3,
+                no_generate=False,
+                dry_run=dry_run,
+                phase3_tokens=phase3_token_accumulator,
+            ),
+            readiness_verdict=readiness_verdict,
+            agent_output_dir=str(agent_output_dir) if not dry_run else None,
+            file_count=file_count if not dry_run else 0,
+            provider_name=provider_name,
+            model_display=model_display,
+            classification=classification,
+            json_output=json_output,
+        )
+
+    # ── 16. Next step ───────────────────────────────────────────────────
+    if not no_generate and not dry_run:
+        console.print(
+            f"[dim]Next step:[/dim] [bold]agenthatch run {ahs_spec.identity.id}[/bold]"
+        )
+
+
+# ── Internal helpers (yaml, skillhouse, output path) ────────────────────────
+
+
+def _accumulate_phase3_tokens(
+    accumulator: dict[str, int], raw_chat_fn: Any
+) -> None:
+    """v0.9.17: Extract token usage from the ai_chat_fn closure.
+
+    The closure created by _create_ai_chat_fn holds an `LLMClient` instance
+    in its `client` variable. After each call, `client.last_usage` contains
+    the most recent CompletionUsage. We read it and accumulate.
+    """
+    try:
+        # Inspect closure to find the LLMClient instance
+        closure_cells = raw_chat_fn.__closure__ or []
+        client = None
+        for cell in closure_cells:
+            obj = cell.cell_contents
+            if hasattr(obj, "last_usage"):
+                client = obj
+                break
+        if client is None or client.last_usage is None:
+            return
+
+        usage = client.last_usage
+        prompt = int(getattr(usage, "prompt_tokens", 0) or 0)
+        completion = int(getattr(usage, "completion_tokens", 0) or 0)
+        total = int(getattr(usage, "total_tokens", 0) or (prompt + completion))
+
+        accumulator["prompt_tokens"] += prompt
+        accumulator["completion_tokens"] += completion
+        accumulator["total_tokens"] += total
+    except Exception as e:
+        logger.debug("Phase 3 token accumulation failed: %s", e)
+
+
+def _build_phase_reports(
+    *,
+    elapsed1: float,
+    elapsed2: float,
+    elapsed3: float,
+    no_generate: bool,
+    dry_run: bool,
+    phase3_tokens: dict[str, int],
+) -> list[Any]:
+    """v0.9.17: Build PhaseReport list for the HatchReport.
+
+    Phase 1 (context assembly) and Phase 2 (agentic inference) have no
+    LLM token consumption tracked at the phase level — Phase 2 tokens are
+    captured per-harness in HarnessOutput.token_usage. Phase 3 (agent
+    generation) may consume tokens via AI tool generation.
+    """
+    from agenthatch.skill.report import PhaseReport
+
+    phases: list[PhaseReport] = [
+        PhaseReport(
+            name="phase_1_context",
+            label="Phase 1: Context Assembly",
+            elapsed_seconds=elapsed1,
+            token_usage={},
+            status="ok",
+        ),
+        PhaseReport(
+            name="phase_2_inference",
+            label="Phase 2: Agentic Inference",
+            elapsed_seconds=elapsed2,
+            token_usage={},  # tokens tracked per-harness, not per-phase
+            status="ok",
+        ),
+    ]
+
+    if no_generate:
+        phases.append(
+            PhaseReport(
+                name="phase_3_generation",
+                label="Phase 3: Agent Generation",
+                elapsed_seconds=0.0,
+                token_usage={},
+                status="skipped",
+                detail="skipped (--no-generate)",
+            )
+        )
+    elif dry_run:
+        phases.append(
+            PhaseReport(
+                name="phase_3_generation",
+                label="Phase 3: Agent Generation",
+                elapsed_seconds=elapsed3,
+                token_usage=dict(phase3_tokens) if phase3_tokens else {},
+                status="ok",
+                detail="dry-run (no files written)",
+            )
+        )
+    else:
+        phases.append(
+            PhaseReport(
+                name="phase_3_generation",
+                label="Phase 3: Agent Generation",
+                elapsed_seconds=elapsed3,
+                token_usage=dict(phase3_tokens) if phase3_tokens else {},
+                status="ok",
+            )
+        )
+
+    return phases
+
+
+def _emit_hatch_report(
+    *,
+    ahs_spec: Any,
+    harness_outputs: dict[str, Any],
+    phases: list[Any],
+    readiness_verdict: Any | None,
+    agent_output_dir: str | None,
+    file_count: int,
+    provider_name: str,
+    model_display: str,
+    classification: Any,
+    json_output: bool,
+) -> None:
+    """v0.9.17: Build and emit the HatchReport (terminal or JSON).
+
+    Never blocks — verdict is advisory (PASS or WARN only).
+    """
+    from agenthatch.skill.report import build_hatch_report
+
+    archetype = getattr(classification, "archetype", None)
+    if archetype is not None:
+        archetype_str = (
+            archetype.value if hasattr(archetype, "value") else str(archetype)
+        )
+    else:
+        archetype_str = None
+    archetype_conf = getattr(classification, "confidence", None)
+
+    report = build_hatch_report(
+        skill_id=ahs_spec.identity.id,
+        skill_name=ahs_spec.identity.display_name,
+        provider=provider_name,
+        model=model_display,
+        phases=phases,
+        harness_outputs=harness_outputs,
+        readiness=readiness_verdict,
+        agent_output_dir=agent_output_dir,
+        file_count=file_count,
+        archetype=archetype_str,
+        archetype_confidence=float(archetype_conf) if archetype_conf is not None else None,
+    )
+
+    if json_output:
+        # CI-friendly JSON: write directly to stdout. When quiet_for_json
+        # is set, the Rich console has been redirected to stderr, so stdout
+        # contains only this JSON — clean for jq/CI pipelines.
+        sys.stdout.write(report.to_json())
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+    else:
+        # Rich terminal rendering
+        console.print()
+        console.print(report.to_terminal())
+
+
+def _resolve_yaml_path(skill_dir: Path, output: str | None) -> Path:
+    """Resolve where to write agenthatch.yaml."""
+    if output:
+        agent_output_dir = Path(output).expanduser().resolve()
+        return agent_output_dir / "agenthatch.yaml"
+    return skill_dir / "agenthatch.yaml"
+
+
+def _register_skillhouse(
+    ahs_spec: Any, yaml_output_path: Path, config: dict[str, Any]
+) -> None:
+    """Register skill in skillhouse.json index."""
+    skillhouse_config = config.get("skillhouse", {}) if "skillhouse" in config else {}
+    skillhouse_path = skillhouse_config.get(
+        "path", ".agenthatch/skillhouse.json"
+    ) if isinstance(skillhouse_config, dict) else ".agenthatch/skillhouse.json"
+
+    skillhouse_full_path = Path(skillhouse_path)
+    if not skillhouse_full_path.is_absolute():
+        skillhouse_full_path = Path.cwd() / skillhouse_full_path
+
+    from agenthatch.house.index import SkillhouseIndex
+
+    idx = SkillhouseIndex(str(skillhouse_full_path))
+    try:
+        idx.add_entry(ahs_spec.identity.id, ahs_spec, str(yaml_output_path))
+        console.print(
+            f"  [dim]Registered: {skillhouse_full_path} "
+            f"({idx.entry_count} entries)[/dim]"
+        )
+    except Exception as e:
+        logger.warning(
+            f"Hatch succeeded but skillhouse index update failed: {e}. "
+            f"The agenthatch.yaml is valid and can be used."
+        )
+        console.print(f"[yellow]⚠ Skill indexing failed (non-fatal): {e}[/yellow]")
+
+
+def _auto_install_dependency(console: Any, tool: str) -> None:
+    """v0.9: Auto-install a CLI dependency using known package managers.
+
+    Tries (in order): npm, pip, brew (macOS), apt-get (Linux).
+    Uses smart timeout: kills process if no output for 15s (hung),
+    waits up to 120s if output is being produced.
+    Does NOT fail if all attempts fail — the agent runtime health check
+    will detect the missing tool and inform the LLM.
+    """
+    import platform
+    import shutil
+    import threading
+
+    if shutil.which(tool):
+        return
+
+    managers = [
+        ("npm", ["npm", "install", "-g", tool]),
+        ("pip", [sys.executable, "-m", "pip", "install", tool]),
+    ]
+
+    system = platform.system()
+    if system == "Darwin":
+        managers.append(("brew", ["brew", "install", tool]))
+    elif system == "Linux":
+        managers.append(("apt", ["sudo", "apt-get", "install", "-y", tool]))
+
+    for mgr_name, cmd in managers:
+        if not shutil.which(cmd[0]):
+            continue
+        console.print(f"[dim]Auto-installing {tool} via {mgr_name}...[/dim]")
+        try:
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            last_output = [time.time()]
+            output_lines: list[str] = []
+
+            def _drain(
+                proc: subprocess.Popen[str] = proc,
+                last_output: list[float] = last_output,
+                output_lines: list[str] = output_lines,
+            ) -> None:
+                assert proc.stdout is not None  # captured with PIPE
+                while True:
+                    line = proc.stdout.readline()
+                    if not line and proc.poll() is not None:
+                        break
+                    if line:
+                        last_output[0] = time.time()
+                        output_lines.append(line)
+
+            reader = threading.Thread(target=_drain, daemon=True)
+            reader.start()
+
+            # Wait up to 120s, but kill if no output for 15s
+            deadline = time.time() + 120
+            while time.time() < deadline:
+                if proc.poll() is not None:
+                    break
+                if time.time() - last_output[0] > 15:
+                    # No output for 15s — process is hung
+                    proc.kill()
+                    proc.wait()
+                    break
+                time.sleep(0.5)
+
+            reader.join(timeout=2)
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
+                continue
+
+            if proc.returncode == 0:
+                console.print(f"[dim]  ✓ {tool} installed[/dim]")
+                return
+        except Exception:
+            pass
+
+    console.print(
+        f"[dim]  ⚠ Could not auto-install {tool}. "
+        f"Agent will detect this at runtime.[/dim]"
+    )
+
+
+def _update_skillhouse_agent_output(
+    agent_id: str, agent_output_dir: Path, config: dict[str, Any]
+) -> None:
+    """Update skillhouse index with agent output path (non-fatal)."""
+    skillhouse_config = config.get("skillhouse", {}) if "skillhouse" in config else {}
+    skillhouse_path = skillhouse_config.get(
+        "path", ".agenthatch/skillhouse.json"
+    ) if isinstance(skillhouse_config, dict) else ".agenthatch/skillhouse.json"
+
+    skillhouse_full_path = Path(skillhouse_path)
+    if not skillhouse_full_path.is_absolute():
+        skillhouse_full_path = Path.cwd() / skillhouse_full_path
+
+    if not skillhouse_full_path.exists():
+        return
+
+    from agenthatch.house.index import SkillhouseIndex
+
+    try:
+        idx = SkillhouseIndex(str(skillhouse_full_path))
+        idx.update_agent_output(agent_id, str(agent_output_dir))
+    except (OSError, json.JSONDecodeError):
+        pass
+
+
+# ── Name Resolution (3-layer fallback) ─────────────────────────────────────
+
+
+def _resolve_skill_name(skill_input: str, config: dict[str, Any]) -> tuple[Path, bool]:
+    """Resolve a skill name or path to a skill directory.
+
+    Three-layer strategy:
+      1. Looks like a path → direct resolution
+      2. skillhouse.json exact match → cached path
+      3. Filesystem scan → BFS tree walk finding SKILL.md-bearing dirs
+
+    Args:
+        skill_input: User-provided skill argument (name or path).
+        config: Full config dict (for [skills].search_dirs).
+
+    Returns:
+        (resolved_skill_dir_path, from_index: bool).
+
+    Raises:
+        typer.Exit: If no skill can be resolved.
+    """
+    input_path = Path(skill_input)
+    looks_like_path = (
+        "/" in skill_input
+        or "\\" in skill_input
+        or bool(input_path.suffix)
+        or skill_input in (".", "..")
+    )
+
+    # ── Layer 1: Direct path ──
+    if looks_like_path:
+        resolved = input_path.expanduser().resolve()
+        if resolved.is_dir():
+            _validate_contains_skill_md(resolved, str(resolved))
+            return resolved, False
+        if resolved.is_file():
+            parent = resolved.parent
+            _validate_contains_skill_md(parent, str(resolved))
+            return parent, False
+        _fail_not_found(skill_input, hint="Path does not exist.", exit_code=1)
+
+    # ── Layer 2: skillhouse.json index ──
+    index_result = _resolve_from_index(skill_input, config)
+    if index_result is not None:
+        return index_result, True
+
+    # ── Layer 3: Filesystem scan ──
+    return _resolve_from_filesystem(skill_input, config), False
+
+
+def _resolve_skill_dir(path: Path) -> Path:
+    """Resolve a path to its skill directory."""
+    if path.is_file() and path.suffix in (".md", ".markdown"):
+        return path.parent
+    return path
+
+
+def _resolve_from_index(name: str, config: dict[str, Any]) -> Path | None:
+    """Exact-match lookup in skillhouse.json."""
+    from agenthatch.house.index import SkillhouseIndex
+
+    skillhouse_cfg = config.get("skillhouse") if "skillhouse" in config else {}
+    skillhouse_path = skillhouse_cfg.get("path", ".agenthatch/skillhouse.json") \
+        if isinstance(skillhouse_cfg, dict) else ".agenthatch/skillhouse.json"
+
+    idx_path = Path(skillhouse_path)
+    if not idx_path.is_absolute():
+        idx_path = Path.cwd() / idx_path
+    if not idx_path.exists():
+        return None
+
+    idx = SkillhouseIndex(str(idx_path))
+    entry = idx.find_by_name(name)
+    if entry is None:
+        return None
+
+    ahs_path = entry.get("ahs_path", "")
+    if not ahs_path:
+        return None
+
+    skill_dir = Path(ahs_path).parent
+    if not skill_dir.is_dir():
+        console.print(
+            f"[yellow]Warning:[/yellow] '{name}' indexed but source dir "
+            f"{skill_dir} no longer exists. Falling back to filesystem scan."
+        )
+        return None
+
+    console.print(f"[dim]Resolved '{name}' from skillhouse index → {skill_dir}[/dim]")
+    return skill_dir
+
+
+def _resolve_from_filesystem(name: str, config: dict[str, Any]) -> Path:
+    """BFS scan search_dirs for a directory named 'name' containing SKILL.md.
+
+    Pattern: BFS with depth/dir limits, case-insensitive SKILL.md matching.
+
+    Returns:
+        Resolved skill directory path.
+
+    Raises:
+        typer.Exit: If no match or multiple ambiguous matches.
+    """
+    search_roots = _resolve_search_roots(config)
+
+    matches: list[Path] = []
+    for root in search_roots:
+        if not root.is_dir():
+            continue
+        found = _scan_for_skill(root, name)
+        matches.extend(found)
+
+    if not matches:
+        _fail_not_found(
+            name,
+            hint=f"Searched {len(search_roots)} directories, "
+                 f"no '{name}/SKILL.md' found.",
+            exit_code=1,
+        )
+
+    if len(matches) > 1:
+        console.print(
+            f"[yellow]Warning:[/yellow] Multiple skills match '{name}'. "
+            f"Using first result: {matches[0]}"
+        )
+        console.print("[dim]Alternatives:[/dim]")
+        for alt in matches[1:]:
+            console.print(f"  - {alt}")
+
+    selected = matches[0]
+    console.print(f"[dim]Discovered '{name}' → {selected}[/dim]")
+    _auto_register_to_index(selected, config)
+    return selected
+
+
+def _scan_for_skill(root: Path, target_name: str) -> list[Path]:
+    """BFS scan a search root for directories containing SKILL.md.
+
+    Pattern: BFS with deque, depth limit, dir count limit, skip dot-prefixed dirs,
+    case-insensitive SKILL.md matching.
+
+    Returns:
+        List of matching directories (empty if none).
+    """
+    results: list[Path] = []
+    visited: set[Path] = set()
+    queue: deque[tuple[Path, int]] = deque()
+
+    try:
+        root = root.resolve(strict=True)
+    except (OSError, FileNotFoundError):
+        return results
+
+    if not root.is_dir():
+        return results
+
+    visited.add(root)
+    queue.append((root, 0))
+    dirs_visited = 0
+
+    _EXCLUDED = frozenset(
+        {".git", "__pycache__", "node_modules", ".venv", "venv",
+         ".mypy_cache", ".pytest_cache", ".tox", ".eggs", "dist", "build"}
+    )
+
+    while queue:
+        current_dir, depth = queue.popleft()
+        dirs_visited += 1
+
+        if dirs_visited > _MAX_DIRS_PER_ROOT:
+            break
+
+        try:
+            entries = list(current_dir.iterdir())
+        except (OSError, PermissionError):
+            continue
+
+        has_skill_md = False
+        subdirs: list[Path] = []
+
+        for entry in entries:
+            if not entry.is_symlink():
+                if entry.is_file() and _is_skill_md(entry.name):
+                    has_skill_md = True
+                elif entry.is_dir() and depth < _MAX_NAME_SCAN_DEPTH:
+                    if not entry.name.startswith(".") and entry.name not in _EXCLUDED:
+                        resolved = entry.resolve()
+                        if resolved not in visited:
+                            subdirs.append(resolved)
+
+        if has_skill_md and current_dir.name == target_name:
+            results.append(current_dir)
+
+        for subdir in subdirs:
+            visited.add(subdir)
+            queue.append((subdir, depth + 1))
+
+    return results
+
+
+def _auto_register_to_index(skill_dir: Path, config: dict[str, Any]) -> None:
+    """Silently register a newly discovered skill to skillhouse.json.
+
+    Called after successful filesystem scan (Layer 3).
+    This ensures subsequent lookups hit the fast index path (Layer 2).
+    Registration is fire-and-forget: failure doesn't block hatch.
+    """
+    try:
+        from agenthatch.house.index import SkillhouseIndex
+
+        skillhouse_cfg = config.get("skillhouse") if "skillhouse" in config else {}
+        skillhouse_path = skillhouse_cfg.get("path", ".agenthatch/skillhouse.json") \
+            if isinstance(skillhouse_cfg, dict) else ".agenthatch/skillhouse.json"
+
+        idx_path = Path(skillhouse_path)
+        if not idx_path.is_absolute():
+            idx_path = Path.cwd() / idx_path
+        idx_path.parent.mkdir(parents=True, exist_ok=True)
+
+        idx = SkillhouseIndex(str(idx_path))
+        idx.register_placeholder(
+            skill_id=skill_dir.name,
+            skill_dir=str(skill_dir),
+        )
+    except (OSError, json.JSONDecodeError):
+        pass
+
+
+def _validate_contains_skill_md(directory: Path, original_input: str) -> None:
+    """Check that a directory contains at least one SKILL.md (case-insensitive)."""
+    try:
+        for entry in directory.iterdir():
+            if entry.is_file() and _is_skill_md(entry.name):
+                return
+    except (OSError, PermissionError):
+        pass
+    _fail_not_found(
+        original_input,
+        hint="Directory exists but no SKILL.md found (case-insensitive). "
+             "Expected: SKILL.md, skill.md, Skill.md, etc.",
+        exit_code=1,
+    )
+
+
+def _fail_not_found(name: str, hint: str = "", exit_code: int = 1) -> None:
+    """Print helpful error and exit."""
+    console.print(f"[red]Error:[/red] Skill not found: '{name}'")
+    if hint:
+        console.print(f"[dim]{hint}[/dim]")
+    raise typer.Exit(code=exit_code)
+
+
+# ── Search Root Resolution (shared with init.py) ────────────────────────────
+
+_KNOWN_SKILL_HOST_DIRS: list[str] = [
+    ".claude/skills",
+    ".openclaw/skills",
+    ".codex/skills",
+    ".agents/skills",
+    "skills",
+    ".agenthatch/skills",
+]
+
+
+def _resolve_search_roots(config: dict[str, Any]) -> list[Path]:
+    """Resolve all skill search roots from three sources.
+
+    Sources:
+      1. [skills].search_dirs from config (user-specified)
+      2. _KNOWN_SKILL_HOST_DIRS under $HOME (auto-discovered AI tool dirs)
+      3. Project-level .agents/skills/ (convention, up to 3 parent levels)
+    """
+    home = Path.home()
+    roots: list[Path] = []
+
+    # Source 1: User-configured search dirs
+    skills_cfg = config.get("skills") if "skills" in config else {}
+    if isinstance(skills_cfg, dict):
+        raw = skills_cfg.get("search_dirs", "")
+        if raw:
+            # M8 fix: handle both TOML array (list) and comma-separated string
+            if isinstance(raw, list):
+                entries = raw
+            else:
+                entries = [s.strip() for s in str(raw).split(",") if s.strip()]
+            for p in entries:
+                if isinstance(p, str):
+                    roots.append(Path(p).expanduser().resolve())
+
+    # Source 2: Known AI tool skill directories under home
+    for host_dir in _KNOWN_SKILL_HOST_DIRS:
+        candidate = home / host_dir
+        if candidate.is_dir():
+            roots.append(candidate.resolve())
+
+    # Source 3: Project-level .agents/skills/ (convention)
+    cwd = Path.cwd().resolve()
+    for parent in [cwd] + list(cwd.parents)[:3]:
+        candidate = parent / ".agents" / "skills"
+        if candidate.is_dir():
+            roots.append(candidate.resolve())
+
+    # Deduplicate by canonical path
+    seen: set[Path] = set()
+    unique: list[Path] = []
+    for r in roots:
+        if r not in seen:
+            seen.add(r)
+            unique.append(r)
+    return unique
