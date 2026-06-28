@@ -50,6 +50,7 @@ export function buildImmersiveHero(opts = {}) {
     canvas,
     h('div', { className: 'bx-hero__rays', 'aria-hidden': 'true' }),
     h('div', { className: 'bx-hero__grid', 'aria-hidden': 'true' }),
+    h('div', { className: 'fx-aurora bx-hero__aurora', 'aria-hidden': 'true' }),
     splineWrap,
     hud,
     inner);

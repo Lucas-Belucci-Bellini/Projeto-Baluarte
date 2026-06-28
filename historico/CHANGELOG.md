@@ -18,6 +18,10 @@ aqui o que mudou.
 - 🔻 **Rodapé da sidebar coerente também**: os glifos soltos do botão **Instalar app** (⬇), do link do **YouTube** (▶) e do **LLBR Innovations** (⬡) viraram ícones de linha (`download`/`play`/`hex`), com regra de tamanho/alinhamento em `layout.css` (some o rótulo quando recolhida).
 - ✅ Verificado no navegador (Playwright): **75/75** itens da sidebar com SVG de linha, **zero** fallback de emoji, 3 ícones no rodapé; build limpo. É o passo 2 ("trocar a sidebar") do plano incremental de adoção do coolicons do Design System (§4); cards/headers ficam pra próxima fatia. 🛡️ Backup: branch de trabalho.
 
+### ✨ react-bits → efeitos vanilla · SoftAurora nos heróis imersivos (#246)
+- 🌌 **Camada de aurora (porta do SoftAurora)** ligada no `buildImmersiveHero` → **~20 páginas flagship** ganham, de uma vez, blobs de cor (ciano/magenta/violeta) respirando à deriva atrás do conteúdo do herói, com `mix-blend: screen` pra somar luz. Herda o acento do universo via `--bx-accent/2`. Novo `.fx-aurora` em `effects.css`.
+- 🪶 CSS puro, `pointer-events:none`, **reduced-motion congela**; entra em z-index 1 (atrás do conteúdo, que é z-4) e **some quando o Spline carrega** (junto de canvas/rays/grid). Verificado no navegador (Playwright + screenshot `/arsenal`): aurora compõe atrás da galáxia WebGL sem prejudicar a leitura; build limpo. 🛡️ Backup: branch de trabalho.
+
 ### ✨ react-bits → efeitos vanilla · TiltedCard nos cards das prateleiras (#246)
 - 🃏 **Inclinação 3D que segue o cursor (porta do TiltedCard)** nos cards das prateleiras do `/home` (Arsenal/Universos/Crônicas, 36 cards): o cartão gira em `rotateX/rotateY` conforme a posição do cursor (+ leve `scale`) e volta ao plano no leave — tátil, estilo "prateleira Steam" (Design System §7). Novo `attachTilt(el)` em `effects.js` + `.fx-tilt` (transição suave, `preserve-3d`).
 - 🛡️ Robusto: rotação **clampada** a ±amplitude (sem flip se o evento vier fora dos limites); **reduced-motion** deixa o card estático; sem dep. Verificado no navegador (Playwright): 36/36 cards com tilt, `transform` setado dentro da faixa (±11°) e limpo no leave; build limpo. 🛡️ Backup: branch de trabalho.

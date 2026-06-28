@@ -46,6 +46,7 @@ em si — inclusive uma versão portada**. Por isso:
 | SpotlightCard | `attachSpotlight(el)` + `.fx-spotlight` | brilho radial que segue o cursor em cartões |
 | DecryptedText | `decryptText(el)` + `decryptTitles(root)` | revelação "decifrando"; ligado **global** nos `.page-header__title` via `shell.renderPage` |
 | TiltedCard | `attachTilt(el)` + `.fx-tilt` | inclinação 3D (rotateX/Y ±amp, clampada) que segue o cursor em cartões |
+| SoftAurora | `.fx-aurora` (CSS puro) | camada de aurora (blobs à deriva, blend screen); herda `--bx-accent/2` |
 
 **Aplicado**: `/home` → `fx-shiny` no kicker + spotlight nas células do bento;
 **56 páginas** com `.page-header__title` → reveal "decifrando" a cada navegação
@@ -68,7 +69,8 @@ em si — inclusive uma versão portada**. Por isso:
 - [ ] **Texto · resto** — GradientText, RotatingText, TrueFocus p/ headers/destaques específicos.
 - [x] **Cartões · 1ª fatia** — TiltedCard portado e aplicado nos cards das prateleiras do `/home` (densidade estilo Steam).
 - [ ] **Cartões · resto** — GlareCard, BorderGlow, MagicBento p/ os hubs e demais grades de cartões.
-- [ ] **Fundos leves** — os ~7 backgrounds CSS (SoftAurora, Grainient…) como camada de profundidade.
+- [x] **Fundos leves · 1ª fatia** — SoftAurora (`.fx-aurora`) ligado no `buildImmersiveHero` → ~20 páginas flagship ganham a aurora atrás do conteúdo de uma vez (some quando o Spline carrega).
+- [ ] **Fundos leves · resto** — Grainient/Beams/DotGrid como variações; aplicar onde fizer sentido.
 - [ ] **Fundos WebGL (app/lazy)** — Aurora/Galaxy/Plasma/LightRays no harness sem-dep, gated #238.
 - [ ] Aposentar graduamente CSS antigo conforme as páginas migram pra esta linguagem.
 
