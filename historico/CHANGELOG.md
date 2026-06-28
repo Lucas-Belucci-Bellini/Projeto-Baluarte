@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-28
 
+### 🗃️ Centro Militar — camada de curadoria no Supabase (dado nosso sobre a Wikipédia) (#246)
+- 🎯 Nova tabela **`public.mil_curation`** (aplicada via MCP no banco oficial) que sobrepõe a Wikipédia com **dado nosso** por frente: **nota do operador**, **destaque** e **ordem**. O hub aplica isso (`.is-featured` + bloco `.mil-note`) por cima do extrato da Wikipédia.
+- 🔐 **RLS**: **leitura pública** (anon/authenticated SELECT — o hub é público); **escrita só por `service_role`** (dashboard/MCP), sem policy de write pra anon. Verificado por `curl`: anon **GET → 200** (lê) · anon **POST → 401** (bloqueado).
+- 🧱 Novo `src/utils/mil-curation.js` (`fetchMilCuration` via `dbSelect`, best-effort — sem Supabase/offline o hub funciona igual) + CSS de destaque/nota. Semeadas as 14 frentes (ordem + 2 notas + 1 destaque de exemplo). Edição via dashboard/MCP (`update mil_curation …`). Plano: `docs/CENTRO-MILITAR.md`.
+- ✅ Verificado: build limpo; overlay (destaque + nota) aplica no DOM; leitura anônima confirmada. 🛡️ Backup: branch de trabalho.
+
 ### 🎖️ Centro Militar — 13 frentes militares + Arsenal num hub só (Wikipédia ao vivo) (#246)
 - 🧭 **Consolidação**: as **13 páginas militares** da sidebar (+ Arsenal) viraram **uma página estilo Wikipédia** em **`/militar` ("Centro Militar")** — índice "Conteúdo" (sticky) + **14 seções**. A **sidebar enxugou de 13 itens → 1**; as páginas individuais **seguem registradas** e acessíveis pelo hub (botão "abrir página completa →") e por URL — **nada removido**.
 - 🌐 **Conteúdo vivo da Wikipédia**: cada seção puxa um **extrato da Wikipédia** sob demanda (IntersectionObserver, web leve) via `src/utils/wikipedia.js` (`fetchWikiSummary`, REST API CORS + cache memória/localStorage TTL 7d). **Best-effort**: se a Wikipédia não responder, mostra link pro artigo (zero erro). Conteúdo **CC BY-SA 4.0**, sempre **creditado e linkado**.

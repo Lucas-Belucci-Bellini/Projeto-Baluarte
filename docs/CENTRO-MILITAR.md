@@ -36,13 +36,28 @@
 `armas-pais`→/armas-por-pais→*Arma* · `guerras`→/guerras-conflitos→*Guerra* ·
 `batalhas`→/batalhas-historicas→*Batalha* · `arsenal`→/arsenal→*Arsenal*
 
+## Supabase — curadoria (nossa) ✅ aplicada
+
+Tabela **`public.mil_curation`** (aplicada via MCP no banco oficial) sobrepõe a
+Wikipédia com **dado nosso** por frente: `id` (= id do tópico), `note` (nota do
+operador), `featured` (destaque), `sort` (ordem), `updated_at`.
+
+- **RLS:** **leitura pública** (`anon`/`authenticated` SELECT) — o hub é público;
+  **escrita só por `service_role`** (dashboard/MCP) — não há policy de write pra
+  anon. Verificado: anon **GET → 200** (lê) · anon **POST → 401** (bloqueado).
+- **Cliente:** `src/utils/mil-curation.js` (`fetchMilCuration` via `dbSelect`,
+  best-effort) → o hub aplica **destaque** (`.is-featured`) + **nota do operador**
+  (`.mil-note`) por seção. Sem Supabase/offline → hub funciona igual.
+- **Como editar:** dashboard (SQL/Table editor) ou sessão com Supabase MCP —
+  ex.: `update mil_curation set note='…', featured=true where id='tecnologia';`.
+- Semeadas as 14 frentes (ordem + 2 notas + 1 destaque de exemplo).
+
 ## Próximas fatias
 
 - [ ] **Conteúdo+** — além do resumo, puxar seções específicas do artigo (Action API
   `extracts`/`sections`) e tabelas (ex.: gastos militares por país) onde fizer sentido.
-- [ ] **Supabase (nosso)** — tabela de **curadoria/edições** (notas do operador,
-  destaques, ordenação) que sobrepõe o conteúdo da Wikipédia. Prepara migration +
-  aplica via dashboard/MCP (split do #291).
+- [ ] **Aplicar `sort`** da curadoria pra reordenar TOC+seções (hoje guarda a ordem;
+  falta usá-la no render) + UI de admin (logado) pra editar a curadoria sem SQL.
 - [ ] **Busca** dentro do hub (filtrar seções) e deep-link por seção (`?sec=`).
 - [ ] Avaliar **dobrar o conteúdo rico das páginas** dentro do hub (tabs) vs manter
   como link — medir peso (web leve #238).
