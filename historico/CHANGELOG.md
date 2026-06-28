@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-06-28
 
+### ⬆️ Toolchain — site e app no Node 24
+- 🟢 **Node 22 → 24** em todo o projeto: `engines.node` do **site** (`package.json`: `22.x → 24.x`) e do **app** (`desktop/package.json`: novo `engines.node: 24.x`). Vercel lê o `engines` → passa a buildar/rodar a web no Node 24.
+- 🤖 **CI**: `desktop-release.yml` (build dos instaladores) `node 22 → 24` e `cambio.yml` (cron do câmbio) `node 20 → 24`.
+- 📌 `.nvmrc` (raiz + `desktop/`) = `24` pra fixar a versão no dev local. Build de produção limpo; JSONs válidos. *Obs.: o Electron empacota o próprio Node (preso ao major do Electron) — isto sobe o Node do **toolchain/CI**, não troca o runtime interno do Electron.*
+
 ### 🎨 Iconografia — sidebar 100% no set de linha (Design System §4 · #246)
 - 🧭 **Toda a navegação lateral agora usa o set único de ícones de linha** (`src/utils/icons.js`, traço + `currentColor`). Caíam no fallback de emoji só **2** rotas — `/git-nexus` ("Núcleo de IA", o flagship da IA) com 🔗 e `/baixar` ("Baixar o App") com ⬇. Mapeei as duas em `iconByPath` e desenhei os ícones `nexus` (grafo/hub) e `download` no mesmo grid 24×24 dos demais.
 - 🔻 **Rodapé da sidebar coerente também**: os glifos soltos do botão **Instalar app** (⬇), do link do **YouTube** (▶) e do **LLBR Innovations** (⬡) viraram ícones de linha (`download`/`play`/`hex`), com regra de tamanho/alinhamento em `layout.css` (some o rótulo quando recolhida).
