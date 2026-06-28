@@ -86,6 +86,24 @@
 .mil-section__open:hover { background: var(--color-cyan); color: #001016; }
 .mil-section__desc { margin: 10px 0 12px; color: var(--color-text-secondary); line-height: 1.6; font-size: 14px; }
 
+/* ----- curadoria (dado nosso, sobre a Wikipédia) ----- */
+.mil-section.is-featured { border-color: var(--color-cyan-edge); box-shadow: 0 0 18px rgba(0, 240, 255, 0.12); }
+.mil-section.is-featured::before { opacity: 1; }
+.mil-toc__item.is-featured { color: var(--color-cyan); }
+.mil-toc__item.is-featured::after { content: '★'; margin-left: auto; font-size: 11px; color: var(--color-cyan); }
+.mil-note {
+  margin: 0 0 14px; padding: 10px 12px;
+  border-left: 2px solid var(--color-cyan);
+  background: rgba(0, 240, 255, 0.06);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 13px; line-height: 1.55; color: var(--color-text-secondary);
+}
+.mil-note__tag {
+  display: block; font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--color-cyan); margin-bottom: 4px;
+}
+
 /* ----- bloco da Wikipédia ----- */
 .mil-wiki {
   border-top: 1px dashed rgba(255, 255, 255, 0.1);

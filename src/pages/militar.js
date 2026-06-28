@@ -14,6 +14,7 @@ import { router } from '../core/router.js';
 import { lineIcon } from '../utils/icons.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { fetchWikiSummary, wikiArticleUrl } from '../utils/wikipedia.js';
+import { fetchMilCuration } from '../utils/mil-curation.js';
 import '../styles/centro-militar.css';
 
 /* Frentes militares → página existente (conteúdo completo) + artigo da Wikipédia. */
@@ -79,17 +80,19 @@ export function militarPage() {
 
   /* índice de conteúdo (estilo Wikipédia) — botões que rolam até a seção
      (não usar href="#..." por causa do hash routing). */
+  const tocList = h('nav', { className: 'mil-toc__list' });
   const toc = h('aside', { className: 'mil-toc' },
-    h('div', { className: 'mil-toc__title' }, 'Conteúdo'),
-    h('nav', { className: 'mil-toc__list' },
-      ...TOPICS.map((t) => h('button', {
-        className: 'mil-toc__item',
-        onclick: () => document.getElementById('sec-' + t.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, h('span', { className: 'mil-toc__ico', html: lineIcon(t.icon) }),
-         h('span', null, t.label)))));
+    h('div', { className: 'mil-toc__title' }, 'Conteúdo'), tocList);
 
   const sections = h('div', { className: 'mil-sections' });
+  const byId = {};                          // id → { sec, tocItem, wikiBox } pra curadoria
   for (const t of TOPICS) {
+    const tocItem = h('button', {
+      className: 'mil-toc__item',
+      onclick: () => document.getElementById('sec-' + t.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, h('span', { className: 'mil-toc__ico', html: lineIcon(t.icon) }), h('span', null, t.label));
+    tocList.appendChild(tocItem);
+
     const wikiBox = h('div', { className: 'mil-wiki' },
       h('span', { className: 'mil-wiki__loading' }, 'Carregando da Wikipédia…'));
     const sec = h('section', { id: 'sec-' + t.id, className: 'mil-section' },
@@ -101,7 +104,25 @@ export function militarPage() {
       wikiBox);
     sections.appendChild(sec);
     lazyFillWiki(sec, wikiBox, t, onCleanup);
+    byId[t.id] = { sec, tocItem, wikiBox };
   }
+
+  /* camada de CURADORIA (dado nosso, sobre a Wikipédia) — best-effort: destaque
+     + nota do operador por frente, lidos da tabela `mil_curation` do Supabase. */
+  fetchMilCuration().then((cur) => {
+    for (const id in cur) {
+      const ref = byId[id];
+      if (!ref) continue;
+      const c = cur[id];
+      if (c.featured) { ref.sec.classList.add('is-featured'); ref.tocItem.classList.add('is-featured'); }
+      if (c.note) {
+        ref.sec.insertBefore(
+          h('div', { className: 'mil-note' },
+            h('span', { className: 'mil-note__tag' }, '✦ Nota do operador'), c.note),
+          ref.wikiBox);
+      }
+    }
+  });
 
   page.appendChild(h('div', { className: 'mil-layout' }, toc, sections));
   page.appendChild(h('p', { className: 'mil-credit' },
