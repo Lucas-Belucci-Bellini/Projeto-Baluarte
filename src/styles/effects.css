@@ -46,7 +46,17 @@
 .fx-spotlight:hover::after,
 .fx-spotlight:focus-within::after { opacity: 1; }
 
+/* TiltedCard — inclinação 3D que segue o cursor (porta do TiltedCard).
+   Pareie com attachTilt(el) de utils/effects.js (seta o transform inline).
+   A transição suaviza o movimento e o retorno ao plano (efeito "mola"). */
+.fx-tilt {
+  transition: transform 0.16s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fx-shiny { animation: none; }
   .fx-spotlight::after { transition: none; }
+  .fx-tilt { transition: none; }
 }

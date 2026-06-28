@@ -45,6 +45,7 @@ em si — inclusive uma versão portada**. Por isso:
 | ShinyText | `.fx-shiny` (CSS puro) | classe num texto; cor via `--fx-shine-*` |
 | SpotlightCard | `attachSpotlight(el)` + `.fx-spotlight` | brilho radial que segue o cursor em cartões |
 | DecryptedText | `decryptText(el)` + `decryptTitles(root)` | revelação "decifrando"; ligado **global** nos `.page-header__title` via `shell.renderPage` |
+| TiltedCard | `attachTilt(el)` + `.fx-tilt` | inclinação 3D (rotateX/Y ±amp, clampada) que segue o cursor em cartões |
 
 **Aplicado**: `/home` → `fx-shiny` no kicker + spotlight nas células do bento;
 **56 páginas** com `.page-header__title` → reveal "decifrando" a cada navegação
@@ -65,7 +66,8 @@ em si — inclusive uma versão portada**. Por isso:
 - [x] **Fatia 0** — camada `effects.*` + 2 efeitos (ShinyText, SpotlightCard) + PoC no `/home`.
 - [x] **Texto · 1ª fatia** — DecryptedText portado e ligado **global** nos títulos de página (56 páginas, reveal a cada navegação).
 - [ ] **Texto · resto** — GradientText, RotatingText, TrueFocus p/ headers/destaques específicos.
-- [ ] **Cartões** — TiltedCard, GlareCard, BorderGlow, MagicBento p/ os hubs (densidade estilo Steam).
+- [x] **Cartões · 1ª fatia** — TiltedCard portado e aplicado nos cards das prateleiras do `/home` (densidade estilo Steam).
+- [ ] **Cartões · resto** — GlareCard, BorderGlow, MagicBento p/ os hubs e demais grades de cartões.
 - [ ] **Fundos leves** — os ~7 backgrounds CSS (SoftAurora, Grainient…) como camada de profundidade.
 - [ ] **Fundos WebGL (app/lazy)** — Aurora/Galaxy/Plasma/LightRays no harness sem-dep, gated #238.
 - [ ] Aposentar graduamente CSS antigo conforme as páginas migram pra esta linguagem.

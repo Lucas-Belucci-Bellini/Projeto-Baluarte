@@ -45,6 +45,36 @@ export function shiny(el) {
   return el;
 }
 
+/**
+ * Inclinação 3D que segue o cursor (porta do TiltedCard). Adiciona `.fx-tilt`
+ * e gira o cartão em rotateX/rotateY conforme a posição do cursor (+ leve scale),
+ * voltando ao plano no leave. JS puro, reduced-motion deixa o cartão estático.
+ *
+ * @param {HTMLElement} el
+ * @param {{ amplitude?: number, scale?: number, perspective?: number }} [opts]
+ * @returns {() => void} cleanup
+ */
+export function attachTilt(el, opts = {}) {
+  if (!el || REDUCED) return () => {};
+  const amp = opts.amplitude ?? 11;
+  const scale = opts.scale ?? 1.04;
+  const persp = opts.perspective ?? 800;
+  el.classList.add('fx-tilt');
+  const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const onMove = (e) => {
+    const r = el.getBoundingClientRect();
+    const px = clamp01((e.clientX - r.left) / r.width);   // 0..1 (esq→dir)
+    const py = clamp01((e.clientY - r.top) / r.height);   // 0..1 (topo→base)
+    const ry = (px - 0.5) * 2 * amp;             // gira no eixo Y (±amp)
+    const rx = (0.5 - py) * 2 * amp;             // gira no eixo X (±amp)
+    el.style.transform = `perspective(${persp}px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${scale})`;
+  };
+  const reset = () => { el.style.transform = ''; };
+  el.addEventListener('pointermove', onMove);
+  el.addEventListener('pointerleave', reset);
+  return () => { el.removeEventListener('pointermove', onMove); el.removeEventListener('pointerleave', reset); reset(); };
+}
+
 /* Conjunto de caracteres do scramble — vibe HUD/decifrando. */
 const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&_<>/\\{}[]=+*';
 

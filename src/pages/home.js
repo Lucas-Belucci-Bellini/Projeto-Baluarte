@@ -8,7 +8,7 @@
 
 import { h } from '../utils/helpers.js';
 import { lineIcon, iconForPath } from '../utils/icons.js';
-import { attachSpotlight } from '../utils/effects.js';
+import { attachSpotlight, attachTilt } from '../utils/effects.js';
 import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
 import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
@@ -240,6 +240,9 @@ export function homePage(args) {
     scard('UNIVERSO', u.name, u.tagline || '', '/universo')), '/universo'));
   page.appendChild(shelf('book', 'Crônicas', ARCS.slice(0, 12).map((a) =>
     scard(a.universe || 'CRÔNICAS', a.title, (a.synopsis || '').slice(0, 80), '/biblioteca')), '/biblioteca'));
+
+  /* Inclinação 3D que segue o cursor nos cards das prateleiras (porta do react-bits). */
+  page.querySelectorAll('.hv2-scard').forEach((c) => onCleanup(attachTilt(c)));
 
   if (typeof MutationObserver !== 'undefined') {
     const mo = new MutationObserver(() => {
