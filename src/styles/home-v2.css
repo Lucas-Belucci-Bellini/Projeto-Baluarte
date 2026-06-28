@@ -106,6 +106,8 @@
 .hv2-btn:hover { transform: translateY(-2px); border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
 .hv2-btn--primary { background: linear-gradient(135deg, var(--color-cyan), #00b8cc); color: #001016; border-color: transparent; }
 .hv2-btn--app { background: linear-gradient(135deg, var(--color-magenta), #cc0088); color: #fff; border-color: transparent; }
+.hv2-btn__ico { display: inline-flex; }
+.hv2-btn__ico .nav-ico { width: 16px; height: 16px; }
 
 /* ============================================================
    Bento grid — a assinatura nova
@@ -123,7 +125,10 @@
   background: linear-gradient(90deg, transparent, var(--color-cyan-edge), transparent); opacity: 0.6; }
 .hv2-cell--mag::before { background: linear-gradient(90deg, transparent, var(--color-magenta-edge), transparent); }
 .hv2-cell__tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--color-text-muted); margin-bottom: 8px; }
+  color: var(--color-text-muted); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px; }
+.hv2-cell__tag-ico { display: inline-flex; color: var(--color-cyan); }
+.hv2-cell__tag-ico .nav-ico { width: 14px; height: 14px; }
 .hv2-cell__title { font-size: 18px; font-weight: 700; color: var(--color-text-primary); margin: 0 0 6px; }
 .hv2-cell__desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin: 0; }
 .hv2-cell__cta { margin-top: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--color-cyan); }
@@ -165,15 +170,20 @@
 .hv2-tile { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px; border-radius: var(--radius-md);
   background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: all var(--transition-base); }
 .hv2-tile:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-2px); }
-.hv2-tile__icon { font-size: 20px; }
+.hv2-tile__icon { font-size: 20px; display: inline-flex; color: var(--color-cyan); }
+.hv2-tile__icon .nav-ico { width: 22px; height: 22px; opacity: 0.9; transition: opacity var(--transition-base); }
+.hv2-tile:hover .hv2-tile__icon .nav-ico { opacity: 1; }
 .hv2-tile__label { font-size: 10px; color: var(--color-text-secondary); text-align: center; }
 
 /* ---- prateleiras (reaproveita a ideia) ---- */
 .hv2-shelf { margin-bottom: var(--space-xl); }
 .hv2-shelf__head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; gap: 12px; }
 .hv2-shelf__title { font-size: 20px; font-weight: 700; margin: 0;
+  display: inline-flex; align-items: center; gap: 8px;
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
   -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hv2-shelf__ico { display: inline-flex; color: var(--color-cyan); }
+.hv2-shelf__ico .nav-ico { width: 18px; height: 18px; }
 .hv2-shelf__more { background: none; border: 0; color: var(--color-cyan); cursor: pointer; font-family: var(--font-mono); font-size: 12px; }
 .hv2-track { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity; }
 .hv2-track::-webkit-scrollbar { height: 6px; } .hv2-track::-webkit-scrollbar-thumb { background: var(--color-cyan-edge); border-radius: 3px; }

@@ -13,6 +13,11 @@ aqui o que mudou.
 - 🔻 **Rodapé da sidebar coerente também**: os glifos soltos do botão **Instalar app** (⬇), do link do **YouTube** (▶) e do **LLBR Innovations** (⬡) viraram ícones de linha (`download`/`play`/`hex`), com regra de tamanho/alinhamento em `layout.css` (some o rótulo quando recolhida).
 - ✅ Verificado no navegador (Playwright): **75/75** itens da sidebar com SVG de linha, **zero** fallback de emoji, 3 ícones no rodapé; build limpo. É o passo 2 ("trocar a sidebar") do plano incremental de adoção do coolicons do Design System (§4); cards/headers ficam pra próxima fatia. 🛡️ Backup: branch de trabalho.
 
+### 🎨 Iconografia — flagship `/home`: cards/headers no set de linha (Design System §4 · #246)
+- 🏠 **Passo 3 (cards/headers)** começando pelo flagship: os glifos/emojis dos **CTAs do herói** (⚙/⬇/🔗 → `gear`/`download`/`nexus`), dos **eyebrows das células do bento** (◈/🔗/⬇/⌖/📖/◆/⚡ → `chart`/`nexus`/`download`/`eye`/`book`/`diamond`/`grid`), dos **tiles de acesso rápido** (agora via `iconForPath(path)`, reusando o mapa por rota) e dos **títulos de prateleira** (🔫/🌌/📖 → `crosshair`/`star`/`book`) viraram ícones de linha do set único.
+- 🎯 **Emoji preservado onde é semântico** (Design System §4): os selos de SO 🪟🍎🐧 do card "Baluarte Launcher" e o `⬡` decorativo do HUD do herói ficam.
+- ✅ Verificado no navegador (Playwright): 8/8 tiles, 7 eyebrows, 3 títulos de prateleira e 3 CTAs com SVG de linha, **zero** emoji residual nessas áreas; build limpo. 🛡️ Backup: branch de trabalho.
+
 ## 2026-06-24
 
 ### 🧠 Omega Prism · Fatia 1 (banco) — Segundo Cérebro + Memória por usuário (#231)
