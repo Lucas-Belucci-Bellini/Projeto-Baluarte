@@ -25,10 +25,12 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 
 - `src/pages/` — uma página por rota · `src/styles/` — CSS (1 por página + tokens em `variables.css`)
 - `src/core/` — router (hash), eventos, estado, storage · `src/layout/` — shell, sidebar, header
-- `src/utils/` — helpers, jarvis-engine/tools, git-nexus-engine, scroll-reveal…
-- `desktop/` — app Electron (main, preload, nexus, ipc) + workflow de release
+- `src/utils/` — helpers, jarvis-engine/tools, git-nexus-engine, scroll-reveal, **effects** (efeitos portados do react-bits: `.fx-*` + `attachSpotlight/Tilt`, `decryptTitles`), **hero-webgl/hero-rays** (fundos WebGL sem dep), **wikipedia** (Centro Militar)…
+- **Camada de efeitos** (#246): `src/utils/effects.js` + `src/styles/effects.css` (no boot) — porta vanilla do **react-bits** (NÃO usar React; ver `docs/REACT-BITS.md`).
+- **Centro Militar** (`/militar`, `src/pages/militar.js`): hub que **consolidou as 13 frentes militares + Arsenal** (sidebar = 1 entrada) com extrato vivo da Wikipédia (`src/utils/wikipedia.js`). As páginas individuais seguem registradas. Plano: `docs/CENTRO-MILITAR.md`.
+- `desktop/` — app Electron (main, preload, nexus, ipc) + workflow de release · **Node 24** (engines do site e do app)
 - `historico/CHANGELOG.md` — registro do que entra no `main`
-- `docs/DESIGN-SYSTEM.md` — **contrato visual** (tokens/componentes/diretrizes do redesign #246/#195); todo design novo sai daqui
+- `docs/DESIGN-SYSTEM.md` — **contrato visual** (tokens/componentes/diretrizes do redesign #246/#195); todo design novo sai daqui · `docs/REACT-BITS.md` (efeitos) · `docs/CENTRO-MILITAR.md` (hub militar)
 - Issues guarda-chuva (**não fechar**): **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign)
 
 ## Regras do projeto
