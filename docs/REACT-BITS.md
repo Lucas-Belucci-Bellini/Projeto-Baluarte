@@ -44,9 +44,11 @@ em si — inclusive uma versão portada**. Por isso:
 |---|---|---|
 | ShinyText | `.fx-shiny` (CSS puro) | classe num texto; cor via `--fx-shine-*` |
 | SpotlightCard | `attachSpotlight(el)` + `.fx-spotlight` | brilho radial que segue o cursor em cartões |
+| DecryptedText | `decryptText(el)` + `decryptTitles(root)` | revelação "decifrando"; ligado **global** nos `.page-header__title` via `shell.renderPage` |
 
-**PoC aplicado** (`/home`): `fx-shiny` no kicker do herói + spotlight nas células
-do bento. Verificado no navegador.
+**Aplicado**: `/home` → `fx-shiny` no kicker + spotlight nas células do bento;
+**56 páginas** com `.page-header__title` → reveal "decifrando" a cada navegação
+(hook único em `shell.renderPage`). Verificado no navegador.
 
 ## ✅ Como adicionar um efeito portado
 
@@ -61,7 +63,8 @@ do bento. Verificado no navegador.
 ## 🛣️ Roadmap (incremental, via Design System)
 
 - [x] **Fatia 0** — camada `effects.*` + 2 efeitos (ShinyText, SpotlightCard) + PoC no `/home`.
-- [ ] **Texto** — portar GradientText, DecryptedText, RotatingText, TrueFocus p/ títulos/headers.
+- [x] **Texto · 1ª fatia** — DecryptedText portado e ligado **global** nos títulos de página (56 páginas, reveal a cada navegação).
+- [ ] **Texto · resto** — GradientText, RotatingText, TrueFocus p/ headers/destaques específicos.
 - [ ] **Cartões** — TiltedCard, GlareCard, BorderGlow, MagicBento p/ os hubs (densidade estilo Steam).
 - [ ] **Fundos leves** — os ~7 backgrounds CSS (SoftAurora, Grainient…) como camada de profundidade.
 - [ ] **Fundos WebGL (app/lazy)** — Aurora/Galaxy/Plasma/LightRays no harness sem-dep, gated #238.

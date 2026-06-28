@@ -11,6 +11,7 @@ import { appState } from '../core/state.js';
 import { setCurrentFunction } from '../utils/baluarte-status.js';
 import { pinElement } from './overlay.js';
 import { revealScan } from '../utils/scroll-reveal.js';
+import { decryptTitles } from '../utils/effects.js';
 import { mountAtmosphere } from '../utils/atmosphere.js';
 import { mountCardSpotlight } from '../utils/card-spotlight.js';
 import { mountScrollProgress } from '../utils/scroll-progress.js';
@@ -65,6 +66,7 @@ export function renderPage(pageEl, route) {
   mount(mainInner, pageEl);              // troca o conteúdo do <main> (descarta a página antiga)
   if (pageEl && pageEl.classList) pageEl.classList.add('route-enter'); // transição de entrada (#246)
   revealScan(pageEl, route);             // anima os blocos entrando na viewport (scroll-reveal)
+  decryptTitles(pageEl);                 // reveal "decifrando" nos títulos de página (#246)
   if (route) {
     updateActiveNav(route);              // realça o item ativo na sidebar
     document.title = pageTitleForRoute(route) + ' · Baluarte';
