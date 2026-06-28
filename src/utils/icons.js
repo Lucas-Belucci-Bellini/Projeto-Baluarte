@@ -119,6 +119,7 @@ export const iconByPath = {
   '/armas-por-pais': 'crosshair', '/guerras-conflitos': 'globe', '/batalhas-historicas': 'shield',
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
   '/enciclopedia-militar': 'book',
+  '/militar': 'shield',
   '/codigo': 'network', '/projetos': 'folder', '/mural': 'chat', '/banco': 'database', '/cerebro': 'brain', '/ocr': 'scantext',
   '/memoria': 'database', '/terminal-ia': 'terminal', '/seguranca': 'shield',
   '/gerar-codigo': 'wand', '/conselho': 'council'

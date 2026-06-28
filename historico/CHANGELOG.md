@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-06-28
 
+### 🎖️ Centro Militar — 13 frentes militares + Arsenal num hub só (Wikipédia ao vivo) (#246)
+- 🧭 **Consolidação**: as **13 páginas militares** da sidebar (+ Arsenal) viraram **uma página estilo Wikipédia** em **`/militar` ("Centro Militar")** — índice "Conteúdo" (sticky) + **14 seções**. A **sidebar enxugou de 13 itens → 1**; as páginas individuais **seguem registradas** e acessíveis pelo hub (botão "abrir página completa →") e por URL — **nada removido**.
+- 🌐 **Conteúdo vivo da Wikipédia**: cada seção puxa um **extrato da Wikipédia** sob demanda (IntersectionObserver, web leve) via `src/utils/wikipedia.js` (`fetchWikiSummary`, REST API CORS + cache memória/localStorage TTL 7d). **Best-effort**: se a Wikipédia não responder, mostra link pro artigo (zero erro). Conteúdo **CC BY-SA 4.0**, sempre **creditado e linkado**.
+- 🧱 Novos `src/pages/militar.js` + `src/styles/centro-militar.css`; rota em `main.js`, título no shell, ícone (`/militar`→shield), sidebar. **Sem dependência nova, sem Cloudflare** (a API da Wikipédia já é CORS-friendly); Supabase fica pra curadoria nossa numa fatia futura. Plano em **`docs/CENTRO-MILITAR.md`**.
+- ✅ Verificado no navegador (Playwright): hub renderiza (hero + índice 14 + 14 seções), sidebar militar = 1 entrada, degradação graciosa quando o fetch falha; build limpo. 🛡️ Backup: branch de trabalho.
+
 ### ⬆️ Toolchain — site e app no Node 24
 - 🟢 **Node 22 → 24** em todo o projeto: `engines.node` do **site** (`package.json`: `22.x → 24.x`) e do **app** (`desktop/package.json`: novo `engines.node: 24.x`). Vercel lê o `engines` → passa a buildar/rodar a web no Node 24.
 - 🤖 **CI**: `desktop-release.yml` (build dos instaladores) `node 22 → 24` e `cambio.yml` (cron do câmbio) `node 20 → 24`.

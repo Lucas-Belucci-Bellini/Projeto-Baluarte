@@ -130,21 +130,12 @@ export const NAV_GROUPS = [
     ]
   },
   {
+    /* As 13 frentes militares foram CONSOLIDADAS num hub único (estilo Wikipédia)
+     * em /militar — sidebar enxuta. As páginas individuais seguem registradas e
+     * acessíveis pelo hub (link "abrir página completa") e por URL direta. */
     label: 'Seção Militar',
     items: [
-      { path: '/forcas-armadas',       label: 'Forças Armadas do Mundo', icon: '🌍', phase: 1 },
-      { path: '/orcamentos-militares', label: 'Orçamentos Militares',    icon: '📊', phase: 1 },
-      { path: '/poder-militar',        label: 'Rankings de Poder',       icon: '🏅', phase: 1 },
-      { path: '/arsenal-expandido',    label: 'Arsenal Expandido',       icon: '⚔', phase: 1 },
-      { path: '/forcas-especiais',     label: 'Forças Especiais',        icon: '🪖', phase: 1 },
-      { path: '/organizacao-militar',  label: 'Organização Militar',     icon: '⚙', phase: 1 },
-      { path: '/tecnologia-militar',   label: 'Tecnologia Militar',      icon: '🚀', phase: 1 },
-      { path: '/taticas-estrategias',  label: 'Táticas & Estratégias',   icon: '🗺', phase: 1 },
-      { path: '/historia-militar',     label: 'História Militar',        icon: '📜', phase: 1 },
-      { path: '/armas-por-pais',       label: 'Armas por País',          icon: '🔫', phase: 1 },
-      { path: '/guerras-conflitos',    label: 'Guerras & Conflitos',     icon: '🌐', phase: 1 },
-      { path: '/batalhas-historicas',  label: 'Batalhas Históricas',     icon: '🔰', phase: 1 },
-      { path: '/enciclopedia-militar', label: 'Enciclopédia Militar',    icon: '🎖', phase: 1 }
+      { path: '/militar', label: 'Centro Militar', icon: '🎖', phase: 1 }
     ]
   },
   {

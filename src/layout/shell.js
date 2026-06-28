@@ -94,6 +94,7 @@ function scrollToTop() {
 function pageTitleForRoute(path) {
   const map = {
     '/home': 'Ponte de Comando',
+    '/militar': 'Centro Militar',
     '/ferramentas': 'Hub de Ferramentas',
     '/editor': 'Editor de Código',
     '/json-studio': 'JSON Studio',
