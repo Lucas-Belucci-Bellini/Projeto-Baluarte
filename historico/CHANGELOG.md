@@ -6,6 +6,13 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-28
+
+### 🎨 Iconografia — sidebar 100% no set de linha (Design System §4 · #246)
+- 🧭 **Toda a navegação lateral agora usa o set único de ícones de linha** (`src/utils/icons.js`, traço + `currentColor`). Caíam no fallback de emoji só **2** rotas — `/git-nexus` ("Núcleo de IA", o flagship da IA) com 🔗 e `/baixar` ("Baixar o App") com ⬇. Mapeei as duas em `iconByPath` e desenhei os ícones `nexus` (grafo/hub) e `download` no mesmo grid 24×24 dos demais.
+- 🔻 **Rodapé da sidebar coerente também**: os glifos soltos do botão **Instalar app** (⬇), do link do **YouTube** (▶) e do **LLBR Innovations** (⬡) viraram ícones de linha (`download`/`play`/`hex`), com regra de tamanho/alinhamento em `layout.css` (some o rótulo quando recolhida).
+- ✅ Verificado no navegador (Playwright): **75/75** itens da sidebar com SVG de linha, **zero** fallback de emoji, 3 ícones no rodapé; build limpo. É o passo 2 ("trocar a sidebar") do plano incremental de adoção do coolicons do Design System (§4); cards/headers ficam pra próxima fatia. 🛡️ Backup: branch de trabalho.
+
 ## 2026-06-24
 
 ### 🧠 Omega Prism · Fatia 1 (banco) — Segundo Cérebro + Memória por usuário (#231)

@@ -9,7 +9,7 @@ import { appState } from '../core/state.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
 import { VERSION, CODENAME } from '../data/version.js';
-import { iconForPath, iconByPath } from '../utils/icons.js';
+import { iconForPath, iconByPath, lineIcon } from '../utils/icons.js';
 import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
 
 /* ===== Grupos de navegação do menu lateral =====
@@ -17,7 +17,9 @@ import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
  * desejado:
  *   - `path`  rota (#/path) — precisa estar registrada em main.js
  *   - `label` texto exibido
- *   - `icon`  glifo de fallback (o ícone de linha vem de icons.js por `path`)
+ *   - `icon`  glifo de fallback — só usado se a rota não tiver ícone de linha em
+ *             icons.js (`iconByPath`). A navegação inteira hoje usa o set de linha;
+ *             mapeie a nova rota lá para manter a coerência (Design System §4).
  *   - `phase` liberação: <= CURRENT_PHASE fica ativo; senão aparece bloqueado
  */
 export const NAV_GROUPS = [
@@ -221,8 +223,9 @@ export function renderSidebar() {
       color: '#00f0ff', border: '1px solid rgba(0,240,255,0.35)',
       background: 'linear-gradient(90deg, rgba(0,240,255,0.16), rgba(0,240,255,0.02))'
     },
+    html: lineIcon('download') + '<span class="sidebar__ext-label">Instalar app</span>',
     onclick: () => promptInstall()
-  }, '⬇ Instalar app');
+  });
   onInstallChange((can) => { installBtn.style.display = can ? 'block' : 'none'; });
 
   const sidebar = h(
@@ -258,12 +261,14 @@ export function renderSidebar() {
       installBtn,
       h('a', {
         className: 'sidebar__ext', href: 'https://www.youtube.com/@Spartan_Gamer_BR',
-        target: '_blank', rel: 'noopener', title: 'Canal no YouTube — Spartan Gamer BR'
-      }, '▶ @Spartan_Gamer_BR'),
+        target: '_blank', rel: 'noopener', title: 'Canal no YouTube — Spartan Gamer BR',
+        html: lineIcon('play') + '<span class="sidebar__ext-label">@Spartan_Gamer_BR</span>'
+      }),
       h('a', {
         className: 'sidebar__ext', href: 'https://llbr-innovations-constructions.vercel.app/',
-        target: '_blank', rel: 'noopener', title: 'LLBR Innovations & Constructions'
-      }, '⬡ LLBR Innovations'),
+        target: '_blank', rel: 'noopener', title: 'LLBR Innovations & Constructions',
+        html: lineIcon('hex') + '<span class="sidebar__ext-label">LLBR Innovations</span>'
+      }),
       h('div', { className: 'sidebar__ver' }, `v${VERSION} · ${CODENAME}`)
     )
   );
