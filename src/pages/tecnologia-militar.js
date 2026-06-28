@@ -98,6 +98,7 @@ export function tecnologiaMilitarPage() {
       title: 'Tecnologia Militar',
       sub: 'SISTEMAS DE COMBATE',
       desc: 'Plataformas e sistemas de combate por domínio — do soldado conectado às armas hipersônicas.',
+      variant: 'lightrays',
       hudLeft: '🚀 PLATAFORMAS', hudRight: 'POR DOMÍNIO'
     }),
     tabBar,

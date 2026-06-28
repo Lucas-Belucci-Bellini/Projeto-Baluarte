@@ -47,6 +47,7 @@ em si — inclusive uma versão portada**. Por isso:
 | DecryptedText | `decryptText(el)` + `decryptTitles(root)` | revelação "decifrando"; ligado **global** nos `.page-header__title` via `shell.renderPage` |
 | TiltedCard | `attachTilt(el)` + `.fx-tilt` | inclinação 3D (rotateX/Y ±amp, clampada) que segue o cursor em cartões |
 | SoftAurora | `.fx-aurora` (CSS puro) | camada de aurora (blobs à deriva, blend screen); herda `--bx-accent/2` |
+| LightRays | `createHeroRays()` (WebGL próprio, sem dep) | god-rays de tela cheia; `variant: 'lightrays'` no `buildImmersiveHero` (web+app) |
 
 **Aplicado**: `/home` → `fx-shiny` no kicker + spotlight nas células do bento;
 **56 páginas** com `.page-header__title` → reveal "decifrando" a cada navegação
@@ -71,7 +72,8 @@ em si — inclusive uma versão portada**. Por isso:
 - [ ] **Cartões · resto** — GlareCard, BorderGlow, MagicBento p/ os hubs e demais grades de cartões.
 - [x] **Fundos leves · 1ª fatia** — SoftAurora (`.fx-aurora`) ligado no `buildImmersiveHero` → ~20 páginas flagship ganham a aurora atrás do conteúdo de uma vez (some quando o Spline carrega).
 - [ ] **Fundos leves · resto** — Grainient/Beams/DotGrid como variações; aplicar onde fizer sentido.
-- [ ] **Fundos WebGL (app/lazy)** — Aurora/Galaxy/Plasma/LightRays no harness sem-dep, gated #238.
+- [x] **Fundos WebGL · 1ª fatia** — **LightRays** portado pro harness WebGL próprio (`hero-rays.js`, sem dep) → roda **web+app** (não precisou gatear, pois é dependency-free como o `hero-webgl`); ligado via `variant: 'lightrays'` e aplicado na `/tecnologia-militar`.
+- [ ] **Fundos WebGL · resto** — Aurora/Plasma/Prism/Galaxy etc.: portar shaders pro harness próprio (1 por vez, medir FPS); se algum exigir OGL/postprocessing, aí sim app-gated #238.
 - [ ] Aposentar graduamente CSS antigo conforme as páginas migram pra esta linguagem.
 
 ## Refs

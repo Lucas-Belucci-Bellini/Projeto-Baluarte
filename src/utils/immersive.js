@@ -11,6 +11,7 @@
 
 import { h, cx } from './helpers.js';
 import { createHeroWebGL, heroSkinColors } from './hero-webgl.js';
+import { createHeroRays } from './hero-rays.js';
 import { createHeroField } from './hero3d.js';
 import { mountSpline } from './spline-embed.js';
 import { sceneFor } from '../data/spline-scenes.js';
@@ -55,7 +56,9 @@ export function buildImmersiveHero(opts = {}) {
     hud,
     inner);
 
-  let fx = createHeroWebGL(canvas, { accent, accent2, variant });
+  let fx = variant === 'lightrays'
+    ? createHeroRays(canvas, { accent, accent2 })
+    : createHeroWebGL(canvas, { accent, accent2, variant });
   if (!fx) fx = createHeroField(canvas, { accent, accent2 });
   fx.start();
 

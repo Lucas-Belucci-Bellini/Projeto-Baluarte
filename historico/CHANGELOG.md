@@ -18,6 +18,11 @@ aqui o que mudou.
 - 🔻 **Rodapé da sidebar coerente também**: os glifos soltos do botão **Instalar app** (⬇), do link do **YouTube** (▶) e do **LLBR Innovations** (⬡) viraram ícones de linha (`download`/`play`/`hex`), com regra de tamanho/alinhamento em `layout.css` (some o rótulo quando recolhida).
 - ✅ Verificado no navegador (Playwright): **75/75** itens da sidebar com SVG de linha, **zero** fallback de emoji, 3 ícones no rodapé; build limpo. É o passo 2 ("trocar a sidebar") do plano incremental de adoção do coolicons do Design System (§4); cards/headers ficam pra próxima fatia. 🛡️ Backup: branch de trabalho.
 
+### ✨ react-bits → efeitos vanilla · LightRays WebGL no herói (#246)
+- 🌟 **Fundo WebGL de "god-rays" (porta do LightRays)** — novo `src/utils/hero-rays.js`: fragment shader de **quad de tela cheia**, WebGL 1.0 **sem dependência** (não usa OGL), feixes de luz descendo de uma fonte no topo modulados por ruído animado, na cor do universo ativo, blending aditivo. Roda **web+app** (é dependency-free como o `hero-webgl`, então não precisou gatear pro app).
+- 🔌 Ligado no `buildImmersiveHero` via `variant: 'lightrays'` (mesma API/ciclo de vida do `createHeroWebGL`: fallback 2D, reduced-motion = 1 quadro, pausa com aba oculta, auto-resize/encerra). Aplicado na **`/tecnologia-militar`** como vitrine.
+- ✅ Verificado no navegador (Playwright + screenshot): o shader compila e os raios renderizam atrás do título holográfico, texto legível; build limpo. 🛡️ Backup: branch de trabalho.
+
 ### ✨ react-bits → efeitos vanilla · SoftAurora nos heróis imersivos (#246)
 - 🌌 **Camada de aurora (porta do SoftAurora)** ligada no `buildImmersiveHero` → **~20 páginas flagship** ganham, de uma vez, blobs de cor (ciano/magenta/violeta) respirando à deriva atrás do conteúdo do herói, com `mix-blend: screen` pra somar luz. Herda o acento do universo via `--bx-accent/2`. Novo `.fx-aurora` em `effects.css`.
 - 🪶 CSS puro, `pointer-events:none`, **reduced-motion congela**; entra em z-index 1 (atrás do conteúdo, que é z-4) e **some quando o Spline carrega** (junto de canvas/rays/grid). Verificado no navegador (Playwright + screenshot `/arsenal`): aurora compõe atrás da galáxia WebGL sem prejudicar a leitura; build limpo. 🛡️ Backup: branch de trabalho.
