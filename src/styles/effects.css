@@ -1,0 +1,52 @@
+/* ============================================================
+   Efeitos reutilizáveis — portados pra vanilla (web leve, sem dep).
+   Inspirados no react-bits (MIT + Commons Clause · © David Haz):
+   reimplementação própria em CSS/JS puro com os tokens do Baluarte —
+   NÃO é o código do react-bits. Plano/curadoria: docs/REACT-BITS.md.
+   Pareados com src/utils/effects.js.
+   ============================================================ */
+
+/* ShinyText — varredura de brilho sobre o texto (porta do ShinyText).
+   Uso: classe .fx-shiny num elemento de texto. Cor via --fx-shine-*. */
+.fx-shiny {
+  --fx-shine-base: var(--color-cyan);
+  --fx-shine-hi: #eaffff;
+  --fx-shine-speed: 3.2s;
+  background-image: linear-gradient(110deg,
+    var(--fx-shine-base) 0%, var(--fx-shine-base) 38%,
+    var(--fx-shine-hi) 50%,
+    var(--fx-shine-base) 62%, var(--fx-shine-base) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: fx-shine var(--fx-shine-speed) linear infinite;
+}
+@keyframes fx-shine {
+  0%   { background-position: 150% center; }
+  100% { background-position: -50% center; }
+}
+
+/* SpotlightCard — brilho radial que segue o cursor (porta do SpotlightCard).
+   Pareie com attachSpotlight(el) de utils/effects.js (seta --fx-x/--fx-y).
+   Cor via --fx-spot. O alvo precisa de position != static (cartões já têm). */
+.fx-spotlight { position: relative; }
+.fx-spotlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--fx-x, 50%) var(--fx-y, 50%),
+    var(--fx-spot, rgba(0, 240, 255, 0.16)), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.fx-spotlight:hover::after,
+.fx-spotlight:focus-within::after { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-shiny { animation: none; }
+  .fx-spotlight::after { transition: none; }
+}

@@ -8,6 +8,7 @@
 
 import { h } from '../utils/helpers.js';
 import { lineIcon, iconForPath } from '../utils/icons.js';
+import { attachSpotlight } from '../utils/effects.js';
 import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
 import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
@@ -52,7 +53,7 @@ function buildHero(onCleanup, operador, sceneUrl) {
   if (!REDUCED) { const t = setInterval(tick, 1000); onCleanup(() => clearInterval(t)); }
 
   const inner = h('div', { className: 'hv2-hero__inner' },
-    h('div', { className: 'hv2-kicker' }, 'NÚCLEO INFINITY DREADNOUGHT · ONLINE'),
+    h('div', { className: 'hv2-kicker fx-shiny' }, 'NÚCLEO INFINITY DREADNOUGHT · ONLINE'),
     h('h1', { className: 'hv2-title' },
       h('span', { className: 'hv2-title__main' }, 'BALUARTE'),
       h('span', { className: 'hv2-title__sub' }, 'MARK XIII')),
@@ -172,7 +173,7 @@ function buildBento(onCleanup) {
     viewsLine.style.display = '';
   });
 
-  return h('section', { className: 'hv2-bento' },
+  const section = h('section', { className: 'hv2-bento' },
     metricCell(onCleanup),
     h('div', { className: 'hv2-cell hv2-cell--ai hv2-cell--link', onclick: () => router.navigate('/git-nexus') },
       h('div', { className: 'hv2-orb', 'aria-hidden': 'true' }),
@@ -203,6 +204,10 @@ function buildBento(onCleanup) {
       h('div', { className: 'hv2-tiles' },
         ...tiles.map(([label, path]) => h('button', { className: 'hv2-tile', onclick: () => router.navigate(path) },
           h('span', { className: 'hv2-tile__icon', html: iconForPath(path) }), h('span', { className: 'hv2-tile__label' }, label))))));
+
+  /* Spotlight que segue o cursor nas células do bento (porta do react-bits). */
+  section.querySelectorAll('.hv2-cell').forEach((cell) => onCleanup(attachSpotlight(cell)));
+  return section;
 }
 
 /* ===== Prateleiras ===== */
