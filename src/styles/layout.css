@@ -335,6 +335,19 @@
 .sidebar__ext:hover { color: var(--color-cyan); }
 .sidebar__ver { margin-top: 6px; }
 
+/* Ícones de linha do rodapé (instalar / links externos) — herdam currentColor */
+.sidebar__install .nav-ico,
+.sidebar__ext .nav-ico {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  vertical-align: -2px;
+  margin-right: 6px;
+  opacity: 0.85;
+}
+.sidebar__ext:hover .nav-ico { opacity: 1; }
+.sidebar.is-collapsed .sidebar__ext-label { display: none; }
+
 /* ============== MAIN ============== */
 .main {
   grid-area: main;

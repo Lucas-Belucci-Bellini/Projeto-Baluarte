@@ -9,7 +9,7 @@ import { appState } from '../core/state.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
 import { VERSION, CODENAME } from '../data/version.js';
-import { iconForPath, iconByPath } from '../utils/icons.js';
+import { iconForPath, iconByPath, lineIcon } from '../utils/icons.js';
 import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
 
 /* ===== Grupos de navegação do menu lateral =====
@@ -17,7 +17,9 @@ import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
  * desejado:
  *   - `path`  rota (#/path) — precisa estar registrada em main.js
  *   - `label` texto exibido
- *   - `icon`  glifo de fallback (o ícone de linha vem de icons.js por `path`)
+ *   - `icon`  glifo de fallback — só usado se a rota não tiver ícone de linha em
+ *             icons.js (`iconByPath`). A navegação inteira hoje usa o set de linha;
+ *             mapeie a nova rota lá para manter a coerência (Design System §4).
  *   - `phase` liberação: <= CURRENT_PHASE fica ativo; senão aparece bloqueado
  */
 export const NAV_GROUPS = [
@@ -128,21 +130,12 @@ export const NAV_GROUPS = [
     ]
   },
   {
+    /* As 13 frentes militares foram CONSOLIDADAS num hub único (estilo Wikipédia)
+     * em /militar — sidebar enxuta. As páginas individuais seguem registradas e
+     * acessíveis pelo hub (link "abrir página completa") e por URL direta. */
     label: 'Seção Militar',
     items: [
-      { path: '/forcas-armadas',       label: 'Forças Armadas do Mundo', icon: '🌍', phase: 1 },
-      { path: '/orcamentos-militares', label: 'Orçamentos Militares',    icon: '📊', phase: 1 },
-      { path: '/poder-militar',        label: 'Rankings de Poder',       icon: '🏅', phase: 1 },
-      { path: '/arsenal-expandido',    label: 'Arsenal Expandido',       icon: '⚔', phase: 1 },
-      { path: '/forcas-especiais',     label: 'Forças Especiais',        icon: '🪖', phase: 1 },
-      { path: '/organizacao-militar',  label: 'Organização Militar',     icon: '⚙', phase: 1 },
-      { path: '/tecnologia-militar',   label: 'Tecnologia Militar',      icon: '🚀', phase: 1 },
-      { path: '/taticas-estrategias',  label: 'Táticas & Estratégias',   icon: '🗺', phase: 1 },
-      { path: '/historia-militar',     label: 'História Militar',        icon: '📜', phase: 1 },
-      { path: '/armas-por-pais',       label: 'Armas por País',          icon: '🔫', phase: 1 },
-      { path: '/guerras-conflitos',    label: 'Guerras & Conflitos',     icon: '🌐', phase: 1 },
-      { path: '/batalhas-historicas',  label: 'Batalhas Históricas',     icon: '🔰', phase: 1 },
-      { path: '/enciclopedia-militar', label: 'Enciclopédia Militar',    icon: '🎖', phase: 1 }
+      { path: '/militar', label: 'Centro Militar', icon: '🎖', phase: 1 }
     ]
   },
   {
@@ -221,8 +214,9 @@ export function renderSidebar() {
       color: '#00f0ff', border: '1px solid rgba(0,240,255,0.35)',
       background: 'linear-gradient(90deg, rgba(0,240,255,0.16), rgba(0,240,255,0.02))'
     },
+    html: lineIcon('download') + '<span class="sidebar__ext-label">Instalar app</span>',
     onclick: () => promptInstall()
-  }, '⬇ Instalar app');
+  });
   onInstallChange((can) => { installBtn.style.display = can ? 'block' : 'none'; });
 
   const sidebar = h(
@@ -258,12 +252,14 @@ export function renderSidebar() {
       installBtn,
       h('a', {
         className: 'sidebar__ext', href: 'https://www.youtube.com/@Spartan_Gamer_BR',
-        target: '_blank', rel: 'noopener', title: 'Canal no YouTube — Spartan Gamer BR'
-      }, '▶ @Spartan_Gamer_BR'),
+        target: '_blank', rel: 'noopener', title: 'Canal no YouTube — Spartan Gamer BR',
+        html: lineIcon('play') + '<span class="sidebar__ext-label">@Spartan_Gamer_BR</span>'
+      }),
       h('a', {
         className: 'sidebar__ext', href: 'https://llbr-innovations-constructions.vercel.app/',
-        target: '_blank', rel: 'noopener', title: 'LLBR Innovations & Constructions'
-      }, '⬡ LLBR Innovations'),
+        target: '_blank', rel: 'noopener', title: 'LLBR Innovations & Constructions',
+        html: lineIcon('hex') + '<span class="sidebar__ext-label">LLBR Innovations</span>'
+      }),
       h('div', { className: 'sidebar__ver' }, `v${VERSION} · ${CODENAME}`)
     )
   );

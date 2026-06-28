@@ -1,0 +1,85 @@
+/* ============================================================
+   Efeitos reutilizáveis — portados pra vanilla (web leve, sem dep).
+   Inspirados no react-bits (MIT + Commons Clause · © David Haz):
+   reimplementação própria em CSS/JS puro com os tokens do Baluarte —
+   NÃO é o código do react-bits. Plano/curadoria: docs/REACT-BITS.md.
+   Pareados com src/utils/effects.js.
+   ============================================================ */
+
+/* ShinyText — varredura de brilho sobre o texto (porta do ShinyText).
+   Uso: classe .fx-shiny num elemento de texto. Cor via --fx-shine-*. */
+.fx-shiny {
+  --fx-shine-base: var(--color-cyan);
+  --fx-shine-hi: #eaffff;
+  --fx-shine-speed: 3.2s;
+  background-image: linear-gradient(110deg,
+    var(--fx-shine-base) 0%, var(--fx-shine-base) 38%,
+    var(--fx-shine-hi) 50%,
+    var(--fx-shine-base) 62%, var(--fx-shine-base) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: fx-shine var(--fx-shine-speed) linear infinite;
+}
+@keyframes fx-shine {
+  0%   { background-position: 150% center; }
+  100% { background-position: -50% center; }
+}
+
+/* SpotlightCard — brilho radial que segue o cursor (porta do SpotlightCard).
+   Pareie com attachSpotlight(el) de utils/effects.js (seta --fx-x/--fx-y).
+   Cor via --fx-spot. O alvo precisa de position != static (cartões já têm). */
+.fx-spotlight { position: relative; }
+.fx-spotlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--fx-x, 50%) var(--fx-y, 50%),
+    var(--fx-spot, rgba(0, 240, 255, 0.16)), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.fx-spotlight:hover::after,
+.fx-spotlight:focus-within::after { opacity: 1; }
+
+/* SoftAurora — camada de aurora (blobs de cor que respiram à deriva), porta do
+   SoftAurora. Drop-in: um elemento `.fx-aurora` num container posicionado vira
+   fundo de profundidade. Herda o acento do universo via --bx-accent/2 (fallback
+   ciano/magenta). CSS puro, pointer-events none, reduced-motion congela. */
+.fx-aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 48% at 28% 30%, color-mix(in srgb, var(--bx-accent, var(--color-cyan)) 26%, transparent), transparent 70%),
+    radial-gradient(42% 52% at 72% 64%, color-mix(in srgb, var(--bx-accent2, var(--color-magenta)) 22%, transparent), transparent 72%),
+    radial-gradient(34% 44% at 52% 82%, color-mix(in srgb, #9d7bff 18%, transparent), transparent 70%);
+  filter: blur(26px);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  animation: fx-aurora-drift 16s ease-in-out infinite alternate;
+}
+@keyframes fx-aurora-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1.06); }
+  to   { transform: translate3d(3%, 3%, 0) scale(1.16); }
+}
+
+/* TiltedCard — inclinação 3D que segue o cursor (porta do TiltedCard).
+   Pareie com attachTilt(el) de utils/effects.js (seta o transform inline).
+   A transição suaviza o movimento e o retorno ao plano (efeito "mola"). */
+.fx-tilt {
+  transition: transform 0.16s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-shiny { animation: none; }
+  .fx-spotlight::after { transition: none; }
+  .fx-tilt { transition: none; }
+  .fx-aurora { animation: none; }
+}

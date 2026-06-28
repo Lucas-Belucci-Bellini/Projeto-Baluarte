@@ -6,6 +6,51 @@ aqui o que mudou.
 
 ---
 
+## 2026-06-28
+
+### 🎖️ Centro Militar — 13 frentes militares + Arsenal num hub só (Wikipédia ao vivo) (#246)
+- 🧭 **Consolidação**: as **13 páginas militares** da sidebar (+ Arsenal) viraram **uma página estilo Wikipédia** em **`/militar` ("Centro Militar")** — índice "Conteúdo" (sticky) + **14 seções**. A **sidebar enxugou de 13 itens → 1**; as páginas individuais **seguem registradas** e acessíveis pelo hub (botão "abrir página completa →") e por URL — **nada removido**.
+- 🌐 **Conteúdo vivo da Wikipédia**: cada seção puxa um **extrato da Wikipédia** sob demanda (IntersectionObserver, web leve) via `src/utils/wikipedia.js` (`fetchWikiSummary`, REST API CORS + cache memória/localStorage TTL 7d). **Best-effort**: se a Wikipédia não responder, mostra link pro artigo (zero erro). Conteúdo **CC BY-SA 4.0**, sempre **creditado e linkado**.
+- 🧱 Novos `src/pages/militar.js` + `src/styles/centro-militar.css`; rota em `main.js`, título no shell, ícone (`/militar`→shield), sidebar. **Sem dependência nova, sem Cloudflare** (a API da Wikipédia já é CORS-friendly); Supabase fica pra curadoria nossa numa fatia futura. Plano em **`docs/CENTRO-MILITAR.md`**.
+- ✅ Verificado no navegador (Playwright): hub renderiza (hero + índice 14 + 14 seções), sidebar militar = 1 entrada, degradação graciosa quando o fetch falha; build limpo. 🛡️ Backup: branch de trabalho.
+
+### ⬆️ Toolchain — site e app no Node 24
+- 🟢 **Node 22 → 24** em todo o projeto: `engines.node` do **site** (`package.json`: `22.x → 24.x`) e do **app** (`desktop/package.json`: novo `engines.node: 24.x`). Vercel lê o `engines` → passa a buildar/rodar a web no Node 24.
+- 🤖 **CI**: `desktop-release.yml` (build dos instaladores) `node 22 → 24` e `cambio.yml` (cron do câmbio) `node 20 → 24`.
+- 📌 `.nvmrc` (raiz + `desktop/`) = `24` pra fixar a versão no dev local. Build de produção limpo; JSONs válidos. *Obs.: o Electron empacota o próprio Node (preso ao major do Electron) — isto sobe o Node do **toolchain/CI**, não troca o runtime interno do Electron.*
+
+### 🎨 Iconografia — sidebar 100% no set de linha (Design System §4 · #246)
+- 🧭 **Toda a navegação lateral agora usa o set único de ícones de linha** (`src/utils/icons.js`, traço + `currentColor`). Caíam no fallback de emoji só **2** rotas — `/git-nexus` ("Núcleo de IA", o flagship da IA) com 🔗 e `/baixar` ("Baixar o App") com ⬇. Mapeei as duas em `iconByPath` e desenhei os ícones `nexus` (grafo/hub) e `download` no mesmo grid 24×24 dos demais.
+- 🔻 **Rodapé da sidebar coerente também**: os glifos soltos do botão **Instalar app** (⬇), do link do **YouTube** (▶) e do **LLBR Innovations** (⬡) viraram ícones de linha (`download`/`play`/`hex`), com regra de tamanho/alinhamento em `layout.css` (some o rótulo quando recolhida).
+- ✅ Verificado no navegador (Playwright): **75/75** itens da sidebar com SVG de linha, **zero** fallback de emoji, 3 ícones no rodapé; build limpo. É o passo 2 ("trocar a sidebar") do plano incremental de adoção do coolicons do Design System (§4); cards/headers ficam pra próxima fatia. 🛡️ Backup: branch de trabalho.
+
+### ✨ react-bits → efeitos vanilla · LightRays WebGL no herói (#246)
+- 🌟 **Fundo WebGL de "god-rays" (porta do LightRays)** — novo `src/utils/hero-rays.js`: fragment shader de **quad de tela cheia**, WebGL 1.0 **sem dependência** (não usa OGL), feixes de luz descendo de uma fonte no topo modulados por ruído animado, na cor do universo ativo, blending aditivo. Roda **web+app** (é dependency-free como o `hero-webgl`, então não precisou gatear pro app).
+- 🔌 Ligado no `buildImmersiveHero` via `variant: 'lightrays'` (mesma API/ciclo de vida do `createHeroWebGL`: fallback 2D, reduced-motion = 1 quadro, pausa com aba oculta, auto-resize/encerra). Aplicado na **`/tecnologia-militar`** como vitrine.
+- ✅ Verificado no navegador (Playwright + screenshot): o shader compila e os raios renderizam atrás do título holográfico, texto legível; build limpo. 🛡️ Backup: branch de trabalho.
+
+### ✨ react-bits → efeitos vanilla · SoftAurora nos heróis imersivos (#246)
+- 🌌 **Camada de aurora (porta do SoftAurora)** ligada no `buildImmersiveHero` → **~20 páginas flagship** ganham, de uma vez, blobs de cor (ciano/magenta/violeta) respirando à deriva atrás do conteúdo do herói, com `mix-blend: screen` pra somar luz. Herda o acento do universo via `--bx-accent/2`. Novo `.fx-aurora` em `effects.css`.
+- 🪶 CSS puro, `pointer-events:none`, **reduced-motion congela**; entra em z-index 1 (atrás do conteúdo, que é z-4) e **some quando o Spline carrega** (junto de canvas/rays/grid). Verificado no navegador (Playwright + screenshot `/arsenal`): aurora compõe atrás da galáxia WebGL sem prejudicar a leitura; build limpo. 🛡️ Backup: branch de trabalho.
+
+### ✨ react-bits → efeitos vanilla · TiltedCard nos cards das prateleiras (#246)
+- 🃏 **Inclinação 3D que segue o cursor (porta do TiltedCard)** nos cards das prateleiras do `/home` (Arsenal/Universos/Crônicas, 36 cards): o cartão gira em `rotateX/rotateY` conforme a posição do cursor (+ leve `scale`) e volta ao plano no leave — tátil, estilo "prateleira Steam" (Design System §7). Novo `attachTilt(el)` em `effects.js` + `.fx-tilt` (transição suave, `preserve-3d`).
+- 🛡️ Robusto: rotação **clampada** a ±amplitude (sem flip se o evento vier fora dos limites); **reduced-motion** deixa o card estático; sem dep. Verificado no navegador (Playwright): 36/36 cards com tilt, `transform` setado dentro da faixa (±11°) e limpo no leave; build limpo. 🛡️ Backup: branch de trabalho.
+
+### ✨ react-bits → efeitos vanilla · DecryptedText global nos títulos (#246)
+- 🔓 **Revelação "decifrando" (porta do DecryptedText) ligada no site inteiro**: a cada navegação, os títulos de página (`.page-header__title`, **56 páginas**) embaralham os caracteres e revelam da esquerda pra direita — cara de HUD, combina com o Baluarte. Hook único em `shell.renderPage` (junto do scroll-reveal); `effects.js` ganhou `decryptText(el)` + `decryptTitles(root)`.
+- 🪶 JS puro, sem dep; `setInterval` que se encerra sozinho (sem leak); **reduced-motion** deixa o texto intacto; **a11y**: o texto real fica em `aria-label` durante o efeito e o título assenta exato. Verificado no navegador (Playwright): efeito roda e o título volta ao original sem corrupção; build limpo. 🛡️ Backup: branch de trabalho.
+
+### ✨ react-bits → efeitos vanilla (Fatia 0 · #246)
+- 🧪 **Estudo + decisão**: o [react-bits](https://github.com/DavidHDev/react-bits) é **React 19** + stack WebGL/GSAP pesada e **licença MIT + Commons Clause** (proíbe redistribuir os componentes, mesmo portados). Em vez de adotar React (quebraria *sem-framework* + *web leve* #238), a direção é **estudar e reimplementar os efeitos em vanilla** com os tokens do Baluarte, creditando o autor. Plano e mapa de portabilidade em **`docs/REACT-BITS.md`**.
+- 🧱 **Camada de efeitos**: novos `src/utils/effects.js` + `src/styles/effects.css` (registrada no boot), sem dependência, com `prefers-reduced-motion`. Primeiros 2 efeitos portados: **ShinyText** (`.fx-shiny`, varredura de brilho em texto, CSS puro) e **SpotlightCard** (`attachSpotlight()` + `.fx-spotlight`, brilho radial que segue o cursor em cartões).
+- 🏠 **PoC no `/home`**: `fx-shiny` no kicker do herói + spotlight nas 7 células do bento. Verificado no navegador (Playwright): efeitos ligados, CSS vars atualizando no cursor, build limpo. Os ~53 efeitos WebGL (Aurora/Galaxy/Plasma…) ficam pra trilha app/lazy gated (#238). 🛡️ Backup: branch de trabalho.
+
+### 🎨 Iconografia — flagship `/home`: cards/headers no set de linha (Design System §4 · #246)
+- 🏠 **Passo 3 (cards/headers)** começando pelo flagship: os glifos/emojis dos **CTAs do herói** (⚙/⬇/🔗 → `gear`/`download`/`nexus`), dos **eyebrows das células do bento** (◈/🔗/⬇/⌖/📖/◆/⚡ → `chart`/`nexus`/`download`/`eye`/`book`/`diamond`/`grid`), dos **tiles de acesso rápido** (agora via `iconForPath(path)`, reusando o mapa por rota) e dos **títulos de prateleira** (🔫/🌌/📖 → `crosshair`/`star`/`book`) viraram ícones de linha do set único.
+- 🎯 **Emoji preservado onde é semântico** (Design System §4): os selos de SO 🪟🍎🐧 do card "Baluarte Launcher" e o `⬡` decorativo do HUD do herói ficam.
+- ✅ Verificado no navegador (Playwright): 8/8 tiles, 7 eyebrows, 3 títulos de prateleira e 3 CTAs com SVG de linha, **zero** emoji residual nessas áreas; build limpo. 🛡️ Backup: branch de trabalho.
+
 ## 2026-06-24
 
 ### 🧠 Omega Prism · Fatia 1 (banco) — Segundo Cérebro + Memória por usuário (#231)

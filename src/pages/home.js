@@ -7,6 +7,8 @@
  */
 
 import { h } from '../utils/helpers.js';
+import { lineIcon, iconForPath } from '../utils/icons.js';
+import { attachSpotlight, attachTilt } from '../utils/effects.js';
 import { router } from '../core/router.js';
 import { appState } from '../core/state.js';
 import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
@@ -22,6 +24,12 @@ import { UNIVERSOS, TOTAL_UNIVERSOS } from '../data/universos.js';
 import { VERSION } from '../data/version.js';
 
 const REDUCED = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Eyebrow de célula com ícone de linha (set único — Design System §4). */
+const cellTag = (icon, text) => h('div', { className: 'hv2-cell__tag' },
+  h('span', { className: 'hv2-cell__tag-ico', html: lineIcon(icon) }), text);
+/* Ícone de linha inline pra botão/título (herda a cor do contexto). */
+const btnIco = (icon) => h('span', { className: 'hv2-btn__ico', html: lineIcon(icon) });
 
 function countUp(el, target, onCleanup) {
   if (REDUCED) { el.textContent = String(target); return; }
@@ -45,7 +53,7 @@ function buildHero(onCleanup, operador, sceneUrl) {
   if (!REDUCED) { const t = setInterval(tick, 1000); onCleanup(() => clearInterval(t)); }
 
   const inner = h('div', { className: 'hv2-hero__inner' },
-    h('div', { className: 'hv2-kicker' }, 'NÚCLEO INFINITY DREADNOUGHT · ONLINE'),
+    h('div', { className: 'hv2-kicker fx-shiny' }, 'NÚCLEO INFINITY DREADNOUGHT · ONLINE'),
     h('h1', { className: 'hv2-title' },
       h('span', { className: 'hv2-title__main' }, 'BALUARTE'),
       h('span', { className: 'hv2-title__sub' }, 'MARK XIII')),
@@ -54,9 +62,9 @@ function buildHero(onCleanup, operador, sceneUrl) {
       '. A ponte de comando da plataforma — narrativa, tática e ferramentas, ',
       'onde os deuses sangram.'),
     h('div', { className: 'hv2-cta' },
-      h('button', { className: 'hv2-btn hv2-btn--primary', onclick: () => router.navigate('/ferramentas') }, '⚙ Hub de Ferramentas'),
-      h('button', { className: 'hv2-btn hv2-btn--app', onclick: () => router.navigate('/baixar') }, '⬇ Baixar o app'),
-      h('button', { className: 'hv2-btn', onclick: () => router.navigate('/git-nexus') }, '🔗 Núcleo de IA')));
+      h('button', { className: 'hv2-btn hv2-btn--primary', onclick: () => router.navigate('/ferramentas') }, btnIco('gear'), 'Hub de Ferramentas'),
+      h('button', { className: 'hv2-btn hv2-btn--app', onclick: () => router.navigate('/baixar') }, btnIco('download'), 'Baixar o app'),
+      h('button', { className: 'hv2-btn', onclick: () => router.navigate('/git-nexus') }, btnIco('nexus'), 'Núcleo de IA')));
 
   /* camada Spline (cena 3D rica) — entra por cima do herói WebGL quando há cena
    * configurada/passada; no sucesso some o canvas/grid; na falta/falha fica o herói. */
@@ -117,7 +125,7 @@ function metricCell(onCleanup) {
     grid.append(h('div', { className: 'hv2-metric' }, num, h('div', { className: 'hv2-metric__l' }, l)));
   });
   return h('div', { className: 'hv2-cell hv2-cell--metrics' },
-    h('div', { className: 'hv2-cell__tag' }, '◈ Status operacional'),
+    cellTag('chart', 'Status operacional'),
     h('h3', { className: 'hv2-cell__title' }, 'O Baluarte em números'),
     h('p', { className: 'hv2-cell__desc' }, 'Conteúdo real, vivo e navegável — clique num número pra mergulhar.'),
     grid);
@@ -132,10 +140,10 @@ function buildBento(onCleanup) {
     ['PWA', 'service worker — offline ok']
   ];
   const tiles = [
-    ['🔗', 'Núcleo de IA', '/git-nexus'], ['⚙', 'Ferramentas', '/ferramentas'],
-    ['⌨', 'Editor', '/editor'], ['◫', 'Biblioteca', '/biblioteca'],
-    ['⌖', 'Arsenal', '/arsenal'], ['🌌', 'Universo', '/universo'],
-    ['💹', 'Câmbio', '/dolar'], ['◇', 'Sobre', '/sobre']
+    ['Núcleo de IA', '/git-nexus'], ['Ferramentas', '/ferramentas'],
+    ['Editor', '/editor'], ['Biblioteca', '/biblioteca'],
+    ['Arsenal', '/arsenal'], ['Universo', '/universo'],
+    ['Câmbio', '/dolar'], ['Sobre', '/sobre']
   ];
 
   // Contador de acessos ao vivo (gravado no Supabase). Só aparece se vier número
@@ -165,44 +173,49 @@ function buildBento(onCleanup) {
     viewsLine.style.display = '';
   });
 
-  return h('section', { className: 'hv2-bento' },
+  const section = h('section', { className: 'hv2-bento' },
     metricCell(onCleanup),
     h('div', { className: 'hv2-cell hv2-cell--ai hv2-cell--link', onclick: () => router.navigate('/git-nexus') },
       h('div', { className: 'hv2-orb', 'aria-hidden': 'true' }),
-      h('div', { className: 'hv2-cell__tag' }, '🔗 Núcleo de IA'),
+      cellTag('nexus', 'Núcleo de IA'),
       h('h3', { className: 'hv2-cell__title' }, 'JARVIS, grafo & memória — num cockpit'),
       h('p', { className: 'hv2-cell__desc' }, 'Git Nexus + J.A.R.V.I.S. + Segundo Cérebro + ML, unificados. O cérebro do Baluarte.'),
       h('div', { className: 'hv2-cell__cta' }, 'abrir o Núcleo →')),
     h('div', { className: 'hv2-cell hv2-cell--app hv2-cell--mag hv2-cell--link', onclick: () => router.navigate('/baixar') },
-      h('div', { className: 'hv2-cell__tag' }, '⬇ Baluarte Launcher'),
+      cellTag('download', 'Baluarte Launcher'),
       h('h3', { className: 'hv2-cell__title' }, 'Baixe o app desktop'),
       h('p', { className: 'hv2-cell__desc' }, 'A experiência completa: 3D pesado, IA e motor real, sem as travas do navegador.'),
       h('div', { className: 'hv2-cell__os' }, h('span', null, '🪟'), h('span', null, '🍎'), h('span', null, '🐧'))),
     h('div', { className: 'hv2-cell hv2-cell--wide' },
-      h('div', { className: 'hv2-cell__tag' }, '⌖ Vigilância · ao vivo'),
+      cellTag('eye', 'Vigilância · ao vivo'),
       ...vig.map(([t, m]) => h('div', { className: 'hv2-vig' },
         h('span', { className: 'hv2-vig__dot' }), h('span', { className: 'hv2-vig__tag' }, t), h('span', { className: 'hv2-vig__msg' }, m))),
       acessosLine, viewsLine),
     h('div', { className: 'hv2-cell hv2-cell--link', onclick: () => router.navigate('/biblioteca') },
-      h('div', { className: 'hv2-cell__tag' }, '📖 Crônica em destaque'),
+      cellTag('book', 'Crônica em destaque'),
       h('h3', { className: 'hv2-cell__title' }, arco.title || 'Onde os Deuses Sangram'),
       h('p', { className: 'hv2-cell__desc' }, (arco.synopsis || 'As Crônicas da Baluarte.').slice(0, 110))),
     h('div', { className: 'hv2-cell hv2-cell--link', style: { '--accent': eq.color || '#00f0ff' }, onclick: () => router.navigate('/elites') },
-      h('div', { className: 'hv2-cell__tag' }, '◆ Equipe em destaque'),
+      cellTag('diamond', 'Equipe em destaque'),
       h('h3', { className: 'hv2-cell__title' }, eq.name || 'Esquadrão ALFA'),
       h('p', { className: 'hv2-cell__desc' }, eq.specialty || 'Esquadrões de elite do alfabeto OTAN.')),
     h('div', { className: 'hv2-cell hv2-cell--wide' },
-      h('div', { className: 'hv2-cell__tag' }, '⚡ Acesso rápido'),
+      cellTag('grid', 'Acesso rápido'),
       h('div', { className: 'hv2-tiles' },
-        ...tiles.map(([icon, label, path]) => h('button', { className: 'hv2-tile', onclick: () => router.navigate(path) },
-          h('span', { className: 'hv2-tile__icon' }, icon), h('span', { className: 'hv2-tile__label' }, label))))));
+        ...tiles.map(([label, path]) => h('button', { className: 'hv2-tile', onclick: () => router.navigate(path) },
+          h('span', { className: 'hv2-tile__icon', html: iconForPath(path) }), h('span', { className: 'hv2-tile__label' }, label))))));
+
+  /* Spotlight que segue o cursor nas células do bento (porta do react-bits). */
+  section.querySelectorAll('.hv2-cell').forEach((cell) => onCleanup(attachSpotlight(cell)));
+  return section;
 }
 
 /* ===== Prateleiras ===== */
-function shelf(title, cards, morePath) {
+function shelf(icon, title, cards, morePath) {
   return h('section', { className: 'hv2-shelf' },
     h('div', { className: 'hv2-shelf__head' },
-      h('h2', { className: 'hv2-shelf__title' }, title),
+      h('h2', { className: 'hv2-shelf__title' },
+        h('span', { className: 'hv2-shelf__ico', html: lineIcon(icon) }), title),
       morePath && h('button', { className: 'hv2-shelf__more', onclick: () => router.navigate(morePath) }, 'ver tudo →')),
     h('div', { className: 'hv2-track' }, ...cards));
 }
@@ -221,12 +234,15 @@ export function homePage(args) {
   const page = h('div', { className: 'page-home2' });
   page.appendChild(buildHero(onCleanup, operador, sceneUrl));
   page.appendChild(buildBento(onCleanup));
-  page.appendChild(shelf('🔫 Arsenal em destaque', ARSENAL.slice(0, 12).map((it) =>
+  page.appendChild(shelf('crosshair', 'Arsenal em destaque', ARSENAL.slice(0, 12).map((it) =>
     scard((it.category || '').toUpperCase(), it.name, [it.origin, it.year].filter(Boolean).join(' · '), '/arsenal')), '/arsenal'));
-  page.appendChild(shelf('🌌 Universos', UNIVERSOS.slice(0, 12).map((u) =>
+  page.appendChild(shelf('star', 'Universos', UNIVERSOS.slice(0, 12).map((u) =>
     scard('UNIVERSO', u.name, u.tagline || '', '/universo')), '/universo'));
-  page.appendChild(shelf('📖 Crônicas', ARCS.slice(0, 12).map((a) =>
+  page.appendChild(shelf('book', 'Crônicas', ARCS.slice(0, 12).map((a) =>
     scard(a.universe || 'CRÔNICAS', a.title, (a.synopsis || '').slice(0, 80), '/biblioteca')), '/biblioteca'));
+
+  /* Inclinação 3D que segue o cursor nos cards das prateleiras (porta do react-bits). */
+  page.querySelectorAll('.hv2-scard').forEach((c) => onCleanup(attachTilt(c)));
 
   if (typeof MutationObserver !== 'undefined') {
     const mo = new MutationObserver(() => {

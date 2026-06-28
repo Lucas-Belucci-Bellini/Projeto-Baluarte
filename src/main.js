@@ -104,6 +104,7 @@ router.register('/simbolos', lazy(() => import('./pages/simbolos.js'), 'simbolos
 router.register('/color-studio', lazy(() => import('./pages/color-studio.js'), 'colorStudioPage'));
 router.register('/regex', lazy(() => import('./pages/regex.js'), 'regexPage'));
 router.register('/arsenal', lazy(() => import('./pages/arsenal.js'), 'arsenalPage'));
+router.register('/militar', lazy(() => import('./pages/militar.js'), 'militarPage'));   // hub consolidado das frentes militares
 router.register('/biblioteca', lazy(() => import('./pages/biblioteca.js'), 'bibliotecaPage'));
 router.register('/elites', lazy(() => import('./pages/elites.js'), 'elitesPage'));
 router.register('/dossie', lazy(() => import('./pages/dossie.js'), 'dossiePage'));

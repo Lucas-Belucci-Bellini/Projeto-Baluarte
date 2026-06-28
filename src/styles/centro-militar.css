@@ -1,0 +1,130 @@
+/* ============================================================
+   Centro Militar — hub consolidado (estilo Wikipédia). #246
+   Índice fixo à esquerda + seções com extrato vivo da Wikipédia.
+   ============================================================ */
+
+.page-militar { display: block; }
+
+.mil-layout {
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  align-items: start;
+}
+
+/* ----- índice de conteúdo (sticky) ----- */
+.mil-toc {
+  position: sticky;
+  top: var(--space-md);
+  align-self: start;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--color-surface-2, var(--color-surface)), var(--color-surface));
+  padding: var(--space-md);
+  max-height: calc(100vh - 2 * var(--space-md));
+  overflow-y: auto;
+}
+.mil-toc__title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+.mil-toc__list { display: flex; flex-direction: column; gap: 2px; }
+.mil-toc__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 9px;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.mil-toc__item:hover { background: rgba(0, 240, 255, 0.08); color: var(--color-text-primary); }
+.mil-toc__ico { display: inline-flex; color: var(--color-cyan); flex-shrink: 0; }
+.mil-toc__ico .nav-ico { width: 16px; height: 16px; }
+
+/* ----- seções ----- */
+.mil-sections { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
+.mil-section {
+  position: relative;
+  scroll-margin-top: var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--color-surface), var(--color-bg-elevated, var(--color-surface)));
+  padding: var(--space-lg);
+}
+.mil-section::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan-edge), transparent);
+  opacity: 0.6;
+}
+.mil-section__head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mil-section__ico { display: inline-flex; color: var(--color-cyan); }
+.mil-section__ico .nav-ico { width: 22px; height: 22px; }
+.mil-section__title {
+  font-size: 20px; font-weight: 700; margin: 0; flex: 1; min-width: 180px;
+  color: var(--color-text-primary);
+}
+.mil-section__open {
+  background: none; border: 1px solid var(--color-cyan-edge); color: var(--color-cyan);
+  font-family: var(--font-mono); font-size: 12px; padding: 5px 11px;
+  border-radius: var(--radius-pill); cursor: pointer; white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+.mil-section__open:hover { background: var(--color-cyan); color: #001016; }
+.mil-section__desc { margin: 10px 0 12px; color: var(--color-text-secondary); line-height: 1.6; font-size: 14px; }
+
+/* ----- bloco da Wikipédia ----- */
+.mil-wiki {
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 12px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+}
+.mil-wiki__loading { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-muted); }
+.mil-wiki__thumb {
+  float: right; width: 132px; height: auto; margin: 0 0 10px 14px;
+  border-radius: var(--radius-sm); border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.mil-wiki__extract { margin: 0 0 10px; line-height: 1.65; }
+.mil-wiki__foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; clear: both; }
+.mil-wiki__more {
+  color: var(--color-cyan); text-decoration: none; font-family: var(--font-mono); font-size: 12px;
+}
+.mil-wiki__more:hover { text-decoration: underline; }
+.mil-wiki__lic {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: var(--tracking-wide);
+  text-transform: uppercase; color: var(--color-text-muted);
+}
+
+.mil-credit {
+  margin: var(--space-lg) 0 0; text-align: center;
+  font-size: 12px; color: var(--color-text-muted);
+}
+.mil-credit a { color: var(--color-cyan); text-decoration: none; }
+.mil-credit a:hover { text-decoration: underline; }
+
+/* ----- responsivo: índice vira topo rolável ----- */
+@media (max-width: 860px) {
+  .mil-layout { grid-template-columns: 1fr; }
+  .mil-toc {
+    position: static; max-height: none;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .mil-toc__list { flex-direction: row; flex-wrap: wrap; }
+  .mil-toc__item { width: auto; }
+  .mil-wiki__thumb { width: 96px; }
+}
