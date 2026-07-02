@@ -32,7 +32,7 @@
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at 50% 40%, rgba(0, 240, 255, 0.18), transparent 70%),
+    radial-gradient(circle at 50% 40%, rgba(212, 162, 78, 0.18), transparent 70%),
     linear-gradient(160deg, var(--color-surface-3), var(--color-bg-elevated));
   border-bottom: var(--border-thin);
 }
@@ -152,7 +152,7 @@
 }
 
 /* Polish cinematográfico (redesign #195) — Onda Lazer. Só visual. */
-.page-filmes .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.page-filmes .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
 .filme-card { transition: transform var(--transition-fast), border-color var(--transition-base), box-shadow var(--transition-base); }
 .filme-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
 .filme-card__poster { transition: transform var(--transition-base); }

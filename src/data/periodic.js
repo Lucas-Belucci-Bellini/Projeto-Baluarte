@@ -10,8 +10,8 @@ export const CATEGORIES_PT = {
   'post-transition': { label: 'Metal pós-transição',  color: '#a3a8b8' },
   'metalloid':    { label: 'Metaloide',               color: '#00ff88' },
   'nonmetal':     { label: 'Não-metal',               color: '#66ddff' },
-  'halogen':      { label: 'Halogênio',               color: '#00f0ff' },
-  'noble':        { label: 'Gás nobre',               color: '#ff00aa' },
+  'halogen':      { label: 'Halogênio',               color: '#d4a24e' },
+  'noble':        { label: 'Gás nobre',               color: '#e8c07a' },
   'lanthanide':   { label: 'Lantanídeo',              color: '#7c4dff' },
   'actinide':     { label: 'Actinídeo',               color: '#b15dff' },
   'unknown':      { label: 'Desconhecido',            color: '#93a4bf' }

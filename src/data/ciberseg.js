@@ -5,9 +5,9 @@
  */
 
 export const CATEGORIES_CS = [
-  { id: 'recon',      label: 'Recon',          icon: '◔', color: '#00f0ff' },
+  { id: 'recon',      label: 'Recon',          icon: '◔', color: '#d4a24e' },
   { id: 'exploit',    label: 'Exploit',        icon: '⚡', color: '#ff3355' },
-  { id: 'malware',    label: 'Malware',        icon: '☣', color: '#ff00aa' },
+  { id: 'malware',    label: 'Malware',        icon: '☣', color: '#e8c07a' },
   { id: 'network',    label: 'Rede',           icon: '⌖', color: '#66ddff' },
   { id: 'crypto',     label: 'Criptografia',   icon: '⚿', color: '#ffaa00' },
   { id: 'defesa',     label: 'Defesa',         icon: '◈', color: '#00ff88' },

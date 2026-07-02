@@ -35,7 +35,7 @@
 }
 .bn-grid--enemy .bn-cell { cursor: crosshair; }
 .bn-grid--enemy.is-locked .bn-cell { cursor: not-allowed; }
-.bn-grid--enemy .bn-cell:not(.is-hit):not(.is-miss):not(.is-sunk):hover { background: rgba(0, 240, 255, 0.18); }
+.bn-grid--enemy .bn-cell:not(.is-hit):not(.is-miss):not(.is-sunk):hover { background: rgba(212, 162, 78, 0.18); }
 .bn-cell.is-ship { background: #4a5a72; border-color: #647890; }
 .bn-cell.is-hit { background: #ff5b3a; border-color: #ff7a5a; }
 .bn-cell.is-sunk { background: #7a1020; border-color: #a01828; }
@@ -47,6 +47,6 @@
 .bn-ship.is-sunk { color: #ff5b7a; text-decoration: line-through; letter-spacing: normal; }
 
 /* Polish cinematográfico (redesign #195) — Onda Lazer. Só visual. */
-.page-bnaval .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.page-bnaval .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
 .bn-board__title { background: linear-gradient(135deg,#e6f1ff,var(--color-cyan)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-.bn-grid-wrap { filter: drop-shadow(0 0 8px rgba(0,240,255,.15)); }
+.bn-grid-wrap { filter: drop-shadow(0 0 8px rgba(212,162,78,.15)); }

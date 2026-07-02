@@ -31,12 +31,12 @@ for (let i = 0; i < 10; i++) {
     <h1>Olá do Baluarte</h1>
     <p>Edite e veja a preview ao lado.</p>
     <script>
-      document.querySelector('h1').style.color = '#00f0ff';
+      document.querySelector('h1').style.color = '#d4a24e';
     </script>
   </body>
 </html>
 `,
-  css: `:root { --accent: #00f0ff; }
+  css: `:root { --accent: #d4a24e; }
 body {
   background: #0a0a0a;
   color: var(--accent);

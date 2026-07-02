@@ -113,24 +113,24 @@ function drawSatScope() {
 
   /* Círculos de elevação: borda=0°, centro=90° */
   const elToR = el => R * (1 - el / 90);
-  ctx.strokeStyle = 'rgba(0,240,255,0.12)';
+  ctx.strokeStyle = 'rgba(212,162,78,0.12)';
   ctx.lineWidth = 1;
   [0, 30, 60].forEach(el => {
     ctx.beginPath(); ctx.arc(cx, cy, elToR(el), 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = 'rgba(0,240,255,0.35)';
+    ctx.fillStyle = 'rgba(212,162,78,0.35)';
     ctx.font = '9px "JetBrains Mono",monospace';
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     ctx.fillText(`${el}°`, cx + elToR(el) + 3, cy);
   });
 
   /* Cruz + pontos cardeais */
-  ctx.strokeStyle = 'rgba(0,240,255,0.1)';
+  ctx.strokeStyle = 'rgba(212,162,78,0.1)';
   ctx.beginPath();
   ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
   ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
   ctx.stroke();
 
-  ctx.fillStyle = '#00f0ff';
+  ctx.fillStyle = '#d4a24e';
   ctx.font = 'bold 10px "JetBrains Mono",monospace';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   [['N', 0], ['L', 90], ['S', 180], ['O', 270]].forEach(([lbl, az]) => {
@@ -170,10 +170,10 @@ function drawSatScope() {
     const x = cx + r * Math.cos(rad);
     const y = cy + r * Math.sin(rad);
     const hi = el > 60;
-    ctx.fillStyle = hi ? '#ff00aa' : '#00f0ff';
+    ctx.fillStyle = hi ? '#e8c07a' : '#d4a24e';
     ctx.beginPath(); ctx.arc(x, y, hi ? 4 : 2.5, 0, Math.PI * 2); ctx.fill();
     if (i < 10 || hi) {
-      ctx.fillStyle = hi ? '#ff00aa' : 'rgba(0,240,255,0.75)';
+      ctx.fillStyle = hi ? '#e8c07a' : 'rgba(212,162,78,0.75)';
       ctx.font = '9px "JetBrains Mono",monospace';
       ctx.textAlign = 'left'; ctx.textBaseline = 'top';
       ctx.fillText(name.slice(0, 14), x + 6, y - 3);
@@ -185,7 +185,7 @@ function drawSatScope() {
   ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
 
   /* Info no canto */
-  ctx.fillStyle = 'rgba(0,240,255,0.5)';
+  ctx.fillStyle = 'rgba(212,162,78,0.5)';
   ctx.font = '9px "JetBrains Mono",monospace';
   ctx.textAlign = 'left'; ctx.textBaseline = 'top';
   ctx.fillText(`OBS ${satObserver.lat.toFixed(1)}°, ${satObserver.lon.toFixed(1)}°`, 6, 6);
@@ -567,7 +567,7 @@ function drawRD(mag, rows, cols, mask) {
   }
 
   /* Marca detecções com retângulo ciano. */
-  ctx.strokeStyle = '#00f0ff';
+  ctx.strokeStyle = '#d4a24e';
   ctx.lineWidth = 1.2;
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -632,7 +632,7 @@ function drawTrackOverlay(tracks, rows, cols) {
     const coasting = t.misses > 0;
 
     /* rastro */
-    ctx.strokeStyle = coasting ? 'rgba(255,0,170,0.35)' : 'rgba(255,0,170,0.6)';
+    ctx.strokeStyle = coasting ? 'rgba(232,192,122,0.35)' : 'rgba(232,192,122,0.6)';
     ctx.beginPath();
     t.trail.forEach((p, i) => {
       const px = (p[1] + 0.5) * cellW, py = (p[0] + 0.5) * cellH;
@@ -641,13 +641,13 @@ function drawTrackOverlay(tracks, rows, cols) {
     ctx.stroke();
 
     /* marcador */
-    ctx.strokeStyle = coasting ? 'rgba(255,0,170,0.6)' : '#ff00aa';
+    ctx.strokeStyle = coasting ? 'rgba(232,192,122,0.6)' : '#e8c07a';
     ctx.beginPath();
     ctx.arc(x, y, Math.max(5, cellW * 0.7), 0, Math.PI * 2);
     ctx.stroke();
 
     /* id */
-    ctx.fillStyle = '#ff00aa';
+    ctx.fillStyle = '#e8c07a';
     ctx.fillText('T' + String(t.id).padStart(2, '0'), x + 7, y - 7);
   });
 }

@@ -172,7 +172,7 @@ function initGraph(canvas, tip, extra) {
     const near = hover ? neighbors(hover) : null;
     for (const l of links) {
       const on = near && (l.s === hover || l.t === hover);
-      ctx.strokeStyle = on ? 'rgba(0,240,255,0.5)' : 'rgba(255,255,255,0.07)';
+      ctx.strokeStyle = on ? 'rgba(212,162,78,0.5)' : 'rgba(255,255,255,0.07)';
       ctx.lineWidth = on ? 1.4 : 0.8;
       ctx.beginPath();
       ctx.moveTo(l.s.x, l.s.y);

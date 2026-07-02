@@ -118,7 +118,7 @@ export function triangulacaoPage() {
 
     /* rumos (retas longas a partir de cada estação) */
     const L = Math.hypot(W, H);
-    ctx.strokeStyle = 'rgba(0,240,255,0.35)';
+    ctx.strokeStyle = 'rgba(212,162,78,0.35)';
     ctx.lineWidth = 1.2;
     measured.forEach((m) => {
       ctx.beginPath();
@@ -137,12 +137,12 @@ export function triangulacaoPage() {
     });
 
     /* alvo real (magenta) */
-    ctx.fillStyle = '#ff00aa';
+    ctx.fillStyle = '#e8c07a';
     ctx.beginPath(); ctx.arc(target.x, target.y, 7, 0, Math.PI * 2); ctx.fill();
 
     /* estimativa (cruz ciano) + linha de erro */
     if (est.ok) {
-      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeStyle = '#d4a24e';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(est.x - 10, est.y); ctx.lineTo(est.x + 10, est.y);

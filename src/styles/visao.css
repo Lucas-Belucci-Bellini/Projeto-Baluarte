@@ -129,9 +129,9 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: rgba(0,240,255,.8);
+  background: rgba(212,162,78,.8);
   border: 2px solid #fff;
-  box-shadow: 0 0 12px rgba(0,240,255,1), 0 0 24px rgba(0,240,255,.5);
+  box-shadow: 0 0 12px rgba(212,162,78,1), 0 0 24px rgba(212,162,78,.5);
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
@@ -179,15 +179,15 @@
 .visao-page .page-hero h1 {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 58%, var(--color-magenta) 120%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+  filter: drop-shadow(0 0 14px rgba(212, 162, 78, 0.22));
 }
 
 /* aba ativa com brilho neon */
-.visao-tab.is-active { text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+.visao-tab.is-active { text-shadow: 0 0 10px rgba(212, 162, 78, 0.5); }
 
 /* viewport da câmera com moldura HUD (colchetes) + glow na borda */
-.visao-viewport { box-shadow: 0 0 24px rgba(0, 240, 255, 0.1); transition: box-shadow var(--transition-base); }
-.visao-viewport:hover { box-shadow: 0 0 32px rgba(0, 240, 255, 0.18); }
+.visao-viewport { box-shadow: 0 0 24px rgba(212, 162, 78, 0.1); transition: box-shadow var(--transition-base); }
+.visao-viewport:hover { box-shadow: 0 0 32px rgba(212, 162, 78, 0.18); }
 .visao-viewport::after {
   content: ''; position: absolute; inset: 8px; z-index: 3; pointer-events: none;
   background:
@@ -202,7 +202,7 @@
 }
 
 /* valor dos sliders e status com brilho mono */
-.visao-slider-val { text-shadow: 0 0 8px rgba(0, 240, 255, 0.4); }
+.visao-slider-val { text-shadow: 0 0 8px rgba(212, 162, 78, 0.4); }
 
 /* painel informativo: acento esquerdo luminoso */
-.visao-info-box { box-shadow: -5px 0 16px -8px rgba(0, 240, 255, 0.6); }
+.visao-info-box { box-shadow: -5px 0 16px -8px rgba(212, 162, 78, 0.6); }

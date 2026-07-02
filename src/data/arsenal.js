@@ -11,17 +11,17 @@
  */
 
 export const CATEGORIES = [
-  { id: 'pistolas',      label: 'Pistolas',         icon: '⚰', color: '#00f0ff' },
-  { id: 'smg',           label: 'Submetralhadoras', icon: '⌖', color: '#00f0ff' },
+  { id: 'pistolas',      label: 'Pistolas',         icon: '⚰', color: '#d4a24e' },
+  { id: 'smg',           label: 'Submetralhadoras', icon: '⌖', color: '#d4a24e' },
   { id: 'rifles',        label: 'Rifles',           icon: '⌗', color: '#00ff88' },
-  { id: 'snipers',       label: 'Snipers',          icon: '⊹', color: '#ff00aa' },
+  { id: 'snipers',       label: 'Snipers',          icon: '⊹', color: '#e8c07a' },
   { id: 'shotguns',      label: 'Shotguns',         icon: '◊', color: '#ffaa00' },
   { id: 'mg',            label: 'Metralhadoras',    icon: '☷', color: '#ff3355' },
   { id: 'launchers',     label: 'Lança-projéteis',  icon: '⚡', color: '#ff3355' },
   { id: 'artilharia',    label: 'Artilharia',       icon: '◎', color: '#ffaa00' },
   { id: 'defesa-aerea',  label: 'Defesa Aérea',     icon: '⊕', color: '#ff3355' },
   { id: 'aeronaves',     label: 'Aeronaves',        icon: '✈', color: '#66ddff' },
-  { id: 'naval',         label: 'Naval',            icon: '⚓', color: '#00f0ff' },
+  { id: 'naval',         label: 'Naval',            icon: '⚓', color: '#d4a24e' },
   { id: 'drones',        label: 'Drones / VANT',    icon: '⊿', color: '#00ff88' },
   { id: 'melee',         label: 'Armas Brancas',    icon: '✠', color: '#93a4bf' },
   { id: 'experimental',  label: 'Experimentais',    icon: '⚛', color: '#7c4dff' },

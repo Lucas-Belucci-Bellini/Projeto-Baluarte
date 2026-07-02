@@ -236,13 +236,13 @@ class GazeTracker {
     }
 
     /* Desenha landmarks dos olhos */
-    ctx.strokeStyle = 'rgba(0,240,255,0.8)';
+    ctx.strokeStyle = 'rgba(212,162,78,0.8)';
     ctx.lineWidth = 1;
     this._drawEyeOutline(ctx, lm, [33,7,163,144,145,153,154,155,133,173,157,158,159,160,161,246], 640, 480);
     this._drawEyeOutline(ctx, lm, [362,382,381,380,374,373,390,249,263,466,388,387,386,385,384,398], 640, 480);
 
     /* Marca íris */
-    ctx.fillStyle = 'rgba(0,240,255,0.9)';
+    ctx.fillStyle = 'rgba(212,162,78,0.9)';
     ctx.beginPath();
     ctx.arc(li.x * 640, li.y * 480, 4, 0, 2 * Math.PI);
     ctx.fill();
@@ -373,8 +373,8 @@ class HandTracker {
   }
 
   _drawHand(ctx, lm, W, H, label) {
-    ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 14;
-    ctx.strokeStyle = 'rgba(0,240,255,0.85)'; ctx.lineWidth = 2;
+    ctx.shadowColor = '#d4a24e'; ctx.shadowBlur = 14;
+    ctx.strokeStyle = 'rgba(212,162,78,0.85)'; ctx.lineWidth = 2;
     for (const [a, b] of HAND_CONNECTIONS) {
       ctx.beginPath();
       ctx.moveTo((1 - lm[a].x) * W, lm[a].y * H);
@@ -387,8 +387,8 @@ class HandTracker {
       const isWrist = i === 0, isTip = TIPS.has(i);
       ctx.beginPath();
       ctx.arc(x, y, isWrist ? 7 : isTip ? 6 : 4, 0, Math.PI * 2);
-      ctx.fillStyle = isWrist ? '#ff00aa' : '#00f0ff';
-      ctx.shadowColor = isWrist ? '#ff00aa' : '#00f0ff';
+      ctx.fillStyle = isWrist ? '#e8c07a' : '#d4a24e';
+      ctx.shadowColor = isWrist ? '#e8c07a' : '#d4a24e';
       ctx.shadowBlur = isWrist ? 20 : 12;
       ctx.fill();
     }
@@ -397,12 +397,12 @@ class HandTracker {
     const lx = (1 - lm[0].x) * W - 20, ly = lm[0].y * H + 26;
     ctx.fillStyle = 'rgba(0,12,24,0.55)';
     ctx.fillRect(lx - 2, ly - 12, ctx.measureText(label).width + 6, 16);
-    ctx.fillStyle = 'rgba(0,240,255,0.95)';
+    ctx.fillStyle = 'rgba(212,162,78,0.95)';
     ctx.fillText(label, lx, ly);
   }
 
   _drawHUD(ctx, W, H) {
-    const c = 'rgba(0,240,255,0.45)';
+    const c = 'rgba(212,162,78,0.45)';
     const len = 22;
     ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.shadowBlur = 0;
     for (const [cx, cy, sx, sy] of [[0,0,1,1],[W-1,0,-1,1],[0,H-1,1,-1],[W-1,H-1,-1,-1]]) {

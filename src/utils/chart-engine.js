@@ -19,7 +19,7 @@
 
 /* Paletas de cores (Material 3 Dark + Neon) */
 export const PALETTES = {
-  neon: ['#00f0ff', '#ff00aa', '#00ff88', '#ffaa00', '#66ddff', '#ff3355', '#ffd700', '#7c4dff'],
+  neon: ['#d4a24e', '#e8c07a', '#00ff88', '#ffaa00', '#66ddff', '#ff3355', '#ffd700', '#7c4dff'],
   ocean: ['#00b4d8', '#0077b6', '#03045e', '#90e0ef', '#caf0f8', '#48cae4', '#ade8f4', '#0096c7'],
   sunset: ['#f72585', '#b5179e', '#7209b7', '#560bad', '#480ca8', '#3a0ca3', '#3f37c9', '#4361ee'],
   forest: ['#52b788', '#40916c', '#2d6a4f', '#1b4332', '#081c15', '#74c69d', '#95d5b2', '#b7e4c7'],
@@ -35,8 +35,8 @@ const DEFAULT_OPTS = {
   padding: { top: 40, right: 40, bottom: 50, left: 60 },
   bgColor: '#0a0a0a',
   fgColor: '#e6f1ff',
-  gridColor: 'rgba(0, 240, 255, 0.08)',
-  axisColor: 'rgba(0, 240, 255, 0.3)',
+  gridColor: 'rgba(212, 162, 78, 0.08)',
+  axisColor: 'rgba(212, 162, 78, 0.3)',
   fontFamily: 'JetBrains Mono, monospace',
   font: '12px JetBrains Mono, monospace'
 };

@@ -48,7 +48,7 @@
 .periodic-cell {
   aspect-ratio: 1;
   background: var(--color-bg);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 162, 78, 0.1);
   border-radius: 2px;
   display: flex;
   flex-direction: column;
@@ -217,7 +217,7 @@
 }
 .pc-preset-tab {
   background: var(--color-surface);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 162, 78, 0.1);
   border-left: 3px solid var(--p-color);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
@@ -468,7 +468,7 @@
 }
 .logic-truth th, .logic-truth td {
   padding: 6px 14px;
-  border: 1px solid rgba(0, 240, 255, 0.15);
+  border: 1px solid rgba(212, 162, 78, 0.15);
   text-align: center;
 }
 .logic-truth th {
@@ -484,9 +484,9 @@
 }
 
 /* Polish cinematográfico (redesign #195) — Onda Referência. Só visual. */
-.page-pt .page-header__title, .page-modpack .page-header__title, .page-pc .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.page-pt .page-header__title, .page-modpack .page-header__title, .page-pc .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
 .page-pt .periodic-cell { transition: transform var(--transition-base), box-shadow var(--transition-base); }
-.page-pt .periodic-cell:hover { box-shadow: 0 0 14px rgba(0,240,255,.55); transform: translateY(-2px); z-index: 3; }
+.page-pt .periodic-cell:hover { box-shadow: 0 0 14px rgba(212,162,78,.55); transform: translateY(-2px); z-index: 3; }
 .modpack-card { transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
 .modpack-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
 .pc-preset { transition: border-color var(--transition-base), box-shadow var(--transition-base); }

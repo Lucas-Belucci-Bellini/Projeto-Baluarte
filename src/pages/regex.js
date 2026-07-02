@@ -21,7 +21,7 @@ const EXAMPLES = [
   { label: 'CPF', pattern: '\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}', flags: 'g', text: '123.456.789-01 e 987.654.321-99' },
   { label: 'Telefone BR', pattern: '\\(?\\d{2}\\)?[\\s-]?9?\\d{4}-?\\d{4}', flags: 'g', text: '(11) 99999-1234, 11 9 99991234, 4321-1234' },
   { label: 'Data DD/MM/AAAA', pattern: '(\\d{2})/(\\d{2})/(\\d{4})', flags: 'g', text: 'nascimento: 25/12/2026 · agendado para 01/01/2027' },
-  { label: 'Hex color', pattern: '#([0-9a-f]{3}){1,2}\\b', flags: 'gi', text: 'cores: #00f0ff #FF0 #ff00aa #abcdef' },
+  { label: 'Hex color', pattern: '#([0-9a-f]{3}){1,2}\\b', flags: 'gi', text: 'cores: #d4a24e #FF0 #e8c07a #abcdef' },
   { label: 'Palavra repetida', pattern: '\\b(\\w+)\\b.*?\\b\\1\\b', flags: 'gi', text: 'o cão correu o cão correu rápido' },
   { label: 'Nomeado: ano/mês', pattern: '(?<ano>\\d{4})-(?<mes>\\d{2})-(?<dia>\\d{2})', flags: 'g', text: 'data ISO: 2026-05-15 e 2027-01-01' },
   { label: 'Lookahead', pattern: '\\d+(?= reais)', flags: 'g', text: 'paguei 50 reais por 3 livros e 25 reais por 1 caderno' },

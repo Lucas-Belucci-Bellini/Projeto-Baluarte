@@ -31,8 +31,8 @@ let renderCallback = null;
 let onStreamEndedCb = null;
 
 const PALETTE = {
-  primary: '#00f0ff',
-  secondary: '#ff00aa',
+  primary: '#d4a24e',
+  secondary: '#e8c07a',
   warn: '#ffaa00',
   success: '#00ff88',
   bg: '#0a0a0a'
@@ -399,8 +399,8 @@ const MODES = {
     ctx.lineTo(W, H);
     ctx.lineTo(0, H);
     const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, 'rgba(0, 240, 255, 0.3)');
-    grad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+    grad.addColorStop(0, 'rgba(212, 162, 78, 0.3)');
+    grad.addColorStop(1, 'rgba(212, 162, 78, 0)');
     ctx.fillStyle = grad;
     ctx.fill();
   },
@@ -409,7 +409,7 @@ const MODES = {
     analyserNode.getByteTimeDomainData(waveformArray);
     clearBg(ctx, W, H);
     /* Linha zero */
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+    ctx.strokeStyle = 'rgba(212, 162, 78, 0.15)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, H / 2);
@@ -464,7 +464,7 @@ const MODES = {
     }
 
     /* Anel central */
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
+    ctx.strokeStyle = 'rgba(212, 162, 78, 0.3)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
@@ -585,8 +585,8 @@ const MODES = {
     }
     ctx.closePath();
     const grad = ctx.createRadialGradient(cx, cy, baseR * 0.3, cx, cy, baseR * 2);
-    grad.addColorStop(0, 'rgba(0,240,255,0.6)');
-    grad.addColorStop(1, 'rgba(255,0,170,0.15)');
+    grad.addColorStop(0, 'rgba(212,162,78,0.6)');
+    grad.addColorStop(1, 'rgba(232,192,122,0.15)');
     ctx.fillStyle = grad;
     ctx.fill();
     ctx.strokeStyle = PALETTE.primary;
@@ -675,7 +675,7 @@ const MODES = {
     for (let i = 0; i < bins; i++) {
       const v = dataArray[i] / 255;
       const barH = v * H * 0.5;
-      ctx.fillStyle = `rgba(0,240,255,${0.25 + v * 0.5})`;
+      ctx.fillStyle = `rgba(212,162,78,${0.25 + v * 0.5})`;
       ctx.fillRect(i * barW, H - barH, Math.max(barW - 1, 1), barH);
     }
     analyserNode.getByteTimeDomainData(waveformArray);

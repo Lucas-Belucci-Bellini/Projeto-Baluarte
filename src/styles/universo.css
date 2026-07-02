@@ -18,7 +18,7 @@
   align-items: center;
   gap: 4px;
   background: var(--color-bg-elevated);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 162, 78, 0.1);
   border-radius: var(--radius-md);
   padding: 12px 8px;
   cursor: pointer;
@@ -207,7 +207,7 @@
   background: linear-gradient(135deg, #e6f1ff, var(--color-cyan));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.univ-detail__name { text-shadow: 0 0 18px rgba(0, 240, 255, 0.35); }
+.univ-detail__name { text-shadow: 0 0 18px rgba(212, 162, 78, 0.35); }
 .univ-detail__icon { filter: drop-shadow(0 0 12px currentColor); }
 /* links de arco do mundo com glow no hover */
 .univ-arc-link:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }

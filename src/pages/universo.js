@@ -101,10 +101,10 @@ function renderDetail() {
 
   const grid = h('div', { className: 'univ-grid' });
   const sections = [
-    section('◈ Pontos-chave', u.keyFacts, '#00f0ff'),
+    section('◈ Pontos-chave', u.keyFacts, '#d4a24e'),
     section('◆ Facções', u.factions, '#00ff88'),
     section('⚠ Ameaças', u.threats, '#ff3355'),
-    section('▶ Mídia / Referência', u.media, '#ff00aa')
+    section('▶ Mídia / Referência', u.media, '#e8c07a')
   ].filter(Boolean);
   sections.forEach((s) => grid.appendChild(s));
   detailEl.appendChild(grid);

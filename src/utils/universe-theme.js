@@ -19,7 +19,7 @@ const KEY = 'ui:universe';
 /* ===== util de cor ===== */
 function hexToRgb(hex) {
   const m = /^#?([0-9a-f]{6})$/i.exec(String(hex).trim());
-  const n = m ? parseInt(m[1], 16) : 0x00f0ff;
+  const n = m ? parseInt(m[1], 16) : 0xd4a24e;
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 const rgba = (c, a) => `rgba(${c.r}, ${c.g}, ${c.b}, ${a})`;
@@ -107,7 +107,7 @@ const SKIN = {
   gundam:          { primary: '#3a6fe0', secondary: '#ff4d4d', font: 'rajdhani', radius: 'mid' },     // mecha Federação
   evangelion:      { primary: '#7b4fd4', secondary: '#7cff52', font: 'rajdhani', radius: 'sharp' },   // roxo NERV + verde
   'mass-effect':   { primary: '#3d8bff', secondary: '#ff7b29', font: 'titillium', radius: 'soft' },
-  cyberpunk:       { primary: '#ff0a78', secondary: '#00f0ff', font: 'mono', radius: 'sharp' },       // neon magenta/ciano
+  cyberpunk:       { primary: '#ff0a78', secondary: '#d4a24e', font: 'mono', radius: 'sharp' },       // neon magenta/ciano
   monsterverse:    { primary: '#5ad84a', secondary: '#ff8a3c', font: 'oswald', radius: 'mid' },       // verde-atômico + calor
   titanfall:       { primary: '#ff7a1a', secondary: '#38b6ff', font: 'rajdhani', radius: 'mid' },     // laranja Militia + azul
   'god-of-war':    { primary: '#c0392b', secondary: '#d4af37', font: 'cinzel', radius: 'sharp' },     // vermelho-sangue + dourado grego
@@ -131,7 +131,7 @@ for (const u of UNIVERSOS) {
 
 /** Lista para o seletor: Baluarte (padrão) + todos os skins. */
 export const UNIVERSE_SKINS = [
-  { id: 'baluarte', label: 'Baluarte', primary: '#00f0ff', secondary: '#ff00aa' },
+  { id: 'baluarte', label: 'Baluarte', primary: '#d4a24e', secondary: '#e8c07a' },
   ...Object.entries(UNIVERSE_THEMES).map(([id, s]) => ({ id, label: s.label, primary: s.primary, secondary: s.secondary }))
 ];
 

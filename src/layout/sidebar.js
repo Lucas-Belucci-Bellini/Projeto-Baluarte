@@ -211,8 +211,8 @@ export function renderSidebar() {
       display: canInstall() ? 'block' : 'none',
       width: '100%', textAlign: 'left', cursor: 'pointer', font: 'inherit',
       margin: '0 0 8px', padding: '7px 10px', borderRadius: '7px',
-      color: '#00f0ff', border: '1px solid rgba(0,240,255,0.35)',
-      background: 'linear-gradient(90deg, rgba(0,240,255,0.16), rgba(0,240,255,0.02))'
+      color: '#d4a24e', border: '1px solid rgba(212,162,78,0.35)',
+      background: 'linear-gradient(90deg, rgba(212,162,78,0.16), rgba(212,162,78,0.02))'
     },
     html: lineIcon('download') + '<span class="sidebar__ext-label">Instalar app</span>',
     onclick: () => promptInstall()

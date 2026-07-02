@@ -100,7 +100,7 @@ function save() {
 /* ===== Desenho ===== */
 
 function colorFor(on) {
-  return on ? '#00f0ff' : '#3a4358';
+  return on ? '#d4a24e' : '#3a4358';
 }
 
 function draw(ctx) {
@@ -155,8 +155,8 @@ function draw(ctx) {
     const lit = c.type === 'OUT' ? ins[0] : !!(c.values && c.values[0]);
 
     /* corpo */
-    ctx.fillStyle = lit ? 'rgba(0,240,255,0.14)' : 'rgba(20,26,38,0.96)';
-    ctx.strokeStyle = lit ? '#00f0ff' : '#46506a';
+    ctx.fillStyle = lit ? 'rgba(212,162,78,0.14)' : 'rgba(20,26,38,0.96)';
+    ctx.strokeStyle = lit ? '#d4a24e' : '#46506a';
     ctx.lineWidth = (drag && drag.comp === c) ? 3 : 1.6;
     roundRect(ctx, c.x, c.y, W, H, 8);
     ctx.fill();
@@ -166,19 +166,19 @@ function draw(ctx) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     if (c.type === 'IN') {
-      ctx.fillStyle = c.on ? '#00f0ff' : '#9aa6bd';
+      ctx.fillStyle = c.on ? '#d4a24e' : '#9aa6bd';
       ctx.font = 'bold 24px monospace';
       ctx.fillText(c.on ? '1' : '0', c.x + W / 2, c.y + H / 2 + 1);
     } else if (c.type === 'OUT') {
       ctx.beginPath();
       ctx.arc(c.x + W / 2, c.y + H / 2, 13, 0, Math.PI * 2);
-      ctx.fillStyle = lit ? '#00f0ff' : '#2a3142';
+      ctx.fillStyle = lit ? '#d4a24e' : '#2a3142';
       ctx.fill();
       ctx.strokeStyle = lit ? '#aef6ff' : '#46506a';
       ctx.lineWidth = 2;
       ctx.stroke();
     } else if (c.type === 'CLOCK') {
-      ctx.fillStyle = c.on ? '#00f0ff' : '#9aa6bd';
+      ctx.fillStyle = c.on ? '#d4a24e' : '#9aa6bd';
       ctx.font = 'bold 13px monospace';
       ctx.fillText('CLK ' + (c.on ? '1' : '0'), c.x + W / 2, c.y + H / 2 + 1);
     } else if (def.kind !== 'ff') {

@@ -103,7 +103,7 @@ function soundcloudSection() {
         } catch {}
       });
     } else {
-      try { widget.load(track.url, { auto_play: true, color: '#00f0ff', hide_related: true, show_comments: false }); } catch {}
+      try { widget.load(track.url, { auto_play: true, color: '#d4a24e', hide_related: true, show_comments: false }); } catch {}
     }
   }
 

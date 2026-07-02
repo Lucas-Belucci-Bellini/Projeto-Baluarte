@@ -2,7 +2,7 @@
 
 .fh-header { margin-bottom: var(--space-md); }
 .fh-title { font-size: clamp(26px, 4vw, 40px); font-weight: 800; margin: 6px 0 4px;
-  background: linear-gradient(92deg, #e6f1ff, #00f0ff 70%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  background: linear-gradient(92deg, #e6f1ff, #d4a24e 70%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .fh-sub { color: var(--color-text-secondary); font-size: 14px; margin: 0; max-width: 70ch; }
 
 .fh-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -10,11 +10,11 @@
   background: var(--color-surface); color: var(--color-text-primary);
   border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-pill); outline: none;
   transition: border-color 0.2s, box-shadow 0.2s; }
-.fh-search:focus { border-color: var(--color-cyan); box-shadow: 0 0 0 3px rgba(0,240,255,0.12); }
+.fh-search:focus { border-color: var(--color-cyan); box-shadow: 0 0 0 3px rgba(212,162,78,0.12); }
 .fh-count { font-size: 12px; color: var(--color-text-muted); white-space: nowrap; }
 
 .fh-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--space-md); }
-.fh-chip { --accent: #00f0ff; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+.fh-chip { --accent: #d4a24e; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
   font-size: 13px; padding: 6px 14px; border-radius: var(--radius-pill); color: var(--color-text-secondary);
   background: var(--color-surface); border: 1px solid rgba(255,255,255,0.1); transition: all 0.18s; }
 .fh-chip:hover { border-color: var(--accent); color: var(--color-text-primary); }
@@ -24,7 +24,7 @@
 .fh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
 
 .fh-card {
-  --accent: #00f0ff; --rx: 0deg; --ry: 0deg;
+  --accent: #d4a24e; --rx: 0deg; --ry: 0deg;
   position: relative; overflow: hidden; cursor: pointer; padding: 16px;
   background: linear-gradient(165deg, var(--color-surface) 0%, var(--color-bg-elevated) 100%);
   border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md);
@@ -41,9 +41,9 @@
 .fh-card__icon { font-size: 26px; color: var(--accent); line-height: 1; }
 .fh-card__badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
 .fh-badge { font-family: var(--font-mono); font-size: 10px; padding: 2px 7px; border-radius: var(--radius-pill); }
-.fh-badge--novo { background: var(--color-cyan-soft, rgba(0,240,255,0.14)); color: var(--color-cyan); }
+.fh-badge--novo { background: var(--color-cyan-soft, rgba(212,162,78,0.14)); color: var(--color-cyan); }
 .fh-badge--ready { background: rgba(0,255,136,0.14); color: #00ff88; }
-.fh-badge--soon { background: var(--color-magenta-soft, rgba(255,0,170,0.14)); color: var(--color-magenta); }
+.fh-badge--soon { background: var(--color-magenta-soft, rgba(232,192,122,0.14)); color: var(--color-magenta); }
 
 .fh-card__title { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: var(--color-text-primary); }
 .fh-card__desc { font-size: 12.5px; line-height: 1.45; color: var(--color-text-muted); margin: 0 0 10px;
@@ -54,5 +54,5 @@
   display: flex; flex-direction: column; align-items: center; gap: 8px; }
 
 /* Polish cinematográfico (redesign #195) — Onda Hubs. Só visual. */
-.fh-title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.fh-title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
 .fh-card:hover { box-shadow: 0 14px 38px rgba(0,0,0,0.5), var(--shadow-glow-cyan); }

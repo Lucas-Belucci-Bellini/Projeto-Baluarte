@@ -165,7 +165,7 @@ const TOOL_ROUTES = {
 
 /* Cor de destaque por categoria (acento dos cards). */
 const CAT_COLOR = {
-  desenvolvimento: '#00f0ff', calculo: '#7ee787', cripto: '#ff00aa',
+  desenvolvimento: '#d4a24e', calculo: '#7ee787', cripto: '#e8c07a',
   visualizacao: '#ffaa00', midia: '#9d7bff', referencia: '#66ddff', sistema: '#ff6b6b'
 };
 
@@ -187,7 +187,7 @@ function tilt(card) {
 function toolCard(tool) {
   const isReady = tool.phase <= 1;
   const route = TOOL_ROUTES[tool.id] || null;
-  const accent = CAT_COLOR[tool.category] || '#00f0ff';
+  const accent = CAT_COLOR[tool.category] || '#d4a24e';
 
   return tilt(h('div', {
     className: 'fh-card' + (isReady ? '' : ' is-locked'),

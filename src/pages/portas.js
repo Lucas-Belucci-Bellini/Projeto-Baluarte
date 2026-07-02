@@ -16,9 +16,9 @@ import {
 
 /* ===== Símbolo SVG de cada porta (forma distintiva ANSI/MIL) ===== */
 function gateSVG(sym) {
-  const W = 'stroke="#00f0ff" stroke-width="2.5" fill="none" stroke-linecap="round"';
-  const B = 'stroke="#00f0ff" stroke-width="2.5" fill="rgba(0,240,255,0.10)" stroke-linejoin="round"';
-  const bub = (cx) => `<circle cx="${cx}" cy="32" r="5" stroke="#00f0ff" stroke-width="2.5" fill="#0a0a0a"/>`;
+  const W = 'stroke="#d4a24e" stroke-width="2.5" fill="none" stroke-linecap="round"';
+  const B = 'stroke="#d4a24e" stroke-width="2.5" fill="rgba(212,162,78,0.10)" stroke-linejoin="round"';
+  const bub = (cx) => `<circle cx="${cx}" cy="32" r="5" stroke="#d4a24e" stroke-width="2.5" fill="#0a0a0a"/>`;
   let body = '';
   let extra = '';
   let wires = '';

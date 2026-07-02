@@ -4,7 +4,7 @@
     "desc": "Mapa de conhecimento que liga domínios, projetos, conceitos e fontes do Mark XIII."
   },
   "tipos": {
-    "dominio":  { "label": "Domínio",  "cor": "#00f0ff", "r": 16 },
+    "dominio":  { "label": "Domínio",  "cor": "#d4a24e", "r": 16 },
     "projeto":  { "label": "Projeto",  "cor": "#ff3b8d", "r": 11 },
     "conceito": { "label": "Conceito", "cor": "#ffaa00", "r": 8 },
     "fonte":    { "label": "Fonte",    "cor": "#00ff88", "r": 8 },

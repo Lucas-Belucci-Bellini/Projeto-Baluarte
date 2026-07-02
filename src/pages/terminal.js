@@ -17,7 +17,7 @@ import { setStatus } from '../utils/baluarte-status.js';
 
 const ANSI_COLORS = {
   '30': '#000', '31': '#ff3355', '32': '#00ff88', '33': '#ffaa00',
-  '34': '#66ddff', '35': '#ff00aa', '36': '#00f0ff', '37': '#e6f1ff',
+  '34': '#66ddff', '35': '#e8c07a', '36': '#d4a24e', '37': '#e6f1ff',
   '90': '#5a6b85', '91': '#ff6680', '92': '#33ffaa', '93': '#ffcc66',
   '94': '#88ddff', '95': '#ff66cc', '96': '#66f0ff', '97': '#ffffff'
 };

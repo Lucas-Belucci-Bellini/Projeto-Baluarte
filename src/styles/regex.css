@@ -98,7 +98,7 @@
 
 .regex-highlight {
   background: var(--color-bg);
-  border: 1px solid rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(212, 162, 78, 0.08);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-size: 13px;
