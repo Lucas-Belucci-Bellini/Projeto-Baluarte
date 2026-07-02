@@ -1,42 +1,46 @@
-/* Design Tokens — Baluarte Mark XIII (Material 3 Dark + Neon) */
+/* Design Tokens — Baluarte Mark XIII · estética "Ouro de Fábula" (Fable 5 V2)
+   Fundo violeta-escuro + acento DOURADO + texto pergaminho + serifas.
+   Os nomes --color-cyan/--color-magenta são MANTIDOS por compatibilidade
+   (~80 folhas + heroSkinColors/efeitos leem eles): cyan = acento (ouro),
+   magenta = acento 2 (ouro-claro). Skins de universo seguem por cima. */
 
 :root {
   /* === Cores base === */
-  --color-bg: #0a0a0a;
-  --color-bg-elevated: #0f1419;
-  --color-surface: #112233;
-  --color-surface-2: #16263b;
-  --color-surface-3: #1c2e47;
-  --color-overlay: rgba(10, 10, 10, 0.85);
+  --color-bg: #0e0c16;
+  --color-bg-elevated: #141020;
+  --color-surface: #1d1729;
+  --color-surface-2: #241c33;
+  --color-surface-3: #2c2340;
+  --color-overlay: rgba(10, 8, 16, 0.85);
 
-  /* === Cores de marca (Neon) === */
-  --color-cyan: #00f0ff;
-  --color-cyan-soft: rgba(0, 240, 255, 0.15);
-  --color-cyan-edge: rgba(0, 240, 255, 0.4);
-  --color-magenta: #ff00aa;
-  --color-magenta-soft: rgba(255, 0, 170, 0.15);
-  --color-magenta-edge: rgba(255, 0, 170, 0.4);
+  /* === Cores de marca (Ouro de Fábula) === */
+  --color-cyan: #d4a24e;
+  --color-cyan-soft: rgba(212, 162, 78, 0.15);
+  --color-cyan-edge: rgba(212, 162, 78, 0.4);
+  --color-magenta: #e8c07a;
+  --color-magenta-soft: rgba(232, 192, 122, 0.15);
+  --color-magenta-edge: rgba(232, 192, 122, 0.4);
 
   /* === Texto === */
-  --color-text-primary: #e6f1ff;
-  --color-text-secondary: #93a4bf;
-  --color-text-muted: #5a6b85;
-  --color-text-inverse: #0a0a0a;
+  --color-text-primary: #f4ecdd;
+  --color-text-secondary: #a89a80;
+  --color-text-muted: #77694f;
+  --color-text-inverse: #241706;
 
   /* === Estados === */
-  --color-success: #00ff88;
-  --color-success-soft: rgba(0, 255, 136, 0.12);
+  --color-success: #3ddc84;
+  --color-success-soft: rgba(61, 220, 132, 0.12);
   --color-warning: #ffaa00;
   --color-warning-soft: rgba(255, 170, 0, 0.12);
   --color-danger: #ff3355;
   --color-danger-soft: rgba(255, 51, 85, 0.12);
-  --color-info: #66ddff;
+  --color-info: #e8c07a;
 
   /* === Bordas === */
-  --border-thin: 1px solid rgba(0, 240, 255, 0.12);
-  --border-base: 1px solid rgba(0, 240, 255, 0.2);
-  --border-strong: 1px solid rgba(0, 240, 255, 0.4);
-  --border-magenta: 1px solid rgba(255, 0, 170, 0.4);
+  --border-thin: 1px solid rgba(212, 178, 112, 0.12);
+  --border-base: 1px solid rgba(212, 178, 112, 0.2);
+  --border-strong: 1px solid rgba(212, 178, 112, 0.4);
+  --border-magenta: 1px solid rgba(232, 192, 122, 0.4);
 
   /* === Espaçamento (escala 4px) === */
   --space-2xs: 2px;
@@ -56,10 +60,10 @@
   --radius-xl: 24px;
   --radius-pill: 999px;
 
-  /* === Tipografia === */
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
-  --font-display: 'Inter', system-ui, sans-serif;
+  /* === Tipografia (Fable V2: serifas + plex mono) === */
+  --font-sans: 'Spectral', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
 
   --font-size-xs: 11px;
   --font-size-sm: 13px;
@@ -91,10 +95,10 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
-  --shadow-glow-cyan: 0 0 16px rgba(0, 240, 255, 0.4), 0 0 32px rgba(0, 240, 255, 0.15);
-  --shadow-glow-cyan-strong: 0 0 24px rgba(0, 240, 255, 0.6), 0 0 48px rgba(0, 240, 255, 0.3);
-  --shadow-glow-magenta: 0 0 16px rgba(255, 0, 170, 0.4), 0 0 32px rgba(255, 0, 170, 0.15);
-  --shadow-glow-magenta-strong: 0 0 24px rgba(255, 0, 170, 0.6), 0 0 48px rgba(255, 0, 170, 0.3);
+  --shadow-glow-cyan: 0 0 16px rgba(212, 162, 78, 0.4), 0 0 32px rgba(212, 162, 78, 0.15);
+  --shadow-glow-cyan-strong: 0 0 24px rgba(212, 162, 78, 0.6), 0 0 48px rgba(212, 162, 78, 0.3);
+  --shadow-glow-magenta: 0 0 16px rgba(232, 192, 122, 0.4), 0 0 32px rgba(232, 192, 122, 0.15);
+  --shadow-glow-magenta-strong: 0 0 24px rgba(232, 192, 122, 0.6), 0 0 48px rgba(232, 192, 122, 0.3);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
   /* === Transições === */

@@ -6,11 +6,19 @@
 > **contrato visual** do Baluarte: tokens, componentes e diretrizes. Toda página/
 > feature nova deve sair daqui (nunca cores/spacings "na mão").
 
-**Estética:** *Material 3 Dark + Neon tático/cinematográfico* (HUD). Ciano↔magenta
-sobre fundo quase-preto, com **glow** e **profundidade**. Referências do operador:
-Rockstar VI (imersivo/cinematográfico), Steam (organização de muito conteúdo),
-Claude Code (consistência/limpeza), + Figma do #246 (charts, **coolicons**, CrowStudy)
-e moodboard do Pinterest.
+**Estética (ATUAL — "Ouro de Fábula", Fable 5 V2):** fundo **violeta-escuro**
+(`#0e0c16`) + acento **DOURADO** (`#d4a24e`/`#e8c07a`) + texto **pergaminho**
+(`#f4ecdd`), tipografia **serifada** (Cormorant Garamond nos títulos, Spectral no
+corpo, IBM Plex Mono no HUD), **grão de ruído** global e glow quente. Fonte do
+design: branch `Redesign-Baluarte-3D` → `…Fable 5 V2/Baluarte Fable.dc.html`
+(mockup do Claude Design). ⚠️ Os nomes de token `--color-cyan`/`--color-magenta`
+foram **mantidos por compatibilidade** (~80 folhas + `heroSkinColors()`/efeitos):
+hoje **cyan = ouro** e **magenta = ouro-claro**. Skins de universo seguem por cima.
+
+*Estética anterior (histórico):* Material 3 Dark + Neon ciano↔magenta (HUD).
+Referências do operador: Rockstar VI (imersivo/cinematográfico), Steam (organização
+de muito conteúdo), Claude Code (consistência/limpeza), Figma do #246 (charts,
+**coolicons**, CrowStudy), moodboard do Pinterest e react-bits (efeitos).
 
 > ⚠️ **Figma do #246:** são *community files* — o Figma MCP exige **acesso de edição**
 > pra ler. Pra extrair deles direto, o operador precisa **duplicar/compartilhar** os
