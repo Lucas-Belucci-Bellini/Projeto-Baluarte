@@ -85,7 +85,7 @@
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, var(--color-cyan), #00b8cc);
+  background: linear-gradient(135deg, var(--color-cyan), var(--color-magenta));
   border-color: var(--color-cyan);
   color: var(--color-text-inverse);
   font-weight: var(--font-weight-semibold);
@@ -95,9 +95,9 @@
 }
 
 .btn--magenta {
-  background: linear-gradient(135deg, var(--color-magenta), #cc0088);
+  background: linear-gradient(135deg, var(--color-magenta), #b8843c);
   border-color: var(--color-magenta);
-  color: var(--color-text-primary);
+  color: var(--color-text-inverse);
   font-weight: var(--font-weight-semibold);
 }
 .btn--magenta:hover {
@@ -438,12 +438,12 @@
   /* Redesign #246 — título HOLOGRÁFICO animado (a assinatura da nova home,
      espalhada pro site inteiro). Páginas com regra própria seguem na sua;
      reduced-motion mata a animação (regra global em variables.css). */
-  background: linear-gradient(100deg, #e6f1ff 0%, var(--color-cyan) 35%, #9d7bff 55%, var(--color-magenta) 80%, #e6f1ff 100%);
+  background: linear-gradient(100deg, #ffffff 0%, var(--color-cyan) 45%, var(--color-magenta) 70%, #ffffff 100%);
   background-size: 250% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.22));
+  filter: drop-shadow(0 0 14px rgba(212, 162, 78, 0.22));
   animation: holo-title 9s ease-in-out infinite;
   margin: 0;
 }
@@ -523,6 +523,6 @@
 }
 .calc-tile:hover, .symbol-tile:hover, .cs-card:hover, .cripto-tile:hover, .porta-card:hover { transform: translateY(-2px); }
 .cs-swatch { transition: transform var(--transition-base), box-shadow var(--transition-base); }
-.cs-swatch:hover { transform: scale(1.06); box-shadow: 0 0 12px rgba(0, 240, 255, 0.35); }
-.page-regex .sec-title { background: linear-gradient(135deg, #e6f1ff, var(--color-cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cs-swatch:hover { transform: scale(1.06); box-shadow: 0 0 12px rgba(212, 162, 78, 0.35); }
+.page-regex .sec-title { background: linear-gradient(135deg, var(--color-text-primary), var(--color-cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .kmap__cell:hover, .morse-ref__cell:hover { box-shadow: inset 0 0 0 1px var(--color-cyan-edge); }

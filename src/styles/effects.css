@@ -10,7 +10,7 @@
    Uso: classe .fx-shiny num elemento de texto. Cor via --fx-shine-*. */
 .fx-shiny {
   --fx-shine-base: var(--color-cyan);
-  --fx-shine-hi: #eaffff;
+  --fx-shine-hi: #fff6e0;
   --fx-shine-speed: 3.2s;
   background-image: linear-gradient(110deg,
     var(--fx-shine-base) 0%, var(--fx-shine-base) 38%,

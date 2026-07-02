@@ -6,6 +6,14 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-02
+
+### 👑 Reskin "Ouro de Fábula" — estética Fable 5 V2 no site inteiro (e no app) (#246)
+- 🎨 **Nova estética oficial** (do mockup `Baluarte Fable.dc.html`, branch `Redesign-Baluarte-3D`, pasta **Fable 5 V2**): fundo **violeta-escuro** (#0e0c16) + acento **DOURADO** (#d4a24e/#e8c07a) + texto **pergaminho** (#f4ecdd) + serifas (**Cormorant Garamond** títulos, **Spectral** corpo, **IBM Plex Mono** HUD) + **grão de ruído** global (assinatura tátil, `body::after`).
+- 🧱 **Reskin via tokens**: `variables.css` re-tokenizado (nomes `--color-cyan`/`--color-magenta` mantidos por compatibilidade → hoje ouro/ouro-claro); o site inteiro (~80 folhas), os **heróis WebGL** (`heroSkinColors()`), a **aurora/efeitos** e os gradientes seguem automático. Neons hardcoded remanescentes (títulos holográficos, raios, botões, métricas) convertidos pro dourado em `home-v2/components/immersive/effects/base`.
+- 🖥️ **Site + app**: o app (Baluarte Launcher) carrega o site → **herda o visual online na hora**; o fallback offline embutido atualiza no próximo build de release (`extraResources ../dist`).
+- ✅ Verificado no navegador (Playwright, screenshots `/home` e `/militar`): título BALUARTE serifado dourado com sheen, sidebar/HUD/CTAs/métricas no ouro, painéis violeta, grão sutil; build limpo. Próximas fatias do mockup: temas **rubi/esmeralda** (como skins), cursor customizado, núcleo 3D "astrolábio" (icosaedro+anéis+vagalumes) no harness WebGL próprio, transição "virar página". `docs/DESIGN-SYSTEM.md` atualizado. 🛡️ Backup: branch de trabalho.
+
 ## 2026-06-28
 
 ### 🗃️ Centro Militar — camada de curadoria no Supabase (dado nosso sobre a Wikipédia) (#246)
