@@ -12,6 +12,7 @@
  * shell.js (título) e icons.js (ícone) — ver CONTRIBUTING.md.
  */
 
+import { inject } from '@vercel/analytics';
 import { router } from './core/router.js';
 import { bus } from './core/events.js';
 import { appState } from './core/state.js';
@@ -226,6 +227,7 @@ function boot() {
   }
 
   appState.set({ bootedAt: Date.now() });
+  inject({ mode: 'auto' });
   initTheme();
   initUniverse();
 
