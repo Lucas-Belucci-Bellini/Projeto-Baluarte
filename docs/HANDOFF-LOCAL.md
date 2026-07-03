@@ -142,6 +142,25 @@ Passos (local):
 - **Aceite:** numa máquina sem WebGPU, o agente Hermes responde e usa ferramentas
   100% local, via o motor embutido.
 
+### M6 — Núcleo de IA: moldura 3D assada no Blender (Fase B do #316) · **cena pronta em `main`**
+
+Objetivo: aliviar CPU/GPU do backdrop do Núcleo — a estrutura complexa
+(carcaça/anéis) vem de um `.glb` **pré-assado no Blender** (normais/AO), e o
+procedural fica só no que precisa ser vivo (núcleo de partículas + constelação +
+bloom). O **remoto já deixou a cena pronta**: `src/utils/nucleo-scene.js` carrega
+um GLB **opt-in** (`GLTFLoader` lazy) e esconde os anéis procedurais quando o
+asset existe; sem asset, fica no procedural (zero regressão).
+
+Passos (local, precisa do Blender):
+- [ ] Modelar a moldura do núcleo no **Blender** (anéis/carcaça) e **bake** de
+      normais/AO; exportar **`public/models/nucleo/frame.glb`** (Draco ou meshopt).
+- [ ] Apontar a URL: no app/console → `localStorage['baluarte:nucleo:glbUrl'] =
+      '/models/nucleo/frame.glb'` (ou plugar num toggle no cockpit). A cena passa
+      a usar o GLB e esconde os anéis procedurais.
+- [ ] Medir antes/depois (draw calls / triângulos / fps) — alvo 60fps no app.
+- **Aceite:** o Núcleo abre com a moldura do GLB (mais leve) + o núcleo/constelação
+      procedurais vivos por cima; fps igual ou melhor que o procedural puro.
+
 ### Outros (local)
 
 - [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` + `npx gitnexus

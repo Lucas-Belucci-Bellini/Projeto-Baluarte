@@ -56,8 +56,33 @@ src/main/java/com/baluarte/nucleo/
   model/                         # JarvisCommand, TelemetryPayload, BiometricPayload, JarvisEvent
 ```
 
-## Deploy (futuro)
+## Configuração (Fase C — tudo opt-in via env)
+
+| Env | O quê | Default |
+|---|---|---|
+| `NUCLEO_HERMES_URL` | Endpoint do **agente Hermes** que responde aos comandos (ex.: `https://projeto-baluarte.vercel.app/api/hermes` ou um Ollama). Vazio = só ecoa o comando. | vazio |
+| `NUCLEO_HERMES_MODEL` | Modelo (opcional, passado ao endpoint). | vazio |
+| `NUCLEO_TOKEN` | Token do operador. Se definido, **REST exige `X-Nucleo-Token`** e **WS exige `?token=`**. Vazio = aberto (dev). | vazio |
+
+Com `NUCLEO_HERMES_URL` setado, um `POST /api/nucleo/command` dispara o Hermes e
+o Núcleo **transmite a resposta** como `JarvisEvent` `type=response` (o front/app
+recebem a fala do Núcleo). Sem a URL, o comando só vira evento `type=command`.
+
+## Testes
+
+```bash
+cd backend-java && mvn test   # JarvisControllerTest: health + command → evento
+```
+
+## Deploy
 
 Precisa de host que aguente processo longo + WebSocket (a Vercel serverless não
-serve): **Railway / Render / Fly.io / VPS**. Depois é só apontar o front pro
-`wss://<host>/ws/nucleo`. Não vai pro deploy do site (está no `.vercelignore`).
+serve): **Railway / Render / Fly.io / VPS**. Passos:
+1. `mvn -q clean package` → `target/nucleo-0.1.0.jar`.
+2. Subir o jar (ou um container `eclipse-temurin:21-jre` rodando `java -jar`).
+3. Definir as envs acima (`NUCLEO_TOKEN` em produção!).
+4. Apontar o front: no app/console → `localStorage['baluarte:nucleo:wsUrl'] =
+   'wss://<host>'` (o cliente adiciona `/ws/nucleo`). A barra "Núcleo ao vivo"
+   fica verde e a cena passa a pulsar com eventos reais.
+
+Não vai pro deploy do site (está no `.vercelignore`).

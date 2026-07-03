@@ -16,6 +16,8 @@
  *   scene.destroy();
  */
 
+import { storage } from '../core/storage.js';
+
 const REDUCED = typeof matchMedia !== 'undefined'
   && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -142,6 +144,26 @@ export async function mountNucleoScene(container) {
     g.rotation.x = Math.PI * (0.1 + i * 0.16); g.rotation.y = Math.PI * (i * 0.21);
     g.userData.spin = { x: (Math.random() - 0.5) * CFG.spinRings, y: (Math.random() - 0.5) * CFG.spinRings, z: (0.3 + Math.random() * 0.6) * CFG.spinRings * (i % 2 ? 1 : -1) };
     coreGroup.add(g); rings.push(g);
+  }
+
+  /* ---- Fase B (#316): moldura OPCIONAL assada no Blender (GLB) ----
+   * Otimização: a estrutura complexa (carcaça/anéis) pode vir de um .glb
+   * pré-assado (normais/AO), aliviando a CPU/GPU — o procedural fica só no que
+   * precisa ser vivo (núcleo de partículas + constelação + bloom). OPT-IN: só
+   * carrega se houver caminho salvo em `nucleo:glbUrl` (a sessão local solta o
+   * asset em public/models/nucleo/ e aponta a URL). Sem asset → procedural
+   * (comportamento atual, zero 404). Ver docs/HANDOFF-LOCAL.md (M-B). */
+  let glbUrl = '';
+  try { glbUrl = storage.get('nucleo:glbUrl', '') || ''; } catch { /* sem storage */ }
+  if (glbUrl) {
+    import('three/examples/jsm/loaders/GLTFLoader.js')
+      .then(({ GLTFLoader }) => new Promise((res, rej) => new GLTFLoader().load(glbUrl, res, undefined, rej)))
+      .then((gltf) => {
+        const mesh = gltf.scene;
+        coreGroup.add(mesh);
+        rings.forEach((r) => { r.visible = false; });   // o GLB substitui a moldura procedural
+      })
+      .catch(() => { /* falhou/ausente → mantém a moldura procedural */ });
   }
 
   /* ---- constelação neural + sinapses ---- */

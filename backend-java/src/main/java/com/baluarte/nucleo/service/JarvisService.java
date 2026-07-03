@@ -12,6 +12,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,9 +31,13 @@ public class JarvisService {
     /** Sessões vivas (thread-safe). */
     private final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
     private final ObjectMapper mapper;
+    private final HermesClient hermes;
+    /* Pool pequeno pra não bloquear o request/WS enquanto o Hermes pensa. */
+    private final java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(2);
 
-    public JarvisService(ObjectMapper mapper) {
+    public JarvisService(ObjectMapper mapper, HermesClient hermes) {
         this.mapper = mapper;
+        this.hermes = hermes;
     }
 
     /* ---- ciclo de vida das conexões (chamado pelo handler WS) ---- */
@@ -57,6 +62,16 @@ public class JarvisService {
         log.info("Núcleo: comando de {} → \"{}\"", src, cmd.text());
         JarvisEvent ev = JarvisEvent.of("command", src, cmd);
         broadcast(ev);
+        /* AGENTE Hermes (Fase C): responde ao comando (assíncrono) e transmite a
+         * resposta como evento — o app/front recebem a fala do Núcleo. */
+        if (hermes.enabled()) {
+            pool.submit(() -> {
+                String answer = hermes.reply(cmd.text());
+                if (answer != null && !answer.isBlank()) {
+                    broadcast(JarvisEvent.of("response", "nucleo", Map.of("text", answer, "to", src)));
+                }
+            });
+        }
         return ev;
     }
 

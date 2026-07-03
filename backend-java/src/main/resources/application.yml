@@ -5,6 +5,18 @@ spring:
   application:
     name: nucleo-jarvis
 
+# Núcleo (Fase C do #316) — tudo OPT-IN via variáveis de ambiente:
+nucleo:
+  # Agente Hermes: endpoint que responde aos comandos (ex.: o proxy do site
+  # https://projeto-baluarte.vercel.app/api/hermes, ou um Ollama local).
+  # Vazio = desligado (o serviço só ecoa o comando, sem resposta de IA).
+  hermes:
+    url: ${NUCLEO_HERMES_URL:}
+    model: ${NUCLEO_HERMES_MODEL:}
+  # Token do operador: se definido, REST (X-Nucleo-Token) e WS (?token=) exigem.
+  # Vazio = aberto (dev). Defina NUCLEO_TOKEN em produção.
+  token: ${NUCLEO_TOKEN:}
+
 # Logs enxutos no dev; suba pra DEBUG quando precisar rastrear o socket.
 logging:
   level:
