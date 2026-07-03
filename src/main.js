@@ -148,7 +148,7 @@ router.register('/roadmap', lazy(() => import('./pages/roadmap.js'), 'roadmapPag
 router.register('/jarvis-dashboard', lazyNexus('dashboard'));
 router.register('/mapa', lazy(() => import('./pages/mapa.js'), 'mapaPage'));
 router.register('/visao', lazy(() => import('./pages/visao.js'), 'visaoPage'));
-router.register('/jarvis-vision', lazy(() => import('./pages/jarvis-vision.js'), 'jarvisVisionPage'));
+router.register('/jarvis-vision', lazyLeve('vision', () => import('./pages/jarvis-vision.js'), 'jarvisVisionPage'));   // app → aba do Núcleo (#316)
 router.register('/forcas-armadas', lazy(() => import('./pages/forcas-armadas.js'), 'forcasArmadasPage'));
 router.register('/orcamentos-militares', lazy(() => import('./pages/orcamentos-militares.js'), 'orcamentosMilitaresPage'));
 router.register('/poder-militar', lazy(() => import('./pages/poder-militar.js'), 'poderMilitarPage'));
@@ -175,7 +175,7 @@ router.register('/ocr', lazy(() => import('./pages/ocr.js'), 'ocrPage'));
 router.register('/memoria', lazyLeve('memoria', () => import('./pages/memoria.js'), 'memoriaPage'));
 router.register('/terminal-ia', lazyNexus('terminal'));
 router.register('/seguranca', lazyNexus('seguranca'));
-router.register('/gerar-codigo', lazy(() => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));
+router.register('/gerar-codigo', lazyLeve('gerar', () => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));   // app → aba do Núcleo (#316)
 router.register('/conselho', lazyNexus('conselho'));
 router.register('/apis', lazyNexus('apis'));
 /* /git-nexus passa pelo GATE leve (#238 Fase 2): web → teaser; app → carrega a

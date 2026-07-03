@@ -8,12 +8,18 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### 📡 Núcleo de IA 10x — Fase D: a cena REAGE a eventos ao vivo (#316)
+- 🔌 **Ponte ao vivo** (`src/utils/nucleo-socket.js`): cliente WebSocket pro backend Java (`/ws/nucleo`) — cada `JarvisEvent` (telemetria/voz/biometria do app) chega e é publicado no event bus como `nucleo:event`. **Opt-in** (só conecta se houver URL salva em `nucleo:wsUrl`), com **reconexão por backoff** — sem URL, fica quieto (não fica batendo em servidor que não existe).
+- ✨ **A cena reage de verdade**: o cockpit assina `nucleo:event` e faz o **`pulse()`** da cena do jarvis-nucleo disparar (glitch), com duração por tipo (comando > biometria > telemetria). Barra **"Núcleo ao vivo"** no topo: status da conexão (bolinha), **último evento**, campo da URL do backend + **conectar** + **⚡ testar** (simula um evento pra ver a cena reagir sem o serviço no ar).
+- ✅ Verificado no navegador (modo nativo simulado): a barra aparece, "⚡ testar" atualiza o último evento (`⚡ biometric · demo`) e dispara o pulso da cena; build limpo. Quando o backend Java (Fase C) subir, é só apontar a URL e o Núcleo passa a pulsar com telemetria/voz/biometria reais.
+
 ### ✨ Núcleo de IA 10x — Fase A: cena do jarvis-nucleo como backdrop vivo do cockpit (#316)
 - 🌌 **Portei o `jarvis-nucleo.html`** (do operador) pra um módulo do site (`src/utils/nucleo-scene.js`): **núcleo procedural** (Simplex noise) + **anéis de dados** + **constelação neural com sinapses vivas** + poeira, com **pós-processo** (UnrealBloom + Glitch). Vira o **backdrop 3D vivo** do cockpit do Núcleo de IA — por trás das 12 abas (JARVIS, grafo, memória, ML, APIs…), com véu de legibilidade.
 - 🪶 **Pesado e app-only (#238)**: Three.js e os passes são **dynamic-imported** dentro do mount → chunk próprio `three` (isolado do `vendor` eager via `vite.config`), **fora do boot do site** (verificado: `index.html` não pré-carrega o three; o site leve nunca baixa). Só o app, ao abrir o cockpit.
 - 🎨 Cores **100% por token** (segue Ouro/Rubi/Esmeralda, reage a `baluarte:theme`); **"pulso de dados"** (glitch) dispara na troca de aba (gancho pra eventos reais na Fase D/backend Java). Respeita `prefers-reduced-motion`; auto-limpa ao trocar de rota/aba.
 - ✅ Verificado no navegador (Playwright/WebGL headless): cena montada (canvas no backdrop), 12 abas, painéis legíveis sobre a cena; build limpo. Fase B (Blender→GLTF) segue como tarefa local no #316.
 - 🧩 **Tudo de IA num lugar só**: puxei pro cockpit as 2 funções de IA que ainda ficavam fora — **Corpo Total** (`jarvis-vision`, rastreamento multi-corporal) e **Gerar Código** (`gerar-codigo`, JARVIS gera código). São **14 abas** agora, do Grafo à IA Proprietária, todas verificadas renderizando/funcionando dentro do Núcleo (troca entre abas sem erro).
+- 🧭 **Navegação unificada**: as entradas de IA soltas da sidebar (`/jarvis-vision`, `/gerar-codigo`) agora, **no app**, abrem **dentro do Núcleo** na aba certa (`lazyLeve` → cockpit `?tab=vision`/`?tab=gerar`); na web seguem como página standalone. Um clique, tudo no mesmo cockpit. Verificado: app abre o cockpit na aba certa, web fica standalone.
 
 ### 🧠 Núcleo de IA 10x — backend Java (ponte mobile) + roadmap #316
 - 🎯 **Plano do "Núcleo de IA 10x"** (visual do `jarvis-nucleo.html` + cockpit unificado): decidido fazer **no stack atual** (Vanilla + Three.js no app, #238) — **sem** re-plataformar pra Next.js/React (quebraria "JS puro, sem framework"). Roadmap completo na **issue #316** (Milestones/Tech Stack/tarefas por fase).

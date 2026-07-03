@@ -195,6 +195,30 @@
 /* os painéis do cockpit ficam legíveis sobre a cena */
 .gn-cock__panel, .gn-cock__tabs, .gn-cock .page-header { position: relative; z-index: 1; }
 
+/* Barra "Núcleo ao vivo" (Fase D #316) — status do backend + último evento +
+   URL do WebSocket + teste. A cena reage (pulse) a cada evento. */
+.gn-live {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 12px; padding: 8px 12px;
+  border: var(--border-thin); border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-bg-elevated) 72%, transparent);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono); font-size: 11px;
+}
+.gn-live__dot {
+  width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--color-text-muted); transition: background var(--transition-base), box-shadow var(--transition-base);
+}
+.gn-live__dot.is-on { background: var(--color-success); box-shadow: 0 0 8px var(--color-success); }
+.gn-live__label { letter-spacing: 0.06em; color: var(--color-text-secondary); text-transform: uppercase; }
+.gn-live__last { color: var(--color-cyan); transition: color var(--transition-fast); }
+.gn-live.is-hit { border-color: var(--color-cyan); box-shadow: var(--shadow-glow-cyan); }
+.gn-live.is-hit .gn-live__last { color: var(--color-magenta); }
+.gn-live__conn { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.gn-live__url { width: 180px; max-width: 46vw; height: 28px; font-size: 11px; padding: 4px 8px; }
+@media (max-width: 640px) { .gn-live__conn { margin-left: 0; width: 100%; } }
+
 .gn-cock__tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-md);
   border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 8px; }
 .gn-cock__tab { background: var(--color-surface); border: 1px solid rgba(255,255,255,0.1);
