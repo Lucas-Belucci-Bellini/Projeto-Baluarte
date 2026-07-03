@@ -87,6 +87,12 @@ aqui o que mudou.
 
 ## 2026-06-24
 
+### 🧠 Omega Prism · Fatia 1 — Segundo Cérebro por usuário (notas na conta) (#231)
+- 📝 O **Segundo Cérebro** (`/cerebro`) deixou de ser só leitura: agora você **cria notas** (título + corpo) que viram **nós 📝 no grafo**, ligados automaticamente aos conceitos do cérebro (via `linkConcepts`). Fecha o **L1 Conhecimento** da Fatia 1 (o L2 Memória saiu nos PRs anteriores).
+- ☁️ **Por usuário, cross-device**: logado, as notas salvam na tabela `knowledge_notes` do Supabase (RLS dono-só) e **voltam em qualquer dispositivo**; deslogado seguem **100% locais** (localStorage) — **zero regressão**. Botão **☁️ Conta** (logado: sincroniza; deslogado: leva ao `/perfil`); ao abrir logado, puxa a conta sozinho.
+- 🧩 Novos `src/core/knowledge.js` (store local-first, dedup por conteúdo, espelho best-effort) + `src/core/knowledge-cloud.js` (CRUD sem SDK, mesmo padrão do `memory-cloud`). O grafo **remonta** ao adicionar/apagar nota; notas e memórias entram na **legenda** como tipos próprios.
+- 🪶 Web leve (#238): sem deps; `index` inalterado (193,7 KB), nada pesado novo no boot. Verificado no navegador (Playwright): criar nota → vira card + nó no grafo (29→**32 nós**, **3 notas**); build limpo + smoke ok. 🛡️ Backup: `backup/2026-06-24-pre-fatia1-web`.
+
 ### 🧠 Omega Prism · Fatia 1 (banco) — Segundo Cérebro + Memória por usuário (#231)
 - 🗄️ Migrations **`0006_knowledge`** (`knowledge_notes`: notas com `tags`/`links`) + **`0007_memories`** (`memories`: fatos "lembre que…", estilo supermemory) — **por usuário, RLS dono-só** (`auth.uid() = user_id`), igual `profiles`. Aplicadas no Supabase oficial.
 - 🔐 Verificado (REST anon): **GET → 200 `[]`** (não vaza) · **POST → 401** (RLS bloqueia) nas duas; estrutura: RLS on + **4 policies (CRUD dono)** cada.

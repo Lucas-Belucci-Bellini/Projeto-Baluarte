@@ -1,0 +1,90 @@
+/**
+ * Segundo Cérebro — notas do usuário (Omega Prism, L1 Conhecimento, Fatia 1).
+ *
+ * Notas curtas (título + corpo + tags) que o operador guarda no Segundo Cérebro.
+ * Local-first: vivem no localStorage (`baluarte:knowledge:notes`) e, quando
+ * logado, espelham na CONTA (Supabase, tabela `knowledge_notes`, RLS dono-só) —
+ * cross-device, igual à Memória. Deslogado / sem Supabase → 100% local, sem
+ * regressão. Sem servidor, sem custo, sem SDK.
+ *
+ * A página `/cerebro` lê daqui e mostra as notas como nós no grafo, ligadas aos
+ * conceitos do `cerebro.json` (a ligação é feita lá, com `linkConcepts`).
+ */
+
+import { storage } from './storage.js';
+import { randHex } from '../utils/helpers.js';
+import { cloudListNotes, cloudInsertNote, cloudDeleteNote } from './knowledge-cloud.js';
+
+const KEY = 'baluarte:knowledge:notes';
+const MAX_LOCAL = 1000;   // teto local (a conta não tem esse limite)
+
+/* Notas da CONTA (Supabase), espelhadas e mescladas às locais — vazio deslogado. */
+let cloudCache = [];
+
+function load() { return storage.get(KEY, []); }
+function persist(list) { storage.set(KEY, list); }
+
+/* Chave de conteúdo p/ dedup local↔conta (mesma nota não duplica ao sincronizar). */
+function keyOf(n) { return ((n.title || '') + '\n' + (n.body || '')).toLowerCase().trim(); }
+
+function toItem(r) {
+  return {
+    id: r.id, title: r.title || '', body: r.body || '', tags: r.tags || [],
+    ts: Date.parse(r.updated_at || r.created_at) || Date.now(), cloud: true
+  };
+}
+
+/** Notas locais + da conta, deduplicadas por conteúdo, mais recentes primeiro. */
+export function listNotes() {
+  const local = load();
+  const seen = new Set(local.map(keyOf));
+  const merged = local.slice();
+  for (const c of cloudCache) {
+    const k = keyOf(c);
+    if (k && !seen.has(k)) { seen.add(k); merged.push(c); }
+  }
+  return merged.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+}
+
+/** Cria uma nota (dedup por conteúdo). Espelha na conta best-effort, se logado. */
+export function addNote({ title, body = '', tags = [] }) {
+  const t = String(title || '').trim();
+  if (!t) return null;
+  const b = String(body || '').trim();
+  const list = load();
+  const dup = list.find((n) => n.title.toLowerCase() === t.toLowerCase() && (n.body || '').toLowerCase() === b.toLowerCase());
+  if (dup) return dup;
+  const item = { id: 'k' + Date.now().toString(36) + randHex(3), title: t, body: b, tags, ts: Date.now() };
+  list.push(item);
+  persist(list.length > MAX_LOCAL ? list.slice(-MAX_LOCAL) : list);
+  cloudInsertNote({ title: item.title, body: item.body, tags: item.tags, links: [] }).then((row) => {
+    if (row && !cloudCache.some((n) => n.id === row.id)) cloudCache.unshift(toItem(row));
+  }).catch(() => {});
+  return item;
+}
+
+/** Apaga uma nota (local + cópia na conta, por id ou por conteúdo). */
+export function deleteNote(id) {
+  const item = load().find((n) => n.id === id) || cloudCache.find((n) => n.id === id);
+  persist(load().filter((n) => n.id !== id));
+  const cn = cloudCache.find((n) => n.id === id)
+    || (item && cloudCache.find((n) => keyOf(n) === keyOf(item)));
+  if (cn) { cloudDeleteNote(cn.id); cloudCache = cloudCache.filter((n) => n !== cn); }
+}
+
+/** Sincroniza com a CONTA quando logado: puxa as notas da nuvem e empurra as
+ *  locais que ainda não estão lá. No-op deslogado. Devolve quantas a conta tem. */
+export async function syncNotes() {
+  const cloud = await cloudListNotes();
+  if (!cloud) { cloudCache = []; return 0; }
+  cloudCache = cloud.map(toItem);
+  const have = new Set(cloudCache.map(keyOf));
+  const localOnly = load().filter((n) => !have.has(keyOf(n)));
+  for (const n of localOnly.slice(0, 200)) {
+    const row = await cloudInsertNote({ title: n.title, body: n.body, tags: n.tags, links: [] });
+    if (row) cloudCache.unshift(toItem(row));
+  }
+  return cloudCache.length;
+}
+
+export function noteCount() { return listNotes().length; }
