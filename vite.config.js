@@ -21,7 +21,13 @@ export default defineConfig({
          * automaticamente. NÃO agrupamos as páginas num único chunk (isso
          * anularia o lazy-load). Mantemos só libs de terceiros juntas. */
         manualChunks(id) {
-          if (id.includes('/node_modules/')) return 'vendor';
+          if (id.includes('/node_modules/')) {
+            /* Three.js é PESADO e só usado no Núcleo (app-only, #238): chunk
+             * próprio pra ficar fora do `vendor` (que é eager no boot). Assim
+             * o site leve nunca baixa o Three — só o app, ao abrir o cockpit. */
+            if (id.includes('/node_modules/three/')) return 'three';
+            return 'vendor';
+          }
           return undefined;
         }
       }

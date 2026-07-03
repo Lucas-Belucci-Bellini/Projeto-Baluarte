@@ -41,6 +41,17 @@ export function gitNexusCockpit(args = {}) {
   const wantTab = explicit || storage.get(LAST_TAB_KEY, 'grafo') || 'grafo';
   const page = h('div', { className: 'page-gitnexus gn-cock' });
 
+  /* Backdrop vivo do Núcleo (Fase A do #316): cena 3D do jarvis-nucleo por trás
+   * dos painéis. Pesado e app-only (o cockpit só roda no app), Three.js lazy.
+   * Best-effort: se o WebGL falhar, o cockpit segue igual (só sem a cena). */
+  const backdrop = h('div', { className: 'gn-cock__backdrop', 'aria-hidden': 'true' });
+  page.appendChild(backdrop);
+  let nucleo = null;
+  import('../utils/nucleo-scene.js')
+    .then((m) => m.mountNucleoScene(backdrop))
+    .then((s) => { nucleo = s; })
+    .catch((err) => { console.warn('[nucleo] cena 3D indisponível:', err); backdrop.remove(); });
+
   /* cabeçalho compacto do Núcleo (cada ferramenta traz o próprio header no painel) */
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '10px' } },
@@ -61,6 +72,7 @@ export function gitNexusCockpit(args = {}) {
   function activate(tab) {
     if (activeId === tab.id) return;
     activeId = tab.id;
+    if (nucleo) { try { nucleo.pulse(220); } catch { /* cena pode ter saído */ } }  // "pulso de dados" ao trocar de aba
     Object.values(buttons).forEach((b) => b.classList.toggle('is-active', b === buttons[tab.id]));
 
     /* lembra a aba e sincroniza a URL (?tab=) sem disparar navegação (replaceState
