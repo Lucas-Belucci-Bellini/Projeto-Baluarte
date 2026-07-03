@@ -27,16 +27,53 @@
     "appId": "com.baluarte.launcher",
     "productName": "Baluarte Launcher",
     "publish": [
-      { "provider": "github", "owner": "Lucas-Belucci-Bellini", "repo": "Projeto-Baluarte", "releaseType": "release" }
+      {
+        "provider": "github",
+        "owner": "Lucas-Belucci-Bellini",
+        "repo": "Projeto-Baluarte",
+        "releaseType": "release"
+      }
     ],
-    "files": ["src/**/*", "package.json"],
+    "files": [
+      "src/**/*",
+      "package.json",
+      "node_modules/**/*"
+    ],
+    "asarUnpack": [
+      "**/node_modules/node-llama-cpp/**",
+      "**/node_modules/@node-llama-cpp/**"
+    ],
     "extraResources": [
-      { "from": "../dist", "to": "web", "filter": ["**/*"] }
+      {
+        "from": "../dist",
+        "to": "web",
+        "filter": [
+          "**/*"
+        ]
+      }
     ],
-    "directories": { "output": "release", "buildResources": "build" },
-    "win": { "target": "nsis" },
-    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
-    "mac": { "target": "dmg", "identity": null, "category": "public.app-category.developer-tools" },
-    "linux": { "target": "AppImage", "category": "Development" }
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": "dmg",
+      "identity": null,
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Development"
+    }
+  },
+  "optionalDependencies": {
+    "node-llama-cpp": "^3.19.0"
   }
 }

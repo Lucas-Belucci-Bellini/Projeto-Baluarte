@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### 📦 Instalador 0.3.0 — motor embutido pronto pra cortar (auto-download + dep opcional)
+- ⬇️ **Modelo auto-baixa no 1º uso** (`desktop/src/hermes.js`): o `.gguf` NÃO vai embutido (instalador pequeno) — baixa pra `userData/models` na 1ª vez (env `BALUARTE_HERMES_MODEL_URL`, default Nous Hermes 2 Pro Q4_K_M), com progresso em `status()`. Um `.gguf` colocado à mão tem prioridade.
+- 🧱 **`node-llama-cpp` como `optionalDependency`** (no `desktop/package-lock.json`) + `asarUnpack` do módulo nativo: o **build do instalador nunca quebra** (se um SO não compilar/carregar o nativo, o app cai no WebLLM, que funciona). `npm ci` do release fica em sync.
+- 🚀 Pronto pra cortar via **Desktop Release** (tag `desktop-v0.3.0` / workflow_dispatch → runners Win/Mac/Linux). ⚠️ O motor nativo pode precisar de **validação on-device** (ABI do Electron) — o app funciona igual pelo WebLLM enquanto isso.
+
 ### ☕ Núcleo de IA 10x — Fase C: agente Hermes no backend + auth por token
 - 🤝 **Agente Hermes no serviço** (`HermesClient` + `JarvisService`): um `POST /api/nucleo/command` agora dispara o Hermes (assíncrono, sem travar o request/WS) e o Núcleo **transmite a resposta** como `JarvisEvent` `type=response` — o front/app recebem a fala do Núcleo. Endpoint **configurável** (`NUCLEO_HERMES_URL`, ex.: o proxy `/api/hermes` do site ou um Ollama); vazio = só ecoa o comando.
 - 🔐 **Auth por token** (opt-in): se `NUCLEO_TOKEN` estiver definido, REST exige `X-Nucleo-Token` (`TokenAuthFilter`, `/health` livre) e o WebSocket exige `?token=` no handshake; vazio = aberto (dev).
