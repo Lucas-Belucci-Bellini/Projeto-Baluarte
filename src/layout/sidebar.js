@@ -135,7 +135,8 @@ export const NAV_GROUPS = [
      * acessíveis pelo hub (link "abrir página completa") e por URL direta. */
     label: 'Seção Militar',
     items: [
-      { path: '/militar', label: 'Centro Militar', icon: '🎖', phase: 1 }
+      { path: '/militar', label: 'Centro Militar', icon: '🎖', phase: 1 },
+      { path: '/modelos-3d', label: 'Modelos 3D', icon: '🧊', phase: 1 }
     ]
   },
   {

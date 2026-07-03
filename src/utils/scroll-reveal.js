@@ -10,20 +10,26 @@ const REDUCED = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduce
 const SUPPORTED = typeof IntersectionObserver !== 'undefined';
 
 let observer = null;
+let tallObserver = null;
+const onEntries = (entries, obs) => {
+  for (const e of entries) {
+    if (e.isIntersecting) {
+      e.target.classList.add('is-revealed');
+      obs.unobserve(e.target);
+    }
+  }
+};
 function getObserver() {
   if (observer) return observer;
-  observer = new IntersectionObserver(
-    (entries, obs) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          e.target.classList.add('is-revealed');
-          obs.unobserve(e.target);
-        }
-      }
-    },
-    { rootMargin: '0px 0px -6% 0px', threshold: 0.04 }
-  );
+  observer = new IntersectionObserver(onEntries, { rootMargin: '0px 0px -6% 0px', threshold: 0.04 });
   return observer;
+}
+/* Blocos MAIS ALTOS que a viewport nunca atingem 4% de interseção — pra eles,
+   threshold 0 (senão ficam presos invisíveis; ex.: grades longas). */
+function getTallObserver() {
+  if (tallObserver) return tallObserver;
+  tallObserver = new IntersectionObserver(onEntries, { rootMargin: '0px 0px -6% 0px', threshold: 0 });
+  return tallObserver;
 }
 
 /** Blocos a revelar: filhos diretos do root da página (as seções). */
@@ -52,10 +58,11 @@ export function revealScan(root, route) {
     return;
   }
   const obs = getObserver();
+  const vh = (typeof innerHeight === 'number' && innerHeight) || 800;
   blocks.forEach((el, i) => {
     if (el.classList.contains('reveal')) return;
     el.classList.add('reveal');
     el.style.setProperty('--reveal-delay', Math.min(i, 5) * 45 + 'ms');
-    obs.observe(el);
+    (el.offsetHeight > vh * 0.5 ? getTallObserver() : obs).observe(el);
   });
 }
