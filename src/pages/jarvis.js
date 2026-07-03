@@ -16,6 +16,7 @@ import {
 import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS, preloadWebLLM, getLoadedModel
 } from '../utils/jarvis-webllm.js';
+import { processHermesAgent, HERMES_AGENT_DEFAULT } from '../utils/jarvis-hermes-agent.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { drawChart } from '../utils/chart-engine.js';
 import { memoryContext, captureConversation, captureReply } from '../utils/jarvis-brain.js';
@@ -33,6 +34,7 @@ import { listSkillSummaries } from '../utils/jarvis-skills.js';
 const MODES = [
   { id: 'local',  label: 'Local',  icon: '◆', badge: 'cyan',    desc: 'Assistente de regras. Offline, sem custo. Navega e consulta o Baluarte.' },
   { id: 'webllm', label: 'Navegador', icon: '⬡', badge: 'cyan', desc: 'IA real 100% no navegador via WebLLM (WebGPU). Sem servidor, sem API key. 1º uso baixa o modelo; depois roda offline.' },
+  { id: 'hermes-agente', label: 'Hermes (agente local)', icon: '⬢', badge: 'warning', desc: 'Nous Hermes rodando LOCAL no navegador (WebLLM/WebGPU, sem API, sem chave) como AGENTE de verdade: navega, consulta e executa ações reais no Baluarte com as ferramentas do JARVIS. 1º uso baixa o modelo (~2,5–4,5 GB); depois roda offline. No app usa o motor embutido.' },
   { id: 'claude', label: 'Claude', icon: '◉', badge: 'magenta', desc: 'Conversa livre via Claude API. Requer API key da Anthropic.' },
   { id: 'ollama', label: 'Ollama', icon: '⬢', badge: 'success', desc: 'Modelo local via Ollama (ollama serve). 100% privado.' },
   { id: 'servidor', label: 'Servidor', icon: '⊛', badge: 'success', desc: 'Backend Python + Gemini com busca web real (Google). Habilita a camada 2 do raciocínio. Requer rodar backend/server.py.' },
@@ -507,6 +509,29 @@ async function handleSend() {
       const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
       messages.push(jMsg);
       renderBubble('jarvis', reply);
+    } else if (config.mode === 'hermes-agente') {
+      /* Agente Hermes LOCAL (WebLLM): tool-calls visíveis + progresso do
+       * download do modelo na 1ª carga. Sem API, sem chave. */
+      const reply = await processHermesAgent(convo, callConfig,
+        async (toolName, input, result) => {
+          removeTyping();
+          renderToolCall(toolName, input, result);
+          const summary = `${toolName} → ${result && result.ok ? 'ok' : 'erro'}`;
+          await addMessage(activeSession.id, 'tool', summary);
+          renderTyping();
+          scrollDown();
+        },
+        {
+          onProgress: (text) => {
+            const tx = document.getElementById('jv-typing')?.querySelector('.jarvis-msg__text');
+            if (tx) { tx.classList.remove('jarvis-typing'); tx.textContent = '⬇ Carregando Hermes local… ' + text; }
+            scrollDown();
+          }
+        });
+      removeTyping();
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
+      renderBubble('jarvis', reply);
     }
   } catch (e) {
     removeTyping();
@@ -688,11 +713,17 @@ function renderConfigPanel() {
           '⊛ No site publicado: deixe a URL VAZIA — usa o backend embutido na Vercel (/api). Só defina GEMINI_API_KEY nas Environment Variables do projeto na Vercel e faça redeploy. ' +
           'Local (npm run dev): use http://127.0.0.1:8000 com backend/server.py rodando.')
       );
-    } else if (config.mode === 'webllm') {
+    } else if (config.mode === 'webllm' || config.mode === 'hermes-agente') {
+      /* O agente local guarda o modelo em chave PRÓPRIA (hermesAgentModel) e
+       * defaulta pro Nous Hermes 2 Pro — não herda o modelo do modo Navegador
+       * (evita rodar o agente num modelo fraco em tool-calling como o Llama 1B). */
+      const isAgent = config.mode === 'hermes-agente';
+      const modelKey = isAgent ? 'hermesAgentModel' : 'webllmModel';
+      const defModel = isAgent ? HERMES_AGENT_DEFAULT : WEBLLM_MODELS[0].id;
       const modelSel = h('select', { className: 'input',
-        onchange: (e) => { config.webllmModel = e.target.value; saveConfig(config); } },
+        onchange: (e) => { config[modelKey] = e.target.value; saveConfig(config); } },
         ...WEBLLM_MODELS.map((m) =>
-          h('option', { value: m.id, selected: (config.webllmModel || WEBLLM_MODELS[0].id) === m.id }, m.label))
+          h('option', { value: m.id, selected: (config[modelKey] || defModel) === m.id }, m.label))
       );
       const tCur = typeof config.webllmTemp === 'number' ? config.webllmTemp : 0.7;
       const tOut = h('span', { className: 'u-mono u-text-cyan', style: { minWidth: '30px', textAlign: 'right' } }, tCur.toFixed(1));
@@ -709,7 +740,7 @@ function renderConfigPanel() {
           if (!isWebGPUAvailable()) { toast('Sem WebGPU neste navegador.', { type: 'warning' }); return; }
           dlBtn.disabled = true; dlWrap.style.display = 'block'; dlStatus.textContent = 'baixando/carregando…';
           try {
-            await preloadWebLLM(config.webllmModel || WEBLLM_MODELS[0].id, (txt, frac) => {
+            await preloadWebLLM(config[modelKey] || defModel, (txt, frac) => {
               dlBar.style.width = Math.round((frac || 0) * 100) + '%';
               if (txt) dlStatus.textContent = txt;
             });
