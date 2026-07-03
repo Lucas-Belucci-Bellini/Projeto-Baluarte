@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### 🧠 Hermes AGENTE LOCAL — sem API, sem chave (#310/#231)
+- 🎯 **O operador quer o Hermes como agente de verdade, local, sem depender da API.** As três metades já existiam soltas no site — juntei: (1) o **Nous Hermes rodando local** (WebLLM/WebGPU, sem servidor/sem chave), (2) as **ferramentas do JARVIS** (navigate, arsenal, editor, memória, skills auto-criadas…), (3) o **loop ReAct** que antes só falava com a API do Claude.
+- 🧩 **Núcleo de agente independente de modelo** (`jarvis-agent-core.js`): fala o protocolo de **function-calling nativo do Nous Hermes** (`<tools>` no sistema, `<tool_call>{…}</tool_call>` do modelo, `<tool_response>` de volta). Serve QUALQUER cérebro de chat — WebLLM agora, **motor embutido do app depois** — pela mesma interface `brain({system,messages})`.
+- ⬢ **Novo modo no JARVIS: "Hermes (agente local)"** (`jarvis-hermes-agent.js`): default no **Nous Hermes 2 Pro (Mistral 7B)**, afinado pra tool-use (chave de modelo própria — não herda o Llama fraco do modo Navegador). Tool-calls aparecem no chat; 1º uso baixa o modelo, depois roda offline. Zero API, zero chave.
+- 🖥️ **Site + app**: no app (Chromium do Electron) roda via WebLLM já; a **Fatia 2** troca o cérebro pelo **motor embutido (llama.cpp/GGUF)** sem browser — mesmo núcleo de agente.
+- ✅ Verificado: teste unitário do núcleo (emite `<tool_call>` → executa ferramenta real → recebe `<tool_response>` → resposta final); UI do modo no navegador (modelo default = Hermes 2 Pro, seletor/baixador, tool-call visível); build limpo.
+
 ### 🌠 Entrada "cascata cybertroniana" + herói ASTROLÁBIO 3D + pill de tema (#246)
 - 🚪 **Entrada nova do site e do app** (mockup Fable 5 V2, `Baluarte_Fable.html`): overlay de boot com **chuva de glifos procedurais** (canvas 2D), **sigilo astrolábio girando** (SVG, 3 camadas) e wordmark que **decodifica de glifos pra BALUARTE**. Duração **6,5s** (o operador pediu mais tempo que os 3,6s do mockup) — clique/Esc pula; `prefers-reduced-motion` = saída rápida sem chuva. Cores 100% via tokens (a entrada segue o tema ativo). O app herda (Launcher carrega o site).
 - 🔭 **Herói do home = astrolábio 3D nativo**: variante nova `'astrolabe'` no harness WebGL **sem dependência** (`hero-webgl.js`) — icosaedro duplo (arestas + casca wireframe), **3 anéis inclinados + grande halo**, campo de partículas, **vagalumes dourados** e 14 estilhaços tetraédricos, com giro majestoso e parallax. Nada de Three.js (~600KB poupados — web leve, #238). A cena Spline do home só entra por `?spline=URL`.

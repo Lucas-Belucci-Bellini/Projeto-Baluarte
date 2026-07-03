@@ -126,6 +126,7 @@ function pageTitleForRoute(path) {
   const map = {
     '/home': 'Ponte de Comando',
     '/militar': 'Centro Militar',
+    '/modelos-3d': 'Modelos 3D',
     '/ferramentas': 'Hub de Ferramentas',
     '/editor': 'Editor de Código',
     '/json-studio': 'JSON Studio',

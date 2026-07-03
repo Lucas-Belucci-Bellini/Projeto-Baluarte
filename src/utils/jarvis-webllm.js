@@ -113,3 +113,25 @@ export async function processWebLLM(messages, config, cbs = {}) {
   }
   return full || '(resposta vazia)';
 }
+
+/**
+ * "Cérebro" pro núcleo de AGENTE (jarvis-agent-core): completa um turno a partir
+ * de {system, messages} e devolve o texto puro do modelo — SEM streaming, pra
+ * parsear os <tool_call> com segurança. Baixa temperatura = tool-calls estáveis.
+ * @param {string} modelId  modelo WebLLM (Nous Hermes recomendado p/ tool use)
+ * @param {{onProgress?:Function}} cbs  progresso do download na 1ª carga
+ */
+export function makeWebLLMBrain(modelId, cbs = {}) {
+  if (!isWebGPUAvailable()) {
+    throw new Error('Seu navegador não suporta WebGPU. Use Chrome ou Edge atualizados (ou o app desktop).');
+  }
+  const id = modelId || DEFAULT_WEBLLM_MODEL;
+  return async ({ system, messages }) => {
+    const engine = await getEngine(id, cbs.onProgress);
+    const chat = [{ role: 'system', content: system }, ...messages];
+    const res = await engine.chat.completions.create({
+      messages: chat, stream: false, temperature: 0.2, max_tokens: 1024
+    });
+    return res.choices?.[0]?.message?.content || '';
+  };
+}
