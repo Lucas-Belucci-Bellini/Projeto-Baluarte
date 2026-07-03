@@ -15,8 +15,13 @@
 
 import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
+import { bus } from '../core/events.js';
+import { initNucleoLink, getNucleoUrl, setNucleoUrl, simulateNucleoEvent } from '../utils/nucleo-socket.js';
 
 const LAST_TAB_KEY = 'nexus:lastTab';   // lembra a última aba aberta no Núcleo de IA
+
+/* Duração do "pulso de dados" (glitch) por tipo de evento do backend (Fase D). */
+const PULSE_MS = { command: 420, biometric: 300, telemetry: 200, system: 160 };
 
 /* Abas do cockpit. `load()` faz o import dinâmico → chunk só baixa quando a aba é
  * aberta (mantém o cockpit leve e cada ferramenta sob demanda). */
@@ -54,6 +59,34 @@ export function gitNexusCockpit(args = {}) {
     .then((s) => { nucleo = s; })
     .catch((err) => { console.warn('[nucleo] cena 3D indisponível:', err); backdrop.remove(); });
 
+  /* ===== Fase D (#316): Núcleo AO VIVO — a cena reage a eventos do backend Java.
+   * Cada `nucleo:event` (telemetria/voz/biometria via WebSocket) faz a cena
+   * PULSAR (glitch). Barra com status + último evento + URL do backend + um
+   * botão de teste (demonstra a reação sem o serviço no ar). */
+  const liveDot = h('span', { className: 'gn-live__dot' });
+  const liveLast = h('span', { className: 'gn-live__last u-text-muted' }, '—');
+  const urlInput = h('input', { className: 'input gn-live__url', value: getNucleoUrl(), placeholder: 'ws://localhost:8080', spellcheck: 'false' });
+  const liveBar = h('div', { className: 'gn-live' },
+    liveDot,
+    h('span', { className: 'gn-live__label' }, 'Núcleo ao vivo'),
+    liveLast,
+    h('div', { className: 'gn-live__conn' },
+      urlInput,
+      h('button', { className: 'btn btn--ghost btn--sm', onclick: () => { setNucleoUrl(urlInput.value.trim()); } }, 'conectar'),
+      h('button', { className: 'btn btn--ghost btn--sm', title: 'Simular um evento pra ver a cena reagir',
+        onclick: () => simulateNucleoEvent(['telemetry', 'biometric', 'command'][Math.random() * 3 | 0]) }, '⚡ testar')));
+
+  const offEvent = bus.on('nucleo:event', (ev) => {
+    if (nucleo) { try { nucleo.pulse(PULSE_MS[ev && ev.type] || 220); } catch { /* cena saiu */ } }
+    liveLast.textContent = `⚡ ${ev && ev.type || 'evento'}${ev && ev.source ? ' · ' + ev.source : ''}`;
+    liveBar.classList.add('is-hit'); setTimeout(() => liveBar.classList.remove('is-hit'), 380);
+  });
+  const offStatus = bus.on('nucleo:status', (s) => {
+    liveDot.classList.toggle('is-on', !!(s && s.connected));
+    liveDot.title = s && s.connected ? 'conectado ao backend' : 'sem conexão (opcional)';
+  });
+  initNucleoLink();   // conecta se houver URL salva; senão fica quieto
+
   /* cabeçalho compacto do Núcleo (cada ferramenta traz o próprio header no painel) */
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '10px' } },
@@ -64,6 +97,7 @@ export function gitNexusCockpit(args = {}) {
         'O hub unificado de IA do Baluarte — grafo de código, JARVIS, memória, ',
         'segundo cérebro, ML, APIs e mais, num cockpit só.'))
   );
+  page.appendChild(liveBar);
 
   const tabbar = h('div', { className: 'gn-cock__tabs' });
   const panel = h('div', { className: 'gn-cock__panel' });
@@ -115,5 +149,14 @@ export function gitNexusCockpit(args = {}) {
 
   /* arranca na aba pedida (deep-link/rota legada) ou no Grafo de Código */
   activate(TABS.find((t) => t.id === wantTab) || TABS[0]);
+
+  /* limpeza ao sair do Núcleo: desinscreve os handlers do bus (o socket é
+   * singleton e segue de pé — barato — pra manter a conexão quente). */
+  if (typeof MutationObserver !== 'undefined') {
+    const mo = new MutationObserver(() => {
+      if (!document.contains(page)) { offEvent(); offStatus(); mo.disconnect(); }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
   return page;
 }
