@@ -112,7 +112,7 @@
 }
 .calc-tile__result {
   background: var(--color-bg);
-  border: 1px solid rgba(212, 162, 78, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 10%, transparent);
   border-radius: var(--radius-sm);
   padding: var(--space-sm);
   display: flex;
@@ -196,7 +196,7 @@
 }
 .conv-cat {
   background: var(--color-surface);
-  border: 1px solid rgba(212, 162, 78, 0.15);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 15%, transparent);
   border-radius: var(--radius-pill);
   padding: 6px 14px;
   color: var(--color-text-secondary);
@@ -234,7 +234,7 @@
   align-items: baseline;
   padding: 8px 12px;
   background: var(--color-bg);
-  border: 1px solid rgba(212, 162, 78, 0.08);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 8%, transparent);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 100ms;
@@ -269,7 +269,7 @@
 }
 .stat-cell {
   background: var(--color-bg);
-  border: 1px solid rgba(212, 162, 78, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 10%, transparent);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
   display: flex;
@@ -355,7 +355,7 @@
 }
 .z1 { background: rgba(0, 255, 136, 0.06); border-left-color: var(--color-success); }
 .z2 { background: rgba(102, 221, 255, 0.06); border-left-color: var(--color-info); }
-.z3 { background: rgba(212, 162, 78, 0.06); border-left-color: var(--color-cyan); }
+.z3 { background: color-mix(in srgb, var(--color-cyan) 6%, transparent); border-left-color: var(--color-cyan); }
 .z4 { background: rgba(255, 170, 0, 0.06); border-left-color: var(--color-warning); }
 .z5 { background: rgba(255, 51, 85, 0.06); border-left-color: var(--color-danger); }
 

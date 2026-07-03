@@ -14,7 +14,7 @@
 }
 .academia-lang {
   background: var(--color-bg-elevated);
-  border: 1px solid rgba(212, 162, 78, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 10%, transparent);
   border-left: 3px solid var(--lang-color);
   border-radius: var(--radius-sm);
   padding: 10px 12px;

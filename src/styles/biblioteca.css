@@ -350,11 +350,11 @@
 .biblioteca-resume::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
   background: linear-gradient(180deg, var(--color-cyan), var(--color-magenta));
-  box-shadow: 0 0 10px rgba(212, 162, 78, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-cyan) 50%, transparent);
 }
 /* busca com foco neon */
 .page-biblioteca .input--search:focus, .viewer-chapters__search:focus {
-  border-color: var(--color-cyan); box-shadow: 0 0 0 3px rgba(212, 162, 78, 0.1);
+  border-color: var(--color-cyan); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-cyan) 10%, transparent);
 }
 /* aba de capítulo no hover com borda neon */
 .viewer-chapter-tab:hover { border-color: var(--color-cyan-edge); }

@@ -12,10 +12,10 @@
   margin: var(--space-md) 0; min-height: 540px;
   display: grid; place-items: center; isolation: isolate;
   background:
-    radial-gradient(90% 80% at 70% 0%, rgba(212,162,78,0.12), transparent 55%),
-    radial-gradient(80% 80% at 10% 100%, rgba(232,192,122,0.12), transparent 55%),
+    radial-gradient(90% 80% at 70% 0%, color-mix(in srgb, var(--color-cyan) 12%, transparent), transparent 55%),
+    radial-gradient(80% 80% at 10% 100%, color-mix(in srgb, var(--color-magenta) 12%, transparent), transparent 55%),
     #06080d;
-  border: 1px solid rgba(212,162,78,0.18);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 18%, transparent);
 }
 .hv2-hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
 
@@ -30,9 +30,9 @@
     transparent 0deg 3deg,
     rgba(240,220,174,0.20) 3deg 4.4deg,
     transparent 4.4deg 9deg,
-    rgba(212,162,78,0.13) 9deg 10deg,
+    color-mix(in srgb, var(--color-cyan) 13%, transparent) 9deg 10deg,
     transparent 10deg 15deg,
-    rgba(232,192,122,0.10) 15deg 16deg,
+    color-mix(in srgb, var(--color-magenta) 10%, transparent) 15deg 16deg,
     transparent 16deg 21deg);
   mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.65) 42%, transparent 82%);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.65) 42%, transparent 82%);
@@ -44,8 +44,8 @@
 .hv2-hero__grid {
   position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5;
   background-image:
-    linear-gradient(rgba(212,162,78,0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212,162,78,0.08) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-cyan) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-cyan) 8%, transparent) 1px, transparent 1px);
   background-size: 44px 44px;
   mask-image: radial-gradient(circle at 50% 45%, #000 30%, transparent 78%);
   -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 30%, transparent 78%);
@@ -90,7 +90,7 @@
   background: linear-gradient(100deg, #ffffff 0%, var(--color-cyan) 45%, var(--color-magenta) 70%, #ffffff 100%);
   background-size: 250% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 30px rgba(212,162,78,0.35));
+  filter: drop-shadow(0 0 30px color-mix(in srgb, var(--color-cyan) 35%, transparent));
   animation: hv2-holo 8s ease-in-out infinite;
 }
 @keyframes hv2-holo { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
@@ -106,7 +106,7 @@
   background: rgba(255,255,255,0.04); color: var(--color-text-primary); transition: all var(--transition-base); }
 .hv2-btn:hover { transform: translateY(-2px); border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
 .hv2-btn--primary { background: linear-gradient(135deg, var(--color-cyan), var(--color-magenta)); color: var(--color-text-inverse); border-color: transparent; }
-.hv2-btn--app { background: linear-gradient(135deg, var(--color-magenta), #b8843c); color: var(--color-text-inverse); border-color: transparent; }
+.hv2-btn--app { background: linear-gradient(135deg, var(--color-magenta), color-mix(in srgb, var(--color-magenta) 70%, #14100a)); color: var(--color-text-inverse); border-color: transparent; }
 .hv2-btn__ico { display: inline-flex; }
 .hv2-btn__ico .nav-ico { width: 16px; height: 16px; }
 
@@ -147,17 +147,17 @@
 .hv2-metrics__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px; }
 .hv2-metric { text-align: center; }
 .hv2-metric__v { font-family: var(--font-mono); font-size: clamp(24px, 4vw, 40px); font-weight: 800; color: var(--color-cyan);
-  text-shadow: 0 0 16px rgba(212,162,78,0.45); line-height: 1; cursor: pointer; }
+  text-shadow: 0 0 16px color-mix(in srgb, var(--color-cyan) 45%, transparent); line-height: 1; cursor: pointer; }
 .hv2-metric__l { font-size: 11px; color: var(--color-text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
 
 /* mini-orbe da célula de IA */
 .hv2-orb { position: absolute; right: -30px; bottom: -30px; width: 150px; height: 150px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(212,162,78,0.5), rgba(157,123,255,0.15) 60%, transparent 70%);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--color-cyan) 50%, transparent), rgba(157,123,255,0.15) 60%, transparent 70%);
   filter: blur(2px); animation: hv2-pulse 5s ease-in-out infinite; }
 @keyframes hv2-pulse { 0%,100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.12); opacity: 1; } }
 
 /* badge app */
-.hv2-cell--app { background: linear-gradient(135deg, rgba(232,192,122,0.12), var(--color-surface)); }
+.hv2-cell--app { background: linear-gradient(135deg, color-mix(in srgb, var(--color-magenta) 12%, transparent), var(--color-surface)); }
 .hv2-cell__os { display: inline-flex; gap: 8px; margin-top: 10px; font-size: 18px; }
 
 /* vigilância */

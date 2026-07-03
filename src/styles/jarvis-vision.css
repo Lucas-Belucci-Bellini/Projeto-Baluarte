@@ -32,10 +32,10 @@
 }
 .jv-toggle:hover { color: var(--color-text-primary); border-color: var(--color-cyan); }
 .jv-toggle.is-on {
-  background: rgba(212, 162, 78, 0.12);
+  background: color-mix(in srgb, var(--color-cyan) 12%, transparent);
   border-color: var(--color-cyan);
   color: var(--color-cyan);
-  box-shadow: 0 0 8px rgba(212, 162, 78, 0.25);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-cyan) 25%, transparent);
 }
 
 .jv-label {
@@ -75,12 +75,12 @@
 
 .jv-viewport {
   position: relative;
-  border: 1px solid var(--color-cyan-edge, rgba(212,162,78,0.3));
+  border: 1px solid var(--color-cyan-edge, color-mix(in srgb, var(--color-cyan) 30%, transparent));
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #000;
   margin-top: var(--space-sm);
-  box-shadow: inset 0 0 40px rgba(212, 162, 78, 0.06);
+  box-shadow: inset 0 0 40px color-mix(in srgb, var(--color-cyan) 6%, transparent);
 }
 .jv-canvas {
   display: block;

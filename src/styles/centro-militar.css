@@ -50,7 +50,7 @@
   cursor: pointer;
   transition: background var(--transition-fast), color var(--transition-fast);
 }
-.mil-toc__item:hover { background: rgba(212, 162, 78, 0.08); color: var(--color-text-primary); }
+.mil-toc__item:hover { background: color-mix(in srgb, var(--color-cyan) 8%, transparent); color: var(--color-text-primary); }
 .mil-toc__ico { display: inline-flex; color: var(--color-cyan); flex-shrink: 0; }
 .mil-toc__ico .nav-ico { width: 16px; height: 16px; }
 
@@ -87,14 +87,14 @@
 .mil-section__desc { margin: 10px 0 12px; color: var(--color-text-secondary); line-height: 1.6; font-size: 14px; }
 
 /* ----- curadoria (dado nosso, sobre a Wikipédia) ----- */
-.mil-section.is-featured { border-color: var(--color-cyan-edge); box-shadow: 0 0 18px rgba(212, 162, 78, 0.12); }
+.mil-section.is-featured { border-color: var(--color-cyan-edge); box-shadow: 0 0 18px color-mix(in srgb, var(--color-cyan) 12%, transparent); }
 .mil-section.is-featured::before { opacity: 1; }
 .mil-toc__item.is-featured { color: var(--color-cyan); }
 .mil-toc__item.is-featured::after { content: '★'; margin-left: auto; font-size: 11px; color: var(--color-cyan); }
 .mil-note {
   margin: 0 0 14px; padding: 10px 12px;
   border-left: 2px solid var(--color-cyan);
-  background: rgba(212, 162, 78, 0.06);
+  background: color-mix(in srgb, var(--color-cyan) 6%, transparent);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-size: 13px; line-height: 1.55; color: var(--color-text-secondary);
 }

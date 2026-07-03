@@ -96,7 +96,7 @@
 .dolar-note { padding: var(--space-2xl) var(--space-md); text-align: center; font-size: var(--font-size-sm); }
 
 /* Polish cinematográfico (redesign #195) — Onda Economia. Só visual. */
-.page-dolar .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
+.page-dolar .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px color-mix(in srgb, var(--color-cyan) 22%, transparent)); }
 .dolar-coin { transition: color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
 .dolar-coin:hover { box-shadow: var(--shadow-glow-cyan); }
-.dolar-stat__value { text-shadow: 0 0 12px rgba(212,162,78,.35); }
+.dolar-stat__value { text-shadow: 0 0 12px color-mix(in srgb, var(--color-cyan) 35%, transparent); }

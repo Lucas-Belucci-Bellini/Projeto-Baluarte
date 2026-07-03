@@ -6,7 +6,7 @@
 
 .tia-win {
   background: #06080c;
-  border: 1px solid rgba(212, 162, 78, 0.18);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 18%, transparent);
   border-radius: var(--radius-md);
   padding: var(--space-md);
   font-family: var(--font-mono);
@@ -15,15 +15,15 @@
   height: 560px;
   overflow-y: auto;
   cursor: text;
-  box-shadow: inset 0 0 60px rgba(212, 162, 78, 0.04);
+  box-shadow: inset 0 0 60px color-mix(in srgb, var(--color-cyan) 4%, transparent);
 }
 @media (max-width: 600px) { .tia-win { height: 460px; font-size: 12px; } }
 
 .tia-out { display: flex; flex-direction: column; }
 .tia-row { white-space: pre-wrap; word-break: break-word; color: var(--color-text-secondary); }
 .tia-cmd { color: #cdd8ea; }
-.tia-ok { color: #d4a24e; }
-.tia-ai { color: #e6edf6; border-left: 2px solid rgba(212, 162, 78, 0.4); padding-left: 8px; margin: 2px 0; }
+.tia-ok { color: var(--color-cyan); }
+.tia-ai { color: #e6edf6; border-left: 2px solid color-mix(in srgb, var(--color-cyan) 40%, transparent); padding-left: 8px; margin: 2px 0; }
 .tia-err { color: #ff5b7a; }
 .tia-dim { color: #7d8aa0; }
 
@@ -34,10 +34,10 @@
 }
 
 .tia-line--input { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.tia-prompt { color: #d4a24e; white-space: nowrap; }
+.tia-prompt { color: var(--color-cyan); white-space: nowrap; }
 .tia-input {
   flex: 1; min-width: 0;
   background: transparent; border: none; outline: none;
   color: #e6edf6; font-family: var(--font-mono); font-size: inherit;
-  caret-color: #d4a24e;
+  caret-color: var(--color-cyan);
 }

@@ -12,8 +12,8 @@
   z-index: calc(var(--z-sticky) + 5);
   transform-origin: 0 50%;
   transform: scaleX(var(--sp, 0));
-  background: linear-gradient(90deg, var(--color-cyan, #d4a24e), var(--color-magenta, #e8c07a));
-  box-shadow: 0 0 10px var(--color-cyan-edge, rgba(212, 162, 78, 0.4));
+  background: linear-gradient(90deg, var(--color-cyan, var(--color-cyan)), var(--color-magenta, var(--color-magenta)));
+  box-shadow: 0 0 10px var(--color-cyan-edge, color-mix(in srgb, var(--color-cyan) 40%, transparent));
   opacity: 0;
   transition: opacity var(--transition-base);
   pointer-events: none;

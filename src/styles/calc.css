@@ -33,7 +33,7 @@
   padding: var(--space-md);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-md), inset 0 0 24px rgba(212, 162, 78, 0.04);
+  box-shadow: var(--shadow-md), inset 0 0 24px color-mix(in srgb, var(--color-cyan) 4%, transparent);
 }
 .calc-display::before {
   content: '';
@@ -41,8 +41,8 @@
   inset: 0;
   background: repeating-linear-gradient(
     0deg,
-    rgba(212, 162, 78, 0.025) 0,
-    rgba(212, 162, 78, 0.025) 1px,
+    color-mix(in srgb, var(--color-cyan) 2.5%, transparent) 0,
+    color-mix(in srgb, var(--color-cyan) 2.5%, transparent) 1px,
     transparent 1px,
     transparent 3px
   );
@@ -96,7 +96,7 @@
   margin-top: 4px;
   line-height: 1.2;
   min-height: 40px;
-  text-shadow: 0 0 16px rgba(212, 162, 78, 0.3);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--color-cyan) 30%, transparent);
   position: relative;
   z-index: 2;
   word-break: break-all;
@@ -171,7 +171,7 @@
 .calc-key {
   background: var(--color-surface);
   color: var(--color-text-primary);
-  border: 1px solid rgba(212, 162, 78, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 10%, transparent);
   border-radius: var(--radius-sm);
   padding: 14px 4px;
   font-family: var(--font-mono);
@@ -186,7 +186,7 @@
   background: var(--color-surface-2);
   border-color: var(--color-cyan-edge);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(212, 162, 78, 0.1);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-cyan) 10%, transparent);
 }
 .calc-key:active {
   transform: translateY(0);
@@ -243,12 +243,12 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--color-magenta);
-  background: rgba(232, 192, 122, 0.05);
-  border-color: rgba(232, 192, 122, 0.2);
+  background: color-mix(in srgb, var(--color-magenta) 5%, transparent);
+  border-color: color-mix(in srgb, var(--color-magenta) 20%, transparent);
 }
 .calc-key--func:hover {
   background: var(--color-magenta-soft);
-  box-shadow: 0 2px 12px rgba(232, 192, 122, 0.2);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--color-magenta) 20%, transparent);
 }
 
 .calc-key--mem {
@@ -393,7 +393,7 @@
 }
 .calc-base__input {
   background: var(--color-bg);
-  border: 1px solid rgba(212, 162, 78, 0.15);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 15%, transparent);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   color: var(--color-text-primary);
@@ -438,7 +438,7 @@
 }
 .bit-cell {
   background: var(--color-surface);
-  border: 1px solid rgba(212, 162, 78, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 10%, transparent);
   border-radius: 3px;
   width: 30px;
   height: 38px;
@@ -532,7 +532,7 @@
   color: var(--color-warning);
 }
 .ieee-bit--mant {
-  background: rgba(212, 162, 78, 0.18);
+  background: color-mix(in srgb, var(--color-cyan) 18%, transparent);
   color: var(--color-cyan);
 }
 .ieee-block__legend {

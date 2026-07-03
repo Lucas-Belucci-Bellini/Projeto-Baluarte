@@ -6,6 +6,13 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-03
+
+### 💎 Temas de fábula: Esmeralda & Rubi + tokenização total das folhas (#246)
+- 🎭 **Dois temas novos do mockup Fable 5 V2** (objeto `THEMES` do `Baluarte Fable.dc.html`): **Esmeralda** (`#2fbf8f`, fundo verde-abissal `#0a1210`) e **Rubi** (`#c8556d`, fundo vinho `#140a0f`) — no picker do `/perfil`, ao lado do **Ouro** (padrão). Diferente dos temas de acento, eles carregam um **kit completo** (`vars` em `theme.js`): fundo, painéis, texto pergaminho e bordas — trocam o mundo, não só a cor. O tema salvo sincroniza na nuvem como antes.
+- 🧱 **Tokenização em massa das folhas por página**: as 277 ocorrências de ouro **hardcoded** que a varredura anterior deixou em 64 folhas viraram tokens (`#d4a24e`→`var(--color-cyan)`, `rgba(212,162,78,α)`→`color-mix(… α%)`). Agora **todas** as páginas (arsenal, editor, militar, jogos…) seguem qualquer tema **e qualquer universo** — os raios WebGL dos heróis, chips, abas e até o syntax highlighting do editor mudam junto. Tint do fundo do `body` também tokenizado.
+- ✅ Verificado no navegador (Playwright): ciclo ouro→rubi→esmeralda→ouro limpa e aplica os kits certinho (tokens conferidos no `<html>`); screenshots do `/home`, `/arsenal`, `/editor` e `/militar` em rubi/esmeralda; build limpo. Site + app (herda online). 🛡️ Backup: branch de trabalho.
+
 ## 2026-07-02
 
 ### 👑 Ouro de Fábula em TODAS as páginas — varredura total do neon + vidro de fábula (#246)

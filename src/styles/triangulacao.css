@@ -9,7 +9,7 @@
   padding: 6px 4px; border-radius: 6px; background: rgba(0, 0, 0, 0.25); text-align: center;
 }
 .tri-stat__lbl { font-size: 9px; letter-spacing: 0.12em; color: var(--color-text-muted, #93a4bf); }
-.tri-stat__val { font-size: 13px; font-weight: 700; color: var(--color-cyan, #d4a24e); }
+.tri-stat__val { font-size: 13px; font-weight: 700; color: var(--color-cyan, var(--color-cyan)); }
 
 .tri-controls { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 .tri-ctrl-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -21,19 +21,19 @@
   font-family: 'JetBrains Mono', monospace; font-size: 11px;
 }
 .tri-seg__btn.is-active {
-  background: rgba(212, 162, 78, 0.12); border-color: var(--color-cyan, #d4a24e); color: var(--color-cyan, #d4a24e);
+  background: color-mix(in srgb, var(--color-cyan) 12%, transparent); border-color: var(--color-cyan, var(--color-cyan)); color: var(--color-cyan, var(--color-cyan));
 }
 .tri-slider-wrap { flex: 1; display: flex; align-items: center; gap: 8px; }
-.tri-slider { flex: 1; accent-color: var(--color-cyan, #d4a24e); }
-.tri-slider__val { min-width: 38px; text-align: right; color: var(--color-cyan, #d4a24e); font-size: 12px; }
+.tri-slider { flex: 1; accent-color: var(--color-cyan, var(--color-cyan)); }
+.tri-slider__val { min-width: 38px; text-align: right; color: var(--color-cyan, var(--color-cyan)); font-size: 12px; }
 
 .tri-scope { padding: 0; overflow: hidden; }
 .tri-scope__head {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 12px; border-bottom: 1px solid rgba(212, 162, 78, 0.15);
-  background: linear-gradient(180deg, rgba(212, 162, 78, 0.06), transparent);
+  padding: 8px 12px; border-bottom: 1px solid color-mix(in srgb, var(--color-cyan) 15%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-cyan) 6%, transparent), transparent);
   font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
-  letter-spacing: 0.1em; color: var(--color-cyan, #d4a24e);
+  letter-spacing: 0.1em; color: var(--color-cyan, var(--color-cyan));
 }
 .tri-canvas {
   display: block; width: 100%; height: auto; aspect-ratio: 16 / 10.5;
@@ -53,7 +53,7 @@
 .page-tri .page-header__title {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 58%, var(--color-magenta) 120%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(212, 162, 78, 0.22));
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-cyan) 22%, transparent));
 }
 
 /* stat tiles: barra de acento no topo, valor com brilho e lift no hover */
@@ -68,7 +68,7 @@
   opacity: 0.6;
 }
 .tri-stat:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow-cyan); }
-.tri-stat__val { text-shadow: 0 0 12px rgba(212, 162, 78, 0.45); }
+.tri-stat__val { text-shadow: 0 0 12px color-mix(in srgb, var(--color-cyan) 45%, transparent); }
 
 /* moldura HUD (colchetes nos cantos) sobre o campo de rumos */
 .tri-scope { position: relative; }
@@ -85,10 +85,10 @@
     linear-gradient(var(--color-cyan-edge) 0 0) bottom right / 2px 16px no-repeat;
 }
 .tri-scope:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-md), var(--shadow-glow-cyan); }
-.tri-canvas { box-shadow: inset 0 0 60px rgba(212, 162, 78, 0.06); }
+.tri-canvas { box-shadow: inset 0 0 60px color-mix(in srgb, var(--color-cyan) 6%, transparent); }
 
 /* cabeçalho com brilho + linha de varredura animada */
-.tri-scope__head { position: relative; overflow: hidden; text-shadow: 0 0 10px rgba(212, 162, 78, 0.45); }
+.tri-scope__head { position: relative; overflow: hidden; text-shadow: 0 0 10px color-mix(in srgb, var(--color-cyan) 45%, transparent); }
 .tri-scope__head::after {
   content: ''; position: absolute; left: -40%; bottom: 0; width: 40%; height: 1px;
   background: linear-gradient(90deg, transparent, var(--color-cyan), transparent);
@@ -97,4 +97,4 @@
 @keyframes tri-scan { to { left: 100%; } }
 
 /* botão de estação ativo com glow */
-.tri-seg__btn.is-active { box-shadow: 0 0 14px rgba(212, 162, 78, 0.35); }
+.tri-seg__btn.is-active { box-shadow: 0 0 14px color-mix(in srgb, var(--color-cyan) 35%, transparent); }

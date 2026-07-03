@@ -4,7 +4,7 @@
 .page-sobre .page-header__title {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 16px rgba(212, 162, 78, 0.22));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-cyan) 22%, transparent));
 }
 
 /* ---- intro ---- */
@@ -12,8 +12,8 @@
   position: relative; overflow: hidden;
   border: var(--border-base); border-radius: var(--radius-lg); padding: var(--space-xl);
   background:
-    radial-gradient(70% 130% at 80% 0%, rgba(212, 162, 78, 0.12), transparent 55%),
-    radial-gradient(70% 130% at 20% 100%, rgba(232, 192, 122, 0.10), transparent 55%),
+    radial-gradient(70% 130% at 80% 0%, color-mix(in srgb, var(--color-cyan) 12%, transparent), transparent 55%),
+    radial-gradient(70% 130% at 20% 100%, color-mix(in srgb, var(--color-magenta) 10%, transparent), transparent 55%),
     linear-gradient(180deg, var(--color-surface-2), var(--color-bg-elevated));
   margin-bottom: var(--space-lg);
 }
@@ -49,9 +49,9 @@
 .sobre-tl-item::before {
   content: ''; position: absolute; left: 0; top: 3px; width: 16px; height: 16px; border-radius: 50%;
   background: var(--color-bg-elevated); border: 2px solid var(--color-cyan);
-  box-shadow: 0 0 10px rgba(212, 162, 78, 0.6);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-cyan) 60%, transparent);
 }
-.sobre-tl-item:last-child::before { border-color: var(--color-magenta); box-shadow: 0 0 12px rgba(232, 192, 122, 0.6); }
+.sobre-tl-item:last-child::before { border-color: var(--color-magenta); box-shadow: 0 0 12px color-mix(in srgb, var(--color-magenta) 60%, transparent); }
 .sobre-tl-tag {
   display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
   color: var(--color-cyan); background: var(--color-cyan-soft); border: 1px solid var(--color-cyan-edge);
@@ -75,7 +75,7 @@
 .sobre-map-card:hover { transform: translateY(-2px); border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
 .sobre-map-card__icon {
   font-size: 22px; color: var(--color-cyan); flex: none; line-height: 1.2;
-  filter: drop-shadow(0 0 6px rgba(212, 162, 78, 0.35));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-cyan) 35%, transparent));
 }
 .sobre-map-card__name { font-weight: 700; font-size: 14px; margin-bottom: 3px; color: var(--color-text-primary); }
 .sobre-map-card__desc { font-size: 12.5px; line-height: 1.55; color: var(--color-text-secondary); }

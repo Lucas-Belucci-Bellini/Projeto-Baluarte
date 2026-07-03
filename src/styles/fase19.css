@@ -527,8 +527,8 @@
 }
 
 /* Polish cinematográfico (redesign #195) — Onda Economia. Só visual. */
-.page-economia .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
+.page-economia .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px color-mix(in srgb, var(--color-cyan) 22%, transparent)); }
 .page-economia .section-header__title { background: linear-gradient(135deg,#e6f1ff,var(--color-cyan)); -webkit-background-clip:text; background-clip:text; color:transparent; }
 .eco-card { transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
 .eco-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
-.eco-card__value { text-shadow: 0 0 12px rgba(212,162,78,.35); }
+.eco-card__value { text-shadow: 0 0 12px color-mix(in srgb, var(--color-cyan) 35%, transparent); }
