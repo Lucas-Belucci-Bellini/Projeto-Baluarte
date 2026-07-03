@@ -11,6 +11,7 @@
 // É aqui que o M3 vai plugar os handlers `nexus.*` (motor real do GitNexus).
 const { ipcMain, shell, app } = require('electron');
 const nexus = require('./nexus');
+const hermes = require('./hermes');
 
 /**
  * Monta os handlers permitidos. `ctx` injeta o que vem do main:
@@ -56,7 +57,12 @@ function buildHandlers(ctx) {
 
     // M3b: grafo REAL do motor (1º repo analisado).
     // { repo, nodes: GraphNode[], relationships: GraphRelationship[] }
-    'nexus:graph': async () => nexus.graph()
+    'nexus:graph': async () => nexus.graph(),
+
+    // Fatia 2 (#310/#231): motor Hermes EMBUTIDO (llama.cpp/GGUF), sem API.
+    // status inerte se a dep/modelo não existirem → o agente cai no WebLLM.
+    'hermes:status': async () => hermes.status(),
+    'hermes:generate': async (payload = {}) => hermes.generate(payload)
   };
 }
 
