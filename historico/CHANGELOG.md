@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### 🧠 Núcleo de IA 10x — backend Java (ponte mobile) + roadmap #316
+- 🎯 **Plano do "Núcleo de IA 10x"** (visual do `jarvis-nucleo.html` + cockpit unificado): decidido fazer **no stack atual** (Vanilla + Three.js no app, #238) — **sem** re-plataformar pra Next.js/React (quebraria "JS puro, sem framework"). Roadmap completo na **issue #316** (Milestones/Tech Stack/tarefas por fase).
+- ☕ **Backend Java (Spring Boot 3.3, Java 21)** em `backend-java/` — serviço **aparte** (fora do Vercel, no `.vercelignore`): ponte do futuro **app de celular** com o Núcleo. REST (`/api/nucleo/command|telemetry|biometric|health`) + **WebSocket** (`/ws/nucleo`) que **transmite eventos ao vivo** (`JarvisEvent`) pro front reagir. Controllers/Service/DTOs/CORS prontos; encanamento (agente, auth, deploy) nas tarefas do #316.
+- 📝 Scaffold correto pra `mvn spring-boot:run` (Java 21). Não afeta o build do site.
+
 ### 🖥️ Hermes agente — motor EMBUTIDO no app (Fatia 2, scaffold) + instalador 0.3.0 (#310/#231)
 - 🔌 **Bridge nativo** (`jarvis-hermes-native.js`): no app, o agente Hermes prefere o **motor embutido** (llama.cpp/GGUF, sem navegador/WebGPU) via o funil seguro `window.baluarte.invoke('hermes:generate')`; fora do app (ou sem o motor), cai no WebLLM automaticamente. Mesmo núcleo de agente.
 - 🧱 **Scaffold no Electron** (`desktop/src/hermes.js` + handlers `hermes:status`/`hermes:generate` na allowlist do `ipc.js`): **lazy e guardado** — sem a dep `node-llama-cpp` ou um `.gguf`, devolve `available:false` e **não quebra o build** do instalador atual. Acende quando uma sessão local adicionar dep + modelo.
