@@ -26,6 +26,7 @@ import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
 import { initUniverse } from './utils/universe-theme.js';
+import { playBootIntro } from './utils/boot-intro.js';
 import { countPageView } from './utils/page-views.js';
 import { handleAuthRedirect } from './core/supabase-auth.js';
 import { $ } from './utils/helpers.js';
@@ -228,6 +229,7 @@ function boot() {
   appState.set({ bootedAt: Date.now() });
   initTheme();
   initUniverse();
+  playBootIntro();               // entrada "cascata cybertroniana" (site + app)
 
   mountShell(root);
   initToast();

@@ -101,6 +101,8 @@ export function applyTheme(id) {
   }
   if (t.vars) Object.entries(t.vars).forEach(([k, v]) => root.style.setProperty(k, v));
   root.dataset.theme = t.id;
+  /* avisa a UI (pill flutuante, pickers) sem acoplamento */
+  try { document.dispatchEvent(new CustomEvent('baluarte:theme', { detail: { id: t.id } })); } catch { /* SSR/teste */ }
   return t.id;
 }
 

@@ -69,6 +69,15 @@ Temas de fábula carregam `vars` (fundo/painéis/texto/bordas) além do acento �
 trocam o **mundo**, não só a cor. Os demais (Âmbar/Matrix/Tático/Violeta/Gelo) só
 trocam acento. Universos (`universe-theme.js`) continuam por cima de qualquer tema.
 
+### Entrada + astrolábio (mockup `Baluarte_Fable.html`, #246)
+- **Entrada** (`src/utils/boot-intro.js` + `boot-intro.css`): chuva de glifos +
+  sigilo astrolábio (SVG) + decode BALUARTE. **6,5s**, clique/Esc pula, tokens →
+  segue o tema. Vale pro site e pro app (o Launcher carrega o site).
+- **Herói astrolábio**: variante `'astrolabe'` do `hero-webgl.js` (sem dep) —
+  icosaedro duplo + anéis/halo + vagalumes + estilhaços. Home usa por padrão.
+- **Pill de tema** (`shell.js` → `.theme-pill`): Ouro/Rubi/Esmeralda flutuante,
+  sincronizada com o `/perfil` via evento `baluarte:theme`.
+
 ### Tipografia
 - **Corpo:** Spectral (`--font-sans`). **Títulos:** Cormorant Garamond (`--font-display`). **Mono:** IBM Plex Mono (`--font-mono`) — dados, código, HUD, métricas.
 - Escala: `--font-size-xs…display` (11→48px). Pesos: 300–700. Tracking: `--tracking-*`.
