@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### ⚡ v0.4.0 (mobile + perf) — Fatia 1: entrada 1x/sessão, SW cache-first, theme mobile (#323)
+- 🚪 **Entrada só na 1ª carga da sessão** (`main.js`): recarregar/voltar **não repete** mais a cascata (perf + não irrita) — marca em `sessionStorage`. No **celular** ela é mais curta (3,8s vs 6,5s no desktop; detecta `pointer:coarse`/tela pequena).
+- 🗄️ **Service Worker mais rápido** (`public/sw.js`): assets com hash do Vite (`/assets/*`) agora são **cache-first puro** (imutáveis → 2ª carga nem toca a rede); o resto segue stale-while-revalidate. Versão do cache → `v0.4.0` (limpa os antigos).
+- 📱 `theme-color` atualizado pro fundo atual (`#0e0c16`) — barra do navegador no mobile combina com a estética.
+- ✅ Verificado (Playwright): entrada aparece na 1ª carga, **some no reload** da mesma sessão, e aparece no mobile; build limpo. Baseline medido: boot ~99 KB gz (JS 68,7 + CSS 30,7) — alvos das próximas fatias (M2: imagens/fontes/CSS crítico, low-end). Instalador **0.3.0 publicado** (release v0.3.0). Roadmap: #323.
+
+
 ### 📦 Instalador 0.3.0 — motor embutido pronto pra cortar (auto-download + dep opcional)
 - ⬇️ **Modelo auto-baixa no 1º uso** (`desktop/src/hermes.js`): o `.gguf` NÃO vai embutido (instalador pequeno) — baixa pra `userData/models` na 1ª vez (env `BALUARTE_HERMES_MODEL_URL`, default Nous Hermes 2 Pro Q4_K_M), com progresso em `status()`. Um `.gguf` colocado à mão tem prioridade.
 - 🧱 **`node-llama-cpp` como `optionalDependency`** (no `desktop/package-lock.json`) + `asarUnpack` do módulo nativo: o **build do instalador nunca quebra** (se um SO não compilar/carregar o nativo, o app cai no WebLLM, que funciona). `npm ci` do release fica em sync.

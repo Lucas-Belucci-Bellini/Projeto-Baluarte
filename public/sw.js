@@ -7,7 +7,7 @@
  * Isso evita servir assets velhos após um deploy (ex.: no Vercel).
  */
 
-const VERSION = 'baluarte-v2.0.1';
+const VERSION = 'baluarte-v0.4.0';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -54,7 +54,25 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  /* Stale-while-revalidate para assets */
+  /* Assets com HASH no nome (/assets/*.js|css do Vite) são IMUTÁVEIS: cache-first
+     puro — 2ª carga nem toca a rede (perf v0.4.0). Deploy novo = hash novo =
+     baixa 1x. */
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      caches.open(RUNTIME_CACHE).then(async (cache) => {
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        const response = await fetch(request);
+        if (response && response.status === 200 && response.type === 'basic') {
+          cache.put(request, response.clone());
+        }
+        return response;
+      })
+    );
+    return;
+  }
+
+  /* Stale-while-revalidate pro resto (fontes, imagens, dados) */
   event.respondWith(
     caches.open(RUNTIME_CACHE).then(async (cache) => {
       const cached = await cache.match(request);
