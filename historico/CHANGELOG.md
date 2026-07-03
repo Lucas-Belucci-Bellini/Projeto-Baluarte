@@ -8,6 +8,10 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### 🗿 Núcleo de IA 10x — Fase B: cena pronta pra moldura assada no Blender (GLB)
+- 🧊 **Cena "GLTF-ready"** (`nucleo-scene.js`): carrega uma moldura `.glb` **opt-in** (`GLTFLoader` lazy, no chunk `three`) e esconde os anéis procedurais quando o asset existe; **sem asset → procedural** (comportamento atual, zero 404/regressão). A metade de código da Fase B — a **assadura no Blender** é tarefa **local** (não roda no remoto): passos em `docs/HANDOFF-LOCAL.md` (**M6**) — bake normais/AO → `public/models/nucleo/frame.glb` → `nucleo:glbUrl`.
+- ✅ Build limpo; `GLTFLoader` confirmado fora do bundle de boot.
+
 ### 📡 Núcleo de IA 10x — Fase D: a cena REAGE a eventos ao vivo (#316)
 - 🔌 **Ponte ao vivo** (`src/utils/nucleo-socket.js`): cliente WebSocket pro backend Java (`/ws/nucleo`) — cada `JarvisEvent` (telemetria/voz/biometria do app) chega e é publicado no event bus como `nucleo:event`. **Opt-in** (só conecta se houver URL salva em `nucleo:wsUrl`), com **reconexão por backoff** — sem URL, fica quieto (não fica batendo em servidor que não existe).
 - ✨ **A cena reage de verdade**: o cockpit assina `nucleo:event` e faz o **`pulse()`** da cena do jarvis-nucleo disparar (glitch), com duração por tipo (comando > biometria > telemetria). Barra **"Núcleo ao vivo"** no topo: status da conexão (bolinha), **último evento**, campo da URL do backend + **conectar** + **⚡ testar** (simula um evento pra ver a cena reagir sem o serviço no ar).
