@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### ☕ Núcleo de IA 10x — Fase C: agente Hermes no backend + auth por token
+- 🤝 **Agente Hermes no serviço** (`HermesClient` + `JarvisService`): um `POST /api/nucleo/command` agora dispara o Hermes (assíncrono, sem travar o request/WS) e o Núcleo **transmite a resposta** como `JarvisEvent` `type=response` — o front/app recebem a fala do Núcleo. Endpoint **configurável** (`NUCLEO_HERMES_URL`, ex.: o proxy `/api/hermes` do site ou um Ollama); vazio = só ecoa o comando.
+- 🔐 **Auth por token** (opt-in): se `NUCLEO_TOKEN` estiver definido, REST exige `X-Nucleo-Token` (`TokenAuthFilter`, `/health` livre) e o WebSocket exige `?token=` no handshake; vazio = aberto (dev).
+- 🧪 Teste do controller (`JarvisControllerTest`: health + comando → evento + validação). `application.yml`/README com as envs e passos de **deploy** (Railway/Render/Fly/VPS → `wss://…`).
+- ⚠️ Buildável/rodável com `mvn` local/CI (sem Maven no remoto). Encanamento restante no #316: persistência (banco) e o deploy em si. Não toca no build do site.
+
 ### 🗿 Núcleo de IA 10x — Fase B: cena pronta pra moldura assada no Blender (GLB)
 - 🧊 **Cena "GLTF-ready"** (`nucleo-scene.js`): carrega uma moldura `.glb` **opt-in** (`GLTFLoader` lazy, no chunk `three`) e esconde os anéis procedurais quando o asset existe; **sem asset → procedural** (comportamento atual, zero 404/regressão). A metade de código da Fase B — a **assadura no Blender** é tarefa **local** (não roda no remoto): passos em `docs/HANDOFF-LOCAL.md` (**M6**) — bake normais/AO → `public/models/nucleo/frame.glb` → `nucleo:glbUrl`.
 - ✅ Build limpo; `GLTFLoader` confirmado fora do bundle de boot.
