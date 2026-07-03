@@ -16,9 +16,9 @@
    reproduzem o visual padrão (Baluarte) onde a var não existir. */
 .bx-atmosphere__aurora {
   background:
-    radial-gradient(38% 44% at 78% 10%, color-mix(in srgb, var(--color-cyan, #d4a24e) 16%, transparent), transparent 60%),
-    radial-gradient(42% 48% at 12% 90%, color-mix(in srgb, var(--color-magenta, #e8c07a) 14%, transparent), transparent 62%),
-    radial-gradient(34% 40% at 50% 52%, color-mix(in srgb, color-mix(in srgb, var(--color-cyan, #d4a24e), var(--color-magenta, #e8c07a)) 10%, transparent), transparent 64%);
+    radial-gradient(38% 44% at 78% 10%, color-mix(in srgb, var(--color-cyan, var(--color-cyan)) 16%, transparent), transparent 60%),
+    radial-gradient(42% 48% at 12% 90%, color-mix(in srgb, var(--color-magenta, var(--color-magenta)) 14%, transparent), transparent 62%),
+    radial-gradient(34% 40% at 50% 52%, color-mix(in srgb, color-mix(in srgb, var(--color-cyan, var(--color-cyan)), var(--color-magenta, var(--color-magenta))) 10%, transparent), transparent 64%);
   filter: blur(10px);
   animation: bx-aurora 34s ease-in-out infinite alternate;
 }
@@ -34,9 +34,9 @@
   opacity: 0.18; mix-blend-mode: screen;
   background: repeating-conic-gradient(from var(--bx-ray) at 50% -6%,
     transparent 0deg 5deg,
-    color-mix(in srgb, var(--color-cyan, #d4a24e) 18%, transparent) 5deg 6deg,
+    color-mix(in srgb, var(--color-cyan, var(--color-cyan)) 18%, transparent) 5deg 6deg,
     transparent 6deg 12deg,
-    color-mix(in srgb, color-mix(in srgb, var(--color-cyan, #d4a24e), var(--color-magenta, #e8c07a)) 14%, transparent) 12deg 13deg,
+    color-mix(in srgb, color-mix(in srgb, var(--color-cyan, var(--color-cyan)), var(--color-magenta, var(--color-magenta))) 14%, transparent) 12deg 13deg,
     transparent 13deg 19deg);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
   mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
@@ -47,8 +47,8 @@
 /* ---- grid HUD fino à deriva ---- */
 .bx-atmosphere__grid {
   background-image:
-    linear-gradient(color-mix(in srgb, var(--color-cyan, #d4a24e) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-cyan, #d4a24e) 5%, transparent) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-cyan, var(--color-cyan)) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-cyan, var(--color-cyan)) 5%, transparent) 1px, transparent 1px);
   background-size: 54px 54px;
   -webkit-mask-image: radial-gradient(125% 95% at 50% 0%, #000 8%, transparent 76%);
   mask-image: radial-gradient(125% 95% at 50% 0%, #000 8%, transparent 76%);

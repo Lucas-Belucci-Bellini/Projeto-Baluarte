@@ -65,7 +65,7 @@
   overflow: hidden;
   position: relative;
   height: 360px;
-  box-shadow: inset 0 0 24px rgba(212, 162, 78, 0.05);
+  box-shadow: inset 0 0 24px color-mix(in srgb, var(--color-cyan) 5%, transparent);
 }
 .fft-canvas {
   display: block;
@@ -103,8 +103,8 @@
 .fft-source-hint {
   font-size: 11px;
   color: var(--color-text-muted);
-  background: rgba(212, 162, 78, 0.04);
-  border: 1px solid rgba(212, 162, 78, 0.12);
+  background: color-mix(in srgb, var(--color-cyan) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 12%, transparent);
   border-radius: var(--radius-sm, 6px);
   padding: 6px 10px;
   margin: 0;
@@ -113,8 +113,8 @@
 .fft-source-hint b { color: var(--color-cyan); }
 
 /* Polish cinematográfico (redesign #195) — Onda Mídia. Só visual. */
-.page-fft .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
-.fft-canvas-wrap { position: relative; box-shadow: inset 0 0 40px rgba(212,162,78,.06); }
+.page-fft .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px color-mix(in srgb, var(--color-cyan) 22%, transparent)); }
+.fft-canvas-wrap { position: relative; box-shadow: inset 0 0 40px color-mix(in srgb, var(--color-cyan) 6%, transparent); }
 .fft-canvas-wrap::before, .fft-canvas-wrap::after { content:''; position:absolute; width:18px; height:18px; border:2px solid var(--color-cyan); opacity:.5; pointer-events:none; z-index:3; }
 .fft-canvas-wrap::before { left:8px; top:8px; border-right:0; border-bottom:0; }
 .fft-canvas-wrap::after { right:8px; bottom:8px; border-left:0; border-top:0; }

@@ -202,7 +202,7 @@
   outline: none;
 }
 .editor-textarea::selection {
-  background: rgba(212, 162, 78, 0.25);
+  background: color-mix(in srgb, var(--color-cyan) 25%, transparent);
   color: transparent;
 }
 
@@ -244,7 +244,7 @@
   white-space: nowrap;
 }
 .editor-autocomplete__item.is-active {
-  background: rgba(212, 162, 78, 0.12);
+  background: color-mix(in srgb, var(--color-cyan) 12%, transparent);
 }
 
 .editor-autocomplete__kind {

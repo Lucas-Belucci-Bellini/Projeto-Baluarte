@@ -266,7 +266,7 @@
 .page-elites .page-header__title {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 16px rgba(212, 162, 78, 0.25));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-cyan) 25%, transparent));
 }
 
 /* cards com profundidade + glow/lift no hover */
@@ -284,7 +284,7 @@
 /* painel de detalhe: brilho radial + nome em degradê neon */
 .elite-detail {
   background:
-    radial-gradient(80% 60% at 80% 0%, rgba(212, 162, 78, 0.07), transparent 60%),
+    radial-gradient(80% 60% at 80% 0%, color-mix(in srgb, var(--color-cyan) 7%, transparent), transparent 60%),
     var(--color-surface);
   border-color: var(--color-cyan-edge);
 }
@@ -292,4 +292,4 @@
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 90%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.elite-stat__value { text-shadow: 0 0 10px rgba(212, 162, 78, 0.4); }
+.elite-stat__value { text-shadow: 0 0 10px color-mix(in srgb, var(--color-cyan) 40%, transparent); }

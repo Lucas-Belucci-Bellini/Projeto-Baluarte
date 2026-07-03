@@ -46,7 +46,7 @@
 .page-mural .page-header__title {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 16px rgba(212, 162, 78, 0.25));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-cyan) 25%, transparent));
 }
 
 /* posts com profundidade + acento luminoso e lift no hover */
@@ -59,7 +59,7 @@
   border-left-color: var(--color-cyan);
   box-shadow: -3px 0 0 0 var(--color-cyan), 0 10px 26px rgba(0, 0, 0, 0.4);
 }
-.mural-post__author { text-shadow: 0 0 10px rgba(212, 162, 78, 0.35); }
+.mural-post__author { text-shadow: 0 0 10px color-mix(in srgb, var(--color-cyan) 35%, transparent); }
 
 /* caixa de composição com foco neon */
-.mural-name:focus, .mural-text:focus { box-shadow: 0 0 0 3px rgba(212, 162, 78, 0.1); }
+.mural-name:focus, .mural-text:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-cyan) 10%, transparent); }

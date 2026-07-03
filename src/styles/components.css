@@ -95,7 +95,7 @@
 }
 
 .btn--magenta {
-  background: linear-gradient(135deg, var(--color-magenta), #b8843c);
+  background: linear-gradient(135deg, var(--color-magenta), color-mix(in srgb, var(--color-magenta) 70%, #14100a));
   border-color: var(--color-magenta);
   color: var(--color-text-inverse);
   font-weight: var(--font-weight-semibold);
@@ -162,13 +162,13 @@
   opacity: 0;
   transition: opacity var(--transition-base);
   background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--color-cyan, #d4a24e) 16%, transparent), transparent 60%);
+    color-mix(in srgb, var(--color-cyan, var(--color-cyan)) 16%, transparent), transparent 60%);
   mix-blend-mode: screen;
 }
 .card:hover::after { opacity: 1; }
 .card--magenta::after {
   background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%),
-    color-mix(in srgb, var(--color-magenta, #e8c07a) 16%, transparent), transparent 60%);
+    color-mix(in srgb, var(--color-magenta, var(--color-magenta)) 16%, transparent), transparent 60%);
 }
 @media (prefers-reduced-motion: reduce) { .card::after { display: none; } }
 
@@ -447,7 +447,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 14px rgba(212, 162, 78, 0.22));
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-cyan) 22%, transparent));
   animation: holo-title 9s ease-in-out infinite;
   margin: 0;
 }
@@ -527,6 +527,6 @@
 }
 .calc-tile:hover, .symbol-tile:hover, .cs-card:hover, .cripto-tile:hover, .porta-card:hover { transform: translateY(-2px); }
 .cs-swatch { transition: transform var(--transition-base), box-shadow var(--transition-base); }
-.cs-swatch:hover { transform: scale(1.06); box-shadow: 0 0 12px rgba(212, 162, 78, 0.35); }
+.cs-swatch:hover { transform: scale(1.06); box-shadow: 0 0 12px color-mix(in srgb, var(--color-cyan) 35%, transparent); }
 .page-regex .sec-title { background: linear-gradient(135deg, var(--color-text-primary), var(--color-cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .kmap__cell:hover, .morse-ref__cell:hover { box-shadow: inset 0 0 0 1px var(--color-cyan-edge); }

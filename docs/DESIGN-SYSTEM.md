@@ -44,22 +44,33 @@ de muito conteúdo), Claude Code (consistência/limpeza), Figma do #246 (charts,
 
 ## 2. Tokens (fonte: `src/styles/variables.css`)
 
-### Cores
+### Cores (Ouro de Fábula — tema padrão)
 | Papel | Token | Valor |
 |---|---|---|
-| Fundo | `--color-bg` / `--color-bg-elevated` | `#0a0a0a` / `#0f1419` |
-| Superfícies | `--color-surface` `…-2` `…-3` | `#112233` → `#1c2e47` |
-| **Marca ciano** | `--color-cyan` (+`-soft`/`-edge`) | `#00f0ff` |
-| **Marca magenta** | `--color-magenta` (+`-soft`/`-edge`) | `#ff00aa` |
-| Texto | `--color-text-primary/secondary/muted` | `#e6f1ff` `#93a4bf` `#5a6b85` |
-| Estados | `--color-success/warning/danger/info` | `#00ff88` `#ffaa00` `#ff3355` `#66ddff` |
+| Fundo | `--color-bg` / `--color-bg-elevated` | `#0e0c16` / `#141020` |
+| Superfícies | `--color-surface` `…-2` `…-3` | `#1d1729` → `#2c2340` |
+| **Acento (ouro)** | `--color-cyan` (+`-soft`/`-edge`) | `#d4a24e` |
+| **Acento 2 (ouro-claro)** | `--color-magenta` (+`-soft`/`-edge`) | `#e8c07a` |
+| Texto (pergaminho) | `--color-text-primary/secondary/muted` | `#f4ecdd` `#a89a80` `#77694f` |
+| Estados | `--color-success/warning/danger/info` | `#3ddc84` `#ffaa00` `#ff3355` `#e8c07a` |
 
-**Regra de uso:** ciano = ação/destaque primário; magenta = acento/segundo plano
-(impacto, "contínuo", risco alto); estados só pra status real. Gradiente de marca:
-`linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%)`.
+**Regra de uso:** acento = ação/destaque primário; acento 2 = segundo plano
+(impacto, "contínuo"); estados só pra status real. **NUNCA** hardcode a cor numa
+folha de página: use o token ou, pra alfa, `color-mix(in srgb, var(--color-cyan) N%, transparent)`
+— é isso que deixa **todas** as páginas seguirem os temas e os universos.
+
+### Temas de fábula (`src/utils/theme.js`, picker em `/perfil`)
+Do mockup Fable 5 V2 (objeto `THEMES` do `Baluarte Fable.dc.html`):
+- **Ouro** (padrão, id `neon` por compat de storage) — os valores do CSS base acima.
+- **Esmeralda** — `#2fbf8f`/`#8fd4b4`, fundo `#0a1210`, kit completo em `vars`.
+- **Rubi** — `#c8556d`/`#e0a06d`, fundo `#140a0f`, kit completo em `vars`.
+
+Temas de fábula carregam `vars` (fundo/painéis/texto/bordas) além do acento —
+trocam o **mundo**, não só a cor. Os demais (Âmbar/Matrix/Tático/Violeta/Gelo) só
+trocam acento. Universos (`universe-theme.js`) continuam por cima de qualquer tema.
 
 ### Tipografia
-- **Sans:** Inter (`--font-sans`/`--font-display`). **Mono:** JetBrains Mono (`--font-mono`) — dados, código, HUD, métricas.
+- **Corpo:** Spectral (`--font-sans`). **Títulos:** Cormorant Garamond (`--font-display`). **Mono:** IBM Plex Mono (`--font-mono`) — dados, código, HUD, métricas.
 - Escala: `--font-size-xs…display` (11→48px). Pesos: 300–700. Tracking: `--tracking-*`.
 
 ### Espaço / Raio / Sombra / Movimento

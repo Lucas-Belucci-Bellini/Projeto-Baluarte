@@ -5,7 +5,7 @@
 .page-banco .page-header__title {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 118%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(212, 162, 78, .22));
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-cyan) 22%, transparent));
 }
 
 .banco-grid {
@@ -39,10 +39,10 @@
   font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--color-text-primary);
-  text-shadow: 0 0 12px rgba(212, 162, 78, .25);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--color-cyan) 25%, transparent);
   margin: 6px 0 2px;
 }
-.banco-tile--mag .banco-tile__value { text-shadow: 0 0 12px rgba(232, 192, 122, .25); }
+.banco-tile--mag .banco-tile__value { text-shadow: 0 0 12px color-mix(in srgb, var(--color-magenta) 25%, transparent); }
 .banco-tile__label { color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: var(--tracking-wide, .04em); }
 
 .banco-top { display: flex; flex-direction: column; gap: 8px; }

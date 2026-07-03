@@ -14,7 +14,7 @@
 }
 .symbols-cat {
   background: var(--color-surface);
-  border: 1px solid rgba(212, 162, 78, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 10%, transparent);
   border-radius: var(--radius-pill);
   padding: 6px 14px;
   color: var(--color-text-secondary);
@@ -39,7 +39,7 @@
   font-size: 14px;
 }
 .symbols-cat__count {
-  background: rgba(232, 192, 122, 0.15);
+  background: color-mix(in srgb, var(--color-magenta) 15%, transparent);
   color: var(--color-magenta);
   padding: 1px 6px;
   border-radius: var(--radius-pill);
@@ -58,7 +58,7 @@
 }
 .symbol-tile {
   background: var(--color-bg);
-  border: 1px solid rgba(212, 162, 78, 0.06);
+  border: 1px solid color-mix(in srgb, var(--color-cyan) 6%, transparent);
   border-radius: var(--radius-sm);
   padding: 8px 4px;
   display: flex;

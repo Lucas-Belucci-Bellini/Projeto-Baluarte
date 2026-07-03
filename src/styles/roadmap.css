@@ -22,7 +22,7 @@
   color: transparent;
   display: block;
   margin-bottom: var(--space-md);
-  filter: drop-shadow(0 0 16px rgba(212,162,78,.4));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-cyan) 40%, transparent));
 }
 .roadmap-hero h1 {
   font-size: var(--font-size-2xl);
@@ -102,7 +102,7 @@
   transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 .jarvis-level:hover {
-  border-color: rgba(212,162,78,.3);
+  border-color: color-mix(in srgb, var(--color-cyan) 30%, transparent);
   box-shadow: var(--shadow-md);
 }
 .jarvis-level--done {
@@ -199,7 +199,7 @@
   transition: border-color var(--transition-base), transform var(--transition-base);
 }
 .site-card:hover {
-  border-color: rgba(212,162,78,.25);
+  border-color: color-mix(in srgb, var(--color-cyan) 25%, transparent);
   transform: translateY(-2px);
 }
 .site-card--new {
@@ -293,7 +293,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(212,162,78,.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--color-cyan) 6%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 .roadmap-vision__step {
@@ -344,7 +344,7 @@
 .roadmap-hero h1 {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 16px rgba(212, 162, 78, 0.25));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-cyan) 25%, transparent));
 }
 .roadmap-section__title {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 90%);

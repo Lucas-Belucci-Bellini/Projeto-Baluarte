@@ -15,7 +15,7 @@
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   text-align: center;
-  box-shadow: var(--shadow-lg), 0 0 32px rgba(212, 162, 78, 0.06);
+  box-shadow: var(--shadow-lg), 0 0 32px color-mix(in srgb, var(--color-cyan) 6%, transparent);
 }
 .shadow-card__icon {
   font-size: 64px;

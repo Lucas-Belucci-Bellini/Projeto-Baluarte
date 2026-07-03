@@ -131,13 +131,13 @@
   height: 120px;
   border-radius: 50%;
   background: radial-gradient(circle at 38% 32%, #1c2e47, #0a0a0a);
-  border: 2px solid rgba(212, 162, 78, 0.25);
+  border: 2px solid color-mix(in srgb, var(--color-cyan) 25%, transparent);
   transition: background 40ms linear, box-shadow 40ms linear;
 }
 
 .morse-lamp.is-on {
   background: radial-gradient(circle at 38% 32%, #ffffff, var(--color-cyan) 60%, #0093a8);
-  box-shadow: var(--shadow-glow-cyan-strong), 0 0 60px rgba(212, 162, 78, 0.6);
+  box-shadow: var(--shadow-glow-cyan-strong), 0 0 60px color-mix(in srgb, var(--color-cyan) 60%, transparent);
   border-color: var(--color-cyan);
 }
 

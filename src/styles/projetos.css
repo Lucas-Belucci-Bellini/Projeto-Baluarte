@@ -35,7 +35,7 @@
 .page-projetos .page-header__title {
   background: linear-gradient(92deg, #e6f1ff, var(--color-cyan) 60%, var(--color-magenta) 115%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 16px rgba(212, 162, 78, 0.25));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-cyan) 25%, transparent));
 }
 
 /* cards com profundidade + glow no hover */

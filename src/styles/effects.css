@@ -39,7 +39,7 @@
   border-radius: inherit;
   pointer-events: none;
   background: radial-gradient(circle at var(--fx-x, 50%) var(--fx-y, 50%),
-    var(--fx-spot, rgba(212, 162, 78, 0.16)), transparent 60%);
+    var(--fx-spot, color-mix(in srgb, var(--color-cyan) 16%, transparent)), transparent 60%);
   opacity: 0;
   transition: opacity 0.35s ease;
 }

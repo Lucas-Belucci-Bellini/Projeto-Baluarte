@@ -67,6 +67,6 @@ table {
 }
 
 ::selection {
-  background: rgba(212, 162, 78, 0.3);
+  background: color-mix(in srgb, var(--color-cyan) 30%, transparent);
   color: #ffffff;
 }
