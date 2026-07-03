@@ -230,7 +230,15 @@ function boot() {
   appState.set({ bootedAt: Date.now() });
   initTheme();
   initUniverse();
-  playBootIntro();               // entrada "cascata cybertroniana" (site + app)
+  /* Entrada "cascata cybertroniana" — perf (v0.4.0): SÓ na 1ª carga da sessão
+   * (recarregar/voltar não repete) e mais curta no celular. */
+  try {
+    if (!sessionStorage.getItem('baluarte:booted')) {
+      sessionStorage.setItem('baluarte:booted', '1');
+      const mobile = typeof matchMedia !== 'undefined' && matchMedia('(max-width: 640px), (pointer: coarse)').matches;
+      playBootIntro({ duration: mobile ? 3800 : 6500 });
+    }
+  } catch { playBootIntro(); }
 
   mountShell(root);
   initToast();
