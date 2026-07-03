@@ -13,7 +13,7 @@ import { codeMemoryCounts } from '../utils/jarvis-brain.js';
 /* cor por pasta de topo */
 const GROUP = (dir) => (dir || '').split('/')[0] || '(raiz)';
 const COLORS = {
-  pages: '#ff3b8d', utils: '#ffaa00', data: '#00ff88', core: '#00f0ff',
+  pages: '#ff3b8d', utils: '#ffaa00', data: '#00ff88', core: '#d4a24e',
   layout: '#b15dff', '(raiz)': '#8aa0bd'
 };
 const colorOf = (dir) => COLORS[GROUP(dir)] || '#66ddff';
@@ -163,7 +163,7 @@ export function codigoPage() {
       const on = hover === l.s || hover === l.t;
       const front = Math.max(0, Math.min(1, ((a.sc + b.sc) / 2 - 0.6) / 0.7));
       ctx.lineWidth = on ? 1.3 : 0.5;
-      ctx.strokeStyle = on ? 'rgba(0,240,255,0.6)' : `rgba(150,170,200,${0.04 + front * 0.10})`;
+      ctx.strokeStyle = on ? 'rgba(212,162,78,0.6)' : `rgba(150,170,200,${0.04 + front * 0.10})`;
       ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke();
     }
     /* nós (já ordenados longe→perto) */

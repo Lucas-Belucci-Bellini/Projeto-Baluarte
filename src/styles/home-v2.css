@@ -100,8 +100,9 @@
 .hv2-tagline { margin: 18px auto 26px; max-width: 560px; color: var(--color-text-secondary);
   font-size: 15px; line-height: 1.7; }
 .hv2-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.hv2-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: var(--radius-pill);
-  font-weight: 600; font-size: 14px; cursor: pointer; border: 1px solid rgba(255,255,255,0.14);
+.hv2-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-pill);
+  font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 0.02em;
+  cursor: pointer; border: 1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.04); color: var(--color-text-primary); transition: all var(--transition-base); }
 .hv2-btn:hover { transform: translateY(-2px); border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
 .hv2-btn--primary { background: linear-gradient(135deg, var(--color-cyan), var(--color-magenta)); color: var(--color-text-inverse); border-color: transparent; }

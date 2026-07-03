@@ -12,7 +12,7 @@ import { storage } from '../core/storage.js';
 const KEY = 'ui:theme';
 
 export const THEMES = [
-  { id: 'neon',    label: 'Neon',    primary: '#00f0ff', secondary: '#ff00aa' },
+  { id: 'neon',    label: 'Neon',    primary: '#d4a24e', secondary: '#e8c07a' },
   { id: 'ambar',   label: 'Âmbar',   primary: '#ffb000', secondary: '#ff5e00' },
   { id: 'matrix',  label: 'Matrix',  primary: '#00ff66', secondary: '#00b34a' },
   { id: 'tatico',  label: 'Tático',  primary: '#ff3b3b', secondary: '#ff8c00' },
@@ -22,7 +22,7 @@ export const THEMES = [
 
 function hexToRgb(hex) {
   const m = /^#?([0-9a-f]{6})$/i.exec(String(hex).trim());
-  const n = m ? parseInt(m[1], 16) : 0x00f0ff;
+  const n = m ? parseInt(m[1], 16) : 0xd4a24e;
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 const rgba = (c, a) => `rgba(${c.r}, ${c.g}, ${c.b}, ${a})`;

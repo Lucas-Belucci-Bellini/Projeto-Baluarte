@@ -389,8 +389,8 @@
 }
 
 /* Polish cinematográfico (redesign #195) — Onda Mídia. Só visual. */
-.page-radio .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
-.radio-display { box-shadow: 0 0 24px rgba(0,240,255,.12), inset 0 0 30px rgba(0,240,255,.05); }
-.radio-display__freq { text-shadow: 0 0 16px rgba(0,240,255,.5); }
+.page-radio .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
+.radio-display { box-shadow: 0 0 24px rgba(212,162,78,.12), inset 0 0 30px rgba(212,162,78,.05); }
+.radio-display__freq { text-shadow: 0 0 16px rgba(212,162,78,.5); }
 .radio-mode__btn.is-active { box-shadow: var(--shadow-glow-cyan); }
 .radio-station:hover, .radio-result:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }

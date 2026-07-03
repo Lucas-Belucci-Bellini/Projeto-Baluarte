@@ -13,7 +13,7 @@
  * a aba oculta.
  *
  * Uso:
- *   const fx = createHeroField(canvas, { accent: '#00f0ff' });
+ *   const fx = createHeroField(canvas, { accent: '#d4a24e' });
  *   fx.start();           // anima (idempotente)
  *   fx.setPointer(x, y);  // parallax (coords 0..1 relativas ao herói)
  *   fx.destroy();         // limpa rAF + listeners
@@ -22,7 +22,7 @@
 const REDUCED = typeof matchMedia !== 'undefined'
   && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function createHeroField(canvas, { accent = '#00f0ff', accent2 = '#ff00aa', density = 1, grid = true } = {}) {
+export function createHeroField(canvas, { accent = '#d4a24e', accent2 = '#e8c07a', density = 1, grid = true } = {}) {
   const ctx = canvas.getContext('2d');
   let raf = 0, running = false, dead = false, w = 0, h = 0, dpr = 1;
   let everConnected = false, waitFrames = 0;
@@ -69,8 +69,8 @@ export function createHeroField(canvas, { accent = '#00f0ff', accent2 = '#ff00aa
     ctx.globalCompositeOperation = 'lighter';
     /* brilho do horizonte */
     const glow = ctx.createLinearGradient(0, horizon - 40, 0, horizon + 4);
-    glow.addColorStop(0, 'rgba(255,0,170,0)');
-    glow.addColorStop(1, 'rgba(255,0,170,0.22)');
+    glow.addColorStop(0, 'rgba(232,192,122,0)');
+    glow.addColorStop(1, 'rgba(232,192,122,0.22)');
     ctx.fillStyle = glow;
     ctx.fillRect(0, horizon - 40, w, 44);
 

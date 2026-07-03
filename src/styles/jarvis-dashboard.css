@@ -44,7 +44,7 @@
 /* Eventos */
 .jd-event-row { display: flex; align-items: center; gap: var(--space-2); font-size: 0.78rem; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
 .jd-event-row:last-child { border-bottom: none; }
-.jd-event-row__type { background: rgba(0,240,255,.1); color: var(--color-primary); border-radius: 4px; padding: 1px 6px; font-size: 0.7rem; white-space: nowrap; }
+.jd-event-row__type { background: rgba(212,162,78,.1); color: var(--color-primary); border-radius: 4px; padding: 1px 6px; font-size: 0.7rem; white-space: nowrap; }
 .jd-event-row__time { font-size: 0.7rem; white-space: nowrap; }
 .jd-event-row__user { color: var(--color-primary); font-size: 0.75rem; }
 .jd-event-row__preview { font-size: 0.72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }

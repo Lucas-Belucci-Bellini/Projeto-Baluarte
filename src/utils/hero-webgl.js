@@ -197,7 +197,7 @@ export function heroSkinColors() {
     try { return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fb; }
     catch { return fb; }
   };
-  return { accent: read('--color-cyan', '#00f0ff'), accent2: read('--color-magenta', '#ff00aa') };
+  return { accent: read('--color-cyan', '#d4a24e'), accent2: read('--color-magenta', '#e8c07a') };
 }
 
 export function createHeroWebGL(canvas, opts = {}) {

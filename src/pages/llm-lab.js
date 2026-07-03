@@ -111,14 +111,14 @@ export function llmLabPage() {
     let mn = Infinity, mx = -Infinity;
     for (const l of losses) { if (l < mn) mn = l; if (l > mx) mx = l; }
     const pad = 8, span = (mx - mn) || 1;
-    ctx.strokeStyle = '#00f0ff'; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.strokeStyle = '#d4a24e'; ctx.lineWidth = 2; ctx.beginPath();
     losses.forEach((l, i) => {
       const x = pad + (i / (losses.length - 1)) * (W - 2 * pad);
       const y = pad + (1 - (l - mn) / span) * (H - 2 * pad);
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     });
     ctx.stroke();
-    ctx.fillStyle = '#ff00aa'; ctx.font = '11px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#e8c07a'; ctx.font = '11px "JetBrains Mono", monospace';
     ctx.fillText(`loss ${losses[losses.length - 1].toFixed(2)}`, W - 86, 16);
   }
 

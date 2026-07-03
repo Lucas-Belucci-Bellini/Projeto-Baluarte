@@ -279,7 +279,7 @@ function addDataLayers(map, refs) {
   map.addLayer({
     id: 'cabos-layer', type: 'line', source: 'cabos',
     layout: { visibility: 'none', 'line-cap': 'round' },
-    paint: { 'line-color': '#00f0ff', 'line-width': 1, 'line-opacity': 0.5 }
+    paint: { 'line-color': '#d4a24e', 'line-width': 1, 'line-opacity': 0.5 }
   });
 
   /* Grid tático */
@@ -287,7 +287,7 @@ function addDataLayers(map, refs) {
   map.addLayer({
     id: 'grid-layer', type: 'line', source: 'grid',
     layout: { visibility: 'none' },
-    paint: { 'line-color': '#00f0ff', 'line-width': 0.4, 'line-opacity': 0.25 }
+    paint: { 'line-color': '#d4a24e', 'line-width': 0.4, 'line-opacity': 0.25 }
   });
 
   /* Naval */
@@ -311,7 +311,7 @@ function addDataLayers(map, refs) {
       'circle-radius': 4,
       'circle-color': [
         'interpolate', ['linear'], ['get', 'alt'],
-        0, '#ff3b3b', 3000, '#ffaa00', 8000, '#00f0ff', 12000, '#ffffff'
+        0, '#ff3b3b', 3000, '#ffaa00', 8000, '#d4a24e', 12000, '#ffffff'
       ],
       'circle-stroke-width': 1, 'circle-stroke-color': '#001a1a'
     }

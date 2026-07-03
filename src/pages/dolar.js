@@ -16,8 +16,8 @@ const STORAGE_KEY = 'dolar:state';
 const REPORTS_URL = 'https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/tree/main/reports/cambio';
 
 const COINS = [
-  { key: 'USD', icon: '💵', label: 'Dólar', color: '#00f0ff', dec: 4 },
-  { key: 'EUR', icon: '💶', label: 'Euro', color: '#ff00aa', dec: 4 },
+  { key: 'USD', icon: '💵', label: 'Dólar', color: '#d4a24e', dec: 4 },
+  { key: 'EUR', icon: '💶', label: 'Euro', color: '#e8c07a', dec: 4 },
   { key: 'BTC', icon: '₿', label: 'Bitcoin', color: '#ffaa00', dec: 0 }
 ];
 const RANGES = [

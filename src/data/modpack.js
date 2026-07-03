@@ -6,8 +6,8 @@
  */
 
 export const MOD_CATEGORIES = [
-  { id: 'tech',        label: 'Tech',              color: '#00f0ff' },
-  { id: 'magic',       label: 'Magia',             color: '#ff00aa' },
+  { id: 'tech',        label: 'Tech',              color: '#d4a24e' },
+  { id: 'magic',       label: 'Magia',             color: '#e8c07a' },
   { id: 'exploration', label: 'Exploração',        color: '#00ff88' },
   { id: 'combat',      label: 'Combate',           color: '#ff3355' },
   { id: 'building',    label: 'Construção',        color: '#ffaa00' },
@@ -161,7 +161,7 @@ export const PC_PRESETS = [
     id: 'creator',
     name: 'Content Creator (R$ 15.000-25.000)',
     icon: '✦',
-    color: '#ff00aa',
+    color: '#e8c07a',
     purpose: '4K render, edit, streaming, dev pesado.',
     parts: [
       { type: 'CPU', value: 'AMD Ryzen 9 7950X3D ou Intel Core i7-14700K' },

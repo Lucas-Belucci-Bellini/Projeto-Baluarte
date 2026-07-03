@@ -9,9 +9,9 @@
  */
 
 export const SKILL_CATEGORIES = [
-  { id: 'core',      label: 'Núcleo',        color: '#00f0ff' },
+  { id: 'core',      label: 'Núcleo',        color: '#d4a24e' },
   { id: 'dev',       label: 'Desenvolvimento', color: '#00ff88' },
-  { id: 'research',  label: 'Pesquisa',      color: '#ff00aa' },
+  { id: 'research',  label: 'Pesquisa',      color: '#e8c07a' },
   { id: 'creative',  label: 'Criativo',      color: '#ffaa00' },
   { id: 'ops',       label: 'Operações',     color: '#66ddff' }
 ];

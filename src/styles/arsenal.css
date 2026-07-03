@@ -44,7 +44,7 @@
 }
 .arsenal-cat {
   background: var(--color-surface);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 162, 78, 0.1);
   border-radius: var(--radius-pill);
   padding: 5px 12px;
   color: var(--color-text-secondary);
@@ -66,7 +66,7 @@
 }
 .arsenal-cat__icon { font-family: var(--font-mono); font-size: 14px; }
 .arsenal-cat__count {
-  background: rgba(255, 0, 170, 0.15);
+  background: rgba(232, 192, 122, 0.15);
   color: var(--color-magenta);
   padding: 1px 6px;
   border-radius: var(--radius-pill);
@@ -363,9 +363,9 @@
 
 /* ===== Polish cinematográfico do redesign (#195) — só visual, sobrepõe ===== */
 .page-arsenal .page-header__title {
-  background: linear-gradient(92deg, #e6f1ff, #00f0ff 60%, #ff00aa 115%);
+  background: linear-gradient(92deg, #e6f1ff, #d4a24e 60%, #e8c07a 115%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.25));
+  filter: drop-shadow(0 0 16px rgba(212, 162, 78, 0.25));
 }
 .page-arsenal .arsenal-row {
   border: 1px solid rgba(255,255,255,0.07);
@@ -378,17 +378,17 @@
 }
 .page-arsenal .arsenal-row.is-active {
   border-color: var(--color-cyan);
-  box-shadow: -3px 0 0 0 var(--color-cyan), 0 0 0 1px rgba(0,240,255,0.25) inset;
+  box-shadow: -3px 0 0 0 var(--color-cyan), 0 0 0 1px rgba(212,162,78,0.25) inset;
   background: linear-gradient(165deg, var(--color-surface-2, #16263b) 0%, var(--color-surface) 100%);
 }
 .page-arsenal .arsenal-detail {
   background:
-    radial-gradient(80% 60% at 80% 0%, rgba(0,240,255,0.07), transparent 60%),
+    radial-gradient(80% 60% at 80% 0%, rgba(212,162,78,0.07), transparent 60%),
     var(--color-surface);
-  border: 1px solid rgba(0,240,255,0.14); border-radius: var(--radius-md);
+  border: 1px solid rgba(212,162,78,0.14); border-radius: var(--radius-md);
 }
 .page-arsenal .arsenal-detail__name {
-  background: linear-gradient(92deg, #e6f1ff, #00f0ff 90%);
+  background: linear-gradient(92deg, #e6f1ff, #d4a24e 90%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .page-arsenal .arsenal-tabs .arsenal-tab,

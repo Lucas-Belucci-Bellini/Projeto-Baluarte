@@ -17,7 +17,7 @@
 const REDUCED = typeof matchMedia !== 'undefined'
   && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const PALETTE = ['#00f0ff', '#ff00aa', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
+const PALETTE = ['#d4a24e', '#e8c07a', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
 
 export function createGraphView3D(canvas, { nodes, edges, comIdx, pr, onSelect } = {}) {
   const ctx = canvas.getContext('2d');
@@ -116,7 +116,7 @@ export function createGraphView3D(canvas, { nodes, edges, comIdx, pr, onSelect }
       const a = screen.get(e.source), b = screen.get(e.target);
       const active = hi && (e.source === hi || e.target === hi);
       const depth = (a.s + b.s) / 2;          // perto = maior s
-      ctx.strokeStyle = active ? 'rgba(0,240,255,0.6)' : `rgba(120,150,200,${(0.05 + depth * 0.06).toFixed(3)})`;
+      ctx.strokeStyle = active ? 'rgba(212,162,78,0.6)' : `rgba(120,150,200,${(0.05 + depth * 0.06).toFixed(3)})`;
       ctx.lineWidth = active ? 1.4 : 0.5;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
     }

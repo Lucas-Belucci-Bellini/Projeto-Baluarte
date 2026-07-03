@@ -195,7 +195,7 @@ function buildBento(onCleanup) {
       cellTag('book', 'Crônica em destaque'),
       h('h3', { className: 'hv2-cell__title' }, arco.title || 'Onde os Deuses Sangram'),
       h('p', { className: 'hv2-cell__desc' }, (arco.synopsis || 'As Crônicas da Baluarte.').slice(0, 110))),
-    h('div', { className: 'hv2-cell hv2-cell--link', style: { '--accent': eq.color || '#00f0ff' }, onclick: () => router.navigate('/elites') },
+    h('div', { className: 'hv2-cell hv2-cell--link', style: { '--accent': eq.color || '#d4a24e' }, onclick: () => router.navigate('/elites') },
       cellTag('diamond', 'Equipe em destaque'),
       h('h3', { className: 'hv2-cell__title' }, eq.name || 'Esquadrão ALFA'),
       h('p', { className: 'hv2-cell__desc' }, eq.specialty || 'Esquadrões de elite do alfabeto OTAN.')),

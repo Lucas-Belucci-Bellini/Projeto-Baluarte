@@ -19,7 +19,7 @@
 
 .media-dropzone {
   background: var(--color-bg-elevated);
-  border: 2px dashed rgba(0, 240, 255, 0.25);
+  border: 2px dashed rgba(212, 162, 78, 0.25);
   border-radius: var(--radius-md);
   padding: var(--space-md);
   text-align: center;
@@ -151,7 +151,7 @@
 }
 
 /* Polish cinematográfico (redesign #195) — Onda Mídia. Só visual. */
-.page-media .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(0,240,255,.22)); }
+.page-media .page-header__title { background: linear-gradient(92deg,#e6f1ff,var(--color-cyan) 60%,var(--color-magenta) 118%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(212,162,78,.22)); }
 .media-row { transition: background var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
 .media-row:hover, .media-row.is-active { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
-.media-dropzone:hover { border-color: var(--color-cyan); box-shadow: 0 0 0 3px rgba(0,240,255,.08); }
+.media-dropzone:hover { border-color: var(--color-cyan); box-shadow: 0 0 0 3px rgba(212,162,78,.08); }

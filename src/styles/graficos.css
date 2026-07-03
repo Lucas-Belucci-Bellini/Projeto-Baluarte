@@ -19,7 +19,7 @@
 }
 .graficos-type {
   background: var(--color-surface);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 162, 78, 0.1);
   border-radius: var(--radius-sm);
   padding: 8px 6px;
   color: var(--color-text-secondary);
@@ -164,7 +164,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md), inset 0 0 24px rgba(0, 240, 255, 0.04);
+  box-shadow: var(--shadow-md), inset 0 0 24px rgba(212, 162, 78, 0.04);
   min-height: 500px;
   position: relative;
 }

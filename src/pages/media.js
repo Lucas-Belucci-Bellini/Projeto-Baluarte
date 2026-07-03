@@ -34,7 +34,7 @@ function iconFor(t) {
 }
 
 function colorFor(t) {
-  return ({ audio: '#ff00aa', video: '#00f0ff', image: '#00ff88', file: '#93a4bf' })[t] || '#93a4bf';
+  return ({ audio: '#e8c07a', video: '#d4a24e', image: '#00ff88', file: '#93a4bf' })[t] || '#93a4bf';
 }
 
 function fmtSize(b) {

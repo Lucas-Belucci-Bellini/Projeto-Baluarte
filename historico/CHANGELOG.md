@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-02
 
+### 👑 Ouro de Fábula em TODAS as páginas — varredura total do neon + vidro de fábula (#246)
+- 🧹 **Varredura em massa**: as ~460 ocorrências de neon hardcoded que os tokens não alcançavam (`#00f0ff`/`#ff00aa` e rgba/0x equivalentes) foram convertidas pro dourado (`#d4a24e`/`#e8c07a`) em **105 arquivos** — todas as ~80 folhas por-página (arsenal, biblioteca, radio, editor, jogos, cripto…), os JS (canvas/gráficos/engines/highlight do editor) e o `cerebro.json` (cores dos nós do grafo). Zero neon remanescente (`grep` = 0).
+- 🫙 **Vidro de fábula global**: o componente `.card` (usado no site inteiro) ganhou o **grão de ruído dourado** por cima do gradiente — os painéis de todas as páginas ficam com a textura do mockup. CTAs do herói (`hv2-btn`) agora **serifados** (Cormorant, como no mockup).
+- ✅ Verificado no navegador (Playwright, 4 páginas de amostra: arsenal/biblioteca/editor/radio): tudo no ouro — até o syntax highlighting do editor; build limpo. Site + app (herda online). 🛡️ Backup: branch de trabalho.
+
+
 ### 👑 Reskin "Ouro de Fábula" — estética Fable 5 V2 no site inteiro (e no app) (#246)
 - 🎨 **Nova estética oficial** (do mockup `Baluarte Fable.dc.html`, branch `Redesign-Baluarte-3D`, pasta **Fable 5 V2**): fundo **violeta-escuro** (#0e0c16) + acento **DOURADO** (#d4a24e/#e8c07a) + texto **pergaminho** (#f4ecdd) + serifas (**Cormorant Garamond** títulos, **Spectral** corpo, **IBM Plex Mono** HUD) + **grão de ruído** global (assinatura tátil, `body::after`).
 - 🧱 **Reskin via tokens**: `variables.css` re-tokenizado (nomes `--color-cyan`/`--color-magenta` mantidos por compatibilidade → hoje ouro/ouro-claro); o site inteiro (~80 folhas), os **heróis WebGL** (`heroSkinColors()`), a **aurora/efeitos** e os gradientes seguem automático. Neons hardcoded remanescentes (títulos holográficos, raios, botões, métricas) convertidos pro dourado em `home-v2/components/immersive/effects/base`.

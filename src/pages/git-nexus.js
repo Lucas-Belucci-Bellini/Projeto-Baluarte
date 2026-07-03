@@ -20,7 +20,7 @@ import { memoryStats, codeMemoryCounts } from '../utils/jarvis-brain.js';
 import codemap from '../data/codemap.json';
 import symbolmap from '../data/codemap-symbols.json';
 
-const PALETTE = ['#00f0ff', '#ff00aa', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
+const PALETTE = ['#d4a24e', '#e8c07a', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
 const FN_CAP = 240;
 
 /**

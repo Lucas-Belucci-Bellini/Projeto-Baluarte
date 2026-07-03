@@ -149,7 +149,7 @@ function drawTrack(canvas, pts) {
   const s = Math.min((W - 2 * pad) / spanLon, (H - 2 * pad) / spanLat);
   const proj = (p) => ({ x: pad + (p.lon - minLon) * lonScale * s, y: H - pad - (p.lat - minLat) * s });
 
-  ctx.strokeStyle = '#00f0ff';
+  ctx.strokeStyle = '#d4a24e';
   ctx.lineWidth = 2;
   ctx.beginPath();
   pts.forEach((p, i) => { const q = proj(p); if (i === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y); });
@@ -159,7 +159,7 @@ function drawTrack(canvas, pts) {
   ctx.fillStyle = '#00ff66';
   ctx.beginPath(); ctx.arc(a.x, a.y, 5, 0, Math.PI * 2); ctx.fill();
   const b = proj(pts[pts.length - 1]);
-  ctx.fillStyle = '#ff00aa';
+  ctx.fillStyle = '#e8c07a';
   ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, Math.PI * 2); ctx.fill();
 }
 

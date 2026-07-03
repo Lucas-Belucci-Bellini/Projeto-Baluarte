@@ -14,7 +14,7 @@
 const REDUCED = typeof matchMedia !== 'undefined'
   && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const PALETTE = ['#00f0ff', '#ff00aa', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
+const PALETTE = ['#d4a24e', '#e8c07a', '#7ee787', '#ffaa00', '#9d7bff', '#ff6b6b', '#66ddff', '#ffd76b'];
 
 export function createGraphView(canvas, { nodes, edges, comIdx, pr, onSelect } = {}) {
   const ctx = canvas.getContext('2d');
@@ -103,7 +103,7 @@ export function createGraphView(canvas, { nodes, edges, comIdx, pr, onSelect } =
     for (const e of edges) {
       const a = toScreen(P.get(e.source)), b = toScreen(P.get(e.target));
       const active = hi && (e.source === hi || e.target === hi);
-      ctx.strokeStyle = active ? 'rgba(0,240,255,0.55)' : 'rgba(120,140,170,0.10)';
+      ctx.strokeStyle = active ? 'rgba(212,162,78,0.55)' : 'rgba(120,140,170,0.10)';
       ctx.lineWidth = active ? 1.4 : 0.5;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
     }

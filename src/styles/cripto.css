@@ -117,7 +117,7 @@
 /* ===== Output ===== */
 .cripto-out {
   background: var(--color-bg);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 162, 78, 0.1);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-family: var(--font-mono);
@@ -167,7 +167,7 @@
   background: var(--color-cyan-soft);
 }
 .cripto-bf__row.is-best {
-  background: rgba(255, 0, 170, 0.08);
+  background: rgba(232, 192, 122, 0.08);
   border-left: 2px solid var(--color-magenta);
 }
 .cripto-bf__shift {
@@ -307,5 +307,5 @@
   letter-spacing: 0.15em;
   line-height: 1.7;
   color: var(--color-magenta);
-  text-shadow: 0 0 4px rgba(255, 0, 170, 0.4);
+  text-shadow: 0 0 4px rgba(232, 192, 122, 0.4);
 }

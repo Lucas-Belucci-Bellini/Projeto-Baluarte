@@ -110,7 +110,7 @@ export const TOOL_SCHEMAS = [
     input_schema: {
       type: 'object',
       properties: {
-        hex: { type: 'string', description: 'Cor em hexadecimal, ex: #00f0ff' }
+        hex: { type: 'string', description: 'Cor em hexadecimal, ex: #d4a24e' }
       },
       required: ['hex']
     }

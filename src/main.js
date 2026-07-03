@@ -247,7 +247,7 @@ function boot() {
 
   console.log(
     `%c⬡ BALUARTE — Mark XIII · v${VERSION}`,
-    'color: #00f0ff; font-weight: bold; font-family: monospace; font-size: 14px;'
+    'color: #d4a24e; font-weight: bold; font-family: monospace; font-size: 14px;'
   );
   console.log(
     `%c${router.count()} rotas ativas · JS puro + Vite 5`,

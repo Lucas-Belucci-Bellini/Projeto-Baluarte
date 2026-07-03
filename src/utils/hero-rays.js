@@ -62,7 +62,7 @@ function hexToRGB(h) {
 }
 
 export function createHeroRays(canvas, opts = {}) {
-  const { accent = '#00f0ff', accent2 = '#ff00aa' } = opts;
+  const { accent = '#d4a24e', accent2 = '#e8c07a' } = opts;
   let gl;
   try { gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true }) || canvas.getContext('experimental-webgl'); }
   catch { return null; }

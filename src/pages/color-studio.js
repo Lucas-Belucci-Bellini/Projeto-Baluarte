@@ -301,8 +301,8 @@ export function colorStudioPage() {
     wrap.appendChild(h('div', { className: 'section-header' },
       h('h2', { className: 'section-header__title' }, 'Gradiente')));
 
-    const c1 = h('input', { type: 'color', className: 'cs-picker', value: '#00f0ff' });
-    const c2 = h('input', { type: 'color', className: 'cs-picker', value: '#ff00aa' });
+    const c1 = h('input', { type: 'color', className: 'cs-picker', value: '#d4a24e' });
+    const c2 = h('input', { type: 'color', className: 'cs-picker', value: '#e8c07a' });
     const angle = h('input', {
       type: 'range', min: '0', max: '360', step: '1', value: '90'
     });

@@ -22,9 +22,9 @@ const MUSICAS_EXCLUIDAS = new Set([
 const GENRE_META = [
   ['sertanejo',  'Sertanejo',          '🤠', '#ffaa00'],
   ['forro',      'Forró & Pisadinha',  '🪗', '#ff8c00'],
-  ['pagode',     'Pagode & Samba',     '🥁', '#ff00aa'],
+  ['pagode',     'Pagode & Samba',     '🥁', '#e8c07a'],
   ['rock',       'Rock',               '🎸', '#ff3355'],
-  ['pop',        'Pop & Internacional','🌎', '#00f0ff'],
+  ['pop',        'Pop & Internacional','🌎', '#d4a24e'],
   ['eletronica', 'Eletrônica',         '🎛', '#7c4dff'],
   ['rap-geek',   'Rap & Geek',         '🎮', '#00ff88'],
   ['trilhas',    'Trilhas & Hinos',    '🎬', '#66ddff'],
@@ -46,7 +46,7 @@ export const PLAYLISTS = [
     id: 'tutoriais',
     title: 'Tutoriais de Operações',
     icon: '◆',
-    color: '#00f0ff',
+    color: '#d4a24e',
     description: 'Como executar manobras táticas básicas e avançadas.',
     videos: [
       { id: 'op-1', title: 'CQB · Empilhamento na porta', duration: '8:42', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['CQB', 'doutrina'] },
@@ -59,7 +59,7 @@ export const PLAYLISTS = [
     id: 'cronicas',
     title: 'Crônicas em Vídeo',
     icon: '◫',
-    color: '#ff00aa',
+    color: '#e8c07a',
     description: 'Adaptações narrativas dos arcos das Crônicas da Baluarte.',
     videos: [
       { id: 'cr-1', title: 'Despertar do Núcleo (ALFA)', duration: '24:18', source: 'youtube', ytId: 'dQw4w9WgXcQ', tags: ['ALFA', 'origem'] },

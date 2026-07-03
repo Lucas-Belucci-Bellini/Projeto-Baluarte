@@ -45,7 +45,7 @@ const HAND_CONNECTIONS = [
 
 /* Cores por pessoa (20 max) — gradiente ciano→magenta */
 const PERSON_COLORS = [
-  '#00f0ff', '#00c8ff', '#00ffaa', '#aaff00', '#ff00aa',
+  '#d4a24e', '#00c8ff', '#00ffaa', '#aaff00', '#e8c07a',
   '#ff8800', '#ff4400', '#cc00ff', '#ffff00', '#00ff44',
   '#ff0055', '#00aaff', '#88ff00', '#ff6600', '#9900ff',
   '#00ffcc', '#ff0099', '#44ff00', '#0055ff', '#ffaa00'
@@ -360,7 +360,7 @@ class JarvisVision {
 
       /* Camada 1 — halo (shadowBlur=0, lineWidth=8, cor única) */
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = 'rgba(0,240,255,0.10)';
+      ctx.strokeStyle = 'rgba(212,162,78,0.10)';
       ctx.lineWidth = 8;
       ctx.beginPath();
       for (let ci = 0; ci < POSE_CONNECTIONS.length; ci++) {
@@ -411,7 +411,7 @@ class JarvisVision {
         const r = major ? 5 : 3;
         if (major) {
           ctx.beginPath(); ctx.arc(px[i], py[i], r+4, 0, Math.PI*2);
-          ctx.fillStyle = 'rgba(0,240,255,0.15)'; ctx.shadowBlur = 0; ctx.fill();
+          ctx.fillStyle = 'rgba(212,162,78,0.15)'; ctx.shadowBlur = 0; ctx.fill();
         }
         ctx.beginPath(); ctx.arc(px[i], py[i], r, 0, Math.PI*2);
         ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = major ? 12 : 6;
@@ -476,8 +476,8 @@ class JarvisVision {
       for (let i = 0; i < lm.length; i++) {
         const wrist = i === 0, tip = TIPS.has(i);
         ctx.beginPath(); ctx.arc(X(lm[i]), Y(lm[i]), wrist ? 6 : tip ? 4.5 : 2.5, 0, Math.PI*2);
-        ctx.fillStyle = wrist ? '#ff00aa' : dotColor;
-        ctx.shadowColor = wrist ? '#ff00aa' : glowColor;
+        ctx.fillStyle = wrist ? '#e8c07a' : dotColor;
+        ctx.shadowColor = wrist ? '#e8c07a' : glowColor;
         ctx.shadowBlur = wrist ? 14 : (fancy ? 12 : 6);
         ctx.fill();
       }
@@ -526,21 +526,21 @@ class JarvisVision {
     const ctx = this.ctx;
     /* Grid em path único — eram 20 beginPath/stroke individuais */
     ctx.shadowBlur = 0;
-    ctx.strokeStyle = 'rgba(0,240,255,0.04)'; ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(212,162,78,0.04)'; ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = 0; x <= W; x += W/12) { ctx.moveTo(x,0); ctx.lineTo(x,H); }
     for (let y = 0; y <= H; y += H/8)  { ctx.moveTo(0,y); ctx.lineTo(W,y); }
     ctx.stroke();
     /* Cantos e mira em path único */
     const L = 32, hx = W/2, hy = H/2;
-    ctx.strokeStyle = 'rgba(0,240,255,0.35)'; ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(212,162,78,0.35)'; ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(L,0); ctx.lineTo(0,0); ctx.lineTo(0,L);
     ctx.moveTo(W-L,0); ctx.lineTo(W,0); ctx.lineTo(W,L);
     ctx.moveTo(0,H-L); ctx.lineTo(0,H); ctx.lineTo(L,H);
     ctx.moveTo(W,H-L); ctx.lineTo(W,H); ctx.lineTo(W-L,H);
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(0,240,255,0.22)';
+    ctx.strokeStyle = 'rgba(212,162,78,0.22)';
     ctx.beginPath();
     ctx.arc(hx, hy, 26, 0, Math.PI*2);
     ctx.moveTo(hx-36,hy); ctx.lineTo(hx-12,hy);
@@ -548,7 +548,7 @@ class JarvisVision {
     ctx.moveTo(hx,hy-36); ctx.lineTo(hx,hy-12);
     ctx.moveTo(hx,hy+12); ctx.lineTo(hx,hy+36);
     ctx.stroke();
-    ctx.fillStyle = 'rgba(0,240,255,0.6)'; ctx.font = '13px monospace';
+    ctx.fillStyle = 'rgba(212,162,78,0.6)'; ctx.font = '13px monospace';
     ctx.fillText('J.A.R.V.I.S · MULTI-BODY TRACKING', 14, 24);
     ctx.fillText(new Date().toLocaleTimeString(), W - 96, 24);
   }
@@ -660,11 +660,11 @@ export function jarvisVisionPage() {
     metrics,
     h('div', { className: 'jv-viewport' }, canvas),
     h('div', { className: 'jv-legend' },
-      h('span', null, h('i', { style: { background: '#00f0ff' } }), 'Pessoa 1'),
+      h('span', null, h('i', { style: { background: '#d4a24e' } }), 'Pessoa 1'),
       h('span', null, h('i', { style: { background: '#00ffaa' } }), 'Pessoa 2'),
       h('span', null, h('i', { style: { background: '#aaff00' } }), 'Pessoa 3+'),
       h('span', null, h('i', { style: { background: '#00ff88' } }), 'Mãos'),
-      h('span', null, h('i', { style: { background: '#ff00aa' } }), 'Pulso')
+      h('span', null, h('i', { style: { background: '#e8c07a' } }), 'Pulso')
     ),
     h('div', { className: 'jv-info' },
       h('p', null, '⚡ TF.js MoveNet MultiPose carrega via CDN na primeira ativação (~8-12s). Depois fica em cache do browser.'),
