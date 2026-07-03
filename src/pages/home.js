@@ -57,6 +57,10 @@ function buildHero(onCleanup, operador, sceneUrl) {
     h('h1', { className: 'hv2-title' },
       h('span', { className: 'hv2-title__main' }, 'BALUARTE'),
       h('span', { className: 'hv2-title__sub' }, 'MARK XIII')),
+    h('div', { className: 'hv2-divider', 'aria-hidden': 'true' },
+      h('span', { className: 'hv2-divider__line' }),
+      h('span', { className: 'hv2-divider__star' }, '✦'),
+      h('span', { className: 'hv2-divider__line hv2-divider__line--r' })),
     h('p', { className: 'hv2-tagline' },
       'Bem-vindo, operador ', h('span', { className: 'u-text-cyan' }, operador),
       '. A ponte de comando da plataforma — narrativa, tática e ferramentas, ',
@@ -70,20 +74,23 @@ function buildHero(onCleanup, operador, sceneUrl) {
    * configurada/passada; no sucesso some o canvas/grid; na falta/falha fica o herói. */
   const splineWrap = h('div', { className: 'hv2-hero__spline', 'aria-hidden': 'true' });
 
+  const corner = (pos) => h('span', { className: `hv2-corner hv2-corner--${pos}`, 'aria-hidden': 'true' });
   const hero = h('div', { className: 'hv2-hero' },
     canvas,
     h('div', { className: 'hv2-hero__rays', 'aria-hidden': 'true' }),
     h('div', { className: 'hv2-hero__grid' }),
     h('div', { className: 'hv2-hero__scan' }),
     splineWrap,
+    corner('tl'), corner('tr'), corner('bl'), corner('br'),
     h('div', { className: 'hv2-hud' },
-      h('div', { className: 'hv2-hud__tl' }, '⬡ MARK XIII · v' + VERSION),
+      h('div', { className: 'hv2-hud__tl' }, '◯ MARK XIII · v' + VERSION),
       h('div', { className: 'hv2-hud__tr' }, clock, h('div', null, h('span', { className: 'hv2-hud__dot' }, '● '), 'NÚCLEO ONLINE')),
       h('div', { className: 'hv2-hud__bl' }, 'LAT —.—— · LON —.——'),
-      h('div', { className: 'hv2-hud__br' }, 'SEC · NÍVEL ÔMEGA')),
+      h('div', { className: 'hv2-hud__br' }, '● NÚCLEO 3D · WEBGL · NÍVEL ÔMEGA')),
     inner);
 
-  let fx = createHeroWebGL(canvas);                       // segue o universo ativo (#246)
+  /* astrolábio de fábula (mockup V2) — segue o tema/universo ativo (#246) */
+  let fx = createHeroWebGL(canvas, { variant: 'astrolabe' });
   if (!fx) fx = createHeroField(canvas, heroSkinColors());
   fx.start();
   onCleanup(() => fx.destroy());
@@ -229,7 +236,10 @@ export function homePage(args) {
   const cleanups = [];
   const onCleanup = (fn) => cleanups.push(fn);
   const operador = (appState.get('user') || { name: 'Operador' }).name;
-  const sceneUrl = sceneFor('home', args && args.query);   // config ou ?spline=URL
+  /* O herói do home agora é o ASTROLÁBIO 3D nativo (mockup Fable 5 V2) — a cena
+   * Spline só entra se pedida explicitamente por ?spline=URL (debug/preview). */
+  const sceneUrl = args && args.query && args.query.spline
+    ? sceneFor('home', args.query) : '';
 
   const page = h('div', { className: 'page-home2' });
   page.appendChild(buildHero(onCleanup, operador, sceneUrl));

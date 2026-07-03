@@ -173,6 +173,75 @@ function buildGeometry(variant, cA, cB) {
     return { field, struct, coreSize };
   }
 
+  if (variant === 'astrolabe') {
+    /* Astrolábio de fábula (mockup Fable 5 V2): icosaedro duplo + anéis
+       inclinados + halo + campo de partículas + vagalumes + estilhaços. */
+    const phi = (1 + Math.sqrt(5)) / 2, nrm = Math.hypot(1, phi);
+    const V = [
+      [-1, phi, 0], [1, phi, 0], [-1, -phi, 0], [1, -phi, 0],
+      [0, -1, phi], [0, 1, phi], [0, -1, -phi], [0, 1, -phi],
+      [phi, 0, -1], [phi, 0, 1], [-phi, 0, -1], [-phi, 0, 1]
+    ].map((v) => v.map((x) => x / nrm));
+    const E = [];                                    // 30 arestas = pares mais próximos
+    for (let i = 0; i < 12; i++) for (let j = i + 1; j < 12; j++) {
+      const d = Math.hypot(V[i][0] - V[j][0], V[i][1] - V[j][1], V[i][2] - V[j][2]);
+      if (d < 1.2) E.push([i, j]);
+    }
+    const dim = (c, f) => [c[0] * f, c[1] * f, c[2] * f];   // aditivo satura — atenua na cor
+    const icosa = (R, col, sz) => {
+      for (const [a, b] of E) for (let k = 0; k <= 26; k++) {
+        const t = k / 26;
+        push(struct, (V[a][0] + (V[b][0] - V[a][0]) * t) * R,
+          (V[a][1] + (V[b][1] - V[a][1]) * t) * R,
+          (V[a][2] + (V[b][2] - V[a][2]) * t) * R, col, sz);
+      }
+      for (const v of V) push(struct, v[0] * R, v[1] * R, v[2] * R, col, sz + 4);
+    };
+    icosa(1.5, dim(cA, 0.8), 3.0);                   // núcleo (arestas)
+    icosa(2.05, dim(cB, 0.45), 2.2);                 // casca wireframe externa (discreta)
+    const ringE = (R, rx, ry, col, seg, sz) => {     // anel com euler (inclinações do mockup)
+      const cX = Math.cos(rx), sX = Math.sin(rx), cY = Math.cos(ry), sY = Math.sin(ry);
+      for (let i = 0; i < seg; i++) {
+        const a = (i / seg) * Math.PI * 2;
+        let x = Math.cos(a) * R, y = Math.sin(a) * R, z = 0;
+        const y2 = y * cX - z * sX; z = y * sX + z * cX; y = y2;
+        const x2 = x * cY + z * sY; z = -x * sY + z * cY; x = x2;
+        push(struct, x, y, z, col, sz + (i % 18 === 0 ? 3 : 0));
+      }
+    };
+    ringE(2.7, Math.PI / 2.4, 0, dim(cA, 0.6), 280, 2.6);
+    ringE(3.15, Math.PI / 2.4 + 0.5, 0.7, dim(cB, 0.5), 300, 2.3);
+    ringE(3.6, Math.PI / 2.4 + 1.0, 1.4, dim(cA, 0.45), 320, 2.1);
+    ringE(4.4, Math.PI / 2.15, 0, dim(cB, 0.35), 360, 1.8);   // grande halo do astrolábio
+    for (let i = 0; i < 1400; i++) {                 // campo de partículas
+      const r = 4 + Math.random() * 12, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+      const t = Math.random();
+      push(field, r * Math.sin(ph) * Math.cos(th), r * Math.sin(ph) * Math.sin(th) * 0.7, r * Math.cos(ph),
+        t < 0.18 ? [1, 1, 1] : (t < 0.7 ? cB : cA), 2 + Math.random() * 4);
+    }
+    for (let i = 0; i < 70; i++) {                   // vagalumes dourados
+      const r = 3 + Math.random() * 7, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+      push(field, r * Math.sin(ph) * Math.cos(th), r * Math.sin(ph) * Math.sin(th) * 0.6, r * Math.cos(ph), dim(cB, 0.8), 6 + Math.random() * 7);
+    }
+    const T = [[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]].map((v) => v.map((x) => x * 0.577));
+    const TE = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]];
+    for (let sI = 0; sI < 14; sI++) {                // estilhaços tetraédricos flutuando
+      const cx = (Math.random() - 0.5) * 11, cy = (Math.random() - 0.5) * 7, cz = (Math.random() - 0.5) * 5;
+      const s = 0.14 + Math.random() * 0.2;
+      const ry = Math.random() * Math.PI * 2, c = Math.cos(ry), sn = Math.sin(ry);
+      for (const [a, b] of TE) for (let k = 0; k <= 6; k++) {
+        const t = k / 6;
+        let x = (T[a][0] + (T[b][0] - T[a][0]) * t) * s;
+        const y = (T[a][1] + (T[b][1] - T[a][1]) * t) * s;
+        let z = (T[a][2] + (T[b][2] - T[a][2]) * t) * s;
+        const x2 = x * c + z * sn; z = -x * sn + z * c; x = x2;
+        push(field, cx + x, cy + y, cz + z, cA, 2.6);
+      }
+    }
+    coreSize = 70;
+    return { field, struct, coreSize };
+  }
+
   // galaxy (padrão)
   for (let i = 0; i < 3600; i++) {
     const u = Math.random(), ang = Math.random() * Math.PI * 2;
@@ -312,8 +381,11 @@ export function createHeroWebGL(canvas, opts = {}) {
     const pv = M.mul(proj, view);
     const scale = Math.min(w, h) * 0.5 * dpr;
 
-    /* fundo (gira devagar) — 'scope' varre no próprio plano (rotZ), o resto gira no Y */
-    const fieldRot = (variant === 'scope') ? M.rotZ(tt * 0.25) : M.rotY(tt * 0.6);
+    /* fundo (gira devagar) — 'scope' varre no próprio plano (rotZ), 'astrolabe'
+       deriva bem devagar (poeira de fábula), o resto gira no Y */
+    const fieldRot = (variant === 'scope') ? M.rotZ(tt * 0.25)
+      : (variant === 'astrolabe') ? M.rotY(tt * 0.12)
+      : M.rotY(tt * 0.6);
     const mvpNeb = M.mul(pv, fieldRot);
     gl.uniformMatrix4fv(loc.uMVP, false, mvpNeb);
     gl.uniform1f(loc.uScale, scale); gl.uniform1f(loc.uIsLine, 0);
@@ -322,14 +394,17 @@ export function createHeroWebGL(canvas, opts = {}) {
     gl.drawArrays(gl.POINTS, 0, N);
 
     /* estrutura: 'planet' = anel orbital girando devagar no eixo Y (mantém a
-       inclinação); 'galaxy'/'reactor' = anéis tombando em eixos diferentes. */
+       inclinação); 'astrolabe' = giro majestoso com balanço (mockup Fable V2);
+       'galaxy'/'reactor' = anéis tombando em eixos diferentes. */
     const structRot = (variant === 'planet')
       ? M.rotY(tt * 0.45)
-      : M.mul(M.rotY(tt * 1.6), M.rotX(tt * 0.9));
+      : (variant === 'astrolabe')
+        ? M.mul(M.rotY(tt * 0.4), M.mul(M.rotX(Math.sin(tt * 0.55) * 0.2), M.rotZ(tt * 0.08)))
+        : M.mul(M.rotY(tt * 1.6), M.rotX(tt * 0.9));
     const mvpCore = M.mul(pv, structRot);
     gl.uniformMatrix4fv(loc.uMVP, false, mvpCore);
     gl.uniform1f(loc.uIsLine, 0);
-    gl.uniform1f(loc.uPoint, 0.085);
+    gl.uniform1f(loc.uPoint, variant === 'astrolabe' ? 0.055 : 0.085);
     bindAttr(bLPos, bLCol, bLSize);
     gl.drawArrays(gl.POINTS, 0, LINES);
 

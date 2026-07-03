@@ -104,6 +104,26 @@
   box-shadow: var(--shadow-glow-magenta-strong);
 }
 
+/* ===== Pill de tema flutuante (mockup Fable 5 V2, #246) ===== */
+.theme-pill {
+  position: fixed; right: 20px; bottom: 18px; z-index: var(--z-overlay);
+  display: flex; align-items: center; gap: 10px; padding: 9px 13px;
+  border: var(--border-thin); border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-bg-elevated) 80%, transparent);
+  backdrop-filter: blur(10px);
+}
+.theme-pill__label {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 1.5px;
+  color: var(--color-text-secondary);
+}
+.theme-pill__sw {
+  width: 20px; height: 20px; border-radius: 50%; padding: 0;
+  border: 2px solid transparent; cursor: pointer;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+.theme-pill__sw.is-active { border-color: #ffffff; transform: scale(1.15); }
+@media (max-width: 640px) { .theme-pill { right: 12px; bottom: 12px; } }
+
 .btn--ghost {
   background: transparent;
   border-color: transparent;

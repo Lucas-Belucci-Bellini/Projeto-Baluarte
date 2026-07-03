@@ -15,9 +15,39 @@ import { decryptTitles } from '../utils/effects.js';
 import { mountAtmosphere } from '../utils/atmosphere.js';
 import { mountCardSpotlight } from '../utils/card-spotlight.js';
 import { mountScrollProgress } from '../utils/scroll-progress.js';
+import { THEMES, getThemeId, setTheme } from '../utils/theme.js';
 
 let mainInner = null;
 let shellRefs = null;
+
+/* ===== Pill de tema flutuante (mockup Fable 5 V2, #246) =====
+ * Troca rápida entre os 3 temas de fábula sem sair da página; a lista
+ * completa (âmbar/matrix/…) segue no /perfil. */
+const FABLE_PILL = [
+  { id: 'neon', title: 'Ouro de Fábula' },
+  { id: 'rubi', title: 'Rubi Encantado' },
+  { id: 'esmeralda', title: 'Esmeralda Ancestral' }
+];
+
+function buildThemePill() {
+  const markActive = (root, id) => {
+    root.querySelectorAll('[data-pill-theme]').forEach((b) =>
+      b.classList.toggle('is-active', b.dataset.pillTheme === id));
+  };
+  const pill = h('div', { className: 'theme-pill', role: 'group', 'aria-label': 'Tema' },
+    h('span', { className: 'theme-pill__label' }, 'TEMA'),
+    ...FABLE_PILL.map(({ id, title }) => {
+      const t = THEMES.find((x) => x.id === id);
+      return h('button', {
+        className: 'theme-pill__sw', 'data-pill-theme': id, title, 'aria-label': title,
+        style: { background: `linear-gradient(135deg, ${t.primary}, ${t.secondary})` },
+        onclick: () => { setTheme(id); markActive(pill, id); }
+      });
+    }));
+  markActive(pill, getThemeId());
+  document.addEventListener('baluarte:theme', (e) => markActive(pill, e.detail && e.detail.id));
+  return pill;
+}
 
 export function mountShell(rootEl) {
   empty(rootEl);
@@ -47,6 +77,7 @@ export function mountShell(rootEl) {
 
   rootEl.appendChild(shell);
   rootEl.appendChild(overlay);
+  rootEl.appendChild(buildThemePill());
 
   shellRefs = { shell, sidebar, header, main, overlay };
   mountScrollProgress();                 // barra de progresso de leitura no topo (#246)
