@@ -176,6 +176,25 @@
 /* ════════════════════════════════════════════════════════════
    Núcleo de IA — cockpit com abas (#231/#238 · fusão da seção IA).
    ════════════════════════════════════════════════════════════ */
+
+/* Backdrop 3D vivo do Núcleo (Fase A do #316) — a cena do jarvis-nucleo por
+   trás dos painéis. Fixa na viewport, atrás de tudo do cockpit, com um véu
+   pra manter os textos legíveis. Só aparece no app (onde o cockpit roda). */
+.gn-cock { position: relative; z-index: 0; }
+.gn-cock__backdrop {
+  position: fixed; inset: var(--header-height) 0 0 var(--sidebar-width);
+  z-index: -1; overflow: hidden; pointer-events: none;
+}
+.gn-cock__backdrop::after {           /* véu de legibilidade */
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 90% 70% at 50% 40%, transparent 30%, var(--color-bg) 92%);
+  opacity: 0.72;
+}
+.shell.is-collapsed .gn-cock__backdrop { left: var(--sidebar-width-collapsed); }
+@media (max-width: 900px) { .gn-cock__backdrop { left: 0; } }
+/* os painéis do cockpit ficam legíveis sobre a cena */
+.gn-cock__panel, .gn-cock__tabs, .gn-cock .page-header { position: relative; z-index: 1; }
+
 .gn-cock__tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-md);
   border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 8px; }
 .gn-cock__tab { background: var(--color-surface); border: 1px solid rgba(255,255,255,0.1);
