@@ -228,6 +228,19 @@ function boot() {
   }
 
   appState.set({ bootedAt: Date.now() });
+  /* Perf mobile/low-end (v0.4.0): detecta aparelho fraco → classe `is-lowfx` no
+   * <html> (CSS alivia o grão) + `window.__baluarteLowFx` (o herói WebGL corta
+   * partículas). Reduced-motion também entra como low-fx. */
+  try {
+    const dm = navigator.deviceMemory || 8;
+    const hc = navigator.hardwareConcurrency || 8;
+    const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+    const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lowfx = reduced || dm <= 2 || hc <= 2 || (coarse && innerWidth <= 820);
+    if (lowfx) document.documentElement.classList.add('is-lowfx');
+    window.__baluarteLowFx = !!lowfx;
+  } catch { /* sem as APIs → assume normal */ }
+
   initTheme();
   initUniverse();
   /* Entrada "cascata cybertroniana" — perf (v0.4.0): SÓ na 1ª carga da sessão

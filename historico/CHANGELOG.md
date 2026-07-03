@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### ⚡ v0.4.0 (mobile + perf) — Fatia 2: fluidez em aparelho fraco/mobile (#323)
+- 📉 **Detecção low-end no boot** (`main.js`): aparelho fraco (`deviceMemory ≤ 2` **ou** `hardwareConcurrency ≤ 2`), **celular** (toque + tela ≤ 820px) ou `prefers-reduced-motion` → classe `is-lowfx` no `<html>` + `window.__baluarteLowFx`. **PC forte fica com tudo** (verificado: 8c/8GB = efeitos completos; celular e 2c/2GB = aliviado).
+- 🪶 **Alívio dos efeitos pesados**: o **grão** global cai de opacidade 0.6 → 0.22 no low-end (menos repaint/composição); o **herói WebGL** gera **metade das partículas** (galáxia 3600→1800, astrolábio 1400→700). Menos GPU/bateria, mais fluido.
+- ✅ Verificado (Playwright, specs forçadas): branch certo em PC forte / celular / PC fraco; build limpo.
+
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 1: entrada 1x/sessão, SW cache-first, theme mobile (#323)
 - 🚪 **Entrada só na 1ª carga da sessão** (`main.js`): recarregar/voltar **não repete** mais a cascata (perf + não irrita) — marca em `sessionStorage`. No **celular** ela é mais curta (3,8s vs 6,5s no desktop; detecta `pointer:coarse`/tela pequena).
 - 🗄️ **Service Worker mais rápido** (`public/sw.js`): assets com hash do Vite (`/assets/*`) agora são **cache-first puro** (imutáveis → 2ª carga nem toca a rede); o resto segue stale-while-revalidate. Versão do cache → `v0.4.0` (limpa os antigos).

@@ -75,6 +75,8 @@ function hexToRGB(h) {
  * Devolve point-clouds (field = fundo; struct = anéis) + tamanho do núcleo.
  */
 function buildGeometry(variant, cA, cB) {
+  /* Perf (v0.4.0): metade das partículas em aparelho fraco/mobile (flag do boot). */
+  const LF = (typeof window !== 'undefined' && window.__baluarteLowFx) ? 0.5 : 1;
   const field = { pos: [], col: [], size: [] };
   const struct = { pos: [], col: [], size: [] };
   let coreSize = 60;
@@ -213,7 +215,7 @@ function buildGeometry(variant, cA, cB) {
     ringE(3.15, Math.PI / 2.4 + 0.5, 0.7, dim(cB, 0.5), 300, 2.3);
     ringE(3.6, Math.PI / 2.4 + 1.0, 1.4, dim(cA, 0.45), 320, 2.1);
     ringE(4.4, Math.PI / 2.15, 0, dim(cB, 0.35), 360, 1.8);   // grande halo do astrolábio
-    for (let i = 0; i < 1400; i++) {                 // campo de partículas
+    for (let i = 0, N = Math.round(1400 * LF); i < N; i++) {   // campo de partículas
       const r = 4 + Math.random() * 12, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
       const t = Math.random();
       push(field, r * Math.sin(ph) * Math.cos(th), r * Math.sin(ph) * Math.sin(th) * 0.7, r * Math.cos(ph),
@@ -243,7 +245,7 @@ function buildGeometry(variant, cA, cB) {
   }
 
   // galaxy (padrão)
-  for (let i = 0; i < 3600; i++) {
+  for (let i = 0, N = Math.round(3600 * LF); i < N; i++) {
     const u = Math.random(), ang = Math.random() * Math.PI * 2;
     const rad = Math.pow(u, 0.6) * 3.4;
     const disc = Math.random() < 0.7;
