@@ -13,6 +13,7 @@ aqui o que mudou.
 - 🪶 **Pesado e app-only (#238)**: Three.js e os passes são **dynamic-imported** dentro do mount → chunk próprio `three` (isolado do `vendor` eager via `vite.config`), **fora do boot do site** (verificado: `index.html` não pré-carrega o three; o site leve nunca baixa). Só o app, ao abrir o cockpit.
 - 🎨 Cores **100% por token** (segue Ouro/Rubi/Esmeralda, reage a `baluarte:theme`); **"pulso de dados"** (glitch) dispara na troca de aba (gancho pra eventos reais na Fase D/backend Java). Respeita `prefers-reduced-motion`; auto-limpa ao trocar de rota/aba.
 - ✅ Verificado no navegador (Playwright/WebGL headless): cena montada (canvas no backdrop), 12 abas, painéis legíveis sobre a cena; build limpo. Fase B (Blender→GLTF) segue como tarefa local no #316.
+- 🧩 **Tudo de IA num lugar só**: puxei pro cockpit as 2 funções de IA que ainda ficavam fora — **Corpo Total** (`jarvis-vision`, rastreamento multi-corporal) e **Gerar Código** (`gerar-codigo`, JARVIS gera código). São **14 abas** agora, do Grafo à IA Proprietária, todas verificadas renderizando/funcionando dentro do Núcleo (troca entre abas sem erro).
 
 ### 🧠 Núcleo de IA 10x — backend Java (ponte mobile) + roadmap #316
 - 🎯 **Plano do "Núcleo de IA 10x"** (visual do `jarvis-nucleo.html` + cockpit unificado): decidido fazer **no stack atual** (Vanilla + Three.js no app, #238) — **sem** re-plataformar pra Next.js/React (quebraria "JS puro, sem framework"). Roadmap completo na **issue #316** (Milestones/Tech Stack/tarefas por fase).

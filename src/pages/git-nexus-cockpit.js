@@ -23,6 +23,8 @@ const LAST_TAB_KEY = 'nexus:lastTab';   // lembra a última aba aberta no Núcle
 const TABS = [
   { id: 'grafo',     label: '🔗 Grafo de Código', load: () => import('./git-nexus.js').then((m) => m.gitNexusPage()) },
   { id: 'jarvis',    label: '◉ J.A.R.V.I.S.',     load: () => import('./jarvis.js').then((m) => m.jarvisPage()) },
+  { id: 'vision',    label: '🤖 Corpo Total',      load: () => import('./jarvis-vision.js').then((m) => m.jarvisVisionPage()) },
+  { id: 'gerar',     label: '🧬 Gerar Código',     load: () => import('./gerar-codigo.js').then((m) => m.gerarCodigoPage()) },
   { id: 'conselho',  label: '⚖ Conselho de IAs',  load: () => import('./conselho.js').then((m) => m.conselhoPage()) },
   { id: 'apis',      label: '🔑 Central de APIs',  load: () => import('./apis.js').then((m) => m.apisPage()) },
   { id: 'dashboard', label: '📊 Dashboard',        load: () => import('./jarvis-dashboard.js').then((m) => m.jarvisDashboardPage()) },
