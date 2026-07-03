@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### 🖥️ Hermes agente — motor EMBUTIDO no app (Fatia 2, scaffold) + instalador 0.3.0 (#310/#231)
+- 🔌 **Bridge nativo** (`jarvis-hermes-native.js`): no app, o agente Hermes prefere o **motor embutido** (llama.cpp/GGUF, sem navegador/WebGPU) via o funil seguro `window.baluarte.invoke('hermes:generate')`; fora do app (ou sem o motor), cai no WebLLM automaticamente. Mesmo núcleo de agente.
+- 🧱 **Scaffold no Electron** (`desktop/src/hermes.js` + handlers `hermes:status`/`hermes:generate` na allowlist do `ipc.js`): **lazy e guardado** — sem a dep `node-llama-cpp` ou um `.gguf`, devolve `available:false` e **não quebra o build** do instalador atual. Acende quando uma sessão local adicionar dep + modelo.
+- 📦 **Baluarte Launcher → 0.3.0**; `docs/HANDOFF-LOCAL.md` ganhou o **M5** (passos locais: `npm i node-llama-cpp`, fornecer o GGUF do Nous Hermes, testar, cortar o instalador via Desktop Release). ✅ Verificado: bridge nativo (mock) prefere o motor embutido; `hermes.js` degrada sem dep; build web limpo.
+
 ### 🧠 Hermes AGENTE LOCAL — sem API, sem chave (#310/#231)
 - 🎯 **O operador quer o Hermes como agente de verdade, local, sem depender da API.** As três metades já existiam soltas no site — juntei: (1) o **Nous Hermes rodando local** (WebLLM/WebGPU, sem servidor/sem chave), (2) as **ferramentas do JARVIS** (navigate, arsenal, editor, memória, skills auto-criadas…), (3) o **loop ReAct** que antes só falava com a API do Claude.
 - 🧩 **Núcleo de agente independente de modelo** (`jarvis-agent-core.js`): fala o protocolo de **function-calling nativo do Nous Hermes** (`<tools>` no sistema, `<tool_call>{…}</tool_call>` do modelo, `<tool_response>` de volta). Serve QUALQUER cérebro de chat — WebLLM agora, **motor embutido do app depois** — pela mesma interface `brain({system,messages})`.

@@ -115,12 +115,41 @@ tocar no sistema**.
 - **Aceite:** numa máquina limpa (sem Node/Python globais), abrir o app → `/git-nexus`
   verde **sem nenhum `npm i -g`**.
 
+### M5 — Hermes AGENTE com motor EMBUTIDO no app (#310/#231) · **scaffold em `main`, falta a máquina**
+
+Objetivo: o modo **"Hermes (agente local)"** do JARVIS usar, no app, o motor
+**embutido** (llama.cpp/GGUF) em vez do WebLLM — sem navegador/WebGPU, modelos
+maiores. O **remoto já deixou tudo pronto e inerte**:
+- Front: núcleo de agente (`src/utils/jarvis-agent-core.js`, protocolo Hermes
+  `<tool_call>`) + `jarvis-hermes-native.js` (prefere o motor embutido quando
+  `hermes:status.available`) + o modo no `/jarvis`. Sem o app, cai no WebLLM.
+- App: `desktop/src/hermes.js` (lazy, guardado) + handlers `hermes:status` /
+  `hermes:generate` na allowlist do `desktop/src/ipc.js`. **Hoje devolve
+  `available:false`** (sem dep/modelo) — por isso NÃO quebra o build atual.
+
+Passos (local):
+- [ ] `cd desktop && npm i node-llama-cpp` (compila nativo por SO) e commitar o
+      `package-lock.json` novo. Considerar `optionalDependencies` se algum SO da
+      matriz de release falhar ao compilar.
+- [ ] Fornecer um GGUF do **Nous Hermes** (ex.: `Hermes-2-Pro-Mistral-7B.Q4_K_M.gguf`):
+      em dev, apontar `BALUARTE_HERMES_MODEL=/caminho/modelo.gguf`; no instalador,
+      empacotar via `extraResources` (`desktop/models/*.gguf` → `resources/models`)
+      **ou** baixar no 1º uso pra `app.getPath('userData')/models` (evita instalador gigante).
+- [ ] Testar `npm start` no `desktop/`: `/jarvis` → modo "Hermes (agente local)"
+      deve mostrar "motor embutido: …" e executar tool-calls sem WebGPU.
+      Refinar a geração em `hermes.js` (template de chat / `setChatHistory` conforme
+      a API do node-llama-cpp instalado).
+- **Aceite:** numa máquina sem WebGPU, o agente Hermes responde e usa ferramentas
+  100% local, via o motor embutido.
+
 ### Outros (local)
 
 - [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` + `npx gitnexus
       setup` → dá ao agente os 16 tools MCP de grafo (context, impact, rename…).
-- [ ] **Publicar releases**: bump em `desktop/package.json` → Actions → **Desktop
-      Release** → Run workflow → instaladores Win/Mac/Linux.
+- [ ] **Publicar releases**: `desktop/package.json` já em **0.3.0** (Hermes embutido) →
+      Actions → **Desktop Release** → Run workflow (ou push da tag `desktop-v0.3.0`) →
+      instaladores Win/Mac/Linux. ⚠️ Faça DEPOIS de fechar o M5 (dep + modelo), senão
+      o instalador sai sem o motor embutido (só WebLLM — que já funciona).
 
 ## C. Mega-plano #238 — app completo / site leve
 

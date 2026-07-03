@@ -11,6 +11,7 @@
 
 import { runLocalAgent } from './jarvis-agent-core.js';
 import { makeWebLLMBrain, DEFAULT_WEBLLM_MODEL } from './jarvis-webllm.js';
+import { nativeHermesStatus, makeNativeBrain } from './jarvis-hermes-native.js';
 import { getToolSchemas, runTool } from './jarvis-tools.js';
 import { getBaluarteBriefing } from './jarvis-engine.js';
 
@@ -26,10 +27,19 @@ export const HERMES_AGENT_DEFAULT = 'Hermes-2-Pro-Mistral-7B-q4f16_1-MLC';
  * @param {{onProgress?:Function, onTurn?:Function}} cbs
  */
 export async function processHermesAgent(messages, config = {}, onToolCall, cbs = {}) {
-  const brain = makeWebLLMBrain(
-    config.webllmModel || HERMES_AGENT_DEFAULT,
-    { onProgress: cbs.onProgress }
-  );
+  /* No app com motor embutido → usa ELE (sem navegador/WebGPU, modelos maiores).
+   * Fora disso → Hermes local no navegador (WebLLM). Mesmo núcleo de agente. */
+  let brain;
+  const native = await nativeHermesStatus();
+  if (native.available) {
+    if (cbs.onProgress) cbs.onProgress(`motor embutido: ${native.model || 'Hermes'} `, 1);
+    brain = makeNativeBrain();
+  } else {
+    brain = makeWebLLMBrain(
+      config.hermesAgentModel || HERMES_AGENT_DEFAULT,
+      { onProgress: cbs.onProgress }
+    );
+  }
   const persona =
     (config.systemPrompt || 'Você é o J.A.R.V.I.S., núcleo de IA do Projeto Baluarte Mark XIII. Responda em português, de forma clara e tática.') +
     '\n\n' + getBaluarteBriefing();
