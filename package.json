@@ -10,15 +10,20 @@
     "preview": "vite preview --host",
     "sync-cronicas": "node scripts/sync-cronicas.mjs && node scripts/gen-fanfic-from-docs.mjs && node scripts/gen-elites-rosters.mjs",
     "gen-symbols": "node scripts/gen-symbols.mjs",
-    "gen-codemap": "node scripts/gen-codemap.mjs"
+    "gen-codemap": "node scripts/gen-codemap.mjs",
+    "mobile:sync": "vite build && cap sync android",
+    "mobile:open": "cap open android"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
     "vite": "^5.4.10"
   },
   "engines": {
     "node": "24.x"
   },
   "dependencies": {
+    "@capacitor/core": "^8.4.1",
     "three": "^0.161.0"
   }
 }

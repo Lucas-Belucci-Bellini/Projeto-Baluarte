@@ -1,0 +1,12 @@
+{
+  "appId": "com.baluarte.app",
+  "appName": "Baluarte",
+  "webDir": "dist",
+  "backgroundColor": "#0e0c16",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
