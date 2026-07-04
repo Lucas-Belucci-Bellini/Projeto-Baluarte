@@ -9,6 +9,7 @@
  * núcleo com o motor embutido (llama.cpp) — ver `jarvis-hermes-native.js`.
  */
 
+import { bus } from '../core/events.js';
 import { runLocalAgent } from './jarvis-agent-core.js';
 import { makeWebLLMBrain, DEFAULT_WEBLLM_MODEL } from './jarvis-webllm.js';
 import { nativeHermesStatus, makeNativeBrain } from './jarvis-hermes-native.js';
@@ -28,17 +29,54 @@ export const HERMES_AGENT_DEFAULT = 'Hermes-2-Pro-Mistral-7B-q4f16_1-MLC';
  */
 export async function processHermesAgent(messages, config = {}, onToolCall, cbs = {}) {
   /* No app com motor embutido → usa ELE (sem navegador/WebGPU, modelos maiores).
-   * Fora disso → Hermes local no navegador (WebLLM). Mesmo núcleo de agente. */
+   * Fora disso → Hermes local no navegador (WebLLM). Mesmo núcleo de agente.
+   *
+   * BLINDAGEM (#310): a escolha do motor é publicada em `hermes:engine` (o HUD
+   * do Núcleo mostra MOTOR: NATIVO/WEB) e o cérebro nativo é embrulhado num
+   * interceptador — se o runtime nativo falhar EM PLENO VOO (ABI, dlopen…),
+   * a chave vira pro WebLLM na hora, na MESMA conversa, sem estourar erro
+   * pro usuário (zero-crash, fallback invisível). */
+  const webModel = config.hermesAgentModel || HERMES_AGENT_DEFAULT;
+  const makeWeb = () => makeWebLLMBrain(webModel, { onProgress: cbs.onProgress });
+
   let brain;
   const native = await nativeHermesStatus();
   if (native.available) {
     if (cbs.onProgress) cbs.onProgress(`motor embutido: ${native.model || 'Hermes'} `, 1);
-    brain = makeNativeBrain();
+    bus.emit('hermes:engine', { engine: 'native', model: native.model || 'GGUF' });
+    const nativeBrain = makeNativeBrain();
+    let webBrain = null;   // fallback preguiçoso: só carrega se precisar
+    brain = async (args) => {
+      if (!webBrain) {
+        try {
+          return await nativeBrain(args);
+        } catch (e) {
+          /* Interceptador: motor nativo caiu → vira a chave AGORA. */
+          console.warn(
+            '[hermes] ⚠ motor NATIVO falhou em pleno voo — fallback IMEDIATO pro WebLLM.\n' +
+            `  · motivo:   ${String(e && e.message).slice(0, 200)}\n` +
+            '  · correção: se for ABI do Electron, `npx electron-rebuild -m node_modules/node-llama-cpp` resolve.\n' +
+            '  · estado:   o WebLLM assumiu o controle desta conversa; nada foi perdido.'
+          );
+          bus.emit('hermes:engine', { engine: 'webllm', reason: 'falha do motor nativo', hint: String(e && e.message) });
+          webBrain = makeWeb();
+        }
+      }
+      return webBrain(args);
+    };
   } else {
-    brain = makeWebLLMBrain(
-      config.hermesAgentModel || HERMES_AGENT_DEFAULT,
-      { onProgress: cbs.onProgress }
-    );
+    if (native.fatal) {
+      /* O main já interceptou e desativou o nativo — loga a razão + correção. */
+      console.warn(
+        '[hermes] ⚠ motor nativo INDISPONÍVEL (interceptado no app).\n' +
+        `  · código:   ${native.code || '—'}\n` +
+        `  · motivo:   ${native.reason || '—'}\n` +
+        `  · correção: ${native.hint || 'npx electron-rebuild'}\n` +
+        '  · estado:   WebLLM no controle — experiência intacta.'
+      );
+    }
+    bus.emit('hermes:engine', { engine: 'webllm', reason: native.reason, hint: native.hint });
+    brain = makeWeb();
   }
   const persona =
     (config.systemPrompt || 'Você é o J.A.R.V.I.S., núcleo de IA do Projeto Baluarte Mark XIII. Responda em português, de forma clara e tática.') +
