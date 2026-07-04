@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### ⚡ v0.4.0 (mobile + perf) — Fatia 6: militar.css e mais 5 folhas fora do boot (~54 KB) (#323)
+- ✂️ **`militar.css` (36,5 KB cru — a MAIOR folha do boot) saiu do boot**: só as **12 páginas militares** usam suas classes (`forcas-*`, `arsx-*`, `poder-*`, `hist-*`, `tat-*`, …) — cada uma agora importa a folha e o Vite emite **um único chunk compartilhado** (29,6 KB) que baixa quando qualquer página militar abre. O hub (`/militar`) usa `centro-militar.css` próprio e não foi afetado.
+- ✂️ Mais 5 folhas com dono claro saíram do boot: `terminal.css` (→ terminal + terminal-ia), `portas.css`, `jarvis-vision.css`, `jarvis-dashboard.css`, `gerar-codigo.css` (dono único cada).
+- 🔬 Auditoria com **regex de fronteira de palavra** sobre as classes de cada folha (os falsos positivos eram só classes de estado genéricas `is-active`/`is-on`, escopadas dentro das folhas).
+- 📉 **CSS do boot: ~30,7 KB → ~22,9 KB gz** (−25%) somando as fatias 5+6. Quem nunca abre uma página militar não baixa mais nada disso.
+- ✅ Verificado (Playwright, build de produção): `/forcas-armadas`, `/poder-militar`, `/portas` e `/terminal` renderizam **estilizadas** com o CSS chegando sob demanda; 0 erros de página; nenhuma das 6 folhas no `dist/index.html`.
+
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 5: 9 folhas da seção IA fora do boot (#323)
 - ✂️ **CSS app-only sai do boot** (`index.html`): as **9 folhas da seção IA** (`llm-lab`, `cerebro`, `ocr`, `memoria`, `terminal-ia`, `seguranca`, `conselho`, `apis`, `aprendizado`, ~24 KB cru) eram carregadas por **todo visitante da web** via `<link>` no boot — mas só servem às abas do cockpit, que é **app-only**. Removidas do boot.
 - 🧩 **Cada página importa a sua** (`import '../styles/x.css'` no módulo): o Vite faz **code-split** e o CSS entra no chunk da própria aba — só baixa **no app, quando a aba abre**. Confirmado que cada folha tem um único dono (seletor-líder não aparece em nenhuma outra página).

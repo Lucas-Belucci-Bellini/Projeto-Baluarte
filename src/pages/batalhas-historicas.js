@@ -3,6 +3,7 @@
  * Batalhas decisivas que mudaram o curso da história
  */
 
+import '../styles/militar.css';
 import { h } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 

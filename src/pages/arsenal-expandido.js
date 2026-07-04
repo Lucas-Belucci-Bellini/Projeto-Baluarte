@@ -4,6 +4,7 @@
  * (infantaria, blindados, artilharia, aéreo, naval, mísseis e drones).
  */
 
+import '../styles/militar.css';
 import { h } from '../utils/helpers.js';
 import arsenalData from '../data/arsenal-expandido.json';
 

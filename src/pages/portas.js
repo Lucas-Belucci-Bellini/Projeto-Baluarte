@@ -5,6 +5,7 @@
  * blocos construtivos; e o catálogo de circuitos integrados 7400/4000.
  */
 
+import '../styles/portas.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import {

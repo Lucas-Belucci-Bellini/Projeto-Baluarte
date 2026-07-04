@@ -10,6 +10,7 @@
  *   └────────────────────────────────────────────────────┘
  */
 
+import '../styles/terminal.css';
 import { h, empty, mount } from '../utils/helpers.js';
 import { execute, autocomplete, createContext } from '../utils/terminal-engine.js';
 import { COMMANDS } from '../data/terminal-commands.js';
