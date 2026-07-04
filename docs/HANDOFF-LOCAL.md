@@ -161,6 +161,27 @@ Passos (local, precisa do Blender):
 - **Aceite:** o Núcleo abre com a moldura do GLB (mais leve) + o núcleo/constelação
       procedurais vivos por cima; fps igual ou melhor que o procedural puro.
 
+### M7 — Mobile nativo com Capacitor (M4 do #323 v0.4.0) · **site pronto, falta empacotar**
+
+Objetivo: levar o site pra loja como app **Android/iOS** envelopando o build
+Vite com o **Capacitor** (sem reescrever nada — o site já é PWA instalável com
+manifest maskable + atalhos + SW cache-first + entrada curta no mobile + alvos
+de toque ≥44px; tudo entregue nas fatias 1–8 do #323).
+
+Passos (local — Android Studio; iOS precisa de macOS/Xcode):
+- [ ] `npm i @capacitor/core @capacitor/cli && npx cap init baluarte
+      com.baluarte.app --web-dir=dist` (na raiz do site).
+- [ ] `npm run build && npx cap add android` (e `npx cap add ios` no macOS);
+      `npx cap sync` depois de cada build.
+- [ ] Ícones/splash por plataforma (`@capacitor/assets` gera dos SVGs do
+      manifest); permissão de **câmera** (Corpo Total/OCR) no
+      `AndroidManifest.xml`/`Info.plist`.
+- [ ] Testar navegação por hash e o gate `window.baluarte.native` (o app móvel
+      NÃO define `native` — segue a experiência web leve, correto pro #238).
+- [ ] Build assinado: Android **AAB** (Play) / iOS via Xcode (App Store).
+- **Aceite:** app abre o site local (offline básico via SW), instala nas lojas
+      internas de teste, câmera funciona no OCR.
+
 ### Outros (local)
 
 - [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` + `npx gitnexus

@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### ⚡ v0.4.0 (mobile + perf) — Fatia 8 (FINAL): alvos de toque ≥44px + handoff do Capacitor (#323)
+- 👆 **Alvos de toque ≥44px em aparelho de toque** (`components.css`, `@media (pointer: coarse)`): botões de ícone do header (eram 28px), botões pequenos e itens da sidebar agora têm área mínima de 44px pro dedo — sem mudar nada no desktop/mouse. Verificado (Playwright mobile 390×844): toggle do menu 44×44, item da sidebar 44px de altura; sem overflow horizontal em `/`, `/militar`, `/ferramentas`; `is-lowfx` ativo no celular.
+- 📦 **M4 (Capacitor → loja) vira tarefa local**: passo a passo completo em `docs/HANDOFF-LOCAL.md` (**M7**) — init/add android+ios, ícones/splash, permissão de câmera, build assinado. O site já está pronto pra envelopar (PWA + SW + manifest + toque).
+- 🏁 **v0.4.0 (parte remota) COMPLETA** — balanço das fatias 1–8: entrada 1×/sessão (curta no mobile) · SW cache-first · low-fx em aparelho fraco · fontes 9→3 · PWA instalável (Android/iOS, maskable + atalhos) · **CSS do boot −46%** (30,7→16,6 KB gz) · boot total ~99,4→**87,8 KB gz** · toque ≥44px. Falta só o M4 (empacotar pra loja), que depende de máquina local.
+
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 7: mais 9 folhas fora do boot — CSS do boot −46% no total (#323)
 - ✂️ **9 folhas com dono claro saíram do boot** (~59 KB cru): `calc` (2 páginas), `cripto` (importada no `/cripto`, cobre os 9 painéis), `graficos` (2), `simbolos` (3), `biblioteca` (9), `logic-sim` (1), `morse` (1), `fase18` (perfil+shadow) e `editor` — esta importada **nos utils do componente** (`editor-engine`/`autocomplete`/`syntax-highlight`), então qualquer página que use o editor (editor, jarvis, gerar-código, ia-proprietária) ganha a folha automaticamente com o chunk.
 - 🏛️ **Ficam no boot só as folhas genuinamente compartilhadas**: `arsenal`, `elites`, `fase17`, `fase19` (57–61 páginas cada — são componentes de fato) + a fundação (reset/variables/base/…).
