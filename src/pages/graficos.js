@@ -9,6 +9,7 @@
  * Suporta 12 tipos. Persistência em localStorage.
  */
 
+import '../styles/graficos.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

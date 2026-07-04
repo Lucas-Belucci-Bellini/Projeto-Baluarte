@@ -16,6 +16,7 @@
  *   onscroll  → ac.close()
  */
 
+import '../styles/editor.css';
 import { h, empty } from './helpers.js';
 import { snippetsFor } from '../data/editor-snippets.js';
 

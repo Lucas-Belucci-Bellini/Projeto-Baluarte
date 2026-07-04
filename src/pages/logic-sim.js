@@ -7,6 +7,7 @@
  * montados com portas). Salva/carrega o circuito em localStorage.
  */
 
+import '../styles/logic-sim.css';
 import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

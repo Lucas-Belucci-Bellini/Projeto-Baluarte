@@ -7,6 +7,7 @@
  * - Painel de ficha detalhada
  */
 
+import '../styles/biblioteca.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';

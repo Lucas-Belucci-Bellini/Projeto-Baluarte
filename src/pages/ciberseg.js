@@ -4,6 +4,8 @@
  * Catálogo de ataques + defesas + ferramentas com filtros e ficha.
  */
 
+import '../styles/biblioteca.css';
+import '../styles/simbolos.css';
 import '../styles/ciberseg.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';

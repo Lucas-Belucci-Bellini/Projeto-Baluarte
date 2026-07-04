@@ -5,6 +5,7 @@
  *   { tabs: [{ id, name, lang, content }], activeId }
  */
 
+import '../styles/editor.css';
 import { storage } from '../core/storage.js';
 import { uid } from './helpers.js';
 import { LANGS, getLang } from '../data/editor-langs.js';

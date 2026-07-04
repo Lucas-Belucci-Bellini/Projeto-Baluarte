@@ -10,6 +10,7 @@
  * Busca por título ou conteúdo. O JSON é grande: carrega sob demanda.
  */
 
+import '../styles/biblioteca.css';
 import '../styles/dossie.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { router } from '../core/router.js';

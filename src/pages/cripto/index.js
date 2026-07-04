@@ -5,6 +5,7 @@
  * Fase 8 (P2): AES-GCM, Vigenère, Atbash, OTP
  */
 
+import '../../styles/cripto.css';
 import { h, cx, empty } from '../../utils/helpers.js';
 import { storage } from '../../core/storage.js';
 import { setStatus } from '../../utils/baluarte-status.js';

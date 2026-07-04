@@ -6,6 +6,7 @@
  * glow/lift, parallax sutil do brilho com o mouse).
  */
 
+import '../styles/fase18.css';
 import '../styles/perfil.css';
 import { h, empty } from '../utils/helpers.js';
 import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';

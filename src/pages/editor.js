@@ -12,6 +12,7 @@
  *   └─────────────────────────────────────────────────────┘
  */
 
+import '../styles/editor.css';
 import { h, cx, debounce, mount, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { highlight } from '../utils/syntax-highlight.js';

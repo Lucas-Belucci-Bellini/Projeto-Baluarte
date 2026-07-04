@@ -7,6 +7,7 @@
  * - Tabela de referência completa
  */
 
+import '../styles/morse.css';
 import { h, cx } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
