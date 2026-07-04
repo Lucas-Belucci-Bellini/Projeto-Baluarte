@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### ⚡ v0.4.0 (mobile + perf) — Fatia 5: 9 folhas da seção IA fora do boot (#323)
+- ✂️ **CSS app-only sai do boot** (`index.html`): as **9 folhas da seção IA** (`llm-lab`, `cerebro`, `ocr`, `memoria`, `terminal-ia`, `seguranca`, `conselho`, `apis`, `aprendizado`, ~24 KB cru) eram carregadas por **todo visitante da web** via `<link>` no boot — mas só servem às abas do cockpit, que é **app-only**. Removidas do boot.
+- 🧩 **Cada página importa a sua** (`import '../styles/x.css'` no módulo): o Vite faz **code-split** e o CSS entra no chunk da própria aba — só baixa **no app, quando a aba abre**. Confirmado que cada folha tem um único dono (seletor-líder não aparece em nenhuma outra página).
+- ✅ Verificado (Playwright, build de produção, app simulado): as 9 folhas **somem** do `dist/index.html`, viram 9 chunks CSS separados; abrir a aba "Conselho de IAs" no cockpit **baixa** `conselho-*.css` sob demanda e `.page-conselho` renderiza estilizada. Web boot fica mais leve.
+
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 4: PWA instalável no celular (Android/iOS) (#323)
 - 📲 **Manifesto modernizado** (`public/manifest.json`): cores alinhadas à estética Ouro (`#0e0c16` no lugar do neon `#0a0a0a`/`#00f0ff`), ícones **hexágono dourado** (`#d4a24e`→`#e8c07a`), um ícone **`maskable` dedicado** (hexágono na safe-zone, sem corte no Android adaptativo), `id`/`categories`/`display_override` e **4 atalhos** (Núcleo, Militar, Arsenal, Modelos 3D) que aparecem no long-press do ícone.
 - 🍎 **Instalável no iOS** (`index.html`): metas `apple-mobile-web-app-*` (capable, título "Baluarte", status bar translúcida), `mobile-web-app-capable` e `apple-touch-icon` — "Adicionar à Tela de Início" no Safari abre em tela cheia, sem barra.

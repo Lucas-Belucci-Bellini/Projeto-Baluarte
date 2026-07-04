@@ -6,6 +6,7 @@
  * mostra cada resposta + um consenso sintetizado. Lê src/utils/jarvis-council.js.
  */
 
+import '../styles/conselho.css';
 import { h, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { runCouncil } from '../utils/jarvis-council.js';

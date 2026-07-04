@@ -12,6 +12,7 @@
  * para o repositório, e o servidor só responde existe/não-existe.
  */
 
+import '../styles/apis.css';
 import { h, empty, uid } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { storage } from '../core/storage.js';

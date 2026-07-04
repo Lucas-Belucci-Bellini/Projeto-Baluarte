@@ -7,6 +7,7 @@
  * site), jarvis-brain (memória + codemap) e chart-engine (gráficos).
  */
 
+import '../styles/terminal-ia.css';
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { loadConfig, processLocal, processServer, getBaluarteBriefing } from '../utils/jarvis-engine.js';

@@ -7,6 +7,7 @@
  * (src/data/cerebro.json). Clicar num nó com rota navega para a página.
  */
 
+import '../styles/cerebro.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import cerebro from '../data/cerebro.json';

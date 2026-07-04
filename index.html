@@ -66,16 +66,9 @@
     <link rel="stylesheet" href="/src/styles/jarvis-vision.css" />
     <link rel="stylesheet" href="/src/styles/gerar-codigo.css" />
 
-    <!-- seção IA (app-only via cockpit; folhas pequenas, mantidas globais por ora) -->
-    <link rel="stylesheet" href="/src/styles/llm-lab.css" />
-    <link rel="stylesheet" href="/src/styles/cerebro.css" />
-    <link rel="stylesheet" href="/src/styles/ocr.css" />
-    <link rel="stylesheet" href="/src/styles/memoria.css" />
-    <link rel="stylesheet" href="/src/styles/terminal-ia.css" />
-    <link rel="stylesheet" href="/src/styles/seguranca.css" />
-    <link rel="stylesheet" href="/src/styles/conselho.css" />
-    <link rel="stylesheet" href="/src/styles/apis.css" />
-    <link rel="stylesheet" href="/src/styles/aprendizado.css" />
+    <!-- seção IA (app-only via cockpit): as folhas saíram do boot (#323 v0.4.0
+         fatia 5) — cada página importa a sua (`import '../styles/x.css'`) e o
+         Vite faz code-split, então só baixam no app quando a aba abre. -->
 
     <title>⬡ Baluarte — Mark XIII</title>
   </head>
