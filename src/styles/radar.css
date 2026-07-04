@@ -96,7 +96,7 @@
   border: 1px solid rgba(150, 180, 255, 0.2);
   color: var(--color-text, #c8d3e6);
   padding: 6px 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -122,7 +122,7 @@
   border: 1px solid rgba(150, 180, 255, 0.2);
   color: var(--color-text-muted, #93a4bf);
   padding: 6px 12px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   border-radius: 4px;
@@ -181,7 +181,7 @@
 }
 
 .rdr-scope__title {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;

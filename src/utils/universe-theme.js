@@ -43,6 +43,27 @@ const FONTS = {
   titillium: "'Titillium Web', 'Inter', sans-serif",
   rajdhani: "'Rajdhani', 'Oswald', sans-serif"
 };
+
+/* Perf (v0.4.0 #323): as fontes de universo NÃO vão no boot (só as 3 do tema
+   Ouro estão no index.html). Aqui carregamos a família sob demanda, uma vez,
+   quando um skin de universo que a usa é aplicado. */
+const FONT_HREF = {
+  inter: 'Inter:wght@300;400;500;600;700',
+  oswald: 'Oswald:wght@500;700',
+  cinzel: 'Cinzel:wght@500;700',
+  mono: 'JetBrains+Mono:wght@400;500;700',
+  titillium: 'Titillium+Web:wght@400;600;700',
+  rajdhani: 'Rajdhani:wght@500;600;700'
+};
+const loadedFonts = new Set();
+function ensureFont(font) {
+  if (!font || !FONT_HREF[font] || loadedFonts.has(font) || typeof document === 'undefined') return;
+  loadedFonts.add(font);
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = `https://fonts.googleapis.com/css2?family=${FONT_HREF[font]}&display=swap`;
+  document.head.appendChild(l);
+}
 const RADII = {
   sharp: { xs: '0', sm: '0', md: '1px', lg: '2px', xl: '3px' },
   mid: { xs: '1px', sm: '2px', md: '3px', lg: '4px', xl: '6px' },
@@ -150,6 +171,7 @@ export function applyUniverse(id) {
     return 'baluarte';
   }
 
+  ensureFont(skin.font);   // carrega a fonte do universo sob demanda (fora do boot)
   const vars = deriveVars(skin.primary, skin.secondary, { font: skin.font, radius: skin.radius });
   Object.entries(vars).forEach(([k, v]) => { root.style.setProperty(k, v); appliedKeys.push(k); });
   root.dataset.universe = id;
