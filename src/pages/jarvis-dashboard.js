@@ -5,6 +5,7 @@
  * Auto-atualiza a cada 30s enquanto o backend estiver online.
  */
 
+import '../styles/jarvis-dashboard.css';
 import { h, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 

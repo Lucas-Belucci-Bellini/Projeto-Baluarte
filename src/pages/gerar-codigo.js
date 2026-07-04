@@ -6,6 +6,7 @@
  * Reaproveita o jarvis-engine (processServer) e o syntax-highlight.
  */
 
+import '../styles/gerar-codigo.css';
 import { h, empty, randHex } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';

@@ -3,6 +3,7 @@
  * GFP Index, capacidade nuclear, poder aéreo, naval, terrestre
  */
 
+import '../styles/militar.css';
 import { h } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 

@@ -3,6 +3,7 @@
  * Linha do tempo por era: da pré-história à guerra moderna
  */
 
+import '../styles/militar.css';
 import { h } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 

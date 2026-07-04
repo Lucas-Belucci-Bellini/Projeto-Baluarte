@@ -8,6 +8,7 @@
  *   • HUD tático                               — cantos, grade, relógio, métricas
  */
 
+import '../styles/jarvis-vision.css';
 import { h } from '../utils/helpers.js';
 
 /* ── Loader de script CDN com cache por src ── */

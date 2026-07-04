@@ -3,6 +3,7 @@
  * Plataformas de combate: veículos, aviões, navios, sistemas avançados
  */
 
+import '../styles/militar.css';
 import { h } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 
