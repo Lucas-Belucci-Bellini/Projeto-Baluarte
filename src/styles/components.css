@@ -140,6 +140,14 @@
   border-radius: var(--radius-sm);
 }
 
+/* M5 (#323 v0.4.0): alvos de toque ≥44px em aparelho de toque — os controles
+ * do header/sidebar são pequenos demais pro dedo (28–36px). Só afeta touch. */
+@media (pointer: coarse) {
+  .btn--icon { min-width: 44px; min-height: 44px; }
+  .btn--sm { min-height: 40px; }
+  .sidebar__item { min-height: 44px; }
+}
+
 .btn--sm {
   padding: var(--space-xs) var(--space-sm);
   font-size: var(--font-size-xs);
