@@ -8,7 +8,15 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### 🛡️ Motor Hermes nativo — blindagem e fallback absoluto (zero-crash) (#310/#222)
+- 🧯 **Try/Catch de Aço no main do Electron** (`desktop/src/hermes.js`): o node-llama-cpp é interceptado nos DOIS pontos onde ABI estoura — o `require` e o `getLlama()/loadModel()` (ERR_DLOPEN_FAILED, `NODE_MODULE_VERSION` mismatch, ELF/arch errado) — e também no runtime (`generate`). O erro é **classificado** (abi/módulo-ausente/init), o motor vira **FATAL na sessão** (falhou 1x → nunca re-tenta; resposta imediata, sem timeout) e **nada sobe** pro app (Zero Crash Policy).
+- ⚡ **Chave automática em pleno voo** (`jarvis-hermes-agent.js`): o cérebro nativo é embrulhado num interceptador — se falhar no meio de uma conversa, o **WebLLM assume NA HORA, na mesma conversa**, sem erro pro usuário. Sem app/motor, já nasce no WebLLM (comportamento anterior preservado).
+- 📟 **HUD do motor** na tela do Núcleo (sinais vitais): linha **MOTOR** mostra `NATIVO (GGUF)` / `WEB (WEBLLM)` / `NATIVO ⬇ N%` (baixando) — sondada na entrada e **ao vivo** via evento `hermes:engine` (qualquer fallback aparece no HUD no ato).
+- 🧾 **Log estruturado** (console de dev / main): `onde / código / motivo / correção` — aponta `npx electron-rebuild -m node_modules/node-llama-cpp` quando é ABI — e avisa que **o fallback já assumiu o controle**; 1 warn só (idempotente).
+- ✅ Verificado: teste de unidade em Node com ABI simulado (status fatal instantâneo c/ hint, `generate` rejeita limpo em 0ms, log único, idempotente) + Playwright no build de produção (HUD nos 3 estados: NATIVO/WEB/baixando).
+
 ### 📱 v0.4.0 — M4: Android com Capacitor pronto pra buildar no CI (#323)
+- ✅ **Validado de ponta a ponta**: o workflow **Mobile Release #1** rodou verde em ~3 min — artefatos `baluarte-android-debug-apk` (9,2 MB) e `baluarte-android-release-aab` (7,8 MB) gerados no CI.
 - 📦 **Capacitor no repo**: `capacitor.config.json` (`com.baluarte.app`, `webDir: dist`, fundo `#0e0c16`) + projeto **`android/` scaffoldado e commitado** (Gradle; o `assets/public` sincronizado e os builds ficam fora do git). Scripts `npm run mobile:sync` / `mobile:open`.
 - 📷 **Permissão de câmera** no `AndroidManifest.xml` (Corpo Total/OCR, runtime via WebView) + paleta Baluarte (`colors.xml`, ícone adaptativo com fundo `#0e0c16`).
 - 🖼️ **Ícones e splash** gerados do `logo.svg` em todas as densidades (launcher/round/foreground mdpi→xxxhdpi + splash port/land) — fontes de 1024/2732px em `assets/` pro iOS reusar.

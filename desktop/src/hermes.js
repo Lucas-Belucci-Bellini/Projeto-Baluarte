@@ -25,10 +25,62 @@ let _model = null;         // modelo carregado (cache)
 let _modelPath = null;
 const _dl = { active: false, pct: 0, error: '' };   // estado do download
 
+/* ===== BLINDAGEM DO MOTOR NATIVO (Zero Crash Policy) =====================
+ * O node-llama-cpp pode estourar em DOIS momentos: no `require` (módulo
+ * ausente) ou — o caso clássico de ABI — dentro de `getLlama()`/`loadModel()`
+ * (ERR_DLOPEN_FAILED, NODE_MODULE_VERSION mismatch, ELF/arch errado). A regra:
+ * NENHUM desses erros pode subir e derrubar o app. O interceptador captura,
+ * CLASSIFICA, marca o motor como FATAL (não re-tenta nesta sessão — falha 1x,
+ * cai no fallback pra sempre, rápido) e loga estruturado com a correção. O
+ * status() passa a responder na hora {available:false, fatal:true, hint} e o
+ * site vira a chave pro WebLLM sem o usuário perceber. */
+const _native = { state: 'unknown', reason: '', code: '', hint: '' };
+
+function classifyNativeError(e) {
+  const msg = String((e && e.message) || e);
+  const code = (e && e.code) || '';
+  if (code === 'ERR_DLOPEN_FAILED' ||
+      /ERR_DLOPEN_FAILED|dlopen|invalid ELF header|wrong ELF class|specified module could not be found|mach-o file, but is an incompatible architecture/i.test(msg)) {
+    return { code: 'ERR_DLOPEN_FAILED', hint: 'binário nativo incompatível com o ABI do Electron — `npx electron-rebuild -m node_modules/node-llama-cpp` (ou reinstalar o app) resolve' };
+  }
+  if (/NODE_MODULE_VERSION|compiled against a different Node\.js version/i.test(msg)) {
+    return { code: 'NODE_MODULE_VERSION', hint: 'node-llama-cpp compilado pra outra versão de Node/Electron — `npx electron-rebuild` resolve' };
+  }
+  if (code === 'MODULE_NOT_FOUND' || /Cannot find module/i.test(msg)) {
+    return { code: 'MODULE_NOT_FOUND', hint: 'dependência opcional node-llama-cpp não instalada neste build — nada a fazer, o WebLLM assume' };
+  }
+  return { code: code || 'NATIVE_INIT_FAILED', hint: 'falha ao inicializar o motor nativo — se persistir, `npx electron-rebuild` e reinstalar o modelo' };
+}
+
+/** Intercepta a falha: classifica, desativa o nativo NESTA sessão e loga. */
+function markNativeFatal(e, onde) {
+  if (_native.state === 'fatal') return;   // já interceptado — não repete o log
+  const c = classifyNativeError(e);
+  _native.state = 'fatal';
+  _native.reason = String((e && e.message) || e).slice(0, 300);
+  _native.code = c.code;
+  _native.hint = c.hint;
+  /* LOG ESTRUTURADO — aparece no console de dev / terminal do app */
+  console.warn(
+    '[hermes][motor-nativo] ⚠ FALHOU e foi DESATIVADO nesta sessão (zero-crash).\n' +
+    `  · onde:     ${onde}\n` +
+    `  · código:   ${_native.code}\n` +
+    `  · motivo:   ${_native.reason}\n` +
+    `  · correção: ${_native.hint}\n` +
+    '  · fallback: o WebLLM (navegador) JÁ assumiu o controle — o app segue 100% funcional.'
+  );
+}
+
 function llamaModule() {
   if (_llamaMod !== null) return _llamaMod;
-  try { _llamaMod = require('node-llama-cpp'); }
-  catch { _llamaMod = false; }
+  if (_native.state === 'fatal') { _llamaMod = false; return _llamaMod; }
+  try {
+    _llamaMod = require('node-llama-cpp');
+    if (_native.state === 'unknown') _native.state = 'ok';
+  } catch (e) {
+    _llamaMod = false;
+    markNativeFatal(e, "require('node-llama-cpp')");
+  }
   return _llamaMod;
 }
 
@@ -59,11 +111,20 @@ function modelUrl() {
 }
 
 async function status() {
-  if (!llamaModule()) return { available: false, reason: 'node-llama-cpp não instalado' };
+  /* FATAL responde na hora (sem re-tentar nada): o site vira pro WebLLM já. */
+  if (_native.state === 'fatal') {
+    return { available: false, fatal: true, engine: 'webllm', reason: _native.reason, code: _native.code, hint: _native.hint };
+  }
+  if (!llamaModule()) {
+    if (_native.state === 'fatal') {
+      return { available: false, fatal: true, engine: 'webllm', reason: _native.reason, code: _native.code, hint: _native.hint };
+    }
+    return { available: false, engine: 'webllm', reason: 'node-llama-cpp não instalado' };
+  }
   if (_dl.active) return { available: false, downloading: true, pct: _dl.pct };
   const mp = _modelPath || findLocalModel();
-  if (mp) return { available: true, model: path.basename(mp), backend: 'llama.cpp' };
-  return { available: false, reason: 'modelo não baixado', canDownload: !!modelUrl(), error: _dl.error || undefined };
+  if (mp) return { available: true, engine: 'native', model: path.basename(mp), backend: 'llama.cpp' };
+  return { available: false, engine: 'webllm', reason: 'modelo não baixado', canDownload: !!modelUrl(), error: _dl.error || undefined };
 }
 
 /* GET seguindo redirects (HuggingFace redireciona pro CDN), streaming pro disco. */
@@ -110,12 +171,20 @@ async function ensureModel() {
 
 async function getModel() {
   const mod = llamaModule();
-  if (!mod) throw new Error('node-llama-cpp não instalado');
+  if (!mod) throw new Error('MOTOR_NATIVO_INDISPONIVEL: ' + (_native.hint || 'node-llama-cpp não instalado'));
   _modelPath = _modelPath || await ensureModel();
   if (_model) return _model;
-  const llama = await mod.getLlama();
-  _model = await llama.loadModel({ modelPath: _modelPath });
-  return _model;
+  /* AQUI é onde o mismatch de ABI costuma estourar de verdade (o require passa,
+   * mas o binding nativo falha ao carregar). Interceptado → fatal → fallback. */
+  try {
+    const llama = await mod.getLlama();
+    _model = await llama.loadModel({ modelPath: _modelPath });
+    _native.state = 'ok';
+    return _model;
+  } catch (e) {
+    markNativeFatal(e, 'getLlama()/loadModel() — carga do binding nativo');
+    throw new Error('MOTOR_NATIVO_INDISPONIVEL: ' + _native.hint);
+  }
 }
 
 /**
@@ -124,10 +193,15 @@ async function getModel() {
  */
 async function generate(payload = {}) {
   const { system = '', messages = [], temperature = 0.2, maxTokens = 1024 } = payload;
+  if (_native.state === 'fatal') {
+    /* resposta imediata — o renderer troca pro WebLLM sem esperar timeout */
+    throw new Error('MOTOR_NATIVO_INDISPONIVEL: ' + _native.hint);
+  }
   const mod = llamaModule();
   const model = await getModel();
-  const context = await model.createContext();
+  let context;
   try {
+    context = await model.createContext();
     const session = new mod.LlamaChatSession({ contextSequence: context.getSequence(), systemPrompt: system });
     const history = messages.slice(0, -1);
     const last = messages[messages.length - 1];
@@ -136,8 +210,14 @@ async function generate(payload = {}) {
     }
     const text = await session.prompt((last && last.content) || '', { temperature, maxTokens });
     return { text: text || '' };
+  } catch (e) {
+    /* runtime nativo caiu em pleno voo (contexto/sessão/prompt) → intercepta */
+    if (!/MOTOR_NATIVO_INDISPONIVEL/.test(String(e && e.message))) {
+      markNativeFatal(e, 'generate() — runtime do llama.cpp');
+    }
+    throw new Error('MOTOR_NATIVO_INDISPONIVEL: ' + (_native.hint || String(e && e.message)));
   } finally {
-    try { await context.dispose(); } catch { /* ok */ }
+    try { if (context) await context.dispose(); } catch { /* ok */ }
   }
 }
 

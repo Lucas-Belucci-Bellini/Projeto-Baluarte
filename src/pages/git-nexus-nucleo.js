@@ -24,6 +24,7 @@ import {
   processClaudeServer, processOpenClaw, processAgent
 } from '../utils/jarvis-engine.js';
 import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
+import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, simulateNucleoEvent } from '../utils/nucleo-socket.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
@@ -89,8 +90,23 @@ export function gitNexusNucleo(args = {}) {
     vitalRow('rede', 'REDE', getNucleoUrl() ? 'CONECTANDO' : 'OFF'),
     vitalRow('eventos', 'EVENTOS', '0'),
     vitalRow('energia', 'ENERGIA', '—'),
-    vitalRow('modo', 'MODO IA', (config.mode || 'local').toUpperCase()));
+    vitalRow('modo', 'MODO IA', (config.mode || 'local').toUpperCase()),
+    vitalRow('motor', 'MOTOR', '…'));
   page.appendChild(vitalsEl);
+
+  /* MOTOR (#310 blindagem): qual cérebro Hermes está no controle — NATIVO
+   * (GGUF/llama.cpp, app) ou WEB (WebLLM). Sonda o status na entrada e segue
+   * AO VIVO pelo `hermes:engine` (o agente publica a escolha e qualquer
+   * fallback em pleno voo — se o nativo cair, a linha vira WEB na hora). */
+  nativeHermesStatus().then((st) => {
+    if (st.available) setVital('motor', 'NATIVO (GGUF)', 'ok');
+    else if (st.downloading) setVital('motor', `NATIVO ⬇ ${Math.round(st.pct || 0)}%`, 'warn');
+    else setVital('motor', 'WEB (WEBLLM)', st.fatal ? 'warn' : undefined);
+  }).catch(() => setVital('motor', 'WEB (WEBLLM)'));
+  const offEngine = bus.on('hermes:engine', (ev) => {
+    if (ev.engine === 'native') setVital('motor', 'NATIVO (GGUF)', 'ok');
+    else setVital('motor', 'WEB (WEBLLM)', ev.reason ? 'warn' : undefined);
+  });
 
   /* Energia: Battery API, best-effort (sem suporte → fica "—"). */
   try {
@@ -281,7 +297,7 @@ export function gitNexusNucleo(args = {}) {
   if (typeof MutationObserver !== 'undefined') {
     const mo = new MutationObserver(() => {
       if (!document.contains(page)) {
-        offEvent(); offStatus();
+        offEvent(); offStatus(); offEngine();
         document.removeEventListener('keydown', onKey);
         try { scene && scene.destroy && scene.destroy(); } catch { /* ok */ }
         mo.disconnect();
