@@ -34,16 +34,20 @@ export function gitNexusGate(args) {
   /* Web puro: teaser leve, sem tocar no chunk pesado. */
   if (!isNative()) return gitNexusTeaser();
 
-  /* App: carrega o cockpit do Núcleo de IA sob demanda (só aqui o pesado vem).
-   * O cockpit traz a aba "Grafo de Código" (a experiência completa) + as
-   * ferramentas IA, cada uma carregada sob demanda dentro dele. */
+  /* App: carrega a TELA ÚNICA do Núcleo sob demanda (#324 — Regra de Ouro:
+   * só o Mark XIII + sinais vitais + chat; as funções são capacidades do
+   * J.A.R.V.I.S., pedidas por comando). O cockpit de abas antigo continua
+   * acessível por ?ui=cockpit (escape hatch/dev). */
   const host = h('div', { className: 'page-gitnexus' },
     h('div', { className: 'gn-loading anim-fade-in' },
       h('span', { className: 'gn-loading__orb' }),
       h('p', { className: 'u-text-muted' }, 'Acordando o Núcleo de IA…')));
 
-  import('./git-nexus-cockpit.js')
-    .then((m) => { empty(host); host.appendChild(m.gitNexusCockpit(args)); })
+  const legacy = args && args.query && args.query.ui === 'cockpit';
+  (legacy
+    ? import('./git-nexus-cockpit.js').then((m) => m.gitNexusCockpit(args))
+    : import('./git-nexus-nucleo.js').then((m) => m.gitNexusNucleo(args)))
+    .then((el) => { empty(host); host.appendChild(el); })
     .catch((err) => {
       console.error('[git-nexus] falha ao carregar o Núcleo de IA:', err);
       empty(host);
