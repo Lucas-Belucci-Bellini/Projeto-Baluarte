@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-03
 
+### ⚡ v0.4.0 (mobile + perf) — Fatia 3: fontes do boot 9 → 3 (resto sob demanda) (#323)
+- ✂️ **Boot carrega só 3 fontes** (`index.html`): Cormorant Garamond, Spectral, IBM Plex Mono (o tema Ouro). As outras **6** (Cinzel, Inter, JetBrains Mono, Oswald, Rajdhani, Titillium) eram só pros **skins de universo** — saíram do boot.
+- 🔤 **Fontes de universo sob demanda** (`universe-theme.js`): ao aplicar um skin que usa uma dessas, a família é injetada **na hora** (1x, cacheada). Quem nunca troca de universo (a maioria) não baixa nenhuma delas.
+- 🧹 5 folhas que usavam `'Inter'`/`'JetBrains Mono'` **na mão** agora usam os **tokens** (`--font-sans`/`--font-mono`) — sem fallback pro sistema e alinhado à regra "fonte via token".
+- ✅ Verificado (Playwright): boot só com as 3; aplicar "doom" injeta Oswald sob demanda; build limpo.
+
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 2: fluidez em aparelho fraco/mobile (#323)
 - 📉 **Detecção low-end no boot** (`main.js`): aparelho fraco (`deviceMemory ≤ 2` **ou** `hardwareConcurrency ≤ 2`), **celular** (toque + tela ≤ 820px) ou `prefers-reduced-motion` → classe `is-lowfx` no `<html>` + `window.__baluarteLowFx`. **PC forte fica com tudo** (verificado: 8c/8GB = efeitos completos; celular e 2c/2GB = aliviado).
 - 🪶 **Alívio dos efeitos pesados**: o **grão** global cai de opacidade 0.6 → 0.22 no low-end (menos repaint/composição); o **herói WebGL** gera **metade das partículas** (galáxia 3600→1800, astrolábio 1400→700). Menos GPU/bateria, mais fluido.
