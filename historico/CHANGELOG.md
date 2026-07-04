@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### 📱 v0.4.0 — M4: Android com Capacitor pronto pra buildar no CI (#323)
+- 📦 **Capacitor no repo**: `capacitor.config.json` (`com.baluarte.app`, `webDir: dist`, fundo `#0e0c16`) + projeto **`android/` scaffoldado e commitado** (Gradle; o `assets/public` sincronizado e os builds ficam fora do git). Scripts `npm run mobile:sync` / `mobile:open`.
+- 📷 **Permissão de câmera** no `AndroidManifest.xml` (Corpo Total/OCR, runtime via WebView) + paleta Baluarte (`colors.xml`, ícone adaptativo com fundo `#0e0c16`).
+- 🖼️ **Ícones e splash** gerados do `logo.svg` em todas as densidades (launcher/round/foreground mdpi→xxxhdpi + splash port/land) — fontes de 1024/2732px em `assets/` pro iOS reusar.
+- 🤖 **Workflow Mobile Release** (`.github/workflows/mobile-release.yml`): tag `mobile-v*` ou Run workflow → **APK de debug** (teste no aparelho) + **AAB de release não assinado** (pronto pra assinar → Play), anexados à release. Runner ubuntu (SDK pré-instalado), Java 21, Node 24.
+- 🖥️ O que segue **local** (HANDOFF M7 atualizado): testar o APK no aparelho, assinatura de produção → Play Console, e o **iOS** (macOS/Xcode → TestFlight).
+
 ### 🧹 Núcleo Mark XIII — tela única 100% LIMPA, sem menus (#324)
 - 🏆 **Regra de Ouro aplicada**: `/git-nexus` no app agora abre a **tela única** (`git-nexus-nucleo.js`) — só a **cena 3D do Mark XIII** (protagonista, tela cheia), o **painel de sinais vitais** (NÚCLEO/REDE/EVENTOS/ENERGIA/MODO IA) e o **chat do J.A.R.V.I.S.** **ZERO abas, botões ou menus** — os 14 menus do cockpit sumiram da interface.
 - 🗣️ **Funções viram capacidades por comando**: "mostrar memória", "abrir conselho", "gerar código", "grafo"… → o J.A.R.V.I.S. **materializa a função inline** num painel de vidro por cima da cena (mesmos loaders sob demanda do cockpit — nada reescrito) e **"fechar"** (ou Esc) recolhe. Comandos extras: `modo <ia>` (troca o cérebro), `conectar ws://…`/`desconectar`/`simular` (ponte Fase D).

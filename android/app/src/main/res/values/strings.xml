@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Baluarte</string>
+    <string name="title_activity_main">Baluarte</string>
+    <string name="package_name">com.baluarte.app</string>
+    <string name="custom_url_scheme">com.baluarte.app</string>
+</resources>

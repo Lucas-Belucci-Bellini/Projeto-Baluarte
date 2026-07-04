@@ -1,0 +1,78 @@
+name: Mobile Release
+
+# Builda o app Android (Capacitor, M4 do #323). Dispara por tag `mobile-v*` OU
+# manualmente (workflow_dispatch). Gera:
+#   • APK de DEBUG — instala direto no aparelho (teste interno, sem assinatura própria)
+#   • AAB de RELEASE (não assinado) — pronto pra assinar localmente e subir na Play
+# A assinatura de produção e o iOS (precisa de macOS/Xcode) seguem LOCAIS —
+# passos em docs/HANDOFF-LOCAL.md (M7).
+on:
+  push:
+    tags:
+      - 'mobile-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão (informativo)'
+        required: false
+        default: '0.4.0'
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Java 21 (Gradle/AGP)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build do site + sync Capacitor
+        run: npm run mobile:sync
+
+      - name: APK de debug
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: AAB de release (não assinado)
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon
+
+      - name: Upload — APK debug
+        uses: actions/upload-artifact@v4
+        with:
+          name: baluarte-android-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload — AAB release (não assinado)
+        uses: actions/upload-artifact@v4
+        with:
+          name: baluarte-android-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Anexar à Release (quando for tag)
+        if: startsWith(github.ref, 'refs/tags/mobile-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/bundle/release/app-release.aab
+          body: |
+            📱 Baluarte Android (Capacitor · M4 do #323)
+            - `app-debug.apk` — instala direto no aparelho (teste interno)
+            - `app-release.aab` — não assinado; assinar localmente antes da Play Store
+            iOS: build local (macOS/Xcode) — ver docs/HANDOFF-LOCAL.md (M7)
