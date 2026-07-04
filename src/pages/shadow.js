@@ -8,6 +8,7 @@
  * esta rota não revela absolutamente nada.
  */
 
+import '../styles/fase18.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';

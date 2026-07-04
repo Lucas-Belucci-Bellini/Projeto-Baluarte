@@ -18,6 +18,7 @@
  * Saída: HTML escapado e com spans de cor.
  */
 
+import '../styles/editor.css';
 function escapeHtml(s) {
   return s
     .replace(/&/g, '&amp;')

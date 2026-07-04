@@ -13,6 +13,7 @@
  * Pontuação: cada acerto = 10 pts → XP → nível/patente. Ranking local por pontos.
  */
 
+import '../styles/biblioteca.css';
 import '../styles/jogos.css';
 import { h, empty, cx } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';

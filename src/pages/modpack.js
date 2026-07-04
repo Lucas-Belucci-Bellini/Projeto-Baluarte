@@ -2,6 +2,8 @@
  * Página /modpack — Catálogo de mods Minecraft (Fase 17).
  */
 
+import '../styles/biblioteca.css';
+import '../styles/simbolos.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { MODS, MOD_CATEGORIES, TOTAL_MODS } from '../data/modpack.js';

@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### ⚡ v0.4.0 (mobile + perf) — Fatia 7: mais 9 folhas fora do boot — CSS do boot −46% no total (#323)
+- ✂️ **9 folhas com dono claro saíram do boot** (~59 KB cru): `calc` (2 páginas), `cripto` (importada no `/cripto`, cobre os 9 painéis), `graficos` (2), `simbolos` (3), `biblioteca` (9), `logic-sim` (1), `morse` (1), `fase18` (perfil+shadow) e `editor` — esta importada **nos utils do componente** (`editor-engine`/`autocomplete`/`syntax-highlight`), então qualquer página que use o editor (editor, jarvis, gerar-código, ia-proprietária) ganha a folha automaticamente com o chunk.
+- 🏛️ **Ficam no boot só as folhas genuinamente compartilhadas**: `arsenal`, `elites`, `fase17`, `fase19` (57–61 páginas cada — são componentes de fato) + a fundação (reset/variables/base/…).
+- 📉 **CSS do boot: ~30,7 KB → ~16,6 KB gz (−46%)** somando as fatias 5+6+7.
+- ✅ Verificado (Playwright, produção): 8 rotas afetadas (`/editor`, `/cripto`, `/biblioteca`, `/calc-cientifica`, `/morse`, `/logic-sim`, `/perfil`, `/simbolos`) renderizam estilizadas com CSS sob demanda, 0 erros de página; cada folha emitida 1x (sem duplicação).
+
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 6: militar.css e mais 5 folhas fora do boot (~54 KB) (#323)
 - ✂️ **`militar.css` (36,5 KB cru — a MAIOR folha do boot) saiu do boot**: só as **12 páginas militares** usam suas classes (`forcas-*`, `arsx-*`, `poder-*`, `hist-*`, `tat-*`, …) — cada uma agora importa a folha e o Vite emite **um único chunk compartilhado** (29,6 KB) que baixa quando qualquer página militar abre. O hub (`/militar`) usa `centro-militar.css` próprio e não foi afetado.
 - ✂️ Mais 5 folhas com dono claro saíram do boot: `terminal.css` (→ terminal + terminal-ia), `portas.css`, `jarvis-vision.css`, `jarvis-dashboard.css`, `gerar-codigo.css` (dono único cada).

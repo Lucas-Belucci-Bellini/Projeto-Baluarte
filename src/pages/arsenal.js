@@ -9,6 +9,7 @@
  * - Tab Doutrinas com 6 manuais táticos
  */
 
+import '../styles/biblioteca.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { buildImmersiveHero } from '../utils/immersive.js';

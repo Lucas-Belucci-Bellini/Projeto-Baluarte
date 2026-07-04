@@ -9,6 +9,8 @@
  * favoritos, busca, filtro por universo, tema dark/sépia, fonte.
  */
 
+import '../styles/biblioteca.css';
+import '../styles/graficos.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';

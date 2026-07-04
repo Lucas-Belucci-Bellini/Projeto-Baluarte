@@ -12,6 +12,7 @@
  *   └────────────────────────────────────────────┘
  */
 
+import '../styles/calc.css';
 import { h, cx, mount, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
