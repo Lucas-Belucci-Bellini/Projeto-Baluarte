@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### 🧹 Núcleo Mark XIII — tela única 100% LIMPA, sem menus (#324)
+- 🏆 **Regra de Ouro aplicada**: `/git-nexus` no app agora abre a **tela única** (`git-nexus-nucleo.js`) — só a **cena 3D do Mark XIII** (protagonista, tela cheia), o **painel de sinais vitais** (NÚCLEO/REDE/EVENTOS/ENERGIA/MODO IA) e o **chat do J.A.R.V.I.S.** **ZERO abas, botões ou menus** — os 14 menus do cockpit sumiram da interface.
+- 🗣️ **Funções viram capacidades por comando**: "mostrar memória", "abrir conselho", "gerar código", "grafo"… → o J.A.R.V.I.S. **materializa a função inline** num painel de vidro por cima da cena (mesmos loaders sob demanda do cockpit — nada reescrito) e **"fechar"** (ou Esc) recolhe. Comandos extras: `modo <ia>` (troca o cérebro), `conectar ws://…`/`desconectar`/`simular` (ponte Fase D).
+- 🤖 **Corpo Total é a única exceção visual** — e **sem botão**: só aparece se pedido no chat ("corpo total", "ativar visão"); fechar também por comando.
+- 💬 **Chat = a única porta**: intents locais primeiro; o resto vai pro cérebro configurado (local/agente/hermes-agente/webllm/claude/ollama/servidor/…, o mesmo pipeline do /jarvis). Tool-calls aparecem como linhas discretas; a cena **pulsa** a cada resposta e evento ao vivo.
+- 🧯 Compat: deep-links `?tab=<id>` abrem a função direto (no painel); o cockpit de abas segue acessível via **`?ui=cockpit`** (escape hatch/dev); rotas individuais (/jarvis, /memoria, …) seguem registradas.
+- ✅ Verificado (Playwright, produção, app simulado): tela limpa (0 abas), "mostrar memória"→painel MEMÓRIA, "fechar"→recolhe, "corpo total"→só por comando, conversa local responde, `?ui=cockpit` e `?tab=` funcionam; 0 erros de página. CSS da tela **fora do boot** (disciplina #323).
+
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 8 (FINAL): alvos de toque ≥44px + handoff do Capacitor (#323)
 - 👆 **Alvos de toque ≥44px em aparelho de toque** (`components.css`, `@media (pointer: coarse)`): botões de ícone do header (eram 28px), botões pequenos e itens da sidebar agora têm área mínima de 44px pro dedo — sem mudar nada no desktop/mouse. Verificado (Playwright mobile 390×844): toggle do menu 44×44, item da sidebar 44px de altura; sem overflow horizontal em `/`, `/militar`, `/ferramentas`; `is-lowfx` ativo no celular.
 - 📦 **M4 (Capacitor → loja) vira tarefa local**: passo a passo completo em `docs/HANDOFF-LOCAL.md` (**M7**) — init/add android+ios, ícones/splash, permissão de câmera, build assinado. O site já está pronto pra envelopar (PWA + SW + manifest + toque).

@@ -1,0 +1,294 @@
+/**
+ * /git-nexus → NÚCLEO Mark XIII — tela única (issue #324).
+ *
+ * A "Regra de Ouro" do operador: a tela do Núcleo é 100% LIMPA — apenas a cena
+ * 3D do Mark XIII (protagonista, não backdrop), um painel de SINAIS VITAIS e o
+ * campo de comando do J.A.R.V.I.S. NADA de aba, botão ou menu para as funções
+ * de IA: elas viram CAPACIDADES do agente — o usuário pede via chat/comando
+ * ("mostrar memória", "abrir conselho"), a IA executa por baixo dos panos e,
+ * quando a função precisa de visual, ela é montada INLINE num painel de vidro
+ * (fechável por comando: "fechar"). O Corpo Total é a única função com
+ * permissão de desenhar imagem — e mesmo ele SÓ aparece se pedido no chat.
+ *
+ * Substitui o cockpit de abas (`git-nexus-cockpit.js`) como a cara do Núcleo.
+ * O cockpit continua acessível por `?ui=cockpit` (escape hatch/dev), e as
+ * rotas individuais (/jarvis, /memoria, …) seguem registradas pra deep-link.
+ */
+
+import '../styles/nucleo-screen.css';
+import { h, empty } from '../utils/helpers.js';
+import { bus } from '../core/events.js';
+import {
+  loadConfig, saveConfig,
+  processLocal, processClaude, processOllama, processServer, processHermes,
+  processClaudeServer, processOpenClaw, processAgent
+} from '../utils/jarvis-engine.js';
+import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
+import { initNucleoLink, getNucleoUrl, setNucleoUrl, simulateNucleoEvent } from '../utils/nucleo-socket.js';
+
+/* Pulso da cena por tipo de evento (Fase D do #316). */
+const PULSE_MS = { command: 420, biometric: 300, telemetry: 200, system: 160 };
+
+/* ===== As funções do Núcleo (ex-abas) — agora capacidades por comando =====
+ * `match` casa o pedido em pt-BR; `load()` importa sob demanda e devolve o
+ * elemento pronto (mesmos loaders do cockpit — nada foi reescrito). */
+const FUNCOES = [
+  { id: 'grafo',     nome: 'Grafo de Código',  match: /\bgrafo\b|c[óo]digo (3d|em 3d)/, load: () => import('./git-nexus.js').then((m) => m.gitNexusPage()) },
+  { id: 'vision',    nome: 'Corpo Total',      match: /corpo (total|inteiro)|ativa\w* (a )?vis[ãa]o|\bvis[ãa]o\b/, load: () => import('./jarvis-vision.js').then((m) => m.jarvisVisionPage()) },
+  { id: 'gerar',     nome: 'Gerar Código',     match: /gerar c[óo]digo|gera c[óo]digo/, load: () => import('./gerar-codigo.js').then((m) => m.gerarCodigoPage()) },
+  { id: 'conselho',  nome: 'Conselho de IAs',  match: /conselho/, load: () => import('./conselho.js').then((m) => m.conselhoPage()) },
+  { id: 'apis',      nome: 'Central de APIs',  match: /\bapis?\b|central de apis|chaves/, load: () => import('./apis.js').then((m) => m.apisPage()) },
+  { id: 'dashboard', nome: 'Dashboard',        match: /dashboard|painel de (m[ée]tricas|status)/, load: () => import('./jarvis-dashboard.js').then((m) => m.jarvisDashboardPage()) },
+  { id: 'ml',        nome: 'ML da Memória',    match: /\bml\b|aprendizado|machine learning/, load: () => import('./aprendizado.js').then((m) => m.aprendizadoPage()) },
+  { id: 'llm',       nome: 'Mini-LLM',         match: /mini[- ]?llm|\bllm\b/, load: () => import('./llm-lab.js').then((m) => m.llmLabPage()) },
+  { id: 'cerebro',   nome: 'Segundo Cérebro',  match: /c[ée]rebro/, load: () => import('./cerebro.js').then((m) => m.cerebroPage()) },
+  { id: 'memoria',   nome: 'Memória',          match: /mem[óo]ria/, load: () => import('./memoria.js').then((m) => m.memoriaPage()) },
+  { id: 'terminal',  nome: 'Terminal-IA',      match: /terminal/, load: () => import('./terminal-ia.js').then((m) => m.terminalIaPage()) },
+  { id: 'seguranca', nome: 'Segurança',        match: /seguran[çc]a/, load: () => import('./seguranca.js').then((m) => m.segurancaPage()) },
+  { id: 'ia',        nome: 'IA Proprietária',  match: /ia propriet[áa]ria|propriet[áa]ria/, load: () => import('./ia-proprietaria.js').then((m) => m.iaProprietariaPage()) },
+  { id: 'jarvis',    nome: 'J.A.R.V.I.S. completo', match: /jarvis completo|chat completo|sess[õo]es/, load: () => import('./jarvis.js').then((m) => m.jarvisPage()) }
+];
+
+/* Modos aceitos pelo comando "modo X" (mesmo catálogo do /jarvis). */
+const MODOS = ['local', 'webllm', 'hermes-agente', 'claude', 'ollama', 'servidor', 'hermes', 'claude-servidor', 'openclaw', 'agente'];
+
+export function gitNexusNucleo(args = {}) {
+  const page = h('div', { className: 'nucleo-screen' });
+
+  /* ===== 1. A cena — protagonista, tela cheia ===== */
+  const sceneEl = h('div', { className: 'nucleo-screen__scene', 'aria-hidden': 'true' });
+  page.appendChild(sceneEl);
+  let scene = null;
+  import('../utils/nucleo-scene.js')
+    .then((m) => m.mountNucleoScene(sceneEl))
+    .then((s) => { scene = s; setVital('nucleo', 'ONLINE', 'ok'); })
+    .catch((err) => {
+      console.warn('[nucleo] cena 3D indisponível:', err);
+      sceneEl.classList.add('nucleo-screen__scene--flat');
+      setVital('nucleo', 'MODO 2D', 'warn');
+    });
+
+  /* ===== 2. Sinais vitais (o único HUD fixo além do chat) ===== */
+  const vitals = {};
+  function vitalRow(id, label, initial) {
+    const val = h('span', { className: 'nucleo-vitals__val' }, initial);
+    vitals[id] = val;
+    return h('div', { className: 'nucleo-vitals__row' },
+      h('span', { className: 'nucleo-vitals__label' }, label), val);
+  }
+  function setVital(id, text, tone) {
+    const el = vitals[id];
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'nucleo-vitals__val' + (tone ? ` nucleo-vitals__val--${tone}` : '');
+  }
+  const config = loadConfig();
+  const vitalsEl = h('aside', { className: 'nucleo-vitals anim-fade-in', 'aria-label': 'Sinais vitais do Núcleo' },
+    h('div', { className: 'nucleo-vitals__title' }, '⬡ MARK XIII'),
+    vitalRow('nucleo', 'NÚCLEO', '…'),
+    vitalRow('rede', 'REDE', getNucleoUrl() ? 'CONECTANDO' : 'OFF'),
+    vitalRow('eventos', 'EVENTOS', '0'),
+    vitalRow('energia', 'ENERGIA', '—'),
+    vitalRow('modo', 'MODO IA', (config.mode || 'local').toUpperCase()));
+  page.appendChild(vitalsEl);
+
+  /* Energia: Battery API, best-effort (sem suporte → fica "—"). */
+  try {
+    if (navigator.getBattery) {
+      navigator.getBattery().then((b) => {
+        const upd = () => setVital('energia', Math.round(b.level * 100) + '%' + (b.charging ? ' ⚡' : ''), b.level < 0.2 && !b.charging ? 'warn' : 'ok');
+        upd(); b.addEventListener('levelchange', upd); b.addEventListener('chargingchange', upd);
+      }).catch(() => {});
+    }
+  } catch { /* best-effort */ }
+
+  /* ===== 3. Painel inline (oculto; abre SÓ por comando) ===== */
+  const panelBody = h('div', { className: 'nucleo-panel__body' });
+  const panelTitle = h('span', { className: 'nucleo-panel__title' }, '');
+  const panelEl = h('section', { className: 'nucleo-panel', hidden: true, 'aria-label': 'Função do Núcleo' },
+    h('div', { className: 'nucleo-panel__bar' }, panelTitle,
+      h('span', { className: 'nucleo-panel__hint u-text-muted' }, 'diga "fechar" (ou Esc)')),
+    panelBody);
+  page.appendChild(panelEl);
+  let panelToken = 0;
+
+  function fecharPanel() {
+    panelToken++;
+    panelEl.hidden = true;
+    empty(panelBody);
+  }
+  function abrirFuncao(fn) {
+    const my = ++panelToken;
+    panelTitle.textContent = fn.nome.toUpperCase();
+    panelEl.hidden = false;
+    empty(panelBody);
+    panelBody.appendChild(h('div', { className: 'nucleo-panel__loading' },
+      h('span', { className: 'gn-loading__orb' }),
+      h('p', { className: 'u-text-muted' }, `Materializando ${fn.nome}…`)));
+    Promise.resolve().then(() => fn.load())
+      .then((el) => { if (my !== panelToken) return; empty(panelBody); panelBody.appendChild(el); })
+      .catch((err) => {
+        if (my !== panelToken) return;
+        console.error(`[nucleo] falha ao carregar "${fn.id}":`, err);
+        empty(panelBody);
+        panelBody.appendChild(h('p', { className: 'u-text-muted' }, 'Não deu pra materializar esta função agora.'));
+      });
+  }
+
+  /* ===== 4. O chat do J.A.R.V.I.S. — a única porta ===== */
+  const log = h('div', { className: 'nucleo-chat__log', role: 'log', 'aria-live': 'polite' });
+  const input = h('input', {
+    className: 'nucleo-chat__input',
+    placeholder: 'Fale com o J.A.R.V.I.S. — ex.: "mostrar memória", "gerar código", "corpo total"…',
+    autocomplete: 'off', spellcheck: 'false', 'aria-label': 'Comando para o J.A.R.V.I.S.'
+  });
+  const chatEl = h('div', { className: 'nucleo-chat' }, log,
+    h('form', {
+      className: 'nucleo-chat__dock',
+      onsubmit: (e) => { e.preventDefault(); enviar(); }
+    }, h('span', { className: 'nucleo-chat__sigil', 'aria-hidden': 'true' }, '◉'), input));
+  page.appendChild(chatEl);
+
+  const convo = [];   // histórico curto em memória (a tela é a sessão)
+  let pensando = null;
+
+  function bolha(role, texto) {
+    const b = h('div', { className: `nucleo-chat__msg nucleo-chat__msg--${role}` }, texto);
+    log.appendChild(b);
+    log.scrollTop = log.scrollHeight;
+    /* mantém o transcript enxuto — só as últimas 12 falas ficam na tela */
+    while (log.children.length > 12) log.removeChild(log.firstChild);
+    return b;
+  }
+  function pensar(on) {
+    if (on && !pensando) { pensando = bolha('jarvis', '…'); pensando.classList.add('nucleo-chat__msg--typing'); }
+    else if (!on && pensando) { pensando.remove(); pensando = null; }
+  }
+
+  /* Roteador de comandos: intents locais primeiro; o resto vai pro cérebro. */
+  async function enviar() {
+    const texto = input.value.trim();
+    if (!texto) return;
+    input.value = '';
+    bolha('user', texto);
+    const t = texto.toLowerCase();
+
+    /* fechar painel */
+    if (/^(fechar|ocultar|esconder|sair)( .*)?$/.test(t)) {
+      fecharPanel();
+      bolha('jarvis', 'Painel recolhido, senhor.');
+      return;
+    }
+    /* trocar modo de IA */
+    const modo = t.match(/^modo\s+([a-z-]+)$/);
+    if (modo) {
+      if (MODOS.includes(modo[1])) {
+        saveConfig({ ...loadConfig(), mode: modo[1] });
+        setVital('modo', modo[1].toUpperCase());
+        bolha('jarvis', `Modo de IA → ${modo[1]}.`);
+      } else bolha('jarvis', `Modo desconhecido. Opções: ${MODOS.join(', ')}.`);
+      return;
+    }
+    /* ponte ao vivo: conectar/desconectar/simular */
+    const con = t.match(/^conectar\s+(wss?:\/\/\S+)$/);
+    if (con) { setNucleoUrl(con[1]); bolha('jarvis', `Ponte configurada: ${con[1]}. Conectando…`); return; }
+    if (/^desconectar$/.test(t)) { setNucleoUrl(''); setVital('rede', 'OFF'); bolha('jarvis', 'Ponte desligada.'); return; }
+    if (/^simular( evento)?$/.test(t)) { simulateNucleoEvent('command'); bolha('jarvis', 'Evento de demonstração emitido.'); return; }
+
+    /* abrir função por comando ("mostrar memória", "abrir conselho", "corpo total"…) */
+    const pedido = /^(mostrar?|abrir?|ativar?|exibir?|rodar?)\b/.test(t) ? t.replace(/^(mostrar?|abrir?|ativar?|exibir?|rodar?)\s*/, '') : t;
+    const fn = FUNCOES.find((f) => f.match.test(pedido));
+    if (fn && (pedido.length < 40)) {   // pedidos curtos = intenção direta de abrir
+      abrirFuncao(fn);
+      bolha('jarvis', fn.id === 'vision'
+        ? 'Ativando o Corpo Total, senhor.'
+        : `${fn.nome} materializado. Diga "fechar" quando terminar.`);
+      return;
+    }
+
+    /* conversa/tarefa → o cérebro configurado responde */
+    convo.push({ role: 'user', content: texto });
+    pensar(true);
+    try {
+      const cfg = loadConfig();
+      const call = { ...cfg };
+      let resposta;
+      const aoTool = (nome, _inp, res) => {
+        pensar(false);
+        bolha('tool', `⚙ ${nome} → ${res && res.ok ? 'ok' : 'erro'}`);
+        pensar(true);
+      };
+      if (cfg.mode === 'agente') resposta = await processAgent(convo, call, aoTool);
+      else if (cfg.mode === 'hermes-agente') resposta = await processHermesAgent(convo, call, aoTool, {});
+      else if (cfg.mode === 'claude') resposta = await processClaude(convo, call);
+      else if (cfg.mode === 'ollama') resposta = await processOllama(convo, call);
+      else if (cfg.mode === 'servidor') resposta = await processServer(convo, call);
+      else if (cfg.mode === 'hermes') resposta = await processHermes(convo, call);
+      else if (cfg.mode === 'claude-servidor') resposta = await processClaudeServer(convo, call);
+      else if (cfg.mode === 'openclaw') resposta = await processOpenClaw(convo, call);
+      else if (cfg.mode === 'webllm') {
+        const m = await import('../utils/jarvis-webllm.js');
+        resposta = await m.processWebLLM(convo, call, {
+          onProgress: (txt) => { if (pensando) pensando.textContent = '⬇ ' + txt; },
+          onToken: (parcial) => { if (pensando) pensando.textContent = parcial; }
+        });
+      } else {
+        const r = processLocal(texto);
+        resposta = r.text;
+        if (r.action?.type === 'navigate') {
+          const alvo = FUNCOES.find((f) => r.action.payload.includes(f.id));
+          if (alvo) abrirFuncao(alvo);   // navegação vira painel inline (sem sair da tela)
+        }
+      }
+      pensar(false);
+      convo.push({ role: 'assistant', content: resposta });
+      if (convo.length > 24) convo.splice(0, convo.length - 24);
+      bolha('jarvis', resposta);
+      scene && scene.pulse && scene.pulse(360);
+    } catch (e) {
+      pensar(false);
+      bolha('jarvis', `⚙ ${e.message} — diga "modo local" pra respostas imediatas sem configuração.`);
+    }
+  }
+
+  /* Esc fecha o painel (complemento de acessibilidade ao comando "fechar"). */
+  const onKey = (e) => { if (e.key === 'Escape' && !panelEl.hidden) fecharPanel(); };
+  document.addEventListener('keydown', onKey);
+
+  /* ===== 5. Núcleo AO VIVO (Fase D #316): eventos fazem a cena pulsar ===== */
+  let nEventos = 0;
+  const offEvent = bus.on('nucleo:event', (ev) => {
+    nEventos++;
+    setVital('eventos', String(nEventos));
+    scene && scene.pulse && scene.pulse(PULSE_MS[ev.type] || 240);
+  });
+  const offStatus = bus.on('nucleo:status', (st) => {
+    setVital('rede', st.connected ? 'ONLINE' : (getNucleoUrl() ? 'RECONECTANDO' : 'OFF'), st.connected ? 'ok' : undefined);
+  });
+  initNucleoLink();
+
+  /* Deep-link compat: /git-nexus?tab=<id> (links antigos do cockpit) abre a
+   * função direto — mas via painel, mantendo a tela limpa. */
+  const tab = args.tab || (args.query && args.query.tab);
+  if (tab) {
+    const fn = FUNCOES.find((f) => f.id === tab);
+    if (fn) abrirFuncao(fn);
+  }
+
+  bolha('jarvis', 'Núcleo Mark XIII operacional. Às ordens, senhor.');
+
+  /* Limpeza ao sair da rota (cena + bus + teclado). */
+  if (typeof MutationObserver !== 'undefined') {
+    const mo = new MutationObserver(() => {
+      if (!document.contains(page)) {
+        offEvent(); offStatus();
+        document.removeEventListener('keydown', onKey);
+        try { scene && scene.destroy && scene.destroy(); } catch { /* ok */ }
+        mo.disconnect();
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
+
+  return page;
+}
