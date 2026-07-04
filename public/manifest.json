@@ -1,26 +1,62 @@
 {
+  "id": "/?source=pwa",
   "name": "Projeto Baluarte — Mark XIII",
   "short_name": "Baluarte",
-  "description": "Plataforma narrativa e de ferramentas técnicas — Lucas Belucci Bellini",
-  "start_url": "/",
+  "description": "Plataforma narrativa, militar e de ferramentas técnicas — Lucas Belucci Bellini",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#0e0c16",
+  "theme_color": "#0e0c16",
   "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "education"],
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%2300f0ff'/><stop offset='1' stop-color='%23ff00aa'/></linearGradient></defs><rect width='192' height='192' fill='%230a0a0a'/><polygon points='96,16 168,56 168,136 96,176 24,136 24,56' fill='none' stroke='url(%23g)' stroke-width='6'/><polygon points='96,48 138,72 138,120 96,144 54,120 54,72' fill='none' stroke='url(%23g)' stroke-width='4'/></svg>",
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%23d4a24e'/><stop offset='1' stop-color='%23e8c07a'/></linearGradient></defs><rect width='192' height='192' fill='%230e0c16'/><polygon points='96,16 168,56 168,136 96,176 24,136 24,56' fill='none' stroke='url(%23g)' stroke-width='6'/><polygon points='96,48 138,72 138,120 96,144 54,120 54,72' fill='none' stroke='url(%23g)' stroke-width='4'/></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%2300f0ff'/><stop offset='1' stop-color='%23ff00aa'/></linearGradient></defs><rect width='512' height='512' fill='%230a0a0a'/><polygon points='256,40 448,150 448,362 256,472 64,362 64,150' fill='none' stroke='url(%23g)' stroke-width='14'/><polygon points='256,128 368,192 368,320 256,384 144,320 144,192' fill='none' stroke='url(%23g)' stroke-width='10'/></svg>",
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%23d4a24e'/><stop offset='1' stop-color='%23e8c07a'/></linearGradient></defs><rect width='512' height='512' fill='%230e0c16'/><polygon points='256,40 448,150 448,362 256,472 64,362 64,150' fill='none' stroke='url(%23g)' stroke-width='14'/><polygon points='256,128 368,192 368,320 256,384 144,320 144,192' fill='none' stroke='url(%23g)' stroke-width='10'/></svg>",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%23d4a24e'/><stop offset='1' stop-color='%23e8c07a'/></linearGradient></defs><rect width='512' height='512' fill='%230e0c16'/><polygon points='256,106 386,181 386,331 256,406 126,331 126,181' fill='none' stroke='url(%23g)' stroke-width='12'/><polygon points='256,166 334,211 334,301 256,346 178,301 178,211' fill='none' stroke='url(%23g)' stroke-width='8'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Núcleo Mark XIII",
+      "short_name": "Núcleo",
+      "description": "Abrir o Núcleo de IA (J.A.R.V.I.S.)",
+      "url": "/#/git-nexus"
+    },
+    {
+      "name": "Centro Militar",
+      "short_name": "Militar",
+      "description": "Hub militar com extrato vivo",
+      "url": "/#/militar"
+    },
+    {
+      "name": "Arsenal",
+      "short_name": "Arsenal",
+      "description": "Arsenal do Baluarte",
+      "url": "/#/arsenal"
+    },
+    {
+      "name": "Modelos 3D",
+      "short_name": "Modelos",
+      "description": "Visualizador de modelos 3D",
+      "url": "/#/modelos-3d"
     }
   ]
 }

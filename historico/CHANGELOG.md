@@ -6,7 +6,13 @@ aqui o que mudou.
 
 ---
 
-## 2026-07-03
+## 2026-07-04
+
+### ⚡ v0.4.0 (mobile + perf) — Fatia 4: PWA instalável no celular (Android/iOS) (#323)
+- 📲 **Manifesto modernizado** (`public/manifest.json`): cores alinhadas à estética Ouro (`#0e0c16` no lugar do neon `#0a0a0a`/`#00f0ff`), ícones **hexágono dourado** (`#d4a24e`→`#e8c07a`), um ícone **`maskable` dedicado** (hexágono na safe-zone, sem corte no Android adaptativo), `id`/`categories`/`display_override` e **4 atalhos** (Núcleo, Militar, Arsenal, Modelos 3D) que aparecem no long-press do ícone.
+- 🍎 **Instalável no iOS** (`index.html`): metas `apple-mobile-web-app-*` (capable, título "Baluarte", status bar translúcida), `mobile-web-app-capable` e `apple-touch-icon` — "Adicionar à Tela de Início" no Safari abre em tela cheia, sem barra.
+- 🖼️ Auditoria de imagens: o site **não usa `<img>` eager** (imagens são fundo CSS ou o iframe da cena 3D, que **já é `loading="lazy"`**) — nada a cortar aqui, o peso já estava enxuto.
+- ✅ Verificado (Playwright, build de produção): manifesto parseia com 3 ícones (1 maskable) + 4 atalhos, boot limpo, `three` **fora** do preload do boot.
 
 ### ⚡ v0.4.0 (mobile + perf) — Fatia 3: fontes do boot 9 → 3 (resto sob demanda) (#323)
 - ✂️ **Boot carrega só 3 fontes** (`index.html`): Cormorant Garamond, Spectral, IBM Plex Mono (o tema Ouro). As outras **6** (Cinzel, Inter, JetBrains Mono, Oswald, Rajdhani, Titillium) eram só pros **skins de universo** — saíram do boot.
