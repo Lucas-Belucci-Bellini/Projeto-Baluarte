@@ -77,6 +77,7 @@ Versionadas em `supabase/migrations/`. Idempotentes (podem rodar mais de uma vez
 | `0005_profiles.sql` | contas de usuário: `profiles` (RLS dono-só) + trigger de criação no signup | ✅ aplicada (23/06/2026, migration `profiles`) |
 | `0006_knowledge.sql` | `knowledge_notes` por usuário (Segundo Cérebro, Omega Prism) — RLS dono-só | ✅ aplicada (24/06/2026, migration `knowledge_notes`) |
 | `0007_memories.sql` | `memories` por usuário (Memória do JARVIS, Omega Prism) — RLS dono-só | ✅ aplicada (24/06/2026, migration `memories`) |
+| `0008_universal_db.sql` | **Banco Universal**: `media_bookmarks` (save-state de mídia, RLS dono-só) + `global_comms` (chat global, Realtime + anti-flood) + índices | ✅ aplicada (04/07/2026, migration `universal_db`) |
 
 Conferir o estado a qualquer momento (sessão com Supabase MCP):
 `list_tables` (tabelas + RLS) e `list_migrations` (histórico aplicado).
@@ -303,7 +304,34 @@ Feito isso, o botão "Entrar com Google" (próxima fatia) funciona ponta a ponta
 
 ---
 
+## 10. Banco de Dados Universal (0008) — sync de mídia + Rede Neural
+
+Três pilares (pedido do operador, 04/07):
+
+- **`media_bookmarks`** — save-state de mídia por usuário (timecode exato onde
+  parou em vídeo/filme/música/rádio/leitura). `UNIQUE (user_id, media_key)` →
+  upsert de 1 request (`on_conflict` + `resolution=merge-duplicates`); índice
+  `(user_id, updated_at desc)` pro "continuar assistindo". **RLS dono-só nas 4
+  operações** — impossível ler/alterar o save de outro. `updated_at` automático
+  por trigger. Preferências profundas (tema/universo/favoritos/prefs jsonb)
+  seguem em `profiles` (0005) — mesmo padrão dono-só.
+- **`global_comms`** — chat global ("Rede Neural"): leitura pública, escrita
+  autenticada **só como si mesmo** (`auth.uid() = user_id`), delete só da
+  própria mensagem, **sem update** (histórico íntegro). **Anti-flood no banco**
+  (trigger `comms_rate_limit`, 1 msg/2s por usuário — nem cliente adulterado
+  fura). Entrega **instantânea** via Realtime: a tabela está na publicação
+  `supabase_realtime` (INSERTs chegam por WebSocket, zero polling).
+- **Cliente sem SDK** (`web = leve`): `src/core/media-sync.js` (local-first +
+  debounce 4s + upsert), `src/core/realtime.js` (protocolo Phoenix em ~90
+  linhas: join `postgres_changes`, heartbeat 25s, reconexão com backoff) e
+  `src/core/comms.js` (histórico + send + dedupe + status).
+
+Verificado em produção (04/07): leitura pública do chat 200 · escrita anônima
+**401 RLS** · save-state anônimo ilegível/inescrevível · INSERT no banco chegou
+**ao vivo** no cliente WebSocket vanilla · advisors sem avisos novos.
+
 ## Refs
 #187 (mural) · #287 (mural no banco) · #288 (login do dono/OTP) · #290 (contador) ·
 #291 (regras/backlog) · #238 (web leve). Código: `src/core/supabase.js` ·
-`src/core/supabase-auth.js` · `src/core/user-prefs.js` · migrations: `supabase/migrations/`.
+`src/core/supabase-auth.js` · `src/core/user-prefs.js` · `src/core/media-sync.js` ·
+`src/core/realtime.js` · `src/core/comms.js` · migrations: `supabase/migrations/`.
