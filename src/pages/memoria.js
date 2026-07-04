@@ -5,6 +5,7 @@
  * aos conceitos do Segundo Cérebro. Lê/escreve via src/utils/jarvis-brain.js.
  */
 
+import '../styles/memoria.css';
 import { h, empty, debounce } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';

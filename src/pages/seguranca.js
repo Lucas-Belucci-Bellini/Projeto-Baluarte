@@ -5,6 +5,7 @@
  * agente do JARVIS, com liga/desliga e o log de decisões. Lê src/utils/jarvis-guard.js.
  */
 
+import '../styles/seguranca.css';
 import { h, empty } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import {

@@ -16,6 +16,7 @@
  *   7. Conexões — Segundo Cérebro (/cerebro) e Git Nexus / Raio-X (/codigo).
  */
 
+import '../styles/aprendizado.css';
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';

@@ -7,6 +7,7 @@
  * Depois GERA texto no estilo do corpus. Educacional e 100% client-side.
  */
 
+import '../styles/llm-lab.css';
 import { h, empty, cx } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 import { buildVocab, NgramModel, NeuralBigram, SAMPLE_CORPORA } from '../utils/llm-mini.js';

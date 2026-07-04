@@ -6,6 +6,7 @@
  * Aceita upload, arrastar-soltar, colar (Ctrl+V) e captura pela câmera.
  */
 
+import '../styles/ocr.css';
 import { h } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
 
