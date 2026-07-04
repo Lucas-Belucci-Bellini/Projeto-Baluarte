@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### 🗄️ Banco de Dados Universal — sync de mídia + Rede Neural (Supabase 0008)
+- 📼 **Sync Universal** (`media_bookmarks`): save-state de mídia por usuário — o timecode exato onde parou (vídeo/filme/música/rádio/leitura) — sincronizado entre desktop (Electron) e mobile/web pelo mesmo login. `UNIQUE (user_id, media_key)` = upsert de 1 request; índice `(user_id, updated_at desc)` pro "continuar assistindo"; `updated_at` automático por trigger. Preferências profundas seguem em `profiles` (0005).
+- 🌐 **Rede Neural** (`global_comms`): chat global entre todos os usuários — leitura pública, escrita autenticada só como si mesmo, entrega **instantânea** via **Supabase Realtime** (tabela na publicação `supabase_realtime`; INSERTs chegam por WebSocket, zero polling/recarregar).
+- 🔐 **Segurança de Aço**: RLS **dono-só nas 4 operações** dos save-states (impossível alterar o estado de outro); chat sem `update` (histórico íntegro), delete só da própria mensagem; **anti-flood no banco** (trigger, 1 msg/2s por usuário — nem cliente adulterado fura); funções de trigger com `EXECUTE` revogado da API.
+- 🪶 **Cliente sem SDK** (regra web=leve): `media-sync.js` (local-first + debounce 4s + upsert), `realtime.js` (protocolo Phoenix do Realtime em ~90 linhas: `postgres_changes`, heartbeat, backoff) e `comms.js` (histórico + send + dedupe).
+- ✅ **Aplicada e verificada em produção**: migration `universal_db` no banco oficial; leitura pública do chat 200, escrita anônima **401 RLS**, save-state anônimo bloqueado; INSERT no banco chegou **ao vivo** no cliente WebSocket vanilla; advisors sem avisos novos. Doc: `docs/SUPABASE.md` §10.
+
 ### 🛡️ Motor Hermes nativo — blindagem e fallback absoluto (zero-crash) (#310/#222)
 - 🧯 **Try/Catch de Aço no main do Electron** (`desktop/src/hermes.js`): o node-llama-cpp é interceptado nos DOIS pontos onde ABI estoura — o `require` e o `getLlama()/loadModel()` (ERR_DLOPEN_FAILED, `NODE_MODULE_VERSION` mismatch, ELF/arch errado) — e também no runtime (`generate`). O erro é **classificado** (abi/módulo-ausente/init), o motor vira **FATAL na sessão** (falhou 1x → nunca re-tenta; resposta imediata, sem timeout) e **nada sobe** pro app (Zero Crash Policy).
 - ⚡ **Chave automática em pleno voo** (`jarvis-hermes-agent.js`): o cérebro nativo é embrulhado num interceptador — se falhar no meio de uma conversa, o **WebLLM assume NA HORA, na mesma conversa**, sem erro pro usuário. Sem app/motor, já nasce no WebLLM (comportamento anterior preservado).
