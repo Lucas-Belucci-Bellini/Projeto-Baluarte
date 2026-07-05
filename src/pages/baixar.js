@@ -90,6 +90,22 @@ export function baixarPage() {
       'Sem as travas do navegador: 3D, ML local e processamento que a web não aguenta.')
   ));
 
+  /* ===== Mobile (v0.5.0 #340): download DIRETO do APK — sem loja, sem login.
+   * Busca em runtime a release `mobile-v*` mais recente (prerelease) e linka o
+   * .apk anexado pelo workflow Mobile Release. iOS: em breve (M7 local). ===== */
+  const apkBtn = h('a', {
+    className: 'dl-other__link is-disabled', href: RELEASES_URL,
+    target: '_blank', rel: 'noopener', title: 'Android — buscando o APK…'
+  }, '🤖 Android (APK direto)');
+  page.appendChild(h('section', { className: 'dl-notes' },
+    h('h2', { className: 'dl-notes__title' }, '📱 Celular'),
+    h('div', { className: 'dl-other', style: { justifyContent: 'flex-start' } },
+      apkBtn,
+      h('span', { className: 'dl-other__link is-disabled', title: 'iOS — em preparação (TestFlight)' }, ' iOS (em breve)')),
+    note('🤖', 'Android', 'Baixe o APK e abra. O Android vai pedir pra permitir "fontes desconhecidas" — é normal fora da Play Store. O site também instala como PWA (menu do navegador → "Adicionar à tela inicial").'),
+    note('', 'iOS', 'Enquanto o app não chega no TestFlight, use o PWA: Safari → Compartilhar → "Adicionar à Tela de Início" — abre em tela cheia.')
+  ));
+
   page.appendChild(h('section', { className: 'dl-notes' },
     h('h2', { className: 'dl-notes__title' }, 'Como instalar'),
     note('🪟', 'Windows', 'Baixe o .exe e abra. Se o Windows avisar (SmartScreen), clique em "Mais informações → Executar assim mesmo" — é só porque o app ainda não tem assinatura paga.'),
@@ -98,7 +114,30 @@ export function baixarPage() {
   ));
 
   loadRelease({ ctaBtn, ctaMain, ctaSub, otherEl, statusEl, osId });
+  loadMobileRelease(apkBtn);
   return page;
+}
+
+/* Acha a release mobile-v* mais recente (prerelease não aparece em /latest) e
+ * aponta o botão pro .apk. Falhou/não existe → botão leva pra página de releases. */
+async function loadMobileRelease(apkBtn) {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=15`,
+      { headers: { Accept: 'application/vnd.github+json' } });
+    if (!r.ok) return;
+    const releases = await r.json();
+    const mob = releases.find((x) => /^mobile-v/.test(x.tag_name || ''));
+    const apk = mob && (mob.assets || []).find((a) => /\.apk$/i.test(a.name));
+    if (apk) {
+      apkBtn.classList.remove('is-disabled');
+      apkBtn.href = apk.browser_download_url;
+      apkBtn.removeAttribute('target');
+      apkBtn.title = `Baixar o APK (${fmtSize(apk.size)}) — ${mob.tag_name}`;
+      apkBtn.textContent = `🤖 Android — APK direto (${fmtSize(apk.size)})`;
+    } else {
+      apkBtn.title = 'Android — APK em preparação; veja as releases';
+    }
+  } catch { /* offline/rate-limit: botão segue pro GitHub */ }
 }
 
 async function loadRelease({ ctaBtn, ctaMain, ctaSub, otherEl, statusEl, osId }) {
