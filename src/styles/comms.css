@@ -1,0 +1,96 @@
+/* /comms — Rede Neural (chat global, 0008). Fora do boot: importada pelo módulo. */
+
+.comms {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.comms__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+}
+.comms__dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.comms__dot.is-on {
+  background: var(--color-cyan);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.comms__feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-height: 280px;
+  max-height: 56vh;
+  overflow-y: auto;
+  padding: var(--space-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-cyan-edge);
+  border-radius: var(--radius-lg);
+  scrollbar-width: thin;
+}
+
+.comms__msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 88%;
+  animation: comms-in 0.22s ease-out;
+}
+@keyframes comms-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
+.comms__msg--own { align-self: flex-end; text-align: right; }
+
+.comms__author {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-cyan);
+  letter-spacing: 0.06em;
+}
+.comms__msg--own .comms__author { color: var(--color-magenta); }
+.comms__text {
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.comms__msg--own .comms__text { border-color: var(--color-magenta-edge); }
+.comms__time { font-size: 10px; color: var(--color-text-muted); }
+
+.comms__dock {
+  display: flex;
+  gap: var(--space-sm);
+}
+.comms__input {
+  flex: 1;
+  min-height: 44px;
+}
+.comms__login {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-cyan-edge);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.comms__empty { color: var(--color-text-muted); text-align: center; padding: var(--space-lg); }

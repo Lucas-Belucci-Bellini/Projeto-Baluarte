@@ -121,7 +121,7 @@ export const iconByPath = {
   '/visao': 'eye', '/jarvis-vision': 'scan', '/ferramentas': 'gear',
   '/enciclopedia-militar': 'book',
   '/militar': 'shield', '/modelos-3d': 'cube',
-  '/codigo': 'network', '/projetos': 'folder', '/mural': 'chat', '/banco': 'database', '/cerebro': 'brain', '/ocr': 'scantext',
+  '/codigo': 'network', '/projetos': 'folder', '/mural': 'chat', '/comms': 'chat', '/banco': 'database', '/cerebro': 'brain', '/ocr': 'scantext',
   '/memoria': 'database', '/terminal-ia': 'terminal', '/seguranca': 'shield',
   '/gerar-codigo': 'wand', '/conselho': 'council'
 };

@@ -31,6 +31,7 @@ export const NAV_GROUPS = [
       { path: '/perfil',      label: 'Perfil',             icon: '◔', phase: 1 },
       { path: '/projetos',    label: 'Projetos',           icon: '📁', phase: 1 },
       { path: '/mural',       label: 'Mural',              icon: '📣', phase: 1 },
+      { path: '/comms',       label: 'Rede Neural',        icon: '📡', phase: 1 },
       { path: '/roadmap',     label: 'Roadmap',            icon: '◈', phase: 1 },
       { path: '/sobre',       label: 'Sobre o Projeto',    icon: '◇', phase: 1 }
     ]

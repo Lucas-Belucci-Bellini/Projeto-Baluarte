@@ -10,6 +10,7 @@ import { h, empty, cx } from '../utils/helpers.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
+import { saveBookmark, loadBookmark } from '../core/media-sync.js';
 import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
 import { ALBUNS } from '../data/albuns.js';
 import {
@@ -256,9 +257,32 @@ function meuAcervoSection() {
     currentUrl = URL.createObjectURL(blob);
     currentId = id;
     audio.src = currentUrl;
+    /* Sync Universal (0008): retoma do ponto salvo (nuvem/local) — só se o
+     * save cair no MEIO da faixa (nem no comecinho, nem no finzinho). */
+    loadBookmark('musica:acervo/' + id).then((b) => {
+      if (!b || currentId !== id) return;
+      const pos = Number(b.position_secs) || 0;
+      const seek = () => {
+        if (pos > 5 && (!audio.duration || pos < audio.duration - 10)) audio.currentTime = pos;
+      };
+      if (audio.readyState >= 1) seek();
+      else audio.addEventListener('loadedmetadata', seek, { once: true });
+    }).catch(() => { /* bookmark é best-effort */ });
     audio.play().catch(() => {});
     markActive();
   }
+
+  /* salva o "onde parei" da faixa atual (debounce/local-first no media-sync) */
+  audio.addEventListener('timeupdate', () => {
+    if (!currentId || !audio.duration || audio.paused) return;
+    const t = tracks.find((x) => x.id === currentId);
+    saveBookmark('musica:acervo/' + currentId, {
+      kind: 'musica',
+      position: audio.currentTime,
+      duration: audio.duration,
+      meta: { name: (t && t.name) || 'faixa' }
+    });
+  });
 
   function playAt(offset) {
     if (!tracks.length) return;
