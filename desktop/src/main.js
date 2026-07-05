@@ -10,7 +10,7 @@
 // Segurança (a UI vem da web, logo o renderer é "não confiável"):
 // contextIsolation ligado, sem nodeIntegration, sandbox, e navegação/links
 // presos às origens confiáveis. A ponte nativa real (nexus.*, fs.*) entra no M2.
-const { app, BrowserWindow, Tray, Menu, nativeImage, shell, ipcMain } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, shell, ipcMain, session, systemPreferences } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const { registerIpc } = require('./ipc');
@@ -249,6 +249,25 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(() => {
     Menu.setApplicationMenu(null);
+
+    /* P0 (#338): Corpo Total — o `getUserMedia` da página só funciona se o
+     * MAIN autorizar a permissão de mídia; sem handler o Electron NEGA em
+     * silêncio (por isso a câmera "não era reconhecida" no app). Allowlist:
+     * só `media` (câmera/microfone) e só pra origem confiável do site. */
+    const isTrustedMediaOrigin = (u) => {
+      try { return ALLOWED_ORIGINS.includes(new URL(u).origin); } catch { return false; }
+    };
+    session.defaultSession.setPermissionRequestHandler((wc, permission, callback, details) => {
+      const from = (details && details.requestingUrl) || (wc && wc.getURL()) || '';
+      const ok = permission === 'media' && isTrustedMediaOrigin(from);
+      if (ok && process.platform === 'darwin' && systemPreferences.askForMediaAccess) {
+        // macOS: dispara o prompt do SISTEMA (exige NSCameraUsageDescription no Info.plist)
+        systemPreferences.askForMediaAccess('camera').catch(() => {});
+      }
+      callback(ok);
+    });
+    session.defaultSession.setPermissionCheckHandler((wc, permission, origin) =>
+      permission === 'media' && isTrustedMediaOrigin(origin));
 
     // Registra o app como handler do protocolo baluarte://
     if (process.defaultApp && process.argv.length >= 2) {
