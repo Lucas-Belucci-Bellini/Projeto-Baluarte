@@ -65,8 +65,12 @@ export async function healthCheckServer(serverUrl) {
 /* ===== Config ===== */
 
 export function loadConfig() {
+  /* v0.5.0 (#340): o Hermes AGENTE local é o motor PADRÃO do J.A.R.V.I.S. —
+   * IA de verdade sem API/chave (WebLLM no site; motor embutido no app, com a
+   * blindagem #310 caindo pro WebLLM se o nativo falhar). Config já salva pelo
+   * usuário não é sobrescrita — isto é só o default de quem nunca escolheu. */
   return storage.get(CONFIG_KEY) || {
-    mode: 'local',
+    mode: 'hermes-agente',
     apiKey: '',
     model: 'claude-sonnet-4-6',
     ollamaUrl: 'http://localhost:11434',

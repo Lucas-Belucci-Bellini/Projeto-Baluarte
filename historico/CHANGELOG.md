@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-05
 
+### 🧠 v0.5.0 — Fatia 1: Hermes é o motor PADRÃO + seletor de modelos + Corpo Total resiliente (#340)
+- ⚙️ **Hermes agente = default** (`jarvis-engine.js`): quem nunca configurou o J.A.R.V.I.S. agora nasce no **`hermes-agente`** (IA de verdade, local, sem API — WebLLM no site, motor embutido no app com a blindagem #310). Config já salva não é tocada.
+- 🎛️ **Alternância dinâmica de modelos por comando** (Núcleo, sem menu — Regra de Ouro #324): **`modelos`** lista o catálogo com o ativo marcado; **`modelo <nº|nome>`** troca na hora (hermes-agente/webllm → catálogo WebLLM; ollama/claude → nome livre). O `/jarvis` já tinha o seletor visual por modo.
+- 🤖 **Corpo Total consertado na web** (o bug: exceção sem tratamento matava o recurso): (1) **mãos viraram opcionais** — MediaPipe falhou (CDN/wasm/`window.Hands`), degrada e o **corpo segue rastreando**; (2) `loadScript` com **teto de 20s** — CDN pendurada (rede móvel ruim) vira mensagem acionável em vez de "Carregando…" eterno; (3) botão **nunca trava** (try/finally). Canvas já era responsivo.
+- ✅ Verificado (Playwright): perfil novo → MODO `HERMES-AGENTE` nos vitais; `modelos`/`modelo 2` listam e persistem; CDN pendurada → status acionável + botão reabilitado; 0 erros.
+
 ### 🚀 Launcher 0.4.0 + Corpo Total reconhecido no app (#338)
 - 🎥 **P0 — causa raiz do Corpo Total corrigida**: o `main.js` do Electron **não tinha `setPermissionRequestHandler`** — o pedido de câmera do `getUserMedia` era **negado em silêncio** (por isso o Corpo Total "não era reconhecido" no app do PC). Agora a sessão registra request+check handlers com **allowlist**: só permissão `media` e só pra origem confiável do site. No macOS, o handler dispara o prompt do sistema (`askForMediaAccess`) e o `Info.plist` ganhou `NSCameraUsageDescription`/`NSMicrophoneUsageDescription` (`build.mac.extendInfo`).
 - 📦 **P1 — launcher 0.4.0**: `desktop/package.json` **0.3.0 → 0.4.0** (leva junto a blindagem do motor nativo, o Núcleo de tela única #324 e o fix do P0). Release cortada pelo workflow **Desktop Release**.
