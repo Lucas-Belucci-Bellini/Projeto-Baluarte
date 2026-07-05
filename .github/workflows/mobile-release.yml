@@ -16,6 +16,10 @@ on:
         description: 'Versão (informativo)'
         required: false
         default: '0.4.0'
+      publish_tag:
+        description: 'Publicar release com esta tag (ex.: mobile-v0.4.0); vazio = só artifacts'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -64,13 +68,16 @@ jobs:
           name: baluarte-android-release-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
 
-      - name: Anexar à Release (quando for tag)
-        if: startsWith(github.ref, 'refs/tags/mobile-v')
+      - name: Anexar à Release (tag mobile-v* ou dispatch com publish_tag)
+        if: startsWith(github.ref, 'refs/tags/mobile-v') || github.event.inputs.publish_tag != ''
         uses: softprops/action-gh-release@v2
         with:
           # prerelease: NÃO pode virar a "latest" — o auto-update do launcher e o
           # /baixar desktop leem /releases/latest; o /baixar acha esta pela tag.
+          # Via dispatch, o softprops CRIA a tag informada (o push direto de tag
+          # é bloqueado pra sessão remota — 403).
           prerelease: true
+          tag_name: ${{ github.event.inputs.publish_tag || github.ref_name }}
           files: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/bundle/release/app-release.aab
