@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-05
 
+### 🗣️ v0.5.0 — Fatia 2: Voz do J.A.R.V.I.S. + APK direto no site (#340)
+- 🗣️ **Voz do J.A.R.V.I.S.** (`src/utils/jarvis-voice.js`): o Núcleo agora FALA as respostas. Dois motores: **ElevenLabs** (voz de referência `Gubgw9l4dtIoQA9YZHgx`, `eleven_multilingual_v2` — fala qualquer idioma) quando o operador colar a chave, e **`speechSynthesis` do navegador** (grátis/offline) como padrão e fallback automático. Texto limpo pra fala (markdown/URLs/código fora), teto de 600 chars.
+- 🎚️ **Tudo por comando, sem menu** (Regra de Ouro): `voz on/off` · `voz idioma <código>` (pt-BR default; en/es/fr/de/it/ja) · `voz chave <key>` (guardada SÓ no navegador) · `silêncio`. Fala para ao sair da rota.
+- 📱 **APK direto no site** (`/baixar`): nova seção **Celular** — o botão Android resolve em runtime a release `mobile-v*` mais recente e baixa o `.apk` **sem loja e sem login** (a solução temporária pedida pelo operador); nota de instalação ("fontes desconhecidas") e alternativa PWA pro iOS.
+- 🔒 Workflow `mobile-release.yml` marcado **`prerelease: true`** — a release do APK NÃO vira a "latest" (protege o auto-update do launcher e o /baixar desktop, que leem `/releases/latest`).
+- ✅ Verificado (Playwright): comandos de voz respondem e persistem (`voice:on/lang`); `/baixar` mostra a seção Celular com botão Android e notas; 0 erros.
+
 ### 🧠 v0.5.0 — Fatia 1: Hermes é o motor PADRÃO + seletor de modelos + Corpo Total resiliente (#340)
 - ⚙️ **Hermes agente = default** (`jarvis-engine.js`): quem nunca configurou o J.A.R.V.I.S. agora nasce no **`hermes-agente`** (IA de verdade, local, sem API — WebLLM no site, motor embutido no app com a blindagem #310). Config já salva não é tocada.
 - 🎛️ **Alternância dinâmica de modelos por comando** (Núcleo, sem menu — Regra de Ouro #324): **`modelos`** lista o catálogo com o ativo marcado; **`modelo <nº|nome>`** troca na hora (hermes-agente/webllm → catálogo WebLLM; ollama/claude → nome livre). O `/jarvis` já tinha o seletor visual por modo.

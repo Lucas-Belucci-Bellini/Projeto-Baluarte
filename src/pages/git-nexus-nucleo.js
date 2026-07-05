@@ -26,6 +26,7 @@ import {
 import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
 import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
 import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
+import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoiceLang, setElevenKey, hasElevenKey, VOICE_LANGS } from '../utils/jarvis-voice.js';
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, simulateNucleoEvent } from '../utils/nucleo-socket.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
@@ -247,6 +248,32 @@ export function gitNexusNucleo(args = {}) {
       }
       return;
     }
+    /* VOZ do J.A.R.V.I.S. (v0.5.0 #340): tudo por comando, sem menu. */
+    if (/^voz( on| off)?$/.test(t)) {
+      const ligar = t === 'voz on' || (t === 'voz' && !voiceEnabled());
+      setVoiceEnabled(ligar);
+      const msg = ligar
+        ? `Voz ativada (${voiceLang()}${hasElevenKey() ? ' · ElevenLabs' : ' · navegador'}). Diga "voz off" pra silenciar.`
+        : 'Voz desativada.';
+      bolha('jarvis', msg);
+      if (ligar) speak(msg);
+      return;
+    }
+    const vozIdioma = t.match(/^voz idioma\s+([a-z]{2}(-[a-z]{2})?)$/i);
+    if (vozIdioma) {
+      const l = setVoiceLang(vozIdioma[1]);
+      bolha('jarvis', l ? `Idioma da voz → ${l}.` : `Idioma não suportado. Opções: ${VOICE_LANGS.join(', ')}.`);
+      if (l && voiceEnabled()) speak(l.startsWith('pt') ? 'Idioma configurado, senhor.' : 'Language configured, sir.');
+      return;
+    }
+    const vozChave = texto.match(/^voz chave\s+(\S+)$/i);
+    if (vozChave) {
+      setElevenKey(vozChave[1]);
+      bolha('jarvis', 'Chave da ElevenLabs guardada SÓ neste navegador. A voz de referência assume na próxima fala.');
+      return;
+    }
+    if (/^(silêncio|silencio|calar?)$/.test(t)) { stopSpeaking(); bolha('jarvis', '…'); return; }
+
     /* ponte ao vivo: conectar/desconectar/simular */
     const con = t.match(/^conectar\s+(wss?:\/\/\S+)$/);
     if (con) { setNucleoUrl(con[1]); bolha('jarvis', `Ponte configurada: ${con[1]}. Conectando…`); return; }
@@ -302,6 +329,7 @@ export function gitNexusNucleo(args = {}) {
       convo.push({ role: 'assistant', content: resposta });
       if (convo.length > 24) convo.splice(0, convo.length - 24);
       bolha('jarvis', resposta);
+      speak(resposta);   // voz (v0.5.0): fala se "voz on" — best-effort, nunca lança
       scene && scene.pulse && scene.pulse(360);
     } catch (e) {
       pensar(false);
@@ -340,6 +368,7 @@ export function gitNexusNucleo(args = {}) {
     const mo = new MutationObserver(() => {
       if (!document.contains(page)) {
         offEvent(); offStatus(); offEngine();
+        stopSpeaking();
         document.removeEventListener('keydown', onKey);
         try { scene && scene.destroy && scene.destroy(); } catch { /* ok */ }
         mo.disconnect();
