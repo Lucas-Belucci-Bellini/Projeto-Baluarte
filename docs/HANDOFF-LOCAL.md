@@ -185,6 +185,20 @@ Passos (local):
 - **Aceite:** APK instala e navega offline; câmera funciona no OCR; AAB
       assinado aceito na Play; build iOS arquivado.
 
+### M8 — Aceite do launcher 0.4.0 + Corpo Total no aparelho (#338 P2)
+
+O remoto já corrigiu a causa raiz (permission handler de mídia no `main.js` +
+`Info.plist` do macOS) e cortou o **launcher 0.4.0**. Falta o aceite físico:
+- [ ] **PC**: instalar o launcher 0.4.0 (release `desktop-v0.4.0`) → abrir o
+      Núcleo → comando **"corpo total"** → a câmera deve acender e o
+      esqueleto/HUD rastrear. Conferir também a linha **MOTOR:** nos sinais
+      vitais (NATIVO se o motor embutido carregar; WEB caso contrário — a
+      blindagem #310 garante que nada quebra).
+- [ ] **Android**: instalar o `app-debug.apk` (workflow **Mobile Release**) →
+      conceder a permissão de câmera → Corpo Total/OCR funcionando.
+- [ ] **iOS** (macOS/Xcode): ao fazer o `cap add ios` (M7), adicionar
+      `NSCameraUsageDescription` no `Info.plist` antes de arquivar.
+
 ### Outros (local)
 
 - [ ] **gitnexus no próprio Claude Code local**: `npx gitnexus analyze` + `npx gitnexus

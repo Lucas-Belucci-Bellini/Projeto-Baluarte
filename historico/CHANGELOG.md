@@ -6,6 +6,13 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-05
+
+### 🚀 Launcher 0.4.0 + Corpo Total reconhecido no app (#338)
+- 🎥 **P0 — causa raiz do Corpo Total corrigida**: o `main.js` do Electron **não tinha `setPermissionRequestHandler`** — o pedido de câmera do `getUserMedia` era **negado em silêncio** (por isso o Corpo Total "não era reconhecido" no app do PC). Agora a sessão registra request+check handlers com **allowlist**: só permissão `media` e só pra origem confiável do site. No macOS, o handler dispara o prompt do sistema (`askForMediaAccess`) e o `Info.plist` ganhou `NSCameraUsageDescription`/`NSMicrophoneUsageDescription` (`build.mac.extendInfo`).
+- 📦 **P1 — launcher 0.4.0**: `desktop/package.json` **0.3.0 → 0.4.0** (leva junto a blindagem do motor nativo, o Núcleo de tela única #324 e o fix do P0). Release cortada pelo workflow **Desktop Release**.
+- 🖥️ **P2 — validação on-device** (local): registrada no `docs/HANDOFF-LOCAL.md` — PC (câmera acende no Corpo Total via Núcleo), Android (APK do Mobile Release + permissão) e iOS (Info.plist no Xcode).
+
 ## 2026-07-04
 
 ### 📡 Rede Neural no site (/comms) + "continuar de onde parou" no acervo

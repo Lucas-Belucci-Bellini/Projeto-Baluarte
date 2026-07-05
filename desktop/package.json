@@ -1,7 +1,7 @@
 {
   "name": "baluarte-launcher",
   "productName": "Baluarte Launcher",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Launcher desktop do Projeto Baluarte — hub nativo com conexão à web e auto-update.",
   "author": "Lucas Belucci Bellini",
@@ -66,7 +66,11 @@
     "mac": {
       "target": "dmg",
       "identity": null,
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.developer-tools",
+      "extendInfo": {
+        "NSCameraUsageDescription": "O Corpo Total do J.A.R.V.I.S. usa a câmera para rastrear pose e mãos.",
+        "NSMicrophoneUsageDescription": "Comandos de voz do J.A.R.V.I.S. usam o microfone."
+      }
     },
     "linux": {
       "target": "AppImage",
