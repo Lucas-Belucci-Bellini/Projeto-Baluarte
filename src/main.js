@@ -169,6 +169,7 @@ router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia
 router.register('/codigo', lazy(() => import('./pages/codigo.js'), 'codigoPage'));
 router.register('/projetos', lazy(() => import('./pages/projetos.js'), 'projetosPage'));
 router.register('/mural', lazy(() => import('./pages/mural.js'), 'muralPage'));
+router.register('/comms', lazy(() => import('./pages/comms.js'), 'commsPage'));   // Rede Neural — chat global em tempo real (0008)
 router.register('/banco', lazy(() => import('./pages/banco.js'), 'bancoPage'));
 router.register('/cerebro', lazyLeve('cerebro', () => import('./pages/cerebro.js'), 'cerebroPage'));
 router.register('/ocr', lazy(() => import('./pages/ocr.js'), 'ocrPage'));

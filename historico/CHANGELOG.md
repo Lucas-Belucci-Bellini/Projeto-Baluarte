@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-04
 
+### 📡 Rede Neural no site (/comms) + "continuar de onde parou" no acervo
+- 💬 **Página `/comms` — Rede Neural**: o chat global do 0008 ganhou a interface — histórico (últimas 50), **mensagens chegando ao vivo** pelo WebSocket (ponto de status da ponte), envio pra quem tá logado (CTA "Entrar com Google" pra quem não tá), bolhas próprias destacadas, anti-flood do banco vira toast amigável ("Calma, soldado"). Entrada na sidebar (📡, grupo Início), título e ícone registrados. Rede pendurada não trava: **teto de 8s** no histórico com aviso gracioso (as msgs ao vivo seguem chegando).
+- ▶️ **Acervo de músicas retoma de onde parou** (`/musicas`): cada faixa do acervo salva o timecode (`saveBookmark`, local-first + nuvem com debounce) e, ao tocar de novo — **em qualquer aparelho logado** — retoma do ponto salvo (só se caiu no meio da faixa; começo/fim recomeça normal).
+- ✅ Verificado (Playwright, produção local): página renderiza (feed/CTA/título), timeout gracioso aos 8s, `/musicas` sem regressão, 0 erros. (REST+Realtime contra o banco real já provados na fatia 0008 — o sandbox bloqueia rede do navegador.)
+
 ### 🗄️ Banco de Dados Universal — sync de mídia + Rede Neural (Supabase 0008)
 - 📼 **Sync Universal** (`media_bookmarks`): save-state de mídia por usuário — o timecode exato onde parou (vídeo/filme/música/rádio/leitura) — sincronizado entre desktop (Electron) e mobile/web pelo mesmo login. `UNIQUE (user_id, media_key)` = upsert de 1 request; índice `(user_id, updated_at desc)` pro "continuar assistindo"; `updated_at` automático por trigger. Preferências profundas seguem em `profiles` (0005).
 - 🌐 **Rede Neural** (`global_comms`): chat global entre todos os usuários — leitura pública, escrita autenticada só como si mesmo, entrega **instantânea** via **Supabase Realtime** (tabela na publicação `supabase_realtime`; INSERTs chegam por WebSocket, zero polling/recarregar).

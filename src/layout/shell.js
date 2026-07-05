@@ -178,6 +178,7 @@ function pageTitleForRoute(path) {
     '/codigo': 'Raio-X do Código',
     '/projetos': 'Projetos',
     '/mural': 'Mural do Baluarte',
+    '/comms': 'Rede Neural — chat global',
     '/cerebro': 'Segundo Cérebro',
     '/memoria': 'Memória do JARVIS',
     '/terminal-ia': 'Terminal-IA',
