@@ -11,13 +11,19 @@
 import '../styles/jarvis-vision.css';
 import { h } from '../utils/helpers.js';
 
-/* ── Loader de script CDN com cache por src ── */
-function loadScript(src) {
+/* ── Loader de script CDN com cache por src e TETO de tempo (#340): rede
+ * pendurada (mobile ruim) não pode deixar o "Carregando…" eterno — estoura,
+ * o start() falha com mensagem acionável e o botão volta a funcionar. ── */
+function loadScript(src, timeoutMs = 20000) {
   return new Promise((res, rej) => {
-    if (document.querySelector(`script[src="${src}"]`)) { res(); return; }
+    const existing = document.querySelector(`script[src="${src}"]`);
+    if (existing && existing.dataset.loaded === '1') { res(); return; }
+    if (existing) existing.remove();   // tentativa anterior pendurada — refaz
     const s = document.createElement('script');
+    const timer = setTimeout(() => { s.remove(); rej(new Error('timeout: ' + src)); }, timeoutMs);
     s.src = src; s.crossOrigin = 'anonymous';
-    s.onload = res; s.onerror = () => rej(new Error('falha: ' + src));
+    s.onload = () => { clearTimeout(timer); s.dataset.loaded = '1'; res(); };
+    s.onerror = () => { clearTimeout(timer); rej(new Error('falha: ' + src)); };
     document.head.appendChild(s);
   });
 }
@@ -208,11 +214,14 @@ class JarvisVision {
     try {
       await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js');
       await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js');
-      if (this.opts.hands)
-        await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
     } catch (e) {
-      setS('Falha ao carregar modelos — verifique a conexão.');
+      setS('Sem acesso à CDN dos modelos — verifique a conexão e tente de novo.');
       return false;
+    }
+    /* o script das mãos é best-effort: falhou, segue só com o corpo (#340) */
+    if (this.opts.hands) {
+      try { await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js'); }
+      catch { console.warn('[corpo-total] hands.js não carregou — sem mãos'); this.opts.hands = false; }
     }
 
     setS('Solicitando câmera…');
@@ -253,18 +262,31 @@ class JarvisVision {
       }
     }
 
+    /* Mãos são OPCIONAIS (#340): se o MediaPipe falhar (CDN/wasm/`window.Hands`
+     * ausente), degrada — o rastreamento de CORPO segue funcionando. Antes, um
+     * erro aqui subia sem tratamento e matava o recurso inteiro (o sintoma
+     * "Corpo Total quebrado na web"). */
     if (this.opts.hands) {
-      this.hands = new window.Hands({
-        locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
-      });
-      this.hands.setOptions({
-        maxNumHands: this.opts.maxHands || 80,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5
-      });
-      this.hands.onResults(r => { this.handResults = r; });
-      await this.hands.initialize();
+      setS('Inicializando mãos…');
+      try {
+        if (!window.Hands) throw new Error('window.Hands indisponível (CDN)');
+        this.hands = new window.Hands({
+          locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
+        });
+        this.hands.setOptions({
+          maxNumHands: this.opts.maxHands || 80,
+          modelComplexity: 1,
+          minDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5
+        });
+        this.hands.onResults(r => { this.handResults = r; });
+        await this.hands.initialize();
+      } catch (e) {
+        console.warn('[corpo-total] mãos indisponíveis — seguindo só com o corpo:', e.message);
+        try { this.hands && this.hands.close && this.hands.close(); } catch { /* ok */ }
+        this.hands = null;
+        this.opts.hands = false;
+      }
     }
 
     this.running = true;
@@ -613,10 +635,17 @@ export function jarvisVisionPage() {
     }
     startBtn.disabled = true;
     _engine = new JarvisVision(canvas, { ...opts }, status, metrics);
-    const ok = await _engine.start();
-    startBtn.disabled = false;
+    /* NUNCA deixa o botão travado (#340): qualquer exceção inesperada no
+     * start() vira status acionável em vez de matar o recurso em silêncio. */
+    let ok = false;
+    try { ok = await _engine.start(); }
+    catch (e) {
+      console.warn('[corpo-total] falha inesperada no start:', e);
+      status.textContent = 'Falha inesperada ao iniciar — tente de novo (detalhes no console).';
+    }
+    finally { startBtn.disabled = false; }
     if (ok) { running = true; startBtn.textContent = '⏹ Desativar'; }
-    else { _engine = null; }
+    else { try { _engine?.stop(); } catch { /* ok */ } _engine = null; }
   }}, '▶ Ativar JARVIS');
 
   const layerDefs = [

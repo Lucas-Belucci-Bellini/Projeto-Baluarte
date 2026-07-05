@@ -25,6 +25,7 @@ import {
 } from '../utils/jarvis-engine.js';
 import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
 import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
+import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, simulateNucleoEvent } from '../utils/nucleo-socket.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
@@ -203,6 +204,47 @@ export function gitNexusNucleo(args = {}) {
         setVital('modo', modo[1].toUpperCase());
         bolha('jarvis', `Modo de IA → ${modo[1]}.`);
       } else bolha('jarvis', `Modo desconhecido. Opções: ${MODOS.join(', ')}.`);
+      return;
+    }
+    /* seletor de MODELOS por comando (#340 — alternância dinâmica sem menu):
+     * "modelos" lista; "modelo <nº|nome>" troca o modelo do modo ativo. */
+    const chaveModelo = (cfg) => (
+      cfg.mode === 'hermes-agente' ? 'hermesAgentModel' :
+      cfg.mode === 'webllm' ? 'webllmModel' :
+      cfg.mode === 'ollama' ? 'ollamaModel' :
+      cfg.mode === 'claude' ? 'model' : null
+    );
+    if (t === 'modelos' || t === 'modelo') {
+      const cfg = loadConfig();
+      const key = chaveModelo(cfg);
+      const atual = key ? (cfg[key] || '(padrão)') : '—';
+      const lista = WEBLLM_MODELS
+        .map((m, i) => `${m.id === atual ? '▸' : ' '} ${i + 1}. ${m.label}`)
+        .join('\n');
+      bolha('jarvis',
+        `Modo ativo: ${cfg.mode} · modelo: ${atual}\n${lista}\n` +
+        'Diga "modelo <nº ou nome>" pra trocar.');
+      return;
+    }
+    const trocaModelo = t.match(/^modelo\s+(.+)$/);
+    if (trocaModelo) {
+      const cfg = loadConfig();
+      const key = chaveModelo(cfg);
+      if (!key) { bolha('jarvis', `O modo "${cfg.mode}" não usa modelo trocável por aqui.`); return; }
+      const pedido = trocaModelo[1].trim();
+      const porIndice = /^\d+$/.test(pedido) ? WEBLLM_MODELS[Number(pedido) - 1] : null;
+      const porNome = WEBLLM_MODELS.find((m) =>
+        m.id.toLowerCase().includes(pedido) || m.label.toLowerCase().includes(pedido));
+      const alvo = porIndice || porNome;
+      if (cfg.mode === 'ollama' || cfg.mode === 'claude') {
+        saveConfig({ ...cfg, [key]: pedido });   // nome livre (modelo do provedor)
+        bolha('jarvis', `Modelo do ${cfg.mode} → ${pedido}.`);
+      } else if (alvo) {
+        saveConfig({ ...cfg, [key]: alvo.id });
+        bolha('jarvis', `Modelo → ${alvo.label}. A troca vale já na próxima mensagem (1º uso baixa o modelo).`);
+      } else {
+        bolha('jarvis', 'Não achei esse modelo. Diga "modelos" pra ver a lista.');
+      }
       return;
     }
     /* ponte ao vivo: conectar/desconectar/simular */
