@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-05
 
+### 📡 v0.5.0 — Fatia 3: a VOZ comanda o Núcleo — ponte /api/nucleo sem servidor (#340)
+- 🌉 **Ponte serverless completa**: agente de voz (ElevenLabs) → **`POST /api/nucleo`** (função Vercel, valida `X-Nucleo-Token`) → INSERT em **`nucleo_events`** (Supabase, migration 0009, escrita só via service key) → **Realtime empurra pro site** → o Núcleo reage NA HORA. Substitui o WebSocket do backend Java enquanto ele não tem deploy — mesmo shape de evento.
+- 🗣️ **Comando remoto EXECUTA no site**: evento `command` aparece no transcript ("📡 voz: …") e as intenções de abrir/fechar função rodam de verdade (dizer "mostrar corpo total" pro agente no celular **abre o painel no site**). Segurança: texto vindo de fora **nunca** vai pro cérebro (não gasta tokens nem executa tools do agente).
+- 🔌 `nucleo-socket.js`: além do WS opt-in do Java, agora assina `nucleo_events` via Supabase Realtime **sempre que configurado** (lazy, best-effort). Comando `simular` demonstra: abre a Memória por evento.
+- 🔐 Envs da função (Vercel): `NUCLEO_TOKEN` + `SUPABASE_SERVICE_KEY` — sem elas responde 503 explicando; token errado 401. GET = health.
+- ✅ Verificado: INSERT no banco chegou **ao vivo** no listener vanilla (`{type:"command", text:"mostrar corpo total"}`); no site (Playwright), evento de comando → bolha 📡 + contador + **painel MEMÓRIA abriu sozinho**; sintaxe da função ok; 0 erros.
+
 ### 🗣️ v0.5.0 — Fatia 2: Voz do J.A.R.V.I.S. + APK direto no site (#340)
 - 🗣️ **Voz do J.A.R.V.I.S.** (`src/utils/jarvis-voice.js`): o Núcleo agora FALA as respostas. Dois motores: **ElevenLabs** (voz de referência `Gubgw9l4dtIoQA9YZHgx`, `eleven_multilingual_v2` — fala qualquer idioma) quando o operador colar a chave, e **`speechSynthesis` do navegador** (grátis/offline) como padrão e fallback automático. Texto limpo pra fala (markdown/URLs/código fora), teto de 600 chars.
 - 🎚️ **Tudo por comando, sem menu** (Regra de Ouro): `voz on/off` · `voz idioma <código>` (pt-BR default; en/es/fr/de/it/ja) · `voz chave <key>` (guardada SÓ no navegador) · `silêncio`. Fala para ao sair da rota.
