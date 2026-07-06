@@ -78,6 +78,7 @@ Versionadas em `supabase/migrations/`. Idempotentes (podem rodar mais de uma vez
 | `0006_knowledge.sql` | `knowledge_notes` por usuário (Segundo Cérebro, Omega Prism) — RLS dono-só | ✅ aplicada (24/06/2026, migration `knowledge_notes`) |
 | `0007_memories.sql` | `memories` por usuário (Memória do JARVIS, Omega Prism) — RLS dono-só | ✅ aplicada (24/06/2026, migration `memories`) |
 | `0008_universal_db.sql` | **Banco Universal**: `media_bookmarks` (save-state de mídia, RLS dono-só) + `global_comms` (chat global, Realtime + anti-flood) + índices | ✅ aplicada (04/07/2026, migration `universal_db`) |
+| `0009_nucleo_events.sql` | **Ponte do Núcleo sem servidor**: `nucleo_events` (voz/API → site via Realtime; escrita só service key pela função `/api/nucleo`) | ✅ aplicada (05/07/2026, migration `nucleo_events`) |
 
 Conferir o estado a qualquer momento (sessão com Supabase MCP):
 `list_tables` (tabelas + RLS) e `list_migrations` (histórico aplicado).

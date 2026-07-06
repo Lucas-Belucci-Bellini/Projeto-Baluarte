@@ -4,6 +4,7 @@
     "api/hermes.py": { "maxDuration": 60 },
     "api/memory.py": { "maxDuration": 30 },
     "api/social.py": { "maxDuration": 30 },
-    "api/health.py": { "maxDuration": 15 }
+    "api/health.py": { "maxDuration": 15 },
+    "api/nucleo.py": { "maxDuration": 15 }
   }
 }

@@ -341,12 +341,32 @@ export function gitNexusNucleo(args = {}) {
   const onKey = (e) => { if (e.key === 'Escape' && !panelEl.hidden) fecharPanel(); };
   document.addEventListener('keydown', onKey);
 
+  /* Comando REMOTO (voz ElevenLabs/API via /api/nucleo → Realtime): mostra no
+   * transcript e executa SÓ as intenções de abrir/fechar função — texto vindo
+   * de fora NUNCA vai pro cérebro (não gasta tokens nem executa tools). */
+  function comandoRemoto(texto, fonte) {
+    bolha('tool', `📡 ${fonte || 'remoto'}: ${texto}`);
+    const t = String(texto).toLowerCase().trim();
+    if (/^(fechar|ocultar|esconder)( .*)?$/.test(t)) { fecharPanel(); return; }
+    const pedido = t.replace(/^(mostrar?|abrir?|ativar?|exibir?|rodar?)\s*/, '');
+    const fn = FUNCOES.find((f) => f.match.test(pedido));
+    if (fn) {
+      abrirFuncao(fn);
+      const msg = `${fn.nome} materializado por comando remoto.`;
+      bolha('jarvis', msg);
+      speak(msg);
+    }
+  }
+
   /* ===== 5. Núcleo AO VIVO (Fase D #316): eventos fazem a cena pulsar ===== */
   let nEventos = 0;
   const offEvent = bus.on('nucleo:event', (ev) => {
     nEventos++;
     setVital('eventos', String(nEventos));
     scene && scene.pulse && scene.pulse(PULSE_MS[ev.type] || 240);
+    if (ev.type === 'command' && ev.payload && ev.payload.text) {
+      comandoRemoto(ev.payload.text, ev.source);
+    }
   });
   const offStatus = bus.on('nucleo:status', (st) => {
     setVital('rede', st.connected ? 'ONLINE' : (getNucleoUrl() ? 'RECONECTANDO' : 'OFF'), st.connected ? 'ok' : undefined);

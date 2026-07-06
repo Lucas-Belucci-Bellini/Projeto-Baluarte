@@ -68,8 +68,31 @@ export function disconnectNucleo() {
   emitStatus(false, 'desligado');
 }
 
-/** Liga a ponte no boot/mount — só age se uma URL estiver configurada. */
+/* ===== Ponte SEM servidor (v0.5.0 #340): Supabase Realtime =====
+ * A função Vercel /api/nucleo grava eventos em `nucleo_events` e o Realtime
+ * empurra pra cá — mesmo shape de JarvisEvent. É assim que o agente de VOZ
+ * (ElevenLabs) comanda o Núcleo ao vivo, sem o backend Java no ar. */
+let supaSub = null;
+function connectSupabaseBridge() {
+  if (supaSub) return;
+  Promise.all([import('../core/realtime.js'), import('../core/supabase.js')])
+    .then(([rt, sb]) => {
+      if (supaSub || !sb.supabaseConfigured()) return;
+      supaSub = rt.subscribeTable(
+        { table: 'nucleo_events', event: 'INSERT' },
+        (row) => bus.emit('nucleo:event', {
+          type: row.type, source: row.source, payload: row.payload, ts: row.created_at
+        }),
+        { onStatus: (s) => { if (s.connected) emitStatus(true, 'supabase'); } }
+      );
+    })
+    .catch(() => { /* ponte é best-effort */ });
+}
+
+/** Liga as pontes no mount: Supabase Realtime (sempre que configurado) +
+ *  WebSocket do backend Java (opt-in por URL, como antes). */
 export function initNucleoLink() {
+  connectSupabaseBridge();
   if (getNucleoUrl()) connectNucleo();
 }
 
@@ -81,7 +104,7 @@ export function simulateNucleoEvent(type = 'telemetry', payload = null) {
   const demo = {
     telemetry: { deviceId: 'demo', metrics: { battery: 0.5 + Math.random() * 0.5 } },
     biometric: { deviceId: 'demo', heartRate: 60 + Math.floor(Math.random() * 60) },
-    command: { text: 'abrir arsenal', source: 'demo' },
+    command: { text: 'mostrar memória', source: 'demo' },
     system: 'ping'
   };
   bus.emit('nucleo:event', {
