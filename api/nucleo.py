@@ -15,9 +15,10 @@ POST /api/nucleo
 GET /api/nucleo -> { ok: true, configured: bool }   (health, sem token)
 
 Envs (Vercel → Settings → Environment Variables):
-  NUCLEO_TOKEN          — o segredo que o chamador manda no header
-  SUPABASE_SERVICE_KEY  — service role key do projeto (NUNCA vai pro cliente)
-  SUPABASE_URL          — opcional (default: projeto oficial)
+  NUCLEO_TOKEN               — o segredo que o chamador manda no header
+  SUPABASE_SERVICE_ROLE_KEY  — service role key (NUNCA vai pro cliente).
+                               Aceita também o nome SUPABASE_SERVICE_KEY.
+  SUPABASE_URL               — opcional (default: projeto oficial)
 
 Sem as envs, responde 503 explicando — nada quebra. Só stdlib.
 """
@@ -29,7 +30,8 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler
 
 SUPABASE_URL = (os.environ.get("SUPABASE_URL") or "https://hcwzsxdcvmswebunznak.supabase.co").rstrip("/")
-SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
+# nome padrão do Supabase primeiro (já existe no Vercel); fallback pro alias curto
+SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_SERVICE_KEY", "")
 TOKEN = os.environ.get("NUCLEO_TOKEN", "")
 
 TYPES = {"command", "telemetry", "biometric", "system", "response"}
