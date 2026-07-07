@@ -99,6 +99,7 @@ export const NAV_GROUPS = [
       { path: '/guia-pc',       label: 'Guia para Montar PC',icon: '◨',  phase: 1 },
       { path: '/modpack',       label: 'Modpack Minecraft',  icon: '◧',  phase: 1 },
       { path: '/zomboid',       label: 'Modpack Zomboid',    icon: '🧟', phase: 1 },
+      { path: '/zomboid-admin', label: 'Admin Zomboid',      icon: '⌘', phase: 1 },
       { path: '/economia',      label: 'Economia',           icon: '◈',  phase: 1 },
       { path: '/dolar',         label: 'Radar do Câmbio',    icon: '💹', phase: 1 }
     ]

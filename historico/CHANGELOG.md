@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-06
 
+### ⌘ Zomboid — Administração de Servidor (comandos + banco de IDs com busca)
+- 🖥️ Nova página **`/zomboid-admin`** (tema sobrevivência: escuro + verde-oliva + vermelho-perigo, escopado pra não vazar no tema Ouro): **Seção 1** — tabela de **comandos de admin** (Comando / Função / Exemplo) com botão **copiar**; `godmod` e `setaccesslevel` marcados como perigosos (borda vermelha). **Seção 2** — **banco de IDs** (mods/veículos) com **busca ao vivo em JS** (nome, categoria, Mod/Workshop/Spawn ID) e cards com copiar por campo.
+- ✅ Comandos com a **grafia correta do jogo** (`/additem`, `/addvehicle`, `/setaccesslevel` — o que realmente funciona no console).
+- 🗂️ Data-driven (`src/data/zomboid-admin.js`): 6 comandos + 17 mods da coleção semeados; os IDs ficam “—” até o operador colar a lista real (nenhum ID inventado). Link cruzado com `/zomboid`.
+- ✅ Verificado (Playwright): 6 comandos, 17 cards, busca por categoria/nome filtra certo, estado vazio ok, 0 erros.
+
 ### 🧟 Modpack Zomboid — vitrine da coleção "alfa" (Spartan Gamer BR)
 - 🎮 Nova página **`/zomboid`**: espelho no Baluarte da coleção da Steam Workshop do operador — modpack militar tático de **Project Zomboid** (159 mods). Herói imersivo + chips (jogo/autor/total) + **botão direto pra Steam** + **destaques por frente** (veículos KI5, aeronaves, blindados, uniformes, mundo/estruturas).
 - 🗂️ Data-driven (`src/data/zomboid-mods.js`): metadados + destaques curados — a lista completa segue na Steam. Nota de crédito aos autores dos mods.

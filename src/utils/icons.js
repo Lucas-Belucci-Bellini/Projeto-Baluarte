@@ -108,7 +108,7 @@ export const iconByPath = {
   '/cripto': 'lock', '/esteganografia': 'image', '/ciberseg': 'shield', '/morse': 'morse',
   '/color-studio': 'droplet', '/qr-studio': 'qr', '/simbolos': 'hash',
   '/biblioteca': 'book', '/academia': 'cap', '/robotica': 'bot', '/guia-pc': 'monitor',
-  '/modpack': 'cube', '/zomboid': 'cube', '/economia': 'coins', '/dolar': 'trending',
+  '/modpack': 'cube', '/zomboid': 'cube', '/zomboid-admin': 'terminal', '/economia': 'coins', '/dolar': 'trending',
   '/radio': 'radio', '/musicas': 'music', '/fft': 'wave', '/media': 'playc',
   '/videos': 'video', '/tv': 'tv', '/filmes': 'film', '/memes': 'smile', '/jogos': 'gamepad',
   '/batalha-naval': 'anchor',

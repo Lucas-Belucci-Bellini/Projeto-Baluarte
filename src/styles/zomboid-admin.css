@@ -1,0 +1,177 @@
+/* /zomboid-admin — tema "sobrevivência": escuro, verde-oliva, vermelho-perigo.
+   Acentos escopados na página (não vazam pro tema Ouro do site). Fora do boot. */
+
+.page-zomboid-admin {
+  --pz-olive: #7a8b3a;
+  --pz-olive-soft: rgba(122, 139, 58, 0.14);
+  --pz-olive-edge: rgba(122, 139, 58, 0.45);
+  --pz-danger: #b5382f;
+  --pz-danger-soft: rgba(181, 56, 47, 0.12);
+}
+
+.pza {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-md) 0 var(--space-2xl);
+}
+
+/* ===== cabeçalho ===== */
+.pza-head { margin-bottom: var(--space-xl); }
+.pza-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--pz-olive);
+  text-shadow: 0 0 18px var(--pz-olive-soft);
+}
+.pza-sub { color: var(--color-text-secondary); margin-top: 2px; }
+.pza-link {
+  margin-top: var(--space-sm);
+  background: transparent;
+  border: 1px solid var(--pz-olive-edge);
+  color: var(--color-text-secondary);
+  padding: 6px var(--space-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 40px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.pza-link:hover { background: var(--pz-olive-soft); color: var(--color-text-primary); }
+
+/* ===== seções ===== */
+.pza-sec { margin-top: var(--space-2xl); }
+.pza-sec__title {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--pz-olive-edge);
+  margin-bottom: var(--space-md);
+}
+
+/* ===== Seção 1 — tabela de comandos ===== */
+.pza-tablewrap { overflow-x: auto; border-radius: var(--radius-md); }
+.pza-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+  background: var(--color-bg-elevated);
+}
+.pza-table th, .pza-table td {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-surface-2);
+  vertical-align: top;
+}
+.pza-table th {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pz-olive);
+  background: var(--pz-olive-soft);
+}
+.pza-table tr:hover td { background: var(--pz-olive-soft); }
+.pza-table tr.is-danger td:first-child { border-left: 3px solid var(--pz-danger); }
+.pza-cmd { color: var(--pz-olive); font-weight: 600; white-space: nowrap; }
+.is-danger .pza-cmd { color: var(--pz-danger); }
+.pza-fn { color: var(--color-text-secondary); }
+.pza-ex { display: inline-flex; align-items: center; gap: var(--space-xs); }
+.pza-ex code { color: var(--color-text-primary); }
+
+/* ===== Seção 2 — busca + cards ===== */
+.pza-searchbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+.pza-search {
+  flex: 1;
+  min-width: 240px;
+  min-height: 46px;
+  padding: 0 var(--space-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--pz-olive-edge);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}
+.pza-search:focus { outline: none; border-color: var(--pz-olive); box-shadow: 0 0 0 3px var(--pz-olive-soft); }
+.pza-count { font-family: var(--font-mono); font-size: var(--font-size-xs); }
+
+.pza-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-sm);
+}
+.pza-card {
+  padding: var(--space-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-surface-2);
+  border-left: 3px solid var(--pz-olive-edge);
+  border-radius: var(--radius-md);
+  transition: border-left-color var(--transition-fast), transform var(--transition-fast);
+}
+.pza-card:hover { border-left-color: var(--pz-olive); transform: translateY(-2px); }
+.pza-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+.pza-card__name { font-weight: 600; color: var(--color-text-primary); }
+.pza-badge {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: var(--radius-lg);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  background: var(--pz-olive-soft);
+  color: var(--pz-olive);
+  border: 1px solid var(--pz-olive-edge);
+}
+
+.pza-card__ids {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px var(--space-sm);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+.pza-card__ids dt { color: var(--color-text-muted); font-family: var(--font-mono); font-size: var(--font-size-xs); }
+.pza-card__ids dd { margin: 0; }
+.pza-id { display: inline-flex; align-items: center; gap: 6px; }
+.pza-id code { color: var(--color-text-primary); word-break: break-all; }
+.pza-id--empty { color: var(--color-text-muted); }
+
+.pza-copy {
+  background: transparent;
+  border: 1px solid var(--pz-olive-edge);
+  color: var(--pz-olive);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  width: 22px; height: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background var(--transition-fast);
+}
+.pza-copy:hover { background: var(--pz-olive-soft); }
+
+.pza-empty { grid-column: 1 / -1; text-align: center; padding: var(--space-lg); }
+
+.pza-note {
+  margin-top: var(--space-xl);
+  padding: var(--space-md);
+  background: var(--pz-danger-soft);
+  border: 1px dashed var(--pz-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.55;
+}
+.pza-note code { color: var(--color-text-primary); }
+
+/* toque ≥44px em aparelho de toque (padrão do site) */
+@media (pointer: coarse) {
+  .pza-copy { width: 40px; height: 40px; }
+}

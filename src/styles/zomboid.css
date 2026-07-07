@@ -41,6 +41,14 @@
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 .pz-cta:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow-cyan-strong); }
+.pz-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin: var(--space-sm) 0 var(--space-lg); }
+.pz-actions .pz-cta { margin: 0; }
+.pz-cta--ghost {
+  background: transparent;
+  border-color: var(--color-cyan-edge);
+  box-shadow: none;
+  cursor: pointer;
+}
 
 .pz-cat {
   margin-top: var(--space-xl);
