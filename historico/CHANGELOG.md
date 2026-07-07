@@ -6,6 +6,14 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-06
+
+### 🧟 Modpack Zomboid — vitrine da coleção "alfa" (Spartan Gamer BR)
+- 🎮 Nova página **`/zomboid`**: espelho no Baluarte da coleção da Steam Workshop do operador — modpack militar tático de **Project Zomboid** (159 mods). Herói imersivo + chips (jogo/autor/total) + **botão direto pra Steam** + **destaques por frente** (veículos KI5, aeronaves, blindados, uniformes, mundo/estruturas).
+- 🗂️ Data-driven (`src/data/zomboid-mods.js`): metadados + destaques curados — a lista completa segue na Steam. Nota de crédito aos autores dos mods.
+- 🧩 Entrada na sidebar (🧟 Modpack Zomboid, ao lado do Modpack Minecraft) + título/ícone. CSS módulo-escopado (fora do boot). Não toca no `/modpack` (Minecraft).
+- ✅ Verificado (Playwright): página renderiza (3 chips, CTA pra Steam, 5 frentes, 17 mods em destaque), 0 erros.
+
 ## 2026-07-05
 
 ### 📡 v0.5.0 — Fatia 3: a VOZ comanda o Núcleo — ponte /api/nucleo sem servidor (#340)

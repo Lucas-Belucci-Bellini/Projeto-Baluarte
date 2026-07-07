@@ -157,6 +157,7 @@ function pageTitleForRoute(path) {
     '/universo': 'Universo',
     '/tabela-periodica': 'Tabela Periódica',
     '/modpack': 'Modpack Minecraft',
+    '/zomboid': 'Modpack Zomboid — coleção Spartan Gamer BR',
     '/guia-pc': 'Guia para Montar PC',
     '/fft': 'Visualizador FFT',
     '/radio': 'Rádio de Frequências',
