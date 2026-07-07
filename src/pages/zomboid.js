@@ -8,6 +8,7 @@
 
 import '../styles/zomboid.css';
 import { h } from '../utils/helpers.js';
+import { router } from '../core/router.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { ZOMBOID_COLLECTION as C, ZOMBOID_CATEGORIES } from '../data/zomboid-mods.js';
 
@@ -36,9 +37,13 @@ export function zomboidPage() {
 
   box.appendChild(h('p', { className: 'u-text-secondary' }, C.desc));
 
-  box.appendChild(h('a', {
-    className: 'pz-cta', href: C.url, target: '_blank', rel: 'noopener'
-  }, '⬈ Abrir a coleção na Steam Workshop'));
+  box.appendChild(h('div', { className: 'pz-actions' },
+    h('a', {
+      className: 'pz-cta', href: C.url, target: '_blank', rel: 'noopener'
+    }, '⬈ Abrir a coleção na Steam Workshop'),
+    h('button', {
+      className: 'pz-cta pz-cta--ghost', onclick: () => router.navigate('/zomboid-admin')
+    }, '⌘ Administração de servidor')));
 
   /* destaques por frente */
   for (const cat of ZOMBOID_CATEGORIES) {
