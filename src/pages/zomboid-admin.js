@@ -115,14 +115,14 @@ export function zomboidAdminPage() {
   input.addEventListener('input', debounce((e) => render(e.target.value), 120));
   render('');
 
-  /* nota: IDs a preencher */
+  /* nota: origem e limites dos dados */
   box.appendChild(h('div', { className: 'pza-note' },
-    'ℹ️ Os campos de ID aparecem como “—” até serem preenchidos com os dados reais ',
-    'da coleção (Mod ID / Workshop ID / Spawn ID). A busca já funciona por nome e categoria; ',
-    'assim que a lista com os IDs entrar em ',
-    h('code', null, 'src/data/zomboid-admin.js'),
-    ', os cards mostram tudo — inclusive o valor pronto pra copiar no ',
-    h('code', null, '/addvehicle'), '.'));
+    'ℹ️ O ', h('strong', null, 'Workshop ID'), ' de todos os ', `${PZ_IDS.length} `,
+    'mods é real — extraído da coleção na Steam (vai no ', h('code', null, 'WorkshopItems='),
+    ' do servidor). O ', h('strong', null, 'Mod ID'), ' e o ', h('strong', null, 'Spawn ID'),
+    ' aparecem preenchidos só quando o mod os declara publicamente; nos demais ficam “—” ',
+    'porque só aparecem dentro do próprio jogo (não invento valor — comando errado quebra no servidor). ',
+    'Pra achar o Spawn ID de um veículo, spawne uma vez e use ', h('code', null, '/addvehicle'), '.'));
 
   return page;
 }

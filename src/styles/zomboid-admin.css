@@ -126,10 +126,20 @@
   border-radius: var(--radius-lg);
   font-size: 10px;
   font-family: var(--font-mono);
+  white-space: nowrap;
   background: var(--pz-olive-soft);
   color: var(--pz-olive);
   border: 1px solid var(--pz-olive-edge);
 }
+/* cor por categoria (facilita varrer os 159 cards) — sobre a base oliva */
+.pza-badge--veiculo   { background: rgba(90, 155, 213, 0.14); color: #6fb0e8; border-color: rgba(90, 155, 213, 0.45); }
+.pza-badge--blindado  { background: rgba(140, 145, 120, 0.16); color: #b9bd9a; border-color: rgba(140, 145, 120, 0.5); }
+.pza-badge--aeronave  { background: rgba(120, 190, 200, 0.14); color: #7fd0da; border-color: rgba(120, 190, 200, 0.45); }
+.pza-badge--arma      { background: var(--pz-danger-soft); color: #d46b62; border-color: var(--pz-danger); }
+.pza-badge--uniforme  { background: rgba(180, 150, 90, 0.16); color: #d3ab63; border-color: rgba(180, 150, 90, 0.5); }
+.pza-badge--mapa      { background: rgba(110, 170, 110, 0.14); color: #7fc47f; border-color: rgba(110, 170, 110, 0.45); }
+.pza-badge--utilidade { background: rgba(150, 130, 175, 0.14); color: #b39ad0; border-color: rgba(150, 130, 175, 0.45); }
+.pza-badge--item      { background: rgba(160, 160, 160, 0.14); color: #b8b8b8; border-color: rgba(160, 160, 160, 0.4); }
 
 .pza-card__ids {
   display: grid;

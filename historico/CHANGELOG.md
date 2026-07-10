@@ -6,6 +6,13 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-10
+
+### 🗂️ Zomboid Admin — banco de IDs povoado com os 159 mods REAIS da coleção
+- 📦 `src/data/zomboid-admin.js` agora tem os **159 mods** da coleção "alfa" com **Workshop ID real** (extraído das URLs da Steam coladas pelo operador — vai direto no `WorkshopItems=` do servidor). Mod ID/Spawn ID preenchidos só onde o mod declara (Caution Pack, tsarslib, M60, `Base.ArmoredMotorhome`); o resto fica "—" — **nenhum ID inventado**.
+- 🏷️ Categorias expandidas de 5 → **8** (veículo, blindado, aeronave, arma, uniforme, mapa, utilidade, item), cada uma com **cor própria no badge** pra varrer os 159 cards; busca ao vivo cobre tudo.
+- 📝 Nota da página atualizada: explica a origem dos dados e como achar Spawn ID de veículo no jogo.
+
 ## 2026-07-06
 
 ### ⌘ Zomboid — Administração de Servidor (comandos + banco de IDs com busca)
