@@ -1,89 +1,193 @@
 /**
  * Administração de servidor — Project Zomboid (#zomboid-admin).
  *
- * Dois conjuntos de dados:
- *   1. PZ_COMMANDS — comandos de admin do jogo (consulta rápida).
- *   2. PZ_IDS      — banco de IDs de mods/veículos (Mod ID / Workshop ID /
- *      Spawn ID) pra busca. SEMENTE com os mods conhecidos da coleção; os IDs
- *      ficam vazios ('') até o operador colar a lista real (renderiza como "—").
- *
- * Comandos com a grafia CORRETA do jogo (o que realmente funciona no console):
- *   /additem · /addvehicle · /setaccesslevel  (não aditem/advehicle/setacesslevel).
+ * PZ_COMMANDS — comandos de admin do jogo (grafia CORRETA: /additem, /addvehicle,
+ * /setaccesslevel). PZ_IDS — banco dos 159 mods da coleção "alfa" (Spartan Gamer
+ * BR) com Workshop ID REAL (extraído da URL da Steam); Mod ID/Spawn ID preenchidos
+ * onde o mod declara, senão '' (renderiza "—"). Busca por nome/categoria/ID.
  */
 
 export const PZ_COMMANDS = [
-  {
-    cmd: '/godmod "Jogador"',
-    fn: 'Deixa o jogador invencível (modo Deus).',
-    ex: '/godmod "Spartan"',
-    danger: true
-  },
-  {
-    cmd: '/invisible "Jogador"',
-    fn: 'Deixa o jogador invisível para os zumbis.',
-    ex: '/invisible "Spartan"'
-  },
-  {
-    cmd: '/teleport "Jogador1" "Jogador2"',
-    fn: 'Teleporta o Jogador 1 para a posição do Jogador 2.',
-    ex: '/teleport "Spartan" "Alfa"'
-  },
-  {
-    cmd: '/additem "Jogador" "ID_do_Item"',
-    fn: 'Adiciona um item ao inventário do jogador.',
-    ex: '/additem "Spartan" "Base.Axe"'
-  },
-  {
-    cmd: '/addvehicle "Base.NomeDoVeiculo"',
-    fn: 'Spawna um veículo à sua frente (ou do jogador informado).',
-    ex: '/addvehicle "Base.CarNormal"'
-  },
-  {
-    cmd: '/setaccesslevel "Jogador" "admin"',
-    fn: 'Dá privilégios de administrador ao jogador.',
-    ex: '/setaccesslevel "Spartan" "admin"',
-    danger: true
-  }
+  { cmd: '/godmod "Jogador"', fn: 'Deixa o jogador invencível (modo Deus).', ex: '/godmod "Spartan"', danger: true },
+  { cmd: '/invisible "Jogador"', fn: 'Deixa o jogador invisível para os zumbis.', ex: '/invisible "Spartan"' },
+  { cmd: '/teleport "Jogador1" "Jogador2"', fn: 'Teleporta o Jogador 1 para a posição do Jogador 2.', ex: '/teleport "Spartan" "Alfa"' },
+  { cmd: '/additem "Jogador" "ID_do_Item"', fn: 'Adiciona um item ao inventário do jogador.', ex: '/additem "Spartan" "Base.Axe"' },
+  { cmd: '/addvehicle "Base.NomeDoVeiculo"', fn: 'Spawna um veículo à sua frente (ou do jogador informado).', ex: '/addvehicle "Base.CarNormal"' },
+  { cmd: '/setaccesslevel "Jogador" "admin"', fn: 'Dá privilégios de administrador ao jogador.', ex: '/setaccesslevel "Spartan" "admin"', danger: true }
 ];
 
-/* Níveis de acesso aceitos pelo /setaccesslevel (referência). */
 export const PZ_ACCESS_LEVELS = ['admin', 'moderator', 'overseer', 'gm', 'observer'];
-
-/**
- * Banco de IDs. `modId`/`workshopId`/`spawnId` vazios = "a preencher".
- * spawnId de veículo é o que vai no /addvehicle (formato "Base.X").
- * Semente com os destaques da coleção "alfa" (Spartan Gamer BR).
- */
-export const PZ_IDS = [
-  // — Veículos (KI5) —
-  { name: "'67 Shelby GT500", cat: 'veiculo', modId: '', workshopId: '', spawnId: '' },
-  { name: "'73 Nissan Skyline", cat: 'veiculo', modId: '', workshopId: '', spawnId: '' },
-  { name: "'93 Ford Mustang", cat: 'veiculo', modId: '', workshopId: '', spawnId: '' },
-  { name: "'70 Dodge Challenger", cat: 'veiculo', modId: '', workshopId: '', spawnId: '' },
-  { name: 'Halo Warthog', cat: 'veiculo', modId: '', workshopId: '', spawnId: '' },
-  // — Blindados —
-  { name: 'LAV-300', cat: 'blindado', modId: '', workshopId: '', spawnId: '' },
-  { name: 'M1 Abrams', cat: 'blindado', modId: '', workshopId: '', spawnId: '' },
-  { name: 'M577 APC', cat: 'blindado', modId: '', workshopId: '', spawnId: '' },
-  { name: 'Bushmaster', cat: 'blindado', modId: '', workshopId: '', spawnId: '' },
-  // — Aeronaves —
-  { name: 'UH-60 Black Hawk', cat: 'aeronave', modId: '', workshopId: '', spawnId: '' },
-  { name: 'AH-64A Apache', cat: 'aeronave', modId: '', workshopId: '', spawnId: '' },
-  { name: 'AH-60 Black Hawk', cat: 'aeronave', modId: '', workshopId: '', spawnId: '' },
-  // — Uniformes & Equipamento —
-  { name: 'SWAT', cat: 'uniforme', modId: '', workshopId: '', spawnId: '' },
-  { name: 'MARPAT', cat: 'uniforme', modId: '', workshopId: '', spawnId: '' },
-  { name: 'Multicam (variantes)', cat: 'uniforme', modId: '', workshopId: '', spawnId: '' },
-  // — Mundo & Estruturas —
-  { name: 'Heavens Hill (mansão)', cat: 'mundo', modId: '', workshopId: '', spawnId: '' },
-  { name: "Yumi's Fridge Expansion Deluxe", cat: 'item', modId: '', workshopId: '', spawnId: '' }
-];
 
 export const PZ_CATS = {
   veiculo: { label: 'Veículo', icon: '🚗' },
   blindado: { label: 'Blindado', icon: '🛡️' },
   aeronave: { label: 'Aeronave', icon: '🚁' },
+  arma: { label: 'Arma', icon: '🔫' },
   uniforme: { label: 'Uniforme', icon: '🎖️' },
-  mundo: { label: 'Mundo', icon: '🏚️' },
+  mapa: { label: 'Mapa', icon: '🗺️' },
+  utilidade: { label: 'Utilidade', icon: '🔧' },
   item: { label: 'Item', icon: '📦' }
 };
+
+/** Workshop ID = o número do /filedetails/?id=… (vai no WorkshopItems= do server). */
+export const PZ_IDS = [
+  { name: "Yumi's Fridge Expansion Deluxe w/ Storage & Inventory Boost", author: "yuminekogirl", cat: 'utilidade', modId: "", workshopId: '3736408852', spawnId: "" },
+  { name: "Heavens Hill", author: "Myloo", cat: 'mapa', modId: "", workshopId: '2834407334', spawnId: "" },
+  { name: "'73 NISSAN Skyline GT-R", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3743371090', spawnId: "" },
+  { name: "'67 Shelby GT500 + Eleanor", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3026723485', spawnId: "" },
+  { name: "'93 Ford Mustang", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3001592312', spawnId: "" },
+  { name: "[J&G] SWAT Uniform", author: "Jordanal", cat: 'uniforme', modId: "", workshopId: '3457969588', spawnId: "" },
+  { name: "[J&G] Forest Multicam Uniform", author: "Jordanal", cat: 'uniforme', modId: "", workshopId: '3309971624', spawnId: "" },
+  { name: "[J&G] Alpine Uniform", author: "Jordanal", cat: 'uniforme', modId: "", workshopId: '3303746488', spawnId: "" },
+  { name: "[J&G] Caution Uniform", author: "Jordanal", cat: 'uniforme', modId: "Caution Pack", workshopId: '3369825662', spawnId: "" },
+  { name: "[J&G] Black Multicam Uniform", author: "Jordanal", cat: 'uniforme', modId: "", workshopId: '3315302991', spawnId: "" },
+  { name: "Cav_Brawler[Plus]", author: "耄耋耄耋耄", cat: 'blindado', modId: "", workshopId: '2980760267', spawnId: "" },
+  { name: "CAV-Brawler", author: "耄耋耄耋耄", cat: 'blindado', modId: "", workshopId: '2955257235', spawnId: "" },
+  { name: "KI5's Vehicles - Lore-Friendly Names", author: "Panopticon", cat: 'item', modId: "", workshopId: '2925239963', spawnId: "" },
+  { name: "Militek Faction Clothing", author: "TTAJ1bl4", cat: 'uniforme', modId: "", workshopId: '3269061047', spawnId: "" },
+  { name: "'81 DeLorean DMC-12", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3253385114', spawnId: "" },
+  { name: "'70 Dodge Challenger", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2873290424', spawnId: "" },
+  { name: "'90 Mercedes-Benz Unimog U1550L", author: "cyt", cat: 'veiculo', modId: "", workshopId: '2843855721', spawnId: "" },
+  { name: "'67 Cadillac Gage Commando", author: "KI5", cat: 'blindado', modId: "", workshopId: '2478247379', spawnId: "" },
+  { name: "darlak's Power Armor T60", author: "darlak97", cat: 'uniforme', modId: "", workshopId: '2885872935', spawnId: "" },
+  { name: "Better Military Equipment", author: "茗明Fuzi", cat: 'item', modId: "", workshopId: '3366589652', spawnId: "" },
+  { name: "Yandere's New Hairstyles", author: "Yandere", cat: 'uniforme', modId: "", workshopId: '3555677825', spawnId: "" },
+  { name: "Zombies for Cute Skins", author: "Yandere", cat: 'uniforme', modId: "", workshopId: '3497186127', spawnId: "" },
+  { name: "Fluffy Hair", author: "Scavenger", cat: 'uniforme', modId: "", workshopId: '2447729538', spawnId: "" },
+  { name: "Cute Skins Girls & Boys V2", author: "Yandere", cat: 'uniforme', modId: "", workshopId: '3391191483', spawnId: "" },
+  { name: "«Scorpion-EVA» Tactical Suit", author: "Yandere", cat: 'uniforme', modId: "", workshopId: '3558108008', spawnId: "" },
+  { name: "USGI Field Gear: Desert Night Camo", author: "Goatdog420", cat: 'uniforme', modId: "", workshopId: '3378335731', spawnId: "" },
+  { name: "Cheval de frise", author: "Brightex", cat: 'utilidade', modId: "", workshopId: '2927800433', spawnId: "" },
+  { name: "XINA Missile Defense System Trailer", author: "BOOGIE MAN", cat: 'arma', modId: "", workshopId: '3540678722', spawnId: "" },
+  { name: "Starlit Library", author: "albion", cat: 'utilidade', modId: "", workshopId: '3378285185', spawnId: "" },
+  { name: "N.W.M.F. Weaponry", author: "Xerdess", cat: 'arma', modId: "", workshopId: '3651242585', spawnId: "" },
+  { name: "LesstroCrate", author: "Lesstro", cat: 'utilidade', modId: "", workshopId: '3168493410', spawnId: "" },
+  { name: "Wasteland Canid's Tactical Pack", author: "toot", cat: 'uniforme', modId: "", workshopId: '3002822422', spawnId: "" },
+  { name: "Weapon Cases", author: "Sim0nG", cat: 'arma', modId: "", workshopId: '3421534431', spawnId: "" },
+  { name: "Project Fallout: The Armory", author: "EtherealShigure", cat: 'item', modId: "", workshopId: '3439815824', spawnId: "" },
+  { name: "Mod Update and Alert System", author: "Chuckleberry Finn", cat: 'utilidade', modId: "", workshopId: '3077900375', spawnId: "" },
+  { name: "errorMagnifier", author: "Chuckleberry Finn", cat: 'utilidade', modId: "", workshopId: '2896041179', spawnId: "" },
+  { name: "Easy Config Chucked", author: "Chuckleberry Finn", cat: 'utilidade', modId: "", workshopId: '2529746725', spawnId: "" },
+  { name: "Expanded Helicopter Events", author: "shark", cat: 'aeronave', modId: "", workshopId: '2458631365', spawnId: "" },
+  { name: "Expanded Helicopter Events: Drop Military Cargo", author: "Batman-[FR]", cat: 'aeronave', modId: "", workshopId: '3259615085', spawnId: "" },
+  { name: "Halo Marine Armor", author: "Nik", cat: 'uniforme', modId: "", workshopId: '3507919075', spawnId: "" },
+  { name: "Project Fallout: NCR: Ranger Veteran", author: "EtherealShigure", cat: 'uniforme', modId: "", workshopId: '3379091722', spawnId: "" },
+  { name: "The Military Boots Replacer", author: "EtherealShigure", cat: 'uniforme', modId: "", workshopId: '3421087940', spawnId: "" },
+  { name: "Trading Trailer", author: "Nik", cat: 'utilidade', modId: "", workshopId: '3572122233', spawnId: "" },
+  { name: "KATTAJ1 Clothes Core", author: "TTAJ1bl4", cat: 'uniforme', modId: "", workshopId: '3470422050', spawnId: "" },
+  { name: "[J&G] MARPAT Camo Uniform", author: "Jordanal", cat: 'uniforme', modId: "", workshopId: '3616192072', spawnId: "" },
+  { name: "Night Vision Goggles", author: "TTAJ1bl4", cat: 'uniforme', modId: "", workshopId: '3470491629', spawnId: "" },
+  { name: "Vanilla MRE", author: "Fox", cat: 'utilidade', modId: "", workshopId: '3100032203', spawnId: "" },
+  { name: "Improvised Silencers", author: "Maxwell218", cat: 'arma', modId: "", workshopId: '2799742455', spawnId: "" },
+  { name: "Insurgent - Black Ops Profession", author: "Mr Sunshine", cat: 'utilidade', modId: "", workshopId: '2907683021', spawnId: "" },
+  { name: "GaelGunStore 1.2 - Firearms pack", author: "Pen-Pen Pirulin", cat: 'arma', modId: "", workshopId: '3616176188', spawnId: "" },
+  { name: "AutoTurret [OldVersion]", author: "耄耋耄耋耄", cat: 'arma', modId: "", workshopId: '3011770495', spawnId: "" },
+  { name: "GAZ-2330 Tigr", author: "Nyph", cat: 'blindado', modId: "", workshopId: '2792289759', spawnId: "" },
+  { name: "WarThunderVehicleLibrary Helicopter Patches", author: "せりな", cat: 'aeronave', modId: "", workshopId: '3639643201', spawnId: "" },
+  { name: "XM93 CBRN", author: "cyt", cat: 'blindado', modId: "", workshopId: '2782916396', spawnId: "" },
+  { name: "UH 60 Helicopter SP Spawns", author: "TTAJ1bl4", cat: 'aeronave', modId: "", workshopId: '2972750297', spawnId: "" },
+  { name: "Doomsday MotorHome", author: "喵了个球", cat: 'blindado', modId: "", workshopId: '2795611320', spawnId: "Base.ArmoredMotorhome" },
+  { name: "'92 AM General M998 HMMWV Reskin Pack", author: "kkshunp", cat: 'veiculo', modId: "", workshopId: '2834460958', spawnId: "" },
+  { name: "KamAZ-53949 Typhoon-K", author: "Nyph", cat: 'blindado', modId: "", workshopId: '2968986598', spawnId: "" },
+  { name: "OT-64 SKOT", author: "Xerdess", cat: 'blindado', modId: "", workshopId: '3666236550', spawnId: "" },
+  { name: "The HEMTT Vehicle Series", author: "cyt", cat: 'veiculo', modId: "", workshopId: '2787752761', spawnId: "" },
+  { name: "Tsar's Common Library 2.0 [B41]", author: "iBrRus", cat: 'utilidade', modId: "", workshopId: '2392709985', spawnId: "" },
+  { name: "Tatrapan [B41]", author: "Xerdess", cat: 'blindado', modId: "", workshopId: '3400667450', spawnId: "" },
+  { name: "'84 Mercedes Benz W460", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2805630347', spawnId: "" },
+  { name: "'78 AM General M35 Series Trucks", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2799152995', spawnId: "" },
+  { name: "'82 Oshkosh M911 + Military Semi-Trailers", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2618213077', spawnId: "" },
+  { name: "US.Army Skin For Military Cars Ki5", author: "Franek", cat: 'item', modId: "", workshopId: '3360591354', spawnId: "" },
+  { name: "Halo M12-C Hog", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2839713081', spawnId: "" },
+  { name: "UH 60 Helicopter SP/MP I V 2.0", author: "TTAJ1bl4", cat: 'aeronave', modId: "", workshopId: '2955370240', spawnId: "" },
+  { name: "'92 AM General M998 Reskin - LFOR", author: "Mudkip", cat: 'veiculo', modId: "", workshopId: '3362376892', spawnId: "" },
+  { name: "Halo M12 Warthog", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2682411284', spawnId: "" },
+  { name: "AH-60 BlackHawk", author: "TNT", cat: 'aeronave', modId: "", workshopId: '2799925193', spawnId: "" },
+  { name: "AH-64A", author: "耄耋耄耋耄", cat: 'aeronave', modId: "", workshopId: '3403968690', spawnId: "" },
+  { name: "Armored MH MkII", author: "喵了个球", cat: 'blindado', modId: "", workshopId: '2850098970', spawnId: "" },
+  { name: "Brita's K153 LTV", author: "BRITA", cat: 'blindado', modId: "", workshopId: '2794684100', spawnId: "" },
+  { name: "Tsar's Common Library B42", author: "Tchernobill", cat: 'utilidade', modId: "tsarslib", workshopId: '3402491515', spawnId: "" },
+  { name: "Tatrapan [B42]", author: "Xerdess", cat: 'blindado', modId: "", workshopId: '3402789975', spawnId: "" },
+  { name: "Lock-Mart Industries M577", author: "KI5", cat: 'blindado', modId: "", workshopId: '3652371248', spawnId: "" },
+  { name: "M1 Abrams", author: "耄耋耄耋耄", cat: 'blindado', modId: "", workshopId: '3397147307', spawnId: "" },
+  { name: "'84 Cadillac Gage LAV-300", author: "KI5", cat: 'blindado', modId: "", workshopId: '3171184800', spawnId: "" },
+  { name: "'97 ADI Bushmaster", author: "KI5", cat: 'blindado', modId: "", workshopId: '2897390033', spawnId: "" },
+  { name: "'86 Oshkosh P19A + Military Trailers", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2566953935', spawnId: "" },
+  { name: "'80 MAN KAT1", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3248388837', spawnId: "" },
+  { name: "dane's Library", author: "dane", cat: 'utilidade', modId: "", workshopId: '3715021740', spawnId: "" },
+  { name: "Customizable Containers", author: "dane", cat: 'utilidade', modId: "", workshopId: '2719850086', spawnId: "" },
+  { name: "'92 AM General M998 + M101A3 Cargo trailer", author: "KI5", cat: 'veiculo', modId: "", workshopId: '2642541073', spawnId: "" },
+  { name: "'93 Ford F-Series", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3073430075', spawnId: "" },
+  { name: "'88 Toyota Hilux", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3435796523', spawnId: "" },
+  { name: "'89 LAND ROVER Defender", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3570973322', spawnId: "" },
+  { name: "Printer3D: Manufacturing & Recycling System", author: "MasterGG", cat: 'utilidade', modId: "", workshopId: '3628922658', spawnId: "" },
+  { name: "TchernoLib B41", author: "Tchernobill", cat: 'utilidade', modId: "", workshopId: '2986578314', spawnId: "" },
+  { name: "True Crawl 3.0", author: "iLusioN", cat: 'utilidade', modId: "", workshopId: '3008448748', spawnId: "" },
+  { name: "True Crouching", author: "BOBcat", cat: 'utilidade', modId: "", workshopId: '2966176354', spawnId: "" },
+  { name: "Advanced Trajectory's Realistic Overhaul", author: "Radon226", cat: 'arma', modId: "", workshopId: '3036878362', spawnId: "" },
+  { name: "Firearms Burst-Fire", author: "Poltergeist", cat: 'arma', modId: "", workshopId: '2988520556', spawnId: "" },
+  { name: "Toggle fire mode", author: "Noir", cat: 'arma', modId: "", workshopId: '2777335362', spawnId: "" },
+  { name: "ADVANCED WARFARE: EX V8.8E", author: "EtherealShigure", cat: 'arma', modId: "", workshopId: '3202594860', spawnId: "" },
+  { name: "AutoTurret 2.0", author: "耄耋耄耋耄", cat: 'arma', modId: "", workshopId: '3096346885', spawnId: "" },
+  { name: "Totally's NATO and Commonwealth Firearms Pack", author: "Totally_Innocent", cat: 'arma', modId: "", workshopId: '3243805556', spawnId: "" },
+  { name: "Vanilla Firearms Expansion (VFE) B41", author: "STENDO_CLIP", cat: 'arma', modId: "", workshopId: '2667899942', spawnId: "" },
+  { name: "Gunrunner's Weapon Pack (VFE Expansion)", author: "The_Gunrunner", cat: 'arma', modId: "", workshopId: '2873405334', spawnId: "" },
+  { name: "Z.R.A.P", author: "TTAJ1bl4", cat: 'arma', modId: "", workshopId: '3109566500', spawnId: "" },
+  { name: "Night Vision", author: "Kaofan", cat: 'uniforme', modId: "", workshopId: '3383603346', spawnId: "" },
+  { name: "Magazine API", author: "N0wh3re", cat: 'arma', modId: "", workshopId: '3436296238', spawnId: "" },
+  { name: "Vanilla Firearm Magazine Expansion", author: "N0wh3re", cat: 'arma', modId: "", workshopId: '3437763053', spawnId: "" },
+  { name: "U.S. M60A3 by Papa_Chad", author: "Papa_Chad", cat: 'blindado', modId: "", workshopId: '3739363702', spawnId: "" },
+  { name: "Hot Brass - Visible Casing Ejection Framework", author: "Marz", cat: 'arma', modId: "", workshopId: '3610677934', spawnId: "" },
+  { name: "Hot Brass - Ammo Craft", author: "Marz", cat: 'arma', modId: "", workshopId: '3637364024', spawnId: "" },
+  { name: "Project Fallout: Power Armor FrameWork", author: "EtherealShigure", cat: 'uniforme', modId: "", workshopId: '3278143832', spawnId: "" },
+  { name: "R.U. BMP-2 by Papa_Chad", author: "Papa_Chad", cat: 'blindado', modId: "", workshopId: '3635550823', spawnId: "" },
+  { name: "Advanced Warfare Community Weapons FrameWork", author: "耄耋耄耋耄", cat: 'arma', modId: "", workshopId: '3434653631', spawnId: "" },
+  { name: "Universal Gun Repair", author: "Cosmic", cat: 'arma', modId: "", workshopId: '2899457928', spawnId: "" },
+  { name: "R.U. BTR-80 by Papa_Chad", author: "Papa_Chad", cat: 'blindado', modId: "", workshopId: '3661387277', spawnId: "" },
+  { name: "Legendary Tactical Weapons", author: "Akyrohunter", cat: 'arma', modId: "", workshopId: '3689524052', spawnId: "" },
+  { name: "ModernFirearmsSystem 42.19", author: "布偶旧猫", cat: 'arma', modId: "", workshopId: '3633421539', spawnId: "" },
+  { name: "Fallout Hummer by Papa_Chad", author: "Papa_Chad", cat: 'veiculo', modId: "", workshopId: '3658100636', spawnId: "" },
+  { name: "Lethal Stealth", author: "retbenwin", cat: 'utilidade', modId: "", workshopId: '3531611692', spawnId: "" },
+  { name: "U.S. M548 Cargo Carrier by Papa_Chad", author: "Papa_Chad", cat: 'blindado', modId: "", workshopId: '3424497614', spawnId: "" },
+  { name: "U.S. M163 VADS by Papa_Chad", author: "Papa_Chad", cat: 'blindado', modId: "", workshopId: '3598575779', spawnId: "" },
+  { name: "U.S. M113 APC by Papa_Chad", author: "Papa_Chad", cat: 'blindado', modId: "", workshopId: '2705655822', spawnId: "" },
+  { name: "Brita's Armor Pack", author: "BRITA", cat: 'uniforme', modId: "", workshopId: '2460154811', spawnId: "" },
+  { name: "U.S. M41 Walker Bulldog by Papa_Chad", author: "Papa_Chad", cat: 'blindado', modId: "", workshopId: '3608725379', spawnId: "" },
+  { name: "Military Tool Kit", author: "Papa_Chad", cat: 'utilidade', modId: "", workshopId: '2705406713', spawnId: "" },
+  { name: "U.S. M998 Humvee by Papa_Chad", author: "Papa_Chad", cat: 'veiculo', modId: "", workshopId: '3554424111', spawnId: "" },
+  { name: "Tactical Pistol Hold", author: "Swalma", cat: 'item', modId: "", workshopId: '3680633169', spawnId: "" },
+  { name: "Tactical Hold", author: "Swalma", cat: 'utilidade', modId: "", workshopId: '3677017550', spawnId: "" },
+  { name: "March Ridge Bunker Overhaul", author: "jascor177", cat: 'mapa', modId: "", workshopId: '3754281911', spawnId: "" },
+  { name: "Project Summer Car", author: "Black_moons", cat: 'veiculo', modId: "", workshopId: '3564950449', spawnId: "" },
+  { name: "Project Summer Car Engine Parts Loot Patch", author: "RNGesus", cat: 'veiculo', modId: "", workshopId: '3757465888', spawnId: "" },
+  { name: "Fallout Armory", author: "ASINSINA", cat: 'uniforme', modId: "", workshopId: '3754116042', spawnId: "" },
+  { name: "M224 Mortar Mod", author: "ZenciGotLover", cat: 'arma', modId: "", workshopId: '3756354730', spawnId: "" },
+  { name: "HK416 SP Build 42.19", author: "Nein.123.4", cat: 'arma', modId: "", workshopId: '3754947991', spawnId: "" },
+  { name: "Blobs Wonderful Tool Expansion!", author: "Blobbyboy12", cat: 'item', modId: "", workshopId: '3753983294', spawnId: "" },
+  { name: "Vanilla Gear Expanded", author: "Tango", cat: 'uniforme', modId: "", workshopId: '3401134276', spawnId: "" },
+  { name: "Civil Defense Sirens", author: "jbdiablo", cat: 'utilidade', modId: "", workshopId: '3750612709', spawnId: "" },
+  { name: "Gas Mask Replacement", author: "Odz", cat: 'uniforme', modId: "", workshopId: '3701820916', spawnId: "" },
+  { name: "Tactical Hold Complete", author: "Swalma", cat: 'utilidade', modId: "", workshopId: '3693258802', spawnId: "" },
+  { name: "US Military Grenades", author: "Corvus", cat: 'arma', modId: "", workshopId: '3745718141', spawnId: "" },
+  { name: "Fallout: Riot Armor Pack", author: "Odz", cat: 'uniforme', modId: "", workshopId: '3723570902', spawnId: "" },
+  { name: "that DAMN Library", author: "KI5", cat: 'utilidade', modId: "", workshopId: '3171167894', spawnId: "" },
+  { name: "'69 Ford Mustang", author: "KI5", cat: 'veiculo', modId: "", workshopId: '3756938756', spawnId: "" },
+  { name: "Eerie Country", author: "AtoxWarrior", cat: 'mapa', modId: "", workshopId: '1254546530', spawnId: "" },
+  { name: "Raven Creek", author: "DavidBlane", cat: 'mapa', modId: "", workshopId: '2196102849', spawnId: "" },
+  { name: "Mount Crow City", author: "DevTech", cat: 'mapa', modId: "", workshopId: '3500846812', spawnId: "" },
+  { name: "Basements", author: "Braven", cat: 'mapa', modId: "", workshopId: '2849247394', spawnId: "" },
+  { name: "Brita's Weapon Pack - Black Mk18+PMAG", author: "Mudkip", cat: 'arma', modId: "", workshopId: '3372653908', spawnId: "" },
+  { name: "AR-15 Rifle", author: "Blackbeard", cat: 'arma', modId: "", workshopId: '2584812605', spawnId: "" },
+  { name: "67 Commando & LAV-300 Mobile Fortresses", author: "Blod", cat: 'blindado', modId: "", workshopId: '3534381368', spawnId: "" },
+  { name: "Chainsword Melee Weapon", author: "Lazarus", cat: 'arma', modId: "", workshopId: '2884915728', spawnId: "" },
+  { name: "Dynamic Backpack Upgrades", author: "Dr. Lalaoz", cat: 'uniforme', modId: "", workshopId: '2996978365', spawnId: "" },
+  { name: "Equipment UI - Paper Doll Interface", author: "Notloc", cat: 'uniforme', modId: "", workshopId: '2950902979', spawnId: "" },
+  { name: "M60", author: "Shadow Client", cat: 'arma', modId: "M60", workshopId: '3106371220', spawnId: "" },
+  { name: "LIAZ 300", author: "Xerdess", cat: 'veiculo', modId: "", workshopId: '3611100835', spawnId: "" },
+  { name: "Players On Map", author: "Maumau", cat: 'utilidade', modId: "", workshopId: '2879960936', spawnId: "" },
+  { name: "RV Interior", author: "Maxwelt", cat: 'mapa', modId: "", workshopId: '2822286426', spawnId: "" },
+  { name: "Silent AutoTurret", author: "EV", cat: 'arma', modId: "", workshopId: '3059352620', spawnId: "" },
+  { name: "Vehicle Military Zones", author: "Пупсич", cat: 'mapa', modId: "", workshopId: '3436499337', spawnId: "" },
+  { name: "Yet Another PZ Library", author: "Пупсич", cat: 'utilidade', modId: "", workshopId: '3624971238', spawnId: "" },
+  { name: "Arsenal[26] GunFighter Mod 2.0", author: "Arsenal[26]", cat: 'arma', modId: "", workshopId: '2297098490', spawnId: "" },
+  { name: "Brita's Weapon Pack", author: "BRITA", cat: 'arma', modId: "", workshopId: '2200148440', spawnId: "" }
+];
