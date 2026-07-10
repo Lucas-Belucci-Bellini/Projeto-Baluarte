@@ -75,6 +75,8 @@ export function loadConfig() {
     model: 'claude-sonnet-4-6',
     ollamaUrl: 'http://localhost:11434',
     ollamaModel: 'llama3.2',
+    hermesLocalUrl: 'http://localhost:1234/v1',
+    hermesLocalModel: '',
     webllmModel: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
     serverUrl: '',
     systemPrompt: 'Você é o J.A.R.V.I.S., assistente de IA do Projeto Baluarte Mark XIII. Responda em português, de forma concisa e tática. O operador é Lucas Belucci Bellini.'
@@ -419,9 +421,11 @@ export async function processOllama(messages, config) {
     stream: false,
     messages: [
       { role: 'system', content: config.systemPrompt },
+      /* aceita o formato do /jarvis ({role:'jarvis', text}) e o do Núcleo
+       * ({role:'assistant', content}) — antes o 2º virava content vazio. */
       ...messages.map((m) => ({
-        role: m.role === 'jarvis' ? 'assistant' : 'user',
-        content: m.text
+        role: (m.role === 'jarvis' || m.role === 'assistant') ? 'assistant' : 'user',
+        content: m.text != null ? m.text : (m.content || '')
       }))
     ]
   };

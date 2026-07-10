@@ -24,6 +24,7 @@ import {
   processClaudeServer, processOpenClaw, processAgent
 } from '../utils/jarvis-engine.js';
 import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
+import { processHermesLocal, healthHermesLocal, listHermesLocalModels, HERMES_LOCAL_PRESETS } from '../utils/hermes-local.js';
 import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
 import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
 import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoiceLang, setElevenKey, hasElevenKey, VOICE_LANGS } from '../utils/jarvis-voice.js';
@@ -53,7 +54,7 @@ const FUNCOES = [
 ];
 
 /* Modos aceitos pelo comando "modo X" (mesmo catálogo do /jarvis). */
-const MODOS = ['local', 'webllm', 'hermes-agente', 'claude', 'ollama', 'servidor', 'hermes', 'claude-servidor', 'openclaw', 'agente'];
+const MODOS = ['local', 'webllm', 'hermes-agente', 'hermes-local', 'claude', 'ollama', 'servidor', 'hermes', 'claude-servidor', 'openclaw', 'agente'];
 
 export function gitNexusNucleo(args = {}) {
   const page = h('div', { className: 'nucleo-screen' });
@@ -213,12 +214,49 @@ export function gitNexusNucleo(args = {}) {
       cfg.mode === 'hermes-agente' ? 'hermesAgentModel' :
       cfg.mode === 'webllm' ? 'webllmModel' :
       cfg.mode === 'ollama' ? 'ollamaModel' :
+      cfg.mode === 'hermes-local' ? 'hermesLocalModel' :
       cfg.mode === 'claude' ? 'model' : null
     );
+    /* HERMES LOCAL da máquina (#340 fatia 4) — tudo por comando, sem menu:
+     * "hermes status" testa a conexão · "hermes url <endereço>" aponta o
+     * endpoint · "hermes lmstudio|ollama|textgen" usa uma porta conhecida. */
+    if (t === 'hermes status') {
+      const cfg = loadConfig();
+      bolha('jarvis', 'Sondando o Hermes local…');
+      try {
+        const hs = await healthHermesLocal(cfg);
+        bolha('jarvis', `✅ Hermes local no ar em ${hs.url} — ${hs.models.length} modelo(s): ${hs.models.slice(0, 5).join(', ') || '(nenhum carregado)'}. Diga "modo hermes-local" pra usar.`);
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    const hermesPreset = t.match(/^hermes\s+(lmstudio|ollama|textgen)$/);
+    if (hermesPreset) {
+      const p = HERMES_LOCAL_PRESETS.find((x) => x.id === hermesPreset[1]);
+      saveConfig({ ...loadConfig(), hermesLocalUrl: p.url });
+      bolha('jarvis', `Endpoint do Hermes local → ${p.label} (${p.url}). Diga "hermes status" pra testar.`);
+      return;
+    }
+    const hermesUrl = t.match(/^hermes\s+url\s+(\S+)$/);
+    if (hermesUrl) {
+      saveConfig({ ...loadConfig(), hermesLocalUrl: hermesUrl[1] });
+      bolha('jarvis', `Endpoint do Hermes local → ${hermesUrl[1]}. Diga "hermes status" pra testar.`);
+      return;
+    }
     if (t === 'modelos' || t === 'modelo') {
       const cfg = loadConfig();
       const key = chaveModelo(cfg);
       const atual = key ? (cfg[key] || '(padrão)') : '—';
+      /* hermes-local: catálogo VIVO — o que o servidor da máquina tem agora. */
+      if (cfg.mode === 'hermes-local') {
+        try {
+          const ids = await listHermesLocalModels(cfg);
+          const lista = ids.map((id, i) => `${id === atual ? '▸' : ' '} ${i + 1}. ${id}`).join('\n');
+          bolha('jarvis',
+            `Modo ativo: hermes-local · modelo: ${atual}\n${lista || '(nenhum modelo carregado no servidor)'}\n` +
+            'Diga "modelo <nome>" pra trocar (vazio usa o carregado).');
+        } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+        return;
+      }
       const lista = WEBLLM_MODELS
         .map((m, i) => `${m.id === atual ? '▸' : ' '} ${i + 1}. ${m.label}`)
         .join('\n');
@@ -237,7 +275,7 @@ export function gitNexusNucleo(args = {}) {
       const porNome = WEBLLM_MODELS.find((m) =>
         m.id.toLowerCase().includes(pedido) || m.label.toLowerCase().includes(pedido));
       const alvo = porIndice || porNome;
-      if (cfg.mode === 'ollama' || cfg.mode === 'claude') {
+      if (cfg.mode === 'ollama' || cfg.mode === 'claude' || cfg.mode === 'hermes-local') {
         saveConfig({ ...cfg, [key]: pedido });   // nome livre (modelo do provedor)
         bolha('jarvis', `Modelo do ${cfg.mode} → ${pedido}.`);
       } else if (alvo) {
@@ -307,6 +345,7 @@ export function gitNexusNucleo(args = {}) {
       else if (cfg.mode === 'hermes-agente') resposta = await processHermesAgent(convo, call, aoTool, {});
       else if (cfg.mode === 'claude') resposta = await processClaude(convo, call);
       else if (cfg.mode === 'ollama') resposta = await processOllama(convo, call);
+      else if (cfg.mode === 'hermes-local') resposta = await processHermesLocal(convo, call);
       else if (cfg.mode === 'servidor') resposta = await processServer(convo, call);
       else if (cfg.mode === 'hermes') resposta = await processHermes(convo, call);
       else if (cfg.mode === 'claude-servidor') resposta = await processClaudeServer(convo, call);
