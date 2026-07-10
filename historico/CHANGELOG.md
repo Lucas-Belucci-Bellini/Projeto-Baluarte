@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-10
 
+### 🧭 v0.5.0 — fechamento: SW bump + estado real da ponte de voz (#340)
+- 🗄️ **Service Worker `baluarte-v0.4.0` → `baluarte-v0.5.0`** (`public/sw.js`): as fatias 1–3 da v0.5.0 (Hermes default, voz, ponte /api/nucleo) entraram sem bump do cache — navegadores que já tinham o SW antigo seguravam assets velhos. Agora o SW novo instala e limpa os caches da v0.4.0.
+- 📡 **Ponte `/api/nucleo` verificada em produção**: função no ar (`{"ok": true}`), mas **`configured: false`** — falta o operador setar `NUCLEO_TOKEN` (+ conferir `SUPABASE_SERVICE_ROLE_KEY`) nas envs do Vercel e redeployar (checklist de ~2 min no comentário do #340). A voz→Núcleo só liga depois disso.
+- ☑️ Issue #340 atualizada: checkboxes das 4 diretrizes marcados (parte remota completa desde os PRs #341–#345).
+
 ### 🗂️ Zomboid Admin — banco de IDs povoado com os 159 mods REAIS da coleção
 - 📦 `src/data/zomboid-admin.js` agora tem os **159 mods** da coleção "alfa" com **Workshop ID real** (extraído das URLs da Steam coladas pelo operador — vai direto no `WorkshopItems=` do servidor). Mod ID/Spawn ID preenchidos só onde o mod declara (Caution Pack, tsarslib, M60, `Base.ArmoredMotorhome`); o resto fica "—" — **nenhum ID inventado**.
 - 🏷️ Categorias expandidas de 5 → **8** (veículo, blindado, aeronave, arma, uniforme, mapa, utilidade, item), cada uma com **cor própria no badge** pra varrer os 159 cards; busca ao vivo cobre tudo.
