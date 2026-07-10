@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-07-10
 
+### 🖥️ v0.5.0 — fatia 4: Hermes LOCAL DA MÁQUINA (LM Studio/Ollama) + voz (#340)
+- ⬢ **Novo modo `hermes-local`** (`src/utils/hermes-local.js`): conecta o J.A.R.V.I.S. a QUALQUER servidor de LLM rodando na máquina do operador via **API OpenAI-compatível** (`/v1/chat/completions`) — LM Studio (`:1234/v1`, default), Ollama (`:11434/v1`), text-generation-webui (`:5000/v1`)… 100% privado, nada passa por nuvem. Timeout largo (2 min — modelo carregando), erros **acionáveis** (servidor fora → como subir + CORS; 404 → conferir `/v1`; mixed content → guard com correção).
+- 🎛️ **Núcleo (sem menu, Regra de Ouro)**: `hermes status` (health check + modelos), `hermes url <endereço>`, presets `hermes lmstudio|ollama|textgen`, `modo hermes-local`, e o `modelos` agora lista o **catálogo VIVO** do servidor local (`GET /v1/models`); `modelo <nome>` troca. `/jarvis`: modo no seletor + campos ENDPOINT/MODELO com notas de CORS.
+- 🗣️ **Pipeline completo Hermes→ElevenLabs já fecha**: a resposta local flui pelo `speak()` existente — com `voz on` (+`voz chave`), o texto do Hermes da máquina sai FALADO (ElevenLabs; fallback navegador). Áudio sem código novo.
+- 🐛 Fix de quebra latente: `processOllama` chamado do Núcleo recebia `{role:'assistant', content}` e mandava `content: undefined` pro Ollama (e assistant virava user) — agora aceita os dois formatos, como o modo novo.
+- 📖 **`docs/HERMES-LOCAL.md`**: portas, envs do lado do servidor (`OLLAMA_ORIGINS`, Enable CORS no LM Studio), troubleshooting.
+- ✅ Verificado (Playwright + mock LM Studio real na `:1234` com CORS): `hermes status` acha o servidor e o modelo, `modelos` lista vivo, mensagem no chat volta do servidor local e renderiza, preset troca a URL, servidor desligado → erro acionável; 0 erros de página.
+
 ### 🧭 v0.5.0 — fechamento: SW bump + estado real da ponte de voz (#340)
 - 🗄️ **Service Worker `baluarte-v0.4.0` → `baluarte-v0.5.0`** (`public/sw.js`): as fatias 1–3 da v0.5.0 (Hermes default, voz, ponte /api/nucleo) entraram sem bump do cache — navegadores que já tinham o SW antigo seguravam assets velhos. Agora o SW novo instala e limpa os caches da v0.4.0.
 - 📡 **Ponte `/api/nucleo` verificada em produção**: função no ar (`{"ok": true}`), mas **`configured: false`** — falta o operador setar `NUCLEO_TOKEN` (+ conferir `SUPABASE_SERVICE_ROLE_KEY`) nas envs do Vercel e redeployar (checklist de ~2 min no comentário do #340). A voz→Núcleo só liga depois disso.

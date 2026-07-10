@@ -17,6 +17,7 @@ import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS, preloadWebLLM, getLoadedModel
 } from '../utils/jarvis-webllm.js';
 import { processHermesAgent, HERMES_AGENT_DEFAULT } from '../utils/jarvis-hermes-agent.js';
+import { processHermesLocal, HERMES_LOCAL_DEFAULT_URL, HERMES_LOCAL_PRESETS } from '../utils/hermes-local.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { drawChart } from '../utils/chart-engine.js';
 import { memoryContext, captureConversation, captureReply } from '../utils/jarvis-brain.js';
@@ -37,6 +38,7 @@ const MODES = [
   { id: 'hermes-agente', label: 'Hermes (agente local)', icon: '⬢', badge: 'warning', desc: 'Nous Hermes rodando LOCAL no navegador (WebLLM/WebGPU, sem API, sem chave) como AGENTE de verdade: navega, consulta e executa ações reais no Baluarte com as ferramentas do JARVIS. 1º uso baixa o modelo (~2,5–4,5 GB); depois roda offline. No app usa o motor embutido.' },
   { id: 'claude', label: 'Claude', icon: '◉', badge: 'magenta', desc: 'Conversa livre via Claude API. Requer API key da Anthropic.' },
   { id: 'ollama', label: 'Ollama', icon: '⬢', badge: 'success', desc: 'Modelo local via Ollama (ollama serve). 100% privado.' },
+  { id: 'hermes-local', label: 'Hermes (local da máquina)', icon: '⬢', badge: 'success', desc: 'Conecta no Hermes rodando NA SUA MÁQUINA via endpoint OpenAI-compatível (/v1): LM Studio, Ollama, text-generation-webui… 100% privado, zero nuvem. Com "voz on" no Núcleo, a resposta sai falada (ElevenLabs/navegador).' },
   { id: 'servidor', label: 'Servidor', icon: '⊛', badge: 'success', desc: 'Backend Python + Gemini com busca web real (Google). Habilita a camada 2 do raciocínio. Requer rodar backend/server.py.' },
   { id: 'hermes', label: 'Hermes (servidor)', icon: '⬢', badge: 'success', desc: 'Nous Hermes via servidor (Vercel → OpenRouter): roda em qualquer device, sem WebGPU. Requer OPENROUTER_API_KEY nas envs da Vercel.' },
   { id: 'claude-servidor', label: 'Claude (servidor)', icon: '🛰', badge: 'magenta', desc: 'Claude pelo servidor do site (Vercel → Anthropic): a chave fica nas envs da Vercel, nunca no navegador — detecta até nome personalizado (ex: Claude_Fable). Status das chaves em /apis.' },
@@ -437,6 +439,13 @@ async function handleSend() {
       messages.push(jMsg);
       emitJarvis(reply);
       captureReply(reply);
+    } else if (config.mode === 'hermes-local') {
+      const reply = await processHermesLocal(convo, callConfig);
+      removeTyping();
+      const jMsg = await addMessage(activeSession.id, 'jarvis', reply);
+      messages.push(jMsg);
+      emitJarvis(reply);
+      captureReply(reply);
     } else if (config.mode === 'servidor') {
       const reply = await processServer(convo, callConfig);
       removeTyping();
@@ -668,6 +677,28 @@ function renderConfigPanel() {
         h('p', { className: 'jarvis-config__warn u-text-muted' },
           '⬢ Requer Ollama rodando ("ollama serve"). 100% local. ' +
           'Pode precisar de OLLAMA_ORIGINS=* para aceitar requests do browser.')
+      );
+    } else if (config.mode === 'hermes-local') {
+      const hlUrl = h('input', {
+        className: 'input', type: 'text', value: config.hermesLocalUrl || HERMES_LOCAL_DEFAULT_URL,
+        placeholder: HERMES_LOCAL_DEFAULT_URL,
+        oninput: (e) => { config.hermesLocalUrl = e.target.value.trim(); saveConfig(config); }
+      });
+      const hlModel = h('input', {
+        className: 'input', type: 'text', value: config.hermesLocalModel || '',
+        placeholder: 'vazio = modelo carregado no servidor',
+        oninput: (e) => { config.hermesLocalModel = e.target.value.trim(); saveConfig(config); }
+      });
+      const presets = HERMES_LOCAL_PRESETS
+        .map((p) => `${p.label} → ${p.url}`).join(' · ');
+      bodyEl.append(
+        h('label', null, h('span', null, 'ENDPOINT LOCAL (OpenAI-compatível)'), hlUrl),
+        h('label', null, h('span', null, 'MODELO'), hlModel),
+        h('p', { className: 'jarvis-config__warn u-text-muted' }, `⬢ Portas conhecidas: ${presets}.`),
+        h('p', { className: 'jarvis-config__warn u-text-muted' },
+          '⚠ O servidor local precisa aceitar o site (CORS): LM Studio → Developer → "Enable CORS"; ' +
+          'Ollama → variável de ambiente OLLAMA_ORIGINS="*" antes do "ollama serve"; ' +
+          'text-generation-webui → flags --api --api-enable-cors. 100% privado: nada sai da sua máquina.')
       );
     } else if (config.mode === 'openclaw') {
       const ocUrl = h('input', {
