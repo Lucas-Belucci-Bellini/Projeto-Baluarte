@@ -94,6 +94,15 @@
 .m3d-viewer__name { font-weight: var(--font-weight-semibold); }
 .m3d-viewer__lic { color: var(--color-success); font-family: var(--font-mono); font-size: 11px; }
 
+.m3d-viewer__share {
+  float: right; margin-left: 12px;
+  background: transparent; border: 1px solid var(--color-cyan-edge);
+  color: var(--color-cyan); border-radius: var(--radius-sm);
+  padding: 2px 10px; font-size: 11px; font-family: var(--font-mono);
+  cursor: pointer; transition: background var(--transition-fast);
+}
+.m3d-viewer__share:hover { background: var(--color-cyan-soft); }
+
 /* ----- rodapé de créditos ----- */
 .m3d-footer { margin: var(--space-lg) 0 0; font-size: 12px; line-height: 1.7; color: var(--color-text-muted); }
 .m3d-footer a { color: var(--color-cyan); text-decoration: none; }

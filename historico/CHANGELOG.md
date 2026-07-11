@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-11
 
+### 🧊 Modelos 3D — deep-link, compartilhar e telemetria (#310 → #348)
+- ✅ **Auditoria do visualizador**: as 7 coleções da issue (+3 extras) já estavam cobertas — 432 modelos semeados, busca por nome/autor, grupos, paginação ao vivo da API do Sketchfab e crédito completo (autor/licença/link) em card + player. Verificado no navegador: tudo funcional, 0 erros.
+- 🔗 **Deep-link compartilhável**: `#/modelos-3d?m=<uid>` abre o modelo direto; botão **⧉ compartilhar** no player copia o link.
+- 📡 **Ligado ao Nexus (#348)**: abrir um modelo registra `interaction` (`ver_modelo_3d` + uid/nome/autor) — a IA aprende quais modelos chamam atenção. Lazy e best-effort (telemetria nunca atrapalha o viewer).
+
+
 ### 🕸️ Nexus Central — multi-site + telemetria + Direito no Supabase (0010) + voz do servidor
 - 🗄️ **Migration 0010 aplicada no banco oficial** (iniciada pelo Claude do Chrome via MCP, finalizada por esta sessão): **Pilar 1** — `tenants` (baluarte/codevibe/essence, `ingest_key_hash` bcrypt) + `tenant_members` + `nexus.is_member()`; **Pilar 2** — `nucleo_events`/`memories`/`site_stats` existentes ganharam `tenant_id` (o `/api/nucleo` segue intacto) e RPCs `SECURITY DEFINER` de ingestão (`ingest_event`/`ingest_stat`/`ingest_memory` — sites externos gravam SEM insert direto, portão = ingest_key); **Pilar 3 (Direito)** — partes, processos (N:N), prazos (flag fatal), `juris_doutrina` com **pgvector**+ivfflat (RAG) e peças com versões; RLS em tudo. Espelho fiel no repo: `supabase/migrations/0010_nexus.sql`.
 - 🐛 **2 fixes aplicados no banco** (a validação anterior não pegou): `ingest_event` estourava o `nucleo_events_type_check` legado → check ampliado com os tipos de telemetria (`page_view`, `click`…); `buscar_juris` executável por `anon` via grant implícito a PUBLIC → revogado na raiz (advisor 0028). Advisors re-rodados: warns restantes são by-design.
