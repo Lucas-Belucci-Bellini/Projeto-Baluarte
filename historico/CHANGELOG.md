@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-11
 
+### 🚀 Releases 0.5.0 — instalador novo (Baluarte Launcher) + APK celular
+- 📦 **Launcher 0.5.0** (`desktop/package.json` 0.4.0 → 0.5.0): leva TUDO da v0.5.0 — Hermes default + seletor de modelos, voz do J.A.R.V.I.S. (3 camadas), modo `hermes-local` (LM Studio/Ollama da máquina), Núcleo com Fase D rica (coração na cena, telemetria no HUD, token na ponte), Nexus multi-site e o Corpo Total consertado. Release cortada pelo workflow **Desktop Release** (Win/Mac/Linux, auto-update pelos apps instalados).
+- 📱 **Mobile 0.5.0**: release `mobile-v0.5.0` (prerelease — não vira "latest") com o **APK direto** via workflow **Mobile Release** (`workflow_dispatch` + `publish_tag`); o `/baixar` resolve a release `mobile-v*` mais recente em runtime.
+
+
 ### 🎤 Músicas Próprias na Central de Música (#356)
 - 🎵 Nova seção **"Músicas Próprias"** no `/musicas`: a obra **"A Baluarte"** do operador em **31 variações** geradas no Suno AI (conta spartangamerbr68), coletadas dos 37 comentários da issue (deduplicadas 37 → 31).
 - 🪶 **Player LAZY**: a página não carrega nenhum iframe do Suno — só o da faixa clicada (1 por vez), mantendo a página leve (#238). Grade numerada, faixa ativa destacada, crédito com link pra faixa e pro perfil.
