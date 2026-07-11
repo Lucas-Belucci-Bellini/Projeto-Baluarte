@@ -225,6 +225,14 @@ export async function mountNucleoScene(container) {
   let glitchUntil = 0;
   function pulse(ms) { glitch.enabled = true; glitchUntil = performance.now() + (ms || 260); }
 
+  /* Fase D rica (#316): biometria → energia — o núcleo BATE no ritmo do
+   * coração do operador. 60 bpm = velocidade padrão; clamp de segurança. */
+  function setHeartRate(bpm) {
+    const v = Number(bpm);
+    if (!Number.isFinite(v) || v <= 0) return;
+    CFG.pulseSpeed = Math.max(0.6, Math.min(3.2, 1.3 * (v / 60)));
+  }
+
   /* ---- interação (parallax) ---- */
   const target = { x: 0, y: 0 }, camCur = { x: 0, y: 0 };
   const onMove = (e) => { target.x = (e.clientX / innerWidth - 0.5); target.y = (e.clientY / innerHeight - 0.5); };
@@ -299,5 +307,5 @@ export async function mountNucleoScene(container) {
     mo.observe(document.body, { childList: true, subtree: true });
   }
 
-  return { pulse, destroy };
+  return { pulse, setHeartRate, destroy };
 }

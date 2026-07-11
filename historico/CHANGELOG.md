@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-07-11
 
+### 🧠 Núcleo 10x — Fase D RICA: telemetria no HUD, coração na cena e token na ponte (#316)
+- 📊 **Telemetria → HUD**: eventos `telemetry` atualizam o vital novo **TELEMETRIA** (🔋 bateria/métricas + origem) — o cockpit mostra o aparelho remoto ao vivo.
+- ❤️ **Biometria → energia**: eventos `biometric` com `heartRate` atualizam o vital **BIOMETRIA** (♥ bpm, alerta fora de 45–120) e a cena ganha `setHeartRate(bpm)` — **o núcleo passa a BATER no ritmo do coração do operador** (clamp de segurança 0.6–3.2×).
+- 🗣️ **Voz → ação**: eventos `voice` (tipo novo do check da 0010) executam a intenção como os `command` — abrir/fechar funções por voz.
+- 🔐 **Token na ponte WS**: `nucleo-socket.js` manda `?token=` no handshake quando configurado (backend Java com `NUCLEO_TOKEN`); comando novo **`ponte token <valor>`** (fica só no navegador). `simular bio|telemetria|voz` demonstra cada reação sem backend.
+- ✅ Verificado (Playwright, app simulado): `simular bio` → "♥ 94 bpm · demo"; `simular telemetria` → "🔋65% · demo"; `ponte token` guarda e reconecta; 0 erros.
+
+
 ### 🧊 Modelos 3D — deep-link, compartilhar e telemetria (#310 → #348)
 - ✅ **Auditoria do visualizador**: as 7 coleções da issue (+3 extras) já estavam cobertas — 432 modelos semeados, busca por nome/autor, grupos, paginação ao vivo da API do Sketchfab e crédito completo (autor/licença/link) em card + player. Verificado no navegador: tudo funcional, 0 erros.
 - 🔗 **Deep-link compartilhável**: `#/modelos-3d?m=<uid>` abre o modelo direto; botão **⧉ compartilhar** no player copia o link.

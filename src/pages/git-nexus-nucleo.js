@@ -28,7 +28,7 @@ import { processHermesLocal, healthHermesLocal, listHermesLocalModels, HERMES_LO
 import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
 import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
 import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoiceLang, setElevenKey, hasElevenKey, VOICE_LANGS } from '../utils/jarvis-voice.js';
-import { initNucleoLink, getNucleoUrl, setNucleoUrl, simulateNucleoEvent } from '../utils/nucleo-socket.js';
+import { initNucleoLink, getNucleoUrl, setNucleoUrl, setNucleoToken, simulateNucleoEvent } from '../utils/nucleo-socket.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
 const PULSE_MS = { command: 420, biometric: 300, telemetry: 200, system: 160 };
@@ -93,6 +93,8 @@ export function gitNexusNucleo(args = {}) {
     vitalRow('rede', 'REDE', getNucleoUrl() ? 'CONECTANDO' : 'OFF'),
     vitalRow('eventos', 'EVENTOS', '0'),
     vitalRow('energia', 'ENERGIA', '—'),
+    vitalRow('remoto', 'TELEMETRIA', '—'),
+    vitalRow('bio', 'BIOMETRIA', '—'),
     vitalRow('modo', 'MODO IA', (config.mode || 'local').toUpperCase()),
     vitalRow('motor', 'MOTOR', '…'));
   page.appendChild(vitalsEl);
@@ -312,11 +314,19 @@ export function gitNexusNucleo(args = {}) {
     }
     if (/^(silêncio|silencio|calar?)$/.test(t)) { stopSpeaking(); bolha('jarvis', '…'); return; }
 
-    /* ponte ao vivo: conectar/desconectar/simular */
+    /* ponte ao vivo: conectar/desconectar/token/simular */
     const con = t.match(/^conectar\s+(wss?:\/\/\S+)$/);
-    if (con) { setNucleoUrl(con[1]); bolha('jarvis', `Ponte configurada: ${con[1]}. Conectando…`); return; }
+    if (con) { setNucleoUrl(con[1]); bolha('jarvis', `Ponte configurada: ${con[1]}. Conectando… (backend com NUCLEO_TOKEN? Diga "ponte token <valor>".)`); return; }
     if (/^desconectar$/.test(t)) { setNucleoUrl(''); setVital('rede', 'OFF'); bolha('jarvis', 'Ponte desligada.'); return; }
-    if (/^simular( evento)?$/.test(t)) { simulateNucleoEvent('command'); bolha('jarvis', 'Evento de demonstração emitido.'); return; }
+    const pTok = texto.match(/^ponte\s+token\s+(\S+)$/i);   // usa `texto` (token respeita maiúsculas)
+    if (pTok) { setNucleoToken(pTok[1]); bolha('jarvis', 'Token da ponte guardado (só neste navegador). Reconectando com ?token=…'); return; }
+    const sim = t.match(/^simular( evento)?( bio(metria)?| telemetria| voz| comando)?$/);
+    if (sim) {
+      const tipo = /bio/.test(t) ? 'biometric' : /telemetria/.test(t) ? 'telemetry' : 'command';
+      simulateNucleoEvent(tipo);
+      bolha('jarvis', `Evento de demonstração (${tipo}) emitido — olhe os sinais vitais e a cena.`);
+      return;
+    }
 
     /* abrir função por comando ("mostrar memória", "abrir conselho", "corpo total"…) */
     const pedido = /^(mostrar?|abrir?|ativar?|exibir?|rodar?)\b/.test(t) ? t.replace(/^(mostrar?|abrir?|ativar?|exibir?|rodar?)\s*/, '') : t;
@@ -403,7 +413,22 @@ export function gitNexusNucleo(args = {}) {
     nEventos++;
     setVital('eventos', String(nEventos));
     scene && scene.pulse && scene.pulse(PULSE_MS[ev.type] || 240);
-    if (ev.type === 'command' && ev.payload && ev.payload.text) {
+    /* Fase D rica (#316): cada tipo de evento reage de um jeito. */
+    if (ev.type === 'telemetry') {
+      /* telemetria → HUD: última leitura do aparelho remoto nos vitais */
+      const m = (ev.payload && ev.payload.metrics) || ev.payload || {};
+      const bateria = m.battery != null ? `🔋${Math.round(m.battery * 100)}%` : null;
+      const chaves = Object.keys(m).length;
+      setVital('remoto', `${bateria || `${chaves} métrica(s)`} · ${ev.source || '?'}`, 'ok');
+    } else if (ev.type === 'biometric') {
+      /* biometria → energia: o núcleo BATE no ritmo do coração */
+      const hr = ev.payload && (ev.payload.heartRate || ev.payload.hr);
+      if (hr) {
+        setVital('bio', `♥ ${hr} bpm · ${ev.source || '?'}`, (hr >= 120 || hr <= 45) ? 'warn' : 'ok');
+        scene && scene.setHeartRate && scene.setHeartRate(hr);
+      }
+    } else if ((ev.type === 'command' || ev.type === 'voice') && ev.payload && ev.payload.text) {
+      /* voz/comando → ação de verdade (abre função, executa intenção) */
       comandoRemoto(ev.payload.text, ev.source);
     }
   });
