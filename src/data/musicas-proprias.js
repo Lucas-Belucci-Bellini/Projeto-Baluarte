@@ -1,0 +1,47 @@
+/**
+ * Músicas PRÓPRIAS do operador (issue #356) — geradas no Suno AI
+ * (conta spartangamerbr68). Obra "A Baluarte" em 31 variações; toca pelo
+ * embed oficial do Suno (lazy: o iframe só carrega ao clicar na faixa).
+ */
+
+export const SUNO_PERFIL = 'https://suno.com/@spartangamerbr68';
+
+export const MUSICAS_PROPRIAS = [
+  '460a8e8b-84a9-4be5-8d5f-21a767051398',
+  '5a09e805-4ef8-493a-8178-2bd0cbc6cc2b',
+  'd75bdf7c-c736-49ae-bb8b-13508c5f5484',
+  'f2bba095-27c6-48e9-969a-fd1aa8d0f707',
+  'b2cc0f32-9d0b-4f8d-aac7-44b6304f84ea',
+  '0dc6d529-88d0-4b23-8f2c-cf7f41b5b2dd',
+  'f6ead878-b876-4503-acc5-db1276a466ab',
+  '0be3b131-a680-478b-8d08-07ba1e4d8e61',
+  '810a11cc-d09b-4b9a-b4e3-6a26dc17d515',
+  '1b98673c-4066-4760-85fd-d4de0fe6dbb8',
+  'e4f6ce9d-a17f-4483-a925-31de0ea9a66b',
+  '7ddd103e-8ab8-456e-b50a-1d309332400d',
+  '0a3a5c89-782a-49eb-b9f1-2d370b208508',
+  '5125f10d-cad8-4b93-ace7-2865fa900a30',
+  '0369c8db-fbaf-49f6-b3ed-7565f88f62a1',
+  '49aeb142-3285-4a58-9065-0380eff911d5',
+  '7d73c317-e163-48f4-944f-d9da521ed267',
+  '7be01df3-8298-4928-9b67-bf0c05bf7a9b',
+  'f7965875-88a2-44ed-8a56-c9e5f4c02823',
+  '87cb79e5-d53a-4b3d-b995-3615c1268bb3',
+  'e57fae42-5ae5-4028-a408-8a3a2b505812',
+  '5d42dac9-d3c1-4fcc-a6ee-5e496ce06d69',
+  '0693e8ef-343c-45c2-9754-e69f6c168149',
+  '3420389f-75b2-4b78-b433-153472cf6053',
+  '6e5e2017-f81f-42b8-a585-fc63b62f746f',
+  'b49641c4-924f-4966-9b5e-23394131903f',
+  '1f5f11ae-c1b2-4d5f-ad1f-9927e5542adc',
+  '3184cf52-393c-49c8-acd8-61c939cb2840',
+  'f1c29446-9e5e-44be-8690-2d2f482715d2',
+  '7330bd71-cc44-4701-96da-9d0fc8bd56f4',
+  '138fe41c-a1b1-40dc-b9f4-9929048f9aa4'
+].map((uid, i) => ({
+  uid,
+  n: i + 1,
+  titulo: `A Baluarte · ${String(i + 1).padStart(2, '0')}`,
+  url: `https://suno.com/song/${uid}`,
+  embed: `https://suno.com/embed/${uid}`
+}));

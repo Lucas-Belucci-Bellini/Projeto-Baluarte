@@ -13,6 +13,7 @@ import { toast } from '../utils/toast.js';
 import { saveBookmark, loadBookmark } from '../core/media-sync.js';
 import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
 import { ALBUNS } from '../data/albuns.js';
+import { MUSICAS_PROPRIAS, SUNO_PERFIL } from '../data/musicas-proprias.js';
 import {
   addFiles, listTracks, getBlob, removeTrack, clearAll, formatSize, offlineAudioSupported
 } from '../utils/offline-audio.js';
@@ -394,6 +395,50 @@ function meuAcervoSection() {
   return wrap;
 }
 
+/* ===== Músicas PRÓPRIAS (Suno AI, issue #356) =====
+ * A obra "A Baluarte" do operador em 31 variações. Player LAZY: a página não
+ * carrega nenhum iframe do Suno — só o da faixa clicada (1 por vez), mantendo
+ * a página leve (#238). Crédito/origem: link pra faixa e pro perfil. */
+function musicasPropriasSection() {
+  const wrap = h('div', { className: 'proprias' });
+  const player = h('div', { className: 'proprias__player' });
+  let ativa = null;
+
+  function tocar(m, btn) {
+    empty(player);
+    if (ativa === m.uid) { ativa = null; btn.classList.remove('is-on'); return; }
+    ativa = m.uid;
+    wrap.querySelectorAll('.proprias__faixa').forEach((b) => b.classList.remove('is-on'));
+    btn.classList.add('is-on');
+    player.append(
+      h('iframe', {
+        className: 'proprias__frame', src: m.embed, title: m.titulo,
+        allow: 'autoplay; encrypted-media; fullscreen', loading: 'eager', frameborder: '0'
+      }),
+      h('p', { className: 'proprias__credito u-text-muted' },
+        '♪ ', h('a', { href: m.url, target: '_blank', rel: 'noopener noreferrer' }, m.titulo),
+        ' — criada pelo operador no ',
+        h('a', { href: SUNO_PERFIL, target: '_blank', rel: 'noopener noreferrer' }, 'Suno AI'))
+    );
+    player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  const grade = h('div', { className: 'proprias__grade' },
+    ...MUSICAS_PROPRIAS.map((m) => {
+      const btn = h('button', { className: 'proprias__faixa', onclick: () => tocar(m, btn) },
+        h('span', { className: 'proprias__num' }, String(m.n).padStart(2, '0')),
+        h('span', { className: 'proprias__nome' }, 'A Baluarte'));
+      return btn;
+    }));
+
+  wrap.append(
+    h('p', { className: 'musica-nota u-text-muted' },
+      '🎤 Composições do próprio operador (Suno AI) — a obra "A Baluarte" em ',
+      String(MUSICAS_PROPRIAS.length), ' variações. Clique numa faixa pra tocar aqui.'),
+    grade, player);
+  return wrap;
+}
+
 export function musicasPage() {
   const fullPage = h('div', { className: 'page-musicas' });
 
@@ -420,6 +465,14 @@ export function musicasPage() {
       h('span', { className: 'acervo-badge' }, 'offline · qualquer rede'))
   );
   fullPage.appendChild(meuAcervoSection());
+
+  /* ===== Músicas PRÓPRIAS (Suno AI, issue #356) — obra do operador ===== */
+  fullPage.appendChild(
+    h('div', { className: 'section-header' },
+      h('h2', { className: 'section-header__title' }, '🎤 Músicas Próprias'),
+      h('span', { className: 'section-header__count' }, String(MUSICAS_PROPRIAS.length)))
+  );
+  fullPage.appendChild(musicasPropriasSection());
 
   /* ===== Faixa em destaque (loop) ===== */
   fullPage.appendChild(
