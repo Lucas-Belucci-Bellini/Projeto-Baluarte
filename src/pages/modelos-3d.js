@@ -33,7 +33,7 @@ const colByUid = Object.fromEntries(SEED.colecoes.map((c) => [c.uid, c]));
 const embedUrl = (uid) =>
   `https://sketchfab.com/models/${uid}/embed?utm_source=website&utm_medium=embed&utm_campaign=share-popup&autostart=1`;
 
-export function modelos3dPage() {
+export function modelos3dPage(args = {}) {
   const cleanups = [];
   const onCleanup = (fn) => cleanups.push(fn);
 
@@ -172,11 +172,26 @@ export function modelos3dPage() {
 
   /* ----- viewer (modal com embed oficial + crédito completo) ----- */
   function abrirViewer(m) {
+    /* Nexus (#348): registra a interação — a IA aprende quais modelos chamam
+     * atenção. Lazy e best-effort: telemetria nunca atrapalha o viewer. */
+    import('../utils/nexus.js')
+      .then((nx) => nx.nexusEvent('interaction', { acao: 'ver_modelo_3d', uid: m.uid, modelo: m.name, autor: m.author }))
+      .catch(() => {});
     const iframe = h('iframe', {
       className: 'm3d-viewer__frame', src: embedUrl(m.uid), title: m.name,
       allow: 'autoplay; fullscreen; xr-spatial-tracking', allowfullscreen: 'true',
       loading: 'eager', frameborder: '0'
     });
+    /* deep-link compartilhável: #/modelos-3d?m=<uid> */
+    const link = `${location.origin}${location.pathname}#/modelos-3d?m=${m.uid}`;
+    const shareBtn = h('button', {
+      className: 'm3d-viewer__share', title: 'Copiar link direto deste modelo',
+      onclick: () => {
+        const done = () => { shareBtn.textContent = 'link copiado ✓'; setTimeout(() => { shareBtn.textContent = '⧉ compartilhar'; }, 1600); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(done).catch(() => {});
+        else done();
+      }
+    }, '⧉ compartilhar');
     const modal = h('div', { className: 'm3d-viewer', onclick: (e) => { if (e.target === modal) fechar(); } },
       h('div', { className: 'm3d-viewer__box' },
         h('button', { className: 'm3d-viewer__close', onclick: () => fechar(), 'aria-label': 'Fechar' }, '✕'),
@@ -187,7 +202,8 @@ export function modelos3dPage() {
           h('a', { href: m.authorUrl || '#', target: '_blank', rel: 'noopener noreferrer' }, m.author),
           h('span', null, ' no '),
           h('a', { href: 'https://sketchfab.com?utm_source=website&utm_medium=embed&utm_campaign=share-popup', target: '_blank', rel: 'noopener noreferrer' }, 'Sketchfab'),
-          m.license ? h('span', { className: 'm3d-viewer__lic' }, ` · Licença: ${m.license}`) : null)));
+          m.license ? h('span', { className: 'm3d-viewer__lic' }, ` · Licença: ${m.license}`) : null,
+          shareBtn)));
     const onKey = (e) => { if (e.key === 'Escape') fechar(); };
     function fechar() { document.removeEventListener('keydown', onKey); modal.remove(); }
     document.addEventListener('keydown', onKey);
@@ -206,6 +222,13 @@ export function modelos3dPage() {
     ' — todos os modelos © seus autores, exibidos via player oficial do Sketchfab.'));
 
   renderGrid();
+
+  /* deep-link: #/modelos-3d?m=<uid> abre o modelo direto (do seed) */
+  const deepUid = (args.query || {}).m;
+  if (deepUid) {
+    const alvo = modelos.find((x) => x.uid === deepUid);
+    if (alvo) setTimeout(() => abrirViewer(alvo), 60);
+  }
 
   /* auto-limpeza ao sair da rota */
   if (typeof MutationObserver !== 'undefined') {
