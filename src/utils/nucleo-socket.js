@@ -16,6 +16,7 @@ import { bus } from '../core/events.js';
 import { storage } from '../core/storage.js';
 
 const URL_KEY = 'nucleo:wsUrl';
+const TOKEN_KEY = 'nucleo:wsToken';
 
 let ws = null;
 let retry = 0;
@@ -23,6 +24,15 @@ let stopped = false;
 let curUrl = '';
 
 export function getNucleoUrl() { return storage.get(URL_KEY, '') || ''; }
+
+/** Token da ponte (Fase D · #316): quando o backend Java sobe com NUCLEO_TOKEN,
+ * o handshake do WS exige `?token=`. Vazio = backend aberto (dev). */
+export function getNucleoToken() { return storage.get(TOKEN_KEY, '') || ''; }
+export function setNucleoToken(tok) {
+  storage.set(TOKEN_KEY, String(tok || '').trim());
+  if (getNucleoUrl()) { disconnectNucleo(); connectNucleo(); }   // reconecta com o token novo
+  return getNucleoToken();
+}
 
 /** Define (e persiste) a URL do backend; reconecta na hora. '' desliga. */
 export function setNucleoUrl(url) {
@@ -42,7 +52,10 @@ export function connectNucleo() {
   if (!url) return null;
   if (ws && curUrl === url && (ws.readyState === 0 || ws.readyState === 1)) return ws;
   stopped = false; curUrl = url;
-  try { ws = new WebSocket(url.replace(/\/+$/, '') + '/ws/nucleo'); }
+  const tok = getNucleoToken();
+  try {
+    ws = new WebSocket(url.replace(/\/+$/, '') + '/ws/nucleo' + (tok ? `?token=${encodeURIComponent(tok)}` : ''));
+  }
   catch { scheduleRetry(); return null; }
 
   ws.onopen = () => { retry = 0; emitStatus(true); };
