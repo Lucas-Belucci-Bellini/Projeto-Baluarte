@@ -8,6 +8,26 @@ Hermes responde entra no pipeline normal do Núcleo — com **`voz on`**, vira
 `src/utils/hermes-local.js` (serviço) · registrado no `/jarvis` (seletor) e no
 Núcleo (comandos).
 
+## ⚡ Instalação automatizada (recomendado)
+
+Scripts que fazem TUDO (instalam o Ollama, baixam o Hermes, sobem a API em
+segundo plano **já com o CORS liberado** e rodam o teste de vida):
+
+```bash
+# Linux / macOS
+bash scripts/instalar-hermes.sh
+```
+```powershell
+# Windows
+powershell -ExecutionPolicy Bypass -File scripts\instalar-hermes.ps1
+```
+
+Ajustes por variável de ambiente (opcionais): `BALUARTE_HERMES_MODELO`
+(default **`hermes3`** — Nous Hermes 3 8B, ~4,7 GB; alternativa leve:
+`openhermes`, Mistral 7B) e `BALUARTE_OLLAMA_ORIGINS` (default `*`).
+No fim, o script imprime os comandos do site (`hermes ollama` → `modo
+hermes-local`). A instalação manual segue abaixo.
+
 ## Servidores suportados e portas
 
 | Servidor | Endpoint (URL base) | Como ligar |

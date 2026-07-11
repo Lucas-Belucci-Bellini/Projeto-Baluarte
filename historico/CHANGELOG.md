@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-10
 
+### ⚙️ v0.5.0 — fatia 5: instaladores 1-clique do Hermes local (Bash + PowerShell) (#340)
+- 📜 **`scripts/instalar-hermes.sh`** (Linux/macOS) e **`scripts/instalar-hermes.ps1`** (Windows): automação completa em 6 etapas com feedback colorido `[OK]/[!]/[ERRO]` — (1) checa ambiente (curl/PowerShell, ~6 GB livres); (2) instala o **Ollama** silenciosamente (Linux: script oficial; macOS: brew; Windows: winget com fallback pro `OllamaSetup.exe /VERYSILENT`); (3) sobe o servidor em segundo plano na `:11434` **já com `OLLAMA_ORIGINS` configurado** (systemd drop-in no Linux, `setx` no Windows, env+nohup no macOS) — o CORS é o único ajuste que o site exige; (4) baixa o modelo (**`hermes3`** default, `BALUARTE_HERMES_MODELO` troca); (5) **teste de vida real**: `GET /v1/models` + chat `POST /v1/chat/completions` ("BALUARTE OK"); (6) imprime os comandos do site (`hermes ollama` → `modo hermes-local` → `voz on`).
+- 🧪 Bash validado de ponta a ponta com **stub do ollama** (binário + API fake na 11434): 6 etapas, health checks e parse da resposta ok; `bash -n` limpo. PowerShell 5.1-compatível (sem operadores PS7).
+- 📖 `docs/HERMES-LOCAL.md` ganhou a seção "Instalação automatizada".
+
 ### 🖥️ v0.5.0 — fatia 4: Hermes LOCAL DA MÁQUINA (LM Studio/Ollama) + voz (#340)
 - ⬢ **Novo modo `hermes-local`** (`src/utils/hermes-local.js`): conecta o J.A.R.V.I.S. a QUALQUER servidor de LLM rodando na máquina do operador via **API OpenAI-compatível** (`/v1/chat/completions`) — LM Studio (`:1234/v1`, default), Ollama (`:11434/v1`), text-generation-webui (`:5000/v1`)… 100% privado, nada passa por nuvem. Timeout largo (2 min — modelo carregando), erros **acionáveis** (servidor fora → como subir + CORS; 404 → conferir `/v1`; mixed content → guard com correção).
 - 🎛️ **Núcleo (sem menu, Regra de Ouro)**: `hermes status` (health check + modelos), `hermes url <endereço>`, presets `hermes lmstudio|ollama|textgen`, `modo hermes-local`, e o `modelos` agora lista o **catálogo VIVO** do servidor local (`GET /v1/models`); `modelo <nome>` troca. `/jarvis`: modo no seletor + campos ENDPOINT/MODELO com notas de CORS.
