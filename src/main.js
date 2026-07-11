@@ -272,6 +272,10 @@ function boot() {
     setTimeout(() => { import('./utils/jarvis-brain.js').then((m) => m.syncRepoMemories()).catch(() => {}); }, 1500);
   }
 
+  /* Nexus Central (0010): telemetria multi-site (page_views + tempo de tela)
+   * via RPC gateada por ingest_key — lazy e best-effort, fora do boot crítico. */
+  setTimeout(() => { import('./utils/nexus.js').then((m) => m.initNexusTelemetry()).catch(() => {}); }, 3000);
+
   console.log(
     `%c⬡ BALUARTE — Mark XIII · v${VERSION}`,
     'color: #d4a24e; font-weight: bold; font-family: monospace; font-size: 14px;'
