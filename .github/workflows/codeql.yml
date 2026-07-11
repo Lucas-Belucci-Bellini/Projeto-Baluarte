@@ -37,6 +37,13 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
+          # vendor/ guarda repos de TERCEIROS (referência do Omega Prism — fora do
+          # build/deploy, ver .vercelignore). Não é código nosso, então fica fora
+          # do CodeQL pra não poluir os PRs com alertas de projetos externos
+          # (ex.: a #294). Só src/, desktop/ e afins continuam sendo analisados.
+          config: |
+            paths-ignore:
+              - vendor
 
       - name: Analisar
         uses: github/codeql-action/analyze@v3
