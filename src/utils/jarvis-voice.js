@@ -1,12 +1,15 @@
 /**
  * Voz do J.A.R.V.I.S. (v0.5.0 · #340) — o marco da 0.5.0.
  *
- * Dois motores, sempre com um funcionando:
- *   1. **ElevenLabs** (voz de referência do operador, `eleven_multilingual_v2`,
- *      fala qualquer idioma) — quando o operador colar a API key. A chave fica
- *      SÓ no navegador (storage local), padrão do cofre da Central de APIs.
- *   2. **speechSynthesis do navegador** — grátis e offline; escolhe a voz pelo
- *      idioma configurado. É o fallback automático se a ElevenLabs falhar.
+ * Três motores, sempre com um funcionando (nessa ordem):
+ *   1. **ElevenLabs LOCAL** (voz de referência, `eleven_multilingual_v2`) —
+ *      quando o operador colar a API key. A chave fica SÓ no navegador
+ *      (storage local), padrão do cofre da Central de APIs.
+ *   2. **ElevenLabs pelo SERVIDOR** (`/api/voz`, função Vercel) — a chave vive
+ *      nas envs do Vercel (`ELEVENLABS_API_KEY`); o navegador nunca a vê.
+ *      Qualquer visitante ganha a voz boa sem chave. 503 = não configurada.
+ *   3. **speechSynthesis do navegador** — grátis e offline; escolhe a voz pelo
+ *      idioma configurado. Fallback final.
  *
  * Preferências (storage): `voice:on` · `voice:lang` (pt-BR default) ·
  * `voice:elevenKey`. Controlado por comandos no Núcleo ("voz on", "voz idioma
@@ -78,7 +81,16 @@ function speakBrowser(text) {
   });
 }
 
-/** Fala pela ElevenLabs (voz de referência). Lança se a API falhar. */
+/** Toca um blob de áudio (MP3 da ElevenLabs, direto ou via proxy). */
+function playBlob(blob) {
+  stopSpeaking();
+  currentUrl = URL.createObjectURL(blob);
+  audioEl = new Audio(currentUrl);
+  return audioEl.play().then(() =>
+    new Promise((resolve) => { audioEl.onended = () => resolve(true); audioEl.onerror = () => resolve(false); }));
+}
+
+/** Fala pela ElevenLabs com a chave LOCAL do operador. Lança se a API falhar. */
 async function speakEleven(text) {
   const key = storage.get(KEY_ELEVEN, '');
   const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${JARVIS_VOICE_ID}`, {
@@ -91,18 +103,35 @@ async function speakEleven(text) {
     })
   });
   if (!res.ok) throw new Error(`ElevenLabs HTTP ${res.status}`);
-  const blob = await res.blob();
-  stopSpeaking();
-  currentUrl = URL.createObjectURL(blob);
-  audioEl = new Audio(currentUrl);
-  await audioEl.play();
-  return new Promise((resolve) => { audioEl.onended = () => resolve(true); audioEl.onerror = () => resolve(false); });
+  return playBlob(await res.blob());
+}
+
+/* Voz pelo SERVIDOR (/api/voz): a chave fica nas envs do Vercel — visitante
+ * ganha ElevenLabs sem colar chave. 503 = env não configurada → desliga a
+ * tentativa pro resto da sessão (não fica batendo na função a cada fala). */
+let serverVozDisponivel = null;   // null = ainda não sabemos
+
+async function speakServer(text) {
+  if (serverVozDisponivel === false) throw new Error('proxy indisponível');
+  const res = await fetch('/api/voz', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text })
+  });
+  if (res.status === 503 || res.status === 404) {
+    serverVozDisponivel = false;   // sem env/da função — não insiste nesta sessão
+    throw new Error('voz do servidor não configurada');
+  }
+  if (!res.ok) throw new Error(`/api/voz HTTP ${res.status}`);
+  serverVozDisponivel = true;
+  return playBlob(await res.blob());
 }
 
 /**
- * Fala um texto com o melhor motor disponível. Best-effort: nunca lança —
- * ElevenLabs falhou (sem chave/quota/rede) → cai no navegador; nada disponível
- * → silêncio (a resposta continua na tela).
+ * Fala um texto com o melhor motor disponível. Best-effort: nunca lança.
+ * Ordem: ElevenLabs com a chave LOCAL (operador) → ElevenLabs pelo SERVIDOR
+ * (/api/voz, chave nas envs do Vercel) → speechSynthesis do navegador →
+ * silêncio (a resposta continua na tela).
  */
 export async function speak(text) {
   if (!voiceEnabled()) return false;
@@ -110,7 +139,9 @@ export async function speak(text) {
   if (!t) return false;
   if (hasElevenKey()) {
     try { return await speakEleven(t); }
-    catch (e) { console.warn('[voz] ElevenLabs falhou — caindo pro navegador:', e.message); }
+    catch (e) { console.warn('[voz] ElevenLabs (local) falhou — tentando o servidor:', e.message); }
   }
+  try { return await speakServer(t); }
+  catch { /* sem proxy — segue pro navegador */ }
   try { return await speakBrowser(t); } catch { return false; }
 }

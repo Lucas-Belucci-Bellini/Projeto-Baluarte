@@ -6,6 +6,15 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-11
+
+### 🕸️ Nexus Central — multi-site + telemetria + Direito no Supabase (0010) + voz do servidor
+- 🗄️ **Migration 0010 aplicada no banco oficial** (iniciada pelo Claude do Chrome via MCP, finalizada por esta sessão): **Pilar 1** — `tenants` (baluarte/codevibe/essence, `ingest_key_hash` bcrypt) + `tenant_members` + `nexus.is_member()`; **Pilar 2** — `nucleo_events`/`memories`/`site_stats` existentes ganharam `tenant_id` (o `/api/nucleo` segue intacto) e RPCs `SECURITY DEFINER` de ingestão (`ingest_event`/`ingest_stat`/`ingest_memory` — sites externos gravam SEM insert direto, portão = ingest_key); **Pilar 3 (Direito)** — partes, processos (N:N), prazos (flag fatal), `juris_doutrina` com **pgvector**+ivfflat (RAG) e peças com versões; RLS em tudo. Espelho fiel no repo: `supabase/migrations/0010_nexus.sql`.
+- 🐛 **2 fixes aplicados no banco** (a validação anterior não pegou): `ingest_event` estourava o `nucleo_events_type_check` legado → check ampliado com os tipos de telemetria (`page_view`, `click`…); `buscar_juris` executável por `anon` via grant implícito a PUBLIC → revogado na raiz (advisor 0028). Advisors re-rodados: warns restantes são by-design.
+- 📡 **Cliente Nexus no site** (`src/utils/nexus.js`, sem SDK): `nexusEvent/Stat/Memory` + **telemetria automática** lazy pós-boot — `page_views` por rota e `tempo_tela_seg` por sessão (flush no `pagehide`, keepalive). Best-effort, nunca quebra o site. Snippet portátil pros outros sites em `docs/NEXUS.md`.
+- 🗣️ **Voz pelo SERVIDOR** (`api/voz.py` + `speak()` em 3 camadas): `POST /api/voz {text}` → MP3 ElevenLabs com a chave nas **envs do Vercel** (`ELEVENLABS_API_KEY` — o navegador nunca vê; 503 desliga a tentativa na sessão) + `GET ?signed=1` (signed URL do agente). Ordem: chave local → servidor → speechSynthesis. `scripts/testar-elevenlabs.mjs` valida chave/TTS/agente.
+- ✅ Verificado: RPC real em produção (`ingest_stat` somou, `page_view` aceito pós-fix, **chave errada rejeitada**); Playwright — o site dispara os `ingest_stat` certos por rota, 0 erros; grants conferidos no catálogo; `py_compile` limpo. Pendências do operador em `docs/NEXUS.md` (chaves ElevenLabs, `NUCLEO_TOKEN`, rotação das ingest keys).
+
 ## 2026-07-10
 
 ### ⚙️ v0.5.0 — fatia 5: instaladores 1-clique do Hermes local (Bash + PowerShell) (#340)
