@@ -426,8 +426,12 @@ function musicasPropriasSection() {
   const grade = h('div', { className: 'proprias__grade' },
     ...MUSICAS_PROPRIAS.map((m) => {
       const btn = h('button', { className: 'proprias__faixa', onclick: () => tocar(m, btn) },
-        h('span', { className: 'proprias__num' }, String(m.n).padStart(2, '0')),
-        h('span', { className: 'proprias__nome' }, 'A Baluarte'));
+        m.capa
+          ? h('img', { className: 'proprias__capa', src: m.capa, alt: m.titulo, loading: 'lazy' })
+          : h('span', { className: 'proprias__capa proprias__capa--vazia' }, '♪'),
+        h('span', { className: 'proprias__rotulo' },
+          h('span', { className: 'proprias__num' }, String(m.n).padStart(2, '0')),
+          h('span', { className: 'proprias__nome' }, 'A Baluarte')));
       return btn;
     }));
 
