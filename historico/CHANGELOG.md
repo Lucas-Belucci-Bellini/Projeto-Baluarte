@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-11
 
+### 🎤 Músicas Próprias na Central de Música (#356)
+- 🎵 Nova seção **"Músicas Próprias"** no `/musicas`: a obra **"A Baluarte"** do operador em **31 variações** geradas no Suno AI (conta spartangamerbr68), coletadas dos 37 comentários da issue (deduplicadas 37 → 31).
+- 🪶 **Player LAZY**: a página não carrega nenhum iframe do Suno — só o da faixa clicada (1 por vez), mantendo a página leve (#238). Grade numerada, faixa ativa destacada, crédito com link pra faixa e pro perfil.
+- 🗂️ Data-driven: `src/data/musicas-proprias.js` (adicionar faixa = 1 linha).
+- ✅ Verificado (Playwright): 31 faixas, 0 iframes antes do clique, player carrega o embed certo ao clicar, crédito ok, 0 erros.
+
+
 ### 🧠 Núcleo 10x — Fase D RICA: telemetria no HUD, coração na cena e token na ponte (#316)
 - 📊 **Telemetria → HUD**: eventos `telemetry` atualizam o vital novo **TELEMETRIA** (🔋 bateria/métricas + origem) — o cockpit mostra o aparelho remoto ao vivo.
 - ❤️ **Biometria → energia**: eventos `biometric` com `heartRate` atualizam o vital **BIOMETRIA** (♥ bpm, alerta fora de 45–120) e a cena ganha `setHeartRate(bpm)` — **o núcleo passa a BATER no ritmo do coração do operador** (clamp de segurança 0.6–3.2×).
