@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### ⬡ Visor 3D universal (#310 fase 2) — qualquer modelo 3D, direto no site
+- ✨ A página `/modelos-3d` ganhou o **Visualizador universal**: arraste um arquivo (`.glb`, `.gltf`, `.stl`, `.obj`, `.fbx`), escolha do disco ou cole uma **URL** — o modelo abre em 3D ali mesmo (three.js: iluminação de estúdio RoomEnvironment + ACES, enquadramento automático, OrbitControls, contagem de triângulos, animação embutida com play/pause, girar automático e recentrar). Botão **✦ Exemplo** abre o capacete oficial da Khronos.
+- 🧳 `.gltf` multi-arquivo funciona: solte o `.gltf` junto com o `.bin` e as texturas que o loader resolve os caminhos por nome (blob-URLs). DRACO comprimido também (decoder oficial sob demanda).
+- 🔗 Deep-link compartilhável: `#/modelos-3d?src=<url-do-modelo>` abre o visor direto. Telemetria Nexus registra `ver_3d_arquivo`.
+- 🪶 Peso zero no boot (#238): o three.js (~218 KB gzip) é chunk **lazy** — só baixa quando um modelo é aberto. O acervo Sketchfab continua igual (embed oficial + créditos).
+- ✅ Verificado (Playwright, GLB real da Khronos): 10/10 checks — render de verdade (screenshot com PBR ok), info de triângulos, dispose limpo ao fechar, deep-link, erro amigável pra URL quebrada, 0 erros de página.
+- 📦 **Launcher 0.5.3 → 0.5.4**: entrega o site novo no app — e é o teste de fogo do diálogo "Reiniciar agora" da 0.5.3 com um update de verdade.
+
 ### 🔔 Launcher 0.5.3 — versão visível no `motor` + "Reiniciar agora" no update (fim da armadilha da bandeja)
 - 🕳️ **A armadilha da bandeja, diagnosticada**: o operador atualizou pro 0.5.2 e continuou vendo o erro antigo — porque **fechar a janela NÃO fecha o app** (ele vive na bandeja) e o electron-updater só instala **no quit**. O update baixava e ficava eternamente esperando um "Sair" que nunca vinha; o operador seguia rodando a versão velha sem saber.
 - ✨ **Diálogo "Reiniciar agora"**: quando o update termina de baixar, o app mostra a janela (se estava escondida) e pergunta — `Reiniciar agora` aplica na hora (`quitAndInstall`); `Depois` mantém o comportamento antigo (aplica no Sair). Também passa a **re-checar updates a cada 2 h** (antes só checava no boot — num app que nunca fecha, nunca mais checava).

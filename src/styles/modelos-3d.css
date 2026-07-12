@@ -103,6 +103,45 @@
 }
 .m3d-viewer__share:hover { background: var(--color-cyan-soft); }
 
+/* ----- visor universal (#310 fase 2): drop zone + palco three.js ----- */
+.m3d-uni { margin-bottom: var(--space-lg); padding: var(--space-md); display: grid; gap: 12px; }
+.m3d-uni__head { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.m3d-uni__badge {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--color-cyan); border: 1px solid var(--color-cyan-edge); border-radius: 999px; padding: 2px 10px;
+}
+.m3d-drop {
+  display: flex; align-items: center; gap: 14px; cursor: pointer;
+  padding: 18px 16px; border: 1.5px dashed rgba(255, 255, 255, 0.22); border-radius: var(--radius-md);
+  color: var(--color-text-secondary); font-size: 14px; line-height: 1.5;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.m3d-drop:hover, .m3d-drop:focus-visible { border-color: var(--color-cyan); }
+.m3d-drop.is-over { border-color: var(--color-cyan); background: var(--color-cyan-soft); }
+.m3d-drop__ico { font-size: 26px; color: var(--color-cyan); }
+.m3d-drop__fmt { font-family: var(--font-mono); font-size: 12px; color: var(--color-cyan); }
+.m3d-uni__urlrow { display: flex; gap: 8px; flex-wrap: wrap; }
+.m3d-uni__urlrow .m3d-url { flex: 1; min-width: 220px; }
+
+.m3d-visor { display: flex; flex-direction: column; }
+.m3d-visor__palco { position: relative; flex: 1; min-height: min(62vh, 560px); }
+.m3d-visor__palco canvas { display: block; width: 100% !important; height: 100% !important; }
+.m3d-visor__loading {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 12px; color: var(--color-text-secondary); font-size: 14px;
+}
+.m3d-visor__spin {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid var(--color-cyan-edge); border-top-color: var(--color-cyan);
+  animation: m3d-spin 0.9s linear infinite;
+}
+@keyframes m3d-spin { to { transform: rotate(360deg); } }
+.m3d-visor__erro { padding: 40px 24px; font-size: 14px; line-height: 1.6; color: var(--color-text-secondary); }
+.m3d-visor__erro-dica { margin-top: 10px; font-size: 12px; color: var(--color-text-muted); }
+.m3d-visor__info { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted); }
+.m3d-visor__acoes { display: inline-flex; gap: 6px; float: right; }
+.m3d-visor__dicas { margin-top: 6px; font-size: 11px; color: var(--color-text-muted); font-family: var(--font-mono); }
+
 /* ----- rodapé de créditos ----- */
 .m3d-footer { margin: var(--space-lg) 0 0; font-size: 12px; line-height: 1.7; color: var(--color-text-muted); }
 .m3d-footer a { color: var(--color-cyan); text-decoration: none; }
