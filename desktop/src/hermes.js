@@ -229,7 +229,14 @@ async function generate(payload = {}) {
     const history = messages.slice(0, -1);
     const last = messages[messages.length - 1];
     if (history.length && typeof session.setChatHistory === 'function') {
-      session.setChatHistory(history.map((m) => ({ type: m.role === 'assistant' ? 'model' : 'user', text: m.content })));
+      /* Formato v3 do node-llama-cpp: item 'model' usa `response: [texto]`
+       * (LISTA), não `text` — era o "modelResponse is not iterable" que
+       * derrubava o motor no 1º generate com histórico (aceite on-device). */
+      session.setChatHistory(history.map((m) => (
+        m.role === 'assistant'
+          ? { type: 'model', response: [String(m.content ?? m.text ?? '')] }
+          : { type: 'user', text: String(m.content ?? m.text ?? '') }
+      )));
     }
     const text = await session.prompt((last && last.content) || '', { temperature, maxTokens });
     return { text: text || '' };

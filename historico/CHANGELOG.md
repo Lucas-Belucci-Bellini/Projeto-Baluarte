@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### 🎯 Launcher 0.5.2 — motor nativo RESPONDE (fix do "modelResponse is not iterable")
+- 🐛 O diagnóstico do comando `motor` na máquina do operador entregou a causa exata: `NATIVE_INIT_FAILED · modelResponse is not iterable`. O módulo carregou ✓, o modelo carregou ✓ — o `generate` morria no **formato do histórico**: a API v3 do node-llama-cpp exige `{type:'model', response:[texto]}` (lista) e mandávamos `{type:'model', text}`. Um campo errado derrubava o motor no 1º diálogo com histórico.
+- ✅ Corrigido e provado com mock que valida o formato v3 (reproduz o erro com o código antigo; o novo passa com a conversa exata do operador). Launcher **0.5.1 → 0.5.2** — auto-update entrega; sem desinstalar nada.
+
+
 ### 🧯 WebLLM em GPU sem shader-f16 + falha dupla transparente (aceite on-device, parte 2)
 - 🐛 No aceite do operador, o `modo hermes-agente` caiu no fallback WebLLM e morreu com **"requires WebGPU extension shader-f16"** — TODO o catálogo era q4f16; em GPU sem a extensão, nenhum modelo WebLLM funcionava (era também o motivo original do "hermes não funciona").
 - ✨ **Auto-fallback f16 → f32**: o load detecta o erro de shader-f16 **uma vez**, troca pro gêmeo `q4f32_1` (Mistral-7B, sem gêmeo publicado, mapeia pro Hermes-2-Pro-Llama-3-8B-f32) e **grava a lição** (`webllm:semF16`) — nas próximas cargas vai direto pro f32. Catálogo ganhou 3 variantes f32 escolhíveis no `modelos`.
