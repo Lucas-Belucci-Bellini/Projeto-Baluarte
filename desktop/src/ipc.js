@@ -12,6 +12,7 @@
 const { ipcMain, shell, app } = require('electron');
 const nexus = require('./nexus');
 const hermes = require('./hermes');
+const arquivos = require('./arquivos');
 
 /**
  * Monta os handlers permitidos. `ctx` injeta o que vem do main:
@@ -62,7 +63,14 @@ function buildHandlers(ctx) {
     // Fatia 2 (#310/#231): motor Hermes EMBUTIDO (llama.cpp/GGUF), sem API.
     // status inerte se a dep/modelo não existirem → o agente cai no WebLLM.
     'hermes:status': async () => hermes.status(),
-    'hermes:generate': async (payload = {}) => hermes.generate(payload)
+    'hermes:generate': async (payload = {}) => hermes.generate(payload),
+
+    // 0.6.0 (#369): JARVIS Arquivista — motor READ-ONLY de arquivos.
+    // buscar/relatorio varrem só o diretório do usuário, com cofre pessoal,
+    // zona proibida e limites duros (ver desktop/src/arquivos.js).
+    'arquivos:status': async () => arquivos.status(),
+    'arquivos:buscar': async (payload = {}) => arquivos.buscar(payload),
+    'arquivos:relatorio': async () => arquivos.relatorio()
   };
 }
 

@@ -29,6 +29,7 @@ import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
 import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
 import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoiceLang, setElevenKey, hasElevenKey, VOICE_LANGS } from '../utils/jarvis-voice.js';
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, setNucleoToken, simulateNucleoEvent } from '../utils/nucleo-socket.js';
+import { initArquivosTools, statusArquivos, buscarArquivos, relatorioArquivos } from '../utils/jarvis-arquivos.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
 const PULSE_MS = { command: 420, biometric: 300, telemetry: 200, system: 160 };
@@ -251,6 +252,47 @@ export function gitNexusNucleo(args = {}) {
       }
       return;
     }
+    /* ARQUIVISTA (#369 fase 1, 0.6.0) — os olhos do JARVIS no PC, read-only:
+     * "arquivos <termo>" busca por nome · "relatorio arquivos" inventário
+     * completo com relatório em Documentos/Baluarte. Só no app. */
+    if (t === 'arquivos' || t === 'arquivista') {
+      const st = await statusArquivos();
+      if (!st.disponivel) {
+        bolha('jarvis', 'O Arquivista mora no app (Baluarte Launcher) — no site eu não toco nos seus arquivos. Baixe em /baixar.');
+      } else if (st.progresso && st.progresso.ativo) {
+        bolha('jarvis', `🗂️ Varredura em andamento: ${st.progresso.varridos.toLocaleString('pt-BR')} arquivos vistos até agora…`);
+      } else {
+        bolha('jarvis', `🗂️ Arquivista pronto (read-only) — raiz: ${st.raiz}.\nComandos: "arquivos <nome>" busca · "relatorio arquivos" inventário completo (salva .md + .txt em Documentos/Baluarte).\n🛡️ Pastas pessoais (${(st.cofrePessoal || []).slice(0, 4).join(', ')}…) ficam de fora, sempre.`);
+      }
+      return;
+    }
+    const buscaArq = t.match(/^arquivos?\s+(.{2,})$/);
+    if (buscaArq && buscaArq[1] !== 'arquivos') {
+      bolha('jarvis', `🔎 Procurando "${buscaArq[1]}" nos seus arquivos…`);
+      try {
+        const r = await buscarArquivos(buscaArq[1]);
+        if (!r.total) {
+          bolha('jarvis', `Nada com "${r.termo}" (varri ${r.stats.arquivos.toLocaleString('pt-BR')} arquivos${r.stats.protegidas ? `; ${r.stats.protegidas} pasta(s) pessoais ficaram de fora` : ''}).`);
+        } else {
+          const linhas = r.resultados.slice(0, 12).map((x) => `· ${x.caminho}`).join('\n');
+          bolha('jarvis', `🗂️ ${r.total} resultado(s) pra "${r.termo}"${r.tetoAtingido ? ' (mostrando o teto)' : ''}:\n${linhas}${r.total > 12 ? `\n… e mais ${r.total - 12}.` : ''}${r.stats.parcial ? '\n⚠ varredura parcial (' + r.stats.motivoParcial + ')' : ''}`);
+        }
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    if (/^relat[óo]rio( de)? arquivos$/.test(t) || /^inventari(o|ar)( do pc)?$/.test(t)) {
+      bolha('jarvis', '🗂️ Gerando o inventário COMPLETO dos seus arquivos (read-only). Em discos grandes isso leva alguns minutos — diga "arquivos" pra acompanhar o progresso.');
+      try {
+        const r = await relatorioArquivos();
+        const s = r.resumo;
+        bolha('jarvis',
+          `✅ Inventário pronto${s.parcial ? ` (PARCIAL — ${s.motivoParcial})` : ''}:\n` +
+          `· ${s.arquivos.toLocaleString('pt-BR')} arquivos em ${s.pastas.toLocaleString('pt-BR')} pastas — ${s.tamanho}\n` +
+          `· ${s.protegidas} pasta(s) pessoais protegidas (fora do relatório) · ${s.duracaoSeg}s\n` +
+          `📄 Relatório: ${r.relatorio}\n📜 Todos os caminhos: ${r.listagem}`);
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
     /* HERMES LOCAL da máquina (#340 fatia 4) — tudo por comando, sem menu:
      * "hermes status" testa a conexão · "hermes url <endereço>" aponta o
      * endpoint · "hermes lmstudio|ollama|textgen" usa uma porta conhecida. */
@@ -468,6 +510,7 @@ export function gitNexusNucleo(args = {}) {
     setVital('rede', st.connected ? 'ONLINE' : (getNucleoUrl() ? 'RECONECTANDO' : 'OFF'), st.connected ? 'ok' : undefined);
   });
   initNucleoLink();
+  initArquivosTools();   // Arquivista (#369): buscar_arquivos/relatorio_arquivos no agente (só no app)
 
   /* Deep-link compat: /git-nexus?tab=<id> (links antigos do cockpit) abre a
    * função direto — mas via painel, mantendo a tela limpa. */
