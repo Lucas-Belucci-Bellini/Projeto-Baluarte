@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### 🧯 WebLLM em GPU sem shader-f16 + falha dupla transparente (aceite on-device, parte 2)
+- 🐛 No aceite do operador, o `modo hermes-agente` caiu no fallback WebLLM e morreu com **"requires WebGPU extension shader-f16"** — TODO o catálogo era q4f16; em GPU sem a extensão, nenhum modelo WebLLM funcionava (era também o motivo original do "hermes não funciona").
+- ✨ **Auto-fallback f16 → f32**: o load detecta o erro de shader-f16 **uma vez**, troca pro gêmeo `q4f32_1` (Mistral-7B, sem gêmeo publicado, mapeia pro Hermes-2-Pro-Llama-3-8B-f32) e **grava a lição** (`webllm:semF16`) — nas próximas cargas vai direto pro f32. Catálogo ganhou 3 variantes f32 escolhíveis no `modelos`.
+- 🔍 **Falha dupla transparente**: quando o motor NATIVO falha em pleno voo E o WebLLM também, o erro agora mostra OS DOIS motivos + "diga motor pra detalhes" (antes o motivo do nativo sumia no console e o operador só via o erro do WebLLM).
+
+
 ### 🩺 Comando `motor` cruza com o MODO ativo (a pegadinha do 402)
 - ⚠️ No aceite on-device do operador, o motor NATIVO ligou (0.5.1 ✓) mas o chat devolvia **HTTP 402 do OpenRouter** — o modo de IA salvo era `hermes` (servidor/nuvem), não `hermes-agente`: o motor estava pronto e **parado no banco**. O `motor` dizia "no controle" mesmo assim.
 - ✅ Agora o comando cruza com `loadConfig().mode`: se o modo ativo não usa o nativo, avisa quem realmente responde o chat (ex.: "OpenRouter na nuvem — gasta créditos!") e ensina o `modo hermes-agente`. Verificado (Playwright) reproduzindo o cenário exato do operador.

@@ -46,12 +46,14 @@ export async function processHermesAgent(messages, config = {}, onToolCall, cbs 
     bus.emit('hermes:engine', { engine: 'native', model: native.model || 'GGUF' });
     const nativeBrain = makeNativeBrain();
     let webBrain = null;   // fallback preguiçoso: só carrega se precisar
+    let nativeErr = null;  // guarda a falha do nativo pra não sumir no fallback
     brain = async (args) => {
       if (!webBrain) {
         try {
           return await nativeBrain(args);
         } catch (e) {
           /* Interceptador: motor nativo caiu → vira a chave AGORA. */
+          nativeErr = e;
           console.warn(
             '[hermes] ⚠ motor NATIVO falhou em pleno voo — fallback IMEDIATO pro WebLLM.\n' +
             `  · motivo:   ${String(e && e.message).slice(0, 200)}\n` +
@@ -62,7 +64,18 @@ export async function processHermesAgent(messages, config = {}, onToolCall, cbs 
           webBrain = makeWeb();
         }
       }
-      return webBrain(args);
+      try {
+        return await webBrain(args);
+      } catch (e2) {
+        /* FALHA DUPLA: sem isto o motivo do nativo sumia e o operador só via o
+         * erro do WebLLM (foi o que aconteceu no aceite on-device). */
+        if (nativeErr) {
+          throw new Error(
+            `${String(e2 && e2.message)}\n(o motor NATIVO também falhou antes: ` +
+            `${String(nativeErr.message).slice(0, 140)} — diga "motor" pra detalhes)`);
+        }
+        throw e2;
+      }
     };
   } else {
     if (native.fatal) {
