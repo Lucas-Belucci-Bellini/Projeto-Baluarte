@@ -8,6 +8,13 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### 🗂️ Launcher 0.6.0 — JARVIS Arquivista, fase 1 (#369): os olhos do JARVIS no PC
+- ✨ **O JARVIS agora enxerga os arquivos da máquina** (como Codex/Claude Code) — read-only: no motor não EXISTE API de escrever/mover/apagar. Novo `desktop/src/arquivos.js` + canais `arquivos:status|buscar|relatorio` no funil IPC allowlisted.
+- 🛡️ **Cofre pessoal**: pastas com `pessoal`, `privado`, `senha(s)`, `secret`… são puladas inteiras — nem o NOME aparece em busca ou relatório, só a contagem de "protegidas". Zona técnica proibida (`.ssh`, cofres de credenciais, `AppData`, `node_modules`, dotfolders) e symlinks nunca seguidos. Limites duros (300k entradas / prof. 14 / 2 min) → resultado parcial sinalizado, nunca app travado.
+- 💬 **Comandos no Núcleo**: `arquivos` (status) · `arquivos <nome>` (busca sem acento/caixa, caminhos completos) · `relatorio arquivos` (inventário: salva `.md` com totais/top extensões/20 maiores/por pasta + **listagem completa de caminhos** em `.txt` em `Documentos/Baluarte` — o pedido do notebook novo).
+- 🤖 **Ferramentas do agente**: `buscar_arquivos` e `relatorio_arquivos` entram no catálogo do `hermes-agente` SÓ no app (`jarvis-arquivos.js`); na web nem existem (#238).
+- ✅ Verificado: motor em Node puro com raiz fake armadilhada — 17/17 (cofre invisível até buscando o nome exato, `.ssh`/`node_modules` bloqueados, symlink pra `/etc` ignorado, relatório não conta o próprio arquivo) · Núcleo via Playwright — 7/7 (status/busca/relatório com ponte mockada; na web o gate segue no teaser). Plano completo das fases 2–4 no **#369**.
+
 ### ⬡ Visor 3D universal (#310 fase 2) — qualquer modelo 3D, direto no site
 - ✨ A página `/modelos-3d` ganhou o **Visualizador universal**: arraste um arquivo (`.glb`, `.gltf`, `.stl`, `.obj`, `.fbx`), escolha do disco ou cole uma **URL** — o modelo abre em 3D ali mesmo (three.js: iluminação de estúdio RoomEnvironment + ACES, enquadramento automático, OrbitControls, contagem de triângulos, animação embutida com play/pause, girar automático e recentrar). Botão **✦ Exemplo** abre o capacete oficial da Khronos.
 - 🧳 `.gltf` multi-arquivo funciona: solte o `.gltf` junto com o `.bin` e as texturas que o loader resolve os caminhos por nome (blob-URLs). DRACO comprimido também (decoder oficial sob demanda).
