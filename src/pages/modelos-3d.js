@@ -58,6 +58,45 @@ export function modelos3dPage(args = {}) {
         h('b', null, 'autor, a licença e o link original'),
         ' — crédito sempre, do jeito que tem que ser.'))));
 
+  /* ----- visor UNIVERSAL (fase 2 do #310): qualquer 3D, como em qualquer
+   * site — arquivo local (arrastar/escolher, inclusive .gltf multi-arquivo)
+   * ou URL direta. O three.js só baixa quando abre (chunk lazy, #238). ----- */
+  const EXEMPLO_URL = 'https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb';
+  const fileInput = h('input', {
+    type: 'file', multiple: true, style: 'display:none',
+    accept: '.glb,.gltf,.stl,.obj,.fbx,.bin,.png,.jpg,.jpeg,.webp,.ktx2',
+    onchange: (e) => { if (e.target.files.length) abrirVisorUniversal({ files: Array.from(e.target.files) }); e.target.value = ''; }
+  });
+  const dropZone = h('div', {
+    className: 'm3d-drop', tabindex: '0', role: 'button',
+    onclick: () => fileInput.click(),
+    onkeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } },
+    ondragover: (e) => { e.preventDefault(); dropZone.classList.add('is-over'); },
+    ondragleave: () => dropZone.classList.remove('is-over'),
+    ondrop: (e) => {
+      e.preventDefault(); dropZone.classList.remove('is-over');
+      const files = Array.from(e.dataTransfer.files || []);
+      if (files.length) abrirVisorUniversal({ files });
+    }
+  },
+    h('span', { className: 'm3d-drop__ico', 'aria-hidden': 'true' }, '⬡'),
+    h('span', null, h('b', null, 'Arraste um modelo 3D aqui'), ' ou clique pra escolher — ',
+      h('span', { className: 'm3d-drop__fmt' }, '.glb · .gltf · .stl · .obj · .fbx'),
+      ' (solte o .gltf junto com o .bin e as texturas que eu resolvo)'));
+  const urlInput = h('input', {
+    className: 'input m3d-url', type: 'url', placeholder: 'https://…/modelo.glb — colar a URL de um modelo',
+    onkeydown: (e) => { if (e.key === 'Enter' && urlInput.value.trim()) abrirVisorUniversal({ url: urlInput.value.trim() }); }
+  });
+  page.appendChild(h('div', { className: 'card m3d-uni' },
+    h('div', { className: 'm3d-uni__head' },
+      h('b', null, 'Visualizador universal'),
+      h('span', { className: 'm3d-uni__badge' }, 'qualquer 3D, direto no site')),
+    dropZone, fileInput,
+    h('div', { className: 'm3d-uni__urlrow' },
+      urlInput,
+      h('button', { className: 'btn btn--primary', onclick: () => { if (urlInput.value.trim()) abrirVisorUniversal({ url: urlInput.value.trim() }); } }, 'Abrir URL'),
+      h('button', { className: 'btn', title: 'Capacete de teste oficial do glTF (Khronos)', onclick: () => abrirVisorUniversal({ url: EXEMPLO_URL, nome: 'DamagedHelmet.glb (exemplo Khronos)' }) }, '✦ Exemplo'))));
+
   /* ----- toolbar: busca + grupos + coleção ----- */
   const buscaInput = h('input', {
     className: 'input m3d-busca', type: 'search',
@@ -211,6 +250,64 @@ export function modelos3dPage(args = {}) {
     page.appendChild(modal);
   }
 
+  /* ----- visor universal: modal com three.js (chunk lazy) ----- */
+  function abrirVisorUniversal(fonte) {
+    const nome = fonte.nome
+      || (fonte.files && fonte.files.length ? (fonte.files.find((f) => /\.(glb|gltf|stl|obj|fbx)$/i.test(f.name)) || fonte.files[0]).name : '')
+      || decodeURIComponent(String(fonte.url || '').split(/[?#]/)[0].split('/').pop() || 'modelo');
+    import('../utils/nexus.js')
+      .then((nx) => nx.nexusEvent('interaction', { acao: 'ver_3d_arquivo', fonte: fonte.url ? 'url' : 'arquivo', nome }))
+      .catch(() => {});
+
+    const palco = h('div', { className: 'm3d-visor__palco' },
+      h('div', { className: 'm3d-visor__loading' }, h('span', { className: 'm3d-visor__spin' }), `Carregando ${nome}…`));
+    const acoes = h('div', { className: 'm3d-visor__acoes' });
+    const info = h('span', { className: 'm3d-visor__info' });
+    const modal = h('div', { className: 'm3d-viewer', onclick: (e) => { if (e.target === modal) fechar(); } },
+      h('div', { className: 'm3d-viewer__box m3d-visor' },
+        h('button', { className: 'm3d-viewer__close', onclick: () => fechar(), 'aria-label': 'Fechar' }, '✕'),
+        palco,
+        h('div', { className: 'm3d-viewer__credit' },
+          h('span', { className: 'm3d-viewer__name' }, nome),
+          info, acoes,
+          h('div', { className: 'm3d-visor__dicas' }, 'girar: arrastar · zoom: roda do mouse · mover: botão direito'))));
+
+    let visor = null;
+    const onKey = (e) => { if (e.key === 'Escape') fechar(); };
+    function fechar() {
+      document.removeEventListener('keydown', onKey);
+      if (visor) { try { visor.dispose(); } catch { /* ok */ } visor = null; }
+      modal.remove();
+    }
+    document.addEventListener('keydown', onKey);
+    onCleanup(() => { document.removeEventListener('keydown', onKey); if (visor) { try { visor.dispose(); } catch { /* ok */ } visor = null; } });
+    page.appendChild(modal);
+
+    import('../utils/visor-3d.js')
+      .then((mod) => mod.montarVisor3D(palco, fonte))
+      .then((v) => {
+        visor = v;
+        palco.querySelector('.m3d-visor__loading')?.remove();
+        info.textContent = ` · ${v.stats.tris.toLocaleString('pt-BR')} triângulos${v.temAnimacao ? ` · ${v.stats.clips} animação(ões)` : ''}`;
+        let girando = false, tocando = v.temAnimacao;
+        const giroBtn = h('button', { className: 'm3d-viewer__share', onclick: () => { girando = !girando; v.setGiro(girando); giroBtn.textContent = girando ? '⟳ girando' : '⟳ girar'; } }, '⟳ girar');
+        acoes.append(
+          h('button', { className: 'm3d-viewer__share', onclick: () => v.recentrar() }, '◎ recentrar'),
+          giroBtn);
+        if (v.temAnimacao) {
+          const animBtn = h('button', { className: 'm3d-viewer__share', onclick: () => { tocando = !tocando; v.setAnimando(tocando); animBtn.textContent = tocando ? '❚❚ pausar' : '▶ animar'; } }, '❚❚ pausar');
+          acoes.appendChild(animBtn);
+        }
+      })
+      .catch((err) => {
+        palco.replaceChildren(h('div', { className: 'm3d-visor__erro' },
+          h('b', null, 'Não consegui abrir esse modelo. '),
+          String((err && err.message) || err).slice(0, 200),
+          h('div', { className: 'm3d-visor__erro-dica' },
+            'Dica: .glb é o formato mais garantido. Se for .gltf com texturas separadas, arraste TODOS os arquivos juntos. URLs precisam permitir acesso externo (CORS).')));
+      });
+  }
+
   /* ----- crédito global (rodapé) ----- */
   page.appendChild(h('p', { className: 'm3d-footer' },
     'Coleções: ',
@@ -223,12 +320,15 @@ export function modelos3dPage(args = {}) {
 
   renderGrid();
 
-  /* deep-link: #/modelos-3d?m=<uid> abre o modelo direto (do seed) */
+  /* deep-links: ?m=<uid> abre modelo do acervo · ?src=<url> abre no visor
+   * universal (compartilhável: #/modelos-3d?src=https://…/modelo.glb) */
   const deepUid = (args.query || {}).m;
   if (deepUid) {
     const alvo = modelos.find((x) => x.uid === deepUid);
     if (alvo) setTimeout(() => abrirViewer(alvo), 60);
   }
+  const deepSrc = (args.query || {}).src;
+  if (deepSrc) setTimeout(() => abrirVisorUniversal({ url: deepSrc }), 60);
 
   /* auto-limpeza ao sair da rota */
   if (typeof MutationObserver !== 'undefined') {
