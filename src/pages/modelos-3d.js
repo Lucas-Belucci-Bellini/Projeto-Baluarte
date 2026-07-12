@@ -251,10 +251,22 @@ export function modelos3dPage(args = {}) {
   }
 
   /* ----- visor universal: modal com three.js (chunk lazy) ----- */
+  /* Sanitização (CodeQL js/xss-through-dom): tudo que veio de fora — valor do
+   * input de URL, nome de arquivo solto, ?src= do deep-link — perde os
+   * metacaracteres de HTML antes de virar texto na tela. Os children do h()
+   * já viram textNode, mas aqui a regra é cinto E suspensório. */
+  const semHtml = (s) => String(s == null ? '' : s).replace(/[<>&"'`]/g, '');
   function abrirVisorUniversal(fonte) {
-    const nome = fonte.nome
+    /* só esquemas de rede/arquivo legítimos passam (nada de javascript: etc.) */
+    if (fonte.url && !/^(https?:|blob:|data:)/i.test(String(fonte.url).trim())) {
+      bolhaErroUrl();
+      return;
+    }
+    if (fonte.url) fonte = { ...fonte, url: String(fonte.url).trim() };
+    const nome = semHtml(fonte.nome
       || (fonte.files && fonte.files.length ? (fonte.files.find((f) => /\.(glb|gltf|stl|obj|fbx)$/i.test(f.name)) || fonte.files[0]).name : '')
-      || decodeURIComponent(String(fonte.url || '').split(/[?#]/)[0].split('/').pop() || 'modelo');
+      || decodeURIComponent(String(fonte.url || '').split(/[?#]/)[0].split('/').pop() || 'modelo'))
+      .slice(0, 120) || 'modelo';
     import('../utils/nexus.js')
       .then((nx) => nx.nexusEvent('interaction', { acao: 'ver_3d_arquivo', fonte: fonte.url ? 'url' : 'arquivo', nome }))
       .catch(() => {});
@@ -302,10 +314,21 @@ export function modelos3dPage(args = {}) {
       .catch((err) => {
         palco.replaceChildren(h('div', { className: 'm3d-visor__erro' },
           h('b', null, 'Não consegui abrir esse modelo. '),
-          String((err && err.message) || err).slice(0, 200),
+          semHtml((err && err.message) || err).slice(0, 200),
           h('div', { className: 'm3d-visor__erro-dica' },
             'Dica: .glb é o formato mais garantido. Se for .gltf com texturas separadas, arraste TODOS os arquivos juntos. URLs precisam permitir acesso externo (CORS).')));
       });
+  }
+
+  /* URL recusada antes de qualquer rede: aviso rápido no lugar do visor */
+  function bolhaErroUrl() {
+    const aviso = h('div', { className: 'm3d-viewer', onclick: (e) => { if (e.target === aviso) aviso.remove(); } },
+      h('div', { className: 'm3d-viewer__box m3d-visor' },
+        h('button', { className: 'm3d-viewer__close', onclick: () => aviso.remove(), 'aria-label': 'Fechar' }, '✕'),
+        h('div', { className: 'm3d-visor__erro' },
+          h('b', null, 'Endereço inválido. '),
+          'Use uma URL http(s) direta pra um arquivo de modelo (ex.: https://…/modelo.glb).')));
+    page.appendChild(aviso);
   }
 
   /* ----- crédito global (rodapé) ----- */
