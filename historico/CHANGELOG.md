@@ -8,6 +8,11 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### 🩺 Comando `motor` cruza com o MODO ativo (a pegadinha do 402)
+- ⚠️ No aceite on-device do operador, o motor NATIVO ligou (0.5.1 ✓) mas o chat devolvia **HTTP 402 do OpenRouter** — o modo de IA salvo era `hermes` (servidor/nuvem), não `hermes-agente`: o motor estava pronto e **parado no banco**. O `motor` dizia "no controle" mesmo assim.
+- ✅ Agora o comando cruza com `loadConfig().mode`: se o modo ativo não usa o nativo, avisa quem realmente responde o chat (ex.: "OpenRouter na nuvem — gasta créditos!") e ensina o `modo hermes-agente`. Verificado (Playwright) reproduzindo o cenário exato do operador.
+
+
 ### 🔧 Launcher 0.5.1 — o motor NATIVO liga de verdade (fix do WEB (WEBLLM) eterno)
 - 🐛 **Bug raiz achado e corrigido**: `node-llama-cpp` v3 é **ESM-only** e o main do Electron carregava com `require()` — no Node 20 do Electron 31 isso estoura `ERR_REQUIRE_ESM` em **toda** máquina → motor marcado FATAL → HUD preso em **WEB (WEBLLM)** pra sempre (o sintoma que o operador viu). Agora a carga é `import()` dinâmico (async, cacheado, mesma blindagem zero-crash).
 - 🐛 **Deadlock do download desfeito**: o front só usava o nativo com `available:true`, que exigia modelo baixado — mas o download só começava no 1º `generate`, que nunca vinha. Agora a **sondagem de status dispara o download em segundo plano** (abrir o Núcleo já prepara o motor; o WebLLM cobre enquanto baixa; HUD mostra `NATIVO ⬇ N%`).
