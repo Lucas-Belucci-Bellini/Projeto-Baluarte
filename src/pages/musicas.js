@@ -13,7 +13,7 @@ import { toast } from '../utils/toast.js';
 import { saveBookmark, loadBookmark } from '../core/media-sync.js';
 import { SOUNDCLOUD_TRACKS } from '../data/soundcloud-tracks.js';
 import { ALBUNS } from '../data/albuns.js';
-import { MUSICAS_PROPRIAS, SUNO_PERFIL } from '../data/musicas-proprias.js';
+import { MUSICAS_PROPRIAS, MUSICAS_LOCAIS, SUNO_PERFIL } from '../data/musicas-proprias.js';
 import {
   addFiles, listTracks, getBlob, removeTrack, clearAll, formatSize, offlineAudioSupported
 } from '../utils/offline-audio.js';
@@ -435,11 +435,21 @@ function musicasPropriasSection() {
       return btn;
     }));
 
+  /* faixas LOCAIS (mp3 no repo): tocam num <audio> nativo, sem Suno */
+  const locais = MUSICAS_LOCAIS.length
+    ? h('div', { className: 'proprias__locais' },
+        ...MUSICAS_LOCAIS.map((m) =>
+          h('div', { className: 'proprias__local' },
+            h('span', { className: 'proprias__local-nome' }, '🎻 ', m.titulo),
+            h('audio', { controls: true, preload: 'none', src: m.arquivo }))))
+    : null;
+
   wrap.append(
     h('p', { className: 'musica-nota u-text-muted' },
       '🎤 Composições do próprio operador (Suno AI) — a obra "A Baluarte" em ',
-      String(MUSICAS_PROPRIAS.length), ' variações. Clique numa faixa pra tocar aqui.'),
+      String(MUSICAS_PROPRIAS.length), ' variações. Clique numa capa pra tocar aqui.'),
     grade, player);
+  if (locais) wrap.append(locais);
   return wrap;
 }
 
