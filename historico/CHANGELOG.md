@@ -8,6 +8,14 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### 🔧 Launcher 0.5.1 — o motor NATIVO liga de verdade (fix do WEB (WEBLLM) eterno)
+- 🐛 **Bug raiz achado e corrigido**: `node-llama-cpp` v3 é **ESM-only** e o main do Electron carregava com `require()` — no Node 20 do Electron 31 isso estoura `ERR_REQUIRE_ESM` em **toda** máquina → motor marcado FATAL → HUD preso em **WEB (WEBLLM)** pra sempre (o sintoma que o operador viu). Agora a carga é `import()` dinâmico (async, cacheado, mesma blindagem zero-crash).
+- 🐛 **Deadlock do download desfeito**: o front só usava o nativo com `available:true`, que exigia modelo baixado — mas o download só começava no 1º `generate`, que nunca vinha. Agora a **sondagem de status dispara o download em segundo plano** (abrir o Núcleo já prepara o motor; o WebLLM cobre enquanto baixa; HUD mostra `NATIVO ⬇ N%`).
+- 🖥️ **WebGPU garantido no app** (`enable-unsafe-webgpu` no main): em máquinas onde o Chromium desliga o WebGPU, nem o WebLLM funcionava ("o hermes não funciona") — onde já era suportado, é no-op.
+- 🩺 **Comando novo `motor` no Núcleo**: diagnóstico on-device sem DevTools — disponível/baixando N%/fatal com código, motivo e correção; a própria sondagem já dispara o preparo do motor.
+- 🏷️ Classificador de erro ganhou `ERR_REQUIRE_ESM`/`ERR_MODULE_NOT_FOUND` (códigos do `import()`).
+- ✅ Verificado: caminho de degradação em Node puro (módulo ausente → fatal limpo, generate rejeita sem crash) e caminho feliz com mock ESM-only (o `import()` carrega o que o `require()` não conseguia); Launcher **0.5.0 → 0.5.1** (auto-update entrega o fix).
+
 ### 🎻 Músicas Próprias — +14 faixas (43 → 57) e a 1ª faixa LOCAL (#356)
 - 🎵 **+14 variações novas** de "A Baluarte" coletadas dos comentários da issue (57 no total, todas com capa).
 - 🎻 **Primeira faixa local no repo**: "DaVinci Intro — dark cello arpeggio" (`public/musicas/davinci-intro-dark-cello.mp3`, 4,3 MB, 192 kbps) — o operador subiu o arquivo (já era MP3 puro, sem trilha de vídeo pra extrair); toca num `<audio>` nativo com `preload="none"` (o site não baixa nada até dar play). Novo export `MUSICAS_LOCAIS`.

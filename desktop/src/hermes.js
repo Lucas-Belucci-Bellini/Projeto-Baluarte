@@ -46,8 +46,11 @@ function classifyNativeError(e) {
   if (/NODE_MODULE_VERSION|compiled against a different Node\.js version/i.test(msg)) {
     return { code: 'NODE_MODULE_VERSION', hint: 'node-llama-cpp compilado pra outra versão de Node/Electron — `npx electron-rebuild` resolve' };
   }
-  if (code === 'MODULE_NOT_FOUND' || /Cannot find module/i.test(msg)) {
+  if (code === 'MODULE_NOT_FOUND' || code === 'ERR_MODULE_NOT_FOUND' || /Cannot find module|Cannot find package/i.test(msg)) {
     return { code: 'MODULE_NOT_FOUND', hint: 'dependência opcional node-llama-cpp não instalada neste build — nada a fazer, o WebLLM assume' };
+  }
+  if (code === 'ERR_REQUIRE_ESM' || /require\(\) of ES Module/i.test(msg)) {
+    return { code: 'ERR_REQUIRE_ESM', hint: 'node-llama-cpp é ESM-only — o main precisa carregar com import() dinâmico (bug de código, não da máquina)' };
   }
   return { code: code || 'NATIVE_INIT_FAILED', hint: 'falha ao inicializar o motor nativo — se persistir, `npx electron-rebuild` e reinstalar o modelo' };
 }
@@ -71,18 +74,28 @@ function markNativeFatal(e, onde) {
   );
 }
 
+/* node-llama-cpp v3 é ESM-ONLY: `require()` estoura ERR_REQUIRE_ESM no Node 20
+ * do Electron 31 (era ESSE o motivo do motor cair pro WebLLM em toda máquina).
+ * A carga certa em CommonJS é o `import()` dinâmico — async, cacheado 1x. */
 function llamaModule() {
-  if (_llamaMod !== null) return _llamaMod;
-  if (_native.state === 'fatal') { _llamaMod = false; return _llamaMod; }
-  try {
-    _llamaMod = require('node-llama-cpp');
-    if (_native.state === 'unknown') _native.state = 'ok';
-  } catch (e) {
-    _llamaMod = false;
-    markNativeFatal(e, "require('node-llama-cpp')");
+  if (_llamaMod !== null) return Promise.resolve(_llamaMod);
+  if (_native.state === 'fatal') { _llamaMod = false; return Promise.resolve(false); }
+  if (!_llamaLoading) {
+    _llamaLoading = import('node-llama-cpp')
+      .then((m) => {
+        _llamaMod = m;
+        if (_native.state === 'unknown') _native.state = 'ok';
+        return _llamaMod;
+      })
+      .catch((e) => {
+        _llamaMod = false;
+        markNativeFatal(e, "import('node-llama-cpp')");
+        return false;
+      });
   }
-  return _llamaMod;
+  return _llamaLoading;
 }
+let _llamaLoading = null;
 
 function modelsDir() {
   try { const { app } = require('electron'); return path.join(app.getPath('userData'), 'models'); }
@@ -115,7 +128,8 @@ async function status() {
   if (_native.state === 'fatal') {
     return { available: false, fatal: true, engine: 'webllm', reason: _native.reason, code: _native.code, hint: _native.hint };
   }
-  if (!llamaModule()) {
+  const mod = await llamaModule();
+  if (!mod) {
     if (_native.state === 'fatal') {
       return { available: false, fatal: true, engine: 'webllm', reason: _native.reason, code: _native.code, hint: _native.hint };
     }
@@ -124,6 +138,15 @@ async function status() {
   if (_dl.active) return { available: false, downloading: true, pct: _dl.pct };
   const mp = _modelPath || findLocalModel();
   if (mp) return { available: true, engine: 'native', model: path.basename(mp), backend: 'llama.cpp' };
+  /* Módulo ok + sem modelo: dispara o download EM SEGUNDO PLANO na 1ª sondagem
+   * (abrir o Núcleo já prepara o motor). Antes o download só começava no 1º
+   * generate — que nunca vinha, porque o front exige available:true (deadlock).
+   * Enquanto baixa, o WebLLM segue no controle; quando termina, o próximo
+   * status vira NATIVO e o HUD acende. */
+  if (modelUrl() && !_dl.error) {
+    setImmediate(() => { ensureModel().catch(() => { /* _dl.error já registra */ }); });
+    return { available: false, downloading: true, pct: 0 };
+  }
   return { available: false, engine: 'webllm', reason: 'modelo não baixado', canDownload: !!modelUrl(), error: _dl.error || undefined };
 }
 
@@ -170,7 +193,7 @@ async function ensureModel() {
 }
 
 async function getModel() {
-  const mod = llamaModule();
+  const mod = await llamaModule();
   if (!mod) throw new Error('MOTOR_NATIVO_INDISPONIVEL: ' + (_native.hint || 'node-llama-cpp não instalado'));
   _modelPath = _modelPath || await ensureModel();
   if (_model) return _model;
@@ -197,7 +220,7 @@ async function generate(payload = {}) {
     /* resposta imediata — o renderer troca pro WebLLM sem esperar timeout */
     throw new Error('MOTOR_NATIVO_INDISPONIVEL: ' + _native.hint);
   }
-  const mod = llamaModule();
+  const mod = await llamaModule();
   const model = await getModel();
   let context;
   try {
