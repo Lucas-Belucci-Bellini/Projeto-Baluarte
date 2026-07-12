@@ -16,6 +16,11 @@ const fs = require('node:fs');
 const { registerIpc } = require('./ipc');
 const nexus = require('./nexus');
 
+/* WebGPU pro WebLLM (fallback do Hermes): em máquinas/plataformas onde o
+ * Chromium desliga o WebGPU por padrão (Linux, GPUs bloqueadas), o modo
+ * navegador do Hermes morre sem isso. Onde já é suportado, é no-op. */
+app.commandLine.appendSwitch('enable-unsafe-webgpu');
+
 let autoUpdater = null;
 try {
   ({ autoUpdater } = require('electron-updater'));

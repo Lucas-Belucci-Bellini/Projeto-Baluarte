@@ -219,6 +219,26 @@ export function gitNexusNucleo(args = {}) {
       cfg.mode === 'hermes-local' ? 'hermesLocalModel' :
       cfg.mode === 'claude' ? 'model' : null
     );
+    /* MOTOR NATIVO (GGUF) — diagnóstico on-device sem DevTools: "motor" mostra
+     * o estado real (disponível/baixando/fatal + motivo + correção) e a própria
+     * sondagem já dispara o download do modelo quando falta. */
+    if (t === 'motor') {
+      const st = await nativeHermesStatus();
+      if (st.available) {
+        setVital('motor', 'NATIVO (GGUF)', 'ok');
+        bolha('jarvis', `✅ Motor NATIVO no controle — modelo ${st.model || 'GGUF'} (llama.cpp).`);
+      } else if (st.downloading) {
+        setVital('motor', `NATIVO ⬇ ${Math.round(st.pct || 0)}%`, 'warn');
+        bolha('jarvis', `⬇ Baixando o modelo do motor nativo: ${Math.round(st.pct || 0)}% (~4,4 GB — segue em segundo plano; o WebLLM cobre enquanto isso). Diga "motor" de novo pra acompanhar.`);
+      } else if (st.fatal) {
+        setVital('motor', 'WEB (WEBLLM)', 'warn');
+        bolha('jarvis', `⚠ Motor nativo DESATIVADO nesta sessão.\ncódigo: ${st.code || '?'}\nmotivo: ${(st.reason || '').slice(0, 160)}\ncorreção: ${st.hint || 'reinstalar o app'}`);
+      } else {
+        setVital('motor', 'WEB (WEBLLM)');
+        bolha('jarvis', `Motor: WebLLM (navegador). ${st.reason || 'Sem ponte com o app — no site, o nativo não existe.'}${st.error ? `\núltimo erro de download: ${st.error}` : ''}`);
+      }
+      return;
+    }
     /* HERMES LOCAL da máquina (#340 fatia 4) — tudo por comando, sem menu:
      * "hermes status" testa a conexão · "hermes url <endereço>" aponta o
      * endpoint · "hermes lmstudio|ollama|textgen" usa uma porta conhecida. */
