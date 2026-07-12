@@ -179,3 +179,13 @@
 .proprias__credito { font-size: 12px; margin-top: 6px; }
 .proprias__credito a { color: var(--color-cyan); text-decoration: none; }
 .proprias__credito a:hover { text-decoration: underline; }
+
+/* faixas locais (mp3 no repo) */
+.proprias__locais { margin-top: var(--space-md); display: grid; gap: 10px; }
+.proprias__local {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 10px 14px; background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+}
+.proprias__local-nome { font-size: 13px; color: var(--color-text-primary); }
+.proprias__local audio { flex: 1; min-width: 220px; height: 36px; }

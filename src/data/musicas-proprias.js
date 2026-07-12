@@ -94,7 +94,35 @@ export const MUSICAS_PROPRIAS = [
   { uid: 'ce2b9502-aae1-4ce4-9f27-24e85177aae3',
     capa: 'https://cdn2.suno.ai/image_large_aa9f96e2-78ea-49d0-b014-ecccc002f1c1.jpeg' },
   { uid: '84f573ff-c3d5-450c-9bf9-c2980666f045',
-    capa: 'https://cdn2.suno.ai/image_large_02b33bbe-83bc-4f04-9d57-735c674dfdc4.jpeg' }
+    capa: 'https://cdn2.suno.ai/image_large_02b33bbe-83bc-4f04-9d57-735c674dfdc4.jpeg' },
+  { uid: '41c06687-15eb-40fa-90e5-f36c7790a213',
+    capa: 'https://cdn2.suno.ai/image_large_41c06687-15eb-40fa-90e5-f36c7790a213.jpeg' },
+  { uid: 'c9fffa2a-3db9-4ff9-9fea-d65d07e41786',
+    capa: 'https://cdn2.suno.ai/image_large_c9fffa2a-3db9-4ff9-9fea-d65d07e41786.jpeg' },
+  { uid: '995d2653-2a71-4feb-ae85-e7ee6fe05462',
+    capa: 'https://cdn2.suno.ai/image_large_995d2653-2a71-4feb-ae85-e7ee6fe05462.jpeg' },
+  { uid: 'd174d993-b514-4caf-9399-bec9e7c4c602',
+    capa: 'https://cdn2.suno.ai/image_large_d174d993-b514-4caf-9399-bec9e7c4c602.jpeg' },
+  { uid: '03bdce87-4b5a-44ec-b956-df862e6ea47c',
+    capa: 'https://cdn2.suno.ai/image_large_03bdce87-4b5a-44ec-b956-df862e6ea47c.jpeg' },
+  { uid: 'fe42673f-d92a-44dc-8bfd-3d99f1ba0149',
+    capa: 'https://cdn2.suno.ai/image_large_fe42673f-d92a-44dc-8bfd-3d99f1ba0149.jpeg' },
+  { uid: 'bd959d28-2ab2-4ef4-b5c3-8531ce0af44a',
+    capa: 'https://cdn2.suno.ai/image_large_bd959d28-2ab2-4ef4-b5c3-8531ce0af44a.jpeg' },
+  { uid: 'f45a8847-9038-47a8-8c52-ca440ce67247',
+    capa: 'https://cdn2.suno.ai/image_large_f45a8847-9038-47a8-8c52-ca440ce67247.jpeg' },
+  { uid: '1275180a-2aaa-41d7-804a-4a2b38215bd0',
+    capa: 'https://cdn2.suno.ai/image_large_1275180a-2aaa-41d7-804a-4a2b38215bd0.jpeg' },
+  { uid: '81586d41-7c06-4417-8fe4-a42c5b44f8dc',
+    capa: 'https://cdn2.suno.ai/image_large_81586d41-7c06-4417-8fe4-a42c5b44f8dc.jpeg' },
+  { uid: '50cd3486-516f-4372-ba87-5c21a88b6c41',
+    capa: 'https://cdn2.suno.ai/image_large_50cd3486-516f-4372-ba87-5c21a88b6c41.jpeg' },
+  { uid: '00d12266-b8f2-475e-9660-22af47d46ec5',
+    capa: 'https://cdn2.suno.ai/image_large_00d12266-b8f2-475e-9660-22af47d46ec5.jpeg' },
+  { uid: 'a15c00c6-2c6f-4a90-9aed-903f4d49eb03',
+    capa: 'https://cdn2.suno.ai/image_large_a15c00c6-2c6f-4a90-9aed-903f4d49eb03.jpeg' },
+  { uid: 'e4ab2348-66da-47b2-a98b-601c4222e7b2',
+    capa: 'https://cdn2.suno.ai/image_large_e4ab2348-66da-47b2-a98b-601c4222e7b2.jpeg' }
 ].map((m, i) => ({
   ...m,
   n: i + 1,
@@ -102,3 +130,12 @@ export const MUSICAS_PROPRIAS = [
   url: `https://suno.com/song/${m.uid}`,
   embed: `https://suno.com/embed/${m.uid}`
 }));
+
+/* Faixas LOCAIS (mp3 no repo, public/musicas/) — tocam no <audio>, sem Suno. */
+export const MUSICAS_LOCAIS = [
+  {
+    id: 'davinci-intro',
+    titulo: 'DaVinci Intro — dark cello arpeggio',
+    arquivo: '/musicas/davinci-intro-dark-cello.mp3'
+  }
+];

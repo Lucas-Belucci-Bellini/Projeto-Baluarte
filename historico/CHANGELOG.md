@@ -6,6 +6,13 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-12
+
+### 🎻 Músicas Próprias — +14 faixas (43 → 57) e a 1ª faixa LOCAL (#356)
+- 🎵 **+14 variações novas** de "A Baluarte" coletadas dos comentários da issue (57 no total, todas com capa).
+- 🎻 **Primeira faixa local no repo**: "DaVinci Intro — dark cello arpeggio" (`public/musicas/davinci-intro-dark-cello.mp3`, 4,3 MB, 192 kbps) — o operador subiu o arquivo (já era MP3 puro, sem trilha de vídeo pra extrair); toca num `<audio>` nativo com `preload="none"` (o site não baixa nada até dar play). Novo export `MUSICAS_LOCAIS`.
+- ✅ Verificado (Playwright): 57 cards com capa, faixa local renderiza e o MP3 responde `206 audio/mpeg` (range requests ok); 0 erros.
+
 ## 2026-07-11
 
 ### 🖼️ Músicas Próprias — capas + 12 faixas novas (#356)
