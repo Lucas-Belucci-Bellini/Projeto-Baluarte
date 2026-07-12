@@ -226,7 +226,16 @@ export function gitNexusNucleo(args = {}) {
       const st = await nativeHermesStatus();
       if (st.available) {
         setVital('motor', 'NATIVO (GGUF)', 'ok');
-        bolha('jarvis', `✅ Motor NATIVO no controle — modelo ${st.model || 'GGUF'} (llama.cpp).`);
+        /* motor pronto ≠ motor EM USO: só o modo hermes-agente usa o nativo.
+         * Se o modo ativo for outro (ex.: hermes servidor/OpenRouter), avisa —
+         * foi exatamente a pegadinha do 402 de créditos do operador. */
+        const cfgM = loadConfig();
+        if (cfgM.mode === 'hermes-agente') {
+          bolha('jarvis', `✅ Motor NATIVO no controle — modelo ${st.model || 'GGUF'} (llama.cpp). O modo hermes-agente responde por ele.`);
+        } else {
+          const quem = cfgM.mode === 'hermes' ? 'o OpenRouter na nuvem (gasta créditos!)' : `"${cfgM.mode}"`;
+          bolha('jarvis', `✅ Motor NATIVO pronto — modelo ${st.model || 'GGUF'} (llama.cpp).\n⚠ MAS o modo de IA ativo é "${cfgM.mode}" — quem responde o chat é ${quem}, não o motor da sua máquina. Diga "modo hermes-agente" pra usar o nativo (grátis, offline).`);
+        }
       } else if (st.downloading) {
         setVital('motor', `NATIVO ⬇ ${Math.round(st.pct || 0)}%`, 'warn');
         bolha('jarvis', `⬇ Baixando o modelo do motor nativo: ${Math.round(st.pct || 0)}% (~4,4 GB — segue em segundo plano; o WebLLM cobre enquanto isso). Diga "motor" de novo pra acompanhar.`);
