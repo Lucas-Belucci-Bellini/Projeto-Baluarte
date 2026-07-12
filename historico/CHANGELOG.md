@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### 🔔 Launcher 0.5.3 — versão visível no `motor` + "Reiniciar agora" no update (fim da armadilha da bandeja)
+- 🕳️ **A armadilha da bandeja, diagnosticada**: o operador atualizou pro 0.5.2 e continuou vendo o erro antigo — porque **fechar a janela NÃO fecha o app** (ele vive na bandeja) e o electron-updater só instala **no quit**. O update baixava e ficava eternamente esperando um "Sair" que nunca vinha; o operador seguia rodando a versão velha sem saber.
+- ✨ **Diálogo "Reiniciar agora"**: quando o update termina de baixar, o app mostra a janela (se estava escondida) e pergunta — `Reiniciar agora` aplica na hora (`quitAndInstall`); `Depois` mantém o comportamento antigo (aplica no Sair). Também passa a **re-checar updates a cada 2 h** (antes só checava no boot — num app que nunca fecha, nunca mais checava).
+- 🏷️ **Versão do launcher em toda resposta do `motor`**: o `hermes:status` agora devolve `appVersion` (via `app.getVersion()`, à prova de contexto sem Electron) e o comando `motor` do Núcleo imprime `· launcher vX.Y.Z` nos 5 ramos (pronto/aviso de modo/baixando/fatal/web) — acabou o "não sei qual versão está rodando" no diagnóstico.
+- ✅ Verificado: `hermes.js` em Node puro degrada limpo (`appVersion:null`, sem crash); Playwright no Núcleo com a ponte mockada — versão aparece no ramo feliz e no fatal, e status sem `appVersion` (launcher antigo) não quebra. Launcher **0.5.2 → 0.5.3**.
+
 ### 🎯 Launcher 0.5.2 — motor nativo RESPONDE (fix do "modelResponse is not iterable")
 - 🐛 O diagnóstico do comando `motor` na máquina do operador entregou a causa exata: `NATIVE_INIT_FAILED · modelResponse is not iterable`. O módulo carregou ✓, o modelo carregou ✓ — o `generate` morria no **formato do histórico**: a API v3 do node-llama-cpp exige `{type:'model', response:[texto]}` (lista) e mandávamos `{type:'model', text}`. Um campo errado derrubava o motor no 1º diálogo com histórico.
 - ✅ Corrigido e provado com mock que valida o formato v3 (reproduz o erro com o código antigo; o novo passa com a conversa exata do operador). Launcher **0.5.1 → 0.5.2** — auto-update entrega; sem desinstalar nada.

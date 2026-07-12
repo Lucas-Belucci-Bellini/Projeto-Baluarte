@@ -10,7 +10,7 @@
 // Segurança (a UI vem da web, logo o renderer é "não confiável"):
 // contextIsolation ligado, sem nodeIntegration, sandbox, e navegação/links
 // presos às origens confiáveis. A ponte nativa real (nexus.*, fs.*) entra no M2.
-const { app, BrowserWindow, Tray, Menu, nativeImage, shell, ipcMain, session, systemPreferences } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, shell, ipcMain, session, systemPreferences, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const { registerIpc } = require('./ipc');
@@ -224,7 +224,27 @@ function setupUpdates() {
   autoUpdater.on('error', () => {
     /* silencioso por enquanto; UI de update no M1+ */
   });
+  /* A ARMADILHA DA BANDEJA: fechar a janela só esconde (o app segue vivo) e o
+   * update baixado só instala no quit — que nunca vinha. Agora, quando o
+   * download termina, o operador ganha o botão "Reiniciar agora". */
+  autoUpdater.on('update-downloaded', (info) => {
+    const win = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
+    if (win && !win.isVisible()) win.show();
+    dialog.showMessageBox(win, {
+      type: 'info',
+      title: 'Atualização pronta',
+      message: `Baluarte Launcher ${info && info.version ? info.version : 'novo'} baixado.`,
+      detail: 'Reiniciar agora pra aplicar? (Fechar a janela NÃO aplica — o app vive na bandeja.)',
+      buttons: ['Reiniciar agora', 'Depois (aplica no Sair)'],
+      defaultId: 0,
+      cancelId: 1
+    }).then(({ response }) => {
+      if (response === 0) { isQuitting = true; autoUpdater.quitAndInstall(); }
+    }).catch(() => { /* best-effort */ });
+  });
   autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+  /* re-checa a cada 2h — o app vive dias na bandeja sem reiniciar */
+  setInterval(() => { autoUpdater.checkForUpdates().catch(() => {}); }, 2 * 60 * 60 * 1000);
 }
 
 /* ===================== ciclo de vida / instância única ===================== */

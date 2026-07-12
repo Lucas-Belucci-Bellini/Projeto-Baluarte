@@ -251,4 +251,13 @@ async function generate(payload = {}) {
   }
 }
 
-module.exports = { status, generate };
+/* Versão do launcher em TODO status — o operador vê no comando "motor" qual
+ * versão está rodando (a armadilha da bandeja escondia updates não aplicados). */
+const APP_VERSION = (() => {
+  try { return require('electron').app.getVersion(); } catch { return null; }
+})();
+
+module.exports = {
+  status: async () => ({ appVersion: APP_VERSION, ...(await status()) }),
+  generate
+};

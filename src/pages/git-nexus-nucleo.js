@@ -224,6 +224,9 @@ export function gitNexusNucleo(args = {}) {
      * sondagem já dispara o download do modelo quando falta. */
     if (t === 'motor') {
       const st = await nativeHermesStatus();
+      /* versão do launcher em toda resposta (0.5.3+) — sem ela ficávamos no
+       * escuro sobre qual app está rodando (armadilha da bandeja). */
+      const ver = st.appVersion ? ` · launcher v${st.appVersion}` : '';
       if (st.available) {
         setVital('motor', 'NATIVO (GGUF)', 'ok');
         /* motor pronto ≠ motor EM USO: só o modo hermes-agente usa o nativo.
@@ -231,20 +234,20 @@ export function gitNexusNucleo(args = {}) {
          * foi exatamente a pegadinha do 402 de créditos do operador. */
         const cfgM = loadConfig();
         if (cfgM.mode === 'hermes-agente') {
-          bolha('jarvis', `✅ Motor NATIVO no controle — modelo ${st.model || 'GGUF'} (llama.cpp). O modo hermes-agente responde por ele.`);
+          bolha('jarvis', `✅ Motor NATIVO no controle — modelo ${st.model || 'GGUF'} (llama.cpp)${ver}. O modo hermes-agente responde por ele.`);
         } else {
           const quem = cfgM.mode === 'hermes' ? 'o OpenRouter na nuvem (gasta créditos!)' : `"${cfgM.mode}"`;
-          bolha('jarvis', `✅ Motor NATIVO pronto — modelo ${st.model || 'GGUF'} (llama.cpp).\n⚠ MAS o modo de IA ativo é "${cfgM.mode}" — quem responde o chat é ${quem}, não o motor da sua máquina. Diga "modo hermes-agente" pra usar o nativo (grátis, offline).`);
+          bolha('jarvis', `✅ Motor NATIVO pronto — modelo ${st.model || 'GGUF'} (llama.cpp)${ver}.\n⚠ MAS o modo de IA ativo é "${cfgM.mode}" — quem responde o chat é ${quem}, não o motor da sua máquina. Diga "modo hermes-agente" pra usar o nativo (grátis, offline).`);
         }
       } else if (st.downloading) {
         setVital('motor', `NATIVO ⬇ ${Math.round(st.pct || 0)}%`, 'warn');
-        bolha('jarvis', `⬇ Baixando o modelo do motor nativo: ${Math.round(st.pct || 0)}% (~4,4 GB — segue em segundo plano; o WebLLM cobre enquanto isso). Diga "motor" de novo pra acompanhar.`);
+        bolha('jarvis', `⬇ Baixando o modelo do motor nativo: ${Math.round(st.pct || 0)}% (~4,4 GB — segue em segundo plano; o WebLLM cobre enquanto isso)${ver}. Diga "motor" de novo pra acompanhar.`);
       } else if (st.fatal) {
         setVital('motor', 'WEB (WEBLLM)', 'warn');
-        bolha('jarvis', `⚠ Motor nativo DESATIVADO nesta sessão.\ncódigo: ${st.code || '?'}\nmotivo: ${(st.reason || '').slice(0, 160)}\ncorreção: ${st.hint || 'reinstalar o app'}`);
+        bolha('jarvis', `⚠ Motor nativo DESATIVADO nesta sessão${ver}.\ncódigo: ${st.code || '?'}\nmotivo: ${(st.reason || '').slice(0, 160)}\ncorreção: ${st.hint || 'reinstalar o app'}`);
       } else {
         setVital('motor', 'WEB (WEBLLM)');
-        bolha('jarvis', `Motor: WebLLM (navegador). ${st.reason || 'Sem ponte com o app — no site, o nativo não existe.'}${st.error ? `\núltimo erro de download: ${st.error}` : ''}`);
+        bolha('jarvis', `Motor: WebLLM (navegador)${ver}. ${st.reason || 'Sem ponte com o app — no site, o nativo não existe.'}${st.error ? `\núltimo erro de download: ${st.error}` : ''}`);
       }
       return;
     }
