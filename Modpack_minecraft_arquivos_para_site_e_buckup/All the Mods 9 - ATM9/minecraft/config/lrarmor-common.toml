@@ -1,0 +1,7 @@
+
+[general]
+	#Enable armor set effect
+	enableArmorSetEffect = true
+	#Enable armor attribute
+	enableArmorAttribute = true
+
