@@ -1,0 +1,17 @@
+// Compost colors for solargeneration. You may add your own colors, change existing ones, or remove colors that aren't needed.
+lapis_shard, #ffffff
+photovoltaic_cell, #d2d0e4
+solar_core_advanced, #ffffff
+solar_core_hardened, #ffffff
+solar_core_leadstone, #ffffff
+solar_core_redstone, #ffffff
+solar_core_resonant, #feffff
+solar_core_signalum, #ff9466
+solar_core_ultimate, #ffffff
+solar_helmet_advanced, #fafaff
+solar_helmet_hardened, #ffffff
+solar_helmet_leadstone, #fcfcff
+solar_helmet_redstone, #ffffff
+solar_helmet_resonant, #f7fbff
+solar_helmet_signalum, #734444
+solar_helmet_ultimate, #fff7ff

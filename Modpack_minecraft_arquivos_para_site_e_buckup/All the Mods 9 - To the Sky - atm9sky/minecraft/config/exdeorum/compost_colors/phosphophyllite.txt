@@ -1,0 +1,2 @@
+// Compost colors for phosphophyllite. You may add your own colors, change existing ones, or remove colors that aren't needed.
+debug_tool, #b4975e
