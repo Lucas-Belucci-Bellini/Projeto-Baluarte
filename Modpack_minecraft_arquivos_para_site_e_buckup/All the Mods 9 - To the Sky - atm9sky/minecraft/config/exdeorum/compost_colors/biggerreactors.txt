@@ -1,0 +1,14 @@
+// Compost colors for biggerreactors. You may add your own colors, change existing ones, or remove colors that aren't needed.
+blutonium_dust, #d4ebff
+blutonium_ingot, #accdff
+cyanite_dust, #ebffff
+cyanite_ingot, #a8ffff
+graphite_dust, #fcfcfc
+graphite_ingot, #c0c0c0
+liquid_obsidian_bucket, #e8e6eb
+ludicrite_dust, #fff0ff
+ludicrite_ingot, #ffabff
+steam_bucket, #ffffff
+uranium_chunk, #bcff6c
+uranium_dust, #ffffed
+uranium_ingot, #e4ff82

@@ -1,0 +1,4 @@
+// Compost colors for appliede. You may add your own colors, change existing ones, or remove colors that aren't needed.
+dummy_emc_item, #ffaae4
+learning_card, #b9afa8
+wireless_transmutation_terminal, #b5a2c0

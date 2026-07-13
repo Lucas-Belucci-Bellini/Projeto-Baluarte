@@ -1,0 +1,14 @@
+// Compost colors for allthetweaks. You may add your own colors, change existing ones, or remove colors that aren't needed.
+allthecatalystium, #ffffff
+atm_star, #fff762
+atm_star_shard, #ffffff
+dimensional_seed, #728ca8
+dragon_soul, #ff87e6
+greg_star, #397093
+improbable_probability_device, #799aa4
+nexium_emitter, #bcd2d7
+oblivion_shard, #c25cff
+patrick_star, #fa978c
+philosophers_fuel, #ff5430
+pulsating_black_hole, #d996e7
+withers_compass, #3e4040
