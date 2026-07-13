@@ -1,0 +1,16 @@
+filename = 'biggerreactors-1.20.1-0.6.0-beta.10.5.jar'
+name = 'Bigger Reactors'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'beta'
+
+[download]
+hash = 'e921682b2e95a56dbb13cbe8a3532ae9d908e129'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 6085277
+project-id = 407780

@@ -1,0 +1,16 @@
+filename = 'entangled-1.3.20-forge-mc1.20.4.jar'
+name = 'Entangled'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20', '1.20.1', '1.20.2', '1.20.3', '1.20.4' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = 'a72c3f8828a2c922c11676a9908e609a75b35b6e'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5885909
+project-id = 301034

@@ -1,0 +1,16 @@
+filename = 'Draconic-Evolution-1.20.1-3.1.2.604-universal.jar'
+name = 'Draconic Evolution'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '0bdec70a1fe1e4ca686bcc71c1ecde8aece5d3df'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 6065044
+project-id = 223565

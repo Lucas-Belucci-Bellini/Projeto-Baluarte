@@ -1,0 +1,16 @@
+filename = 'easy-villagers-forge-1.20.1-1.1.23.jar'
+name = 'Easy Villagers'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '97690e4039eb71258892edde8b2da8661dffbf5c'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5724570
+project-id = 400514

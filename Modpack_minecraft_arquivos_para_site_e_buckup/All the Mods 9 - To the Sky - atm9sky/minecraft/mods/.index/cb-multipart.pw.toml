@@ -1,0 +1,16 @@
+filename = 'CBMultipart-1.20.1-3.3.0.146-universal.jar'
+name = 'CB Multipart'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '7eb4d3f7b9dc4b65cffd848f2949eb5d468dfc32'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5311521
+project-id = 258426

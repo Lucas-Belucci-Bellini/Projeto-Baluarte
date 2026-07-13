@@ -1,0 +1,16 @@
+filename = 'alchemistry-1.20.1-2.3.4.jar'
+name = 'Alchemistry'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = 'f0656d019a7254befb87e46bcae1dc0ce7acd173'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4770614
+project-id = 293425

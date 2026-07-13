@@ -1,0 +1,16 @@
+filename = 'default-server-properties-forge-81.1.0.jar'
+name = 'Default Server Properties'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '040e4cfde815d022cc3899ba0ef290a9843a47c8'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4599572
+project-id = 676811

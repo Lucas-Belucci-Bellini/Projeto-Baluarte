@@ -1,0 +1,16 @@
+filename = 'aecapfix-0.9.jar'
+name = 'AECapFix'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '6f475953200265e986b9bc19e090fe2a1b244887'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5418991
+project-id = 914685

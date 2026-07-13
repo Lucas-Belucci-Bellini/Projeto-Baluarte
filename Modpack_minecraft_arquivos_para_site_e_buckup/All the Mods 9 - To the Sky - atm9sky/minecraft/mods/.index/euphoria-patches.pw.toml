@@ -1,0 +1,76 @@
+filename = 'EuphoriaPatcher-1.6.4-r5.5.1-forge.jar'
+name = 'Euphoria Patches'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [
+    '1.13',
+    '1.13-Snapshot',
+    '1.13.1',
+    '1.13.2',
+    '1.14',
+    '1.14-Snapshot',
+    '1.14.1',
+    '1.14.2',
+    '1.14.3',
+    '1.14.4',
+    '1.15',
+    '1.15-Snapshot',
+    '1.15.1',
+    '1.15.2',
+    '1.16',
+    '1.16-Snapshot',
+    '1.16.1',
+    '1.16.2',
+    '1.16.3',
+    '1.16.4',
+    '1.16.5',
+    '1.17',
+    '1.17-Snapshot',
+    '1.17.1',
+    '1.18',
+    '1.18-Snapshot',
+    '1.18.1',
+    '1.18.2',
+    '1.19',
+    '1.19-Snapshot',
+    '1.19.1',
+    '1.19.2',
+    '1.19.3',
+    '1.19.3-Snapshot',
+    '1.19.4',
+    '1.19.4-Snapshot',
+    '1.20',
+    '1.20-Snapshot',
+    '1.20.1',
+    '1.20.2',
+    '1.20.2-Snapshot',
+    '1.20.3',
+    '1.20.3-Snapshot',
+    '1.20.4',
+    '1.20.5',
+    '1.20.5-Snapshot',
+    '1.20.6',
+    '1.21',
+    '1.21-Snapshot',
+    '1.21.1',
+    '1.21.1-Snapshot',
+    '1.21.2',
+    '1.21.2-Snapshot',
+    '1.21.3',
+    '1.21.4',
+    '1.21.4-Snapshot',
+    '1.21.5',
+    '1.21.5-Snapshot',
+    '1.21.6-snapshot'
+]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '7956a375cff3b6114afae23ab009b14d2a87606e'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 6564324
+project-id = 915902
