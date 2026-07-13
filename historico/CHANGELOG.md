@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-12
 
+### 🔬 Launcher 0.6.1 — Arquivista fase 2 (#369): agora o JARVIS ANALISA
+- ✨ Três capacidades novas, todas read-only: **`ler <arquivo>`** (conteúdo de texto/código, máx 256 KB — recusa binário, credencial e tudo que estiver no cofre), **`analisar <pasta>`** ("o que é isto?": classifica projeto/fotos/música/documentos/backups, totais, top extensões, maiores/mais recentes, **duplicados** por tamanho+hash e **gordura** — arquivos de 100 MB+ parados há 90+ dias) e **`procurar <trecho> em <pasta>`** (busca por CONTEÚDO, substring literal sem regex, só em tipos de texto seguros).
+- 🛡️ **Fronteira nova blindada**: agora entram CAMINHOS como input — cada um passa por `validarCaminho`: dentro da raiz, nenhum segmento do cofre pessoal/zona proibida, **nenhum symlink no trajeto**; arquivos com cara de segredo (`.env`, `.pem`, `id_rsa`, `*senha*`, `*token*`…) são recusados até fora do cofre.
+- 🤖 Tools novas no agente (`ler_arquivo`, `analisar_pasta`, `buscar_conteudo`) — dá pra pedir em linguagem natural no `hermes-agente`.
+- ✅ Verificado: motor 19/19 em Node puro (escape de raiz `../..`, cofre por caminho direto, `.env`, `.exe`, binário disfarçado de `.js`, symlink pra `/etc` — todos recusados com mensagem amigável; duplicados e classificação de pasta certos) · Núcleo 5/5 no Playwright.
+
 ### 🗂️ Launcher 0.6.0 — JARVIS Arquivista, fase 1 (#369): os olhos do JARVIS no PC
 - ✨ **O JARVIS agora enxerga os arquivos da máquina** (como Codex/Claude Code) — read-only: no motor não EXISTE API de escrever/mover/apagar. Novo `desktop/src/arquivos.js` + canais `arquivos:status|buscar|relatorio` no funil IPC allowlisted.
 - 🛡️ **Cofre pessoal**: pastas com `pessoal`, `privado`, `senha(s)`, `secret`… são puladas inteiras — nem o NOME aparece em busca ou relatório, só a contagem de "protegidas". Zona técnica proibida (`.ssh`, cofres de credenciais, `AppData`, `node_modules`, dotfolders) e symlinks nunca seguidos. Limites duros (300k entradas / prof. 14 / 2 min) → resultado parcial sinalizado, nunca app travado.

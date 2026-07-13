@@ -18,6 +18,7 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 
 /* ===================== configuração de segurança ===================== */
 
@@ -250,4 +251,202 @@ async function relatorio() {
   };
 }
 
-module.exports = { status, buscar, relatorio };
+/* ===================== FASE 2 — Analisar (#369, 0.6.1) =====================
+ * Agora entram CAMINHOS como input (do operador ou do agente) — a fronteira
+ * nova de segurança é validar cada um: dentro da raiz, nenhum segmento do
+ * cofre pessoal/zona proibida, sem symlink no caminho. Continua read-only. */
+
+/** Arquivos com cara de segredo: nunca são lidos, nem fora do cofre. */
+const ehSegredo = (nome) => /senha|password|secret|token|credenc|\.env$|\.pem$|\.key$|id_rsa|\.pfx$|\.p12$/i.test(nome);
+
+/** Extensões de TEXTO seguras pra leitura/grep (código, docs, dados). */
+const EXT_TEXTO = new Set([
+  '.txt', '.md', '.markdown', '.json', '.js', '.mjs', '.cjs', '.ts', '.jsx', '.tsx',
+  '.css', '.html', '.htm', '.xml', '.svg', '.csv', '.tsv', '.yml', '.yaml', '.toml',
+  '.ini', '.cfg', '.conf', '.log', '.py', '.java', '.c', '.h', '.cpp', '.hpp', '.cs',
+  '.go', '.rs', '.rb', '.php', '.sh', '.ps1', '.bat', '.sql', '.gd', '.lua', '.kt'
+]);
+const LER_MAX_BYTES = 256 * 1024;   // teto de leitura por arquivo
+
+/**
+ * Valida um caminho vindo de fora. Devolve o absoluto normalizado ou lança
+ * com mensagem amigável. Regras: dentro da raiz; nenhum segmento pessoal,
+ * proibido ou symlink no trajeto.
+ */
+async function validarCaminho(entrada) {
+  const bruto = String(entrada || '').trim();
+  if (!bruto) throw new Error('caminho vazio');
+  const base = path.resolve(raiz());
+  const abs = path.resolve(base, bruto);
+  if (abs !== base && !abs.startsWith(base + path.sep)) {
+    throw new Error(`fora da minha área (só trabalho dentro de ${base})`);
+  }
+  const rel = path.relative(base, abs);
+  const segmentos = rel ? rel.split(path.sep) : [];
+  let atual = base;
+  for (const seg of segmentos) {
+    if (ehPessoal(seg)) throw new Error('esse caminho passa por uma pasta do cofre pessoal — não entro nem pra ler');
+    if (ehProibida(seg)) throw new Error(`"${seg}" fica na zona proibida (credenciais/config/caches) — não entro`);
+    atual = path.join(atual, seg);
+    const st = await fsp.lstat(atual).catch(() => null);
+    if (!st) throw new Error('caminho não existe');
+    if (st.isSymbolicLink()) throw new Error('symlink no caminho — não sigo atalhos');
+  }
+  return abs;
+}
+
+/**
+ * Lê o CONTEÚDO de um arquivo de texto seguro (código/docs/dados).
+ * Recusa binário, segredo e tamanho além do teto (devolve truncado).
+ */
+async function ler({ caminho, maxBytes } = {}) {
+  const abs = await validarCaminho(caminho);
+  const st = await fsp.stat(abs);
+  if (!st.isFile()) throw new Error('isso é uma pasta — use "analisar" nela');
+  const nome = path.basename(abs);
+  if (ehSegredo(nome)) throw new Error('esse arquivo tem cara de credencial/segredo — me recuso a ler');
+  const ext = path.extname(nome).toLowerCase();
+  if (!EXT_TEXTO.has(ext)) throw new Error(`só leio texto/código (${ext || 'sem extensão'} não é um tipo seguro)`);
+  const teto = Math.min(Number(maxBytes) || LER_MAX_BYTES, LER_MAX_BYTES);
+  const fd = await fsp.open(abs, 'r');
+  try {
+    const buf = Buffer.alloc(Math.min(st.size, teto));
+    await fd.read(buf, 0, buf.length, 0);
+    if (buf.includes(0)) throw new Error('conteúdo binário — não é texto');
+    const conteudo = buf.toString('utf8');
+    return {
+      caminho: abs, bytes: st.size, truncado: st.size > teto,
+      linhas: conteudo.split('\n').length, conteudo
+    };
+  } finally { await fd.close(); }
+}
+
+/**
+ * "O que é esta pasta?" — resumo de um diretório: totais, top extensões,
+ * maiores/mais recentes, CLASSIFICAÇÃO heurística (projeto/fotos/música…),
+ * DUPLICADOS (tamanho igual + hash dos primeiros 64 KB) e GORDURA
+ * (arquivos grandes parados há 90+ dias).
+ */
+async function analisar({ caminho } = {}) {
+  const abs = await validarCaminho(caminho || '.');
+  const st = await fsp.stat(abs);
+  if (!st.isDirectory()) throw new Error('isso é um arquivo — use "ler" nele');
+
+  const porExt = new Map();
+  const maiores = [];
+  const recentes = [];
+  const porTamanho = new Map();   // size -> [caminhos] (candidatos a duplicado)
+  const gordura = [];
+  let totalBytes = 0;
+  const marcadores = new Set();   // arquivos-assinatura (package.json, …)
+  const agora = Date.now();
+
+  const stats = await varrer(abs, async (arq, dirent) => {
+    const ext = (path.extname(dirent.name) || '(sem ext)').toLowerCase();
+    porExt.set(ext, (porExt.get(ext) || 0) + 1);
+    if (/^(package\.json|cargo\.toml|pom\.xml|go\.mod|requirements\.txt|gemfile|makefile|index\.html)$/i.test(dirent.name)) {
+      marcadores.add(dirent.name.toLowerCase());
+    }
+    const s = await fsp.stat(arq).catch(() => null);
+    if (!s) return;
+    totalBytes += s.size;
+    maiores.push({ caminho: arq, bytes: s.size });
+    if (maiores.length > 40) { maiores.sort((a, b) => b.bytes - a.bytes); maiores.length = 10; }
+    recentes.push({ caminho: arq, mtime: s.mtimeMs });
+    if (recentes.length > 40) { recentes.sort((a, b) => b.mtime - a.mtime); recentes.length = 5; }
+    if (s.size > 1024) {
+      const lista = porTamanho.get(s.size) || [];
+      if (lista.length < 8) { lista.push(arq); porTamanho.set(s.size, lista); }
+    }
+    if (s.size > 100 * 1024 * 1024 && agora - s.mtimeMs > 90 * 24 * 3600 * 1000) {
+      if (gordura.length < 10) gordura.push({ caminho: arq, bytes: s.size, meses: Math.round((agora - s.mtimeMs) / (30 * 24 * 3600 * 1000)) });
+    }
+  });
+
+  /* duplicados: só grupos de MESMO tamanho; hash rápido (64 KB) confirma */
+  const duplicados = [];
+  const hash64k = async (arq) => {
+    const fd = await fsp.open(arq, 'r');
+    try {
+      const buf = Buffer.alloc(64 * 1024);
+      const { bytesRead } = await fd.read(buf, 0, buf.length, 0);
+      return crypto.createHash('sha1').update(buf.subarray(0, bytesRead)).digest('hex');
+    } finally { await fd.close(); }
+  };
+  let gruposChecados = 0;
+  for (const [tam, lista] of porTamanho) {
+    if (lista.length < 2 || gruposChecados >= 120 || duplicados.length >= 10) continue;
+    gruposChecados++;
+    const porHash = new Map();
+    for (const arq of lista) {
+      const hx = await hash64k(arq).catch(() => null);
+      if (!hx) continue;
+      const grupo = porHash.get(hx) || [];
+      grupo.push(arq);
+      porHash.set(hx, grupo);
+    }
+    for (const grupo of porHash.values()) {
+      if (grupo.length > 1) duplicados.push({ bytes: tam, arquivos: grupo });
+    }
+  }
+
+  /* classificação heurística pelo perfil das extensões */
+  const conta = (...exts) => exts.reduce((n, e) => n + (porExt.get(e) || 0), 0);
+  const total = stats.arquivos || 1;
+  let tipo = 'mista';
+  if (marcadores.size >= 1 && conta('.js', '.ts', '.py', '.java', '.rs', '.go', '.c', '.cpp', '.cs', '.html', '.css') > total * 0.25) tipo = 'projeto de código';
+  else if (conta('.jpg', '.jpeg', '.png', '.heic', '.webp', '.raw', '.gif') > total * 0.5) tipo = 'fotos/imagens';
+  else if (conta('.mp3', '.flac', '.wav', '.ogg', '.m4a') > total * 0.5) tipo = 'música';
+  else if (conta('.mp4', '.mkv', '.avi', '.mov', '.webm') > total * 0.4) tipo = 'vídeos';
+  else if (conta('.pdf', '.docx', '.doc', '.xlsx', '.pptx', '.odt') > total * 0.4) tipo = 'documentos';
+  else if (conta('.zip', '.rar', '.7z', '.bak', '.iso', '.tar', '.gz') > total * 0.4) tipo = 'backups/arquivos compactados';
+
+  maiores.sort((a, b) => b.bytes - a.bytes);
+  recentes.sort((a, b) => b.mtime - a.mtime);
+  return {
+    caminho: abs, tipo,
+    arquivos: stats.arquivos, pastas: stats.pastas, tamanho: fmtBytes(totalBytes),
+    protegidas: stats.protegidas, parcial: stats.parcial,
+    topExtensoes: [...porExt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([e, n]) => `${e}:${n}`),
+    maiores: maiores.slice(0, 5).map((m) => ({ caminho: m.caminho, tamanho: fmtBytes(m.bytes) })),
+    recentes: recentes.slice(0, 5).map((r) => ({ caminho: r.caminho, quando: new Date(r.mtime).toISOString().slice(0, 10) })),
+    duplicados: duplicados.slice(0, 6).map((d) => ({ tamanho: fmtBytes(d.bytes), arquivos: d.arquivos })),
+    gordura: gordura.map((g) => ({ caminho: g.caminho, tamanho: fmtBytes(g.bytes), paradoHaMeses: g.meses }))
+  };
+}
+
+/**
+ * Busca por CONTEÚDO (substring literal, sem regex — sem ReDoS) em arquivos
+ * de texto seguros sob uma pasta. Devolve arquivo + linha + trecho.
+ */
+async function grep({ termo, caminho, maxResultados } = {}) {
+  const t = String(termo || '').trim();
+  if (t.length < 3) throw new Error('termo de conteúdo muito curto (mínimo 3 caracteres)');
+  const abs = await validarCaminho(caminho || '.');
+  const teto = Math.min(Number(maxResultados) || 40, 100);
+  const tLower = t.toLowerCase();
+  const acertos = [];
+  let arquivosLidos = 0;
+
+  const stats = await varrer(abs, async (arq, dirent) => {
+    if (acertos.length >= teto) return;
+    const ext = path.extname(dirent.name).toLowerCase();
+    if (!EXT_TEXTO.has(ext) || ehSegredo(dirent.name)) return;
+    const s = await fsp.stat(arq).catch(() => null);
+    if (!s || s.size > 512 * 1024) return;
+    const texto = await fsp.readFile(arq, 'utf8').catch(() => null);
+    if (texto == null || texto.includes('\0')) return;
+    arquivosLidos++;
+    if (!texto.toLowerCase().includes(tLower)) return;
+    const linhas = texto.split('\n');
+    for (let i = 0; i < linhas.length && acertos.length < teto; i++) {
+      if (linhas[i].toLowerCase().includes(tLower)) {
+        acertos.push({ caminho: arq, linha: i + 1, trecho: linhas[i].trim().slice(0, 200) });
+      }
+    }
+  });
+
+  return { termo: t, total: acertos.length, tetoAtingido: acertos.length >= teto, arquivosLidos, acertos, parcial: stats.parcial };
+}
+
+module.exports = { status, buscar, relatorio, ler, analisar, grep };
