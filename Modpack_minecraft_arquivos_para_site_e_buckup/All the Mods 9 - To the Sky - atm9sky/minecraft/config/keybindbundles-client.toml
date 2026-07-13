@@ -1,0 +1,4 @@
+#ONLY USE THIS IF YOU KNOW WHAT YOU'RE DOING
+#Ignore invalid key checks in InputConstants#isKeyDown
+ignoreInvalidKeyChecks = false
+
