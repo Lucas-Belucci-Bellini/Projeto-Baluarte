@@ -1,0 +1,22 @@
+{
+  "id": "miner-4_-174-85-1270",
+  "name": "miner 4",
+  "icon": "journeymap:ui/img/waypoint-icon.png",
+  "colorizedIcon": "fake:color--2913487-waypoint-icon.png",
+  "x": -174,
+  "y": 85,
+  "z": 1270,
+  "r": 211,
+  "g": 139,
+  "b": 49,
+  "enable": true,
+  "type": "Normal",
+  "origin": "journeymap",
+  "dimensions": [
+    "minecraft:overworld"
+  ],
+  "persistent": true,
+  "showDeviation": false,
+  "iconColor": -1,
+  "customIconColor": false
+}

@@ -1,0 +1,22 @@
+{
+  "id": "Point-Alfa_16159-115-70338",
+  "name": "Point Alfa",
+  "icon": "journeymap:ui/img/waypoint-icon.png",
+  "colorizedIcon": "fake:color--16326606-waypoint-icon.png",
+  "x": 16159,
+  "y": 115,
+  "z": 70338,
+  "r": 6,
+  "g": 224,
+  "b": 50,
+  "enable": true,
+  "type": "Normal",
+  "origin": "journeymap",
+  "dimensions": [
+    "minecraft:overworld"
+  ],
+  "persistent": true,
+  "showDeviation": false,
+  "iconColor": -1,
+  "customIconColor": false
+}

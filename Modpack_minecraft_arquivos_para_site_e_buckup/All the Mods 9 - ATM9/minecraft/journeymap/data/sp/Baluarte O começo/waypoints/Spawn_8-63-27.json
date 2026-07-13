@@ -1,0 +1,22 @@
+{
+  "id": "Spawn_8-63-27",
+  "name": "Spawn",
+  "icon": "journeymap:ui/img/waypoint-icon.png",
+  "colorizedIcon": "fake:color--6247053-waypoint-icon.png",
+  "x": 8,
+  "y": 63,
+  "z": -27,
+  "r": 160,
+  "g": 173,
+  "b": 115,
+  "enable": true,
+  "type": "Normal",
+  "origin": "journeymap",
+  "dimensions": [
+    "minecraft:overworld"
+  ],
+  "persistent": true,
+  "showDeviation": false,
+  "iconColor": -1,
+  "customIconColor": false
+}

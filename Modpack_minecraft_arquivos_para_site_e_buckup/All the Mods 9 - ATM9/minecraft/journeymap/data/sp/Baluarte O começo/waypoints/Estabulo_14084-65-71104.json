@@ -1,0 +1,22 @@
+{
+  "id": "Estabulo_14084-65-71104",
+  "name": "Estabulo",
+  "icon": "journeymap:ui/img/waypoint-icon.png",
+  "colorizedIcon": "fake:color--8238590-waypoint-icon.png",
+  "x": 14084,
+  "y": 65,
+  "z": 71104,
+  "r": 130,
+  "g": 74,
+  "b": 2,
+  "enable": true,
+  "type": "Normal",
+  "origin": "journeymap",
+  "dimensions": [
+    "minecraft:overworld"
+  ],
+  "persistent": true,
+  "showDeviation": false,
+  "iconColor": -1,
+  "customIconColor": false
+}

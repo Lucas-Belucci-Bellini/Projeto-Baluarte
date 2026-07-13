@@ -1,0 +1,22 @@
+{
+  "id": "Miner-1_18392-128-67760",
+  "name": "Miner 1",
+  "icon": "journeymap:ui/img/waypoint-icon.png",
+  "colorizedIcon": "fake:color--2693721-waypoint-icon.png",
+  "x": 18392,
+  "y": 128,
+  "z": 67760,
+  "r": 214,
+  "g": 229,
+  "b": 167,
+  "enable": true,
+  "type": "Normal",
+  "origin": "journeymap",
+  "dimensions": [
+    "minecraft:the_nether"
+  ],
+  "persistent": true,
+  "showDeviation": false,
+  "iconColor": -1,
+  "customIconColor": false
+}
