@@ -1,0 +1,16 @@
+filename = 'XyCraft Override-0.6.22.jar'
+name = 'XyCraft: Override'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = 'ba2341ec57a45585b108c5f3ce5b29b42673fb57'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4788864
+project-id = 653790

@@ -1,0 +1,16 @@
+filename = 'Runelic-Forge-1.20.1-18.0.2.jar'
+name = 'Runelic'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '3b8cc4657cf9f0e321834b1726e358b58a1ea3c4'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4714779
+project-id = 393149

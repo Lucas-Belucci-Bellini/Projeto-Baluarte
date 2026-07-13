@@ -1,0 +1,16 @@
+filename = 'XyCraft Machines-0.6.22.jar'
+name = 'XyCraft: Machines'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '951528b6b3b4b07aaff26a83569ad8ecd368b3c0'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4788865
+project-id = 653791

@@ -1,0 +1,16 @@
+filename = 'PigPen-Forge-1.20.1-15.0.2.jar'
+name = 'Pig Pen Cipher'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '2885041c28bc1cba74ad73d9846b53b26539232a'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4714775
+project-id = 396234

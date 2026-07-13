@@ -1,0 +1,16 @@
+filename = 'teamprojecte-1.20.1-1.1.4.jar'
+name = 'Team ProjectE'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = 'a7d5b78d195c112499d5c20b0ae91fe8845fbcd7'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5402805
+project-id = 689273

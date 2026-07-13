@@ -1,0 +1,16 @@
+filename = 'PickleTweaks-1.20.1-8.0.5.jar'
+name = 'Pickle Tweaks'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '50d37bfc351cfe7c1f0d4cda0d7b5c1a9eb12675'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5775098
+project-id = 238761

@@ -1,0 +1,16 @@
+filename = 'pylons-1.20.1-4.2.1.jar'
+name = 'Pylons'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20', '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '5ae2fd1e7b88bc38d81a6b180701153ada5a6aa1'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4935004
+project-id = 518211

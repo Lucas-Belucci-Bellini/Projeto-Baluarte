@@ -1,0 +1,16 @@
+filename = 'showcaseitem-1.20.1-1.2.jar'
+name = 'Showcase Item'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '282e08fc46b7e4bab61a8651b5fcc1ee1befddd9'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5090810
+project-id = 627196
