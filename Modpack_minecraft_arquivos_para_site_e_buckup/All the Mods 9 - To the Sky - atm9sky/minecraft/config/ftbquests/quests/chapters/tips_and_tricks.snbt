@@ -1,0 +1,501 @@
+{
+	default_hide_dependency_lines: false
+	default_quest_shape: "diamond"
+	filename: "tips_and_tricks"
+	group: ""
+	icon: {
+		Count: 1
+		id: "simplemagnets:basicmagnet"
+		tag: { }
+	}
+	id: "1BE666F01EFFC00D"
+	images: [{
+		height: 3.0d
+		image: "atm:textures/questpics/tips_and_tricks.png"
+		rotation: 0.0d
+		width: 12.0d
+		x: -3.5d
+		y: -4.5d
+	}]
+	order_index: 2
+	progression_mode: "flexible"
+	quest_links: [ ]
+	quests: [
+		{
+			description: ["{atm9.quest.tips.desc.sink}"]
+			id: "722978AC0C1B2649"
+			rewards: [
+				{
+					id: "145F9B3A17676EAA"
+					item: "pipez:fluid_pipe"
+					type: "item"
+				}
+				{
+					id: "27E83245804C145F"
+					type: "xp_levels"
+					xp_levels: 3
+				}
+			]
+			subtitle: "{atm9.quest.tips.subt.sink}"
+			tasks: [{
+				id: "6855AE257D62AA37"
+				item: "cookingforblockheads:sink"
+				type: "item"
+			}]
+			title: "{atm9.quest.tips.sink}"
+			x: -3.5d
+			y: 2.0d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.hyperbox}"]
+			id: "594540768120A627"
+			rewards: [{
+				id: "2A248AC5FB96CA1A"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			subtitle: "{atm9.quest.tips.subt.hyperbox}"
+			tasks: [{
+				id: "029DB3044D5E30A0"
+				item: "hyperbox:hyperbox"
+				type: "item"
+			}]
+			x: -5.5d
+			y: 0.0d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.shrink}"]
+			id: "73F91BF3D424B269"
+			rewards: [{
+				id: "55241015585F591A"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			tasks: [{
+				id: "3B227EED4B839733"
+				item: {
+					Count: 1
+					id: "shrink:shrinking_device"
+					tag: { }
+				}
+				type: "item"
+			}]
+			title: "{atm9.quest.tips.shrink}"
+			x: -5.5d
+			y: 1.0d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.build}"]
+			id: "0F75D7B9F4FF2459"
+			rewards: [{
+				id: "4F4959C6CA30683B"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			shape: "diamond"
+			tasks: [
+				{
+					id: "358F3A8EA9E5E7E3"
+					item: "buildinggadgets2:gadget_building"
+					type: "item"
+				}
+				{
+					id: "008AD88A1CDCEE5E"
+					item: "buildinggadgets2:gadget_exchanging"
+					type: "item"
+				}
+				{
+					id: "4738B22DF26DB2D8"
+					item: {
+						Count: 1
+						id: "buildinggadgets2:gadget_copy_paste"
+						tag: { }
+					}
+					type: "item"
+				}
+				{
+					id: "283D88FA9196A4AC"
+					item: "buildinggadgets2:gadget_destruction"
+					type: "item"
+				}
+			]
+			title: "{atm9.quest.tips.build}"
+			x: -5.0d
+			y: 0.5d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.wand}"]
+			icon: {
+				Count: 1
+				id: "constructionwand:diamond_wand"
+				tag: {
+					Damage: 0
+					wand_options: { }
+				}
+			}
+			id: "2A2E3D020B1F5126"
+			rewards: [{
+				id: "73E17D3567E3D6BD"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			tasks: [{
+				id: "4EAE6AD12D7541EA"
+				item: {
+					Count: 1
+					id: "itemfilters:or"
+					tag: {
+						items: [
+							{
+								Count: 1b
+								id: "constructionwand:stone_wand"
+								tag: {
+									Damage: 0
+									wand_options: { }
+								}
+							}
+							{
+								Count: 1b
+								id: "constructionwand:iron_wand"
+								tag: {
+									Damage: 0
+									wand_options: { }
+								}
+							}
+							{
+								Count: 1b
+								id: "constructionwand:diamond_wand"
+								tag: {
+									Damage: 0
+									wand_options: { }
+								}
+							}
+							{
+								Count: 1b
+								id: "constructionwand:infinity_wand"
+								tag: {
+									wand_options: { }
+								}
+							}
+						]
+					}
+				}
+				title: "{atm9.quest.tips.wand}"
+				type: "item"
+			}]
+			x: -6.0d
+			y: 0.5d
+		}
+		{
+			dependencies: [
+				"722978AC0C1B2649"
+				"594540768120A627"
+				"73F91BF3D424B269"
+				"0F75D7B9F4FF2459"
+				"2A2E3D020B1F5126"
+				"0821032D8ACE7E82"
+				"70E66957E98D944D"
+				"2874646A910EA889"
+				"3FC002E5A6C08DCC"
+				"25E585C8AE7430DC"
+				"7193A76409F26E93"
+			]
+			hide_dependency_lines: true
+			id: "0F8F37D7E12078F5"
+			rewards: [{
+				id: "7C7200EB84547449"
+				type: "xp_levels"
+				xp_levels: 10
+			}]
+			shape: "gear"
+			subtitle: "{atm9.quest.tips.subt.tipped_out}"
+			tasks: [{
+				id: "42DA8E971B27ACED"
+				type: "checkmark"
+			}]
+			title: "{atm9.quest.tips.tipped_out}"
+			x: -3.5d
+			y: 0.5d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.tricks}"]
+			id: "0C856BBB1679A7DD"
+			rewards: [{
+				id: "5FA6EA3609ABF6BE"
+				type: "xp"
+				xp: 10
+			}]
+			shape: "hexagon"
+			size: 2.0d
+			subtitle: "{atm9.quest.tips.subt.tricks}"
+			tasks: [{
+				id: "3DC008A578A93CCF"
+				title: "Tips and Tricks!"
+				type: "checkmark"
+			}]
+			title: "{atm9.quest.tips.tricks}"
+			x: -3.5d
+			y: -2.0d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.magnet}"]
+			id: "3FC002E5A6C08DCC"
+			rewards: [{
+				id: "256A43FECEFF24DB"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			subtitle: "{atm9.quest.tips.subt.magnet}"
+			tasks: [{
+				id: "4112D6272EC400DE"
+				item: {
+					Count: 1
+					id: "simplemagnets:basicmagnet"
+					tag: { }
+				}
+				type: "item"
+			}]
+			title: "{atm9.quest.tips.magnet}"
+			x: -2.0d
+			y: 0.5d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.gale}"]
+			icon: {
+				Count: 1
+				ForgeCaps: {
+					Parent: { }
+				}
+				id: "projecte:swiftwolf_rending_gale"
+			}
+			id: "25E585C8AE7430DC"
+			rewards: [{
+				id: "0F1FEE53279D1DCB"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			tasks: [
+				{
+					id: "1E0446C02381B91A"
+					item: {
+						Count: 1
+						ForgeCaps: {
+							Parent: { }
+						}
+						id: "projecte:swiftwolf_rending_gale"
+					}
+					type: "item"
+				}
+				{
+					id: "6E2C6FF70F097FA5"
+					item: "projecte:relay_mk1"
+					type: "item"
+				}
+			]
+			title: "{atm9.quest.tips.gale}"
+			x: -3.0d
+			y: 2.5d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.repair}"]
+			id: "0821032D8ACE7E82"
+			rewards: [{
+				id: "06651311BB1B0C7F"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			subtitle: "{atm9.quest.tips.subt.repair}"
+			tasks: [{
+				id: "1D6930C723F7BF7C"
+				item: {
+					Count: 1
+					ForgeCaps: {
+						Parent: { }
+					}
+					id: "projecte:repair_talisman"
+				}
+				type: "item"
+			}]
+			x: -1.5d
+			y: 0.0d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.gateway}"]
+			icon: {
+				Count: 1
+				id: "gateways:gate_pearl"
+				tag: {
+					gateway: "gateways:emerald_grove"
+				}
+			}
+			id: "70E66957E98D944D"
+			rewards: [{
+				id: "3CAA8F1EE5F5D087"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			tasks: [{
+				id: "2F8A05433945F741"
+				item: {
+					Count: 1
+					id: "itemfilters:or"
+					tag: {
+						items: [
+							{
+								Count: 1b
+								id: "gateways:gate_pearl"
+								tag: {
+									gateway: "gateways:basic/blaze"
+								}
+							}
+							{
+								Count: 1b
+								id: "gateways:gate_pearl"
+								tag: {
+									gateway: "gateways:basic/slime"
+								}
+							}
+							{
+								Count: 1b
+								id: "gateways:gate_pearl"
+								tag: {
+									gateway: "gateways:basic/enderman"
+								}
+							}
+							{
+								Count: 1b
+								id: "gateways:gate_pearl"
+								tag: {
+									gateway: "gateways:emerald_grove"
+								}
+							}
+							{
+								Count: 1b
+								id: "gateways:gate_pearl"
+								tag: {
+									gateway: "gateways:endless/blaze"
+								}
+							}
+							{
+								Count: 1b
+								id: "gateways:gate_pearl"
+								tag: {
+									gateway: "gateways:overworldian_nights"
+								}
+							}
+							{
+								Count: 1b
+								id: "gateways:gate_pearl"
+								tag: {
+									gateway: "gateways:hellish_fortress"
+								}
+							}
+						]
+					}
+				}
+				title: "{atm9.quest.tips.gateway}"
+				type: "item"
+			}]
+			x: -1.0d
+			y: 0.5d
+		}
+		{
+			description: ["{atm9.quest.tips.desc.torch}"]
+			icon: "torchmaster:megatorch"
+			id: "2874646A910EA889"
+			rewards: [{
+				id: "10D78D51349C01D1"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			tasks: [
+				{
+					id: "2EBAFA63D3D96B6C"
+					item: "torchmaster:megatorch"
+					type: "item"
+				}
+				{
+					id: "32A72CBDA8A7CCB2"
+					item: "torchmaster:dreadlamp"
+					type: "item"
+				}
+				{
+					id: "2771EAC66CE43976"
+					item: "torchmaster:feral_flare_lantern"
+					type: "item"
+				}
+				{
+					id: "15185F7D9371601D"
+					item: "torchmaster:frozen_pearl"
+					type: "item"
+				}
+			]
+			title: "{atm9.quest.tips.torch}"
+			x: -1.5d
+			y: 1.0d
+		}
+		{
+			description: [
+				"{atm9.quest.tips.desc.sleepcharm}"
+				""
+				""
+			]
+			id: "7193A76409F26E93"
+			rewards: [{
+				id: "5A0C6C2615247B4F"
+				type: "xp_levels"
+				xp_levels: 3
+			}]
+			subtitle: "{atm9.quest.tips.subt.sleepcharm}"
+			tasks: [{
+				id: "08AD28F438762CBF"
+				item: "darkutils:charm_sleep"
+				type: "item"
+			}]
+			title: "{atm9.quest.tips.sleepcharm}"
+			x: -4.0d
+			y: 2.5d
+		}
+		{
+			can_repeat: false
+			description: [
+				"This Quest has been authored by &6AllTheMods Staff&r, or a &2Community contributor&r for use in AllTheMods Modpacks."
+				"As all &6AllTheMods&r packs are licensed under &eAll Rights Reserved&r, this Quest is not allowed to be used in any public packs not released by the &6AllTheMods Team&r, without explicit permission."
+				""
+				""
+				""
+				"This quest is intentionally hidden, if you're seeing this, you're in editing mode."
+			]
+			disable_toast: true
+			hide_details_until_startable: true
+			hide_until_deps_visible: true
+			icon: {
+				Count: 1
+				id: "ftbquests:custom_icon"
+				tag: {
+					Icon: "minecraft:item/barrier"
+				}
+			}
+			id: "392BD853FE455DD6"
+			invisible: true
+			optional: true
+			shape: "octagon"
+			tasks: [
+				{
+					disable_toast: true
+					id: "4A13A2070E35B659"
+					title: "Quests By AllTheMods"
+					type: "checkmark"
+				}
+				{
+					id: "4514AC93E859A463"
+					title: "Quests By AllTheMods"
+					type: "checkmark"
+				}
+			]
+			x: -3.5d
+			y: -0.5d
+		}
+	]
+	title: "{atm9.chapters.4.title}"
+}

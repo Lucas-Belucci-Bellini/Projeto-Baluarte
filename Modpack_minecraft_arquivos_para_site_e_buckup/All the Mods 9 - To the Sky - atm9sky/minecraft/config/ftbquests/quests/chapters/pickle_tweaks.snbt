@@ -1,0 +1,1712 @@
+{
+	default_hide_dependency_lines: false
+	default_quest_shape: "diamond"
+	filename: "pickle_tweaks"
+	group: "6614EE2378B8AFB9"
+	icon: "pickletweaks:emerald_apple"
+	id: "45E138C664B184F9"
+	images: [
+		{
+			height: 1.5d
+			image: "pickletweaks:item/emerald_pickaxe"
+			rotation: 0.0d
+			width: 1.5d
+			x: 4.5d
+			y: 9.0d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/flint_pickaxe"
+			rotation: 0.0d
+			width: 1.5d
+			x: 1.5d
+			y: 9.0d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/flint_chestplate"
+			rotation: 0.0d
+			width: 1.5d
+			x: -2.5d
+			y: 9.0d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/emerald_chestplate"
+			rotation: 0.0d
+			width: 1.5d
+			x: -5.5d
+			y: 9.0d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/diamond_paxel"
+			rotation: 0.0d
+			width: 1.5d
+			x: 1.5d
+			y: 2.5d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/diamond_sickle"
+			rotation: 0.0d
+			width: 1.5d
+			x: 4.5d
+			y: 5.5d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/diamond_scythe"
+			rotation: 0.0d
+			width: 1.5d
+			x: 3.0d
+			y: 4.0d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/watering_can"
+			rotation: 0.0d
+			width: 1.5d
+			x: 6.0d
+			y: 6.5d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/reinforced_mesh"
+			rotation: 0.0d
+			width: 1.5d
+			x: -0.5d
+			y: -2.0d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/reinforced_night_vision_goggles"
+			rotation: 0.0d
+			width: 1.5d
+			x: -5.0d
+			y: 5.5d
+		}
+		{
+			height: 1.5d
+			image: "pickletweaks:item/magnet"
+			rotation: 0.0d
+			width: 1.5d
+			x: -4.0d
+			y: 4.0d
+		}
+		{
+			height: 1.0d
+			image: "pickletweaks:block/colored_cobblestone"
+			rotation: 0.0d
+			width: 1.0d
+			x: -3.0d
+			y: 2.5d
+		}
+		{
+			height: 1.5d
+			image: "atm:textures/questpics/pickle_tweaks.png"
+			rotation: 0.0d
+			width: 4.935754189944134d
+			x: -0.5d
+			y: 6.5d
+		}
+	]
+	order_index: 5
+	quest_links: [ ]
+	quests: [
+		{
+			description: ["{atm9.quest.pickleTweaks.desc.pickleTweaks}"]
+			icon: "minecraft:sea_pickle"
+			icon_scale: 1.2d
+			id: "72A4FB909DE90192"
+			min_width: 300
+			rewards: [
+				{
+					id: "44CE66A0C2AD29DD"
+					item: "minecraft:sea_pickle"
+					type: "item"
+				}
+				{
+					id: "0BEEB2285CC86420"
+					type: "xp"
+					xp: 10
+				}
+			]
+			shape: "pentagon"
+			size: 1.75d
+			subtitle: "{atm9.quest.pickleTweaks.subt.pickleTweaks}"
+			tasks: [{
+				id: "1AFDE5DC24314747"
+				item: "minecraft:flint"
+				type: "item"
+			}]
+			title: "{atm9.quest.pickleTweaks.pickleTweaks}"
+			x: -0.5d
+			y: 3.5d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.smoothGlowstone}"]
+			hide_dependency_lines: true
+			id: "159963C0708ED2EF"
+			rewards: [
+				{
+					id: "24D9BEC64E91D268"
+					item: "minecraft:glowstone"
+					type: "item"
+				}
+				{
+					id: "21A638197A7B7DDC"
+					type: "xp"
+					xp: 10
+				}
+			]
+			subtitle: "Glowstone but Smooth"
+			tasks: [{
+				id: "205A6A500E20297D"
+				item: "pickletweaks:smooth_glowstone"
+				type: "item"
+			}]
+			x: -4.5d
+			y: 1.0d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.coloredCobble}"]
+			hide_dependency_lines: true
+			id: "3F0E6D88B0A8FF2A"
+			rewards: [
+				{
+					count: 16
+					id: "1D9B48B18E236C42"
+					item: "minecraft:cobblestone"
+					type: "item"
+				}
+				{
+					id: "00BADC7768D46CEC"
+					type: "xp"
+					xp: 10
+				}
+			]
+			subtitle: "Cobblestone but Colored"
+			tasks: [{
+				id: "168D671DD9714414"
+				item: {
+					Count: 1
+					id: "itemfilters:or"
+					tag: {
+						items: [
+							{
+								Count: 1b
+								id: "pickletweaks:white_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:orange_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:magenta_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:light_blue_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:yellow_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:lime_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:pink_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:gray_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:cyan_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:purple_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:brown_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:green_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:light_gray_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:blue_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:red_cobblestone"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:black_cobblestone"
+							}
+						]
+					}
+				}
+				title: "{atm9.quest.pickleTweaks.coloredCobble}"
+				type: "item"
+			}]
+			x: -4.0d
+			y: 1.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "08144E435F47E212"
+			optional: true
+			rewards: [{
+				id: "390950F4EDE78B17"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.5Damage}"
+			tasks: [{
+				id: "6EEE6B3722F1F19B"
+				item: {
+					Count: 1
+					id: "pickletweaks:wooden_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.0d
+			y: -0.5d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "0B2AD54DB1DEE587"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.flintHelmet}"
+			tasks: [{
+				id: "2B9056BB5348A526"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_helmet"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -2.5d
+			y: 10.5d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "3812394BCD0553BB"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.flintChestplate}"
+			tasks: [{
+				id: "2AC69C1269CE1767"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_chestplate"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -3.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "7E48976B99FE4C0A"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.flintLeggings}"
+			tasks: [{
+				id: "040F98E1274FB725"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_leggings"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -2.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "2C19821F633C5C79"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.flintBoots}"
+			tasks: [{
+				id: "251D81798C195468"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_boots"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -2.5d
+			y: 11.5d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "0AA6D1B7E7466B95"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.3Armor}"
+			tasks: [{
+				id: "47F1D1BACF15A6BE"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_helmet"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -5.5d
+			y: 10.5d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "5ADEDA26A0C381FA"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.emeraldChestplate}"
+			tasks: [{
+				id: "68A99F9A6CA971D7"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_chestplate"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -6.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "5CF5A0375026F5D9"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.emeraldLeggings}"
+			tasks: [{
+				id: "37188BD82D0DE4F7"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_leggings"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -5.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			id: "426878DD1A0B0607"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.3Armor}"
+			tasks: [{
+				id: "330206C242DF4B4D"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_boots"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -5.5d
+			y: 11.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "0093B6CDAF90A4F8"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.8Damage}"
+			tasks: [{
+				id: "369399074925BFCF"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_sword"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.5d
+			y: 10.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "2B01971FF2B47173"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelObsidian}"
+			tasks: [{
+				id: "3F129D13401F2F11"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_pickaxe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "0D8F480F06B4B740"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelObsidian}"
+			tasks: [{
+				id: "5123261B25EC6F55"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_shovel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.5d
+			y: 11.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "2F607B57ECEDAC29"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelObsidian}"
+			tasks: [{
+				id: "2AEFFE06613100FE"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_axe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 5.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "1F496E5C620DE86E"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelObsidian}"
+			tasks: [{
+				id: "08F25AF5A32E175C"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_hoe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.0d
+			y: 12.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "0449C9C6DFE9A919"
+			optional: true
+			rewards: [{
+				id: "221203A62004BE5C"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.9Damage}"
+			tasks: [{
+				id: "5412A0730AB01C88"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 2.5d
+			y: 1.0d
+		}
+		{
+			dependencies: ["76AC90EFAC7B2B8E"]
+			description: ["{atm9.quest.pickleTweaks.desc.grassMesh}"]
+			id: "5DB9206F6FD0EDF8"
+			rewards: [{
+				id: "08BDE9C400C40953"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.grassMesh}"
+			tasks: [{
+				id: "2F129B67E5C34B19"
+				item: {
+					Count: 1
+					id: "pickletweaks:grass_fiber_mesh"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -1.0d
+			y: -4.0d
+		}
+		{
+			dependencies: ["76AC90EFAC7B2B8E"]
+			id: "00F25E17D6308594"
+			rewards: [{
+				id: "220270CF6D78D3C8"
+				type: "xp"
+				xp: 50
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.mesh}"
+			tasks: [{
+				id: "25230B69E2D27D2D"
+				item: {
+					Count: 1
+					id: "pickletweaks:mesh"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -0.5d
+			y: -3.5d
+		}
+		{
+			dependencies: ["76AC90EFAC7B2B8E"]
+			id: "7D986D1678CED000"
+			rewards: [{
+				id: "32E2FAE896D112BC"
+				type: "xp"
+				xp: 100
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.reinforcedMesh}"
+			tasks: [{
+				id: "7AE97A536A58E93F"
+				item: {
+					Count: 1
+					id: "pickletweaks:reinforced_mesh"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 0.0d
+			y: -4.0d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.meshes}"]
+			hide_dependent_lines: true
+			id: "76AC90EFAC7B2B8E"
+			min_width: 300
+			rewards: [{
+				id: "30FD3156AA223222"
+				type: "xp"
+				xp: 10
+			}]
+			shape: "hexagon"
+			size: 1.5d
+			subtitle: "{atm9.quest.pickleTweaks.subt.meshes}"
+			tasks: [{
+				id: "1A4A246139D70360"
+				title: "{atm9.quest.pickleTweaks.meshes}"
+				type: "checkmark"
+			}]
+			x: -0.5d
+			y: -0.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "308CF5221A347C2D"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.flintSword}"
+			tasks: [{
+				id: "05A7DA7EAE29D402"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_sword"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 1.5d
+			y: 10.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "3E9BFC192225E065"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelIron}"
+			tasks: [{
+				id: "7C3AEA7445E7286D"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_pickaxe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 1.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "68B7BB87C8C0D271"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelIron}"
+			tasks: [{
+				id: "1F3A05CE5BAB2EE4"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_axe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 2.0d
+			y: 11.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "217AC57077401CFB"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelIron}"
+			tasks: [{
+				id: "53A10F833791000B"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_shovel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 1.5d
+			y: 11.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "474BFBF7B8B2376E"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.levelIron}"
+			tasks: [{
+				id: "51EAD34E61F23C26"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_hoe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 1.0d
+			y: 12.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "6B74CEE26C11062C"
+			optional: true
+			rewards: [{
+				id: "477505E6BFF673CF"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.6.75Damage}"
+			tasks: [{
+				id: "4051CD83A37E27D1"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.0d
+			y: 0.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "218323640E113B37"
+			optional: true
+			rewards: [{
+				id: "7572F6B6CC6E6706"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.6Damage}"
+			tasks: [{
+				id: "4BAB2ADACD5E83A1"
+				item: {
+					Count: 1
+					id: "pickletweaks:stone_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 3.5d
+			y: 0.0d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.armor}"]
+			hide_dependent_lines: true
+			icon: {
+				Count: 1
+				id: "minecraft:iron_chestplate"
+				tag: {
+					Damage: 0
+				}
+			}
+			id: "485BA237D9A86A5D"
+			min_width: 350
+			rewards: [{
+				id: "0366AD9A8D9C600F"
+				type: "xp"
+				xp: 10
+			}]
+			shape: "hexagon"
+			size: 1.5d
+			subtitle: "{atm9.quest.pickleTweaks.subt.armor}"
+			tasks: [{
+				id: "48BAAA8C5E7CE9CD"
+				item: {
+					Count: 1
+					id: "itemfilters:tag"
+					tag: {
+						value: "forge:armors"
+					}
+				}
+				title: "{atm9.quest.pickleTweaks.armor}"
+				type: "item"
+			}]
+			x: -4.0d
+			y: 7.0d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.tools}"]
+			hide_dependent_lines: true
+			icon: {
+				Count: 1
+				id: "minecraft:iron_pickaxe"
+				tag: {
+					Damage: 0
+				}
+			}
+			id: "6811E8C2651B2BBC"
+			min_width: 350
+			rewards: [{
+				id: "02F193FCD4C551A9"
+				type: "xp"
+				xp: 10
+			}]
+			shape: "hexagon"
+			size: 1.5d
+			subtitle: "{atm9.quest.pickleTweaks.subt.tools}"
+			tasks: [{
+				id: "2C4C5D619AC4185F"
+				item: {
+					Count: 1
+					id: "itemfilters:tag"
+					tag: {
+						value: "forge:tools"
+					}
+				}
+				title: "{atm9.quest.pickleTweaks.tools}"
+				type: "item"
+			}]
+			x: 3.0d
+			y: 7.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "10AEA96BF7FD540A"
+			optional: true
+			rewards: [{
+				id: "0CF4E73A5E1CBB59"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.7Damage}"
+			tasks: [{
+				id: "44EA4BD2C947B35F"
+				item: {
+					Count: 1
+					id: "pickletweaks:iron_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 3.0d
+			y: 0.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "078FF7E3847D4099"
+			optional: true
+			rewards: [{
+				id: "284E4B8B9A7A6238"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.5Damage}"
+			tasks: [{
+				id: "545E127A6A11929D"
+				item: {
+					Count: 1
+					id: "pickletweaks:golden_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.5d
+			y: 0.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "377C7BA816497DD7"
+			optional: true
+			rewards: [{
+				id: "43C80056A242C941"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.8Damage}"
+			tasks: [{
+				id: "470B64BAD6BA2D91"
+				item: {
+					Count: 1
+					id: "pickletweaks:diamond_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 3.5d
+			y: 1.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "1D48CF0938B05B6A"
+			optional: true
+			rewards: [{
+				id: "0C89F1ADB685A25C"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.9Damage}"
+			tasks: [{
+				id: "1CCFB75E1D67B375"
+				item: {
+					Count: 1
+					id: "pickletweaks:netherite_paxel"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 3.0d
+			y: 1.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "3939AFC0910134D8"
+			optional: true
+			rewards: [{
+				id: "613BC2A5B42B61C7"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.6Damage}"
+			tasks: [{
+				id: "1A0CA85F88481E69"
+				item: {
+					Count: 1
+					id: "pickletweaks:stone_sickle"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 6.5d
+			y: 3.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "7584A7FB6F27D0D8"
+			optional: true
+			rewards: [{
+				id: "34F0C039FB220495"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.5Damage}"
+			tasks: [{
+				id: "2A62959B4F3C6818"
+				item: {
+					Count: 1
+					id: "pickletweaks:wooden_scythe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 5.5d
+			y: 1.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "172416EEA4EC7AB1"
+			optional: true
+			rewards: [{
+				id: "36A2B93C326FA595"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.5Damage}"
+			tasks: [{
+				id: "498F233CDB8BAA44"
+				item: {
+					Count: 1
+					id: "pickletweaks:wooden_sickle"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 7.0d
+			y: 2.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "7367CB8A86A53210"
+			optional: true
+			rewards: [{
+				id: "23AD972368671EAF"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.6Damage}"
+			tasks: [{
+				id: "5E49EF181EEDFA7F"
+				item: {
+					Count: 1
+					id: "pickletweaks:stone_scythe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 5.0d
+			y: 1.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "7822254F7C29841C"
+			optional: true
+			rewards: [{
+				id: "1519C884AC01475F"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.7Damage}"
+			tasks: [{
+				id: "543BF136BC5958CC"
+				item: {
+					Count: 1
+					id: "pickletweaks:iron_scythe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.5d
+			y: 2.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "190BDF77BA0261C8"
+			optional: true
+			rewards: [{
+				id: "3F8679C43B1532CB"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.8Damage}"
+			tasks: [{
+				id: "2B3ACFF83C66D5B5"
+				item: {
+					Count: 1
+					id: "itemfilters:or"
+					tag: {
+						items: [
+							{
+								Count: 1b
+								id: "pickletweaks:diamond_scythe"
+								tag: {
+									Damage: 0
+								}
+							}
+							{
+								Count: 1b
+								id: "mysticalagriculture:diamond_scythe"
+								tag: {
+									Damage: 0
+								}
+							}
+						]
+					}
+				}
+				title: "{atm9.quest.pickleTweaks.diamondScythe}"
+				type: "item"
+			}]
+			x: 5.0d
+			y: 2.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "41F6EA6030908767"
+			optional: true
+			rewards: [{
+				id: "120F96E3E8C9C2DC"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.6.75Damage}"
+			tasks: [{
+				id: "4A69BD76B29F8A51"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_scythe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 5.5d
+			y: 2.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "5BF508DBB886B67B"
+			optional: true
+			rewards: [{
+				id: "1C123CE96F01A2C2"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.9Damage}"
+			tasks: [{
+				id: "3AA06C51F1332570"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_scythe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.0d
+			y: 2.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "0ACC99877052DAF3"
+			optional: true
+			rewards: [{
+				id: "0804F53A1C2829A7"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.5Damage}"
+			tasks: [{
+				id: "3C2331F5BFBE1550"
+				item: {
+					Count: 1
+					id: "pickletweaks:golden_scythe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 6.0d
+			y: 1.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "765A241529866023"
+			optional: true
+			rewards: [{
+				id: "77B302C290678D1A"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.9Damage}"
+			tasks: [{
+				id: "610B2F1704848495"
+				item: {
+					Count: 1
+					id: "pickletweaks:netherite_scythe"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 4.5d
+			y: 3.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "004CF9A83EF3A038"
+			optional: true
+			rewards: [{
+				id: "1E2B22AAD0EAD727"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.6.75Damage}"
+			tasks: [{
+				id: "51B184E4405CEB33"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_sickle"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 7.0d
+			y: 3.5d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.gameplay}"]
+			hide_dependency_lines: true
+			id: "35BE319868E890BA"
+			min_width: 300
+			rewards: [
+				{
+					count: 10
+					id: "3010D75AA6877AF4"
+					item: "minecraft:oak_planks"
+					type: "item"
+				}
+				{
+					id: "2029CDD327778291"
+					type: "xp"
+					xp: 10
+				}
+			]
+			shape: "gear"
+			subtitle: "{atm9.quest.pickleTweaks.subt.gameplay}"
+			tasks: [{
+				id: "79003E0D4FB194F0"
+				title: "{atm9.quest.pickleTweaks.gameplay}"
+				type: "checkmark"
+			}]
+			x: -0.5d
+			y: 5.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			description: ["{atm9.quest.pickleTweaks.desc.flintShears}"]
+			id: "650E478572C1A514"
+			optional: true
+			subtitle: "{atm9.quest.pickleTweaks.subt.flintShears}"
+			tasks: [{
+				id: "127CE22BB99B5310"
+				item: {
+					Count: 1
+					id: "pickletweaks:flint_shears"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 2.0d
+			y: 12.0d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.coalPieces}"]
+			hide_dependency_lines: true
+			id: "7B6AB8B39C5301A9"
+			rewards: [
+				{
+					id: "38A59249F9CD967A"
+					item: "minecraft:coal"
+					type: "item"
+				}
+				{
+					id: "2EB4F6E737482D4E"
+					type: "xp"
+					xp: 10
+				}
+			]
+			subtitle: "{atm9.quest.pickleTweaks.subt.coalPieces}"
+			tasks: [{
+				id: "183FD7747CBEC2A4"
+				item: {
+					Count: 1
+					id: "itemfilters:or"
+					tag: {
+						items: [
+							{
+								Count: 1b
+								id: "pickletweaks:coal_piece"
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:charcoal_piece"
+							}
+						]
+					}
+				}
+				title: "{atm9.quest.pickleTweaks.coalPieces}"
+				type: "item"
+			}]
+			title: "Coal Pieces"
+			x: -5.5d
+			y: 3.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "59A5AA94C9870BCD"
+			optional: true
+			rewards: [{
+				id: "3F7F86149DC3656B"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.5Damage}"
+			tasks: [{
+				id: "7916C3AAED274FF2"
+				item: {
+					Count: 1
+					id: "pickletweaks:golden_sickle"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 7.5d
+			y: 3.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "1A528281BA1693D4"
+			optional: true
+			rewards: [{
+				id: "3BBDF937984704F5"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.7Damage}"
+			tasks: [{
+				id: "43A3671C96C5E10C"
+				item: {
+					Count: 1
+					id: "pickletweaks:iron_sickle"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 6.0d
+			y: 3.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "26D0D2B509FC2B41"
+			optional: true
+			rewards: [{
+				id: "1861F88843E042B5"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.8Damage}"
+			tasks: [{
+				id: "74C9703C865B0F07"
+				item: {
+					Count: 1
+					id: "itemfilters:or"
+					tag: {
+						items: [
+							{
+								Count: 1b
+								id: "mysticalagriculture:diamond_sickle"
+								tag: {
+									Damage: 0
+								}
+							}
+							{
+								Count: 1b
+								id: "pickletweaks:diamond_sickle"
+								tag: {
+									Damage: 0
+								}
+							}
+						]
+					}
+				}
+				title: "{atm9.quest.pickleTweaks.diamondSickle}"
+				type: "item"
+			}]
+			x: 6.5d
+			y: 4.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "28FB7B6231E6FCDC"
+			optional: true
+			rewards: [{
+				id: "78A319D4D4DF4B58"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.9Damage}"
+			tasks: [{
+				id: "7BACDB7E66864B66"
+				item: {
+					Count: 1
+					id: "pickletweaks:emerald_sickle"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 5.5d
+			y: 4.0d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "3EE37FA40B6C5C21"
+			optional: true
+			rewards: [{
+				id: "7884DE6DFE3F73D5"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.9Damage}"
+			tasks: [{
+				id: "39F3BFFD555A208F"
+				item: {
+					Count: 1
+					id: "pickletweaks:netherite_sickle"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: 6.0d
+			y: 4.5d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			description: ["{atm9.quest.pickleTweaks.desc.vision}"]
+			id: "3DFF22448B49D5AD"
+			optional: true
+			rewards: [{
+				id: "495065965B0AD48B"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.vision}"
+			tasks: [{
+				id: "10FDC59C45C4F9E9"
+				item: {
+					Count: 1
+					id: "pickletweaks:night_vision_goggles"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			x: -6.5d
+			y: 4.0d
+		}
+		{
+			dependencies: ["485BA237D9A86A5D"]
+			description: ["{atm9.quest.pickleTweaks.desc.reinforcedVision}"]
+			id: "67468F6D953D30C8"
+			rewards: [
+				{
+					id: "0F14BEC4D75D0DD3"
+					item: {
+						Count: 1
+						id: "minecraft:potion"
+						tag: {
+							Potion: "minecraft:night_vision"
+						}
+					}
+					type: "item"
+				}
+				{
+					id: "5246B76818B63F7E"
+					type: "xp"
+					xp: 100
+				}
+			]
+			subtitle: "{atm9.quest.pickleTweaks.subt.reinforcedVision}"
+			tasks: [{
+				id: "162EEDC9EB82CA51"
+				item: {
+					Count: 1
+					id: "pickletweaks:reinforced_night_vision_goggles"
+					tag: {
+						Damage: 0
+					}
+				}
+				type: "item"
+			}]
+			title: "{atm9.quest.pickleTweaks.reinforcedVision}"
+			x: -7.0d
+			y: 3.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "0EF5BFC56C3B6E51"
+			optional: true
+			rewards: [{
+				id: "588E89DB17AD4C1D"
+				type: "xp"
+				xp: 10
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.watering}"
+			tasks: [{
+				id: "236E7E7791FE1B98"
+				item: {
+					Count: 1
+					id: "itemfilters:or"
+					tag: {
+						items: [
+							{
+								Count: 1b
+								id: "pickletweaks:watering_can"
+								tag: {
+									Water: 0b
+								}
+							}
+							{
+								Count: 1b
+								id: "mysticalagriculture:watering_can"
+								tag: {
+									Water: 0b
+								}
+							}
+						]
+					}
+				}
+				title: "{atm9.quest.pickleTweaks.watering}"
+				type: "item"
+			}]
+			x: 7.0d
+			y: 5.5d
+		}
+		{
+			dependencies: ["6811E8C2651B2BBC"]
+			id: "4FFED1F4181C4FA0"
+			rewards: [
+				{
+					count: 5
+					id: "6E5B702B0758E8F7"
+					item: "chemlib:water"
+					type: "item"
+				}
+				{
+					id: "533C9A2F5DF1A101"
+					type: "xp"
+					xp: 100
+				}
+			]
+			subtitle: "{atm9.quest.pickleTweaks.subt.reinforcedWatering}"
+			tasks: [{
+				id: "51830EC26102193C"
+				item: {
+					Count: 1
+					id: "pickletweaks:reinforced_watering_can"
+					tag: {
+						Water: 0b
+					}
+				}
+				type: "item"
+			}]
+			title: "{atm9.quest.pickleTweaks.reinforcedWatering}"
+			x: 7.5d
+			y: 5.0d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.magnet}"]
+			hide_dependency_lines: true
+			id: "51E1CEFDE1473A43"
+			rewards: [{
+				id: "64078F7D2A0A2473"
+				type: "xp"
+				xp: 100
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.magnet}"
+			tasks: [{
+				id: "35C19F11B769AD65"
+				item: "pickletweaks:magnet"
+				type: "item"
+			}]
+			x: -5.5d
+			y: 2.0d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.diamondApple}"]
+			hide_dependency_lines: true
+			id: "7E98EEB3FE40C5D0"
+			rewards: [{
+				id: "729F2BE4AF5DF528"
+				type: "xp"
+				xp: 100
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.apples}"
+			tasks: [{
+				id: "7EE656B162DC6BB3"
+				item: "pickletweaks:diamond_apple"
+				type: "item"
+			}]
+			x: -5.0d
+			y: 2.5d
+		}
+		{
+			dependencies: ["72A4FB909DE90192"]
+			description: ["{atm9.quest.pickleTweaks.desc.emeraldApple}"]
+			hide_dependency_lines: true
+			id: "100E1052A0668C18"
+			rewards: [{
+				id: "7D08420A470AA476"
+				type: "xp"
+				xp: 100
+			}]
+			subtitle: "{atm9.quest.pickleTweaks.subt.apples}"
+			tasks: [{
+				id: "01B5086D0DAE803B"
+				item: "pickletweaks:emerald_apple"
+				type: "item"
+			}]
+			x: -6.0d
+			y: 2.5d
+		}
+		{
+			can_repeat: false
+			description: [
+				"This Quest has been authored by &6AllTheMods Staff&r, or a &2Community contributor&r for use in AllTheMods Modpacks."
+				"As all &6AllTheMods&r packs are licensed under &eAll Rights Reserved&r, this Quest is not allowed to be used in any public packs not released by the &6AllTheMods Team&r, without explicit permission."
+				""
+				""
+				""
+				"This quest is intentionally hidden, if you're seeing this, you're in editing mode."
+			]
+			disable_toast: true
+			hide_details_until_startable: true
+			hide_until_deps_visible: true
+			icon: {
+				Count: 1
+				id: "ftbquests:custom_icon"
+				tag: {
+					Icon: "minecraft:item/barrier"
+				}
+			}
+			id: "18CFACD5FED6E033"
+			invisible: true
+			optional: true
+			shape: "octagon"
+			tasks: [
+				{
+					disable_toast: true
+					id: "24E42B6F3112943D"
+					title: "Quests By AllTheMods"
+					type: "checkmark"
+				}
+				{
+					id: "6E42F2B4A1C1F320"
+					title: "Quests By AllTheMods"
+					type: "checkmark"
+				}
+			]
+			x: -0.5d
+			y: 8.0d
+		}
+	]
+	title: "{atm9.chapters.39.title}"
+}
