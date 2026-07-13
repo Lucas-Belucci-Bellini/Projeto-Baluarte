@@ -1,0 +1,68 @@
+Detected that Windows has terminated one or more processes within the last minute leading up to the moment of the current Minecraft JVM instance termination,
+so with a very high probability that one of these processes is the Minecraft JVM itself.
+Command used to identify terminated processes:
+ 
+$ErrorActionPreference = 'Continue'; 
+Get-WinEvent -FilterHashtable @{ 
+  LogName='Application'; 
+  Level=2; 
+  StartTime=((Get-Date).AddSeconds(-15).ToString('o')) 
+} *>&1 | Format-Table -Wrap -AutoSize | Out-File "C:\Users\Usuario\AppData\Local\Temp\win_event1781969959214.txt" -Encoding UTF8
+ 
+If no java.exe (or related JVM processes) are listed below, you can disregard this message.
+To get more information about such errors:
+1) Open Windows Event Viewer (Win+R -> eventvwr.msc -> Enter).
+2) Click "Windows Logs" -> "Application".
+3) Look for the latest Error you have.
+ 
+ ﻿
+
+   ProviderName: Application Error
+
+TimeCreated           Id LevelDisplayName Message                                                                      
+-----------           -- ---------------- -------                                                                      
+20/06/2026 12:39:38 1000 Erro             Nome do aplicativo com falha: Razer Synapse 3.exe, versão: 3.1.627.5,        
+                                          carimbo de data/hora: 0x9b75727e                                             
+                                          Nome do módulo com falha: ntdll.dll, versão: 10.0.26100.8521, carimbo de     
+                                          data/hora: 0xd511f2d7                                                        
+                                          Código de exceção: 0xc00000fd                                                
+                                          Deslocamento de falha: 0x0003d58c                                            
+                                          ID do processo com falha: 0x6D48                                             
+                                          Hora de início do aplicativo com falha: 0x1DD00C88266776D                    
+                                          Caminho do aplicativo com falha: C:\Program Files                            
+                                          (x86)\Razer\Synapse3\WPFUI\Framework\Razer Synapse 3 Host\Razer Synapse 3.exe
+                                          Caminho do módulo com falha: C:\WINDOWS\SYSTEM32\ntdll.dll                   
+                                          ID do relatório: 2ea4d0ce-ba6a-4210-9111-b88972897040                        
+                                          Nome completo do pacote com falha:                                           
+                                          ID do aplicativo relativo ao pacote com falha:                               
+20/06/2026 12:39:38 1000 Erro             Nome do aplicativo com falha: rzappengine.exe, versão: 1.49.0.0, carimbo de  
+                                          data/hora: 0x5b668450                                                        
+                                          Nome do módulo com falha: chrome_child.dll, versão: 1.49.0.0, carimbo de     
+                                          data/hora: 0x5b668450                                                        
+                                          Código de exceção: 0x80000003                                                
+                                          Deslocamento de falha: 0x000000000173f8cd                                    
+                                          ID do processo com falha: 0x741C                                             
+                                          Hora de início do aplicativo com falha: 0x1DD00C894EF8E1D                    
+                                          Caminho do aplicativo com falha: C:\Program                                  
+                                          Files\Razer\RzAppEngine\rzappengine.exe                                      
+                                          Caminho do módulo com falha: C:\Program                                      
+                                          Files\Razer\RzAppEngine\1.49.0.0\chrome_child.dll                            
+                                          ID do relatório: 1a1f5526-1e3f-4115-bdd9-367a50b798d1                        
+                                          Nome completo do pacote com falha:                                           
+                                          ID do aplicativo relativo ao pacote com falha:                               
+20/06/2026 12:39:38 1000 Erro             Nome do aplicativo com falha: steamwebhelper.exe, versão: 10.72.33.79,       
+                                          carimbo de data/hora: 0x6a28819a                                             
+                                          Nome do módulo com falha: KERNELBASE.dll, versão: 10.0.26100.8655, carimbo   
+                                          de data/hora: 0x9e0ffa42                                                     
+                                          Código de exceção: 0xe0000008                                                
+                                          Deslocamento de falha: 0x00000000000c1b6a                                    
+                                          ID do processo com falha: 0x5D28                                             
+                                          Hora de início do aplicativo com falha: 0x1DD00C811517D42                    
+                                          Caminho do aplicativo com falha: C:\Program Files                            
+                                          (x86)\Steam\bin\cef\cef.win64\steamwebhelper.exe                             
+                                          Caminho do módulo com falha: C:\WINDOWS\System32\KERNELBASE.dll              
+                                          ID do relatório: d340e25b-0c3d-4946-b51c-fc0930bc7bee                        
+                                          Nome completo do pacote com falha:                                           
+                                          ID do aplicativo relativo ao pacote com falha:                               
+
+

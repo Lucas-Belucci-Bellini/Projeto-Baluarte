@@ -1,0 +1,20 @@
+{
+  "bookGuiScale": 0,
+  "clickedVisualize": false,
+  "bookData": {
+    "botania:lexicon": {
+      "viewedEntries": [
+        "botania:tools/overgrowth_seed"
+      ],
+      "bookmarks": [],
+      "completedManualQuests": []
+    },
+    "pneumaticcraft:book": {
+      "viewedEntries": [
+        "pneumaticcraft:base_concepts/basic_materials"
+      ],
+      "bookmarks": [],
+      "completedManualQuests": []
+    }
+  }
+}

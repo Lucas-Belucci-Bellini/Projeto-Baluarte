@@ -1,0 +1,19 @@
+{
+    "formatVersion": "1",
+    "groups": {
+        "Operation Desert Storm": {
+            "hidden": false,
+            "instances": [
+                "The Pixelmon Modpack",
+                "FTB StoneBlock 3",
+                "StaTech Industry",
+                "All the Mods 9 - ATM9",
+                "1.21.4",
+                "1.20.1",
+                "All the Mods 9 - To the Sky - atm9sky",
+                "26.1.2",
+                "1.12.2"
+            ]
+        }
+    }
+}

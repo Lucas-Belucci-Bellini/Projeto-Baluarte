@@ -1,0 +1,51 @@
+#
+# Enabled advanced config options
+# Additional options will be shown after next config load
+#
+EnableAdvancedConfig = false
+
+#
+# Always show moderator and coil tooltips regardless of advanced tooltip setting
+# Can always be enabled with advanced tooltips
+# Default: true
+#
+AlwaysShowTooltips = true
+
+#
+# Enables integration with JEI, showing all moderator and coil properties
+# Default: true
+#
+EnableJEIIntegration = true
+
+[Reactor.GUI]
+    #
+    # Default: 2000
+    #
+    HeatDisplayMax = 2000
+
+[Turbine.GUI]
+    #
+    # Default: 10
+    #
+    DeltaMB = 10
+
+    #
+    # Default: 100
+    #
+    DeltaMBShift = 100
+
+    #
+    # Default: 500
+    #
+    DeltaMBCtrl = 500
+
+    #
+    # Default: 1000
+    #
+    DeltaMBHCtrlShift = 1000
+
+[HeatExchanger.gui]
+    #
+    # Default: 2000
+    #
+    HeatDisplayMax = 2000

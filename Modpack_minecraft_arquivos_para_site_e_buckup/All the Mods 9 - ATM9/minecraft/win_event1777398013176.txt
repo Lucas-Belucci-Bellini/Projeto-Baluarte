@@ -1,0 +1,40 @@
+Detected that Windows has terminated one or more processes within the last minute leading up to the moment of the current Minecraft JVM instance termination,
+so with a very high probability that one of these processes is the Minecraft JVM itself.
+Command used to identify terminated processes:
+ 
+$ErrorActionPreference = 'Continue'; 
+Get-WinEvent -FilterHashtable @{ 
+  LogName='Application'; 
+  Level=2; 
+  StartTime=((Get-Date).AddSeconds(-15).ToString('o')) 
+} *>&1 | Format-Table -Wrap -AutoSize | Out-File "C:\Users\Usuario\AppData\Local\Temp\win_event1777398013176.txt" -Encoding UTF8
+ 
+If no java.exe (or related JVM processes) are listed below, you can disregard this message.
+To get more information about such errors:
+1) Open Windows Event Viewer (Win+R -> eventvwr.msc -> Enter).
+2) Click "Windows Logs" -> "Application".
+3) Look for the latest Error you have.
+ 
+ ﻿
+
+   ProviderName: Application Error
+
+TimeCreated           Id LevelDisplayName Message                                                                      
+-----------           -- ---------------- -------                                                                      
+28/04/2026 14:40:02 1000 Erro             Nome do aplicativo com falha: LightingService.exe, versão: 3.7.25.0, carimbo 
+                                          de data/hora: 0x650168e0                                                     
+                                          Nome do módulo com falha: LightingService.exe, versão: 3.7.25.0, carimbo de  
+                                          data/hora: 0x650168e0                                                        
+                                          Código de exceção: 0xc0000409                                                
+                                          Deslocamento de falha: 0x0031699f                                            
+                                          ID do processo com falha: 0x674                                              
+                                          Hora de início do aplicativo com falha: 0x1DCD627E6AC1C83                    
+                                          Caminho do aplicativo com falha: C:\Program Files                            
+                                          (x86)\LightingService\LightingService.exe                                    
+                                          Caminho do módulo com falha: C:\Program Files                                
+                                          (x86)\LightingService\LightingService.exe                                    
+                                          ID do relatório: 2043114a-65ff-4082-9c4f-0c57ae3de217                        
+                                          Nome completo do pacote com falha:                                           
+                                          ID do aplicativo relativo ao pacote com falha:                               
+
+
