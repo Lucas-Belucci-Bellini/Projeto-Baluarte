@@ -1,0 +1,16 @@
+filename = 'IronJetpacks-1.20.1-7.0.8.jar'
+name = 'Iron Jetpacks'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '0d96294d46cf1f96b691fa80c6e5bfe42eb444dc'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 6033946
+project-id = 284497

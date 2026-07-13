@@ -1,0 +1,16 @@
+filename = 'itemcollectors-1.1.10-forge-mc1.20.jar'
+name = 'Item Collectors'
+side = 'both'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20', '1.20.1', '1.20.2', '1.20.3', '1.20.4' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '6973bf6a6f70901cea8446b8c34de085c4282147'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5272968
+project-id = 395620

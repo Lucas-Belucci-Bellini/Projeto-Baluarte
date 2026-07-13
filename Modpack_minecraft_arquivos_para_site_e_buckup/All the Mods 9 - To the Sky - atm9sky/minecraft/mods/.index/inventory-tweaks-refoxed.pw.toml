@@ -1,0 +1,16 @@
+filename = 'invtweaks-1.20.1-1.2.0.jar'
+name = 'Inventory Tweaks - ReFoxed'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = 'd0a419f3b026b4949ed178119befbcf734deb6eb'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5939627
+project-id = 976858

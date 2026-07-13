@@ -1,0 +1,16 @@
+filename = 'generatorgalore-1.20.1-1.2.4.jar'
+name = 'Generator Galore'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '67f423ba5164267e2c8033bddc17fec69f50e9f8'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 5318306
+project-id = 691049

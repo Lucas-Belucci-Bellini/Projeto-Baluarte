@@ -1,0 +1,41 @@
+filename = 'JCPlugin-1.17.x-1.20.x-4.0.4-Forge.jar'
+name = 'JCPlugin'
+side = 'client'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [
+    '1.17.1',
+    '1.18.2',
+    '1.19.2',
+    '1.19.3',
+    '1.19.4',
+    '1.20',
+    '1.20.1',
+    '1.20.2',
+    '1.20.3',
+    '1.20.4',
+    '1.20.5',
+    '1.20.6',
+    '1.21',
+    '1.21-Snapshot',
+    '1.21.1',
+    '1.21.10',
+    '1.21.2',
+    '1.21.3',
+    '1.21.4',
+    '1.21.5',
+    '1.21.6',
+    '1.21.7',
+    '1.21.8',
+    '1.21.9'
+]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '9fd902aa2fd1e42fcb04fed1cfe7f6bf1a2e4bea'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4573148
+project-id = 659192

@@ -1,0 +1,16 @@
+filename = 'forcecraft-1.20.1-4.2.5.jar'
+name = 'ForceCraft'
+side = 'both'
+x-prismlauncher-loaders = [ 'neoforge', 'forge' ]
+x-prismlauncher-mc-versions = [ '1.20', '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = '360eff2e47fe982fbb582c615ec60a99ac69a701'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 6107740
+project-id = 454802
