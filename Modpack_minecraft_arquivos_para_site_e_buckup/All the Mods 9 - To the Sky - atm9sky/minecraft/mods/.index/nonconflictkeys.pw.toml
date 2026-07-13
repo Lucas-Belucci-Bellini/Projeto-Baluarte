@@ -1,0 +1,16 @@
+filename = 'NonConflictKeys-Forge-1.19.X-1.20-1.0.0.jar'
+name = 'NonConflictKeys [Forge]'
+side = 'client'
+x-prismlauncher-loaders = [ 'forge' ]
+x-prismlauncher-mc-versions = [ '1.19', '1.19.1', '1.19.2', '1.19.3', '1.19.4', '1.20', '1.20.1' ]
+x-prismlauncher-release-type = 'release'
+
+[download]
+hash = 'c6fcb7aedbc36bc51776fa71a8bac1161a5103e0'
+hash-format = 'sha1'
+mode = 'metadata:curseforge'
+url = ''
+
+[update.curseforge]
+file-id = 4580489
+project-id = 864845
