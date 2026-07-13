@@ -497,6 +497,16 @@ export function gitNexusNucleo(args = {}) {
       pensar(false);
       convo.push({ role: 'assistant', content: resposta });
       if (convo.length > 24) convo.splice(0, convo.length - 24);
+      /* CONVERSA PERSISTIDA no Nexus (pedido do operador: "estamos perdendo
+       * dados de conversas importantes que podem ser úteis para modelos de
+       * IA") — cada troca vira uma memory no Supabase, best-effort (se a
+       * rede falhar, o chat segue normal). O localStorage deixa de ser o
+       * único lugar onde as conversas vivem. */
+      import('../utils/nexus.js')
+        .then((nx) => nx.nexusMemory(
+          `[${cfg.mode}] operador: ${texto}\njarvis: ${String(resposta).slice(0, 4000)}`,
+          ['conversa', 'jarvis', 'nucleo', cfg.mode]))
+        .catch(() => {});
       bolha('jarvis', resposta);
       speak(resposta);   // voz (v0.5.0): fala se "voz on" — best-effort, nunca lança
       scene && scene.pulse && scene.pulse(360);
