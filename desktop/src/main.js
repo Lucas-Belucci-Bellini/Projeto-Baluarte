@@ -21,6 +21,14 @@ const nexus = require('./nexus');
  * navegador do Hermes morre sem isso. Onde já é suportado, é no-op. */
 app.commandLine.appendSwitch('enable-unsafe-webgpu');
 
+/* Login Google no APP (pedido do operador: "só a web conseguia conectar"):
+ * o Google recusa OAuth em navegador embutido quando o User-Agent entrega
+ * o Electron ("este navegador ou app pode não ser seguro"). O Chromium por
+ * baixo é o mesmo do Chrome — só limpamos os tokens delatores do UA. */
+app.userAgentFallback = app.userAgentFallback
+  .replace(/ baluarte-launcher\/[^ ]+/i, '')
+  .replace(/ Electron\/[^ ]+/, '');
+
 let autoUpdater = null;
 try {
   ({ autoUpdater } = require('electron-updater'));
@@ -30,6 +38,18 @@ try {
 
 const REMOTE_URL = 'https://projeto-baluarte.vercel.app/';
 const ALLOWED_ORIGINS = ['https://projeto-baluarte.vercel.app'];
+
+/* A outra metade do login Google no app: o fluxo OAuth NAVEGA pra fora do
+ * site (supabase.co/auth → accounts.google.com → de volta ao site) e o
+ * will-navigate jogava esse trajeto pro navegador EXTERNO — a sessão nascia
+ * lá e o app ficava deslogado. Estas origens de autenticação (e só elas)
+ * podem navegar DENTRO da janela; qualquer outro link segue indo pro
+ * navegador de verdade. */
+const AUTH_ORIGINS = [
+  'https://hcwzsxdcvmswebunznak.supabase.co',
+  'https://accounts.google.com',
+  'https://accounts.youtube.com'   // o Google às vezes pinga aqui no meio do login
+];
 
 let mainWindow = null;
 let splashWindow = null;
@@ -114,7 +134,9 @@ function createMainWindow() {
     return { action: 'deny' };
   });
   mainWindow.webContents.on('will-navigate', (e, url) => {
-    const ok = ALLOWED_ORIGINS.some((o) => url.startsWith(o)) || url.startsWith('file://');
+    const ok = ALLOWED_ORIGINS.some((o) => url.startsWith(o))
+      || AUTH_ORIGINS.some((o) => url.startsWith(o))   // OAuth (Google/Supabase) fica NA janela
+      || url.startsWith('file://');
     if (!ok) {
       e.preventDefault();
       if (/^https?:/.test(url)) shell.openExternal(url);

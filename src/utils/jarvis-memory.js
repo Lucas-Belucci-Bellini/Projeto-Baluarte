@@ -127,6 +127,14 @@ export async function addMessage(sessionId, role, text) {
     memFallback.messages.push(msg);
   }
   await updateSession(sessionId, {});
+  /* Espelho no Nexus (Supabase): IndexedDB é local e morre com limpeza de
+   * dados/reinstalação — o operador já perdeu conversas assim. Cada mensagem
+   * de conversa (user/jarvis; tool não) vira uma memory, best-effort. */
+  if (role === 'user' || role === 'jarvis') {
+    import('./nexus.js')
+      .then((nx) => nx.nexusMemory(`[${sessionId}] ${role}: ${String(text).slice(0, 4000)}`, ['conversa', 'jarvis', 'sessao']))
+      .catch(() => {});
+  }
   return msg;
 }
 

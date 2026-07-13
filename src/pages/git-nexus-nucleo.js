@@ -29,7 +29,10 @@ import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
 import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
 import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoiceLang, setElevenKey, hasElevenKey, VOICE_LANGS } from '../utils/jarvis-voice.js';
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, setNucleoToken, simulateNucleoEvent } from '../utils/nucleo-socket.js';
-import { initArquivosTools, statusArquivos, buscarArquivos, relatorioArquivos } from '../utils/jarvis-arquivos.js';
+import {
+  initArquivosTools, statusArquivos, buscarArquivos, relatorioArquivos,
+  lerArquivo, analisarPasta, grepArquivos
+} from '../utils/jarvis-arquivos.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
 const PULSE_MS = { command: 420, biometric: 300, telemetry: 200, system: 160 };
@@ -262,7 +265,7 @@ export function gitNexusNucleo(args = {}) {
       } else if (st.progresso && st.progresso.ativo) {
         bolha('jarvis', `🗂️ Varredura em andamento: ${st.progresso.varridos.toLocaleString('pt-BR')} arquivos vistos até agora…`);
       } else {
-        bolha('jarvis', `🗂️ Arquivista pronto (read-only) — raiz: ${st.raiz}.\nComandos: "arquivos <nome>" busca · "relatorio arquivos" inventário completo (salva .md + .txt em Documentos/Baluarte).\n🛡️ Pastas pessoais (${(st.cofrePessoal || []).slice(0, 4).join(', ')}…) ficam de fora, sempre.`);
+        bolha('jarvis', `🗂️ Arquivista pronto (read-only) — raiz: ${st.raiz}.\nComandos: "arquivos <nome>" busca · "relatorio arquivos" inventário (.md + .txt em Documentos/Baluarte) · "analisar <pasta>" o-que-é-isto + duplicados + gordura · "ler <arquivo>" texto/código · "procurar <trecho> em <pasta>" busca por conteúdo.\n🛡️ Pastas pessoais (${(st.cofrePessoal || []).slice(0, 4).join(', ')}…) ficam de fora, sempre.`);
       }
       return;
     }
@@ -277,6 +280,49 @@ export function gitNexusNucleo(args = {}) {
           const linhas = r.resultados.slice(0, 12).map((x) => `· ${x.caminho}`).join('\n');
           bolha('jarvis', `🗂️ ${r.total} resultado(s) pra "${r.termo}"${r.tetoAtingido ? ' (mostrando o teto)' : ''}:\n${linhas}${r.total > 12 ? `\n… e mais ${r.total - 12}.` : ''}${r.stats.parcial ? '\n⚠ varredura parcial (' + r.stats.motivoParcial + ')' : ''}`);
         }
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    /* Fase 2 do Arquivista (0.6.1): analisar pasta · ler arquivo · procurar
+     * conteúdo. Os caminhos vão como o operador digitou (com caixa original);
+     * a validação de cofre/zona proibida acontece no motor do app. */
+    const analisarCmd = texto.match(/^analisar\s+(.+)$/i);
+    if (analisarCmd) {
+      bolha('jarvis', `🔬 Analisando "${analisarCmd[1]}"…`);
+      try {
+        const a = await analisarPasta(analisarCmd[1].trim());
+        const dup = a.duplicados.length
+          ? `\n♻ Duplicados: ${a.duplicados.slice(0, 3).map((d) => `${d.tamanho} ×${d.arquivos.length}`).join(' · ')}`
+          : '';
+        const gordo = a.gordura.length
+          ? `\n🏋 Gordura: ${a.gordura.slice(0, 3).map((g) => `${g.tamanho} parado há ${g.paradoHaMeses}m`).join(' · ')}`
+          : '';
+        bolha('jarvis',
+          `🗂️ ${a.caminho}\nTipo: ${a.tipo}${a.parcial ? ' (varredura parcial)' : ''}\n` +
+          `${a.arquivos.toLocaleString('pt-BR')} arquivos · ${a.pastas.toLocaleString('pt-BR')} pastas · ${a.tamanho}` +
+          `${a.protegidas ? ` · ${a.protegidas} protegida(s)` : ''}\n` +
+          `Extensões: ${a.topExtensoes.slice(0, 6).join(' ')}\n` +
+          `Maior: ${a.maiores[0] ? `${a.maiores[0].tamanho} — ${a.maiores[0].caminho}` : '—'}${dup}${gordo}`);
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    const lerCmd = texto.match(/^ler\s+(.+)$/i);
+    if (lerCmd) {
+      try {
+        const r = await lerArquivo(lerCmd[1].trim());
+        const inicio = r.conteudo.split('\n').slice(0, 25).join('\n');
+        bolha('jarvis', `📄 ${r.caminho} (${r.linhas} linhas${r.truncado ? ', mostrando o começo' : ''}):\n${inicio}${r.linhas > 25 ? '\n…' : ''}`);
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    const grepCmd = texto.match(/^procurar\s+"?([^"]{3,}?)"?(?:\s+em\s+(.+))?$/i);
+    if (grepCmd) {
+      bolha('jarvis', `🔎 Procurando "${grepCmd[1]}" DENTRO dos arquivos${grepCmd[2] ? ` de ${grepCmd[2]}` : ''}…`);
+      try {
+        const g = await grepArquivos(grepCmd[1], (grepCmd[2] || '.').trim());
+        if (!g.total) { bolha('jarvis', `Nada de "${g.termo}" em ${g.arquivosLidos.toLocaleString('pt-BR')} arquivos de texto lidos.`); return; }
+        const linhas = g.acertos.slice(0, 10).map((x) => `· ${x.caminho}:${x.linha} — ${x.trecho.slice(0, 80)}`).join('\n');
+        bolha('jarvis', `🔎 ${g.total} acerto(s)${g.tetoAtingido ? ' (teto)' : ''} pra "${g.termo}":\n${linhas}${g.total > 10 ? `\n… e mais ${g.total - 10}.` : ''}`);
       } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
       return;
     }
@@ -451,6 +497,16 @@ export function gitNexusNucleo(args = {}) {
       pensar(false);
       convo.push({ role: 'assistant', content: resposta });
       if (convo.length > 24) convo.splice(0, convo.length - 24);
+      /* CONVERSA PERSISTIDA no Nexus (pedido do operador: "estamos perdendo
+       * dados de conversas importantes que podem ser úteis para modelos de
+       * IA") — cada troca vira uma memory no Supabase, best-effort (se a
+       * rede falhar, o chat segue normal). O localStorage deixa de ser o
+       * único lugar onde as conversas vivem. */
+      import('../utils/nexus.js')
+        .then((nx) => nx.nexusMemory(
+          `[${cfg.mode}] operador: ${texto}\njarvis: ${String(resposta).slice(0, 4000)}`,
+          ['conversa', 'jarvis', 'nucleo', cfg.mode]))
+        .catch(() => {});
       bolha('jarvis', resposta);
       speak(resposta);   // voz (v0.5.0): fala se "voz on" — best-effort, nunca lança
       scene && scene.pulse && scene.pulse(360);

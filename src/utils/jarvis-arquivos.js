@@ -36,6 +36,20 @@ export function relatorioArquivos() {
   return invocar('arquivos:relatorio');
 }
 
+/** Fase 2 (0.6.1): ler texto seguro · resumo de pasta · busca por conteúdo. */
+export function lerArquivo(caminho) {
+  if (!temPonte()) throw new Error('Arquivos só no app (Baluarte Launcher).');
+  return invocar('arquivos:ler', { caminho });
+}
+export function analisarPasta(caminho) {
+  if (!temPonte()) throw new Error('Arquivos só no app (Baluarte Launcher).');
+  return invocar('arquivos:analisar', { caminho });
+}
+export function grepArquivos(termo, caminho) {
+  if (!temPonte()) throw new Error('Arquivos só no app (Baluarte Launcher).');
+  return invocar('arquivos:grep', { termo, caminho });
+}
+
 let registrado = false;
 /** Registra as ferramentas do agente (idempotente; no-op fora do app). */
 export function initArquivosTools() {
@@ -63,6 +77,55 @@ export function initArquivosTools() {
           resultados: (r.resultados || []).slice(0, 20)
             .map((x) => ({ caminho: x.caminho, tamanho: x.bytes, modificado: x.modificado }))
         };
+      } catch (e) { return { ok: false, error: e.message }; }
+    }
+  });
+
+  registerTool({
+    name: 'ler_arquivo',
+    description: 'Lê o CONTEÚDO de um arquivo de texto/código do computador (read-only, máx 256 KB). Recusa binários, credenciais e qualquer coisa no cofre pessoal. Use quando o operador pedir pra ver/explicar/analisar um arquivo específico.',
+    input_schema: {
+      type: 'object',
+      properties: { caminho: { type: 'string', description: 'Caminho do arquivo (absoluto ou relativo à pasta do usuário).' } },
+      required: ['caminho']
+    },
+    run: async ({ caminho }) => {
+      try {
+        const r = await lerArquivo(caminho);
+        return { ok: true, caminho: r.caminho, bytes: r.bytes, linhas: r.linhas, truncado: r.truncado, conteudo: r.conteudo.slice(0, 12000) };
+      } catch (e) { return { ok: false, error: e.message }; }
+    }
+  });
+
+  registerTool({
+    name: 'analisar_pasta',
+    description: 'Analisa uma PASTA do computador e responde "o que é isto?": classificação (projeto de código/fotos/música/documentos/backups), totais, top extensões, maiores e mais recentes, DUPLICADOS (mesmo tamanho + hash) e GORDURA (arquivos grandes parados há 90+ dias). Read-only. Use pra entender/organizar diretórios.',
+    input_schema: {
+      type: 'object',
+      properties: { caminho: { type: 'string', description: 'Caminho da pasta. Vazio = pasta do usuário inteira.' } },
+      required: []
+    },
+    run: async ({ caminho }) => {
+      try { return { ok: true, ...(await analisarPasta(caminho || '.')) }; }
+      catch (e) { return { ok: false, error: e.message }; }
+    }
+  });
+
+  registerTool({
+    name: 'buscar_conteudo',
+    description: 'Busca um trecho de TEXTO DENTRO dos arquivos (grep literal, sem regex) de uma pasta do computador — só tipos de texto seguros, nunca credenciais/cofre. Devolve arquivo, linha e trecho. Use quando o operador procurar onde algo está escrito.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        termo: { type: 'string', description: 'Texto a procurar (mínimo 3 caracteres).' },
+        caminho: { type: 'string', description: 'Pasta onde procurar. Vazio = pasta do usuário inteira (mais lento).' }
+      },
+      required: ['termo']
+    },
+    run: async ({ termo, caminho }) => {
+      try {
+        const r = await grepArquivos(termo, caminho || '.');
+        return { ok: true, total: r.total, arquivosLidos: r.arquivosLidos, tetoAtingido: r.tetoAtingido, acertos: r.acertos.slice(0, 20) };
       } catch (e) { return { ok: false, error: e.message }; }
     }
   });

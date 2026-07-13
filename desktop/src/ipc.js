@@ -70,7 +70,14 @@ function buildHandlers(ctx) {
     // zona proibida e limites duros (ver desktop/src/arquivos.js).
     'arquivos:status': async () => arquivos.status(),
     'arquivos:buscar': async (payload = {}) => arquivos.buscar(payload),
-    'arquivos:relatorio': async () => arquivos.relatorio()
+    'arquivos:relatorio': async () => arquivos.relatorio(),
+
+    // 0.6.1 (#369 fase 2): analisar — leitura de texto seguro, resumo de
+    // pasta (duplicados/gordura) e busca por conteúdo. Caminhos de fora
+    // passam pelo validarCaminho (raiz + cofre + symlink) no motor.
+    'arquivos:ler': async (payload = {}) => arquivos.ler(payload),
+    'arquivos:analisar': async (payload = {}) => arquivos.analisar(payload),
+    'arquivos:grep': async (payload = {}) => arquivos.grep(payload)
   };
 }
 
