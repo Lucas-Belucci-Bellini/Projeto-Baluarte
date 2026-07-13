@@ -1,0 +1,6 @@
+#618 minecraft:basalt_deltas
+#570 minecraft:crimson_forest
+#653 minecraft:nether_wastes
+#3DC minecraft:plains
+#721 minecraft:soul_sand_valley
+#628 minecraft:warped_forest
