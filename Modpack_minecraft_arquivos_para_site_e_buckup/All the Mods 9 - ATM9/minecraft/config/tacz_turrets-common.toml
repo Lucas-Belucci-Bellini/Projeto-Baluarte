@@ -1,0 +1,11 @@
+#Whether turrets need ammo
+consumeAmmo = true
+#Turret detection and engagement range in blocks
+#Range: 8 ~ 128
+turretRange = 64
+#Initial health for new turrets. Will not affect existing turrets
+#Range: 10 ~ 1000
+turretHealth = 200
+#If true, turrets target all living entities (except players, turrets, and the owner). If false, turrets only target vanilla monsters and entities in the tacz_turrets:turret_targets entity type tag.
+targetAllMobs = false
+
