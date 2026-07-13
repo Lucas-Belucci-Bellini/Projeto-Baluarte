@@ -1,0 +1,4 @@
+#Defines the maximum how many items every slot will have
+#Range: > 64
+maxItems = 1000000000
+

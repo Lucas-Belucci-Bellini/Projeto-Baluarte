@@ -1,0 +1,38 @@
+
+[audio]
+	onlyNearestBeep = true
+	#Range: 1 ~ 200
+	beepMinPeriod = 6
+	#Range: 2 ~ 400
+	beepMaxPeriod = 40
+	#Range: 0.0 ~ 2.0
+	beepVolume = 0.8
+	#Range: 0.5 ~ 2.0
+	beepPitchMinFar = 0.7
+	#Range: 0.5 ~ 3.0
+	beepPitchMaxNear = 1.8
+
+[hud]
+	enabled = true
+	#Range: 1 ~ 12
+	listCount = 5
+	anchorRight = true
+	#Range: 0 ~ 10000
+	x = 8
+	#Range: 0 ~ 10000
+	y = 8
+
+[performance]
+	#Scanning interval in ticks (20 ticks = 1 second). Lower = more responsive but worse performance.
+	#Range: 1 ~ 20
+	scanInterval = 5
+
+[realism]
+	#Lock-on time in ticks before target appears on detector. Simulates signal acquisition delay.
+	#Range: 5 ~ 100
+	lockOnTime = 10
+	#Only detect drones that are moving/active (not landed or idle)
+	onlyDetectActive = false
+	#Weather (rain/thunderstorm) reduces detection range
+	weatherAffectsRange = true
+
