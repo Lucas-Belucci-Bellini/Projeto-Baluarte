@@ -1,0 +1,1 @@
+{"jarName":"sodiumdynamiclights-forge-1.0.10-1.20.1.jar","modId":"sodiumdynamiclights","version":"1.0.9","mixinConfigs":["mixins.sodiumdynamiclights.json"],"jarJarMods":[{"jarName":"fabric-api-base-0.4.31+ef105b4977.jar","modId":"fabric_api_base","version":"0.4.31+ef105b4977","mixinConfigs":["fabric-api-base.init.mixins.json"],"jarJarMods":[],"pathFromJarJar":"/META-INF/jars/"}]}

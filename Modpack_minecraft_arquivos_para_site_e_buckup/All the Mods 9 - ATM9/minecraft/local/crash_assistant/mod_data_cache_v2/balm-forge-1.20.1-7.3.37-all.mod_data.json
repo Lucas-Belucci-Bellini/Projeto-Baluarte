@@ -1,0 +1,1 @@
+{"jarName":"balm-forge-1.20.1-7.3.37-all.jar","modId":"balm","version":"7.3.37","mixinConfigs":["balm.mixins.json"],"jarJarMods":[{"jarName":"kuma-api-forge-20.1.12+1.20.1.jar","modId":"kuma_api","version":"20.1.12","mixinConfigs":["kuma_api.forge.mixins.json","kuma_api.mixins.json"],"jarJarMods":[],"pathFromJarJar":"/META-INF/jarjar/"}]}

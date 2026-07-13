@@ -1,0 +1,1 @@
+{"jarName":"geckolib-forge-1.20.1-4.8.2.jar","modId":"geckolib","version":"4.8.2","mixinConfigs":["geckolib.mixins.json"],"jarJarMods":[{"jarName":"mclib-20.jar","mixinConfigs":[],"jarJarMods":[],"pathFromJarJar":"/META-INF/jarjar/"}]}
