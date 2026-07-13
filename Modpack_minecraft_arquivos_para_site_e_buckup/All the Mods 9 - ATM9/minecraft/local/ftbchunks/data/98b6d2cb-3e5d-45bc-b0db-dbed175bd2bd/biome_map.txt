@@ -1,0 +1,2 @@
+#34D minecraft:deep_lukewarm_ocean
+#79A minecraft:lukewarm_ocean
