@@ -1,0 +1,6 @@
+
+[General]
+	#Generator tickrate. Increase if you're having performance issues
+	#Range: 1 ~ 64
+	tickRate = 5
+
