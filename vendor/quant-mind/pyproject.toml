@@ -1,0 +1,221 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantmind"
+version = "0.2.0"
+description = "QuantMind - Intelligent Knowledge Extraction and Retrieval Framework"
+requires-python = ">=3.10"
+dependencies = [
+    "arxiv",
+    "pyyaml",
+    "numpy>=2.2.4",
+    "openai>=1.68.2",
+    "openai-agents>=0.14",
+    "pillow>=10.1.0,<11.0.0",
+    "ipykernel>=6.29.5",
+    "pydantic>=2.0.0",
+    "pymupdf>=1.23.0",
+    "python-dotenv>=1.0.0",
+    "httpx[socks]>=0.28.1",
+    "litellm>=1.74.0.post1",
+    "jinja2>=3.0.0",
+    "trafilatura>=1.10",
+]
+
+[project.optional-dependencies]
+# Dev tooling that backs scripts/verify.sh: ruff (format+lint), basedpyright
+# (type check), import-linter (architecture contracts), pytest+pytest-cov
+# (tests + coverage floor). Black/isort/mypy from the previous toolchain are
+# intentionally dropped — ruff and basedpyright supersede them.
+dev = [
+    "ruff>=0.11,<0.12",
+    "basedpyright>=1.39",
+    "import-linter>=2.11",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "pre-commit>=3.0",
+]
+full = [
+    "marker-pdf>=0.2.0",
+    "beautifulsoup4>=4.12.0",
+    "sentence-transformers>=2.2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["quantmind*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml", "*.json", "*.txt"]
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+# ----------------------------------------------------------------------------
+# ruff: format + lint
+# ----------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 80
+target-version = "py310"
+
+[tool.ruff.lint]
+# Layered rule selection. D (docstrings) keeps the existing convention;
+# F (pyflakes) catches real bugs; I (isort) keeps imports tidy; E/W
+# (pycodestyle, minus E501 which ruff format already handles); B (bugbear)
+# catches subtle correctness issues.
+select = ["D", "E", "F", "I", "W", "B", "W505"]
+ignore = [
+    # Docstring rules we explicitly waive (see existing convention).
+    "D100", "D102", "D104", "D105", "D107", "D203", "D213", "D401", "D402",
+    # E501 (line-too-long) is handled by ruff format; flagging it again on
+    # long URLs / strings only adds noise.
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests don't need module/function docstrings or strict bugbear rules.
+"tests/**/*.py" = ["D", "B"]
+"**/__init__.py" = ["D104", "F401"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 100
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# ----------------------------------------------------------------------------
+# basedpyright: type checker
+# ----------------------------------------------------------------------------
+# Every module in `quantmind/` is type-checked at "standard" mode. PR5
+# deleted the transitional packages (`config/`, `flow/`, `llm/`,
+# `models/`) so the exclude list is now down to the directories pyright
+# always wants ignored.
+
+[tool.basedpyright]
+include = ["quantmind"]
+exclude = [
+    "**/__pycache__",
+    "**/.venv",
+    "**/build",
+]
+pythonVersion = "3.10"
+typeCheckingMode = "standard"
+reportMissingImports = "error"
+reportMissingTypeStubs = "none"
+# Pydantic v2 discriminated unions tighten a `str` field to `Literal["..."]`
+# in subclasses (e.g. `Paper.item_type: Literal["paper"]`). Python's variance
+# rules say mutable attributes must be invariant, so basedpyright flags this
+# even though Pydantic supports it. We use this idiom throughout knowledge/
+# and configs/, so disable the diagnostic globally.
+reportIncompatibleVariableOverride = "none"
+
+# ----------------------------------------------------------------------------
+# import-linter: architectural boundary contracts
+# ----------------------------------------------------------------------------
+# Encodes the target architecture: utils, knowledge, and preprocess are
+# leaves; configs depends only on knowledge; flows + magic is the apex
+# layer (PR5). The transitional packages (config/, flow/, llm/, models/)
+# were deleted in PR5; they remain in the forbidden lists as a tripwire
+# against accidental re-introduction during future refactors.
+
+[tool.importlinter]
+root_packages = ["quantmind"]
+
+[[tool.importlinter.contracts]]
+name = "utils is a leaf (no inbound deps from quantmind packages)"
+type = "forbidden"
+source_modules = ["quantmind.utils"]
+forbidden_modules = [
+    "quantmind.configs",
+    "quantmind.flows",
+    "quantmind.knowledge",
+    "quantmind.magic",
+    "quantmind.preprocess",
+]
+
+[[tool.importlinter.contracts]]
+name = "knowledge is a leaf (no inbound deps from quantmind packages)"
+type = "forbidden"
+source_modules = ["quantmind.knowledge"]
+forbidden_modules = [
+    "quantmind.configs",
+    "quantmind.flows",
+    "quantmind.magic",
+    "quantmind.preprocess",
+    "quantmind.utils",
+]
+
+[[tool.importlinter.contracts]]
+name = "configs only depends on knowledge"
+type = "forbidden"
+source_modules = ["quantmind.configs"]
+forbidden_modules = [
+    "quantmind.flows",
+    "quantmind.magic",
+    "quantmind.preprocess",
+]
+
+[[tool.importlinter.contracts]]
+name = "preprocess only depends on utils (no inbound deps on configs/knowledge/flows)"
+type = "forbidden"
+source_modules = ["quantmind.preprocess"]
+forbidden_modules = [
+    "quantmind.configs",
+    "quantmind.flows",
+    "quantmind.knowledge",
+    "quantmind.magic",
+]
+
+[[tool.importlinter.contracts]]
+name = "flows + magic is apex (no transitional package imports)"
+type = "forbidden"
+source_modules = [
+    "quantmind.flows",
+    "quantmind.magic",
+]
+# These packages were deleted in PR5; the contract guards against any
+# future code re-introducing them under the same names.
+forbidden_modules = [
+    "quantmind.config",
+    "quantmind.flow",
+    "quantmind.llm",
+    "quantmind.models",
+]
+
+# ----------------------------------------------------------------------------
+# pytest: configuration + coverage gate
+# ----------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Coverage floor 75% — PR5 deleted the transitional packages so every
+# remaining module is in the target architecture and is well-tested.
+addopts = [
+    "--cov=quantmind",
+    "--cov-report=term-missing",
+    "--cov-fail-under=75",
+    "-ra",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["quantmind"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+# Branch coverage. Floor moves with the migration:
+#   PR3: 60% (parsers/sources still drag the average down)
+#   PR4: 65% (parsers/sources gone; preprocess >85%)
+#   PR5: 75% (flow/, llm/, config/, transitional models/ gone)

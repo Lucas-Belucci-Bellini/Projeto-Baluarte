@@ -1,0 +1,160 @@
+import React, { useEffect, useState } from "react";
+import { X, Copy, Check } from "@phosphor-icons/react";
+import Admin from "@/models/admin";
+import paths from "@/utils/paths";
+import { userFromStorage } from "@/utils/request";
+import System from "@/models/system";
+import { useTranslation } from "react-i18next";
+
+export default function NewApiKeyModal({ closeModal, onSuccess }) {
+  const { t } = useTranslation();
+  const [apiKey, setApiKey] = useState(null);
+  const [name, setName] = useState("");
+  const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCreate = async (e) => {
+    setError(null);
+    e.preventDefault();
+    const user = userFromStorage();
+    const Model = !!user ? Admin : System;
+
+    const { apiKey: newApiKey, error } = await Model.generateApiKey({
+      name,
+    });
+    if (!!newApiKey) {
+      setApiKey(newApiKey);
+      onSuccess();
+    }
+    setError(error);
+  };
+
+  const copyApiKey = () => {
+    if (!apiKey) return false;
+    window.navigator.clipboard.writeText(apiKey.secret);
+    setCopied(true);
+  };
+
+  useEffect(() => {
+    function resetStatus() {
+      if (!copied) return false;
+      setTimeout(() => {
+        setCopied(false);
+      }, 3000);
+    }
+    resetStatus();
+  }, [copied]);
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="relative w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border">
+        <div className="relative p-6 border-b rounded-t border-theme-modal-border">
+          <div className="w-full flex gap-x-2 items-center">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              {t("api.modal.title")}
+            </h3>
+          </div>
+          <button
+            onClick={closeModal}
+            type="button"
+            className="absolute top-4 right-4 transition-all duration-300 bg-transparent rounded-lg text-sm p-1 inline-flex items-center hover:bg-theme-modal-border hover:border-theme-modal-border hover:border-opacity-50 border-transparent border"
+          >
+            <X size={24} weight="bold" className="text-white" />
+          </button>
+        </div>
+        <div className="px-7 py-6">
+          <form onSubmit={handleCreate}>
+            <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+              {error && (
+                <p className="text-red-400 text-sm">
+                  {t("api.messages.error", { error })}
+                </p>
+              )}
+              {!apiKey && (
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-white">
+                    {t("api.modal.name.label")}
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t("api.modal.name.placeholder")}
+                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5"
+                  />
+                  <p className="text-white text-opacity-60 text-xs md:text-sm mt-2">
+                    {t("api.modal.name.helper")}
+                  </p>
+                </div>
+              )}
+              {apiKey && (
+                <div className="relative">
+                  <input
+                    type="text"
+                    defaultValue={`${apiKey.secret}`}
+                    disabled={true}
+                    className="border-none bg-theme-settings-input-bg text-white placeholder:text-theme-settings-input-placeholder text-sm rounded-lg outline-none block w-full p-2.5 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={copyApiKey}
+                    disabled={copied}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-theme-modal-border transition-all duration-300"
+                  >
+                    {copied ? (
+                      <Check
+                        size={20}
+                        className="text-green-400"
+                        weight="bold"
+                      />
+                    ) : (
+                      <Copy size={20} className="text-white" weight="bold" />
+                    )}
+                  </button>
+                </div>
+              )}
+              <p className="text-white text-opacity-60 text-xs md:text-sm">
+                {t("api.modal.helper")}
+              </p>
+              <a
+                href={paths.apiDocs()}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-400 hover:underline"
+              >
+                Read the API documentation &rarr;
+              </a>
+            </div>
+            <div className="flex justify-end items-center mt-6 pt-6 border-t border-theme-modal-border">
+              {!apiKey ? (
+                <>
+                  <button
+                    onClick={closeModal}
+                    type="button"
+                    className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm mr-2"
+                  >
+                    {t("api.modal.cancel")}
+                  </button>
+                  <button
+                    type="submit"
+                    className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
+                  >
+                    {t("api.modal.create")}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={closeModal}
+                  type="button"
+                  className="transition-all duration-300 text-white hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm"
+                >
+                  {t("api.modal.close")}
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}

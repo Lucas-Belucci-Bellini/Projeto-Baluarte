@@ -1,0 +1,125 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agenthatch"
+version = "0.9.20"
+description = "Turn any SKILL.md into a runnable AI Agent"
+readme = "README.md"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [
+    {name = "EternalRights", email = "eternalrights@outlook.com"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+    
+    "typer>=0.15.0",
+    "packaging>=24.0",
+    "httpx>=0.28.0",
+    # v0.3 new dependencies
+    "openai>=1.0",
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+    "python-frontmatter>=1.0",
+    "rich>=13.0",
+    "instructor>=1.0",
+    "sentence-transformers>=3.0",
+    "rank-bm25>=0.2",
+    "jinja2>=3.1",
+    "tomli-w>=1.0",
+    "prompt-toolkit>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.8.0",
+    "mypy>=1.10",
+    "types-PyYAML>=6.0",
+    "build>=1.0",
+    "twine>=5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/agenthatch/agenthatch"
+Repository = "https://github.com/agenthatch/agenthatch"
+Issues = "https://github.com/agenthatch/agenthatch/issues"
+
+[project.scripts]
+agenthatch = "agenthatch.cli.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agenthatch", "agenthatch-core/src/agenthatch_core"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "design/",
+    "tests/",
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+    "-ra",
+]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "C4", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[[tool.mypy.overrides]]
+module = "numpy"
+ignore_errors = true
+
+[tool.coverage.run]
+branch = true
+source = ["agenthatch"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "@overload",
+    'if __name__ == "__main__":',
+    "if TYPE_CHECKING:",
+]
+
+# ── CI Quality Gate (v0.3.1) ──
+# Run with: hatch run quality:check
+# This ensures ruff + mypy + pytest are all executed before release.
+# mypy --strict was previously declared (line 87) but never enforced;
+# this section closes that gap per v0.3.1 release checklist.
+[tool.hatch.envs.quality]
+features = ["dev"]
+
+[tool.hatch.envs.quality.scripts]
+check = [
+    "ruff check src/",
+    "mypy --strict src/agenthatch",
+    "pytest",
+]

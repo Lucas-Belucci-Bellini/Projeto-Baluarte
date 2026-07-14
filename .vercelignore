@@ -11,6 +11,7 @@ Humanity always first/
 GitNexus-1.6.7/
 .obsidian/
 .smart-env/
+vendor/
 
 # --- Documentos-fonte arquivados (os dados de runtime estão em src/data/*) ---
 *.pdf

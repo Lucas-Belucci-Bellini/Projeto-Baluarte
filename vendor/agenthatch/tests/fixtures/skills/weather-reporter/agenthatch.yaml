@@ -1,0 +1,134 @@
+identity:
+  id: weather-reporter
+  display_name: Weather Reporter
+  version: ''
+intent:
+  triggers:
+  - weather
+  - forecast
+  - temperature
+  - humidity
+  - wind
+  - precipitation
+  - climate
+  - conditions
+  - meteorological
+  - check
+  - report
+  satisfies:
+  - get weather for {city}
+  - check temperature in {city}
+  - get forecast for {city}
+  - check humidity in {city}
+  - get weather conditions for {location}
+  - get multi-day forecast for {city}
+  summary: Fetches current weather conditions and multi-day forecasts for any city,
+    providing temperature, humidity, wind, and condition description data.
+interface:
+  provides:
+  - capability: weather_current
+    type: data
+    input_schema:
+      city: string
+    output_schema:
+      city: string
+      country: string
+      temperature: number
+      feels_like: number
+      description: string
+      humidity: number
+      wind_speed: number
+  - capability: weather_forecast
+    type: data
+    input_schema:
+      city: string
+      days: number
+    output_schema:
+      city: string
+      days: number
+      forecast: array
+  requires:
+  - capability: http_client
+    type: action
+    input_schema: {}
+    output_schema: {}
+  - capability: json_parser
+    type: data
+    input_schema: {}
+    output_schema: {}
+  - capability: bash_runtime
+    type: action
+    input_schema: {}
+    output_schema: {}
+  compatible_with: []
+  mcp_servers: []
+  api_templates:
+  - name: get_data_2_5_weather
+    url: https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${OPENWEATHER_API_KEY}&units=metric
+    method: GET
+    params: []
+    headers: {}
+    auth_env_var: null
+base:
+  runtime: bash
+  timeout: 120s
+  env:
+  - name: OPENWEATHER_API_KEY
+    required: true
+    description: OpenWeatherMap API key for authentication
+  dependencies:
+  - curl
+  - jq
+instructions:
+  workflow:
+  - step: 1
+    description: Extract city name from user query
+    script: null
+  - step: 2
+    description: Call the API with scripts/query_weather.sh <city>
+    script: scripts/query_weather.sh
+  - step: 3
+    description: Parse JSON response and format as human-readable text
+    script: null
+  - step: 4
+    description: For forecasts, use scripts/forecast_weather.sh <city> <days>
+    script: scripts/forecast_weather.sh
+  rules:
+  - City names with spaces must be URL-encoded (e.g., "New York" → "New%20York")
+  - Always specify units=metric unless user explicitly requests imperial
+  - Never expose API key in output
+  - Respect API rate limit of 60 calls/min on free tier
+  safety:
+    confirmation_required_for: []
+    plan_required: false
+    max_rows_default: null
+    parameterized_only: false
+  output_template: "Weather in {city}, {country}:\n  Temperature: {temp}°C (feels\
+    \ like {feels_like}°C)\n  Condition: {description}\n  Humidity: {humidity}%\n\
+    \  Wind: {wind_speed} m/s"
+  raw_body: "# Weather Reporter\n\nQuery weather data from OpenWeatherMap API.\n\n\
+    ## Quick Start\n\n```bash\ncurl -s \"https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${OPENWEATHER_API_KEY}&units=metric\"\
+    \ | jq .\n```\n\n## Workflow\n\n1. Extract city name from user query\n2. Call\
+    \ the API with `scripts/query_weather.sh <city>`\n3. Parse JSON response and format\
+    \ as human-readable text\n4. For forecasts, use `scripts/forecast_weather.sh <city>\
+    \ <days>`\n\n## Output Format\n\n```\nWeather in {city}, {country}:\n  Temperature:\
+    \ {temp}°C (feels like {feels_like}°C)\n  Condition: {description}\n  Humidity:\
+    \ {humidity}%\n  Wind: {wind_speed} m/s\n```\n\n## Gotchas\n\n- City names with\
+    \ spaces must be URL-encoded (e.g., \"New York\" → \"New%20York\")\n- The free\
+    \ API tier limits to 60 calls/min\n- Always specify `units=metric` unless user\
+    \ explicitly requests imperial"
+resources:
+  scripts:
+  - name: scripts/query_weather.sh
+    hash: 513ec12a4857b0770a0362cd8268b08556119e3544e6dedc7de48c62ebd4f2c9
+  references:
+  - name: agenthatch.yaml
+    hash: 3607f3a3b4803649a0bc340cc59eb49aeaca76933fe943f44fc991de0407f676
+  assets: []
+modes: null
+composition:
+  event_listeners: []
+agent:
+  status: hatched
+  hatched_at: 2026-06-25 09:37:09.733195+00:00
+  generated_at: null

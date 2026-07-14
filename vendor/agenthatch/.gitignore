@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+design/
+
+# Virtual environments
+.venv/
+venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+coverage/
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+.env
+docs/
+.agenthatch/
+
+# Generated agent output
+*-agent/
+
+# claude specific
+.claude/
+
+# Marketing & planning (not part of the package)
+.workbuddy/
+campaign/
+deliverables/

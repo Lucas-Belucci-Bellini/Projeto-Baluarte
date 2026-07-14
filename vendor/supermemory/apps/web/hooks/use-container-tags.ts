@@ -1,0 +1,24 @@
+"use client"
+
+import { useQuery } from "@tanstack/react-query"
+import { $fetch } from "@lib/api"
+import type { ContainerTagListType } from "@lib/types"
+
+export function useContainerTags() {
+	const { data: allProjects = [], isLoading } = useQuery({
+		queryKey: ["container-tags"],
+		queryFn: async () => {
+			const response = await $fetch("@get/container-tags/list")
+			if (response.error) {
+				throw new Error(response.error?.message || "Failed to load projects")
+			}
+			return (response.data || []) as ContainerTagListType[]
+		},
+		staleTime: 30 * 1000,
+	})
+
+	return {
+		allProjects,
+		isLoading,
+	}
+}
