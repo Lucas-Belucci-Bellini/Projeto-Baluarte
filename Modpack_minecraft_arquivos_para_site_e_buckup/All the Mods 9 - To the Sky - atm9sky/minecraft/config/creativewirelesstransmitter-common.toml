@@ -1,7 +1,0 @@
-
-["Creative Wireless Transmitter Options"]
-	#
-	#The energy used by the Creative Wireless Transmitter
-	#Range: > 0
-	creativeWirelessTransmitterEnergyUsage = 0
-

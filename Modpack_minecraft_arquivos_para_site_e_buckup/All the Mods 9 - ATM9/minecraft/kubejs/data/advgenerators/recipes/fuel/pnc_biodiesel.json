@@ -1,7 +1,0 @@
-{
-    "type": "advgenerators:liquid_fuel",
-    "fuel": {
-      "fluid": "pneumaticcraft:biodiesel"
-    },
-    "fePerMb": 1024
-  }

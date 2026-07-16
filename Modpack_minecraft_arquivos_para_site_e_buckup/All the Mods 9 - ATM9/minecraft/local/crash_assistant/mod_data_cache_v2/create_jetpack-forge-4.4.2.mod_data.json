@@ -1,1 +1,0 @@
-{"jarName":"create_jetpack-forge-4.4.2.jar","modId":"create_jetpack","version":"4.4.2","mixinConfigs":[],"jarJarMods":[{"jarName":"flightlib-forge-2.1.0.jar","modId":"flightlib","version":"2.1.0","mixinConfigs":["flightlib.mixins.json"],"jarJarMods":[],"pathFromJarJar":"/META-INF/jarjar/"}]}

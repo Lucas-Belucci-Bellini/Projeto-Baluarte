@@ -1,1 +1,0 @@
-{"jarName":"hyperbox-1.20.1-4.0.2.0.jar","modId":"hyperbox","version":"4.0.2.0","mixinConfigs":["hyperbox.mixins.json"],"jarJarMods":[{"jarName":"infiniverse-1.20.1-1.0.0.5.jar","modId":"infiniverse","version":"1.0.0.5","mixinConfigs":[],"jarJarMods":[],"pathFromJarJar":"/META-INF/jarjar/"}]}

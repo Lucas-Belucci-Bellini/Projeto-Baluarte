@@ -1,6 +1,0 @@
-#Use black overlay instead of white when blinded by flashbang
-blackFlash = false
-#Screen shake multiplier for explosions, default is 1.0
-#Range: 0.0 ~ 128.0
-explodeScreenShakeMultiplier = 1.0
-

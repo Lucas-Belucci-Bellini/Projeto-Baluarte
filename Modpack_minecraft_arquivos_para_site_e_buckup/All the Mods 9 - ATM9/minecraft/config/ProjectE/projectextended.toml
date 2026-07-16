@@ -1,6 +1,0 @@
-
-#All of the config options in this file are server side and will be synced from server to client. ProjectExtended uses one "server" config file for all worlds, for convenience in going from one world to another, but makes it be a "server" config file so that forge will automatically sync it when we connect to a multiplayer server.
-[server]
-	#Set to false to not display missing Game Stages in tooltips when a player cannot learn or condense an item.
-	showMissingGameStages = true
-
