@@ -498,3 +498,9 @@
 .a3-mod { font-size: 13px; line-height: 1.7; }
 .a3-mod a { color: var(--color-cyan); text-decoration: none; }
 .a3-mod a:hover { text-decoration: underline; }
+
+/* ----- DLCs instalados do Arma 3 (/modpack) ----- */
+.a3-dlc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.a3-dlc { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.07); border-radius: var(--radius-sm); }
+.a3-dlc__nome { font-size: 13px; font-weight: var(--font-weight-semibold); }
+.a3-dlc__tag { font-size: 10px; font-family: var(--font-mono); }

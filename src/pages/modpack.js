@@ -8,6 +8,7 @@ import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { MODS, MOD_CATEGORIES, TOTAL_MODS } from '../data/modpack.js';
 import { ARMA3_PRESETS, ARMA3_TOTAL_MODS } from '../data/arma3-presets.js';
+import { ARMA3_DLCS, ARMA3_INSTALACAO } from '../data/arma3-instalacao.js';
 
 const STORAGE_KEY = 'modpack:state';
 let state = null;
@@ -178,6 +179,18 @@ export function modpackPage() {
         ' do operador com ',
         h('span', { className: 'u-text-cyan' }, `${ARMA3_TOTAL_MODS} mods`),
         ' no total (CBA, ACE, RHS, CUP…). Baixe o preset e ARRASTE o arquivo na janela do Arma 3 Launcher — ele importa e assina tudo sozinho.')));
+
+  /* DLCs instalados (só o índice — nenhum arquivo do jogo é hospedado, #386) */
+  a3Wrap.appendChild(
+    h('div', { className: 'card', style: 'padding:16px; margin-bottom:16px' },
+      h('div', { style: 'display:flex; align-items:center; gap:10px; margin-bottom:10px' },
+        h('b', null, '🎖️ DLCs & expansões instalados'),
+        h('span', { className: 'badge badge--cyan' }, `${ARMA3_INSTALACAO.totalDlcs}`)),
+      h('div', { className: 'a3-dlc-grid' },
+        ...ARMA3_DLCS.map((d) => h('div', { className: 'a3-dlc' },
+          h('span', { className: 'a3-dlc__nome' }, d.nome),
+          h('span', { className: 'a3-dlc__tag u-text-muted' }, `${d.tipo} · ${d.ano}`)))),
+      h('p', { className: 'u-text-muted', style: 'font-size:12px; margin:10px 0 0' }, ARMA3_INSTALACAO.nota)));
 
   const presetsGrid = h('div', { className: 'modpack-grid' });
   ARMA3_PRESETS.forEach((p) => {

@@ -69,7 +69,11 @@ async function carregarObjeto({ url, files, nome }) {
         import('three/examples/jsm/loaders/GLTFLoader.js'),
         import('three/examples/jsm/loaders/DRACOLoader.js')
       ]);
-      const draco = new DRACOLoader().setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+      /* DRACO decoder SELF-HOSTED (0.7.2): antes vinha do gstatic CDN — se a
+       * rede/CSP bloqueava o CDN, .glb comprimido morria. Agora mora no site
+       * (public/modelos-3d/draco/), zero dependência externa. */
+      const draco = new DRACOLoader().setDecoderPath(
+        (import.meta.env && import.meta.env.BASE_URL || '/') + 'modelos-3d/draco/');
       const loader = new GLTFLoader(manager).setDRACOLoader(draco);
       const gltf = await loader.loadAsync(alvo);
       return { objeto: gltf.scene, clips: gltf.animations || [], rotulo, fim };
@@ -126,12 +130,36 @@ export async function montarVisor3D(host, fonte) {
 
   cena.add(objeto);
 
-  /* enquadramento automático: centraliza e afasta a câmera pelo tamanho real */
+  /* enquadramento automático: FIT-TO-VIEW pela esfera envolvente e o FOV real
+   * (0.7.2) — antes um fator fixo deixava modelos altos/finos, tipo o soldado,
+   * cortados (a câmera nascia perto demais). Agora a distância é calculada pra
+   * a esfera caber na vertical E na horizontal do frustum. */
+  objeto.updateWorldMatrix(true, true);
   const caixa = new THREE.Box3().setFromObject(objeto);
+  /* SkinnedMesh (soldado etc.): a caixa da geometria vem em REST pose e ignora
+   * a escala/pose do esqueleto — sai minúscula e a câmera nasce dentro do
+   * modelo. Expandir pelas posições reais dos ossos dá o extent de verdade. */
+  const p = new THREE.Vector3();
+  objeto.traverse((n) => {
+    if (n.isSkinnedMesh && n.skeleton) {
+      for (const osso of n.skeleton.bones) { osso.getWorldPosition(p); caixa.expandByPoint(p); }
+    }
+  });
   const centro = caixa.getCenter(new THREE.Vector3());
   const tam = caixa.getSize(new THREE.Vector3()).length() || 1;
+  const raio = tam / 2;
+  /* aspecto REAL do palco já aqui (a câmera nasce com 1 e só é ajustada
+   * depois) — sem isso, palco largo-e-baixo cortava modelo alto. */
+  const aspecto = (host.clientWidth || 1) / (host.clientHeight || 1);
+  const fov = (camera.fov * Math.PI) / 180;
+  const distV = raio / Math.sin(fov / 2);                       // cabe na vertical
+  const distH = raio / Math.sin(Math.atan(Math.tan(fov / 2) * Math.max(aspecto, 0.1))); // e na horizontal
+  /* folga de 45%: a caixa de skinned-mesh (soldado etc.) costuma vir
+   * subestimada — a margem generosa garante o corpo inteiro no quadro. */
+  const dist = Math.max(distV, distH) * 1.45;
   camera.near = tam / 1000; camera.far = tam * 100;
-  camera.position.set(centro.x + tam * 0.55, centro.y + tam * 0.4, centro.z + tam * 0.8);
+  const dir = new THREE.Vector3(0.5, 0.35, 1).normalize();
+  camera.position.copy(centro).addScaledVector(dir, dist);
 
   const controles = new OrbitControls(camera, renderer.domElement);
   controles.target.copy(centro);

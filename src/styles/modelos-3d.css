@@ -103,6 +103,33 @@
 }
 .m3d-viewer__share:hover { background: var(--color-cyan-soft); }
 
+/* ----- Galeria 3D (0.7.2): cards que renderizam no visor three.js ----- */
+.m3d-galeria { margin-bottom: var(--space-lg); padding: var(--space-md); }
+.m3d-galeria-grid {
+  display: grid; gap: 14px; margin-top: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+.m3d-gal-card {
+  display: flex; flex-direction: column; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.09); border-radius: var(--radius-md);
+  overflow: hidden; background: rgba(10, 8, 16, 0.4);
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+.m3d-gal-card:hover { border-color: var(--color-cyan); transform: translateY(-3px); }
+.m3d-gal-card__thumb {
+  height: 96px; display: flex; align-items: center; justify-content: center;
+  font-size: 40px; color: var(--color-cyan);
+  background: radial-gradient(circle at 50% 40%, rgba(80, 200, 255, 0.14), transparent 70%);
+}
+.m3d-gal-card__body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.m3d-gal-card__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.m3d-gal-card__nome { font-weight: var(--font-weight-semibold); }
+.m3d-gal-card__desc { font-size: 12px; line-height: 1.5; margin: 0; }
+.m3d-gal-card__meta { font-size: 11px; font-family: var(--font-mono); }
+.m3d-gal-card__meta a { color: var(--color-cyan); text-decoration: none; }
+.m3d-gal-card__meta a:hover { text-decoration: underline; }
+.m3d-gal-card__btn { margin-top: 2px; width: 100%; }
+
 /* ----- visor universal (#310 fase 2): drop zone + palco three.js ----- */
 .m3d-uni { margin-bottom: var(--space-lg); padding: var(--space-md); display: grid; gap: 12px; }
 .m3d-uni__head { display: flex; align-items: center; gap: 10px; font-size: 15px; }
@@ -124,7 +151,7 @@
 .m3d-uni__urlrow .m3d-url { flex: 1; min-width: 220px; }
 
 .m3d-visor { display: flex; flex-direction: column; }
-.m3d-visor__palco { position: relative; flex: 1; min-height: min(62vh, 560px); }
+.m3d-visor__palco { position: relative; flex: 1; min-height: min(74vh, 680px); }
 .m3d-visor__palco canvas { display: block; width: 100% !important; height: 100% !important; }
 .m3d-visor__loading {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
