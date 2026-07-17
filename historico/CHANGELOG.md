@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-17
+
+### ✋ Launcher 0.7.0 — Arquivista fase 3 (#369): organizar COM A MÃO DO OPERADOR
+- ✨ Primeira capacidade de ESCRITA do Arquivista, com as regras do plano viradas em código: **`mover <de> para <destino>`** e **`apagar <arquivo>`** preparam uma ação e **NADA executa** até o operador digitar **`confirmar`** (`cancelar` ou qualquer outra mensagem desarma na hora — nada roda por acidente).
+- 🗑️ **"Apagar" não apaga**: manda pra **lixeira do Baluarte** (`Documentos/Baluarte/lixeira` + manifesto) — `lixeira` lista, **`restaurar <id>`** devolve pro caminho original. `fs.unlink` em arquivo do operador não existe no módulo.
+- 🛡️ Regras duras no motor: **1 arquivo por vez** (pasta é recusada), origem E destino validados (raiz + cofre pessoal + zona proibida + symlink), destino **nunca sobrescreve**, move entre volumes só solta o original depois de conferir a cópia. O **agente NÃO recebe** as tools de escrita nesta fase — só comandos digitados.
+- ✅ Verificado: motor 13/13 em Node puro (fuga da raiz, cofre, sobrescrita, pasta, nome proibido — recusados; apagar→lixeira→restaurar ida-e-volta com conteúdo intacto) · Núcleo 6/6 (confirmação exige `confirmar`, pendência morre com `cancelar` OU com qualquer outro comando).
+
+### 🪖 Presets ARMA 3 na /modpack (5 presets · 321 mods)
+- 🎮 A página `/modpack` ganhou a seção **Presets Arma 3**: os 5 presets do operador (ALFA, Bravo, Charlie, GIT HUB, projeto baluarte vercel app) exportados do Arma 3 Launcher, servidos em `/arma3/preset-*.html` — **baixar e arrastar na janela do Launcher importa tudo**. Cada card expande a lista de mods com links do Steam Workshop (CBA, ACE, RHS, CUP…) + DLCs.
+- ✅ Verificado (Playwright): 5 cards com download apontando pra `/arma3/`, lista expande com 37+ links do Workshop, preset servido íntegro (`arma:PresetName` presente).
+
 ## 2026-07-12
 
 ### 🔬 Launcher 0.6.1 — Arquivista fase 2 (#369): agora o JARVIS ANALISA

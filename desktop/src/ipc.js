@@ -77,7 +77,15 @@ function buildHandlers(ctx) {
     // passam pelo validarCaminho (raiz + cofre + symlink) no motor.
     'arquivos:ler': async (payload = {}) => arquivos.ler(payload),
     'arquivos:analisar': async (payload = {}) => arquivos.analisar(payload),
-    'arquivos:grep': async (payload = {}) => arquivos.grep(payload)
+    'arquivos:grep': async (payload = {}) => arquivos.grep(payload),
+
+    // 0.7.0 (#369 fase 3): organizar COM CONFIRMAÇÃO — 1 arquivo por vez,
+    // "apagar" = lixeira do Baluarte (reversível via restaurar). A pergunta
+    // de confirmação mora no Núcleo; o agente NÃO tem acesso a estes canais.
+    'arquivos:mover': async (payload = {}) => arquivos.mover(payload),
+    'arquivos:apagar': async (payload = {}) => arquivos.apagar(payload),
+    'arquivos:lixeira': async () => arquivos.lixeira(),
+    'arquivos:restaurar': async (payload = {}) => arquivos.restaurar(payload)
   };
 }
 
