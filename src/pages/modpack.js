@@ -7,6 +7,7 @@ import '../styles/simbolos.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { MODS, MOD_CATEGORIES, TOTAL_MODS } from '../data/modpack.js';
+import { ARMA3_PRESETS, ARMA3_TOTAL_MODS } from '../data/arma3-presets.js';
 
 const STORAGE_KEY = 'modpack:state';
 let state = null;
@@ -141,5 +142,43 @@ export function modpackPage() {
   fullPage.appendChild(listEl);
 
   renderList();
+
+  /* ===== Presets ARMA 3 (uploads do operador) =====
+   * Cada card baixa o preset oficial do Arma 3 Launcher (arrastar o arquivo
+   * na janela do Launcher importa tudo) e expande a lista de mods com os
+   * links do Steam Workshop. */
+  fullPage.appendChild(
+    h('div', { className: 'page-header anim-fade-in', style: { margin: '28px 0 12px' } },
+      h('h2', { className: 'page-header__title', style: { fontSize: '1.6em' } }, '🪖 Presets Arma 3'),
+      h('p', { className: 'page-header__description' },
+        h('span', { className: 'u-text-cyan' }, `${ARMA3_PRESETS.length} presets`),
+        ' do operador com ',
+        h('span', { className: 'u-text-cyan' }, `${ARMA3_TOTAL_MODS} mods`),
+        ' no total (CBA, ACE, RHS, CUP…). Baixe o preset e ARRASTE o arquivo na janela do Arma 3 Launcher — ele importa e assina tudo sozinho.')));
+
+  const presetsGrid = h('div', { className: 'modpack-grid' });
+  ARMA3_PRESETS.forEach((p) => {
+    const lista = h('div', { className: 'a3-mods', style: 'display:none' },
+      ...p.mods.map((m) => h('div', { className: 'a3-mod' },
+        h('a', { href: m.url, target: '_blank', rel: 'noopener noreferrer' }, m.nome))),
+      p.dlcs.length ? h('div', { className: 'a3-mod u-text-muted' }, 'DLCs: ' + p.dlcs.map((d) => d.nome).join(' · ')) : null);
+    const toggle = h('button', { className: 'btn', onclick: () => {
+      const aberto = lista.style.display !== 'none';
+      lista.style.display = aberto ? 'none' : 'block';
+      toggle.textContent = aberto ? `▸ ver os ${p.mods.length} mods` : '▾ esconder mods';
+    } }, `▸ ver os ${p.mods.length} mods`);
+    presetsGrid.appendChild(
+      h('div', { className: 'modpack-card' },
+        h('div', { className: 'modpack-card__head' },
+          h('span', { className: 'badge badge--cyan' }, 'ARMA 3'),
+          h('span', { className: 'modpack-card__cat u-text-muted u-mono' }, `${p.mods.length} mods · ${p.dlcs.length} DLCs`)),
+        h('div', { className: 'modpack-card__name' }, p.nome),
+        h('div', { style: 'display:flex; gap:8px; margin:10px 0; flex-wrap:wrap' },
+          h('a', { className: 'btn btn--primary', href: p.arquivo, download: '' }, '⬇ Baixar preset'),
+          toggle),
+        lista));
+  });
+  fullPage.appendChild(presetsGrid);
+
   return fullPage;
 }

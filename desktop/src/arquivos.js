@@ -449,4 +449,101 @@ async function grep({ termo, caminho, maxResultados } = {}) {
   return { termo: t, total: acertos.length, tetoAtingido: acertos.length >= teto, arquivosLidos, acertos, parcial: stats.parcial };
 }
 
-module.exports = { status, buscar, relatorio, ler, analisar, grep };
+/* ============ FASE 3 — Organizar com a mão do operador (#369, 0.7.0) ============
+ * PRIMEIRA capacidade de escrita — e as regras do plano valem no motor:
+ *   • cada operação é UMA ação num ARQUIVO (nada de lote, nada de pasta);
+ *   • "apagar" NÃO existe: é mover pra LIXEIRA do Baluarte, sempre reversível
+ *     (restaurar). fs.unlink em arquivo do operador não aparece neste módulo;
+ *   • origem E destino passam pelo validarCaminho (raiz + cofre + symlink);
+ *   • a CONFIRMAÇÃO é da camada de cima (o Núcleo pergunta e só invoca no
+ *     "confirmar"); o agente NÃO recebe essas tools nesta fase. */
+
+const LIXEIRA_DIR = () => path.join(raiz(), 'Documents', 'Baluarte', 'lixeira');
+const MANIFESTO = () => path.join(LIXEIRA_DIR(), 'manifesto.json');
+
+async function lerManifesto() {
+  try { return JSON.parse(await fsp.readFile(MANIFESTO(), 'utf8')); } catch { return []; }
+}
+async function salvarManifesto(itens) {
+  await fsp.mkdir(LIXEIRA_DIR(), { recursive: true });
+  await fsp.writeFile(MANIFESTO(), JSON.stringify(itens, null, 2), 'utf8');
+}
+
+/** Valida um destino que ainda NÃO existe: pai validado + folha com regras. */
+async function validarDestinoNovo(entrada) {
+  const bruto = String(entrada || '').trim();
+  if (!bruto) throw new Error('destino vazio');
+  const base = path.resolve(raiz());
+  const abs = path.resolve(base, bruto);
+  if (abs === base || !abs.startsWith(base + path.sep)) {
+    throw new Error(`destino fora da minha área (só trabalho dentro de ${base})`);
+  }
+  await validarCaminho(path.dirname(abs));   // pai existe e é limpo (cofre/symlink)
+  const folha = path.basename(abs);
+  if (ehPessoal(folha) || ehProibida(folha)) {
+    throw new Error('esse nome de destino cai nas regras do cofre/zona proibida — escolha outro');
+  }
+  if (await fsp.lstat(abs).catch(() => null)) throw new Error('o destino já existe — não sobrescrevo nada');
+  return abs;
+}
+
+/** Move UM arquivo dentro da raiz (rename com fallback copiar+remover). */
+async function moverArquivoFisico(de, para) {
+  try {
+    await fsp.rename(de, para);
+  } catch (e) {
+    if (e.code !== 'EXDEV') throw e;
+    await fsp.copyFile(de, para);            // volumes diferentes: copia…
+    const [a, b] = await Promise.all([fsp.stat(de), fsp.stat(para)]);
+    if (a.size !== b.size) { await fsp.rm(para); throw new Error('cópia divergiu — operação abortada, original intacto'); }
+    await fsp.rm(de);                         // …e só então solta o original
+  }
+}
+
+/** mover/renomear UM arquivo. { de, para } — destino não pode existir. */
+async function mover({ de, para } = {}) {
+  const origem = await validarCaminho(de);
+  const st = await fsp.stat(origem);
+  if (!st.isFile()) throw new Error('por segurança, nesta fase eu só movo ARQUIVOS (um por vez), não pastas');
+  const destino = await validarDestinoNovo(para);
+  await moverArquivoFisico(origem, destino);
+  return { ok: true, de: origem, para: destino };
+}
+
+/** "apagar" = mover pra lixeira do Baluarte (reversível). */
+async function apagar({ caminho } = {}) {
+  const origem = await validarCaminho(caminho);
+  const st = await fsp.stat(origem);
+  if (!st.isFile()) throw new Error('por segurança, nesta fase eu só mando ARQUIVOS pra lixeira, não pastas');
+  await fsp.mkdir(LIXEIRA_DIR(), { recursive: true });
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const guardado = path.join(LIXEIRA_DIR(), `${id}__${path.basename(origem)}`);
+  await moverArquivoFisico(origem, guardado);
+  const itens = await lerManifesto();
+  itens.push({ id, original: origem, guardado, bytes: st.size, quando: new Date().toISOString() });
+  await salvarManifesto(itens);
+  return { ok: true, id, original: origem, lixeira: guardado };
+}
+
+/** Conteúdo da lixeira (pro comando "lixeira"). */
+async function lixeira() {
+  const itens = await lerManifesto();
+  return { total: itens.length, itens: itens.slice(-30).reverse() };
+}
+
+/** Desfaz um "apagar": devolve o arquivo pro caminho original. */
+async function restaurar({ id } = {}) {
+  const itens = await lerManifesto();
+  const item = itens.find((x) => x.id === String(id || '').trim());
+  if (!item) throw new Error(`não achei "${id}" na lixeira — diga "lixeira" pra ver os ids`);
+  if (!(await fsp.lstat(item.guardado).catch(() => null))) throw new Error('o arquivo sumiu da lixeira — não consigo restaurar');
+  if (await fsp.lstat(item.original).catch(() => null)) {
+    throw new Error('já existe um arquivo novo no caminho original — não sobrescrevo; mova-o antes');
+  }
+  await fsp.mkdir(path.dirname(item.original), { recursive: true });
+  await moverArquivoFisico(item.guardado, item.original);
+  await salvarManifesto(itens.filter((x) => x.id !== item.id));
+  return { ok: true, restaurado: item.original };
+}
+
+module.exports = { status, buscar, relatorio, ler, analisar, grep, mover, apagar, lixeira, restaurar };

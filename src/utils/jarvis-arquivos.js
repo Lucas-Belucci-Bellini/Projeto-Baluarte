@@ -50,6 +50,26 @@ export function grepArquivos(termo, caminho) {
   return invocar('arquivos:grep', { termo, caminho });
 }
 
+/* Fase 3 (0.7.0) — ESCRITA com a mão do operador. Estas funções são chamadas
+ * SÓ pelos comandos do Núcleo depois do "confirmar"; de propósito, nenhuma
+ * delas vira tool do agente nesta fase. */
+export function moverArquivo(de, para) {
+  if (!temPonte()) throw new Error('Arquivos só no app (Baluarte Launcher).');
+  return invocar('arquivos:mover', { de, para });
+}
+export function apagarArquivo(caminho) {
+  if (!temPonte()) throw new Error('Arquivos só no app (Baluarte Launcher).');
+  return invocar('arquivos:apagar', { caminho });
+}
+export function verLixeira() {
+  if (!temPonte()) throw new Error('Arquivos só no app (Baluarte Launcher).');
+  return invocar('arquivos:lixeira');
+}
+export function restaurarArquivo(id) {
+  if (!temPonte()) throw new Error('Arquivos só no app (Baluarte Launcher).');
+  return invocar('arquivos:restaurar', { id });
+}
+
 let registrado = false;
 /** Registra as ferramentas do agente (idempotente; no-op fora do app). */
 export function initArquivosTools() {

@@ -31,7 +31,8 @@ import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoice
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, setNucleoToken, simulateNucleoEvent } from '../utils/nucleo-socket.js';
 import {
   initArquivosTools, statusArquivos, buscarArquivos, relatorioArquivos,
-  lerArquivo, analisarPasta, grepArquivos
+  lerArquivo, analisarPasta, grepArquivos,
+  moverArquivo, apagarArquivo, verLixeira, restaurarArquivo
 } from '../utils/jarvis-arquivos.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
@@ -175,6 +176,7 @@ export function gitNexusNucleo(args = {}) {
   page.appendChild(chatEl);
 
   const convo = [];   // histórico curto em memória (a tela é a sessão)
+  let acaoPendente = null;   // fase 3 do Arquivista: ação de escrita aguardando "confirmar"
   let pensando = null;
 
   function bolha(role, texto) {
@@ -197,6 +199,26 @@ export function gitNexusNucleo(args = {}) {
     input.value = '';
     bolha('user', texto);
     const t = texto.toLowerCase();
+
+    /* Fase 3 do Arquivista: uma ação de escrita pendente só sobrevive até a
+     * PRÓXIMA mensagem — ou ela é "confirmar"/"cancelar", ou desarma AQUI,
+     * antes de qualquer outro comando (nada executa por acidente). */
+    if (t === 'confirmar') {
+      if (!acaoPendente) { bolha('jarvis', 'Não há nada aguardando confirmação.'); return; }
+      const acao = acaoPendente; acaoPendente = null;
+      try { bolha('jarvis', await acao.executar()); }
+      catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    if (t === 'cancelar' && acaoPendente) {
+      acaoPendente = null;
+      bolha('jarvis', 'Ação cancelada — nada foi tocado.');
+      return;
+    }
+    if (acaoPendente) {
+      acaoPendente = null;
+      bolha('jarvis', '(ação pendente desarmada — nada foi tocado)');
+    }
 
     /* fechar painel */
     if (/^(fechar|ocultar|esconder|sair)( .*)?$/.test(t)) {
@@ -283,6 +305,70 @@ export function gitNexusNucleo(args = {}) {
       } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
       return;
     }
+    /* Fase 3 do Arquivista (0.7.0) — ESCRITA com confirmação: mover/apagar/
+     * restaurar preparam uma AÇÃO PENDENTE e nada acontece até o operador
+     * digitar "confirmar" ("cancelar" ou qualquer outro comando desarma).
+     * "apagar" = lixeira do Baluarte, sempre reversível. */
+    if (t === 'confirmar') {
+      if (!acaoPendente) { bolha('jarvis', 'Não há nada aguardando confirmação.'); return; }
+      const acao = acaoPendente; acaoPendente = null;
+      try {
+        const r = await acao.executar();
+        bolha('jarvis', r);
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    if (t === 'cancelar' && acaoPendente) {
+      acaoPendente = null;
+      bolha('jarvis', 'Ação cancelada — nada foi tocado.');
+      return;
+    }
+    const moverCmd = texto.match(/^mover\s+(.+?)\s+(?:para|->)\s+(.+)$/i);
+    if (moverCmd) {
+      const [, de, para] = moverCmd;
+      acaoPendente = {
+        executar: async () => {
+          const r = await moverArquivo(de.trim(), para.trim());
+          return `✅ Movido:\n${r.de}\n→ ${r.para}`;
+        }
+      };
+      bolha('jarvis', `🚚 Mover:\n${de.trim()}\n→ ${para.trim()}\nDiga "confirmar" pra executar (ou "cancelar").`);
+      return;
+    }
+    const apagarCmd = texto.match(/^apagar\s+(.+)$/i);
+    if (apagarCmd) {
+      const alvo = apagarCmd[1].trim();
+      acaoPendente = {
+        executar: async () => {
+          const r = await apagarArquivo(alvo);
+          return `🗑️ Na lixeira do Baluarte (reversível): ${r.original}\nid: ${r.id} — "restaurar ${r.id}" desfaz.`;
+        }
+      };
+      bolha('jarvis', `🗑️ Mandar pra LIXEIRA do Baluarte (reversível, nada é apagado de verdade):\n${alvo}\nDiga "confirmar" pra executar (ou "cancelar").`);
+      return;
+    }
+    if (t === 'lixeira') {
+      try {
+        const lx = await verLixeira();
+        if (!lx.total) { bolha('jarvis', 'Lixeira do Baluarte vazia.'); return; }
+        const linhas = lx.itens.slice(0, 10).map((i) => `· [${i.id}] ${i.original} (${i.quando.slice(0, 10)})`).join('\n');
+        bolha('jarvis', `🗑️ ${lx.total} item(ns) na lixeira:\n${linhas}\n"restaurar <id>" devolve pro lugar.`);
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
+      return;
+    }
+    const restCmd = t.match(/^restaurar\s+(\S+)$/);
+    if (restCmd) {
+      acaoPendente = {
+        executar: async () => {
+          const r = await restaurarArquivo(restCmd[1]);
+          return `♻ Restaurado: ${r.restaurado}`;
+        }
+      };
+      bolha('jarvis', `♻ Restaurar o item [${restCmd[1]}] da lixeira pro caminho original.\nDiga "confirmar" pra executar (ou "cancelar").`);
+      return;
+    }
+    if (acaoPendente) { acaoPendente = null; bolha('jarvis', '(ação pendente desarmada)'); }
+
     /* Fase 2 do Arquivista (0.6.1): analisar pasta · ler arquivo · procurar
      * conteúdo. Os caminhos vão como o operador digitou (com caixa original);
      * a validação de cofre/zona proibida acontece no motor do app. */

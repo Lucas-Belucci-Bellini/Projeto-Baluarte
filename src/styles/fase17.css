@@ -492,3 +492,9 @@
 .pc-preset { transition: border-color var(--transition-base), box-shadow var(--transition-base); }
 .pc-preset:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); }
 .pc-preset-tab.is-active { box-shadow: var(--shadow-glow-cyan); }
+
+/* ----- Presets Arma 3 (/modpack) ----- */
+.a3-mods { margin-top: 10px; max-height: 260px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; }
+.a3-mod { font-size: 13px; line-height: 1.7; }
+.a3-mod a { color: var(--color-cyan); text-decoration: none; }
+.a3-mod a:hover { text-decoration: underline; }
