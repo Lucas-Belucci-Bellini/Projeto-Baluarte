@@ -32,7 +32,7 @@ import { initNucleoLink, getNucleoUrl, setNucleoUrl, setNucleoToken, simulateNuc
 import {
   initArquivosTools, statusArquivos, buscarArquivos, relatorioArquivos,
   lerArquivo, analisarPasta, grepArquivos,
-  moverArquivo, apagarArquivo, verLixeira, restaurarArquivo
+  moverArquivo, apagarArquivo, verLixeira, restaurarArquivo, sentinelaPC
 } from '../utils/jarvis-arquivos.js';
 
 /* Pulso da cena por tipo de evento (Fase D do #316). */
@@ -345,6 +345,30 @@ export function gitNexusNucleo(args = {}) {
         }
       };
       bolha('jarvis', `🗑️ Mandar pra LIXEIRA do Baluarte (reversível, nada é apagado de verdade):\n${alvo}\nDiga "confirmar" pra executar (ou "cancelar").`);
+      return;
+    }
+    /* Fase 4 (0.7.1): Sentinela — higiene defensiva read-only. */
+    if (t === 'sentinela' || t === 'verificar pc' || t === 'checar pc') {
+      bolha('jarvis', '🛡️ Sentinela varrendo Downloads/Desktop e o autostart (read-only)…');
+      try {
+        const s = await sentinelaPC();
+        const bloco = [];
+        bloco.push(`🛡️ Sentinela — varri: ${s.varridos.join(', ') || '(nenhum alvo achado)'}`);
+        if (s.duplaExtensao.length) {
+          bloco.push(`🔴 ISCAS (dupla extensão) — NÃO ABRA:\n${s.duplaExtensao.map((x) => `· ${x.caminho}`).join('\n')}`);
+        }
+        if (s.executaveis.length) {
+          bloco.push(`🟡 Executáveis em Downloads/Desktop (confira se reconhece):\n${s.executaveis.slice(0, 8).map((x) => `· ${x.caminho} (${x.tamanho}, ${x.modificado})`).join('\n')}${s.executaveis.length > 8 ? `\n… e mais ${s.executaveis.length - 8}.` : ''}`);
+        }
+        if (s.autostart.length) {
+          bloco.push(`⚡ Inicia junto com o sistema:\n${s.autostart.slice(0, 10).map((x) => `· ${x.item}`).join('\n')}`);
+        }
+        if (s.pesadosParados.length) {
+          bloco.push(`⚪ Peso morto (200 MB+, 6+ meses parado):\n${s.pesadosParados.slice(0, 5).map((x) => `· ${x.caminho} (${x.tamanho}, ${x.meses}m)`).join('\n')}`);
+        }
+        bloco.push(`${s.duplaExtensao.length ? '⚠' : '✅'} ${s.veredito}\n${s.nota}`);
+        bolha('jarvis', bloco.join('\n\n'));
+      } catch (e) { bolha('jarvis', `⚠ ${e.message}`); }
       return;
     }
     if (t === 'lixeira') {

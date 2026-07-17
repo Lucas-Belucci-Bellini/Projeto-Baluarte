@@ -70,6 +70,12 @@ export function restaurarArquivo(id) {
   return invocar('arquivos:restaurar', { id });
 }
 
+/** Fase 4 (0.7.1): Sentinela — higiene defensiva read-only. */
+export function sentinelaPC() {
+  if (!temPonte()) throw new Error('O Sentinela mora no app (Baluarte Launcher).');
+  return invocar('arquivos:sentinela');
+}
+
 let registrado = false;
 /** Registra as ferramentas do agente (idempotente; no-op fora do app). */
 export function initArquivosTools() {
@@ -147,6 +153,16 @@ export function initArquivosTools() {
         const r = await grepArquivos(termo, caminho || '.');
         return { ok: true, total: r.total, arquivosLidos: r.arquivosLidos, tetoAtingido: r.tetoAtingido, acertos: r.acertos.slice(0, 20) };
       } catch (e) { return { ok: false, error: e.message }; }
+    }
+  });
+
+  registerTool({
+    name: 'sentinela_pc',
+    description: 'Varredura DEFENSIVA read-only do PC (higiene, não antivírus): iscas de dupla extensão (nota.pdf.exe), executáveis em Downloads/Desktop, o que inicia junto com o sistema (autostart) e peso morto. Nada é tocado — só relata pro operador decidir. Use quando pedirem pra "verificar o PC", "checar segurança" ou "o que liga com o sistema".',
+    input_schema: { type: 'object', properties: {} },
+    run: async () => {
+      try { return { ok: true, ...(await sentinelaPC()) }; }
+      catch (e) { return { ok: false, error: e.message }; }
     }
   });
 

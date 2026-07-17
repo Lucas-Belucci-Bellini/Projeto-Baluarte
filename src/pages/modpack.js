@@ -69,21 +69,43 @@ export function modpackPage() {
   state = loadState();
   const fullPage = h('div', { className: 'page-modpack' });
 
+  /* ===== Central de MODPACKS (pedido do operador): todos os jogos numa
+   * seção só — Minecraft (catálogo) + Arma 3 (presets), com o placar geral
+   * e abas por jogo. Jogos novos = mais uma aba + data file. ===== */
   fullPage.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
       h('div', { className: 'page-header__crumbs' },
         h('span', null, 'BALUARTE'), h('span', null, '›'),
         h('span', null, 'FERRAMENTAS'), h('span', null, '›'),
-        h('span', null, 'MODPACK MINECRAFT')),
-      h('h1', { className: 'page-header__title' }, '◧ Modpack Minecraft'),
+        h('span', null, 'CENTRAL DE MODPACKS')),
+      h('h1', { className: 'page-header__title' }, '◧ Central de Modpacks'),
       h('p', { className: 'page-header__description' },
-        h('span', { className: 'u-text-cyan' }, `${TOTAL_MODS} mods`),
-        ' catalogados em ',
-        h('span', { className: 'u-text-cyan' }, `${MOD_CATEGORIES.length} categorias`),
-        ' (Tech, Magia, Exploração, Combate, Construção, Storage, World Gen, Performance, Utility). Tier S/A/B/C por popularidade.'
+        'Todos os dados dos modpacks, todos os jogos: ',
+        h('span', { className: 'u-text-cyan' }, `Minecraft — ${TOTAL_MODS} mods`),
+        ` em ${MOD_CATEGORIES.length} categorias · `,
+        h('span', { className: 'u-text-cyan' }, `Arma 3 — ${ARMA3_PRESETS.length} presets (${ARMA3_TOTAL_MODS} mods)`),
+        ' prontos pra importar no Launcher.'
       )
     )
   );
+
+  /* abas por jogo */
+  const mcWrap = h('div', null);
+  const a3Wrap = h('div', { style: 'display:none' });
+  const abas = h('div', { className: 'symbols-cats', style: { marginBottom: '10px' } });
+  const trocarAba = (jogo) => {
+    mcWrap.style.display = jogo === 'mc' ? '' : 'none';
+    a3Wrap.style.display = jogo === 'a3' ? '' : 'none';
+    [...abas.children].forEach((b) => b.classList.toggle('is-active', b.dataset.jogo === jogo));
+  };
+  abas.append(
+    h('button', { className: 'symbols-cat is-active', dataset: { jogo: 'mc' }, onclick: () => trocarAba('mc') },
+      h('span', { className: 'symbols-cat__icon' }, '◧'), h('span', { className: 'symbols-cat__label' }, `Minecraft (${TOTAL_MODS})`)),
+    h('button', { className: 'symbols-cat', dataset: { jogo: 'a3' }, onclick: () => trocarAba('a3') },
+      h('span', { className: 'symbols-cat__icon' }, '🪖'), h('span', { className: 'symbols-cat__label' }, `Arma 3 (${ARMA3_TOTAL_MODS})`)));
+  fullPage.appendChild(abas);
+  fullPage.appendChild(mcWrap);
+  fullPage.appendChild(a3Wrap);
 
   /* Controls */
   const searchInput = h('input', {
@@ -107,7 +129,7 @@ export function modpackPage() {
 
   countEl = h('span', { className: 'section-header__count' }, '');
 
-  fullPage.appendChild(
+  mcWrap.appendChild(
     h('div', { className: 'elites-controls' },
       h('div', { style: { flex: 1, minWidth: '200px' } }, searchInput),
       tierSel,
@@ -125,7 +147,7 @@ export function modpackPage() {
         onclick: () => {
           state.cat = c.id;
           persist();
-          document.querySelectorAll('.symbols-cat').forEach((b) =>
+          chips.querySelectorAll('.symbols-cat').forEach((b) =>
             b.classList.toggle('is-active', b.textContent.trim().startsWith(c.label))
           );
           renderList();
@@ -136,19 +158,20 @@ export function modpackPage() {
       )
     );
   });
-  fullPage.appendChild(chips);
+  mcWrap.appendChild(chips);
 
   listEl = h('div', { className: 'modpack-grid' });
-  fullPage.appendChild(listEl);
+  mcWrap.appendChild(listEl);
 
   renderList();
+  if (/[?&]jogo=arma3/.test(window.location.hash)) trocarAba('a3');
 
   /* ===== Presets ARMA 3 (uploads do operador) =====
    * Cada card baixa o preset oficial do Arma 3 Launcher (arrastar o arquivo
    * na janela do Launcher importa tudo) e expande a lista de mods com os
    * links do Steam Workshop. */
-  fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { margin: '28px 0 12px' } },
+  a3Wrap.appendChild(
+    h('div', { className: 'page-header anim-fade-in', style: { margin: '4px 0 12px' } },
       h('h2', { className: 'page-header__title', style: { fontSize: '1.6em' } }, '🪖 Presets Arma 3'),
       h('p', { className: 'page-header__description' },
         h('span', { className: 'u-text-cyan' }, `${ARMA3_PRESETS.length} presets`),
@@ -178,7 +201,7 @@ export function modpackPage() {
           toggle),
         lista));
   });
-  fullPage.appendChild(presetsGrid);
+  a3Wrap.appendChild(presetsGrid);
 
   return fullPage;
 }

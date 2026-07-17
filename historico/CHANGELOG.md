@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-17
 
+### 🛡️ Launcher 0.7.1 — Sentinela (fase 4 do #369) + Central de Modpacks + Minhas Redes
+- 🛡️ **Sentinela** — a fase 4 do Arquivista, visibilidade DEFENSIVA 100% read-only (sem promessa de antivírus): comando **`sentinela`** no Núcleo varre Downloads/Desktop e relata **🔴 iscas de dupla extensão** (`boleto.pdf.exe` — "NÃO ABRA"), **🟡 executáveis** pra conferência humana, **⚡ o que inicia junto com o sistema** (autostart Windows/Linux — exceção cirúrgica à zona proibida: só os caminhos exatos, só NOMES) e **⚪ peso morto** (200 MB+ parado 6+ meses). Nada é tocado — a decisão é sempre do operador. Tool `sentinela_pc` no agente (read-only).
+- 🎮 **Central de Modpacks**: a `/modpack` virou o hub de TODOS os jogos — abas **Minecraft** (catálogo com busca/tiers/categorias) e **Arma 3** (5 presets · 321 mods), placar geral no topo e deep-link `?jogo=arma3`. Jogo novo = mais uma aba + data file.
+- 🌐 **Minhas Redes** (`/perfil`): os perfis públicos do operador em cards — GitHub, YouTube (@Spartan_Gamer_BR), TikTok (@lucasbeluccioficial), Instagram (@lucas_belucci_bellini), Steam, Nexus Mods (SpartanGamerBRoficial) e Wattpad (SPARTAN_BR). **Sempre em expansão**: perfil novo = 1 linha em `src/data/perfis.js`.
+- ✅ Verificado: Sentinela 6/6 em Node puro (isca achada, pdf limpo ignorado, autostart listado) + navegador 13/13 (comando no Núcleo com "NÃO ABRA", abas da Central funcionando, 7 redes no perfil).
+
 ### ✋ Launcher 0.7.0 — Arquivista fase 3 (#369): organizar COM A MÃO DO OPERADOR
 - ✨ Primeira capacidade de ESCRITA do Arquivista, com as regras do plano viradas em código: **`mover <de> para <destino>`** e **`apagar <arquivo>`** preparam uma ação e **NADA executa** até o operador digitar **`confirmar`** (`cancelar` ou qualquer outra mensagem desarma na hora — nada roda por acidente).
 - 🗑️ **"Apagar" não apaga**: manda pra **lixeira do Baluarte** (`Documentos/Baluarte/lixeira` + manifesto) — `lixeira` lista, **`restaurar <id>`** devolve pro caminho original. `fs.unlink` em arquivo do operador não existe no módulo.

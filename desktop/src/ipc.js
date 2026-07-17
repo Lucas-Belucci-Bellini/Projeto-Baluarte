@@ -85,7 +85,11 @@ function buildHandlers(ctx) {
     'arquivos:mover': async (payload = {}) => arquivos.mover(payload),
     'arquivos:apagar': async (payload = {}) => arquivos.apagar(payload),
     'arquivos:lixeira': async () => arquivos.lixeira(),
-    'arquivos:restaurar': async (payload = {}) => arquivos.restaurar(payload)
+    'arquivos:restaurar': async (payload = {}) => arquivos.restaurar(payload),
+
+    // 0.7.1 (#369 fase 4): Sentinela — higiene defensiva READ-ONLY
+    // (iscas de dupla extensão, executáveis em Downloads/Desktop, autostart).
+    'arquivos:sentinela': async () => arquivos.sentinela()
   };
 }
 
