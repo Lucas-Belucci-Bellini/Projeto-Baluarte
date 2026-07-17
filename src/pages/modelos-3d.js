@@ -19,6 +19,7 @@ import { h } from '../utils/helpers.js';
 import { lineIcon } from '../utils/icons.js';
 import { attachSpotlight } from '../utils/effects.js';
 import SEED from '../data/modelos-3d.json';
+import { GALERIA_3D } from '../data/galeria-3d.js';
 import '../styles/modelos-3d.css';
 
 const GRUPOS = [
@@ -50,18 +51,43 @@ export function modelos3dPage(args = {}) {
     h('div', { className: 'm3d-intro__ico', html: lineIcon('cube') }),
     h('div', null,
       h('p', { className: 'm3d-intro__lead' },
-        'Acervo 3D militar — armas, veículos, mechas e dioramas das coleções curadas na ',
-        h('a', { href: 'https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/310', target: '_blank', rel: 'noopener noreferrer' }, 'issue #310'),
-        '. Clique num modelo pra girar em 3D no player oficial do Sketchfab.'),
+        'Acervo 3D militar — armas, veículos, mechas e dioramas. A ',
+        h('b', null, 'Galeria 3D'), ' abaixo renderiza os modelos ',
+        h('b', null, 'aqui no site'), ' (motor three.js — clicar e ver, sem depender de nada externo). '),
       h('p', { className: 'm3d-intro__credit' },
-        '✦ Todos os modelos pertencem aos seus criadores. Cada card e o player mostram o ',
-        h('b', null, 'autor, a licença e o link original'),
-        ' — crédito sempre, do jeito que tem que ser.'))));
+        '✦ Todos os modelos pertencem aos seus criadores — autor, licença e link sempre à mostra. ',
+        'Modelos do Arma 3 NÃO entram (conteúdo protegido da Bohemia); use o ',
+        h('b', null, 'Visualizador universal'), ' pra abrir os seus localmente.'))));
+
+  /* ===== Galeria 3D — modelos LIVRES que abrem no visor real (0.7.2) =====
+   * A correção do "não funciona": o acervo Sketchfab depende de iframe embed
+   * (cookies de terceiros → tela preta em muita máquina). Aqui os modelos são
+   * hospedados no próprio site e renderizam no three.js que já funciona. */
+  const galeriaGrid = h('div', { className: 'm3d-galeria-grid' });
+  GALERIA_3D.forEach((g) => {
+    galeriaGrid.appendChild(
+      h('div', { className: 'm3d-gal-card', onclick: () => abrirVisorUniversal({ url: g.arquivo, nome: g.nome }) },
+        h('div', { className: 'm3d-gal-card__thumb', 'aria-hidden': 'true' }, '⬡'),
+        h('div', { className: 'm3d-gal-card__body' },
+          h('div', { className: 'm3d-gal-card__head' },
+            h('span', { className: 'm3d-gal-card__nome' }, g.nome),
+            h('span', { className: 'badge badge--cyan' }, g.tag)),
+          h('p', { className: 'm3d-gal-card__desc u-text-muted' }, g.desc),
+          h('div', { className: 'm3d-gal-card__meta u-text-muted' },
+            `por ${g.autor} · `,
+            h('a', { href: g.fonte, target: '_blank', rel: 'noopener noreferrer', onclick: (e) => e.stopPropagation() }, g.licenca)),
+          h('button', { className: 'btn btn--primary m3d-gal-card__btn' }, '▶ Ver em 3D'))));
+  });
+  page.appendChild(h('div', { className: 'card m3d-galeria' },
+    h('div', { className: 'm3d-uni__head' },
+      h('b', null, '🧊 Galeria 3D'),
+      h('span', { className: 'm3d-uni__badge' }, 'renderiza no site · clicar e ver')),
+    galeriaGrid));
 
   /* ----- visor UNIVERSAL (fase 2 do #310): qualquer 3D, como em qualquer
    * site — arquivo local (arrastar/escolher, inclusive .gltf multi-arquivo)
    * ou URL direta. O three.js só baixa quando abre (chunk lazy, #238). ----- */
-  const EXEMPLO_URL = 'https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb';
+  const EXEMPLO_URL = '/modelos-3d/capacete-sci-fi.glb';
   const fileInput = h('input', {
     type: 'file', multiple: true, style: 'display:none',
     accept: '.glb,.gltf,.stl,.obj,.fbx,.bin,.png,.jpg,.jpeg,.webp,.ktx2',
@@ -257,10 +283,14 @@ export function modelos3dPage(args = {}) {
    * já viram textNode, mas aqui a regra é cinto E suspensório. */
   const semHtml = (s) => String(s == null ? '' : s).replace(/[<>&"'`]/g, '');
   function abrirVisorUniversal(fonte) {
-    /* só esquemas de rede/arquivo legítimos passam (nada de javascript: etc.) */
-    if (fonte.url && !/^(https?:|blob:|data:)/i.test(String(fonte.url).trim())) {
-      bolhaErroUrl();
-      return;
+    /* Só destinos legítimos (nada de javascript: etc.): http(s)/blob/data OU
+     * um caminho same-origin com UMA barra (ex.: /modelos-3d/x.glb da Galeria).
+     * `//host` (protocolo-relativo a outro host) e `/\` são recusados. */
+    if (fonte.url) {
+      const u = String(fonte.url).trim();
+      const okScheme = /^(https?:|blob:|data:)/i.test(u);
+      const okLocal = /^\/[^/\\]/.test(u);
+      if (!okScheme && !okLocal) { bolhaErroUrl(); return; }
     }
     if (fonte.url) fonte = { ...fonte, url: String(fonte.url).trim() };
     const nome = semHtml(fonte.nome

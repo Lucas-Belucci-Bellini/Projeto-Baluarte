@@ -8,6 +8,15 @@ aqui o que mudou.
 
 ## 2026-07-17
 
+### 🧊 Launcher 0.7.2 — visor 3D que FUNCIONA de verdade (Galeria 3D no site)
+- 🐛 **A causa do "não funciona"**: clicar num modelo do acervo abria um **iframe embed do Sketchfab**, que depende de **cookies de terceiros** (bloqueados por padrão nos navegadores modernos) → tela preta na máquina do operador.
+- ✨ **Galeria 3D** nova na `/modelos-3d`: modelos LIVRES hospedados no próprio site que **renderizam aqui** no motor three.js (clicar e ver, sem depender de nada externo) — Soldado animado, Capacete sci-fi (PBR), Buggy e Lanterna, cada um com autor + licença + link. O operador adiciona os dele soltando o `.glb` em `public/modelos-3d/` + 1 entrada em `src/data/galeria-3d.js`.
+- 🐛 **Bug do caminho local**: a validação de URL do visor (do fix de XSS) barrava caminhos same-origin (`/modelos-3d/x.glb`) como "Endereço inválido" — a Galeria não abria. Agora aceita `/caminho` de uma barra (rejeitando `//host` e `/\`).
+- 🖼️ **Enquadramento correto pra skinned-mesh**: a caixa envolvente de modelos com esqueleto (soldado) vinha em rest-pose e minúscula → câmera nascia dentro do modelo (só as botas). Agora expande pelas posições reais dos **ossos** + fit-to-view pelo FOV/aspecto real. Palco do visor mais alto.
+- 🔌 **DRACO decoder self-hosted**: antes vinha do `gstatic` CDN (quebrava `.glb` comprimido se a rede/CSP bloqueasse) — agora mora em `public/modelos-3d/draco/`, zero dependência externa.
+- 🪖 **Arma 3 no site? Não.** O Drive do operador é a instalação completa do jogo (executáveis, DLLs, DLCs) — os modelos `.p3d` são conteúdo protegido da Bohemia e não podem ser republicados (#386). O caminho certo: abrir os seus localmente pelo Visualizador universal.
+- ✅ Verificado (Playwright, render real com swiftshader): Galeria 10/10 (canvas monta, 11.376 triângulos + 4 animações no soldado, DRACO local servido, dispose limpo) + visor universal 10/10 (regressão) + screenshot do soldado inteiro enquadrado.
+
 ### 🛡️ Launcher 0.7.1 — Sentinela (fase 4 do #369) + Central de Modpacks + Minhas Redes
 - 🛡️ **Sentinela** — a fase 4 do Arquivista, visibilidade DEFENSIVA 100% read-only (sem promessa de antivírus): comando **`sentinela`** no Núcleo varre Downloads/Desktop e relata **🔴 iscas de dupla extensão** (`boleto.pdf.exe` — "NÃO ABRA"), **🟡 executáveis** pra conferência humana, **⚡ o que inicia junto com o sistema** (autostart Windows/Linux — exceção cirúrgica à zona proibida: só os caminhos exatos, só NOMES) e **⚪ peso morto** (200 MB+ parado 6+ meses). Nada é tocado — a decisão é sempre do operador. Tool `sentinela_pc` no agente (read-only).
 - 🎮 **Central de Modpacks**: a `/modpack` virou o hub de TODOS os jogos — abas **Minecraft** (catálogo com busca/tiers/categorias) e **Arma 3** (5 presets · 321 mods), placar geral no topo e deep-link `?jogo=arma3`. Jogo novo = mais uma aba + data file.
