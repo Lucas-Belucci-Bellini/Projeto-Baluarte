@@ -546,4 +546,83 @@ async function restaurar({ id } = {}) {
   return { ok: true, restaurado: item.original };
 }
 
-module.exports = { status, buscar, relatorio, ler, analisar, grep, mover, apagar, lixeira, restaurar };
+/* ============ FASE 4 — Sentinela (#369, 0.7.1) ============
+ * VISIBILIDADE defensiva, 100% read-only — sem promessa de antivírus:
+ * o Sentinela olha os lugares onde ameaça costuma pousar e RELATA pro
+ * operador decidir. Nada é tocado, movido ou "limpo" automaticamente. */
+
+/** Extensões executáveis (o que roda com clique duplo no Windows). */
+const EXT_EXECUTAVEL = new Set(['.exe', '.bat', '.cmd', '.ps1', '.vbs', '.vbe', '.scr', '.msi', '.com', '.pif', '.hta', '.jar', '.lnk']);
+
+/** Dupla extensão clássica de isca: documento na frente, executável atrás. */
+const RX_DUPLA_EXTENSAO = /\.(pdf|docx?|xlsx?|pptx?|jpe?g|png|gif|mp3|mp4|txt|zip|rar)\.(exe|scr|bat|cmd|vbs|vbe|pif|hta|com)$/i;
+
+/* Autostart: EXCEÇÃO cirúrgica à zona proibida — só ESTES caminhos exatos,
+ * só LISTAGEM de nomes (nunca conteúdo). É onde malware adora se pendurar. */
+const AUTOSTART_ALVOS = [
+  ['AppData', 'Roaming', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup'],  // Windows (usuário)
+  ['.config', 'autostart']                                                              // Linux (XDG)
+];
+
+/**
+ * Varredura de higiene: Downloads/Desktop (iscas + executáveis + peso morto)
+ * e autostart (o que liga junto com o PC). Devolve achados classificados.
+ */
+async function sentinela() {
+  const base = raiz();
+  const duplaExtensao = [];   // 🔴 cara de golpe
+  const executaveis = [];     // 🟡 pra conferência humana
+  const pesadosParados = [];  // ⚪ gordura
+  const agora = Date.now();
+
+  const alvosDisco = [];
+  for (const nome of ['Downloads', 'Desktop', 'Área de Trabalho']) {
+    const dir = path.join(base, nome);
+    if (await fsp.stat(dir).then((s) => s.isDirectory()).catch(() => false)) alvosDisco.push(dir);
+  }
+  for (const dir of alvosDisco) {
+    await varrer(dir, async (arq, dirent) => {
+      const nome = dirent.name;
+      const ext = path.extname(nome).toLowerCase();
+      if (RX_DUPLA_EXTENSAO.test(nome)) {
+        if (duplaExtensao.length < 20) duplaExtensao.push({ caminho: arq });
+        return;
+      }
+      if (EXT_EXECUTAVEL.has(ext)) {
+        const s = await fsp.stat(arq).catch(() => null);
+        if (s && executaveis.length < 25) {
+          executaveis.push({ caminho: arq, tamanho: fmtBytes(s.size), modificado: new Date(s.mtimeMs).toISOString().slice(0, 10) });
+        }
+        return;
+      }
+      const s = await fsp.stat(arq).catch(() => null);
+      if (s && s.size > 200 * 1024 * 1024 && agora - s.mtimeMs > 180 * 24 * 3600 * 1000 && pesadosParados.length < 15) {
+        pesadosParados.push({ caminho: arq, tamanho: fmtBytes(s.size), meses: Math.round((agora - s.mtimeMs) / (30 * 24 * 3600 * 1000)) });
+      }
+    });
+  }
+
+  /* autostart: listagem de NOMES nos alvos exatos (fora deles, nada) */
+  const autostart = [];
+  for (const partes of AUTOSTART_ALVOS) {
+    const dir = path.join(base, ...partes);
+    const nomes = await fsp.readdir(dir).catch(() => null);
+    if (nomes) {
+      for (const n of nomes) {
+        if (n.toLowerCase() === 'desktop.ini') continue;
+        autostart.push({ item: n, onde: dir });
+      }
+    }
+  }
+
+  return {
+    varridos: alvosDisco.map((d) => path.basename(d)),
+    duplaExtensao, executaveis, autostart, pesadosParados,
+    veredito: duplaExtensao.length
+      ? 'ATENÇÃO: há arquivo com cara de isca (dupla extensão) — não abra; confira e considere apagar.'
+      : 'Nenhum padrão clássico de isca encontrado nos alvos varridos.',
+    nota: 'Sentinela é VISIBILIDADE (read-only) — nada foi tocado. A decisão é sempre sua.'
+  };
+}
+
+module.exports = { status, buscar, relatorio, ler, analisar, grep, mover, apagar, lixeira, restaurar, sentinela };

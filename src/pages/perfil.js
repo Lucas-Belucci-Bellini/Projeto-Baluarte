@@ -21,6 +21,7 @@ import { UNIVERSE_SKINS, getUniverseId, setUniverse } from '../utils/universe-th
 import { supabaseConfigured } from '../core/supabase.js';
 import { isLoggedIn, currentUser, signInWithGoogle, signOut } from '../core/supabase-auth.js';
 import { loadProfile, saveProfile } from '../core/user-prefs.js';
+import { PERFIS } from '../data/perfis.js';
 
 const STORAGE_KEY = 'perfil:config';
 
@@ -186,6 +187,23 @@ export function perfilPage() {
     const v = viewsStat.querySelector('.pf-stat__value');
     if (v) v.textContent = res.total.toLocaleString('pt-BR');
   });
+
+  /* ---- minhas redes (perfis públicos do operador, sempre em expansão:
+   * perfil novo = mais uma entrada em src/data/perfis.js) ---- */
+  page.appendChild(sectionTitle('🌐', 'Minhas Redes'));
+  page.appendChild(
+    h('div', { className: 'pf-links' },
+      ...PERFIS.map((p) =>
+        h('button', {
+          className: 'pf-link',
+          title: p.desc,
+          style: `--rede-cor: ${p.cor}`,
+          onclick: () => window.open(p.url, '_blank', 'noopener')
+        },
+          h('span', { className: 'pf-link__icon', style: `color: ${p.cor}` }, p.icone),
+          h('span', { className: 'pf-link__label' }, `${p.rede} · ${p.user}`),
+          h('span', { className: 'pf-link__arrow' }, '↗'))))
+  );
 
   /* ---- acesso rápido ---- */
   page.appendChild(sectionTitle('⊳', 'Acesso Rápido'));
