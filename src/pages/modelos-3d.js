@@ -272,6 +272,13 @@ export function modelos3dPage(args = {}) {
       h('div', { className: 'm3d-viewer__box' },
         h('button', { className: 'm3d-viewer__close', onclick: () => fechar(), 'aria-label': 'Fechar' }, '✕'),
         iframe,
+        /* 0.7.3: o player do Sketchfab é um iframe EXTERNO — com cookies de
+         * terceiros bloqueados (padrão em navegador moderno) ele vira tela
+         * preta e parece que "o 3D quebrou". O aviso dá as duas saídas. */
+        h('div', { className: 'm3d-viewer__hint' },
+          '🖼 Player externo do Sketchfab — ficou em tela preta? Seu navegador bloqueia cookies de terceiros. ',
+          h('a', { href: m.url, target: '_blank', rel: 'noopener noreferrer' }, 'Abra no Sketchfab ↗'),
+          ' ou use a Galeria 3D no topo da página (renderiza aqui no site).'),
         h('div', { className: 'm3d-viewer__credit' },
           h('a', { href: m.url, target: '_blank', rel: 'noopener noreferrer', className: 'm3d-viewer__name' }, m.name),
           h('span', null, ' por '),

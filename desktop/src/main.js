@@ -21,6 +21,14 @@ const nexus = require('./nexus');
  * navegador do Hermes morre sem isso. Onde já é suportado, é no-op. */
 app.commandLine.appendSwitch('enable-unsafe-webgpu');
 
+/* Visor 3D dentro do app (0.7.3): em GPU da blocklist o Chromium 126 desliga
+ * o WebGL SEM fallback de software — o visor morre com "WebGL desativado"
+ * mesmo com o site certo no ar. ignore-gpu-blocklist tenta a GPU real;
+ * enable-unsafe-swiftshader garante o render por software quando nem isso dá
+ * (aceitável aqui: a janela só carrega as origens confiáveis do launcher). */
+app.commandLine.appendSwitch('ignore-gpu-blocklist');
+app.commandLine.appendSwitch('enable-unsafe-swiftshader');
+
 /* Login Google no APP (pedido do operador: "só a web conseguia conectar"):
  * o Google recusa OAuth em navegador embutido quando o User-Agent entrega
  * o Electron ("este navegador ou app pode não ser seguro"). O Chromium por

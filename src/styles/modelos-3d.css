@@ -85,6 +85,14 @@
   background: rgba(10, 8, 16, 0.7); color: var(--color-text-primary); font-size: 15px;
 }
 .m3d-viewer__close:hover { border-color: var(--color-cyan); color: var(--color-cyan); }
+.m3d-viewer__hint {
+  padding: 8px 16px; font-size: 12px; line-height: 1.5; color: var(--color-text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+.m3d-viewer__hint a { color: var(--color-cyan); text-decoration: none; }
+.m3d-viewer__hint a:hover { text-decoration: underline; }
+
 .m3d-viewer__credit {
   padding: 12px 16px; font-size: 13px; line-height: 1.5; color: var(--color-text-secondary);
   border-top: 1px solid rgba(255, 255, 255, 0.08);

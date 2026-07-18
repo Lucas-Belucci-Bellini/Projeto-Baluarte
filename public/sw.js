@@ -7,7 +7,11 @@
  * Isso evita servir assets velhos após um deploy (ex.: no Vercel).
  */
 
-const VERSION = 'baluarte-v0.5.0';
+/* 0.7.3: a VERSION ficou parada na v0.5.0 por DUAS releases — todo mundo que
+ * visitou naquela época carregava cache velho (o "3D não funciona" mesmo com
+ * o site novo no ar). Bump = SW novo instala, limpa os caches antigos e
+ * assume na hora. */
+const VERSION = 'baluarte-v0.7.3';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -43,6 +47,11 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  /* Modelos 3D e o decoder DRACO vão SEMPRE na rede: são binários grandes
+     (estourariam o quota à toa) e o stale-while-revalidate podia entregar
+     modelo/decoder de release velha — outra face do "3D não funciona". */
+  if (url.pathname.startsWith('/modelos-3d/')) return;
 
   /* Navegação: tenta rede primeiro, fallback offline.html */
   if (request.mode === 'navigate') {
