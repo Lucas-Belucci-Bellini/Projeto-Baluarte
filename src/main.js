@@ -293,13 +293,25 @@ if (document.readyState === 'loading') {
 }
 
 /* ==============================================================
- *  Service Worker — registrado em modo passivo (skeleton).
- *  Cache real só na Fase 18.
+ *  Service Worker — cache do site (stale-while-revalidate).
+ *  0.7.3: quando um SW NOVO assume o controle (release nova), a aba
+ *  recarrega UMA vez pra sair do bundle velho — era assim que máquinas
+ *  presas no cache da v0.5.0 continuavam vendo o site antigo.
  * ============================================================== */
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
       .catch((err) => console.warn('[sw] registro falhou (esperado em dev):', err));
+  });
+  // se a página JÁ nasceu controlada, um controllerchange = release nova
+  // (primeiro acesso dispara o evento pelo clients.claim() — esse não conta)
+  const jaControlada = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!jaControlada || window.__swRecarregou) return;
+    window.__swRecarregou = true;
+    if (sessionStorage.getItem('sw:recarregou') === '1') return;
+    sessionStorage.setItem('sw:recarregou', '1');
+    location.reload();
   });
 }

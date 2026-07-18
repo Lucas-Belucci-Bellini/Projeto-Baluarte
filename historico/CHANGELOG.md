@@ -6,7 +6,13 @@ aqui o que mudou.
 
 ---
 
-## 2026-07-17
+## 2026-07-18
+
+### 🧊 Launcher 0.7.3 — a caça completa ao "3D não funciona" (cache velho + WebGL no app)
+- 🕵️ **Análise total pedida pelo operador.** Produção estava certa (código novo, GLBs e DRACO respondendo 200, render verificado) — os culpados estavam em VOLTA do visor:
+- 🐛 **Service worker preso na v0.5.0** (o maior): o `sw.js` em produção ficou com `VERSION = baluarte-v0.5.0` por DUAS releases — quem visitou naquela época tinha um SW com cache **stale-while-revalidate** servindo site velho (por isso "mesmo assim não vai" com o site novo no ar). Agora: versão bumpada pra **v0.7.3** (instala, purga os caches antigos e assume), `/modelos-3d/**` **fora do cache** (binários grandes + risco de modelo/decoder de release velha) e a aba **recarrega 1x sozinha** quando um SW de release nova assume (com trava anti-loop).
+- 🐛 **WebGL sem fallback no app**: o Launcher só tinha o switch de WebGPU — em GPU da blocklist, o Chromium 126 desliga o WebGL **sem** render por software e o visor morre "WebGL desativado" dentro do app. Agora o main sobe com `ignore-gpu-blocklist` (tenta a GPU real) + `enable-unsafe-swiftshader` (garante o software render) — o 3D passa a funcionar no Launcher mesmo em máquina com GPU vetada.
+- 🖼️ **Aviso no acervo Sketchfab**: os cards do acervo continuam sendo iframe externo (tela preta com cookies de terceiros bloqueados — padrão dos navegadores). O modal agora avisa na hora e dá as duas saídas: "Abra no Sketchfab ↗" ou a Galeria 3D (que renderiza aqui no site).
 
 ### 🩺 Visor 3D com autodiagnóstico (site) — o "mesmo assim não vai" agora se explica
 - 🔍 O operador testou a 0.7.2 e o visor seguiu sem abrir — e a produção está comprovadamente com o código novo (galeria, DRACO local e GLBs respondendo 200). Suspeito nº 1: **WebGL desligado/bloqueado na máquina** (consistente com o histórico da GPU: WebGPU desligado, sem shader-f16).
