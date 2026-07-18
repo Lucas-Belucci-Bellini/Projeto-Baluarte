@@ -8,6 +8,12 @@ aqui o que mudou.
 
 ## 2026-07-17
 
+### 🩺 Visor 3D com autodiagnóstico (site) — o "mesmo assim não vai" agora se explica
+- 🔍 O operador testou a 0.7.2 e o visor seguiu sem abrir — e a produção está comprovadamente com o código novo (galeria, DRACO local e GLBs respondendo 200). Suspeito nº 1: **WebGL desligado/bloqueado na máquina** (consistente com o histórico da GPU: WebGPU desligado, sem shader-f16).
+- ✨ Agora o visor **se diagnostica sozinho**: (1) a Galeria mostra um aviso vermelho NA HORA se o WebGL estiver desativado no navegador ("ative a aceleração de hardware e recarregue"); (2) ao clicar, o erro fala claro o que falta em vez do erro críptico do three.js; (3) GPU fraca que recusa antialias ganha segunda tentativa sem antialias.
+- ✅ Verificado (Playwright, 4/4): com WebGL renderiza sem aviso; com `--disable-webgl` o aviso aparece na galeria e o erro do clique explica a correção.
+- 📝 Nota do operador registrada: o tema militar do site é **hobby/interesse pessoal** — nada de trabalho militar real nem propaganda.
+
 ### 🧊 Launcher 0.7.2 — visor 3D que FUNCIONA de verdade (Galeria 3D no site)
 - 🐛 **A causa do "não funciona"**: clicar num modelo do acervo abria um **iframe embed do Sketchfab**, que depende de **cookies de terceiros** (bloqueados por padrão nos navegadores modernos) → tela preta na máquina do operador.
 - ✨ **Galeria 3D** nova na `/modelos-3d`: modelos LIVRES hospedados no próprio site que **renderizam aqui** no motor three.js (clicar e ver, sem depender de nada externo) — Soldado animado, Capacete sci-fi (PBR), Buggy e Lanterna, cada um com autor + licença + link. O operador adiciona os dele soltando o `.glb` em `public/modelos-3d/` + 1 entrada em `src/data/galeria-3d.js`.

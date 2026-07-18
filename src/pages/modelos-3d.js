@@ -78,10 +78,21 @@ export function modelos3dPage(args = {}) {
             h('a', { href: g.fonte, target: '_blank', rel: 'noopener noreferrer', onclick: (e) => e.stopPropagation() }, g.licenca)),
           h('button', { className: 'btn btn--primary m3d-gal-card__btn' }, '▶ Ver em 3D'))));
   });
+  /* autodiagnóstico do "não vai" (0.7.2.1): se o WebGL estiver desligado na
+   * máquina, avisa NA CARA — sem esperar o clique falhar. Teste barato, sem
+   * puxar o chunk do three.js. */
+  const semWebGL = (() => {
+    try {
+      const c = document.createElement('canvas');
+      return !(c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl'));
+    } catch { return true; }
+  })();
   page.appendChild(h('div', { className: 'card m3d-galeria' },
     h('div', { className: 'm3d-uni__head' },
       h('b', null, '🧊 Galeria 3D'),
-      h('span', { className: 'm3d-uni__badge' }, 'renderiza no site · clicar e ver')),
+      h('span', { className: 'm3d-uni__badge' }, 'renderiza no site · clicar e ver'),
+      semWebGL ? h('span', { className: 'm3d-uni__badge', style: 'color:#ff7a7a;border-color:#ff7a7a' },
+        '⚠ WebGL DESATIVADO neste navegador — ative a aceleração de hardware nas configurações e recarregue') : null),
     galeriaGrid));
 
   /* ----- visor UNIVERSAL (fase 2 do #310): qualquer 3D, como em qualquer

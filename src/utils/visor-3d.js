@@ -108,17 +108,52 @@ async function carregarObjeto({ url, files, nome }) {
 }
 
 /**
+ * WebGL disponível NESTE navegador? (0.7.2.1 — autodiagnóstico do "não vai":
+ * em máquina com aceleração de hardware desligada/GPU bloqueada, o contexto
+ * vem nulo e o three.js morre com erro críptico. Testamos antes e falamos
+ * claro o que falta.)
+ */
+export function diagnosticoWebGL() {
+  try {
+    const c = document.createElement('canvas');
+    const gl2 = !!c.getContext('webgl2');
+    const gl1 = gl2 || !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
+    return { ok: gl1, webgl2: gl2 };
+  } catch {
+    return { ok: false, webgl2: false };
+  }
+}
+
+/**
  * Monta o visor dentro de `host` e carrega o modelo.
  * fonte: { url } OU { files } (FileList/array de File) — `nome` opcional.
  * Devolve controles: { rotulo, temAnimacao, setAnimando, setGiro, recentrar,
  * stats, dispose }.
  */
 export async function montarVisor3D(host, fonte) {
+  const diag = diagnosticoWebGL();
+  if (!diag.ok) {
+    throw new Error('WebGL está DESATIVADO neste navegador — sem ele não existe 3D. ' +
+      'Ative a aceleração de hardware (Configurações → Sistema → "Usar aceleração de hardware") e recarregue a página.');
+  }
+
   const { objeto, clips, rotulo, fim } = await carregarObjeto(fonte);
 
   const cena = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 5000);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  /* GPU fraca/bloqueada às vezes recusa contexto com antialias — tenta sem */
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  } catch {
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'default' });
+    } catch (e2) {
+      fim();
+      throw new Error(`o navegador recusou criar o contexto WebGL (${String(e2 && e2.message).slice(0, 80)}) — ` +
+        'tente ativar a aceleração de hardware ou outro navegador.');
+    }
+  }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
