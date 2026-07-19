@@ -15,6 +15,7 @@ import { ARMA3_PRESETS } from '../data/arma3-presets.js';
 import { A3TUT_CATEGORIAS, A3TUT_MODS, A3TUT_TOTAL, A3TUT_DUAL_ARMS } from '../data/arma3-tutoriais.js';
 import { A3TUT_DEPS } from '../data/arma3-deps.js';
 import { A3VAN_SECOES, A3VAN_TOTAL_TOPICOS } from '../data/arma3-vanilla.js';
+import { A3CFG_SECOES, A3CFG_TOTAL_TOPICOS } from '../data/arma3-config.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
 
@@ -24,7 +25,8 @@ export function arma3TutorialPage(args = {}) {
   const urlPorId = Object.fromEntries(preset.mods.map((m) => [m.url.match(/id=(\d+)/)[1], m.url]));
 
   let busca = '', catAtiva = 'all';
-  let aba = (args.query || {}).aba === 'mods' ? 'mods' : 'vanilla';
+  const abaInicial = (args.query || {}).aba;
+  let aba = (abaInicial === 'mods' || abaInicial === 'config') ? abaInicial : 'vanilla';
 
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in' },
@@ -32,13 +34,14 @@ export function arma3TutorialPage(args = {}) {
         h('span', null, 'BALUARTE'), h('span', null, '›'),
         h('span', null, 'FERRAMENTAS'), h('span', null, '›'),
         h('span', null, 'TUTORIAL ARMA 3')),
-      h('h1', { className: 'page-header__title' }, '📖 Tutorial Arma 3 — do zero aos 105 mods'),
+      h('h1', { className: 'page-header__title' }, '📖 Bíblia do Arma 3 — jogo, mods e configuração'),
       h('p', { className: 'page-header__description' },
-        h('span', { className: 'u-text-cyan' }, 'Jogo base completo'),
-        ` (${A3VAN_SECOES.length} seções · ${A3VAN_TOTAL_TOPICOS} tópicos) + `,
+        h('span', { className: 'u-text-cyan' }, 'Jogo base'),
+        ` (${A3VAN_TOTAL_TOPICOS} tópicos) · `,
+        h('span', { className: 'u-text-cyan' }, 'Instalar & configurar mods'),
+        ` (${A3CFG_TOTAL_TOPICOS} tópicos) · `,
         h('span', { className: 'u-text-cyan' }, `${A3TUT_TOTAL} mods`),
-        ' do preset ', h('b', null, 'projeto baluarte vercel app'),
-        ' explicados um a um: o que é, como funciona, comandos e atalhos.')));
+        ' do preset explicados um a um. Tudo pra jogar — com ou sem mods.')));
 
   /* aviso de honestidade sobre teclas + link do preset */
   page.appendChild(h('div', { className: 'card a3tut-aviso' },
@@ -62,7 +65,8 @@ export function arma3TutorialPage(args = {}) {
     }
   }, h('span', { className: 'symbols-cat__label' }, label));
   abas.append(
-    abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS} tópicos`),
+    abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
+    abaBtn('config', `🔧 Instalar & configurar mods · ${A3CFG_TOTAL_TOPICOS}`),
     abaBtn('mods', `🧩 Mods do preset · ${A3TUT_TOTAL}`));
   page.appendChild(abas);
 
@@ -73,11 +77,17 @@ export function arma3TutorialPage(args = {}) {
     oninput: debounce((e) => { busca = e.target.value; render(); }, 120)
   });
   const chips = h('div', { className: 'symbols-cats' });
+  function secoesDaAba() {
+    if (aba === 'config') return A3CFG_SECOES;
+    if (aba === 'vanilla') return A3VAN_SECOES;
+    return null; // mods usa A3TUT_CATEGORIAS
+  }
   function montarChips() {
     chips.replaceChildren();
+    const secs = secoesDaAba();
     const cats = aba === 'mods'
       ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3TUT_CATEGORIAS]
-      : [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3VAN_SECOES.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))];
+      : [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))];
     cats.forEach((c) => {
       chips.appendChild(h('button', {
         className: 'symbols-cat' + (c.id === catAtiva ? ' is-active' : ''), dataset: { cat: c.id },
@@ -185,8 +195,9 @@ export function arma3TutorialPage(args = {}) {
       });
       contador.textContent = `${visiveis} de ${total} mods`;
     } else {
-      total = A3VAN_TOTAL_TOPICOS;
-      A3VAN_SECOES.forEach((sec) => {
+      const secs = secoesDaAba();
+      total = aba === 'config' ? A3CFG_TOTAL_TOPICOS : A3VAN_TOTAL_TOPICOS;
+      secs.forEach((sec) => {
         if (catAtiva !== 'all' && catAtiva !== sec.id) return;
         const filtrados = !termo ? sec.topicos : sec.topicos.filter((t) =>
           normalize(`${t.titulo} ${t.texto}`).includes(termo));
@@ -194,7 +205,8 @@ export function arma3TutorialPage(args = {}) {
         visiveis += filtrados.length;
         corpo.appendChild(secaoEl(sec, filtrados.map(cardTopico), filtrados.length, sec.desc));
       });
-      contador.textContent = `${visiveis} de ${total} tópicos do jogo base`;
+      const rotulo = aba === 'config' ? 'tópicos de instalação/config' : 'tópicos do jogo base';
+      contador.textContent = `${visiveis} de ${total} ${rotulo}`;
     }
     if (!visiveis) corpo.appendChild(h('div', { className: 'card a3tut-vazio u-text-muted' }, 'Nada bate com essa busca.'));
   }

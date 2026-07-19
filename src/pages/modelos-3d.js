@@ -87,13 +87,45 @@ export function modelos3dPage(args = {}) {
       return !(c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl'));
     } catch { return true; }
   })();
+  /* Diagnóstico do "não abre" (0.7.6): botão que roda a cadeia inteira do 3D
+   * NA MÁQUINA do operador e mostra onde quebra, com copiar. Substitui o
+   * chute remoto por dado real. */
+  const diagSaida = h('div', { className: 'm3d-diag', style: 'display:none' });
+  const diagBtn = h('button', { className: 'btn m3d-diag-btn', onclick: async () => {
+    diagBtn.disabled = true; diagBtn.textContent = '🩺 Diagnosticando…';
+    diagSaida.style.display = ''; diagSaida.replaceChildren(h('div', { className: 'u-text-muted' }, 'Rodando os testes na sua máquina…'));
+    try {
+      const { rodarDiagnostico3D } = await import('../utils/diag-3d.js');
+      const r = await rodarDiagnostico3D();
+      const linhas = r.etapas.map((e) => h('div', { className: 'm3d-diag__linha' },
+        h('span', { className: 'm3d-diag__ico', style: `color:${e.ok ? 'var(--color-success)' : '#ff7a7a'}` }, e.ok ? '✓' : '✕'),
+        h('span', { className: 'm3d-diag__nome' }, e.nome),
+        h('span', { className: 'm3d-diag__det u-text-muted' }, e.detalhe)));
+      const copiar = h('button', { className: 'btn btn--primary', onclick: () => {
+        const done = () => { copiar.textContent = 'copiado ✓ — cole aqui pra mim'; };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(r.texto).then(done).catch(() => {});
+        else { const ta = h('textarea'); ta.value = r.texto; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch { /* ok */ } ta.remove(); done(); }
+      } }, '⧉ copiar laudo');
+      diagSaida.replaceChildren(
+        h('div', { className: 'm3d-diag__veredito' + (r.tudoOk ? ' is-ok' : ' is-fail') },
+          r.tudoOk ? '✓ Todas as etapas passaram — o 3D deveria abrir. Se ainda não abre, copie o laudo e me mande.'
+                   : '✕ Achei onde quebra (linha vermelha abaixo). Copie o laudo e me mande que eu conserto certeiro.'),
+        ...linhas,
+        h('div', { style: 'margin-top:10px; display:flex; gap:8px; flex-wrap:wrap' }, copiar));
+    } catch (e) {
+      diagSaida.replaceChildren(h('div', { style: 'color:#ff7a7a' }, 'O próprio diagnóstico falhou: ' + String(e && e.message || e)));
+    }
+    diagBtn.disabled = false; diagBtn.textContent = '🩺 Testar meu 3D de novo';
+  } }, '🩺 O 3D não abre? Clique pra diagnosticar');
+
   page.appendChild(h('div', { className: 'card m3d-galeria' },
     h('div', { className: 'm3d-uni__head' },
       h('b', null, '🧊 Galeria 3D'),
       h('span', { className: 'm3d-uni__badge' }, 'renderiza no site · clicar e ver'),
       semWebGL ? h('span', { className: 'm3d-uni__badge', style: 'color:#ff7a7a;border-color:#ff7a7a' },
         '⚠ WebGL DESATIVADO neste navegador — ative a aceleração de hardware nas configurações e recarregue') : null),
-    galeriaGrid));
+    galeriaGrid,
+    h('div', { className: 'm3d-diag-wrap' }, diagBtn, diagSaida)));
 
   /* ----- visor UNIVERSAL (fase 2 do #310): qualquer 3D, como em qualquer
    * site — arquivo local (arrastar/escolher, inclusive .gltf multi-arquivo)

@@ -220,6 +220,36 @@ export const A3VAN_SECOES = [
     ]
   },
   {
+    id: 'taticas', nome: 'Táticas de combate', icon: '🎯',
+    desc: 'O Arma premia tática, não reflexo — os fundamentos que mantêm você vivo.',
+    topicos: [
+      {
+        titulo: 'Cobertura, conceal e a regra dos 3 segundos',
+        texto: 'COVER (cobertura) para bala; CONCEAL (ocultação — mato, fumaça) só esconde. Não confunda: um arbusto não para tiro. Mova-se de cobertura em cobertura em lances curtos ("I\'m up, he sees me, I\'m down" — ~3 segundos expostos), porque o atirador leva um tempo pra te processar. Ficar parado no aberto é morte.',
+        atalhos: [['Z / X', 'deitar/agachar atrás de cobertura'], ['Q / E', 'espiar da quina expondo pouco']],
+        dicas: ['Antes de correr, tenha a PRÓXIMA cobertura escolhida — nunca corra pro nada.', 'Fumaça (granada) cria concealment na hora: cruze estradas atrás dela.']
+      },
+      {
+        titulo: 'Supressão e fogo de manobra',
+        texto: 'Você não precisa ACERTAR pra vencer: fogo perto do inimigo o obriga a se abaixar (supressão) e para de atirar em você. A manobra clássica é fogo-e-movimento: um elemento SUPRIME (atira na posição inimiga) enquanto o outro MANOBRA pelo flanco. Comande isso na IA com as equipes coloridas (9) + engajar (3).',
+        atalhos: [['3 → Suppress (comando de IA)', 'mandar a IA suprimir uma posição'], ['9 → equipes', 'dividir suprimir × manobrar']],
+        dicas: ['Metralhadora (LMG) é a rainha da supressão — 200 balas mantendo cabeça abaixada.', 'Flanco vem DEPOIS da supressão: sem supressão, quem manobra corre pro tiro.']
+      },
+      {
+        titulo: 'Distância de engajamento e a bala que cai',
+        texto: 'Escolha o tiro pela distância: red dot/CQB até ~200 m, óticas médias 200-500 m, luneta 500 m+. Lembre da queda da bala (zeroing, PgUp/PgDn) e que, sem vento no vanilla, a variável é só distância. Não abra fogo cedo demais: revelar posição a 600 m com fuzil de assalto só entrega você.',
+        atalhos: [['Page Up / Page Down', 'ajustar o zeroing pra distância'], ['prender respiração (mirando)', 'estabilizar o tiro longo']],
+        dicas: ['Contra alvo distante, MIRE e ESPERE ele parar — tiro em movimento a 400 m é loteria.', 'Deixe o inimigo se aproximar da SUA distância ideal em vez de duelar na dele.']
+      },
+      {
+        titulo: 'Operações noturnas',
+        texto: 'À noite, NVG (tecla N) + laser IR (L, só visível no NVG) é vantagem esmagadora contra quem não tem visão noturna. Sem NVG, use a luz da lua (relógio O mostra a hora) e evite lanternas brancas — elas te entregam a quilômetros. Iluminação (flare de artilharia/foguete) sobre o inimigo troca o jogo de um assalto.',
+        atalhos: [['N', 'visão noturna (com NVG equipado)'], ['L', 'laser/lanterna (IR só aparece no NVG)'], ['O', 'relógio (hora → luz da lua)']],
+        dicas: ['Luz branca à noite = "atire em mim". Prefira IR sempre que tiver NVG.', 'Sem NVG contra inimigo COM NVG: fique na cobertura e force o combate pra perto.']
+      }
+    ]
+  },
+  {
     id: 'multiplayer', nome: 'Multiplayer & Comunidade', icon: '🌐',
     desc: 'Onde o Arma vira estilo de vida: co-op, milsim, King of the Hill, Antistasi…',
     topicos: [

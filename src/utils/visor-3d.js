@@ -11,7 +11,8 @@
  *
  * .gltf multi-arquivo funciona no modo local: todos os arquivos soltos juntos
  * (bin/texturas) viram blob-URLs e o LoadingManager resolve os caminhos
- * relativos por nome-base. DRACO usa o decoder oficial (gstatic) sob demanda.
+ * relativos por nome-base. DRACO usa o decoder SELF-HOSTED (public/modelos-3d/
+ * draco/) sob demanda — zero dependência de CDN externo.
  */
 
 import * as THREE from 'three';
