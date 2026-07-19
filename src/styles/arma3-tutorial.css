@@ -6,6 +6,9 @@
 .a3tut-aviso p { margin: 0 0 12px; font-size: 13px; line-height: 1.6; color: var(--color-text-secondary); }
 .a3tut-aviso__acoes { display: flex; gap: 8px; flex-wrap: wrap; }
 
+.a3tut-abas { margin: 2px 0 0; }
+.a3tut-aba .symbols-cat__label { font-weight: var(--font-weight-semibold); }
+
 .a3tut-toolbar { display: flex; gap: 10px; }
 .a3tut-busca { flex: 1; min-width: 220px; }
 .a3tut-contador { font-size: 12px; font-family: var(--font-mono); }
@@ -33,6 +36,20 @@
   display: block; font-size: 10px; letter-spacing: 0.08em;
   font-family: var(--font-mono); color: var(--color-text-muted);
 }
+
+.a3tut-card__deps { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.a3tut-dep {
+  padding: 1px 8px; border-radius: 999px; font-size: 10.5px;
+  font-family: var(--font-mono); color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04);
+}
+
+.a3tut-card--destaque {
+  border: 1px solid var(--color-cyan-edge, rgba(0, 229, 255, 0.35));
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.07) inset;
+  margin-bottom: 4px;
+}
+.a3tut-dep--aviso { color: var(--color-cyan); border-color: var(--color-cyan-edge, rgba(0, 229, 255, 0.35)); }
 
 .a3tut-atalhos { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
 .a3tut-atalho { display: flex; align-items: baseline; gap: 8px; font-size: 12px; }

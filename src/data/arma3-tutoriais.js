@@ -44,17 +44,17 @@ export const A3TUT_MODS = {
   },
   2522638637: {
     cat: 'fundacao', nome: 'ACE3 Arsenal Extended - Core',
-    oQue: 'Extensão do Arsenal do ACE que agrupa variantes de equipamento (cores/versões do mesmo item) num painel só.',
-    como: 'Dentro do Arsenal ACE, itens com variantes ganham um seletor extra — em vez de 30 entradas "capacete verde/tan/preto" espalhadas, você escolhe o item e depois a variante. Sem tecla própria: é UI dentro do Arsenal.',
+    oQue: 'Extensão do Arsenal do ACE que agrupa variantes de equipamento (cores/versões do mesmo item) num seletor só — em vez de 30 entradas "capacete verde/tan/preto", uma entrada com opções.',
+    como: 'É o CORE: precisa de mods de compatibilidade por pack de equipamento (existem compats prontos, ex.: USP) — mods deste preset que já suportam (SPS, retexturas do Simpel) se agrupam sozinhos. Requer ACE 3.16+. Sem tecla própria: é UI dentro do Arsenal ACE.',
     atalhos: [['— ', 'sem teclas; funciona dentro do Arsenal ACE']],
-    dicas: ['Combina com os packs de equipamento (USP, GEARSOC, TAC VESTS…): a lista fica MUITO mais limpa.']
+    dicas: ['Se um pack aparecer "desagrupado", falta o compat dele — procure "[Pack] AAE compat" no Workshop.']
   },
   1376867375: {
     cat: 'fundacao', nome: 'ACE Interaction Menu Expansion',
-    oQue: 'Mais entradas no menu de interação do ACE: sentar em cadeiras, dobrar/guardar mapa, gestos e utilidades que o ACE base não traz.',
-    como: 'As ações novas aparecem automaticamente no menu radial (⊞ Win / Ctrl+⊞ Win) quando fazem sentido — olhe uma cadeira e "sentar" estará lá.',
+    oQue: 'Porta as ações mais usadas do menu de rolagem vanilla pro menu radial do ACE — a cura da guerra entre os dois menus (e do clássico "ejetar sem querer" rolando a roda).',
+    como: 'As ações novas (abrir INVENTÁRIO, entrar em veículos por posição, etc.) aparecem no menu radial (⊞ Win / Ctrl+⊞ Win) quando fazem sentido — o objetivo declarado do autor é você quase nunca precisar do menu de rolagem.',
     atalhos: [['⊞ Win / Ctrl + ⊞ Win', 'as ações novas entram no menu radial do ACE']],
-    dicas: ['Ótimo pra screenshots e roleplay de base: sentar, apoiar arma, gestos.']
+    dicas: ['Requer o ACE (interact menu) — já está no preset.', 'Ótimo pra imersão: menos UI vanilla quebrando o clima.']
   },
   1779063631: {
     cat: 'fundacao', nome: 'Zeus Enhanced (ZEN)',
@@ -65,15 +65,15 @@ export const A3TUT_MODS = {
   },
   2966168738: {
     cat: 'fundacao', nome: 'Terrain Lib',
-    oQue: 'Biblioteca de objetos/estruturas usada como dependência por terrenos e mods de cenário.',
-    como: 'Passivo — não tem menu nem tecla. Instala e esquece; outros mods puxam os assets dela.',
-    atalhos: [['—', 'sem interação direta']],
-    dicas: ['Se um mapa reclamar de "missing addon", confira se ela está ativa.']
+    oQue: 'Editor de TERRENO dentro do Zeus: funções pra modificar a altura/forma do terreno por áreas (gatilhos, marcadores, áreas por função) com vários parâmetros.',
+    como: 'No Zeus, use as ferramentas/módulos do Terrain Lib pra esculpir o terreno da área escolhida. Também otimiza a rede em MP: só os pontos de terreno que mudaram são enviados (o padrão do jogo reenvia o grupo todo).',
+    atalhos: [['—', 'ferramentas dentro do Zeus']],
+    dicas: ['Combina com o Trencher e as Chameleon Trenches: terreno esculpido + trincheira com textura do solo.']
   },
   3147473073: {
     cat: 'fundacao', nome: 'TOTT Core',
-    oQue: 'Núcleo da família TOTT (Tools of the Trade): funções e recursos compartilhados pelos packs TOTT AiO, NSW e Optics deste preset.',
-    como: 'Passivo. Precisa estar ativo pros outros TOTT funcionarem.',
+    oQue: 'Núcleo da família TOTT (Tools of the Trade): retratos autênticos das armas usadas por componentes do JSOC, feitos com referências e pesquisa pesada.',
+    como: 'Passivo — funções e assets compartilhados. Requer CBA e RHSUSAF (a família TOTT é construída sobre o framework RHS).',
     atalhos: [['—', 'sem interação direta']],
     dicas: ['Os itens em si aparecem via TOTT AiO/NSW/Optics no Arsenal.']
   },
@@ -86,54 +86,54 @@ export const A3TUT_MODS = {
   },
   3575468172: {
     cat: 'fundacao', nome: 'MCC - Core',
-    oQue: 'Núcleo da série MCC de ARMAS e ACESSÓRIOS deste preset (Red Dot, LPVO, M4A1, Knights…). Atenção: não é o "MCC Sandbox" de missões — aqui MCC é uma linha de armamento moderno.',
-    como: 'Passivo: carrega os sistemas/texturas que os packs MCC usam. As armas e óticas aparecem no Arsenal com prefixo MCC.',
+    oQue: 'Núcleo da série "Modern Combat Carbines" (Project M) — a linha de armas e acessórios modernos deste preset (Red Dot, LPVO, M4A1, Knights…). Não confundir com o "MCC Sandbox" de missões.',
+    como: 'Core puro: NÃO contém itens em jogo (aviso oficial do autor) — carrega os sistemas que os packs MCC usam. As armas e óticas vêm dos packs "MCC -" e aparecem no Arsenal.',
     atalhos: [['—', 'sem interação direta']],
     dicas: ['Instale sempre junto de qualquer pack "MCC -" da lista — todos dependem deste Core.']
   },
   3328314886: {
     cat: 'fundacao', nome: 'Heavy Weapons Framework',
-    oQue: 'Framework pra armas pesadas desmontáveis: carregar metralhadora/morteiro em partes na mochila e montar em campo.',
-    como: 'As partes viram itens de mochila. Monte/desmonte pela ação de interação (ACE ou menu de rolagem) perto das partes no chão; a arma montada opera como estática normal.',
-    atalhos: [['⊞ Win / menu de rolagem', 'montar · desmontar · pegar partes']],
-    dicas: ['Divida as partes entre dois soldados — tripé com um, tubo com outro.']
+    oQue: 'Framework de ANIMAÇÕES pra armas pesadas: carregar uma arma pesada te coloca num moveset especial que restringe o movimento (mantendo alguma mobilidade) — peso de verdade no ombro. Nasceu dentro do mod Solar Auxilia e virou standalone a pedidos.',
+    como: 'As armas afetadas são definidas nas opções do CBA (ou no config de cada mod compatível). Entrou no moveset pesado? Pra SAIR: agache ou dispare o sprint.',
+    atalhos: [['X ou sprint', 'sair do moveset de arma pesada'], ['Addon Options → HWF', 'definir quais armas contam como pesadas']],
+    dicas: ['Metralhadora pesada deixou de ser fuzil com skin: agora ela ANDA como pesada.']
   },
 
   /* ===================== 🏃 MOVIMENTO & IMERSÃO ===================== */
   2664678033: {
     cat: 'imersao', nome: 'CE: Movement',
-    oQue: 'Movimento estendido: escalar muros e obstáculos mais altos do que o passo vanilla permite.',
-    como: 'Chegue de frente no obstáculo e use a tecla de escalada — a animação leva você por cima de muros/caixas que o V padrão não vence.',
-    atalhos: [['configurável (Configure Addons → CE Movement)', 'escalar/vault — defina uma tecla sua (ex.: V longa)']],
-    dicas: ['Nem toda parede é escalável — altura máxima existe.', 'Com mochila muito pesada a escalada pode ser negada (combina com o Simple Weight Limit).']
+    oQue: 'Cluster Enhancements: Movement — controle FINO da velocidade de movimento: você ajusta o passo entre os degraus fixos do jogo (andar/trotar/correr), estilo "walk speed" analógico.',
+    como: 'Ajuste a velocidade atual pelos atalhos do mod (roda de velocidade) — útil pra acompanhar formação sem a dança do anda-para-anda. Open source (GPLv3), da comunidade Cluster.',
+    atalhos: [['configurável (Configure Addons → CE Movement)', 'aumentar/diminuir a velocidade de movimento']],
+    dicas: ['Patrulha em formação: iguale sua velocidade à do ponto e esqueça o stop-and-go.']
   },
   3351398245: {
     cat: 'imersao', nome: 'Animated Corner Shooting',
-    oQue: 'Atirar de quina com animação real: o personagem projeta a arma pro lado da esquina expondo o mínimo do corpo.',
-    como: 'Encoste na quina e ative pela tecla do mod — entra na postura de corner shooting; atire e saia com a mesma tecla.',
-    atalhos: [['configurável (Configure Addons)', 'entrar/sair da postura de quina']],
-    dicas: ['Brutal em CQB urbano; treine no VR antes de usar em missão.']
+    oQue: 'Sistema de tiro "às cegas" por trás de cobertura: desloca a arma pro lado/cima da quina expondo o mínimo do corpo. Funciona em todas as posturas (só pra jogadores, não pra IA).',
+    como: 'Perto da cobertura, desloque a arma com os atalhos do mod e atire; clique DUPLO na tecla trava a posição. Requer o Animated Recoil (mesmo autor) ativo — já está neste preset.',
+    atalhos: [['Shift + Q', 'deslocar a arma pra ESQUERDA da cobertura (padrão)'], ['Shift + E', 'deslocar a arma pra DIREITA (padrão)'], ['Ctrl + botão-direito', 'deslocar a arma pra CIMA (padrão)'], ['tecla 2× rápido', 'travar/destravar a posição deslocada']],
+    dicas: ['Brutal em CQB urbano; treine no VR antes de usar em missão.', 'Teclas trocáveis nas configurações do mod (CBA).']
   },
   3687909045: {
     cat: 'imersao', nome: 'Showdown Posture',
-    oQue: 'Posturas adicionais de arma (posições de prontidão/abaixada mais naturais).',
-    como: 'Alterna posturas pela tecla do mod; as posturas afetam velocidade e silhueta.',
-    atalhos: [['configurável (Configure Addons)', 'alternar postura']],
-    dicas: ['Postura baixa + caminhar = patrulha com cara de milsim.']
+    oQue: 'Postura "arma alta" AUTOMÁTICA inspirada no Hunt: Showdown — o personagem levanta a arma sozinho na prontidão, como naquele jogo. Feito originalmente pro cenário Mad God Part 2 e liberado pra todo mundo.',
+    como: 'Automático ao carregar — sem tecla. Dá pra EXCLUIR armas do sistema nas opções (as MGs do Spearhead já vêm excluídas por usarem sistema próprio). Existe uma versão separada do autor com suporte a IA.',
+    atalhos: [['—', 'automático; exclusões em Addon Options']],
+    dicas: ['Compatível com praticamente tudo, segundo o autor — se alguma arma brigar, exclua ela nas opções.']
   },
   3761394375: {
-    cat: 'imersao', nome: 'Realistic Vegetation Interaction',
-    oQue: 'A vegetação reage a você: galhos e arbustos se afastam/balançam quando o soldado passa.',
-    como: '100% passivo — atravesse o mato e veja. Também denuncia: mato mexendo entrega movimento.',
+    cat: 'imersao', nome: 'Realistic Vegetation Interaction (RVI)',
+    oQue: 'Penalidades de MOVIMENTO na vegetação densa: atravessar arbusto/mato fechado fica lento de verdade — pra você E pra IA — simulando o esforço de romper a folhagem.',
+    como: '100% passivo, com impacto de performance praticamente zero (promessa oficial do autor). Ande no mato denso e sinta o freio.',
     atalhos: [['—', 'passivo']],
-    dicas: ['Lembre que o inimigo (humano) também VÊ o arbusto mexendo…']
+    dicas: ['O autor recomenda o irmão RVC (Realistic Vegetation Concealment) pro lado da OCULTAÇÃO — papel que neste preset o HATG já cumpre.', 'Emboscada em mata fechada ficou mais honesta: ninguém "surfa" pelo arbusto.']
   },
   3346427969: {
     cat: 'imersao', nome: 'Hide Among The Grass (HATG)',
-    oQue: 'Conserta a injustiça clássica do Arma: a IA te enxergava por cima da grama que o seu monitor renderiza. Deitado na vegetação, você fica de fato mais difícil de ver.',
-    como: 'Passivo — deite na grama/mato e a detecção da IA cai de acordo com a cobertura real.',
-    atalhos: [['—', 'passivo']],
-    dicas: ['Combina perfeitamente com Dynamic Camo System e ghillie: sniper de verdade.']
+    oQue: 'Stealth com foco em performance: a IA passa a NÃO te ver na grama. Você fica oculto quando DEITADO ou AGACHADO (ou em pé dentro de prédio), pesando fatores como distância do inimigo e o tipo de superfície.',
+    como: 'Passivo — não mexe no comportamento da IA, só em como ela "enxerga" (por isso é compatível com mods de IA). Todos os fatores são configuráveis em Addon Options.',
+    atalhos: [['—', 'passivo; opções em Addon Options → HATG']],
+    dicas: ['Em pé no meio do mato você CONTINUA visível — a ocultação exige deitar/agachar.', 'Combina perfeitamente com Dynamic Camo System e ghillie: sniper de verdade.']
   },
   2800081814: {
     cat: 'imersao', nome: 'Dynamic Camo System',
@@ -144,24 +144,24 @@ export const A3TUT_MODS = {
   },
   632435682: {
     cat: 'imersao', nome: 'Remove Stamina',
-    oQue: 'Remove a fadiga/stamina do jogo — corre pra sempre, sem arma balançando de cansaço.',
-    como: 'Passivo, zero configuração. Instalou, nunca mais cansou.',
+    oQue: 'Remove a fadiga/stamina do jogo — corre pra sempre, sem arma balançando de cansaço. Feito pra co-op com MUITA corrida.',
+    como: 'Passivo, zero configuração: executa `player enableStamina false` a cada segundo (é literalmente isso, segundo o autor). Instalou, nunca mais cansou.',
     atalhos: [['—', 'passivo']],
     dicas: ['Convive bem com o Simple Weight Limit: você não CANSA, mas também não vira mula de carga infinita.']
   },
   3044998814: {
     cat: 'imersao', nome: 'Simple Weight Limit',
-    oQue: 'Limite de peso simples: acima do teto, você não consegue simplesmente sair andando com o inventário lotado.',
-    como: 'Passivo — o peso total do equipamento é vigiado e o excesso bloqueia/penaliza o movimento.',
-    atalhos: [['—', 'passivo']],
-    dicas: ['Olhe a barra de peso no canto do inventário antes de sair do Arsenal.']
+    oQue: 'Limite de peso em DOIS degraus: acima do peso MÉDIO você perde o sprint (só trota); acima do peso MÁXIMO, nem trotar.',
+    como: 'Passivo — os dois limites (em libras/lbs) são configuráveis em Addon Options → "Weight Limit". Em MP, só o servidor precisa ter o mod.',
+    atalhos: [['Addon Options → Weight Limit', 'definir peso médio e máximo (lbs)']],
+    dicas: ['Olhe a barra de peso no inventário antes de sair do Arsenal.', 'Mula de esquadrão com mochila cheia de munição vai sentir os dois degraus.']
   },
   2010226699: {
     cat: 'imersao', nome: 'GGE: Weapon Canting',
-    oQue: 'Inclinar a arma (cant) — o clássico "deitar o fuzil" pra mirar por cima de cobertura baixa ou usar red dot offset.',
-    como: 'Segure/pressione a tecla do mod pra inclinar a arma nos ângulos configurados; a balística respeita a inclinação.',
-    atalhos: [['configurável (Configure Addons → GGE)', 'inclinar arma esquerda/direita']],
-    dicas: ['Com LPVO das MCC + red dot em 45°, o canting vira mira secundária real de CQB.']
+    oQue: 'Atirar com a arma primária INCLINADA (canted) — o clássico "deitar o fuzil" pra mirar por cima de cobertura baixa ou usar mira offset.',
+    como: 'MIRANDO, aperte a tecla do mod pra alternar entre mira normal e inclinada. Se você usa "toggle" pra mirar (Optics no botão direito), marque a opção "Toggle ADS" nas configurações do mod.',
+    atalhos: [['C (mirando)', 'alternar mira normal ↔ inclinada (padrão do mod)'], ['Configure Addons → GGE', 'trocar tecla e opções (Toggle ADS)']],
+    dicas: ['Retículo fora do centro ao inclinar? Desligue o headbob (dica oficial do autor).', 'Com LPVO das MCC, o canting vira mira secundária real de CQB.']
   },
   2623341670: {
     cat: 'imersao', nome: 'Animated Recoil Coefficient Changer',
@@ -172,33 +172,33 @@ export const A3TUT_MODS = {
   },
   2993442344: {
     cat: 'imersao', nome: 'Death and Hit Reactions',
-    oQue: 'Animações novas de morte e de reação a acertos — fim do "manequim que desliga".',
-    como: 'Passivo — IA e jogadores tropeçam, cambaleiam e caem de formas variadas conforme onde levaram o tiro.',
+    oQue: 'Animações cinematográficas de morte e reação a acertos — e um truque técnico por trás: a animação antes do ragdoll ajuda a SINCRONIZAR o ragdoll em MP (o jogo só interpola o fim da queda, não o caminho todo).',
+    como: 'Passivo — IA e jogadores tropeçam, cambaleiam e caem de formas variadas conforme onde levaram o tiro. Em MP precisa estar no cliente E no servidor.',
     atalhos: [['—', 'passivo']],
     dicas: ['Muda completamente a leitura de "acertei ou não" a média distância.']
   },
   3444518126: {
     cat: 'imersao', nome: 'Immersive Voices PLUS',
-    oQue: 'Vozes imersivas: gritos de dor, esforço e reações vocais mais humanas no combate.',
-    como: 'Passivo — substitui/adiciona as vozes automaticamente.',
-    atalhos: [['—', 'passivo']],
-    dicas: ['Com o sistema médico do ACE, ferido gritando = pressão real no medic.']
+    oQue: 'Conjuntos de VOZES TEMÁTICAS com protocolo de rádio completo: Warhammer 40K (Guarda Imperial, Space Marines, Orks…), HALO (fuzileiros, Elites), Star Wars (clones com voz do Temuera Morrison, droides) e mais.',
+    como: 'Aplica as vozes automaticamente (via setSpeaker) nas unidades spawnadas no Eden e no Zeus, conforme o tema. Jogadores e o Zeus escutam; os arquivos são assinados pra MP.',
+    atalhos: [['—', 'automático ao spawnar unidades (Eden/Zeus)']],
+    dicas: ['Jogando cenário normal, é neutro; em cenários temáticos (40K/HALO/SW) as unidades ganham as vozes certas sozinhas.']
   },
 
   /* ===================== 🖥️ INTERFACE & HUD ===================== */
   2791403093: {
     cat: 'interface', nome: 'Better Inventory',
-    oQue: 'Reforma da tela de inventário: layout mais denso e legível, sem mudar as regras do jogo.',
-    como: 'Passivo — abra o inventário (I) e a UI nova já está lá.',
-    atalhos: [['I', 'inventário (padrão do jogo)']],
-    dicas: ['Este preset também tem o EVEN Better Inventory — ver o card dele.']
+    oQue: 'Fim do pula-pula entre abas: uniforme, colete E mochila visíveis AO MESMO TEMPO na tela de inventário, com movimentação de itens em pilha e botões do Task Force Radio.',
+    como: 'Abra o inventário (I) e a UI nova está lá. Mover em PILHA: segure Shift ao arrastar = 5 itens de uma vez; segure Ctrl = o máximo possível (carregadores parciais agrupam com parciais, cheios com cheios). Só itens/carregadores empilham (armas e contêineres não — limite do engine). Clientside: em MP basta o servidor permitir.',
+    atalhos: [['I', 'inventário (padrão do jogo)'], ['Shift + arrastar', 'mover 5 itens de uma vez'], ['Ctrl + arrastar', 'mover o máximo possível'], ['Options → Controls → Better Inventory', 'trocar as teclas do mod']],
+    dicas: ['Tem compatibilidade nativa com o Dual Arms (2 armas primárias) — ver o destaque no topo da página.', '⚠ CONFLITO: o EBI (também neste preset) declara-se incompatível com este mod — ative UM dos dois, não ambos.']
   },
   3739421199: {
     cat: 'interface', nome: 'EVEN Better Inventory (EBI)',
-    oQue: 'A evolução do Better Inventory pelo mesmo caminho: ainda mais informação e organização na mesma tela.',
-    como: 'Passivo — refina a tela de inventário (agrupamentos, contadores, leitura rápida).',
-    atalhos: [['I', 'inventário (padrão do jogo)']],
-    dicas: ['Melhora principalmente saque rápido de corpos/caixas em MP.']
+    oQue: 'Inventário estilo ESCAPE FROM TARKOV em 3 painéis: GEAR (armas/loadout), CONTAINER (uniforme+colete+mochila sempre visíveis) e STASH (chão/caixas/veículos com abas de filtro All·Weapons·Magazines·Items). Em BETA público.',
+    como: 'Substitui a TELA do inventário mantendo as regras vanilla por baixo (é overhaul de UI, não de sistema). Destaque oficial: integração com o Armor Plates System — slot dedicado de placas com barra de HP (arraste a placa pro slot e pronto). Compatível com BackpackOnChest-Redux e ACE (carregue @ace ANTES do EBI).',
+    atalhos: [['I', 'inventário (padrão do jogo)'], ['abas do STASH', 'filtrar loot: All · Weapons · Magazines · Items']],
+    dicas: ['⚠ INCOMPATÍVEL com o Better Inventory original (aviso oficial do autor) — como os DOIS estão no preset, ative só um por vez no Launcher.', 'É beta: o autor pede pra testar em SP antes de levar pra comunidade.']
   },
   2060770170: {
     cat: 'interface', nome: 'Arsenal Search',
@@ -244,24 +244,24 @@ export const A3TUT_MODS = {
   },
   3100410156: {
     cat: 'interface', nome: '121 Deployable Spotting Scope',
-    oQue: 'Luneta de observação (spotting scope) implantável — o item do observador da dupla de sniper.',
-    como: 'Carregue como equipamento, implante pela ação de montar (como arma estática) e use F pra entrar na luneta; grande zoom pra observar e corrigir tiros.',
-    atalhos: [['menu de rolagem / ⊞ Win', 'montar · desmontar a luneta'], ['numpad +/-', 'zoom (padrão de óticas)']],
-    dicas: ['Dupla clássica: um no Modern Sniper Systems, outro nesta luneta ditando correções.']
+    oQue: 'Luneta de observação implantável via ACE — Leupold Mark 4 12-40x com retículo Horus TREMOR4, criada pra acompanhar rifles de precisão (feita originalmente pra Task Force 121).',
+    como: 'PRECISA DE DOIS ITENS do Arsenal: a luneta [121] Leupold Mk4 (slot de binóculo) E o tripé [121] Vortex Summit (itens diversos). Com os dois no inventário: auto-interação do ACE → Equipment → Deploy pra montar no tripé; aí é olhar, ajustar o zoom (12-40x) e ditar correções.',
+    atalhos: [['Ctrl + ⊞ Win → Equipment → Deploy', 'montar a luneta no tripé'], ['numpad + / -', 'zoom 12-40x']],
+    dicas: ['Sem o tripé no inventário não há como implantar — os DOIS itens são obrigatórios.', 'Dupla clássica: um no Modern Sniper Systems, outro nesta luneta com o retículo TREMOR4 ditando correções.']
   },
   3550382310: {
     cat: 'interface', nome: 'Sniper Utilities',
-    oQue: 'Utilidades de atirador de precisão: ferramentas de cálculo e apoio pro tiro longo.',
-    como: 'Adiciona itens/ações de sniper (dados de tiro, apoio de cálculo) usáveis pelo inventário e interação. Detalhes finos na página do Workshop.',
-    atalhos: [['configurável / interação', 'ferramentas via itens e menu']],
-    dicas: ['Use junto do zeroing do ACE (PgUp/PgDn) e do spotting scope.']
+    oQue: 'Keybinds de DEPLOY RÁPIDO pro kit de precisão: monta tripé de tiro (ACE SSWT) em 3 alturas e a luneta de observação com UMA tecla — sem caçar a ação no menu do ACE.',
+    como: 'Feito especificamente pro tripé SSWT do ACE e pro 121 Deployable Spotting Scope (dependência; está no preset). Defina as 4 teclas no Configure Addons: tripé altura 1/2/3 + implantar luneta. As classes dos itens são configuráveis (dá pra apontar pra outros tripés compatíveis).',
+    atalhos: [['configurável (Configure Addons → Sniper Utilities)', 'tripé altura 1 · altura 2 · altura 3 · implantar luneta']],
+    dicas: ['Fluxo de dupla de precisão em segundos: uma tecla monta o tripé, outra a luneta — e o ACE zeroing (PgUp/PgDn) faz o resto.']
   },
   2954489716: {
     cat: 'interface', nome: 'Advanced Unit Positioning',
-    oQue: 'Posicionamento fino de unidades da sua esquadra — mandar IA pra posições exatas (andares, janelas, coberturas) além do "mover pra lá" grosseiro.',
-    como: 'Com IA sob seu comando, use o menu/tecla do mod pra apontar a posição exata desejada. Consulte a página do Workshop pros detalhes do fluxo.',
-    atalhos: [['configurável (Configure Addons)', 'posicionar unidade apontada']],
-    dicas: ['Transforma defesa urbana com IA: cada janela com um fuzileiro DE PROPÓSITO.']
+    oQue: '"Lean Out": debruçar sobre janelas, parapeitos e beiradas pra atirar ao longo (ou pra baixo) da parede — posições de tiro que o jogo normal não permite.',
+    como: 'Com a arma APOIADA numa superfície (deploy do bipé/apoio), entre no modo de debruçar com Ctrl+W (Ajustar Postura Acima) e ajuste o ângulo com E/Q (girar torre). Saia com V — MAS reduza o ângulo antes: no ângulo máximo, sair (ou morrer) te faz cair da beirada. Funciona até em unidades controladas remotamente pelo Zeus.',
+    atalhos: [['C (apoiar arma) + Ctrl + W', 'entrar no modo de debruçar (arma apoiada)'], ['E / Q', 'ajustar o ângulo do debruçar'], ['V', 'sair do modo (reduza o ângulo antes!)']],
+    dicas: ['Defesa de telhado: debruce e cubra a base da parede — o ângulo morto clássico deixa de existir.', 'Cair da beirada no ângulo máximo é recurso, não bug: dá pra "escorregar" pra fora de uma janela de propósito.']
   },
 
   /* ===================== 🪢 CORDAS, RAPEL & BREACH ===================== */
@@ -325,31 +325,31 @@ export const A3TUT_MODS = {
   },
   3679457651: {
     cat: 'apoio', nome: 'SCAI Artillery Support',
-    oQue: 'IA de artilharia: baterias controladas por IA passam a usar artilharia de forma inteligente (inclusive contra você).',
-    como: 'Majoritariamente passivo — configure o comportamento em Addon Options; em missões, baterias IA respondem a contatos.',
-    atalhos: [['—', 'passivo; opções em Addon Options']],
-    dicas: ['Cuidado: com isto ativo, ficar parado em campo aberto contra IA com morteiros é convite.']
+    oQue: 'Morteiros IA que FUNCIONAM: quando unidades aliadas avistam o inimigo, elas reportam as coordenadas pras guarnições de morteiro, que engajam com dispersão e precisão realistas. "Chega de morteiros mudos" (lema oficial).',
+    como: 'Passivo — o sistema de observação aliada roda sozinho: contato avistado → coordenada reportada → fogo indireto chegando. Tudo configurável via CBA (Addon Options).',
+    atalhos: [['—', 'passivo; opções em Addon Options → SCAI']],
+    dicas: ['Vale pros DOIS lados: ficar parado em campo aberto contra IA com morteiros virou convite.', 'Coloque um morteiro + guarnição IA na sua base e ganhe apoio de fogo "de graça" nas defesas.']
   },
   3671208957: {
     cat: 'apoio', nome: 'WBK Simple Support',
-    oQue: 'Menu simples de suportes (artilharia, suprimento, reforço) pra usar em qualquer missão sem montar módulos.',
-    como: 'Abra o menu do mod e escolha o suporte; pensado pra ser o caminho mais direto entre "quero apoio" e "apoio caiu".',
-    atalhos: [['configurável (Configure Addons → WBK)', 'abrir o menu de suportes']],
-    dicas: ['Ótimo pra sessões casuais de editor onde você só quer brincar de comandante.']
+    oQue: 'Líderes de esquadrão chamam apoio SEM módulo nenhum, em qualquer missão — com um detalhe de imersão: é preciso carregar a MOCHILA-RÁDIO (qual mochila conta é configurável).',
+    como: 'Com a mochila exigida nas costas, abra o menu de suporte do mod e chame; tempos, custos e catálogo são todos configuráveis em Addon Options. O autor recomenda combinar com o Simplex Support Services pra sistema mais profundo — os dois convivem.',
+    atalhos: [['configurável (Configure Addons → WBK)', 'abrir o menu de suportes'], ['mochila-rádio equipada', 'requisito pra poder chamar']],
+    dicas: ['Sem a mochila certa o menu não funciona — o RTO (operador de rádio) virou função de verdade.']
   },
   3323604819: {
     cat: 'apoio', nome: 'LAFS - Light AI Fire Support',
-    oQue: 'Fogo de apoio leve automático da IA: esquadras IA usam morteiros/metralhadoras de apoio de forma coordenada.',
-    como: 'Passivo — a IA aliada/inimiga coordena apoio leve sozinha conforme o combate; ajuste em Addon Options.',
+    oQue: 'Dá à IA acesso dinâmico a armas de guerra que ela não sabia usar (incluindo os drones FPV — o Crocus é dependência!) — mais ameaça, combate mais interessante e apoio de fogo justo, sem gatilho manual.',
+    como: 'Passivo — o sistema decide quando a IA emprega o apoio. O "Light" é a carga no SERVIDOR: foi desenhado pra operações e unidades grandes. Tem wiki própria com o funcionamento detalhado (link na página do Workshop).',
     atalhos: [['—', 'passivo; opções em Addon Options']],
-    dicas: ['Combina com SCAI: o campo de batalha inteiro passa a usar fogo indireto.']
+    dicas: ['⚠ IA com drone FPV caçando você é outra guerra — esteja avisado.', 'Combina com SCAI: o campo de batalha inteiro passa a usar fogo indireto.']
   },
   3699105433: {
     cat: 'apoio', nome: 'ADAPTATIVE ARMA SUPPORTS (AAS - Core)',
-    oQue: 'Framework adaptativo de suportes: base que padroniza pedidos de apoio pra missões e outros módulos.',
-    como: 'Core passivo — os suportes aparecem conforme a missão/módulos configurarem; opções em Addon Options.',
-    atalhos: [['—', 'passivo/depende da missão']],
-    dicas: ['Se um cenário seu usar AAS, os menus dele assumem o padrão do framework.']
+    oQue: 'Interface tática de suportes que funciona em QUALQUER missão: do gun run de precisão à QRF completa, de campo minado lançável a FOB entregue de helicóptero — sem módulo de Zeus, sem objeto pré-posto, sem script.',
+    como: 'Solte o AAS na missão e a interface de chamados aparece; configure uma vez (mods, mapa, economia) e chame suportes a operação inteira. Funciona com Antistasi, KP Liberation, Warlords, Overthrow e cenário vanilla — e o admin ajusta tudo em tempo real.',
+    atalhos: [['interface própria do AAS (menu/ação)', 'chamar os suportes configurados'], ['Addon Options → AAS', 'configurar catálogo, custos e limites']],
+    dicas: ['No seu Antistasi Ultimate: AAS vira o "menu de apoio" que a guerrilha não tem.', 'Tudo é IA de verdade executando (o heli VOA até você com a FOB) — não é spawn mágico.']
   },
   2651774379: {
     cat: 'apoio', nome: 'OPCOM - Operations Command',
@@ -360,10 +360,10 @@ export const A3TUT_MODS = {
   },
   3492800259: {
     cat: 'apoio', nome: 'Binocular - Artillery',
-    oQue: 'Chamar artilharia OLHANDO pelo binóculo: viu, pediu, caiu.',
-    como: 'Com binóculo equipado, olhe pro alvo e use a ação/tecla do mod pra designar o ponto e disparar a chamada de fogo (bateria precisa existir na missão).',
-    atalhos: [['B', 'binóculo (padrão do jogo)'], ['configurável', 'chamar fogo no ponto observado']],
-    dicas: ['O jeito mais rápido de brincar de observador avançado (FO) sem menus.']
+    oQue: 'Transforma o DESIGNADOR A LASER num controlador de artilharia: você carrega "munições" de artilharia nele (foguetes 230 mm, morteiros 155/82 mm, guiados, fumaça, cluster, até minas AT) e o que você designa, cai.',
+    como: 'Equipe o Laserdesignator + os carregadores de artilharia do mod (Arsenal). Aponte o designador no alvo e dispare a munição escolhida — HE, guiada por laser, iluminação, fumaça… cada "carregador" traz 800 disparos do tipo.',
+    atalhos: [['B', 'sacar o designador (slot de binóculo)'], ['botão de disparo da arma', 'chamar o fogo no ponto designado']],
+    dicas: ['O clássico "sempre carreguei o designador e nunca usei" morre aqui (piada do próprio autor).', 'Munição guiada a laser + alvo em movimento = acompanhe o alvo com o feixe até o impacto.']
   },
 
   /* ===================== 🔫 ARMAS & ACESSÓRIOS ===================== */
@@ -376,17 +376,17 @@ export const A3TUT_MODS = {
   },
   2268351256: {
     cat: 'armas', nome: 'Tier One Weapons',
-    oQue: 'Armamento de forças especiais de alta fidelidade (fuzis modernos, acessórios detalhados, skins).',
-    como: 'Conteúdo de Arsenal; os acessórios próprios (miras/lasers do pack) montam pelas teclas normais do Arsenal.',
+    oQue: 'Armamento do US SOCOM por Fingolfin: SIG MCX Virtus (5.56 e .300 Blackout), SR16 (canos 11.5/14.5"), HK416 (10.4/14.5", rails Geissele/Remington/Midwest), Mk46 e Mk48 — em várias cores e configurações.',
+    como: 'Conteúdo de Arsenal. Construído sobre o framework do RHS (RHSUSAF é dependência) e compatível com ACE.',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Qualidade de animação/som acima da média — vale montar um loadout só com ele pra sentir.']
+    dicas: ['Requer RHSUSAF ativo (já está no preset).', 'O .300 Blackout do MCX é o rei do supressor — subsônico de verdade.']
   },
   2811886291: {
     cat: 'armas', nome: 'SPS Weapons V2',
-    oQue: 'Pacote variado de armas SPS: fuzis, pistolas e apoio com modelagem própria.',
-    como: 'Conteúdo de Arsenal.',
-    atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Confira os calibres: alguns usam munição própria do pack.']
+    oQue: 'Pacote de armas SPS com acessórios de ponta: inclui lasers/iluminadores reais — Steiner DBAL-A4, B.E. Meyers MAWL-DA, Wilcox RAID-Xe e lanterna Surefire M300C (com modos IR).',
+    como: 'Conteúdo de Arsenal (requer CBA + ACE + Arsenal Extended, todos no preset). Os lasers usam a implementação de laser visível atual do jogo/ACE.',
+    atalhos: [['L', 'ligar acessório'], ['Ctrl + L (ACE)', 'alternar modos (visível/IR/lanterna)']],
+    dicas: ['O MAWL-DA + BettIR = iluminação IR de verdade no NVG.', 'Confira os calibres: alguns usam munição própria do pack.']
   },
   699630614: {
     cat: 'armas', nome: 'Specialist Military Arms (SMA) 2.7.1',
@@ -397,17 +397,17 @@ export const A3TUT_MODS = {
   },
   3100490558: {
     cat: 'armas', nome: 'NGA - Next Generation Armory',
-    oQue: 'Arsenal de nova geração: armamento moderno (linha NGSW e afins) com acessórios atuais.',
-    como: 'Conteúdo de Arsenal.',
+    oQue: 'Os VENCEDORES do programa NGSW do Exército dos EUA: XM7 Spear 6.8 mm (fuzil), XM7 Raptor (cano curto) e a família da nova geração.',
+    como: 'Conteúdo de Arsenal (requer CBA + ACE). Munição própria 6.8 mm — leve os carregadores certos.',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Par natural do [FACTION] US Army 2027 deste preset.']
+    dicas: ['Par natural do [FACTION] US Army 2027 deste preset — a facção já vem equipada com eles.']
   },
   3614460136: {
     cat: 'armas', nome: 'Modern Combat Carbines (All-in-One)',
-    oQue: 'Coleção tudo-em-um de carabinas modernas (variantes AR e afins) num pacote só.',
-    como: 'Conteúdo de Arsenal.',
+    oQue: 'O tudo-em-um da série MCC: as carabinas do campo de batalha de ~2025, do FN LICC ao M4 URG-I, com acessórios de alta qualidade e modularidade máxima — "o sonho do infante e do gun guy" (palavras do autor).',
+    como: 'Conteúdo de Arsenal (requer MCC Core). Em expansão contínua — o pack recebe conteúdo novo com o tempo.',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Busque "MCC"/"Carbine" no Arsenal Search pra ver a família toda.']
+    dicas: ['Busque "MCC" no Arsenal Search pra ver a família toda.']
   },
   3564392635: {
     cat: 'armas', nome: 'Modern Sniper Systems (All-in-One)',
@@ -418,10 +418,10 @@ export const A3TUT_MODS = {
   },
   3425368881: {
     cat: 'armas', nome: 'M4A1 URGI',
-    oQue: 'O M4A1 URG-I (Upper Receiver Group - Improved) do SOCOM, modelado em detalhe.',
-    como: 'Conteúdo de Arsenal (procure URGI).',
+    oQue: 'O M4A1 URG-I (Upper Receiver Group - Improved) do SOCOM, modelado em detalhe (modelo original de LOUETTA).',
+    como: 'Conteúdo de Arsenal (procure URGI). Requer CBA + RHSUSAF.',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Aceita as óticas MCC — montagem moderna autêntica.']
+    dicas: ['Na imagem oficial o autor usa óticas TOTT — o par natural dele neste preset.']
   },
   3029401059: {
     cat: 'armas', nome: 'JCA - P320',
@@ -432,10 +432,10 @@ export const A3TUT_MODS = {
   },
   3147482833: {
     cat: 'armas', nome: 'TOTT AiO',
-    oQue: 'O pacote all-in-one da família TOTT: armas e equipamento da linha Tools of the Trade.',
-    como: 'Conteúdo de Arsenal (requer TOTT Core).',
+    oQue: 'O all-in-one da família TOTT (Tools of the Trade): reúne Core + Optics + CAG + NSW — as armas do JSOC com fidelidade de referência, sobre o framework RHS.',
+    como: 'Conteúdo de Arsenal (requer CBA + RHSUSAF; feito pra jogar com ACE).',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Busque "TOTT" no Arsenal Search.']
+    dicas: ['Busque "TOTT" no Arsenal Search.', 'Óticas TOTT foram feitas pra estas armas — o encaixe é perfeito.']
   },
   3391372394: {
     cat: 'armas', nome: 'TOTT NSW',
@@ -446,31 +446,31 @@ export const A3TUT_MODS = {
   },
   3147476552: {
     cat: 'armas', nome: 'TOTT Optics',
-    oQue: 'Pacote de óticas da família TOTT: miras e lunetas pra montar nas armas.',
-    como: 'Conteúdo de Arsenal — slot de ótica (requer TOTT Core).',
-    atalhos: [['numpad + / -', 'zoom de ótica (padrão do jogo)'], ['Ctrl + botão-direito', 'alternar retículo/modo em óticas que têm (padrão)']],
-    dicas: ['Óticas TOTT em armas TOTT têm o encaixe visual perfeito.']
+    oQue: 'Óticas JSOC de alta fidelidade: Aimpoint T2 (várias montagens), Romeo 4T, EOTech XPS-3/EXPS-3, Nightforce ATACR 1-8x NSWDG, Vortex 1-6 e 1-10, Leupold CQBSS — as variáveis com PiP (picture-in-picture) real via CBA — e até clip-on térmico VooDoo-S.',
+    como: 'Conteúdo de Arsenal — slot de ótica (requer TOTT Core). Nas LPVO com PiP, o zoom alterna dentro da própria ótica.',
+    atalhos: [['numpad + / -', 'zoom/magnificação'], ['Ctrl + botão-direito', 'alternar retículo/modo em óticas que têm (padrão)']],
+    dicas: ['O clip-on térmico VooDoo-S na frente de uma LPVO = visão térmica sem trocar de ótica.', 'Óticas TOTT em armas TOTT têm o encaixe visual perfeito.']
   },
   3583519360: {
     cat: 'armas', nome: 'MCC - Red Dot Pack',
-    oQue: 'Miras red dot modernas da linha MCC (Aimpoint/EOTech-like) em várias montagens.',
-    como: 'Slot de ótica no Arsenal (requer MCC Core).',
-    atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Versões com riser combinam com capacete + NVG.']
+    oQue: 'Red dots modernos com modelos comprados/licenciados: Aimpoint T2 (+ magnifier), EOTech EXPS (+ magnifier) e Sig Sauer Romeo9T.',
+    como: 'Slot de ótica no Arsenal (requer MCC Core). Versões com magnifier alternam a magnificação na tecla de modo da ótica.',
+    atalhos: [['Ctrl + botão-direito', 'alternar red dot ↔ magnifier (quando houver)']],
+    dicas: ['MCC = "Modern Combat Carbines" (a série de armas do Project M).', 'Versões com riser combinam com capacete + NVG.']
   },
   3596642267: {
     cat: 'armas', nome: 'MCC - Extended Red Dot Pack',
-    oQue: 'Expansão do Red Dot Pack: mais modelos e variações de miras de ponto.',
-    como: 'Slot de ótica no Arsenal (requer MCC Core).',
+    oQue: 'Variações estendidas dos red dots do pack base em montagens de operador: GBRS Hydra e UnityX (as elevações altas usadas com NVG/passivo).',
+    como: 'Slot de ótica no Arsenal. Requer o MCC Red Dot Pack E o MCC Lights & Lasers (dependências oficiais — ambos no preset).',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Instale junto do pack base pra lista completa.']
+    dicas: ['Montagem alta (Hydra/Unity) é feita pra mirar COM o NVG na cara — combina com BettIR.']
   },
   3583521742: {
     cat: 'armas', nome: 'MCC - Lights & Lasers',
-    oQue: 'Lanternas e lasers táticos modernos (visível/IR) da linha MCC.',
-    como: 'Slot lateral no Arsenal; liga/desliga com a tecla de acessório e alterna modos com o ACE.',
-    atalhos: [['L', 'ligar acessório (padrão)'], ['Ctrl + L (ACE)', 'alternar lanterna/laser/IR']],
-    dicas: ['Com o BettIR deste preset, os modos IR destes lasers viram iluminação real no NVG.']
+    oQue: 'Os lasers/lanternas táticos reais de 2025: BE Meyers SAL-UHP (LA-30), EOTech NGAL e OGL, AN/PEQ-15, AN/PEQ-16B, L3 Squad LRF, Surefire M600V/M300C e Inforce WMLX — cada um com TODOS os modos reais (luz branca, tocha IR, laser IR, laser visível e combos).',
+    como: 'Slot lateral no Arsenal (requer MCC Core). Liga com a tecla de acessório; os MODOS alternam pela tecla "Next Laser Function" do CBA (defina no Configure Addons — orientação oficial do autor).',
+    atalhos: [['L', 'ligar acessório (padrão)'], ['CBA "Next Laser Function" (Configure Addons)', 'alternar luz branca / IR / laser / combos']],
+    dicas: ['Com o BettIR deste preset, os modos IR viram iluminação real no NVG.']
   },
   3575476126: {
     cat: 'armas', nome: 'MCC - LPVO Pack',
@@ -481,10 +481,10 @@ export const A3TUT_MODS = {
   },
   3596643390: {
     cat: 'armas', nome: 'MCC - Magnified Optics Pack',
-    oQue: 'Óticas magnificadas MCC: lunetas fixas e magnifiers pra red dots.',
-    como: 'Slot de ótica no Arsenal.',
-    atalhos: [['numpad + / -', 'zoom'], ['Ctrl + botão-direito', 'flip do magnifier (quando houver)']],
-    dicas: ['Red dot + magnifier basculante = DMR improvisado.']
+    oQue: 'Óticas magnificadas de baixa potência (Elcan, ACOG…): hoje traz o Elcan SPECTR Gen3 — inclusive na versão com red dot Steiner MPS em cima. Pack em expansão.',
+    como: 'Slot de ótica no Arsenal (requer MCC Core).',
+    atalhos: [['numpad + / -', 'zoom'], ['Ctrl + botão-direito', 'alternar Elcan ↔ red dot MPS (na versão combinada)']],
+    dicas: ['Elcan + MPS em cima = alcance E CQB na mesma ótica.']
   },
   3576299123: {
     cat: 'armas', nome: 'MCC - Muzzle Devices',
@@ -495,10 +495,10 @@ export const A3TUT_MODS = {
   },
   3591481785: {
     cat: 'armas', nome: 'MCC - M4A1 Pack',
-    oQue: 'Família M4A1 da linha MCC com as configurações modernas.',
+    oQue: 'M4A1 "upgradeados": handguards, stocks, grips e ferros novos dando vida ao clássico — perfeitos pra PMC, milícia ocidental ou "forças especiais de orçamento" (descrição do autor). Configurações SMR (Geissele 9/11.5/14.5", basicamente um URGI) e Aero, tudo em 5.56 E .300 Blackout.',
     como: 'Conteúdo de Arsenal (requer MCC Core).',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Compare com o M4A1 URGI — dois sabores do mesmo fuzil.']
+    dicas: ['O SMR 11.5" .300BLK + supressor MCC = arma de PMC perfeita.', 'Compare com o M4A1 URGI standalone — dois sabores do mesmo fuzil.']
   },
   3575470416: {
     cat: 'armas', nome: 'MCC - Knights KS-1-2-3-4 Pack',
@@ -509,28 +509,28 @@ export const A3TUT_MODS = {
   },
   3591474457: {
     cat: 'armas', nome: 'MCC - FN LICC-IWS',
-    oQue: 'O FN LICC/IWS (Individual Weapon System) — o sistema modular da FN.',
-    como: 'Conteúdo de Arsenal (requer MCC Core).',
+    oQue: 'O FN IWS (Individual Weapon System) de contrato governamental: carabina IPC no calibre .264 LICC (6.5×43 mm) com carregador polímero de 25 — a aposta da FN pra próxima geração.',
+    como: 'Conteúdo de Arsenal (requer MCC Core). Calibre próprio — leve os carregadores .264 LICC.',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Curiosidade de armaria moderna: procure as variantes de cano no Arsenal Extended.']
+    dicas: ['Compare com o XM7 6.8 mm do NGA: dois futuros concorrentes no mesmo preset.']
   },
   3611446339: {
     cat: 'armas', nome: 'MCC - Barrett Rec7DI',
-    oQue: 'O Barrett REC7 DI — fuzil AR em gás direto da Barrett.',
+    oQue: 'O Barrett REC7 DI: AR leve e modular em gás direto (aceno ao design original de Eugene Stoner), com sistema de gás mid-length pensado pra rodar liso COM ou SEM supressor.',
     como: 'Conteúdo de Arsenal (requer MCC Core).',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Aceita o ecossistema de óticas/lasers MCC.']
+    dicas: ['Feito pra supressor: casa com os Muzzle Devices do próprio MCC.']
   },
   3620610160: {
     cat: 'armas', nome: 'MCC - Sig SpearLT & RattlerLT Pack',
-    oQue: 'SIG MCX Spear-LT e Rattler-LT — as carabinas compactas da SIG usadas por SOF.',
+    oQue: 'SIG MCX Spear-LT e Rattler-LT — a evolução direta do MCX Virtus, a plataforma que a SIG lapidou com testes e feedback de operadores até virar referência.',
     como: 'Conteúdo de Arsenal (requer MCC Core).',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Rattler-LT + supressor MCC = arma de CQB/PSD perfeita.']
+    dicas: ['Rattler-LT + supressor MCC = arma de CQB/PSD perfeita.', 'O Virtus "original" está no Tier One Weapons — dá pra comparar as gerações.']
   },
   3618796804: {
     cat: 'armas', nome: 'MCC - LMT MARS-L and SPECWAR Pack',
-    oQue: 'Fuzis LMT MARS-L e a linha SPECWAR — os AR da Lewis Machine & Tool (contrato NZ).',
+    oQue: 'A família LMT MARS-L com o upper SPECWAR: desenvolvido em parceria com operadores, cano MRP de 12.5"+ e rail monolítico patenteado da LMT — mais espaço de acessório e ergonomia que o CQB clássico.',
     como: 'Conteúdo de Arsenal (requer MCC Core).',
     atalhos: [['—', 'conteúdo de Arsenal']],
     dicas: ['Fecha a coleção MCC: com os packs deste preset você monta praticamente qualquer fuzil ocidental atual.']
@@ -602,10 +602,10 @@ export const A3TUT_MODS = {
   },
   3020755032: {
     cat: 'faccoes', nome: 'Antistasi Ultimate',
-    oQue: 'O modo de jogo: campanha dinâmica de guerrilha onde você liberta o mapa cidade por cidade contra um invasor — persistente, cooperativa e infinitamente rejogável.',
-    como: 'Crie a partida pelo menu multiplayer (host local ou servidor) escolhendo o cenário Antistasi Ultimate no mapa desejado. Dentro do jogo, o menu do Antistasi (tecla própria) controla recrutamento, garagem, dinheiro, HQ e persistência (salvar campanha).',
+    oQue: 'O modo de jogo: campanha dinâmica de guerrilha (libertar o mapa cidade a cidade), no fork mais ambicioso da família — 25+ mods de facção suportados, 50+ mapas, condições de vitória/derrota opcionais e QOL em cima do Antistasi Plus do Socrates.',
+    como: 'Crie a partida pelo menu multiplayer (host local ou servidor) escolhendo o cenário Antistasi Ultimate no mapa desejado. Dentro do jogo, o menu do Antistasi (tecla própria) controla recrutamento, garagem, dinheiro, HQ e persistência — o sistema de save foi reimplementado (funciona até em servidor Linux).',
     atalhos: [['Y', 'menu do jogador Antistasi (padrão; pode conflitar com Zeus — remapeie um)'], ['mapa → HQ', 'ações da base: recrutar, arsenal, salvar']],
-    dicas: ['Comece limpando outposts pequenos — atacar cidade grande cedo é suicídio.', 'O arsenal da guerrilha só mantém o que você SAQUEIA: cada fuzil inimigo vale ouro.', 'Funciona com RHS/CUP deste preset — o inimigo usa o conteúdo dos mods.']
+    dicas: ['Comece limpando outposts pequenos — atacar cidade grande cedo é suicídio.', 'O arsenal da guerrilha só mantém o que você SAQUEIA: cada fuzil inimigo vale ouro.', 'Com RHS/CUP deste preset o inimigo usa o conteúdo dos mods — e o justBuild/KzyxTools daqui têm integração oficial.']
   },
 
   /* ===================== 🎽 UNIFORMES & EQUIPAMENTO ===================== */
@@ -625,10 +625,10 @@ export const A3TUT_MODS = {
   },
   3702954719: {
     cat: 'equipamento', nome: 'IHPS Helmet 2035',
-    oQue: 'Outra leitura do capacete IHPS, adaptada ao estilo 2035 do Arma 3 vanilla.',
+    oQue: 'O capacete IHPS reimaginado DENTRO do lore 2035 do Arma 3: com lore próprio escrito (a Invasão do Takistão, a "Recessão Negra" dos anos 2020, a chegada lenta do IHPS junto do fuzil MX 6.5 mm) — feito pra casar com a NATO vanilla.',
     como: 'Slot de capacete no Arsenal.',
     atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Use este com as facções vanilla NATO; o USP IHPS com RHS/2027.']
+    dicas: ['Use este com as facções vanilla NATO (MX 6.5 mm); o USP IHPS com RHS/US Army 2027.']
   },
   2127190744: {
     cat: 'equipamento', nome: 'Moe Pilot Gear Suite',
@@ -653,10 +653,10 @@ export const A3TUT_MODS = {
   },
   3694150202: {
     cat: 'equipamento', nome: '[TRF] Blackthorn Operators Equipment - REDUX',
-    oQue: 'Equipamento de operadores Blackthorn (REDUX): uniformes e gear SOF estilizados de alta qualidade.',
-    como: 'Conteúdo de Arsenal.',
-    atalhos: [['—', 'conteúdo de Arsenal']],
-    dicas: ['Estética PMC/unidade fictícia — bom pra cenários originais seus.']
+    oQue: 'Equipamento da unidade Blackthorn (REDUX — a versão limpa e refeita do pack antigo): uniformes e gear SOF de alta qualidade, com insígnias da unidade.',
+    como: 'Conteúdo de Arsenal (requer CBA + ACE). O capacete Caiman tem INTERAÇÕES ACE próprias: levantar os abafadores (earpro) e o visor LH250 pelo menu de auto-interação.',
+    atalhos: [['Ctrl + ⊞ Win (com o Caiman)', 'levantar/baixar abafadores e visor do capacete']],
+    dicas: ['É pack de unidade (btrg.co.uk) — vem com insígnia deles; bom pra estética PMC/unidade fictícia.']
   },
   1299068883: {
     cat: 'equipamento', nome: 'GEARSOC - Deluxe Edition',
@@ -683,17 +683,17 @@ export const A3TUT_MODS = {
   /* ===================== 🚁 AERONAVES & DRONES ===================== */
   1686321576: {
     cat: 'aeronaves', nome: 'Project - Future Vertical Lift',
-    oQue: 'As aeronaves do programa FVL real dos EUA: V-280 Valor e companhia — os substitutos do Black Hawk, voáveis.',
-    como: 'Aeronaves no editor/Zeus (BLUFOR). Voam como VTOL: transição entre modo helicóptero e avião pela tecla de VTOL do jogo.',
+    oQue: 'Tiltrotor baseado no Bell V-280 Valor (no jogo, UV-85 "Omaha") — o substituto do Black Hawk, em CINCO variantes: básica (sem armas), com miniguns, com Gatling .50, MV-85 Spec Ops (2× minigun + canhão 20 mm + 14 foguetes + 2 mísseis Griffin) e AV-85 de ataque (troca os assentos por 8× ATGM).',
+    como: 'Aeronaves no editor/Zeus (BLUFOR). Voam como VTOL: decolagem vertical, transição de rotores pra cruzeiro pela tecla de VTOL do jogo.',
     atalhos: [['tecla de transição VTOL (padrão do jogo)', 'alternar rotores helicóptero ↔ cruzeiro'], ['G (padrão)', 'trem de pouso']],
-    dicas: ['Aprenda a transição no VR: levantar como heli, transicionar, cruzar a 300 kt, voltar a heli no LZ.']
+    dicas: ['Aprenda a transição no VR: levantar como heli, transicionar, cruzar rápido, voltar a heli no LZ.', 'Escolha a variante pelo papel: tropa (básica/minigun), escolta (MV-85), caça-tanque (AV-85).']
   },
   2147841185: {
     cat: 'aeronaves', nome: 'Project - FVL ACE3 Compatibility',
-    oQue: 'Ponte de compatibilidade entre o FVL e o ACE (integra os sistemas médico/carga/interação do ACE nas aeronaves FVL).',
-    como: 'Passivo — instale junto do FVL quando jogar com ACE (o caso deste preset).',
-    atalhos: [['—', 'passivo']],
-    dicas: ['Sem ele, interações ACE dentro do FVL ficam capadas.']
+    oQue: 'Ponte de compatibilidade FVL ↔ ACE — na prática, habilita o FASTROPING do ACE (descer de corda rápida) nas aeronaves FVL.',
+    como: 'Passivo — instale junto do FVL quando jogar com ACE (o caso deste preset). Com ele, o UV-85 pairando ganha a interação de fast rope do ACE.',
+    atalhos: [['⊞ Win (no heli pairando)', 'preparar cordas / descer (fast rope do ACE)']],
+    dicas: ['Fast rope do ACE + Advanced Rappelling = dois jeitos de descer sem pousar; o fast rope é o mais rápido.']
   },
   3354581482: {
     cat: 'aeronaves', nome: 'CV-22 Osprey',
@@ -704,61 +704,61 @@ export const A3TUT_MODS = {
   },
   3390219536: {
     cat: 'aeronaves', nome: 'C-5 Galaxy',
-    oQue: 'O gigante C-5 Galaxy: transporte estratégico capaz de engolir veículos inteiros.',
+    oQue: 'O Lockheed C-5 Galaxy: capacidade de transporte aéreo ESTRATÉGICO intercontinental da USAF — engole cargas "outsized" (veículos inteiros) que nem o C-17 leva.',
     como: 'Aeronave no editor/Zeus. Carregue veículos pelo sistema de carga (ViV/ACE cargo) pela rampa; pista LONGA obrigatória.',
     atalhos: [['menu de rolagem / ⊞ Win', 'rampa · carga de veículos'], ['G', 'trem de pouso']],
     dicas: ['Planeje o pouso: nem toda pista do Arma segura um C-5.']
   },
   3686190970: {
     cat: 'aeronaves', nome: 'STmod AC-130J',
-    oQue: 'O AC-130J Ghostrider: o gunship com canhões laterais (105 mm, 30 mm) orbitando o alvo.',
-    como: 'Coloque pelo editor/Zeus; pilote a órbita (ou use piloto IA) e opere as estações de artilharia nas posições de gunner — câmera estilo "olho de Deus" com os canhões laterais.',
+    oQue: 'Recriação do AC-130J Ghostrider (o gunship que entrou em serviço na USAF em 2017) E do irmão de transporte MC-130J Commando II — canhões laterais orbitando o alvo + inserção especial.',
+    como: 'Coloque pelo editor/Zeus (requer ACE); pilote a órbita (ou use piloto IA) e opere as estações de artilharia nas posições de gunner — câmera estilo "olho de Deus" com os canhões laterais.',
     atalhos: [['posições de gunner (entrar no veículo)', 'estações dos canhões'], ['Ctrl + botão-direito', 'trocar modo de câmera/zoom (padrão de gunner)']],
-    dicas: ['Órbita à esquerda: os canhões atiram pelo bordo esquerdo — mantenha o alvo nesse lado.']
+    dicas: ['Órbita à esquerda: os canhões atiram pelo bordo esquerdo — mantenha o alvo nesse lado.', 'O MC-130J cobre o papel de transporte especial (o C-5 daqui é o estratégico).']
   },
   3045129955: {
     cat: 'aeronaves', nome: 'FPV Drone Crocus',
-    oQue: 'Drone FPV (first-person view) estilo guerra atual: pequeno, rápido e com carga explosiva.',
-    como: 'Use o terminal UAV (item no slot GPS) pra conectar e pilotar em primeira pessoa; voe até o alvo e detone a carga.',
+    oQue: 'Drone de ATAQUE FPV (first-person view) até 190 km/h, em duas versões: AT (anticarro) e AP (antipessoal) — o retrato do campo de batalha de 2024+.',
+    como: 'Use o terminal UAV (item no slot GPS) pra conectar e pilotar em primeira pessoa; voe até o alvo e detone a carga. Existem mods-irmãos oficiais do autor: IA usando FPV, jammer (Sania) e dano reduzido — links na página do Workshop.',
     atalhos: [['terminal UAV (equipar + usar)', 'conectar/pilotar o drone'], ['W A S D + mouse', 'voo FPV']],
-    dicas: ['Pilotar FPV tem curva de aprendizado — treine no VR antes.', 'Retrato fiel do campo de batalha de 2024+: barato, letal, assustador.']
+    dicas: ['Pilotar FPV tem curva de aprendizado — treine no VR antes.', 'Contra blindado use a versão AT; infantaria entrincheirada, a AP.']
   },
   3431126976: {
     cat: 'aeronaves', nome: 'Wings of Fury',
-    oQue: 'Pacote de melhorias de aviação/combate aéreo da comunidade.',
-    como: 'Melhorias aplicadas às aeronaves conforme as opções do mod; detalhes finos na página do Workshop.',
-    atalhos: [['—', 'ver página do Workshop pros detalhes']],
-    dicas: ['Teste num voo livre no VR/editor pra sentir as mudanças antes de missão.']
+    oQue: 'Pacote de AERONAVES NOVAS (frota dos packs FireWill, Luca e TeTeTe3 — incluindo o A-10) com sistemas de armas realistas, física de armamento e animações avançadas integradas.',
+    como: 'As aeronaves aparecem no editor/Zeus; armamento e travas seguem o padrão do jogo (F troca arma, T trava alvo, C contramedidas).',
+    atalhos: [['F', 'trocar arma'], ['T', 'travar alvo'], ['C', 'contramedidas (padrão)'], ['G', 'trem de pouso']],
+    dicas: ['Voo livre no VR/editor primeiro: cada aeronave tem envelope e armamento próprios.']
   },
 
   /* ===================== 🏗️ CONSTRUÇÃO & CENÁRIO ===================== */
   3336740643: {
     cat: 'construcao', nome: 'Milsim Structures',
-    oQue: 'Estruturas militares pra composição de bases: torres, muralhas HESCO, tendas, contêineres.',
-    como: 'Objetos no Eden (editor) e no Zeus — categoria de estruturas; monte FOBs arrastando e alinhando.',
-    atalhos: [['—', 'objetos no Eden/Zeus']],
-    dicas: ['No ZEN, salve a base pronta como COMPOSIÇÃO e reutilize em qualquer missão.']
+    oQue: 'Prédios de base militar "sem glamour" (proposital!) COM INTERIORES navegáveis — feitos originalmente pro mapa Fort Johnson do autor e liberados standalone.',
+    como: 'Objetos no Eden/Zeus. As paredes têm SNAP entre si: ligue/desligue o encaixe alternando a Grade de Translação do editor.',
+    atalhos: [['grade de translação do Eden', 'ligar/desligar o snap das paredes']],
+    dicas: ['Interior de verdade = CQB de verdade dentro da SUA base.', 'No ZEN, salve a base pronta como COMPOSIÇÃO e reutilize em qualquer missão.']
   },
   2914901109: {
     cat: 'construcao', nome: 'Chameleon Trenches',
-    oQue: 'Trincheiras "camaleão": objetos de trincheira que adotam a textura do terreno onde são postos.',
-    como: 'Objetos no Eden/Zeus; ao posicionar, a trincheira assume a cor/textura do solo local — sem remendo visual.',
-    atalhos: [['—', 'objetos no Eden/Zeus']],
-    dicas: ['Linha de trincheira + HATG = defesa que a IA custa a enxergar.']
+    oQue: 'Trincheiras "camaleão": objetos de trincheira que adotam automaticamente a TEXTURA DO SOLO onde são postos — zero contraste entre trincheira e terreno.',
+    como: 'No editor, categoria "Trench Structures": posicione os objetos e afunde-os parcialmente no chão pra imitar posição cavada. O autor recomenda usar junto do mod Deformer (deformar o terreno de verdade); a atribuição automática de textura pode ser desligada se quiser.',
+    atalhos: [['—', 'objetos no Eden/Zeus (categoria Trench Structures)']],
+    dicas: ['Linha de trincheira + HATG = defesa que a IA custa a enxergar.', 'Com o Terrain Lib dá pra esculpir o terreno em volta no próprio Zeus.']
   },
   3256534418: {
     cat: 'construcao', nome: 'Trencher - Eden Trench Generation',
-    oQue: 'Gerador de trincheiras no Eden: desenhe a linha e ele gera o trincheiramento inteiro.',
-    como: 'Ferramenta do EDITOR (Eden): use o módulo/ferramenta Trencher pra traçar o caminho da trincheira e gerar os segmentos automaticamente.',
-    atalhos: [['—', 'ferramenta dentro do Eden (editor 3D)']],
-    dicas: ['Frente de 500 m de trincheiras em 2 minutos — WW1 no Arma sem carpal túnel.']
+    oQue: 'Geração de trincheiras POR MÓDULO no Eden: qualquer profundidade e largura, com reforços opcionais (sacos de areia, dentes-de-dragão, arame farpado) — e a IA NAVEGA e guarnece as trincheiras.',
+    como: 'No Eden, coloque os módulos do Trencher no traçado desejado e configure; módulos de área desligam a geração em trechos escolhidos. IMPORTANTE: salve a missão pra ver as modificações em jogo; em MP, servidor E clientes precisam do mod + dependências (Chameleon Trenches e Terrain Lib — ambas no preset).',
+    atalhos: [['—', 'módulos dentro do Eden (editor 3D)']],
+    dicas: ['Frente de 500 m em 2 minutos — WW1 no Arma sem túnel do carpo.', 'IA guarnecendo trincheira gerada = defesa pronta sem script.']
   },
   1162098941: {
     cat: 'construcao', nome: 'justBuild',
-    oQue: 'Construção EM JOGO: menu de construção livre pra erguer estruturas durante a partida (estilo fortificação).',
-    como: 'Abra o menu de construção do mod, escolha a peça, posicione com o preview fantasma e confirme; peças encaixam umas nas outras.',
-    atalhos: [['configurável (Configure Addons → justBuild)', 'abrir o menu de construção'], ['mouse + roda', 'girar/ajustar a peça no preview']],
-    dicas: ['Fortificar objetivo tomado no meio da partida muda o metagame da defesa.']
+    oQue: 'Construção EM JOGO via menu do ACE: FOB, estação de reparo, barreiras Hesco, sacos de areia, caixa de munição COM Arsenal, bunker, concertina e posições de morteiro/HMG/AA/AT/artilharia — em qualquer missão.',
+    como: 'Usa o menu de interação do ACE pra colocar os objetos (requer o ACE ativo — está no preset). Tem integração oficial com o ANTISTASI: o que você constrói entra no save persistente. Alguns objetos pedem RHSUSAF/RHSAFRF (ambos no preset).',
+    atalhos: [['⊞ Win / Ctrl + ⊞ Win', 'menu de construção via interação ACE']],
+    dicas: ['No seu Antistasi Ultimate: fortificar cidade tomada e SALVAR junto da campanha.', 'A caixa com Arsenal construível é um respawn de equipamento portátil.']
   },
 
   /* ===================== ⚙️ ADMIN, CHEATS & PERFORMANCE ===================== */
@@ -771,15 +771,15 @@ export const A3TUT_MODS = {
   },
   3674879316: {
     cat: 'admin', nome: 'KzyxTools - Cheat Menu & Admin Tool',
-    oQue: 'Menu de administração/desenvolvimento compatível com MULTIPLAYER: ferramentas de admin, spawn, teleporte e debug pra quem roda o servidor.',
-    como: 'Abra pelo atalho do mod (precisa de permissão de admin no MP); menus de jogador, mundo e debug.',
-    atalhos: [['configurável (Configure Addons → KzyxTools)', 'abrir o menu de admin']],
-    dicas: ['USE COM RESPONSABILIDADE em servidor: é ferramenta de admin, não de trapaça com os amigos.']
+    oQue: 'Kit completo de admin/desenvolvimento numa UI só (MP compatível): spawn de unidades/veículos com editor de loadout, visualização de balística e rastreio de projéteis em tempo real, módulos Zeus na hora, edição de texturas/hitpoints de veículo, god mode, teleporte e NoClip.',
+    como: 'TUDO sai de uma tecla só (defina no Configure Addons). Compatível com qualquer mod/missão — inclusive suporte nativo ao Antistasi (revive integrado).',
+    atalhos: [['configurável (Configure Addons → KzyxTools)', 'abrir o menu (uma tecla pra tudo)']],
+    dicas: ['O rastreio de projéteis é uma AULA de balística: veja a bala caindo no ar.', 'USE COM RESPONSABILIDADE em servidor: é ferramenta de admin, não de trapaça com os amigos.']
   },
   2565965887: {
     cat: 'admin', nome: 'Arma 3 Performance Extension',
-    oQue: 'Extensão nativa de performance: otimizações de engine via DLL pra ganhar FPS (especialmente em cenários pesados de IA).',
-    como: 'Passivo após instalado — siga as instruções da página do Workshop (a extensão precisa ser permitida no jogo no primeiro uso).',
+    oQue: 'Extensão nativa de performance com a filosofia declarada do autor: "não posso mudar COMO o Arma calcula certas coisas, mas posso mudar QUEM calcula" — descarrega cálculos do engine e ganha FPS, principalmente com muita IA (a página traz tabela de benchmark).',
+    como: 'Passivo após instalado (requer CBA) — a extensão precisa ser permitida no jogo no primeiro uso.',
     atalhos: [['—', 'passivo']],
     dicas: ['Com 105 mods carregados, todo FPS conta — deixe sempre ativo.', 'Se o jogo pedir confirmação de extensão no boot, aceite (é este mod).']
   }
@@ -787,3 +787,16 @@ export const A3TUT_MODS = {
 
 /* Sanidade: total esperado de tutoriais */
 export const A3TUT_TOTAL = Object.keys(A3TUT_MODS).length;
+
+/* ===== Destaque: o mod das 2 ARMAS PRINCIPAIS (pedido do operador) =====
+ * Ele NÃO está no preset atual — o Better Inventory daqui declara
+ * compatibilidade nativa com ele; fica o caminho honesto pra adicionar. */
+export const A3TUT_DUAL_ARMS = {
+  nome: 'Dual Arms - Two Primary Weapons',
+  url: 'https://steamcommunity.com/sharedfiles/filedetails/?id=1334412770',
+  oQue: 'O mod que permite carregar DUAS ARMAS PRINCIPAIS: a segunda vai no slot do lançador (classificada como lançador) e você TROCA entre elas de forma fluida. Suporta 5.700+ armas da comunidade e 2.600+ acessórios.',
+  como: 'Assine no Workshop e ative no Launcher junto do preset. A troca é por botões no inventário ou por atalho: as addactions vêm DESLIGADAS por padrão — vá em Options → Controls → Custom controls e binde a "Use Action 16" pra trocar de arma por tecla.',
+  atalhos: [['Use Action 16 (bindar em Custom Controls)', 'trocar entre as duas primárias'], ['botões no inventário', 'guardar/trocar a segunda arma']],
+  dicas: ['NÃO está no preset atual — é adição à parte (o Better Inventory daqui já tem compatibilidade nativa com ele).', 'O slot de lançador fica ocupado: escolha entre AT ou segunda primária — realismo cobra.'],
+  nota: 'Fora do preset — compatível com o Better Inventory desta lista'
+};

@@ -418,66 +418,6 @@ function toolDatas() {
       h('div', { className: 'util-row' }, base, h('span', null, '+'), n, h('span', null, 'dias')), addOut));
 }
 
-/* ===== CPF/CNPJ — validação e geração ===== */
-function validaCPF(v) {
-  const c = v.replace(/\D/g, '');
-  if (c.length !== 11 || /^(\d)\1{10}$/.test(c)) return false;
-  let s = 0; for (let i = 0; i < 9; i++) s += +c[i] * (10 - i);
-  let d1 = (s * 10) % 11; if (d1 === 10) d1 = 0; if (d1 !== +c[9]) return false;
-  s = 0; for (let i = 0; i < 10; i++) s += +c[i] * (11 - i);
-  let d2 = (s * 10) % 11; if (d2 === 10) d2 = 0; return d2 === +c[10];
-}
-function validaCNPJ(v) {
-  const c = v.replace(/\D/g, '');
-  if (c.length !== 14 || /^(\d)\1{13}$/.test(c)) return false;
-  const dig = (len) => {
-    const w = len === 12 ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2] : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-    let s = 0; for (let i = 0; i < len; i++) s += +c[i] * w[i];
-    const r = s % 11; return r < 2 ? 0 : 11 - r;
-  };
-  return dig(12) === +c[12] && dig(13) === +c[13];
-}
-function geraCPF() {
-  const n = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10));
-  let s = 0; for (let i = 0; i < 9; i++) s += n[i] * (10 - i);
-  let d1 = (s * 10) % 11; if (d1 === 10) d1 = 0; n.push(d1);
-  s = 0; for (let i = 0; i < 10; i++) s += n[i] * (11 - i);
-  let d2 = (s * 10) % 11; if (d2 === 10) d2 = 0; n.push(d2);
-  return n.join('').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-}
-function geraCNPJ() {
-  const n = Array.from({ length: 12 }, (_, i) => i < 8 ? Math.floor(Math.random() * 10) : (i === 8 ? 0 : i === 9 ? 0 : i === 10 ? 0 : 1));
-  const dig = (len) => {
-    const w = len === 12 ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2] : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-    let s = 0; for (let i = 0; i < len; i++) s += n[i] * w[i];
-    const r = s % 11; return r < 2 ? 0 : 11 - r;
-  };
-  n.push(dig(12)); n.push(dig(13));
-  return n.join('').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-}
-function toolDocs() {
-  const inp = h('input', { className: 'input u-mono', type: 'text', placeholder: 'CPF ou CNPJ (com ou sem pontuação)' });
-  const out = h('div', { className: 'util-result' }, '—');
-  inp.oninput = () => {
-    const d = inp.value.replace(/\D/g, '');
-    if (!d) { out.textContent = '—'; out.className = 'util-result'; return; }
-    let ok = null, tipo = '';
-    if (d.length <= 11) { tipo = 'CPF'; ok = validaCPF(d); }
-    else { tipo = 'CNPJ'; ok = validaCNPJ(d); }
-    out.textContent = `${tipo}: ${ok ? '✓ válido' : '✗ inválido'}`;
-    out.className = 'util-result ' + (ok ? 'u-text-success' : 'u-text-danger');
-  };
-  const genOut = h('div', { className: 'util-result u-mono' }, '—');
-  return h('div', { className: 'util-body' },
-    h('div', { className: 'util-field' }, h('span', null, 'Validar'), inp, out),
-    h('div', { className: 'util-field' }, h('span', null, 'Gerar (teste)'),
-      h('div', { className: 'util-row' },
-        h('button', { className: 'btn btn--ghost btn--sm', onclick: () => { genOut.textContent = geraCPF(); } }, 'CPF'),
-        h('button', { className: 'btn btn--ghost btn--sm', onclick: () => { genOut.textContent = geraCNPJ(); } }, 'CNPJ'),
-        h('button', { className: 'btn btn--ghost btn--sm', onclick: () => copy(genOut.textContent) }, '⧉')),
-      genOut));
-}
-
 /* ===== px ↔ rem ===== */
 function toolPxRem() {
   const base = h('input', { className: 'input util-qty', type: 'number', value: '16' });
@@ -642,7 +582,7 @@ export function utilidadesPage() {
       h('p', { className: 'page-header__description' },
         'Utilidades rápidas do dia a dia — ',
         h('span', { className: 'u-text-cyan' }, '25 ferramentas técnicas'),
-        ' (senhas, UUID, texto, datas, CPF/CNPJ, fusos, Markdown, binário, JSON↔CSV, bytes…). Tudo no navegador.'))
+        ' (senhas, UUID, texto, datas, fusos, Markdown, binário, JSON↔CSV, bytes…). Tudo no navegador.'))
   );
   page.appendChild(
     h('div', { className: 'util-grid' },
@@ -661,7 +601,6 @@ export function utilidadesPage() {
       section('Tabela ASCII', '🔠', toolAscii()),
       section('Números Romanos', 'Ⅻ', toolRomanos()),
       section('Calculadora de Datas', '📅', toolDatas()),
-      section('CPF / CNPJ', '🪪', toolDocs()),
       section('px ↔ rem', '📐', toolPxRem()),
       section('Relógio Mundial', '🌐', toolFusos()),
       section('Markdown → HTML', '📄', toolMarkdown()),
