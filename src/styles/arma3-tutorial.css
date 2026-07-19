@@ -1,0 +1,50 @@
+/* ===== /arma3-tutorial — tutorial detalhado dos mods do Arma 3 ===== */
+
+.page-a3tut { display: flex; flex-direction: column; gap: 14px; }
+
+.a3tut-aviso { padding: 16px; }
+.a3tut-aviso p { margin: 0 0 12px; font-size: 13px; line-height: 1.6; color: var(--color-text-secondary); }
+.a3tut-aviso__acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.a3tut-toolbar { display: flex; gap: 10px; }
+.a3tut-busca { flex: 1; min-width: 220px; }
+.a3tut-contador { font-size: 12px; font-family: var(--font-mono); }
+
+.a3tut-secao { margin: 10px 0 4px; }
+.a3tut-secao__head { display: flex; align-items: center; gap: 10px; }
+.a3tut-secao__icon { font-size: 1.3em; }
+.a3tut-secao__titulo { margin: 0; font-size: 1.25em; }
+.a3tut-secao__desc { margin: 4px 0 10px; font-size: 12px; }
+
+.a3tut-grid {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+}
+@media (max-width: 720px) { .a3tut-grid { grid-template-columns: 1fr; } }
+
+.a3tut-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.a3tut-card__head { display: flex; align-items: baseline; gap: 10px; justify-content: space-between; }
+.a3tut-card__nome { font-size: 14px; }
+.a3tut-card__ws { font-size: 11px; font-family: var(--font-mono); color: var(--color-cyan); text-decoration: none; white-space: nowrap; }
+.a3tut-card__ws:hover { text-decoration: underline; }
+.a3tut-card__oque { margin: 0; font-size: 13px; line-height: 1.55; }
+.a3tut-card__sec p { margin: 2px 0 0; font-size: 12.5px; line-height: 1.55; color: var(--color-text-secondary); }
+.a3tut-card__label {
+  display: block; font-size: 10px; letter-spacing: 0.08em;
+  font-family: var(--font-mono); color: var(--color-text-muted);
+}
+
+.a3tut-atalhos { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.a3tut-atalho { display: flex; align-items: baseline; gap: 8px; font-size: 12px; }
+.a3tut-kbd {
+  flex-shrink: 0; padding: 1px 7px; border-radius: 4px;
+  border: 1px solid var(--color-cyan-edge, rgba(0, 229, 255, 0.35));
+  background: rgba(0, 229, 255, 0.06);
+  font-family: var(--font-mono); font-size: 11px; color: var(--color-cyan);
+}
+.a3tut-atalho__acao { color: var(--color-text-secondary); line-height: 1.4; }
+
+.a3tut-dicas { margin: 4px 0 0; padding-left: 18px; }
+.a3tut-dicas li { font-size: 12px; line-height: 1.5; color: var(--color-text-secondary); margin: 3px 0; }
+
+.a3tut-vazio { padding: 24px; text-align: center; }

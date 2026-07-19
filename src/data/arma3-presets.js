@@ -1,8 +1,8 @@
 /**
  * Presets do ARMA 3 do operador — exportados do Arma 3 Launcher e servidos
  * em /arma3/preset-*.html (baixar e ARRASTAR no Launcher importa o preset).
- * Fonte: uploads do operador (2026-07-17). Gerado por script — os mods levam
- * pro Steam Workshop de cada um.
+ * Fonte: uploads do operador (2026-07-17 · vercel app atualizado 2026-07-19).
+ * Gerado por script — os mods levam pro Steam Workshop de cada um.
  */
 
 export const ARMA3_PRESETS = [
@@ -1052,8 +1052,8 @@ export const ARMA3_PRESETS = [
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3100410156"
       },
       {
-        "nome": "Tier One Weapons",
-        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2268351256"
+        "nome": "NGA - Next Generation Armory",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3100490558"
       },
       {
         "nome": "JCA - P320",
@@ -1092,10 +1092,6 @@ export const ARMA3_PRESETS = [
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=843425103"
       },
       {
-        "nome": "TOTT AiO",
-        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3147482833"
-      },
-      {
         "nome": "Zeus Enhanced",
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=1779063631"
       },
@@ -1112,12 +1108,24 @@ export const ARMA3_PRESETS = [
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3583521742"
       },
       {
-        "nome": "NGA - Next Generation Armory",
-        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3100490558"
-      },
-      {
         "nome": "FPV Drone Crocus",
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3045129955"
+      },
+      {
+        "nome": "Terrain Lib",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2966168738"
+      },
+      {
+        "nome": "Chameleon Trenches",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2914901109"
+      },
+      {
+        "nome": "Tier One Weapons",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2268351256"
+      },
+      {
+        "nome": "TOTT AiO",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3147482833"
       },
       {
         "nome": "Remove stamina",
@@ -1194,10 +1202,6 @@ export const ARMA3_PRESETS = [
       {
         "nome": "RHSGREF",
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=843593391"
-      },
-      {
-        "nome": "Nato Remake",
-        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3573170717"
       },
       {
         "nome": "Dynamic Camo System",
@@ -1390,6 +1394,38 @@ export const ARMA3_PRESETS = [
       {
         "nome": "Death and Hit reactions",
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2993442344"
+      },
+      {
+        "nome": "KzyxTools - Cheat Menu & Development-Admin Tool (MP Compatible)",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3674879316"
+      },
+      {
+        "nome": "Wings of Fury",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3431126976"
+      },
+      {
+        "nome": "Milsim Structures",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3336740643"
+      },
+      {
+        "nome": "Trencher - Eden Trench Generation",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3256534418"
+      },
+      {
+        "nome": "Antistasi Ultimate - Mod",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3020755032"
+      },
+      {
+        "nome": "justBuild",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=1162098941"
+      },
+      {
+        "nome": "C-5 Galaxy",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3390219536"
+      },
+      {
+        "nome": "STmod_AC130J",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3686190970"
       }
     ],
     "dlcs": [
@@ -1404,10 +1440,6 @@ export const ARMA3_PRESETS = [
       {
         "nome": "Western Sahara",
         "url": "https://store.steampowered.com/app/1681170"
-      },
-      {
-        "nome": "Contact",
-        "url": "https://store.steampowered.com/app/1021790"
       }
     ]
   }

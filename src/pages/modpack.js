@@ -178,7 +178,9 @@ export function modpackPage() {
         h('span', { className: 'u-text-cyan' }, `${ARMA3_PRESETS.length} presets`),
         ' do operador com ',
         h('span', { className: 'u-text-cyan' }, `${ARMA3_TOTAL_MODS} mods`),
-        ' no total (CBA, ACE, RHS, CUP…). Baixe o preset e ARRASTE o arquivo na janela do Arma 3 Launcher — ele importa e assina tudo sozinho.')));
+        ' no total (CBA, ACE, RHS, CUP…). Baixe o preset e ARRASTE o arquivo na janela do Arma 3 Launcher — ele importa e assina tudo sozinho.'),
+      h('a', { className: 'btn btn--primary', style: 'margin-top:10px', href: '#/arma3-tutorial' },
+        '📖 Tutorial detalhado dos mods — comandos, atalhos e como cada um funciona')));
 
   /* DLCs instalados (só o índice — nenhum arquivo do jogo é hospedado, #386) */
   a3Wrap.appendChild(

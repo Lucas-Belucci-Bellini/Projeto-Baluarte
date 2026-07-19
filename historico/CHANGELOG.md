@@ -6,7 +6,14 @@ aqui o que mudou.
 
 ---
 
-## 2026-07-18
+## 2026-07-19
+
+### 📖 Launcher 0.7.4 — preset Arma 3 atualizado + Tutorial detalhado dos 105 mods
+- 🪖 **Preset "projeto baluarte vercel app" atualizado** (upload do operador): 96 → **105 mods** (9 novos, incl. TRF Blackthorn, EBI, AAS Core, Advanced Rappelling/Pickup Rope/Urban Rappelling, OPCOM, AEW Helmets, CV-22 Osprey). Placar geral da Central: **330 mods** somando os 5 presets.
+- 📖 **Página nova `/arma3-tutorial`** (pedido do operador: "tutorial sobre cada um desses mods… comandos, atalhos, como funciona, tudo detalhado em uma página"): os **105 mods explicados um a um** — o que é, como funciona, comandos & atalhos (em `<kbd>`) e dicas — organizados em **11 categorias** (Fundação, Movimento & Imersão, Interface & HUD, Cordas & Breach, Apoio de Fogo, Armas, Facções, Equipamento, Aeronaves, Construção, Admin & Performance) com **busca** e chips de filtro.
+- ⌨️ **Honestidade nos atalhos**: teclas listadas são os padrões conhecidos (jogo/ACE); onde o mod não documenta padrão, o card diz "configurável" e aponta o caminho real (Options → Controls → Configure Addons, do CBA). Todo card linka a página oficial do Workshop.
+- 🔗 A Central de Modpacks (aba Arma 3) ganhou o botão direto pro tutorial; cobertura garantida por script (105/105 mods do preset têm tutorial — zero faltando, zero sobrando).
+- ✅ Verificado (Playwright, 12/12): 105 cards em 11 seções, 131 atalhos renderizados, busca e chips filtrando, links do Workshop nos 105, placar 330 na Central e navegação Central ↔ tutorial.
 
 ### 🧊 Launcher 0.7.3 — a caça completa ao "3D não funciona" (cache velho + WebGL no app)
 - 🕵️ **Análise total pedida pelo operador.** Produção estava certa (código novo, GLBs e DRACO respondendo 200, render verificado) — os culpados estavam em VOLTA do visor:
