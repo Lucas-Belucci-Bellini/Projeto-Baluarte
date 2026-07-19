@@ -11,7 +11,7 @@
  * visitou naquela época carregava cache velho (o "3D não funciona" mesmo com
  * o site novo no ar). Bump = SW novo instala, limpa os caches antigos e
  * assume na hora. */
-const VERSION = 'baluarte-v0.7.3';
+const VERSION = 'baluarte-v0.7.4';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
