@@ -25,7 +25,7 @@ const TOOLS = [
   { id: 'regex', name: 'Lab de Regex', category: 'desenvolvimento', icon: '✱', phase: 1, desc: 'Tester JS com highlight de matches, grupos nomeados, replace preview, 10 exemplos e cheatsheet completa.' },
   { id: 'json', name: 'JSON Studio', category: 'desenvolvimento', icon: '{ }', phase: 1, desc: 'Formata, minifica e valida JSON, com árvore navegável, erros com linha/coluna e estatísticas da estrutura.' },
   { id: 'git-helper', name: 'Git Helper', category: 'desenvolvimento', icon: '⎇', phase: 1, desc: 'Cheatsheet de comandos Git agrupados (clique copia) e modelos de .gitignore.' },
-  { id: 'utilidades', name: 'Caixa de Ferramentas', category: 'desenvolvimento', icon: '🧰', phase: 1, tag: 'novo', desc: '25 utilidades: senhas, UUID, texto (contador/diff/caso/slug/binário/frequência), datas, timestamp, porcentagem, regra de três, romanos, ASCII, bytes, Lorem, base64 de imagem, sorteador, CPF/CNPJ, px↔rem, fusos, Markdown→HTML e JSON↔CSV.' },
+  { id: 'utilidades', name: 'Caixa de Ferramentas', category: 'desenvolvimento', icon: '🧰', phase: 1, tag: 'novo', desc: '24 utilidades: senhas, UUID, texto (contador/diff/caso/slug/binário/frequência), datas, timestamp, porcentagem, regra de três, romanos, ASCII, bytes, Lorem, base64 de imagem, sorteador, px↔rem, fusos, Markdown→HTML e JSON↔CSV.' },
 
   /* === Cálculo (9) === */
   { id: 'calc-cientifica', name: 'Científica', category: 'calculo', icon: '∑', phase: 1, desc: 'Trigonometria (deg/rad), hiperbólicas, logaritmos, fatoriais, memória, histórico.' },
