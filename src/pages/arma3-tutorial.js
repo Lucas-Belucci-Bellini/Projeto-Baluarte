@@ -17,6 +17,7 @@ import { A3TUT_DEPS } from '../data/arma3-deps.js';
 import { A3VAN_SECOES, A3VAN_TOTAL_TOPICOS } from '../data/arma3-vanilla.js';
 import { A3CFG_SECOES, A3CFG_TOTAL_TOPICOS } from '../data/arma3-config.js';
 import { A3CMD_SECOES, A3CMD_TOTAL } from '../data/arma3-comandos.js';
+import { A3CAMP_SECOES, A3CAMP_TOTAL } from '../data/arma3-campanhas.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
 
@@ -27,7 +28,7 @@ export function arma3TutorialPage(args = {}) {
 
   let busca = '', catAtiva = 'all';
   const abaInicial = (args.query || {}).aba;
-  let aba = (abaInicial === 'mods' || abaInicial === 'config' || abaInicial === 'comandos') ? abaInicial : 'vanilla';
+  let aba = (abaInicial === 'mods' || abaInicial === 'config' || abaInicial === 'comandos' || abaInicial === 'campanhas') ? abaInicial : 'vanilla';
 
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in' },
@@ -69,7 +70,8 @@ export function arma3TutorialPage(args = {}) {
     abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
     abaBtn('config', `🔧 Instalar & configurar mods · ${A3CFG_TOTAL_TOPICOS}`),
     abaBtn('mods', `🧩 Mods do preset · ${A3TUT_TOTAL}`),
-    abaBtn('comandos', `⌨️ Comandos & Spawn · ${A3CMD_TOTAL}`));
+    abaBtn('comandos', `⌨️ Comandos & Spawn · ${A3CMD_TOTAL}`),
+    abaBtn('campanhas', `🏴 Campanhas · ${A3CAMP_TOTAL}`));
   page.appendChild(abas);
 
   /* busca + chips (as categorias mudam conforme a aba) */
@@ -82,6 +84,7 @@ export function arma3TutorialPage(args = {}) {
   function secoesDaAba() {
     if (aba === 'config') return A3CFG_SECOES;
     if (aba === 'comandos') return A3CMD_SECOES;
+    if (aba === 'campanhas') return A3CAMP_SECOES;
     if (aba === 'vanilla') return A3VAN_SECOES;
     return null; // mods usa A3TUT_CATEGORIAS
   }
@@ -227,7 +230,9 @@ export function arma3TutorialPage(args = {}) {
       contador.textContent = `${visiveis} de ${total} mods`;
     } else {
       const secs = secoesDaAba();
-      total = aba === 'config' ? A3CFG_TOTAL_TOPICOS : (aba === 'comandos' ? A3CMD_TOTAL : A3VAN_TOTAL_TOPICOS);
+      total = aba === 'config' ? A3CFG_TOTAL_TOPICOS
+        : (aba === 'comandos' ? A3CMD_TOTAL
+          : (aba === 'campanhas' ? A3CAMP_TOTAL : A3VAN_TOTAL_TOPICOS));
       const renderCard = aba === 'comandos' ? cardComando : cardTopico;
       secs.forEach((sec) => {
         if (catAtiva !== 'all' && catAtiva !== sec.id) return;
@@ -239,7 +244,8 @@ export function arma3TutorialPage(args = {}) {
         corpo.appendChild(secaoEl(sec, filtrados.map(renderCard), filtrados.length, sec.desc));
       });
       const rotulo = aba === 'config' ? 'tópicos de instalação/config'
-        : (aba === 'comandos' ? 'comandos de console' : 'tópicos do jogo base');
+        : (aba === 'comandos' ? 'comandos de console'
+          : (aba === 'campanhas' ? 'tópicos de campanha' : 'tópicos do jogo base'));
       contador.textContent = `${visiveis} de ${total} ${rotulo}`;
     }
     if (!visiveis) corpo.appendChild(h('div', { className: 'card a3tut-vazio u-text-muted' }, 'Nada bate com essa busca.'));

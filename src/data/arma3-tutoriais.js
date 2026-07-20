@@ -813,7 +813,7 @@ Object.assign(A3TUT_MODS, {
     oQue: 'Campanha dinâmica de GUERRILHA cooperativa: liberte o território da ocupação começando só com pistolas. Mundo vivo com PERSISTÊNCIA TOTAL (cada unidade de cada guarnição é salva — via FileXT) e um comandante IA que REAGE: QRFs, patrulhas, postos ocupados e bloqueios de estrada conforme a sua atividade cresce.',
     como: 'Crie a partida pelo MP (host/servidor) escolhendo o cenário Vindicta no mapa. Começo furtivo: o mundo nasce calmo, você viaja livre; cada ação sua sobe a temperatura da região e o comandante inimigo responde. Capture armas, recrute e construa o movimento. Requer CBA + ACE + FileXT (todos no preset). É ALPHA — o time pede feedback pelo Discord deles.',
     atalhos: [['menu próprio do Vindicta (em jogo)', 'ações de guerrilha: recrutar, construir, planejar']],
-    dicas: ['A alternativa ao Antistasi Ultimate no MESMO preset: Vindicta aposta na simulação profunda (comandante IA + persistência por unidade); o Antistasi na variedade de facções/mapas. Jogue os dois.', 'Furtividade importa DE VERDADE: no começo, tiro dado é QRF na sua cabeça.']
+    dicas: ['📖 GUIA COMPLETO na aba 🏴 Campanhas desta página: suspeita/undercover (números oficiais), intel, camps, recrutamento, construção, arsenal e o lockpick de veículos — tudo extraído do repo e docs oficiais.', 'A alternativa ao Antistasi Ultimate no MESMO preset: Vindicta aposta na simulação profunda; o Antistasi na variedade. Jogue os dois.', 'Furtividade importa DE VERDADE: no começo, tiro dado é QRF na sua cabeça.']
   }
 });
 

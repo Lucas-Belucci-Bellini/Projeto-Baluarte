@@ -6,6 +6,19 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-20 (parte 2)
+
+### 🏴 Launcher 0.7.9 — aba CAMPANHAS: guia Vindicta completo (do repo e docs oficiais)
+- 🏴 **5ª aba da Bíblia do Arma 3**: "Campanhas" — o guia de campanha do **Vindicta** com **14 tópicos em 5 seções**, TODOS extraídos do README oficial (Sparker95/Vindicta) e do guia oficial Vindicta-Docs (pedido do operador: "usa isso para melhorar o guia"):
+  - **Começando**: menu U (CREATE/facções/INITIAL ENEMY %), o save PRÓPRIO de 6 slots no .vars (com o alerta oficial de backup), mapas suportados (Altis/Enoch/Tanoa/Malden/Weferlingen + CUP) e os avisos honestos — mods de IA são INCOMPATÍVEIS (FAQ oficial) e o projeto foi encerrado (alpha jogável, sem features novas).
+  - **Suspeita & Undercover** com os números oficiais: <50% invisível, 50–100% sujeito a PRISÃO, 100% atiram; fontes documentadas (correr conta! arma/roupa militar/capacete; exposição no veículo) e o coldre ACE no 0.
+  - **Civis, Influência & Intel**: as 5 interações de diálogo, os 2 tipos de intel (forças = sempre velha; ações futuras = sincronizada com "Ended"), tablets táticos nos uniformes e interceptação por rádio.
+  - **Camps, Recrutamento & Ordens**: raio de recrutamento (o círculo no mapa), as 3 condições do alistamento (local + Arsenal com armas + alojamento), e a pegadinha documentada do Split-antes-de-mover (senão o local é ABANDONADO).
+  - **Construção, Arsenal & Veículos**: Build UI pela roda, o Arsenal LIMITADO de propósito (economia = saque) com o truque "Inventory to Arsenal", e o LOCKPICK de veículos militares (item que já vem no uniforme — o segredo do FAQ).
+- 🔗 O card do mod Vindicta na aba de mods agora aponta pro guia completo.
+- ✅ Verificado (Playwright, 20/20): 5 abas, 14 tópicos na aba campanhas via deep-link `?aba=campanhas`, números 50%/100% presentes, lockpick/arsenal limitado/aviso de IA no texto, busca "lockpick" filtra, regressão completa das outras abas.
+
+
 ## 2026-07-20
 
 ### 🎒 Launcher 0.7.8 — preset atualizado (109 mods): APS + BackpackOnChest + Vindicta + FileXT
