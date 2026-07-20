@@ -1120,6 +1120,10 @@ export const ARMA3_PRESETS = [
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2914901109"
       },
       {
+        "nome": "FileXT",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2162811561"
+      },
+      {
         "nome": "Tier One Weapons",
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2268351256"
       },
@@ -1426,6 +1430,18 @@ export const ARMA3_PRESETS = [
       {
         "nome": "STmod_AC130J",
         "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3686190970"
+      },
+      {
+        "nome": "Armor Plates System",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2523439183"
+      },
+      {
+        "nome": "BackpackOnChest - Redux",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2372036642"
+      },
+      {
+        "nome": "Vindicta (Alpha)",
+        "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2185874952"
       }
     ],
     "dlcs": [

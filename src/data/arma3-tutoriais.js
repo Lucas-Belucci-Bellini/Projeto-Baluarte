@@ -198,7 +198,7 @@ export const A3TUT_MODS = {
     oQue: 'Inventário estilo ESCAPE FROM TARKOV em 3 painéis: GEAR (armas/loadout), CONTAINER (uniforme+colete+mochila sempre visíveis) e STASH (chão/caixas/veículos com abas de filtro All·Weapons·Magazines·Items). Em BETA público.',
     como: 'Substitui a TELA do inventário mantendo as regras vanilla por baixo (é overhaul de UI, não de sistema). Destaque oficial: integração com o Armor Plates System — slot dedicado de placas com barra de HP (arraste a placa pro slot e pronto). Compatível com BackpackOnChest-Redux e ACE (carregue @ace ANTES do EBI).',
     atalhos: [['I', 'inventário (padrão do jogo)'], ['abas do STASH', 'filtrar loot: All · Weapons · Magazines · Items']],
-    dicas: ['⚠ INCOMPATÍVEL com o Better Inventory original (aviso oficial do autor) — como os DOIS estão no preset, ative só um por vez no Launcher.', 'É beta: o autor pede pra testar em SP antes de levar pra comunidade.']
+    dicas: ['⚠ INCOMPATÍVEL com o Better Inventory original (aviso oficial do autor) — como os DOIS estão no preset, ative só um por vez no Launcher.', 'É beta: o autor pede pra testar em SP antes de levar pra comunidade.', '🎉 Desde a atualização 0.7.8 do preset, o Armor Plates System e o BackpackOnChest-Redux estão INCLUSOS — o slot de placas com barra de HP e o botão de mochila no peito ficam ATIVOS.']
   },
   2060770170: {
     cat: 'interface', nome: 'Arsenal Search',
@@ -784,6 +784,38 @@ export const A3TUT_MODS = {
     dicas: ['Com 105 mods carregados, todo FPS conta — deixe sempre ativo.', 'Se o jogo pedir confirmação de extensão no boot, aceite (é este mod).']
   }
 };
+
+/* ===== novos na atualização 0.7.8 do preset (dados oficiais do Workshop) ===== */
+Object.assign(A3TUT_MODS, {
+  2162811561: {
+    cat: 'fundacao', nome: 'FileXT',
+    oQue: 'Extensão que deixa o SQF LER E GRAVAR ARQUIVOS no disco — é a memória permanente que o Arma não tem. No seu preset, é a dependência que dá PERSISTÊNCIA ao Vindicta (salvar a campanha entre sessões).',
+    como: 'Passivo — carrega como mod e expõe as funções de arquivo pros scripts. O guia de setup oficial é do próprio time do Vindicta (vindicta-team.github.io); em servidor dedicado a extensão precisa ser permitida.',
+    atalhos: [['—', 'passivo; usado pelos mods que salvam em arquivo']],
+    dicas: ['Sem ele o Vindicta não salva — instale sempre junto.', 'Suporta Linux desde 2022 (serve pra servidor dedicado Linux).']
+  },
+  2523439183: {
+    cat: 'imersao', nome: 'Armor Plates System (APS)',
+    oQue: 'Sistema médico ALTERNATIVO standalone: placas cerâmicas no colete viram HP extra (inspiração declarada no médico do COD Warzone) — leve, cheio de opções, com revive próprio (quando o ACE medical não está carregado) e suporte aos recursos do ACE.',
+    como: 'Coloque as placas no colete (com o EBI deste preset, ARRASTE a placa direto pro slot dedicado — a integração é o recurso-manchete do EBI e dispensa keybind). Dano consome primeiro as placas; barra de HP da placa visível na UI. Configurações no CBA pra encaixar no seu estilo.',
+    atalhos: [['arrastar placa → slot (no EBI)', 'instalar placa com animação e regras do APS'], ['Addon Options → APS', 'ajustar HP, revive e comportamento']],
+    dicas: ['⚠ Decisão de preset: APS carregado JUNTO do ACE medical muda a dinâmica — leia as opções e escolha qual sistema manda no dano.', 'Com EBI + APS + BackpackOnChest, o trio do inventário Tarkov-style deste preset fica completo.']
+  },
+  2372036642: {
+    cat: 'equipamento', nome: 'BackpackOnChest - Redux',
+    oQue: 'Mochila no PEITO e nas costas AO MESMO TEMPO (com penalidade de movimento) — a reescrita oficial do clássico de DerZade. O caso de uso número 1: PARAQUEDAS nas costas, mochila no peito.',
+    como: 'Via interação/auto-interação do ACE: mova a mochila pro peito e equipe outra (ou o paraquedas) nas costas. Preserva as variáveis da mochila (rádio TFAR e ACE Gunbag continuam funcionando no peito). Requer CBA + ACE.',
+    atalhos: [['Ctrl + ⊞ Win → equipamento', 'mover mochila pro peito / devolver às costas']],
+    dicas: ['Salto HALO completo: paraquedas atrás, mochila de missão na frente.', 'O EBI tem botão dedicado pra este mod na tela de inventário (compat oficial).']
+  },
+  2185874952: {
+    cat: 'faccoes', nome: 'Vindicta (Alpha)',
+    oQue: 'Campanha dinâmica de GUERRILHA cooperativa: liberte o território da ocupação começando só com pistolas. Mundo vivo com PERSISTÊNCIA TOTAL (cada unidade de cada guarnição é salva — via FileXT) e um comandante IA que REAGE: QRFs, patrulhas, postos ocupados e bloqueios de estrada conforme a sua atividade cresce.',
+    como: 'Crie a partida pelo MP (host/servidor) escolhendo o cenário Vindicta no mapa. Começo furtivo: o mundo nasce calmo, você viaja livre; cada ação sua sobe a temperatura da região e o comandante inimigo responde. Capture armas, recrute e construa o movimento. Requer CBA + ACE + FileXT (todos no preset). É ALPHA — o time pede feedback pelo Discord deles.',
+    atalhos: [['menu próprio do Vindicta (em jogo)', 'ações de guerrilha: recrutar, construir, planejar']],
+    dicas: ['A alternativa ao Antistasi Ultimate no MESMO preset: Vindicta aposta na simulação profunda (comandante IA + persistência por unidade); o Antistasi na variedade de facções/mapas. Jogue os dois.', 'Furtividade importa DE VERDADE: no começo, tiro dado é QRF na sua cabeça.']
+  }
+});
 
 /* Sanidade: total esperado de tutoriais */
 export const A3TUT_TOTAL = Object.keys(A3TUT_MODS).length;
