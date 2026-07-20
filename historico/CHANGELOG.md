@@ -6,7 +6,13 @@ aqui o que mudou.
 
 ---
 
-## 2026-07-19 (parte 2)
+## 2026-07-20
+
+### ⌨️ Launcher 0.7.7 — Comandos & Spawn (console SQF) + FOB do KP Liberation por comando
+- ⌨️ **4ª aba da Bíblia do Arma 3**: "Comandos & Spawn" — **21 comandos de console** em 5 seções (Console de Debug, KP Liberation, Veículos & Objetos, Unidades & Grupos, Utilitários), cada um com o **SQF pronto num bloco com botão ⧉ copiar**, explicação e dicas. Busca e chips funcionam como nas outras abas; deep-link `?aba=comandos`.
+- 🏗️ **O pedido do operador — FOB do KP Liberation — com COLETA DE DADOS REAL**: extraído do código oficial (github.com/KillahPotatoes/KP-Liberation): a caixa de FOB é `FOB_box_typename` (= `B_Slingload_01_Cargo_F` no preset padrão) e a própria missão a cria com `createVehicle` puro (startgame.sqf) sendo reconhecida por CLASSNAME (do_build.sqf) — logo o comando de console é idêntico ao oficial. Bônus verificados no código: **FOB instantânea** via `[getPosATL player, true] remoteExec ["build_fob_remote_call", 2]` (assinatura confirmada), caminhão-FOB/respawn/Huron pelas variáveis do preset, e **caixas de recurso com valor de verdade** via `KPLIB_fnc_createCrate [recurso, quantidade, posição]` (fn_createCrate.sqf — createVehicle cru nasceria valendo zero).
+- 🧰 Demais comandos: descobrir classname (`copyToClipboard typeOf cursorObject`), spawns (createVehicle simples/array/`BIS_fnc_spawnVehicle` tripulado, createUnit+createGroup, `BIS_fnc_spawnGroup`, waypoints), utilitários (teleporte por clique no mapa, cura/munição/combustível, god mode, arsenal BIS, tempo/clima, splendid camera) — com a regra de ouro repetida: console é pro SEU host/SP; em servidor alheio é ban.
+- ✅ Verificado (Playwright, 14/14): 21 comandos em 5 seções, blocos SQF renderizados, copiar → clipboard com feedback, comandos do FOB presentes, busca "FOB" filtra, 4 abas, vanilla segue padrão, zero erro.
 
 ### 🩺 Launcher 0.7.6 — Diagnóstico do 3D NA MÁQUINA do operador + Bíblia do Arma 3 (jogo + mods + config)
 - 🩺 **Diagnóstico do "3D não abre" que roda AÍ, não aqui.** As correções remotas (SW, WebGL no app, aviso do Sketchfab) não resolveram e o sintoma não reproduz no dev — então em vez de mais um chute, a `/modelos-3d` ganhou um botão **"🩺 O 3D não abre? Clique pra diagnosticar"** que testa a cadeia inteira NA MÁQUINA do operador e mostra onde quebra, com **copiar laudo**: (1) GPU/contexto WebGL + nome do renderizador real; (2) teste DECISIVO em WebGL cru — limpa de vermelho e LÊ o pixel de volta (prova que a GPU desenha); (3) baixar o `Soldier.glb` (status/MB/ms); (4) baixar o decoder DRACO; (5) estado do service worker (controla a aba? qual cache?); (6) montar o visor three.js real e contar triângulos — capturando o erro EXATO se falhar. Verificado (Playwright): com WebGL dá tudo verde + GPU + 11.376 triângulos; sem WebGL aponta a etapa que quebra e ainda confirma que GLB/DRACO baixam.
