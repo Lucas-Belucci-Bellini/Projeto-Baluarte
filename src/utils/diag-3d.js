@@ -109,8 +109,16 @@ export async function rodarDiagnostico3D() {
   try {
     const mod = await import('./visor-3d.js');
     visor = await mod.montarVisor3D(palco, { url: base() + GLB_TESTE, nome: 'diagnostico' });
-    visorOk = true;
-    visorDetalhe = `montou · ${visor.stats.tris.toLocaleString('pt-BR')} triângulos${visor.temAnimacao ? ' · com animação' : ''}`;
+    /* 0.7.10: montar NÃO basta — antes o modelo montava e ficava PRETO (só o
+     * IBL do PMREM iluminava, e ele sai preto em algumas GPUs). Agora lemos o
+     * brilho do quadro: se vier preto, o veredito reporta isso. */
+    const luz = visor.amostraLuminancia ? visor.amostraLuminancia() : { ok: true, media: -1 };
+    visorOk = !!luz.ok;
+    const tri = `${visor.stats.tris.toLocaleString('pt-BR')} triângulos${visor.temAnimacao ? ' · com animação' : ''}`;
+    visorDetalhe = luz.ok
+      ? `montou e APARECE · ${tri} · brilho central ${luz.media}/255`
+      : `montou (${tri}) mas o quadro saiu PRETO (brilho ${luz.media != null ? luz.media : '?'}/255)` +
+        `${luz.motivo ? ' · ' + luz.motivo : ''} — provável tela-preta do IBL; a 0.7.10 adiciona luzes explícitas`;
   } catch (e) {
     visorDetalhe = 'ERRO: ' + String(e && e.message || e).slice(0, 220);
   } finally {

@@ -160,9 +160,20 @@ export async function montarVisor3D(host, fonte) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.appendChild(renderer.domElement);
 
-  /* estúdio: IBL do RoomEnvironment (o mesmo look de visor "de site grande") */
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  cena.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  /* estúdio: IBL do RoomEnvironment (o mesmo look de visor "de site grande").
+   * BLINDADO (0.7.10): em GPU AMD via ANGLE/D3D11 o pipeline do PMREM
+   * (render targets half-float) às vezes sai PRETO — o modelo montava e
+   * ficava todo preto por depender SÓ do environment. Agora é try/catch e,
+   * acima de tudo, existem LUZES EXPLÍCITAS (adiante) que garantem o modelo
+   * visível mesmo se o IBL falhar. */
+  let pmrem = null;
+  try {
+    pmrem = new THREE.PMREMGenerator(renderer);
+    cena.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  } catch (e) {
+    if (pmrem) { try { pmrem.dispose(); } catch { /* ok */ } pmrem = null; }
+    cena.environment = null; // sem IBL: as luzes explícitas assumem
+  }
 
   cena.add(objeto);
 
@@ -196,6 +207,22 @@ export async function montarVisor3D(host, fonte) {
   camera.near = tam / 1000; camera.far = tam * 100;
   const dir = new THREE.Vector3(0.5, 0.35, 1).normalize();
   camera.position.copy(centro).addScaledVector(dir, dist);
+
+  /* LUZES EXPLÍCITAS (0.7.10) — a correção da "janela preta": antes a cena
+   * dependia SÓ do environment (IBL) do PMREM, que sai preto em algumas GPUs
+   * (AMD/ANGLE/D3D11) — o modelo montava e ficava todo preto. Estas luzes
+   * garantem o modelo visível SEMPRE, com ou sem IBL. Posições em função do
+   * tamanho do modelo pra escalar de lanterna a veículo. */
+  cena.add(new THREE.HemisphereLight(0xffffff, 0x404654, cena.environment ? 0.9 : 1.6));
+  const key = new THREE.DirectionalLight(0xfff4e6, cena.environment ? 1.6 : 2.6);
+  key.position.copy(centro).add(new THREE.Vector3(1, 2, 1.5).multiplyScalar(tam));
+  cena.add(key);
+  const fill = new THREE.DirectionalLight(0xbfd4ec, cena.environment ? 0.7 : 1.2);
+  fill.position.copy(centro).add(new THREE.Vector3(-1.5, 0.6, -1).multiplyScalar(tam));
+  cena.add(fill);
+  const back = new THREE.DirectionalLight(0xffffff, cena.environment ? 0.5 : 0.9);
+  back.position.copy(centro).add(new THREE.Vector3(0, 0.8, -2).multiplyScalar(tam));
+  cena.add(back);
 
   const controles = new OrbitControls(camera, renderer.domElement);
   controles.target.copy(centro);
@@ -249,6 +276,26 @@ export async function montarVisor3D(host, fonte) {
     stats: { tris: Math.round(tris), verts, clips: clips.length },
     setAnimando(on) { animando = !!on; },
     setGiro(on) { controles.autoRotate = !!on; },
+    /* amostra o brilho do quadro renderizado (0.7.10): força um frame e LÊ o
+     * pixel central de volta — distingue "montou" de "montou e APARECE".
+     * É o que o diagnóstico usa pra pegar a tela-preta que o mount não vê. */
+    amostraLuminancia() {
+      try {
+        renderer.render(cena, camera);
+        const gl = renderer.getContext();
+        const w = gl.drawingBufferWidth, hh = gl.drawingBufferHeight;
+        if (!w || !hh) return { ok: false, motivo: 'canvas 0×0' };
+        const n = 16;
+        const px = new Uint8Array(n * n * 4);
+        gl.readPixels((w - n) >> 1, (hh - n) >> 1, n, n, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        let soma = 0, max = 0;
+        for (let i = 0; i < px.length; i += 4) {
+          const l = px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114;
+          soma += l; if (l > max) max = l;
+        }
+        return { ok: max > 8, media: Math.round(soma / (n * n)), max: Math.round(max), largura: w, altura: hh };
+      } catch (e) { return { ok: false, motivo: String(e && e.message || e) }; }
+    },
     recentrar() {
       camera.position.copy(poseInicial.pos);
       controles.target.copy(poseInicial.alvo);
@@ -271,7 +318,7 @@ export async function montarVisor3D(host, fonte) {
           });
         }
       });
-      pmrem.dispose();
+      if (pmrem) pmrem.dispose();
       renderer.dispose();
       renderer.domElement.remove();
       fim();
