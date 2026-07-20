@@ -65,6 +65,11 @@ export const A3TUT_DEPS = {
     "Project - Future Vertical Lift",
     "ace"
   ],
+  "2185874952": [
+    "ace",
+    "CBA_A3",
+    "FileXT"
+  ],
   "2260572637": [
     "CBA_A3"
   ],
@@ -72,8 +77,15 @@ export const A3TUT_DEPS = {
     "CBA_A3",
     "RHSUSAF"
   ],
+  "2372036642": [
+    "CBA_A3",
+    "ace"
+  ],
   "2522638637": [
     "ace",
+    "CBA_A3"
+  ],
+  "2523439183": [
     "CBA_A3"
   ],
   "2565965887": [

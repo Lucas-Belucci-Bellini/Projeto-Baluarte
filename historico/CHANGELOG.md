@@ -8,6 +8,15 @@ aqui o que mudou.
 
 ## 2026-07-20
 
+### 🎒 Launcher 0.7.8 — preset atualizado (109 mods): APS + BackpackOnChest + Vindicta + FileXT
+- 🪖 **Preset "projeto baluarte vercel app" atualizado** (upload do operador): 105 → **109 mods** (total geral: **334**). Os 4 novos, com tutoriais escritos a partir das descrições oficiais do Workshop:
+  - **Armor Plates System (APS)** — sistema médico alternativo: placas cerâmicas no colete viram HP extra (inspiração COD Warzone); revive próprio sem ACE medical.
+  - **BackpackOnChest - Redux** — mochila no peito E nas costas (o combo de paraquedas); preserva rádio TFAR/ACE Gunbag no peito.
+  - **Vindicta (Alpha)** — campanha dinâmica de guerrilha com persistência TOTAL por unidade e comandante IA que reage (QRF, patrulhas, bloqueios); a alternativa ao Antistasi no mesmo preset.
+  - **FileXT** — a extensão de gravar/ler arquivos que dá a persistência do Vindicta.
+- 🎉 **A integração do EBI fechou o ciclo**: com APS e BackpackOnChest agora INCLUSOS, o slot de placas com barra de HP e o botão de mochila no peito do EBI (recursos-manchete dele) ficam ativos — os cards do EBI/APS/BoC se cruzam explicando o trio.
+- ✅ Verificado (Playwright, 13/13 + 14/14 de regressão): 109 mods + destaque = 110 cards, 123 chips REQUER, cobertura 109/109 por script, abas/busca/comandos intactos.
+
 ### ⌨️ Launcher 0.7.7 — Comandos & Spawn (console SQF) + FOB do KP Liberation por comando
 - ⌨️ **4ª aba da Bíblia do Arma 3**: "Comandos & Spawn" — **21 comandos de console** em 5 seções (Console de Debug, KP Liberation, Veículos & Objetos, Unidades & Grupos, Utilitários), cada um com o **SQF pronto num bloco com botão ⧉ copiar**, explicação e dicas. Busca e chips funcionam como nas outras abas; deep-link `?aba=comandos`.
 - 🏗️ **O pedido do operador — FOB do KP Liberation — com COLETA DE DADOS REAL**: extraído do código oficial (github.com/KillahPotatoes/KP-Liberation): a caixa de FOB é `FOB_box_typename` (= `B_Slingload_01_Cargo_F` no preset padrão) e a própria missão a cria com `createVehicle` puro (startgame.sqf) sendo reconhecida por CLASSNAME (do_build.sqf) — logo o comando de console é idêntico ao oficial. Bônus verificados no código: **FOB instantânea** via `[getPosATL player, true] remoteExec ["build_fob_remote_call", 2]` (assinatura confirmada), caminhão-FOB/respawn/Huron pelas variáveis do preset, e **caixas de recurso com valor de verdade** via `KPLIB_fnc_createCrate [recurso, quantidade, posição]` (fn_createCrate.sqf — createVehicle cru nasceria valendo zero).
