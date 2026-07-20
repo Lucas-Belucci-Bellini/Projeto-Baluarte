@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-20 (parte 3)
+
+### 🔦 Launcher 0.7.10 — ACHEI a tela preta do 3D: modelo sem luz (só IBL) → luzes explícitas
+- 🎯 **O laudo do operador fechou o caso.** Tudo passava (GPU RX 6650 XT via ANGLE/D3D11, WebGL DESENHA o pixel, GLB/DRACO 200, SW v0.7.9, o visor MONTA com 11.376 triângulos) — MAS a janela abria PRETA. O diagnóstico só confirmava que *montou*, não que *aparece*.
+- 🐛 **Causa raiz**: a cena do visor não tinha NENHUMA luz explícita — 100% da iluminação vinha do `PMREMGenerator` + `RoomEnvironment` (IBL). Esse pipeline (render targets half-float) sai **preto em algumas GPUs AMD via ANGLE/D3D11**. O modelo carregava, contava os triângulos, montava — e renderizava **todo preto por falta de luz**. Rodava no nosso swiftshader (software) e falhava só na GPU real — por isso nunca reproduziu no dev.
+- ✨ **Correção**: **luzes explícitas** no visor (HemisphereLight + 3 DirectionalLight key/fill/back, posicionadas em função do tamanho do modelo) — o modelo fica visível SEMPRE, com ou sem IBL. As luzes até **sobem de intensidade quando o IBL falha** (`environment ? menor : maior`). O PMREM agora é `try/catch` (se explodir, não derruba mais o mount).
+- 🩺 **Diagnóstico mais esperto**: novo `amostraLuminancia()` no visor LÊ o pixel central do quadro renderizado — a etapa 7 do laudo agora diz **"montou e APARECE · brilho N/255"** ou **"montou mas o quadro saiu PRETO"**, distinguindo os dois casos que antes eram indistinguíveis.
+- ✅ Verificado (Playwright, swiftshader, 7/7): galeria abre com 11.376 triângulos + animação, `amostraLuminancia` mede brilho 39/255 (não-preto), canvas 480×360, laudo reporta APARECE.
+
+
 ## 2026-07-20 (parte 2)
 
 ### 🏴 Launcher 0.7.9 — aba CAMPANHAS: guia Vindicta completo (do repo e docs oficiais)
