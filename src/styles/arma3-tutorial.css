@@ -65,3 +65,21 @@
 .a3tut-dicas li { font-size: 12px; line-height: 1.5; color: var(--color-text-secondary); margin: 3px 0; }
 
 .a3tut-vazio { padding: 24px; text-align: center; }
+
+/* ===== bloco de comando SQF (aba Comandos & Spawn) ===== */
+.a3tut-sqf { position: relative; margin-top: 4px; }
+.a3tut-sqf__code {
+  margin: 0; padding: 10px 12px; padding-right: 84px;
+  border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.55;
+  color: var(--color-cyan); white-space: pre-wrap; word-break: break-word;
+}
+.a3tut-sqf__copiar {
+  position: absolute; top: 8px; right: 8px;
+  padding: 2px 10px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--color-cyan-edge, rgba(0, 229, 255, 0.35));
+  background: rgba(0, 229, 255, 0.08);
+  font-family: var(--font-mono); font-size: 11px; color: var(--color-cyan);
+}
+.a3tut-sqf__copiar:hover { background: rgba(0, 229, 255, 0.16); }

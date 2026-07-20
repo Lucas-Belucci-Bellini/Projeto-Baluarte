@@ -16,6 +16,7 @@ import { A3TUT_CATEGORIAS, A3TUT_MODS, A3TUT_TOTAL, A3TUT_DUAL_ARMS } from '../d
 import { A3TUT_DEPS } from '../data/arma3-deps.js';
 import { A3VAN_SECOES, A3VAN_TOTAL_TOPICOS } from '../data/arma3-vanilla.js';
 import { A3CFG_SECOES, A3CFG_TOTAL_TOPICOS } from '../data/arma3-config.js';
+import { A3CMD_SECOES, A3CMD_TOTAL } from '../data/arma3-comandos.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
 
@@ -26,7 +27,7 @@ export function arma3TutorialPage(args = {}) {
 
   let busca = '', catAtiva = 'all';
   const abaInicial = (args.query || {}).aba;
-  let aba = (abaInicial === 'mods' || abaInicial === 'config') ? abaInicial : 'vanilla';
+  let aba = (abaInicial === 'mods' || abaInicial === 'config' || abaInicial === 'comandos') ? abaInicial : 'vanilla';
 
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in' },
@@ -67,7 +68,8 @@ export function arma3TutorialPage(args = {}) {
   abas.append(
     abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
     abaBtn('config', `🔧 Instalar & configurar mods · ${A3CFG_TOTAL_TOPICOS}`),
-    abaBtn('mods', `🧩 Mods do preset · ${A3TUT_TOTAL}`));
+    abaBtn('mods', `🧩 Mods do preset · ${A3TUT_TOTAL}`),
+    abaBtn('comandos', `⌨️ Comandos & Spawn · ${A3CMD_TOTAL}`));
   page.appendChild(abas);
 
   /* busca + chips (as categorias mudam conforme a aba) */
@@ -79,6 +81,7 @@ export function arma3TutorialPage(args = {}) {
   const chips = h('div', { className: 'symbols-cats' });
   function secoesDaAba() {
     if (aba === 'config') return A3CFG_SECOES;
+    if (aba === 'comandos') return A3CMD_SECOES;
     if (aba === 'vanilla') return A3VAN_SECOES;
     return null; // mods usa A3TUT_CATEGORIAS
   }
@@ -146,6 +149,34 @@ export function arma3TutorialPage(args = {}) {
         h('ul', { className: 'a3tut-dicas' }, ...t.dicas.map((d) => h('li', null, d)))) : null);
   }
 
+  /* card da aba Comandos & Spawn: bloco SQF com botão de copiar */
+  function cardComando(t) {
+    let sqfEl = null;
+    if (t.sqf) {
+      const copiarBtn = h('button', {
+        className: 'a3tut-sqf__copiar',
+        onclick: () => {
+          const done = () => { copiarBtn.textContent = 'copiado ✓'; setTimeout(() => { copiarBtn.textContent = '⧉ copiar'; }, 1600); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.sqf).then(done).catch(() => {});
+          else done();
+        }
+      }, '⧉ copiar');
+      sqfEl = h('div', { className: 'a3tut-card__sec' },
+        h('span', { className: 'a3tut-card__label' }, 'COMANDO (COLE NO CONSOLE)'),
+        h('div', { className: 'a3tut-sqf' },
+          h('pre', { className: 'a3tut-sqf__code' }, t.sqf),
+          copiarBtn));
+    }
+    return h('div', { className: 'card a3tut-card' },
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, t.titulo)),
+      h('p', { className: 'a3tut-card__oque' }, t.texto),
+      sqfEl,
+      t.dicas && t.dicas.length ? h('div', { className: 'a3tut-card__sec' },
+        h('span', { className: 'a3tut-card__label' }, 'DICAS'),
+        h('ul', { className: 'a3tut-dicas' }, ...t.dicas.map((d) => h('li', null, d)))) : null);
+  }
+
   function secaoEl(cat, cards, qtd, desc) {
     return h('div', { className: 'a3tut-secao' },
       h('div', { className: 'a3tut-secao__head' },
@@ -196,16 +227,19 @@ export function arma3TutorialPage(args = {}) {
       contador.textContent = `${visiveis} de ${total} mods`;
     } else {
       const secs = secoesDaAba();
-      total = aba === 'config' ? A3CFG_TOTAL_TOPICOS : A3VAN_TOTAL_TOPICOS;
+      total = aba === 'config' ? A3CFG_TOTAL_TOPICOS : (aba === 'comandos' ? A3CMD_TOTAL : A3VAN_TOTAL_TOPICOS);
+      const renderCard = aba === 'comandos' ? cardComando : cardTopico;
       secs.forEach((sec) => {
         if (catAtiva !== 'all' && catAtiva !== sec.id) return;
-        const filtrados = !termo ? sec.topicos : sec.topicos.filter((t) =>
-          normalize(`${t.titulo} ${t.texto}`).includes(termo));
+        const lista = sec.topicos || sec.itens || [];
+        const filtrados = !termo ? lista : lista.filter((t) =>
+          normalize(`${t.titulo} ${t.texto} ${t.sqf || ''}`).includes(termo));
         if (!filtrados.length) return;
         visiveis += filtrados.length;
-        corpo.appendChild(secaoEl(sec, filtrados.map(cardTopico), filtrados.length, sec.desc));
+        corpo.appendChild(secaoEl(sec, filtrados.map(renderCard), filtrados.length, sec.desc));
       });
-      const rotulo = aba === 'config' ? 'tópicos de instalação/config' : 'tópicos do jogo base';
+      const rotulo = aba === 'config' ? 'tópicos de instalação/config'
+        : (aba === 'comandos' ? 'comandos de console' : 'tópicos do jogo base');
       contador.textContent = `${visiveis} de ${total} ${rotulo}`;
     }
     if (!visiveis) corpo.appendChild(h('div', { className: 'card a3tut-vazio u-text-muted' }, 'Nada bate com essa busca.'));
