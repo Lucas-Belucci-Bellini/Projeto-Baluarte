@@ -18,6 +18,8 @@ import { A3VAN_SECOES, A3VAN_TOTAL_TOPICOS } from '../data/arma3-vanilla.js';
 import { A3CFG_SECOES, A3CFG_TOTAL_TOPICOS } from '../data/arma3-config.js';
 import { A3CMD_SECOES, A3CMD_TOTAL } from '../data/arma3-comandos.js';
 import { A3CAMP_SECOES, A3CAMP_TOTAL } from '../data/arma3-campanhas.js';
+import { A3COL_INFO, A3COL_CATS, A3COL_ITENS, A3COL_TOTAL } from '../data/arma3-colecao.js';
+import { A3DRV_PASTAS, A3DRV_SECOES, A3DRV_TOTAL } from '../data/arma3-drive.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
 
@@ -28,7 +30,8 @@ export function arma3TutorialPage(args = {}) {
 
   let busca = '', catAtiva = 'all';
   const abaInicial = (args.query || {}).aba;
-  let aba = (abaInicial === 'mods' || abaInicial === 'config' || abaInicial === 'comandos' || abaInicial === 'campanhas') ? abaInicial : 'vanilla';
+  let aba = (abaInicial === 'mods' || abaInicial === 'config' || abaInicial === 'comandos' ||
+    abaInicial === 'campanhas' || abaInicial === 'colecao' || abaInicial === 'drive') ? abaInicial : 'vanilla';
 
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in' },
@@ -36,14 +39,16 @@ export function arma3TutorialPage(args = {}) {
         h('span', null, 'BALUARTE'), h('span', null, '›'),
         h('span', null, 'FERRAMENTAS'), h('span', null, '›'),
         h('span', null, 'TUTORIAL ARMA 3')),
-      h('h1', { className: 'page-header__title' }, '📖 Bíblia do Arma 3 — jogo, mods e configuração'),
+      h('h1', { className: 'page-header__title' }, '📖 Bíblia do Arma 3 — a wiki completa'),
       h('p', { className: 'page-header__description' },
         h('span', { className: 'u-text-cyan' }, 'Jogo base'),
         ` (${A3VAN_TOTAL_TOPICOS} tópicos) · `,
-        h('span', { className: 'u-text-cyan' }, 'Instalar & configurar mods'),
-        ` (${A3CFG_TOTAL_TOPICOS} tópicos) · `,
+        h('span', { className: 'u-text-cyan' }, `coleção completa (${A3COL_TOTAL} itens)`),
+        ' com guia de cada um · ',
         h('span', { className: 'u-text-cyan' }, `${A3TUT_TOTAL} mods`),
-        ' do preset explicados um a um. Tudo pra jogar — com ou sem mods.')));
+        ' do preset a fundo · comandos, campanhas e até os ',
+        h('span', { className: 'u-text-cyan' }, 'arquivos reais no Drive'),
+        '. Do casual ao programador.')));
 
   /* aviso de honestidade sobre teclas + link do preset */
   page.appendChild(h('div', { className: 'card a3tut-aviso' },
@@ -68,10 +73,12 @@ export function arma3TutorialPage(args = {}) {
   }, h('span', { className: 'symbols-cat__label' }, label));
   abas.append(
     abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
+    abaBtn('colecao', `📦 Coleção completa · ${A3COL_TOTAL}`),
     abaBtn('config', `🔧 Instalar & configurar mods · ${A3CFG_TOTAL_TOPICOS}`),
     abaBtn('mods', `🧩 Mods do preset · ${A3TUT_TOTAL}`),
     abaBtn('comandos', `⌨️ Comandos & Spawn · ${A3CMD_TOTAL}`),
-    abaBtn('campanhas', `🏴 Campanhas · ${A3CAMP_TOTAL}`));
+    abaBtn('campanhas', `🏴 Campanhas · ${A3CAMP_TOTAL}`),
+    abaBtn('drive', `☁️ Arquivos (Drive) · ${A3DRV_TOTAL}`));
   page.appendChild(abas);
 
   /* busca + chips (as categorias mudam conforme a aba) */
@@ -85,15 +92,18 @@ export function arma3TutorialPage(args = {}) {
     if (aba === 'config') return A3CFG_SECOES;
     if (aba === 'comandos') return A3CMD_SECOES;
     if (aba === 'campanhas') return A3CAMP_SECOES;
+    if (aba === 'drive') return A3DRV_SECOES;
     if (aba === 'vanilla') return A3VAN_SECOES;
-    return null; // mods usa A3TUT_CATEGORIAS
+    return null; // mods usa A3TUT_CATEGORIAS · colecao usa A3COL_CATS
   }
   function montarChips() {
     chips.replaceChildren();
     const secs = secoesDaAba();
     const cats = aba === 'mods'
       ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3TUT_CATEGORIAS]
-      : [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))];
+      : (aba === 'colecao'
+        ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3COL_CATS]
+        : [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))]);
     cats.forEach((c) => {
       chips.appendChild(h('button', {
         className: 'symbols-cat' + (c.id === catAtiva ? ' is-active' : ''), dataset: { cat: c.id },
@@ -142,7 +152,8 @@ export function arma3TutorialPage(args = {}) {
   function cardTopico(t) {
     return h('div', { className: 'card a3tut-card' },
       h('div', { className: 'a3tut-card__head' },
-        h('b', { className: 'a3tut-card__nome' }, t.titulo)),
+        h('b', { className: 'a3tut-card__nome' }, t.titulo),
+        t.link ? h('a', { className: 'a3tut-card__ws', href: t.link.url, target: '_blank', rel: 'noopener noreferrer' }, t.link.rotulo + ' ↗') : null),
       h('p', { className: 'a3tut-card__oque' }, t.texto),
       t.atalhos && t.atalhos.length ? h('div', { className: 'a3tut-card__sec' },
         h('span', { className: 'a3tut-card__label' }, 'COMANDOS & ATALHOS'),
@@ -178,6 +189,77 @@ export function arma3TutorialPage(args = {}) {
       t.dicas && t.dicas.length ? h('div', { className: 'a3tut-card__sec' },
         h('span', { className: 'a3tut-card__label' }, 'DICAS'),
         h('ul', { className: 'a3tut-dicas' }, ...t.dicas.map((d) => h('li', null, d)))) : null);
+  }
+
+  /* pula pra aba Mods já buscando o item (usado pelos cards da Coleção) */
+  function irParaTutorial(nome) {
+    const btn = abas.querySelector('[data-aba="mods"]');
+    if (btn) btn.click();
+    busca = nome; buscaInput.value = nome;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* card da aba Coleção: capa do Workshop + guia do autor */
+  function cardColecao(id, it) {
+    const url = `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`;
+    return h('div', { className: 'card a3tut-card a3col-card' },
+      it.img ? h('img', { className: 'a3col-card__capa', src: it.img, alt: it.nome, loading: 'lazy' }) : null,
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, it.nome),
+        h('a', { className: 'a3tut-card__ws', href: url, target: '_blank', rel: 'noopener noreferrer' }, 'Workshop ↗')),
+      h('div', { className: 'a3col-card__meta' },
+        it.tam ? h('span', { className: 'badge' }, it.tam) : null,
+        it.autor ? h('span', { className: 'badge' }, 'por ' + it.autor) : null,
+        ...it.tags.map((t) => h('span', { className: 'a3col-tag' }, t))),
+      it.dlcs && it.dlcs.length ? h('div', { className: 'a3tut-card__deps' },
+        h('span', { className: 'a3tut-card__label' }, 'DLC'),
+        ...it.dlcs.map((d) => h('span', { className: 'a3tut-dep a3tut-dep--aviso' }, d))) : null,
+      it.deps && it.deps.length ? h('div', { className: 'a3tut-card__deps' },
+        h('span', { className: 'a3tut-card__label' }, 'REQUER'),
+        ...it.deps.map((d) => h('span', { className: 'a3tut-dep' }, d))) : null,
+      h('p', { className: 'a3tut-card__oque' }, it.resumo),
+      it.guia ? h('details', { className: 'a3col-card__guia' },
+        h('summary', null, '📖 guia completo do autor'),
+        h('pre', { className: 'a3col-card__guiatxt' }, it.guia)) : null,
+      it.temTutorial ? h('button', {
+        className: 'a3col-card__irtut', onclick: () => irParaTutorial(it.nome)
+      }, '🧩 tutorial detalhado na aba Mods →') : null);
+  }
+
+  /* visualizador de pastas do Drive (iframe embeddedfolderview — a pasta é
+   * compartilhada por link, então o embed lista os arquivos AO VIVO) */
+  function viewerDrive() {
+    let pastaAtiva = A3DRV_PASTAS[0];
+    const iframe = h('iframe', {
+      className: 'a3drv-iframe', loading: 'lazy', title: 'Arquivos do Arma 3 no Drive',
+      src: `https://drive.google.com/embeddedfolderview?id=${pastaAtiva.driveId}#list`
+    });
+    const descEl = h('p', { className: 'a3drv-desc u-text-muted' }, pastaAtiva.desc);
+    const abrirEl = h('a', {
+      className: 'btn', target: '_blank', rel: 'noopener noreferrer',
+      href: `https://drive.google.com/drive/folders/${pastaAtiva.driveId}`
+    }, 'abrir no Drive ↗');
+    const chipsPastas = h('div', { className: 'symbols-cats a3drv-pastas' });
+    A3DRV_PASTAS.forEach((p) => {
+      chipsPastas.appendChild(h('button', {
+        className: 'symbols-cat' + (p.id === pastaAtiva.id ? ' is-active' : ''), dataset: { pasta: p.id },
+        onclick: () => {
+          pastaAtiva = p;
+          chipsPastas.querySelectorAll('.symbols-cat').forEach((b) => b.classList.toggle('is-active', b.dataset.pasta === p.id));
+          iframe.src = `https://drive.google.com/embeddedfolderview?id=${p.driveId}#list`;
+          descEl.textContent = p.desc;
+          abrirEl.href = `https://drive.google.com/drive/folders/${p.driveId}`;
+        }
+      }, h('span', { className: 'symbols-cat__label' }, p.nome)));
+    });
+    return h('div', { className: 'card a3drv-viewer' },
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, '☁️ Navegar nos arquivos reais (ao vivo)'),
+        abrirEl),
+      h('p', { className: 'a3tut-card__oque' },
+        'O espelho completo da instalação do operador está numa pasta compartilhada do Drive — igual à aba Filmes, dá pra navegar sem sair do site. Escolha a pasta:'),
+      chipsPastas, descEl, iframe);
   }
 
   function secaoEl(cat, cards, qtd, desc) {
@@ -228,12 +310,35 @@ export function arma3TutorialPage(args = {}) {
         corpo.appendChild(secaoEl(cat, filtrados.map(([id, t]) => cardMod(id, t)), filtrados.length, cat.desc));
       });
       contador.textContent = `${visiveis} de ${total} mods`;
+    } else if (aba === 'colecao') {
+      total = A3COL_TOTAL;
+      /* cabeçalho da coleção (some se houver busca ativa) */
+      if (!termo) {
+        corpo.appendChild(h('div', { className: 'card a3tut-card a3tut-card--destaque' },
+          h('div', { className: 'a3tut-card__head' },
+            h('b', { className: 'a3tut-card__nome' }, `📦 Coleção "${A3COL_INFO.nome}"`),
+            h('a', { className: 'a3tut-card__ws', href: A3COL_INFO.url, target: '_blank', rel: 'noopener noreferrer' }, 'assinar na Steam ↗')),
+          h('p', { className: 'a3tut-card__oque' },
+            `A coleção oficial do site, montada por ${A3COL_INFO.autor}: ${A3COL_TOTAL} itens entre mods, cenários, composições e terrenos — TUDO catalogado abaixo com capa, tamanho, dependências e o guia de cada um. Assinou a coleção, o Launcher baixa tudo sozinho.`)));
+      }
+      A3COL_CATS.forEach((cat) => {
+        if (catAtiva !== 'all' && catAtiva !== cat.id) return;
+        const doCat = Object.entries(A3COL_ITENS).filter(([, it]) => it.cat === cat.id);
+        const filtrados = !termo ? doCat : doCat.filter(([id, it]) =>
+          normalize(`${it.nome} ${it.resumo} ${it.tags.join(' ')} ${id}`).includes(termo));
+        if (!filtrados.length) return;
+        visiveis += filtrados.length;
+        corpo.appendChild(secaoEl(cat, filtrados.map(([id, it]) => cardColecao(id, it)), filtrados.length, cat.desc));
+      });
+      contador.textContent = `${visiveis} de ${total} itens da coleção`;
     } else {
       const secs = secoesDaAba();
       total = aba === 'config' ? A3CFG_TOTAL_TOPICOS
         : (aba === 'comandos' ? A3CMD_TOTAL
-          : (aba === 'campanhas' ? A3CAMP_TOTAL : A3VAN_TOTAL_TOPICOS));
+          : (aba === 'campanhas' ? A3CAMP_TOTAL
+            : (aba === 'drive' ? A3DRV_TOTAL : A3VAN_TOTAL_TOPICOS)));
       const renderCard = aba === 'comandos' ? cardComando : cardTopico;
+      if (aba === 'drive' && !termo && catAtiva === 'all') corpo.appendChild(viewerDrive());
       secs.forEach((sec) => {
         if (catAtiva !== 'all' && catAtiva !== sec.id) return;
         const lista = sec.topicos || sec.itens || [];
@@ -245,7 +350,8 @@ export function arma3TutorialPage(args = {}) {
       });
       const rotulo = aba === 'config' ? 'tópicos de instalação/config'
         : (aba === 'comandos' ? 'comandos de console'
-          : (aba === 'campanhas' ? 'tópicos de campanha' : 'tópicos do jogo base'));
+          : (aba === 'campanhas' ? 'tópicos de campanha'
+            : (aba === 'drive' ? 'tópicos dos arquivos' : 'tópicos do jogo base')));
       contador.textContent = `${visiveis} de ${total} ${rotulo}`;
     }
     if (!visiveis) corpo.appendChild(h('div', { className: 'card a3tut-vazio u-text-muted' }, 'Nada bate com essa busca.'));

@@ -83,3 +83,47 @@
   font-family: var(--font-mono); font-size: 11px; color: var(--color-cyan);
 }
 .a3tut-sqf__copiar:hover { background: rgba(0, 229, 255, 0.16); }
+
+/* ===== 0.8.0 — aba Coleção completa (221 itens com capa) ===== */
+.a3col-card { overflow: hidden; }
+.a3col-card__capa {
+  width: calc(100% + 32px); margin: -16px -16px 10px;
+  aspect-ratio: 460 / 260; object-fit: cover; display: block;
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.a3col-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 6px; }
+.a3col-tag {
+  padding: 1px 8px; border-radius: 999px; font-size: 10px;
+  font-family: var(--font-mono); color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.a3col-card__guia { margin-top: 8px; }
+.a3col-card__guia summary {
+  cursor: pointer; font-size: 12px; color: var(--color-cyan);
+  font-family: var(--font-mono); user-select: none;
+}
+.a3col-card__guiatxt {
+  margin: 8px 0 0; padding: 10px 12px; max-height: 340px; overflow: auto;
+  border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.3);
+  font-family: inherit; font-size: 12px; line-height: 1.55;
+  color: var(--color-text-secondary); white-space: pre-wrap; word-break: break-word;
+}
+.a3col-card__irtut {
+  margin-top: 10px; padding: 6px 12px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--color-cyan-edge, rgba(0, 229, 255, 0.35));
+  background: rgba(0, 229, 255, 0.08);
+  font-family: var(--font-mono); font-size: 11px; color: var(--color-cyan);
+  text-align: left;
+}
+.a3col-card__irtut:hover { background: rgba(0, 229, 255, 0.16); }
+
+/* ===== 0.8.0 — aba Arquivos (Drive) ===== */
+.a3drv-viewer { margin-bottom: 18px; }
+.a3drv-pastas { margin: 10px 0 6px; }
+.a3drv-desc { font-size: 12px; margin: 0 0 8px; }
+.a3drv-iframe {
+  width: 100%; height: 440px; border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px; background: rgba(255, 255, 255, 0.92);
+}
