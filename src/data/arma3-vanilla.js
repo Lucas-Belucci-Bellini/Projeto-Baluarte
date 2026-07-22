@@ -266,6 +266,81 @@ export const A3VAN_SECOES = [
         dicas: ['Slot de "rifleman" é o melhor lugar pra aprender observando.', 'Errar tudo bem; avisar que é novo = metade da comunidade vira instrutor voluntário.']
       }
     ]
+  },
+  /* ===== 0.8.0 — enciclopédia: o jogo além do teclado ===== */
+  {
+    id: 'enciclopedia', nome: 'Enciclopédia: jogo, série & engine', icon: '📚',
+    desc: 'O Arma 3 como objeto: de onde veio, como funciona por dentro e por que é um dos jogos mais difíceis (e modáveis) do mundo.',
+    topicos: [
+      {
+        titulo: 'Ficha técnica: o que é o Arma 3',
+        texto: 'Lançado em 12/09/2013 pela Bohemia Interactive (estúdio tcheco), rodando no engine Real Virtuality 4. Ambientado em 2035 no Mediterrâneo (ilhas Altis e Stratis, inspiradas nas gregas Lemnos e Ágios Efstrátios): a OTAN em retirada da Europa encara o pacto CSAT em expansão. Militarmente é um SANDBOX: um jogo de guerra combinada (infantaria, blindados, ar, mar) onde a comunidade cria o resto — mais de uma década depois, segue vivo por causa do Workshop.',
+        dicas: ['A campanha original "The East Wind" saiu em 3 episódios: Survive, Adapt e Win (2013-2014) — você joga como o soldado Ben Kerry.', 'Só o conteúdo vanilla passa de 20 veículos por facção, ~40 armas e 5 terrenos oficiais.']
+      },
+      {
+        titulo: 'A linhagem: de Operation Flashpoint ao Arma 4',
+        texto: 'A série começou em Operation Flashpoint: Cold War Crisis (2001) — o "pai" dos milsims de PC. Seguiu com Arma: Armed Assault (2006), Arma 2 (2009) — cujo mod DayZ (2012) inventou o gênero survival-multiplayer e financiou o futuro do estúdio — e Arma 3 (2013). Depois vieram Arma Reforger (2022, no engine novo Enfusion, como "ponte" tecnológica) e o Arma 4 anunciado. O Arma 3 é o último e mais maduro capítulo da era Real Virtuality.',
+        dicas: ['Muita mecânica "estranha" do Arma 3 é herança direta de 2001 — a comunidade chama de "Armaisms".', 'Arma 2 + mods segue relevante: parte dos mods do 3 (CUP, RHS) porta conteúdo daquela era.']
+      },
+      {
+        titulo: 'Real Virtuality por dentro (nível programador)',
+        texto: 'O engine separa DADO de CÓDIGO: todo conteúdo é descrito em configs de classes (config.cpp compilado pra binário) e o comportamento em SQF — linguagem de script própria com ~2.500 comandos. O jogo roda os scripts num scheduler cooperativo (scripts "scheduled" podem dormir; event handlers rodam "unscheduled" e não podem travar o frame). Multiplayer usa modelo de locality: cada objeto "pertence" a uma máquina e comandos têm efeito local ou global — remoteExec é a ponte.',
+        dicas: ['A BIKI (community.bistudio.com) documenta TODOS os comandos — é a biblioteca-mãe de quem scripta.', 'Aprendeu a ler config de classe? Você lê qualquer mod: é tudo herança (class Rifle_Base_F: Rifle {…}).']
+      },
+      {
+        titulo: 'Por que ele é considerado tão difícil',
+        texto: 'Três motivos somados: (1) simulação — balística com queda/vento de projétil, stamina, ferimentos, zeroing; (2) escala — mapas de centenas de km² onde o contato começa a 300+ m (você morre sem ver de onde); (3) ausência de guias — sem minimapa mágico, sem marcador de inimigo em dificuldades altas, navegação por bússola e mapa de papel. A recompensa: nenhum outro jogo entrega a mesma sensação de operação real.',
+        dicas: ['O "pulo do gato" universal: devagar é rápido. Quem corre no aberto vira estatística.', 'A aba Táticas desta página tem o passo a passo de sobrevivência.']
+      }
+    ]
+  },
+  {
+    id: 'dlcs', nome: 'DLCs & Creator DLCs — o catálogo completo', icon: '📦',
+    desc: 'Tudo que a Bohemia (e os estúdios parceiros) lançaram — o que cada expansão adiciona e pra quem ela é.',
+    topicos: [
+      {
+        titulo: 'As expansões da própria Bohemia (2014-2021)',
+        texto: 'Zeus (2014, GRÁTIS — modo mestre-de-jogo em tempo real) · Karts (2014) · Helicopters (2014 — modelo de voo RotorLib avançado + sling loading) · Marksmen (2015 — apoiar/deploy de arma, supressão) · APEX (2016, A GRANDE: o arquipélago Tanoa de 100 km², facções CTRG/Syndikat/Gendarmerie, armas e a campanha co-op Apex Protocol) · Jets (2017 — sensores, radar, hitpoints de aeronave, porta-aviões USS Freedom) · Malden (2017, GRÁTIS — remake do mapa clássico de 2001) · Laws of War (2017 — a facção humanitária IDAP, minas/cluster e a campanha "Remnants of War", parte da renda doada ao CICV) · Tac-Ops (2017, missões táticas) · Tanks (2018 — interiores de blindado, mecânica de munição) · Contact (2019 — o terreno Livonia de 163 km², a LDF e a campanha de PRIMEIRO CONTATO alienígena "First Contact") · Art of War (2021, beneficente).',
+        dicas: ['Sem o DLC você ainda JOGA nos servidores que o usam — o jogo mostra aviso e bloqueia usar o equipamento premium diretamente.', 'The Old Man (2020, grátis com Apex): campanha open-world solo em Tanoa — a mais subestimada do jogo.']
+      },
+      {
+        titulo: 'Creator DLCs — estúdios da comunidade, qualidade oficial',
+        texto: 'Programa em que criadores veteranos vendem expansões oficiais: Global Mobilization (2019 — Guerra Fria alemã, 419 km² de Weferlingen) · S.O.G. Prairie Fire (2021 — Vietnã completo, co-op lendária) · CSLA Iron Curtain (2021 — Tchecoslováquia) · Western Sahara (2021 — deserto de Sefrou-Ramal, a campanha Extraction que consta no perfil GHOST) · Spearhead 1944 (2023 — Normandia WW2, jogada pelo operador: Operation Cobra) · Reaction Forces (2024) · Expeditionary Forces (2024).',
+        dicas: ['CDLCs têm "compatibility data" GRÁTIS no Workshop: você entra em servidor com o conteúdo sem comprar (sem os assets premium).', 'Prairie Fire e Spearhead são consideradas as melhores campanhas co-op da plataforma inteira.']
+      }
+    ]
+  },
+  {
+    id: 'faccoes', nome: 'Facções do universo 2035', icon: '🚩',
+    desc: 'Quem luta contra quem no lore do Armaverse — e o que cada facção usa.',
+    topicos: [
+      {
+        titulo: 'OTAN, CSAT e AAF — o triângulo da campanha',
+        texto: 'OTAN (azul): em 2035 é uma força ocidental sobrecarregada, com a task force do Mediterrâneo abandonada à própria sorte — armas: MX 6.5 mm, blindados Slammer/Marshall, F/A-181. CSAT (vermelho, "Canton-Protocol Strategic Alliance Treaty"): pacto liderado por Irã e China em ascensão tecnológica — Katiba, uniformes com proteção integrada, To-199 Neophron, tecnologia superior. AAF (verde, Altis Armed Forces): o exército local de Altis, treinado pela OTAN e financiado pela CSAT — Mk20, blindados leves, a facção "do meio" que trai todo mundo na campanha.',
+        dicas: ['A leitura de cores vale o jogo inteiro: BLUFOR azul, OPFOR vermelho, INDEPENDENT verde, CIVIL roxo/branco.', 'Independente ≠ aliado: a relação da AAF com você depende da missão (o editor define).']
+      },
+      {
+        titulo: 'As outras: FIA, CTRG, Syndikat, Viper, LDF, IDAP',
+        texto: 'FIA: guerrilha civil de Altis que a campanha te faz liderar — equipamento capturado, IEDs, emboscada. CTRG: força especial multinacional da OTAN (protagonista do Apex Protocol, uniformes stealth). Syndikat: cartel criminoso de Tanoa (AKs velhas, brutalidade). Viper: o espelho da CTRG do lado CSAT (exoesqueleto de mergulho, tecnologia de ponta). LDF: Livonian Defense Force, o exército polonês-báltico do Contact. IDAP: organização humanitária NEUTRA do Laws of War (drones de desminagem, vans — atirar nela é crime de guerra, e a campanha te faz sentir isso).',
+        dicas: ['Russia (Spetsnaz) aparece no Contact em exercício conjunto com a LDF quando os alienígenas chegam.', 'Cada facção tem sua página de equipamento completa no Field Manual e na BIKI (Arma 3 Factions).']
+      }
+    ]
+  },
+  {
+    id: 'mapas', nome: 'Os terrenos oficiais', icon: '🌍',
+    desc: 'Os mundos do vanilla + DLCs — tamanhos, clima e o que cada um ensina.',
+    topicos: [
+      {
+        titulo: 'Stratis e Altis — o Egeu de 2035',
+        texto: 'Stratis (20 km²): a ilha-tutorial, base aérea + colinas — perfeita pra infantaria e aprender o jogo (o prólogo inteiro se passa nela). Altis (270 km²!): o coração do Arma 3 — capital Kavala, aeroporto internacional, salinas, montanhas; um país inteiro onde cabe qualquer tipo de operação. As duas são recriações das ilhas gregas reais Ágios Efstrátios e Lemnos.',
+        dicas: ['270 km² não é marketing: de carro, atravessar Altis leva ~20 minutos REAIS.', 'Kavala e Pyrgos são os melhores campos de treino de CQB do vanilla.']
+      },
+      {
+        titulo: 'Tanoa, Malden e Livonia — selva, clássico e floresta',
+        texto: 'Tanoa (100 km², Apex): arquipélago do Pacífico Sul com SELVA densa, plantações, vulcão — visibilidade curta muda completamente o combate (é onde nasce o CQB de mato). Malden 2035 (62 km², grátis): remake carinhoso do mapa do Operation Flashpoint de 2001. Livonia (163 km², Contact): floresta báltica temperada com clareiras e bunkers — o cenário de caçada de OVNIs e do Antistasi mais atmosférico. Além deles: Virtual Reality (o grid de treino) e as versões táticas dos CDLCs.',
+        dicas: ['Na selva de Tanoa, silenciador e paciência valem mais que scope: contato médio a <100 m.', 'Livonia + chuva + noite = o melhor cenário de terror do jogo (a comunidade usa pra missões de zumbi/STALKER).']
+      }
+    ]
   }
 ];
 

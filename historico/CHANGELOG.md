@@ -6,7 +6,19 @@ aqui o que mudou.
 
 ---
 
-## 2026-07-20 (parte 3)
+## 2026-07-22
+
+### 📖 Launcher 0.8.0 — a MEGA-WIKI do Arma 3: coleção completa (221 itens), enciclopédia e os arquivos reais no Drive
+- 🎯 **Pedido do operador**: "todas as informações sobre tudo dessa coleção… isso sim é uma wiki, tem tudo que eu possa e não possa precisar". A Bíblia do Arma 3 virou a **página única** do jogo no site e no app — agora com **7 abas**.
+- 📦 **Aba nova "Coleção completa · 221"**: TODOS os itens da coleção Steam oficial do site (`projeto-baluarte.vercel.app`, id 3769819471, por Spartan Gamer BR) catalogados um a um — **capa do Workshop em cada card**, tamanho, autor, tags, DLCs exigidas, dependências (REQUER) e o **guia completo do autor embutido** (expandível) nos 95+ itens que não tinham tutorial. Categorias: 117 mods · 62 cenários & missões · 33 composições · 8 terrenos · 1 campanha. Os 100+ itens que já têm tutorial detalhado ganharam botão que **pula direto pro card na aba Mods**. Dados coletados da **Steam Web API oficial** (`GetPublishedFileDetails`, 221/221) + raspagem das páginas.
+- ☁️ **Aba nova "Arquivos (Drive) · 19"**: o operador espelhou a INSTALAÇÃO INTEIRA no Google Drive — a aba navega nela **ao vivo, sem sair do site** (iframe `embeddedfolderview`, mesmo espírito da aba Filmes) com 8 pastas mapeadas (jogo, Workshop/107410, perfis, GHOST, composições, Bohemia). E mais:
+  - 👻 **Perfil GHOST decifrado**: baixamos o `GHOST.Arma3Profile` REAL e lemos campo a campo — dificuldade Custom com **IA no máximo** (skillAI=1, precisionAI=1, AILevelHigh), HUD de veterano, vídeo (view distance 3000 m, terrainGrid 12.5), progresso de campanha (East Wind em "Blackfoot Down", Old Man, Spearhead 1944, Contact, Western Sahara) e os keybinds de mod gravados (Antistasi Y/R/H, RHS FCS, BettIR, Unsung…).
+  - 🧱 **Composições próprias catalogadas**: a frota SPARTAN TIME (HEAVY/AIR/WATER/TANK/RECON/DELTA…), OSPREY, BRASIL 1-2, BASE OLD MEN e 50+ — com o guia de como importar em outro PC.
+  - 💾 **Saves & vars explicados**: GHOST.vars de 27 MB (onde Vindicta/Antistasi/KP salvam de verdade), AntistasiUltimate.vars, Saved/UserSaved.
+  - 🔬 **Anatomia dos arquivos (nível programador)**: formato do .Arma3Profile (Param File), PBO/bisign/bikey, mission.sqm, arma3.cfg/.rpt e por que o id do Workshop é a chave de tudo.
+- 📚 **Jogo base virou enciclopédia (42 tópicos, +10)**: seções novas — **Enciclopédia** (ficha técnica 2013/Real Virtuality 4, a linhagem OFP→Arma 4, o engine por dentro: SQF/scheduler/locality/remoteExec, por que o jogo é difícil), **DLCs & Creator DLCs** (o catálogo completo 2014-2024), **Facções do universo 2035** (OTAN/CSAT/AAF/FIA/CTRG/Syndikat/Viper/LDF/IDAP) e **Terrenos oficiais** (Stratis 20 km² → Altis 270 km², Tanoa, Malden, Livonia).
+- 🔄 SW `baluarte-v0.8.0` (a wiki chega pra quem já visitou) · app `0.8.0`.
+- ✅ Verificado (Playwright, 15/15): 7 abas, 221/221 na coleção com 221 capas e 95 guias, busca filtra, pulo Coleção→Mods funciona, visualizador do Drive com 8 pastas e troca de iframe, 19 tópicos do Drive, deep-link `?aba=colecao`, zero erros de página. Capas conferidas por HTTP direto no CDN (200 image/jpeg).
 
 ### 🔦 Launcher 0.7.10 — ACHEI a tela preta do 3D: modelo sem luz (só IBL) → luzes explícitas
 - 🎯 **O laudo do operador fechou o caso.** Tudo passava (GPU RX 6650 XT via ANGLE/D3D11, WebGL DESENHA o pixel, GLB/DRACO 200, SW v0.7.9, o visor MONTA com 11.376 triângulos) — MAS a janela abria PRETA. O diagnóstico só confirmava que *montou*, não que *aparece*.
