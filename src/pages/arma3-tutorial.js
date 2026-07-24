@@ -20,6 +20,8 @@ import { A3CMD_SECOES, A3CMD_TOTAL } from '../data/arma3-comandos.js';
 import { A3CAMP_SECOES, A3CAMP_TOTAL } from '../data/arma3-campanhas.js';
 import { A3COL_INFO, A3COL_CATS, A3COL_ITENS, A3COL_TOTAL } from '../data/arma3-colecao.js';
 import { A3DRV_PASTAS, A3DRV_SECOES, A3DRV_TOTAL } from '../data/arma3-drive.js';
+import { A3ARM, A3ARM_TIPOS, A3ARM_CALIBRES, A3ARM_TOTAL } from '../data/arma3-armas.js';
+import { resolverTiro, AIR_FRICTION_REF } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
 
@@ -29,9 +31,12 @@ export function arma3TutorialPage(args = {}) {
   const urlPorId = Object.fromEntries(preset.mods.map((m) => [m.url.match(/id=(\d+)/)[1], m.url]));
 
   let busca = '', catAtiva = 'all';
+  /* estado da calculadora de balística (sobrevive aos re-renders) */
+  let calcArmaId = 'mk1emr', calcZero = 300, calcAlvo = 600, calcVento = 0;
   const abaInicial = (args.query || {}).aba;
   let aba = (abaInicial === 'mods' || abaInicial === 'config' || abaInicial === 'comandos' ||
-    abaInicial === 'campanhas' || abaInicial === 'colecao' || abaInicial === 'drive') ? abaInicial : 'vanilla';
+    abaInicial === 'campanhas' || abaInicial === 'colecao' || abaInicial === 'drive' ||
+    abaInicial === 'armas') ? abaInicial : 'vanilla';
 
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in' },
@@ -73,6 +78,7 @@ export function arma3TutorialPage(args = {}) {
   }, h('span', { className: 'symbols-cat__label' }, label));
   abas.append(
     abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
+    abaBtn('armas', `🔫 Armas (database) · ${A3ARM_TOTAL}`),
     abaBtn('colecao', `📦 Coleção completa · ${A3COL_TOTAL}`),
     abaBtn('config', `🔧 Instalar & configurar mods · ${A3CFG_TOTAL_TOPICOS}`),
     abaBtn('mods', `🧩 Mods do preset · ${A3TUT_TOTAL}`),
@@ -103,7 +109,9 @@ export function arma3TutorialPage(args = {}) {
       ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3TUT_CATEGORIAS]
       : (aba === 'colecao'
         ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3COL_CATS]
-        : [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))]);
+        : (aba === 'armas'
+          ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3ARM_TIPOS]
+          : [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))]));
     cats.forEach((c) => {
       chips.appendChild(h('button', {
         className: 'symbols-cat' + (c.id === catAtiva ? ' is-active' : ''), dataset: { cat: c.id },
@@ -262,6 +270,122 @@ export function arma3TutorialPage(args = {}) {
       chipsPastas, descEl, iframe);
   }
 
+  /* ===== aba Armas: calculadora de balística + tabela estilo Fallout ===== */
+  const velRef = (a) => a.vel || (A3ARM_CALIBRES[a.calibre] && A3ARM_CALIBRES[a.calibre].vel) || 800;
+  const dragRef = (a) => AIR_FRICTION_REF[a.calibre] || -0.0009;
+
+  /* mini-SVG da trajetória (queda em cm × distância) */
+  function svgTrajetoria(res, alvo) {
+    const pts = res.trajetoria.filter((p) => p.x <= alvo * 1.02);
+    if (pts.length < 2) return null;
+    const W = 520, H = 150, padL = 8, padR = 8, padT = 10, padB = 18;
+    const maxX = alvo || 1;
+    const ys = pts.map((p) => p.y);
+    const yMin = Math.min(0, ...ys), yMax = Math.max(0, ...ys);
+    const span = (yMax - yMin) || 1;
+    const sx = (x) => padL + (x / maxX) * (W - padL - padR);
+    const sy = (y) => padT + (1 - (y - yMin) / span) * (H - padT - padB);
+    const d = pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join(' ');
+    const NS = 'http://www.w3.org/2000/svg';
+    const el = document.createElementNS(NS, 'svg');
+    el.setAttribute('viewBox', `0 0 ${W} ${H}`); el.setAttribute('class', 'a3arm-svg');
+    const mk = (t, at) => { const n = document.createElementNS(NS, t); for (const k in at) n.setAttribute(k, at[k]); return n; };
+    el.appendChild(mk('line', { x1: padL, y1: sy(0), x2: W - padR, y2: sy(0), class: 'a3arm-svg__zero' }));  // linha de mira
+    el.appendChild(mk('path', { d, class: 'a3arm-svg__path' }));
+    el.appendChild(mk('line', { x1: sx(alvo), y1: padT, x2: sx(alvo), y2: H - padB, class: 'a3arm-svg__alvo' }));
+    const t1 = mk('text', { x: padL + 2, y: sy(0) - 4, class: 'a3arm-svg__lbl' }); t1.textContent = 'linha de mira';
+    const t2 = mk('text', { x: sx(alvo) - 4, y: H - 6, class: 'a3arm-svg__lbl', 'text-anchor': 'end' }); t2.textContent = alvo + ' m';
+    el.append(t1, t2);
+    return el;
+  }
+
+  function calcBalistica() {
+    const box = h('div', { className: 'card a3tut-card a3arm-calc' });
+    const saida = h('div', { className: 'a3arm-calc__saida' });
+
+    function recalc() {
+      const a = A3ARM.find((w) => w.id === calcArmaId) || A3ARM[0];
+      const initSpeed = velRef(a), airFriction = dragRef(a);
+      const res = resolverTiro({ initSpeed, airFriction, zero: calcZero, alvo: calcAlvo, vento: calcVento });
+      const sinal = res.quedaCm >= 0 ? '+' : '−';
+      const abs = Math.abs(res.quedaCm);
+      saida.replaceChildren(
+        h('div', { className: 'a3arm-calc__grid' },
+          resultado('Queda no alvo', `${sinal}${abs.toFixed(0)} cm`, res.quedaCm >= 0 ? 'acima da mira → segure baixo' : 'abaixo da mira → segure alto'),
+          resultado('Correção', `${res.mils >= 0 ? '+' : '−'}${Math.abs(res.mils).toFixed(1)} mils`, 'no retículo (mil-dots)'),
+          resultado('Tempo de voo', `${res.tempo.toFixed(2)} s`, `chega em ${calcAlvo} m`),
+          resultado('Vel. no alvo', `${res.vAlvo.toFixed(0)} m/s`, `${res.energiaRelPct.toFixed(0)}% da energia de saída`),
+          resultado('Deriva por vento', `${res.derivaVentoCm >= 0 ? '→' : '←'} ${Math.abs(res.derivaVentoCm).toFixed(0)} cm`, calcVento ? `vento ${calcVento} m/s` : 'sem vento'),
+          resultado('Elevação do cano', `${res.anguloZeroGraus.toFixed(2)}°`, `zerado em ${calcZero} m · ápice ${(res.apiceM * 100).toFixed(0)} cm`)),
+        svgTrajetoria(res, calcAlvo) || h('p', { className: 'u-text-muted' }, ''));
+    }
+
+    const selArma = h('select', { className: 'input a3arm-sel', onchange: (e) => { calcArmaId = e.target.value; recalc(); } });
+    A3ARM_TIPOS.forEach((tp) => {
+      const grp = h('optgroup', { label: tp.nome });
+      A3ARM.filter((a) => a.tipo === tp.id && a.calibre !== '—').forEach((a) =>
+        grp.appendChild(h('option', { value: a.id, selected: a.id === calcArmaId }, `${a.nome} — ${a.calibre}`)));
+      if (grp.children.length) selArma.appendChild(grp);
+    });
+    const num = (val, min, max, step, set) => h('input', {
+      className: 'input a3arm-num', type: 'number', value: String(val), min: String(min), max: String(max), step: String(step),
+      oninput: (e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) { set(Math.max(min, Math.min(max, v))); recalc(); } }
+    });
+    box.append(
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, '🧮 Calculadora de trajetória (modelo real do engine)')),
+      h('p', { className: 'a3tut-card__oque' },
+        'Resolve o MESMO cálculo do jogo: arrasto ', h('code', null, 'airFriction × v²'),
+        ' + gravidade 9.81, por integração numérica. Escolha a arma e o alvo — dá a queda, a correção em mils, o tempo e a energia residual. ',
+        h('span', { className: 'u-text-muted' }, '(velocidade/arrasto de referência por calibre; o valor exato por arma vem da extração local dos PBOs — issue #398.)')),
+      h('div', { className: 'a3arm-calc__campos' },
+        h('label', null, h('span', null, 'Arma'), selArma),
+        h('label', null, h('span', null, 'Zeragem (m)'), num(calcZero, 25, 2000, 25, (v) => calcZero = v)),
+        h('label', null, h('span', null, 'Alvo (m)'), num(calcAlvo, 10, 2000, 10, (v) => calcAlvo = v)),
+        h('label', null, h('span', null, 'Vento lateral (m/s)'), num(calcVento, -20, 20, 1, (v) => calcVento = v))),
+      saida);
+    recalc();
+    return box;
+  }
+  function resultado(rotulo, valor, sub) {
+    return h('div', { className: 'a3arm-res' },
+      h('span', { className: 'a3arm-res__rot' }, rotulo),
+      h('b', { className: 'a3arm-res__val' }, valor),
+      h('span', { className: 'a3arm-res__sub u-text-muted' }, sub));
+  }
+
+  /* tabela de um tipo de arma (estilo Fallout, rolagem horizontal) */
+  function tabelaTipo(tp, armas) {
+    const th = (t, cls) => h('th', cls ? { className: cls } : null, t);
+    const linha = (a) => h('tr', { className: 'a3arm-tr' },
+      h('td', { className: 'a3arm-td a3arm-td--nome' }, a.nome,
+        a.faccao ? h('span', { className: 'a3arm-fac' }, a.faccao) : null),
+      h('td', { className: 'a3arm-td' }, a.calibre),
+      h('td', { className: 'a3arm-td a3arm-num-cel' }, String(velRef(a)),
+        h('span', { className: 'a3arm-td__u' }, ' m/s')),
+      h('td', { className: 'a3arm-td' }, a.rpm ? `~${a.rpm}/min` : (a.modos.includes('Auto') ? 'auto' : 'semi')),
+      h('td', { className: 'a3arm-td' }, a.mag.join('/')),
+      h('td', { className: 'a3arm-td' }, a.modos.join(', ')),
+      h('td', { className: 'a3arm-td' }, a.zeroing),
+      h('td', { className: 'a3arm-td' }, h('span', { className: 'a3col-tag' }, a.dlc)),
+      h('td', { className: 'a3arm-td a3arm-td--obs' }, a.obs),
+      h('td', { className: 'a3arm-td' }, a.calibre !== '—'
+        ? h('button', { className: 'a3arm-calcbtn', onclick: () => { calcArmaId = a.id; aba = 'armas'; catAtiva = 'all'; busca = ''; buscaInput.value = ''; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); } }, '🧮')
+        : '—'));
+    const tabela = h('table', { className: 'a3arm-tabela' },
+      h('thead', null, h('tr', null,
+        th('Variante'), th('Calibre'), th('Vel. saída'), th('Cadência'), th('Carreg.'),
+        th('Modos'), th('Zeroing'), th('DLC'), th('Observações'), th('Balística'))),
+      h('tbody', null, ...armas.map(linha)));
+    return h('div', { className: 'a3tut-secao' },
+      h('div', { className: 'a3tut-secao__head' },
+        h('span', { className: 'a3tut-secao__icon' }, tp.icon),
+        h('h2', { className: 'a3tut-secao__titulo' }, tp.nome),
+        h('span', { className: 'badge badge--cyan' }, String(armas.length))),
+      h('p', { className: 'a3tut-secao__desc u-text-muted' }, tp.desc),
+      h('div', { className: 'a3arm-tabela-wrap' }, tabela));
+  }
+
   function secaoEl(cat, cards, qtd, desc) {
     return h('div', { className: 'a3tut-secao' },
       h('div', { className: 'a3tut-secao__head' },
@@ -331,6 +455,19 @@ export function arma3TutorialPage(args = {}) {
         corpo.appendChild(secaoEl(cat, filtrados.map(([id, it]) => cardColecao(id, it)), filtrados.length, cat.desc));
       });
       contador.textContent = `${visiveis} de ${total} itens da coleção`;
+    } else if (aba === 'armas') {
+      total = A3ARM_TOTAL;
+      if (!termo && catAtiva === 'all') corpo.appendChild(calcBalistica());
+      A3ARM_TIPOS.forEach((tp) => {
+        if (catAtiva !== 'all' && catAtiva !== tp.id) return;
+        const doTipo = A3ARM.filter((a) => a.tipo === tp.id);
+        const filtrados = !termo ? doTipo : doTipo.filter((a) =>
+          normalize(`${a.nome} ${a.calibre} ${a.faccao} ${a.dlc} ${a.obs} ${a.modos.join(' ')}`).includes(termo));
+        if (!filtrados.length) return;
+        visiveis += filtrados.length;
+        corpo.appendChild(tabelaTipo(tp, filtrados));
+      });
+      contador.textContent = `${visiveis} de ${total} armas`;
     } else {
       const secs = secoesDaAba();
       total = aba === 'config' ? A3CFG_TOTAL_TOPICOS

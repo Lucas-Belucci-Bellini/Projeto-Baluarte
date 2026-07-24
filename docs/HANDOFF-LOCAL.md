@@ -208,6 +208,47 @@ O remoto já corrigiu a causa raiz (permission handler de mídia no `main.js` +
       instaladores Win/Mac/Linux. ⚠️ Faça DEPOIS de fechar o M5 (dep + modelo), senão
       o instalador sai sem o motor embutido (só WebLLM — que já funciona).
 
+## D. Wiki de ARMAS — extração dos PBOs do Drive (#398) · **base remota em `main`**
+
+> A meta do operador: "a MELHOR wiki de armas do Arma 3, estilo Fallout, porém
+> completa — inclusive como calcular a trajetória da bala. Fazer a Bohemia ter
+> inveja." E: "quero olhar as armas como eu olho no jogo — foi pra isso que te
+> dei todos os arquivos." Masterplan completo: **issue #398**.
+
+O **remoto já deixou pronto** (aba "🔫 Armas (database)" na Bíblia do Arma 3):
+- `src/data/arma3-armas.js` — 40 armas **vanilla** (fuzil/DMR/sniper/SMG/LMG/pistola/lançador)
+  com os fatos estáveis (calibre, carregador, modos, cadência, zeroing, DLC) + o
+  slot `img`/`render` **vazio** esperando a imagem "como no jogo".
+- `src/utils/arma3-balistica.js` — a **calculadora de trajetória** com o modelo de
+  arrasto REAL do engine (`airFriction × v²` + gravidade, integração numérica);
+  hoje usa velocidade/`airFriction` de **referência por calibre** (`A3ARM_CALIBRES` /
+  `AIR_FRICTION_REF`), editável.
+
+Falta a **máquina** (os arquivos do Drive + Arma 3 Tools). Passos:
+
+- [ ] **Extrair os configs dos PBOs** (a fonte DEFINITIVA dos números):
+      instalar **Arma 3 Tools** (grátis na Steam) → `cfgconvert`/`derap` para
+      converter os `config.bin` (binarizados) em `config.cpp` legível. Despejar
+      de `Addons/` (vanilla) **e** de cada pasta em `107410/` (mods) as classes
+      `CfgWeapons` (arma → `magazines[]`, `modes[]`, `reloadTime`), `CfgMagazines`
+      (`initSpeed`, `count`, `ammo`) e `CfgAmmo` (`hit`, `airFriction`, `typicalSpeed`,
+      `caliber`). Gerar um JSON e **substituir os valores de referência** por
+      exatos em `arma3-armas.js` + `AIR_FRICTION_REF` (aí a calc fica idêntica ao jogo).
+- [ ] **Expandir pro arsenal MODADO** (o diferencial que nenhuma wiki tem): rodar
+      o mesmo dump sobre RHS/CUP/NIArms/etc. e alimentar a database — centenas de
+      armas com stats reais. Manter a separação por tipo/mod.
+- [ ] **Imagens "como no jogo"**: extrair os ícones da UI (`\ui\...\*.paa`) com o
+      **TexView2** (dos Arma 3 Tools) → PNG, e/ou renderizar os `.p3d`. Salvar em
+      `public/arma3/armas/<id>.png` e preencher o campo `img`/`render`; o card já
+      mostra quando existir.
+- [ ] **Commitar seguindo as regras do projeto** (o operador pediu explicitamente
+      que a sessão local "saiba de tudo, inclusive dos commits") — o fluxo completo
+      está no #398 e na seção "Regras" do CLAUDE.md: branch → commit (trailers
+      Co-Authored-By + Claude-Session, **sem** id de modelo) → PR draft → verde →
+      backup branch → merge → CHANGELOG → (se app) bump + Desktop Release.
+- **Aceite:** tabela de armas com stats EXATOS do config (vanilla + mods), a
+  calculadora batendo com o jogo, e cada arma com a imagem como aparece no Arsenal.
+
 ## C. Mega-plano #238 — app completo / site leve
 
 - [x] **Fase 1 — medir** ✅ (comentário no #238): boot web ~111 kB gz; pesados lazos por rota.

@@ -63,6 +63,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "The DUWS proceduraly generates a mini campaign, with all the enemy zones to capture being randomly generated.  Or you can also choose to manually place your HQ and the enemy, and easily make your own unique campaign.  The key here is to have maximum replayability, where the player can setup his own campaign or let the DUWS create everything randomly for him.  You can play with the DUWS on any island you want, you just have to rename…",
   "temTutorial": false,
+  "autor": "kibot",
   "guia": "The DUWS proceduraly generates a mini campaign, with all the enemy zones to capture being randomly generated.  Or you can also choose to manually place your HQ and the enemy, and easily make your own unique campaign.  The key here is to have maximum replayability, where the player can setup his own campaign or let the DUWS create everything randomly for him.  You can play with the DUWS on any island you want, you just have to rename the .pbo file.\n\nYou can play the DUWS on any island you want, all you have to do is to rename the mission file, more info below.\n\nFEATURES:\n\n*Play the way you want:\n-Play as a lone wolf or as a SF team, using support assets and gadgets and perform side missions\n-Control your personnal squad of troopers and fight against the OPFOR\n-Control several squads, vehicles and supports and try to retake the island from the enemy\n-...or a mix of all of them\n*Persistent player stats througout the campaigns/missions, allowing the player to play a multi island driven campaign\n*Unlock abilities throughout the campaigns as you gain experience (persistent)\n*Pretty much every location is randomly generated on the map, from the HQ to the enemy zones and side mission locations.\n*Random side missions, with names randomly generated\n*Play the DUWS on any island you want to.\n*VAS by Tonic (Armory)\n*Several support options to unlock (UAV, Arty, Personnal FLIR, VAS, ...)\n*You can define the HQ and/or the enemy zones, or just the HQ and let the DUWS generate the zones automatically. You can also let the DUWS create everything by itself. Basicly you decide the level of randomization there is.\n*WARCOM(War Commander) system. BLUFOR forces will try to capture the island, war escalates as the campaign progress.\n*Dynamic weather. At the start of the campaign, you may choose the type of weather (mediterranean, temperate, tropical, arid...). The weather will then be randomly generated according to these parameters.\n*Full support of the High Command module\n\nMore info on:\nh"
  },
  "183397120": {
@@ -80,6 +81,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "COOP version of the dynamic whole map mission WLA for 1-8 players.\n\nA Dynamic Whole Map COOP mission focusing on smooth performance, offering wide customization options and full freedom for gameplay in random generated world events that react on players actions. Where ever you go, there is life and events to see depending local relationship values and what kind of enemy/friendly installations there happens currently to be. Capture…",
   "temTutorial": false,
+  "autor": "SaOk",
   "guia": "COOP version of the dynamic whole map mission WLA for 1-8 players.\n\nA Dynamic Whole Map COOP mission focusing on smooth performance, offering wide customization options and full freedom for gameplay in random generated world events that react on players actions. Where ever you go, there is life and events to see depending local relationship values and what kind of enemy/friendly installations there happens currently to be. Capture factories, piers, power plants to get resources faster to custom build AI guarded guardposts with custom easy-to-use constructing system or spend it to call more support that you can high command if wanted. Or drive any land vehicle, chopper or plane, capturing dynamic generating zones around map. Keep local civilians happy by commiting tasks for them or turn them rioting by raiding villages for more resources. Experience the campaign long mission run by over 400 scripts that are constantly updated and expanded.\n\nIn this COOP version its always possible now to play in CSAT side, giving trouble for opposite side player.\n\nTHIRD PARTY SCRIPTS:\n-Virtual Ammobox System for TAW_Tonic\n\nSPECIAL THANKS:\n-ss3goku0001 for Text Improvements\n-TAW_Tonic for Virtual Ammobox System (with permission, updated to work for AI-teammember too)\n\nRECOMMENDED MODS:\n-JSRS2.0 and Blastcore\n\nWORK IN PROGRESS. MORE TASKS AND FEATURES COMING THROUGH 2014"
  },
  "192890745": {
@@ -97,6 +99,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "BECTI is a Conquer The Island gamemode based on the old school OFP MFCTI where two teams composed of Players and AI fight for the controls of an island in a power struggle with towns and bases.\n\nThe commander is the leader of your side, only he may build the base and set the income distribution, all team leaders shall always listen to the commander. The commander is the only one which is able to perform upgrades and assign orders.…",
   "temTutorial": false,
+  "autor": "Benny",
   "guia": "BECTI is a Conquer The Island gamemode based on the old school OFP MFCTI where two teams composed of Players and AI fight for the controls of an island in a power struggle with towns and bases.\n\nThe commander is the leader of your side, only he may build the base and set the income distribution, all team leaders shall always listen to the commander. The commander is the only one which is able to perform upgrades and assign orders.\n\nTowns need to be captured and held by your side, to capture a town, you simply have to stand next to the flag while no enemy is around, but watch out ! the town occupation may try to defend it ! The generated income and the units may vary depending on a town's size.\n\nFunds are mainly earned by capturing town and salvaging wrecks but killing enemies will also reward you with a bounty bonus, funds may be used to purchase units and gear.\n\nParameters allows you to play with a different setup all the time, nearly everything can be changed (AI, base, environment, economy, gameplay, module, respawn, towns...).\n\nAs the fights goes on, different assets may appear such as:\n\n    HQ: The HQ is the commander's main toy. Once destroyed, a side may no longer build factories so move it wisely!\n    Repair trucks: Repair trucks may be used by anyone to buy and place defensive structure but they can also be used to repair and build factories. FOB may be deployed from it upon request!\n    Ammo trucks: The ammo truck act as mobile resupply point for both infantry and vehicles. The gear and the service menu may be accessed from it.\n    Salvage trucks: Salvage trucks may be used to gain a certain cash amount from vehicle wrecks (You get 50% of the bounty, the rest is split among the other units). Independent trucks may also be purchased by commander.\n    Forward operating base: Those special structures may be built from Repair Truck and may act as a mobile respawn/resupply point. Note that they are limited in a way that only X of them may be placed at a time. T"
  },
  "192891753": {
@@ -144,6 +147,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Hunter Six: Special Operation Unit is a Single Player open map Campaign set in 2016 on Altis.\n\nNo Mods Required.\n\nHUNTER SIX 2 (Now Available):\nSTEAM WORKSHOP LINK\n\nFor more content, please SUPPORT the project at:\nDONATION\n\nThe main idea is not to copy a linear Call of Duty campaign style, but instead to focus on the best features that ArmA series offers.    The campaign offers a fully randomized open map campaign with two main…",
   "temTutorial": false,
+  "autor": "Lato",
   "guia": "Hunter Six: Special Operation Unit is a Single Player open map Campaign set in 2016 on Altis.\n\nNo Mods Required.\n\nHUNTER SIX 2 (Now Available):\nSTEAM WORKSHOP LINK\n\nFor more content, please SUPPORT the project at:\nDONATION\n\nThe main idea is not to copy a linear Call of Duty campaign style, but instead to focus on the best features that ArmA series offers.    The campaign offers a fully randomized open map campaign with two main objectives: locate and rescue the hostages and locate and eliminate the leader of the rebels. The decisions how to reach the goals are fully up to the player. Each playthrough will also offer a different objectives path to collect the intel on the main targets locations. The content is packed within one dynamic SP mission.\n\nOverview:\nOn the eve of civil war in Greece, a Navy Special Unit - HUNTER SIX is sent to Altis to locate and rescue two missing CIA agents, who were tracking the rebel separatist leader, that calls himself the Messiah.\n\nKey Features:\n    - open world, fully procedural mini campaign (each playthrough is a different scenario)\n    - teammates level up system increases their combat skill\n    - teammates individual perks have an actual influence on your team\n    - teammates fatigue system (operators need to get back to the base and rest)\n    - talk to your teammates to learn facts from their personal life\n    - teammates permadeath\n    - squad selection, medal & ribbon awards and a squad statistics screen\n    - a reputation system that verifies if the locals are going to help you or join the rebels\n    - dynamic day/night cycle with sleeping (skip time) option\n    - new Transport and Close Air Support system via radio\n    - interview the locals, gather intel and plan your next move against the rebels\n    - search bodies to collect intel\n    - NEW! Playable teammates (press U)\n\nInspired by:\nTom Clancy's Ghost Recon (2001)\nArmA 2 - Manhattan mission\nBooks by Howard E. Wasdin, Marcus Luttrell, Chris Kyle, Mark Owen and Brandon Web"
  },
  "338988835": {
@@ -155,9 +159,12 @@ export const A3COL_ITENS = {
    "Helicopter",
    "Mechanics"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3"
+  ],
   "resumo": "Join our Discord Channel and our server\nhttps://discord.gg/3DzkzAn\n\nMCC Wikia page\n\nhttp://mccsandbox.wikia.com/wiki/MCCSandbox_Wiki\n\nSo what is MCC Sandbox exactly?\n\"A powerful tool that takes control of any mission you’re running.\" - Rock, Paper, Shotgun - July 12TH 2013.\n\nLicense:\nUnder GPL3 License as described here:\n http://http://www.gnu.org/licenses/gpl-3.0.en.html\n\nMCC Sandbox with its integrated advanced AI system (GAIA) is…",
   "temTutorial": false,
+  "autor": "shay_gman",
   "guia": "Join our Discord Channel and our server\nhttps://discord.gg/3DzkzAn\n\nMCC Wikia page\n\nhttp://mccsandbox.wikia.com/wiki/MCCSandbox_Wiki\n\nSo what is MCC Sandbox exactly?\n\"A powerful tool that takes control of any mission you’re running.\" - Rock, Paper, Shotgun - July 12TH 2013.\n\nLicense:\nUnder GPL3 License as described here:\n http://http://www.gnu.org/licenses/gpl-3.0.en.html\n\nMCC Sandbox with its integrated advanced AI system (GAIA) is Freedom.\nYou can do anything you ever dreamed of in ArmA without knowing even one script command.\n\nEither you play PvP, Co-op or survival, It will change the way you play ArmA forever.\n\nInspired be VBS and it's in game real time editor we tried to create something similar that will let any player as the role of an instructor or as we call him the mission maker, to create different real life scenarios and put them to the test. Then he can alter and change the mission progress as he see fit in order to give the other players a more divert and intense experience. MCC support role/kits selection and it's build to work on dedicated servers. MCC will save the player progress and let him unlock new gear, weapons, scopes and uniforms.\nYou can create missions without any scripting knowladge and alter them in while in game. You can save your missions and share with friends.\nMCC expends Zeus and ads more variety to it.\n\nSupport us in Make ArmA Not War:\n http://makearmanotwar.com/entry/EbPhuUe5nR#.VGH2aTSqk0D\n\nYou'll get:\nCustom AI Behavior  – GAIA an new AI level like no other, AI will fortify in buildings, place mines, throw smoke grenades, use empty vehicles, suppress with automatic rifles, flank, call CAS and artillery  and much more.\n\nMission Generator – Define your game style and the amount of players and press \"Generate\" and MCC will generate random, suprising fully voice narrating with up to 20 different objectives.\n\n3D editor – You can place units and object in 3D save them, load them, add some unique presets for them.\n\nGroup generator – Yo"
  },
  "410206202": {
@@ -196,6 +203,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Warlords for Arma 3 is a multiplayer mode set up as a sort of Sector Control / CTI hybrid supporting TvT, PvP as well as COOP and even solo play against the AI.\n\nVersion 0.98 (Jul 22 2016)\n\nDetailed info, including how to set up your own Warlords mission, can be found on the BI forums: https://forums.bistudio.com/topic/182339-warlords/\n\nDISCLAIMER: Although I'm a BIS employee, this is an UNOFFICIAL mod and should be treated as any…",
   "temTutorial": false,
+  "autor": "Jezuro",
   "guia": "Warlords for Arma 3 is a multiplayer mode set up as a sort of Sector Control / CTI hybrid supporting TvT, PvP as well as COOP and even solo play against the AI.\n\nVersion 0.98 (Jul 22 2016)\n\nDetailed info, including how to set up your own Warlords mission, can be found on the BI forums: https://forums.bistudio.com/topic/182339-warlords/\n\nDISCLAIMER: Although I'm a BIS employee, this is an UNOFFICIAL mod and should be treated as any other usermade content.\n\nHow do I run it?\n\nAfter subscribing on Workshop and restarting the game, Warlords scenarios will appear when setting up a MP game. Stratis and Altis both have their dedicated missions.\n\nGame rules\n\n(Note that the current rules may change in the future)\n\nCore mechanics\n    There are three contesting factions: BLUFOR, OPFOR and Independents (AAF). BLUFOR and OPFOR can be controlled by players, AAF is always AI only.\n    BLUFOR and OPFOR start in their bases and respawn there. In every scenario, there are multiple sectors linked with each other and with the bases themselves.\n        All sectors except faction bases are initially controlled by AAF.\n        All sectors except the player's faction's base are initially locked and inaccessible (zone restriction).\n    At the start of the game, players vote for the sector to unlock and attack via the Sector voting tab in the map screen.\n        Players can vote only for sectors directly linked with a sector controlled by their faction (at the start it's only those connected to their faction's base).\n    Once a sector is selected, it's unlocked and zone restriction is removed for the entirety of the game.\n        This means that even if a faction seizes a sector and then loses control over it, the sector can be reclaimed by that faction even without being selected again.\n    A sector is seized when the attacking faction is the dominating presence in its area.\n        Seizing progress is shown by a HUD in the bottom right corner of the screen.\n    Once the selected sector is s"
  },
  "463939057": {
@@ -284,6 +292,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "CONTENT\n\nThis is the TERRAINS - CORE pack, the successor of \"A3MP\" and \"All in ArmA - Terrain Pack (AiA TP)\". It contains all the core data for maps from Arma1, Arma 2, expansions and DLC's.\n\nThis pack contains:\n\n• all terrains core data like models and configs from previous arma titles\n\n• community made additional content that was donated and fit's the timeframe\n\nIMPORTANT!\nThis is the CORE DATA pack, it DOES NOT include any maps!\nTo…",
   "temTutorial": false,
+  "autor": "OfotViking",
   "guia": "CONTENT\n\nThis is the TERRAINS - CORE pack, the successor of \"A3MP\" and \"All in ArmA - Terrain Pack (AiA TP)\". It contains all the core data for maps from Arma1, Arma 2, expansions and DLC's.\n\nThis pack contains:\n\n• all terrains core data like models and configs from previous arma titles\n\n• community made additional content that was donated and fit's the timeframe\n\nIMPORTANT!\nThis is the CORE DATA pack, it DOES NOT include any maps!\nTo get the maps from CUP Terrains Pack, you need to download the MAPS PACK\nhttp://steamcommunity.com/sharedfiles/filedetails/?id=583544987\n\nISSUES\n\nTHIS WORKSHOP PAGE IS NOT MONITORED BY THE DEVELOPERS\nPlease report bugs to\n\nhttps://dev.cup-arma3.org/u/Ticket\n\nABOUT US\n\nThe Community Upgrade Project is a cooperative effort to bring the content of Bohemia Interactive's earlier games (Arma 2 and Arma 2: Operation Arrowhead and DLC's in particular) into Arma 3, updated to the functionality and standards of the next generation game.\n\nFor more information on the project, check our webpage at\n\nhttp://cup-arma3.org/\n\nor visit us on out discord server at\n\nhttps://dev.cup-arma3.org/u/discord\n\nDONATIONS\n\nHelp us to keep this Mod up and running, The link below will lead you to our donation page.\nThank you!\n\nhttps://www.cup-arma3.org/donations\n\nREDISTRIBUTION\n\nANY REUPLOADS (STANDALONE OR PART OF MODPACKS) TO THE STEAM WORKSHOP (ARMA3 & DAYZ) ARE PROHIBITED AND VIOLATING THE STEAM WORKSHOP EULA SECTION 6D, AS WELL AS THE CUP LICENSE. REUPLOADS WILL BE TAKEN DOWN VIA DMCA NOTICE WITHOUT WARNING!\nhttps://www.cup-arma3.org/cup-license"
  },
  "583544987": {
@@ -294,9 +303,12 @@ export const A3COL_ITENS = {
   "tags": [
    "Terrain"
   ],
-  "deps": [],
+  "deps": [
+   "CUP Terrains - Core"
+  ],
   "resumo": "CONTENT\n\nThis is the TERRAINS pack, the successor of \"A3MP\" and \"All in ArmA - Terrain Pack (AiA TP)\". It contains 16 maps from Arma: Arma: Armed Assault and the expansion, Arma 2 and the expansion and DLC's.\n\nFor credits and other information, see our web page.\n\nThis pack contains:\n\n• all terrains from previous arma titles\n\n• community made additional content that was donated and fit's the timeframe\n\nISSUES\n\nTHIS WORKSHOP PAGE IS NOT…",
   "temTutorial": false,
+  "autor": "OfotViking",
   "guia": "CONTENT\n\nThis is the TERRAINS pack, the successor of \"A3MP\" and \"All in ArmA - Terrain Pack (AiA TP)\". It contains 16 maps from Arma: Arma: Armed Assault and the expansion, Arma 2 and the expansion and DLC's.\n\nFor credits and other information, see our web page.\n\nThis pack contains:\n\n• all terrains from previous arma titles\n\n• community made additional content that was donated and fit's the timeframe\n\nISSUES\n\nTHIS WORKSHOP PAGE IS NOT MONITORED BY THE DEVELOPERS\nPlease report bugs to\n\nhttps://dev.cup-arma3.org/u/Ticket\n\nABOUT US\n\nThe Community Upgrade Project is a cooperative effort to bring the content of Bohemia Interactive's earlier games (Arma 2 and Arma 2: Operation Arrowhead and DLC's in particular) into Arma 3, updated to the functionality and standards of the next generation game.\n\nFor more information on the project, check our webpage at\n\nhttp://cup-arma3.org/\n\nor visit us on out discord server at\n\nhttps://dev.cup-arma3.org/u/discord\n\nDONATIONS\n\nHelp us to keep this Mod up and running, The link below will lead you to our donation page.\nThank you!\n\nhttps://www.cup-arma3.org/donations\n\nREDISTRIBUTION\n\nANY REUPLOADS (STANDALONE OR PART OF MODPACKS) TO THE STEAM WORKSHOP (ARMA3 & DAYZ) ARE PROHIBITED AND VIOLATING THE STEAM WORKSHOP EULA SECTION 6D, AS WELL AS THE CUP LICENSE. REUPLOADS WILL BE TAKEN DOWN VIA DMCA NOTICE WITHOUT WARNING!\nhttps://www.cup-arma3.org/cup-license"
  },
  "620260972": {
@@ -308,9 +320,12 @@ export const A3COL_ITENS = {
    "Content Review",
    "x64"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3"
+  ],
   "resumo": "This is the official ALiVEmod team release of ALiVE on Steam\n\nALiVE is the next generation dynamic persistent battlefield for ArmA3. Developed by the Multi Session Operations team, the easy to use modular mission framework provides everything that players and mission makers need to set up and run realistic military operations in almost any scenario up to Company level, including command, combat support, service support and logistics.…",
   "temTutorial": false,
+  "autor": "Matt",
   "guia": "This is the official ALiVEmod team release of ALiVE on Steam\n\nALiVE is the next generation dynamic persistent battlefield for ArmA3. Developed by the Multi Session Operations team, the easy to use modular mission framework provides everything that players and mission makers need to set up and run realistic military operations in almost any scenario up to Company level, including command, combat support, service support and logistics.\n\nAI Commanders automatically plan and direct missions for all AI forces across the Area of Operations, identifying strategic objectives and reacting to changes in the tactical situation. The revolutionary Virtual Profile System can support thousands of units operating simultaneously across the map with minimal impact on performance. The result is a realistic and constantly changing battlefield which truly brings ArmA3 ALiVE.\n\nPlease visit our Wiki here:\nhttps://alivewiki.com/\n\nJoin us on Discord:\nhttps://discord.gg/KkacXFx\n\nPlease note the ALiVE War Room is no longer available.\n\nQ. If War Room is down, how do I save my mission progress/use persistence?\n\nA. Set the 'Database Source' parameter in the ALiVE data module to 'Local'. This will allow persistence to function via saving mission persistence data to the host machine, and you can save as normal.\n\nQ. Are the official Bohemia Interactive DLCs & CDLC's compatible with ALiVE?\n\nA. Yes all DLCs & CDLC's are compatible.\n\nThe latest ALiVE addon files can also be downloaded directly from:\nhttps://github.com/ALiVEOS/ALiVE.OS/releases/tag/v2.2.0.2601221"
  },
  "632435682": {
@@ -584,6 +599,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped…",
   "temTutorial": false,
+  "autor": "baby yoda executed by the state",
   "guia": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped enemy force and a larger number of objectives to tackle, selecting and utilising your platoon as a commander may be the key to victory. However, if you prefer to be a cog in the war machine rather than taking a command role, your platoon have support menu options allowing you to call them into battle and let them proceed from sector to sector autonomously.\n\nAs with DRO, DCO is designed to be simple to use but with plenty of options to customise your mission setup. The objective behind DCO is to create a way to quickly get playing a new scenario in singleplayer or co-op and has been designed from the ground up to take advantage of faction mods. If you have any mods that create new factions they will be selectable as player or enemy sides within the mission. However, the scenario itself requires no mods apart from specific terrains if you want to use them.\n\nFeatures\n\n• Playable in SP or COOP\n\n• Dynamic scripting means that no two missions are the same\n\n• Select a platoon to command using the High Command interface\n\n• Menu on startup to select a variety of options including time of day\n\n• Revive system that takes visual cues from BIS revive but is fully AI compatible and works in both MP and SP\n\n• Virtual Arsenal to select starting loadout for both player and AI units\n\n• 'Reset AI' diary entry to unstick AI units\n\n• 1-2 hour estimated duration"
  },
  "865662937": {
@@ -601,6 +617,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped…",
   "temTutorial": false,
+  "autor": "baby yoda executed by the state",
   "guia": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped enemy force and a larger number of objectives to tackle, selecting and utilising your platoon as a commander may be the key to victory. However, if you prefer to be a cog in the war machine rather than taking a command role, your platoon have support menu options allowing you to call them into battle and let them proceed from sector to sector autonomously.\n\nAs with DRO, DCO is designed to be simple to use but with plenty of options to customise your mission setup. The objective behind DCO is to create a way to quickly get playing a new scenario in singleplayer or co-op and has been designed from the ground up to take advantage of faction mods. If you have any mods that create new factions they will be selectable as player or enemy sides within the mission. However, the scenario itself requires no mods apart from specific terrains if you want to use them.\n\nFeatures\n\n• Playable in SP or COOP\n\n• Dynamic scripting means that no two missions are the same\n\n• Select a platoon to command using the High Command interface\n\n• Menu on startup to select a variety of options including time of day\n\n• Revive system that takes visual cues from BIS revive but is fully AI compatible and works in both MP and SP\n\n• Virtual Arsenal to select starting loadout for both player and AI units\n\n• 'Reset AI' diary entry to unstick AI units\n\n• 1-2 hour estimated duration"
  },
  "865663571": {
@@ -618,6 +635,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped…",
   "temTutorial": false,
+  "autor": "baby yoda executed by the state",
   "guia": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped enemy force and a larger number of objectives to tackle, selecting and utilising your platoon as a commander may be the key to victory. However, if you prefer to be a cog in the war machine rather than taking a command role, your platoon have support menu options allowing you to call them into battle and let them proceed from sector to sector autonomously.\n\nAs with DRO, DCO is designed to be simple to use but with plenty of options to customise your mission setup. The objective behind DCO is to create a way to quickly get playing a new scenario in singleplayer or co-op and has been designed from the ground up to take advantage of faction mods. If you have any mods that create new factions they will be selectable as player or enemy sides within the mission. However, the scenario itself requires no mods apart from specific terrains if you want to use them.\n\nFeatures\n\n• Playable in SP or COOP\n\n• Dynamic scripting means that no two missions are the same\n\n• Select a platoon to command using the High Command interface\n\n• Menu on startup to select a variety of options including time of day\n\n• Revive system that takes visual cues from BIS revive but is fully AI compatible and works in both MP and SP\n\n• Virtual Arsenal to select starting loadout for both player and AI units\n\n• 'Reset AI' diary entry to unstick AI units\n\n• 1-2 hour estimated duration"
  },
  "878714108": {
@@ -634,6 +652,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a…",
   "temTutorial": false,
+  "autor": "veteran29",
   "guia": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a massive “Capture the Island” campaign involving a large range of different settlements across the entire area.\n- Cooperate with up to 34 players, including a Commanding role, two fire-team squads, a medevac and a logistical support squad as well as AI recruits to fill the gaps.\n- Purchase both infantry and vehicles (both ground and air) using three different types of physical resources; supplies, ammunition and fuel.\n- Build the FOB of your dreams with an in-game \"what you see is what you get\" system.\n- Play within an immersive engine that not only punishes you for civilian casualty but diversely reacts in turn.\n- Combat aggressive and cunning hostile forces who react and adapt to your actions.\n- Monitor and work alongside, or against, independent guerrilla forces.\n- Learn that every window is a threat thanks to the custom urban combat AI.\n- Accomplish meaningful secondary objectives that will benefit your progression.\n- Never lose your progress with the built-in server-side save system.\n\n-- Predefined Factions (can be changed easily in the config) --\nBlufor (0): NATO\nOpfor (0): CSAT\nResistance (0): FIA\n\n-- Statistics --\nCapitals: 10\nCities: 68\nMilitary: 26\nFactories: 24\nRadiotower: 22\nTotal Sectors: 147\n\nOfficial BI Forum Thread\n\nTo have a look at the code, participate with pulls or if you want to report issues, you can visit the\nGitHub Page\n\nYou have questions, suggestions or need help? Click on the link below to talk to people who work with or on the mission:\nKP Liberation Discord\n\nIf you like the work and think it's worth a small dona"
  },
  "884703460": {
@@ -651,6 +670,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a…",
   "temTutorial": false,
+  "autor": "veteran29",
+  "dlcs": [
+   "Arma 3 Apex"
+  ],
   "guia": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a massive “Capture the Island” campaign involving a large range of different settlements across the entire area.\n- Cooperate with up to 34 players, including a Commanding role, two fire-team squads, a medevac and a logistical support squad as well as AI recruits to fill the gaps.\n- Purchase both infantry and vehicles (both ground and air) using three different types of physical resources; supplies, ammunition and fuel.\n- Build the FOB of your dreams with an in-game \"what you see is what you get\" system.\n- Play within an immersive engine that not only punishes you for civilian casualty but diversely reacts in turn.\n- Combat aggressive and cunning hostile forces who react and adapt to your actions.\n- Monitor and work alongside, or against, independent guerrilla forces.\n- Learn that every window is a threat thanks to the custom urban combat AI.\n- Accomplish meaningful secondary objectives that will benefit your progression.\n- Never lose your progress with the built-in server-side save system.\n\n-- Predefined Factions (can be changed easily in the config) --\nBlufor (1): NATO\nOpfor (1): CSAT\nResistance (1): Tanoa Syndicate\n\n-- Statistics --\nCapitals: 7\nCities: 65\nMilitary: 22\nFactories: 34\nRadiotower: 30\nTotal Sectors: 158\n\nOfficial BI Forum Thread\n\nTo have a look at the code, participate with pulls or if you want to report issues, you can visit the\nGitHub Page\n\nYou have questions, suggestions or need help? Click on the link below to talk to people who work with or on the mission:\nKP Liberation Discord\n\nIf you like the work and think it's worth a"
  },
  "917511991": {
@@ -667,6 +690,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "The Original Ahoy World Invade and Annex created for Arma 3 in Alpha! (Optimized for peak performance 64-bit)\n\nI changed the AI within this mission for a more dynamic and immersive gameplay. They will route, utilize weaponry, and even flank if you stay too long in one position! The more recent Ahoy missions, in my opinion, have been oversaturated with users attempting to make their own versions. Yet at the very core of the original,…",
   "temTutorial": false,
+  "autor": "Drakeziel",
   "guia": "The Original Ahoy World Invade and Annex created for Arma 3 in Alpha! (Optimized for peak performance 64-bit)\n\nI changed the AI within this mission for a more dynamic and immersive gameplay. They will route, utilize weaponry, and even flank if you stay too long in one position! The more recent Ahoy missions, in my opinion, have been oversaturated with users attempting to make their own versions. Yet at the very core of the original, there is much fun to be had because this is the state that it was meant to be played.\n\nPlease Rate and leave feedback based on your experience!"
  },
  "953118282": {
@@ -684,6 +708,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped…",
   "temTutorial": false,
+  "autor": "baby yoda executed by the state",
   "guia": "Dynamic Combat Ops is a randomised, replayable scenario that focuses on combined arms operations.\nSelect your AO location, the factions you want to use and your platoon makeup or leave them all randomised and see what mission you are sent on.\n\nThe sister mission to Dynamic Recon Ops, DCO is intended to take the design philosophy behind that mission and expand it to cover the full range of combined arms scenarios. With a better equipped enemy force and a larger number of objectives to tackle, selecting and utilising your platoon as a commander may be the key to victory. However, if you prefer to be a cog in the war machine rather than taking a command role, your platoon have support menu options allowing you to call them into battle and let them proceed from sector to sector autonomously.\n\nAs with DRO, DCO is designed to be simple to use but with plenty of options to customise your mission setup. The objective behind DCO is to create a way to quickly get playing a new scenario in singleplayer or co-op and has been designed from the ground up to take advantage of faction mods. If you have any mods that create new factions they will be selectable as player or enemy sides within the mission. However, the scenario itself requires no mods apart from specific terrains if you want to use them.\n\nFeatures\n\n• Playable in SP or COOP\n\n• Dynamic scripting means that no two missions are the same\n\n• Select a platoon to command using the High Command interface\n\n• Menu on startup to select a variety of options including time of day\n\n• Revive system that takes visual cues from BIS revive but is fully AI compatible and works in both MP and SP\n\n• Virtual Arsenal to select starting loadout for both player and AI units\n\n• 'Reset AI' diary entry to unstick AI units\n\n• 1-2 hour estimated duration"
  },
  "1162098941": {
@@ -914,9 +939,13 @@ export const A3COL_ITENS = {
    "Coop",
    "Vehicles"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "ace"
+  ],
   "resumo": "Advanced Spotting Scope (Script)\n\nUse the ACE 3 Spotting Scope as rangefinder, showing the distance, azimuth, inclination and coordinates of the specific point that is being observed.\n\nAlthough they are data that can be obtained with the Vector and the MicroDAGR, the Scope allows you to zoom in a lot or use night vision or thermal glasses.\n\nThe script is made to put it as is in the initPlayerLocal.sqf of the mission\n\nDisclaimer and…",
   "temTutorial": false,
+  "autor": "Dash",
   "guia": "Advanced Spotting Scope (Script)\n\nUse the ACE 3 Spotting Scope as rangefinder, showing the distance, azimuth, inclination and coordinates of the specific point that is being observed.\n\nAlthough they are data that can be obtained with the Vector and the MicroDAGR, the Scope allows you to zoom in a lot or use night vision or thermal glasses.\n\nThe script is made to put it as is in the initPlayerLocal.sqf of the mission\n\nDisclaimer and License\n\nAll the computer programs and software are provided \"as is\" without warranty of any kind. We make no warranties, express or implied, that they are free of error, or are consistent with any particular standard of merchantability, or that they will meet your requirements for any particular application. They should not be relied on for solving a problem whose incorrect solution could result in injury to a person or loss of property. If you do use them in such a manner, it is at your own risk. The author and publisher disclaim all liability for direct, indirect, or consequential damages resulting from your use of the programs.\n\nBy downloading and using this mod, you hereby agree to the following license agreement.\n\nCreative Commons\n\nThe work contained in this distribution is licensed under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License. Please note that the above mentioned agreement gives the right to Dash to waiver any of the conditions, thus feel free to contact me to obtain permission to modify my work.\n\nIt is forbidden to distribute the content of this package by itself, or as part of another distribution, using the Steam Workshop by anyone other than Dash.\n\nYou may not use the material for commercial purposes. This includes running this package on server instances that employ any monetization schemes, including, but not limited to, donate-reward systems. Bohemia Interactive's approval of your monitization scheme does not grant you rights to wave this clause of the EULA.\n\nThis add-on is provided for "
  },
  "1667745333": {
@@ -965,6 +994,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Summary:\n\nArma 3 - AI vs AI Gamemode.\n\nZones are randomly generated around the map you need to capture these zones by completing objectives and killing the AI within the zone. It's endless, zones keep spawning when you complete them! This game mode does not require any player input. AI will command themselves, leaving players to do as they wish without having to micro manage the AI. Essentially chaos unfolds between the AI. All units…",
   "temTutorial": false,
+  "autor": "Braden",
   "guia": "Summary:\n\nArma 3 - AI vs AI Gamemode.\n\nZones are randomly generated around the map you need to capture these zones by completing objectives and killing the AI within the zone. It's endless, zones keep spawning when you complete them! This game mode does not require any player input. AI will command themselves, leaving players to do as they wish without having to micro manage the AI. Essentially chaos unfolds between the AI. All units in the pictures are AI controlled aside from myself.\n\nThis is my first ArmA 3 mod. I also mainly made it for myself. This gamemode is also based off Invade & Annex which is very similar. I did not use their framework because I wanted to learn the SQF language and thought it would be fun to make my own version. Therefore it does not include the same things. You can view the code if you wish. I just wanted a gamemode where I can screw around and do what I want.\n\nThis gamemode is not really finished either.\n\nUsage:\n\nYou'll find the mission file through hosting your own server. This can be done in the MP menu. It currently only adds the mission to Altis. Others maps can easily be added. You can also change the server params to your liking as there's a few.\n\nWhat do I do?:\n\nWhat ever you want... fly a jet, be a gunner in a tank or be a sniper. You can kill your own friendly if you really wanted too.. They do respawn.\n\nDependencies\n\nNone. This mod does not require any other mods.\n\nSupported Mods:\n\nSome things may be missing, that comes down to me not knowing what's the best from other mods.\n RHSUSAF\n RHSAFRF\n RHSSAF\n RHSGREF\n\nCapturing a Zone:\n\nIn-order to capture a zone most enemies need to be dead along with the objectives completed. The most important objective to complete is destroying the radio tower. Failure to do so will mean more enemy reinforcements will keep arriving.\n\nFeatures:\n\nCustomizable & dynamic systems (Includes mission parameters)\nMini central intelligences controlling both enemy & friendly AI\nFriendlies can mark enemies on"
  },
  "1737370963": {
@@ -980,6 +1010,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a…",
   "temTutorial": false,
+  "autor": "veteran29",
+  "dlcs": [
+   "Arma 3 Malden"
+  ],
   "guia": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a massive “Capture the Island” campaign involving a large range of different settlements across the entire area.\n- Cooperate with up to 34 players, including a Commanding role, two fire-team squads, a medevac and a logistical support squad as well as AI recruits to fill the gaps.\n- Purchase both infantry and vehicles (both ground and air) using three different types of physical resources; supplies, ammunition and fuel.\n- Build the FOB of your dreams with an in-game \"what you see is what you get\" system.\n- Play within an immersive engine that not only punishes you for civilian casualty but diversely reacts in turn.\n- Combat aggressive and cunning hostile forces who react and adapt to your actions.\n- Monitor and work alongside, or against, independent guerrilla forces.\n- Learn that every window is a threat thanks to the custom urban combat AI.\n- Accomplish meaningful secondary objectives that will benefit your progression.\n- Never lose your progress with the built-in server-side save system.\n\n-- Predefined Factions (can be changed easily in the config) --\nBlufor (0): NATO\nOpfor (0): CSAT\nResistance (0): FIA\n\n-- Statistics --\nCapitals: 7\nCities: 31\nMilitary: 10\nFactories: 11\nRadiotower: 10\nTotal Sectors: 69\n\nOfficial BI Forum Thread\n\nTo have a look at the code, participate with pulls or if you want to report issues, you can visit the\nGitHub Page\n\nYou have questions, suggestions or need help? Click on the link below to talk to people who work with or on the mission:\nKP Liberation Discord\n\nIf you like the work and think it's worth a small donati"
  },
  "1779063631": {
@@ -1011,6 +1045,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a…",
   "temTutorial": false,
+  "autor": "veteran29",
+  "dlcs": [
+   "Arma 3 Contact"
+  ],
   "guia": "Version: 0.96.7a\nChangelog and Wiki\n\nThis mission is only a continued project based on the original, but most likely abandoned, mission from GreuhZbug.\n\nOTHER MAPS:\nSteam Workshop Collection\n\n--- Overview ---\nThe area has fallen to the enemy, and it is up to you to take it back. Embark with your teammates on a persistent campaign that will span several weeks of real time to liberate all the major cities of the area.\n\n- Experience a massive “Capture the Island” campaign involving a large range of different settlements across the entire area.\n- Cooperate with up to 34 players, including a Commanding role, two fire-team squads, a medevac and a logistical support squad as well as AI recruits to fill the gaps.\n- Purchase both infantry and vehicles (both ground and air) using three different types of physical resources; supplies, ammunition and fuel.\n- Build the FOB of your dreams with an in-game \"what you see is what you get\" system.\n- Play within an immersive engine that not only punishes you for civilian casualty but diversely reacts in turn.\n- Combat aggressive and cunning hostile forces who react and adapt to your actions.\n- Monitor and work alongside, or against, independent guerrilla forces.\n- Learn that every window is a threat thanks to the custom urban combat AI.\n- Accomplish meaningful secondary objectives that will benefit your progression.\n- Never lose your progress with the built-in server-side save system.\n\n-- Predefined Factions (can be changed easily in the config) --\nBlufor (27): Livonia Defence Force\nOpfor (1): CSAT\nResistance (0): FIA\n\n-- Statistics --\nCapitals: 6\nCities: 28\nMilitary: 18\nFactories: 23\nRadiotower: 23\nTotal Sectors: 98\n\nOfficial BI Forum Thread\n\nTo have a look at the code, participate with pulls or if you want to report issues, you can visit the\nGitHub Page\n\nYou have questions, suggestions or need help? Click on the link below to talk to people who work with or on the mission:\nKP Liberation Discord\n\nIf you like the work and think it's wo"
  },
  "1818899168": {
@@ -1049,6 +1087,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "TRGM2 is a fully randomised mission, no need for mission setup, just press play and go (If you want to customise your settings, there is an easy menu at start where you can adjust mission types and advanced settings)\n\nYou start the mission at the same base or a camp near the AO, from here you plan how to arrive at the AO, do you drive? fly? or get flown in by the AI transport team.\n\nwww.trgm2.com\n\nEngine:\n\nStarted development in late…",
   "temTutorial": false,
+  "autor": "treendy",
   "guia": "TRGM2 is a fully randomised mission, no need for mission setup, just press play and go (If you want to customise your settings, there is an easy menu at start where you can adjust mission types and advanced settings)\n\nYou start the mission at the same base or a camp near the AO, from here you plan how to arrive at the AO, do you drive? fly? or get flown in by the AI transport team.\n\nwww.trgm2.com\n\nEngine:\n\nStarted development in late 2015, and still adding new features!!  the list below is most of what to expect, however, more is being added often, so dont get too comfortable!  I aim to make it feel like the enemy have a human command, and the details to look like they have been placed by hand!\n\n•  Enemy vehicles, patrols, locations, weather, time of day will change on each playthrough\n\n•  Enemy equipment will vary (NVG, AA, AT, Snipers), chance of enemy calling in air support or reinforcements\n\n•  Varied vehicle threats (enemy will have heavier vehicles if you activate this in params)\n\n•  Random chance of a side mission: Take down comms to lower chance of enemy air support.  Gather intel from enemy base of objective location\n\n•  Enemy patrols are not in a random order, they will be paroling around the AO, or from building to building\n\n•  AI enhanced.  If you get spotted, they will send a nearby patrol to investigate, or call in a near by vehicle\n\n•  Friendly transport chopper to fly you in and extract when completed (but there is a chopper and car you can control should you wish)\n\n•  Hardcore NVG script added\n\n•  Random events you can encounter (checkpoints, stranded civs, downed convoy etc...)\n\n•  Campaign Mode!\n\n•  All version are updated and maintained!\n\n=================================================\nJoin my Discord for updates or media of things to come, play throughs etc...\nhttps://discord.gg/qYrjgJs\nWant to join Tactical Cannon Fodder? mention in my discord...\nWarning, we are a hardcore one life group!\n=================================================\n\nTha"
  },
  "1981964169": {
@@ -1057,9 +1096,12 @@ export const A3COL_ITENS = {
   "tam": "822 MB",
   "img": "https://images.steamusercontent.com/ugc/767236446983862447/E6866F24F7AD0E4175AE1488649161A0934D41E9/?imw=460&imh=260&ima=fit&impolicy=Letterbox&letterbox=false",
   "tags": [],
-  "deps": [],
+  "deps": [
+   "CUP Terrains - Core"
+  ],
   "resumo": "CONTENT\n\nThis is the Maps 2.0 pack, the successor of \"CUP Terrains - Maps\". It will contain all upgraded CUP Terrains.\n\nFor credits and other information, see our web page.\n\nThis pack contains:\n\n• Chernarus 2020\n\n• Zargabad 2025\n\nISSUES\n\nTHIS WORKSHOP PAGE IS NOT MONITORED BY THE DEVELOPERS\nPlease report bugs to\n\nhttps://dev.cup-arma3.org/u/Ticket\n\nABOUT US\n\nThe Community Upgrade Project is a cooperative effort to bring the content of…",
   "temTutorial": false,
+  "autor": "OfotViking",
   "guia": "CONTENT\n\nThis is the Maps 2.0 pack, the successor of \"CUP Terrains - Maps\". It will contain all upgraded CUP Terrains.\n\nFor credits and other information, see our web page.\n\nThis pack contains:\n\n• Chernarus 2020\n\n• Zargabad 2025\n\nISSUES\n\nTHIS WORKSHOP PAGE IS NOT MONITORED BY THE DEVELOPERS\nPlease report bugs to\n\nhttps://dev.cup-arma3.org/u/Ticket\n\nABOUT US\n\nThe Community Upgrade Project is a cooperative effort to bring the content of Bohemia Interactive's earlier games (Arma 2 and Arma 2: Operation Arrowhead and DLC's in particular) into Arma 3, updated to the functionality and standards of the next generation game.\n\nFor more information on the project, check our webpage at\n\nhttp://cup-arma3.org/\n\nor visit us on out discord server at\n\nhttps://dev.cup-arma3.org/u/discord\n\nDONATIONS\n\nHelp us to keep this Mod up and running, The link below will lead you to our donation page.\nThank you!\n\nhttps://www.cup-arma3.org/donations\n\nREDISTRIBUTION\n\nANY REUPLOADS (STANDALONE OR PART OF MODPACKS) TO THE STEAM WORKSHOP (ARMA3 & DAYZ) ARE PROHIBITED AND VIOLATING THE STEAM WORKSHOP EULA SECTION 6D, AS WELL AS THE CUP LICENSE. REUPLOADS WILL BE TAKEN DOWN VIA DMCA NOTICE WITHOUT WARNING!\nhttps://www.cup-arma3.org/cup-license"
  },
  "1984611671": {
@@ -1077,6 +1119,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "TRGM2 is a fully randomised mission, no need for mission setup, just press play and go (If you want to customise your settings, there is an easy menu at start where you can adjust mission types and advanced settings)\n\nYou start the mission at the same base or a camp near the AO, from here you plan how to arrive at the AO, do you drive? fly? or get flown in by the AI transport team.\n\nwww.trgm2.com\n\nEngine:\n\nStarted development in late…",
   "temTutorial": false,
+  "autor": "treendy",
   "guia": "TRGM2 is a fully randomised mission, no need for mission setup, just press play and go (If you want to customise your settings, there is an easy menu at start where you can adjust mission types and advanced settings)\n\nYou start the mission at the same base or a camp near the AO, from here you plan how to arrive at the AO, do you drive? fly? or get flown in by the AI transport team.\n\nwww.trgm2.com\n\nEngine:\n\nStarted development in late 2015, and still adding new features!!  the list below is most of what to expect, however, more is being added often, so dont get too comfortable!  I aim to make it feel like the enemy have a human command, and the details to look like they have been placed by hand!\n\n•  Enemy vehicles, patrols, locations, weather, time of day will change on each playthrough\n\n•  Enemy equipment will vary (NVG, AA, AT, Snipers), chance of enemy calling in air support or reinforcements\n\n•  Varied vehicle threats (enemy will have heavier vehicles if you activate this in params)\n\n•  Random chance of a side mission: Take down comms to lower chance of enemy air support.  Gather intel from enemy base of objective location\n\n•  Enemy patrols are not in a random order, they will be paroling around the AO, or from building to building\n\n•  AI enhanced.  If you get spotted, they will send a nearby patrol to investigate, or call in a near by vehicle\n\n•  Friendly transport chopper to fly you in and extract when completed (but there is a chopper and car you can control should you wish)\n\n•  Hardcore NVG script added\n\n•  Random events you can encounter (checkpoints, stranded civs, downed convoy etc...)\n\n•  Campaign Mode!\n\n•  All version are updated and maintained!\n\n=================================================\nJoin my Discord for updates or media of things to come, play throughs etc...\nhttps://discord.gg/qYrjgJs\nWant to join Tactical Cannon Fodder? mention in my discord...\nWarning, we are a hardcore one life group!\n=================================================\n\nTha"
  },
  "1990653162": {
@@ -1180,9 +1223,13 @@ export const A3COL_ITENS = {
    "Coop",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CUP Terrains - Maps",
+   "CUP Terrains - Core"
+  ],
   "resumo": "TRGM2 is a fully randomised mission, no need for mission setup, just press play and go (If you want to customise your settings, there is an easy menu at start where you can adjust mission types and advanced settings)\n\nYou start the mission at the same base or a camp near the AO, from here you plan how to arrive at the AO, do you drive? fly? or get flown in by the AI transport team.\nwww.trgm2.com\n\nHelp for Heroes…",
   "temTutorial": false,
+  "autor": "treendy",
   "guia": "TRGM2 is a fully randomised mission, no need for mission setup, just press play and go (If you want to customise your settings, there is an easy menu at start where you can adjust mission types and advanced settings)\n\nYou start the mission at the same base or a camp near the AO, from here you plan how to arrive at the AO, do you drive? fly? or get flown in by the AI transport team.\nwww.trgm2.com\n\nHelp for Heroes\n\nhttps://www.helpforheroes.org.uk/\nI have a lot of fun playing and building Arma missions, but do this from the comfort of my home with the only worry of pis**ng my wife off by being too loud or playing too long, which is nothing compared to the s#!t the real guys go through and have to live with after! I knew a very genuine guy, always seemed happy, but took his own life while suffering from PTSD.\nI have massive respect for anyone serving! thank you\n Help For Heroes\n\nEngine:\n\nStarted development in late 2015, and still adding new features!!  the list below is most of what to expect, however, more is being added often, so dont get too comfortable!  I aim to make it feel like the enemy have a human command, and the details to look like they have been placed by hand!\n\n•  Enemy vehicles, patrols, locations, weather, time of day will change on each playthrough\n\n•  Enemy equipment will vary (NVG, AA, AT, Snipers), chance of enemy calling in air support or reinforcements\n\n•  Varied vehicle threats (enemy will have heavier vehicles if you activate this in params)\n\n•  Random chance of a side mission: Take down comms to lower chance of enemy air support.  Gather intel from enemy base of objective location\n\n•  Enemy patrols are not in a random order, they will be paroling around the AO, or from building to building\n\n•  AI enhanced.  If you get spotted, they will send a nearby patrol to investigate, or call in a near by vehicle\n\n•  Friendly transport chopper to fly you in and extract when completed (but there is a chopper and car you can control should you wish)\n\n•  Ha"
  },
  "2060770170": {
@@ -1268,7 +1315,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This field tent functions as a mobile field headquarters, using quickly deployable and rugged electronic equipment. This allows it to both remain mobile, and maintain a line of communication to both higher ups, and fellow units in the field.",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "Heliotrope"
  },
  "2260572637": {
   "nome": "BettIR NVG",
@@ -1292,9 +1340,12 @@ export const A3COL_ITENS = {
   "tags": [
    "Logistics"
   ],
-  "deps": [],
+  "deps": [
+   "Eden Objects"
+  ],
   "resumo": "A small drone command position .\nMod used in the screenshoot \"Italian Armed Forces By DVK\" - \"Eden Objects\"",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "Flex7103"
  },
  "2267029016": {
   "nome": "CyberOps Container HQ",
@@ -1307,7 +1358,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This is a Cyber Operations Container HQ with a detailed interior.\n\nIf you see objects floating make sure to toggle Vertical Mode and Surface Snapping before placing it.\n\nI'm very interested in your feedback so leave a comment.\n\nNote: all objects have their damage and simulation disabled.",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "Alex Mason"
  },
  "2268351256": {
   "nome": "Tier One Weapons",
@@ -1336,6 +1388,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Description\n\nThis mod adds a sonar to the game which you can use from any ship. This can be useful if you have ever unintentionally grounded your ship or crashed into underwater objects. Also it can be used for searching for objects at the sea floor.\n\nModes of operation\n\nSector Imaging Mode - scans a 180 degrees sector with a very narrow vertical beam. Signal strength is mapped to display intensity, displayed range is not corrected…",
   "temTutorial": false,
+  "autor": "Savelli",
   "guia": "Description\n\nThis mod adds a sonar to the game which you can use from any ship. This can be useful if you have ever unintentionally grounded your ship or crashed into underwater objects. Also it can be used for searching for objects at the sea floor.\n\nModes of operation\n\nSector Imaging Mode - scans a 180 degrees sector with a very narrow vertical beam. Signal strength is mapped to display intensity, displayed range is not corrected (slant range). This is best suited for searching for objects on the sea floor and for making images.\n\nSector Depth Mode - scans a 180 degrees sector with a wider vertical beam. Depth of each point is mapped to display color, displayed range is projected. This mode is more useful for navigation in shallow areas.\n\nBasic Forward Scan Mode - scans area directly ahead of your vessel with a vertical beam. Position of each point is displayed on distance-depth graph, giving you precise information of depth right ahead of your vessel. Although you can see only a small area of the sea floor, this mode has the fastest refresh rate.\n\nNOTE:\n\n* Wherever the depth is displayed in the device, it is not the true depth, but depth below sensor position which is located at the bottom of your vessel.\n* Sector scanning modes might degrade your frame rate. If you are having bad performance, reduce the scan rate.\n\nHow to enable\n\nWhen you are in a ship, use the \"Sonar Options\" action in the action menu.\n\nOptions\n\nMode - sets the mode of sonar.\nRange - sets the maximum range of the sonar.\nMax Depth - sets the depth limit for the display. Only affects basic forward scan and sector depth modes.\nImage Gamma - Allows you to adjust gamma correction of the image. Only affects sector imaging mode.\nScan Rate - Allows you to adjust the scanning rate of the sonar. Only affects sector imaging and sector depth modes.\n\nLinks\n\nGithub: https://github.com/Sparker95/Arma-3-Ship-Sonar\nBI Forum: https://forums.bohemia.net/forums/topic/231509-forward-scan-sonar-for-ships/"
  },
  "2307477087": {
@@ -1353,6 +1406,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play…",
   "temTutorial": false,
+  "autor": "BillyEatWorld",
   "guia": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play solo, host a local multiplayer server, select the map you want to play and adjust mission parameters as required.\n- For best results, don’t guess what mods work. Download SUPPORTED MOD PRESETS here - https://discord.gg/vRG3X4yqYV\n- Check Discussions for FAQ.\n- PBO Files - https://www.dropbox.com/sh/2rwfpu1h3sowee6/AABjA-YFHv3iIEiJtmqhY45Ka?dl=0\n\n.....\n\n*** MULTIPLAYER SAVING***\n\n- You MUST be running the @Inidbi2 database mod on the dedi server or local host.\n- Saving happens automatically in the background. The in game save button has nothing to do with the save system in DA.\n- Your server / game client MUST be in 64bit mode.\n- If on a dedicated server, @inidbi2 should be loaded in -servermod, not -mod.\n- If @INIDBI2 doesn’t work, manually move the mod folder to ARMA 3 root directory and run from there.\n- Connected clients DO NOT need to run @inidbi2. Just the server / host.\n\nDownload INIDBI2 here - https://steamcommunity.com/workshop/filedetails/?id=1768992669\n\n.....\n\nFeatures:\n\n- Open world dynamic design\n- Up to 12 player co-op\n- Works on hosted and dedicated servers\n- Persistence (must be using \"Inidbi2 - Official Extension\" mod)\n- Enemy camps\n- Dynamically generated side objectives\n- Random Encounters\n- Discoverable friendly camps\n- Static ships + carriers\n- Mission level progression system to unlock gear and vehicles\n- Class special abilities.\n- Switch class in game.\n- Weapon and gear class restrictions.\n- Find and unlock new friendly vehicles to spawn at base.\n- \"Outpost\" mobile spawn point mechanic.\n- Fast Travel system\n- Recr"
  },
  "2372036642": {
@@ -1385,6 +1439,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "This Building is used as an Armory and Storage unit for smaller Camps, FOBs or Outposts. It has 8 restricted arsenals that only provide weapons, ammo, attachments and a few items such as Rangefinders. It is also equipped with 4 First-Aid stations where you can stock up on First-Aid Kits and Medic-Bags.I used vanilla weapons and attachments only  in the arsenal and for the Gun walls so if you want to expand it with more stuff you need…",
   "temTutorial": false,
+  "autor": "Antares",
   "guia": "This Building is used as an Armory and Storage unit for smaller Camps, FOBs or Outposts. It has 8 restricted arsenals that only provide weapons, ammo, attachments and a few items such as Rangefinders. It is also equipped with 4 First-Aid stations where you can stock up on First-Aid Kits and Medic-Bags.I used vanilla weapons and attachments only  in the arsenal and for the Gun walls so if you want to expand it with more stuff you need to do that yourself.\n\nIf you have suggestions what you would like to see me build just let me know, and maybe I can work something out. \n\nRequirements:\n- Should have none \n\nVisit us on our Homepage: prae-garde.de"
  },
  "2387647757": {
@@ -1402,6 +1457,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "This Building is use as a conference room and briefing area for smaller Camps, FOBs or Outposts. It build with ACEX Sitting function in mind so i did everything in my power to prevent people from breaking their legs when standing up. It doesn't have any arsenal or storage space but it's possible to add if needed. \n\nIf you have suggestions what you would like to see me build just let me know, and maybe I can work something out.…",
   "temTutorial": false,
+  "autor": "Antares",
   "guia": "This Building is use as a conference room and briefing area for smaller Camps, FOBs or Outposts. It build with ACEX Sitting function in mind so i did everything in my power to prevent people from breaking their legs when standing up. It doesn't have any arsenal or storage space but it's possible to add if needed. \n\nIf you have suggestions what you would like to see me build just let me know, and maybe I can work something out. \n\nRequirements:\n- Contact DLC maybe for some of the objects not sure\n\nIf you don't need that you should be able to leave these requirements out.\n\nVisit us on our Homepage: prae-garde.de"
  },
  "2407225063": {
@@ -1417,7 +1473,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "A small CTRG camp, used for Electronic Intelligence, Emissions Intelligence and Cyberwarfare. Easily concealed in any woodland/forested area.\n\nHas a Hunter for transportation and a crate with CTRG weapons (SPAR/DMR).",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "Avaritia"
  },
  "2474792559": {
   "nome": "Direct Action - Tanoa",
@@ -1434,6 +1491,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play…",
   "temTutorial": false,
+  "autor": "BillyEatWorld",
+  "dlcs": [
+   "Arma 3 Apex"
+  ],
   "guia": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play solo, host a local multiplayer server, select the map you want to play and adjust mission parameters as required.\n- For best results, don’t guess what mods work. Download SUPPORTED MOD PRESETS here - https://discord.gg/vRG3X4yqYV\n- Check Discussions for FAQ.\n- PBO Files - https://www.dropbox.com/sh/2rwfpu1h3sowee6/AABjA-YFHv3iIEiJtmqhY45Ka?dl=0\n\n.....\n\n*** MULTIPLAYER SAVING***\n\n- You MUST be running the @Inidbi2 database mod on the dedi server or local host.\n- Saving happens automatically in the background. The in game save button has nothing to do with the save system in DA.\n- Your server / game client MUST be in 64bit mode.\n- If on a dedicated server, @inidbi2 should be loaded in -servermod, not -mod.\n- If @INIDBI2 doesn’t work, manually move the mod folder to ARMA 3 root directory and run from there.\n- Connected clients DO NOT need to run @inidbi2. Just the server / host.\n\nDownload INIDBI2 here - https://steamcommunity.com/workshop/filedetails/?id=1768992669\n\n.....\n\nFeatures:\n\n- Open world dynamic design\n- Up to 12 player co-op\n- Works on hosted and dedicated servers\n- Persistence (must be using \"Inidbi2 - Official Extension\" mod)\n- Enemy camps\n- Dynamically generated side objectives\n- Random Encounters\n- Discoverable friendly camps\n- Static ships + carriers\n- Mission level progression system to unlock gear and vehicles\n- Class special abilities.\n- Switch class in game.\n- Weapon and gear class restrictions.\n- Find and unlock new friendly vehicles to spawn at base.\n- \"Outpost\" mobile spawn point mechanic.\n- Fast Travel system\n- Recr"
  },
  "2480263219": {
@@ -1496,6 +1557,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "This is a fully furnished Bunker HQ. This time, there's not much to tell.\n\n+++ Bohemia DLC only +++ No Creator DLC +++ No mods +++ Furniture +++\n\nSome objects are scaled and might look a bit off when placing the composition in the editor. But after spawning as a player, everything will look as intended.\n\n! ! ! CAUTION ! ! !\n\nMake sure to disable surface snapping and terrain alignment (vertical mode, see last picture) before placing…",
   "temTutorial": false,
+  "autor": "Dællbørn",
   "guia": "This is a fully furnished Bunker HQ. This time, there's not much to tell.\n\n+++ Bohemia DLC only +++ No Creator DLC +++ No mods +++ Furniture +++\n\nSome objects are scaled and might look a bit off when placing the composition in the editor. But after spawning as a player, everything will look as intended.\n\n! ! ! CAUTION ! ! !\n\nMake sure to disable surface snapping and terrain alignment (vertical mode, see last picture) before placing comps!\n\nMaybe you won't need all listed DLC, I didn't really double-check that.\n\nFeel free to use and alter this composition for your missions. Attribution is appreciated but not necessary."
  },
  "2588603554": {
@@ -1526,6 +1588,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play…",
   "temTutorial": false,
+  "autor": "BillyEatWorld",
+  "dlcs": [
+   "Arma 3 Contact"
+  ],
   "guia": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play solo, host a local multiplayer server, select the map you want to play and adjust mission parameters as required.\n- For best results, don’t guess what mods work. Download SUPPORTED MOD PRESETS here - https://discord.gg/vRG3X4yqYV\n- Check Discussions for FAQ.\n- PBO Files - https://www.dropbox.com/sh/2rwfpu1h3sowee6/AABjA-YFHv3iIEiJtmqhY45Ka?dl=0\n\n.....\n\n*** MULTIPLAYER SAVING***\n\n- You MUST be running the @Inidbi2 database mod on the dedi server or local host.\n- Saving happens automatically in the background. The in game save button has nothing to do with the save system in DA.\n- Your server / game client MUST be in 64bit mode.\n- If on a dedicated server, @inidbi2 should be loaded in -servermod, not -mod.\n- If @INIDBI2 doesn’t work, manually move the mod folder to ARMA 3 root directory and run from there.\n- Connected clients DO NOT need to run @inidbi2. Just the server / host.\n\nDownload INIDBI2 here - https://steamcommunity.com/workshop/filedetails/?id=1768992669\n\n.....\n\nFeatures:\n\n- Open world dynamic design\n- Up to 12 player co-op\n- Works on hosted and dedicated servers\n- Persistence (must be using \"Inidbi2 - Official Extension\" mod)\n- Enemy camps\n- Dynamically generated side objectives\n- Random Encounters\n- Discoverable friendly camps\n- Static ships + carriers\n- Mission level progression system to unlock gear and vehicles\n- Class special abilities.\n- Switch class in game.\n- Weapon and gear class restrictions.\n- Find and unlock new friendly vehicles to spawn at base.\n- \"Outpost\" mobile spawn point mechanic.\n- Fast Travel system\n- Recr"
  },
  "2609065498": {
@@ -1540,6 +1606,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Military Data Center\n\nA Military Cargo HQ deployed as a Data Center for communications, intelligence gathering, and can operate as a briefing room.\n\nThis HQ contains electronics, TV screens, server units, and more.\n\nImportant Note:\n\nWhen placing this composition in the Eden Editor, make sure you toggle vertical mode to not adjust to terrain, as well as toggle Surface Snapping to snap to terrain, otherwise spawning the composition will…",
   "temTutorial": false,
+  "autor": "XpeditionXD8",
   "guia": "Military Data Center\n\nA Military Cargo HQ deployed as a Data Center for communications, intelligence gathering, and can operate as a briefing room.\n\nThis HQ contains electronics, TV screens, server units, and more.\n\nImportant Note:\n\nWhen placing this composition in the Eden Editor, make sure you toggle vertical mode to not adjust to terrain, as well as toggle Surface Snapping to snap to terrain, otherwise spawning the composition will misplace the objects inside the HQ.\n\nAll objects inside of the building use BIS_fnc_attachToRelative to make it Zeus friendly. An event handler has been added that will delete all attached objects when the main building itself is physically destroyed or deleted by Zeus.\n\nOriginal Design by me (XpeditionXD8).\nIf you use this composition in a mission or a Zeus Operation, feel free to let me know in the comments. I'd like to receive feedback with suggestions/improvements."
  },
  "2609065953": {
@@ -1554,6 +1621,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Military Data Center\n\nA Military Cargo HQ deployed as a Data Center for communications, intelligence gathering, and can operate as a briefing room.\n\nThis HQ contains electronics, TV screens, server units, and more.\n\nImportant Note:\n\nWhen placing this composition in the Eden Editor, make sure you toggle vertical mode to not adjust to terrain, as well as toggle Surface Snapping to snap to terrain, otherwise spawning the composition will…",
   "temTutorial": false,
+  "autor": "XpeditionXD8",
   "guia": "Military Data Center\n\nA Military Cargo HQ deployed as a Data Center for communications, intelligence gathering, and can operate as a briefing room.\n\nThis HQ contains electronics, TV screens, server units, and more.\n\nImportant Note:\n\nWhen placing this composition in the Eden Editor, make sure you toggle vertical mode to not adjust to terrain, as well as toggle Surface Snapping to snap to terrain, otherwise spawning the composition will misplace the objects inside the HQ.\n\nAll objects inside of the building use BIS_fnc_attachToRelative to make it Zeus friendly. An event handler has been added that will delete all attached objects when the main building itself is physically destroyed or deleted by Zeus.\n\nOriginal Design by me (XpeditionXD8).\nIf you use this composition in a mission or a Zeus Operation, feel free to let me know in the comments. I'd like to receive feedback with suggestions/improvements."
  },
  "2623341670": {
@@ -1610,6 +1678,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play…",
   "temTutorial": false,
+  "autor": "BillyEatWorld",
+  "dlcs": [
+   "Arma 3 Creator DLC: Western Sahara"
+  ],
   "guia": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play solo, host a local multiplayer server, select the map you want to play and adjust mission parameters as required.\n- For best results, don’t guess what mods work. Download SUPPORTED MOD PRESETS here - https://discord.gg/vRG3X4yqYV\n- Check Discussions for FAQ.\n- PBO Files - https://www.dropbox.com/sh/2rwfpu1h3sowee6/AABjA-YFHv3iIEiJtmqhY45Ka?dl=0\n\n.....\n\n*** MULTIPLAYER SAVING***\n\n- You MUST be running the @Inidbi2 database mod on the dedi server or local host.\n- Saving happens automatically in the background. The in game save button has nothing to do with the save system in DA.\n- Your server / game client MUST be in 64bit mode.\n- If on a dedicated server, @inidbi2 should be loaded in -servermod, not -mod.\n- If @INIDBI2 doesn’t work, manually move the mod folder to ARMA 3 root directory and run from there.\n- Connected clients DO NOT need to run @inidbi2. Just the server / host.\n\nDownload INIDBI2 here - https://steamcommunity.com/workshop/filedetails/?id=1768992669\n\n.....\n\nFeatures:\n\n- Open world dynamic design\n- Up to 12 player co-op\n- Works on hosted and dedicated servers\n- Persistence (must be using \"Inidbi2 - Official Extension\" mod)\n- Enemy camps\n- Dynamically generated side objectives\n- Random Encounters\n- Discoverable friendly camps\n- Static ships + carriers\n- Mission level progression system to unlock gear and vehicles\n- Class special abilities.\n- Switch class in game.\n- Weapon and gear class restrictions.\n- Find and unlock new friendly vehicles to spawn at base.\n- \"Outpost\" mobile spawn point mechanic.\n- Fast Travel system\n- Recr"
  },
  "2662233087": {
@@ -1627,6 +1699,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play…",
   "temTutorial": false,
+  "autor": "BillyEatWorld",
   "guia": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play solo, host a local multiplayer server, select the map you want to play and adjust mission parameters as required.\n- For best results, don’t guess what mods work. Download SUPPORTED MOD PRESETS here - https://discord.gg/vRG3X4yqYV\n- Check Discussions for FAQ.\n- PBO Files - https://www.dropbox.com/sh/2rwfpu1h3sowee6/AABjA-YFHv3iIEiJtmqhY45Ka?dl=0\n\n.....\n\n*** MULTIPLAYER SAVING***\n\n- You MUST be running the @Inidbi2 database mod on the dedi server or local host.\n- Saving happens automatically in the background. The in game save button has nothing to do with the save system in DA.\n- Your server / game client MUST be in 64bit mode.\n- If on a dedicated server, @inidbi2 should be loaded in -servermod, not -mod.\n- If @INIDBI2 doesn’t work, manually move the mod folder to ARMA 3 root directory and run from there.\n- Connected clients DO NOT need to run @inidbi2. Just the server / host.\n\nDownload INIDBI2 here - https://steamcommunity.com/workshop/filedetails/?id=1768992669\n\n.....\n\nFeatures:\n\n- Open world dynamic design\n- Up to 12 player co-op\n- Works on hosted and dedicated servers\n- Persistence (must be using \"Inidbi2 - Official Extension\" mod)\n- Enemy camps\n- Dynamically generated side objectives\n- Random Encounters\n- Discoverable friendly camps\n- Static ships + carriers\n- Mission level progression system to unlock gear and vehicles\n- Class special abilities.\n- Switch class in game.\n- Weapon and gear class restrictions.\n- Find and unlock new friendly vehicles to spawn at base.\n- \"Outpost\" mobile spawn point mechanic.\n- Fast Travel system\n- Recr"
  },
  "2664678033": {
@@ -1659,6 +1732,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play…",
   "temTutorial": false,
+  "autor": "BillyEatWorld",
   "guia": "Welcome to Direct Action: Dynamic Missions! A new open world, combined arms, dynamic mission for ARMA 3.\n\nPlease do not modify and / or re-upload this mission without permission in any form on Steam or elsewhere.\n\nAny SUGGESTIONS and BUG REPORTS please reach out to us on our Discord - https://discord.gg/vRG3X4yqYV\n\n.....\n\n*** IMPORTANT INFO ***\n\n- Direct action is a multiplayer only scenario. It will not appear in \"Scenarios\". To play solo, host a local multiplayer server, select the map you want to play and adjust mission parameters as required.\n- For best results, don’t guess what mods work. Download SUPPORTED MOD PRESETS here - https://discord.gg/vRG3X4yqYV\n- Check Discussions for FAQ.\n- PBO Files - https://www.dropbox.com/sh/2rwfpu1h3sowee6/AABjA-YFHv3iIEiJtmqhY45Ka?dl=0\n\n.....\n\n*** MULTIPLAYER SAVING***\n\n- You MUST be running the @Inidbi2 database mod on the dedi server or local host.\n- Saving happens automatically in the background. The in game save button has nothing to do with the save system in DA.\n- Your server / game client MUST be in 64bit mode.\n- If on a dedicated server, @inidbi2 should be loaded in -servermod, not -mod.\n- If @INIDBI2 doesn’t work, manually move the mod folder to ARMA 3 root directory and run from there.\n- Connected clients DO NOT need to run @inidbi2. Just the server / host.\n\nDownload INIDBI2 here - https://steamcommunity.com/workshop/filedetails/?id=1768992669\n\n.....\n\nFeatures:\n\n- Open world dynamic design\n- Up to 12 player co-op\n- Works on hosted and dedicated servers\n- Persistence (must be using \"Inidbi2 - Official Extension\" mod)\n- Enemy camps\n- Dynamically generated side objectives\n- Random Encounters\n- Discoverable friendly camps\n- Static ships + carriers\n- Mission level progression system to unlock gear and vehicles\n- Class special abilities.\n- Switch class in game.\n- Weapon and gear class restrictions.\n- Find and unlock new friendly vehicles to spawn at base.\n- \"Outpost\" mobile spawn point mechanic.\n- Fast Travel system\n- Recr"
  },
  "2699465073": {
@@ -1687,7 +1761,8 @@ export const A3COL_ITENS = {
   "tags": [],
   "deps": [],
   "resumo": "NO MODS NEEDED.\n\nMade easy with this composition - Thanks man for posting it!\nhttps://steamcommunity.com/sharedfiles/filedetails/?id=2399157621&searchtext=DESK+SET\n\n⭐Want to see more great stuff!?⭐\n\nJoin my discord for Arma 3 scripts and goodies!\nhttps://discord.gg/ZxXWDXeFbM\n\nCheck My YouTube channel for Arma content (tutorials and gameplay)\nhttps://www.youtube.com/channel/UC8ssC9aJNK47AgR7rWqp1yw\n\nEnjoy",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "Benchmark"
  },
  "2719006683": {
   "nome": "Vehicle Maintenance Station",
@@ -1703,7 +1778,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Vehicle Maintenance Station for all your needs. You can add or delete any components as you wish. Don't forget to toggle vertical mode and surface snapping off. Hope you enjoy it!",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "JackFighter"
  },
  "2733847169": {
   "nome": "UAV Feed Station [NATO] v1.4",
@@ -1720,6 +1796,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "UAV Feed Station\n\nCreates a global camera, attaches itself to an AR-2 Darter Drone, and displays the camera feed on a screen texture.\n\nImportant Info / Known issues\n\n• This has been tested in multiplayer environments where there could be a player with Zeus perms/controls that could spawn this composition and have it work properly for ground players not using a Zeus interface. The Zeus user(s) will not be able to see the displayed feed…",
   "temTutorial": false,
+  "autor": "XpeditionXD8",
   "guia": "UAV Feed Station\n\nCreates a global camera, attaches itself to an AR-2 Darter Drone, and displays the camera feed on a screen texture.\n\nImportant Info / Known issues\n\n• This has been tested in multiplayer environments where there could be a player with Zeus perms/controls that could spawn this composition and have it work properly for ground players not using a Zeus interface. The Zeus user(s) will not be able to see the displayed feed texture applied to the object, but if they leave the Zeus interface and return to their player state, they will see it.\n\n• Work In Progress: In a possible future update, this will add another event handler that will allow Zeus users to see the live feed on the screened object while using the Zeus interface.\n\n• To use this in a scenario like ones mentioned above, make sure you have a file called \"Description.ext\" in your mission's folder. More info in this very helpful video: https://www.youtube.com/watch?v=-SZrnZPvA80\n\n• Use at your own risk in Zeus multiplayer scenarios/servers. There will eventually be an update to fix the issue of players not being able to use the actions due to remoteExec restrictions. As of now, if a Zeus spawns this composition, the addActions are not correctly executed for every client/JIP to receive the intended actions for the object. This will be fixed eventually.\n\n• The time has finally come where this works properly with usage of the Virtual Arsenal and Virtual Garage. The issue before was that when a player opened any instance of the Virtual Arsenal using BIS_fnc_arsenal, all PIP textures would stop working. Every time a camera is deleted without the terminated effect being applied beforehand, all other PIP textures stopped working. You have to delete and recreate every camera.\n\nNote: The static that appears on some displays are a known issue according to everything related to ArmA 3 and Bohemia Interactive, and there is nothing that can fix it or take it out of the display. it's something to do with the a"
  },
  "2734912943": {
@@ -1733,6 +1810,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "UAV Feed Station\n\nCreates a global camera, attaches itself to an AR-2 Darter Drone, and displays the camera feed on a Data Terminal.\n2 cameras are used on the Darter Drone and have different PiP effects: Left cam (cam 1) has normal and night vision PiP effects, Right cam (cam 2) has thermal PiP.\n\nImportant Info / Known issues\n\n• This has been tested in multiplayer environments where there could be a player with Zeus perms/controls that…",
   "temTutorial": false,
+  "autor": "XpeditionXD8",
   "guia": "UAV Feed Station\n\nCreates a global camera, attaches itself to an AR-2 Darter Drone, and displays the camera feed on a Data Terminal.\n2 cameras are used on the Darter Drone and have different PiP effects: Left cam (cam 1) has normal and night vision PiP effects, Right cam (cam 2) has thermal PiP.\n\nImportant Info / Known issues\n\n• This has been tested in multiplayer environments where there could be a player with Zeus perms/controls that could spawn this composition and have it work properly for ground players not using a Zeus interface. The Zeus user(s) will not be able to see the displayed feed texture applied to the object, but if they leave the Zeus interface and return to their player state, they will see it.\n\n• Work In Progress: In a possible future update, this will add another event handler that will allow Zeus users to see the live feed on the screened object while using the Zeus interface.\n\n• To use this in a scenario like ones mentioned above, make sure you have a file called \"Description.ext\" in your mission's folder. More info in this very helpful video: https://www.youtube.com/watch?v=-SZrnZPvA80\n\n• Use at your own risk in Zeus multiplayer scenarios/servers. There will eventually be an update to fix the issue of players not being able to use the actions due to remoteExec restrictions. As of now, if a Zeus spawns this composition, the addActions are not correctly executed for every client/JIP to receive the intended actions for the object. This will be fixed eventually.\n\n• The time has finally come where this works properly with usage of the Virtual Arsenal and Virtual Garage. The issue before was that when a player opened any instance of the Virtual Arsenal using BIS_fnc_arsenal, all PIP textures would stop working. Every time a camera is deleted without the terminated effect being applied beforehand, all other PIP textures stopped working. You have to delete and recreate every camera.\n\nNote: The static that appears on some displays (such as this one) ar"
  },
  "2760602147": {
@@ -1750,6 +1828,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "All In One Virtual Arsenal & Service Station\n by M9-SD\n\nFeatures:\n\n• Full Arsenal (+Animations)\n• Copy Loadout\n• Empty Loadout\n• Save Respawn Loadout\n• Load Respawn Loadout\n• Delete Respawn Loadout\n• Heal\n• Repair Vehicle\n• Rearm Vehicle\n• Refuel Vehicle\n• 3D Marker\n• Map Marker\n• Sound Effects\n\nNo mods or DLC required!\nThis composition only works properly if the server has composition inits enabled.\n\nHow to use:\n3DEN: Compositions >…",
   "temTutorial": false,
+  "autor": "L𝘼𝙍𝙋𝘼 — 🤖",
   "guia": "All In One Virtual Arsenal & Service Station\n by M9-SD\n\nFeatures:\n\n• Full Arsenal (+Animations)\n• Copy Loadout\n• Empty Loadout\n• Save Respawn Loadout\n• Load Respawn Loadout\n• Delete Respawn Loadout\n• Heal\n• Repair Vehicle\n• Rearm Vehicle\n• Refuel Vehicle\n• 3D Marker\n• Map Marker\n• Sound Effects\n\nNo mods or DLC required!\nThis composition only works properly if the server has composition inits enabled.\n\nHow to use:\n3DEN: Compositions > Custom > Steam Subscribed Content > Services > AIO Arsenal by M9-SD\nZeus: Groups > Empty > Steam Subscribed Content > Services > AIO Arsenal by M9-SD\n\nRate, Favorite, & Subscribe for more features and updates.\n\nScroll down for other variants!\n\nOther Variants:\n\n• Supply Box (Small)\n\n• Module (Apply to anything)\n\nSource Code & License:\n\n• Github\n• MIT License\n\nYou may do what you want with the code, provided you abide by and include my copyright/license.\n\nTags:\narsenal composition script sqf code 3den eden editor zeus pub public official m9 m9sd m9-sd scroll action actions aio all-in-one vehicle crate box ammo container shipping emp faraday cage proof welding fuel gas medical gear weapons uniforms backpacks face faces zam supply supplies cargo drop camp tool tools utility utilities module make create spawn give apply car tank ammunition weapon armament pylon round vest clothes hat helmet bullet bullets plate carrier backpack reload quick full arsenal yellow gold helipad light lighting day night\n\n——————————————————————————————————\n\nMy Links\n\n• Donate\n• Website\n• YouTube\n• GitHub\n• Workshop\n• Discord (ZAM)\n• Discord (SQF Archive)\n\n——————————————————————————————————\n\nRequirements\n\nThis is a scripted composition, designed to be placed from the Zeus interface. After subscribing to and subsequently downloading this composition, it will automatically be accessible in-game from Zeus > Groups > Empty > Compositions (since it's not a mod, it won't show up as one in the Arma 3 launcher). The scripts attached to this composition will only work if the"
  },
  "2764558652": {
@@ -1767,6 +1846,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "All In One Virtual Arsenal\n by M9-SD\n\nFeatures:\n\n• Full Arsenal (+Animations)\n• Copy Loadout\n• Empty Loadout\n• Save Respawn Loadout\n• Load Respawn Loadout\n• Delete Respawn Loadout\n• Heal\n• Repair Vehicle\n• Rearm Vehicle\n• Refuel Vehicle\n• 3D Marker\n• Map Marker\n• Sound Effects\n• Slingloadable\n\nNo mods or DLC required!\nThis composition only works properly if the server has composition inits enabled.\n\nHow to use:\n3DEN: Compositions >…",
   "temTutorial": false,
+  "autor": "L𝘼𝙍𝙋𝘼 — 🤖",
   "guia": "All In One Virtual Arsenal\n by M9-SD\n\nFeatures:\n\n• Full Arsenal (+Animations)\n• Copy Loadout\n• Empty Loadout\n• Save Respawn Loadout\n• Load Respawn Loadout\n• Delete Respawn Loadout\n• Heal\n• Repair Vehicle\n• Rearm Vehicle\n• Refuel Vehicle\n• 3D Marker\n• Map Marker\n• Sound Effects\n• Slingloadable\n\nNo mods or DLC required!\nThis composition only works properly if the server has composition inits enabled.\n\nHow to use:\n3DEN: Compositions > Custom > Steam Subscribed Content > Services > AIO Arsenal (Supply Box)\nZeus: Groups > Empty > Steam Subscribed Content > Services > AIO Arsenal (Supply Box)\n\nRate, Favorite, & Subscribe for more features and updates.\n\nOther Variants:\n\n• Service Station (Faraday Cage)\n• Module (Apply to anything)\n\nSource Code & License:\n\n• Github\n• MIT License\n\nFeel free to do whatever you want with the code, just include the above copyright notice.\n\nTags:\narsenal composition script sqf code 3den eden editor zeus pub public official m9 m9sd m9-sd scroll action actions aio all-in-one vehicle crate box ammo container shipping emp faraday cage proof welding fuel gas medical gear weapons uniforms backpacks face faces zam supply supplies cargo drop camp tool tools utility utilities module make create spawn give apply car tank ammunition weapon armament pylon round vest clothes hat helmet bullet bullets plate carrier backpack reload quick full arsenal yellow gold helipad light lighting day night small\n\n——————————————————————————————————\n\nMy Links\n\n• Donate\n• Website\n• YouTube\n• GitHub\n• Workshop\n• Discord (ZAM)\n• Discord (SQF Archive)\n\n——————————————————————————————————\n\nRequirements\n\nThis is a scripted composition, designed to be placed from the Zeus interface. After subscribing to and subsequently downloading this composition, it will automatically be accessible in-game from Zeus > Groups > Empty > Compositions (since it's not a mod, it won't show up as one in the Arma 3 launcher). The scripts attached to this composition will only work if the server allows i"
  },
  "2765292972": {
@@ -1784,6 +1864,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "All In One Virtual Arsenal (Module)\n by M9-SD\n\nFeatures:\n\n• Make anything a virtual arsenal!\n\n• Full Arsenal (+Animations)\n• Copy Loadout\n• Empty Loadout\n• Save Respawn Loadout\n• Load Respawn Loadout\n• Delete Respawn Loadout\n• Heal\n• Repair Vehicle\n• Rearm Vehicle\n• Refuel Vehicle\n• 3D Marker\n• Map Marker\n• Sound Effects\n• Slingloadable\n\nNo mods or DLC required!\nThis composition only works properly if the server has composition inits…",
   "temTutorial": false,
+  "autor": "L𝘼𝙍𝙋𝘼 — 🤖",
   "guia": "All In One Virtual Arsenal (Module)\n by M9-SD\n\nFeatures:\n\n• Make anything a virtual arsenal!\n\n• Full Arsenal (+Animations)\n• Copy Loadout\n• Empty Loadout\n• Save Respawn Loadout\n• Load Respawn Loadout\n• Delete Respawn Loadout\n• Heal\n• Repair Vehicle\n• Rearm Vehicle\n• Refuel Vehicle\n• 3D Marker\n• Map Marker\n• Sound Effects\n• Slingloadable\n\nNo mods or DLC required!\nThis composition only works properly if the server has composition inits enabled.\n\nHow to use:\n3DEN: Does not work when spawned from 3den editor.\nThis works just like a zeus module, so it must be run from the zeus interface.\nZeus: Groups > Empty > Steam Subscribed Content > Services > [+] AIO Arsenal (Module)\nPlace the composition on any editable object to add the arsenal actions to it.\n\nRate, Favorite, & Subscribe for more features and updates.\n\nOther Variants:\n\n• Service Station (Faraday Cage)\n• Supply Box (Small)\n\nSource Code & License:\n\n• Github\n• MIT License\n\nFeel free to do whatever you want with the code, just include the above copyright notice.\n\nTags:\narsenal composition script sqf code 3den eden editor zeus pub public official m9 m9sd m9-sd scroll action actions aio all-in-one vehicle crate box ammo container shipping emp faraday cage proof welding fuel gas medical gear weapons uniforms backpacks face faces zam supply supplies cargo drop camp tool tools utility utilities module make create spawn give apply car tank ammunition weapon armament pylon round vest clothes hat helmet bullet bullets plate carrier backpack reload quick full arsenal yellow gold helipad light lighting day night small\n\n——————————————————————————————————\n\nMy Links\n\n• Donate\n• Website\n• YouTube\n• GitHub\n• Workshop\n• Discord (ZAM)\n• Discord (SQF Archive)\n\n——————————————————————————————————\n\nRequirements\n\nThis is a scripted composition, designed to be placed from the Zeus interface. After subscribing to and subsequently downloading this composition, it will automatically be accessible in-game from Zeus > Groups > Empty > Compositio"
  },
  "2783387288": {
@@ -1800,7 +1881,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Medium size FOB for your needs.\nIncludes HQ, briefing area, dormitory area, medical tent and couple of empty tents for your own needs (arsenal, etc...).\nMedium population with props. Performance friendly!\nWorking lamp system; night won't be so dark.\nNo DLC requirements! Completely vanilla (WS was used only for screenshots).\nHope y'all enjoy and have a good time!",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "JackFighter"
  },
  "2788422362": {
   "nome": "RIS - Isla Duala",
@@ -1884,7 +1966,8 @@ export const A3COL_ITENS = {
   "tags": [],
   "deps": [],
   "resumo": "(sem descrição no Workshop)",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "WhosButWhyTho"
  },
  "2798381570": {
   "nome": "Weapon workshop",
@@ -1894,7 +1977,8 @@ export const A3COL_ITENS = {
   "tags": [],
   "deps": [],
   "resumo": "(sem descrição no Workshop)",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "WhosButWhyTho"
  },
  "2800081814": {
   "nome": "Dynamic Camo System",
@@ -1922,7 +2006,8 @@ export const A3COL_ITENS = {
   "tags": [],
   "deps": [],
   "resumo": "This composition features a fairly detailed smaller briefing area complete with seating area, tables, whiteboard, and monitors.",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "GallopingGepard"
  },
  "2800515391": {
   "nome": "Sleeping Area Tent",
@@ -1930,9 +2015,12 @@ export const A3COL_ITENS = {
   "tam": "56 KB",
   "img": "https://images.steamusercontent.com/ugc/1816649539780082772/F710711A31AE27AE1F28A49350FD473F0F28FFAE/?imw=460&imh=260&ima=fit&impolicy=Letterbox&letterbox=false",
   "tags": [],
-  "deps": [],
+  "deps": [
+   "PLP All in One"
+  ],
   "resumo": "This composition features a fully furnished sleeping area for a maximum of 12 individuals.",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "GallopingGepard"
  },
  "2808189229": {
   "nome": "Medium Military Base",
@@ -1949,6 +2037,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Medium Military Base ( No Mods )\nWith living quarters, storage and office rooms.\n\n- You can find the compositions in the group section under Compositions > Custom\n- Try to place the composition by turning vertical mode off and surface snapping.\n- Object Counter:\n- All of my compositions have most of their objects simulation & damage disabled to save performance.\n\nLink to my other Arma 3 Compositions\nThank you for subscribing to my…",
   "temTutorial": false,
+  "autor": "Roman",
   "guia": "Medium Military Base ( No Mods )\nWith living quarters, storage and office rooms.\n\n- You can find the compositions in the group section under Compositions > Custom\n- Try to place the composition by turning vertical mode off and surface snapping.\n- Object Counter:\n- All of my compositions have most of their objects simulation & damage disabled to save performance.\n\nLink to my other Arma 3 Compositions\nThank you for subscribing to my composition! Don't forget to rate it! ;)"
  },
  "2811886291": {
@@ -1974,9 +2063,12 @@ export const A3COL_ITENS = {
   "tam": "6 MB",
   "img": "https://images.steamusercontent.com/ugc/11898843091538412645/36962C10593156CA02F8DBEFE2807F4EFB06716E/?imw=460&imh=260&ima=fit&impolicy=Letterbox&letterbox=false",
   "tags": [],
-  "deps": [],
+  "deps": [
+   "ace"
+  ],
   "resumo": "The work on Overthrow continues!\n\nOverthrow is a dynamic and persistent revolution campaign mod for Arma 3.\n\nOverthrow: Community Edition (previously Rekter Edition) is a continuation of the Overthrow Plus project by Nifnat\n\nThe goal of the project is to update the Overthrow codebase to allow for easier modification and enhanced performance, while also adding new features and fixing bugs, trying to stay faithful to the original vision…",
   "temTutorial": false,
+  "autor": "ThomasAngel",
   "guia": "The work on Overthrow continues!\n\nOverthrow is a dynamic and persistent revolution campaign mod for Arma 3.\n\nOverthrow: Community Edition (previously Rekter Edition) is a continuation of the Overthrow Plus project by Nifnat\n\nThe goal of the project is to update the Overthrow codebase to allow for easier modification and enhanced performance, while also adding new features and fixing bugs, trying to stay faithful to the original vision of Overthrow.\n\nThe mod is in active development, and bugs and issues may occur, even to the save system. Making backups is highly recommended!\n\nCurrent features\n\n•  Ability to change enemy faction (RHS, 3CB)\n\n•  Warehouse inventories are separate\n\n•  Warehouse arsenal no longer resets loadout\n\n•  Improved warehouse search\n\n•  Resistance cap speed increased 4x if NATO isn't present\n\n•  VCOM has been removed\n\n•  New gendarmerie units\n\n•  Performance improvements\n\n•  Security & bug fixes\n\n•  New save system allows for save transfers and back-ups\n\n•  Ability to disable random loadouts for NATO\n\n•  And so much more...\n\nIssues\n\n•  Saves are NOT compatible with other versions of Overthrow\n\nFAQ\n\nQ: Do I have to use ACE?\nA: Yes. Overthrow has been designed to be played with ACE from the start.\nQ: Can I use 'ACE no medical' mods?\nA: No. Overthrow requires that the medical items are present.\nQ: How do I change the faction?\nA: Click the \"Parameters\" button in the role selection screen.\nQ: Do I load only this, or Overthrow and this?\nA: Load only this mod! Do NOT load other versions at the same time!\nQ: Do I need any DLC?\nA: None are required but Apex is very much recommended.\nQ: Can I make my own version?\nA: Yes, absolutely! If you make something cool, considering making a pull request for it on GitHub and I may merge it into this version as well.\nQ: I made a campaign for a new map! Should I release a new version?\nA: In my opinion, no. Just create a pull request on GitHub, and if everything is alright, we will add your custom campaign right into th"
  },
  "2836999643": {
@@ -2009,7 +2101,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Free to use by \"mitwit\"",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "mitwit"
  },
  "2852780363": {
   "nome": "NATO HQ Desert [MAIN MEDICAL TENT]",
@@ -2024,7 +2117,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Free to use by \"mitwit\"",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "mitwit"
  },
  "2852782449": {
   "nome": "NATO HQ Jungle [MAIN MEDICAL TENT]",
@@ -2039,7 +2133,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Free to use by \"mitwit\"",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "mitwit"
  },
  "2871002081": {
   "nome": "Simpel's MilGP Retextures",
@@ -2068,7 +2163,14 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This comp is a tent for Blufor Forces, specificly Nato. Put this with Vertical Mode on and No simulation  on all. Hope you enjoy.",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "greatgamerc",
+  "dlcs": [
+   "Arma 3 Helicopters",
+   "Arma 3 Malden",
+   "Arma 3 Tanks",
+   "Arma 3 Contact"
+  ]
  },
  "2877029157": {
   "nome": "AIO Arsenal+Service (Huron Cargo Container, Orange UI)",
@@ -2083,6 +2185,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "All-In-One Virtual Arsenal + Service Station\n\nBy M9-SD\nEdited by XpeditionXD8\n\n(Disclaimer):\nThis version of AIO Arsenal has been slightly modified to be used on a Huron Cargo Container.\nMultiple of these can be placed in a scenario. However, there is a high possibility that every AIO Arsenal will be the same UI color as the first one that was spawned, since it initializes global marker variables and can overwrite other markers.\n\nTo…",
   "temTutorial": false,
+  "autor": "L𝘼𝙍𝙋𝘼 — 🤖",
   "guia": "All-In-One Virtual Arsenal + Service Station\n\nBy M9-SD\nEdited by XpeditionXD8\n\n(Disclaimer):\nThis version of AIO Arsenal has been slightly modified to be used on a Huron Cargo Container.\nMultiple of these can be placed in a scenario. However, there is a high possibility that every AIO Arsenal will be the same UI color as the first one that was spawned, since it initializes global marker variables and can overwrite other markers.\n\nTo see the official description and instructions, please visit\n ArmA 3 Workshop > M9-SD's Workshop > \"AIO Arsenal\"\n\nVirtual Arsenal Features:\n\nService Station Features:\n\nUsage:\n\n• Works in both singleplayer and multiplayer scenarios, including official Zeus servers.\n\n• Usable in official Zeus servers with zeusCompositionScriptLevel = 2 (servers ending in an even number).\n\nAll copyrights and original content go to their respective owners."
  },
  "2894857160": {
@@ -2099,7 +2202,12 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This comp is a jungle version of the military desert operation table comp. Dont forget to put it with simulation off and vertical mode on. This was  based on a request from Predator14. Enjoy!",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "greatgamerc",
+  "dlcs": [
+   "Arma 3 Apex",
+   "Arma 3 Contact"
+  ]
  },
  "2914901109": {
   "nome": "Chameleon Trenches",
@@ -2197,6 +2305,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "We do not declare that we own the Mods, we just include the Mods that the server wants to play. Thank you to the owner for making it.\n\nadded\n- SF Helmet\n- Viking Vest\n- Viking Backpack\n- Cigarette & Animation ( Cigar & Cigarette In Facewear,Cig Pack In Magazines )\n- IFF Strobe ( In Grenades )\n\nUpdateed 1/10/2023\n\nAdjusted helmet stats to make them more reasonable Adjusted all equipmentl stats\n\n- Adjusted Cap\n- Adjusted Helmet\n-…",
   "temTutorial": false,
+  "autor": "Hize ツ",
   "guia": "We do not declare that we own the Mods, we just include the Mods that the server wants to play. Thank you to the owner for making it.\n\nadded\n- SF Helmet\n- Viking Vest\n- Viking Backpack\n- Cigarette & Animation ( Cigar & Cigarette In Facewear,Cig Pack In Magazines )\n- IFF Strobe ( In Grenades )\n\nUpdateed 1/10/2023\n\nAdjusted helmet stats to make them more reasonable Adjusted all equipmentl stats\n\n- Adjusted Cap\n- Adjusted Helmet\n- Adjusted Vest\n\nTo make it look reasonable"
  },
  "3042013497": {
@@ -2211,9 +2320,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nRoughly eight hours ago, a CIA asset and informant embedded deep withing Chedaki structures has gone silent. After CDF Intelligence Teams have intercepted radio calls about an American mole, we believe him to be held somewhere in the western part of South Zagoria, probably near Zelenogorsk. While we do not know the end goal of the Chedaki rebels, we strongly believe they will move the informant somewhere even more remote or…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nRoughly eight hours ago, a CIA asset and informant embedded deep withing Chedaki structures has gone silent. After CDF Intelligence Teams have intercepted radio calls about an American mole, we believe him to be held somewhere in the western part of South Zagoria, probably near Zelenogorsk. While we do not know the end goal of the Chedaki rebels, we strongly believe they will move the informant somewhere even more remote or possible even into Russia proper.\nThat's why Razor Team of the 27th MEU will be the first American military unit to officially reach Chernarussian shores, move into the area, and rescue the hostage before escaping the area.\n\n Mission\n\nOur mission is easy: go in, rescue the hostage and escape without losing anybody. To achieve this, however, you first have to meet with allied NAPA guerillas who already scouted out the area and can tell you where the HVT is being held.\n\n Data\n\n• Difficulty: Easy/Medium*\n\n• Type Of Combat: MidRange\n\n• Playtime: 15-30min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI\n\nCallsign Razor 01"
  },
  "3044998814": {
@@ -2258,9 +2375,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Maps 2.0",
+   "CUP Terrains - Maps",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nThe northern mountain range and border region to Russia is firmly in Chedaki hand and barely any CDF airstrikes even went that far. Boots on the ground mostly consisted of local guerillas with a death wish - until now.\nThe CIA managed to find out who is behind the arrest and torture of their guy a few days ago and as it turns out, he's behind the same fate of pretty much any other foreignt national the Chedaki could get…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nThe northern mountain range and border region to Russia is firmly in Chedaki hand and barely any CDF airstrikes even went that far. Boots on the ground mostly consisted of local guerillas with a death wish - until now.\nThe CIA managed to find out who is behind the arrest and torture of their guy a few days ago and as it turns out, he's behind the same fate of pretty much any other foreignt national the Chedaki could get their hands on. In the same investigation they didn't just find his current hideout but also a hidden rebel supply depot.\nThat's why Razor Team of the 27th MEU will be moving behind enemy lines to destroy all Chedaki supplies and neutralize the head of rebel counter-intelligence.\n\n Mission\n\nOur mission is to destroy Chedaki supplies and neutralize the guy who is responsible for the arrest and torture of dozens of international aid workers as well as our CIA guy. After we've done that we have to secure the LZ and wait for a CDF bird to pick us up.\n\n Data\n\n• Difficulty: Easy/Medium*\n\n• Type Of Combat: MidRange\n\n• Playtime: 20-35min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI\n\nCallsign Razor 02\n\nCredit\n\nThanks to Devastator_cm for their convoy script"
  },
  "3087700723": {
@@ -2394,9 +2519,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Maps 2.0",
+   "CUP Terrains - Maps",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nAn American drone was looking at the Chedaki-held Krasnostav Airbase and got shot down earlier. Due to the top secret nature of  the current US-involvement (which is not happening, at least officially), destroying the wreck and removing the local backup drive has highest priority.\nThat's why Razor Team of the 27th MEU will be moving behind enemy lines to find the crash site, clear it and cover all tracks of direct…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nAn American drone was looking at the Chedaki-held Krasnostav Airbase and got shot down earlier. Due to the top secret nature of  the current US-involvement (which is not happening, at least officially), destroying the wreck and removing the local backup drive has highest priority.\nThat's why Razor Team of the 27th MEU will be moving behind enemy lines to find the crash site, clear it and cover all tracks of direct US-involvement in the Chernarussian Civil War.\n\n Mission\n\nOur mission is to find the crashed drone and remove the local backup drive before Russian special forces can do the same. While not our planned main task, we are in Chedaki heartlands and might find a few chances to suprise the enemy...\n\n Data\n\n• Difficulty: Easy/Medium*\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 20-45min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI\n\nCallsign Razor 03"
  },
  "3155812911": {
@@ -2411,9 +2544,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Weapons",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Terrains - Maps 2.0",
+   "CUP Terrains - Core"
+  ],
   "resumo": "Situation\n\nSince we cleaned up the area two weeks ago, when we were resucing the informant, this region was pretty safe, except for a Chedaki garrison at the dam, who mostly stayed for themselves. Neither the insurgents nor the NAPA or CDF fighters really engaged each other at that time. But as it seems, this informal truce was not meant to last - we received a distress call from NAPA guerillas near Zelenogorsk. They sounded like they…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nSince we cleaned up the area two weeks ago, when we were resucing the informant, this region was pretty safe, except for a Chedaki garrison at the dam, who mostly stayed for themselves. Neither the insurgents nor the NAPA or CDF fighters really engaged each other at that time. But as it seems, this informal truce was not meant to last - we received a distress call from NAPA guerillas near Zelenogorsk. They sounded like they were in big trouble, and asked us to help them as fast as we could.\n\n Mission\n\nOur mission is simple: meet the NAPA fighters at their hideout, find out what's wrong and offer to assist as good as we can.\n\n Data\n\n• Difficulty: Easy/Medium*\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 15-25min, shorter but more story-driven\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI\n\nCallsign Razor 04\n\nalso gave the callsign razor collection page a small overhaul"
  },
  "3159553804": {
@@ -2428,9 +2569,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Weapons",
+   "CUP Vehicles",
+   "CUP Units"
+  ],
   "resumo": "Situation\n\nRecent satellite and drone pictures have confirmed what many already thought: to anticipate our looming invasion, Chedaki insurgents have concentrated further inland, leaving installations and towns near or at the coast only lightly guarded. The port town of Berezino is only guarded by a single platoon. For this reason, Colonel Armstrong has decided that the best course of action is a quick heliborne insertion of Task Force…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nRecent satellite and drone pictures have confirmed what many already thought: to anticipate our looming invasion, Chedaki insurgents have concentrated further inland, leaving installations and towns near or at the coast only lightly guarded. The port town of Berezino is only guarded by a single platoon. For this reason, Colonel Armstrong has decided that the best course of action is a quick heliborne insertion of Task Force 21 to secure the area and prepare the landing of armored and motorized reinforcements.\n\nBut for this to happen, we have do to some preparations...\n\n Mission\n\nThe Chedaki-held port town of Berezino is only lightly guarded, but the enemy still has two defensive positions on the beach. To prepare for the insertion of Task Force 21, we have to clear out both defensive sites and neutralize an enemy commander who is currently not far away from our location. As soon as TF21 has been inserted into the region, we are tasked with supporting them in their offensive operations. \n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange/Long-ish Range\n\n• Playtime: 20-40min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI\n\nCallsign Razor 05"
  },
  "3165549156": {
@@ -2445,9 +2594,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nTask Forces 21 and 22 managed to secure Berezino and Krasnostav. But the area between those towns is still an insurgent territory. This is why Command has designated Routes 16 and 17. 16 is the well-kept main road, and 17 is the hidden backroad. Both are connecting the port of Berezino to the airbase in Krasnostav and are high-probability targets for Chedaki ambushes and IEDs. \n\nThis is why both roads are to be patrolled at…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nTask Forces 21 and 22 managed to secure Berezino and Krasnostav. But the area between those towns is still an insurgent territory. This is why Command has designated Routes 16 and 17. 16 is the well-kept main road, and 17 is the hidden backroad. Both are connecting the port of Berezino to the airbase in Krasnostav and are high-probability targets for Chedaki ambushes and IEDs. \n\nThis is why both roads are to be patrolled at regular intervals, but right now, a Marine squad is kept busy because of Chedaki prisoners. We have volunteered to patrol along Route 17 instead.\n\n Mission\n\nOur mission is to meet up with the Marine squad and talk to the soldier in charge. After that, we have to walk alon Route 17 (through WP 1 to 9) until we reach Krasnostav Airbase. There we have to talk to Logistics Officer Wright and offer assistance if needed.\n\n Data\n\n• Difficulty: Easy*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 20-40min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 06 | I'm not 100% happy with this mission myself but I already started over twice, so yeah, this is good enough"
  },
  "3170686732": {
@@ -2462,9 +2619,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Maps 2.0",
+   "CUP Terrains - Core",
+   "CUP Units",
+   "CUP Weapons",
+   "CUP Vehicles"
+  ],
   "resumo": "Situation\n\nUS Marines are attacking the industrial and military hub of Zelenogorsk, which is currently held by Chedaki insurgents. However, an AH-1Z Viper got shot down over enemy territory not too far away from the battle, but regular Marine units can't spare anyone for SAR operations.\n\nLuckily, Razor Team was conducting anti-guerilla operations not too far from the crash site and has been ordered to secure the wreck and search for…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nUS Marines are attacking the industrial and military hub of Zelenogorsk, which is currently held by Chedaki insurgents. However, an AH-1Z Viper got shot down over enemy territory not too far away from the battle, but regular Marine units can't spare anyone for SAR operations.\n\nLuckily, Razor Team was conducting anti-guerilla operations not too far from the crash site and has been ordered to secure the wreck and search for both pilots.\n\n Mission\n\nOur mission is to clear the village of Drozhino, secure the wreck, and search for any signs of the pilot and co-pilot. \n\n Data\n\n• Difficulty: Easy*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 20-30min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 07 | I had to start over and change pretty much everything about this mission >SIX< times. I pray to god this'll work and won't suck"
  },
  "3171940465": {
@@ -2479,9 +2644,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nSaber Team, another Force Recon squad, has been active behind enemy lines ever since the invasion started. Tonight they were tasked with destroying artillery that has been pounding the frontlint as well as finding the source of a weird radio signal that has been intercepted.\n\nHowever, half an hour ago, they called for backup against well-equipped and numerically superior Chedaki forces - a few minutes later, they went radio…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nSaber Team, another Force Recon squad, has been active behind enemy lines ever since the invasion started. Tonight they were tasked with destroying artillery that has been pounding the frontlint as well as finding the source of a weird radio signal that has been intercepted.\n\nHowever, half an hour ago, they called for backup against well-equipped and numerically superior Chedaki forces - a few minutes later, they went radio silent.\n\n Mission\n\nOur mission is to check out the friendly camp to see if we can find any clues as to their whereabouts. If we can't find anything, we have to move to Saber's last known position near the old lodge in western Bogtyrka. After finding and assisting the squad, we are tasked with finishing their mission and finding the source of the radio signal. \n\n Data\n\n• Difficulty: Easy*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 20-25min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 08 | yes I know I mixed up UK and US english. sue me"
  },
  "3172727094": {
@@ -2496,9 +2669,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nAs joint US-CDF units prepare their last push towards the Chedaki main base at the Northwestern Airfield, there are still many insurgent-held towns and villages forming a ring around the headquarters. However, before those can be attacked and secured, many (more or less hidden) defensive positions have to be cleared.\n\n Mission\n\nRazor Team is tasked with clearing multiple defensive positions in and around the Chedaki-held…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nAs joint US-CDF units prepare their last push towards the Chedaki main base at the Northwestern Airfield, there are still many insurgent-held towns and villages forming a ring around the headquarters. However, before those can be attacked and secured, many (more or less hidden) defensive positions have to be cleared.\n\n Mission\n\nRazor Team is tasked with clearing multiple defensive positions in and around the Chedaki-held town of Stary Sobor.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 25-45min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 09"
  },
  "3173740364": {
@@ -2513,9 +2694,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Units",
+   "CUP Weapons",
+   "CUP Vehicles"
+  ],
   "resumo": "Situation\n\nA few hours ago, a Chedaki commander crossed the border back into Chernarus. We believe he will be leading the negotiations with the Novigrad government, as he is one of their more moderate commanders. He did not only criticize Moscow for its maneuvers and pouring oil on the fire, but he also openly stated his disgust with Chedaki war crimes.\n\nDespite his (more or less) clean record, he's still a wanted man as well as…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nA few hours ago, a Chedaki commander crossed the border back into Chernarus. We believe he will be leading the negotiations with the Novigrad government, as he is one of their more moderate commanders. He did not only criticize Moscow for its maneuvers and pouring oil on the fire, but he also openly stated his disgust with Chedaki war crimes.\n\nDespite his (more or less) clean record, he's still a wanted man as well as commander of an enemy fighting force and terrorist organization. Novigrad and Washington both want him taken alive to be brought back for questioning and his looming trial. \n\n Mission\n\nRazor Team is tasked with clearing an enemy lookout before they move to the last known position of the HVT at Kamensk Military Base. There they have to secure the area, find and arrest the commander, and bring him back to base. \n\nOptionally, there is a Chedaki comms site not too far away from the base itself. Sabotaging enemy communications will deny them the chance to call in reinforcements. \n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 25-45min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 10 | gotta wait for the Tigr in the next CUPdate. sorry guys"
  },
  "3210449198": {
@@ -2530,9 +2719,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nRussian forces have crossed the border. No radio contact with any friendly units. Tracers light up the sky. Enemy patrols made us crawl through grass and brush. Situation: FUBAR.\n\n Mission\n\nRazor Team has to move back to Krasnostav Airbase to reunite with friendly forces to find out what happened and - if needed - leave Chernarus behind.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 20-30min\n\n•…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nRussian forces have crossed the border. No radio contact with any friendly units. Tracers light up the sky. Enemy patrols made us crawl through grass and brush. Situation: FUBAR.\n\n Mission\n\nRazor Team has to move back to Krasnostav Airbase to reunite with friendly forces to find out what happened and - if needed - leave Chernarus behind.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 20-30min\n\n• Factions: Razor Team (USMC) vs Chedaki\n\n• Players: SP/ Coop-5\n\n• Revive: Vanilla Revive w/ Medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 11 | guess whos back. back again"
  },
  "3239072023": {
@@ -2547,9 +2744,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nAfter escaping from the north, you were offered to join a local NAPA cell at their headquarters at Rog Castle. From there, you talked to Baseplate, and it was decided that you'd, while officially MIA/KIA, would stay behind and advise as well as join NAPA guerillas in their fight against Russian occupiers.\n\n Mission\n\nYou're tasked with helping out NAPA fighters in their new guerilla war against Russian forces, who had invaded…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nAfter escaping from the north, you were offered to join a local NAPA cell at their headquarters at Rog Castle. From there, you talked to Baseplate, and it was decided that you'd, while officially MIA/KIA, would stay behind and advise as well as join NAPA guerillas in their fight against Russian occupiers.\n\n Mission\n\nYou're tasked with helping out NAPA fighters in their new guerilla war against Russian forces, who had invaded South Zagoria just a day prior.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 30-60min\n\n• Factions: Razor Team (NAPA) vs Chedaki & Russian Armed Forces\n\n• Players: SP/ Coop-5\n\n• Revive: Medic can vanilla revive w/ medkit In COOP\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 12 | all hail the watcher of staroye"
  },
  "3256534418": {
@@ -2583,9 +2788,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Maps 2.0",
+   "CUP Terrains - Core",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nAfter disrupting Russian operations in the area, things stayed calm for a while, but over night, Russian planes and helicopters started to patrol the area around the NAPA main base at Rog Castle. Razor Team was sent out to patrol the woods to the east to look for any signs of a Russian assault on the base.\n\nThe patrol itself was quiet and without anything noteworthy; on their way back, however, they saw smoke rising over the…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nAfter disrupting Russian operations in the area, things stayed calm for a while, but over night, Russian planes and helicopters started to patrol the area around the NAPA main base at Rog Castle. Razor Team was sent out to patrol the woods to the east to look for any signs of a Russian assault on the base.\n\nThe patrol itself was quiet and without anything noteworthy; on their way back, however, they saw smoke rising over the castle...\n\n Mission\n\nMove back to your patrol base, try to reach somebody at Rog, and find out what's going on.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 40-60min\n\n• Factions: Razor Team (NAPA) vs Chedaki & Russian Armed Forces\n\n• Players: SP/ Coop-5\n\n Thanks to\n\nTova for their convoy script https://forums.bohemia.net/forums/topic/226608-simple-convoy-script-release/ and to onestar for beta testing\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 13 | the AI convoy might be a bit buggy"
  },
  "3270456437": {
@@ -2600,9 +2813,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Maps 2.0",
+   "CUP Terrains - Maps",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nA Russian soldier who is growing disillusioned with the war effort wants to meet Razor Team to discuss the location of intel that might change to course of the war. \n\n Mission\n\nMeet the informant, retrieve all documents and bring them to a CIA contact.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 30-45min\n\n• Factions: Razor Team (NAPA) vs Chedaki & Russian Armed Forces\n\n• Players: SP/ Coop-5\n\n*…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nA Russian soldier who is growing disillusioned with the war effort wants to meet Razor Team to discuss the location of intel that might change to course of the war. \n\n Mission\n\nMeet the informant, retrieve all documents and bring them to a CIA contact.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 30-45min\n\n• Factions: Razor Team (NAPA) vs Chedaki & Russian Armed Forces\n\n• Players: SP/ Coop-5\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 14 | one more to go"
  },
  "3277283940": {
@@ -2616,6 +2837,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "scripts are fully compatible with Public Zeus servers on the Game Master slot.\n\nThis script allows AI Artillery to fire autonomously. Artillery units will now act properly and provide support to the battlefield just how they would in real life. Forward Observers (FO's) will even order danger close missions if they're about to be overrun and destroyed.\n\n- Forward Observers will now call artillery strikes on enemy positions that they are…",
   "temTutorial": false,
+  "autor": "ekc",
   "guia": "scripts are fully compatible with Public Zeus servers on the Game Master slot.\n\nThis script allows AI Artillery to fire autonomously. Artillery units will now act properly and provide support to the battlefield just how they would in real life. Forward Observers (FO's) will even order danger close missions if they're about to be overrun and destroyed.\n\n- Forward Observers will now call artillery strikes on enemy positions that they are aware of.\n- FO's will use artillery assets that are part of their team within range (Mortars won't fire at extreme distances, just like Rocket Artillery won't fire at extremely close ones!)\n- Compatible with all vanilla Artillery units (Mortars, SPGs, MLRs).\n- Basic RHS Support (See below the supported vehicle roster)\n\nHow to use:\n\n1. Place down the composition on any infantry unit, turning it into a Forward Observer.\n2. Place down any artillery unit.\n3. Make the Forward Observer engage any hostiles.\n\nSupported Stationary Artillery:\n\n- Mk6 Mortar (All Sides)\n- MK41 VLS\n\nSupported Mobile Artillery Roster:\n\nArtillery accuracy is determined by how much the Forward Observer knows about you. If his information is minimal, then the artillery will hit you in the radius of 125m. If his information is full, then the artillery will hit you in the radius of 25m. And everything in between."
  },
  "3277439226": {
@@ -2630,9 +2852,17 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "OtherMap"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Terrains - Maps 2.0",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nMoscow changed its tune: from denying all allegations regarding the invasion of South Zagoria, they switched over to calling it an \"illegal operation by rouge elements\". But according to our intelligence reports, that's an elaborate ruse: they deny all involvement in the ongoing war and argue that they cannot stop the aggression, yet they keep on secretly supporting the so-called rouge general and his underlings.\nHowever,…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nMoscow changed its tune: from denying all allegations regarding the invasion of South Zagoria, they switched over to calling it an \"illegal operation by rouge elements\". But according to our intelligence reports, that's an elaborate ruse: they deny all involvement in the ongoing war and argue that they cannot stop the aggression, yet they keep on secretly supporting the so-called rouge general and his underlings.\nHowever, this allowed us to declare all Russian army personnel inside Chernarus members of a terrorist organization, as well as restart our weapon shipments, intelligence sharing, and air support against hardened targets. Thus, NAPA and CDF forces managed to gain the upper hand and are about to push the aggressor back behind the border.\n\n Mission\n\nWe have to take out Colonel Malyukov, the so-called \"rouge general\" acting without orders from Moscow. Because once he is out of the picture, the Kremlin has no more hand to play but to stop reinforcing their presence inside Chernarus.\n\nBesides neutralizing the HVT (Codename: Jester), we also have to retrieve the \"Cobalt Dossier\" - a collection of files ranging from the planning stage of the invasion up to the names of involved commanders.\n\n Data\n\n• Difficulty: Medium*\n\n• Type Of Combat: CQB/MidRange\n\n• Playtime: 25-45min\n\n• Factions: Razor Team (NAPA) vs Russian Armed Forces\n\n• Players: SP/ Coop-5\n\n• Bonus: different ending depending on how well you do\n\n* you will receive less damage than you normaly would because I wanted to make the loadout as faithful to Arma 2 Razor as I could, but that'd mean getting one-tapped by AI.\n\nthis mission is not meant to be played with any other mods like ACE, AI mods, etc. Use those at your own risk\n\nCallsign Razor 15 | i dont want to set the world on fire"
  },
  "3289908126": {
@@ -2647,9 +2877,16 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "Altis"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nAs the situation on Altis grows more dire, the government in Pyrgos keeps downplaying the situation. But despite all efforts to ignore the crisis, more and more AAF soldiers and Altian policemen leave their posts to join the pro-CSAT protests all around the country. However, they are taking comrades as well as equipment with them, which allows the resistance to arm itself while also sharpening its rhetoric against the Pyrgos…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nAs the situation on Altis grows more dire, the government in Pyrgos keeps downplaying the situation. But despite all efforts to ignore the crisis, more and more AAF soldiers and Altian policemen leave their posts to join the pro-CSAT protests all around the country. However, they are taking comrades as well as equipment with them, which allows the resistance to arm itself while also sharpening its rhetoric against the Pyrgos government.\n\nFor this reason, the British MoD has given green light to an SAS team to keep an eye on the situation and intervene if needed...\n\n Mission\n\nSAS squad \"Lancer\" is tasked with neutralizing a former AAF officer who turned into an arms dealer. After he's taken care of, the team has to find all the weapon crates in his hideout and report them to headquarters before being transported back to the HMS Elizabeth. \n\n Data\n\n• Difficulty: Easy\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 15-25min\n\n• Factions: SAS vs AAF Deserters"
  },
  "3297140142": {
@@ -2664,9 +2901,16 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "Altis"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nWestern intelligence reports and influence have talked the government in Pyrgos into increasing police and army activity against all protestors and in protest-heavy regions. After we banded together under the banner of the 'Freedom and Indepence Army', the Altis Armed Forces (AAF) increased their armed patrols through woods and villages to find our campsites. They arrested hundreds, put a curfew in effect, and declared the…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nWestern intelligence reports and influence have talked the government in Pyrgos into increasing police and army activity against all protestors and in protest-heavy regions. After we banded together under the banner of the 'Freedom and Indepence Army', the Altis Armed Forces (AAF) increased their armed patrols through woods and villages to find our campsites. They arrested hundreds, put a curfew in effect, and declared the area around the parliament as a military zone. This leaves us no other choice than to go into the offensive and strike back. Either we will create a new and brighter future for our country, or we will die trying.\n\nBut since our main supplier got taken out by our former colonial master, who is using Pyrgos as its lapdog, we have to find other ways to get supplies and need to strike at the source - the armories of the AAF. \n\n Mission\n\nWe have to clear an AAF-held village and roadblock before we can advance towards a newly constructed base. There, we have to clear the FOB and load all supplies into a truck before bringing them to the meeting point.\n\n Data\n\n• Difficulty: Easy\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 15-25min\n\n• Factions: FIA vs AAF\n\nAI mods, ACE, etc. might break the mission."
  },
  "3303386235": {
@@ -2681,9 +2925,16 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "Altis"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nFIA guerillas managed to capture Oreokastro and consolidate their power over the rural northwest of the island. There, they held out against AAF counterattacks and managed to evade Altian special forces patrolling the woods. But unlike many experts believed, they never strayed too far outside those areas. only ambushing army convoys at the fringes of their territory a few times. \n\nBut over the last few days, there have been…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nFIA guerillas managed to capture Oreokastro and consolidate their power over the rural northwest of the island. There, they held out against AAF counterattacks and managed to evade Altian special forces patrolling the woods. But unlike many experts believed, they never strayed too far outside those areas. only ambushing army convoys at the fringes of their territory a few times. \n\nBut over the last few days, there have been more and more reports of guerilla activity way outside the FIA-controlled areas. Altian police, stretched too thin with guarding strategic locations and administrative buildings, have asked the army for help to patrol the area and investigate some of those reports.\n\n Mission\n\nWe (Gamma Squad) are tasked with patrolling areas in southern Altis to follow up on alleged FIA sightings. For that we have to recon the AO and investiage: a reported campsite, an old warehouse, and two farms. \n\n Data\n\n• Difficulty: Easy\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 10-20min\n\n• Factions: AAF vs FIA\n\nAI mods, ACE, etc. might break the mission."
  },
  "3311558427": {
@@ -2700,6 +2951,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "HEMTT w/ Deployable MIM-145 Defender\n\nHeavy Expanded Mobility Tactical Truck w/ Deployable MIM-145 Defender\n\nPart of a bigger mod I'm working on, but I believe the workshop needs this. Enjoy.\nComes in Sand and Olive variants.\n\nFits perfectly in combination with HEMTT - Deployable Radar!\n\nThis composition has no crew, it's empty. However, here's one with the UAV Operator inside!\n\nHOW TO USE:\nSTEP 1. - Get out of the damn vehicle. Deploy…",
   "temTutorial": false,
+  "autor": "DrunkeN",
   "guia": "HEMTT w/ Deployable MIM-145 Defender\n\nHeavy Expanded Mobility Tactical Truck w/ Deployable MIM-145 Defender\n\nPart of a bigger mod I'm working on, but I believe the workshop needs this. Enjoy.\nComes in Sand and Olive variants.\n\nFits perfectly in combination with HEMTT - Deployable Radar!\n\nThis composition has no crew, it's empty. However, here's one with the UAV Operator inside!\n\nHOW TO USE:\nSTEP 1. - Get out of the damn vehicle. Deploy the MIM-145 Defender. When deploying, make sure the clear the 10m radius around the back of the vehicle and make sure HEMTT is not manned.\nSTEP 2. - Once deployed, hack it and use it at will. Meanwhile all HEMTT seats are removed until you deactivate the SAM. This is to prevent the misuse of the composition and taking advantage of it.\nSTEP 3.1. - When you're done using it, deactivate it and all seats will then be unlocked.\nSTEP 3.2. - When you need to use it, activate it again. HEMTT seats are locked again, Defender is ready to use, but you need to hack it again.\n\nHOW TO REARM/REPAIR:\nSTEP 1. Park the rearm/repair vehicle near the deployed Defender.\nSTEP 2. Take control of the Defender and point to the truck. Interact with it to rearm/repair.\n\nDescription:\nA composition which enhances the already lacking vanilla content, this one in particular makes use of HEMTT in combination with MIM-145 Defender trailer. We all know that towing vehicles in vanilla ArmA 3 is not possible, so I added 3 user actions that add the ability to drive the HEMTT where you need to and deploy the Defender.\n\nYou only need to deploy the Defender once, then there's nothing more you can do with that user action. After that, there's only deactivate and activate user actions.\n\nThe composition consists of vanilla assets, uses the vehicle's init field to execute scripts. No need for any special attention when placing this composition in either editor or Zeus. Simple place and use.\n\nWorks flawlessly in singleplayer and missions in general, however... for multiplayer pu"
  },
  "3311578760": {
@@ -2713,6 +2965,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "HEMTT w/ Deployable AN/MPQ-105 Radar\n\nHeavy Expanded Mobility Tactical Truck w/ Deployable AN/MPQ-105 Radar\n\nPart of a bigger mod I'm working on, but I believe the workshop needs it. Enjoy.\nComes in Sand and Olive variants.\n\nFits perfectly in combination with HEMTT - Deployable Defender!\n\nThis composition has no crew, it's empty. However, here's one with the UAV Operator inside!\n\nHOW TO USE:\nSTEP 1. - Get out of the damn vehicle.…",
   "temTutorial": false,
+  "autor": "DrunkeN",
   "guia": "HEMTT w/ Deployable AN/MPQ-105 Radar\n\nHeavy Expanded Mobility Tactical Truck w/ Deployable AN/MPQ-105 Radar\n\nPart of a bigger mod I'm working on, but I believe the workshop needs it. Enjoy.\nComes in Sand and Olive variants.\n\nFits perfectly in combination with HEMTT - Deployable Defender!\n\nThis composition has no crew, it's empty. However, here's one with the UAV Operator inside!\n\nHOW TO USE:\nSTEP 1. - Get out of the damn vehicle. Deploy the AN/MPQ-105 Radar.\nSTEP 2. - Once deployed, hack it and use it at will. Meanwhile all HEMTT seats are removed until you deactivate the Radar. This is to prevent the misuse of the composition and taking advantage of it.\nSTEP 3.1. - When you're done using it, deactivate it and all seats will then be unlocked.\nSTEP 3.2. - When you need to use it, activate it again. HEMTT seats are locked again, Radar is ready to use, but you need to hack it again.\n\nHOW TO REPAIR:\nSTEP 1. Park the repair vehicle near the deployed Radar.\nSTEP 2. Take control of the Radar and point to the truck. Interact with it to repair it.\n\nDescription:\nA composition which enhances the already lacking vanilla content, this one in particular makes use of HEMTT in combination with AN/MPQ-105 Radar trailer. We all know that towing vehicles in vanilla ArmA 3 is not possible, so I added 3 user actions that add the ability to drive the HEMTT where you need to and deploy the AN/MPQ-105 Radar.\n\nYou only need to deploy the Radar once, then there's nothing more you can do with that user action. After that, there's only deactivate and activate user actions.\n\nThe composition consists of vanilla assets, uses the vehicle's init field to execute scripts. No need for any special attention when placing this composition in either editor or Zeus. Simple place and use.\n\nWorks flawlessly in singleplayer and missions in general, however... for multiplayer purposes you must include \" zeusCompositionScriptLevel = 2; \" in the description file of the dedicated server... or you can use the fol"
  },
  "3318806960": {
@@ -2727,9 +2980,16 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "Altis"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nWith the FIA offensive starting and rioters breaking into the British embassy, the United States called all their diplomatic personnel back to the states. The ambassador was moved via motorcade, which was guarded by ION Inc. contractors, because the Marines were busy guarding the embassy itself until they could evacuate. \n\nThe convoy, however, never reached the International Airport and went silent only thirty minutes into…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nWith the FIA offensive starting and rioters breaking into the British embassy, the United States called all their diplomatic personnel back to the states. The ambassador was moved via motorcade, which was guarded by ION Inc. contractors, because the Marines were busy guarding the embassy itself until they could evacuate. \n\nThe convoy, however, never reached the International Airport and went silent only thirty minutes into the trip. An AAF helicopter has shown a possible ambush, but the ION Security Team on the ground decided to ignore those warnings and keep on moving...\n\n Mission\n\nYou are part of ION Extraction Team \"Firebird.\" You are tasked with securing the ambushed convoy as well as finding ambassador Dennis Crocker before moving him to safety.\n\n Data\n\n• Difficulty: Easy\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 15-20min\n\n• Factions: ION vs AAF\n\nAI mods, ACE, etc. might break the mission."
  },
  "3323604819": {
@@ -2800,9 +3060,16 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "Altis"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nA group of high-ranking FIA leaders showed willingness to negotiate with the Altian army and political officials in Pyrgos to end the Civil War without more bloodshed. As a sign of goodwill, they have leaked the rough location where Ambassador Crocker is being held by fighters staying true to Gavras. This is why Razor Team has been dispatched to clear and search the area to find Crocker and bring him back to safety.…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nA group of high-ranking FIA leaders showed willingness to negotiate with the Altian army and political officials in Pyrgos to end the Civil War without more bloodshed. As a sign of goodwill, they have leaked the rough location where Ambassador Crocker is being held by fighters staying true to Gavras. This is why Razor Team has been dispatched to clear and search the area to find Crocker and bring him back to safety.\n\n Mission\n\nOur mission is to find Ambassador Crocker, who is currently held inside the AO, and bring him to the USS Nimitz\n\n Data\n\n• Difficulty: Easy\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 15-25min\n\n• Factions: USMC vs FIA\n\nAI mods, ACE, etc. might break the mission."
  },
  "3351398245": {
@@ -2847,9 +3114,16 @@ export const A3COL_ITENS = {
    "Multiplayer",
    "Altis"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Terrains - Core",
+   "CUP Vehicles",
+   "CUP Units",
+   "CUP Weapons"
+  ],
   "resumo": "Situation\n\nCoalition airstrikes and AAF advances quickly overcame organized FIA resistance. What was left of the guerilla group fled into the northwestern mountain ranges. The former tourist village of Oreokastro quickly turned to the last stand of Gavras' last fighter as he took refuge there.\n\nWhile former FIA leaders met for peace talks, Gavras and his most loyal fighters ignored every ultimatum and kept on attacking AAF forces now…",
   "temTutorial": false,
+  "autor": "zahl",
   "guia": "Situation\n\nCoalition airstrikes and AAF advances quickly overcame organized FIA resistance. What was left of the guerilla group fled into the northwestern mountain ranges. The former tourist village of Oreokastro quickly turned to the last stand of Gavras' last fighter as he took refuge there.\n\nWhile former FIA leaders met for peace talks, Gavras and his most loyal fighters ignored every ultimatum and kept on attacking AAF forces now besieging the village. This is why Special Forces squad \"Apollo\" was dispatched. With their advanced training and tactics, they are tasked with capturing Gavras without turning the village into rubble even further.\n\n Mission\n\nYour mission is to find and apprehend Gavras.\n\n Data\n\n• Difficulty: Easy\n\n• Type Of Combat: MidRange/CQB\n\n• Playtime: 15-25min\n\n• Factions: AAF SF vs FIA"
  },
  "3365693392": {
@@ -2867,6 +3141,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Situation\n\nA few weeks ago, a regiment of CSAT paratroopers and a large number of cargo aircraft arrived at the Sefrou-Ramal airbase. Combined with that, (infrequent) earthquakes have started to hit the region, which is rather uncharacteristic for the area as a whole. At the same time, many construction projects began to pop out all over the desert. Most of them are simple fuel depots or outposts in remote areas, but one of those…",
   "temTutorial": false,
+  "autor": "zahl",
+  "dlcs": [
+   "Arma 3 Creator DLC: Western Sahara"
+  ],
   "guia": "Situation\n\nA few weeks ago, a regiment of CSAT paratroopers and a large number of cargo aircraft arrived at the Sefrou-Ramal airbase. Combined with that, (infrequent) earthquakes have started to hit the region, which is rather uncharacteristic for the area as a whole. At the same time, many construction projects began to pop out all over the desert. Most of them are simple fuel depots or outposts in remote areas, but one of those projects looks different. Combined with tremors growing more frequent, analysts believe that CSAT is currently testing the so-called 'East Wind Device' somewhere in the region.\n\n Mission\n\nYour mission is to infiltrate remote CSAT/SFIA-held territory and find out what they are building at the construction site, which Headquarters believes will become a major testing site for the 'East Wind Device'.\nFor that, you have to clear out an outpost roughly a kilometer north of the site. This needs to be done so that the enemies present at the base won't be a problem later in the mission. Optionally, you can also disable enemy communications at this stage.\n\nAfter you have taken out all personnel at the outpost, you have to proceed to the construction site. There, you first have to secure the site and then look around for any blueprints, data sets, or the device itself. After you have found any intel, a friendly HELO will pick you up and bring you back to base.\n\n Data\n\n• Difficulty: Easy/ Medium\n\n• Type Of Combat: MidRange/CQB\n\n• Voiced: Yes (11labs)\n\n• Playtime: 15-25 minutes\n\n• Factions: CTRG vs SFIA/CSAT\n\n Special Thanks\n\n• to reddit user u/cmsc351_irl for their hex camo template\n\n• 11labs for their AI voices\n\n• Benchmark for their flyby composition"
  },
  "3374221806": {
@@ -2883,7 +3161,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "🔶ESPAÑOL: Composiciones sencillas de comunicaciones y logística para el Zeus y el editor de juego.\n\n🔶ENGLISH: Simple communications and logistics setups for the Zeus and the game editor.\n\n🔹Check out my other compositions!\n\n🔹https://steamcommunity.com/sharedfiles/filedetails/?id=3703527603",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "Derii002"
  },
  "3386249759": {
   "nome": "Desert Ocean [SP/COOP 1-8]",
@@ -2900,6 +3179,10 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Desert Ocean is a SP/MP co-op mission designed for 1 to 8 players.\n\n• Immersive cutscenes and thrilling story\n\n• English voiceover\n\n• No Mods\n\n• In-game music, streamer-friendly\n\n• 2035 \"Future\" Setting\n\nMods:\n\nMods are not required for this mission.\nHowever, I recommend using ‘ACE3’ and 'TFAR' or 'ACRE2'.\n(Please avoid using mods that alter the behavior of the AI)\n\nFor additional equipment mods, place a virtual arsenal with the…",
   "temTutorial": false,
+  "autor": "Joshua9797💾",
+  "dlcs": [
+   "Arma 3 Creator DLC: Western Sahara"
+  ],
   "guia": "Desert Ocean is a SP/MP co-op mission designed for 1 to 8 players.\n\n• Immersive cutscenes and thrilling story\n\n• English voiceover\n\n• No Mods\n\n• In-game music, streamer-friendly\n\n• 2035 \"Future\" Setting\n\nMods:\n\nMods are not required for this mission.\nHowever, I recommend using ‘ACE3’ and 'TFAR' or 'ACRE2'.\n(Please avoid using mods that alter the behavior of the AI)\n\nFor additional equipment mods, place a virtual arsenal with the available Zeus slot.\n\nMission:\n\nThe situation in the Sahara region has escalated, requiring immediate action.\nThe remote desert village of Tazzarine has fallen under Tura control, and critical intelligence essential for disrupting their operations has been lost.\nA UNA team, led by Lt. Jonathan Lasco, was deployed to assist the village but went silent 48 hours ago.\nYour mission: retake Tazzarine, recover the lost intel, and reestablish security in the region.\nGood luck!\n\nV1.10"
  },
  "3390219536": {
@@ -2926,9 +3209,14 @@ export const A3COL_ITENS = {
    "Boat",
    "Character"
   ],
-  "deps": [],
+  "deps": [
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons"
+  ],
   "resumo": "The Altian Civil War:\n\nAfter a long period of economic crisis and political instability on Altis, Colonel Georgious Akhanteros comes to power with a coup in 2018. He continues to maintain relations with European countries and NATO to receive the military aid requested under agreements with the previous civilian government but, in the beginning of 2020, he began to make military and economic agreements with other non-NATO countries as…",
   "temTutorial": false,
+  "autor": "Flex7103",
   "guia": "The Altian Civil War:\n\nAfter a long period of economic crisis and political instability on Altis, Colonel Georgious Akhanteros comes to power with a coup in 2018. He continues to maintain relations with European countries and NATO to receive the military aid requested under agreements with the previous civilian government but, in the beginning of 2020, he began to make military and economic agreements with other non-NATO countries as well. After long peaceful protests violently repressed by Akhanteros, all kinds of dissidents gathered under the armed movement of the FIA, thus starting a conflict that will degenerate more and more...\n\nFeatures\n\n-Altis Armed Forces:\n\n• Independent faction.\n\n• Infantry units and special forces with their groups.\n\n• Different vehicles with custom textures.\n\n• Uniforms and gear in AAF camo.\n\nAfter the coup, the AAF underwent several changes and received several funds for equipment modernization, with particular attention also to the navy which is responsible for cutting the FIA ​​supply lines. Thanks to Akhanteros, the AAF can count on various vehicles and weapons (some of their own production under license).\n\n-Freedom and Independence Army:\n\n• All side faction.\n\n• Infantry units with their groups.\n\n• Different vehicles with custom textures.\n\n• Randomised headgear and facewear for more variety.\n\nFrom simple street criminals to arms smugglers, the FIA ​​is characterized by its ability to gather under its influence all those who do not support the military government. Although composed mainly of civilians and some AAF deserters, this paramilitary force can rely on foreign-funded weapons and rudimentary and captured enemy vehicles.\n\n-Raven PMCs:\n\n• Independent and Opfor faction.\n\n• Infantry units with their groups.\n\n• Different vehicles.\n\nA relatively small military force composed of mercenaries from Russian territory. Their main mission is to defend cargo ships from FIA attacks, but according to some AAN investigations, the Altian governme"
  },
  "3391372394": {
@@ -2959,9 +3247,16 @@ export const A3COL_ITENS = {
    "MarksmenDLC",
    "HelicoptersDLC"
   ],
-  "deps": [],
+  "deps": [
+   "CBA_A3",
+   "CUP Units",
+   "CUP Vehicles",
+   "CUP Weapons",
+   "(CUP) Altian Civil War"
+  ],
   "resumo": "DO NOT USE AI ALTERING MODS SUCH AS LAMBS OR VCOM OR SUCH AS IT WOULD CAUSE UNINTENTED AI BEHAVIOUR\n\n \"In the year 2025, Akhanteros began his ascent to power in the Altian region. Shortly after assuming office, the ceasefire between the FIA party and the AAF broke down, leading to escalating tensions. His brutal conduct toward the local populace caused NATO to withdraw its mandate, and soon after, Task Force Aegis was dissolved. Locals…",
   "temTutorial": false,
+  "autor": "Chris P. Bacon",
   "guia": "DO NOT USE AI ALTERING MODS SUCH AS LAMBS OR VCOM OR SUCH AS IT WOULD CAUSE UNINTENTED AI BEHAVIOUR\n\n \"In the year 2025, Akhanteros began his ascent to power in the Altian region. Shortly after assuming office, the ceasefire between the FIA party and the AAF broke down, leading to escalating tensions. His brutal conduct toward the local populace caused NATO to withdraw its mandate, and soon after, Task Force Aegis was dissolved. Locals who defied his reign formed small militia cells under the banner of the FIA, but their efforts to combat Akhanteros's forces proved futile. Outgunned and outnumbered, they hoped for foreign intervention.\n\nWitnessing his oppression of the people, NATO council approved a redeployment to Altis. Before sending the main incursion force, a small US Marine team was dispatched to eliminate one of Akhanteros's closest advisors.\"\n\n Overview\n\nUS Marine team 'Dogstar' deployed into Altis to eliminate a high profile AAF Officer\n\n Features\n\n•  Play Singleplayer\n\n•  Include Voice Acting (Courtesy of Elevenlab)\n\n•  25 Minutes duration\n\n•  Custom Music\n\nAuthor's notes\n\nHello guys. Been a while. Today i've brought a scenario using Flex's very based Altian Civil War CUP Expansion mod. Meant to bring this earlier this month but IRL stuff got me backlogged.\n\nAs always:\n\nVoice acting is created with elevenlab.\n\nDO NOT use AI mods such as LAMBS, VCOM, or the such. A lot of the script relies with the unit waypoints and may cause unintended issues.\n\nHope you all enjoy :)\n\nCredits\n\nFlex7103 for the very based CUP Expansion - Altian Civil War\nCUP Collection Dev Team\nArma 3 forums and discord dwellers for teaching me a lot\n\nSongs Used\n\nSOCOM 3 - All Threats\n\nSOCOM 3 - Prevent Sarwat's Escape\n\nSOCOM 3 - Hearts Of The Fist\n\nSOCOM 3 - Prevent Terrorist Escape 1\n\nSOCOM 2 - SEALs Demoliton Spawn Theme\n\nSOCOM Combined Assault - Intro Track"
  },
  "3424012664": {
@@ -3038,7 +3333,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "SMALL UAV DRONE CONTROL STATION / HUT.  NO MODS NEEDED",
-  "temTutorial": false
+  "temTutorial": false,
+  "autor": "McKelvie"
  },
  "3492800259": {
   "nome": "Binocular -Artillery",
@@ -3068,6 +3364,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "JointCom Armoury - Modular Helmet Remake Project\n\nThe first helmet mod in the JCA Standalone mod selection, the JCA - Modular Helmet Remake Project.\n\nDISCLAIMERS:\n\n ▪ No DLC assets were edited in the creation of this project.\n ▪ No DLC content was \"Ripped\" in the creation of this project.\n ▪ This mod does not exist to bypass DLC or infringe the Arma 3 EULA.\n\nDESCRIPTION:\n\nThe first helmet mod to come from JointCom armoury, the JCA…",
   "temTutorial": false,
+  "autor": "Grave",
   "guia": "JointCom Armoury - Modular Helmet Remake Project\n\nThe first helmet mod in the JCA Standalone mod selection, the JCA - Modular Helmet Remake Project.\n\nDISCLAIMERS:\n\n ▪ No DLC assets were edited in the creation of this project.\n ▪ No DLC content was \"Ripped\" in the creation of this project.\n ▪ This mod does not exist to bypass DLC or infringe the Arma 3 EULA.\n\nDESCRIPTION:\n\nThe first helmet mod to come from JointCom armoury, the JCA Modular Helmet Remake Project sets out to protect you with four variants of the Modular Helmet platform first added in A3 Contact. To achieve this the model was made to be as close to 1-1 as possible to the Contact assets over the course of a seven months from the absolute ground up. The model was then UV mapped to the existing Modular Helmet textures, weighted and configured with the same selections to allow for existing textures/materials to easily be switched out for one another giving the ability to add multiple variants easily, as well as creating compatibility with the existing designs config wise.\n\nMHRP was designed to be used as a baseline gear item for dependencies within E22 as well as other unit mods, the helmets include a set of patch selections for customise able logos or flags depending on users wants without having to add many large files for simple flag textures painted directly onto the canvas.\n\nFeatures:\n\nFour Modular Helmet variants:\n- Modular Helmet (Standard)\n- Modular Helmet (Headset)\n- Modular Helmet (Ear Protectors)\n- Modular Helmet (Chops)\n\ncolour schemes:\n- Black\n- Sand\n- Olive\n\n-Fully Implemented arsenal icons for all new vests for ease of location.\n-Default Patch/Name Tag textures included in PBO for easy retextures (Not permission to re-upload mod.)\n\nDisclaimer:\n\nArma 3 Sync:\nReupload of any JCA content to third party softwear such as Arma 3 sync is prohibited. You are not permited to reupload JCA content due to lisances of many assets within.\n\nCredits:\n\nPatreons - For their continued support.\nGrave - Model, Co"
  },
  "3550382310": {
@@ -3468,6 +3765,7 @@ export const A3COL_ITENS = {
   "deps": [],
   "resumo": "Realistic Vegetation Concealment (RVC) is a lightweight AI enhancement that simulates the visual uncertainty created by vegetation.\n\nInstead of making units stealthier, RVC slows how quickly AI visually confirm targets that are partially obscured by foliage. AI will still detect, engage, and eventually identify enemies—they simply take longer to build visual confidence when vegetation gets in the way.\n\nFeatures\n\n• Lightweight,…",
   "temTutorial": false,
+  "autor": "CallsignChris",
   "guia": "Realistic Vegetation Concealment (RVC) is a lightweight AI enhancement that simulates the visual uncertainty created by vegetation.\n\nInstead of making units stealthier, RVC slows how quickly AI visually confirm targets that are partially obscured by foliage. AI will still detect, engage, and eventually identify enemies—they simply take longer to build visual confidence when vegetation gets in the way.\n\nFeatures\n\n• Lightweight, group-based AI logic with minimal performance impact.\n• Multiplayer and dedicated server compatible.\n• Supports dynamically spawned AI.\n\nRecommended Mods\n\nFor the best experience, Realistic Vegetation Interaction (RVI) is highly recommended. RVI handles movement through vegetation, while RVC handles how vegetation affects AI perception.\n\nRVC also pairs well with Real Engine Enhanced and LAMBS Danger.fsm (DEV), complementing their AI behavior without overlapping functionality.\n\nRequirements\n\n• CBA_A3\n\nLICENSE\n\nAPL-SA – Arma Public License Share Alike\n\nWhat am I allowed to do?\n✔️ Redistribute this mod in part or whole privately / within a unit, just give credit where it is due.\n✔️ Redistribute this mod in part or whole publicly ONLY with clear credit towards the author and with credits linking to this page.\n❌ You may not use this mod on monetized servers.\n❌ Port this mod in part or whole to games other than ArmA."
  }
 };

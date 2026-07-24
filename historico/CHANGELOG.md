@@ -6,7 +6,16 @@ aqui o que mudou.
 
 ---
 
-## 2026-07-22
+## 2026-07-24
+
+### 🔫 Launcher 0.9.0 — DATABASE de armas estilo Fallout + CALCULADORA de balística (a "inveja da Bohemia")
+- 🎯 **Pedido do operador** (masterplan em **#398**): "fazer algo parecido ou melhor que a wiki de Fallout, que mostra cada arma e o que ela faz — separando todos os tipos — inclusive **como calcular a trajetória da bala**. Quero fazer a Bohemia ter inveja." A Bíblia do Arma 3 ganhou a **8ª aba: "🔫 Armas (database)"**.
+- 📊 **Tabela estilo Fallout, separada por tipo** (`src/data/arma3-armas.js`): **40 armas vanilla** (7 tipos — fuzil de assalto, DMR, sniper & anti-materiel, SMG, LMG/MMG, pistola, lançador) com colunas Variante · Calibre · Vel. de saída · Cadência · Carregador · Modos · Zeroing · DLC · Observações — ordenável, filtrável por chip de tipo e por busca. Rolagem horizontal (não estoura no mobile).
+- 🧮 **Calculadora de trajetória com o MODELO REAL do engine** (`src/utils/arma3-balistica.js`): resolve o MESMO cálculo do jogo — arrasto `airFriction × v²` + gravidade 9.81, por **integração numérica** (não é fórmula fechada). Escolhe a arma e o alvo e devolve: **queda no alvo (cm + mils)**, correção no retículo, **tempo de voo**, **velocidade e energia residual**, **deriva por vento lateral** e o **ângulo de zeragem** — com o **desenho da trajetória** (SVG) cruzando a linha de mira. Cada linha da tabela tem botão 🧮 que carrega a arma na calc.
+- 🧭 **Honestidade mantida**: entram os fatos estáveis (calibre, carregador, modos, cadência, zeroing, DLC); a velocidade/arrasto é de **referência por calibre** (`A3ARM_CALIBRES`/`AIR_FRICTION_REF`, editável na calc), e os **decimais exatos de config (airFriction/hit) + o arsenal modado + as imagens "como no jogo"** virão da **extração local dos PBOs do Drive** — documentado em `docs/HANDOFF-LOCAL.md` (seção D) e no #398, **incluindo as regras de commit** pra sessão local (pedido do operador).
+- 📦 **Coleção (0.8.0) completada**: o raspador terminou — os **113 itens novos** agora com dependências/autor (regenerado `arma3-colecao.js`).
+- 🔄 SW `baluarte-v0.9.0` · app `0.9.0`.
+- ✅ Verificado (Playwright, 15/15): 8 abas, database com 40 armas em 7 tabelas, calculadora produz queda/mils/tempo/energia + SVG da trajetória, trocar arma/alvo/vento recalcula (Mk-I EMR zerado 300 m → −224 cm em 600 m), botão 🧮 da tabela, chips por tipo, busca, deep-link `?aba=armas`, coleção 221 intacta, zero erros.
 
 ### 📖 Launcher 0.8.0 — a MEGA-WIKI do Arma 3: coleção completa (221 itens), enciclopédia e os arquivos reais no Drive
 - 🎯 **Pedido do operador**: "todas as informações sobre tudo dessa coleção… isso sim é uma wiki, tem tudo que eu possa e não possa precisar". A Bíblia do Arma 3 virou a **página única** do jogo no site e no app — agora com **7 abas**.
