@@ -6,6 +6,21 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-24
+
+### 📖 Wiki de Arma 3 (`/wiki-arma3`) — a camada de navegação: capa, índice e artigo por assunto
+- 🎯 **Pedido do operador**: "tudo isso tem que ser visível de uma forma fácil, do mesmo jeito que é fácil ver as coisas complexas e tem imagens… uma mega wiki sobre Arma 3 com tudo explicado tanto para iniciantes quanto para veteranos". O conteúdo já existia (0.8.0), mas morava numa página só de 7 abas — **sem entrada na sidebar** e sem link por assunto.
+- 🧭 **Rota nova `/wiki-arma3`** (entra na sidebar em *Conhecimento*), com três vistas e **deep-link de verdade** (o botão voltar funciona):
+  - **Capa** — 6 portais (Começar a jogar · Mods & instalação · A coleção · Missões & campanhas · Console & comandos · Arquivos & backup) + trilha **iniciante ↔ veterano** + busca global.
+  - **Índice** (`?p=<portal>`) — **grade com capa** ou **tabela ordenável** (estilo wiki de Fallout: miniatura, artigo, categoria, nível, autor), com filtros de categoria e nível cujas contagens acompanham a busca.
+  - **Artigo** (`?a=<id>`) — **infobox lateral** (capa, tipo, categoria, nível, autor, tamanho, id do Workshop, REQUER, DLC, tags), corpo, teclas em `<kbd>`, dicas, bloco SQF com copiar, guia original do autor colapsado e **"veja também"**.
+- 🔗 **Índice unificado** (`src/data/wiki-arma3.js`): **353 artigos** normalizados a partir das 7 fontes já existentes — não duplica conteúdo, só lê (quem escreve continua editando `arma3-vanilla`, `arma3-tutoriais`, etc.). Um item da coleção e o tutorial do **mesmo id do Workshop viram UM artigo**: a capa vem da coleção, a explicação vem do tutorial.
+- 📦 **Coleção atualizada para a nova (id 3770621777): 221 → 237 itens** (+16: Ravage e Ravage: Livonia, DayZ Ravage, Pilgrimage 1/1.951, The Forgotten Few 2, NIArms Core + HK416, Reload action rework CORE/compats, RHSTERRACORE, Gorkas 'n' Gear, Tinter-Furniture, Project Infinite, Eden Objects, Australian Commando Weapon Pack). **Autoria completa: 113 → 237/237** itens com autor creditado.
+- 🩹 Corrigido no caminho: as **tags da Steam** apareciam sem rótulo logo abaixo de "REQUER" na ficha técnica, passando por dependência (o ACE mostrava `CBA_A3, Content Review, x64` — só `CBA_A3` é dependência de verdade).
+- ♻️ `/arma3-tutorial` **intacta** — a capa da wiki linka pra ela como "modo tutorial (abas)".
+
+---
+
 ## 2026-07-22
 
 ### 📖 Launcher 0.8.0 — a MEGA-WIKI do Arma 3: coleção completa (221 itens), enciclopédia e os arquivos reais no Drive
