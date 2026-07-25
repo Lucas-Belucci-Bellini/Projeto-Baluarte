@@ -21,3 +21,7 @@ venv/
 
 # saída das ferramentas locais de extração do Arma 3 (#398)
 scripts/arma3/out/
+
+# ícones extraídos do jogo (gerados por scripts/arma3/extrair-imagens.py).
+# Fora do git até o operador decidir sobre publicar asset da Bohemia no site.
+public/arma3/armas/

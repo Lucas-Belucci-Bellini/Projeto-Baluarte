@@ -2,10 +2,9 @@
 """
 Leitor de PBO (o container de addon do Arma 3) — Python puro, sem dependência.
 
-Existe porque a parte LOCAL da issue #398 precisa abrir os arquivos reais do
-jogo e dos mods (ícones .paa, modelos .p3d, configs) e o Arma 3 Tools oficial
-não está instalado nesta máquina. Formato documentado na BIKI ("PBO File
-Format") e estável desde o Operation Flashpoint.
+Usado pela parte LOCAL da issue #398 pra alcançar os arquivos reais do jogo e
+dos mods (ícones .paa, modelos .p3d). Formato documentado na BIKI ("PBO File
+Format"), estável desde o Operation Flashpoint.
 
   Estrutura:
     [entradas do índice]   nome NUL-terminado + 5×uint32
@@ -17,19 +16,25 @@ Format") e estável desde o Operation Flashpoint.
   packing: 0 → cru · 0x43707273 ('Cprs') → LZSS · 0x456e6372 ('Encr') → cifrado
 
 A primeira entrada costuma ser o cabeçalho de propriedades (nome vazio, packing
-'Vers'), seguido de pares chave/valor NUL-terminados — é de lá que sai o
-`prefix`, o caminho virtual que o jogo usa (ex.: `meumod\addons\armas`).
+'Vers') com pares chave/valor NUL-terminados — de lá sai o `prefix`, o caminho
+virtual que o jogo usa (ex.: `a3\\weapons_f`). É a chave pra resolver um caminho
+de config (`\\A3\\Weapons_F\\Data\\UI\\x_ca.paa`) até o PBO certo.
+
+LEITURA PREGUIÇOSA: só o cabeçalho entra na memória; o conteúdo de cada entrada
+é lido por seek sob demanda. Sem isso, indexar milhares de PBOs (vários com
+GB) seria inviável.
 
 Uso:
     python scripts/arma3/pbo.py list    <arquivo.pbo> [padrão]
     python scripts/arma3/pbo.py extract <arquivo.pbo> <destino> [padrão]
     python scripts/arma3/pbo.py find    <pasta> <padrão> [--limite N]
+    python scripts/arma3/pbo.py index   <pasta> [<pasta>...]
 
-`padrão` é glob simples (fnmatch), casado sem diferenciar maiúsculas:
-    python scripts/arma3/pbo.py find "C:/.../Arma 3/Addons" "*.paa" --limite 20
+`padrão` é glob simples (fnmatch), casado sem diferenciar maiúsculas.
 """
 
 import fnmatch
+import json
 import os
 import struct
 import sys
@@ -38,6 +43,8 @@ PACK_CRU = 0x00000000
 PACK_VERS = 0x56657273   # 'Vers' — entrada de propriedades do cabeçalho
 PACK_LZSS = 0x43707273   # 'Cprs' — comprimido
 PACK_CIFR = 0x456E6372   # 'Encr' — cifrado (não abrimos)
+
+_BLOCO = 1 << 16         # 64 KB por leitura ao varrer o cabeçalho
 
 
 class ErroPBO(Exception):
@@ -88,58 +95,72 @@ def descomprimir_lzss(dados, tamanho_final):
 
 
 class PBO:
-    """Índice de um .pbo já aberto. Os dados só são lidos sob demanda."""
+    """Índice de um .pbo. Só o cabeçalho fica em memória."""
 
     def __init__(self, caminho):
         self.caminho = caminho
         self.propriedades = {}
-        self.entradas = []                          # dicts: nome, packing, orig, tam, offset
-        with open(caminho, 'rb') as f:
-            self._ler_indice(f)
+        self.entradas = []                          # nome, packing, orig, tam, offset
+        self._ler_indice()
 
-    def _ler_indice(self, f):
-        bruto = f.read()
-        i = 0
-        primeira = True
-        while True:
-            fim = bruto.find(b'\0', i)
-            if fim < 0:
-                raise ErroPBO('índice truncado (sem terminador de nome)')
-            nome = bruto[i:fim].decode('cp1252', 'replace')
-            i = fim + 1
-            if i + 20 > len(bruto):
-                raise ErroPBO('índice truncado (sem os 5 campos)')
-            packing, orig, _res, _ts, tam = struct.unpack_from('<5I', bruto, i)
-            i += 20
+    # -- cabeçalho ------------------------------------------------------
+    def _ler_indice(self):
+        with open(self.caminho, 'rb') as f:
+            buf = bytearray(f.read(_BLOCO))
+            i = 0
+            primeira = True
 
-            if nome == '' and packing == PACK_VERS and primeira:
-                # cabeçalho de propriedades: pares chave/valor até string vazia
+            def garantir(n):
+                """Garante n bytes disponíveis a partir de i (lê mais se preciso)."""
+                nonlocal buf
+                while len(buf) - i < n:
+                    extra = f.read(_BLOCO)
+                    if not extra:
+                        return False
+                    buf += extra
+                return True
+
+            def ler_str():
+                nonlocal i
                 while True:
-                    fim = bruto.find(b'\0', i)
-                    chave = bruto[i:fim].decode('cp1252', 'replace'); i = fim + 1
-                    if chave == '':
-                        break
-                    fim = bruto.find(b'\0', i)
-                    valor = bruto[i:fim].decode('cp1252', 'replace'); i = fim + 1
-                    self.propriedades[chave.lower()] = valor
+                    fim = buf.find(b'\0', i)
+                    if fim >= 0:
+                        s = buf[i:fim].decode('cp1252', 'replace')
+                        i = fim + 1
+                        return s
+                    if not garantir(len(buf) - i + 1):
+                        raise ErroPBO('cabeçalho truncado (sem terminador)')
+
+            while True:
+                nome = ler_str()
+                if not garantir(20):
+                    raise ErroPBO('cabeçalho truncado (sem os 5 campos)')
+                packing, orig, _res, _ts, tam = struct.unpack_from('<5I', buf, i)
+                i += 20
+
+                if nome == '' and packing == PACK_VERS and primeira:
+                    while True:                     # pares chave/valor até string vazia
+                        chave = ler_str()
+                        if chave == '':
+                            break
+                        self.propriedades[chave.lower()] = ler_str()
+                    primeira = False
+                    continue
+
                 primeira = False
-                continue
+                if nome == '' and tam == 0:
+                    break                           # fim do índice
+                self.entradas.append({
+                    'nome': nome.replace('\\', '/'),
+                    'packing': packing, 'orig': orig, 'tam': tam, 'offset': 0
+                })
 
-            primeira = False
-            if nome == '' and tam == 0:
-                break                               # fim do índice
-            self.entradas.append({
-                'nome': nome.replace('\\', '/'),
-                'packing': packing, 'orig': orig, 'tam': tam, 'offset': 0
-            })
+            pos = i                                 # os blobs começam aqui
+            for e in self.entradas:
+                e['offset'] = pos
+                pos += e['tam']
 
-        # os blobs começam logo após o índice, na ordem das entradas
-        pos = i
-        for e in self.entradas:
-            e['offset'] = pos
-            pos += e['tam']
-        self._bruto = bruto
-
+    # -- acesso ---------------------------------------------------------
     @property
     def prefixo(self):
         return self.propriedades.get('prefix', '')
@@ -150,20 +171,60 @@ class PBO:
         p = padrao.lower()
         return [e for e in self.entradas if fnmatch.fnmatch(e['nome'].lower(), p)]
 
+    def achar(self, caminho_interno):
+        """Acha uma entrada pelo caminho interno (sem o prefixo), sem case."""
+        alvo = caminho_interno.replace('\\', '/').lower().lstrip('/')
+        for e in self.entradas:
+            if e['nome'].lower() == alvo:
+                return e
+        return None
+
     def ler(self, entrada):
-        """Devolve os bytes já descomprimidos de uma entrada."""
+        """Bytes já descomprimidos de uma entrada (nome ou dict)."""
         if isinstance(entrada, str):
-            alvo = entrada.replace('\\', '/').lower()
-            achou = [e for e in self.entradas if e['nome'].lower() == alvo]
-            if not achou:
+            achado = self.achar(entrada)
+            if not achado:
                 raise ErroPBO(f'entrada não encontrada: {entrada}')
-            entrada = achou[0]
-        dados = self._bruto[entrada['offset']:entrada['offset'] + entrada['tam']]
+            entrada = achado
         if entrada['packing'] == PACK_CIFR:
             raise ErroPBO(f"entrada cifrada (não suportado): {entrada['nome']}")
+        with open(self.caminho, 'rb') as f:
+            f.seek(entrada['offset'])
+            dados = f.read(entrada['tam'])
         if entrada['packing'] == PACK_LZSS and entrada['orig'] and entrada['orig'] != entrada['tam']:
             return descomprimir_lzss(dados, entrada['orig'])
         return dados
+
+
+def indexar(raizes, quieto=False):
+    """Varre árvores de .pbo e devolve {prefixo_minusculo: caminho_do_pbo}.
+
+    O prefixo é o que liga um caminho de config ao arquivo real: o config diz
+    `\\A3\\Weapons_F\\Data\\UI\\x_ca.paa` e o PBO com prefixo `a3\\weapons_f`
+    é quem tem `Data/UI/x_ca.paa` dentro."""
+    indice = {}
+    lidos = falhas = 0
+    for raiz in raizes:
+        if not os.path.isdir(raiz):
+            continue
+        for base, _dirs, arqs in os.walk(raiz):
+            for a in arqs:
+                if not a.lower().endswith('.pbo'):
+                    continue
+                caminho = os.path.join(base, a)
+                try:
+                    pbo = PBO(caminho)
+                except Exception:
+                    falhas += 1
+                    continue
+                lidos += 1
+                pref = (pbo.prefixo or '').replace('/', '\\').lower().strip('\\')
+                if pref and pref not in indice:
+                    indice[pref] = caminho
+    if not quieto:
+        print(f'# {lidos} pbos lidos, {len(indice)} prefixos, {falhas} ilegíveis',
+              file=sys.stderr)
+    return indice
 
 
 def _humano(n):
@@ -175,8 +236,7 @@ def _humano(n):
 
 def cmd_list(argv):
     pbo = PBO(argv[0])
-    padrao = argv[1] if len(argv) > 1 else None
-    itens = pbo.listar(padrao)
+    itens = pbo.listar(argv[1] if len(argv) > 1 else None)
     print(f'# {os.path.basename(pbo.caminho)}  prefixo={pbo.prefixo!r}  '
           f'{len(itens)} de {len(pbo.entradas)} entradas')
     for e in itens:
@@ -206,16 +266,11 @@ def cmd_extract(argv):
 
 
 def cmd_find(argv):
-    """Varre uma árvore de .pbo procurando entradas que casem com o padrão."""
     if len(argv) < 2:
         raise SystemExit('uso: find <pasta> <padrão> [--limite N]')
     raiz, padrao = argv[0], argv[1]
-    limite = 50
-    if '--limite' in argv:
-        limite = int(argv[argv.index('--limite') + 1])
-
-    achados = 0
-    lidos = 0
+    limite = int(argv[argv.index('--limite') + 1]) if '--limite' in argv else 50
+    achados = lidos = 0
     for base, _dirs, arqs in os.walk(raiz):
         for a in arqs:
             if not a.lower().endswith('.pbo'):
@@ -223,7 +278,7 @@ def cmd_find(argv):
             caminho = os.path.join(base, a)
             try:
                 pbo = PBO(caminho)
-            except Exception as err:                # PBO quebrado não derruba a varredura
+            except Exception as err:
                 print(f'! {a}: {err}', file=sys.stderr)
                 continue
             lidos += 1
@@ -236,19 +291,19 @@ def cmd_find(argv):
     print(f'--- {achados} entradas em {lidos} pbos')
 
 
+def cmd_index(argv):
+    print(json.dumps(indexar(argv), ensure_ascii=False, indent=1))
+
+
 def main():
     if len(sys.argv) < 3:
         print(__doc__)
         raise SystemExit(1)
     cmd, argv = sys.argv[1], sys.argv[2:]
-    if cmd == 'list':
-        cmd_list(argv)
-    elif cmd == 'extract':
-        cmd_extract(argv)
-    elif cmd == 'find':
-        cmd_find(argv)
-    else:
+    acoes = {'list': cmd_list, 'extract': cmd_extract, 'find': cmd_find, 'index': cmd_index}
+    if cmd not in acoes:
         raise SystemExit(f'comando desconhecido: {cmd}')
+    acoes[cmd](argv)
 
 
 if __name__ == '__main__':
