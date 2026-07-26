@@ -44,6 +44,45 @@ SAIDA = os.path.join(RAIZ, 'scripts', 'arma3', 'out', 'arma3-veiculos.json')
 # Numeração de side do config do Arma 3
 LADO = {0: 'OPFOR', 1: 'BLUFOR', 2: 'Independente', 3: 'Civil'}
 
+# CfgVehicles guarda TUDO que o editor posiciona: prédio, ruína, caixa de
+# munição, módulo e prop entram junto com os veículos. Sem separar isso, dizer
+# "24.261 veículos" seria enganoso — a maioria é cenário.
+#
+# Os tokens abaixo saíram da cadeia de herança REAL do dump (as bases mais
+# frequentes entre os 24.261 registros), não de memória. A ordem de busca é a
+# da própria herança (pai imediato -> raiz), então o primeiro token que casa é
+# sempre o mais específico: um tanque bate em `tank_f` antes de `landvehicle`.
+CLASSE_VEICULO = {
+    'tank': 'blindado', 'tank_f': 'blindado',
+    'car': 'terrestre', 'car_f': 'terrestre', 'truck_f': 'terrestre',
+    'motorcycle': 'terrestre', 'landvehicle': 'terrestre',
+    'helicopter': 'aereo', 'plane': 'aereo', 'plane_base_f': 'aereo',
+    'air': 'aereo',
+    'ship': 'naval', 'ship_f': 'naval', 'boat_f': 'naval',
+    'staticweapon': 'estatico',
+    'reammobox': 'caixa', 'reammobox_f': 'caixa',
+    'weaponholder': 'suporteDeItem',
+    'module_f': 'modulo', 'logic': 'modulo',
+    'ruins': 'estrutura', 'wall': 'estrutura', 'wall_f': 'estrutura',
+    'house': 'estrutura', 'housebase': 'estrutura', 'house_f': 'estrutura',
+    'house_small_f': 'estrutura', 'building': 'estrutura',
+    'nonstrategic': 'estrutura', 'strategic': 'estrutura', 'static': 'estrutura',
+    'thing': 'objeto', 'thingx': 'objeto',
+}
+
+# As que contam como veículo de verdade pra tabela da wiki
+CLASSES_VEICULO_REAL = {'blindado', 'terrestre', 'aereo', 'naval', 'estatico'}
+
+
+def classe_veiculo(heranca):
+    """INFERIDO da cadeia de herança real do config. None quando nenhuma base
+    conhecida aparece — nunca um chute."""
+    for b in heranca or []:
+        c = CLASSE_VEICULO.get(b.lower())
+        if c:
+            return c
+    return None
+
 
 def achar_rpt():
     base = os.path.join(os.environ.get('LOCALAPPDATA', ''), 'Arma 3')
@@ -247,6 +286,8 @@ def main():
         v['armas'] = lista(v.pop('_armas'))
         v['carregadores'] = lista(v.pop('_mags'))
         v['hitpoints'] = parse_hp(v.pop('_hp')) or None
+        v['classeVeiculo'] = classe_veiculo(v['heranca'])
+        v['ehVeiculo'] = v['classeVeiculo'] in CLASSES_VEICULO_REAL
     for s in sold.values():
         s['armas'] = lista(s.pop('_armas'))
         s['carregadores'] = lista(s.pop('_mags'))
@@ -262,7 +303,10 @@ def main():
     with open(SAIDA, 'w', encoding='utf-8') as f:
         json.dump(saida, f, ensure_ascii=False, indent=1)
 
-    print(f'\nveículos ....... {len(veic)}')
+    reais = [v for v in veic.values() if v['ehVeiculo']]
+    print(f'\nregistros CfgVehicles ... {len(veic)}')
+    print(f'  VEÍCULO de verdade .... {len(reais)}')
+    print(f'  cenário/caixa/módulo .. {len(veic) - len(reais)}')
     print(f'soldados ....... {len(sold)}')
     print(f'facções ........ {len(facs)}')
     if fim and len(fim) >= 4:
@@ -279,19 +323,20 @@ def main():
     print(f'\ncom imagem no config: {com_img} de {len(veic)}')
     print(f'sem armor declarado: {sem_armor} (ficam null, não zero)')
 
-    porcat = {}
+    porclasse = {}
     for v in veic.values():
-        k = v['categoriaEditor'] or '?'
-        porcat[k] = porcat.get(k, 0) + 1
-    print('\npor categoria do editor (campo real do config):')
-    for k, n in sorted(porcat.items(), key=lambda x: -x[1])[:14]:
-        print(f'  {k:22} {n}')
+        k = v['classeVeiculo'] or '?'
+        porclasse[k] = porclasse.get(k, 0) + 1
+    print('\npor classe (INFERIDA da herança do config):')
+    for k, n in sorted(porclasse.items(), key=lambda x: -x[1]):
+        marca = ' <- veiculo' if k in CLASSES_VEICULO_REAL else ''
+        print(f'  {k:16} {n}{marca}')
 
     porlado = {}
-    for v in veic.values():
+    for v in reais:
         k = v['lado'] or '?'
         porlado[k] = porlado.get(k, 0) + 1
-    print('\nveículos por lado:')
+    print('\nveículos de verdade por lado:')
     for k, n in sorted(porlado.items(), key=lambda x: -x[1]):
         print(f'  {k:14} {n}')
     print(f'\nescrito: {SAIDA}')

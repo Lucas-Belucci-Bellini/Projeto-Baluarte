@@ -42,8 +42,20 @@ LIMITE_LOG = 1012
 RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SAIDA = os.path.join(RAIZ, 'scripts', 'arma3', 'out', 'arma3-itens.json')
 
-# Confirmados no config real dos addons (characters_f / weapons_f de-rapificados)
-TIPO_ITEMINFO = {801: 'uniforme', 701: 'colete', 605: 'capacete', 616: 'nvg'}
+# Confirmados por EVIDÊNCIA, não de memória. Os quatro primeiros vieram do
+# config de addon de-rapificado (characters_f / weapons_f); os outros saíram do
+# cruzamento tipo x cadeia de herança nos 67.368 itens do dump real — 201 casa
+# 1:1 com quem herda de base de óptica, 101 com muzzle_snds_*, 301 com
+# acc_pointer_IR, 621 com uavterminal_base.
+#
+# 302 fica GENÉRICO de propósito: nos dados reais ele mistura bipé
+# (rhsusf_acc_harris_bipod), grip, pointer e item avulso (CBA_MiscItem). De
+# memória eu teria chamado 302 de "bipé" e estaria errado na maioria dos casos.
+TIPO_ITEMINFO = {
+    801: 'uniforme', 701: 'colete', 605: 'capacete', 616: 'nvg',
+    201: 'mira', 101: 'silenciador', 301: 'laser', 302: 'acessorio',
+    621: 'terminalUAV',
+}
 
 # Bases da engine — a herança é o sinal confiável pros acessórios
 BASE_CATEGORIA = [
@@ -111,13 +123,20 @@ def texto(s):
 def categoria(item):
     """INFERIDO. Número verificado primeiro; depois a cadeia de herança;
     por último a forma do próprio registro. Sem chute de constante."""
+    chain = [b.lower() for b in item.get('heranca') or []]
+    # binóculo e telêmetro compartilham o type 616 com os NVG: a herança é o
+    # único jeito de separar os dois, então ela vem ANTES do número aqui
+    if ('rangefinder' in chain or 'binocular' in chain) and 'nvgoggles' not in chain:
+        return 'binoculo'
     t = item.get('itemInfoType')
     if t is not None and int(t) in TIPO_ITEMINFO:
         return TIPO_ITEMINFO[int(t)]
-    chain = [b.lower() for b in item.get('heranca') or []]
     for base, cat in BASE_CATEGORIA:
         if base in chain:
             return cat
+    # lançadores de veículo caem no dump porque o `type` deles não é 1/2/4
+    if any(x in chain for x in ('launchercore', 'missilelauncher', 'rocketpods')):
+        return 'armaDeVeiculo'
     if item.get('oticas'):
         return 'mira'
     if item.get('coefSilenciador'):
