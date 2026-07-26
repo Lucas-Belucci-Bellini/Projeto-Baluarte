@@ -197,11 +197,15 @@ class PBO:
 
 
 def indexar(raizes, quieto=False):
-    """Varre árvores de .pbo e devolve {prefixo_minusculo: caminho_do_pbo}.
+    """Varre árvores de .pbo e devolve {prefixo_minusculo: [caminhos_de_pbo]}.
 
     O prefixo é o que liga um caminho de config ao arquivo real: o config diz
     `\\A3\\Weapons_F\\Data\\UI\\x_ca.paa` e o PBO com prefixo `a3\\weapons_f`
-    é quem tem `Data/UI/x_ca.paa` dentro."""
+    é quem tem `Data/UI/x_ca.paa` dentro.
+
+    É uma LISTA por prefixo de propósito: mods dividem o conteúdo em vários
+    PBOs que declaram o MESMO prefixo (um com os modelos, outro com as
+    texturas). Guardar só o primeiro deixava ~1000 armas sem ícone."""
     indice = {}
     lidos = falhas = 0
     for raiz in raizes:
@@ -219,8 +223,8 @@ def indexar(raizes, quieto=False):
                     continue
                 lidos += 1
                 pref = (pbo.prefixo or '').replace('/', '\\').lower().strip('\\')
-                if pref and pref not in indice:
-                    indice[pref] = caminho
+                if pref:
+                    indice.setdefault(pref, []).append(caminho)
     if not quieto:
         print(f'# {lidos} pbos lidos, {len(indice)} prefixos, {falhas} ilegíveis',
               file=sys.stderr)
