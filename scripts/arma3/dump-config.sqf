@@ -13,7 +13,16 @@ private _fnc_lim = {
 
 private _fnc_num = { _this toFixed 6 };
 
-diag_log text "<<A3DUMP>>INICIO|v1";
+private _fnc_pedacos = {
+    params ["_marca", "_classe", "_texto"];
+    while { count _texto > 0 } do {
+        private _p = _texto select [0, 700];
+        diag_log text (format ["<<A3DUMP>>%1|%2|%3", _marca, _classe, _p]);
+        _texto = _texto select [700];
+    };
+};
+
+diag_log text "<<A3DUMP>>INICIO|v2";
 
 private _armas = "
     (getNumber (_x >> 'scope') >= 2) &&
@@ -25,6 +34,7 @@ private _nArmas = 0;
 
 {
     private _cfg = _x;
+    private _classe = configName _cfg;
 
     private _mags = (getArray (_cfg >> "magazines") select { _x isEqualType "" }) apply { toLower _x };
     { if !(_x in _magsUsados) then { _magsUsados pushBack _x } } forEach _mags;
@@ -44,20 +54,29 @@ private _nArmas = 0;
         };
     } forEach (getArray (_cfg >> "modes") select { _x isEqualType "" });
 
-    diag_log text (format ["<<A3DUMP>>W|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12",
-        configName _cfg,
+    private _desc = (getText (_cfg >> "descriptionShort")) call _fnc_lim;
+    if (count _desc > 90) then { _desc = _desc select [0, 90] };
+
+    diag_log text (format ["<<A3DUMP>>W|%1|%2|%3|%4|%5|%6|%7|%8",
+        _classe,
         (getText (_cfg >> "displayName")) call _fnc_lim,
         getNumber (_cfg >> "type"),
         (configSourceMod _cfg) call _fnc_lim,
-        (getText (_cfg >> "picture")) call _fnc_lim,
-        (getText (_cfg >> "model")) call _fnc_lim,
         (getNumber (_cfg >> "WeaponSlotsInfo" >> "mass")) call _fnc_num,
         getNumber (_cfg >> "maxZeroing"),
         (getNumber (_cfg >> "initSpeed")) call _fnc_num,
-        _mags joinString ";",
-        _modosTxt joinString ";",
-        (getText (_cfg >> "descriptionShort")) call _fnc_lim
+        _desc
     ]);
+
+    diag_log text (format ["<<A3DUMP>>WP|%1|%2|%3",
+        _classe,
+        (getText (_cfg >> "picture")) call _fnc_lim,
+        (getText (_cfg >> "model")) call _fnc_lim
+    ]);
+
+    ["WM", _classe, _mags joinString ";"] call _fnc_pedacos;
+    ["WF", _classe, _modosTxt joinString ";"] call _fnc_pedacos;
+
     _nArmas = _nArmas + 1;
 } forEach _armas;
 
@@ -88,7 +107,7 @@ private _nAmmo = 0;
 {
     private _cfg = configFile >> "CfgAmmo" >> _x;
     if (isClass _cfg) then {
-        diag_log text (format ["<<A3DUMP>>A|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11|%12",
+        diag_log text (format ["<<A3DUMP>>A|%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11",
             configName _cfg,
             (getNumber (_cfg >> "hit")) call _fnc_num,
             (getNumber (_cfg >> "indirectHit")) call _fnc_num,
@@ -99,8 +118,7 @@ private _nAmmo = 0;
             getNumber (_cfg >> "explosive"),
             getNumber (_cfg >> "deflecting"),
             getNumber (_cfg >> "visibleFire"),
-            getNumber (_cfg >> "audibleFire"),
-            (getText (_cfg >> "model")) call _fnc_lim
+            getNumber (_cfg >> "audibleFire")
         ]);
         _nAmmo = _nAmmo + 1;
     };
@@ -109,7 +127,7 @@ private _nAmmo = 0;
 private _dt = diag_tickTime - _t0;
 diag_log text (format ["<<A3DUMP>>FIM|%1|%2|%3|%4", _nArmas, _nMags, _nAmmo, _dt toFixed 1]);
 
-private _msg = format ["DUMP OK em %1 s - %2 armas, %3 carregadores, %4 municoes. Feche o jogo e rode: python scripts/arma3/parse-dump.py",
+private _msg = format ["DUMP OK em %1 s - %2 armas, %3 carregadores, %4 municoes. Rode: python scripts/arma3/parse-dump.py",
     _dt toFixed 1, _nArmas, _nMags, _nAmmo];
 hint _msg;
 systemChat _msg;

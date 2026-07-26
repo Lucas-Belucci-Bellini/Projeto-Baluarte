@@ -10,6 +10,16 @@ Fluxo (issue #398, parte LOCAL):
 Sem argumento, acha sozinho o .rpt mais recente em %LOCALAPPDATA%\\Arma 3 que
 contenha um dump completo. Passe um caminho pra forçar outro arquivo.
 
+FORMATO v2 — o registro de arma vem quebrado em linhas curtas de propósito: o
+diag_log do jogo trunca em 1012 caracteres, e na v1 isso comia 11% das armas em
+silêncio (as com muitos carregadores compatíveis). Agora:
+    W |classe|nome|tipo|fonte|massa|zeroing|initSpeed|desc
+    WP|classe|picture|model
+    WM|classe|<carregadores>      (em pedaços; concatenados na ordem do log)
+    WF|classe|<modos de tiro>     (idem)
+    M |classe|nome|ammo|count|initSpeed|massa|fonte
+    A |classe|hit|indHit|indRange|caliber|airFriction|typicalSpeed|expl|defl|vis|aud
+
 Honestidade (regra da #398): tudo aqui é valor lido do config do jogo em
 execução — nada é estimado. O único campo inferido é `tipoSugerido`, marcado
 como tal, porque "fuzil x DMR x sniper" é classificação editorial, não config.
@@ -20,6 +30,7 @@ import os
 import sys
 
 MARCA = '<<A3DUMP>>'
+LIMITE_LOG = 1012          # onde o .rpt corta; serve de alarme de truncamento
 RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SAIDA = os.path.join(RAIZ, 'scripts', 'arma3', 'out', 'arma3-config.json')
 
@@ -41,13 +52,15 @@ def achar_rpt():
         except OSError:
             continue
         if MARCA in txt:
-            cands.append((MARCA + 'FIM' in txt, os.path.getmtime(p), p))
+            # prioriza dump v2, depois dump completo, depois o mais recente
+            cands.append((MARCA + 'INICIO|v2' in txt, MARCA + 'FIM' in txt,
+                          os.path.getmtime(p), p))
     if not cands:
         raise SystemExit(
             'nenhum .rpt com dump encontrado.\n'
             'Rode o scripts/arma3/dump-config.sqf no debug console do jogo primeiro.')
-    cands.sort(reverse=True)          # 1º os que terminaram (FIM), depois o mais novo
-    return cands[0][2]
+    cands.sort(reverse=True)
+    return cands[0][3]
 
 
 def num(s, padrao=0.0):
@@ -111,50 +124,72 @@ def sugerir_tipo(arma, mag, ammo):
     return 'fuzil'
 
 
-def main():
-    caminho = sys.argv[1] if len(sys.argv) > 1 else achar_rpt()
-    print(f'lendo: {caminho}')
-
+def ler_rpt(caminho):
+    """Devolve (armas, mags, ammos, fim, truncadas, versao)."""
     armas, mags, ammos = {}, {}, {}
-    fim = None
+    fim, versao, truncadas = None, None, 0
+
     with open(caminho, encoding='cp1252', errors='replace') as f:
         for linha in f:
             i = linha.find(MARCA)
             if i < 0:
                 continue
             corpo = linha[i + len(MARCA):].rstrip('\n\r "')
+            if len(corpo) >= LIMITE_LOG:
+                truncadas += 1
             tipo, _, resto = corpo.partition('|')
             c = resto.split('|')
 
-            if tipo == 'W' and len(c) >= 12:
+            if tipo == 'INICIO':
+                versao = c[0] if c else '?'
+            elif tipo == 'W' and len(c) >= 8:
                 armas[c[0]] = {
                     'classe': c[0], 'nome': c[1], 'tipo': int(num(c[2])),
                     'tipoNome': TIPO_ARMA.get(int(num(c[2])), '?'),
-                    'fonte': c[3], 'picture': c[4], 'model': c[5],
-                    'massa': limpo(num(c[6])), 'maxZeroing': int(num(c[7])),
-                    'initSpeedArma': limpo(num(c[8])),
-                    'magazines': [m for m in c[9].split(';') if m],
-                    'modos': parse_modos(c[10]),
-                    'descricao': c[11],
+                    'fonte': c[3], 'massa': limpo(num(c[4])),
+                    'maxZeroing': int(num(c[5])), 'initSpeedArma': limpo(num(c[6])),
+                    'descricao': c[7],
+                    'picture': '', 'model': '', '_mags': '', '_modos': '',
                 }
+            elif tipo == 'WP' and len(c) >= 3 and c[0] in armas:
+                armas[c[0]]['picture'] = c[1]
+                armas[c[0]]['model'] = c[2]
+            elif tipo == 'WM' and len(c) >= 2 and c[0] in armas:
+                armas[c[0]]['_mags'] += c[1]          # pedaços na ordem do log
+            elif tipo == 'WF' and len(c) >= 2 and c[0] in armas:
+                armas[c[0]]['_modos'] += c[1]
             elif tipo == 'M' and len(c) >= 7:
                 mags[c[0].lower()] = {
                     'classe': c[0], 'nome': c[1], 'ammo': c[2],
                     'count': int(num(c[3])), 'initSpeed': limpo(num(c[4])),
                     'massa': limpo(num(c[5])), 'fonte': c[6],
                 }
-            elif tipo == 'A' and len(c) >= 12:
+            elif tipo == 'A' and len(c) >= 11:
                 ammos[c[0].lower()] = {
                     'classe': c[0], 'hit': limpo(num(c[1])),
                     'indirectHit': limpo(num(c[2])), 'indirectHitRange': limpo(num(c[3])),
                     'caliber': limpo(num(c[4])), 'airFriction': limpo(num(c[5])),
                     'typicalSpeed': limpo(num(c[6])), 'explosivo': bool(num(c[7])),
                     'ricochete': bool(num(c[8])), 'visibleFire': limpo(num(c[9])),
-                    'audibleFire': limpo(num(c[10])), 'model': c[11],
+                    'audibleFire': limpo(num(c[10])),
                 }
             elif tipo == 'FIM':
                 fim = c
 
+    return armas, mags, ammos, fim, truncadas, versao
+
+
+def main():
+    caminho = sys.argv[1] if len(sys.argv) > 1 else achar_rpt()
+    print(f'lendo: {caminho}')
+
+    armas, mags, ammos, fim, truncadas, versao = ler_rpt(caminho)
+
+    if versao != 'v2':
+        raise SystemExit(
+            f'esse .rpt é de um dump {versao or "antigo"}, e o formato mudou.\n'
+            'Rode o dump de novo no jogo com o scripts/arma3/dump-config.sqf atual\n'
+            '(a v1 perdia 11% das armas por truncamento do log).')
     if not armas:
         raise SystemExit('o arquivo tem a marca do dump mas nenhuma arma foi lida — '
                          'o script rodou até o fim no jogo?')
@@ -162,6 +197,9 @@ def main():
     # --- resolve cada arma: carregador padrão -> munição -> balística ---
     sem_balistica = 0
     for a in armas.values():
+        a['magazines'] = [m for m in a.pop('_mags').split(';') if m]
+        a['modos'] = parse_modos(a.pop('_modos'))
+
         mag = next((mags[m] for m in a['magazines'] if m in mags), None)
         ammo = ammos.get(mag['ammo'].lower()) if mag else None
         a['carregadorPadrao'] = mag['classe'] if mag else None
@@ -198,7 +236,14 @@ def main():
     print(f'carregadores ... {len(mags)}')
     print(f'munições ....... {len(ammos)}')
     if fim and len(fim) >= 4:
+        contadas = int(num(fim[0]))
         print(f'(o jogo contou {fim[0]}/{fim[1]}/{fim[2]} em {fim[3]}s)')
+        if contadas != len(armas):
+            print(f'  ATENÇÃO: {contadas - len(armas)} armas do jogo não chegaram aqui')
+    if truncadas:
+        print(f'  ATENÇÃO: {truncadas} linhas bateram no limite de {LIMITE_LOG} '
+              f'caracteres do log e podem estar cortadas')
+
     print(f'\nsem balística completa: {sem_balistica} '
           f'({100 * sem_balistica // max(len(armas), 1)}%)')
 
@@ -211,7 +256,7 @@ def main():
         print(f'  {t:10} {n}')
     print('\ntop 12 fontes (mod/DLC):')
     for m, n in sorted(porfonte.items(), key=lambda x: -x[1])[:12]:
-        print(f'  {m:22} {n}')
+        print(f'  {m:38} {n}')
     print(f'\nescrito: {SAIDA}')
 
 
