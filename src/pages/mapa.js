@@ -13,6 +13,7 @@
 
 import '../styles/mapa.css';
 import { h } from '../utils/helpers.js';
+import { estiloMapLibre, CAMADAS_BASE } from '../data/camadas-mapa.js';
 
 /* ── Endpoints ── */
 const OPENSKY = 'https://opensky-network.org/api/states/all';
@@ -20,12 +21,6 @@ const RAINVIEWER = 'https://api.rainviewer.com/public/weather-maps.json';
 const OPENMETEO = 'https://api.open-meteo.com/v1/forecast';
 const AIS_DIGITRAFFIC = 'https://meri.digitraffic.fi/api/ais/v1/locations';
 const CABOS = 'https://www.submarinecablemap.com/api/v3/cable/cable-geo.json';
-
-/* Data de ontem (UTC) — imagem de satélite NASA GIBS mais recente disponível. */
-function gibsDate() {
-  const d = new Date(Date.now() - 36 * 3600 * 1000);
-  return d.toISOString().slice(0, 10);
-}
 
 /* ── Estado do módulo ── */
 let _map = null;
@@ -60,71 +55,13 @@ function loadMapLibre() {
   });
 }
 
-/* ── Estilo base com múltiplas fontes ── */
+/* ── Estilo base com múltiplas fontes ──
+ * As fontes de tile saem de src/data/camadas-mapa.js, que é COMPARTILHADO com
+ * o Project Vanguard (API idêntica nos dois repos, como o helpers.js). Antes
+ * a lista morava aqui dentro; o Vanguard tinha a dele, com 3 camadas em vez
+ * de 7, e as duas já divergiam. Agora acrescentar camada num vale nos dois. */
 function buildStyle() {
-  return {
-    version: 8,
-    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-    sources: {
-      sat: {
-        type: 'raster', tileSize: 256, maxzoom: 22,
-        tiles: [
-          'https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-          'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-          'https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-          'https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-        ],
-        attribution: '© Google'
-      },
-      labels: {
-        type: 'raster', tileSize: 256, maxzoom: 20,
-        tiles: [
-          'https://cartodb-basemaps-a.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png',
-          'https://cartodb-basemaps-b.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png',
-          'https://cartodb-basemaps-c.global.ssl.fastly.net/dark_only_labels/{z}/{x}/{y}.png'
-        ],
-        attribution: '© CARTO'
-      },
-      gibs: {
-        type: 'raster', tileSize: 256, maxzoom: 9,
-        tiles: [`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${gibsDate()}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`],
-        attribution: '© NASA GIBS / MODIS Terra'
-      },
-      dark: {
-        type: 'raster', tileSize: 256, maxzoom: 19,
-        tiles: [
-          'https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
-          'https://cartodb-basemaps-b.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
-          'https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'
-        ],
-        attribution: '© CARTO'
-      },
-      terreno: {
-        type: 'raster', tileSize: 256, maxzoom: 18,
-        tiles: ['https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'.replace('{s}', 'a')],
-        attribution: '© OpenTopoMap'
-      },
-      'dem': {
-        type: 'raster-dem', tileSize: 256, maxzoom: 15, encoding: 'terrarium',
-        tiles: ['https://elevation-tiles-prod.s3.amazonaws.com/terrarium/{z}/{x}/{y}.png']
-      },
-      gebco: {
-        type: 'raster', tileSize: 256,
-        tiles: ['https://wms.gebco.net/mapserv?request=GetMap&service=WMS&version=1.3.0&layers=GEBCO_LATEST&styles=&format=image/png&transparent=true&crs=EPSG:3857&width=256&height=256&bbox={bbox-epsg-3857}'],
-        attribution: '© GEBCO'
-      }
-    },
-    layers: [
-      { id: 'base-dark', type: 'raster', source: 'dark', layout: { visibility: 'none' } },
-      { id: 'base-terreno', type: 'raster', source: 'terreno', layout: { visibility: 'none' } },
-      { id: 'base-sat', type: 'raster', source: 'sat' },
-      { id: 'gibs-layer', type: 'raster', source: 'gibs', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.85 } },
-      { id: 'gebco-layer', type: 'raster', source: 'gebco', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.7 } },
-      { id: 'hillshade', type: 'hillshade', source: 'dem', layout: { visibility: 'none' }, paint: { 'hillshade-exaggeration': 0.5 } },
-      { id: 'labels-layer', type: 'raster', source: 'labels', layout: { visibility: 'visible' } }
-    ],
-    terrain: undefined
-  };
+  return estiloMapLibre({ base: 'sat', overlays: ['labels'] });
 }
 
 /* ════════════════════════════════════
@@ -454,29 +391,30 @@ export function mapaPage() {
 
   const refs = { air, naval, temp, radar, statusEl, coordEl, counts: { air: 0, naval: 0 } };
 
-  /* Base layer radios */
-  let base = 'sat';
+  /* Base layer radios — a lista vem do catálogo compartilhado, então camada
+   * nova em camadas-mapa.js aparece aqui sozinha, sem editar esta função. */
+  const ICONE_BASE = { sat: '🛰', dark: '◗', terreno: '⛰', imagery: '🌍' };
+  let base = (CAMADAS_BASE.find((c) => c.padrao) || CAMADAS_BASE[0]).id;
   function setBase(b) {
     base = b;
     if (!_map) return;
-    setVis(_map, ['base-sat'], b === 'sat');
-    setVis(_map, ['base-dark'], b === 'dark');
-    setVis(_map, ['base-terreno'], b === 'terreno');
+    CAMADAS_BASE.forEach((c) => setVis(_map, [`base-${c.id}`], c.id === b));
     /* Rótulos: úteis sobre satélite/terreno (modo híbrido); o tático escuro já tem rótulos. */
     const showLabels = labels.checked && b !== 'dark';
     setVis(_map, ['labels-layer'], showLabels);
   }
 
   const baseBtns = h('div', { className: 'mapa-base-group' },
-    ...[['sat', '🛰 Satélite'], ['dark', '◗ Tático'], ['terreno', '⛰ Terreno']].map(([id, label]) =>
+    ...CAMADAS_BASE.map((c) =>
       h('button', {
-        className: `mapa-base-btn${id === 'sat' ? ' is-active' : ''}`,
+        className: `mapa-base-btn${c.id === base ? ' is-active' : ''}`,
+        title: c.desc,
         onclick: (e) => {
           document.querySelectorAll('.mapa-base-btn').forEach(b => b.classList.remove('is-active'));
           e.currentTarget.classList.add('is-active');
-          setBase(id);
+          setBase(c.id);
         }
-      }, label)
+      }, `${ICONE_BASE[c.id] || '▣'} ${c.nome}`)
     )
   );
 

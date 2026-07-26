@@ -14,21 +14,66 @@
 
 const G = 9.81;
 
+/**
+ * Os números de tiro de uma arma, com a procedência declarada.
+ *
+ * Desde a extração da #398 cada arma traz o `v0` e o `airFriction` MEDIDOS no
+ * config do jogo — é o que esta função devolve. O fallback por calibre só
+ * entra quando a arma não tem o dado, e vem marcado como `fonte: 'referencia'`
+ * pra tela poder dizer que aquele número é estimado.
+ *
+ * Devolve `null` quando o modelo não se aplica. Isso não é frescura: no config
+ * do Arma, foguete e míssil têm `airFriction` POSITIVO e `v0` de ejeção
+ * (~30 m/s), porque seguem outro modelo de voo — o projétil acelera depois de
+ * sair do tubo. Jogar esse par no integrador abaixo (que assume arrasto, isto
+ * é, `airFriction < 0`) produziria uma bala GANHANDO velocidade e uma
+ * "trajetória" que não existe. Melhor recusar do que desenhar ficção.
+ */
+export function dadosBalisticos(arma) {
+  if (!arma) return null;
+  if (arma.balistico === false) return null;
+
+  const v0 = arma.v0;
+  const af = arma.airFriction;
+  if (typeof v0 === 'number' && v0 > 0 && typeof af === 'number' && af < 0) {
+    return { initSpeed: v0, airFriction: af, fonte: 'config' };
+  }
+
+  const ref = AIR_FRICTION_REF[arma.calibre];
+  if (typeof v0 === 'number' && v0 > 0 && typeof ref === 'number') {
+    return { initSpeed: v0, airFriction: ref, fonte: 'referencia' };
+  }
+  return null;
+}
+
 /* airFriction de REFERÊNCIA por família de calibre (negativo = arrasto).
- * O valor EXATO por arma vem da extração local dos PBOs (#398); estes são os
- * de referência pra família, coerentes com o alcance observado no jogo. */
+ *
+ * Deixou de ser a fonte principal: `dadosBalisticos()` usa o valor medido da
+ * arma e só cai aqui quando o config não informa o arrasto. Fica porque essa
+ * minoria existe — e porque um número de família declarado como estimativa é
+ * honesto, enquanto um número de família apresentado como medição não era. */
 export const AIR_FRICTION_REF = {
-  '9x21mm': -0.0018,
+  /* Os rótulos são os NORMALIZADOS pelo gerador (arma3-armas.js). Se mudarem
+   * lá, mudam aqui — senão o fallback silenciosamente nunca casa. */
+  '9 mm': -0.0018,
   '.45 ACP': -0.0025,
-  '5.56mm': -0.00114,
-  '5.8mm': -0.0011,
-  '6.5mm': -0.00075,
-  '7.62mm': -0.0009,
-  '7.62x39mm': -0.00125,
-  '9.3mm': -0.00055,
-  '.338': -0.00036,
-  '12.7x54mm': -0.0016,
-  '12.7mm': -0.0005
+  '5.56×45 mm': -0.00114,
+  '5.45×39 mm': -0.0012,
+  '5.8×42 mm': -0.0011,
+  '6.5×39 mm': -0.00075,
+  '6.5 Creedmoor': -0.00062,
+  '6.8 SPC': -0.001,
+  '7.62×51 mm': -0.0009,
+  '7.62×39 mm': -0.00125,
+  '7.62×54 mm': -0.001,
+  '.300 BLK': -0.0018,
+  '.300 WM': -0.00045,
+  '9.3×64 mm': -0.00055,
+  '.338 LM': -0.00036,
+  '.408 CheyTac': -0.00033,
+  '12.7×54 mm': -0.0016,
+  '12.7×99 mm': -0.0005,
+  '12.7×108 mm': -0.00052
 };
 
 /* Integra a trajetória do projétil.
@@ -97,6 +142,17 @@ function anguloDeZero(initSpeed, airFriction, zero) {
  *   residual, deriva por vento e a polilinha da trajetória (pra desenhar).
  */
 export function resolverTiro({ initSpeed, airFriction, zero, alvo, vento = 0 }) {
+  /* Guarda explícita: `airFriction >= 0` não é arrasto, é empuxo. Acontece de
+   * verdade no config (foguete/míssil) e a integração devolveria uma curva
+   * fisicamente impossível em vez de falhar. Ver dadosBalisticos(). */
+  if (!(airFriction < 0)) {
+    throw new RangeError(
+      `airFriction deve ser negativo (arrasto); recebi ${airFriction}. ` +
+      'Foguete e míssil usam outro modelo de voo — use dadosBalisticos() para filtrar.');
+  }
+  if (!(initSpeed > 0)) {
+    throw new RangeError(`initSpeed deve ser positivo; recebi ${initSpeed}.`);
+  }
   const ang = anguloDeZero(initSpeed, airFriction, zero);
   const maxDist = Math.max(alvo, zero) * 1.08 + 10;
   const pts = integrar(initSpeed, airFriction, ang, maxDist, vento);

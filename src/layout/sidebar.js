@@ -98,6 +98,7 @@ export const NAV_GROUPS = [
       { path: '/robotica',      label: 'Robótica',           icon: '⊕',  phase: 1 },
       { path: '/guia-pc',       label: 'Guia para Montar PC',icon: '◨',  phase: 1 },
       { path: '/wiki-arma3',    label: 'Wiki de Arma 3',     icon: '📖', phase: 1 },
+      { path: '/vanguard',      label: 'Project Vanguard',   icon: '⌖',  phase: 1 },
       { path: '/modpack',       label: 'Modpack Minecraft',  icon: '◧',  phase: 1 },
       { path: '/zomboid',       label: 'Modpack Zomboid',    icon: '🧟', phase: 1 },
       { path: '/zomboid-admin', label: 'Admin Zomboid',      icon: '⌘', phase: 1 },

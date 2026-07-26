@@ -164,3 +164,90 @@
   border: 1px solid var(--color-cyan-edge, rgba(0,229,255,0.35)); background: rgba(0,229,255,0.08);
 }
 .a3arm-calcbtn:hover { background: rgba(0,229,255,0.18); }
+
+/* ═══════ database de armas + catálogo (extração in-game #398) ═══════ */
+
+/* Miniatura do ícone do jogo. `--vazio` é o estado HONESTO de "sem ícone":
+ * um selo neutro, nunca um desenho genérico que passe por ser o item. */
+.a3arm-thumb {
+  display: block;
+  object-fit: contain;
+  background: var(--color-surface-2);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+}
+.a3arm-thumb--sm { width: 56px; height: 42px; padding: 2px; }
+.a3arm-thumb--lg { width: 112px; height: 84px; padding: var(--space-2xs); }
+.a3arm-thumb--vazio {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+  border-style: dashed;
+  cursor: help;
+}
+.a3arm-th--img { width: 64px; }
+.a3arm-td--img { width: 64px; padding: var(--space-2xs) var(--space-xs); }
+
+/* Ausência de dado: um traço discreto, distinto de um zero. */
+.a3arm-td__na { color: var(--color-text-muted); cursor: help; }
+.a3arm-af { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.a3arm-var {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  cursor: help;
+}
+
+/* Procedência do número: medido no config x estimado por família de calibre. */
+.a3arm-calc__proc,
+.a3arm-calc__aviso {
+  margin: var(--space-xs) 0 0;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+}
+.a3arm-selo {
+  display: inline-block;
+  padding: 1px var(--space-xs);
+  margin-right: var(--space-2xs);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.04em;
+}
+.a3arm-selo--medido { color: var(--color-success); background: var(--color-success-soft); }
+.a3arm-selo--ref { color: var(--color-warning); background: var(--color-warning-soft); }
+
+.a3arm-proc__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--space-xs);
+  margin: var(--space-sm) 0;
+}
+.a3arm-proc__linha {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  font-size: var(--font-size-xs);
+}
+.a3arm-proc__linha b { font-family: var(--font-mono); font-size: var(--font-size-md); color: var(--color-cyan); }
+.a3arm-proc__rot { text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-secondary); }
+.a3arm-proc__nota { font-size: var(--font-size-xs); line-height: var(--line-height-base); }
+.a3arm-proc__nota code {
+  font-size: var(--font-size-xs);
+  padding: 0 var(--space-2xs);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-3);
+}
+.a3arm-proc__acoes { margin-top: var(--space-sm); }
+
+/* Catálogo ainda não extraído: instrução, não erro. */
+.a3cat-pendente { border-left: 3px solid var(--color-warning); }
+.a3cat-pendente .a3tut-dicas li { margin-bottom: var(--space-2xs); }

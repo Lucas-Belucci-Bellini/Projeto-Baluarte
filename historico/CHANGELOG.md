@@ -6,6 +6,25 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-26
+
+### 🔬 Armas com valores MEDIDOS do jogo + pipeline pra extrair TODO o resto (veículos, miras, gear)
+- 🎯 **Fecha a pendência registrada na 0.9.0**: a database de armas deixou de usar "velocidade de referência por calibre" e passou a usar o **`v0` e o `airFriction` REAIS**, lidos do config do jogo em execução com o preset completo carregado (dump da #398, parte LOCAL). A calculadora de trajetória agora resolve com o número **daquela arma**, não da família do calibre.
+- 📊 **10.822 classes → 1.477 armas de verdade** (`scripts/arma3/gerar-base-armas.py`). O que colapsou foi variante cosmética: óptica pré-montada (`_ACO_F`, `_Holo_pointer_snds_F`) e camuflagem (`(Arid)`, `(Lush)`) — 34 entradas só de MX. A chave de agrupamento é (modelo + balística), então o que muda o tiro **continua em linhas separadas**: o mesmo `mxm_f.p3d` aparece com v₀ 774 e 857 (carregador diferente).
+  - **Núcleo** (jogo base + DLC + CDLC, 106 armas) vai no bundle; o **arsenal modado** (1.371) desce sob demanda de `public/arma3/armas-db.json` — 1,7 MB cru, ~100 kB no fio.
+  - **96,3%** têm balística completa · **95,1%** têm ícone.
+- 🖼️ **Coluna de imagem ligada** na tabela: os 2.417 WebP extraídos dos PBOs aparecem por arma. Arma sem ícone **não ganha placeholder que finja ser a arma** — ganha um selo com o motivo (`sem-picture-no-config` ou `paa-nao-extraido`, que é o `.ebo` cifrado das CDLC, que nem o Arma 3 Tools abre).
+- 🧠 **`tipoSugerido` substituído**: a heurística antiga jogava **9.090 das 10.822 em "fuzil"** — um default, não uma classificação. Agora a inferência é encadeada e **cada arma declara em que evidência caiu** (`tipoFonte`): `config` (o campo `type` do engine) > `descricao` (o rótulo do próprio jogo: "Sniper Rifle", "Marksman rifle") > `classe` (prefixo de slot) > `desc-generica` > `numerico`. O que não dá pra classificar vira **`primaria`** — honesto — em vez de virar "fuzil" por default.
+- 🚀 **Foguete e míssil recusados na calculadora, de propósito**: no config, munição de lançador tem `airFriction` **positivo** e `v0` de ejeção (~30 m/s), porque segue outro modelo de voo. Jogar esse par no integrador de arrasto daria uma bala **acelerando**. `resolverTiro()` agora falha alto nesse caso e `dadosBalisticos()` filtra antes.
+- 🎒 **Aba nova "🎒 Catálogo"** + **pipeline completo pra extrair todo o resto**: `dump-catalogo.sqf` (novo) despeja `CfgVehicles` (veículos, soldados, mochilas, armamento estático), os itens do `CfgWeapons` com `ItemInfo` (**miras com zoom real**, supressores, apontadores, bipés, **uniformes e coletes com proteção por ponto do corpo**, capacetes, NVG, binóculos, GPS, rádio) e `CfgGlasses` — **23 categorias** já definidas com as colunas de cada uma. Enquanto o operador não roda o dump no jogo, a aba mostra **"aguardando extração"** com o passo a passo, não tabela vazia sem explicação.
+  - ⚠️ **`getNumber` do SQF devolve 0 pra propriedade que não existe** — "sem blindagem declarada" viraria "blindagem 0". O dump testa `isNumber` antes e emite vazio; o parser converte em `null`. É a regra `hit: null ≠ hit: 0` num lugar onde ela é fácil de perder.
+- 🔬 **Painel de procedência** na aba de armas: de onde vem cada número, quantas armas têm balística/ícone, e a distribuição das evidências de classificação. Dá pra auditar a tabela sem sair dela.
+- 🗺️ **Camadas de mapa agora são compartilhadas** com o Project Vanguard (`src/data/camadas-mapa.js`, API idêntica nos dois repos — a mesma decisão do `helpers.js`). O `/mapa` tinha 7 camadas e o Vanguard tinha 3 próprias; as duas listas já divergiam. Agora camada nova entra nos dois de uma vez, e o seletor de base do `/mapa` se monta a partir do catálogo (ganhou a 2ª fonte de satélite).
+- ⌖ **Project Vanguard aparece no Baluarte**: rota **`/vanguard`** na sidebar (*Conhecimento*), com o **computador de tiro** e o **conversor MGRS/UTM** funcionando de verdade — o motor zero-dependência do repo irmão vendorizado em `src/utils/vanguard/` (~10,6 kB gzip, dentro do "leve" da #238). Os dois modelos balísticos convivem: `arma3-balistica.js` é tiro **tenso** ("dado o ângulo, onde cai"), o motor do Vanguard é tiro **curvo** ("dado o alvo, qual o ângulo").
+- ✅ Verificado no navegador (Playwright): 106 armas em tabela com 76 ícones carregando e 30 marcados como ausentes (todos CDLC cifradas), calculadora abrindo no MX com **v₀ 752,5 · airFriction −0,000774** (bate com a conferência in-game do operador), `/vanguard` resolvendo missão (carga 2 preferida, 1203 mil, 29,3 s) e conversor MGRS, `/mapa` com as 4 bases do catálogo. Zero erros de página. Vanguard: 54/54 testes.
+
+---
+
 ## 2026-07-24
 
 ### 🔫 Launcher 0.9.0 — DATABASE de armas estilo Fallout + CALCULADORA de balística (a "inveja da Bohemia")

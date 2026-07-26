@@ -43,6 +43,7 @@ OUT = os.path.join(AQUI, 'out')
 DESTINO_PNG = os.path.join(RAIZ, 'public', 'arma3', 'armas')
 CACHE_INDICE = os.path.join(OUT, 'indice-pbo.json')
 DUMP_CONFIG = os.path.join(OUT, 'arma3-config.json')
+DUMP_CATALOGO = os.path.join(OUT, 'arma3-catalogo.json')
 MAPA_SAIDA = os.path.join(OUT, 'armas-imagens.json')
 
 STEAM = r'C:\Program Files (x86)\Steam\steamapps'
@@ -145,14 +146,38 @@ def converter(pal2pace, dados_paa, destino_png):
 
 
 def alvos_do_dump():
-    if not os.path.isfile(DUMP_CONFIG):
+    """{classe: caminho virtual do ícone} de TUDO que foi despejado.
+
+    Junta as duas extrações: `arma3-config.json` (armas, do dump-config.sqf) e
+    `arma3-catalogo.json` (veículos, soldados, miras, uniformes, coletes,
+    mochilas, óculos… do dump-catalogo.sqf). O catálogo é opcional — quem só
+    rodou o dump de armas continua funcionando igual.
+
+    O caminho virtual sai do config do jeito que o config escreve; quem resolve
+    extensão e prefixo de PBO é o resto do script (ver as armadilhas no README:
+    muito config escreve o `picture` SEM a extensão `.paa`)."""
+    alvos = {}
+
+    if os.path.isfile(DUMP_CONFIG):
+        with open(DUMP_CONFIG, encoding='utf-8') as f:
+            dump = json.load(f)
+        alvos.update({c: a['picture'] for c, a in dump['armas'].items() if a.get('picture')})
+
+    if os.path.isfile(DUMP_CATALOGO):
+        with open(DUMP_CATALOGO, encoding='utf-8') as f:
+            cat = json.load(f)
+        for secao in ('veiculos', 'itens', 'oculos'):
+            for c, e in (cat.get(secao) or {}).items():
+                if e.get('picture'):
+                    alvos.setdefault(c, e['picture'])
+
+    if not alvos:
         raise SystemExit(
-            f'não achei {DUMP_CONFIG}.\n'
-            'Rode antes o dump no jogo (scripts/arma3/dump-config.sqf) e depois\n'
-            'python scripts/arma3/parse-dump.py — ou use --teste pra um ensaio.')
-    with open(DUMP_CONFIG, encoding='utf-8') as f:
-        dump = json.load(f)
-    return {c: a['picture'] for c, a in dump['armas'].items() if a.get('picture')}
+            f'não achei {DUMP_CONFIG} nem {DUMP_CATALOGO}.\n'
+            'Rode antes um dump no jogo (scripts/arma3/dump-config.sqf para armas,\n'
+            'dump-catalogo.sqf para o resto) e depois o parse-* correspondente —\n'
+            'ou use --teste pra um ensaio.')
+    return alvos
 
 
 def alvos_de_teste(n):
