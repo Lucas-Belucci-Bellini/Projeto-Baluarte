@@ -19,8 +19,8 @@ insubstituível para os números. O Arma 3 Tools é insubstituível para as imag
 
 ## Fluxo
 
-São **quatro** dumps independentes. No jogo: `Esc` → `DEBUG CONSOLE` → cola o
-`.sqf` → `EXECUTE`. Pode rodar os quatro na mesma sessão: cada um tem sua
+São **cinco** dumps independentes. No jogo: `Esc` → `DEBUG CONSOLE` → cola o
+`.sqf` → `EXECUTE`. Pode rodar os cinco na mesma sessão: cada um tem sua
 própria marca no `.rpt` e seu próprio parser.
 
 ```bash
@@ -39,6 +39,10 @@ python scripts/arma3/parse-itens.py
 # veículos, soldados e facções
 #   no jogo: scripts/arma3/dump-veiculos.sqf
 python scripts/arma3/parse-veiculos.py
+
+# compatibilidade arma x acessorio, slot por slot
+#   no jogo: scripts/arma3/dump-acessorios.sqf
+python scripts/arma3/parse-acessorios.py
 
 # ícones das armas (o extrator de imagem, por enquanto só armas)
 python scripts/arma3/extrair-imagens.py
@@ -66,6 +70,12 @@ python scripts/arma3/extrair-imagens.py
   `OpticsMode` + `discreteDistance`), silenciadores (`AmmoCoef`), coletes e
   capacetes (`armor`/`passThrough` por hitpoint), uniformes, NVG, binóculos.
   Marca `<<A3ITEM>>`.
+- **`dump-acessorios.sqf` / `parse-acessorios.py`** — a matriz **arma ×
+  acessório**: para cada arma, o `compatibleItems[]` de cada slot do
+  `WeaponSlotsInfo` (`MuzzleSlot`, `CowsSlot`, `PointerSlot`,
+  `UnderBarrelSlot`, ou o que o mod inventar). Listas idênticas viram um grupo
+  compartilhado — variante de camo aceita o mesmo conjunto — então o JSON não
+  explode. Marca `<<A3ACC>>`.
 - **`dump-veiculos.sqf` / `parse-veiculos.py`** — `CfgFactionClasses`, os
   soldados (`isKindOf CAManBase`) e os veículos: velocidade, combustível,
   lotação, carga, blindagem, custo, potência, armas de casco + torres de
