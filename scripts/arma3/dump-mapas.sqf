@@ -18,7 +18,14 @@ private _fnc_sub = {
     _s
 };
 
-private _fnc_num = { _this toFixed 3 };
+private _fnc_num = {
+    private _v = _this;
+    if (_v isEqualType "") then {
+        _v = if (_v regexMatch "^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$")
+             then { parseNumber _v } else { "" };
+    };
+    if (_v isEqualType 0) then { _v toFixed 3 } else { "" };
+};
 
 private _fnc_n = {
     if (isNumber _this) then { (getNumber _this) toFixed 3 } else { "" };
