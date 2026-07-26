@@ -18,3 +18,6 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# saída das ferramentas locais de extração do Arma 3 (#398)
+scripts/arma3/out/
