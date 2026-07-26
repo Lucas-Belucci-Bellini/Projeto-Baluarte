@@ -1,5 +1,5 @@
 {
- "fonte": "Arma3_x64_2026-07-25_23-18-48.rpt",
+ "fonte": "Arma3_x64_2026-07-26_11-41-37.rpt",
  "armas": {
   "ACE_Flashlight_Maglite_ML300L": {
    "classe": "ACE_Flashlight_Maglite_ML300L",
@@ -13147,7 +13147,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -13281,7 +13281,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -21061,7 +21061,7 @@
    "massa": 74.139999,
    "maxZeroing": 1000,
    "initSpeedArma": -0.95,
-   "descricao": "Carbine<br />Caliber: 5.56x45 mm<br />Rate of fire: 750 rounds/min 0:49:54 No alive in 10000 ms, exceeded timeout of 10000 ms",
+   "descricao": "Carbine<br />Caliber: 5.56x45 mm<br />Rate of fire: 750 rounds/min",
    "picture": "/bwa3_g36/ui/bwa3_g36ka4_tan_x_ca.paa",
    "model": "/bwa3_g36/bwa3_g36ka4.p3d",
    "magazines": [
@@ -25000,7 +25000,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_mag",
@@ -25051,7 +25051,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -25075,7 +25075,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -25167,7 +25167,7 @@
      "rpm": 857,
      "dispersao": 0.00131,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "150Rnd_762x54_Box",
@@ -25218,7 +25218,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 3
     },
     {
      "nome": "single_medium_optics1",
@@ -25336,7 +25336,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 8
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -25446,7 +25446,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -25521,7 +25521,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     },
     {
      "nome": "single_medium_optics1",
@@ -25631,7 +25631,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -25655,7 +25655,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -59995,7 +59995,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 8
     },
     {
      "nome": "ACE_Burst_far",
@@ -60075,7 +60075,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -60155,7 +60155,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -60235,7 +60235,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -60243,7 +60243,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "CUP_30Rnd_545x39_Fort224_M",
@@ -94673,7 +94673,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -94681,7 +94681,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "CUP_30Rnd_556x45_X95",
@@ -94751,7 +94751,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -94759,7 +94759,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "CUP_30Rnd_556x45_X95",
@@ -94907,7 +94907,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -94915,7 +94915,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "CUP_30Rnd_556x45_X95",
@@ -128727,7 +128727,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -128821,7 +128821,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -128915,7 +128915,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 8
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129009,7 +129009,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129103,7 +129103,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129197,7 +129197,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129291,7 +129291,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129385,7 +129385,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129479,7 +129479,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129573,7 +129573,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -129761,7 +129761,7 @@
      "rpm": 550,
      "dispersao": 0.00102,
      "auto": true,
-     "rajada": 8
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "200Rnd_65x39_cased_Box",
@@ -130961,7 +130961,7 @@
      "rpm": 857,
      "dispersao": 0.00131,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "150Rnd_762x54_Box",
@@ -131053,7 +131053,7 @@
      "rpm": 857,
      "dispersao": 0.00131,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "150Rnd_762x54_Box",
@@ -131145,7 +131145,7 @@
      "rpm": 857,
      "dispersao": 0.00131,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "150Rnd_762x54_Box",
@@ -266982,7 +266982,7 @@
      "rpm": 1500,
      "dispersao": 0.00145,
      "auto": false,
-     "rajada": 4
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "150Rnd_93x64_Mag",
@@ -267065,7 +267065,7 @@
      "rpm": 500,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "130Rnd_338_Mag",
@@ -267148,7 +267148,7 @@
      "rpm": 500,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 8
     }
    ],
    "carregadorPadrao": "130Rnd_338_Mag",
@@ -267231,7 +267231,7 @@
      "rpm": 500,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "130Rnd_338_Mag",
@@ -267314,7 +267314,7 @@
      "rpm": 500,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "130Rnd_338_Mag",
@@ -267397,7 +267397,7 @@
      "rpm": 500,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "130Rnd_338_Mag",
@@ -267480,7 +267480,7 @@
      "rpm": 500,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 8
     }
    ],
    "carregadorPadrao": "130Rnd_338_Mag",
@@ -297196,7 +297196,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -297296,7 +297296,7 @@
      "rpm": 857,
      "dispersao": 0.00131,
      "auto": true,
-     "rajada": 3
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "150Rnd_762x54_Box",
@@ -297387,7 +297387,7 @@
      "rpm": 1500,
      "dispersao": 0.00145,
      "auto": false,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "150Rnd_93x64_Mag",
@@ -297470,7 +297470,7 @@
      "rpm": 500,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "130Rnd_338_Mag",
@@ -297604,7 +297604,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 8
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -298386,7 +298386,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -298410,7 +298410,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -298462,7 +298462,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -298486,7 +298486,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -298562,7 +298562,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -298614,7 +298614,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -298638,7 +298638,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -298690,7 +298690,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -298766,7 +298766,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -298918,7 +298918,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -298942,7 +298942,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -298994,7 +298994,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -299070,7 +299070,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -299094,7 +299094,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -299146,7 +299146,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -299170,7 +299170,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -299222,7 +299222,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -299246,7 +299246,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -299322,7 +299322,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -299374,7 +299374,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 3
     },
     {
      "nome": "single_medium_optics1",
@@ -299398,7 +299398,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "SMA_30Rnd_762x35_BLK_EPR",
@@ -312003,7 +312003,7 @@
      "rpm": 550,
      "dispersao": 0.00082,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "SPS_KAC_LAMG_150rnd_Box",
@@ -312086,7 +312086,7 @@
      "rpm": 550,
      "dispersao": 0.00082,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "SPS_KAC_LAMG_150rnd_Box",
@@ -312169,7 +312169,7 @@
      "rpm": 550,
      "dispersao": 0.00082,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "SPS_KAC_LAMG_150rnd_Box",
@@ -312252,7 +312252,7 @@
      "rpm": 550,
      "dispersao": 0.00082,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "SPS_KAC_LAMG_150rnd_Box_Tan",
@@ -312335,7 +312335,7 @@
      "rpm": 550,
      "dispersao": 0.00082,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "SPS_KAC_LAMG_150rnd_Box_Tan",
@@ -312501,7 +312501,7 @@
      "rpm": 550,
      "dispersao": 0.00082,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SPS_KAC_LAMG_150rnd_Box_Tan",
@@ -312584,7 +312584,7 @@
      "rpm": 550,
      "dispersao": 0.00082,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "SPS_KAC_LAMG_150rnd_Box",
@@ -312667,7 +312667,7 @@
      "rpm": 575,
      "dispersao": 0.000682,
      "auto": false,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "SPS_KAC_LWAMG_100rnd_Box",
@@ -312750,7 +312750,7 @@
      "rpm": 575,
      "dispersao": 0.000682,
      "auto": false,
-     "rajada": 6
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "SPS_KAC_LWAMG_100rnd_Box",
@@ -312833,7 +312833,7 @@
      "rpm": 575,
      "dispersao": 0.000682,
      "auto": false,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "SPS_KAC_LWAMG_100rnd_Box",
@@ -312916,7 +312916,7 @@
      "rpm": 575,
      "dispersao": 0.000682,
      "auto": false,
-     "rajada": 3
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "SPS_KAC_LWAMG_100rnd_Box",
@@ -576429,7 +576429,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -576437,7 +576437,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -576505,7 +576505,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 8
     },
     {
      "nome": "ACE_Burst_far",
@@ -576513,7 +576513,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -576589,7 +576589,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -576657,7 +576657,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -576665,7 +576665,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -576733,7 +576733,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -576809,7 +576809,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 8
     },
     {
      "nome": "ACE_Burst_far",
@@ -576817,7 +576817,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -576893,7 +576893,7 @@
      "rpm": 800,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -576961,7 +576961,7 @@
      "rpm": 800,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -576969,7 +576969,7 @@
      "rpm": 800,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577037,7 +577037,7 @@
      "rpm": 800,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 8
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -577045,7 +577045,7 @@
      "rpm": 800,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577113,7 +577113,7 @@
      "rpm": 800,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -577121,7 +577121,7 @@
      "rpm": 800,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577197,7 +577197,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577265,7 +577265,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -577273,7 +577273,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577341,7 +577341,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -577417,7 +577417,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -577493,7 +577493,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 8
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -577501,7 +577501,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577577,7 +577577,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577645,7 +577645,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -577653,7 +577653,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_green",
@@ -577721,7 +577721,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -580001,7 +580001,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -580025,7 +580025,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -580076,7 +580076,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -580151,7 +580151,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -580175,7 +580175,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -580190,81 +580190,6 @@
   },
   "arifle_MXC_Black_ACO_F": {
    "classe": "arifle_MXC_Black_ACO_F",
-   "nome": "MXC (Black)",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "enoch",
-   "massa": 72,
-   "maxZeroing": 800,
-   "initSpeedArma": -0.946382,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/Weapons_F_EPB/Rifles/MX_Black/Data/UI/gear_mx_cqc_black_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MXC_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_black_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00116,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00116,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00116,
-     "auto": true,
-     "rajada": 5
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00116,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00116,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00116,
-     "auto": true,
-     "rajada": 5
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
-   "capacidade": 30,
-   "v0": 732.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MXC_Black_ACO_Pointer_Snds_F": {
-   "classe": "arifle_MXC_Black_ACO_Pointer_Snds_F",
    "nome": "MXC (Black)",
    "tipo": 1,
    "tipoNome": "primaria",
@@ -580325,7 +580250,82 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
+   "capacidade": 30,
+   "v0": 732.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MXC_Black_ACO_Pointer_Snds_F": {
+   "classe": "arifle_MXC_Black_ACO_Pointer_Snds_F",
+   "nome": "MXC (Black)",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "enoch",
+   "massa": 72,
+   "maxZeroing": 800,
+   "initSpeedArma": -0.946382,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/Weapons_F_EPB/Rifles/MX_Black/Data/UI/gear_mx_cqc_black_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MXC_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_black_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00116,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00116,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00116,
+     "auto": true,
+     "rajada": 4
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00116,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00116,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00116,
+     "auto": true,
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -580376,7 +580376,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -580451,7 +580451,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -580475,7 +580475,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -580526,7 +580526,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -580550,7 +580550,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -580625,7 +580625,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -580676,7 +580676,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -580700,7 +580700,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -580751,7 +580751,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -580775,7 +580775,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -580826,7 +580826,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -580850,7 +580850,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -580901,7 +580901,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -580976,7 +580976,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -581051,7 +581051,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -581075,7 +581075,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -581126,7 +581126,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -581150,7 +581150,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -581276,7 +581276,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -581300,7 +581300,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -581356,7 +581356,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -581380,7 +581380,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "ACE_30Rnd_65_Creedmor_mag",
@@ -581460,7 +581460,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "ACE_30Rnd_65_Creedmor_mag",
@@ -581516,7 +581516,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -581621,7 +581621,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -581678,7 +581678,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -581702,7 +581702,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -581759,7 +581759,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -581783,7 +581783,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -581840,7 +581840,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -581945,7 +581945,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -582002,7 +582002,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -582026,7 +582026,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -582083,7 +582083,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -582107,7 +582107,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -582187,7 +582187,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "ACE_30Rnd_65_Creedmor_mag",
@@ -582243,7 +582243,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 8
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -582323,7 +582323,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 8
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -582347,7 +582347,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "ACE_30Rnd_65_Creedmor_mag",
@@ -582398,7 +582398,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     },
     {
      "nome": "single_medium_optics1",
@@ -582422,7 +582422,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -582473,7 +582473,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -582548,7 +582548,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -582623,7 +582623,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -582647,7 +582647,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -582662,81 +582662,6 @@
   },
   "arifle_MX_Black_ACO_FL_F": {
    "classe": "arifle_MX_Black_ACO_FL_F",
-   "nome": "MX (Black)",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "enoch",
-   "massa": 79,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/Weapons_F_EPB/Rifles/MX_Black/Data/UI/gear_mx_rifle_black_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_black_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 7
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 2
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_Black_ACO_Pointer_F": {
-   "classe": "arifle_MX_Black_ACO_Pointer_F",
    "nome": "MX (Black)",
    "tipo": 1,
    "tipoNome": "primaria",
@@ -582797,7 +582722,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -582810,8 +582735,8 @@
    "rpm": 800,
    "tipoSugerido": "fuzil"
   },
-  "arifle_MX_Black_ACO_Pointer_Snds_F": {
-   "classe": "arifle_MX_Black_ACO_Pointer_Snds_F",
+  "arifle_MX_Black_ACO_Pointer_F": {
+   "classe": "arifle_MX_Black_ACO_Pointer_F",
    "nome": "MX (Black)",
    "tipo": 1,
    "tipoNome": "primaria",
@@ -582848,7 +582773,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -582872,7 +582797,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -582885,83 +582810,8 @@
    "rpm": 800,
    "tipoSugerido": "fuzil"
   },
-  "arifle_MX_Black_F": {
-   "classe": "arifle_MX_Black_F",
-   "nome": "MX (Black)",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "@ace",
-   "massa": 79,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/Weapons_F_EPB/Rifles/MX_Black/Data/UI/gear_mx_rifle_black_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_black_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 4
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 4
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_Black_Hamr_Pointer_Snds_F": {
-   "classe": "arifle_MX_Black_Hamr_Pointer_Snds_F",
+  "arifle_MX_Black_ACO_Pointer_Snds_F": {
+   "classe": "arifle_MX_Black_ACO_Pointer_Snds_F",
    "nome": "MX (Black)",
    "tipo": 1,
    "tipoNome": "primaria",
@@ -583035,12 +582885,12 @@
    "rpm": 800,
    "tipoSugerido": "fuzil"
   },
-  "arifle_MX_Black_Hamr_pointer_F": {
-   "classe": "arifle_MX_Black_Hamr_pointer_F",
+  "arifle_MX_Black_F": {
+   "classe": "arifle_MX_Black_F",
    "nome": "MX (Black)",
    "tipo": 1,
    "tipoNome": "primaria",
-   "fonte": "",
+   "fonte": "@ace",
    "massa": 79,
    "maxZeroing": 1000,
    "initSpeedArma": -0.972222,
@@ -583097,7 +582947,157 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 5
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_Black_Hamr_Pointer_Snds_F": {
+   "classe": "arifle_MX_Black_Hamr_Pointer_Snds_F",
+   "nome": "MX (Black)",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "enoch",
+   "massa": 79,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/Weapons_F_EPB/Rifles/MX_Black/Data/UI/gear_mx_rifle_black_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_black_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 7
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 4
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_Black_Hamr_pointer_F": {
+   "classe": "arifle_MX_Black_Hamr_pointer_F",
+   "nome": "MX (Black)",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "",
+   "massa": 79,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/Weapons_F_EPB/Rifles/MX_Black/Data/UI/gear_mx_rifle_black_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_black_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 7
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -583148,7 +583148,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 8
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -583223,7 +583223,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 8
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -583247,7 +583247,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -583298,7 +583298,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -583322,7 +583322,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -583373,7 +583373,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     },
     {
      "nome": "single_medium_optics1",
@@ -583397,7 +583397,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -583448,7 +583448,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -583523,7 +583523,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -583598,7 +583598,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -583622,7 +583622,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -583673,7 +583673,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -583748,7 +583748,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -583772,7 +583772,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
@@ -583823,7 +583823,82 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 2
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_GL_F": {
+   "classe": "arifle_MX_GL_F",
+   "nome": "MX 3GL",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "@ace",
+   "massa": 119,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm<br />Grenade Launcher<br />Caliber: 40 mm",
+   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_gl_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_GL_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -583850,7 +583925,7 @@
      "rajada": 4
     }
    ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_black_mag",
+   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
    "capacidade": 30,
    "v0": 752.5,
    "municao": "B_65x39_Caseless",
@@ -583860,12 +583935,87 @@
    "rpm": 800,
    "tipoSugerido": "fuzil"
   },
-  "arifle_MX_GL_F": {
-   "classe": "arifle_MX_GL_F",
+  "arifle_MX_GL_Hamr_pointer_F": {
+   "classe": "arifle_MX_GL_Hamr_pointer_F",
    "nome": "MX 3GL",
    "tipo": 1,
    "tipoNome": "primaria",
-   "fonte": "@ace",
+   "fonte": "",
+   "massa": 119,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm<br />Grenade Launcher<br />Caliber: 40 mm",
+   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_gl_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_GL_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 5
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 2
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_GL_Holo_pointer_snds_F": {
+   "classe": "arifle_MX_GL_Holo_pointer_snds_F",
+   "nome": "MX 3GL",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "",
    "massa": 119,
    "maxZeroing": 1000,
    "initSpeedArma": -0.972222,
@@ -583923,156 +584073,6 @@
      "dispersao": 0.00087,
      "auto": true,
      "rajada": 2
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_GL_Hamr_pointer_F": {
-   "classe": "arifle_MX_GL_Hamr_pointer_F",
-   "nome": "MX 3GL",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "",
-   "massa": 119,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm<br />Grenade Launcher<br />Caliber: 40 mm",
-   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_gl_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_GL_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 8
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 4
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_GL_Holo_pointer_snds_F": {
-   "classe": "arifle_MX_GL_Holo_pointer_snds_F",
-   "nome": "MX 3GL",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "",
-   "massa": 119,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm<br />Grenade Launcher<br />Caliber: 40 mm",
-   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_gl_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_GL_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 6
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -584147,7 +584147,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -584222,7 +584222,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -584273,7 +584273,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -584297,7 +584297,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -584372,7 +584372,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -584423,7 +584423,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -584522,7 +584522,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -584537,6 +584537,156 @@
   },
   "arifle_MX_Hamr_pointer_F": {
    "classe": "arifle_MX_Hamr_pointer_F",
+   "nome": "MX",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "",
+   "massa": 79,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 6
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 3
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_Holo_pointer_F": {
+   "classe": "arifle_MX_Holo_pointer_F",
+   "nome": "MX",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "",
+   "massa": 79,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 4
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 2
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_RCO_pointer_snds_F": {
+   "classe": "arifle_MX_RCO_pointer_snds_F",
    "nome": "MX",
    "tipo": 1,
    "tipoNome": "primaria",
@@ -584598,156 +584748,6 @@
      "dispersao": 0.00087,
      "auto": true,
      "rajada": 2
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_Holo_pointer_F": {
-   "classe": "arifle_MX_Holo_pointer_F",
-   "nome": "MX",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "",
-   "massa": 79,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 6
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 4
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_RCO_pointer_snds_F": {
-   "classe": "arifle_MX_RCO_pointer_snds_F",
-   "nome": "MX",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "",
-   "massa": 79,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/weapons_F/Rifles/MX/data/UI/gear_mx_rifle_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 4
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -584838,7 +584838,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_black_mag",
@@ -584929,7 +584929,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_black_mag",
@@ -585111,7 +585111,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_mag",
@@ -585202,7 +585202,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_mag",
@@ -585293,7 +585293,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 3
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_khaki_mag",
@@ -585384,7 +585384,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 6
+     "rajada": 7
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_khaki_mag",
@@ -585475,7 +585475,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "100Rnd_65x39_caseless_mag",
@@ -585526,7 +585526,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -585550,7 +585550,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -585601,7 +585601,82 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 8
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 3
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_khk_ACO_RF": {
+   "classe": "arifle_MX_khk_ACO_RF",
+   "nome": "MX (Khaki)",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "RF",
+   "massa": 79,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/Weapons_F_Exp/Rifles/MX/Data/UI/icon_arifle_MX_khk_F_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_khaki_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -585638,12 +585713,162 @@
    "rpm": 800,
    "tipoSugerido": "fuzil"
   },
-  "arifle_MX_khk_ACO_RF": {
-   "classe": "arifle_MX_khk_ACO_RF",
+  "arifle_MX_khk_F": {
+   "classe": "arifle_MX_khk_F",
    "nome": "MX (Khaki)",
    "tipo": 1,
    "tipoNome": "primaria",
-   "fonte": "RF",
+   "fonte": "@ace",
+   "massa": 79,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/Weapons_F_Exp/Rifles/MX/Data/UI/icon_arifle_MX_khk_F_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_khaki_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 3
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 4
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_khk_Hamr_Pointer_F": {
+   "classe": "arifle_MX_khk_Hamr_Pointer_F",
+   "nome": "MX (Khaki)",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "expansion",
+   "massa": 79,
+   "maxZeroing": 1000,
+   "initSpeedArma": -0.972222,
+   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/A3/Weapons_F_Exp/Rifles/MX/Data/UI/icon_arifle_MX_khk_F_X_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
+   "magazines": [
+    "30rnd_65x39_caseless_khaki_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 5
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 3
+    }
+   ],
+   "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
+   "capacidade": 30,
+   "v0": 752.5,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "arifle_MX_khk_Hamr_Pointer_Snds_F": {
+   "classe": "arifle_MX_khk_Hamr_Pointer_Snds_F",
+   "nome": "MX (Khaki)",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "expansion",
    "massa": 79,
    "maxZeroing": 1000,
    "initSpeedArma": -0.972222,
@@ -585713,231 +585938,6 @@
    "rpm": 800,
    "tipoSugerido": "fuzil"
   },
-  "arifle_MX_khk_F": {
-   "classe": "arifle_MX_khk_F",
-   "nome": "MX (Khaki)",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "@ace",
-   "massa": 79,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/Weapons_F_Exp/Rifles/MX/Data/UI/icon_arifle_MX_khk_F_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_khaki_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 6
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 3
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_khk_Hamr_Pointer_F": {
-   "classe": "arifle_MX_khk_Hamr_Pointer_F",
-   "nome": "MX (Khaki)",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "expansion",
-   "massa": 79,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/Weapons_F_Exp/Rifles/MX/Data/UI/icon_arifle_MX_khk_F_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_khaki_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 3
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 2
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "arifle_MX_khk_Hamr_Pointer_Snds_F": {
-   "classe": "arifle_MX_khk_Hamr_Pointer_Snds_F",
-   "nome": "MX (Khaki)",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "expansion",
-   "massa": 79,
-   "maxZeroing": 1000,
-   "initSpeedArma": -0.972222,
-   "descricao": "Assault Rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/A3/Weapons_F_Exp/Rifles/MX/Data/UI/icon_arifle_MX_khk_F_X_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MX_F.p3d",
-   "magazines": [
-    "30rnd_65x39_caseless_khaki_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 4
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 3
-    }
-   ],
-   "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
-   "capacidade": 30,
-   "v0": 752.5,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
   "arifle_MX_khk_Holo_Pointer_F": {
    "classe": "arifle_MX_khk_Holo_Pointer_F",
    "nome": "MX (Khaki)",
@@ -585976,7 +585976,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -586051,7 +586051,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -586075,7 +586075,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_khaki_mag",
@@ -586251,7 +586251,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -586275,7 +586275,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -586376,7 +586376,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -586400,7 +586400,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 5
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -586525,7 +586525,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -586626,7 +586626,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -586650,7 +586650,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -586751,7 +586751,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -586775,7 +586775,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -586900,7 +586900,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -587001,7 +587001,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -587025,7 +587025,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -587150,7 +587150,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -587251,7 +587251,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -587376,7 +587376,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 8
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -587501,7 +587501,7 @@
      "rpm": 857,
      "dispersao": 0.00145,
      "auto": true,
-     "rajada": 7
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -587525,7 +587525,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -587626,7 +587626,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -587751,7 +587751,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -587775,7 +587775,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -587876,7 +587876,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -588001,7 +588001,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -588025,7 +588025,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -588126,7 +588126,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -588251,7 +588251,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -588275,7 +588275,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -588908,7 +588908,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589075,7 +589075,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589242,7 +589242,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589326,7 +589326,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589410,7 +589410,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589494,7 +589494,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589744,7 +589744,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589828,7 +589828,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589912,7 +589912,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -589996,7 +589996,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -590164,7 +590164,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_slr_lxWS",
@@ -591496,7 +591496,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 8
     },
     {
      "nome": "ACE_Burst_far",
@@ -591504,7 +591504,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -591621,7 +591621,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -591746,7 +591746,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 8
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -591754,7 +591754,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -591871,7 +591871,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 6
+     "rajada": 8
     },
     {
      "nome": "ACE_Burst_far",
@@ -591879,7 +591879,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -591996,7 +591996,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -592004,7 +592004,7 @@
      "rpm": 857,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -592121,7 +592121,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -592129,7 +592129,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -592246,7 +592246,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -592379,7 +592379,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -592496,7 +592496,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -592504,7 +592504,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -592621,7 +592621,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -592629,7 +592629,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -592754,7 +592754,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -592871,7 +592871,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -592879,7 +592879,7 @@
      "rpm": 857,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "30Rnd_556x45_Stanag",
@@ -600974,7 +600974,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 8
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -600998,7 +600998,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601049,7 +601049,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -601073,7 +601073,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601124,7 +601124,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 6
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -601148,7 +601148,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601199,7 +601199,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 8
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -601223,7 +601223,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601274,7 +601274,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     },
     {
      "nome": "single_medium_optics1",
@@ -601298,7 +601298,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601349,7 +601349,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -601373,7 +601373,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601448,7 +601448,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601499,7 +601499,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 3
     },
     {
      "nome": "single_medium_optics1",
@@ -601523,7 +601523,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -601574,7 +601574,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -601598,7 +601598,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "30Rnd_65x39_caseless_mag",
@@ -601649,7 +601649,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "single_medium_optics1",
@@ -601724,7 +601724,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 8
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -601799,7 +601799,7 @@
      "rpm": 800,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "single_medium_optics1",
@@ -601914,7 +601914,7 @@
      "rpm": 750,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 6
     }
    ],
    "carregadorPadrao": "EF_100Rnd_65x39_caseless_coy_mag",
@@ -603898,7 +603898,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -603949,7 +603949,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -603973,7 +603973,7 @@
      "rpm": 800,
      "dispersao": 0.00116,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -603988,81 +603988,6 @@
   },
   "ef_arifle_mxm_DMS_LP_BI_snds": {
    "classe": "ef_arifle_mxm_DMS_LP_BI_snds",
-   "nome": "MXM 6.5 mm (Coyote)",
-   "tipo": 1,
-   "tipoNome": "primaria",
-   "fonte": "EF",
-   "massa": 85,
-   "maxZeroing": 1400,
-   "initSpeedArma": -1,
-   "descricao": "Marksman rifle<br />Caliber: 6.5x39 mm",
-   "picture": "/ef/ef_weapons/data/ui/ef_arifle_mxm_coy_CA.paa",
-   "model": "/A3/Weapons_F/Rifles/MX/MXM_F.p3d",
-   "magazines": [
-    "ef_30rnd_65x39_caseless_coy_mag"
-   ],
-   "modos": [
-    {
-     "nome": "Single",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00073,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "FullAuto",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00073,
-     "auto": true,
-     "rajada": 1
-    },
-    {
-     "nome": "fullauto_medium",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00073,
-     "auto": true,
-     "rajada": 4
-    },
-    {
-     "nome": "single_medium_optics1",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00073,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "single_far_optics2",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00073,
-     "auto": false,
-     "rajada": 1
-    },
-    {
-     "nome": "ACE_Burst_far",
-     "reloadTime": 0.075,
-     "rpm": 800,
-     "dispersao": 0.00087,
-     "auto": true,
-     "rajada": 2
-    }
-   ],
-   "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
-   "capacidade": 30,
-   "v0": 774,
-   "municao": "B_65x39_Caseless",
-   "dano": 10,
-   "airFriction": -0.000774,
-   "caliber": 1,
-   "rpm": 800,
-   "tipoSugerido": "fuzil"
-  },
-  "ef_arifle_mxm_Hamr_LP_BI": {
-   "classe": "ef_arifle_mxm_Hamr_LP_BI",
    "nome": "MXM 6.5 mm (Coyote)",
    "tipo": 1,
    "tipoNome": "primaria",
@@ -604124,6 +604049,81 @@
      "dispersao": 0.00087,
      "auto": true,
      "rajada": 4
+    }
+   ],
+   "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
+   "capacidade": 30,
+   "v0": 774,
+   "municao": "B_65x39_Caseless",
+   "dano": 10,
+   "airFriction": -0.000774,
+   "caliber": 1,
+   "rpm": 800,
+   "tipoSugerido": "fuzil"
+  },
+  "ef_arifle_mxm_Hamr_LP_BI": {
+   "classe": "ef_arifle_mxm_Hamr_LP_BI",
+   "nome": "MXM 6.5 mm (Coyote)",
+   "tipo": 1,
+   "tipoNome": "primaria",
+   "fonte": "EF",
+   "massa": 85,
+   "maxZeroing": 1400,
+   "initSpeedArma": -1,
+   "descricao": "Marksman rifle<br />Caliber: 6.5x39 mm",
+   "picture": "/ef/ef_weapons/data/ui/ef_arifle_mxm_coy_CA.paa",
+   "model": "/A3/Weapons_F/Rifles/MX/MXM_F.p3d",
+   "magazines": [
+    "ef_30rnd_65x39_caseless_coy_mag"
+   ],
+   "modos": [
+    {
+     "nome": "Single",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00073,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "FullAuto",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00073,
+     "auto": true,
+     "rajada": 1
+    },
+    {
+     "nome": "fullauto_medium",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00073,
+     "auto": true,
+     "rajada": 4
+    },
+    {
+     "nome": "single_medium_optics1",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00073,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "single_far_optics2",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00073,
+     "auto": false,
+     "rajada": 1
+    },
+    {
+     "nome": "ACE_Burst_far",
+     "reloadTime": 0.075,
+     "rpm": 800,
+     "dispersao": 0.00087,
+     "auto": true,
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "EF_30Rnd_65x39_caseless_coy_mag",
@@ -604249,7 +604249,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 8
     },
     {
      "nome": "single_medium_optics1",
@@ -604324,7 +604324,7 @@
      "rpm": 800,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "single_medium_optics1",
@@ -723477,7 +723477,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -723560,7 +723560,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 8
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -723568,7 +723568,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -723643,7 +723643,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -723651,7 +723651,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 2
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -723734,7 +723734,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -723817,7 +723817,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -723892,7 +723892,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 6
+     "rajada": 3
     },
     {
      "nome": "ACE_Burst_far",
@@ -723900,7 +723900,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -723975,7 +723975,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 4
+     "rajada": 8
     },
     {
      "nome": "ACE_Burst_far",
@@ -724058,7 +724058,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -724141,7 +724141,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -724224,7 +724224,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 7
+     "rajada": 3
     },
     {
      "nome": "ACE_Burst_far",
@@ -724232,7 +724232,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -724307,7 +724307,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -724315,7 +724315,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 2
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -724390,7 +724390,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 8
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -724398,7 +724398,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -724473,7 +724473,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 4
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -724481,7 +724481,7 @@
      "rpm": 600,
      "dispersao": 0.00058,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -725087,7 +725087,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -725095,7 +725095,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725170,7 +725170,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -725178,7 +725178,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725253,7 +725253,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -725261,7 +725261,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725336,7 +725336,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 7
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -725344,7 +725344,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725419,7 +725419,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",
@@ -725427,7 +725427,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725502,7 +725502,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -725510,7 +725510,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 3
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725593,7 +725593,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 3
+     "rajada": 5
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725668,7 +725668,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 6
+     "rajada": 5
     },
     {
      "nome": "ACE_Burst_far",
@@ -725676,7 +725676,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 3
+     "rajada": 2
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725751,7 +725751,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -725759,7 +725759,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725842,7 +725842,7 @@
      "rpm": 300,
      "dispersao": 0.00073,
      "auto": true,
-     "rajada": 2
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "10Rnd_93x64_DMR_05_Mag",
@@ -725917,7 +725917,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 6
     },
     {
      "nome": "ACE_Burst_far",
@@ -726000,7 +726000,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 7
     },
     {
      "nome": "ACE_Burst_far",
@@ -726008,7 +726008,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 4
+     "rajada": 3
     }
    ],
    "carregadorPadrao": "20Rnd_762x51_Mag",
@@ -726201,7 +726201,7 @@
      "rpm": 706,
      "dispersao": 0.00087,
      "auto": true,
-     "rajada": 5
+     "rajada": 4
     },
     {
      "nome": "ACE_Burst_far",

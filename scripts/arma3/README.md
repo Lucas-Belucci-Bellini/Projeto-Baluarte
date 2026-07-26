@@ -88,8 +88,12 @@ python scripts/arma3/extrair-imagens.py
 
 ## Contrato dos dados (o que a sessão remota consome)
 
-**`scripts/arma3/out/arma3-config.json`** — fora do git (é intermediário, grande
-e regenerável). Uma entrada por arma:
+Tudo em `scripts/arma3/out/` é **versionado** — decisão do operador: os dados
+vão pro repositório, não só as ferramentas. São ~150 MB somados, e o histórico
+do git guarda isso pra sempre (pesa em todo clone e em todo build). Os parsers
+regeneram tudo em minutos, se um dia valer a pena reverter.
+
+**`scripts/arma3/out/arma3-config.json`** (18 MB) — uma entrada por arma:
 
 ```json
 {"armas": {"ex_fuzil_01": {
