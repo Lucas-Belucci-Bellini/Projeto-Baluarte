@@ -125,6 +125,7 @@ router.register('/batalha-naval', lazy(() => import('./pages/batalha-naval.js'),
 router.register('/universo', lazy(() => import('./pages/universo.js'), 'universoPage'));
 router.register('/tabela-periodica', lazy(() => import('./pages/tabela-periodica.js'), 'tabelaPeriodicaPage'));
 router.register('/modpack', lazy(() => import('./pages/modpack.js'), 'modpackPage'));
+router.register('/wiki-arma3', lazy(() => import('./pages/wiki-arma3.js'), 'wikiArma3Page'));   // wiki de Arma 3 (capa/índice/artigo via ?p= ?a=)
 router.register('/arma3-tutorial', lazy(() => import('./pages/arma3-tutorial.js'), 'arma3TutorialPage'));   // tutorial dos 105 mods do preset
 router.register('/zomboid', lazy(() => import('./pages/zomboid.js'), 'zomboidPage'));   // coleção Project Zomboid (Spartan Gamer BR)
 router.register('/zomboid-admin', lazy(() => import('./pages/zomboid-admin.js'), 'zomboidAdminPage'));   // admin de servidor PZ

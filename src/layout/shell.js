@@ -156,6 +156,7 @@ function pageTitleForRoute(path) {
     '/robotica': 'Currículo de Robótica',
     '/universo': 'Universo',
     '/tabela-periodica': 'Tabela Periódica',
+    '/wiki-arma3': 'Wiki de Arma 3',
     '/modpack': 'Modpack Minecraft',
     '/zomboid': 'Modpack Zomboid — coleção Spartan Gamer BR',
     '/zomboid-admin': 'Zomboid — Administração de Servidor',

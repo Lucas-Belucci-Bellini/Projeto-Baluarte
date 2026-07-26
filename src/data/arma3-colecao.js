@@ -4,16 +4,16 @@
  * (GetPublishedFileDetails) + raspagem das páginas. NÃO editar à mão:
  * regenere com o script.
  *
- * Coleção: "projeto-baluarte.vercel.app" · id 3769819471 · 221 itens.
+ * Coleção: "projeto-baluarte.vercel.app" · id 3770621777 · 237 itens.
  * Cada item: nome, cat, tam, img (capa no CDN do Steam), tags, deps,
  * resumo e — para itens SEM tutorial na aba Mods — o guia do autor.
  */
 
 export const A3COL_INFO = {
-  id: '3769819471',
+  id: '3770621777',
   nome: 'projeto-baluarte.vercel.app',
   autor: 'Spartan Gamer BR',
-  url: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3769819471'
+  url: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3770621777'
 };
 
 export const A3COL_CATS = [
@@ -177,7 +177,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "v1.1.7 Released!\n\nATTENTION! Since 1.1.5 you must press the LOAD SSPCM button for the cheat menu to load!\n\nSimple single player cheat menu by Benargee. This addon is accessible inside any single player mission or scenario, Including the official campaign. Includes access to Zeus, debug console, virtual arsenal and a few other cheat functions. This addon is also very useful for mission developement, without having to include temporary…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Benargee"
  },
  "450814997": {
   "nome": "CBA_A3",
@@ -187,7 +188,8 @@ export const A3COL_ITENS = {
   "tags": [],
   "deps": [],
   "resumo": "CBA: Community Based Addons for Arma 3\n\nWhat does the name Community Base Addons mean? It is a system that:\n\n• Offers a range of features for addon-makers and mission designers.\n\n• Aims to have community wide acceptance and to be used as much as possible by community addons to maintain compatibility.\n\n• The community is very much encouraged to request or submit functionality.\n\n• The most obvious example would be to submit functions to…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "CBATeam"
  },
  "462357997": {
   "nome": "Warlords",
@@ -219,7 +221,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Advanced Combat Environment 3 (ACE3)\n\nhttps://ace3.acemod.org\n\nACE3 is the collaborative efforts of the former AGM and CSE teams, along with many of the developers from Arma 2's ACE2 project.\n\nThis mod is entirely open-source (we are hosted on GitHub), and everyone is free to propose changes or maintain their own, customized version as long as they make their changes open to the public in accordance with the GNU General Public License.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "acemod"
  },
  "497660133": {
   "nome": "CUP Weapons",
@@ -231,7 +234,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "CONTENT\n\nThis is the WEAPONS pack. It contains all the weapons, assault rifles, machine guns, shotguns, grenade launchers, pistols, sniper rifles, and whatever else goes \"boom\" in Arma 2 and the expansion and DLC's. All weapons are stripped of their attachments were possible, and these have been turned into attachable scopes, lasers, flashlights, and bipods interchangeable with the vanilla content.\n\nSome of the weapons are new or…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "CUP Team"
  },
  "497661914": {
   "nome": "CUP Units",
@@ -246,7 +250,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "CONTENT\n\nThis is the Units pack. It contains all the units of the original Arma 2 and Arrowhead as well as the DLC. Right now, there are a lot of placeholder units that do not look like the original ones but are instead stand-ins using default Arma 3 uniforms and CUP equipment.\nAll uniforms and vests are compatible with vanilla content, meaning that you can mix vanilla and CUP content.\n\nThis pack contains:\n\n• almost all units from…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "CUP Team"
  },
  "541888371": {
   "nome": "CUP Vehicles",
@@ -266,7 +271,8 @@ export const A3COL_ITENS = {
    "CUP Units"
   ],
   "resumo": "CONTENT\n\nThis is the VEHICLE pack. It contains all the vehicles from Arma 2 and the expansion\nand DLC's. All vehicles are ported with Arma 3 standarts and features.\n\nFor credits and other information, see our web page.\n\nThis pack contains:\n\n• almost all vehicles from previous arma titles like https://community.bistudio.com/wiki/ArmA_2:_Vehicles\n\n• community made additional content that was donated and fit's the timeframe\n\nISSUES\n\nTHIS…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "CUP Team"
  },
  "579942493": {
   "nome": "US Military Mod",
@@ -279,7 +285,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "US Military Mod\n\nBy Delta Hawk\n\n///DO NOT REUPLOAD\\\\\\\n\nThis mod features a comprehensive selection of high quality, realistic military gear, uniforms and equipment in effort to accurately portray basic U.S. Army Soldiers, including infantry and Rangers, U.S. Marine infantry, and basic Airmen and Sailor for the late 1980s to the mid 1990s.\n\nThank you for downloading my mod! Enjoy!\n\nFEATURES\n\n- Over 200 high quality, period accurate…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Delta Hawk"
  },
  "583496184": {
   "nome": "CUP Terrains - Core",
@@ -341,7 +348,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Simple mod which executes \"player enableStamina false\" each second. Useful when you play CO-OP missions which require a lot of running.\n\nCBA_A3 is required\nhttps://steamcommunity.com/sharedfiles/filedetails/?id=450814997",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Muttley"
  },
  "692082939": {
   "nome": "[STOPPED] Chornobyl Zone",
@@ -371,7 +379,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "BI Forums Thread\nArmaholic…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Vin."
  },
  "705986840": {
   "nome": "Dynamic Recon Ops - Altis",
@@ -401,7 +410,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Adds support for helicopter rappelling. SP & MP Compatible.\n\nCompletely optional, but if you want to give back for any of my addons, I would greatly appreciate Donations!\n\nhttps://forums.bistudio.com/topic/192126-advanced-rappelling/\n\nWant more? Check out my latest mods!\n\nAlso check out my Advanced Urban Rappelling, Advanced Sling Loading  and Advanced Towing addons for more rope features!\n\nFeatures:\n\n - Rappel up to 6 players or AI…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "duda"
  },
  "714149065": {
   "nome": "Isla Duala",
@@ -479,7 +489,8 @@ export const A3COL_ITENS = {
   "tags": [],
   "deps": [],
   "resumo": "Created by Duda w/ custom animations by Mcruppert\n\nhttps://forums.bistudio.com/topic/192925-advanced-urban-rappelling/\n\nWant more? Check out my latest mods!\n\nAlso check out my Advanced Rappelling, Advanced Sling Loading  and Advanced Towing addons for more rope features!\n\nFeatures:\n\n - Rappel of anything that's more than 4-5m high. This includes buildings, cliff, towers, etc. Everything works as long a you can walk to an edge.\n - Fire…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "duda"
  },
  "779568775": {
   "nome": "TAC VESTS",
@@ -492,7 +503,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Here is my answer to ljyyg mushi\n\nYou said I was jealous?\nThe data you used when you released your mod (some RRV, PACA, leg pouches, etc.) was created by me. So first I asked \"why you build by stolen data?\" and you commented on the mod page. You deleted it, though.\nIf you didn't know, now you know it.\nWhen I look at the your screenshot I can understand that it is my data (TAC VESTS). Because I have spent thousands of hours making it.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Zabb"
  },
  "788666316": {
   "nome": "Dynamic Recon Ops - Chernobyl Zone",
@@ -528,7 +540,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "# RELEASE 0.5.6: RHS: Armed Forces of the Russian Federation\nchangelog available here - http://www.rhsmods.org/mod/1#changelog\n\n# DISCLAIMER & LICENSE\nhttp://www.rhsmods.org/page/EULA\n\n# RE-UPLOADS\nRe-uploads of any RHS content (in part or in full) on Steam Workshop is PROHIBITED\n\n# FREQUENT ASKED QUESTIONS\nhttp://www.rhsmods.org/faq\n\n# DOCUMENTATION & CREDITS\nhttp://www.rhsmods.org/\n\n# FEEDBACK TRACKER\nhttp://feedback.rhsmods.org/\nIf…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Red Hammer Studios"
  },
  "843577117": {
   "nome": "RHSUSAF",
@@ -544,7 +557,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "# RELEASE 0.5.6: RHS: United States Armed Forces\nchangelog available here - http://www.rhsmods.org/mod/2#changelog\n\n# DISCLAIMER & LICENSE\nhttp://www.rhsmods.org/page/EULA\n\n# RE-UPLOADS\nRe-uploads of any RHS content (in part or in full) on Steam Workshop is PROHIBITED\n\n# FREQUENT ASKED QUESTIONS\nhttp://www.rhsmods.org/faq\n\n# DOCUMENTATION & CREDITS\nhttp://www.rhsmods.org/\n\n# FEEDBACK TRACKER\nhttp://feedback.rhsmods.org/\nIf you have…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Red Hammer Studios"
  },
  "843593391": {
   "nome": "RHSGREF",
@@ -563,7 +577,8 @@ export const A3COL_ITENS = {
    "RHSUSAF"
   ],
   "resumo": "# RELEASE 0.5.6: RHS: GREen Forces\nchangelog available here - http://www.rhsmods.org/mod/3#changelog\n\n# REQUIREMENTS\nRHS: GREF requires 2 mods to run\n* RHS: AFRF  - https://steamcommunity.com/sharedfiles/filedetails/?id=843425103\n* RHS: USAF - https://steamcommunity.com/sharedfiles/filedetails/?id=843577117\n\n# DISCLAIMER & LICENSE\nhttp://www.rhsmods.org/page/EULA\n\n# RE-UPLOADS\nRe-uploads of any RHS content (in part or in full) on Steam…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Red Hammer Studios"
  },
  "843632231": {
   "nome": "RHSSAF",
@@ -582,7 +597,8 @@ export const A3COL_ITENS = {
    "RHSUSAF"
   ],
   "resumo": "# RELEASE 0.5.6: RHS: Serbian Armed Forces\nchangelog available here - http://www.rhsmods.org/mod/4#changelog\n\n# REQUIREMENTS\nRHS: SAF requires 2 mods to run\n* RHS: AFRF  - https://steamcommunity.com/sharedfiles/filedetails/?id=843425103\n* RHS: USAF - https://steamcommunity.com/sharedfiles/filedetails/?id=843577117\n\n# DISCLAIMER & LICENSE\nhttp://www.rhsmods.org/page/EULA\n\n# RE-UPLOADS\nRe-uploads of any RHS content (in part or in full)…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Red Hammer Studios"
  },
  "865203162": {
   "nome": "Dynamic Combat Ops - Altis",
@@ -722,7 +738,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This mod gives you the ability to place static objects in any mission\n\n**Added Antistasi integration - currently objects will be saved with persitent save feature.**\n\nRequires ACE menu to function.\nAddon Requirement removed to facilitate different versions of ACE. ie ACE no Medical\n\nRHSUSAF and RHSAFRF    are needed for some objects\n\nList of Current Objects:\n\nFOB , Repair Station , Hesco barriers , Sandbags\nAmmobox with Arsenal ,…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "justokin"
  },
  "1200127537": {
   "nome": "BWMod",
@@ -740,7 +757,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Version 2.6\n\nIntroduction\n\nThe Bundeswehr - Modifikation is a community of interest for the computer game series Armed Assault, whose goal is to make material of the Bundeswehr accessible in Arma 3.\nThe main focus is on vehicles, weapons and equipment that were or will be acquired by the Bundeswehr in a period of 2005-2020, such as the IdZ system or the SPz Puma.\n\nDownload\n\nYou can download older versions of the mod here:…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "bwmod"
  },
  "1270920304": {
   "nome": "TRGM2 - Tanoa",
@@ -774,7 +792,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "For years the community enjoyed the GEARSOC, a pioneer, a unique and innovative mod, the first to bring realistic cryes and oakley gloves nicely worked, now a new beginning, a new opportunity. GEARSOC is back to the community.\n\nWhat is the GEARSOC Deluxe Edition?\n\nThis project will bring the GEARSOC back to the ArmA 3 Public Community, including almost all uniforms from tier 1 units which were present in GEARSOC v2. The Deluxe Edition…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Lockheed"
  },
  "1376822401": {
   "nome": "RIS - Stratis",
@@ -824,7 +843,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Important\n\nACE (official or custom versions that includes ace interact menu) is required.\n\n==========================================================\n\nIf you play with ACE mod you've probably felt the annoyance more or less when the ACE interaction menu and vanilla ArmA action menu get in the way of each other - having to remember when to use which ruins the fun...\nOr maybe you've become sworn enemy of the vanilla menu because that one…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Chum Bucket"
  },
  "1547016606": {
   "nome": "Advanced Breaching",
@@ -840,7 +860,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Advanced Breaching\n\nAdvanced Breaching allows to open closed doors with demolition charges or with a shotgun.\n\nIt is easy to use, you just have to add a module in the editor and select the weapon or demolition charge to use.\n\nIf you're not sure what kind of weapon or magazine you're using:\nIn the editor, hit ESC, and in the \"Watch\" section of the command console, write:\n\nprimaryWeapon player;\n to see the weapon.\n\nprimaryWeaponMagazine…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Dash"
  },
  "1547762495": {
   "nome": "Advanced Underbarrel",
@@ -856,7 +877,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Advanced Underbarrel\n\nAdvanced Underbarrel allows you to modify the ammunition fired by the grenade launcher of a weapon, replacing it with shotgun shells, flash grenades, or whatever else you can think of.\n\nIt is easy to use, you just have to add a module in the editor and assign the weapon you want to replace and the new ammunition.\n\nIf you're not sure what kind of weapon or magazine you're using:\nIn the editor, hit ESC, and in the…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Dash"
  },
  "1559969481": {
   "nome": "RIS - Altis",
@@ -892,7 +914,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Advanced Zipline\n\n- Content & Features\nAdvanced Zipline adds a new round of grenade launcher that allows you to deploy an harpon with a rope.\nOnce the harpon hits somewhere, it allows several players to slide down the rope and overrun valleys, buildings, or any other obstacle!\n\n- Installation & Steam Workshop\nSubscribe to the mods of your choice and they will be kept up to date by the Steam Worshop updater.\n\n- Requirements\n\nAdvanced…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Dash"
  },
  "1590156730": {
   "nome": "Arma Commander",
@@ -925,7 +948,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "A UI showing unit positions and names of units in your squad\n\nSummary\n\nThis clientside mod shows a compass in the bottom middle of you screen and a list of people in your current squad. It is made with SQF commands which recently have been added to Arma3 and were not available back in the days of Arma2 or early Arma3. Meaning no weird workarounds with map elements are needed anymore which just eat more frames.\nA strong point of this UI…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "diwako"
  },
  "1664588656": {
   "nome": "Advanced Spotting Scope (Script)",
@@ -964,7 +988,8 @@ export const A3COL_ITENS = {
    "Advanced Rappelling"
   ],
   "resumo": "Advanced Pickup Rope\n\nAdvanced Pickup Rope allows you to request a pickup rope to a helicopter in the air. Once the rope is taken, you can climb up to the helicopter or travel hanging.\n\nIt is easy to use, you just have to load the mod, look at a helicopter in the air and use the \"Request Pickup Rope\" action.\n\nDisclaimer and License\n\nThe MIT License (MIT)\n\nCopyright (c) 2016 Seth Duda & Dash\n\nPermission is hereby granted, free of…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Dash"
  },
  "1686321576": {
   "nome": "Project - Future Vertical Lift",
@@ -977,7 +1002,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "ACE3 Compatibility mod available  Here\n\nThe FVL Mod is a tilt-rotor based on the Bell V-280 Valor. For the game we have called the aircraft the UV-85 \"Omaha\". There are five variants in the game.  The UV-85 basic has no weapons, UV-85 with mini-guns, UV-85 with .50 cal Gatlin gun,  MV-85 (Spec Ops) with 2x mini-gun, a 20mm cannon, 14 rockets, 2x Griffin missile (mini-Hellfire), and the AV-85 (attack) that has same as MV-85, but trades…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Martinezfg11"
  },
  "1691027866": {
   "nome": "Evannex: AI vs AI - Altis",
@@ -1028,7 +1054,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Zeus Enhanced\n\nZeus Enhanced, also known as ZEN, is an Arma 3 mod aimed at improving and expanding the functionality of the Zeus real-time editor.\n\nZeus Enhanced is built with communities who use Zeus as their primary mission making tool in mind by enabling curators with powerful tools to create dynamic scenarios in an efficient manner. For an in-depth breakdown of the features and frameworks please visit the website.\n\nThis mod is…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "mharis001"
  },
  "1816049282": {
   "nome": "KP Liberation Livonia",
@@ -1164,7 +1191,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Contains common functions and assets utilised by Goobin's Gameplay Enhancement mods.\n\nI will try to fix issues and add new GGE mods when I have time.\n\nThanks to Iceman, SpartanSix and Valentine there is now a Discord for GGE mods!\n\nCheck it out:  https://discord.gg/xTsDvXY",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "goobin"
  },
  "2010226699": {
   "nome": "GGE: Weapon Canting",
@@ -1180,7 +1208,8 @@ export const A3COL_ITENS = {
    "GGE: Core"
   ],
   "resumo": "Adds the ability to fire primary weapons canted.\n\nWhile aiming, press the keybind (default key: \"C\") to switch between canted and non canted aiming modes.\n\nCheck the \"Configure Addons\" menu to change settings and the \"Configure Addon Controls\" menu to change the keybind.\n\nNOTE: If you use toggle to aim (\"Optics\" is bound to right mouse buttton and \"Optics Temporary\" is not) make sure you select the \"Toggle ADS\" option in the \"Configure…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "goobin"
  },
  "2044374502": {
   "nome": "USP Gear - Core",
@@ -1195,7 +1224,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Version: 0.8.8\n\nUSP Gear Core contains files that are essential to other USP Gear & Uniforms modules. Additionally, numerous flag/ID/morale/etc patches are included which can be used with many of the other USP packs which feature flag patch selections.This is a standalone module and does not need to be used alongside the all-in-one pack; USP Gear & Uniforms AIO. Always be sure to check the versions between modules, as the standalone…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "UnderSiege Productions"
  },
  "2057294714": {
   "nome": "ETS - Enemy Tagging System",
@@ -1209,7 +1239,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Summary\n\nConcept was inspired by Ghost Recon : Wildlands.\nThis mod is useful for communications in a squad, and identifying targets.\nIdeally best suited for Co-op, but it can be used in PVP or Singleplayer to help you keep track of enemy targets, or at least make them more apparent if they blend in.\n\nFeatures\n\n- Tag enemies by Aiming at them or holding your 'Lock Target' key.\n- Option to choose between Side or Group for Tag visibility.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Hortzy"
  },
  "2058008726": {
   "nome": "TRGM2 - Bystrica",
@@ -1243,7 +1274,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Client-side search MOD for Arsenal.\n\nUsage: Press Ctrl+F to open the interface, then put any words to search.\nBonus: You can sort items by stats (such as ROF, accuracy and weight).\n\nTip: Put “class ” prefix to the search words make a search for classNames.\n\nAPL-SA.",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "POLPOX"
  },
  "2127190744": {
   "nome": "Moe Pilot Gear Suite",
@@ -1259,7 +1291,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Moe Pilot Gear Suite\n\nThis mod is no longer being updated. Thank you for the kind comments and for enjoying my work! If you wish to pick up the baton and continue development or even port this to Arma Reforger, there is no need to ask me for permission! You can download the unbinarized files (and even some WIP stuff I never finished) from the link below:…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "556Moe"
  },
  "2147841185": {
   "nome": "Project - FVL Ace3 Compatibility",
@@ -1274,7 +1307,8 @@ export const A3COL_ITENS = {
    "ace"
   ],
   "resumo": "ACE compatibility for the  Project - Future Vertical Lift mod.\n\nFeatures:\n\n•  Support for ACE Fastroping\n\n•  More to come…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Martinezfg11"
  },
  "2162811561": {
   "nome": "FileXT",
@@ -1288,7 +1322,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This is an Arma extension which lets you store and read data in files from SQF.\n\nImportant: at 22 Jan. 2022 Linux support was added, thanks to user https://github.com/xoorath\n\nMore information at:\nSetup guide\nGitHub page",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Savelli"
  },
  "2185874952": {
   "nome": "Vindicta (Alpha)",
@@ -1302,7 +1337,8 @@ export const A3COL_ITENS = {
    "FileXT"
   ],
   "resumo": "Vindicta is a dynamic cooperative guerrilla warfare scenario where your goal is to free territory from enemy occupation.\n\nNOTE ABOUT COMMENTS\n\nPlease follow to our Discord server if you want to provide feedback.\nThis comment section is not checked as often!\n\nMAIN FEATURES\n\nThe following review by HazBo sums up most of the features of Vindicta:\n\n•  Dynamic game world. At game start everything is relatively peaceful and not all outposts…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Vindicta Team"
  },
  "2237337619": {
   "nome": "Field Headquarters (NATO)",
@@ -1330,7 +1366,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "BettIR Nightvision module\n\nIf you noticed a change in the mod title and description, it's because BettIR will soon be updated right here; it was previously called \"Legacy\" because I was going to upload a new version separately, but I've decided otherwise.\n\nThe weapon attachments module will be moved to a separate mod soon however, so that people don't have to use my solution and pick anything else they prefer (i.e. ITN)\n\nThis is still…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Vestarr"
  },
  "2264167015": {
   "nome": "Small Drone Command  Position By Flex7103",
@@ -1374,7 +1411,8 @@ export const A3COL_ITENS = {
    "RHSUSAF"
   ],
   "resumo": "Tier 1 Weapons - A mod by Fingolfin\n\nDescription\nThis mod adds several weapons used by US SOCOM units in different setups and color variants. It is based on the RHS framework and should work fine with ACE.\n\nContent\n Weapons:\n  • SIS Sauer MCX Virtus with 11.5 inch barrels in different color variants (5.56mm and .300 Blackout)\n  • SR16s with 11.5 and 14.5inch barrels, URX4 rails, various stocks in different color variants\n  • HK416s…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Fingolfin_A3"
  },
  "2281685552": {
   "nome": "Forward Scan Sonar For Ships",
@@ -1422,7 +1460,8 @@ export const A3COL_ITENS = {
    "ace"
   ],
   "resumo": "BackpackOnChest - Redux\n\nAn official rewrite and continuation of the original BackpackOnChest mod by DerZade. This mod allows you to have a backpack on your chest and on your back at the same time, with movement penalties. Great for parachutes!\n\nImprovements from the original\n\n• Optimizations.\n\n• Support for variables associated with the backpack (for items such as the ACE Gunbag or TFAR backpack radios).\n\n• Transition to an easier…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "mjc4wilton"
  },
  "2379914629": {
   "nome": "[Prae] Container HQ Armory",
@@ -1508,7 +1547,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Makes the Arma 3 vanilla GPS readable and suitable for use.\nAdds a High contrast version for helicopters and planes, to see obstacles clearly and dodge them easily.\n\nOn the High contrast version, powerlines are marked in green. Terrain at your altitude level or above is marked in red areas.\n\nTo get an even better visual, it is advised to use it with the mod Enhanced Map :…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Hoplite"
  },
  "2522638637": {
   "nome": "ACE3 Arsenal Extended - Core",
@@ -1524,7 +1564,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "This mod will group ACE arsenal entries and allow to pick a model using options. It avoid having a lot of combinaisons listed.\n\nIt needs compat mods to work :\n-  USP version\n- AMF version\n\nThis version requires ACE 3.16, and will not work with earlier versions.\n\nContributors / Compat mods\n\nYou can create compat mods and contribute to this project on GitHub.\n\nTo quickly create a compat mod you can use the Config Helper Application :\n-…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "GrueArbre"
  },
  "2523439183": {
   "nome": "Armor Plates System",
@@ -1540,7 +1581,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Standalone Arma 3 Alternative Medical System\n\nFeatures\n\n- Many settings to fit your play style\n- Lightweight\n- ACE features support\n- Own revive system (Only when ACE medical is not loaded)\n- UI and QoL additions\n- ACE medical rewrite support\n\nInfo - Standalone mode\n\nThe Armor Plates System (APS) is at its core a stand-alone medical system. It is meant to abstract Arma 3’s vanilla damage and streamline the vanilla medical system. It…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "diwako"
  },
  "2550003269": {
   "nome": "Bunker HQ",
@@ -1571,7 +1613,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Version: 0.8.6\n\nUSP Gear IHPS is a standalone pack containing the Integrated Head Protection System (IHPS). The helmet comes in a variety of colors, patterns, and other variants. More variants will be available with the 'USP_Gear_Head' versions. This module does require USP Gear - Core in order to function properly.\n\nCurrent contents include:\n\n- IHPS\n- IHPS Covered\n- IHPS Comtac3\n- IHPS USA Flag\n- IHPS Mandible\n- IHPS Up-Armor\n- IHPS…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "UnderSiege Productions"
  },
  "2595671123": {
   "nome": "Direct Action - Livonia",
@@ -1637,7 +1680,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "The mod changes the behavior of weapons. Now it feels alive in your hands, the cardboard effect disappears.\n\nThe mod contains:\n\n• Animated weapon recoil.\n\n• Animated entry into aiming mode.\n\n• Animated change of fire modes.\n\n• Adjust recoil coefficient.\n\n• Adjustment of recoil behavior during automatic fire.\n\n• Adjust AI accuracy.\n\nIn the mod settings you can find many parameters, including the influence of the degree of animation…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Cucumber"
  },
  "2651774379": {
   "nome": "OPCOM - Operations Command",
@@ -1649,7 +1693,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "OPCOM: OPERATIONS COMMAND\n\nVersion: 0.2.1.241003.1\n\nWHAT TO EXPECT:\nOPCOM is a \"see what you get\" menu with lots of customization and settings. No modding or deep editor knowledge required. It takes just a few clicks to set up your single-player scenario, operator, squad, and support.  Play missions or liberation on any map. In Global Ops, you drop into other maps, directly from your current scenario, to execute special operations…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "KingOfNuthin"
  },
  "2652027546": {
   "nome": "Integrated Visual Augmentation System (IVAS) Headset",
@@ -1661,7 +1706,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Integrated Visual Augmentation System\n\nOur very first Arma 3 Mod! After 4 days of nonstop tears and wanting to strangle the Arma devs for using pain in the ass files and programs, it is complete. This is our first mod, and will definitely be our last.\n\nWorn in your NVG slot to free up facewear for some kickass combinations, We present;\nIntegrated Visual Augmentation Goggles, currently in testing with the United States Army on a $22…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Firepaw217 [CM]"
  },
  "2659085897": {
   "nome": "Direct Action - Sefrou-Ramal",
@@ -1715,7 +1761,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Cluster Enhancements: Movement (CE:M)\n\nCE:M is the collaborative effort of the Cluster Community Mod team. It is a part of a broader collection of mods designed to enhance the experience of players in our community.\n\nThis addon is entirely open source and all contributions are welcome. Feel free to maintain your own custom version, so long as the changes you make are open to the public in accordance with the GNU General Public License…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Tapawingo"
  },
  "2667104050": {
   "nome": "Direct Action - Stratis",
@@ -1751,7 +1798,8 @@ export const A3COL_ITENS = {
    "Zeus Enhanced"
   ],
   "resumo": "A mod that adds more Fire Support modules into ArmA 3 Zeus\n\n STATUS: STABLE\n\nThis mod will add more different Fire support modules as well as Barrages for ease of use during your operations as well as New custom munitions usable via 3DEN and Zeus modules and, where marked , directly by players in the field.\n\nYou can run these modules via Zeus, 3DEN or through Functions in your scripts\nGithub wiki page for all the PLUS mods:…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Phenosi"
  },
  "2709837403": {
   "nome": "Military Tower With Interiors",
@@ -1956,7 +2004,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Are you also annoyed to switch between Uniform, Vest and Backpack?\nHere is the solution to this madness.\n\nFeatures:\n\n- Changed Inventory Layout\n- Contents of Uniform, Vest and Backpack are visible at the same time.\n- Clientside Mod. The Mod only needs to be whitelisted on the Server and have CBA installed.\n- Stack Moving. Move many Items/Magazines at the same Time.\n- Task Force Radio Buttons to open the settings of equipped Radios.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "[Phönix] Xaneas"
  },
  "2798280128": {
   "nome": "Uplink",
@@ -1996,7 +2045,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Dynamic Camo System\n\nA lightweight mod that makes your uniform choice actually matter. If your uniforms colours match the ground, you will be less visible to AI. The mod does this by comparing the uniforms average colour to the ground textures average colour and applying a camouflage coefficient depending on how much the colours match.\n\nFeatures\n\n•  Almost everything is adjustable through CBA settings\n\n•  Only the server needs the mod…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "ThomasAngel"
  },
  "2800373440": {
   "nome": "Briefing Area (Small)",
@@ -2055,7 +2105,8 @@ export const A3COL_ITENS = {
    "ace"
   ],
   "resumo": "SPS Weapons V2\n\n2.3.0\nUpdated laser/light modules to adapt to ACE3's latest implementation of visible lasers. ACE3 has dropped their original implementation and now use the Vanilla game engine version which was added fairly recently. The laser/light modules in this mod now use the same implementation as ACE3 have removed their old implementation.\n\n2.2.0\nAdded a series of laser pointers, IR illuminators and white light illuminators to…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Steve"
  },
  "2824471652": {
   "nome": "Overthrow Community Edition",
@@ -2086,7 +2137,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Current State: STABLE\n\nAdds an expanded air support module into ArmA 3 ZEUS\n\nThis is a client-side mod\n\nThis mod will add a new Air Support module that will allow you to use any Aircraft with any Weapon for any of your CAS purposes, this mod will ease the use CAS during your operations when you don't want or have any players to do CAS.\n\n Basipek and Phenosi\n\nFeel free to follow me on my Content Platforms\nMy Youtube Channel\n\nLICENSE:…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Phenosi"
  },
  "2852399167": {
   "nome": "NATO HQ Jungle [CHECK-IN ROOM TENT]",
@@ -2147,7 +2199,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This mod was initially made for my unit as a fix for some of the textures from Adacas' Military Gear Pack, all credits to him for the models and most of the original textures. I have edited almost every single texture from MILGP + MILGP AOR extension, as well as added extra options such as black and white vests, multicam arid, tropic, and black JPCs, spraypainted and covered helmets, flecktarn and tropentarn uniforms, camo PCUs and…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "simpel"
  },
  "2876605714": {
   "nome": "Nato Main Command Tent",
@@ -2217,7 +2270,8 @@ export const A3COL_ITENS = {
   "tags": [],
   "deps": [],
   "resumo": "Chameleon Trenches/ Peer Trenches\n\nZiel des Mods ist es Objekte zum Bauen von Grabenstellungen bereit zustellen. Am sinnvollsten ist es, wenn man die Mod mit dem Deformer Mod zusammen verwendet.\n\n Anleitung\n\nUm die Mod zu verwenden einfach die Objekte aus der Editor Kategorie \"Trench Structures\" platzieren. Die Objekte nehmen die Textur des Bodens an, sodass sie keinen deutlichen Kontrast zwischen den Objekten und dem Boden bilden. Die…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Peer/Ocelot"
  },
  "2954489716": {
   "nome": "Advanced Unit Positioning",
@@ -2231,7 +2285,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Get in the right positions to take the right shots.\n\nLean Out\n\nLean over a window or ledge to shoot along or down the wall!\n\nWhen your weapon is deployed on a surface, press Infantry > Adjust Stance Up (Ctrl + W) to go into leaning mode. Use View > Raise/Lower Turret (E/Q) to adjust the lean angle.\n\nBe sure to decrease the lean angle before exiting! At maximum lean angle, exiting or being killed will result in you falling over the…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Ampersand"
  },
  "2966168738": {
   "nome": "Terrain Lib",
@@ -2247,7 +2302,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Terrain Library\n\nUse this mod as a terrain editor in Zeus\n\nThis provides some useful functions which makes working with terrain much nicer by allowing you to use triggers, markers, and function-based areas to modify terrain as an area, with a ton of parameters.\n\nIt also fixes a problem of network optimisation in multiplayer when it comes to changing terrain heights. By default, when you modify group of terrain points, unless the exact…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Seb"
  },
  "2993442344": {
   "nome": "Death and Hit reactions",
@@ -2262,7 +2318,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Had this idea for a while. Wanted to make game just a little bit cinematic.\n\nMod must be installed on both client and server\n\nThis mod is also serving another purpose: to more or less syncronize ragdoll in MP environment just a little bit when death animations enabled. Because after dying units are playing an animation and only afterwards ragdoll, it allow arma to not syncronize full path of a ragdoll but only the end of it making an…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "WebKnight"
  },
  "3020755032": {
   "nome": "Antistasi Ultimate - Mod",
@@ -2276,7 +2333,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Antistasi Ultimate is a fork of Socrates Antistasi Plus. We aim to add more templates, maps, and features along with many tweaks and fixes that will completely change the experience.\n\nHere are just a few of the Antistasi Ultimate improvements!\n\n• 25+ Supported Faction Mods.\n\n• 50+ Supported Maps.\n\n• Countless features and QOL changes added since the original 10.0 release.\n\n• New optional victory and loss conditions.\n\n• Reimplemented…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Silence"
  },
  "3029401059": {
   "nome": "JCA - P320",
@@ -2292,7 +2350,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "JointCom Armoury - P320\n\nThe first mod in the JCA Standalone mod selection, the JCA - P320.\n\nDESCRIPTION:\n\nThe Obelisk Weapons Group P320 sets out to arm you with a new sidearm for when things get that little bit tricky. The P320 is a balance between weight and power with it being lighter than the 4-five .45 acp pistols with roughly the same accuracy, though packing less of a punch being chambered in 9 mm.\n\nWeapons:\n\nPistols:\n- P320 9…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Grave"
  },
  "3038594789": {
   "nome": "SF Gear",
@@ -2345,7 +2404,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Super simple mod that limits movement speed based on weight, and designed to prevent players from carrying an enormous amount of items.\n\nAdds 2 CBA settings found under \"Weight Limit\", max and med weight, if the player goes over the med weight they can no longer sprint but can still jog, if they go over the max weight they cannot sprint or jog. Weights are in lbs.\n\nThis mod is ONLY needed on the server, clients do not need to have it…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "J3FF"
  },
  "3045129955": {
   "nome": "FPV Drone Crocus",
@@ -2361,7 +2421,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "ATTENTION:\nThe mod authors firmly condemn the terrorist attack at Crocus City Hall and extend their condolences to the victims and the injured, along with the entire country. Please note that the mod is in no way related to recent events; it was named \"Crocus\" a long time ago.\n\nCrocus is a strike Unmanned Aerial Vehicle (UAV) with First-Person View (FPV) video transmission. Available in two modifications: AT (Anti-Tank) and AP…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "[SEAL TEAM] DarkBall"
  },
  "3048337256": {
   "nome": "Into Enemy Territory [SP][Coop-5]",
@@ -2401,7 +2462,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "This mod expands upon the Operator Helmets from the Aegis mod by adding some exciting AEW additions: the camouflage pattern used by the New Altis Army (ALPAT), along with the inclusion of Greek Lizard patterns used by HAF and Myrimidones PMC variants. With this expansion, also comes a few custom configuration of the helmet like FAST and Light.\n\nFEATURES\n\n5 Operator Helmet variants in ALPAT, Greek Lizard, Greek Lizard-A  and Tan…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Pup"
  },
  "3100410156": {
   "nome": "121 Deployable Spotting Scope",
@@ -2416,7 +2478,8 @@ export const A3COL_ITENS = {
    "ace"
   ],
   "resumo": "Summary\n\nOriginally created for Task Force 121 to supplement the USASOC Sniper Rifles. This mod introduces an ACE deployable and adjustable spotting scope to Arma. The scope is based on the Leupold Mark 4 12-40x spotting scope with a Horus TREMOR4 reticle. Note that you will need BOTH spotting scope (in binocular slot) AND tripod (in misc items) to deploy spotting scope as a tripod!\n\nUsage\n\nFrom Arsenal\n- Add [121] Vortex Summit Carbon…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "visco"
  },
  "3100490558": {
   "nome": "NGA - Next Generation Armory",
@@ -2431,7 +2494,8 @@ export const A3COL_ITENS = {
    "ace"
   ],
   "resumo": "Next Generation Armory\n\nNext Generation Armory is a project originally started by SonicJohnBH, with the intent to add all of the candidates from the NGSW program for the US Army.\nAfter months of procrastination, and busy schedules preventing myself (Pred) and SonicJohnBH from continuing work, this is the re-release of the mod, with many fixes that were done, but pushes never released.\n\nThis mod currently only contains the winning…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Pred"
  },
  "3132553286": {
   "nome": "[FACTION] US Army 2027",
@@ -2461,7 +2525,8 @@ export const A3COL_ITENS = {
    "Project - FVL Ace3 Compatibility"
   ],
   "resumo": "A complete set of 3 faction variants of US Army soldiers from the year 2025+, equipped with Next Generation Army equipment, such as the M7 SPEAR Rifle, IVAS Headset, IHPS Helmet, and many other upgraded goods.\n\n GENERAL DESCRIPTION:\n\nAs the US Army steps into the Next Generation in the 2020s, new and upgraded equipment begins to appear in the hands of the G.I. Notably, the new service rifle, the  SIG M7 SPEAR  an upgraded, awesome new…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Nightwolf2112"
  },
  "3147473073": {
   "nome": "TOTT Core",
@@ -2476,7 +2541,8 @@ export const A3COL_ITENS = {
    "RHSUSAF"
   ],
   "resumo": "TOTT\n\n   Tools of The Trade is a mod that aims to provide authentic and accurate depictions of various rifles and weapons used by components of JSOC. All depictions are made using insider knowledge, countless reference images and hours of research and testing. For more info join the Discord.\n\nIf for some reason you couldn't figure out how to click on the image, here's the link: discord.gg/cvbSSJ9QbF\n\nContent\n\nCore Functions\nCore Assets…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "MattyIce"
  },
  "3147476552": {
   "nome": "TOTT Optics",
@@ -2490,7 +2556,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "TOTT\n\n   Tools of The Trade is a mod that aims to provide authentic and accurate depictions of various rifles and weapons used by components of JSOC. All depictions are made using insider knowledge, countless reference images and hours of research and testing. For more info join the Discord.\n\nIf for some reason you couldn't figure out how to click on the image, here's the link: discord.gg/cvbSSJ9QbF\n\nContent\n\nAimpoint T2 with Assorted…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "MattyIce"
  },
  "3147482833": {
   "nome": "TOTT AiO",
@@ -2505,7 +2572,8 @@ export const A3COL_ITENS = {
    "RHSUSAF"
   ],
   "resumo": "TOTT\n\n   Tools of The Trade is a mod that aims to provide authentic and accurate depictions of various rifles and weapons used by components of JSOC. All depictions are made using insider knowledge, countless reference images and hours of research and testing. For more info join the Discord.\n\nIf for some reason you couldn't figure out how to click on the image, here's the link: discord.gg/cvbSSJ9QbF\n\nContent\n\n TOTT Core\n TOTT Optics…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "MattyIce"
  },
  "3153893342": {
   "nome": "Drone Down [SP][Coop-5]",
@@ -2774,7 +2842,8 @@ export const A3COL_ITENS = {
    "Terrain Lib"
   ],
   "resumo": "Trencher\n\nModule-based trench generation.\n\nYou must save the mission for trench modifications to show up in-game.\n\nThe server and client both need this mod and its dependencies for it to work.\n\nFEATURES:\n\n- Create trenches of any depth and width, with lots of configuration options\n- AI can navigate and garrison trenches\n- Optionally add reinforcement to the trench walls, sandbags, dragons teeth and barbed wire\n- Use area-based module…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Seb"
  },
  "3267596179": {
   "nome": "Hunted/Hunter [SP][Coop-5]",
@@ -3004,7 +3073,8 @@ export const A3COL_ITENS = {
    "FPV Drone Crocus"
   ],
   "resumo": "Light AI Fire Support is intended for giving the AI dynamic access to many weapons of war they previously couldn't use to increase their threat, provide a more enjoyable combat experience for players and to provide a fair system of fire support that avoids the pitfalls of manually triggering it. The Light refers to the load on the server, with this mod intended for use by bigger operations and units.\n\nVideo explaining LAFS\n\nLAFS Wiki,…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Rimmy"
  },
  "3328314886": {
   "nome": "Heavy Weapons Framework",
@@ -3019,7 +3089,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "This mod was a part of the Solar Auxilia mod for a while, but due to popular request I have made it into a completely standalone system.\n\nSo what does this mod do?\n\nThis mod adds specific animations to any weapon added to the CBA options or in the weapons config aswell, the main idea behind the mod is to restrict player movement with heavy weapons yet keep some mobility. When using a heavy weapon the player will be put into a special…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "WebKnight"
  },
  "3336740643": {
   "nome": "Milsim Structures",
@@ -3032,7 +3103,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Things in your environment looking too nice? Grey it up! Wanna do some cool LARPing? Throw these down! These are some bland military base-themed buildings WITH INTERIORS that I initially made for my Fort Johnson map, but now I've moved them to a standalone release here so I can use them in other maps and update them separately- and now you can use them too! Snapping on the wall pieces can be toggled on & off by turning the Translation…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brominum"
  },
  "3346427969": {
   "nome": "Hide Among The Grass - HATG",
@@ -3046,7 +3118,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Hide Among The Grass (HATG) is a performance-focused solution to all things stealth.\n\nThis mod was originally designed as an alternative to ACSTG but we very quickly realised we could do more.\n\nYou will only be hidden when prone or crouched (and standing, if in a building). A variety of factors apply, such as enemies being close or what surface you are on. These can all be configured!\n\nOther AI mods should be compatible. This mod does…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Silence"
  },
  "3351167408": {
   "nome": "Razor's Edge [SP][Coop-5]",
@@ -3086,7 +3159,8 @@ export const A3COL_ITENS = {
    "Animated Recoil coefficient changer"
   ],
   "resumo": "The mod implements a system of shooting blindly from behind cover.\n\nWeapon shifting works in all stances and positions.\n\nThe mod only works for players, not for AI.\n\nControl (can be changed in settings):\n\n• Shift + Q - weapon shift to the left\n\n• Shift + E - weapon shift to the right\n\n• CTRL + right mouse button - weapon shift up\n\nDouble clicking locks the position.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Cucumber"
  },
  "3354581482": {
   "nome": "CV-22 Osprey",
@@ -3100,7 +3174,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Systems Application Development Office presents:\n\nCV-22 Special Operations Osprey\n\nbased on the Deltagamer V-22 mod, modified to the CV-22 with several additional enhancements\n\nThe CV-22 Osprey is a tiltrotor aircraft employed by the US Air Force Special Operations Command (AFSOC) that combines the vertical takeoff, hover and vertical landing qualities of a helicopter with the long-range, fuel efficiency and speed characteristics of a…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "altar_of_needles"
  },
  "3356778268": {
   "nome": "Ghost Town Gunfight [SP][Coop-5]",
@@ -3195,7 +3270,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "The Lockheed C-5 Galaxy is a large military transport aircraft designed and built by Lockheed, and now maintained and upgraded by its successor, Lockheed Martin. It provides the United States Air Force (USAF) with a heavy intercontinental-range strategic airlift capability, one that can carry outsized and oversized loads, including all air-certifiable cargo. The Galaxy has many similarities to the smaller Lockheed C-141 Starlifter and…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "joker006 Wolves PMC"
  },
  "3390585168": {
   "nome": "(CUP) Altian Civil War",
@@ -3233,7 +3309,8 @@ export const A3COL_ITENS = {
    "RHSUSAF"
   ],
   "resumo": "TOTT\n\n   Tools of The Trade is a mod that aims to provide authentic and accurate depictions of various rifles and weapons used by components of JSOC. All depictions are made using insider knowledge, countless reference images and hours of research and testing. For more info join the Discord.\n\nIf for some reason you couldn't figure out how to click on the image, here's the link: discord.gg/cvbSSJ9QbF\n\n Recommended Mods\n\n ACE3 - This mod…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "MattyIce"
  },
  "3416827457": {
   "nome": "Bandit Country [CUP] - [SP]",
@@ -3271,7 +3348,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "(sem descrição no Workshop)",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Ghandalf8830"
  },
  "3425368881": {
   "nome": "M4A1_URGI",
@@ -3286,7 +3364,8 @@ export const A3COL_ITENS = {
    "RHSUSAF"
   ],
   "resumo": "M4A1 URGI!!!\n\nOptica utilizada en la imagen es del mod \"TOTT\"\n\nTodos los derechos para el autor original \"LOUETTA\"",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Kraz"
  },
  "3431126976": {
   "nome": "Wings of Fury",
@@ -3302,7 +3381,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Wings of Fury is a mod that introduces new aircraft, known from the FireWill, Luca, and TeTeTe3 packs. The mod adds a variety of airborne machines equipped with realistic weapon systems and advanced mechanics. If you're a fan of aerial combat, this mod will provide you with intense and exciting experiences in the game.\n\nFeatures:\n\n• New aircraft from FireWill, Luca, and TeTeTe3.\n\n• Integrated weaponry and control systems.\n\n• Realistic…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "smok_2017"
  },
  "3444518126": {
   "nome": "Immersive Voices PLUS",
@@ -3318,7 +3398,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "STATUS: Stable\n\nFeatures:\n\n- A Full Voice set tailored to an extensive 'Radio Protocol' for MANY Themes.\n- Automatically applies the thematic voices using 'setSpeaker' after units are spawned (3DEN and Zeus).\n- Can be heard by Players and Zeus\n- All Voice Files have now been keyed/signed for Multiplayer Use\n\nSupported Themes\n\n• Warhammer 40K |  Imperial Guard, Heretics, Space Marines (Loyalist and Chaos), Skitarii (Adeptus Mechanicus),…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Phenosi"
  },
  "3444555961": {
   "nome": "UAV GROUND CONTROL STATION",
@@ -3351,7 +3432,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "I know you've always had the laserdesignator with you, but you've never used it.\nNow you can do \"something\" with your laserdesignator.\n\nHere is a few magazines for you,but they actully 800Rnd in game you can load into laserdesignator.\n  magazines[]=\n  {\n   \"Laserbatteries\",\n   \"800Rnd_230mm_rockets\",\n   \"800Rnd_230mm_rockets_cluster\",\n   \"800Rnd_230mm_rockets_LG\",\n   \"800Rnd_155mm_Mo_shells\",\n   \"800Rnd_155mm_Mo_guided\",…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "EvilBatW"
  },
  "3498478340": {
   "nome": "JCA - Modular Helmet Remake Project",
@@ -3382,7 +3464,8 @@ export const A3COL_ITENS = {
    "121 Deployable Spotting Scope"
   ],
   "resumo": "Systems Application Development Office presents:\n\nSniper Utilities\n\nThis mod adds a few keybinds and settings for more rapid and dynamic deployment of shooting tripods and spotting scopes. It specifically is for the ACE SSWT Kit tripod and spotting scope and the 121 Deployable Spotting Scope. Be sure to check out the video to see how it works.\n\nAdds the following keybinds:\n1. Deploy tripod at height 1\n2. Deploy tripod at height 2\n3.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "altar_of_needles"
  },
  "3564392635": {
   "nome": "Modern Sniper Systems (All-in-One)",
@@ -3397,7 +3480,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN SNIPER SYSTEMS: All in One\n\n JOIN THE PROJECT M DISCORD\nThe Modern Sniper Systems ensemble adds a comprehensive array of Long Range weapon systems and their asscociated optics, attachments and ammo types. This mod draws on the core platforms that define the long range environment in the 2020s and gives players these tools. Many of these weapons or attachments are a first for Arma 3 and provides something any Long Range…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3575468172": {
   "nome": "MCC - Core",
@@ -3412,7 +3496,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: CORE\n\nTHIS IS A CORE MOD ONLY, IT DOES NOT CONTAIN ANY IN-GAME ITEMS\nTo Utilise, please use in conjunction with an MCC GUN or OPTIC mod\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nREPACKING THIS MOD:\nI do NOT allow repacking/reuploading of this mod for a few simple reasons:\n1. This mod will receive regular updates / Bug fixes with time.\n2. I beleive repacking takes away the link that credits the…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3575470416": {
   "nome": "MCC - Knights KS-1-2-3-4 Pack",
@@ -3428,7 +3513,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: Knights KS-1/2/3/4 Pack\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nThe KS series of rifles are produced by Knight's Armament Company (KAC). They are designed as updated versions of their AR-based SR-16 rifles. The 13.7\" KS-1 variant was adopted as the L403A1-AIW by the British Armed Forces in 2023 to supplement the L85A2-A3 and L119A1-A2 rifles used by Royal Marines and the British Army Ranger…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3575476126": {
   "nome": "MCC - LPVO Pack",
@@ -3443,7 +3529,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: Low Power Variable Optic Pack\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nINCLUDES:\nLeupold Mark 5HD 2-10\nTrijicon VCOG 1-8\nVortex AMG 1-10 Elanaor\nZero Compromise ZCO 2-10\n\nAll LPVOs come with backup red dot (exception of VCOG)\n\nAll models were purchased through reputable platforms such as CGTrader or directly through the modeler with their written consent. A list of them is provided below:…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3576299123": {
   "nome": "MCC - Muzzle Devices",
@@ -3456,7 +3543,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "MODERN COMBAT CABRINES: Muzzle Devices\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nWant to up your long range aesthetics & performance? The Muzzle devices pack adds a range of Suppressors, Muzzle Brakes & Flash hiders for your carbine of choice!\n\nCONTENT:\nSurefire TI2 (7.62)\nSurefire RC2 & Mini2 (5.56 & 7.62)\nSurefire RC4 & Mini4\nSurefire Warden\nSurefire Warcomp\nSurefire SF4P\nSurefire RBC\nOtter Creek Polonium & PoloniumK…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3583519360": {
   "nome": "MCC - Red Dot Pack",
@@ -3471,7 +3559,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES:Red Dot Pack\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nINCLUDES (All variants with & without magnifier):\nAimpoint T2\nAimpoint CompM5\nEotech EXPS3\nEotech EXPS3-HD\nLeupold LCO PRO F2\nSig Sauer Romeo8T (In UK-spec Railscales Mount for magnified variant)\nSig Sauer Romeo9T\nVortex AMG UH-1\n\nAll models were purchased through reputable platforms such as CGTrader or directly through the modeler with their…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3583521742": {
   "nome": "MCC - Lights & Lasers",
@@ -3486,7 +3575,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES:Lights & Lasers\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nINCLUDES:\nBE-Meyers & CO SAL-UHP (LA-30)\nEotech NGAL\nEotech OGL\nL3 AN/PEQ-15\nL3 AN/PEQ-16B MIPIM\nL3 SQUAD LRF\nSurefire M600V\nSurefire M300C\nInforce WMLX\n\nAll units feature their real life options, including White Light, IR-Torch, IR-Laser, Visible Laser, IR-COMBO & VIS-COMBO. Use CBA Next Laser Function key to toggle between.\n\nAll models…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3591474457": {
   "nome": "MCC - FN LICC-IWS",
@@ -3499,7 +3589,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: FN LICC\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nThe FN IWS was purpose-built and developed under government contract to meet the requirements of today’s warfighter: a more lethal and lighter individual weapon system. The system consists of four complementary components:\n\nFN’s Improved Performance Carbine (IPC)\n.264 LICC (Lightweight Intermediate Caliber Cartridge), or 6.5x43mm, ammunition that…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3591481785": {
   "nome": "MCC - M4A1 Pack",
@@ -3515,7 +3606,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: 'Upgraded' M4A1 Pack\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nThis pack features a range of M4A1 rifles with upgraded furnishings such as Handguards, Charging Handles, Stocks, Grips, Safety & Iron Sights. The idea of this pack is to breath some fresh life into the old classic, giving you options for weapons perfect for PMCs or western militia or budget special forces.\n\nCONTENT:\nAll…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3596642267": {
   "nome": "MCC - Extended Red Dot Pack",
@@ -3529,7 +3621,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES:Extended Red Dot Pack\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nINCLUDES:\nExtended variations of the red dots found in the MCC - Red Dot Optics Pack\n- GBRS Hydra Mount\n- UnityX Mounts\n- Spuhr T2 mounts\n\nAll models were purchased through reputable platforms such as CGTrader or directly through the modeler with their written consent. A list of them is provided below:\n\nCredits & Thankyous:\nCannuccia…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3596643390": {
   "nome": "MCC - Magnified Optics Pack",
@@ -3544,7 +3637,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: Magnified OpticsPack\n\nThis pack includes a number of low power magnified optics like Elcans, ACOGs etc etc. This pack will be expanded over time.\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nINCLUDES\nElcan SPECTR Gen3 (With Steiner MPS Red dot option)\n\nAll models were purchased through reputable platforms such as CGTrader or directly through the modeler with their written consent. A list of them is…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3611446339": {
   "nome": "MCC - Barrett Rec7DI",
@@ -3560,7 +3654,8 @@ export const A3COL_ITENS = {
    "MCC - Core"
   ],
   "resumo": "MODERN COMBAT CARBINES: Barrett REC7DI\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nWith a nod to Eugene Stoner and his direct impingement design, Barrett is proud to produce the REC7 DI: a lightweight, modular, accurate AR that even the most die hard traditionalist can appreciate.\n\nKnown for its reliability and precision, the Barrett REC7 is designed specifically for situations in which there’s no room for error and…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3614460136": {
   "nome": "Modern Combat Carbines (All-in-One)",
@@ -3575,7 +3670,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: All in One\n\n JOIN THE PROJECT M DISCORD\nThe Modern Combat Carbines ensemble adds a comprehensive array of carbine rifles from around the 2025 battlespaces from FNs LICC through to upgraded M4 platform rifles like the URG-I. Feauturing a wide range of high quality attachments and built with maximum modularity, this mod is designed to be a infantrymans & gun guys dream! This pack will be supported & expanded over…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3618796804": {
   "nome": "MCC - LMT MARS-L and SPECWAR Pack",
@@ -3589,7 +3685,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "MODERN COMBAT CARBINES: LMT MARS-L Family\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nBuilt with operational performance in mind, the new LMT Spec War upper was designed in partnership with some of Americas most specialized warfighters. This upper was built to utilize the new 12.5″ MRP barrel as well as other 12″ or greater barrels. We removed the built in forward QD swivels and extended the length over the traditional…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3620610160": {
   "nome": "MCC - Sig SpearLT & RattlerLT Pack",
@@ -3604,7 +3701,8 @@ export const A3COL_ITENS = {
    "MCC - Core"
   ],
   "resumo": "MODERN COMBAT CARBINES: Sig SpearLT & RattlerLT Pack\n\nJOIN THE PROJECT M DISCORD\nhttps://discord.gg/RbDhB82CTA\n\nThe MCX platform has long been SIG SAUER’S breeding ground for developing the best rifle system in the world through extensive testing, continued innovation and customer feedback. Now SIG SAUER Introduces the SIG SAUER MCX-SPEAR-LT Rifle, a revolutionary firearm built upon the legacy of its predecessor, the MCX Virtus.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Brucey"
  },
  "3671208957": {
   "nome": "WBK Simple Support",
@@ -3618,7 +3716,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "This simple mod allows squad leaders to call support without needing to place any modules, everything can be configured through addon settings and can be accesed in any mission, as long as you have required backpack (that can also be changed). Please watch the video to see everything.\n\nIf you want more in-depth support system i highly reccomend using Simplex Support Services, besides those two mods can work together and thats how i use…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "WebKnight"
  },
  "3674879316": {
   "nome": "KzyxTools - Cheat Menu & Development-Admin Tool (MP Compatible)",
@@ -3632,7 +3731,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "A comprehensive UI-based toolkit for Arma 3 - spawn, debug, administrate, and customize your experience from a single menu.\n\nSpawn units and vehicles with full dynamic loadout editing. Visualize ballistics, track projectiles, and analyze shots in real time. Manage Zeus modules on the fly. Edit vehicle textures, hitpoints, and animation sources. Toggle god mode, teleport, fly with NoClip, or tweak weapon behavior - all from one keybind.…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Kohjin"
  },
  "3679457651": {
   "nome": "SCAI Artillery Support",
@@ -3649,7 +3749,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "💬 JOIN OUR DISCORD SERVER\n\n🔗 >>> CLICK HERE TO JOIN DISCORD <<<\n\nSCAI Artillery - AI Mortar Support System\n\nIntelligent AI artillery support with realistic accuracy and CBA settings\n\n📋 Description\n\nSCAI Artillery enhances AI mortar crews with intelligent targeting based on allied spotting. When your allies detect enemies, they report target coordinates to artillery crews who will engage with realistic spread and accuracy.\n\nNo more…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "You Lose"
  },
  "3686190970": {
   "nome": "STmod_AC130J",
@@ -3663,7 +3764,8 @@ export const A3COL_ITENS = {
    "ace"
   ],
   "resumo": "Please report any bugs or other issues in this workshop thread.\nWhen reporting a bug, please read the notes in the bug thread carefully and check to see if a similar bug has already been reported.\n\nThis mod recreates the AC-130J Ghostrider gunship, which entered service with the U.S. Air Force in 2017, and its predecessor, the MC-130J Commando II transport aircraft, for Arma 3.\nPlease note that due to a lack of reference materials or…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Semtex2175"
  },
  "3687909045": {
   "nome": "Showdown Posture",
@@ -3678,7 +3780,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Version with AI support:\n\nhttps://steamcommunity.com/sharedfiles/filedetails/?id=3728185537\n\nSimple mod that was inspired by Hunt: Showdown and adds an automatic weapon up posture similar to that game. Was made originally for upcoming Mad God Part 2, but i am releasing it so anybody can use it. Can work with multiple genres and mods, should be compatible with everything.\n\nMain things:\n\n•  You can exclude weapons from system, for…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "WebKnight"
  },
  "3694150202": {
   "nome": "[TRF] Blackthorn Operators Equipment Mod - REDUX",
@@ -3693,7 +3796,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "BLACKTHORN OPERATORS EQUIPMENT MOD - REDUX\n\n A new release of equipment for the Blackthorn unit. The old mod was getting too cluttered with alot of errors and issues that a new pack was made instead. I will not be taking general requests for this one as it's for a unit, nor will I upload a version without insignia.\n\nJoin us at: https://btrg.co.uk/\n\n Require ACE for Caiman interactive options to lift Earpro and LH250 Visor.\n\nAPL-ND\n\n*No…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "TheRealFordy"
  },
  "3699105433": {
   "nome": "ADAPTATIVE ARMA SUPPORTS (AAS - Core)",
@@ -3705,7 +3809,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "◈  ADAPTATIVE ARMA SUPPORTS  ◈\n\nDrop AAS into any Arma 3 mission and gain access to an immersive tactical support interface. No Zeus modules, no pre-placed objects, no scripting required. Configure it once to match your mods, map, and economy framework, then call in supports seamlessly throughout your operation. Works with Antistasi, KP Liberation, Warlords, Overthrow, and any vanilla scenario.\nFrom a precision gun run to a full…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "KOLOVIAN"
  },
  "3702954719": {
   "nome": "IHPS Helmet 2035",
@@ -3717,7 +3822,8 @@ export const A3COL_ITENS = {
   ],
   "deps": [],
   "resumo": "Lore\n\nThe Integrated Helmet Protection System began development after lessons learned in the Takistan Invasion, but in the wake of the Black Recession of the 2020s, the US Army had to enact cost-cutting measures to stay within Congress's allocated budget. MICH style helmets already in service would be unable to be replaced quickly as focus shifted from soldiers' PPE to arming all combat MOS with the new MX rifle alongside the 6.5mm…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "Axle"
  },
  "3739421199": {
   "nome": "EVEN Better Inventory (EBI)",
@@ -3735,7 +3841,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "EVEN Better Inventory (EBI)\n\nTarkov-style inventory UI for Arma 3 — PUBLIC BETA\n\n⚠ BETA — PLEASE READ\n\nThis mod is in active development. Features work, but you should expect rough edges. — if you try EBI, please report bugs, broken interactions, and mod incompatibilities. Your feedback directly shapes what gets fixed next.\n\nThis is not a final release. Test in single-player or a dedicated server before committing your whole community…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "60secAssassin"
  },
  "3761394375": {
   "nome": "Realistic Vegetation Interaction",
@@ -3751,7 +3858,8 @@ export const A3COL_ITENS = {
    "CBA_A3"
   ],
   "resumo": "Realistic Vegetation Interaction (RVI) adds dynamic vegetation movement penalties to Arma 3.\n\nDense foliage now affects player and AI movement, simulating the difficulty of pushing through bushes and vegetation.\n\nFeatures\n\n• Player vegetation interaction.\n• AI vegetation interaction.\n• Virtually zero performance impact.\n\nRecommended Mods\n\nFor the best experience, Realistic Vegetation Concealment (RVC) is highly recommended. RVC handles…",
-  "temTutorial": true
+  "temTutorial": true,
+  "autor": "CallsignChris"
  },
  "3763899932": {
   "nome": "Realistic Vegetation Concealment",
@@ -3767,7 +3875,183 @@ export const A3COL_ITENS = {
   "temTutorial": false,
   "autor": "CallsignChris",
   "guia": "Realistic Vegetation Concealment (RVC) is a lightweight AI enhancement that simulates the visual uncertainty created by vegetation.\n\nInstead of making units stealthier, RVC slows how quickly AI visually confirm targets that are partially obscured by foliage. AI will still detect, engage, and eventually identify enemies—they simply take longer to build visual confidence when vegetation gets in the way.\n\nFeatures\n\n• Lightweight, group-based AI logic with minimal performance impact.\n• Multiplayer and dedicated server compatible.\n• Supports dynamically spawned AI.\n\nRecommended Mods\n\nFor the best experience, Realistic Vegetation Interaction (RVI) is highly recommended. RVI handles movement through vegetation, while RVC handles how vegetation affects AI perception.\n\nRVC also pairs well with Real Engine Enhanced and LAMBS Danger.fsm (DEV), complementing their AI behavior without overlapping functionality.\n\nRequirements\n\n• CBA_A3\n\nLICENSE\n\nAPL-SA – Arma Public License Share Alike\n\nWhat am I allowed to do?\n✔️ Redistribute this mod in part or whole privately / within a unit, just give credit where it is due.\n✔️ Redistribute this mod in part or whole publicly ONLY with clear credit towards the author and with credits linking to this page.\n❌ You may not use this mod on monetized servers.\n❌ Port this mod in part or whole to games other than ArmA."
+ },
+ "2288691268": {
+  "nome": "RHSTERRACORE",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/2300841042463920663/045D5A59A09D4713B11902AE30597A41BD52CBEC/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Red Hammer Studios",
+  "tags": [],
+  "deps": [],
+  "resumo": "# Release 0.7.1: RHS: Terracore This is the release note accompanying RHS: Terracore release. This mod does not require any other mods to operate. ## Installation ## Steam Workshop Subscribe to the mods of your choice and they will be kept up to date by th...",
+  "temTutorial": false
+ },
+ "2549267174": {
+  "nome": "Ravage: Livonia",
+  "cat": "cenario",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/1698404268687371632/6941490B4C2F26A71318718DC35CC6DE19ECC1A5/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "GAlvares",
+  "tags": [],
+  "deps": [],
+  "resumo": "Ravage: Livonia You are one of Livonia's survivors. You are a survivor in an apocalyptic world. Trapped in Livonia, you must try to survive anyway. All people are gone or walking on like the living dead, the few people left over cannot be trusted. - Zombis...",
+  "temTutorial": false
+ },
+ "2752324758": {
+  "nome": "Gorkas 'n' Gear",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/1865056895923967624/02A6BA0F9B58273F6B27EDA9C70FC99468068110/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "EO",
+  "tags": [],
+  "deps": [],
+  "resumo": "A selection of retextured and recoloured Gorkas with various gear to compliment them. 39 Gorka variants. 20 Beanies. (Configured without headsets) 9 Boonie Hats. 4 Kipchak Vests, (Urban Camo) (Black) 2 Modular Vests (LDF) (Black) 1 Bergen (Hunter Camo) Ser...",
+  "temTutorial": false
+ },
+ "2248165312": {
+  "nome": "Tinter-Furniture - Dynamic Furniture as a Mod",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/9602368235724449129/2B376EB114BCD04723FBC8D67A9C93C704212560/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Tinter",
+  "tags": [],
+  "deps": [],
+  "resumo": "Are you a mission maker? Use the script version for furniture with one less mod dependency: https://forums.bohemia.net/forums/topic/226197-tinter-furniture-mp-compatible-and-dynamically-spawned-furniture/ This mod will spawn dynamically put furniture into ...",
+  "temTutorial": false
+ },
+ "807038742": {
+  "nome": "Project Infinite - All in one",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/925923832299051699/9CEB1E6003F2ACF083388839625315A9CA0EB4FC/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Bnae",
+  "tags": [],
+  "deps": [],
+  "resumo": "Project Infinite - All in one addon contains all weapons and attachments created by Bnae. Hold \"FIRE\" button to hold reload action (Sako TRG-42, Winchester Model 97, Lee-Enfield Mk.I and Colt Single-action Army). READ THIS BEFORE USING: This addon contains...",
+  "temTutorial": false
+ },
+ "3050920861": {
+  "nome": "DayZ Ravage",
+  "cat": "cenario",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/2113935398636494686/AB86F99DA223B23B0E440141264798912EB0687F/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Redarmy",
+  "tags": [],
+  "deps": [],
+  "resumo": "WHO IS THIS MOD FOR?: If you like playing DayZ standalone,but wanted a single player experience,this is worth trying out. I created this scenario for myself,its created with alot of attention to detail,performance,randomness and replayability. This mod is ...",
+  "temTutorial": false
+ },
+ "1376636636": {
+  "nome": "Ravage",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/1841421875657877224/AAAC674D77E79F27F36FB3A27E91082A544859CE/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Haleks",
+  "tags": [],
+  "deps": [],
+  "resumo": "What is it? Ravage is a survival mod for Arma 3, bringing you a comprehensive set of tools to create scenarios with ease. Ravage adds new assets, game mechanics and modules, as well as new missions and countless tweaks and modifications. Creating your own ...",
+  "temTutorial": false
+ },
+ "1229640757": {
+  "nome": "[SP/CO12] The Forgotten Few 2 (US/AL)",
+  "cat": "cenario",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/930427803645465748/36E976A2B5A06305C0938E30A1597B01C3E60E4A/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "KingN",
+  "tags": [],
+  "deps": [],
+  "resumo": "Dynamic Single-Scenario Campaign / Single Mission for SP and MP The Forgotten Few 2 is the Arma 3 successor to the dynamic mission originally created for Arma 2. Command a small special task group and plan your mission execution. Finish randomly generated ...",
+  "temTutorial": false
+ },
+ "810445590": {
+  "nome": "Pilgrimage 1.951",
+  "cat": "cenario",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/957478099690776251/1949D9D5464E66FF3AB407E64D1865D217B279F8/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Rydygier",
+  "tags": [],
+  "deps": [],
+  "resumo": "2nd place in Singleplayer category of Make Arma Not War contest The beauty of Pilgrimage is its effective combination of soldiering sim, orienteering adventure and detective mystery. PCGamer's \"Mod of the Week\" Alex, a freelance PMC employee, is searching ...",
+  "temTutorial": false
+ },
+ "254868906": {
+  "nome": "Pilgrimage",
+  "cat": "cenario",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/541889954016008225/1949D9D5464E66FF3AB407E64D1865D217B279F8/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Rydygier",
+  "tags": [],
+  "deps": [],
+  "resumo": "This version is obsolete since A3 1.66. For the next version check new Workshop Pilgrimage entry. 2nd place in Singleplayer category of Make Arma Not War contest The beauty of Pilgrimage is its effective combination of soldiering sim, orienteering adventur...",
+  "temTutorial": false
+ },
+ "686802825": {
+  "nome": "Eden Objects",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/878629064250446521/7D35D879578EB200B0FA14215D526D6476AC42D6/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Kydoimos",
+  "tags": [],
+  "deps": [],
+  "resumo": "http://i.imgur.com/kuqiiiL.png http://i.imgur.com/5nQAbxE.png Mod Overview Eden Objects is a concise collection of highly-detailed models for Arma 3, created to celebrate the release of the new 3D editor. Each item has been fully localized and comes with a...",
+  "temTutorial": false
+ },
+ "667454606": {
+  "nome": "NIArms Core",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/796485291355534400/F36E7DAAF11CAB57CE22CB97953C1785249A7BA1/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Still Trans Rights",
+  "tags": [],
+  "deps": [],
+  "resumo": "==== THIS MOD SUPERCEDES AND REPLACE HLC CORE PACK , PLEASE UNSUB THAT AND USE THIS INSTEAD ==== NIArms Core is the central core to the weapons sets released by me. It contains mostly shared resources like magazine icons, some material templates and textur...",
+  "temTutorial": false
+ },
+ "1519157834": {
+  "nome": "NIArms HK416 Rifles",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/2023850635385575250/6F84D294F2D78486A6E682636983075A2D9FD3EF/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Still Trans Rights",
+  "tags": [],
+  "deps": [],
+  "resumo": "This weapon set was made possible by the generosity of the people who're backing this through Patreon. If you'd like to see more of this stuff ,why not pitch in a couple of bucks? Through Patreon If you can't or don't want to, no hard feelings. About- ====...",
+  "temTutorial": false
+ },
+ "3506880725": {
+  "nome": "Reload action rework - CORE",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/13120133889386672045/1DCDBBF3CF0415AE5040E0A307E9239115BE13E3/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "HBAOplus",
+  "tags": [],
+  "deps": [],
+  "resumo": "Mod still WIP. Will not need CBA if the weapon mod is CBA free. Based on a legacy version of CUP Reload Rework, all credit goes to MachoMain. https://steamcommunity.com/sharedfiles/filedetails/?id=3252930199 This mod provides 4 new reload animations to AR1...",
+  "temTutorial": false
+ },
+ "3506894612": {
+  "nome": "Reload action rework - compats",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/17358537263874589122/F4F4AD147434A151D82B20543EE42DC450064355/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "HBAOplus",
+  "tags": [],
+  "deps": [],
+  "resumo": "Sub-mod of Reload action rework - CORE - WIP. Main mod provides 4 new reload animations to AR15s, AKs, RPKs (also suitable for MK18ABR) and semi-auto pistols, which were supposed to be made to replace the vanilla counterparts in mind. And also alters some ...",
+  "temTutorial": false
+ },
+ "1902310828": {
+  "nome": "Australian Commando Weapon Pack",
+  "cat": "mod",
+  "tam": "",
+  "img": "https://images.steamusercontent.com/ugc/1711905846770001920/E9AEF31D6E2D50A3F7408D29029EA8026D47535D/?imw=460&imh=260&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+  "autor": "Robert California",
+  "tags": [],
+  "deps": [],
+  "resumo": "https://i.imgur.com/EBbTPrO.png Australian Commando Weapon Pack Special Operations Command's mission is to generate, command and reconstitute high-readiness world-class joint forces in order to conduct combined special operations in support of Australia's ...",
+  "temTutorial": false
  }
 };
 
-export const A3COL_TOTAL = 221;
+export const A3COL_TOTAL = 237;
