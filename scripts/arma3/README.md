@@ -32,6 +32,12 @@ python scripts/arma3/extrair-imagens.py
 - **`dump-config.sqf`** — despeja `CfgWeapons`/`CfgMagazines`/`CfgAmmo` do config
   já mesclado em memória. Sai no `.rpt`, em linhas `<<A3DUMP>>` delimitadas por
   `|` (sem JSON de propósito: o log do jogo mexe com aspas).
+
+  ⚠️ **Não adicione comentários nem acento neste arquivo.** O debug console
+  executa o texto colado sem passar pelo pré-processador, então `/* */` e `//`
+  não são removidos: o parser lê o `/` como divisão e morre com
+  `Invalid number in expression` já no primeiro caractere. Por isso o arquivo é
+  ASCII puro e sem um único comentário — a explicação mora aqui, não lá dentro.
 - **`parse-dump.py`** — lê o `.rpt` (acha o mais recente sozinho) e resolve a
   cadeia **arma → carregador → munição**.
 - **`pbo.py`** — leitor de PBO em Python puro (índice, `prefix`, LZSS), leitura
