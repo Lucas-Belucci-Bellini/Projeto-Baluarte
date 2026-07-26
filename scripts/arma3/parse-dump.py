@@ -46,15 +46,24 @@ def achar_rpt():
         if not a.lower().endswith('.rpt'):
             continue
         p = os.path.join(base, a)
+        # linha a linha: o .rpt de uma sessão longa passa de 1 GB e f.read()
+        # estoura a memória (já aconteceu aqui)
+        tem = v2 = completo = False
         try:
             with open(p, encoding='cp1252', errors='replace') as f:
-                txt = f.read()
+                for linha in f:
+                    if MARCA not in linha:
+                        continue
+                    tem = True
+                    if MARCA + 'INICIO|v2' in linha:
+                        v2 = True
+                    elif MARCA + 'FIM' in linha:
+                        completo = True
         except OSError:
             continue
-        if MARCA in txt:
+        if tem:
             # prioriza dump v2, depois dump completo, depois o mais recente
-            cands.append((MARCA + 'INICIO|v2' in txt, MARCA + 'FIM' in txt,
-                          os.path.getmtime(p), p))
+            cands.append((v2, completo, os.path.getmtime(p), p))
     if not cands:
         raise SystemExit(
             'nenhum .rpt com dump encontrado.\n'
@@ -141,6 +150,12 @@ def ler_rpt(caminho):
             c = resto.split('|')
 
             if tipo == 'INICIO':
+                # O .rpt é o log da SESSÃO inteira: se o dump rodou mais de uma
+                # vez, o arquivo tem vários blocos. Só o último vale — zerar aqui
+                # evita misturar formatos (uma linha v1 tem 12 campos e passaria
+                # pelo filtro do W|, com os campos todos trocados de lugar).
+                armas, mags, ammos = {}, {}, {}
+                truncadas = 0
                 versao = c[0] if c else '?'
             elif tipo == 'W' and len(c) >= 8:
                 armas[c[0]] = {

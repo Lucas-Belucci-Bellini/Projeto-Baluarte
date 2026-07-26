@@ -24,6 +24,7 @@ varrer os PBOs de novo só com --reindexar.
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -142,44 +143,60 @@ def main():
     print(f'índice: {len(indice)} prefixos de PBO')
 
     alvos = alvos_de_teste(teste) if teste else alvos_do_dump()
-    print(f'ícones a extrair: {len(alvos)}\n')
+
+    # Muitas variantes compartilham o MESMO .paa (camo, retextura, versão de
+    # mod). Converter por classe faria o mesmo trabalho dezenas de vezes e
+    # encheria o repo de arquivo duplicado: agrupa por imagem e converte 1x.
+    por_imagem = {}
+    for classe, virtual in alvos.items():
+        por_imagem.setdefault(virtual.lower(), []).append(classe)
+    print(f'armas: {len(alvos)} | imagens distintas: {len(por_imagem)}\n')
 
     os.makedirs(DESTINO_PNG, exist_ok=True)
     mapa, faltou_pbo, falhou_conv = {}, [], []
     cache_pbo = {}
+    convertidas = 0
 
-    for i, (classe, virtual) in enumerate(sorted(alvos.items()), 1):
-        caminho_pbo, interno = resolver(virtual, indice)
-        if not caminho_pbo:
-            faltou_pbo.append((classe, virtual))
-            continue
-        try:
-            if caminho_pbo not in cache_pbo:
-                cache_pbo[caminho_pbo] = PBO(caminho_pbo)
-            pbo = cache_pbo[caminho_pbo]
-            entrada = pbo.achar(interno)
-            if not entrada:
-                faltou_pbo.append((classe, virtual))
+    for i, (virtual, classes) in enumerate(sorted(por_imagem.items()), 1):
+        nome = re.sub(r'[^a-z0-9_-]+', '-',
+                      os.path.splitext(os.path.basename(virtual))[0].lower())
+        destino = os.path.join(DESTINO_PNG, f'{nome}.png')
+
+        if not os.path.isfile(destino):                 # já convertida antes? reusa
+            caminho_pbo, interno = resolver(virtual, indice)
+            if not caminho_pbo:
+                faltou_pbo.append((classes[0], virtual))
                 continue
-            dados = pbo.ler(entrada)
-        except Exception as err:
-            falhou_conv.append((classe, str(err)[:100]))
-            continue
+            try:
+                if caminho_pbo not in cache_pbo:
+                    cache_pbo[caminho_pbo] = PBO(caminho_pbo)
+                pbo = cache_pbo[caminho_pbo]
+                entrada = pbo.achar(interno)
+                if not entrada:
+                    faltou_pbo.append((classes[0], virtual))
+                    continue
+                dados = pbo.ler(entrada)
+            except Exception as err:
+                falhou_conv.append((classes[0], str(err)[:100]))
+                continue
+            ok, err = converter(pal2pace, dados, destino)
+            if not ok:
+                falhou_conv.append((classes[0], err))
+                continue
+            convertidas += 1
 
-        destino = os.path.join(DESTINO_PNG, f'{classe}.png')
-        ok, err = converter(pal2pace, dados, destino)
-        if ok:
-            mapa[classe] = f'/arma3/armas/{classe}.png'
-        else:
-            falhou_conv.append((classe, err))
-        if i % 25 == 0 or i == len(alvos):
-            print(f'  {i}/{len(alvos)} — {len(mapa)} ok')
+        for c in classes:
+            mapa[c] = f'/arma3/armas/{nome}.png'
+        if i % 200 == 0 or i == len(por_imagem):
+            print(f'  {i}/{len(por_imagem)} imagens — {convertidas} PNG, '
+                  f'{len(mapa)} armas mapeadas')
 
     os.makedirs(OUT, exist_ok=True)
     with open(MAPA_SAIDA, 'w', encoding='utf-8') as f:
         json.dump(dict(sorted(mapa.items())), f, ensure_ascii=False, indent=1)
 
-    print(f'\nPNG gerados ....... {len(mapa)}')
+    print(f'\nPNG gerados ....... {convertidas}')
+    print(f'armas mapeadas .... {len(mapa)}')
     print(f'PBO não resolvido . {len(faltou_pbo)}')
     print(f'falha na conversão  {len(falhou_conv)}')
     for c, v in faltou_pbo[:5]:
