@@ -76,14 +76,39 @@ nome da classe, pronto pra `<img src="/arma3/armas/<classe>.png">`.
 - `v0` já é o efetivo: o multiplicador `initSpeed` da arma aplicado sobre o
   `initSpeed` do carregador.
 
-## Estado atual
+## Estado atual — dump rodado, dados prontos
 
-Verificado nesta máquina:
+O operador rodou o dump com o preset completo carregado. Resultado:
 
-- índice de PBOs: **4.362 lidos, 2.278 prefixos, 0 ilegíveis** (jogo + Workshop);
-- conversão de ícone: **6/6** no ensaio, PNG 256×256 conferido visualmente;
-- `parse-dump.py`: testado ponta a ponta com `.rpt` sintético.
+| | |
+|---|---|
+| armas | **10.822** (o total do jogo bate com o lido) |
+| carregadores · munições | 1.432 · 472 |
+| com balística completa (`v0` + `airFriction` + dano) | **99%** |
+| ícones | **10.226** de 10.457 (97,8%) em 2.417 WebP, 39 MB |
 
-Pendente: rodar o dump in-game — é o que preenche `arma3-config.json` e, com ele,
-o conjunto completo de ícones. O caminho LZSS do `pbo.py` ainda não apareceu em
-PBO real, então segue sem validação em dado de produção.
+Amostra conferida contra o jogo: MX `v0=752,5 dano=10 airFriction=-0,000774`;
+M200 Intervention `v0=867 cap=7`; P99 `v0=390`; Stoner 99 `cap=200`.
+
+### O que NÃO dá pra extrair (limite conhecido, não bug)
+
+- **125 imagens de Expeditionary Forces** — DLC em `.ebo` cifrado, que nem o
+  Arma 3 Tools abre. Os *números* dessas armas estão no JSON (vieram do dump
+  in-game); só o ícone falta.
+- **365 armas sem `picture` no config** — não existe ícone pra extrair.
+
+### Armadilhas que custaram caro (não repita)
+
+- O `diag_log` **trunca a linha em 1012 caracteres**. Foi por isso que a v1 do
+  formato perdeu 11% das armas *em silêncio*. Ao acrescentar campo, quebre em
+  mais linhas em vez de alongar a existente.
+- O `.rpt` é o log da **sessão inteira**: guarda todos os dumps que rodaram. O
+  parser zera o estado a cada `INICIO` — só o último vale.
+- Muito config escreve o `picture` **sem extensão** (`.../ui/gear_x_ca`), e o
+  arquivo dentro do PBO é `.paa`. Foi o que segurou ~800 ícones.
+- Um prefixo de PBO pode ter **vários** PBOs (modelo num, textura noutro).
+- Manter muitos PBOs abertos estoura a memória da máquina (`WinError 1455`);
+  o cache é limitado a 6 de propósito.
+
+O caminho LZSS do `pbo.py` ainda não apareceu em PBO real — segue sem validação
+em dado de produção.
