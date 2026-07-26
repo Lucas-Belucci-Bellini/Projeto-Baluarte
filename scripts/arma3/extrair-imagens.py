@@ -136,6 +136,7 @@ def main():
     argv = sys.argv[1:]
     reindexar = '--reindexar' in argv
     teste = int(argv[argv.index('--teste') + 1]) if '--teste' in argv else 0
+    limite = int(argv[argv.index('--limite') + 1]) if '--limite' in argv else 0
 
     pal2pace = achar_pal2pace()
     print(f'Pal2PacE: {pal2pace}')
@@ -154,26 +155,55 @@ def main():
 
     os.makedirs(DESTINO_PNG, exist_ok=True)
     mapa, faltou_pbo, falhou_conv = {}, [], []
-    cache_pbo = {}
     convertidas = 0
 
-    for i, (virtual, classes) in enumerate(sorted(por_imagem.items()), 1):
+    # Resolve TUDO primeiro (só consulta o índice, é barato) e agrupa por PBO.
+    # Assim cada PBO é aberto uma vez e liberado antes do próximo: guardar os
+    # índices de centenas de PBOs em cache estourou a memória da máquina
+    # (WinError 1455 - arquivo de paginação muito pequeno).
+    trabalho = {}
+    for virtual, classes in por_imagem.items():
         nome = re.sub(r'[^a-z0-9_-]+', '-',
                       os.path.splitext(os.path.basename(virtual))[0].lower())
         destino = os.path.join(DESTINO_PNG, f'{nome}.png')
+        if os.path.isfile(destino):                      # já convertida: reusa
+            for c in classes:
+                mapa[c] = f'/arma3/armas/{nome}.png'
+            continue
+        caminho_pbo, interno = resolver(virtual, indice)
+        if not caminho_pbo:
+            faltou_pbo.append((classes[0], virtual))
+            continue
+        trabalho.setdefault(caminho_pbo, []).append((interno, nome, destino, classes))
 
-        if not os.path.isfile(destino):                 # já convertida antes? reusa
-            caminho_pbo, interno = resolver(virtual, indice)
-            if not caminho_pbo:
-                faltou_pbo.append((classes[0], virtual))
-                continue
+    if limite:
+        cortado = {}
+        restam = limite
+        for p, itens in trabalho.items():
+            if restam <= 0:
+                break
+            cortado[p] = itens[:restam]
+            restam -= len(cortado[p])
+        trabalho = cortado
+
+    total = sum(len(v) for v in trabalho.values())
+    print(f'a converter: {total} imagens, de {len(trabalho)} PBOs '
+          f'({len(mapa)} ja tinham PNG)\n')
+
+    feitas = 0
+    for caminho_pbo, itens in trabalho.items():
+        try:
+            pbo = PBO(caminho_pbo)
+        except Exception as err:
+            for _interno, _nome, _dest, classes in itens:
+                falhou_conv.append((classes[0], str(err)[:100]))
+            continue
+        for interno, nome, destino, classes in itens:
+            feitas += 1
             try:
-                if caminho_pbo not in cache_pbo:
-                    cache_pbo[caminho_pbo] = PBO(caminho_pbo)
-                pbo = cache_pbo[caminho_pbo]
                 entrada = pbo.achar(interno)
                 if not entrada:
-                    faltou_pbo.append((classes[0], virtual))
+                    faltou_pbo.append((classes[0], interno))
                     continue
                 dados = pbo.ler(entrada)
             except Exception as err:
@@ -184,12 +214,11 @@ def main():
                 falhou_conv.append((classes[0], err))
                 continue
             convertidas += 1
-
-        for c in classes:
-            mapa[c] = f'/arma3/armas/{nome}.png'
-        if i % 200 == 0 or i == len(por_imagem):
-            print(f'  {i}/{len(por_imagem)} imagens — {convertidas} PNG, '
-                  f'{len(mapa)} armas mapeadas')
+            for c in classes:
+                mapa[c] = f'/arma3/armas/{nome}.png'
+            if convertidas % 200 == 0:
+                print(f'  {feitas}/{total} — {convertidas} PNG, {len(mapa)} armas')
+        del pbo                                          # solta o índice antes do próximo
 
     os.makedirs(OUT, exist_ok=True)
     with open(MAPA_SAIDA, 'w', encoding='utf-8') as f:
