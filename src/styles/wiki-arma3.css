@@ -427,3 +427,36 @@
   padding-top: var(--space-md);
   border-top: 1px dashed var(--color-border);
 }
+
+/* ── anatomia do classname ──
+ * Cada pedaço do nome numa linha, o pedaço em mono à esquerda e o
+ * significado à direita. A etiqueta de evidência distingue o que o engine
+ * usa de fato (slot) do que é convenção observada. */
+.wk-anat__intro { margin-bottom: var(--space-sm); }
+.wk-anat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.wk-anat__linha {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: baseline;
+  padding: var(--space-xs) var(--space-sm);
+  border-left: 2px solid var(--color-cyan);
+  background: var(--color-surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.wk-anat__pedaco {
+  font-family: var(--font-mono);
+  color: var(--color-cyan);
+  white-space: nowrap;
+  min-width: 5rem;
+}
+.wk-anat__desc { color: var(--color-text); }
+.wk-anat__ev { font-size: .75rem; opacity: .7; }
+
+@media (max-width: 640px) {
+  .wk-anat__linha { flex-direction: column; gap: 2px; }
+  .wk-anat__pedaco { min-width: 0; }
+}

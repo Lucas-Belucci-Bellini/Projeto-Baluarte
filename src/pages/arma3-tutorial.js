@@ -816,8 +816,9 @@ export function arma3TutorialPage(args = {}) {
 
   /* ===== soldados =====
    *
-   * A coluna "Lado" fica vazia em ~87% e isso e o dado, nao falha de
-   * captura: 83 das 248 faccoes usam side 7 (sideUnknown do engine). */
+   * A coluna "Lado" fica vazia em ~90%, e a causa NAO e sideUnknown: sao 21
+   * faccoes que o dump nao capturou (sof_rangers sozinha tem 24.555). Nao
+   * preencher com "Civil": sof_rangers sao Rangers, nao civis. */
   function tabelaSoldados(lista) {
     const colunas = [
       { k: 'nome', rot: 'Soldado', celCls: 'a3arm-td--nome', val: (s) => s.nome,
@@ -845,10 +846,6 @@ export function arma3TutorialPage(args = {}) {
       { k: 'moch', rot: 'Mochila', val: (s) => s.mochila,
         cel: (s) => (s.mochila ? h('code', { className: 'a3arm-af' }, s.mochila)
           : h('span', { className: 'a3arm-td__na' }, '—')) },
-      { k: 'var', rot: 'Variantes', celCls: 'a3arm-num-cel', descPrimeiro: true,
-        val: (s) => s.variantes,
-        cel: (s) => (s.variantes > 1 ? h('span', { title: s.nomes.join(' · ') }, String(s.variantes))
-          : h('span', { className: 'a3arm-td__na' }, '1')) },
       { k: 'classe', rot: 'Classe', val: (s) => s.classe,
         cel: (s) => h('code', { className: 'a3arm-af' }, s.classe) },
     ];

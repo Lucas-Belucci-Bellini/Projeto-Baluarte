@@ -562,10 +562,6 @@ function construir() {
     if (s.mochila) frases.push(`Leva a mochila ${s.mochila}.`);
     if (s.nGranadas) frases.push(`Tem ${s.nGranadas} slot(s) de granada/explosivo.`);
     if (s.nItens) frases.push(`${s.nItens} itens ligados (rádio, GPS, kit).`);
-    if (s.variantes > 1) {
-      frases.push(`O config tem ${s.variantes} classes com este mesmo ` +
-        'equipamento — camuflagem diferente, mesma carga.');
-    }
 
     artigos.push({
       id: `sol-${s.id}`,

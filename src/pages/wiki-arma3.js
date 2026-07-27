@@ -16,6 +16,7 @@ import '../styles/wiki-arma3.css';
 import { h, debounce } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { A3EXT_BLOCOS, A3EXT_FILA } from '../data/arma3-extracao.js';
+import { explicarClasse } from '../data/arma3-classes.js';
 import {
   WIKI_ARTIGOS, WIKI_POR_ID, WIKI_TOTAL, WIKI_PORTAIS, WIKI_NIVEIS,
   WIKI_CONTAGEM, A3COL_INFO, buscar, relacionados, catsDoPortal
@@ -477,6 +478,36 @@ function vistaArtigo(page, art) {
       h('ul', { className: 'wk-dicas' }, ...art.dicas.map((d) => h('li', null, d))))
     : null;
 
+  /* ── o classname explicado pedaço por pedaço ──
+   *
+   * O leitor vê `arifle_MX_ACO_pointer_F` na ficha e, sem a convenção
+   * decorada, isso é ruído. Mas o nome É estruturado: prefixo diz o slot,
+   * os pedaços do meio dizem a óptica e o acessório montados de fábrica.
+   *
+   * Só aparece pedaço que casa com o dicionário — meia explicação
+   * verdadeira vale mais que uma inteira inventada. Classe de mod que não
+   * segue a convenção não mostra o bloco. */
+  const classeDoArtigo = (art.arma || art.acessorio || art.veiculo
+    || art.equipamento || art.soldado || art.terreno || {}).classe;
+  const ctx = art.soldado ? 'soldado' : (art.veiculo ? 'veiculo' : 'item');
+  const partes = classeDoArtigo ? explicarClasse(classeDoArtigo, ctx).partes : [];
+  const anatomia = partes.length
+    ? h('section', { className: 'wk-art__bloco' },
+      h('h2', { className: 'wk-art__h2' }, '🔤 O que o nome da classe diz'),
+      h('p', { className: 'u-text-muted wk-anat__intro' },
+        'O ', h('code', null, classeDoArtigo),
+        ' não é um código arbitrário — cada pedaço tem significado:'),
+      h('div', { className: 'wk-anat' },
+        ...partes.map((pt) => h('div', { className: 'wk-anat__linha' },
+          h('code', { className: 'wk-anat__pedaco' }, pt.texto),
+          h('div', null,
+            h('b', null, pt.nome),
+            h('span', { className: 'wk-anat__desc' }, ' — ' + pt.desc),
+            pt.ev === 'slot'
+              ? h('span', { className: 'wk-anat__ev' }, ' [o engine usa isto pra escolher o slot]')
+              : h('span', { className: 'wk-anat__ev u-text-muted' }, ' [convenção observada, não declarada no config]'))))))
+    : null;
+
   /* bloco SQF com botão de copiar (artigos do portal Console) */
   let sqf = null;
   if (art.sqf) {
@@ -519,7 +550,7 @@ function vistaArtigo(page, art) {
         h('span', { className: 'wk-tag' }, `${art.icon || '📄'} ${art.catNome}`),
         art.noPreset ? h('span', { className: 'wk-tag wk-tag--on' }, '✔ está no preset oficial') : null,
         art.naColecao ? h('span', { className: 'wk-tag' }, '📦 na coleção') : null),
-      corpo, atalhos, sqf, dicas, guia, relEl),
+      corpo, anatomia, atalhos, sqf, dicas, guia, relEl),
     infobox(art)));
 }
 

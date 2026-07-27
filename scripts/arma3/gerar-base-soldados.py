@@ -20,22 +20,34 @@ pro campo", em vez de mais uma lista de nomes.
 
 ## Três decisões
 
-### 1. `lado` fica null em 90% — e isso é o dado, não uma falha
+### 1. `lado` fica null em 90%, e a causa NÃO é sideUnknown
 
-Medido: só **4.331 dos 44.761** têm lado. A causa é real e vale registrar: a
-facção declara `side`, e **83 das 248 facções usam `side: 7`**, que é o
-`sideUnknown` do engine. Facção sem lado ⇒ soldado sem lado.
+Medido: só **4.331 dos 44.761** têm lado. Investigado a fundo, porque a
+primeira explicação que escrevi aqui estava errada:
 
-Preencher com "BLUFOR" por parecer, ou com "Civil" por ser o mais comum,
-inventaria filiação. Onde a facção declara (`side` 0/1/2/3 → OPFOR / BLUFOR /
-Independente / Civil), o lado sai dali e `ladoFonte` diz "faccao".
+  - as **83 facções com `side: 7`** (sideUnknown) têm **ZERO soldados** —
+    são módulos e lógica (ACE Logistics, ALiVE Modules, Animals, Audio)
+  - os 40.430 sem lado pertencem a **21 facções que NÃO ESTÃO no dump**:
+    `sof_rangers` sozinha tem 24.555, `zulu_flannels` 5.632
 
-### 2. Colapsa por EQUIPAMENTO, não por nome
+Ou seja, não é "o jogo diz que não tem lado" — é "o dump não capturou essa
+facção". `CfgFactionClasses` trouxe 248 e essas 21 ficaram de fora.
 
-44.761 é o acervo contando cada variante de camuflagem como soldado novo. A
-chave de agrupamento é o que o soldado LEVA — facção, uniforme, mochila e a
-lista de armas. Dois "Rifleman" com o mesmo equipamento viram um; o mesmo nome
-com arma diferente **continua separado**, porque é outro soldado na prática.
+⚠️ **Não preencher com "Civil".** `sof_rangers` são *Rangers* (classes
+`TFL_mw_pcu_*`, mod de forças especiais dos EUA): rotular 24.555 deles como
+civis seria pior que deixar em branco. Consertar isto de verdade exige um
+dump novo que capture as facções faltantes — está registrado no README.
+
+### 2. NÃO colapsa: entram os 44.761, nome repetido e tudo
+
+Decisão do operador, e ela tem razão de ser: dois "Rifleman" com o mesmo
+equipamento ainda são DUAS classes que se pode spawnar, com camuflagem
+diferente — e quem monta missão precisa do classname exato, não do
+representante de um grupo.
+
+O custo é o tamanho, e ele foi pago onde dava: o JSON sob demanda leva menos
+campos que o bundle (ver `SO_NO_NUCLEO`), e o núcleo do bundle segue só com
+vanilla/DLC. O acervo completo desce quando alguém pede.
 
 ### 3. `armas` inclui `Throw` e `Put`
 
@@ -185,7 +197,7 @@ def verificar(entradas):
 
 
 def escrever(todas, faccoes):
-    entradas = colapsar(todas)
+    entradas = todas  # sem colapso: decisão do operador, ver decisão 2
     nucleo = [e for e in entradas if not e['_ehMod']]
     nucleo.sort(key=lambda e: ((e['lado'] or 'zzz'), e['nome'].lower()))
     pub = [{k: v for k, v in e.items() if not k.startswith('_')} for e in nucleo]
@@ -241,8 +253,7 @@ def escrever(todas, faccoes):
     # .jpg), `nomes`, `faccaoClasse` e `sideCru` só servem à ficha do núcleo,
     # que já está no bundle — na lista completa ninguém os lê.
     # Mesmo raciocínio que enxugou veiculos-db e equipamento-db.
-    SO_NO_NUCLEO = {'preview', 'nomes', 'classes', 'faccaoClasse', 'sideCru',
-                    'ladoFonte'}
+    SO_NO_NUCLEO = {'preview', 'faccaoClasse', 'sideCru', 'ladoFonte'}
     pubTodos = [{k: v for k, v in e.items()
                  if not k.startswith('_') and k not in SO_NO_NUCLEO}
                 for e in entradas]
@@ -270,8 +281,7 @@ def main():
     nucleo, colapsadas = escrever(entradas, faccoes)
 
     comLado = sum(1 for e in colapsadas if e['lado'])
-    print(f'soldados no dump ..... {len(entradas)}')
-    print(f'após colapsar ........ {len(colapsadas)}  (por equipamento)')
+    print(f'soldados publicados .. {len(entradas)}  (todos, sem colapso)')
     print(f'núcleo (bundle) ...... {len(nucleo)}')
     print(f'com lado declarado ... {comLado}  '
           f'({100 * comLado / max(len(colapsadas), 1):.0f}%)')
