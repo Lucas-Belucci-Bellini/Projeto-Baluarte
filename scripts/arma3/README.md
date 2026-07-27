@@ -352,6 +352,38 @@ O operador rodou o dump com o preset completo carregado. Resultado:
 Amostra conferida contra o jogo: MX `v0=752,5 dano=10 airFriction=-0,000774`;
 M200 Intervention `v0=867 cap=7`; P99 `v0=390`; Stoner 99 `cap=200`.
 
+### ⚠️ Granadas e explosivos NÃO estão no dump — precisa rodar de novo
+
+O `dump-config.sqf` filtra as armas por `type in [1, 2, 4]` (primária, pistola,
+lançador) e só coleta os carregadores QUE ESSAS ARMAS USAM. Só que granada de
+mão, fumígena, sinalizador, mina e carga explosiva pertencem às pseudo-armas
+**`Throw`** e **`Put`**, que não são desses tipos — e por isso ficaram de fora.
+
+Medido: `HandGrenade`, `MiniGrenade`, `SmokeShell`, `Chemlight_green`,
+`DemoCharge_Remote_Mag` e `ATMine_Range_Mag` **não estão** nos 1.432
+carregadores capturados. Dos 1.432, 1.323 são bala; o que sobra é munição de
+lançador e de morteiro, não coisa de arremesso.
+
+Por isso **não existe aba de granadas** na wiki: montar uma com este dump
+mostraria o M72 e o RPG-26 como "granada", que é falso. O `dump-config.sqf`
+já foi corrigido (varre `Throw` e `Put` antes do resto e loga
+`<<A3DUMP>>ARREMESSO|`), mas **o dump precisa rodar de novo no jogo** pra
+trazer o dado.
+
+Como conferir se a rodada nova pegou: procure a linha `<<A3DUMP>>ARREMESSO|`
+no `.rpt` — ela diz quantos carregadores cada pseudo-arma trouxe. Zero ali
+significa que o preset não tem nada de arremesso, o que seria estranho.
+
+### Facções faltando — 40.430 soldados sem lado
+
+Os soldados sem `lado` **não** são de facção `sideUnknown`, como parecia: são
+de **21 facções que não estão no `CfgFactionClasses` capturado**. A maior é
+`sof_rangers`, com 24.555 soldados — e são *Rangers* (classes `TFL_mw_pcu_*`),
+não civis. `zulu_flannels` tem 5.632.
+
+**Não preencha com "Civil".** O conserto é capturar essas facções num dump
+novo; enquanto isso o campo fica ausente, que é a verdade.
+
 ### Itens e veículos — dump rodado, dados prontos
 
 | | |
