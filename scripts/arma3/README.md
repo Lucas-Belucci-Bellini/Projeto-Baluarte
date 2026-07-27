@@ -229,6 +229,46 @@ preset), então sem o intermediário no repo uma sessão **remota** não regera
 `src/data/arma3-armas.js` depois de um ajuste no gerador — dependeria de um
 round-trip com a máquina do operador a cada mudança.
 
+### A ampliação da mira NÃO sai de `0.75 / FOV`
+
+Parece que sai, e não sai. Conferindo o ELCAN SpecterOS:
+
+| fonte | valor |
+|---|---|
+| `oticas[].zoomMin` do config | 0,0625 |
+| conta `0,75 / 0,0625` | **12×** |
+| `descriptionShort` do próprio jogo | **2x** |
+
+Fator 6 de diferença. Seja porque o 0,75 não é a referência certa, seja porque
+a óptica 2D do ACE renderiza por outro caminho, a conta não se sustenta — e
+publicar "zoom real lido do config" com ela seria inventar número com cara de
+medição.
+
+**Use o texto.** 435 dos 1.167 itens com óptica trazem "Magnification: 2x" no
+`descriptionShort`, que é o rótulo que o jogo mostra ao jogador. Para os outros
+732, exiba o FOV cru rotulado como FOV e diga que a ampliação não é declarada —
+não converta.
+
+### O `.rpt` é cp1252 e engole UTF-8: 191 descrições vêm com mojibake
+
+`6xâ€“25x` é `6x–25x` com o en-dash lido como cp1252. O parser abre o `.rpt`
+nessa codificação (correto — é o que o jogo escreve), mas parte do texto do
+config já está em UTF-8, então volta embaralhado.
+
+Conserto no consumidor, não no parser (o `.rpt` não mente; a codificação é
+mista mesmo):
+
+```python
+def reparar(s):
+    try:
+        return s.encode('cp1252', errors='strict').decode('utf-8', errors='strict')
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return s            # já estava certo
+```
+
+O `strict` nos dois lados é o que segura: sem ele, texto correto seria
+"consertado" para lixo.
+
 ### Regras de honestidade (as mesmas da #398)
 
 - Todo número vem do config do jogo em execução. Nada é estimado.
