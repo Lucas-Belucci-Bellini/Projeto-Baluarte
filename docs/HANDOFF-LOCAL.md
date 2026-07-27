@@ -249,6 +249,72 @@ Falta a **máquina** (os arquivos do Drive + Arma 3 Tools). Passos:
 - **Aceite:** tabela de armas com stats EXATOS do config (vanilla + mods), a
   calculadora batendo com o jogo, e cada arma com a imagem como aparece no Arsenal.
 
+## E. Catálogo completo + modelos 3D (#398, fase 2) · **pipeline em `main`, falta rodar**
+
+A extração de **armas** terminou e já está no site (valores medidos, ícones,
+calculadora). Faltam duas coisas que **só a máquina do operador** consegue.
+
+### E1 — Dump do CATÁLOGO (veículos, soldados, miras, uniformes, coletes…)
+
+Tudo pronto do lado remoto; é só rodar. A aba **🎒 Catálogo** do
+`/arma3-tutorial` já existe com as **23 categorias** e mostra "aguardando
+extração" até o dado chegar.
+
+```bash
+# 1. no jogo: Esc -> DEBUG CONSOLE -> cola scripts/arma3/dump-catalogo.sqf -> EXECUTE
+python scripts/arma3/parse-catalogo.py
+python scripts/arma3/extrair-imagens.py          # pega os ícones dos itens novos
+python scripts/arma3/extrair-imagens.py --webp
+python scripts/arma3/gerar-catalogo.py
+```
+
+O que sai: blindagem/velocidade/transporte por veículo, **zoom real** das miras
+(o config guarda FOV em radianos), **proteção por ponto do corpo** de colete e
+uniforme, capacidade de mochila, armamento inicial de cada função de soldado.
+
+⚠️ **Não troque o `_fnc_n` por `getNumber` no `.sqf`.** `getNumber` devolve 0
+pra propriedade que **não existe**, e "sem blindagem declarada" viraria
+"blindagem 0". O helper testa `isNumber` antes e emite vazio.
+
+### E2 — Modelos 3D: o que dá e o que não dá
+
+O operador pediu para **ver as armas em 3D**. Situação real:
+
+| | |
+|---|---|
+| ✅ **O visor já existe** | `src/utils/visor-3d.js` — three.js com GLTF + DRACO self-hosted, STL, OBJ, FBX, OrbitControls, enquadramento automático, chunk lazy (#238). **Não precisa de biblioteca nova.** |
+| ✅ **Extrair o `.p3d` do PBO** | `scripts/arma3/extrair-modelos.py` (novo). Deduplica: 10.821 armas apontam pra **1.337 modelos** distintos. |
+| ❌ **Converter `.p3d` → glTF** | **Não dá por script.** É o gargalo. |
+
+**Por que a conversão não é automatizável:** o `.p3d` que o jogo distribui é
+**ODOL** (binarizado) — formato proprietário, sem especificação pública
+estável, que muda entre versões do engine. Não há biblioteca Python ou JS que
+leia ODOL de forma confiável; escrever uma seria engenharia reversa de formato
+fechado, que quebra em silêncio na próxima atualização.
+
+O caminho que funciona exige GUI:
+
+```bash
+python scripts/arma3/extrair-imagens.py --reindexar   # se o índice não existir
+python scripts/arma3/extrair-modelos.py --so-nucleo   # começa pelo jogo base
+# depois, na GUI:
+#   Blender + addon Arma Toolbox (Alwarren) -> importa .p3d -> exporta .glb
+#   salvar em public/arma3/modelos/<classe>.glb
+```
+
+Com o `.glb` no lugar, ligar no site é trivial — o visor abre `.glb` de uma URL.
+
+**Sobre os repositórios que o operador encontrou** (`Online3DViewer`,
+`3d-model-hub`, `3DViewer`, `DRViewer`, `html_3dviewer`): nenhum resolve o
+gargalo. Todos são **visualizadores** — a parte que já está pronta aqui — e
+nenhum lê `.p3d`. O `Online3DViewer` (kovacsv) é o mais maduro dos cinco, mas
+adotá-lo trocaria um visor que já existe, já é lazy e já usa os tokens do site
+por outro que teria de ser integrado do zero, sem ganhar nenhum formato que
+importe para este caso.
+
+Comece pelo **núcleo** (`--so-nucleo`): ~100 modelos do jogo base cobrem quase
+todo o uso, e converter 1.337 à mão não se paga.
+
 ## C. Mega-plano #238 — app completo / site leve
 
 - [x] **Fase 1 — medir** ✅ (comentário no #238): boot web ~111 kB gz; pesados lazos por rota.
