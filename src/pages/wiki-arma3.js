@@ -140,6 +140,32 @@ function vistaCapa(page) {
       h('a', { className: 'btn', href: '#/arma3-tutorial' }, 'Modo tutorial (abas)'))));
 }
 
+/* Ficha de soldado.
+ *
+ * ⚠️ "Lado" some quando o config não declara — 83 das 248 facções usam
+ * `side: 7` (sideUnknown). A ficha prefere a linha ausente a chutar BLUFOR
+ * por o soldado "parecer" ocidental. */
+function fichaSoldado(s, linha) {
+  return [
+    linha('Facção', s.faccao),
+    linha('Lado', s.lado
+      ? h('span', null, s.lado,
+        h('span', { className: 'u-text-muted' }, ' · declarado pela facção'))
+      : h('span', { className: 'u-text-muted' }, 'a facção não declara (sideUnknown)')),
+    linha('Armamento', s.armas && s.armas.length
+      ? h('span', null, ...s.armas.map((a, i) => h('span', null, i ? ' · ' : '', h('code', null, a))))
+      : null),
+    linha('Carregadores', s.nCarregadores ? String(s.nCarregadores) : null),
+    linha('Granadas/explosivos', s.nGranadas ? String(s.nGranadas) : null),
+    linha('Uniforme', s.uniforme ? h('code', null, s.uniforme) : null),
+    linha('Mochila', s.mochila ? h('code', null, s.mochila) : null),
+    linha('Itens ligados', s.nItens ? String(s.nItens) : null),
+    linha('Variantes', s.variantes > 1 ? `${s.variantes} classes com a mesma carga` : null),
+    linha('Origem', s.dlc),
+    linha('Classe', h('code', null, s.classe)),
+  ];
+}
+
 /* Ficha de equipamento.
  *
  * ⚠️ A linha "Passagem" é o `passThrough`: a fração do dano que atravessa a
@@ -501,7 +527,7 @@ const ROTULO_TIPO = {
   mod: 'Mod', item: 'Item da coleção', guia: 'Guia',
   comando: 'Comando de console', campanha: 'Missão/campanha', arquivo: 'Arquivo',
   arma: 'Arma', acessorio: 'Acessório', terreno: 'Terreno', veiculo: 'Veículo',
-  equipamento: 'Equipamento'
+  equipamento: 'Equipamento', soldado: 'Soldado'
 };
 
 /* Infobox estilo wiki: capa + ficha técnica, na lateral. */
@@ -542,6 +568,7 @@ function infobox(art) {
     ...(art.terreno ? fichaTerreno(art.terreno, linha) : []),
     ...(art.veiculo ? fichaVeiculo(art.veiculo, linha) : []),
     ...(art.equipamento ? fichaEquipamento(art.equipamento, linha) : []),
+    ...(art.soldado ? fichaSoldado(art.soldado, linha) : []),
 
     ...(art.links || []).map((l) => {
       /* Link interno (#/rota) NÃO abre em aba nova: `target=_blank` faz sentido

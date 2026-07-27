@@ -28,6 +28,7 @@ import { A3ACC, A3ACC_TOTAL, A3ACC_META } from '../data/arma3-acessorios.js';
 import { A3TER, A3TER_TOTAL, A3TER_META } from '../data/arma3-terrenos.js';
 import { A3VEI, A3VEI_TOTAL, A3VEI_CATEGORIAS, A3VEI_META } from '../data/arma3-veiculos.js';
 import { A3EQP, A3EQP_TOTAL, A3EQP_CATEGORIAS } from '../data/arma3-equipamento.js';
+import { A3SOL, A3SOL_TOTAL, A3SOL_META } from '../data/arma3-soldados.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
@@ -68,7 +69,7 @@ export function arma3TutorialPage(args = {}) {
   let expandido = null;   // id da arma com os modos de tiro abertos
   let arsenalMods = null, arsenalEstado = 'ocioso';
   const abaInicial = (args.query || {}).aba;
-  const ABAS = ['vanilla', 'armas', 'acessorios', 'veiculos', 'equipamento', 'terrenos', 'municao',
+  const ABAS = ['vanilla', 'armas', 'acessorios', 'veiculos', 'equipamento', 'soldados', 'terrenos', 'municao',
     'carregadores', 'colecao', 'config', 'mods', 'comandos',
     'campanhas', 'drive'];
   let aba = ABAS.includes(abaInicial) ? abaInicial : (armaPedida ? 'armas' : 'vanilla');
@@ -117,6 +118,7 @@ export function arma3TutorialPage(args = {}) {
     abaBtn('acessorios', `🔭 Miras & acessórios · ${A3ACC_TOTAL}`),
     abaBtn('veiculos', `🛡️ Veículos · ${A3VEI_TOTAL}`),
     abaBtn('equipamento', `🦺 Equipamento · ${A3EQP_TOTAL}`),
+    abaBtn('soldados', `🎖️ Soldados · ${A3SOL_TOTAL}`),
     abaBtn('terrenos', `🗺️ Terrenos · ${A3TER_TOTAL}`),
     abaBtn('municao', `💥 Munições · ${A3MUN_TOTAL}`),
     abaBtn('carregadores', `🧰 Carregadores · ${A3MAG_TOTAL}`),
@@ -812,6 +814,51 @@ export function arma3TutorialPage(args = {}) {
     lista.length, tabelaSort('equipamento', colunas, lista));
   }
 
+  /* ===== soldados =====
+   *
+   * A coluna "Lado" fica vazia em ~87% e isso e o dado, nao falha de
+   * captura: 83 das 248 faccoes usam side 7 (sideUnknown do engine). */
+  function tabelaSoldados(lista) {
+    const colunas = [
+      { k: 'nome', rot: 'Soldado', celCls: 'a3arm-td--nome', val: (s) => s.nome,
+        cel: (s) => h('b', null, s.nome) },
+      { k: 'faccao', rot: 'Facção', val: (s) => s.faccao,
+        cel: (s) => (s.faccao ? h('span', null, s.faccao)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'lado', rot: 'Lado', val: (s) => s.lado,
+        cel: (s) => (s.lado
+          ? h('span', { className: 'a3arm-flag' }, s.lado)
+          : h('span', { className: 'a3arm-td__na', title: 'a facção usa side 7 (sideUnknown) — o config não declara o lado' }, '—')) },
+      { k: 'armas', rot: 'Armamento', val: (s) => (s.armas ? s.armas[0] : null),
+        cel: (s) => (s.armas && s.armas.length
+          ? h('span', { title: s.armas.join(' · ') },
+            h('code', { className: 'a3arm-af' }, s.armas[0]),
+            s.armas.length > 1 ? h('span', { className: 'a3arm-td__u' }, ` +${s.armas.length - 1}`) : null)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'mags', rot: 'Carregadores', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (s) => s.nCarregadores, cel: (s) => val(s.nCarregadores) },
+      { k: 'gran', rot: 'Granadas', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (s) => s.nGranadas, cel: (s) => val(s.nGranadas) },
+      { k: 'unif', rot: 'Uniforme', val: (s) => s.uniforme,
+        cel: (s) => (s.uniforme ? h('code', { className: 'a3arm-af' }, s.uniforme)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'moch', rot: 'Mochila', val: (s) => s.mochila,
+        cel: (s) => (s.mochila ? h('code', { className: 'a3arm-af' }, s.mochila)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'var', rot: 'Variantes', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (s) => s.variantes,
+        cel: (s) => (s.variantes > 1 ? h('span', { title: s.nomes.join(' · ') }, String(s.variantes))
+          : h('span', { className: 'a3arm-td__na' }, '1')) },
+      { k: 'classe', rot: 'Classe', val: (s) => s.classe,
+        cel: (s) => h('code', { className: 'a3arm-af' }, s.classe) },
+    ];
+    return secao('🎖️', 'Soldados',
+      'Quem é cada soldado e O QUE CARREGA — arma, carregadores, uniforme e '
+      + 'mochila, lidos do config. A coluna Lado fica vazia quando a facção '
+      + 'usa sideUnknown; é ausência declarada, não falta de captura.',
+    lista.length, tabelaSort('soldados', colunas, lista));
+  }
+
   /* ===== terrenos =====
    *
    * A coluna que importa é "Northing": ela mostra o SINAL do passo da grade.
@@ -1154,6 +1201,16 @@ export function arma3TutorialPage(args = {}) {
       if (lista.length) corpo.appendChild(tabelaEquipamento(lista));
       contador.textContent = `${visiveis} de ${total} peças do núcleo `
         + `(${A3EQP_TOTAL} classes no config, variante cosmética colapsada)`;
+    } else if (aba === 'soldados') {
+      total = A3SOL.length;
+      const lista = !termo ? A3SOL : A3SOL.filter((s) => normalize(
+        `${s.nome} ${s.classe} ${s.faccao || ''} ${s.lado || ''} ${s.dlc} `
+        + `${(s.armas || []).join(' ')} ${(s.classes || []).join(' ')}`
+      ).includes(termo));
+      visiveis = lista.length;
+      if (lista.length) corpo.appendChild(tabelaSoldados(lista));
+      contador.textContent = `${visiveis} de ${total} soldados do núcleo `
+        + `(${A3SOL_TOTAL} classes no config)`;
     } else if (aba === 'municao') {
       total = A3MUN_TOTAL;
       if (!termo) corpo.appendChild(cardFurtividade());

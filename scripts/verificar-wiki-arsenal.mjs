@@ -35,6 +35,7 @@ import { A3ACC } from '../src/data/arma3-acessorios.js';
 import { A3TER } from '../src/data/arma3-terrenos.js';
 import { A3VEI } from '../src/data/arma3-veiculos.js';
 import { A3EQP } from '../src/data/arma3-equipamento.js';
+import { A3SOL } from '../src/data/arma3-soldados.js';
 import { WIKI_ARTIGOS } from '../src/data/wiki-arma3.js';
 import { dadosBalisticos } from '../src/utils/arma3-balistica.js';
 
@@ -174,6 +175,35 @@ for (const e of A3EQP) {
   if (p && p.cobertas > p.partes) falhas.push(`${e.classe}: cobertas > partes`);
 }
 
+/* ── portal Soldados ── */
+const classesSol = new Set(A3SOL.map((s) => s.classe));
+const artsSol = WIKI_ARTIGOS.filter((a) => a.portal === 'soldados');
+if (!artsSol.length) falhas.push('o portal "soldados" não tem nenhum artigo');
+for (const art of artsSol) {
+  const url = ((art.links || [])[0] || {}).url || '';
+  const m = /[?&]q=([^&]+)/.exec(url);
+  if (!/aba=soldados/.test(url)) { falhas.push(`${art.titulo}: link não aponta pra aba=soldados`); continue; }
+  if (!m) { falhas.push(`${art.titulo}: link sem ?q=`); continue; }
+  const classe = decodeURIComponent(m[1]);
+  if (!classesSol.has(classe)) {
+    falhas.push(`${art.titulo}: busca por "${classe}", que não está na base de soldados`);
+  }
+}
+
+/* Lado inventado é o erro que a base de soldados pode cometer: quando a
+ * facção usa sideUnknown, o lado TEM de ficar ausente. */
+for (const s of A3SOL) {
+  if (s.lado && s.ladoFonte !== 'faccao') {
+    falhas.push(`${s.classe}: lado "${s.lado}" sem procedência declarada`);
+  }
+  if (s.sideCru === 7 && s.lado) {
+    falhas.push(`${s.classe}: sideUnknown virou lado "${s.lado}"`);
+  }
+  if ((s.armas || []).some((a) => /^(throw|put)$/i.test(a))) {
+    falhas.push(`${s.classe}: Throw/Put contado como arma`);
+  }
+}
+
 /* Ids duplicados ENTRE portais: os três prefixam (ars-/opt-/ter-), mas uma
  * colisão levaria dois assuntos ao mesmo deep-link. */
 const todosIds = WIKI_ARTIGOS.map((a) => a.id);
@@ -187,6 +217,7 @@ console.log(`artigos de óptica:  ${artsOpt.length}`);
 console.log(`artigos de terreno: ${artsTer.length} (${terComGrade.size} com grade)`);
 console.log(`artigos de veículo: ${artsVei.length}`);
 console.log(`artigos de equip.:  ${artsEqp.length}`);
+console.log(`artigos de soldado: ${artsSol.length}`);
 
 if (falhas.length) {
   console.error(`\n${falhas.length} problema(s):`);

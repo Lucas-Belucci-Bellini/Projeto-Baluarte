@@ -159,13 +159,16 @@ def main():
              'n': sum(1 for x in vlist.values() if x.get('ehVeiculo') and x.get('hitpoints')),
              'nota': None},
             {'rot': 'facções', 'n': len((veic or {}).get('faccoes') or {}), 'nota': None},
+            {'rot': 'soldados', 'n': len(soldados), 'nota': 'com o que cada um carrega'},
+            {'rot': 'com lado declarado pela facção',
+             'n': sum(1 for s in soldados.values()
+                      if ((veic or {}).get('faccoes') or {}).get(s.get('faccao'), {}).get('side') in (0, 1, 2, 3)),
+             'nota': '83 facções usam sideUnknown'},
         ],
     })
 
     # Extraído mas ainda sem tela — declarado como fila, não como entregue.
     fila = [
-        {'rot': 'soldados', 'n': len(soldados) or None,
-         'rpt': (veic or {}).get('fonte')},
         {'rot': 'animações e gestos',
          'n': len((anim or {}).get('animacoes') or (anim or {}).get('gestos') or {}) or None,
          'rpt': (anim or {}).get('fonte')},

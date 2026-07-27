@@ -32,6 +32,7 @@ import { A3ACC, A3ACC_TOTAL } from './arma3-acessorios.js';
 import { A3TER } from './arma3-terrenos.js';
 import { A3VEI, A3VEI_CATEGORIAS } from './arma3-veiculos.js';
 import { A3EQP, A3EQP_CATEGORIAS } from './arma3-equipamento.js';
+import { A3SOL } from './arma3-soldados.js';
 
 export { A3COL_INFO };
 
@@ -74,7 +75,10 @@ export const WIKI_PORTAIS = [
         + 'o total do casco E a parte mais fraca, que só o total esconde.' },
   { id: 'equipamento', nome: 'Equipamento',      icon: '🦺', cor: 'cyan',
     desc: 'Coletes, capacetes, uniformes e mochilas com a proteção POR PONTO '
-        + 'DO CORPO e a fração de dano que atravessa a placa.' }
+        + 'DO CORPO e a fração de dano que atravessa a placa.' },
+  { id: 'soldados', nome: 'Soldados & facções',  icon: '🎖️', cor: 'magenta',
+    desc: 'Quem é cada soldado, de que facção — e O QUE CARREGA: arma, '
+        + 'carregadores, uniforme e mochila, tudo lido do config.' }
 ];
 
 /* Nível por seção de origem. A chave é `portal:secao` de propósito: o id
@@ -532,6 +536,60 @@ function construir() {
       tags: [cat.nome, q.dlc, q.classe].filter(Boolean),
       autor: '', tam: '',
       equipamento: q,
+    });
+  });
+
+  /* --- 10. soldados ---
+   *
+   * Fecha o círculo das cinco bases: o soldado referencia a ARMA, o
+   * CARREGADOR e o UNIFORME por classe — e as três já existem aqui. É o
+   * artigo que responde "o que o Rifleman da BLUFOR leva pro campo".
+   *
+   * ⚠️ `lado` é null em ~87%, e isso é o dado: 83 das 248 facções usam
+   * `side: 7` (sideUnknown do engine). Facção sem lado é soldado sem lado —
+   * preencher por semelhança inventaria filiação. */
+  A3SOL.forEach((s) => {
+    const frases = [];
+    if (s.faccao) {
+      frases.push(`Facção ${s.faccao}` +
+        (s.lado ? `, do lado ${s.lado}.` : ' — o config não declara o lado dela.'));
+    }
+    if (s.armas && s.armas.length) {
+      frases.push(`Sai com ${s.armas.join(' e ')}` +
+        (s.nCarregadores ? `, ${s.nCarregadores} carregadores.` : '.'));
+    }
+    if (s.uniforme) frases.push(`Veste ${s.uniforme}.`);
+    if (s.mochila) frases.push(`Leva a mochila ${s.mochila}.`);
+    if (s.nGranadas) frases.push(`Tem ${s.nGranadas} slot(s) de granada/explosivo.`);
+    if (s.nItens) frases.push(`${s.nItens} itens ligados (rádio, GPS, kit).`);
+    if (s.variantes > 1) {
+      frases.push(`O config tem ${s.variantes} classes com este mesmo ` +
+        'equipamento — camuflagem diferente, mesma carga.');
+    }
+
+    artigos.push({
+      id: `sol-${s.id}`,
+      titulo: s.nome,
+      tipo: 'soldado',
+      portal: 'soldados',
+      cat: s.lado || 'sem-lado',
+      catNome: s.lado || 'Lado não declarado',
+      icon: '🎖️',
+      nivel: 2,
+      img: '',
+      resumo: [s.faccao, s.lado, s.dlc].filter(Boolean).join(' · '),
+      corpo: frases.join(' '),
+      guia: '',
+      sqf: `_g = createGroup west; _u = _g createUnit ["${s.classe}", position player, [], 0, "NONE"];`,
+      atalhos: [], dicas: [],
+      links: [{
+        rotulo: 'Ver na tabela de soldados',
+        url: `#/arma3-tutorial?aba=soldados&q=${encodeURIComponent(s.classe)}`,
+      }],
+      deps: [], dlcs: s.dlc ? [s.dlc] : [],
+      tags: [s.faccao, s.lado, s.dlc, s.classe].filter(Boolean),
+      autor: '', tam: '',
+      soldado: s,
     });
   });
 
