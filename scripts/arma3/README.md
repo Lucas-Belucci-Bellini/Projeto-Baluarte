@@ -102,6 +102,13 @@ turntable é para subconjunto curado, não para o acervo inteiro.
   `UnderBarrelSlot`, ou o que o mod inventar). Listas idênticas viram um grupo
   compartilhado — variante de camo aceita o mesmo conjunto — então o JSON não
   explode. Marca `<<A3ACC>>`.
+
+  ⚠️ **O config cobre pouco.** No dump real, só **719 das 10.822 armas** (6,6%)
+  declaram `compatibleItems`; o resto deixa o slot vazio e delega ao CBA. Por
+  isso o v2 pergunta ao ENGINE também, pelo comando `compatibleItems`, e grava
+  em `compativeisEngine`. A lista do engine cobre muito mais, mas é achatada:
+  não diz em qual slot cada item entra. Os dois campos são complementares —
+  o do config quando existir, o do engine como rede.
 - **`dump-veiculos.sqf` / `parse-veiculos.py`** — `CfgFactionClasses`, os
   soldados (`isKindOf CAManBase`) e os veículos: velocidade, combustível,
   lotação, carga, blindagem, custo, potência, armas de casco + torres de

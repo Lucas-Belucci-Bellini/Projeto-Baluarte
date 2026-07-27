@@ -98,10 +98,16 @@ def ler_rpt(caminho):
                 continue
             if not c or not c[0]:
                 continue
-            arma = armas.setdefault(c[0], {'_slots': {}, 'slotsVazios': [],
+            if tipo == 'ENGINE':
+                continue                       # flag da sonda; o FIM já conta
+
+            arma = armas.setdefault(c[0], {'_slots': {}, '_engine': '',
+                                           'slotsVazios': [],
                                            'nSlotsJogo': None})
 
-            if tipo == 'S' and len(c) >= 3:
+            if tipo == 'SE' and len(c) >= 3:
+                arma['_engine'] += c[2]        # pedaços na ordem do log
+            elif tipo == 'S' and len(c) >= 3:
                 # pedaços na ordem do log: concatena o texto do MESMO slot
                 arma['_slots'][c[1]] = arma['_slots'].get(c[1], '') + c[2]
             elif tipo == 'SV' and len(c) >= 2:
@@ -122,7 +128,7 @@ def main():
 
     armas, fim, truncadas, versao = ler_rpt(caminho)
 
-    if versao != 'v1':
+    if versao not in ('v1', 'v2'):
         raise SystemExit(
             f'esse .rpt é de um dump de acessórios {versao or "desconhecido"}.\n'
             'Rode o dump de novo com o scripts/arma3/dump-acessorios.sqf atual.')
@@ -151,12 +157,30 @@ def main():
                 porcompat[it] = porcompat.get(it, 0) + 1
 
         total = sum(len(grupos[g]) for g in slots.values())
+
+        # lista resolvida pelo ENGINE (comando compatibleItems). Cobre o que o
+        # config deixa vazio — mod que delega ao CBA aparece aqui e não lá.
+        # Em troca, é uma lista achatada: não diz em QUAL slot cada item entra.
+        eng = [x for x in dados['_engine'].split(';') if x]
+        gid_eng = None
+        if eng:
+            chave = '\n'.join(eng)
+            gid_eng = por_chave.get(chave)
+            if gid_eng is None:
+                gid_eng = f'g{len(por_chave) + 1}'
+                por_chave[chave] = gid_eng
+                grupos[gid_eng] = eng
+            for it in eng:
+                porcompat[it] = porcompat.get(it, 0) + 1
+
         if dados['nSlotsJogo'] is not None and dados['nSlotsJogo'] != len(slots):
             divergentes += 1
         saida_armas[classe] = {
             'slots': slots,
             'slotsVazios': dados['slotsVazios'] or None,
             'totalCompativeis': total,
+            'compativeisEngine': gid_eng,
+            'totalEngine': len(eng),
         }
 
     saida = {
@@ -171,9 +195,14 @@ def main():
 
     pares = sum(a['totalCompativeis'] for a in saida_armas.values())
     com_slot = sum(1 for a in saida_armas.values() if a['slots'])
+    com_eng = sum(1 for a in saida_armas.values() if a['totalEngine'])
+    pares_eng = sum(a['totalEngine'] for a in saida_armas.values())
+    n = max(len(saida_armas), 1)
     print(f'\narmas .................. {len(saida_armas)}')
-    print(f'  com algum acessório .. {com_slot}')
-    print(f'pares arma-acessório ... {pares}')
+    print(f'  slot no CONFIG ....... {com_slot} ({100 * com_slot // n}%)')
+    print(f'  lista do ENGINE ...... {com_eng} ({100 * com_eng // n}%)')
+    print(f'pares do config ........ {pares}')
+    print(f'pares do engine ........ {pares_eng}')
     print(f'grupos distintos ....... {len(grupos)} '
           f'(a matriz repete muito: variantes de camo aceitam o mesmo conjunto)')
     print(f'acessórios distintos ... {len(porcompat)}')

@@ -19,15 +19,27 @@ private _fnc_pedacos = {
     };
 };
 
-diag_log text "<<A3ACC>>INICIO|v1";
+diag_log text "<<A3ACC>>INICIO|v2";
 
 private _armas = "
     (getNumber (_x >> 'scope') >= 2) &&
     {(getNumber (_x >> 'type')) in [1, 2, 4]}
 " configClasses (configFile >> "CfgWeapons");
 
+private _fnc_compat = compile "compatibleItems _this";
+private _temEngine = false;
+if (count _armas > 0) then {
+    private _probe = nil;
+    _probe = (configName (_armas select 0)) call _fnc_compat;
+    if (!isNil "_probe") then {
+        if (_probe isEqualType []) then { _temEngine = true };
+    };
+};
+diag_log text (format ["<<A3ACC>>ENGINE|%1", _temEngine]);
+
 private _nArmas = 0;
 private _nPares = 0;
+private _nEng = 0;
 
 {
     private _cfg = _x;
@@ -51,15 +63,29 @@ private _nPares = 0;
         };
     } forEach ("true" configClasses _wsi);
 
+    if (_temEngine) then {
+        private _lista = _classe call _fnc_compat;
+        if (!isNil "_lista") then {
+            private _eng = [];
+            {
+                if (_x isEqualType "") then { _eng pushBack (_x call _fnc_sub) };
+            } forEach _lista;
+            if (count _eng > 0) then {
+                ["SE", _classe, "engine", _eng joinString ";"] call _fnc_pedacos;
+                _nEng = _nEng + count _eng;
+            };
+        };
+    };
+
     diag_log text (format ["<<A3ACC>>N|%1|%2", _classe, _nSlots]);
     _nArmas = _nArmas + 1;
 } forEach _armas;
 
 private _dt = diag_tickTime - _t0;
-diag_log text (format ["<<A3ACC>>FIM|%1|%2|%3", _nArmas, _nPares, _dt toFixed 1]);
+diag_log text (format ["<<A3ACC>>FIM|%1|%2|%3|%4", _nArmas, _nPares, _dt toFixed 1, _nEng]);
 
-private _msg = format ["DUMP ACESSORIOS OK em %1 s - %2 armas, %3 pares arma-acessorio. Rode: python scripts/arma3/parse-acessorios.py",
-    _dt toFixed 1, _nArmas, _nPares];
+private _msg = format ["DUMP ACESSORIOS OK em %1 s - %2 armas, %3 pares do config, %4 pares do engine. Rode: python scripts/arma3/parse-acessorios.py",
+    _dt toFixed 1, _nArmas, _nPares, _nEng];
 hint _msg;
 systemChat _msg;
 copyToClipboard _msg;
