@@ -292,10 +292,21 @@ a óptica 2D do ACE renderiza por outro caminho, a conta não se sustenta — e
 publicar "zoom real lido do config" com ela seria inventar número com cara de
 medição.
 
-**Use o texto.** 435 dos 1.167 itens com óptica trazem "Magnification: 2x" no
-`descriptionShort`, que é o rótulo que o jogo mostra ao jogador. Para os outros
-732, exiba o FOV cru rotulado como FOV e diga que a ampliação não é declarada —
-não converta.
+**Use o texto.** Dos 1.167 itens com óptica (`itemInfoType == 201`):
+
+| | |
+|---|---|
+| citam "magnification" na descrição | 292 |
+| **com `Magnification: Nx` extraível** | **241** |
+| sem ampliação declarada | **926** |
+
+Para os 926, exiba o FOV cru rotulado como FOV e diga que a ampliação não é
+declarada — **não converta**.
+
+> Correção: uma versão anterior desta seção dizia "435 de 1.167, sobrando 732".
+> Estava errado — contei ocorrências de `Nx` soltas em qualquer lugar do texto
+> (402), que pegam coisas como "3x magnifier" e nomes de produto, não o rótulo
+> `Magnification:`. O número que vale é o que dá pra extrair sem adivinhar: 241.
 
 ### O `.rpt` é cp1252 e engole UTF-8: 191 descrições vêm com mojibake
 
@@ -354,11 +365,26 @@ M200 Intervention `v0=867 cap=7`; P99 `v0=390`; Stoner 99 `cap=200`.
 A contagem do jogo bateu **exata** com a lida nos três dumps — nenhuma linha
 truncada, nenhum registro perdido.
 
-### Mapas — dump ainda não rodado
+### Mapas — dump rodado E consumido
 
-Os scripts estão prontos e o bug que derrubava o dump na primeira tentativa
-está corrigido (veja as armadilhas abaixo). Falta o operador rodar
-`dump-mapas.sqf` e o `parse-mapas.py`.
+`out/arma3-mapas.json` tem os **102 mundos** — 71 são alias (casca apontando
+pro `.wrp` de outro), sobrando **31 terrenos reais** (8 oficiais + 23 de mod).
+`gerar-base-terrenos.py` os transforma em `src/data/arma3-terrenos.js`, com a
+**grade literal do config** (offset + passo por eixo, com sinal): 30 mundos
+contam o northing de cima pra baixo, 1 (ChernobylZone) conta pra cima.
+`src/utils/arma3-grade.js` converte grade↔metros respeitando o sinal, e
+`scripts/verificar-grade.mjs` cobra ida-e-volta, anti-simetria de azimute e
+vizinhança em TODOS os mundos. O card "Azimute de grade" em `#/vanguard`
+consome isso — é o cálculo de ângulo nos mapas do jogo.
+
+### Miras e acessórios — consumidos do dump de itens
+
+`gerar-base-acessorios.py` filtra os 3.218 com `itemInfoType` de acessório
+(101/201/301/302) e publica 211 do jogo/DLC no bundle + os 3.218 no JSON.
+A ampliação vem SÓ do texto ("Magnification: Nx", 241 de 1.167 miras); o
+resto mostra o FOV cru. Armadilha nova paga aqui: mod que reusa modelo E
+ícone vanilla (`ACE_DBAL_A3_Red`) — o desempate final é o PREFIXO da classe
+(a Bohemia só usa `optic_/muzzle_/bipod_/acc_/chemicaldetector_`).
 
 ### Imagens — só as armas, por enquanto
 

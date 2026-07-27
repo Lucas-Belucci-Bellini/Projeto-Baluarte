@@ -25,6 +25,8 @@ import {
 } from '../data/arma3-armas.js';
 import { A3CAT, A3CAT_CATEGORIAS, A3CAT_META, carregarCatalogo } from '../data/arma3-catalogo.js';
 import { A3MUN, A3MAG, A3MUN_TOTAL, A3MAG_TOTAL } from '../data/arma3-municao.js';
+import { A3ACC, A3ACC_TOTAL, A3ACC_META } from '../data/arma3-acessorios.js';
+import { A3TER, A3TER_TOTAL, A3TER_META } from '../data/arma3-terrenos.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
@@ -67,8 +69,9 @@ export function arma3TutorialPage(args = {}) {
   /* catálogo (veículos, miras, uniformes…) — idem */
   let catalogoMods = null, catalogoEstado = 'ocioso';
   const abaInicial = (args.query || {}).aba;
-  const ABAS = ['vanilla', 'armas', 'municao', 'carregadores', 'catalogo',
-    'colecao', 'config', 'mods', 'comandos', 'campanhas', 'drive'];
+  const ABAS = ['vanilla', 'armas', 'acessorios', 'terrenos', 'municao',
+    'carregadores', 'catalogo', 'colecao', 'config', 'mods', 'comandos',
+    'campanhas', 'drive'];
   let aba = ABAS.includes(abaInicial) ? abaInicial : (armaPedida ? 'armas' : 'vanilla');
 
   page.appendChild(
@@ -112,6 +115,8 @@ export function arma3TutorialPage(args = {}) {
   abas.append(
     abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
     abaBtn('armas', `🔫 Armas (database) · ${A3ARM_TOTAL}`),
+    abaBtn('acessorios', `🔭 Miras & acessórios · ${A3ACC_TOTAL}`),
+    abaBtn('terrenos', `🗺️ Terrenos · ${A3TER_TOTAL}`),
     abaBtn('municao', `💥 Munições · ${A3MUN_TOTAL}`),
     abaBtn('carregadores', `🧰 Carregadores · ${A3MAG_TOTAL}`),
     abaBtn('catalogo', A3CAT_META.disponivel
@@ -615,6 +620,140 @@ export function arma3TutorialPage(args = {}) {
     lista.length, tabelaSort('municao', colunas, lista));
   }
 
+  /* ===== miras e acessórios =====
+   *
+   * ⚠️ A coluna "Ampliação" e a coluna "FOV" são DUAS COISAS e ficam
+   * separadas de propósito. Ampliação só existe onde o próprio jogo escreve
+   * "Magnification: Nx"; nas outras 926 miras a célula fica vazia e só o FOV
+   * aparece. Derivar uma da outra (0,75/FOV) discorda do texto do jogo em
+   * 159 das 215 ópticas que trazem os dois — no ELCAN dá 12× contra "2x"
+   * escrito pela Bohemia. Uma coluna só, "zoom", esconderia isso.
+   */
+  function cardAcessorios() {
+    const miras = A3ACC.filter((a) => a.tipo === 'mira');
+    const comAmp = miras.filter((a) => a.ampliacao !== null).length;
+    return h('div', { className: 'card a3tut-card' },
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, '🔭 De onde vem a ampliação')),
+      h('p', { className: 'a3tut-card__oque' },
+        'Ampliação e campo de visão são colunas separadas porque são grandezas '
+        + 'diferentes. A ', h('b', null, 'ampliação'), ' só aparece quando o jogo '
+        + 'a declara no texto do item ("Magnification: 2x") — são ',
+        h('b', null, `${comAmp} das ${miras.length} miras`),
+        '. Nas outras a célula fica vazia e sobra o ', h('b', null, 'FOV'),
+        ', que é o campo de visão cru do config.'),
+      h('p', { className: 'a3tut-card__oque' },
+        'Por que não converter um no outro: a conta 0,75/FOV ',
+        h('b', null, 'discorda do próprio jogo em 159 das 215'),
+        ' miras que trazem os dois valores. No ELCAN SpecterOS ela dá 12×, e a '
+        + 'Bohemia escreve "2x" na descrição. Preencher a coluna com a conta '
+        + 'seria inventar número com cara de medição.'),
+      h('p', { className: 'a3arm-proc__nota u-text-muted' },
+        `Núcleo do jogo e DLCs: ${A3ACC.length} acessórios. `
+        + `O acervo completo com mods tem ${A3ACC_TOTAL} — `,
+        h('code', null, A3ACC_META.dbUrl), '.'));
+  }
+
+  function tabelaAcessorios(lista) {
+    const TIPO_ROT = {
+      mira: '🔭 mira', silenciador: '🤫 silenciador',
+      apontador: '🔦 laser', bipe: '⚙️ bipé',
+    };
+    const colunas = [
+      /* Sem thumb: o `imagem` daqui é o caminho .paa cru do config — o ícone
+       * dos acessórios ainda não passou pelo extrator (só o das armas). */
+      { k: 'nome', rot: 'Acessório', celCls: 'a3arm-td--nome', val: (a) => a.nome,
+        cel: (a) => h('b', null, a.nome) },
+      { k: 'tipo', rot: 'Tipo', val: (a) => a.tipo,
+        cel: (a) => h('span', null, TIPO_ROT[a.tipo] || a.tipo) },
+      { k: 'amp', rot: 'Ampliação', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (a) => (Array.isArray(a.ampliacao) ? a.ampliacao[1] : a.ampliacao),
+        cel: (a) => (a.ampliacaoRotulo
+          ? h('b', { title: 'declarada pelo jogo na descrição do item' }, a.ampliacaoRotulo)
+          : h('span', { className: 'a3arm-td__na', title: 'o jogo não declara a ampliação desta mira' }, '—')) },
+      { k: 'fov', rot: 'FOV (config)', celCls: 'a3arm-num-cel',
+        val: (a) => (a.fov ? a.fov.init : null),
+        cel: (a) => (a.fov
+          ? h('span', { title: 'campo de visão cru — NÃO é ampliação' },
+            h('code', { className: 'a3arm-af' }, String(a.fov.init ?? a.fov.min)),
+            a.fov.modos > 1 ? h('span', { className: 'a3arm-td__u' }, ` ${a.fov.modos} modos`) : null)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'sil', rot: 'Coef. som', celCls: 'a3arm-num-cel',
+        val: (a) => a.coefSilenciador, cel: (a) => val(a.coefSilenciador, '', 2) },
+      { k: 'massa', rot: 'Massa', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (a) => a.massa, cel: (a) => val(a.massa, '', 1) },
+      { k: 'dlc', rot: 'Origem', val: (a) => a.dlc,
+        cel: (a) => h('span', { className: 'a3arm-flag' }, a.dlc) },
+      { k: 'classe', rot: 'Classe', val: (a) => a.classe,
+        cel: (a) => h('code', { className: 'a3arm-af' }, a.classe) },
+    ];
+    return secao('🔭', 'Miras & acessórios',
+      'Miras, silenciadores, lasers e bipés do jogo base e das DLCs, medidos no config.',
+      lista.length, tabelaSort('acessorios', colunas, lista));
+  }
+
+  /* ===== terrenos =====
+   *
+   * A coluna que importa é "Northing": ela mostra o SINAL do passo da grade.
+   * 30 dos 31 mundos contam de cima pra baixo (convenção vanilla) e 1 conta
+   * pra cima — quem assumir um só erra o eixo N-S em 180°. */
+  function cardTerrenos() {
+    const desce = A3TER.filter((t) => t.grade && t.grade.passoY < 0).length;
+    const sobe = A3TER.filter((t) => t.grade && t.grade.passoY > 0).length;
+    return h('div', { className: 'card a3tut-card' },
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, '🗺️ A grade de cada mundo é diferente')),
+      h('p', { className: 'a3tut-card__oque' },
+        'Converter "034056" em metros exige o offset e o passo ',
+        h('b', null, 'daquele terreno'), ' — e o passo tem SINAL. ',
+        h('b', null, `${desce} mundos`), ' contam o northing do norte para baixo '
+        + '(a convenção dos mapas vanilla) e ', h('b', null, `${sobe}`),
+        ' conta para cima. Assumir uma convenção só erraria o eixo N-S em 180°.'),
+      h('p', { className: 'a3tut-card__oque' },
+        'Por isso a grade vai literal, como o config declara, e a conversão fica '
+        + 'em um módulo puro (', h('code', null, 'src/utils/arma3-grade.js'),
+        ') com verificador que confere ida-e-volta, anti-simetria do azimute e '
+        + 'vizinhança em ', h('b', null, 'todos'), ' os mundos — não num exemplo escolhido.'),
+      h('p', { className: 'a3arm-proc__nota u-text-muted' },
+        'Mundos-alias (casca apontando pro mesmo .wrp de outro) ficam fora, '
+        + 'senão o mesmo terreno apareceria várias vezes.'));
+  }
+
+  function tabelaTerrenos(lista) {
+    const colunas = [
+      { k: 'nome', rot: 'Terreno', celCls: 'a3arm-td--nome', val: (t) => t.nome,
+        cel: (t) => h('a', { href: `#/vanguard?terreno=${t.id}`, title: 'calcular azimute neste terreno' },
+          h('b', null, t.nome)) },
+      { k: 'tam', rot: 'Tamanho', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (t) => t.tamanhoM,
+        cel: (t) => (t.tamanhoM
+          ? h('span', null, (t.tamanhoM / 1000).toFixed(1), h('span', { className: 'a3arm-td__u' }, ' km'))
+          : h('span', { className: 'a3arm-td__na', title: 'o config deste mundo não declara mapSize' }, '—')) },
+      { k: 'area', rot: 'Área', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (t) => t.areaKm2, cel: (t) => val(t.areaKm2, 'km²', 0) },
+      { k: 'cel', rot: 'Célula', celCls: 'a3arm-num-cel',
+        val: (t) => (t.grade ? Math.abs(t.grade.passoX) : null),
+        cel: (t) => (t.grade ? val(Math.abs(t.grade.passoX), 'm') : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'north', rot: 'Northing', val: (t) => (t.grade ? (t.grade.passoY < 0 ? 0 : 1) : null),
+        cel: (t) => (t.grade
+          ? h('span', { className: 'a3arm-flag', title: `passoY = ${t.grade.passoY}` },
+            t.grade.passoY < 0 ? '↓ p/ baixo' : '↑ p/ cima')
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'loc', rot: 'Localidades', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (t) => t.localidades, cel: (t) => val(t.localidades) },
+      { k: 'aero', rot: 'Pistas', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (t) => t.aeroportos, cel: (t) => val(t.aeroportos) },
+      { k: 'dlc', rot: 'Origem', val: (t) => t.dlc,
+        cel: (t) => h('span', { className: 'a3arm-flag' }, t.dlc) },
+      { k: 'classe', rot: 'Classe', val: (t) => t.classe,
+        cel: (t) => h('code', { className: 'a3arm-af' }, t.classe) },
+    ];
+    return secao('🗺️', 'Terrenos',
+      'Os mundos jogáveis com a grade real de cada um. Clique no nome para abrir '
+      + 'o cálculo de azimute do Vanguard já naquele terreno.',
+      lista.length, tabelaSort('terrenos', colunas, lista));
+  }
+
   /* ===== carregadores ===== */
   function cardCarregadores() {
     const variam = {};
@@ -971,6 +1110,24 @@ export function arma3TutorialPage(args = {}) {
       });
       contador.textContent = `${visiveis} de ${total} armas`
         + (arsenalMods ? ' (núcleo + mods)' : ` no núcleo · ${A3ARM_META.mods} de mods sob demanda`);
+    } else if (aba === 'acessorios') {
+      total = A3ACC.length;
+      if (!termo) corpo.appendChild(cardAcessorios());
+      const lista = !termo ? A3ACC : A3ACC.filter((a) => normalize(
+        `${a.nome} ${a.classe} ${a.tipo} ${a.dlc} ${a.ampliacaoRotulo || ''} `
+        + `${a.descricao || ''}`).includes(termo));
+      visiveis = lista.length;
+      if (lista.length) corpo.appendChild(tabelaAcessorios(lista));
+      contador.textContent = `${visiveis} de ${total} acessórios (núcleo do jogo)`;
+    } else if (aba === 'terrenos') {
+      total = A3TER_TOTAL;
+      if (!termo) corpo.appendChild(cardTerrenos());
+      const lista = !termo ? A3TER : A3TER.filter((t) => normalize(
+        `${t.nome} ${t.classe} ${t.dlc} ${t.autor || ''} `
+        + `${(t.capitais || []).join(' ')}`).includes(termo));
+      visiveis = lista.length;
+      if (lista.length) corpo.appendChild(tabelaTerrenos(lista));
+      contador.textContent = `${visiveis} de ${total} terrenos`;
     } else if (aba === 'municao') {
       total = A3MUN_TOTAL;
       if (!termo) corpo.appendChild(cardFurtividade());

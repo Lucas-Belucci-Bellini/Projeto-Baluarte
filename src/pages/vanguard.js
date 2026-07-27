@@ -28,6 +28,13 @@ import {
  * tenso, no formato de cartão que o Vanguard usa. */
 import { A3ARM } from '../data/arma3-armas.js';
 import { dadosBalisticos, tabelaQueda, milRadParaMilNato } from '../utils/arma3-balistica.js';
+/* Terrenos REAIS do dump (grade de cada mundo, literal do config) + o
+ * conversor que respeita o sinal do passo — ver arma3-grade.js. */
+import { A3TER } from '../data/arma3-terrenos.js';
+import {
+  azimuteGrau, distanciaM, dentroDoMundo, gradeParaMetros, grauParaMilNato,
+  grauParaMrad, metrosParaGrade,
+} from '../utils/arma3-grade.js';
 
 /* Alvo de treino padrão: Altis, a ilha do Arma 3. Abre com uma missão
  * resolvida em vez de formulário vazio — dá pra ver o que a tela faz antes
@@ -39,8 +46,9 @@ const PADRAO = {
 
 const nUm = (v, casas = 0) => (Number.isFinite(v) ? v.toFixed(casas) : '—');
 
-export function vanguardPage() {
+export function vanguardPage(args = {}) {
   const page = h('div', { className: 'page-vanguard' });
+  const terrenoPedido = (args.query || {}).terreno;
 
   page.appendChild(h('div', { className: 'page-header anim-fade-in' },
     h('div', { className: 'page-header__crumbs' },
@@ -62,8 +70,186 @@ export function vanguardPage() {
       h('b', null, 'não tabela de tiro oficial'),
       '. Serve para o Arma 3 e para estudo — não para emprego real.')));
 
-  page.append(cardComputador(), cardMrad(), cardCoordenadas(), cardArquitetura());
+  page.append(cardTerreno(terrenoPedido), cardComputador(), cardMrad(),
+    cardCoordenadas(), cardArquitetura());
   return page;
+}
+
+/* ═══════════ azimute de grade nos terrenos do Arma 3 ═══════════
+ *
+ * A pergunta que motivou o card: "com o Vanguard ligado no Baluarte, dá pra
+ * calcular ângulo nos mapas do dump?" Dá — porque o dump traz a grade REAL
+ * de cada mundo (offset e passo por eixo, literal do config), e o passo tem
+ * SINAL: 30 dos 31 mundos contam o northing de cima pra baixo, 1 conta pra
+ * cima. O conversor consome o sinal; aqui só se digita grade como no jogo.
+ *
+ * O que o card NÃO faz, e diz que não faz: elevação. O dump não traz o DEM
+ * dos terrenos, então não há diferença de altitude nem crista — azimute e
+ * distância são planos, como a bússola do jogo.
+ */
+function cardTerreno(terrenoPedido) {
+  const terrenos = [...A3TER].filter((t) => t.grade)
+    .sort((a, b) => (a.ehMod - b.ehMod)
+      || a.nome.localeCompare(b.nome, 'pt-BR')
+      || a.classe.localeCompare(b.classe));
+  if (!terrenos.length) return h('div', null);
+
+  const armas = A3ARM.filter((a) => dadosBalisticos(a))
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+
+  let terrenoId = (terrenos.find((t) => t.id === terrenoPedido)
+    || terrenos.find((t) => t.classe === 'Altis') || terrenos[0]).id;
+  let armaId = '';
+  let zero = 300;
+
+  /* Abre resolvido, no estilo da página: duas grades geradas DO PRÓPRIO
+   * terreno (centro e ~1,5 km a nordeste), não digitadas de memória. */
+  function gradesIniciais(t) {
+    const g = t.grade;
+    const meioM = (t.tamanhoM || Math.abs(g.passoX) * 10 ** g.digitos) / 2;
+    const a = metrosParaGrade(meioM, meioM, g);
+    const b = metrosParaGrade(meioM + 1200, meioM + 900, g);
+    return { a: a || '', b: b || '' };
+  }
+
+  const ini = gradesIniciais(terrenos.find((t) => t.id === terrenoId));
+  let gradePeca = ini.a;
+  let gradeAlvo = ini.b;
+
+  const saida = h('div', null);
+
+  function recalc() {
+    const t = terrenos.find((x) => x.id === terrenoId) || terrenos[0];
+    const g = t.grade;
+    const peca = gradeParaMetros(gradePeca, g);
+    const alvo = gradeParaMetros(gradeAlvo, g);
+
+    if (!peca || !alvo) {
+      saida.replaceChildren(h('p', { className: 'vg-nota u-text-muted' },
+        'Digite as duas grades como no mapa do jogo: número PAR de dígitos '
+        + '(4 a 10), metade easting, metade northing — ex.: ',
+        h('code', null, '034056'), ' ou ', h('code', null, '03450560'), '.'));
+      return;
+    }
+
+    const dist = distanciaM(peca, alvo);
+    const az = azimuteGrau(peca, alvo);
+    const retro = (az + 180) % 360;
+    const dentroP = dentroDoMundo(peca, t.tamanhoM);
+    const dentroA = dentroDoMundo(alvo, t.tamanhoM);
+
+    const linhaAz = (rotulo, grau) => h('tr', { className: 'vg-tr' },
+      h('td', null, rotulo),
+      h('td', { className: 'vg-num' }, h('b', null, grau.toFixed(1)), h('span', { className: 'vg-u' }, '°')),
+      h('td', { className: 'vg-num' }, h('b', null, grauParaMilNato(grau).toFixed(0)), h('span', { className: 'vg-u' }, ' mil')),
+      h('td', { className: 'vg-num' }, grauParaMrad(grau).toFixed(0), h('span', { className: 'vg-u' }, ' mrad')));
+
+    const filhos = [
+      h('p', { className: 'vg-nota' },
+        h('b', null, t.nome), ` (${t.classe})`,
+        t.tamanhoM ? ` · ${(t.tamanhoM / 1000).toFixed(1)} km de lado` : ' · tamanho não declarado no config',
+        ` · célula de ${Math.abs(g.passoX)} m`,
+        g.passoY < 0 ? ' · northing conta do norte pra baixo (vanilla)' : ' · northing conta pra cima'),
+
+      h('div', { className: 'vg-tabela-wrap' },
+        h('table', { className: 'vg-tabela' },
+          h('thead', null, h('tr', null,
+            h('th', null, ''), h('th', null, 'Graus'),
+            h('th', null, 'mil NATO (6400)'), h('th', null, 'MRAD (6283)'))),
+          h('tbody', null,
+            linhaAz('Azimute peça → alvo', az),
+            linhaAz('Retro-azimute', retro)))),
+
+      h('p', { className: 'vg-nota' },
+        h('b', null, 'Distância: '), h('b', null, `${dist.toFixed(0)} m`),
+        dist >= 1000 ? ` (${(dist / 1000).toFixed(2)} km)` : ''),
+    ];
+
+    if (dentroP === false || dentroA === false) {
+      filhos.push(h('p', { className: 'vg-nota' },
+        '⚠️ ', dentroP === false ? 'A grade da peça cai fora do mundo. ' : '',
+        dentroA === false ? 'A grade do alvo cai fora do mundo.' : ''));
+    }
+
+    if (armaId) {
+      const a = armas.find((x) => x.id === armaId);
+      const bal = a && dadosBalisticos(a);
+      if (bal) {
+        const [linha] = tabelaQueda({ ...bal, zero, vento: 0 }, [dist]);
+        const corr = -linha.mils;
+        filhos.push(h('p', { className: 'vg-nota' },
+          h('b', null, `🎯 ${a.nome}`), ` zerada a ${zero} m, nesta distância: `,
+          h('b', null, `${corr >= 0 ? '+' : '−'}${Math.abs(corr).toFixed(2)} mrad`),
+          ` (${corr >= 0 ? '+' : '−'}${Math.abs(milRadParaMilNato(corr)).toFixed(2)} mil NATO)`,
+          ` · tempo de voo ${linha.t.toFixed(2)} s · chega a ${linha.v.toFixed(0)} m/s`));
+      }
+    }
+
+    filhos.push(h('p', { className: 'vg-nota u-text-muted' },
+      'Azimute de GRADE do mapa do jogo, plano — o dump não traz o relevo '
+      + '(DEM), então diferença de altitude e crista não entram. Grade e '
+      + 'convenção de northing vêm do config de cada mundo, medidas, não '
+      + 'assumidas.'));
+
+    saida.replaceChildren(...filhos);
+  }
+
+  const selTerreno = h('select', {
+    className: 'input', onchange: (e) => {
+      terrenoId = e.target.value;
+      const novo = gradesIniciais(terrenos.find((t) => t.id === terrenoId));
+      gradePeca = novo.a; gradeAlvo = novo.b;
+      inPeca.value = gradePeca; inAlvo.value = gradeAlvo;
+      recalc();
+    },
+  }, ...terrenos.map((t) => h('option', { value: t.id, selected: t.id === terrenoId },
+    `${t.nome}${t.nome !== t.classe ? ` (${t.classe})` : ''} — `
+    + `${t.ehMod ? t.dlc : t.dlc}${t.tamanhoM ? ` · ${(t.tamanhoM / 1000).toFixed(0)} km` : ''}`)));
+
+  const inGrade = (valor, set) => h('input', {
+    className: 'input vg-num-in', type: 'text', value: valor,
+    placeholder: '034056', spellcheck: 'false',
+    oninput: (e) => { set(e.target.value); recalc(); },
+  });
+  const inPeca = inGrade(gradePeca, (v) => { gradePeca = v; });
+  const inAlvo = inGrade(gradeAlvo, (v) => { gradeAlvo = v; });
+
+  const selArma = h('select', {
+    className: 'input', onchange: (e) => { armaId = e.target.value; recalc(); },
+  }, h('option', { value: '' }, '— sem arma (só azimute) —'),
+  ...armas.map((a) => h('option', { value: a.id },
+    `${a.nome}${a.calibre ? ' — ' + a.calibre : ''}`)));
+
+  const inZero = h('input', {
+    className: 'input vg-num-in', type: 'number', value: String(zero),
+    min: '25', max: '2000', step: '25',
+    oninput: (e) => {
+      const x = parseFloat(e.target.value);
+      if (Number.isFinite(x)) { zero = Math.max(25, Math.min(2000, x)); recalc(); }
+    },
+  });
+
+  const box = h('div', { className: 'card vg-card' },
+    h('div', { className: 'vg-card__head' },
+      h('b', null, '🧭 Azimute de grade — terrenos do Arma 3'),
+      h('span', { className: 'vg-motor' },
+        `${terrenos.length} terrenos com grade medida`)),
+    h('p', { className: 'vg-oque' },
+      'Duas grades do mapa do jogo → azimute em ',
+      h('b', null, 'mil NATO e MRAD'),
+      ', distância e retro-azimute. A grade de cada mundo (offset, passo e '
+      + 'DIREÇÃO do northing) vem medida do config — é o que faz o eixo N-S '
+      + 'sair certo em mundo vanilla e em mod.'),
+    h('div', { className: 'vg-campos' },
+      h('label', { className: 'vg-campo--largo' }, h('span', null, 'Terreno'), selTerreno),
+      h('label', null, h('span', null, 'Grade da peça'), inPeca),
+      h('label', null, h('span', null, 'Grade do alvo'), inAlvo),
+      h('label', { className: 'vg-campo--largo' }, h('span', null, 'Arma (opcional)'), selArma),
+      h('label', null, h('span', null, 'Zeragem (m)'), inZero)),
+    saida);
+
+  recalc();
+  return box;
 }
 
 /* ═══════════ cartão de tiro MRAD (tiro tenso) ═══════════

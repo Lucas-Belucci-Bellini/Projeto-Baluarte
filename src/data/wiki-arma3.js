@@ -28,6 +28,8 @@ import { A3TUT_DEPS } from './arma3-deps.js';
 import { A3COL_INFO, A3COL_CATS, A3COL_ITENS } from './arma3-colecao.js';
 import { ARMA3_PRESETS } from './arma3-presets.js';
 import { A3ARM, A3ARM_TIPOS } from './arma3-armas.js';
+import { A3ACC, A3ACC_TOTAL } from './arma3-acessorios.js';
+import { A3TER } from './arma3-terrenos.js';
 
 export { A3COL_INFO };
 
@@ -58,7 +60,13 @@ export const WIKI_PORTAIS = [
     desc: 'A instalação real espelhada no Drive: pastas, PBOs e saves.' },
   { id: 'arsenal',  nome: 'Arsenal',             icon: '🔫', cor: 'cyan',
     desc: 'Cada arma com os números MEDIDOS no config do jogo: v₀, arrasto, dano, '
-        + 'precisão em centímetros e o ícone como aparece no Arsenal.' }
+        + 'precisão em centímetros e o ícone como aparece no Arsenal.' },
+  { id: 'optica',   nome: 'Miras & acessórios',  icon: '🔭', cor: 'magenta',
+    desc: 'Miras, lasers, silenciadores e bipés extraídos do config. A ampliação '
+        + 'sai do texto do próprio jogo — nunca de conta com o campo de visão.' },
+  { id: 'terrenos', nome: 'Terrenos',            icon: '🗺️', cor: 'cyan',
+    desc: 'Os mundos jogáveis com a grade REAL de cada um: tamanho, célula, '
+        + 'localidades e a direção do northing que o computador de tiro usa.' }
 ];
 
 /* Nível por seção de origem. A chave é `portal:secao` de propósito: o id
@@ -268,6 +276,130 @@ function construir() {
       tam: '',
       /* usados pela infobox da wiki */
       arma: a
+    });
+  });
+
+  /* --- 6. miras e acessórios (config do jogo) ---
+   *
+   * Mesma regra do arsenal: cada frase só existe se o dado existir. A
+   * ampliação é o campo delicado — ela SÓ vem quando o próprio jogo escreve
+   * "Magnification: Nx" na descrição. Onde não vem, o artigo diz que não é
+   * declarada e mostra o campo de visão cru, rotulado como FOV. Converter
+   * FOV em ampliação (0,75/FOV) erra: nas 215 ópticas que trazem os dois,
+   * 159 discordam da conta — inclusive o ELCAN, que dá 12× calculado contra
+   * "2x" escrito pela própria Bohemia. */
+  const TIPO_ACC = {
+    mira: { nome: 'Mira', icon: '🔭', nivel: 2 },
+    silenciador: { nome: 'Silenciador', icon: '🤫', nivel: 2 },
+    apontador: { nome: 'Laser / lanterna', icon: '🔦', nivel: 1 },
+    bipe: { nome: 'Bipé / empunhadura', icon: '⚙️', nivel: 1 },
+  };
+  A3ACC.forEach((c) => {
+    const tp = TIPO_ACC[c.tipo] || { nome: 'Acessório', icon: '🔧', nivel: 2 };
+    const frases = [];
+    if (c.descricao) frases.push(c.descricao.replace(/\s*\.?\s*$/, '.'));
+
+    if (c.tipo === 'mira') {
+      if (c.ampliacaoRotulo) {
+        frases.push(`Ampliação ${c.ampliacaoRotulo}, como o próprio jogo declara ` +
+          'na descrição do item.');
+      } else if (c.fov) {
+        frases.push('O jogo não declara a ampliação desta mira. O config traz o ' +
+          `campo de visão (zoom ${c.fov.init ?? c.fov.min}), que NÃO é ampliação — ` +
+          'a conversão entre os dois não se sustenta no acervo, então fica o FOV cru.');
+      }
+      if (c.fov && c.fov.modos > 1) {
+        frases.push(`Tem ${c.fov.modos} modos ópticos (colimador e luneta, por exemplo).`);
+      }
+    }
+    if (typeof c.coefSilenciador === 'number') {
+      frases.push(`Coeficiente de som ${c.coefSilenciador} — quanto o config ` +
+        'reduz o alcance audível do disparo.');
+    }
+    if (typeof c.massa === 'number') frases.push(`Massa ${c.massa} no inventário.`);
+
+    artigos.push({
+      id: `opt-${c.id}`,
+      titulo: c.nome,
+      tipo: 'acessorio',
+      portal: 'optica',
+      cat: c.tipo,
+      catNome: tp.nome,
+      icon: tp.icon,
+      nivel: tp.nivel,
+      /* `c.imagem` é caminho .paa cru do config — o extrator de ícones ainda
+       * não cobriu acessórios. Capa ausente é ausente, não <img> quebrado. */
+      img: '',
+      resumo: [tp.nome, c.ampliacaoRotulo, c.dlc].filter(Boolean).join(' · '),
+      corpo: frases.join(' '),
+      guia: '', sqf: `this addPrimaryWeaponItem "${c.classe}";`,
+      atalhos: [], dicas: [],
+      links: [{
+        rotulo: 'Ver na tabela de acessórios',
+        url: `#/arma3-tutorial?aba=acessorios&q=${encodeURIComponent(c.classe)}`,
+      }],
+      deps: [], dlcs: c.dlc ? [c.dlc] : [],
+      tags: [tp.nome, c.dlc, c.ampliacaoRotulo, c.classe].filter(Boolean),
+      autor: '', tam: '',
+      acessorio: c,
+    });
+  });
+
+  /* --- 7. terrenos (CfgWorlds) ---
+   *
+   * O dado que justifica o portal é a GRADE: offset, passo e o SINAL do
+   * passo por eixo. É o que o computador de tiro consome pra transformar
+   * "034056" em metros e daí em azimute — e o sinal é o que impede errar o
+   * eixo N-S em 180°. Por isso ele aparece no artigo, não só na tabela. */
+  A3TER.forEach((t) => {
+    const frases = [];
+    if (t.tamanhoM) {
+      const km = t.tamanhoM / 1000;
+      frases.push(`Terreno de ${km.toFixed(1)} km de lado` +
+        (t.areaKm2 ? `, ${t.areaKm2} km² de área` : '') + '.');
+    } else {
+      frases.push('O config deste mundo não declara o tamanho (mapSize).');
+    }
+    if (t.localidades) {
+      frases.push(`${t.localidades} localidades nomeadas no config` +
+        (t.capitais && t.capitais.length ? ` — entre elas ${t.capitais.join(', ')}.` : '.'));
+    }
+    if (t.aeroportos) frases.push(`${t.aeroportos} pista(s) registrada(s).`);
+    if (t.grade) {
+      frases.push(`A célula da grade mede ${Math.abs(t.grade.passoX)} m, e o ` +
+        `northing conta ${t.grade.passoY < 0 ? 'do norte PARA BAIXO — a convenção ' +
+        'dos mapas vanilla' : 'PARA CIMA, ao contrário dos mapas vanilla'}. ` +
+        'É desse sinal que sai o azimute certo.');
+    }
+    if (typeof t.latitude === 'number') {
+      frases.push(`Latitude ${t.latitude}° e longitude ${t.longitude}° no config — ` +
+        'é o que define a posição do sol e a hora do nascer e pôr.');
+    }
+
+    artigos.push({
+      id: `ter-${t.id}`,
+      titulo: t.nome === t.classe ? t.nome : `${t.nome} (${t.classe})`,
+      tipo: 'terreno',
+      portal: 'terrenos',
+      cat: t.ehMod ? 'mod' : 'oficial',
+      catNome: t.ehMod ? 'Terreno de mod' : 'Terreno oficial',
+      icon: '🗺️',
+      nivel: 2,
+      img: '',
+      resumo: [t.dlc, t.tamanhoM ? `${(t.tamanhoM / 1000).toFixed(0)} km` : null,
+        t.localidades ? `${t.localidades} localidades` : null].filter(Boolean).join(' · '),
+      corpo: frases.join(' '),
+      guia: '', sqf: '', atalhos: [], dicas: [],
+      /* Deep-link que abre o card de azimute JÁ neste terreno — é o elo entre
+       * a wiki e o Vanguard, e o motivo do portal existir. */
+      links: [{
+        rotulo: 'Calcular azimute neste terreno',
+        url: `#/vanguard?terreno=${t.id}`,
+      }],
+      deps: [], dlcs: t.dlc && !t.ehMod ? [t.dlc] : [],
+      tags: [t.dlc, t.autor, t.classe].filter(Boolean),
+      autor: t.autor || '', tam: '',
+      terreno: t,
     });
   });
 

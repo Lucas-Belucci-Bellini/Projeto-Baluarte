@@ -99,6 +99,33 @@ function vistaCapa(page) {
       h('span', { className: 'wk-trilha__qtd' },
         `${WIKI_ARTIGOS.filter((a) => a.nivel === nv.id).length} artigos →`)))));
 
+  /* ── o acervo medido no jogo ──
+   *
+   * O placar do que a extração já tirou do config, com a divisão honesta:
+   * "navegável" é o que virou tabela/artigo aqui; "cru no repositório" é o
+   * que já foi medido mas ainda não tem gerador. Os números do cru vêm do
+   * dump de 26–27/07/2026 (scripts/arma3/out/) e mudam quando ele rodar de
+   * novo — por isso a frase diz DE ONDE saíram, e não finge tempo real. */
+  page.appendChild(h('div', { className: 'card wk-colecao' },
+    h('div', null,
+      h('b', null, '🧬 Medido direto do jogo em execução'),
+      h('p', { className: 'u-text-muted' },
+        'Navegável nesta wiki: ', h('b', null, '10.822 armas'),
+        ' (106 artigos do núcleo + arsenal completo na tabela), ',
+        h('b', null, '211 miras e acessórios'), ', ',
+        h('b', null, '31 terrenos com a grade real'), ', ',
+        h('b', null, '1.432 carregadores'), ' e ', h('b', null, '472 munições'),
+        '. Já medido e aguardando gerador (cru em scripts/arma3/out/): ',
+        h('b', null, '67.368 itens de inventário'),
+        ' (40.720 uniformes, 12.829 capacetes, 9.875 coletes), ',
+        h('b', null, '24.261 registros de veículo'), ' com blindagem por hitpoint, ',
+        h('b', null, '44.761 soldados'), ' de 248 facções e ',
+        h('b', null, '12.716 animações'), ' (8.705 estados + 4.011 gestos) — '
+        + 'dump de 26–27/07/2026.')),
+    h('div', { className: 'wk-colecao__acoes' },
+      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=armas' }, '🔫 Tabela de armas'),
+      h('a', { className: 'btn', href: '#/vanguard' }, '⌖ Computador de tiro'))));
+
   /* portais */
   page.appendChild(h('div', { className: 'wk-secao__head' },
     h('h2', { className: 'wk-secao__titulo' }, 'Portais'),
@@ -370,7 +397,8 @@ function vistaArtigo(page, art) {
 
 const ROTULO_TIPO = {
   mod: 'Mod', item: 'Item da coleção', guia: 'Guia',
-  comando: 'Comando de console', campanha: 'Missão/campanha', arquivo: 'Arquivo'
+  comando: 'Comando de console', campanha: 'Missão/campanha', arquivo: 'Arquivo',
+  arma: 'Arma', acessorio: 'Acessório', terreno: 'Terreno'
 };
 
 /* Infobox estilo wiki: capa + ficha técnica, na lateral. */
@@ -407,6 +435,8 @@ function infobox(art) {
     /* Ficha técnica da arma. Infobox de wiki existe justamente pra isso —
      * até aqui os números medidos só apareciam diluídos na prosa do corpo. */
     ...(art.arma ? fichaArma(art.arma, linha) : []),
+    ...(art.acessorio ? fichaAcessorio(art.acessorio, linha) : []),
+    ...(art.terreno ? fichaTerreno(art.terreno, linha) : []),
 
     ...(art.links || []).map((l) => {
       /* Link interno (#/rota) NÃO abre em aba nova: `target=_blank` faz sentido
@@ -457,6 +487,62 @@ function fichaArma(a, linha) {
       ? linha('Variantes', `${a.variantes} classes no config`)
       : null,
     linha('Classe', h('code', null, a.classe)),
+  ];
+}
+
+/* Ficha de mira/acessório.
+ *
+ * ⚠️ A linha "Ampliação" NUNCA sai de conta. Quando o jogo não escreve
+ * "Magnification: Nx", a ficha diz "não declarada" e mostra o FOV cru,
+ * rotulado como FOV. Publicar 0,75/FOV como se fosse zoom medido erraria em
+ * 159 das 215 ópticas que trazem os dois valores. */
+function fichaAcessorio(c, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  const fov = c.fov;
+  return [
+    linha('Ampliação', c.ampliacaoRotulo
+      ? h('span', null, h('b', null, c.ampliacaoRotulo),
+        h('span', { className: 'u-text-muted' }, ' (declarada pelo jogo)'))
+      : (c.tipo === 'mira'
+        ? h('span', { className: 'u-text-muted' }, 'não declarada no config')
+        : null)),
+    linha('Campo de visão', fov
+      ? h('span', null, h('code', null, String(fov.init ?? fov.min)),
+        (fov.min != null && fov.max != null && fov.min !== fov.max)
+          ? h('span', { className: 'u-text-muted' }, ` · varia de ${fov.min} a ${fov.max}`)
+          : null)
+      : null),
+    linha('Modos ópticos', fov && fov.modos > 1 ? String(fov.modos) : null),
+    linha('Coef. do silenciador', n(c.coefSilenciador, '', 2)),
+    linha('Massa', n(c.massa, '', 1)),
+    linha('Origem', c.dlc),
+    linha('Classe', h('code', null, c.classe)),
+  ];
+}
+
+/* Ficha de terreno. A grade é o motivo do portal existir: sem ela o
+ * computador de tiro não converte grade em metros. `passoY` negativo é o
+ * normal no vanilla (northing de cima pra baixo) — a ficha diz qual é, em
+ * vez de deixar o leitor supor. */
+function fichaTerreno(t, linha) {
+  const g = t.grade;
+  return [
+    linha('Tamanho', t.tamanhoM
+      ? `${(t.tamanhoM / 1000).toFixed(1)} km × ${(t.tamanhoM / 1000).toFixed(1)} km`
+      : h('span', { className: 'u-text-muted' }, 'não declarado no config')),
+    linha('Área', t.areaKm2 ? `${t.areaKm2} km²` : null),
+    linha('Localidades', t.localidades ? String(t.localidades) : null),
+    linha('Pistas', t.aeroportos ? String(t.aeroportos) : null),
+    linha('Célula da grade', g ? `${Math.abs(g.passoX)} m` : null),
+    linha('Northing', g
+      ? (g.passoY < 0 ? 'conta do norte para baixo (vanilla)' : 'conta para cima')
+      : null),
+    linha('Lat / Lon', typeof t.latitude === 'number'
+      ? `${t.latitude}° / ${t.longitude}°` : null),
+    linha('Origem', t.dlc),
+    linha('Autor', t.autor),
+    linha('Classe', h('code', null, t.classe)),
   ];
 }
 

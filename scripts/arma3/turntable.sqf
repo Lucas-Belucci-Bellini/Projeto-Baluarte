@@ -1,4 +1,4 @@
-private _versao = "v3-fov-dia-semNVG";
+private _versao = "v4-luz4s-alto100-olhaDeBaixo-focoCentro";
 diag_log text (format ["<<A3TT>>ETAPA|1|script colado e parseado|versao|%1", _versao]);
 systemChat format ["TURNTABLE %1 colado", _versao];
 
