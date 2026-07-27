@@ -240,6 +240,45 @@ def ler_rpt(caminho):
     return mundos, fim, truncadas, versao
 
 
+def marcar_canonicos(mundos):
+    """Separa terreno REAL de mundo-STUB.
+
+    O CUP Terrains declara dezenas de classes de mundo para terrenos legados que
+    NÃO estão instalados (isladuala, namalsk, fallujah, Lingor...). Cada stub
+    aponta o `worldName` pro .wrp de outro mapa e herda dele `description` e a
+    classe `Names` inteira. No dump real: 102 classes, só 31 .wrp distintos —
+    33 classes dividindo `utes.wrp` e 15 dividindo `chernarus.wrp`.
+
+    Sem separar, a wiki diria que Isla Duala se chama "Utes" e tem as 43
+    localidades de Utes. O discriminador é o próprio arquivo: dentro do grupo
+    que compartilha um .wrp, o terreno real é aquele cujo nome de classe bate
+    com o nome do arquivo. Os outros são apelidos que apontam pra ele.
+    """
+    grupos = {}
+    for m in mundos.values():
+        base = os.path.basename((m['wrp'] or '').replace('\\', '/')).lower()
+        if base.endswith('.wrp'):
+            base = base[:-4]
+        m['wrpArquivo'] = base or None
+        grupos.setdefault(base, []).append(m)
+
+    indefinidos = 0
+    for base, lista in grupos.items():
+        canon = next((m for m in lista if m['classe'].lower() == base), None)
+        if canon is None and len(lista) == 1:
+            canon = lista[0]          # .wrp exclusivo: não há com quem confundir
+        for m in lista:
+            if canon is None:
+                # grupo sem dono óbvio: "não sei" não é a mesma coisa que "não é"
+                m['ehTerrenoReal'] = None
+                m['aliasDe'] = None
+                indefinidos += 1
+            else:
+                m['ehTerrenoReal'] = m is canon
+                m['aliasDe'] = None if m is canon else canon['classe']
+    return grupos, indefinidos
+
+
 def resolver(mundos):
     """Fecha cada mundo: junta os pedaços e calcula os DERIVADOS marcados."""
     divergentes = 0
@@ -286,6 +325,8 @@ def main():
                          'o script rodou até o fim no jogo?')
 
     divergentes = resolver(mundos)
+    grupos_wrp, indefinidos = marcar_canonicos(mundos)
+    reais = [m for m in mundos.values() if m['ehTerrenoReal']]
 
     saida = {
         'fonte': os.path.basename(caminho),
@@ -296,13 +337,18 @@ def main():
         json.dump(saida, f, ensure_ascii=False, indent=1)
 
     # --- relatório ---
-    com_tam = sum(1 for m in mundos.values() if m['tamanhoM'])
-    com_img = sum(1 for m in mundos.values() if m['pictureMap'] or m['pictureShot'])
-    print(f'\nmundos ............. {len(mundos)}')
-    print(f'com tamanho real ... {com_tam} ({100 * com_tam // max(len(mundos), 1)}%)')
-    print(f'com miniatura ...... {com_img}')
-    print(f'localidades ........ {sum(m["totalLocalidades"] for m in mundos.values())}')
-    print(f'aeroportos ......... {sum(len(m["aeroportos"]) for m in mundos.values())}')
+    com_tam = sum(1 for m in reais if m['tamanhoM'])
+    com_img = sum(1 for m in reais if m['pictureMap'] or m['pictureShot'])
+    print(f'\nclasses de mundo ....... {len(mundos)}')
+    print(f'  TERRENO de verdade ... {len(reais)}  (um por .wrp)')
+    print(f'  stub/apelido do CUP .. {len(mundos) - len(reais) - indefinidos}')
+    if indefinidos:
+        print(f'  indefinidos .......... {indefinidos} (ehTerrenoReal=null)')
+    print(f'arquivos .wrp distintos  {len(grupos_wrp)}')
+    print(f'com tamanho real ....... {com_tam} de {len(reais)}')
+    print(f'com miniatura .......... {com_img}')
+    print(f'localidades (só reais) . {sum(m["totalLocalidades"] for m in reais)}')
+    print(f'aeroportos (só reais) .. {sum(len(m["aeroportos"]) for m in reais)}')
     if fim and len(fim) >= 3:
         print(f'(o jogo contou {fim[0]} mundos / {fim[1]} localidades em {fim[2]}s)')
         contados = num(fim[0])
@@ -315,17 +361,17 @@ def main():
         print(f'  ATENÇÃO: {divergentes} mundos com contagem de localidades divergente '
               f'(veja _avisoLocalidades no JSON)')
 
-    maiores = sorted((m for m in mundos.values() if m['tamanhoM']),
+    maiores = sorted((m for m in reais if m['tamanhoM']),
                      key=lambda m: -m['tamanhoM'])[:12]
-    print('\nmaiores terrenos (lado do quadrado, do config):')
+    print('\nmaiores terrenos REAIS (lado do quadrado, do config):')
     for m in maiores:
         print(f'  {(m["nome"] or "?")[:32]:34} {m["tamanhoM"]:>6} m  '
               f'{m["areaQuadradoKm2"]:>8} km2  {m["totalLocalidades"]:>4} loc')
 
     porfonte = {}
-    for m in mundos.values():
+    for m in reais:
         porfonte[m['fonte'] or '?'] = porfonte.get(m['fonte'] or '?', 0) + 1
-    print('\ntop 12 fontes (mod/DLC):')
+    print('\ntop 12 fontes dos terrenos REAIS (mod/DLC):')
     for k, n in sorted(porfonte.items(), key=lambda x: -x[1])[:12]:
         print(f'  {k:38} {n}')
     print(f'\nescrito: {SAIDA}')
