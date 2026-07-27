@@ -304,8 +304,13 @@ def escrever(entradas, completos, faccoes):
 
     pubTodos = [{k: v for k, v in e.items() if not k.startswith('_')} for e in entradas]
     os.makedirs(os.path.dirname(SAIDA_JSON), exist_ok=True)
+    # O mapa `completos` (hitpoints parte a parte dos 5.425) sozinho pesa
+    # 4,2 MB dos 6,6 MB do arquivo. O resumo por veículo -- casco, parte mais
+    # fraca, quantas relativas -- basta pra tabela e pra wiki; parte a parte
+    # e coisa do app, que le o dump direto de scripts/arma3/out/.
+    # Mesmo motivo que tirou o detalhe do equipamento-db.
     with open(SAIDA_JSON, 'w', encoding='utf-8') as f:
-        json.dump({'veiculos': pubTodos, 'detalhe': completos, 'faccoes': faccoes},
+        json.dump({'veiculos': pubTodos, 'faccoes': faccoes},
                   f, ensure_ascii=False, separators=(',', ':'))
     return nucleo
 
