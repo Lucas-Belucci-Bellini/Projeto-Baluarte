@@ -234,7 +234,7 @@ function construir() {
     }
 
     artigos.push({
-      id: `ars-${slug(a.classe)}`,
+      id: `ars-${a.id}`,
       titulo: a.nome,
       tipo: 'arma',
       portal: 'arsenal',
@@ -251,8 +251,10 @@ function construir() {
       sqf: `this addWeapon "${a.classe}";`,
       atalhos: [],
       dicas: [],
+      /* `?arma=` faz a calculadora abrir JÁ nesta arma — sem isso o link
+       * entregava uma tabela de 106 linhas e a calculadora em outra coisa. */
       links: [{ rotulo: 'Abrir na tabela e na calculadora',
-        url: `#/arma3-tutorial?aba=armas` }],
+        url: `#/arma3-tutorial?aba=armas&arma=${a.id}` }],
       deps: [],
       dlcs: a.origem ? [a.origem] : [],
       tags: [a.calibre, a.origem, tp.nome, a.classe].filter(Boolean),

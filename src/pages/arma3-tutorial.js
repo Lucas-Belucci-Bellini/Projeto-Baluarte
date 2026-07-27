@@ -34,7 +34,7 @@ export function arma3TutorialPage(args = {}) {
   const preset = ARMA3_PRESETS.find((p) => p.id === PRESET_ID);
   const urlPorId = Object.fromEntries(preset.mods.map((m) => [m.url.match(/id=(\d+)/)[1], m.url]));
 
-  let busca = '', catAtiva = 'all';
+  let catAtiva = 'all';
 
   /* Armas que a calculadora aceita: só as que têm um projétil balístico de
    * verdade (ver dadosBalisticos). Calculada uma vez — é o mesmo filtro do
@@ -42,9 +42,21 @@ export function arma3TutorialPage(args = {}) {
   const armasCalculaveis = A3ARM.filter((a) => dadosBalisticos(a));
 
   /* estado da calculadora de balística (sobrevive aos re-renders).
-   * Abre num fuzil do JOGO BASE — a lista está ordenada por velocidade, e o
-   * primeiro item calhava de ser um DMR de CDLC que quase ninguém reconhece. */
-  let calcArmaId = (armasCalculaveis.find((a) => a.classe === 'arifle_MX_F')
+   *
+   * `?arma=<id>` vem da wiki: o artigo de cada arma promete "abrir na tabela e
+   * na calculadora", e sem isto o link caía numa lista de 106 com a
+   * calculadora em outra arma — promessa quebrada. Se o id não existir (link
+   * velho, arma que saiu do preset), cai no padrão em vez de quebrar.
+   *
+   * O padrão é um fuzil do JOGO BASE: a lista está ordenada por velocidade, e
+   * o primeiro item calhava de ser um DMR de CDLC que quase ninguém reconhece. */
+  let busca = '';
+  const armaPedida = (args.query || {}).arma;
+  /* `?q=` pré-preenche a busca — é como o artigo da arma manda o leitor
+   * direto na munição dela, sem virar 472 artigos de nome de classe. */
+  const buscaInicial = (args.query || {}).q || '';
+  let calcArmaId = (armasCalculaveis.find((a) => a.id === armaPedida)
+    || armasCalculaveis.find((a) => a.classe === 'arifle_MX_F')
     || armasCalculaveis.find((a) => a.origem === 'Base' && a.tipo === 'fuzil')
     || armasCalculaveis[0] || {}).id;
   let calcZero = 300, calcAlvo = 600, calcVento = 0;
@@ -57,7 +69,7 @@ export function arma3TutorialPage(args = {}) {
   const abaInicial = (args.query || {}).aba;
   const ABAS = ['vanilla', 'armas', 'municao', 'carregadores', 'catalogo',
     'colecao', 'config', 'mods', 'comandos', 'campanhas', 'drive'];
-  let aba = ABAS.includes(abaInicial) ? abaInicial : 'vanilla';
+  let aba = ABAS.includes(abaInicial) ? abaInicial : (armaPedida ? 'armas' : 'vanilla');
 
   page.appendChild(
     h('div', { className: 'page-header anim-fade-in' },
@@ -117,8 +129,10 @@ export function arma3TutorialPage(args = {}) {
   const buscaInput = h('input', {
     className: 'input a3tut-busca', type: 'search',
     placeholder: 'Buscar… (ex.: rapel, zeroing, comandar, sniper)',
+    value: buscaInicial,
     oninput: debounce((e) => { busca = e.target.value; render(); }, 120)
   });
+  busca = buscaInicial;
   const chips = h('div', { className: 'symbols-cats' });
   function secoesDaAba() {
     if (aba === 'config') return A3CFG_SECOES;

@@ -403,9 +403,61 @@ function infobox(art) {
       h('span', { className: 'wk-info__rot' }, 'Tags'),
       h('span', { className: 'wk-info__val' },
         ...art.tags.map((t) => h('span', { className: 'wk-tag' }, t)))) : null,
-    ...(art.links || []).map((l) => h('a', {
-      className: 'btn wk-info__link', href: l.url, target: '_blank', rel: 'noopener noreferrer'
-    }, l.rotulo + ' ↗')));
+
+    /* Ficha técnica da arma. Infobox de wiki existe justamente pra isso —
+     * até aqui os números medidos só apareciam diluídos na prosa do corpo. */
+    ...(art.arma ? fichaArma(art.arma, linha) : []),
+
+    ...(art.links || []).map((l) => {
+      /* Link interno (#/rota) NÃO abre em aba nova: `target=_blank` faz sentido
+       * pro Workshop, não pra ir de uma tela do site pra outra. */
+      const externo = /^https?:/i.test(l.url);
+      return h('a', {
+        className: 'btn wk-info__link',
+        href: l.url,
+        target: externo ? '_blank' : null,
+        rel: externo ? 'noopener noreferrer' : null,
+      }, l.rotulo + (externo ? ' ↗' : ' →'));
+    }));
+}
+
+/* Linhas de ficha técnica de uma arma, na ordem em que se compara arma.
+ * Só entra o que o config informou — ausente some, em vez de virar "0". */
+function fichaArma(a, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  return [
+    linha('Calibre', a.calibre),
+    linha('Velocidade de saída', n(a.v0, ' m/s', 1)),
+    linha('Arrasto (airFriction)', typeof a.airFriction === 'number'
+      ? h('code', null, String(a.airFriction)) : null),
+    linha('Precisão', a.dispersaoCm100
+      ? `${a.dispersaoCm100} cm a 100 m (${a.dispersaoMrad} mrad)` : null),
+    linha('Dano', n(a.dano, '', 1)),
+    linha('Cadência', n(a.rpm, ' tiros/min')),
+    linha('Carregador', n(a.capacidade)),
+    linha('Zeragem máx.', n(a.zeroing, ' m')),
+    linha('Massa', n(a.massa)),
+    /* Elo pra munição: ela não vira artigo (seriam 472 nomes de classe
+     * técnicos afogando o índice), mas daqui dá pra chegar na tabela dela. */
+    a.municao ? h('div', { className: 'wk-info__linha' },
+      h('span', { className: 'wk-info__rot' }, 'Munição'),
+      h('span', { className: 'wk-info__val' },
+        h('a', { href: `#/arma3-tutorial?aba=municao&q=${encodeURIComponent(a.municao)}` },
+          h('code', null, a.municao)))) : null,
+    a.miras && a.miras.length ? h('div', { className: 'wk-info__linha' },
+      h('span', { className: 'wk-info__rot' }, 'Miras'),
+      h('span', { className: 'wk-info__val' },
+        ...a.miras.map((m) => h('span', { className: 'wk-tag' }, m)))) : null,
+    a.acessorios && a.acessorios.length ? h('div', { className: 'wk-info__linha' },
+      h('span', { className: 'wk-info__rot' }, 'Acessórios'),
+      h('span', { className: 'wk-info__val' },
+        ...a.acessorios.map((m) => h('span', { className: 'wk-tag' }, m)))) : null,
+    a.variantes > 1
+      ? linha('Variantes', `${a.variantes} classes no config`)
+      : null,
+    linha('Classe', h('code', null, a.classe)),
+  ];
 }
 
 /* ==============================================================
