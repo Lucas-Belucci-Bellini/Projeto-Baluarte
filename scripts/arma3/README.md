@@ -19,8 +19,8 @@ insubstituível para os números. O Arma 3 Tools é insubstituível para as imag
 
 ## Fluxo
 
-São **cinco** dumps independentes. No jogo: `Esc` → `DEBUG CONSOLE` → cola o
-`.sqf` → `EXECUTE`. Pode rodar os cinco na mesma sessão: cada um tem sua
+São **seis** dumps independentes. No jogo: `Esc` → `DEBUG CONSOLE` → cola o
+`.sqf` → `EXECUTE`. Pode rodar os seis na mesma sessão: cada um tem sua
 própria marca no `.rpt` e seu próprio parser.
 
 ```bash
@@ -44,9 +44,35 @@ python scripts/arma3/parse-veiculos.py
 #   no jogo: scripts/arma3/dump-acessorios.sqf
 python scripts/arma3/parse-acessorios.py
 
+# catalogo de animacoes: estados do corpo + gestos, com grafo de transicoes
+#   no jogo: scripts/arma3/dump-animacoes.sqf
+python scripts/arma3/parse-animacoes.py
+
 # ícones das armas (o extrator de imagem, por enquanto só armas)
 python scripts/arma3/extrair-imagens.py
 ```
+
+Ou tudo de uma vez, com placar no fim e código de saída 1 se algo falhar:
+
+```bash
+python scripts/arma3/extrair-tudo.py
+```
+
+### `turntable.sqf` — o render 3D
+
+Roda **diferente dos outros**: em `spawn` e com o jogo **despausado**, porque
+tira uma foto por quadro. Orbita a câmera em N passos e gera o sprite-sheet de
+giro; o site mostra o objeto rodando ao arrastar o mouse.
+
+Usa `createSimpleObject` direto no `.p3d` que o config declara, então o mesmo
+código serve arma, carregador, munição (o projétil), veículo e item — e
+**funciona nas DLCs cifradas**, porque quem carrega o modelo é o próprio jogo,
+não um leitor externo de ODOL. A distância da câmera sai do `boundingBoxReal`,
+então pistola e tanque se enquadram sozinhos.
+
+A lista `_alvos` vem com 3 classes vanilla de propósito: valide barato antes de
+mirar em lista grande. 10.822 armas × 24 fotos seriam 260 mil imagens — o
+turntable é para subconjunto curado, não para o acervo inteiro.
 
 ## O que cada script faz
 
