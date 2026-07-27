@@ -251,3 +251,72 @@
 /* Catálogo ainda não extraído: instrução, não erro. */
 .a3cat-pendente { border-left: 3px solid var(--color-warning); }
 .a3cat-pendente .a3tut-dicas li { margin-bottom: var(--space-2xs); }
+
+/* ── tabela ordenável (armas · munições · carregadores) ── */
+.a3arm-th.is-sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+.a3arm-th.is-sortable:hover { color: var(--color-cyan); }
+.a3arm-th.is-sorted { color: var(--color-cyan); }
+.a3arm-seta { font-size: var(--font-size-xs); }
+
+/* Marca binária (subsônica/explosiva/traçante): presença é informação, e a
+ * ausência é um ponto neutro — não um "não" gritado em vermelho. */
+.a3arm-flag {
+  display: inline-block;
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+.a3arm-flag.is-sub { color: var(--color-success); background: var(--color-success-soft); }
+.a3arm-flag.is-exp { color: var(--color-danger); background: var(--color-danger-soft); }
+.a3arm-flag.is-ric { color: var(--color-warning); background: var(--color-warning-soft); }
+.a3arm-flag.is-tra { margin-left: var(--space-2xs); color: var(--color-warning); background: var(--color-warning-soft); }
+
+/* ── modos de tiro (linha expansível) ── */
+.a3arm-modos-btn {
+  padding: 2px var(--space-xs);
+  border: var(--border-thin);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.a3arm-modos-btn:hover,
+.a3arm-modos-btn.is-open { color: var(--color-cyan); border-color: var(--color-cyan-edge); }
+.a3arm-modos {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  border: var(--border-thin);
+  border-left: 3px solid var(--color-cyan);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+.a3arm-modos__tit {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.04em;
+  color: var(--color-cyan);
+  text-transform: uppercase;
+}
+.a3arm-modos__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-xs);
+}
+.a3arm-modo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-xs) var(--space-sm);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: var(--font-size-xs);
+}
+.a3arm-modo b { color: var(--color-text-primary); font-family: var(--font-mono); }

@@ -24,6 +24,7 @@ import {
   A3ARM, A3ARM_TIPOS, A3ARM_TOTAL, A3ARM_META, carregarArsenal,
 } from '../data/arma3-armas.js';
 import { A3CAT, A3CAT_CATEGORIAS, A3CAT_META, carregarCatalogo } from '../data/arma3-catalogo.js';
+import { A3MUN, A3MAG, A3MUN_TOTAL, A3MAG_TOTAL } from '../data/arma3-municao.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
@@ -49,12 +50,13 @@ export function arma3TutorialPage(args = {}) {
   let calcZero = 300, calcAlvo = 600, calcVento = 0;
 
   /* arsenal completo (mods) — só desce quando o operador pede */
+  let expandido = null;   // id da arma com os modos de tiro abertos
   let arsenalMods = null, arsenalEstado = 'ocioso';
   /* catálogo (veículos, miras, uniformes…) — idem */
   let catalogoMods = null, catalogoEstado = 'ocioso';
   const abaInicial = (args.query || {}).aba;
-  const ABAS = ['vanilla', 'armas', 'catalogo', 'colecao', 'config', 'mods',
-    'comandos', 'campanhas', 'drive'];
+  const ABAS = ['vanilla', 'armas', 'municao', 'carregadores', 'catalogo',
+    'colecao', 'config', 'mods', 'comandos', 'campanhas', 'drive'];
   let aba = ABAS.includes(abaInicial) ? abaInicial : 'vanilla';
 
   page.appendChild(
@@ -98,6 +100,8 @@ export function arma3TutorialPage(args = {}) {
   abas.append(
     abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
     abaBtn('armas', `🔫 Armas (database) · ${A3ARM_TOTAL}`),
+    abaBtn('municao', `💥 Munições · ${A3MUN_TOTAL}`),
+    abaBtn('carregadores', `🧰 Carregadores · ${A3MAG_TOTAL}`),
     abaBtn('catalogo', A3CAT_META.disponivel
       ? `🎒 Catálogo (veículos, miras, gear) · ${A3CAT_META.nucleo}`
       : '🎒 Catálogo (veículos, miras, gear) · ⏳'),
@@ -135,7 +139,13 @@ export function arma3TutorialPage(args = {}) {
           ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3ARM_TIPOS]
           : (aba === 'catalogo'
             ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3CAT_CATEGORIAS]
-            : [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))])));
+            /* Munições e carregadores são lista PLANA: não têm seção, e o
+             * filtro delas é a busca + ordenar coluna. Sem esta guarda o
+             * `secs.map` abaixo estoura com `secs === null`. */
+            : (!secs
+              ? []
+              : [{ id: 'all', nome: 'Tudo', icon: '⬡' },
+                ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))]))));
     cats.forEach((c) => {
       chips.appendChild(h('button', {
         className: 'symbols-cat' + (c.id === catAtiva ? ' is-active' : ''), dataset: { cat: c.id },
@@ -423,30 +433,252 @@ export function arma3TutorialPage(args = {}) {
       h('span', { className: 'a3arm-res__sub u-text-muted' }, sub));
   }
 
+  /* ===== tabela ordenável, compartilhada pelas três abas de dados =====
+   *
+   * Uma spec de coluna, três tabelas (armas, munições, carregadores). Antes
+   * cada tabela repetia thead + linha na mão; com isso, ordenar precisaria ser
+   * escrito três vezes — e é justamente o que o operador pediu em todas.
+   *
+   * `ordem` guarda o estado por TABELA (a chave é o id), não global: ordenar os
+   * fuzis não pode bagunçar a ordem dos snipers logo abaixo.
+   *
+   * `val(e)` é o valor pra COMPARAR, `cel(e)` é o que aparece. Separar os dois
+   * é o que faz "8.7 cm" ordenar como 8.7 e não como texto — e o que mantém
+   * ausente (`null`) sempre no fim, em vez de virar 0 e liderar a coluna
+   * crescente, que seria a mentira de sempre. */
+  const ordem = {};
+
+  function tabelaSort(idTabela, colunas, itens) {
+    const est = ordem[idTabela] || (ordem[idTabela] = { col: null, desc: false });
+
+    let lista = itens;
+    if (est.col) {
+      const c = colunas.find((x) => x.k === est.col);
+      if (c) {
+        lista = [...itens].sort((a, b) => {
+          const va = c.val(a), vb = c.val(b);
+          /* Ausente vai SEMPRE pro fim, nos dois sentidos. */
+          const na = va === null || va === undefined || va === '';
+          const nb = vb === null || vb === undefined || vb === '';
+          if (na && nb) return 0;
+          if (na) return 1;
+          if (nb) return -1;
+          const r = typeof va === 'number' && typeof vb === 'number'
+            ? va - vb
+            : String(va).localeCompare(String(vb), 'pt-BR');
+          return est.desc ? -r : r;
+        });
+      }
+    }
+
+    const th = (c) => h('th', {
+      className: 'a3arm-th' + (c.cls ? ' ' + c.cls : '')
+        + (c.k ? ' is-sortable' : '') + (est.col === c.k ? ' is-sorted' : ''),
+      title: c.k ? 'ordenar por esta coluna' : null,
+      onclick: c.k ? () => {
+        if (est.col === c.k) est.desc = !est.desc;
+        else { est.col = c.k; est.desc = !!c.descPrimeiro; }
+        render();
+      } : null,
+    }, c.rot, c.k && est.col === c.k
+      ? h('span', { className: 'a3arm-seta' }, est.desc ? ' ▾' : ' ▴')
+      : null);
+
+    return h('div', { className: 'a3arm-tabela-wrap' },
+      h('table', { className: 'a3arm-tabela' },
+        h('thead', null, h('tr', null, ...colunas.map(th))),
+        h('tbody', null, ...lista.map((e) => h('tr', { className: 'a3arm-tr' },
+          ...colunas.map((c) => h('td', {
+            className: 'a3arm-td' + (c.celCls ? ' ' + c.celCls : ''),
+          }, c.cel(e))))))));
+  }
+
+  const secao = (icon, titulo, desc, qtd, ...corpoEls) => h('div', { className: 'a3tut-secao' },
+    h('div', { className: 'a3tut-secao__head' },
+      h('span', { className: 'a3tut-secao__icon' }, icon),
+      h('h2', { className: 'a3tut-secao__titulo' }, titulo),
+      h('span', { className: 'badge badge--cyan' }, String(qtd))),
+    desc ? h('p', { className: 'a3tut-secao__desc u-text-muted' }, desc) : null,
+    ...corpoEls);
+
+  /* Modos de tiro de uma arma. O MX tem 6 no config (Single, FullAuto, rajadas
+   * e os modos que a óptica troca) — a tabela mostrava um RPM só. */
+  function celModos(a) {
+    const ms = a.modos || [];
+    if (!ms.length) return h('span', { className: 'a3arm-td__na' }, '—');
+    const aberto = expandido === a.id;
+    return h('button', {
+      className: 'a3arm-modos-btn' + (aberto ? ' is-open' : ''),
+      title: ms.map((m) => m.nome).join(' · '),
+      onclick: () => { expandido = aberto ? null : a.id; render(); },
+    }, `${ms.length} modo${ms.length > 1 ? 's' : ''}`, aberto ? ' ▾' : ' ▸');
+  }
+
+  function detalheModos(a) {
+    const ms = a.modos || [];
+    return h('div', { className: 'a3arm-modos' },
+      h('span', { className: 'a3arm-modos__tit' }, `Modos de tiro de ${a.nome}`),
+      h('div', { className: 'a3arm-modos__grade' }, ...ms.map((m) => h('div', {
+        className: 'a3arm-modo',
+      },
+        h('b', null, m.nome),
+        h('span', null, m.auto ? 'automático' : 'semi',
+          m.rajada > 1 ? ` · rajada de ${m.rajada}` : ''),
+        h('span', { className: 'a3arm-num-cel' }, m.rpm ? `${m.rpm} tiros/min` : '—'),
+        h('span', { className: 'u-text-muted' }, m.dispersao
+          ? `dispersão ${(m.dispersao * 1000).toFixed(2)} mrad · ${(m.dispersao * 10000).toFixed(1)} cm a 100 m`
+          : 'dispersão não informada')))));
+  }
+
+  /* ===== munições ===== */
+  function cardFurtividade() {
+    const q = A3MUN.filter((m) => typeof m.audibleFire === 'number')
+      .sort((a, b) => a.audibleFire - b.audibleFire);
+    const sub = A3MUN.filter((m) => m.subsonico).length;
+    const exp = A3MUN.filter((m) => m.explosivo).length;
+    return h('div', { className: 'card a3tut-card a3arm-proc' },
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, '💥 Munição — o que estes números querem dizer')),
+      h('p', { className: 'a3tut-card__oque' },
+        'Dois campos do config têm nome enganoso e é onde quase todo mundo erra:'),
+      h('ul', { className: 'a3tut-dicas' },
+        h('li', null, h('b', null, 'Penetração ≠ calibre. '),
+          'O campo ', h('code', null, 'caliber'), ' da MUNIÇÃO não é o calibre em mm — '
+          + 'é o multiplicador de penetração do engine. Aqui está renomeado pra não confundir '
+          + 'com o calibre da arma.'),
+        h('li', null, h('b', null, 'Explosivo mata pelo dano INDIRETO. '),
+          `${exp} munições são explosivas: o `, h('code', null, 'dano'),
+          ' direto pode ser baixo e ainda assim matar pelo dano indireto dentro do raio. '
+          + 'Olhar só a primeira coluna faz foguete parecer fraco.'),
+        h('li', null, h('b', null, 'Furtividade. '),
+          h('code', null, 'visibleFire'), ' e ', h('code', null, 'audibleFire'),
+          ' são o quanto o tiro te denuncia — vão de ',
+          h('b', null, String(q[0].audibleFire)), ' a ',
+          h('b', null, String(q[q.length - 1].audibleFire)),
+          `. E ${sub} munições são `, h('b', null, 'subsônicas'),
+          ' (abaixo de 340 m/s): o projétil não estala ao passar, que é o que faz '
+          + 'supressor valer a pena de verdade.')));
+  }
+
+  function tabelaMunicao(lista) {
+    const flag = (on, txt, cls) => (on
+      ? h('span', { className: `a3arm-flag ${cls}` }, txt)
+      : h('span', { className: 'a3arm-td__na' }, '·'));
+    const colunas = [
+      { k: 'classe', rot: 'Munição', celCls: 'a3arm-td--nome', val: (m) => m.classe,
+        cel: (m) => h('code', { className: 'a3arm-af' }, m.classe) },
+      { k: 'dano', rot: 'Dano', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (m) => m.dano, cel: (m) => val(m.dano, '', 1) },
+      { k: 'ind', rot: 'Dano indireto', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (m) => m.danoIndireto,
+        cel: (m) => (m.danoIndireto
+          ? h('span', { title: `raio de ${m.raioIndireto} m` }, String(m.danoIndireto),
+            h('span', { className: 'a3arm-td__u' }, ` /${m.raioIndireto} m`))
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'pen', rot: 'Penetração', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (m) => m.penetracao,
+        cel: (m) => h('span', { title: 'campo `caliber` do config — multiplicador de penetração, não o calibre' },
+          val(m.penetracao, '', 2)) },
+      { k: 'vt', rot: 'Vel. típica', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (m) => m.velTipica, cel: (m) => val(m.velTipica, 'm/s') },
+      { k: 'af', rot: 'airFriction', celCls: 'a3arm-num-cel', val: (m) => m.airFriction,
+        cel: (m) => (typeof m.airFriction === 'number'
+          ? h('code', { className: 'a3arm-af' }, String(m.airFriction))
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'som', rot: 'Ruído', celCls: 'a3arm-num-cel', val: (m) => m.audibleFire,
+        cel: (m) => h('span', { title: 'audibleFire — o quanto o tiro se ouve' }, val(m.audibleFire, '', 2)) },
+      { k: 'luz', rot: 'Clarão', celCls: 'a3arm-num-cel', val: (m) => m.visibleFire,
+        cel: (m) => h('span', { title: 'visibleFire — o quanto o tiro se vê' }, val(m.visibleFire, '', 2)) },
+      { k: 'sub', rot: 'Subsônica', val: (m) => (m.subsonico ? 0 : 1),
+        cel: (m) => flag(m.subsonico, 'subsônica', 'is-sub') },
+      { k: 'exp', rot: 'Explosiva', val: (m) => (m.explosivo ? 0 : 1),
+        cel: (m) => flag(m.explosivo, 'explosiva', 'is-exp') },
+      { k: 'ric', rot: 'Ricocheteia', val: (m) => (m.ricochete ? 0 : 1),
+        cel: (m) => flag(m.ricochete, 'ricocheteia', 'is-ric') },
+    ];
+    return secao('💥', 'Munições', 'Todas as munições que o preset carrega, com dano, '
+      + 'penetração e o quanto cada tiro denuncia a posição.',
+    lista.length, tabelaSort('municao', colunas, lista));
+  }
+
+  /* ===== carregadores ===== */
+  function cardCarregadores() {
+    const variam = {};
+    A3MAG.forEach((m) => {
+      if (!m.municao || !m.v0) return;
+      (variam[m.municao.toLowerCase()] ||= new Set()).add(m.v0);
+    });
+    const nVariam = Object.values(variam).filter((s) => s.size > 1).length;
+    return h('div', { className: 'card a3tut-card a3arm-proc' },
+      h('div', { className: 'a3tut-card__head' },
+        h('b', { className: 'a3tut-card__nome' }, '🧰 Carregador muda a balística')),
+      h('p', { className: 'a3tut-card__oque' },
+        'Cada carregador tem ', h('b', null, 'velocidade de saída própria'),
+        ' — não é atributo só da arma. Em ', h('b', null, String(nVariam)),
+        ' munições a mesma bala sai com v₀ diferente dependendo do carregador, e é por '
+        + 'isso que a mesma arma aparece em mais de uma linha na tabela de armas: '
+        + 'não é duplicata, é balística diferente.'),
+      h('p', { className: 'a3arm-proc__nota u-text-muted' },
+        'O ', h('code', null, 'v₀'), ' aqui é o do carregador; a arma aplica o multiplicador '
+        + 'dela por cima, e o resultado é o que aparece na coluna v₀ das armas.'));
+  }
+
+  function tabelaCarregadores(lista) {
+    const colunas = [
+      { k: 'nome', rot: 'Carregador', celCls: 'a3arm-td--nome', val: (m) => m.nome,
+        cel: (m) => [m.nome, m.tracante ? h('span', { className: 'a3arm-flag is-tra' }, 'traçante') : null] },
+      { k: 'cap', rot: 'Capacidade', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (m) => m.capacidade, cel: (m) => val(m.capacidade) },
+      { k: 'v0', rot: 'v₀', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (m) => m.v0, cel: (m) => val(m.v0, 'm/s') },
+      { k: 'massa', rot: 'Massa', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (m) => m.massa, cel: (m) => val(m.massa) },
+      { k: 'mun', rot: 'Munição', val: (m) => m.municao,
+        cel: (m) => (m.municao
+          ? h('code', { className: 'a3arm-af' }, m.municao)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'origem', rot: 'Origem', val: (m) => m.origem,
+        cel: (m) => h('span', { className: 'a3col-tag' }, m.origem || '—') },
+    ];
+    return secao('🧰', 'Carregadores', 'Capacidade, massa e a velocidade de saída de cada um.',
+      lista.length, tabelaSort('carregadores', colunas, lista));
+  }
+
   /* tabela de um tipo de arma (estilo Fallout, rolagem horizontal) */
   function tabelaTipo(tp, armas) {
-    const th = (t, cls) => h('th', cls ? { className: cls } : null, t);
-    const linha = (a) => h('tr', { className: 'a3arm-tr' },
-      h('td', { className: 'a3arm-td a3arm-td--img' }, thumb(a)),
-      h('td', { className: 'a3arm-td a3arm-td--nome' }, a.nome,
-        a.variantes > 1
-          ? h('span', { className: 'a3arm-var', title: a.nomes.join(' · ') }, `+${a.variantes - 1} variantes`)
-          : null,
-        a.faccao ? h('span', { className: 'a3arm-fac' }, a.faccao) : null),
-      h('td', { className: 'a3arm-td' }, a.calibre || h('span', { className: 'a3arm-td__na' }, '—')),
-      h('td', { className: 'a3arm-td a3arm-num-cel' }, val(a.v0, 'm/s', 1)),
-      h('td', { className: 'a3arm-td a3arm-num-cel' },
-        typeof a.airFriction === 'number'
+    const colunas = [
+      { rot: '', cls: 'a3arm-th--img', celCls: 'a3arm-td--img', cel: (a) => thumb(a) },
+      { k: 'nome', rot: 'Arma', celCls: 'a3arm-td--nome', val: (a) => a.nome,
+        cel: (a) => [a.nome,
+          a.variantes > 1
+            ? h('span', { className: 'a3arm-var', title: a.nomes.join(' · ') }, `+${a.variantes - 1} variantes`)
+            : null,
+          a.faccao ? h('span', { className: 'a3arm-fac' }, a.faccao) : null] },
+      { k: 'calibre', rot: 'Calibre', val: (a) => a.calibre,
+        cel: (a) => a.calibre || h('span', { className: 'a3arm-td__na' }, '—') },
+      { k: 'v0', rot: 'v₀', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (a) => a.v0, cel: (a) => val(a.v0, 'm/s', 1) },
+      { k: 'af', rot: 'airFriction', celCls: 'a3arm-num-cel', val: (a) => a.airFriction,
+        cel: (a) => (typeof a.airFriction === 'number'
           ? h('code', { className: 'a3arm-af' }, String(a.airFriction))
-          : h('span', { className: 'a3arm-td__na' }, '—')),
-      h('td', { className: 'a3arm-td a3arm-num-cel' }, val(a.dano, '', 1)),
-      h('td', { className: 'a3arm-td a3arm-num-cel' }, val(a.rpm, '/min')),
-      h('td', { className: 'a3arm-td a3arm-num-cel' }, val(a.capacidade)),
-      h('td', { className: 'a3arm-td a3arm-num-cel' }, val(a.zeroing, 'm')),
-      h('td', { className: 'a3arm-td' }, h('span', { className: 'a3col-tag' }, a.origem || '—')),
-      h('td', { className: 'a3arm-td a3arm-td--obs' },
-        a.obs || a.desc || h('span', { className: 'a3arm-td__na' }, '—')),
-      h('td', { className: 'a3arm-td' }, dadosBalisticos(a)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'disp', rot: 'Precisão', celCls: 'a3arm-num-cel', val: (a) => a.dispersaoCm100,
+        cel: (a) => (a.dispersaoCm100
+          ? h('span', { title: `${a.dispersaoMrad} mrad — dispersão do melhor modo de tiro` },
+            `${a.dispersaoCm100}`, h('span', { className: 'a3arm-td__u' }, ' cm/100 m'))
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'dano', rot: 'Dano', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (a) => a.dano, cel: (a) => val(a.dano, '', 1) },
+      { k: 'rpm', rot: 'Cadência', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (a) => a.rpm, cel: (a) => val(a.rpm, '/min') },
+      { k: 'modos', rot: 'Modos', val: (a) => (a.modos || []).length, cel: celModos },
+      { k: 'cap', rot: 'Carreg.', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (a) => a.capacidade, cel: (a) => val(a.capacidade) },
+      { k: 'zero', rot: 'Zeroing', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (a) => a.zeroing, cel: (a) => val(a.zeroing, 'm') },
+      { k: 'origem', rot: 'Origem', val: (a) => a.origem,
+        cel: (a) => h('span', { className: 'a3col-tag' }, a.origem || '—') },
+      { rot: 'Balística', cel: (a) => (dadosBalisticos(a)
         ? h('button', {
           className: 'a3arm-calcbtn', title: 'abrir na calculadora',
           onclick: () => {
@@ -460,20 +692,12 @@ export function arma3TutorialPage(args = {}) {
           title: a.tipo === 'lancador'
             ? 'míssil/foguete não segue o modelo de arrasto de bala'
             : 'o config não informa v₀ e airFriction desta arma'
-        }, '—')));
-    const tabela = h('table', { className: 'a3arm-tabela' },
-      h('thead', null, h('tr', null,
-        th('', 'a3arm-th--img'), th('Arma'), th('Calibre'), th('v₀'), th('airFriction'),
-        th('Dano'), th('Cadência'), th('Carreg.'), th('Zeroing'), th('Origem'),
-        th('Descrição'), th('Balística'))),
-      h('tbody', null, ...armas.map(linha)));
-    return h('div', { className: 'a3tut-secao' },
-      h('div', { className: 'a3tut-secao__head' },
-        h('span', { className: 'a3tut-secao__icon' }, tp.icon),
-        h('h2', { className: 'a3tut-secao__titulo' }, tp.nome),
-        h('span', { className: 'badge badge--cyan' }, String(armas.length))),
-      h('p', { className: 'a3tut-secao__desc u-text-muted' }, tp.desc),
-      h('div', { className: 'a3arm-tabela-wrap' }, tabela));
+        }, '—')) },
+    ];
+    const aberta = armas.find((a) => a.id === expandido);
+    return secao(tp.icon, tp.nome, tp.desc, armas.length,
+      tabelaSort(`arma:${tp.id}`, colunas, armas),
+      aberta ? detalheModos(aberta) : null);
   }
 
   /* Painel de procedência: de onde vem cada número e o que falta. É o que
@@ -730,6 +954,22 @@ export function arma3TutorialPage(args = {}) {
       });
       contador.textContent = `${visiveis} de ${total} armas`
         + (arsenalMods ? ' (núcleo + mods)' : ` no núcleo · ${A3ARM_META.mods} de mods sob demanda`);
+    } else if (aba === 'municao') {
+      total = A3MUN_TOTAL;
+      if (!termo) corpo.appendChild(cardFurtividade());
+      const lista = !termo ? A3MUN : A3MUN.filter((m) =>
+        normalize(`${m.classe} ${m.subsonico ? 'subsonica' : ''} ${m.explosivo ? 'explosiva' : ''}`).includes(termo));
+      visiveis = lista.length;
+      if (lista.length) corpo.appendChild(tabelaMunicao(lista));
+      contador.textContent = `${visiveis} de ${total} munições`;
+    } else if (aba === 'carregadores') {
+      total = A3MAG_TOTAL;
+      if (!termo) corpo.appendChild(cardCarregadores());
+      const lista = !termo ? A3MAG : A3MAG.filter((m) =>
+        normalize(`${m.nome} ${m.classe} ${m.municao || ''} ${m.origem || ''}`).includes(termo));
+      visiveis = lista.length;
+      if (lista.length) corpo.appendChild(tabelaCarregadores(lista));
+      contador.textContent = `${visiveis} de ${total} carregadores`;
     } else if (aba === 'catalogo') {
       const base = catalogoMods ? A3CAT.concat(catalogoMods) : A3CAT;
       total = base.length;
