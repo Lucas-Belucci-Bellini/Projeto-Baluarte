@@ -49,9 +49,22 @@ jobs:
           #
           # A análise continua cobrindo TODO o código que este projeto escreve:
           # src/, scripts/, api/, desktop/, backend/.
+          #
+          # ⚠️ O DIRETÓRIO NU É O QUE FUNCIONA. A primeira tentativa usou só
+          # `GitNexus-1.6.7/**` e NÃO excluiu nada: o log do job seguiu
+          # dizendo "CodeQL scanned 1551 out of 1551 TypeScript files" — e
+          # este projeto não tem UM arquivo TypeScript, os 1.551 são todos
+          # do GitNexus. O config era lido (aparece no user-config.yaml),
+          # só não casava. As duas formas ficam declaradas.
+          #
+          # Como conferir se voltar a falhar: o log do job de
+          # javascript-typescript termina com a linha "CodeQL scanned N out
+          # of N TypeScript files". Neste repo o número certo é ZERO.
           config: |
             paths-ignore:
+              - GitNexus-1.6.7
               - GitNexus-1.6.7/**
+              - '**/GitNexus-1.6.7/**'
 
       - name: Analisar
         uses: github/codeql-action/analyze@v3
