@@ -184,6 +184,15 @@ def classificar(classe, arma):
     desc = arma.get('descricao') or ''
     for rx, tp in DESC_ESPECIFICA:
         if rx.search(desc):
+            # `type == 1` é ARMA PRIMÁRIA no engine, e isso é autoritativo:
+            # o fuzil com lança-granadas acoplado (MX 3GL, Katiba KGL, TRG21 GL)
+            # tem `type: 1` e descrição "Assault Rifle · … · Grenade Launcher".
+            # Deixar o texto decidir classificava o fuzil como lançador — e,
+            # pior, marcava `balistico: false`, então a calculadora recusava uma
+            # arma com balística de fuzil perfeitamente boa (o MX 3GL tem o v0 e
+            # o airFriction do MX). O UGL é boca SECUNDÁRIA, não o tipo da arma.
+            if tp == 'lancador' and tipo_cfg == 1:
+                continue
             return tp, 'descricao'
 
     pref = classe.split('_')[0].lower()

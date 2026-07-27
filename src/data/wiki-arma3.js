@@ -252,9 +252,15 @@ function construir() {
       atalhos: [],
       dicas: [],
       /* `?arma=` faz a calculadora abrir JÁ nesta arma — sem isso o link
-       * entregava uma tabela de 106 linhas e a calculadora em outra coisa. */
-      links: [{ rotulo: 'Abrir na tabela e na calculadora',
-        url: `#/arma3-tutorial?aba=armas&arma=${a.id}` }],
+       * entregava uma tabela de 106 linhas e a calculadora em outra coisa.
+       *
+       * E o RÓTULO segue o que a arma permite: prometer "e na calculadora"
+       * pra foguete, sinalizador ou arma sem v0 no config levava o leitor a
+       * uma calculadora que caía em OUTRA arma, calada. */
+      links: [{
+        rotulo: a.balistico ? 'Abrir na tabela e na calculadora' : 'Abrir na tabela',
+        url: `#/arma3-tutorial?aba=armas&arma=${a.id}`,
+      }],
       deps: [],
       dlcs: a.origem ? [a.origem] : [],
       tags: [a.calibre, a.origem, tp.nome, a.classe].filter(Boolean),
