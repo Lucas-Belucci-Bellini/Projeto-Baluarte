@@ -33,6 +33,7 @@
 import { A3ARM } from '../src/data/arma3-armas.js';
 import { A3ACC } from '../src/data/arma3-acessorios.js';
 import { A3TER } from '../src/data/arma3-terrenos.js';
+import { A3VEI } from '../src/data/arma3-veiculos.js';
 import { WIKI_ARTIGOS } from '../src/data/wiki-arma3.js';
 import { dadosBalisticos } from '../src/utils/arma3-balistica.js';
 
@@ -112,6 +113,39 @@ for (const art of artsTer) {
   }
 }
 
+/* ── portal Veículos ──
+ * Mesma armadilha: `?aba=veiculos&q=<classe>` que não existe na base abre a
+ * aba com busca vazia, sem erro — e o leitor conclui que o veículo sumiu. */
+const classesVei = new Set(A3VEI.map((v) => v.classe));
+const artsVei = WIKI_ARTIGOS.filter((a) => a.portal === 'veiculos');
+if (!artsVei.length) falhas.push('o portal "veiculos" não tem nenhum artigo');
+for (const art of artsVei) {
+  const url = ((art.links || [])[0] || {}).url || '';
+  const m = /[?&]q=([^&]+)/.exec(url);
+  if (!/aba=veiculos/.test(url)) {
+    falhas.push(`${art.titulo}: link não aponta pra aba=veiculos`);
+    continue;
+  }
+  if (!m) { falhas.push(`${art.titulo}: link sem ?q=`); continue; }
+  const classe = decodeURIComponent(m[1]);
+  if (!classesVei.has(classe)) {
+    falhas.push(`${art.titulo}: busca por "${classe}", que não está na base de veículos`);
+  }
+}
+
+/* A blindagem "menor" NUNCA pode ser <= 0: negativo no config é blindagem
+ * RELATIVA ao casco, e vazar pro resumo faria a tabela anunciar
+ * "ponto fraco: −100", que não quer dizer nada. */
+for (const v of A3VEI) {
+  const b = v.blindagem;
+  if (b && b.menor != null && b.menor <= 0) {
+    falhas.push(`${v.classe}: blindagem "menor" ${b.menor} — valor relativo vazou`);
+  }
+  if (b && b.menor != null && b.maior != null && b.menor > b.maior) {
+    falhas.push(`${v.classe}: blindagem menor > maior`);
+  }
+}
+
 /* Ids duplicados ENTRE portais: os três prefixam (ars-/opt-/ter-), mas uma
  * colisão levaria dois assuntos ao mesmo deep-link. */
 const todosIds = WIKI_ARTIGOS.map((a) => a.id);
@@ -123,6 +157,7 @@ console.log(`  com calculadora:  ${calculaveis}`);
 console.log(`  só tabela:        ${artigos.length - calculaveis}`);
 console.log(`artigos de óptica:  ${artsOpt.length}`);
 console.log(`artigos de terreno: ${artsTer.length} (${terComGrade.size} com grade)`);
+console.log(`artigos de veículo: ${artsVei.length}`);
 
 if (falhas.length) {
   console.error(`\n${falhas.length} problema(s):`);

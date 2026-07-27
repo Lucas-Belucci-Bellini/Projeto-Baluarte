@@ -27,6 +27,7 @@ import { A3CAT, A3CAT_CATEGORIAS, A3CAT_META, carregarCatalogo } from '../data/a
 import { A3MUN, A3MAG, A3MUN_TOTAL, A3MAG_TOTAL } from '../data/arma3-municao.js';
 import { A3ACC, A3ACC_TOTAL, A3ACC_META } from '../data/arma3-acessorios.js';
 import { A3TER, A3TER_TOTAL, A3TER_META } from '../data/arma3-terrenos.js';
+import { A3VEI, A3VEI_TOTAL, A3VEI_CATEGORIAS, A3VEI_META } from '../data/arma3-veiculos.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
@@ -69,7 +70,7 @@ export function arma3TutorialPage(args = {}) {
   /* catálogo (veículos, miras, uniformes…) — idem */
   let catalogoMods = null, catalogoEstado = 'ocioso';
   const abaInicial = (args.query || {}).aba;
-  const ABAS = ['vanilla', 'armas', 'acessorios', 'terrenos', 'municao',
+  const ABAS = ['vanilla', 'armas', 'acessorios', 'veiculos', 'terrenos', 'municao',
     'carregadores', 'catalogo', 'colecao', 'config', 'mods', 'comandos',
     'campanhas', 'drive'];
   let aba = ABAS.includes(abaInicial) ? abaInicial : (armaPedida ? 'armas' : 'vanilla');
@@ -116,6 +117,7 @@ export function arma3TutorialPage(args = {}) {
     abaBtn('vanilla', `🎮 Jogo base (vanilla) · ${A3VAN_TOTAL_TOPICOS}`),
     abaBtn('armas', `🔫 Armas (database) · ${A3ARM_TOTAL}`),
     abaBtn('acessorios', `🔭 Miras & acessórios · ${A3ACC_TOTAL}`),
+    abaBtn('veiculos', `🛡️ Veículos · ${A3VEI_TOTAL}`),
     abaBtn('terrenos', `🗺️ Terrenos · ${A3TER_TOTAL}`),
     abaBtn('municao', `💥 Munições · ${A3MUN_TOTAL}`),
     abaBtn('carregadores', `🧰 Carregadores · ${A3MAG_TOTAL}`),
@@ -156,7 +158,9 @@ export function arma3TutorialPage(args = {}) {
         ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3COL_CATS]
         : (aba === 'armas'
           ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3ARM_TIPOS]
-          : (aba === 'catalogo'
+          : (aba === 'veiculos'
+            ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3VEI_CATEGORIAS]
+            : (aba === 'catalogo'
             ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3CAT_CATEGORIAS]
             /* Munições e carregadores são lista PLANA: não têm seção, e o
              * filtro delas é a busca + ordenar coluna. Sem esta guarda o
@@ -164,7 +168,7 @@ export function arma3TutorialPage(args = {}) {
             : (!secs
               ? []
               : [{ id: 'all', nome: 'Tudo', icon: '⬡' },
-                ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))]))));
+                ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))])))));
     cats.forEach((c) => {
       chips.appendChild(h('button', {
         className: 'symbols-cat' + (c.id === catAtiva ? ' is-active' : ''), dataset: { cat: c.id },
@@ -692,6 +696,65 @@ export function arma3TutorialPage(args = {}) {
       lista.length, tabelaSort('acessorios', colunas, lista));
   }
 
+  /* ===== veículos =====
+   *
+   * A coluna que justifica a tabela é "Ponto fraco": só a blindagem do casco
+   * esconde onde o veículo cede. E ela compara SÓ blindagem absoluta —
+   * armor negativo no config é blindagem RELATIVA ao casco (19.223 partes do
+   * acervo, quase todas rodas), e misturar as duas anunciaria "ponto fraco:
+   * −100". As relativas ficam numa coluna própria, contadas. */
+  function tabelaVeiculos(lista) {
+    const CAT = Object.fromEntries(A3VEI_CATEGORIAS.map((c) => [c.id, c]));
+    const colunas = [
+      { k: 'nome', rot: 'Veículo', celCls: 'a3arm-td--nome', val: (v) => v.nome,
+        cel: (v) => h('b', null, v.nome) },
+      { k: 'cat', rot: 'Tipo', val: (v) => v.categoria,
+        cel: (v) => h('span', null, `${(CAT[v.categoria] || {}).icon || ''} `
+          + `${(CAT[v.categoria] || {}).nome || v.categoria}`) },
+      { k: 'armor', rot: 'Casco', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (v) => v.armor,
+        cel: (v) => h('span', { title: 'blindagem total do casco' }, val(v.armor)) },
+      { k: 'fraca', rot: 'Ponto fraco', celCls: 'a3arm-num-cel',
+        val: (v) => (v.blindagem ? v.blindagem.menor : null),
+        cel: (v) => {
+          const b = v.blindagem;
+          if (!b) {
+            return h('span', { className: 'a3arm-td__na', title: 'o config não declara blindagem por parte' }, '—');
+          }
+          if (b.menor == null) {
+            return h('span', { className: 'a3arm-td__na', title: `${b.partes} partes, nenhuma com blindagem absoluta` }, '—');
+          }
+          return h('span', { title: `a mais fraca das ${b.partes} partes com dano próprio` },
+            h('b', null, String(b.menor)),
+            h('span', { className: 'a3arm-td__u' }, ` ${b.menorParte || ''}`));
+        } },
+      { k: 'rel', rot: 'Partes relativas', celCls: 'a3arm-num-cel',
+        val: (v) => (v.blindagem ? v.blindagem.relativas : null),
+        cel: (v) => (v.blindagem && v.blindagem.relativas
+          ? h('span', { title: 'blindagem negativa no config = proporcional ao casco (rodas, periscópios); não se compara com as absolutas' },
+            String(v.blindagem.relativas))
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'vel', rot: 'Vel. máx.', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (v) => v.maxSpeed, cel: (v) => val(v.maxSpeed, 'km/h') },
+      { k: 'lot', rot: 'Ocupantes', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (v) => v.lotacao, cel: (v) => val(v.lotacao) },
+      { k: 'armas', rot: 'Armas', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (v) => v.armas, cel: (v) => val(v.armas) },
+      { k: 'lado', rot: 'Lado', val: (v) => v.lado,
+        cel: (v) => (v.lado ? h('span', { className: 'a3arm-flag' }, v.lado)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'dlc', rot: 'Origem', val: (v) => v.dlc,
+        cel: (v) => h('span', { className: 'a3arm-flag' }, v.dlc) },
+      { k: 'classe', rot: 'Classe', val: (v) => v.classe,
+        cel: (v) => h('code', { className: 'a3arm-af' }, v.classe) },
+    ];
+    return secao('🛡️', 'Veículos',
+      'Blindados, viaturas, aeronaves e navios do jogo base e das DLCs. '
+      + 'A coluna "Ponto fraco" é a parte com menor blindagem ABSOLUTA — é por '
+      + 'ela que o veículo cede antes do casco ceder.',
+    lista.length, tabelaSort('veiculos', colunas, lista));
+  }
+
   /* ===== terrenos =====
    *
    * A coluna que importa é "Northing": ela mostra o SINAL do passo da grade.
@@ -1128,6 +1191,16 @@ export function arma3TutorialPage(args = {}) {
       visiveis = lista.length;
       if (lista.length) corpo.appendChild(tabelaTerrenos(lista));
       contador.textContent = `${visiveis} de ${total} terrenos`;
+    } else if (aba === 'veiculos') {
+      total = A3VEI.length;
+      const daCat = catAtiva === 'all' ? A3VEI : A3VEI.filter((v) => v.categoria === catAtiva);
+      const lista = !termo ? daCat : daCat.filter((v) => normalize(
+        `${v.nome} ${v.classe} ${v.dlc} ${v.lado || ''} ${v.faccao || ''} ${v.categoria}`
+      ).includes(termo));
+      visiveis = lista.length;
+      if (lista.length) corpo.appendChild(tabelaVeiculos(lista));
+      contador.textContent = `${visiveis} de ${total} veículos do núcleo `
+        + `(${A3VEI_META.porCategoria ? Object.values(A3VEI_META.porCategoria).reduce((a, b) => a + b, 0) : 0} no acervo com mods)`;
     } else if (aba === 'municao') {
       total = A3MUN_TOTAL;
       if (!termo) corpo.appendChild(cardFurtividade());

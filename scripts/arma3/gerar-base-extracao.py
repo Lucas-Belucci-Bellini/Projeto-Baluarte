@@ -139,10 +139,25 @@ def main():
         },
     ]
 
+    # Veículos já têm tela — entram como bloco, não como fila.
+    reais = sum(1 for x in vlist.values() if x.get('ehVeiculo'))
+    blocos.append({
+        'id': 'veiculos',
+        'titulo': 'Veículos',
+        'rpt': (veic or {}).get('fonte'),
+        'linhas': [
+            {'rot': 'registros em CfgVehicles', 'n': len(vlist),
+             'nota': 'inclui parede, arbusto e marcador — não só veículo'},
+            {'rot': 'veículos de verdade', 'n': reais, 'nota': 'os que a tabela mostra'},
+            {'rot': 'com blindagem por parte',
+             'n': sum(1 for x in vlist.values() if x.get('ehVeiculo') and x.get('hitpoints')),
+             'nota': None},
+            {'rot': 'facções', 'n': len((veic or {}).get('faccoes') or {}), 'nota': None},
+        ],
+    })
+
     # Extraído mas ainda sem tela — declarado como fila, não como entregue.
     fila = [
-        {'rot': 'registros de CfgVehicles', 'n': len(vlist) or None,
-         'rpt': (veic or {}).get('fonte')},
         {'rot': 'soldados', 'n': len(soldados) or None,
          'rpt': (veic or {}).get('fonte')},
         {'rot': 'animações e gestos',

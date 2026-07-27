@@ -30,6 +30,7 @@ import { ARMA3_PRESETS } from './arma3-presets.js';
 import { A3ARM, A3ARM_TIPOS } from './arma3-armas.js';
 import { A3ACC, A3ACC_TOTAL } from './arma3-acessorios.js';
 import { A3TER } from './arma3-terrenos.js';
+import { A3VEI, A3VEI_CATEGORIAS } from './arma3-veiculos.js';
 
 export { A3COL_INFO };
 
@@ -66,7 +67,10 @@ export const WIKI_PORTAIS = [
         + 'sai do texto do próprio jogo — nunca de conta com o campo de visão.' },
   { id: 'terrenos', nome: 'Terrenos',            icon: '🗺️', cor: 'cyan',
     desc: 'Os mundos jogáveis com a grade REAL de cada um: tamanho, célula, '
-        + 'localidades e a direção do northing que o computador de tiro usa.' }
+        + 'localidades e a direção do northing que o computador de tiro usa.' },
+  { id: 'veiculos', nome: 'Veículos',            icon: '🛡️', cor: 'magenta',
+    desc: 'Blindados, viaturas, aeronaves e navios com a blindagem medida — '
+        + 'o total do casco E a parte mais fraca, que só o total esconde.' }
 ];
 
 /* Nível por seção de origem. A chave é `portal:secao` de propósito: o id
@@ -400,6 +404,67 @@ function construir() {
       tags: [t.dlc, t.autor, t.classe].filter(Boolean),
       autor: t.autor || '', tam: '',
       terreno: t,
+    });
+  });
+
+  /* --- 8. veículos (CfgVehicles) ---
+   *
+   * O dado que justifica o portal é a BLINDAGEM POR PARTE. `armor` sozinho
+   * diz o casco; o ponto fraco tático (motor, combustível, torre) mora no
+   * hitpoints. E o sinal importa: armor negativo é blindagem RELATIVA ao
+   * total, não "mais fraca que zero" — 19.223 partes do acervo usam essa
+   * convenção, quase todas rodas. Por isso o artigo separa as duas coisas. */
+  const catVei = Object.fromEntries(A3VEI_CATEGORIAS.map((c) => [c.id, c]));
+  A3VEI.forEach((v) => {
+    const cat = catVei[v.categoria] || { nome: 'Veículo', icon: '🚙' };
+    const frases = [];
+    if (v.armor) {
+      frases.push(`Blindagem de casco ${v.armor}` +
+        (v.armorEstrutural ? `, estrutural ${v.armorEstrutural}.` : '.'));
+    }
+    const b = v.blindagem;
+    if (b && b.menor != null) {
+      frases.push(`Das ${b.partes} partes com dano próprio, a mais fraca é ` +
+        `${b.menorParte} (${b.menor}) — é por ela que o veículo cede primeiro.`);
+    } else if (b) {
+      frases.push(`Tem ${b.partes} partes com dano próprio, mas nenhuma com ` +
+        'blindagem absoluta declarada.');
+    } else {
+      frases.push('O config não declara blindagem por parte para este veículo.');
+    }
+    if (b && b.relativas) {
+      frases.push(`Outras ${b.relativas} partes usam blindagem RELATIVA ` +
+        '(valor negativo no config, proporcional ao casco) — normalmente rodas ' +
+        'e periscópios; não se comparam com as absolutas.');
+    }
+    if (v.maxSpeed) frases.push(`Velocidade máxima ${v.maxSpeed} km/h.`);
+    if (v.lotacao) frases.push(`Leva ${v.lotacao} ocupantes.`);
+    if (v.armas) frases.push(`Monta ${v.armas} sistema(s) de arma.`);
+    if (v.custo) frases.push(`Custo ${v.custo} na avaliação da IA do config.`);
+
+    artigos.push({
+      id: `vei-${v.id}`,
+      titulo: v.nome,
+      tipo: 'veiculo',
+      portal: 'veiculos',
+      cat: v.categoria,
+      catNome: cat.nome,
+      icon: cat.icon,
+      nivel: v.categoria === 'blindado' || v.categoria === 'aereo' ? 3 : 2,
+      img: '',
+      resumo: [cat.nome, v.faccao, v.dlc].filter(Boolean).join(' · '),
+      corpo: frases.join(' '),
+      guia: '',
+      sqf: `_v = "${v.classe}" createVehicle position player;`,
+      atalhos: [], dicas: [],
+      links: [{
+        rotulo: 'Ver na tabela de veículos',
+        url: `#/arma3-tutorial?aba=veiculos&q=${encodeURIComponent(v.classe)}`,
+      }],
+      deps: [], dlcs: v.dlc ? [v.dlc] : [],
+      tags: [cat.nome, v.lado, v.faccao, v.dlc, v.classe].filter(Boolean),
+      autor: '', tam: '',
+      veiculo: v,
     });
   });
 

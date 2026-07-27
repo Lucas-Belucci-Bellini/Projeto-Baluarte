@@ -140,6 +140,43 @@ function vistaCapa(page) {
       h('a', { className: 'btn', href: '#/arma3-tutorial' }, 'Modo tutorial (abas)'))));
 }
 
+/* Ficha de veículo.
+ *
+ * ⚠️ "Parte mais fraca" só compara blindagem ABSOLUTA. No config, armor
+ * negativo é blindagem RELATIVA ao casco (convenção do engine, usada em
+ * 19.223 partes — quase todas rodas). Um `min()` sobre os dois juntos
+ * anunciaria "parte mais fraca: −100", que não significa nada. As relativas
+ * aparecem em linha própria, contadas, sem virar comparação. */
+function fichaVeiculo(v, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  const b = v.blindagem;
+  return [
+    linha('Categoria', v.categoria),
+    linha('Lado', v.lado),
+    linha('Facção', v.faccao),
+    linha('Blindagem do casco', n(v.armor)),
+    linha('Blindagem estrutural', n(v.armorEstrutural)),
+    linha('Parte mais fraca', b && b.menor != null
+      ? h('span', null, h('b', null, b.menorParte || '—'),
+        h('span', { className: 'u-text-muted' }, ` · ${b.menor} de ${b.partes} partes`))
+      : (b ? h('span', { className: 'u-text-muted' }, 'nenhuma absoluta declarada') : null)),
+    linha('Partes com blindagem relativa', b && b.relativas
+      ? h('span', null, String(b.relativas),
+        h('span', { className: 'u-text-muted' }, ' · valor negativo = proporcional ao casco'))
+      : null),
+    linha('Velocidade máx.', n(v.maxSpeed, ' km/h')),
+    linha('Potência', n(v.potencia, ' hp')),
+    linha('Ocupantes', n(v.lotacao)),
+    linha('Carga', n(v.cargaMax)),
+    linha('Combustível', n(v.combustivel, '', 2)),
+    linha('Sistemas de arma', n(v.armas)),
+    linha('Custo (IA)', n(v.custo)),
+    linha('Origem', v.dlc),
+    linha('Classe', h('code', null, v.classe)),
+  ];
+}
+
 /* ══════════════════════════════════════════════════════════════
  *  Procedência — quanto saiu do jogo, contado no dump.
  *
@@ -434,7 +471,7 @@ function vistaArtigo(page, art) {
 const ROTULO_TIPO = {
   mod: 'Mod', item: 'Item da coleção', guia: 'Guia',
   comando: 'Comando de console', campanha: 'Missão/campanha', arquivo: 'Arquivo',
-  arma: 'Arma', acessorio: 'Acessório', terreno: 'Terreno'
+  arma: 'Arma', acessorio: 'Acessório', terreno: 'Terreno', veiculo: 'Veículo'
 };
 
 /* Infobox estilo wiki: capa + ficha técnica, na lateral. */
@@ -473,6 +510,7 @@ function infobox(art) {
     ...(art.arma ? fichaArma(art.arma, linha) : []),
     ...(art.acessorio ? fichaAcessorio(art.acessorio, linha) : []),
     ...(art.terreno ? fichaTerreno(art.terreno, linha) : []),
+    ...(art.veiculo ? fichaVeiculo(art.veiculo, linha) : []),
 
     ...(art.links || []).map((l) => {
       /* Link interno (#/rota) NÃO abre em aba nova: `target=_blank` faz sentido
