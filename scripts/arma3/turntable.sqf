@@ -25,9 +25,12 @@ if (count _alvos == 0) exitWith {
             if (_m == "" && { isText _e }) then { _m = getText _e };
         } forEach ["CfgWeapons", "CfgMagazines", "CfgAmmo", "CfgVehicles", "CfgGlasses"];
         if (_m == "") exitWith { "" };
-        if !((toLower _m) endsWith ".p3d") then { _m = _m + ".p3d" };
+        private _ext = if (count _m > 4) then { toLower (_m select [(count _m) - 4]) } else { "" };
+        if (_ext != ".p3d") then { _m = _m + ".p3d" };
         _m
     };
+
+    private _fnc_foto = compile "screenshot _this";
 
     private _base = getPosATL player;
     private _centro = [(_base select 0) + 25, _base select 1, (_base select 2) + 50];
@@ -80,7 +83,7 @@ if (count _alvos == 0) exitWith {
                     sleep 0.15;
 
                     private _arq = format ["%1_%2_%3.png", _prefixo, _classe, _i];
-                    screenshot _arq;
+                    _arq call _fnc_foto;
                     diag_log text (format ["<<A3TT>>IMG|%1|%2|%3", _classe, _i, _arq]);
                     sleep 0.1;
                 };
