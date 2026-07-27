@@ -8,9 +8,11 @@ private _alvos = [
 
 private _passos = 24;
 private _prefixo = "a3tt";
-private _folga = 2.2;
-private _altura = 0.35;
+private _folga = 1.3;
+private _altura = 0.30;
 private _usarCamera = true;
+private _fov = 0.35;
+private _forcarDia = true;
 
 diag_log text (format ["<<A3TT>>ETAPA|2|alvos|%1", count _alvos]);
 
@@ -26,10 +28,21 @@ private _temPlayer = !isNull player;
 if (_temPlayer) then { _base = getPosATL player };
 diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
 
-[_alvos, _passos, _prefixo, _folga, _altura, _base, _fnc_foto, _usarCamera] spawn {
-    params ["_alvos", "_passos", "_prefixo", "_folga", "_altura", "_base", "_fnc_foto", "_usarCamera"];
+[_alvos, _passos, _prefixo, _folga, _altura, _base, _fnc_foto, _usarCamera, _fov, _forcarDia] spawn {
+    params ["_alvos", "_passos", "_prefixo", "_folga", "_altura", "_base", "_fnc_foto",
+            "_usarCamera", "_fov", "_forcarDia"];
 
     diag_log text "<<A3TT>>ETAPA|5|spawn rodando (jogo despausado)";
+
+    private _dataOriginal = date;
+    private _overcastOriginal = overcast;
+    if (_forcarDia) then {
+        setDate [_dataOriginal select 0, 6, 21, 12, 0];
+        0 setOvercast 0;
+        0 setRain 0;
+        0 setFog 0;
+        diag_log text (format ["<<A3TT>>ETAPA|5b|forcei meio-dia|data original|%1", _dataOriginal]);
+    };
 
     private _fnc_modelo = {
         private _c = _this;
@@ -54,7 +67,10 @@ diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
         _cam = "camera" camCreate _centro;
         _cam cameraEffect ["internal", "back"];
         showCinemaBorder false;
-        diag_log text (format ["<<A3TT>>ETAPA|7|camera|%1", !isNull _cam]);
+        camUseNVG false;
+        _cam camSetFov _fov;
+        _cam camCommit 0;
+        diag_log text (format ["<<A3TT>>ETAPA|7|camera|%1|fov|%2", !isNull _cam, _fov]);
     } else {
         diag_log text "<<A3TT>>ETAPA|7|camera desligada por _usarCamera";
     };
@@ -102,6 +118,7 @@ diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
                             (_centro select 2) + (_tam * _altura)
                         ];
                         _cam camSetTarget _obj;
+                        _cam camSetFov _fov;
                         _cam camCommit 0;
                     };
                     sleep 0.15;
@@ -124,6 +141,12 @@ diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
     if (!isNull _cam) then {
         _cam cameraEffect ["terminate", "back"];
         camDestroy _cam;
+    };
+
+    if (_forcarDia) then {
+        setDate _dataOriginal;
+        0 setOvercast _overcastOriginal;
+        diag_log text "<<A3TT>>ETAPA|10|data e clima da missao restaurados";
     };
 
     diag_log text (format ["<<A3TT>>FIM|%1|%2|%3", _ok, _falhas, _passos]);
