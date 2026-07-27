@@ -12,7 +12,8 @@
     "gen-symbols": "node scripts/gen-symbols.mjs",
     "gen-codemap": "node scripts/gen-codemap.mjs",
     "mobile:sync": "vite build && cap sync android",
-    "mobile:open": "cap open android"
+    "mobile:open": "cap open android",
+    "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && node scripts/verificar-wiki-arsenal.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",

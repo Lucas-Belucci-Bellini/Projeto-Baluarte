@@ -335,6 +335,7 @@ def montar(classes, armas, municoes, imagens, notas):
         'nomes': nomes,
         'tipo': tipo,
         'tipoFonte': tipo_fonte,
+        '_tipoCfg': a.get('tipo'),
         'origem': origem(canon, a) or (a.get('fonte') or '').lstrip('@') or None,
         'ehMod': origem(canon, a) is None,
         'calibre': cal,
@@ -383,6 +384,13 @@ def verificar(entradas):
     """
     erros = []
     for e in entradas:
+        # O engine diz `type: 1` = arma primária. Se a classificação disser
+        # "lançador" pra uma dessas, a descrição venceu o config — foi assim que
+        # 68 fuzis com lança-granadas acoplado viraram lançadores e perderam a
+        # calculadora, apesar de terem a balística do fuzil.
+        if e['tipo'] == 'lancador' and e.get('_tipoCfg') == 1:
+            erros.append(f'{e["classe"]}: classificada lançador, mas o config diz '
+                         'arma primária (type 1) — o UGL é boca secundária')
         if e['balistico'] and (e['airFriction'] is None or e['airFriction'] >= 0):
             erros.append(f'{e["classe"]}: marcada balística com airFriction {e["airFriction"]}')
         if e['balistico'] and not e['v0']:
@@ -570,13 +578,17 @@ def escrever_js(nucleo, todas, armas, cfg, notas):
 def escrever_json(todas, cfg):
     """public/arma3/armas-db.json — o arsenal completo, sob demanda."""
     os.makedirs(os.path.dirname(DEST_JSON), exist_ok=True)
+    # Campo com `_` na frente é INTERNO (só as invariantes usam). O módulo JS
+    # filtra por lista de campos e nunca os viu; este JSON despejava o dict
+    # inteiro, então vazavam pro arquivo público. Tira aqui, num lugar só.
+    publicas = [{k: v for k, v in e.items() if not k.startswith('_')} for e in todas]
     doc = {
         '_leia': ('Gerado por scripts/arma3/gerar-base-armas.py a partir do dump in-game '
                   '(issue #398). Ausente é null, nunca zero. `tipo` é inferido — '
                   '`tipoFonte` declara a evidência.'),
         'dump': cfg.get('fonte'),
-        'total': len(todas),
-        'armas': todas,
+        'total': len(publicas),
+        'armas': publicas,
     }
     with open(DEST_JSON, 'w', encoding='utf-8') as f:
         json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
