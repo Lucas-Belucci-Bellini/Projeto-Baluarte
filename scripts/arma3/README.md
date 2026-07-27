@@ -74,6 +74,54 @@ A lista `_alvos` vem com 3 classes vanilla de propósito: valide barato antes de
 mirar em lista grande. 10.822 armas × 24 fotos seriam 260 mil imagens — o
 turntable é para subconjunto curado, não para o acervo inteiro.
 
+#### ⚠️ Os 20 quadros que estão no repo NÃO servem — não ligue na UI
+
+`public/arma3/3d/arifle_MX_F/` tem 20 `.webp` e `out/turntable.json` os declara,
+mas **nenhum deles mostra a arma de forma utilizável**. Medido quadro a quadro
+(média RGB de cada um):
+
+- **`00`–`09`**: verde forte, +60 de G sobre R/B — visão noturna. A arma é um
+  borrão branco de poucos pixels.
+- **`10`–`19`**: sem verde, mas estourados de luz e com **estrutura do cenário**
+  no lugar do objeto (`12` é viga de teto; `16` pega a arma torta, fora do
+  centro, contra parede e chão).
+
+A causa provável — inferência, não medição, porque só se confirma com o jogo
+aberto:
+
+1. `setDate` para meio-dia é instantâneo, mas a **adaptação de luz do engine
+   não é**; os primeiros quadros saem com a exposição da noite ainda.
+2. `_centro` é `player + 30 m` para cima, e 30 m **não garante céu atrás** — se
+   o operador estiver dentro de um galpão, o fundo é o telhado.
+3. `camSetTarget` mira a origem do `.p3d`, que não é o centro visual da arma; o
+   `coletar-turntable.py` recorta os 55% centrais, então o que ficou fora do
+   centro é cortado.
+
+Ligar isso na wiki mostraria um borrão verde com a legenda "MX 6.5 mm" — que é
+exatamente o que a regra de dado ausente proíbe. **Enquanto não houver uma
+rodada boa, o 3D fica sem UI.** O `coletar-turntable.py` em si está certo: os
+244,8 MB → 0,40 MB são reais, e ele só pega `a3tt_*.png`, não screenshot solto.
+
+#### O que mudou no `.sqf` pra próxima rodada (⚠️ não testado)
+
+Três ajustes, um por causa provável acima. **Nenhum foi validado no jogo** —
+quem roda é a sessão local; se não resolver, o diagnóstico é que está errado,
+não o script. Como o arquivo não pode ter comentário (ver a regra do debug
+console adiante), a explicação é esta:
+
+| Variável | Era | É | Por quê |
+|---|---|---|---|
+| `_esperaLuz` | (não existia) | `4` | `sleep` depois do `setDate` pra exposição do engine alcançar o meio-dia antes da 1ª foto |
+| `_alto` | `30` fixo | `100` | passar de qualquer construção, pra não fotografar telhado |
+| `_altura` | `0.30` | `-0.25` | câmera **abaixo** do objeto olhando pra cima: o fundo vira céu em vez de chão |
+
+E a câmera passou a orbitar e mirar `_foco` — o centro do `boundingBoxReal`
+convertido com `modelToWorld` — em vez do objeto. A origem do `.p3d` costuma
+cair na coronha ou no cano, não no meio da arma; mirando a origem, o objeto
+saía torto e o recorte central do coletor cortava fora. Sai no `.rpt` como
+linha `<<A3TT>>FOCO|<classe>|<centro no modelo>|<centro no mundo>`, pra dar
+pra conferir sem abrir imagem.
+
 ## O que cada script faz
 
 - **`dump-config.sqf`** — despeja `CfgWeapons`/`CfgMagazines`/`CfgAmmo` do config

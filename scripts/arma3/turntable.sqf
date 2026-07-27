@@ -9,10 +9,12 @@ private _alvos = [
 private _passos = 24;
 private _prefixo = "a3tt";
 private _folga = 1.3;
-private _altura = 0.30;
+private _altura = -0.25;
 private _usarCamera = true;
 private _fov = 0.35;
 private _forcarDia = true;
+private _alto = 100;
+private _esperaLuz = 4;
 
 diag_log text (format ["<<A3TT>>ETAPA|2|alvos|%1", count _alvos]);
 
@@ -28,9 +30,10 @@ private _temPlayer = !isNull player;
 if (_temPlayer) then { _base = getPosATL player };
 diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
 
-[_alvos, _passos, _prefixo, _folga, _altura, _base, _fnc_foto, _usarCamera, _fov, _forcarDia] spawn {
+[_alvos, _passos, _prefixo, _folga, _altura, _base, _fnc_foto, _usarCamera, _fov,
+ _forcarDia, _alto, _esperaLuz] spawn {
     params ["_alvos", "_passos", "_prefixo", "_folga", "_altura", "_base", "_fnc_foto",
-            "_usarCamera", "_fov", "_forcarDia"];
+            "_usarCamera", "_fov", "_forcarDia", "_alto", "_esperaLuz"];
 
     diag_log text "<<A3TT>>ETAPA|5|spawn rodando (jogo despausado)";
 
@@ -42,6 +45,8 @@ diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
         0 setRain 0;
         0 setFog 0;
         diag_log text (format ["<<A3TT>>ETAPA|5b|forcei meio-dia|data original|%1", _dataOriginal]);
+        sleep _esperaLuz;
+        diag_log text (format ["<<A3TT>>ETAPA|5c|esperei %1s a luz adaptar", _esperaLuz]);
     };
 
     private _fnc_modelo = {
@@ -59,8 +64,8 @@ diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
         _m
     };
 
-    private _centro = [(_base select 0) + 20, _base select 1, (_base select 2) + 30];
-    diag_log text (format ["<<A3TT>>ETAPA|6|centro|%1", _centro]);
+    private _centro = [(_base select 0) + 20, _base select 1, (_base select 2) + _alto];
+    diag_log text (format ["<<A3TT>>ETAPA|6|centro|%1|altura|%2", _centro, _alto]);
 
     private _cam = objNull;
     if (_usarCamera) then {
@@ -106,6 +111,14 @@ diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
                 if (_tam <= 0) then { _tam = 1 };
                 private _dist = _tam * _folga;
 
+                private _meio = [
+                    ((_min select 0) + (_max select 0)) / 2,
+                    ((_min select 1) + (_max select 1)) / 2,
+                    ((_min select 2) + (_max select 2)) / 2
+                ];
+                private _foco = _obj modelToWorld _meio;
+                diag_log text (format ["<<A3TT>>FOCO|%1|%2|%3", _classe, _meio, _foco]);
+
                 diag_log text (format ["<<A3TT>>OBJ|%1|%2|%3|%4",
                     _classe, _p3d, _tam toFixed 3, _passos]);
 
@@ -113,11 +126,11 @@ diag_log text (format ["<<A3TT>>ETAPA|4|player|%1|pos|%2", _temPlayer, _base]);
                     private _ang = 360 * _i / _passos;
                     if (!isNull _cam) then {
                         _cam camSetPos [
-                            (_centro select 0) + (_dist * sin _ang),
-                            (_centro select 1) + (_dist * cos _ang),
-                            (_centro select 2) + (_tam * _altura)
+                            (_foco select 0) + (_dist * sin _ang),
+                            (_foco select 1) + (_dist * cos _ang),
+                            (_foco select 2) + (_tam * _altura)
                         ];
-                        _cam camSetTarget _obj;
+                        _cam camSetTarget _foco;
                         _cam camSetFov _fov;
                         _cam camCommit 0;
                     };
