@@ -46,6 +46,7 @@ motivo de cada ausência.
 
 import json
 import os
+import re
 import sys
 from collections import Counter
 
@@ -62,6 +63,20 @@ DUMP_CATALOGO = os.path.join(OUT, 'arma3-catalogo.json')
 MAPA_SAIDA = os.path.join(OUT, 'modelos-p3d.json')
 
 MAX_PBOS_ABERTOS = 6      # o índice de um PBO grande pesa MBs; ver extrair-imagens.py
+
+
+def nome_seguro(classe):
+    """Nome de arquivo a partir da classe do config.
+
+    A classe vem do dump, ou seja, de dado externo: quem escolhe o texto é o
+    autor do mod. Concatenar direto em `os.path.join` deixaria uma classe com
+    `../` (ou barra, ou dois-pontos no Windows) escrever FORA da pasta de
+    destino. O `extrair-imagens.py` já fazia essa higienização; aqui faltava.
+
+    Mantém só o que é seguro em qualquer sistema de arquivos e garante nome
+    não vazio."""
+    limpo = re.sub(r'[^A-Za-z0-9_.-]+', '-', str(classe)).strip('.-')
+    return limpo[:120] or 'sem-nome'
 
 
 def candidatos(caminho_virtual, indice):
@@ -154,7 +169,7 @@ def main():
     cache = CachePBO()
     mapa, motivos = {}, Counter()
     for i, (classe, virtual) in enumerate(sorted(tarefas.items()), 1):
-        destino = os.path.join(DESTINO, f'{classe}.p3d')
+        destino = os.path.join(DESTINO, f'{nome_seguro(classe)}.p3d')
         if os.path.isfile(destino) and os.path.getsize(destino):
             mapa[classe] = os.path.relpath(destino, RAIZ)
             motivos['ja-extraido'] += 1
