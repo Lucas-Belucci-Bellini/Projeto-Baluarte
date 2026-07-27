@@ -6,7 +6,8 @@
  * deep-link por assunto (#/wiki-arma3?a=<id>). Quem escreve conteúdo continua
  * editando o arquivo de origem — a wiki reflete automático.
  *
- * Fontes: arma3-vanilla (jogo base) · arma3-config (instalar/configurar) ·
+ * Fontes: arma3-armas (o arsenal medido no jogo) · arma3-vanilla (jogo base) ·
+ * arma3-config (instalar/configurar) ·
  * arma3-comandos (console/SQF) · arma3-campanhas · arma3-drive (arquivos) ·
  * arma3-tutoriais (mods do preset, explicados à mão) · arma3-colecao (os 237
  * itens da coleção Steam, com capa).
@@ -26,6 +27,7 @@ import { A3TUT_CATEGORIAS, A3TUT_MODS } from './arma3-tutoriais.js';
 import { A3TUT_DEPS } from './arma3-deps.js';
 import { A3COL_INFO, A3COL_CATS, A3COL_ITENS } from './arma3-colecao.js';
 import { ARMA3_PRESETS } from './arma3-presets.js';
+import { A3ARM, A3ARM_TIPOS } from './arma3-armas.js';
 
 export { A3COL_INFO };
 
@@ -53,7 +55,10 @@ export const WIKI_PORTAIS = [
   { id: 'comandos', nome: 'Console & comandos',  icon: '⌨️', cor: 'cyan',
     desc: 'Spawnar, teleportar, depurar — o lado técnico (SQF) pra quem já manda no jogo.' },
   { id: 'arquivos', nome: 'Arquivos & backup',   icon: '☁️', cor: 'magenta',
-    desc: 'A instalação real espelhada no Drive: pastas, PBOs e saves.' }
+    desc: 'A instalação real espelhada no Drive: pastas, PBOs e saves.' },
+  { id: 'arsenal',  nome: 'Arsenal',             icon: '🔫', cor: 'cyan',
+    desc: 'Cada arma com os números MEDIDOS no config do jogo: v₀, arrasto, dano, '
+        + 'precisão em centímetros e o ícone como aparece no Arsenal.' }
 ];
 
 /* Nível por seção de origem. A chave é `portal:secao` de propósito: o id
@@ -184,6 +189,77 @@ function construir() {
       naColecao: !!col,
       noPreset: !!URL_PRESET[wid],
       temTutorial: !!tut
+    });
+  });
+
+  /* --- 3. arsenal: uma arma = um artigo ---------------------------------
+   * A wiki é a camada de NAVEGAÇÃO do conteúdo que mora nos data files, e o
+   * arsenal estava de fora: dava pra ver a tabela em /arma3-tutorial, mas não
+   * dava pra CHEGAR nela pela wiki, nem buscar "MX" e achar a arma.
+   *
+   * Arma é, de longe, o melhor caso pro formato "infobox + artigo" que esta
+   * wiki usa: tem capa (o ícone extraído do jogo), ficha técnica (os números
+   * medidos) e texto. Por isso entra como portal próprio em vez de virar um
+   * link solto na capa. */
+  const tiposArma = Object.fromEntries(A3ARM_TIPOS.map((t) => [t.id, t]));
+  A3ARM.forEach((a) => {
+    const tp = tiposArma[a.tipo] || { nome: 'Arma', icon: '🔫' };
+    /* O corpo é montado a partir do que foi MEDIDO — sem adjetivo que o
+     * config não sustente. Cada frase só existe se o dado existir. */
+    const frases = [];
+    /* O `desc` do config costuma ser "Assault Rifle · Caliber: 6.5x39 mm" — o
+     * calibre já sai normalizado no campo próprio, então corta a parte
+     * repetida em vez de dizer duas vezes. */
+    const categoria = (a.desc || '').split(/\s*·?\s*Caliber/i)[0].replace(/[·\s]+$/, '');
+    if (categoria) frases.push(categoria + '.');
+    if (a.calibre) frases.push(`Calibre ${a.calibre}.`);
+    if (a.v0) {
+      frases.push(`Sai do cano a ${a.v0} m/s` +
+        (a.airFriction ? ` e desacelera com arrasto ${a.airFriction} (airFriction do config).` : '.'));
+    }
+    if (a.dispersaoCm100) {
+      frases.push(`Dispersão de ${a.dispersaoMrad} mrad — cerca de ` +
+        `${a.dispersaoCm100} cm a 100 m no melhor modo de tiro.`);
+    }
+    if (a.dano) frases.push(`Dano direto ${a.dano} por projétil.`);
+    if (a.capacidade) frases.push(`Carregador padrão de ${a.capacidade}.`);
+    if (a.zeroing) frases.push(`Zeragem até ${a.zeroing} m.`);
+    if (a.variantes > 1) {
+      frases.push(`O config tem ${a.variantes} classes desta mesma arma ` +
+        '(óptica pré-montada e camuflagem) — todas com a mesma balística.');
+    }
+    if (!a.balistico) {
+      frases.push('Não segue o modelo de bala: foguete e míssil usam outro ' +
+        'modelo de voo no engine, então a calculadora de trajetória não se aplica.');
+    }
+
+    artigos.push({
+      id: `ars-${slug(a.classe)}`,
+      titulo: a.nome,
+      tipo: 'arma',
+      portal: 'arsenal',
+      cat: a.tipo,
+      catNome: tp.nome,
+      icon: tp.icon,
+      /* Pistola e fuzil são o básico; DMR/sniper/lançador pedem bagagem. */
+      nivel: ['pistola', 'fuzil', 'smg'].includes(a.tipo) ? 1
+        : (['sniper', 'lancador', 'dmr'].includes(a.tipo) ? 3 : 2),
+      img: a.img || '',
+      resumo: [categoria, a.calibre, a.origem].filter(Boolean).join(' · '),
+      corpo: frases.join(' '),
+      guia: '',
+      sqf: `this addWeapon "${a.classe}";`,
+      atalhos: [],
+      dicas: [],
+      links: [{ rotulo: 'Abrir na tabela e na calculadora',
+        url: `#/arma3-tutorial?aba=armas` }],
+      deps: [],
+      dlcs: a.origem ? [a.origem] : [],
+      tags: [a.calibre, a.origem, tp.nome, a.classe].filter(Boolean),
+      autor: '',
+      tam: '',
+      /* usados pela infobox da wiki */
+      arma: a
     });
   });
 

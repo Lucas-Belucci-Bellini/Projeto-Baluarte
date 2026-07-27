@@ -80,6 +80,7 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 OUT = os.path.join(RAIZ, 'scripts', 'arma3', 'out')
 DEST_JS = os.path.join(RAIZ, 'src', 'data', 'arma3-armas.js')
 DEST_JSON = os.path.join(RAIZ, 'public', 'arma3', 'armas-db.json')
+DEST_MUN = os.path.join(RAIZ, 'src', 'data', 'arma3-municao.js')
 NOTAS = os.path.join(RAIZ, 'scripts', 'arma3', 'notas-editoriais.json')
 
 # Prefixos de slot de arma do jogo (DIR_DLC/DIR_CDLC/FONTE_DLC vêm do módulo
@@ -257,8 +258,21 @@ def montar(classes, armas, municoes, imagens, notas):
     # míssil acelera até o `typicalSpeed` (~900). Jogar esse par no integrador
     # de arrasto (que espera airFriction < 0) daria um projétil ACELERANDO —
     # por isso a calculadora precisa saber recusar, e não adivinhar.
+    modos = [{'nome': m.get('nome'), 'rpm': num(m.get('rpm')),
+              'dispersao': num(m.get('dispersao')), 'auto': bool(m.get('auto')),
+              'rajada': num(m.get('rajada'))}
+             for m in (a.get('modos') or [])]
+
     af = num(a.get('airFriction'))
     balistico = tipo != 'lancador' and af is not None and af < 0
+
+    # Dispersão: o config guarda em RADIANOS, por modo de tiro. O número que
+    # o jogador compara é o desvio em centímetros a 100 m, que é conversão de
+    # unidade pura (rad × 100 m × 100 cm/m) — nada estimado. Pega a MENOR
+    # dispersão entre os modos: é a precisão da arma no melhor caso, que é o
+    # que faz sentido comparar entre armas.
+    disps = [m['dispersao'] for m in modos if m.get('dispersao')]
+    disp = min(disps) if disps else None
 
     # Nome de exibição: o MAIS CURTO do grupo. As variantes de camuflagem só
     # acrescentam sufixo ("MX", "MX (Black)", "MX (Khaki)"), então o mais curto
@@ -266,11 +280,6 @@ def montar(classes, armas, municoes, imagens, notas):
     nomes = sorted({armas[c].get('nome') for c in classes if armas[c].get('nome')})
     nome = min(nomes, key=lambda x: (len(x), x)) if nomes else (a.get('nome') or canon)
     nota = notas.get(canon, {})
-    modos = [{'nome': m.get('nome'), 'rpm': num(m.get('rpm')),
-              'dispersao': num(m.get('dispersao')), 'auto': bool(m.get('auto')),
-              'rajada': num(m.get('rajada'))}
-             for m in (a.get('modos') or [])]
-
     return {
         'id': slug(canon),
         'classe': canon,
@@ -290,6 +299,9 @@ def montar(classes, armas, municoes, imagens, notas):
         'raioIndireto': num(mun.get('indirectHitRange')),
         'explosivo': bool(mun.get('explosivo')) if mun else None,
         'velTipica': num(mun.get('typicalSpeed')),
+        'dispersao': disp,
+        'dispersaoMrad': round(disp * 1000, 3) if disp else None,
+        'dispersaoCm100': round(disp * 10000, 1) if disp else None,
         'penetracao': num(a.get('caliber')),
         'capacidade': num(a.get('capacidade')),
         'rpm': num(a.get('rpm')),
@@ -378,6 +390,7 @@ def main():
     mods = [e for e in entradas if e['ehMod']]
 
     escrever_js(nucleo, entradas, armas, cfg, notas)
+    escrever_municao(cfg)
     escrever_json(entradas, cfg)
     relatorio(nucleo, mods, entradas, armas)
 
@@ -387,6 +400,7 @@ def escrever_js(nucleo, todas, armas, cfg, notas):
     campos_arma = ('id', 'classe', 'nome', 'tipo', 'tipoFonte', 'origem', 'calibre',
                    'calibreFonte', 'v0', 'airFriction', 'balistico', 'dano',
                    'danoIndireto', 'raioIndireto', 'explosivo', 'velTipica',
+                   'dispersao', 'dispersaoMrad', 'dispersaoCm100',
                    'penetracao', 'capacidade', 'rpm', 'zeroing', 'massa',
                    'municao', 'img', 'imgAusente', 'variantes', 'nomes',
                    'fontePatch', 'desc', 'faccao', 'obs', 'modos')
@@ -546,6 +560,112 @@ def relatorio(nucleo, mods, todas, armas):
     print(f'escrito: {os.path.relpath(DEST_JS, RAIZ)}')
     print(f'escrito: {os.path.relpath(DEST_JSON, RAIZ)} '
           f'({os.path.getsize(DEST_JSON) / 1e6:.2f} MB cru)')
+
+
+def escrever_municao(cfg):
+    """src/data/arma3-municao.js — munições e carregadores.
+
+    Módulo separado de propósito: são as duas pontas da MESMA cadeia
+    (arma → carregador → munição), mas quem consulta "que munição é essa"
+    raramente quer a tabela de armas junto. Somados dão ~32 kB gzip, então
+    cabem no bundle sem lazy-load.
+
+    O que este dado responde e a tabela de armas não:
+
+      - **Furtividade.** `visibleFire` e `audibleFire` são o quanto o tiro
+        se denuncia. Variam de 0,07 a 32 e de 0,05 a 120 — é a diferença
+        entre um subsônico suprimido e um .50. Nenhuma wiki de Arma 3 expõe.
+      - **Penetração.** O campo `caliber` da MUNIÇÃO não é o calibre em mm:
+        é o multiplicador de penetração do engine. Nome infeliz do config,
+        por isso aqui ele se chama `penetracao`.
+      - **Dano indireto.** `hit` é o dano direto; explosivo mata pelo
+        `indirectHit` dentro do `indirectHitRange`. Olhar só o `hit` faz um
+        foguete parecer fraco.
+      - **Trocar o carregador muda a balística.** Cada carregador tem
+        `initSpeed` próprio — é por isso que o mesmo MXM aparece com v₀ 774
+        e 857 na tabela de armas.
+    """
+    mu = cfg.get('municoes') or {}
+    mg = cfg.get('carregadores') or {}
+
+    municoes = sorted((
+        {
+            'id': slug(v.get('classe') or k),
+            'classe': v.get('classe') or k,
+            'dano': num(v.get('hit')),
+            'danoIndireto': num(v.get('indirectHit')),
+            'raioIndireto': num(v.get('indirectHitRange')),
+            'penetracao': num(v.get('caliber')),
+            'airFriction': num(v.get('airFriction')),
+            'velTipica': num(v.get('typicalSpeed')),
+            'explosivo': bool(v.get('explosivo')),
+            'ricochete': bool(v.get('ricochete')),
+            'visibleFire': num(v.get('visibleFire')),
+            'audibleFire': num(v.get('audibleFire')),
+            # subsônico: abaixo de ~340 m/s o projétil não estala ao passar.
+            # É o que faz supressor valer a pena de verdade.
+            'subsonico': bool(v.get('typicalSpeed') and v['typicalSpeed'] < 340),
+        } for k, v in mu.items()), key=lambda x: x['classe'].lower())
+
+    carregadores = sorted((
+        {
+            'id': slug(v.get('classe') or k),
+            'classe': v.get('classe') or k,
+            'nome': v.get('nome') or v.get('classe') or k,
+            'municao': v.get('ammo') or None,
+            'capacidade': num(v.get('count')),
+            'v0': num(v.get('initSpeed')),
+            'massa': num(v.get('massa')),
+            'origem': (v.get('fonte') or '').lstrip('@') or None,
+            'tracante': 'tracer' in (v.get('classe') or k).lower(),
+        } for k, v in mg.items()), key=lambda x: x['nome'].lower())
+
+    campos_m = ('id', 'classe', 'dano', 'danoIndireto', 'raioIndireto', 'penetracao',
+                'airFriction', 'velTipica', 'explosivo', 'ricochete',
+                'visibleFire', 'audibleFire', 'subsonico')
+    campos_c = ('id', 'classe', 'nome', 'municao', 'capacidade', 'v0', 'massa',
+                'origem', 'tracante')
+
+    L = ['/**',
+         ' * Munições e carregadores do Arma 3 — valores medidos no config do jogo.',
+         ' *',
+         ' * ⚠️ ARQUIVO GERADO — não edite à mão (scripts/arma3/gerar-base-armas.py).',
+         f' *   Dump de origem: {cfg.get("fonte")}',
+         ' *',
+         ' * CUIDADO COM DOIS NOMES DO CONFIG',
+         ' *   `penetracao` é o campo `caliber` da munição — NÃO é o calibre em mm.',
+         ' *     É o multiplicador de penetração do engine. O nome no config é infeliz.',
+         ' *   `dano` é o `hit` (direto). Explosivo mata pelo `danoIndireto` dentro do',
+         ' *     `raioIndireto` — olhar só o `dano` faz foguete parecer fraco.',
+         ' *',
+         ' * FURTIVIDADE: `visibleFire`/`audibleFire` são o quanto o tiro se denuncia.',
+         ' * `subsonico` é derivado (velTipica < 340 m/s) — abaixo disso o projétil não',
+         ' * estala ao passar, que é o que faz supressor valer a pena.',
+         ' */',
+         '',
+         '/* 472 munições. */',
+         'export const A3MUN = [']
+    for m in municoes:
+        L.append('  { ' + ', '.join(f'{c}: {js_valor(m[c])}' for c in campos_m) + ' },')
+    L += [']', '',
+          '/* 1.432 carregadores. Cada um tem `v0` PRÓPRIO: trocar o carregador muda',
+          ' * a balística da mesma arma. */',
+          'export const A3MAG = [']
+    for c_ in carregadores:
+        L.append('  { ' + ', '.join(f'{c}: {js_valor(c_[c])}' for c in campos_c) + ' },')
+    L += [']', '',
+          'export const A3MUN_TOTAL = A3MUN.length;',
+          'export const A3MAG_TOTAL = A3MAG.length;',
+          '',
+          '/* Índice classe→munição, pra ligar carregador e arma na munição sem varrer. */',
+          'export const A3MUN_POR_CLASSE = Object.fromEntries(',
+          '  A3MUN.map((m) => [m.classe.toLowerCase(), m]));',
+          '']
+    L = [x.replace(']', '];') if x == ']' else x for x in L]
+    with open(DEST_MUN, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(L))
+    print(f'escrito: {os.path.relpath(DEST_MUN, RAIZ)} '
+          f'({len(municoes)} munições, {len(carregadores)} carregadores)')
 
 
 # Texto editorial por calibre. Sem número: os números moram na arma.
