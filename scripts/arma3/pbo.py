@@ -248,6 +248,28 @@ def cmd_list(argv):
         print(f'  {marca} {_humano(e["orig"] or e["tam"]):>9}  {e["nome"]}')
 
 
+def caminho_contido(destino, nome_interno):
+    """Resolve `nome_interno` DENTRO de `destino`, ou devolve None se escapar.
+
+    Isto é a defesa contra "Zip Slip". O nome da entrada vem do cabeçalho do
+    PBO — quer dizer, de quem MONTOU o arquivo, e os PBOs que este projeto abre
+    vêm da Steam Workshop, ou seja, de terceiros. Uma entrada chamada
+    `..\\..\\Windows\\System32\\algo.dll` faria o extrator escrever fora da
+    pasta de destino, e no Windows — que é onde o operador roda isto — a
+    contrabarra É separador de caminho, então o ataque funciona de verdade.
+
+    Não basta procurar por ".." no texto: `os.path.normpath` também resolve
+    caminho absoluto (`\\algo`) e letra de unidade (`C:algo`). Por isso a
+    checagem é feita no caminho JÁ RESOLVIDO, comparando com a raiz real.
+    """
+    seguro = nome_interno.replace('\\', os.sep).replace('/', os.sep)
+    raiz = os.path.realpath(destino)
+    alvo = os.path.realpath(os.path.join(raiz, seguro))
+    if alvo != raiz and not alvo.startswith(raiz + os.sep):
+        return None
+    return alvo
+
+
 def cmd_extract(argv):
     if len(argv) < 2:
         raise SystemExit('uso: extract <arquivo.pbo> <destino> [padrão]')
@@ -255,8 +277,14 @@ def cmd_extract(argv):
     destino = argv[1]
     itens = pbo.listar(argv[2] if len(argv) > 2 else None)
     ok = 0
+    recusadas = 0
     for e in itens:
-        alvo = os.path.join(destino, e['nome'])
+        alvo = caminho_contido(destino, e['nome'])
+        if alvo is None:
+            print(f'  ! {e["nome"]}: recusada — escaparia da pasta de destino',
+                  file=sys.stderr)
+            recusadas += 1
+            continue
         os.makedirs(os.path.dirname(alvo), exist_ok=True)
         try:
             dados = pbo.ler(e)
@@ -267,6 +295,9 @@ def cmd_extract(argv):
             f.write(dados)
         ok += 1
     print(f'{ok} de {len(itens)} entradas extraídas de {os.path.basename(pbo.caminho)}')
+    if recusadas:
+        print(f'{recusadas} entrada(s) recusadas por tentarem escrever fora do destino.',
+              file=sys.stderr)
 
 
 def cmd_find(argv):
