@@ -140,6 +140,35 @@ function vistaCapa(page) {
       h('a', { className: 'btn', href: '#/arma3-tutorial' }, 'Modo tutorial (abas)'))));
 }
 
+/* Ficha de equipamento.
+ *
+ * ⚠️ A linha "Passagem" é o `passThrough`: a fração do dano que atravessa a
+ * placa MESMO no ponto coberto. Publicar só "proteção 25" sugere imunidade;
+ * o par (proteção, passagem) é o que descreve a peça de verdade. */
+function fichaEquipamento(q, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  const p = q.protecao;
+  return [
+    linha('Categoria', q.tipo),
+    linha('Proteção máxima', p && p.maior != null
+      ? h('span', null, h('b', null, String(p.maior)),
+        h('span', { className: 'u-text-muted' }, ` em ${p.maiorParte}`))
+      : (p ? h('span', { className: 'u-text-muted' }, 'nenhuma declarada') : null)),
+    linha('Pontos cobertos', p && p.maior != null ? `${p.cobertas} de ${p.partes}` : null),
+    linha('Passagem (passThrough)', p && p.passagem != null
+      ? h('span', null, `${Math.round(p.passagem * 100)}%`,
+        h('span', { className: 'u-text-muted' }, ' do dano atravessa a placa'))
+      : null),
+    linha('Capacidade', n(q.capacidade)),
+    linha('Contêiner', q.containerClass),
+    linha('Massa', n(q.massa, '', 1)),
+    linha('Variantes', q.variantes > 1 ? `${q.variantes} classes com os mesmos números` : null),
+    linha('Origem', q.dlc),
+    linha('Classe', h('code', null, q.classe)),
+  ];
+}
+
 /* Ficha de veículo.
  *
  * ⚠️ "Parte mais fraca" só compara blindagem ABSOLUTA. No config, armor
@@ -471,7 +500,8 @@ function vistaArtigo(page, art) {
 const ROTULO_TIPO = {
   mod: 'Mod', item: 'Item da coleção', guia: 'Guia',
   comando: 'Comando de console', campanha: 'Missão/campanha', arquivo: 'Arquivo',
-  arma: 'Arma', acessorio: 'Acessório', terreno: 'Terreno', veiculo: 'Veículo'
+  arma: 'Arma', acessorio: 'Acessório', terreno: 'Terreno', veiculo: 'Veículo',
+  equipamento: 'Equipamento'
 };
 
 /* Infobox estilo wiki: capa + ficha técnica, na lateral. */
@@ -511,6 +541,7 @@ function infobox(art) {
     ...(art.acessorio ? fichaAcessorio(art.acessorio, linha) : []),
     ...(art.terreno ? fichaTerreno(art.terreno, linha) : []),
     ...(art.veiculo ? fichaVeiculo(art.veiculo, linha) : []),
+    ...(art.equipamento ? fichaEquipamento(art.equipamento, linha) : []),
 
     ...(art.links || []).map((l) => {
       /* Link interno (#/rota) NÃO abre em aba nova: `target=_blank` faz sentido

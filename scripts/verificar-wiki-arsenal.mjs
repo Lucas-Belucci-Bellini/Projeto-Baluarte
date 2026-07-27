@@ -34,6 +34,7 @@ import { A3ARM } from '../src/data/arma3-armas.js';
 import { A3ACC } from '../src/data/arma3-acessorios.js';
 import { A3TER } from '../src/data/arma3-terrenos.js';
 import { A3VEI } from '../src/data/arma3-veiculos.js';
+import { A3EQP } from '../src/data/arma3-equipamento.js';
 import { WIKI_ARTIGOS } from '../src/data/wiki-arma3.js';
 import { dadosBalisticos } from '../src/utils/arma3-balistica.js';
 
@@ -146,6 +147,33 @@ for (const v of A3VEI) {
   }
 }
 
+/* ── portal Equipamento ── */
+const classesEqp = new Set(A3EQP.map((e) => e.classe));
+const artsEqp = WIKI_ARTIGOS.filter((a) => a.portal === 'equipamento');
+if (!artsEqp.length) falhas.push('o portal "equipamento" não tem nenhum artigo');
+for (const art of artsEqp) {
+  const url = ((art.links || [])[0] || {}).url || '';
+  const m = /[?&]q=([^&]+)/.exec(url);
+  if (!/aba=equipamento/.test(url)) {
+    falhas.push(`${art.titulo}: link não aponta pra aba=equipamento`);
+    continue;
+  }
+  if (!m) { falhas.push(`${art.titulo}: link sem ?q=`); continue; }
+  const classe = decodeURIComponent(m[1]);
+  if (!classesEqp.has(classe)) {
+    falhas.push(`${art.titulo}: busca por "${classe}", que não está na base de equipamento`);
+  }
+}
+
+/* Proteção "maior" <= 0 seria ausência virada zero — coletes de papel. */
+for (const e of A3EQP) {
+  const p = e.protecao;
+  if (p && p.maior != null && p.maior <= 0) {
+    falhas.push(`${e.classe}: proteção "maior" ${p.maior} — ausência virou zero`);
+  }
+  if (p && p.cobertas > p.partes) falhas.push(`${e.classe}: cobertas > partes`);
+}
+
 /* Ids duplicados ENTRE portais: os três prefixam (ars-/opt-/ter-), mas uma
  * colisão levaria dois assuntos ao mesmo deep-link. */
 const todosIds = WIKI_ARTIGOS.map((a) => a.id);
@@ -158,6 +186,7 @@ console.log(`  só tabela:        ${artigos.length - calculaveis}`);
 console.log(`artigos de óptica:  ${artsOpt.length}`);
 console.log(`artigos de terreno: ${artsTer.length} (${terComGrade.size} com grade)`);
 console.log(`artigos de veículo: ${artsVei.length}`);
+console.log(`artigos de equip.:  ${artsEqp.length}`);
 
 if (falhas.length) {
   console.error(`\n${falhas.length} problema(s):`);

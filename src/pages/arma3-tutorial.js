@@ -27,6 +27,7 @@ import { A3MUN, A3MAG, A3MUN_TOTAL, A3MAG_TOTAL } from '../data/arma3-municao.js
 import { A3ACC, A3ACC_TOTAL, A3ACC_META } from '../data/arma3-acessorios.js';
 import { A3TER, A3TER_TOTAL, A3TER_META } from '../data/arma3-terrenos.js';
 import { A3VEI, A3VEI_TOTAL, A3VEI_CATEGORIAS, A3VEI_META } from '../data/arma3-veiculos.js';
+import { A3EQP, A3EQP_TOTAL, A3EQP_CATEGORIAS } from '../data/arma3-equipamento.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
@@ -67,7 +68,7 @@ export function arma3TutorialPage(args = {}) {
   let expandido = null;   // id da arma com os modos de tiro abertos
   let arsenalMods = null, arsenalEstado = 'ocioso';
   const abaInicial = (args.query || {}).aba;
-  const ABAS = ['vanilla', 'armas', 'acessorios', 'veiculos', 'terrenos', 'municao',
+  const ABAS = ['vanilla', 'armas', 'acessorios', 'veiculos', 'equipamento', 'terrenos', 'municao',
     'carregadores', 'colecao', 'config', 'mods', 'comandos',
     'campanhas', 'drive'];
   let aba = ABAS.includes(abaInicial) ? abaInicial : (armaPedida ? 'armas' : 'vanilla');
@@ -115,6 +116,7 @@ export function arma3TutorialPage(args = {}) {
     abaBtn('armas', `🔫 Armas (database) · ${A3ARM_TOTAL}`),
     abaBtn('acessorios', `🔭 Miras & acessórios · ${A3ACC_TOTAL}`),
     abaBtn('veiculos', `🛡️ Veículos · ${A3VEI_TOTAL}`),
+    abaBtn('equipamento', `🦺 Equipamento · ${A3EQP_TOTAL}`),
     abaBtn('terrenos', `🗺️ Terrenos · ${A3TER_TOTAL}`),
     abaBtn('municao', `💥 Munições · ${A3MUN_TOTAL}`),
     abaBtn('carregadores', `🧰 Carregadores · ${A3MAG_TOTAL}`),
@@ -146,21 +148,28 @@ export function arma3TutorialPage(args = {}) {
   function montarChips() {
     chips.replaceChildren();
     const secs = secoesDaAba();
-    const cats = aba === 'mods'
-      ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3TUT_CATEGORIAS]
-      : (aba === 'colecao'
-        ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3COL_CATS]
-        : (aba === 'armas'
-          ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3ARM_TIPOS]
-          : (aba === 'veiculos'
-            ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3VEI_CATEGORIAS]
-            /* Munições e carregadores são lista PLANA: não têm seção, e o
-             * filtro delas é a busca + ordenar coluna. Sem esta guarda o
-             * `secs.map` abaixo estoura com `secs === null`. */
-            : (!secs
-              ? []
-              : [{ id: 'all', nome: 'Tudo', icon: '⬡' },
-                ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))]))));
+    /* Mapa em vez de ternário aninhado: a cadeia chegou a seis níveis e
+     * quebrou duas vezes por contagem de parêntese — um erro que o build só
+     * acusa como "invalid JS syntax" a 900 linhas de distância. Aba nova
+     * agora é uma linha aqui. */
+    const TUDO = { id: 'all', nome: 'Tudo', icon: '⬡' };
+    const CATS_DA_ABA = {
+      mods: A3TUT_CATEGORIAS,
+      colecao: A3COL_CATS,
+      armas: A3ARM_TIPOS,
+      veiculos: A3VEI_CATEGORIAS,
+      equipamento: A3EQP_CATEGORIAS,
+    };
+    let cats;
+    if (CATS_DA_ABA[aba]) {
+      cats = [TUDO, ...CATS_DA_ABA[aba]];
+    } else if (secs) {
+      cats = [TUDO, ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))];
+    } else {
+      /* Munição, carregadores, acessórios e terrenos são lista PLANA: não
+       * têm seção, e o filtro delas é a busca + ordenar coluna. */
+      cats = [];
+    }
     cats.forEach((c) => {
       chips.appendChild(h('button', {
         className: 'symbols-cat' + (c.id === catAtiva ? ' is-active' : ''), dataset: { cat: c.id },
@@ -747,6 +756,62 @@ export function arma3TutorialPage(args = {}) {
     lista.length, tabelaSort('veiculos', colunas, lista));
   }
 
+  /* ===== equipamento =====
+   *
+   * A coluna que justifica a tabela e "Passagem": proteção sem ela sugere
+   * imunidade. `passThrough` é a fração do dano que atravessa a placa MESMO
+   * no ponto coberto — um colete de proteção 16 com 30% de passagem para
+   * bem menos que o número sozinho promete. */
+  function tabelaEquipamento(lista) {
+    const CAT = Object.fromEntries(A3EQP_CATEGORIAS.map((c) => [c.id, c]));
+    const colunas = [
+      { k: 'nome', rot: 'Item', celCls: 'a3arm-td--nome', val: (e) => e.nome,
+        cel: (e) => h('b', null, e.nome) },
+      { k: 'tipo', rot: 'Tipo', val: (e) => e.tipo,
+        cel: (e) => h('span', null, `${(CAT[e.tipo] || {}).icon || ''} ${(CAT[e.tipo] || {}).nome || e.tipo}`) },
+      { k: 'prot', rot: 'Proteção', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (e) => (e.protecao ? e.protecao.maior : null),
+        cel: (e) => {
+          const p = e.protecao;
+          if (!p || p.maior == null) {
+            return h('span', { className: 'a3arm-td__na', title: p ? 'o config não declara blindagem em nenhum ponto' : 'peça sem proteção declarada' }, '—');
+          }
+          return h('span', { title: `mais protegido: ${p.maiorParte}` },
+            h('b', null, String(p.maior)),
+            h('span', { className: 'a3arm-td__u' }, ` ${p.maiorParte}`));
+        } },
+      { k: 'cob', rot: 'Pontos cobertos', celCls: 'a3arm-num-cel',
+        val: (e) => (e.protecao ? e.protecao.cobertas : null),
+        cel: (e) => (e.protecao && e.protecao.maior != null
+          ? h('span', null, `${e.protecao.cobertas}`, h('span', { className: 'a3arm-td__u' }, ` de ${e.protecao.partes}`))
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'pass', rot: 'Passagem', celCls: 'a3arm-num-cel',
+        val: (e) => (e.protecao ? e.protecao.passagem : null),
+        cel: (e) => (e.protecao && e.protecao.passagem != null
+          ? h('span', { title: 'passThrough — fração do dano que atravessa a placa mesmo no ponto coberto' },
+            `${Math.round(e.protecao.passagem * 100)}%`)
+          : h('span', { className: 'a3arm-td__na' }, '—')) },
+      { k: 'cap', rot: 'Capacidade', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (e) => e.capacidade, cel: (e) => val(e.capacidade) },
+      { k: 'massa', rot: 'Massa', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (e) => e.massa, cel: (e) => val(e.massa, '', 1) },
+      { k: 'var', rot: 'Variantes', celCls: 'a3arm-num-cel', descPrimeiro: true,
+        val: (e) => e.variantes,
+        cel: (e) => (e.variantes > 1
+          ? h('span', { title: e.nomes.join(' · ') }, String(e.variantes))
+          : h('span', { className: 'a3arm-td__na' }, '1')) },
+      { k: 'dlc', rot: 'Origem', val: (e) => e.dlc,
+        cel: (e) => h('span', { className: 'a3arm-flag' }, e.dlc) },
+      { k: 'classe', rot: 'Classe', val: (e) => e.classe,
+        cel: (e) => h('code', { className: 'a3arm-af' }, e.classe) },
+    ];
+    return secao('🦺', 'Equipamento',
+      'Coletes, capacetes, uniformes, mochilas e óculos. "Proteção" é o ponto '
+      + 'mais blindado; "Passagem" é quanto do dano atravessa a placa mesmo '
+      + 'assim — os dois juntos descrevem a peça, o primeiro sozinho não.',
+    lista.length, tabelaSort('equipamento', colunas, lista));
+  }
+
   /* ===== terrenos =====
    *
    * A coluna que importa é "Northing": ela mostra o SINAL do passo da grade.
@@ -1079,6 +1144,16 @@ export function arma3TutorialPage(args = {}) {
       if (lista.length) corpo.appendChild(tabelaVeiculos(lista));
       contador.textContent = `${visiveis} de ${total} veículos do núcleo `
         + `(${A3VEI_META.porCategoria ? Object.values(A3VEI_META.porCategoria).reduce((a, b) => a + b, 0) : 0} no acervo com mods)`;
+    } else if (aba === 'equipamento') {
+      total = A3EQP.length;
+      const daCat = catAtiva === 'all' ? A3EQP : A3EQP.filter((e) => e.tipo === catAtiva);
+      const lista = !termo ? daCat : daCat.filter((e) => normalize(
+        `${e.nome} ${e.classe} ${e.dlc} ${e.tipo} ${(e.nomes || []).join(' ')}`
+      ).includes(termo));
+      visiveis = lista.length;
+      if (lista.length) corpo.appendChild(tabelaEquipamento(lista));
+      contador.textContent = `${visiveis} de ${total} peças do núcleo `
+        + `(${A3EQP_TOTAL} classes no config, variante cosmética colapsada)`;
     } else if (aba === 'municao') {
       total = A3MUN_TOTAL;
       if (!termo) corpo.appendChild(cardFurtividade());

@@ -31,6 +31,7 @@ import { A3ARM, A3ARM_TIPOS } from './arma3-armas.js';
 import { A3ACC, A3ACC_TOTAL } from './arma3-acessorios.js';
 import { A3TER } from './arma3-terrenos.js';
 import { A3VEI, A3VEI_CATEGORIAS } from './arma3-veiculos.js';
+import { A3EQP, A3EQP_CATEGORIAS } from './arma3-equipamento.js';
 
 export { A3COL_INFO };
 
@@ -70,7 +71,10 @@ export const WIKI_PORTAIS = [
         + 'localidades e a direção do northing que o computador de tiro usa.' },
   { id: 'veiculos', nome: 'Veículos',            icon: '🛡️', cor: 'magenta',
     desc: 'Blindados, viaturas, aeronaves e navios com a blindagem medida — '
-        + 'o total do casco E a parte mais fraca, que só o total esconde.' }
+        + 'o total do casco E a parte mais fraca, que só o total esconde.' },
+  { id: 'equipamento', nome: 'Equipamento',      icon: '🦺', cor: 'cyan',
+    desc: 'Coletes, capacetes, uniformes e mochilas com a proteção POR PONTO '
+        + 'DO CORPO e a fração de dano que atravessa a placa.' }
 ];
 
 /* Nível por seção de origem. A chave é `portal:secao` de propósito: o id
@@ -465,6 +469,69 @@ function construir() {
       tags: [cat.nome, v.lado, v.faccao, v.dlc, v.classe].filter(Boolean),
       autor: '', tam: '',
       veiculo: v,
+    });
+  });
+
+  /* --- 9. equipamento (uniformes, coletes, capacetes, mochilas, óculos) ---
+   *
+   * O dado que justifica o portal é a PROTEÇÃO POR PONTO DO CORPO. Um número
+   * só por colete esconde a diferença entre "peito 25, abdômen descoberto" e
+   * "os dois em 25" — e é essa distinção que decide se a peça serve. Vem
+   * junto o `passThrough`: a fração do dano que passa pela placa mesmo
+   * quando o ponto está coberto. */
+  const catEqp = Object.fromEntries(A3EQP_CATEGORIAS.map((c) => [c.id, c]));
+  A3EQP.forEach((q) => {
+    const cat = catEqp[q.tipo] || { nome: 'Equipamento', icon: '🎽' };
+    const frases = [];
+    const p = q.protecao;
+    if (p && p.maior != null) {
+      frases.push(`Protege ${p.cobertas} de ${p.partes} pontos do corpo; o mais ` +
+        `blindado é ${p.maiorParte} (${p.maior}).`);
+      if (p.passagem != null) {
+        frases.push(`Mesmo onde cobre, ${Math.round(p.passagem * 100)}% do dano ` +
+          'atravessa a placa (passThrough) — proteção não é imunidade.');
+      }
+    } else if (p) {
+      frases.push(`O config lista ${p.partes} pontos do corpo para esta peça, ` +
+        'mas não declara blindagem em nenhum.');
+    } else if (q.tipo === 'colete' || q.tipo === 'capacete') {
+      frases.push('O config não declara proteção por ponto do corpo para esta peça.');
+    }
+    if (q.capacidade) {
+      frases.push(`Carrega ${q.capacidade} de volume` +
+        (q.containerClass ? ` (${q.containerClass}).` : '.'));
+    }
+    if (typeof q.massa === 'number') frases.push(`Massa ${q.massa}.`);
+    if (q.variantes > 1) {
+      frases.push(`O config tem ${q.variantes} classes com estes mesmos números ` +
+        '— camuflagem e cor diferentes, mesma proteção e mesma capacidade.');
+    }
+
+    artigos.push({
+      id: `eqp-${q.id}`,
+      titulo: q.nome,
+      tipo: 'equipamento',
+      portal: 'equipamento',
+      cat: q.tipo,
+      catNome: cat.nome,
+      icon: cat.icon,
+      nivel: q.tipo === 'colete' || q.tipo === 'capacete' ? 2 : 1,
+      img: '',
+      resumo: [cat.nome, p && p.maior != null ? `proteção ${p.maior}` : null,
+        q.dlc].filter(Boolean).join(' · '),
+      corpo: frases.join(' '),
+      guia: '',
+      sqf: q.tipo === 'mochila' ? `this addBackpack "${q.classe}";`
+        : `this addItem "${q.classe}";`,
+      atalhos: [], dicas: [],
+      links: [{
+        rotulo: 'Ver na tabela de equipamento',
+        url: `#/arma3-tutorial?aba=equipamento&q=${encodeURIComponent(q.classe)}`,
+      }],
+      deps: [], dlcs: q.dlc ? [q.dlc] : [],
+      tags: [cat.nome, q.dlc, q.classe].filter(Boolean),
+      autor: '', tam: '',
+      equipamento: q,
     });
   });
 

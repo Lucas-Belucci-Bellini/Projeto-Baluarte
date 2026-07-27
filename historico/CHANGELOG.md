@@ -6,6 +6,92 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-27
+
+### 📚 Wiki de Arma 3 **0.9.1** — 459 → 1.816 artigos, tudo medido no config
+
+A wiki deixou de ser "o jogo base + os mods + o arsenal" e passou a cobrir o
+acervo inteiro que a extração da #398 trouxe. **Quatro portais novos**, todos
+com o mesmo contrato das armas: o número existe porque foi lido do config, e o
+que não foi medido aparece como ausente em vez de virar zero.
+
+- 🔭 **Miras & acessórios (211 artigos)** — 3.218 acessórios classificados pelo
+  `itemInfoType` do engine (101 boca · 201 óptica · 301 apontador · 302 bipé),
+  não por heurística.
+  - ⚠️ **A ampliação NÃO sai de `0,75 / FOV`.** Medido: nas 215 ópticas que
+    trazem os dois valores, **159 discordam** da conta — o ELCAN SpecterOS dá
+    12× calculado contra "Magnification: 2x" escrito pela própria Bohemia. A
+    ampliação só é publicada quando o jogo a declara em texto (**241 de 1.167**);
+    nas outras **926** o campo é `null` e o FOV cru aparece rotulado como FOV.
+- 🗺️ **Terrenos (31 artigos)** — os mundos jogáveis com a **grade REAL** de
+  cada um. ⚠️ **30 dos 31 contam o northing de cima pra baixo e 1 conta pra
+  cima**; assumir uma convenção só erra o eixo N-S em **180°**. O
+  `verificar-grade.mjs` cobra isso nos 31 por propriedade estrutural
+  (ida-e-volta, sinal do norte, anti-simetria, vizinhança).
+- 🛡️ **Veículos (874 artigos)** — 5.425 veículos de verdade, com **blindagem
+  por parte**: o 2S9 Sochor tem casco 425 e tanque de combustível em 0,5.
+  - ⚠️ **`armor` negativo não é blindagem menor.** São **19.223 partes** do
+    acervo (rodas, periscópios, ERA) e o sinal é convenção do engine: negativo
+    é *relativo* ao casco. Um `min()` sobre os dois juntos anunciava
+    "ponto fraco: −100". Agora o resumo só compara absolutos e conta os
+    relativos à parte — com invariante no gerador e no verificador.
+  - `ehVeiculo` corta **24.261 → 5.425**: `CfgVehicles` guarda parede, arbusto
+    e marcador do editor. Publicar 24.261 "veículos" seria número grande e falso.
+- 🦺 **Equipamento (241 artigos)** — coletes, capacetes, uniformes, mochilas e
+  óculos com **proteção POR PONTO DO CORPO** e o `passThrough`. Um número só
+  esconde a diferença entre "peito 25, abdômen descoberto" e "os dois em 25";
+  e proteção sem a passagem sugere imunidade que não existe (Plate Carrier:
+  peito 16, **30% do dano atravessa**). **19.616 itens** trazem esse dado.
+  - **71.373 classes → 988** colapsando variante cosmética; o JSON sob demanda
+    saiu de **29,7 MB para 641 kB**. Cada entrada registra `variantes` e os
+    nomes, então nada some sem deixar rastro.
+
+### 🧭 Vanguard acoplado de verdade
+
+- 🗺️ **Mapa tático** (`/vanguard`): marcar peça e alvo no mapa, ler MGRS,
+  azimute de **GRADE** e distância, e despejar tudo no computador de tiro num
+  clique. O vetor sai do `gridVector()` vendorizado — o mesmo que reprojeta o
+  alvo no fuso UTM da peça quando os dois caem em fusos diferentes.
+- 🧭 **Azimute de grade nos terrenos do Arma 3**: duas grades como no jogo →
+  azimute em mil NATO e MRAD, distância e retro-azimute, na grade daquele mundo.
+- A **altitude é manual e a tela diz isso**: a web não tem DEM (regra #238).
+
+### 🔬 Procedência derivada, não digitada
+
+- A capa da wiki mostra **quanto saiu do jogo, contado no dump**, com o `.rpt`
+  de origem de cada bloco. Antes era texto escrito à mão, que envelhece calado
+  — e é justamente o número que sustenta "os dados são medidos".
+- O gerador se pagou na primeira execução: escrito com os nomes de campo
+  errados devolveu **0 armas com balística completa**, que publicado viraria
+  "0% do acervo tem balística". Virou invariante que **recusa gerar** em vez de
+  publicar zero. Com os nomes certos: **10.679 de 10.822 (99%)**.
+- A **fila fica declarada**: 44.761 soldados e 4.011 gestos aparecem como
+  "extraído, ainda sem tela" em vez de sumirem.
+
+### 🔧 Infraestrutura
+
+- ✅ **CI de build e invariantes** (`.github/workflows/ci.yml`) — o repo não
+  tinha nenhum workflow que conferisse que o site compila. Ele **regera as
+  bases a partir do dump versionado e falha se divergir do commit**; pegou um
+  defeito na primeira execução (a base de armas estava gerada de um dump
+  anterior ao das outras).
+- 🚀 **Deploy consertado**: o bundle das funções Python estourava o limite
+  (340,98 MB contra 225 MB) porque `scripts/` nunca esteve no `.vercelignore`.
+  Somado a `excludeFiles`, `public/` deixa de contar pra um bundle que não o lê.
+- 🧹 **Aba "Catálogo" removida** — dizia aguardar extração que já rodou, e
+  prometia veículos e miras que agora têm aba própria.
+- 🔒 CodeQL deixa de analisar os **3.711 arquivos do GitNexus 1.6.7** (código de
+  terceiro commitado na raiz), que geravam alerta que ninguém deste projeto
+  pode corrigir.
+- 🔄 SW `baluarte-v0.9.1` · app `0.9.1`.
+
+**Pendente**: o 3D segue sem UI. Os 20 quadros do turntable não servem (00–09
+verdes de visão noturna, 10–19 estourados e com cenário no lugar da arma); o
+`.sqf` está ajustado e carimbado `v4`, mas **não testado** — depende de rodada
+na máquina do operador.
+
+---
+
 ## 2026-07-26
 
 ### 🔬 Armas com valores MEDIDOS do jogo + pipeline pra extrair TODO o resto (veículos, miras, gear)

@@ -106,6 +106,12 @@ def main():
             'rpt': (itens or {}).get('fonte'),
             'linhas': [
                 {'rot': 'itens de inventário', 'n': len(it), 'nota': None},
+                {'rot': 'uniformes (801)', 'n': porInfo.get(801), 'nota': None},
+                {'rot': 'capacetes (605)', 'n': porInfo.get(605), 'nota': None},
+                {'rot': 'coletes (701)', 'n': porInfo.get(701), 'nota': None},
+                {'rot': 'com proteção por ponto do corpo',
+                 'n': sum(1 for v in it.values() if v.get('protecao')),
+                 'nota': 'blindagem e passThrough por parte'},
                 {'rot': 'miras (itemInfoType 201)', 'n': porInfo.get(201), 'nota': None},
                 {'rot': 'lasers e lanternas (301)', 'n': porInfo.get(301), 'nota': None},
                 {'rot': 'silenciadores (101)', 'n': porInfo.get(101), 'nota': None},
