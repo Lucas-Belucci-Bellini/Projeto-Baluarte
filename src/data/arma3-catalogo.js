@@ -62,7 +62,7 @@ export const A3CAT_META = {
   total: 0,
   porCategoria: {  },
   catalogoUrl: '/arma3/catalogo-db.json',
-  comoGerar: "No jogo: Esc → DEBUG CONSOLE → cole scripts/arma3/dump-catalogo.sqf → EXECUTE. Depois: python scripts/arma3/parse-catalogo.py && python scripts/arma3/gerar-catalogo.py"
+  comoGerar: "Os dumps do jogo já rodaram: scripts/arma3/out/ tem itens, veículos, acessórios, animações e mapas. O que falta é o gerador que vira src/data/arma3-catalogo.js."
 };
 
 /* Catálogo completo (com mods) sob demanda — uma requisição por sessão. */

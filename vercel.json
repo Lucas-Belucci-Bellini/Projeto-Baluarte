@@ -1,10 +1,35 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/chat.py": { "maxDuration": 60 },
-    "api/hermes.py": { "maxDuration": 60 },
-    "api/memory.py": { "maxDuration": 30 },
-    "api/social.py": { "maxDuration": 30 },
-    "api/health.py": { "maxDuration": 15 },
-    "api/nucleo.py": { "maxDuration": 15 }
+    "api/chat.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/hermes.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/memory.py": {
+      "maxDuration": 30,
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/social.py": {
+      "maxDuration": 30,
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/health.py": {
+      "maxDuration": 15,
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/nucleo.py": {
+      "maxDuration": 15,
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/claude.py": {
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/voz.py": {
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    }
   }
 }

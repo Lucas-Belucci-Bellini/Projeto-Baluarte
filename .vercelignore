@@ -31,6 +31,13 @@ docs/
 historico/
 .github/
 
+# --- Extração do Arma 3 (#398): dumps do jogo + geradores ---
+# scripts/arma3/out/ tem ~157 MB de JSON cru (config, itens, veículos, mapas).
+# Fica versionado de propósito — sem ele uma sessão remota não regera
+# src/data/arma3-*.js — mas o site não lê nada disso: o Vite lê src/ e public/,
+# e o que a página precisa já está em public/arma3/armas-db.json.
+scripts/
+
 # --- App desktop (Electron) — buildado à parte, não vai pro deploy web (#222) ---
 desktop/
 

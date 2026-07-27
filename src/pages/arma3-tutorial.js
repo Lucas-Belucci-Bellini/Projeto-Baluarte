@@ -775,28 +775,31 @@ export function arma3TutorialPage(args = {}) {
     if (!A3CAT_META.disponivel) {
       return h('div', { className: 'card a3tut-card a3cat-pendente' },
         h('div', { className: 'a3tut-card__head' },
-          h('b', { className: 'a3tut-card__nome' }, '⏳ Catálogo aguardando extração no jogo')),
+          h('b', { className: 'a3tut-card__nome' }, '⏳ Dados extraídos, catálogo ainda não montado')),
         h('p', { className: 'a3tut-card__oque' },
           'Veículos, soldados, miras, uniformes, coletes, capacetes, mochilas e '
           + 'acessórios saem do mesmo lugar que as armas: o config do jogo ',
           h('b', null, 'em execução'),
-          '. Só o operador consegue tirar — exige o Arma 3 com o preset carregado. '
-          + 'Enquanto o dump não roda, esta aba fica honestamente vazia: preencher '
-          + 'com número inventado seria pior que não ter.'),
+          '. Essa parte já foi feita — os dumps rodaram e o dado cru está em ',
+          h('code', null, 'scripts/arma3/out/'),
+          '. O que falta é o gerador que transforma esse cru nas tabelas desta aba. '
+          + 'Até ele existir, a aba fica honestamente vazia: mostrar número que não '
+          + 'foi conferido seria pior que não mostrar nada.'),
         h('div', { className: 'a3tut-card__sec' },
-          h('span', { className: 'a3tut-card__label' }, 'COMO PREENCHER'),
-          h('ol', { className: 'a3tut-dicas' },
-            h('li', null, 'No jogo: ', h('kbd', { className: 'a3tut-kbd' }, 'Esc'),
-              ' → DEBUG CONSOLE → colar ', h('code', null, 'scripts/arma3/dump-catalogo.sqf'),
-              ' → EXECUTE'),
-            h('li', null, h('code', null, 'python scripts/arma3/parse-catalogo.py')),
-            h('li', null, h('code', null, 'python scripts/arma3/extrair-imagens.py'),
-              ' (ícones dos itens novos)'),
-            h('li', null, h('code', null, 'python scripts/arma3/gerar-catalogo.py')))),
+          h('span', { className: 'a3tut-card__label' }, 'O QUE JÁ EXISTE'),
+          h('ul', { className: 'a3tut-dicas' },
+            h('li', null, h('code', null, 'out/arma3-itens.json'),
+              ' — uniformes, coletes, capacetes, mochilas, óculos'),
+            h('li', null, h('code', null, 'out/arma3-veiculos.json'),
+              ' — veículos e soldados, com blindagem por hitpoint'),
+            h('li', null, h('code', null, 'out/arma3-acessorios.json'),
+              ' — miras, supressores, bipés e lasers'),
+            h('li', null, h('code', null, 'out/arma3-mapas.json'), ' — os terrenos'),
+            h('li', null, h('code', null, 'out/arma3-animacoes.json'), ' — gestos e poses'))),
         h('p', { className: 'a3arm-proc__nota u-text-muted' },
           'As ', h('b', null, `${A3CAT_CATEGORIAS.length} categorias`),
           ' já estão definidas com as colunas de cada uma — a tabela liga sozinha '
-          + 'quando o dado chegar.'));
+          + 'quando o gerador rodar.'));
     }
     const btn = h('button', {
       className: 'btn', onclick: async () => {
