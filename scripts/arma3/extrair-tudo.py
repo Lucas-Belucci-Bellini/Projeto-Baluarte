@@ -29,6 +29,7 @@ ETAPAS = [
     ('itens', 'parse-itens.py', 'dump-itens.sqf'),
     ('veiculos', 'parse-veiculos.py', 'dump-veiculos.sqf'),
     ('acessorios', 'parse-acessorios.py', 'dump-acessorios.sqf'),
+    ('animacoes', 'parse-animacoes.py', 'dump-animacoes.sqf'),
 ]
 
 IMAGENS = ('imagens', 'extrair-imagens.py', '(usa o arma3-config.json)')
