@@ -1,4 +1,6 @@
-diag_log text "<<A3TT>>ETAPA|1|script colado e parseado";
+private _versao = "v3-fov-dia-semNVG";
+diag_log text (format ["<<A3TT>>ETAPA|1|script colado e parseado|versao|%1", _versao]);
+systemChat format ["TURNTABLE %1 colado", _versao];
 
 private _alvos = [
     "arifle_MX_F",
