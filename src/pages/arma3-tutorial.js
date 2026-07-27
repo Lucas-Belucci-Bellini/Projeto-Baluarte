@@ -29,6 +29,7 @@ import { A3TER, A3TER_TOTAL, A3TER_META } from '../data/arma3-terrenos.js';
 import { A3VEI, A3VEI_TOTAL, A3VEI_CATEGORIAS, A3VEI_META } from '../data/arma3-veiculos.js';
 import { A3EQP, A3EQP_TOTAL, A3EQP_CATEGORIAS } from '../data/arma3-equipamento.js';
 import { A3SOL, A3SOL_TOTAL, A3SOL_META } from '../data/arma3-soldados.js';
+import { resumirClasse } from '../data/arma3-classes.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
@@ -474,6 +475,19 @@ export function arma3TutorialPage(args = {}) {
    * crescente, que seria a mentira de sempre. */
   const ordem = {};
 
+  /* Célula de classname com o nome DECODIFICADO no tooltip.
+   * `arifle_MX_ACO_pointer_F` vira "Fuzil de assalto · ACO · Apontador
+   * laser · Arma 3" ao passar o mouse — a convenção deixa de exigir que o
+   * leitor a decore. Classe que não casa com o dicionário fica sem tooltip,
+   * em vez de ganhar um palpite. */
+  function celClasse(classe, contexto) {
+    const resumo = resumirClasse(classe, contexto);
+    return h('code', {
+      className: 'a3arm-af' + (resumo ? ' a3arm-af--lido' : ''),
+      title: resumo || null,
+    }, classe);
+  }
+
   function tabelaSort(idTabela, colunas, itens) {
     const est = ordem[idTabela] || (ordem[idTabela] = { col: null, desc: false });
 
@@ -692,7 +706,7 @@ export function arma3TutorialPage(args = {}) {
       { k: 'dlc', rot: 'Origem', val: (a) => a.dlc,
         cel: (a) => h('span', { className: 'a3arm-flag' }, a.dlc) },
       { k: 'classe', rot: 'Classe', val: (a) => a.classe,
-        cel: (a) => h('code', { className: 'a3arm-af' }, a.classe) },
+        cel: (a) => celClasse(a.classe, 'item') },
     ];
     return secao('🔭', 'Miras & acessórios',
       'Miras, silenciadores, lasers e bipés do jogo base e das DLCs, medidos no config.',
@@ -749,7 +763,7 @@ export function arma3TutorialPage(args = {}) {
       { k: 'dlc', rot: 'Origem', val: (v) => v.dlc,
         cel: (v) => h('span', { className: 'a3arm-flag' }, v.dlc) },
       { k: 'classe', rot: 'Classe', val: (v) => v.classe,
-        cel: (v) => h('code', { className: 'a3arm-af' }, v.classe) },
+        cel: (v) => celClasse(v.classe, 'veiculo') },
     ];
     return secao('🛡️', 'Veículos',
       'Blindados, viaturas, aeronaves e navios do jogo base e das DLCs. '
@@ -805,7 +819,7 @@ export function arma3TutorialPage(args = {}) {
       { k: 'dlc', rot: 'Origem', val: (e) => e.dlc,
         cel: (e) => h('span', { className: 'a3arm-flag' }, e.dlc) },
       { k: 'classe', rot: 'Classe', val: (e) => e.classe,
-        cel: (e) => h('code', { className: 'a3arm-af' }, e.classe) },
+        cel: (e) => celClasse(e.classe, 'item') },
     ];
     return secao('🦺', 'Equipamento',
       'Coletes, capacetes, uniformes, mochilas e óculos. "Proteção" é o ponto '
@@ -847,7 +861,7 @@ export function arma3TutorialPage(args = {}) {
         cel: (s) => (s.mochila ? h('code', { className: 'a3arm-af' }, s.mochila)
           : h('span', { className: 'a3arm-td__na' }, '—')) },
       { k: 'classe', rot: 'Classe', val: (s) => s.classe,
-        cel: (s) => h('code', { className: 'a3arm-af' }, s.classe) },
+        cel: (s) => celClasse(s.classe, 'soldado') },
     ];
     return secao('🎖️', 'Soldados',
       'Quem é cada soldado e O QUE CARREGA — arma, carregadores, uniforme e '
@@ -910,7 +924,7 @@ export function arma3TutorialPage(args = {}) {
       { k: 'dlc', rot: 'Origem', val: (t) => t.dlc,
         cel: (t) => h('span', { className: 'a3arm-flag' }, t.dlc) },
       { k: 'classe', rot: 'Classe', val: (t) => t.classe,
-        cel: (t) => h('code', { className: 'a3arm-af' }, t.classe) },
+        cel: (t) => celClasse(t.classe, 'item') },
     ];
     return secao('🗺️', 'Terrenos',
       'Os mundos jogáveis com a grade real de cada um. Clique no nome para abrir '
@@ -970,7 +984,12 @@ export function arma3TutorialPage(args = {}) {
           a.variantes > 1
             ? h('span', { className: 'a3arm-var', title: a.nomes.join(' · ') }, `+${a.variantes - 1} variantes`)
             : null,
-          a.faccao ? h('span', { className: 'a3arm-fac' }, a.faccao) : null] },
+          a.faccao ? h('span', { className: 'a3arm-fac' }, a.faccao) : null,
+          /* A tabela de armas é a única sem coluna de Classe — o classname
+           * entra aqui embaixo, com o mesmo tooltip decodificado das outras.
+           * É o campo que se copia pro `addWeapon`, então precisa estar
+           * visível, não só no artigo da wiki. */
+          h('div', { className: 'a3arm-classe' }, celClasse(a.classe, 'item'))] },
       { k: 'calibre', rot: 'Calibre', val: (a) => a.calibre,
         cel: (a) => a.calibre || h('span', { className: 'a3arm-td__na' }, '—') },
       { k: 'v0', rot: 'v₀', celCls: 'a3arm-num-cel', descPrimeiro: true,

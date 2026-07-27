@@ -320,3 +320,12 @@
   font-size: var(--font-size-xs);
 }
 .a3arm-modo b { color: var(--color-text-primary); font-family: var(--font-mono); }
+
+/* Classname que o dicionário consegue ler ganha sublinhado pontilhado —
+ * sinaliza que há tooltip, sem poluir quem não tem. */
+.a3arm-af--lido {
+  text-decoration: underline dotted var(--color-cyan);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.a3arm-classe { margin-top: 2px; font-size: .72rem; opacity: .85; }
