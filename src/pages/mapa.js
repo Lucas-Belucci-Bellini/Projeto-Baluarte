@@ -14,6 +14,7 @@
 import '../styles/mapa.css';
 import { h } from '../utils/helpers.js';
 import { estiloMapLibre, CAMADAS_BASE } from '../data/camadas-mapa.js';
+import { loadMapLibre } from '../utils/maplibre-loader.js';
 
 /* ── Endpoints ── */
 const OPENSKY = 'https://opensky-network.org/api/states/all';
@@ -39,21 +40,7 @@ function cleanup() {
   _terrainOn = false;
 }
 
-/* ── Loader MapLibre GL ── */
-function loadMapLibre() {
-  return new Promise((resolve) => {
-    if (window.maplibregl) { resolve(window.maplibregl); return; }
-    const css = document.createElement('link');
-    css.rel = 'stylesheet';
-    css.href = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css';
-    document.head.appendChild(css);
-    const s = document.createElement('script');
-    s.src = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js';
-    s.onload = () => resolve(window.maplibregl);
-    s.onerror = () => resolve(null);
-    document.head.appendChild(s);
-  });
-}
+/* ── Loader MapLibre GL — compartilhado com o mapa tático do /vanguard ── */
 
 /* ── Estilo base com múltiplas fontes ──
  * As fontes de tile saem de src/data/camadas-mapa.js, que é COMPARTILHADO com

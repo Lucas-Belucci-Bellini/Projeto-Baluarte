@@ -175,7 +175,46 @@
   margin-top: var(--space-md);
 }
 
+/* ── mapa tático (a tela #/mapa do Vanguard, embutida) ── */
+
+/* ⚠️ ALTURA EXPLÍCITA, e o contêiner NÃO é `position:absolute`.
+ * O maplibre-gl.css entra em runtime (CDN) e traz
+ * `.maplibregl-map { position: relative }`, que ganha a cascata e colapsa
+ * um contêiner sem altura própria para zero. É a mesma armadilha já paga no
+ * .mapa__canvas — por isso aqui a altura é fixa, não herdada. */
+.vg-mapa {
+  height: clamp(320px, 52vh, 560px);
+  width: 100%;
+  margin-top: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+}
+
+.vg-mapa__barra { align-items: flex-end; }
+
+.vg-mapa__modo {
+  font-family: var(--font-mono);
+  letter-spacing: .04em;
+}
+
+.vg-mapa__alt { width: 8rem; }
+
+.vg-mapa__ro { margin-top: var(--space-md); }
+
+.vg-mapa__levar { margin-top: var(--space-md); }
+
+/* O marcador do MapLibre é SVG injetado por ele; só a cor é nossa. */
+.vg-mapa .maplibregl-popup-content {
+  background: var(--color-surface-1);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+}
+
 @media (max-width: 640px) {
   .vg-num-in { width: 100%; }
   .vg-campos label { flex: 1 1 100%; }
+  .vg-mapa { height: 60vh; }
+  .vg-mapa__alt { width: 100%; }
 }

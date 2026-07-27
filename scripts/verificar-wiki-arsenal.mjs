@@ -31,6 +31,8 @@
  */
 
 import { A3ARM } from '../src/data/arma3-armas.js';
+import { A3ACC } from '../src/data/arma3-acessorios.js';
+import { A3TER } from '../src/data/arma3-terrenos.js';
 import { WIKI_ARTIGOS } from '../src/data/wiki-arma3.js';
 import { dadosBalisticos } from '../src/utils/arma3-balistica.js';
 
@@ -68,9 +70,59 @@ const calculaveis = artigos.filter((a) => {
   return m && dadosBalisticos(porId.get(decodeURIComponent(m[1])) || {});
 }).length;
 
+/* ── portal Miras & acessórios ──
+ * O link manda `?aba=acessorios&q=<classe>`. Se a classe não existir na base,
+ * a aba abre com a busca vazia de resultados — sem erro, e o leitor conclui
+ * que o acessório sumiu. */
+const classesAcc = new Set(A3ACC.map((c) => c.classe));
+const artsOpt = WIKI_ARTIGOS.filter((a) => a.portal === 'optica');
+if (!artsOpt.length) falhas.push('o portal "optica" não tem nenhum artigo');
+for (const art of artsOpt) {
+  const url = ((art.links || [])[0] || {}).url || '';
+  const m = /[?&]q=([^&]+)/.exec(url);
+  if (!/aba=acessorios/.test(url)) {
+    falhas.push(`${art.titulo}: link não aponta pra aba=acessorios`);
+    continue;
+  }
+  if (!m) { falhas.push(`${art.titulo}: link sem ?q= — cai na lista inteira`); continue; }
+  const classe = decodeURIComponent(m[1]);
+  if (!classesAcc.has(classe)) {
+    falhas.push(`${art.titulo}: busca por "${classe}", que não está na base de acessórios`);
+  }
+}
+
+/* ── portal Terrenos ──
+ * O link promete "calcular azimute NESTE terreno" e manda `?terreno=<id>`.
+ * O card do Vanguard só lista terreno COM grade; um id sem grade cairia no
+ * padrão (Altis) calado — o leitor calcularia azimute do mapa errado. */
+const terComGrade = new Set(A3TER.filter((t) => t.grade).map((t) => t.id));
+const idsTer = new Set(A3TER.map((t) => t.id));
+const artsTer = WIKI_ARTIGOS.filter((a) => a.portal === 'terrenos');
+if (!artsTer.length) falhas.push('o portal "terrenos" não tem nenhum artigo');
+for (const art of artsTer) {
+  const url = ((art.links || [])[0] || {}).url || '';
+  const m = /[?&]terreno=([^&]+)/.exec(url);
+  if (!m) { falhas.push(`${art.titulo}: link sem ?terreno=`); continue; }
+  const id = decodeURIComponent(m[1]);
+  if (!idsTer.has(id)) {
+    falhas.push(`${art.titulo}: aponta pro terreno inexistente "${id}"`);
+  } else if (!terComGrade.has(id)) {
+    falhas.push(`${art.titulo}: promete azimute, mas o terreno "${id}" não tem `
+      + 'grade — o card cairia em OUTRO terreno, calado');
+  }
+}
+
+/* Ids duplicados ENTRE portais: os três prefixam (ars-/opt-/ter-), mas uma
+ * colisão levaria dois assuntos ao mesmo deep-link. */
+const todosIds = WIKI_ARTIGOS.map((a) => a.id);
+const dup = todosIds.length - new Set(todosIds).size;
+if (dup) falhas.push(`${dup} id(s) de artigo duplicado(s) na wiki inteira`);
+
 console.log(`artigos do arsenal: ${artigos.length}`);
 console.log(`  com calculadora:  ${calculaveis}`);
 console.log(`  só tabela:        ${artigos.length - calculaveis}`);
+console.log(`artigos de óptica:  ${artsOpt.length}`);
+console.log(`artigos de terreno: ${artsTer.length} (${terComGrade.size} com grade)`);
 
 if (falhas.length) {
   console.error(`\n${falhas.length} problema(s):`);

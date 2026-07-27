@@ -22,8 +22,12 @@ import '../styles/vanguard.css';
 import { h } from '../utils/helpers.js';
 import {
   resolverMissao, listarSistemas, latLonParaMGRS, mgrsParaLatLon,
-  latLonParaUTM, VERSAO_MOTOR,
+  latLonParaUTM, gridVector, VERSAO_MOTOR,
 } from '../utils/vanguard/index.js';
+/* O mapa tático usa as MESMAS peças do /mapa: loader único do MapLibre e o
+ * catálogo de camadas compartilhado com o repo do Vanguard. */
+import { loadMapLibre } from '../utils/maplibre-loader.js';
+import { estiloMapLibre } from '../data/camadas-mapa.js';
 /* A ponte entre os dois projetos: dado medido do Baluarte + modelo de tiro
  * tenso, no formato de cartão que o Vanguard usa. */
 import { A3ARM } from '../data/arma3-armas.js';
@@ -45,6 +49,11 @@ const PADRAO = {
 };
 
 const nUm = (v, casas = 0) => (Number.isFinite(v) ? v.toFixed(casas) : '—');
+
+/* Ponte mapa → computador de tiro. Os dois cards vivem neste módulo; o
+ * cardComputador registra `aplicar` e o mapa chama quando o operador pede
+ * "levar para o computador". Sem evento global, sem estado fora da página. */
+const ponteComputador = {};
 
 export function vanguardPage(args = {}) {
   const page = h('div', { className: 'page-vanguard' });
@@ -70,9 +79,166 @@ export function vanguardPage(args = {}) {
       h('b', null, 'não tabela de tiro oficial'),
       '. Serve para o Arma 3 e para estudo — não para emprego real.')));
 
-  page.append(cardTerreno(terrenoPedido), cardComputador(), cardMrad(),
-    cardCoordenadas(), cardArquitetura());
+  page.append(cardMapaTatico(), cardTerreno(terrenoPedido), cardComputador(),
+    cardMrad(), cardCoordenadas(), cardArquitetura());
   return page;
+}
+
+/* ═══════════ mapa tático — a tela #/mapa do Vanguard, dentro do Baluarte ═══════════
+ *
+ * Mesmo fluxo do app irmão (project-vanguard-cyan.vercel.app/#/mapa): marcar
+ * PEÇA e ALVO no mapa, ler MGRS de cada um e o VETOR DE TIRO (azimute de
+ * grade + distância), e despejar tudo no computador de tiro logo abaixo.
+ *
+ * Nada aqui é reimplementação: o vetor vem do `gridVector()` vendorado — o
+ * mesmo que reprojeta o alvo no fuso UTM da peça quando os dois caem em
+ * fusos diferentes — e as camadas vêm do catálogo compartilhado entre os
+ * dois repos. A ALTITUDE é manual: a web não tem DEM (regra #238 — o perfil
+ * de elevação é do app); o campo existe e diz de onde o número veio: de você.
+ */
+function cardMapaTatico() {
+  let modo = null;          // 'peca' | 'alvo' | null
+  let peca = null;          // { lat, lon }
+  let alvo = null;
+  let altPeca = 0, altAlvo = 0;
+  let mapa = null;
+  let mkPeca = null, mkAlvo = null;
+
+  const elMapa = h('div', { className: 'vg-mapa' });
+  const roPeca = h('div', { className: 'vg-leitura' });
+  const roAlvo = h('div', { className: 'vg-leitura' });
+  const roVetor = h('div', null);
+
+  const fmt = (p) => `${p.lat.toFixed(6)}, ${p.lon.toFixed(6)}`;
+
+  function leituraPonto(el, rotulo, p, alt) {
+    el.replaceChildren(
+      h('span', { className: 'vg-leitura__rot' }, rotulo),
+      p ? h('b', { className: 'vg-leitura__val' }, latLonParaMGRS(p.lat, p.lon, 5, true))
+        : h('b', { className: 'vg-leitura__val u-text-muted' }, '— clique no mapa —'),
+      h('span', { className: 'vg-leitura__sub u-text-muted' },
+        p ? `${fmt(p)} · alt ${alt} m (manual)` : ''));
+  }
+
+  function recalcVetor() {
+    leituraPonto(roPeca, '◆ Peça', peca, altPeca);
+    leituraPonto(roAlvo, '✳ Alvo', alvo, altAlvo);
+    if (!peca || !alvo) {
+      roVetor.replaceChildren(h('p', { className: 'vg-nota u-text-muted' },
+        'Marque a peça e o alvo para o vetor de tiro aparecer.'));
+      return;
+    }
+    const v = gridVector({ ...peca, alt: altPeca }, { ...alvo, alt: altAlvo });
+    roVetor.replaceChildren(
+      h('div', { className: 'vg-grid' },
+        leitura('Azimute de grade', `${nUm(grauParaMilNato(v.azimuteGradeDeg))} mil`,
+          `${nUm(v.azimuteGradeDeg, 2)}° · NATO 6400 · fuso ${v.zona}`),
+        leitura('Distância', v.distanciaHorizontalM >= 10000
+          ? `${(v.distanciaHorizontalM / 1000).toFixed(2)} km`
+          : `${nUm(v.distanciaHorizontalM)} m`,
+        `no terreno · inclinada ${v.distanciaInclinadaM >= 10000
+          ? (v.distanciaInclinadaM / 1000).toFixed(2) + ' km'
+          : nUm(v.distanciaInclinadaM) + ' m'}`),
+        leitura('Desnível', `${v.deltaAltM >= 0 ? '+' : '−'}${Math.abs(v.deltaAltM)} m`,
+          'das altitudes manuais')),
+      h('button', {
+        className: 'btn btn--primary vg-mapa__levar',
+        onclick: () => {
+          if (ponteComputador.aplicar) {
+            ponteComputador.aplicar(
+              { lat: peca.lat, lon: peca.lon, alt: altPeca },
+              { lat: alvo.lat, lon: alvo.lon, alt: altAlvo });
+          }
+        },
+      }, '▶ Levar para o computador de tiro'));
+  }
+
+  function marcar(ml, lngLat) {
+    const p = { lat: lngLat.lat, lon: lngLat.lng };
+    if (modo === 'peca') {
+      peca = p;
+      if (!mkPeca) {
+        mkPeca = new ml.Marker({ color: '#00e5ff' }).setLngLat(lngLat).addTo(mapa);
+      } else mkPeca.setLngLat(lngLat);
+    } else if (modo === 'alvo') {
+      alvo = p;
+      if (!mkAlvo) {
+        mkAlvo = new ml.Marker({ color: '#ff9f1a' }).setLngLat(lngLat).addTo(mapa);
+      } else mkAlvo.setLngLat(lngLat);
+    }
+    recalcVetor();
+  }
+
+  const btnModo = (id, rotulo) => {
+    const b = h('button', {
+      className: 'btn vg-mapa__modo', dataset: { modo: id },
+      onclick: () => {
+        modo = modo === id ? null : id;
+        barra.querySelectorAll('.vg-mapa__modo').forEach((x) =>
+          x.classList.toggle('btn--primary', x.dataset.modo === modo));
+      },
+    }, rotulo);
+    return b;
+  };
+
+  const altIn = (valor, set) => h('input', {
+    className: 'input vg-num-in vg-mapa__alt', type: 'number',
+    value: String(valor), step: '1', min: '-500', max: '9000',
+    oninput: (e) => {
+      const x = parseFloat(e.target.value);
+      if (Number.isFinite(x)) { set(x); recalcVetor(); }
+    },
+  });
+
+  const barra = h('div', { className: 'vg-campos vg-mapa__barra' },
+    btnModo('peca', '◆ Marcar peça'),
+    btnModo('alvo', '✳ Marcar alvo'),
+    h('label', null, h('span', null, 'Alt. peça (m)'), altIn(altPeca, (v) => { altPeca = v; })),
+    h('label', null, h('span', null, 'Alt. alvo (m)'), altIn(altAlvo, (v) => { altAlvo = v; })));
+
+  const box = h('div', { className: 'card vg-card' },
+    h('div', { className: 'vg-card__head' },
+      h('b', null, '🗺️ Mapa tático — peça e alvo no mundo real'),
+      h('a', {
+        className: 'vg-motor', href: 'https://project-vanguard-cyan.vercel.app/#/mapa',
+        target: '_blank', rel: 'noopener noreferrer',
+      }, 'abrir o Vanguard completo ↗')),
+    h('p', { className: 'vg-oque' },
+      'A tela de mapa do Vanguard, rodando aqui com o mesmo motor: clique para '
+      + 'marcar ', h('b', null, 'peça'), ' e ', h('b', null, 'alvo'),
+      ', leia o MGRS de cada um e o vetor de tiro — azimute de ',
+      h('b', null, 'GRADE'), ' (reprojetado no fuso da peça quando os dois caem '
+      + 'em fusos diferentes) e distância corrigida do fator de escala. '
+      + 'Depois é um clique para despejar tudo no computador de tiro abaixo.'),
+    barra, elMapa,
+    h('div', { className: 'vg-grid vg-mapa__ro' }, roPeca, roAlvo),
+    roVetor,
+    h('p', { className: 'vg-nota u-text-muted' },
+      'Altitude é manual porque a web não tem o modelo de elevação (DEM) — '
+      + 'ele é do app, junto com o perfil de crista. Camadas de tile do mesmo '
+      + 'catálogo compartilhado dos dois repos.'));
+
+  recalcVetor();
+
+  loadMapLibre().then((ml) => {
+    if (!ml) {
+      elMapa.replaceChildren(h('p', { className: 'vg-erro' },
+        'Não deu para baixar o MapLibre (rede/CDN). Os campos manuais do '
+        + 'computador de tiro abaixo continuam funcionando.'));
+      return;
+    }
+    mapa = new ml.Map({
+      container: elMapa,
+      style: estiloMapLibre({ base: 'terreno', overlays: [] }),
+      center: [-43.19, -22.95],
+      zoom: 11,
+      attributionControl: { compact: true },
+    });
+    mapa.addControl(new ml.NavigationControl({ showCompass: true }), 'bottom-right');
+    mapa.on('click', (e) => marcar(ml, e.lngLat));
+  });
+
+  return box;
 }
 
 /* ═══════════ azimute de grade nos terrenos do Arma 3 ═══════════
@@ -460,18 +626,36 @@ function cardComputador() {
         : null);
   }
 
-  const num = (chave, min, max, passo) => h('input', {
-    className: 'input vg-num-in', type: 'number', value: String(campos[chave]),
-    min: String(min), max: String(max), step: String(passo),
-    oninput: (e) => {
-      const v = parseFloat(e.target.value);
-      if (Number.isFinite(v)) { campos[chave] = v; calcular(); }
-    },
-  });
+  /* Guardados por chave pra que o mapa tático consiga reescrever os campos —
+   * ver ponteComputador.aplicar abaixo. */
+  const entradas = {};
+  const num = (chave, min, max, passo) => {
+    const el = h('input', {
+      className: 'input vg-num-in', type: 'number', value: String(campos[chave]),
+      min: String(min), max: String(max), step: String(passo),
+      oninput: (e) => {
+        const v = parseFloat(e.target.value);
+        if (Number.isFinite(v)) { campos[chave] = v; calcular(); }
+      },
+    });
+    entradas[chave] = el;
+    return el;
+  };
 
   const selSis = h('select', {
     className: 'input', onchange: (e) => { sistemaId = e.target.value; calcular(); }
   }, ...sistemas.map((s) => h('option', { value: s.id }, `${s.nome} — ${s.origem}`)));
+
+  /* Ponte com o mapa tático: ele marca peça e alvo, aqui recebe. Os campos
+   * são escritos NOS INPUTS também, não só no estado — senão a tela mostraria
+   * a coordenada antiga com o resultado novo, que é pior que não ligar nada. */
+  ponteComputador.aplicar = (p, a) => {
+    campos.pecaLat = p.lat; campos.pecaLon = p.lon; campos.pecaAlt = p.alt;
+    campos.alvoLat = a.lat; campos.alvoLon = a.lon; campos.alvoAlt = a.alt;
+    Object.entries(entradas).forEach(([k, el]) => { el.value = String(campos[k]); });
+    calcular();
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const box = h('div', { className: 'card vg-card' },
     h('div', { className: 'vg-card__head' },
