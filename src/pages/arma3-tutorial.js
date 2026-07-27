@@ -23,7 +23,6 @@ import { A3DRV_PASTAS, A3DRV_SECOES, A3DRV_TOTAL } from '../data/arma3-drive.js'
 import {
   A3ARM, A3ARM_TIPOS, A3ARM_TOTAL, A3ARM_META, carregarArsenal,
 } from '../data/arma3-armas.js';
-import { A3CAT, A3CAT_CATEGORIAS, A3CAT_META, carregarCatalogo } from '../data/arma3-catalogo.js';
 import { A3MUN, A3MAG, A3MUN_TOTAL, A3MAG_TOTAL } from '../data/arma3-municao.js';
 import { A3ACC, A3ACC_TOTAL, A3ACC_META } from '../data/arma3-acessorios.js';
 import { A3TER, A3TER_TOTAL, A3TER_META } from '../data/arma3-terrenos.js';
@@ -67,11 +66,9 @@ export function arma3TutorialPage(args = {}) {
   /* arsenal completo (mods) — só desce quando o operador pede */
   let expandido = null;   // id da arma com os modos de tiro abertos
   let arsenalMods = null, arsenalEstado = 'ocioso';
-  /* catálogo (veículos, miras, uniformes…) — idem */
-  let catalogoMods = null, catalogoEstado = 'ocioso';
   const abaInicial = (args.query || {}).aba;
   const ABAS = ['vanilla', 'armas', 'acessorios', 'veiculos', 'terrenos', 'municao',
-    'carregadores', 'catalogo', 'colecao', 'config', 'mods', 'comandos',
+    'carregadores', 'colecao', 'config', 'mods', 'comandos',
     'campanhas', 'drive'];
   let aba = ABAS.includes(abaInicial) ? abaInicial : (armaPedida ? 'armas' : 'vanilla');
 
@@ -121,9 +118,6 @@ export function arma3TutorialPage(args = {}) {
     abaBtn('terrenos', `🗺️ Terrenos · ${A3TER_TOTAL}`),
     abaBtn('municao', `💥 Munições · ${A3MUN_TOTAL}`),
     abaBtn('carregadores', `🧰 Carregadores · ${A3MAG_TOTAL}`),
-    abaBtn('catalogo', A3CAT_META.disponivel
-      ? `🎒 Catálogo (veículos, miras, gear) · ${A3CAT_META.nucleo}`
-      : '🎒 Catálogo (veículos, miras, gear) · ⏳'),
     abaBtn('colecao', `📦 Coleção completa · ${A3COL_TOTAL}`),
     abaBtn('config', `🔧 Instalar & configurar mods · ${A3CFG_TOTAL_TOPICOS}`),
     abaBtn('mods', `🧩 Mods do preset · ${A3TUT_TOTAL}`),
@@ -160,15 +154,13 @@ export function arma3TutorialPage(args = {}) {
           ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3ARM_TIPOS]
           : (aba === 'veiculos'
             ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3VEI_CATEGORIAS]
-            : (aba === 'catalogo'
-            ? [{ id: 'all', nome: 'Tudo', icon: '⬡' }, ...A3CAT_CATEGORIAS]
             /* Munições e carregadores são lista PLANA: não têm seção, e o
              * filtro delas é a busca + ordenar coluna. Sem esta guarda o
              * `secs.map` abaixo estoura com `secs === null`. */
             : (!secs
               ? []
               : [{ id: 'all', nome: 'Tudo', icon: '⬡' },
-                ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))])))));
+                ...secs.map((s) => ({ id: s.id, nome: s.nome, icon: s.icon }))]))));
     cats.forEach((c) => {
       chips.appendChild(h('button', {
         className: 'symbols-cat' + (c.id === catAtiva ? ' is-active' : ''), dataset: { cat: c.id },
@@ -971,120 +963,6 @@ export function arma3TutorialPage(args = {}) {
       arsenalMods ? null : h('div', { className: 'a3arm-proc__acoes' }, btn));
   }
 
-  /* Cabeçalho do catálogo — inclusive o estado "ainda não extraído", que é
-   * informação, não erro: esses dados só existem depois do dump no jogo. */
-  function catalogoCabecalho() {
-    if (!A3CAT_META.disponivel) {
-      return h('div', { className: 'card a3tut-card a3cat-pendente' },
-        h('div', { className: 'a3tut-card__head' },
-          h('b', { className: 'a3tut-card__nome' }, '⏳ Dados extraídos, catálogo ainda não montado')),
-        h('p', { className: 'a3tut-card__oque' },
-          'Veículos, soldados, miras, uniformes, coletes, capacetes, mochilas e '
-          + 'acessórios saem do mesmo lugar que as armas: o config do jogo ',
-          h('b', null, 'em execução'),
-          '. Essa parte já foi feita — os dumps rodaram e o dado cru está em ',
-          h('code', null, 'scripts/arma3/out/'),
-          '. O que falta é o gerador que transforma esse cru nas tabelas desta aba. '
-          + 'Até ele existir, a aba fica honestamente vazia: mostrar número que não '
-          + 'foi conferido seria pior que não mostrar nada.'),
-        h('div', { className: 'a3tut-card__sec' },
-          h('span', { className: 'a3tut-card__label' }, 'O QUE JÁ EXISTE'),
-          h('ul', { className: 'a3tut-dicas' },
-            h('li', null, h('code', null, 'out/arma3-itens.json'),
-              ' — uniformes, coletes, capacetes, mochilas, óculos'),
-            h('li', null, h('code', null, 'out/arma3-veiculos.json'),
-              ' — veículos e soldados, com blindagem por hitpoint'),
-            h('li', null, h('code', null, 'out/arma3-acessorios.json'),
-              ' — miras, supressores, bipés e lasers'),
-            h('li', null, h('code', null, 'out/arma3-mapas.json'), ' — os terrenos'),
-            h('li', null, h('code', null, 'out/arma3-animacoes.json'), ' — gestos e poses'))),
-        h('p', { className: 'a3arm-proc__nota u-text-muted' },
-          'As ', h('b', null, `${A3CAT_CATEGORIAS.length} categorias`),
-          ' já estão definidas com as colunas de cada uma — a tabela liga sozinha '
-          + 'quando o gerador rodar.'));
-    }
-    const btn = h('button', {
-      className: 'btn', onclick: async () => {
-        if (catalogoEstado === 'carregando' || catalogoMods) return;
-        catalogoEstado = 'carregando';
-        btn.textContent = 'baixando…'; btn.disabled = true;
-        try {
-          catalogoMods = (await carregarCatalogo()).filter((e) => e.ehMod);
-          catalogoEstado = 'pronto';
-          render();
-        } catch (err) {
-          catalogoEstado = 'erro';
-          btn.disabled = false;
-          btn.textContent = 'falhou — tentar de novo';
-          console.error('[arma3] catálogo completo:', err);
-        }
-      }
-    }, `⬇ Carregar o catálogo completo (+${A3CAT_META.total - A3CAT_META.nucleo} de mods)`);
-    return h('div', { className: 'card a3tut-card a3arm-proc' },
-      h('div', { className: 'a3tut-card__head' },
-        h('b', { className: 'a3tut-card__nome' }, '🔬 Catálogo — procedência')),
-      h('p', { className: 'a3tut-card__oque' },
-        'Do config do jogo em execução (', h('code', null, A3CAT_META.dump || '—'),
-        '). Blindagem, velocidade, zoom de mira e proteção de colete são valores '
-        + 'lidos, não estimados. Ausente aparece como ',
-        h('span', { className: 'a3arm-td__na' }, '—'), '.'),
-      catalogoMods ? null : h('div', { className: 'a3arm-proc__acoes' }, btn));
-  }
-
-  /* Tabela de uma categoria do catálogo. As colunas vêm de A3CAT_CATEGORIAS —
-   * acrescentar categoria não exige mexer aqui. */
-  function tabelaCategoria(cat, itens) {
-    const COL = {
-      blindagem: ['Blindagem', (e) => val(e.blindagem)],
-      velocidade: ['Vel. máx.', (e) => val(e.velocidade, 'km/h')],
-      combustivel: ['Combustível', (e) => val(e.combustivel, '', 2)],
-      transporte: ['Transporta', (e) => val(e.transporte)],
-      armamento: ['Armamento', (e) => (e.armamento && e.armamento.length
-        ? h('span', { title: e.armamento.join(' · ') }, `${e.armamento.length} sistema(s)`)
-        : h('span', { className: 'a3arm-td__na' }, '—'))],
-      lado: ['Lado', (e) => e.lado || h('span', { className: 'a3arm-td__na' }, '—')],
-      faccao: ['Facção', (e) => e.faccao || h('span', { className: 'a3arm-td__na' }, '—')],
-      uniforme: ['Uniforme', (e) => e.uniforme || h('span', { className: 'a3arm-td__na' }, '—')],
-      zoom: ['Zoom máx.', (e) => (e.zoomMax
-        ? h('span', null, `${e.zoomMax}×`)
-        : h('span', { className: 'a3arm-td__na' }, '—'))],
-      visao: ['Visão', (e) => {
-        const modos = [...new Set((e.opticas || []).flatMap((o) => o.visao || []))];
-        return modos.length ? modos.join(', ') : h('span', { className: 'a3arm-td__na' }, '—');
-      }],
-      protecao: ['Proteção', (e) => (typeof e.protecaoTorax === 'number'
-        ? h('span', { title: (e.protecao || []).map((p) => `${p.ponto}: ${p.armor}`).join(' · ') },
-          String(e.protecaoTorax), h('span', { className: 'a3arm-td__u' }, ` (${e.protecaoPonto})`))
-        : h('span', { className: 'a3arm-td__na' }, '—'))],
-      capacidade: ['Capacidade', (e) => val(e.capacidade)],
-      massa: ['Massa', (e) => val(e.massa)],
-    };
-    const cols = (cat.colunas || []).filter((c) => COL[c]);
-    const linha = (e) => h('tr', { className: 'a3arm-tr' },
-      h('td', { className: 'a3arm-td a3arm-td--img' }, thumb(e)),
-      h('td', { className: 'a3arm-td a3arm-td--nome' }, e.nome,
-        e.variantes > 1
-          ? h('span', { className: 'a3arm-var', title: e.nomes.join(' · ') }, `+${e.variantes - 1} variantes`)
-          : null),
-      ...cols.map((c) => h('td', { className: 'a3arm-td a3arm-num-cel' }, COL[c][1](e))),
-      h('td', { className: 'a3arm-td' }, h('span', { className: 'a3col-tag' }, e.origem || '—')),
-      h('td', { className: 'a3arm-td a3arm-td--obs' },
-        e.desc || h('span', { className: 'a3arm-td__na' }, '—')));
-    const tabela = h('table', { className: 'a3arm-tabela' },
-      h('thead', null, h('tr', null,
-        h('th', { className: 'a3arm-th--img' }, ''), h('th', null, 'Nome'),
-        ...cols.map((c) => h('th', null, COL[c][0])),
-        h('th', null, 'Origem'), h('th', null, 'Descrição'))),
-      h('tbody', null, ...itens.map(linha)));
-    return h('div', { className: 'a3tut-secao' },
-      h('div', { className: 'a3tut-secao__head' },
-        h('span', { className: 'a3tut-secao__icon' }, cat.icon),
-        h('h2', { className: 'a3tut-secao__titulo' }, cat.nome),
-        h('span', { className: 'badge badge--cyan' }, String(itens.length))),
-      h('p', { className: 'a3tut-secao__desc u-text-muted' }, cat.desc),
-      h('div', { className: 'a3arm-tabela-wrap' }, tabela));
-  }
-
   function secaoEl(cat, cards, qtd, desc) {
     return h('div', { className: 'a3tut-secao' },
       h('div', { className: 'a3tut-secao__head' },
@@ -1217,25 +1095,6 @@ export function arma3TutorialPage(args = {}) {
       visiveis = lista.length;
       if (lista.length) corpo.appendChild(tabelaCarregadores(lista));
       contador.textContent = `${visiveis} de ${total} carregadores`;
-    } else if (aba === 'catalogo') {
-      const base = catalogoMods ? A3CAT.concat(catalogoMods) : A3CAT;
-      total = base.length;
-      if (!termo) corpo.appendChild(catalogoCabecalho());
-      if (A3CAT_META.disponivel) {
-        A3CAT_CATEGORIAS.forEach((cat) => {
-          if (catAtiva !== 'all' && catAtiva !== cat.id) return;
-          const daCat = base.filter((e) => e.categoria === cat.id);
-          const filtrados = !termo ? daCat : daCat.filter((e) => normalize(
-            `${e.nome} ${e.nomes ? e.nomes.join(' ') : ''} ${e.faccao || ''} `
-            + `${e.origem || ''} ${e.desc || ''} ${e.classe}`).includes(termo));
-          if (!filtrados.length) return;
-          visiveis += filtrados.length;
-          corpo.appendChild(tabelaCategoria(cat, filtrados));
-        });
-      }
-      contador.textContent = A3CAT_META.disponivel
-        ? `${visiveis} de ${total} itens do catálogo`
-        : 'catálogo aguardando extração no jogo';
     } else {
       const secs = secoesDaAba();
       total = aba === 'config' ? A3CFG_TOTAL_TOPICOS
