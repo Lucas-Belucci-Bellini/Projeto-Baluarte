@@ -15,6 +15,7 @@
 import '../styles/wiki-arma3.css';
 import { h, debounce } from '../utils/helpers.js';
 import { router } from '../core/router.js';
+import { A3EXT_BLOCOS, A3EXT_FILA } from '../data/arma3-extracao.js';
 import {
   WIKI_ARTIGOS, WIKI_POR_ID, WIKI_TOTAL, WIKI_PORTAIS, WIKI_NIVEIS,
   WIKI_CONTAGEM, A3COL_INFO, buscar, relacionados, catsDoPortal
@@ -106,25 +107,7 @@ function vistaCapa(page) {
    * que já foi medido mas ainda não tem gerador. Os números do cru vêm do
    * dump de 26–27/07/2026 (scripts/arma3/out/) e mudam quando ele rodar de
    * novo — por isso a frase diz DE ONDE saíram, e não finge tempo real. */
-  page.appendChild(h('div', { className: 'card wk-colecao' },
-    h('div', null,
-      h('b', null, '🧬 Medido direto do jogo em execução'),
-      h('p', { className: 'u-text-muted' },
-        'Navegável nesta wiki: ', h('b', null, '10.822 armas'),
-        ' (106 artigos do núcleo + arsenal completo na tabela), ',
-        h('b', null, '211 miras e acessórios'), ', ',
-        h('b', null, '31 terrenos com a grade real'), ', ',
-        h('b', null, '1.432 carregadores'), ' e ', h('b', null, '472 munições'),
-        '. Já medido e aguardando gerador (cru em scripts/arma3/out/): ',
-        h('b', null, '67.368 itens de inventário'),
-        ' (40.720 uniformes, 12.829 capacetes, 9.875 coletes), ',
-        h('b', null, '24.261 registros de veículo'), ' com blindagem por hitpoint, ',
-        h('b', null, '44.761 soldados'), ' de 248 facções e ',
-        h('b', null, '12.716 animações'), ' (8.705 estados + 4.011 gestos) — '
-        + 'dump de 26–27/07/2026.')),
-    h('div', { className: 'wk-colecao__acoes' },
-      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=armas' }, '🔫 Tabela de armas'),
-      h('a', { className: 'btn', href: '#/vanguard' }, '⌖ Computador de tiro'))));
+  page.appendChild(painelExtracao());
 
   /* portais */
   page.appendChild(h('div', { className: 'wk-secao__head' },
@@ -155,6 +138,59 @@ function vistaCapa(page) {
         onclick: (e) => { e.preventDefault(); ir({ p: 'colecao' }); }
       }, 'Ver os itens'),
       h('a', { className: 'btn', href: '#/arma3-tutorial' }, 'Modo tutorial (abas)'))));
+}
+
+/* ══════════════════════════════════════════════════════════════
+ *  Procedência — quanto saiu do jogo, contado no dump.
+ *
+ *  Estes números eram digitados à mão nesta capa. Digitados, eles envelhecem
+ *  calados no dia em que o operador roda o dump de novo — e são justamente
+ *  os números que sustentam a alegação "os dados são medidos no config".
+ *  Um painel de procedência errado é pior que nenhum.
+ *
+ *  Agora saem de `len()` sobre os dumps (src/data/arma3-extracao.js, gerado
+ *  por scripts/arma3/gerar-base-extracao.py), com o nome do .rpt de origem
+ *  de cada bloco. O CI regera e falha se divergir do commit.
+ * ══════════════════════════════════════════════════════════════ */
+function painelExtracao() {
+  const nf = new Intl.NumberFormat('pt-BR');
+  const n = (x) => (typeof x === 'number' ? nf.format(x) : '—');
+
+  return h('div', { className: 'card wk-proc' },
+    h('div', { className: 'wk-proc__head' },
+      h('b', null, '🧬 Medido direto do jogo em execução'),
+      h('span', { className: 'u-text-muted' },
+        'contagem feita no dump, não digitada')),
+
+    h('div', { className: 'wk-proc__blocos' },
+      ...A3EXT_BLOCOS.map((b) => h('div', { className: 'wk-proc__bloco' },
+        h('span', { className: 'wk-proc__titulo' }, b.titulo),
+        h('table', { className: 'wk-proc__tab' },
+          h('tbody', null,
+            ...b.linhas.filter((l) => l.n != null).map((l) => h('tr', null,
+              h('td', { className: 'wk-proc__n' }, h('b', null, n(l.n))),
+              h('td', null, l.rot,
+                l.nota ? h('span', { className: 'u-text-muted' }, ` — ${l.nota}`) : null))))),
+        b.rpt ? h('code', { className: 'wk-proc__rpt', title: 'arquivo .rpt de origem' }, b.rpt) : null))),
+
+    /* Declarar a fila é parte da honestidade: o dado existe no repo, a tela
+     * é que não. Sumir com isso daria a impressão de acervo completo. */
+    A3EXT_FILA.length
+      ? h('div', { className: 'wk-proc__fila' },
+        h('span', { className: 'wk-proc__titulo' }, '⏳ Extraído, ainda sem tela própria'),
+        h('p', { className: 'u-text-muted' },
+          ...A3EXT_FILA.flatMap((f, i) => [
+            i ? ' · ' : '', h('b', null, n(f.n)), ' ' + f.rot,
+          ]),
+          '. O dado cru está em ', h('code', null, 'scripts/arma3/out/'),
+          ' — falta o gerador que vira tabela.'))
+      : null,
+
+    h('div', { className: 'wk-colecao__acoes' },
+      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=armas' }, '🔫 Tabela de armas'),
+      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=acessorios' }, '🔭 Miras'),
+      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=terrenos' }, '🗺️ Terrenos'),
+      h('a', { className: 'btn', href: '#/vanguard' }, '⌖ Computador de tiro')));
 }
 
 /* Campo de busca da capa: manda pro índice global já filtrando. */

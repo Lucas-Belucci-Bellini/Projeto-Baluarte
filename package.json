@@ -13,7 +13,7 @@
     "gen-codemap": "node scripts/gen-codemap.mjs",
     "mobile:sync": "vite build && cap sync android",
     "mobile:open": "cap open android",
-    "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && python3 scripts/arma3/gerar-base-acessorios.py && python3 scripts/arma3/gerar-base-terrenos.py && node scripts/verificar-wiki-arsenal.mjs && node scripts/verificar-grade.mjs"
+    "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && python3 scripts/arma3/gerar-base-acessorios.py && python3 scripts/arma3/gerar-base-terrenos.py && python3 scripts/arma3/gerar-base-extracao.py && node scripts/verificar-wiki-arsenal.mjs && node scripts/verificar-grade.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",
