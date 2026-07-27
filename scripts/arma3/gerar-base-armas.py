@@ -114,6 +114,44 @@ def origem(classe, arma):
     return None
 
 
+# ── miras e acessórios pré-montados ──────────────────────────────────────
+# O config não tem "lista de miras compatíveis" por arma. Mas TEM as variantes
+# pré-montadas: `arifle_MX_ACO_F` é o MX com o ACO já no trilho. Quando o
+# gerador colapsa essas variantes (elas têm a mesma balística), o nome do
+# acessório iria junto pro lixo — e ele é informação de verdade sobre o que
+# aquela arma aceita no jogo.
+#
+# ⚠️ Isto lista o que APARECE MONTADO, não o que é compatível: uma arma sem
+# variante pré-montada aparece sem mira, mesmo aceitando todas. E a AMPLIAÇÃO
+# de cada mira NÃO está aqui — mora no `OpticsModes` do item da óptica, que só
+# o dump-catalogo.sqf alcança. Por isso o campo guarda só o rótulo.
+MIRAS = {
+    'aco': 'ACO', 'acos': 'ACO SD', 'holo': 'Holosight', 'mrco': 'MRCO',
+    'arco': 'ARCO', 'rco': 'RCO', 'erco': 'ERCO', 'hamr': 'Hamr',
+    'dms': 'DMS', 'sos': 'SOS', 'mos': 'MOS', 'ams': 'AMS', 'khs': 'KHS',
+    'lrps': 'LRPS', 'nstalker': 'Nightstalker', 'kahlia': 'Kahlia',
+    'ico': 'ICO', 'tws': 'TWS', 'dmr': None,
+}
+ACESSORIOS = {
+    'pointer': 'apontador laser', 'point': 'apontador laser',
+    'snds': 'supressor', 'sd': 'supressor', 'flash': 'lanterna',
+    'bi': 'bipé', 'lp': 'apontador (LP)', 'bpd': 'bipé',
+}
+
+
+def acessorios_das_variantes(classes):
+    """(miras, acessórios) que aparecem PRÉ-MONTADOS nas variantes do grupo."""
+    miras, acess = set(), set()
+    for c in classes:
+        for tok in c.split('_')[1:]:
+            t = tok.lower()
+            if t in MIRAS and MIRAS[t]:
+                miras.add(MIRAS[t])
+            elif t in ACESSORIOS:
+                acess.add(ACESSORIOS[t])
+    return sorted(miras), sorted(acess)
+
+
 # ── tipo ──────────────────────────────────────────────────────────────────
 # Categorias ESPECÍFICAS no descriptionShort: o rótulo que o próprio jogo usa.
 DESC_ESPECIFICA = [
@@ -277,6 +315,7 @@ def montar(classes, armas, municoes, imagens, notas):
     # Nome de exibição: o MAIS CURTO do grupo. As variantes de camuflagem só
     # acrescentam sufixo ("MX", "MX (Black)", "MX (Khaki)"), então o mais curto
     # é o nome da arma; usar o do canônico daria "HERA H6 (Black)" como título.
+    miras, acessorios = acessorios_das_variantes(classes)
     nomes = sorted({armas[c].get('nome') for c in classes if armas[c].get('nome')})
     nome = min(nomes, key=lambda x: (len(x), x)) if nomes else (a.get('nome') or canon)
     nota = notas.get(canon, {})
@@ -312,6 +351,8 @@ def montar(classes, armas, municoes, imagens, notas):
         'img': img,
         'imgAusente': ausente,
         'variantes': len(classes),
+        'miras': miras,
+        'acessorios': acessorios,
         'fontePatch': a.get('fonte') or None,
         'desc': limpar_desc(a.get('descricao')) or None,
         'faccao': nota.get('faccao'),
@@ -402,7 +443,7 @@ def escrever_js(nucleo, todas, armas, cfg, notas):
                    'danoIndireto', 'raioIndireto', 'explosivo', 'velTipica',
                    'dispersao', 'dispersaoMrad', 'dispersaoCm100',
                    'penetracao', 'capacidade', 'rpm', 'zeroing', 'massa',
-                   'municao', 'img', 'imgAusente', 'variantes', 'nomes',
+                   'municao', 'img', 'imgAusente', 'variantes', 'nomes', 'miras', 'acessorios',
                    'fontePatch', 'desc', 'faccao', 'obs', 'modos')
     com_bal = sum(1 for e in nucleo if e['v0'] is not None and e['airFriction'] is not None)
     com_img = sum(1 for e in nucleo if e['img'])

@@ -174,13 +174,38 @@ export function resolverTiro({ initSpeed, airFriction, zero, alvo, vento = 0 }) 
   };
 }
 
-/* Tabela de queda pra várias distâncias (útil no card da arma) */
-export function tabelaQueda({ initSpeed, airFriction, zero }, distancias) {
+/**
+ * Tabela de queda pra várias distâncias — o "cartão de tiro" da arma.
+ *
+ * Integra UMA vez e amostra em cada distância, em vez de resolver o tiro por
+ * distância: o ângulo de zeragem é o mesmo para toda a tabela, então repetir a
+ * bisseção 12 vezes só gastaria CPU pra chegar no mesmo número.
+ *
+ * `mils` aqui é MILIRRADIANO de verdade (1 mrad = 1 m a 1000 m), que é o que
+ * o retículo das miras usa. NÃO é o mil NATO (6400 por volta, ≈0,98 mrad) —
+ * quem precisar do NATO converte na borda, com `milRadParaMilNato`.
+ */
+export function tabelaQueda({ initSpeed, airFriction, zero, vento = 0 }, distancias) {
   const ang = anguloDeZero(initSpeed, airFriction, zero);
   const maxD = Math.max(...distancias, zero) * 1.08 + 10;
-  const pts = integrar(initSpeed, airFriction, ang, maxD);
+  const pts = integrar(initSpeed, airFriction, ang, maxD, vento);
   return distancias.map((d) => {
     const a = alturaEm(pts, d);
-    return { d, quedaCm: a.y * 100, mils: d > 0 ? (a.y / d) * 1000 : 0, v: a.v, t: a.t };
+    return {
+      d,
+      quedaCm: a.y * 100,
+      mils: d > 0 ? (a.y / d) * 1000 : 0,
+      derivaCm: a.z * 100,
+      derivaMils: d > 0 ? (a.z / d) * 1000 : 0,
+      v: a.v,
+      t: a.t,
+    };
   });
 }
+
+/* 6400 mils NATO por volta contra 2π·1000 ≈ 6283,2 milirradianos. A razão é
+ * ~0,982: parece arredondamento, mas a 1000 m dá quase 2 m de erro — por isso
+ * o motor guarda radiano e só converte na borda. */
+export const MIL_NATO_POR_VOLTA = 6400;
+export const MRAD_POR_VOLTA = 2 * Math.PI * 1000;
+export const milRadParaMilNato = (mrad) => mrad * (MIL_NATO_POR_VOLTA / MRAD_POR_VOLTA);

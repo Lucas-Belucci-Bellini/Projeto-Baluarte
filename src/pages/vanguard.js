@@ -24,6 +24,10 @@ import {
   resolverMissao, listarSistemas, latLonParaMGRS, mgrsParaLatLon,
   latLonParaUTM, VERSAO_MOTOR,
 } from '../utils/vanguard/index.js';
+/* A ponte entre os dois projetos: dado medido do Baluarte + modelo de tiro
+ * tenso, no formato de cartão que o Vanguard usa. */
+import { A3ARM } from '../data/arma3-armas.js';
+import { dadosBalisticos, tabelaQueda, milRadParaMilNato } from '../utils/arma3-balistica.js';
 
 /* Alvo de treino padrão: Altis, a ilha do Arma 3. Abre com uma missão
  * resolvida em vez de formulário vazio — dá pra ver o que a tela faz antes
@@ -58,8 +62,134 @@ export function vanguardPage() {
       h('b', null, 'não tabela de tiro oficial'),
       '. Serve para o Arma 3 e para estudo — não para emprego real.')));
 
-  page.append(cardComputador(), cardCoordenadas(), cardArquitetura());
+  page.append(cardComputador(), cardMrad(), cardCoordenadas(), cardArquitetura());
   return page;
+}
+
+/* ═══════════ cartão de tiro MRAD (tiro tenso) ═══════════
+ *
+ * É aqui que os dois projetos se encostam de verdade: os NÚMEROS vêm da
+ * extração do Baluarte (`arma3-armas.js`, medidos no config do jogo) e o
+ * MODELO vem do `arma3-balistica.js`; o Vanguard entra com o formato de
+ * cartão de tiro, que é como se usa isso em campo.
+ *
+ * ⚠️ MRAD ≠ mil NATO. O retículo das miras do Arma é em MILIRRADIANO
+ * (2π·1000 ≈ 6283 por volta, 1 mrad = 1 m a 1000 m). O mil NATO divide a
+ * volta em 6400, então 1 mrad ≈ 1,019 mil NATO. Parece arredondamento e não
+ * é: a 1000 m a diferença passa de 1,8 m. As duas colunas aparecem lado a
+ * lado justamente pra ninguém usar uma achando que é a outra.
+ */
+const DISTANCIAS_CARTAO = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500];
+
+function cardMrad() {
+  const armas = A3ARM.filter((a) => dadosBalisticos(a))
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  if (!armas.length) return h('div', null);
+
+  let armaId = (armas.find((a) => a.classe === 'srifle_LRR_F')
+    || armas.find((a) => a.tipo === 'sniper') || armas[0]).id;
+  let zero = 300;
+  let vento = 0;
+
+  const saida = h('div', null);
+
+  function recalc() {
+    const a = armas.find((x) => x.id === armaId) || armas[0];
+    const bal = dadosBalisticos(a);
+    /* Não adianta pedir cartão até 1500 m de uma pistola: corta no zeroing
+     * que o config declara pra arma, que é o alcance que o jogo assume. */
+    const limite = a.zeroing || 1000;
+    const dists = DISTANCIAS_CARTAO.filter((d) => d <= Math.max(limite, zero));
+    const linhas = tabelaQueda({ ...bal, zero, vento }, dists);
+
+    saida.replaceChildren(
+      h('p', { className: 'vg-nota u-text-muted' },
+        h('b', null, a.nome), ' · v₀ ', h('b', null, `${bal.initSpeed} m/s`),
+        ' · airFriction ', h('code', null, String(bal.airFriction)),
+        bal.fonte === 'config' ? ' (medido no config)' : ' (arrasto estimado pela família do calibre)',
+        a.dispersaoCm100 ? ` · dispersão ${a.dispersaoCm100} cm a 100 m` : '',
+        ` · zeragem máx. do config ${limite} m`),
+
+      a.miras && a.miras.length
+        ? h('p', { className: 'vg-nota' },
+          h('b', null, '🔭 Miras que aparecem montadas nesta arma: '),
+          a.miras.join(' · '),
+          a.acessorios && a.acessorios.length ? ` — e ${a.acessorios.join(', ')}` : '',
+          h('span', { className: 'u-text-muted' },
+            ' (do config: são as variantes pré-montadas. A AMPLIAÇÃO de cada mira '
+            + 'ainda não está aqui — depende do dump do catálogo.)'))
+        : h('p', { className: 'vg-nota u-text-muted' },
+          '🔭 Esta arma não tem variante com mira pré-montada no config — o que '
+          + 'não quer dizer que não aceite mira.'),
+
+      h('div', { className: 'vg-tabela-wrap' },
+        h('table', { className: 'vg-tabela' },
+          h('thead', null, h('tr', null,
+            h('th', null, 'Distância'),
+            h('th', null, 'Queda'),
+            h('th', null, 'Correção MRAD'),
+            h('th', null, 'mil NATO'),
+            h('th', null, 'Vento 1 m/s'),
+            h('th', null, 'Tempo'),
+            h('th', null, 'Vel.'))),
+          h('tbody', null, ...linhas.map((r) => {
+            const alvo = Math.abs(r.d - zero) < 1;
+            /* A correção é o OPOSTO da queda: se a bala cai 2 mrad, sobe-se
+             * 2 mrad no retículo. Mostrar a queda com o sinal dela e chamar
+             * de "correção" seria o erro clássico. */
+            const corr = -r.mils;
+            return h('tr', { className: 'vg-tr' + (alvo ? ' is-preferida' : '') },
+              h('td', null, `${r.d} m`, alvo ? h('span', { className: 'vg-tag' }, 'zerada') : null),
+              h('td', { className: 'vg-num' }, `${r.quedaCm >= 0 ? '+' : '−'}${Math.abs(r.quedaCm).toFixed(0)} cm`),
+              h('td', { className: 'vg-num' },
+                h('b', null, `${corr >= 0 ? '+' : '−'}${Math.abs(corr).toFixed(2)}`),
+                h('span', { className: 'vg-u' }, ' mrad')),
+              h('td', { className: 'vg-num' },
+                `${corr >= 0 ? '+' : '−'}${Math.abs(milRadParaMilNato(corr)).toFixed(2)}`),
+              h('td', { className: 'vg-num' }, vento
+                ? `${r.derivaCm >= 0 ? '→' : '←'} ${Math.abs(r.derivaCm / (vento || 1)).toFixed(0)} cm`
+                : h('span', { className: 'vg-u' }, '—')),
+              h('td', { className: 'vg-num' }, `${r.t.toFixed(2)} s`),
+              h('td', { className: 'vg-num' }, `${r.v.toFixed(0)} m/s`));
+          })))),
+
+      h('p', { className: 'vg-nota u-text-muted' },
+        h('b', null, 'Como usar: '),
+        'a coluna MRAD é o quanto SUBIR no retículo (ou o mil-dot em que segurar). '
+        + 'Positivo = mirar acima do alvo. A coluna de vento é por 1 m/s de vento '
+        + 'travessal — multiplique pela velocidade real.'));
+  }
+
+  const sel = h('select', {
+    className: 'input', onchange: (e) => { armaId = e.target.value; recalc(); }
+  }, ...armas.map((a) => h('option', { value: a.id, selected: a.id === armaId },
+    `${a.nome}${a.calibre ? ' — ' + a.calibre : ''}`)));
+
+  const numIn = (v, min, max, passo, set) => h('input', {
+    className: 'input vg-num-in', type: 'number', value: String(v),
+    min: String(min), max: String(max), step: String(passo),
+    oninput: (e) => {
+      const x = parseFloat(e.target.value);
+      if (Number.isFinite(x)) { set(Math.max(min, Math.min(max, x))); recalc(); }
+    },
+  });
+
+  const box = h('div', { className: 'card vg-card' },
+    h('div', { className: 'vg-card__head' },
+      h('b', null, '🎯 Cartão de tiro MRAD (tiro tenso)'),
+      h('span', { className: 'vg-motor' }, `${armas.length} armas com balística`)),
+    h('p', { className: 'vg-oque' },
+      'O outro problema, o inverso do computador acima: aqui o ângulo é dado '
+      + '(a arma está zerada) e a pergunta é onde a bala cai. Os números vêm da '
+      + 'extração do Arma 3 — v₀ e arrasto MEDIDOS no config, arma por arma.'),
+    h('div', { className: 'vg-campos' },
+      h('label', { className: 'vg-campo--largo' }, h('span', null, 'Arma'), sel),
+      h('label', null, h('span', null, 'Zeragem (m)'), numIn(zero, 25, 2000, 25, (v) => { zero = v; })),
+      h('label', null, h('span', null, 'Vento travessal (m/s)'), numIn(vento, -20, 20, 1, (v) => { vento = v; }))),
+    saida);
+
+  recalc();
+  return box;
 }
 
 /* ═══════════ computador de tiro ═══════════ */
