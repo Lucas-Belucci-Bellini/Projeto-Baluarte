@@ -37,6 +37,21 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
+          # GitNexus 1.6.7 é código de TERCEIRO, commitado inteiro na raiz do
+          # repo: 3.711 arquivos, dos quais 1.564 JS/TS. Analisá-lo produz
+          # alerta que ninguém deste projeto pode corrigir (não é nosso código,
+          # e atualizar significa trocar a pasta inteira), e some com a
+          # sinalização do que É nosso: o PR #402 não toca um arquivo sequer
+          # ali e mesmo assim herdou alerta, porque o diff grande fez o CodeQL
+          # reatribuir. Ver o aviso do próprio GitHub no check: "Alerts not
+          # introduced by this pull request might have been detected because
+          # the code changes were too large."
+          #
+          # A análise continua cobrindo TODO o código que este projeto escreve:
+          # src/, scripts/, api/, desktop/, backend/.
+          config: |
+            paths-ignore:
+              - GitNexus-1.6.7/**
 
       - name: Analisar
         uses: github/codeql-action/analyze@v3
