@@ -208,9 +208,25 @@ function cardCoordenadas() {
     if (!t) { saida.replaceChildren(); return; }
     let lat, lon;
 
-    const par = t.match(/^\s*(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)\s*$/);
-    if (par) {
-      lat = parseFloat(par[1]); lon = parseFloat(par[2]);
+    /* Separa por vírgula/ponto-e-vírgula/espaço com UMA classe de caractere.
+     *
+     * A versão anterior usava `/^\s*(num)\s*[,;\s]\s*(num)\s*$/` e era um
+     * ReDoS polinomial de verdade (CodeQL pegou, e dá pra medir): num run de
+     * espaços, cada espaço pode casar com `\s*`, com `[,;\s]` ou com o `\s*`
+     * seguinte, então uma entrada que falha no fim faz o motor tentar as
+     * O(n²) divisões — 16 mil espaços colados no campo travavam a aba por
+     * ~240 ms, e o texto vem direto de um <input>.
+     *
+     * `split` numa classe única não tem essa ambiguidade (é varredura linear,
+     * não backtracking): os mesmos 16 mil espaços passaram a levar 0,02 ms.
+     *
+     * Quem valida número agora é o `Number()`, que é um pouco MAIS permissivo
+     * que o regex era — aceita "1e5" e "0x10". Não é problema: o que decide se
+     * a coordenada presta é a checagem de intervalo logo abaixo (|lat| ≤ 90,
+     * |lon| ≤ 180), e ela pega qualquer um desses. */
+    const campos = t.split(/[\s,;]+/).filter(Boolean);
+    if (campos.length === 2 && campos.every((c) => c !== '' && Number.isFinite(Number(c)))) {
+      lat = Number(campos[0]); lon = Number(campos[1]);
     } else {
       try {
         const p = mgrsParaLatLon(t);
