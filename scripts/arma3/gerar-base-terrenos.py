@@ -218,8 +218,26 @@ def escrever(entradas, completos):
         '',
     ]
     corpo_js = '\n'.join(linhas)
+
+    # ── Sobre o alerta do CodeQL nas duas escritas abaixo ──
+    #
+    # `py/clear-text-storage-sensitive-data` marca isto como "armazena dado
+    # privado em texto claro". O que dispara a heurística são os campos
+    # `latitude`/`longitude` de cada entrada (a classificação `private` do
+    # CodeQL inclui coordenada geográfica) — e, de fato, este é o único gerador
+    # do diretório que carrega lat/lon, e o único marcado.
+    #
+    # É falso positivo, e a razão é factual, não conveniência: são as
+    # coordenadas FICTÍCIAS dos mundos do Arma 3, lidas do `CfgWorlds`, que a
+    # Bohemia publica no jogo. Altis fica "em" 39,9 N / 25,15 E porque foi
+    # inspirada em Lemnos. Não há pessoa, não há rastreio, não há segredo — e o
+    # arquivo de saída é servido publicamente no site, de propósito.
+    #
+    # A supressão é inline e nomeada em vez de `paths-ignore` no workflow: fica
+    # ao lado do código, aparece no diff e alguém pode discordar dela. Excluir
+    # o diretório inteiro da análise esconderia também o alerta que importasse.
     with open(SAIDA_JS, 'w', encoding='utf-8') as f:
-        f.write(corpo_js)
+        f.write(corpo_js)  # codeql[py/clear-text-storage-sensitive-data]
 
     def escrever_json(caminho):
         os.makedirs(os.path.dirname(caminho), exist_ok=True)
@@ -232,7 +250,7 @@ def escrever(entradas, completos):
     if os.path.isdir(RAIZ_VANGUARD):
         os.makedirs(os.path.dirname(SAIDA_VANGUARD), exist_ok=True)
         with open(SAIDA_VANGUARD, 'w', encoding='utf-8') as f:
-            f.write(corpo_js)
+            f.write(corpo_js)  # codeql[py/clear-text-storage-sensitive-data]
         escrever_json(SAIDA_VANGUARD_JSON)
         print(f'         {SAIDA_VANGUARD}  (repo irmão)')
         print(f'         {SAIDA_VANGUARD_JSON}  (repo irmão)')
