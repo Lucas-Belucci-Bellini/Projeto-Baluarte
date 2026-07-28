@@ -351,6 +351,22 @@ function cardTerreno(terrenoPedido) {
       }
     }
 
+    /* Passagem de bastão pro app irmão. Este card resolve o azimute plano; o
+     * Vanguard resolve a missão inteira (carga, elevação, tempo de voo,
+     * vento). Levar terreno E as duas grades no link é o que faz o clique
+     * continuar a mesma conta em vez de recomeçar — o Vanguard lê os três
+     * parâmetros e já abre calculado. Mesma base de terrenos nos dois lados,
+     * gerada pelo mesmo script, então a grade significa a mesma coisa lá. */
+    const q = new URLSearchParams({ terreno: t.id, peca: gradePeca, alvo: gradeAlvo });
+    filhos.push(h('p', { className: 'vg-nota' },
+      h('a', {
+        className: 'btn',
+        href: `https://project-vanguard-cyan.vercel.app/#/tiro?${q}`,
+        target: '_blank', rel: 'noopener noreferrer',
+      }, '🎯 Abrir esta grade no computador de tiro do Vanguard'),
+      h('span', { className: 'u-text-muted' },
+        ' — lá entram carga, elevação, tempo de voo e vento.')));
+
     filhos.push(h('p', { className: 'vg-nota u-text-muted' },
       'Azimute de GRADE do mapa do jogo, plano — o dump não traz o relevo '
       + '(DEM), então diferença de altitude e crista não entram. Grade e '

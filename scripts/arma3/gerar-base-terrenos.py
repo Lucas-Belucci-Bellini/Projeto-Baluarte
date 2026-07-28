@@ -42,6 +42,19 @@ ENTRADA = os.path.join(AQUI, 'out', 'arma3-mapas.json')
 SAIDA_JS = os.path.join(RAIZ, 'src', 'data', 'arma3-terrenos.js')
 SAIDA_JSON = os.path.join(RAIZ, 'public', 'arma3', 'terrenos-db.json')
 
+# O repo IRMÃO recebe a mesma base, com a mesma API — igual ao
+# `camadas-mapa.js`. Escrever nos dois DAQUI é o que impede a divergência
+# silenciosa: se fossem duas cópias mantidas à mão, um ajuste no gerador
+# valeria só de um lado e ninguém perceberia até o azimute sair errado.
+# Se o irmão não estiver clonado ao lado, o gerador só avisa e segue.
+RAIZ_VANGUARD = os.path.join(os.path.dirname(RAIZ), 'Project-Vanguard')
+SAIDA_VANGUARD = os.path.join(RAIZ_VANGUARD, 'src', 'data', 'arma3-terrenos.js')
+
+# O `.js` exporta `carregarTerrenos()`, que busca o JSON pesado sob demanda.
+# Mandar o `.js` sem o JSON deixaria essa função com um 404 esperando alguém
+# chamar. Os dois viajam juntos ou nenhum viaja.
+SAIDA_VANGUARD_JSON = os.path.join(RAIZ_VANGUARD, 'public', 'arma3', 'terrenos-db.json')
+
 # Fato publicado: que DLC oficial traz que terreno. Não é heurística — é a
 # lista de conteúdo das DLCs da Bohemia. Tudo que não está aqui nem em cDLC
 # por caminho é mod.
@@ -204,12 +217,27 @@ def escrever(entradas, completos):
         '}',
         '',
     ]
+    corpo_js = '\n'.join(linhas)
     with open(SAIDA_JS, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(linhas))
+        f.write(corpo_js)
 
-    os.makedirs(os.path.dirname(SAIDA_JSON), exist_ok=True)
-    with open(SAIDA_JSON, 'w', encoding='utf-8') as f:
-        json.dump({'terrenos': completos}, f, ensure_ascii=False, separators=(',', ':'))
+    def escrever_json(caminho):
+        os.makedirs(os.path.dirname(caminho), exist_ok=True)
+        with open(caminho, 'w', encoding='utf-8') as f:
+            json.dump({'terrenos': completos}, f, ensure_ascii=False,
+                      separators=(',', ':'))
+
+    escrever_json(SAIDA_JSON)
+
+    if os.path.isdir(RAIZ_VANGUARD):
+        os.makedirs(os.path.dirname(SAIDA_VANGUARD), exist_ok=True)
+        with open(SAIDA_VANGUARD, 'w', encoding='utf-8') as f:
+            f.write(corpo_js)
+        escrever_json(SAIDA_VANGUARD_JSON)
+        print(f'         {SAIDA_VANGUARD}  (repo irmão)')
+        print(f'         {SAIDA_VANGUARD_JSON}  (repo irmão)')
+    else:
+        print('  (Project-Vanguard não está clonado ao lado — pulei a cópia irmã)')
 
 
 def main():
