@@ -15,6 +15,8 @@
 import '../styles/wiki-arma3.css';
 import { h, debounce } from '../utils/helpers.js';
 import { router } from '../core/router.js';
+import { A3EXT_BLOCOS, A3EXT_FILA } from '../data/arma3-extracao.js';
+import { explicarClasse } from '../data/arma3-classes.js';
 import {
   WIKI_ARTIGOS, WIKI_POR_ID, WIKI_TOTAL, WIKI_PORTAIS, WIKI_NIVEIS,
   WIKI_CONTAGEM, A3COL_INFO, buscar, relacionados, catsDoPortal
@@ -99,6 +101,15 @@ function vistaCapa(page) {
       h('span', { className: 'wk-trilha__qtd' },
         `${WIKI_ARTIGOS.filter((a) => a.nivel === nv.id).length} artigos →`)))));
 
+  /* ── o acervo medido no jogo ──
+   *
+   * O placar do que a extração já tirou do config, com a divisão honesta:
+   * "navegável" é o que virou tabela/artigo aqui; "cru no repositório" é o
+   * que já foi medido mas ainda não tem gerador. Os números do cru vêm do
+   * dump de 26–27/07/2026 (scripts/arma3/out/) e mudam quando ele rodar de
+   * novo — por isso a frase diz DE ONDE saíram, e não finge tempo real. */
+  page.appendChild(painelExtracao());
+
   /* portais */
   page.appendChild(h('div', { className: 'wk-secao__head' },
     h('h2', { className: 'wk-secao__titulo' }, 'Portais'),
@@ -128,6 +139,151 @@ function vistaCapa(page) {
         onclick: (e) => { e.preventDefault(); ir({ p: 'colecao' }); }
       }, 'Ver os itens'),
       h('a', { className: 'btn', href: '#/arma3-tutorial' }, 'Modo tutorial (abas)'))));
+}
+
+/* Ficha de soldado.
+ *
+ * ⚠️ "Lado" some quando o config não declara — 83 das 248 facções usam
+ * `side: 7` (sideUnknown). A ficha prefere a linha ausente a chutar BLUFOR
+ * por o soldado "parecer" ocidental. */
+function fichaSoldado(s, linha) {
+  return [
+    linha('Facção', s.faccao),
+    linha('Lado', s.lado
+      ? h('span', null, s.lado,
+        h('span', { className: 'u-text-muted' }, ' · declarado pela facção'))
+      : h('span', { className: 'u-text-muted' }, 'a facção não declara (sideUnknown)')),
+    linha('Armamento', s.armas && s.armas.length
+      ? h('span', null, ...s.armas.map((a, i) => h('span', null, i ? ' · ' : '', h('code', null, a))))
+      : null),
+    linha('Carregadores', s.nCarregadores ? String(s.nCarregadores) : null),
+    linha('Granadas/explosivos', s.nGranadas ? String(s.nGranadas) : null),
+    linha('Uniforme', s.uniforme ? h('code', null, s.uniforme) : null),
+    linha('Mochila', s.mochila ? h('code', null, s.mochila) : null),
+    linha('Itens ligados', s.nItens ? String(s.nItens) : null),
+    linha('Variantes', s.variantes > 1 ? `${s.variantes} classes com a mesma carga` : null),
+    linha('Origem', s.dlc),
+    linha('Classe', h('code', null, s.classe)),
+  ];
+}
+
+/* Ficha de equipamento.
+ *
+ * ⚠️ A linha "Passagem" é o `passThrough`: a fração do dano que atravessa a
+ * placa MESMO no ponto coberto. Publicar só "proteção 25" sugere imunidade;
+ * o par (proteção, passagem) é o que descreve a peça de verdade. */
+function fichaEquipamento(q, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  const p = q.protecao;
+  return [
+    linha('Categoria', q.tipo),
+    linha('Proteção máxima', p && p.maior != null
+      ? h('span', null, h('b', null, String(p.maior)),
+        h('span', { className: 'u-text-muted' }, ` em ${p.maiorParte}`))
+      : (p ? h('span', { className: 'u-text-muted' }, 'nenhuma declarada') : null)),
+    linha('Pontos cobertos', p && p.maior != null ? `${p.cobertas} de ${p.partes}` : null),
+    linha('Passagem (passThrough)', p && p.passagem != null
+      ? h('span', null, `${Math.round(p.passagem * 100)}%`,
+        h('span', { className: 'u-text-muted' }, ' do dano atravessa a placa'))
+      : null),
+    linha('Capacidade', n(q.capacidade)),
+    linha('Contêiner', q.containerClass),
+    linha('Massa', n(q.massa, '', 1)),
+    linha('Variantes', q.variantes > 1 ? `${q.variantes} classes com os mesmos números` : null),
+    linha('Origem', q.dlc),
+    linha('Classe', h('code', null, q.classe)),
+  ];
+}
+
+/* Ficha de veículo.
+ *
+ * ⚠️ "Parte mais fraca" só compara blindagem ABSOLUTA. No config, armor
+ * negativo é blindagem RELATIVA ao casco (convenção do engine, usada em
+ * 19.223 partes — quase todas rodas). Um `min()` sobre os dois juntos
+ * anunciaria "parte mais fraca: −100", que não significa nada. As relativas
+ * aparecem em linha própria, contadas, sem virar comparação. */
+function fichaVeiculo(v, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  const b = v.blindagem;
+  return [
+    linha('Categoria', v.categoria),
+    linha('Lado', v.lado),
+    linha('Facção', v.faccao),
+    linha('Blindagem do casco', n(v.armor)),
+    linha('Blindagem estrutural', n(v.armorEstrutural)),
+    linha('Parte mais fraca', b && b.menor != null
+      ? h('span', null, h('b', null, b.menorParte || '—'),
+        h('span', { className: 'u-text-muted' }, ` · ${b.menor} de ${b.partes} partes`))
+      : (b ? h('span', { className: 'u-text-muted' }, 'nenhuma absoluta declarada') : null)),
+    linha('Partes com blindagem relativa', b && b.relativas
+      ? h('span', null, String(b.relativas),
+        h('span', { className: 'u-text-muted' }, ' · valor negativo = proporcional ao casco'))
+      : null),
+    linha('Velocidade máx.', n(v.maxSpeed, ' km/h')),
+    linha('Potência', n(v.potencia, ' hp')),
+    linha('Ocupantes', n(v.lotacao)),
+    linha('Carga', n(v.cargaMax)),
+    linha('Combustível', n(v.combustivel, '', 2)),
+    linha('Sistemas de arma', n(v.armas)),
+    linha('Custo (IA)', n(v.custo)),
+    linha('Origem', v.dlc),
+    linha('Classe', h('code', null, v.classe)),
+  ];
+}
+
+/* ══════════════════════════════════════════════════════════════
+ *  Procedência — quanto saiu do jogo, contado no dump.
+ *
+ *  Estes números eram digitados à mão nesta capa. Digitados, eles envelhecem
+ *  calados no dia em que o operador roda o dump de novo — e são justamente
+ *  os números que sustentam a alegação "os dados são medidos no config".
+ *  Um painel de procedência errado é pior que nenhum.
+ *
+ *  Agora saem de `len()` sobre os dumps (src/data/arma3-extracao.js, gerado
+ *  por scripts/arma3/gerar-base-extracao.py), com o nome do .rpt de origem
+ *  de cada bloco. O CI regera e falha se divergir do commit.
+ * ══════════════════════════════════════════════════════════════ */
+function painelExtracao() {
+  const nf = new Intl.NumberFormat('pt-BR');
+  const n = (x) => (typeof x === 'number' ? nf.format(x) : '—');
+
+  return h('div', { className: 'card wk-proc' },
+    h('div', { className: 'wk-proc__head' },
+      h('b', null, '🧬 Medido direto do jogo em execução'),
+      h('span', { className: 'u-text-muted' },
+        'contagem feita no dump, não digitada')),
+
+    h('div', { className: 'wk-proc__blocos' },
+      ...A3EXT_BLOCOS.map((b) => h('div', { className: 'wk-proc__bloco' },
+        h('span', { className: 'wk-proc__titulo' }, b.titulo),
+        h('table', { className: 'wk-proc__tab' },
+          h('tbody', null,
+            ...b.linhas.filter((l) => l.n != null).map((l) => h('tr', null,
+              h('td', { className: 'wk-proc__n' }, h('b', null, n(l.n))),
+              h('td', null, l.rot,
+                l.nota ? h('span', { className: 'u-text-muted' }, ` — ${l.nota}`) : null))))),
+        b.rpt ? h('code', { className: 'wk-proc__rpt', title: 'arquivo .rpt de origem' }, b.rpt) : null))),
+
+    /* Declarar a fila é parte da honestidade: o dado existe no repo, a tela
+     * é que não. Sumir com isso daria a impressão de acervo completo. */
+    A3EXT_FILA.length
+      ? h('div', { className: 'wk-proc__fila' },
+        h('span', { className: 'wk-proc__titulo' }, '⏳ Extraído, ainda sem tela própria'),
+        h('p', { className: 'u-text-muted' },
+          ...A3EXT_FILA.flatMap((f, i) => [
+            i ? ' · ' : '', h('b', null, n(f.n)), ' ' + f.rot,
+          ]),
+          '. O dado cru está em ', h('code', null, 'scripts/arma3/out/'),
+          ' — falta o gerador que vira tabela.'))
+      : null,
+
+    h('div', { className: 'wk-colecao__acoes' },
+      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=armas' }, '🔫 Tabela de armas'),
+      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=acessorios' }, '🔭 Miras'),
+      h('a', { className: 'btn', href: '#/arma3-tutorial?aba=terrenos' }, '🗺️ Terrenos'),
+      h('a', { className: 'btn', href: '#/vanguard' }, '⌖ Computador de tiro')));
 }
 
 /* Campo de busca da capa: manda pro índice global já filtrando. */
@@ -322,6 +478,36 @@ function vistaArtigo(page, art) {
       h('ul', { className: 'wk-dicas' }, ...art.dicas.map((d) => h('li', null, d))))
     : null;
 
+  /* ── o classname explicado pedaço por pedaço ──
+   *
+   * O leitor vê `arifle_MX_ACO_pointer_F` na ficha e, sem a convenção
+   * decorada, isso é ruído. Mas o nome É estruturado: prefixo diz o slot,
+   * os pedaços do meio dizem a óptica e o acessório montados de fábrica.
+   *
+   * Só aparece pedaço que casa com o dicionário — meia explicação
+   * verdadeira vale mais que uma inteira inventada. Classe de mod que não
+   * segue a convenção não mostra o bloco. */
+  const classeDoArtigo = (art.arma || art.acessorio || art.veiculo
+    || art.equipamento || art.soldado || art.terreno || {}).classe;
+  const ctx = art.soldado ? 'soldado' : (art.veiculo ? 'veiculo' : 'item');
+  const partes = classeDoArtigo ? explicarClasse(classeDoArtigo, ctx).partes : [];
+  const anatomia = partes.length
+    ? h('section', { className: 'wk-art__bloco' },
+      h('h2', { className: 'wk-art__h2' }, '🔤 O que o nome da classe diz'),
+      h('p', { className: 'u-text-muted wk-anat__intro' },
+        'O ', h('code', null, classeDoArtigo),
+        ' não é um código arbitrário — cada pedaço tem significado:'),
+      h('div', { className: 'wk-anat' },
+        ...partes.map((pt) => h('div', { className: 'wk-anat__linha' },
+          h('code', { className: 'wk-anat__pedaco' }, pt.texto),
+          h('div', null,
+            h('b', null, pt.nome),
+            h('span', { className: 'wk-anat__desc' }, ' — ' + pt.desc),
+            pt.ev === 'slot'
+              ? h('span', { className: 'wk-anat__ev' }, ' [o engine usa isto pra escolher o slot]')
+              : h('span', { className: 'wk-anat__ev u-text-muted' }, ' [convenção observada, não declarada no config]'))))))
+    : null;
+
   /* bloco SQF com botão de copiar (artigos do portal Console) */
   let sqf = null;
   if (art.sqf) {
@@ -364,13 +550,15 @@ function vistaArtigo(page, art) {
         h('span', { className: 'wk-tag' }, `${art.icon || '📄'} ${art.catNome}`),
         art.noPreset ? h('span', { className: 'wk-tag wk-tag--on' }, '✔ está no preset oficial') : null,
         art.naColecao ? h('span', { className: 'wk-tag' }, '📦 na coleção') : null),
-      corpo, atalhos, sqf, dicas, guia, relEl),
+      corpo, anatomia, atalhos, sqf, dicas, guia, relEl),
     infobox(art)));
 }
 
 const ROTULO_TIPO = {
   mod: 'Mod', item: 'Item da coleção', guia: 'Guia',
-  comando: 'Comando de console', campanha: 'Missão/campanha', arquivo: 'Arquivo'
+  comando: 'Comando de console', campanha: 'Missão/campanha', arquivo: 'Arquivo',
+  arma: 'Arma', acessorio: 'Acessório', terreno: 'Terreno', veiculo: 'Veículo',
+  equipamento: 'Equipamento', soldado: 'Soldado'
 };
 
 /* Infobox estilo wiki: capa + ficha técnica, na lateral. */
@@ -403,9 +591,122 @@ function infobox(art) {
       h('span', { className: 'wk-info__rot' }, 'Tags'),
       h('span', { className: 'wk-info__val' },
         ...art.tags.map((t) => h('span', { className: 'wk-tag' }, t)))) : null,
-    ...(art.links || []).map((l) => h('a', {
-      className: 'btn wk-info__link', href: l.url, target: '_blank', rel: 'noopener noreferrer'
-    }, l.rotulo + ' ↗')));
+
+    /* Ficha técnica da arma. Infobox de wiki existe justamente pra isso —
+     * até aqui os números medidos só apareciam diluídos na prosa do corpo. */
+    ...(art.arma ? fichaArma(art.arma, linha) : []),
+    ...(art.acessorio ? fichaAcessorio(art.acessorio, linha) : []),
+    ...(art.terreno ? fichaTerreno(art.terreno, linha) : []),
+    ...(art.veiculo ? fichaVeiculo(art.veiculo, linha) : []),
+    ...(art.equipamento ? fichaEquipamento(art.equipamento, linha) : []),
+    ...(art.soldado ? fichaSoldado(art.soldado, linha) : []),
+
+    ...(art.links || []).map((l) => {
+      /* Link interno (#/rota) NÃO abre em aba nova: `target=_blank` faz sentido
+       * pro Workshop, não pra ir de uma tela do site pra outra. */
+      const externo = /^https?:/i.test(l.url);
+      return h('a', {
+        className: 'btn wk-info__link',
+        href: l.url,
+        target: externo ? '_blank' : null,
+        rel: externo ? 'noopener noreferrer' : null,
+      }, l.rotulo + (externo ? ' ↗' : ' →'));
+    }));
+}
+
+/* Linhas de ficha técnica de uma arma, na ordem em que se compara arma.
+ * Só entra o que o config informou — ausente some, em vez de virar "0". */
+function fichaArma(a, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  return [
+    linha('Calibre', a.calibre),
+    linha('Velocidade de saída', n(a.v0, ' m/s', 1)),
+    linha('Arrasto (airFriction)', typeof a.airFriction === 'number'
+      ? h('code', null, String(a.airFriction)) : null),
+    linha('Precisão', a.dispersaoCm100
+      ? `${a.dispersaoCm100} cm a 100 m (${a.dispersaoMrad} mrad)` : null),
+    linha('Dano', n(a.dano, '', 1)),
+    linha('Cadência', n(a.rpm, ' tiros/min')),
+    linha('Carregador', n(a.capacidade)),
+    linha('Zeragem máx.', n(a.zeroing, ' m')),
+    linha('Massa', n(a.massa)),
+    /* Elo pra munição: ela não vira artigo (seriam 472 nomes de classe
+     * técnicos afogando o índice), mas daqui dá pra chegar na tabela dela. */
+    a.municao ? h('div', { className: 'wk-info__linha' },
+      h('span', { className: 'wk-info__rot' }, 'Munição'),
+      h('span', { className: 'wk-info__val' },
+        h('a', { href: `#/arma3-tutorial?aba=municao&q=${encodeURIComponent(a.municao)}` },
+          h('code', null, a.municao)))) : null,
+    a.miras && a.miras.length ? h('div', { className: 'wk-info__linha' },
+      h('span', { className: 'wk-info__rot' }, 'Miras'),
+      h('span', { className: 'wk-info__val' },
+        ...a.miras.map((m) => h('span', { className: 'wk-tag' }, m)))) : null,
+    a.acessorios && a.acessorios.length ? h('div', { className: 'wk-info__linha' },
+      h('span', { className: 'wk-info__rot' }, 'Acessórios'),
+      h('span', { className: 'wk-info__val' },
+        ...a.acessorios.map((m) => h('span', { className: 'wk-tag' }, m)))) : null,
+    a.variantes > 1
+      ? linha('Variantes', `${a.variantes} classes no config`)
+      : null,
+    linha('Classe', h('code', null, a.classe)),
+  ];
+}
+
+/* Ficha de mira/acessório.
+ *
+ * ⚠️ A linha "Ampliação" NUNCA sai de conta. Quando o jogo não escreve
+ * "Magnification: Nx", a ficha diz "não declarada" e mostra o FOV cru,
+ * rotulado como FOV. Publicar 0,75/FOV como se fosse zoom medido erraria em
+ * 159 das 215 ópticas que trazem os dois valores. */
+function fichaAcessorio(c, linha) {
+  const n = (x, suf = '', casas = 0) =>
+    (typeof x === 'number' ? `${x.toFixed(casas).replace(/\.0+$/, '')}${suf}` : null);
+  const fov = c.fov;
+  return [
+    linha('Ampliação', c.ampliacaoRotulo
+      ? h('span', null, h('b', null, c.ampliacaoRotulo),
+        h('span', { className: 'u-text-muted' }, ' (declarada pelo jogo)'))
+      : (c.tipo === 'mira'
+        ? h('span', { className: 'u-text-muted' }, 'não declarada no config')
+        : null)),
+    linha('Campo de visão', fov
+      ? h('span', null, h('code', null, String(fov.init ?? fov.min)),
+        (fov.min != null && fov.max != null && fov.min !== fov.max)
+          ? h('span', { className: 'u-text-muted' }, ` · varia de ${fov.min} a ${fov.max}`)
+          : null)
+      : null),
+    linha('Modos ópticos', fov && fov.modos > 1 ? String(fov.modos) : null),
+    linha('Coef. do silenciador', n(c.coefSilenciador, '', 2)),
+    linha('Massa', n(c.massa, '', 1)),
+    linha('Origem', c.dlc),
+    linha('Classe', h('code', null, c.classe)),
+  ];
+}
+
+/* Ficha de terreno. A grade é o motivo do portal existir: sem ela o
+ * computador de tiro não converte grade em metros. `passoY` negativo é o
+ * normal no vanilla (northing de cima pra baixo) — a ficha diz qual é, em
+ * vez de deixar o leitor supor. */
+function fichaTerreno(t, linha) {
+  const g = t.grade;
+  return [
+    linha('Tamanho', t.tamanhoM
+      ? `${(t.tamanhoM / 1000).toFixed(1)} km × ${(t.tamanhoM / 1000).toFixed(1)} km`
+      : h('span', { className: 'u-text-muted' }, 'não declarado no config')),
+    linha('Área', t.areaKm2 ? `${t.areaKm2} km²` : null),
+    linha('Localidades', t.localidades ? String(t.localidades) : null),
+    linha('Pistas', t.aeroportos ? String(t.aeroportos) : null),
+    linha('Célula da grade', g ? `${Math.abs(g.passoX)} m` : null),
+    linha('Northing', g
+      ? (g.passoY < 0 ? 'conta do norte para baixo (vanilla)' : 'conta para cima')
+      : null),
+    linha('Lat / Lon', typeof t.latitude === 'number'
+      ? `${t.latitude}° / ${t.longitude}°` : null),
+    linha('Origem', t.dlc),
+    linha('Autor', t.autor),
+    linha('Classe', h('code', null, t.classe)),
+  ];
 }
 
 /* ==============================================================

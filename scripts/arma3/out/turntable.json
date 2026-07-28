@@ -1,0 +1,11 @@
+{
+ "objetos": {
+  "arifle_MX_F": {
+   "quadros": 20,
+   "lado": 512,
+   "caminho": "/arma3/3d/arifle_MX_F"
+  }
+ },
+ "lado": 512,
+ "fracaoRecorte": 0.55
+}

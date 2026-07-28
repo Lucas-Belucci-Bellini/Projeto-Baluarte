@@ -30,6 +30,15 @@ private _armas = "
 " configClasses (configFile >> "CfgWeapons");
 
 private _magsUsados = [];
+
+{
+    private _cfgL = configFile >> "CfgWeapons" >> _x;
+    if (isClass _cfgL) then {
+        private _mL = (getArray (_cfgL >> "magazines") select { _x isEqualType "" }) apply { toLower _x };
+        { if !(_x in _magsUsados) then { _magsUsados pushBack _x } } forEach _mL;
+        diag_log text (format ["<<A3DUMP>>ARREMESSO|%1|%2", _x, count _mL]);
+    };
+} forEach ["Throw", "Put"];
 private _nArmas = 0;
 
 {

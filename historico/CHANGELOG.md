@@ -6,6 +6,127 @@ aqui o que mudou.
 
 ---
 
+## 2026-07-27
+
+### 📚 Wiki de Arma 3 **0.9.1** — 459 → 1.816 artigos, tudo medido no config
+
+A wiki deixou de ser "o jogo base + os mods + o arsenal" e passou a cobrir o
+acervo inteiro que a extração da #398 trouxe. **Quatro portais novos**, todos
+com o mesmo contrato das armas: o número existe porque foi lido do config, e o
+que não foi medido aparece como ausente em vez de virar zero.
+
+- 🔭 **Miras & acessórios (211 artigos)** — 3.218 acessórios classificados pelo
+  `itemInfoType` do engine (101 boca · 201 óptica · 301 apontador · 302 bipé),
+  não por heurística.
+  - ⚠️ **A ampliação NÃO sai de `0,75 / FOV`.** Medido: nas 215 ópticas que
+    trazem os dois valores, **159 discordam** da conta — o ELCAN SpecterOS dá
+    12× calculado contra "Magnification: 2x" escrito pela própria Bohemia. A
+    ampliação só é publicada quando o jogo a declara em texto (**241 de 1.167**);
+    nas outras **926** o campo é `null` e o FOV cru aparece rotulado como FOV.
+- 🗺️ **Terrenos (31 artigos)** — os mundos jogáveis com a **grade REAL** de
+  cada um. ⚠️ **30 dos 31 contam o northing de cima pra baixo e 1 conta pra
+  cima**; assumir uma convenção só erra o eixo N-S em **180°**. O
+  `verificar-grade.mjs` cobra isso nos 31 por propriedade estrutural
+  (ida-e-volta, sinal do norte, anti-simetria, vizinhança).
+- 🛡️ **Veículos (874 artigos)** — 5.425 veículos de verdade, com **blindagem
+  por parte**: o 2S9 Sochor tem casco 425 e tanque de combustível em 0,5.
+  - ⚠️ **`armor` negativo não é blindagem menor.** São **19.223 partes** do
+    acervo (rodas, periscópios, ERA) e o sinal é convenção do engine: negativo
+    é *relativo* ao casco. Um `min()` sobre os dois juntos anunciava
+    "ponto fraco: −100". Agora o resumo só compara absolutos e conta os
+    relativos à parte — com invariante no gerador e no verificador.
+  - `ehVeiculo` corta **24.261 → 5.425**: `CfgVehicles` guarda parede, arbusto
+    e marcador do editor. Publicar 24.261 "veículos" seria número grande e falso.
+- 🦺 **Equipamento (241 artigos)** — coletes, capacetes, uniformes, mochilas e
+  óculos com **proteção POR PONTO DO CORPO** e o `passThrough`. Um número só
+  esconde a diferença entre "peito 25, abdômen descoberto" e "os dois em 25";
+  e proteção sem a passagem sugere imunidade que não existe (Plate Carrier:
+  peito 16, **30% do dano atravessa**). **19.616 itens** trazem esse dado.
+  - **71.373 classes → 988** colapsando variante cosmética; o JSON sob demanda
+    saiu de **29,7 MB para 641 kB**. Cada entrada registra `variantes` e os
+    nomes, então nada some sem deixar rastro.
+
+### 🧭 Vanguard acoplado de verdade
+
+- 🗺️ **Mapa tático** (`/vanguard`): marcar peça e alvo no mapa, ler MGRS,
+  azimute de **GRADE** e distância, e despejar tudo no computador de tiro num
+  clique. O vetor sai do `gridVector()` vendorizado — o mesmo que reprojeta o
+  alvo no fuso UTM da peça quando os dois caem em fusos diferentes.
+- 🧭 **Azimute de grade nos terrenos do Arma 3**: duas grades como no jogo →
+  azimute em mil NATO e MRAD, distância e retro-azimute, na grade daquele mundo.
+- A **altitude é manual e a tela diz isso**: a web não tem DEM (regra #238).
+
+### 🔬 Procedência derivada, não digitada
+
+- A capa da wiki mostra **quanto saiu do jogo, contado no dump**, com o `.rpt`
+  de origem de cada bloco. Antes era texto escrito à mão, que envelhece calado
+  — e é justamente o número que sustenta "os dados são medidos".
+- O gerador se pagou na primeira execução: escrito com os nomes de campo
+  errados devolveu **0 armas com balística completa**, que publicado viraria
+  "0% do acervo tem balística". Virou invariante que **recusa gerar** em vez de
+  publicar zero. Com os nomes certos: **10.679 de 10.822 (99%)**.
+- A **fila fica declarada**: 44.761 soldados e 4.011 gestos aparecem como
+  "extraído, ainda sem tela" em vez de sumirem.
+
+### 🔧 Infraestrutura
+
+- ✅ **CI de build e invariantes** (`.github/workflows/ci.yml`) — o repo não
+  tinha nenhum workflow que conferisse que o site compila. Ele **regera as
+  bases a partir do dump versionado e falha se divergir do commit**; pegou um
+  defeito na primeira execução (a base de armas estava gerada de um dump
+  anterior ao das outras).
+- 🚀 **Deploy consertado**: o bundle das funções Python estourava o limite
+  (340,98 MB contra 225 MB) porque `scripts/` nunca esteve no `.vercelignore`.
+  Somado a `excludeFiles`, `public/` deixa de contar pra um bundle que não o lê.
+- 🧹 **Aba "Catálogo" removida** — dizia aguardar extração que já rodou, e
+  prometia veículos e miras que agora têm aba própria.
+- 🔒 CodeQL deixa de analisar os **3.711 arquivos do GitNexus 1.6.7** (código de
+  terceiro commitado na raiz), que geravam alerta que ninguém deste projeto
+  pode corrigir.
+- 🔄 SW `baluarte-v0.9.1` · app `0.9.1`.
+
+**Pendente**: o 3D segue sem UI. Os 20 quadros do turntable não servem (00–09
+verdes de visão noturna, 10–19 estourados e com cenário no lugar da arma); o
+`.sqf` está ajustado e carimbado `v4`, mas **não testado** — depende de rodada
+na máquina do operador.
+
+---
+
+## 2026-07-26
+
+### 🔬 Armas com valores MEDIDOS do jogo + pipeline pra extrair TODO o resto (veículos, miras, gear)
+- 🎯 **Fecha a pendência registrada na 0.9.0**: a database de armas deixou de usar "velocidade de referência por calibre" e passou a usar o **`v0` e o `airFriction` REAIS**, lidos do config do jogo em execução com o preset completo carregado (dump da #398, parte LOCAL). A calculadora de trajetória agora resolve com o número **daquela arma**, não da família do calibre.
+- 📊 **10.822 classes → 1.477 armas de verdade** (`scripts/arma3/gerar-base-armas.py`). O que colapsou foi variante cosmética: óptica pré-montada (`_ACO_F`, `_Holo_pointer_snds_F`) e camuflagem (`(Arid)`, `(Lush)`) — 34 entradas só de MX. A chave de agrupamento é (modelo + balística), então o que muda o tiro **continua em linhas separadas**: o mesmo `mxm_f.p3d` aparece com v₀ 774 e 857 (carregador diferente).
+  - **Núcleo** (jogo base + DLC + CDLC, 106 armas) vai no bundle; o **arsenal modado** (1.371) desce sob demanda de `public/arma3/armas-db.json` — 1,7 MB cru, ~100 kB no fio.
+  - **96,3%** têm balística completa · **95,1%** têm ícone.
+- 🖼️ **Coluna de imagem ligada** na tabela: os 2.417 WebP extraídos dos PBOs aparecem por arma. Arma sem ícone **não ganha placeholder que finja ser a arma** — ganha um selo com o motivo (`sem-picture-no-config` ou `paa-nao-extraido`, que é o `.ebo` cifrado das CDLC, que nem o Arma 3 Tools abre).
+- 🧠 **`tipoSugerido` substituído**: a heurística antiga jogava **9.090 das 10.822 em "fuzil"** — um default, não uma classificação. Agora a inferência é encadeada e **cada arma declara em que evidência caiu** (`tipoFonte`): `config` (o campo `type` do engine) > `descricao` (o rótulo do próprio jogo: "Sniper Rifle", "Marksman rifle") > `classe` (prefixo de slot) > `desc-generica` > `numerico`. O que não dá pra classificar vira **`primaria`** — honesto — em vez de virar "fuzil" por default.
+- 🚀 **Foguete e míssil recusados na calculadora, de propósito**: no config, munição de lançador tem `airFriction` **positivo** e `v0` de ejeção (~30 m/s), porque segue outro modelo de voo. Jogar esse par no integrador de arrasto daria uma bala **acelerando**. `resolverTiro()` agora falha alto nesse caso e `dadosBalisticos()` filtra antes.
+- 🎒 **Aba nova "🎒 Catálogo"** + **pipeline completo pra extrair todo o resto**: `dump-catalogo.sqf` (novo) despeja `CfgVehicles` (veículos, soldados, mochilas, armamento estático), os itens do `CfgWeapons` com `ItemInfo` (**miras com zoom real**, supressores, apontadores, bipés, **uniformes e coletes com proteção por ponto do corpo**, capacetes, NVG, binóculos, GPS, rádio) e `CfgGlasses` — **23 categorias** já definidas com as colunas de cada uma. Enquanto o operador não roda o dump no jogo, a aba mostra **"aguardando extração"** com o passo a passo, não tabela vazia sem explicação.
+  - ⚠️ **`getNumber` do SQF devolve 0 pra propriedade que não existe** — "sem blindagem declarada" viraria "blindagem 0". O dump testa `isNumber` antes e emite vazio; o parser converte em `null`. É a regra `hit: null ≠ hit: 0` num lugar onde ela é fácil de perder.
+- 🔬 **Painel de procedência** na aba de armas: de onde vem cada número, quantas armas têm balística/ícone, e a distribuição das evidências de classificação. Dá pra auditar a tabela sem sair dela.
+- 📚 **O arsenal entrou na WIKI (`/wiki-arma3`): 353 → 459 artigos.** Furo que o operador apontou: a wiki é a camada de **navegação** do conteúdo, e o arsenal estava fora dela — dava pra ver a tabela em `/arma3-tutorial`, mas não dava pra *chegar* nela pela wiki nem buscar "MX" e achar a arma. Portal novo **🔫 Arsenal** (106 artigos), com o formato "infobox + artigo" que a própria wiki descreve: capa (o ícone extraído do jogo), ficha técnica e texto. O corpo é montado **só do que foi medido** — cada frase só existe se o dado existir, e lançador ganha a frase dizendo que a calculadora não se aplica. Traz o comando SQF pra spawnar e link pra abrir na calculadora.
+- 🎯 **Precisão em CENTÍMETROS** (coluna nova): o config guarda dispersão em radianos por modo de tiro; converter pra cm a 100 m é regra de três. **M200 Intervention 1,8 cm · MX 8,7 cm · MP-443 Grach 43,5 cm.** Usa a MENOR dispersão entre os modos — a precisão no melhor caso, que é o que faz sentido comparar.
+- 💥 **Aba de munições (472)** com o que nenhuma wiki de Arma 3 mostra: **furtividade** (`audibleFire` de 0,05 na fumígena a 120 no .50 BMG, `visibleFire` 0,07–32) e as **71 munições subsônicas**. O cartão da aba explica os dois campos de nome enganoso, que é onde erra quem lê config do Arma: o `caliber` da MUNIÇÃO **não é o calibre em mm** (é o multiplicador de penetração), e explosivo mata pelo **dano indireto** — olhar só o `hit` faz foguete parecer fraco.
+- 🧰 **Aba de carregadores (1.432)**, até então 100% ignorados. Mostra o que a tabela de armas não explicava: **cada carregador tem `v0` próprio**, e é por isso que a mesma arma aparece em mais de uma linha — não é duplicata, é balística diferente (o mesmo `mxm_f.p3d` com v₀ 774 e 857).
+- 🔢 **Modos de tiro por arma**: a tabela mostrava um RPM só, mas o MX tem **6 modos** no config. A célula agora abre uma linha com cada modo, seu RPM e sua dispersão própria.
+- ↕️ **Tabelas ordenáveis** (armas, munições, carregadores) por uma spec de coluna única. `val()` (comparar) e `cel()` (mostrar) são separados, então "8.7 cm" ordena como 8.7 e não como texto; **ausente vai sempre pro fim nos dois sentidos** — virar 0 e liderar a coluna crescente seria a mentira de sempre.
+- 🎯 **Cartão de tiro MRAD em `/vanguard`** — é onde os dois projetos se encostam de verdade: os NÚMEROS vêm da extração do Baluarte (v₀ e airFriction medidos) e o MODELO do `arma3-balistica.js`; o Vanguard entra com o formato de cartão. A página passa a ter os dois problemas **inversos** lado a lado: computador de morteiro ("dado o alvo, qual o ângulo?") e cartão MRAD ("dado o ângulo, onde cai?"). M200 zerada em 300 m → **+14,31 mrad a 1500 m**.
+  - ⚠️ **MRAD ≠ mil NATO** e as duas colunas aparecem juntas de propósito: o retículo do Arma é milirradiano (≈6283/volta), o mil NATO divide em 6400 — 1 mrad ≈ 1,019 mil NATO, o que a 1000 m passa de 1,8 m de erro.
+  - A coluna é a **correção**, não a queda: se a bala cai 2 mrad, sobe-se 2 mrad. Mostrar a queda e chamar de correção é o erro clássico.
+- 🔭 **Miras por arma, tiradas do config** — o config não tem "lista de miras compatíveis", mas tem as variantes pré-montadas (`arifle_MX_ACO_F` é o MX com o ACO no trilho), que o colapso de variantes jogaria fora junto com a camuflagem. MX → ACO, Hamr, Holosight, RCO; M200 → LRPS, SOS. **62 das 106** armas do núcleo. Declarado o que NÃO é: lista o que aparece montado (não o que a arma aceita), e a ampliação de cada mira depende do dump do catálogo.
+- 🐞 **Fuzil com lança-granadas deixou de ser "lançador"** — bug encontrado por auditoria dos deep-links, não por leitura de código. O engine diz `type: 1` (arma primária) pro MX 3GL, mas a descrição traz "Grenade Launcher" e o classificador deixava o texto vencer o config. Resultado: 68 fuzis viravam lançadores e **perdiam a calculadora**, apesar de terem a balística do fuzil (o MX 3GL tem o v₀ e o airFriction do MX). O UGL é boca **secundária**, não o tipo da arma. `lancador` 120 → **52**, `fuzil` 743 → **804**.
+- 🧰 **Wiki: infobox virou ficha técnica** — o objeto da arma já era anexado ao artigo e **nada consumia**, então uma arma mostrava os mesmos 5 campos de um artigo de texto. Agora 19 linhas: calibre, v₀, airFriction, precisão em cm, dano, cadência, carregador, zeragem, massa, munição, miras, acessórios, variantes, classe. Ausente some, em vez de virar "0".
+- 🔗 **Deep-link que cumpre o que promete** — o botão dizia "Abrir na tabela e na calculadora" e caía numa lista de 106 linhas com a calculadora em outra arma. Agora `?arma=<id>` abre já na arma certa, e o **rótulo segue o que ela permite**: 94 prometem calculadora e entregam, 12 dizem só "Abrir na tabela" (foguete, sinalizador e as sem v₀ no config). Link interno também parou de abrir em aba nova.
+- 🛡️ **Os dois bugs acima ficaram travados** — eram silenciosos (a página abre, o número aparece, e é de outra arma), então não voltariam com barulho. O gerador passa a **recusar gerar** se classificar como lançador algo que o config diz ser arma primária, e `scripts/verificar-wiki-arsenal.mjs` (novo, `npm run verificar-arma3`) checa o vão entre wiki, base e calculadora — que nenhum módulo enxerga sozinho. Junto: campo interno (`_`) parou de vazar pro `armas-db.json` público.
+
+- 🔒 **Três vulnerabilidades reais corrigidas** no caminho: **ReDoS polinomial** no conversor de coordenadas (medido: 16 mil espaços, 238 ms → 0,02 ms), **path injection** pelo nome de classe no `extrair-modelos.py`, e **Zip Slip** no `pbo.py` — este pré-existente e o mais sério: o nome da entrada vem do cabeçalho do PBO, os PBOs vêm da Steam Workshop, e no Windows a contrabarra é separador, então um mod mal montado escrevia fora da pasta de destino.
+- 🗺️ **Camadas de mapa agora são compartilhadas** com o Project Vanguard (`src/data/camadas-mapa.js`, API idêntica nos dois repos — a mesma decisão do `helpers.js`). O `/mapa` tinha 7 camadas e o Vanguard tinha 3 próprias; as duas listas já divergiam. Agora camada nova entra nos dois de uma vez, e o seletor de base do `/mapa` se monta a partir do catálogo (ganhou a 2ª fonte de satélite).
+- ⌖ **Project Vanguard aparece no Baluarte**: rota **`/vanguard`** na sidebar (*Conhecimento*), com o **computador de tiro** e o **conversor MGRS/UTM** funcionando de verdade — o motor zero-dependência do repo irmão vendorizado em `src/utils/vanguard/` (~10,6 kB gzip, dentro do "leve" da #238). Os dois modelos balísticos convivem: `arma3-balistica.js` é tiro **tenso** ("dado o ângulo, onde cai"), o motor do Vanguard é tiro **curvo** ("dado o alvo, qual o ângulo").
+- ✅ Verificado no navegador (Playwright): 106 armas em tabela com 76 ícones carregando e 30 marcados como ausentes (todos CDLC cifradas), calculadora abrindo no MX com **v₀ 752,5 · airFriction −0,000774** (bate com a conferência in-game do operador), `/vanguard` resolvendo missão (carga 2 preferida, 1203 mil, 29,3 s) e conversor MGRS, `/mapa` com as 4 bases do catálogo. Zero erros de página. Vanguard: 54/54 testes.
+
+---
+
 ## 2026-07-24
 
 ### 🔫 Launcher 0.9.0 — DATABASE de armas estilo Fallout + CALCULADORA de balística (a "inveja da Bohemia")

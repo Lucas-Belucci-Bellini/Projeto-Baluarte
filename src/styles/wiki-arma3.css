@@ -371,3 +371,92 @@
   .wk-colecao { flex-direction: column; align-items: stretch; }
   .wk-atalho { grid-template-columns: 1fr; gap: var(--space-2xs); }
 }
+
+/* ── painel de procedência da capa ──
+ * Números derivados do dump (src/data/arma3-extracao.js). Grid que quebra
+ * em coluna única no telefone; a tabela de cada bloco alinha o número à
+ * direita pra comparação vertical rápida. */
+.wk-proc {
+  margin-top: var(--space-lg);
+}
+.wk-proc__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.wk-proc__blocos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-md);
+}
+.wk-proc__bloco {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  background: var(--color-surface-2);
+}
+.wk-proc__titulo {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--color-cyan);
+  margin-bottom: var(--space-sm);
+}
+.wk-proc__tab { width: 100%; border-collapse: collapse; }
+.wk-proc__tab td { padding: .15rem 0; vertical-align: baseline; font-size: var(--fs-sm); }
+.wk-proc__n {
+  text-align: right;
+  padding-right: var(--space-sm) !important;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.wk-proc__rpt {
+  display: block;
+  margin-top: var(--space-sm);
+  font-size: .7rem;
+  color: var(--color-text-muted);
+  word-break: break-all;
+}
+.wk-proc__fila {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px dashed var(--color-border);
+}
+
+/* ── anatomia do classname ──
+ * Cada pedaço do nome numa linha, o pedaço em mono à esquerda e o
+ * significado à direita. A etiqueta de evidência distingue o que o engine
+ * usa de fato (slot) do que é convenção observada. */
+.wk-anat__intro { margin-bottom: var(--space-sm); }
+.wk-anat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.wk-anat__linha {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: baseline;
+  padding: var(--space-xs) var(--space-sm);
+  border-left: 2px solid var(--color-cyan);
+  background: var(--color-surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.wk-anat__pedaco {
+  font-family: var(--font-mono);
+  color: var(--color-cyan);
+  white-space: nowrap;
+  min-width: 5rem;
+}
+.wk-anat__desc { color: var(--color-text); }
+.wk-anat__ev { font-size: .75rem; opacity: .7; }
+
+@media (max-width: 640px) {
+  .wk-anat__linha { flex-direction: column; gap: 2px; }
+  .wk-anat__pedaco { min-width: 0; }
+}

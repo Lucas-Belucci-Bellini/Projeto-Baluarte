@@ -20,4 +20,6 @@ __pycache__/
 venv/
 
 # saída das ferramentas locais de extração do Arma 3 (#398)
-scripts/arma3/out/
+# VERSIONADA por decisão do operador: os dados vão pro repositório, não só
+# as ferramentas. São ~150 MB e o histórico do git guarda isso pra sempre.
+# Regenerável em minutos com os parsers, se um dia quiser reverter.

@@ -1,0 +1,65 @@
+# CI de build e das invariantes de dado do Arma 3.
+#
+# Por que existe: o repo tinha só CodeQL, câmbio e os releases — nenhum
+# workflow conferia que o site COMPILA nem que os dados gerados continuam
+# honestos. A regra do projeto é "merge quando o CI ficar verde"; sem isto,
+# não havia verde para esperar.
+#
+# O `verificar-arma3` REGERA as bases a partir de scripts/arma3/out/ (o dump
+# versionado) e só então roda os verificadores. Isso pega dois defeitos que
+# passariam calados:
+#
+#   1. gerador e arquivo gerado fora de sincronia — alguém edita
+#      src/data/arma3-*.js à mão e o próximo `git diff` acusa
+#   2. link de wiki que promete o que não entrega (artigo apontando pra
+#      arma/acessório/terreno que não existe, ou pra calculadora que cairia
+#      em outra arma)
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build + invariantes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: npm
+
+      - name: Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Regerar as bases e conferir as invariantes
+        run: npm run verificar-arma3
+
+      # Se a regeração mudou algum arquivo versionado, o commit está
+      # desatualizado em relação ao gerador — falha declarando o quê.
+      - name: As bases geradas batem com o commit?
+        run: |
+          if ! git diff --quiet -- src/data public/arma3; then
+            echo "::error::As bases geradas divergem do commit. Rode 'npm run verificar-arma3' e commite o resultado."
+            git diff --stat -- src/data public/arma3
+            exit 1
+          fi
+          echo "ok — bases geradas em dia com o gerador."

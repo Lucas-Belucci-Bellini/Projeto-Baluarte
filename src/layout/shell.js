@@ -157,6 +157,7 @@ function pageTitleForRoute(path) {
     '/universo': 'Universo',
     '/tabela-periodica': 'Tabela Periódica',
     '/wiki-arma3': 'Wiki de Arma 3',
+    '/vanguard': 'Project Vanguard — computador de tiro',
     '/modpack': 'Modpack Minecraft',
     '/zomboid': 'Modpack Zomboid — coleção Spartan Gamer BR',
     '/zomboid-admin': 'Zomboid — Administração de Servidor',
