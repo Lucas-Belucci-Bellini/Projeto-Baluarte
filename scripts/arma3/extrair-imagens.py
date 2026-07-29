@@ -1,38 +1,35 @@
 #!/usr/bin/env python3
 """
-Extrai os ícones das armas "como aparecem no jogo" e converte pra PNG (#398).
+Extrai as imagens (picture, icon, pictureMap, etc.) de todos os dados do Arma 3.
 
-O pedido do operador: "quero uma forma de olhar as armas que eu olho no jogo —
-foi para isso que estou te dando todos os arquivos". O ícone de cada arma é um
-.paa dentro de algum PBO; o config aponta pra ele por caminho virtual
-(`\\A3\\Weapons_F\\Data\\UI\\gear_x_ca.paa`).
+O script lê TODOS os JSONs gerados na pasta out/, coleta todos os caminhos virtuais
+de imagens, acha o PBO correspondente, extrai, converte via Pal2PacE e depois converte
+diretamente para WebP, deletando o PNG original para economizar espaço.
 
-Como o caminho vira arquivo:
-    1. cada PBO declara um `prefix` no cabeçalho  (ex.: a3\\weapons_f)
-    2. juntamos TODOS os PBOs que casam com o prefixo, do mais longo pro mais
-       curto — mods dividem o conteúdo em vários PBOs com o MESMO prefixo, e
-       guardar só o primeiro deixava ~1000 armas sem ícone
-    3. se nenhum candidato tiver o caminho exato, procura pelo nome do arquivo
-       nos PBOs da mesma raiz (`mss\\...` mora em `mss\\mss_core`, por exemplo)
-    4. Pal2PacE.exe (Arma 3 Tools) converte o .paa em .png
+O mapa gerado (arma3-icones.json) apontará:
+    { "caminho\\virtual\\no\\config.paa": "/arma3/icones/arquivo.webp" }
 
 Uso:
-    python scripts/arma3/extrair-imagens.py              # usa o dump do config
+    python scripts/arma3/extrair-imagens.py              # usa os dumps do config
     python scripts/arma3/extrair-imagens.py --teste 6    # 6 ícones, sem dump
     python scripts/arma3/extrair-imagens.py --limite 500 # lote menor
     python scripts/arma3/extrair-imagens.py --reindexar  # refaz o índice de PBOs
-    python scripts/arma3/extrair-imagens.py --webp       # PNG -> WebP + mapa
 
-Requer o Arma 3 Tools instalado (Pal2PacE). O índice de prefixos é cacheado —
-varrer os PBOs de novo só com --reindexar.
+Requer o Arma 3 Tools instalado (Pal2PacE) e a biblioteca Pillow.
 """
 
 import json
 import os
 import re
+import glob
 import subprocess
 import sys
 import tempfile
+
+try:
+    from PIL import Image
+except ImportError:
+    raise SystemExit('este script precisa do Pillow: pip install Pillow')
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pbo import PBO, indexar                                    # noqa: E402
@@ -40,25 +37,21 @@ from pbo import PBO, indexar                                    # noqa: E402
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))
 OUT = os.path.join(AQUI, 'out')
-DESTINO_PNG = os.path.join(RAIZ, 'public', 'arma3', 'armas')
+DESTINO_ICONES = os.path.join(RAIZ, 'public', 'arma3', 'icones')
 CACHE_INDICE = os.path.join(OUT, 'indice-pbo.json')
-DUMP_CONFIG = os.path.join(OUT, 'arma3-config.json')
-DUMP_CATALOGO = os.path.join(OUT, 'arma3-catalogo.json')
-MAPA_SAIDA = os.path.join(OUT, 'armas-imagens.json')
+MAPA_SAIDA = os.path.join(OUT, 'arma3-icones.json')
 
 STEAM = r'C:\Program Files (x86)\Steam\steamapps'
 RAIZES_PBO = [
     os.path.join(STEAM, 'common', 'Arma 3', 'Addons'),
-    os.path.join(STEAM, 'common', 'Arma 3'),          # Curator/Expansion/Heli...
+    os.path.join(STEAM, 'common', 'Arma 3'),
     os.path.join(STEAM, 'workshop', 'content', '107410'),
 ]
 
-MAX_PBOS_ABERTOS = 6      # cache pequeno: o índice de um PBO grande pesa MBs
+MAX_PBOS_ABERTOS = 6
 
 
 def achar_pal2pace():
-    """Pal2PacE mudou de pasta entre versões do Arma 3 Tools — procura em vez
-    de fixar o caminho. A variável A3TOOLS tem prioridade."""
     bases = [os.environ.get('A3TOOLS', ''), os.path.join(STEAM, 'common', 'Arma 3 Tools')]
     for base in bases:
         if not base or not os.path.isdir(base):
@@ -73,8 +66,6 @@ def achar_pal2pace():
 
 
 def carregar_indice(reindexar=False):
-    """{prefixo: [caminhos de pbo]} — LISTA, porque vários PBOs compartilham
-    prefixo e o ícone pode estar em qualquer um deles."""
     if not reindexar and os.path.isfile(CACHE_INDICE):
         with open(CACHE_INDICE, encoding='utf-8') as f:
             indice = json.load(f)
@@ -90,12 +81,6 @@ def carregar_indice(reindexar=False):
 
 
 def candidatos(caminho_virtual, indice):
-    """Devolve [(caminho_pbo, caminho_interno)] em ordem de probabilidade.
-
-    Prefixo mais longo primeiro (mods têm `x\\addons\\y` e `x\\addons\\y2`, e
-    casar o mais curto pegaria o PBO errado). Depois, como rede de segurança,
-    os PBOs da mesma raiz — o config às vezes aponta pra `mss\\a.paa` enquanto
-    o PBO declara `mss\\mss_core`."""
     p = caminho_virtual.replace('/', '\\').lower().strip('\\')
     partes = p.split('\\')
     saida = []
@@ -107,9 +92,6 @@ def candidatos(caminho_virtual, indice):
 
 
 class CachePBO:
-    """Guarda poucos PBOs abertos. Sem limite, os índices de centenas de mods
-    juntos estouram a memória (WinError 1455 — já aconteceu aqui)."""
-
     def __init__(self, maximo=MAX_PBOS_ABERTOS):
         self.maximo = maximo
         self.itens = {}
@@ -129,54 +111,65 @@ class CachePBO:
         return pbo
 
 
-def converter(pal2pace, dados_paa, destino_png):
-    """Grava o .paa num temporário e chama o Pal2PacE pra virar PNG."""
+def converter_webp(pal2pace, dados_paa, destino_webp):
+    """Grava o .paa num temporário, converte pra PNG e salva direto como WebP."""
     with tempfile.TemporaryDirectory() as tmp:
         origem = os.path.join(tmp, 'icone.paa')
+        tmp_png = os.path.join(tmp, 'icone.png')
         with open(origem, 'wb') as f:
             f.write(dados_paa)
         try:
-            r = subprocess.run([pal2pace, origem, destino_png],
+            r = subprocess.run([pal2pace, origem, tmp_png],
                                capture_output=True, text=True, timeout=60)
         except (subprocess.TimeoutExpired, OSError) as err:
             return False, str(err)[:120]
-        if not os.path.isfile(destino_png) or os.path.getsize(destino_png) == 0:
+        
+        if not os.path.isfile(tmp_png) or os.path.getsize(tmp_png) == 0:
             return False, (r.stderr or r.stdout or 'Pal2PacE não gerou saída').strip()[:160]
+
+        # Converte o PNG resultante para WebP e salva
+        try:
+            with Image.open(tmp_png) as im:
+                os.makedirs(os.path.dirname(destino_webp), exist_ok=True)
+                im.save(destino_webp, 'WEBP', quality=90, method=4)
+        except Exception as err:
+            return False, f"Erro ao converter para WebP: {err}"
+            
     return True, ''
 
 
+def extract_alvos_from_json(filepath):
+    alvos = set()
+    with open(filepath, encoding='utf-8') as f:
+        data = json.load(f)
+    
+    def walk(node):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if k in ['picture', 'icon', 'pictureMap', 'pictureShot'] and isinstance(v, str) and v.strip():
+                    alvos.add(v.strip())
+                walk(v)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+                
+    walk(data)
+    return alvos
+
+
 def alvos_do_dump():
-    """{classe: caminho virtual do ícone} de TUDO que foi despejado.
-
-    Junta as duas extrações: `arma3-config.json` (armas, do dump-config.sqf) e
-    `arma3-catalogo.json` (veículos, soldados, miras, uniformes, coletes,
-    mochilas, óculos… do dump-catalogo.sqf). O catálogo é opcional — quem só
-    rodou o dump de armas continua funcionando igual.
-
-    O caminho virtual sai do config do jeito que o config escreve; quem resolve
-    extensão e prefixo de PBO é o resto do script (ver as armadilhas no README:
-    muito config escreve o `picture` SEM a extensão `.paa`)."""
-    alvos = {}
-
-    if os.path.isfile(DUMP_CONFIG):
-        with open(DUMP_CONFIG, encoding='utf-8') as f:
-            dump = json.load(f)
-        alvos.update({c: a['picture'] for c, a in dump['armas'].items() if a.get('picture')})
-
-    if os.path.isfile(DUMP_CATALOGO):
-        with open(DUMP_CATALOGO, encoding='utf-8') as f:
-            cat = json.load(f)
-        for secao in ('veiculos', 'itens', 'oculos'):
-            for c, e in (cat.get(secao) or {}).items():
-                if e.get('picture'):
-                    alvos.setdefault(c, e['picture'])
-
+    alvos = set()
+    jsons = glob.glob(os.path.join(OUT, '*.json'))
+    for f in jsons:
+        nome = os.path.basename(f)
+        if nome in ['indice-pbo.json', 'arma3-icones.json', 'turntable.json', 'armas-imagens.json']:
+            continue
+        alvos.update(extract_alvos_from_json(f))
+    
     if not alvos:
         raise SystemExit(
-            f'não achei {DUMP_CONFIG} nem {DUMP_CATALOGO}.\n'
-            'Rode antes um dump no jogo (scripts/arma3/dump-config.sqf para armas,\n'
-            'dump-catalogo.sqf para o resto) e depois o parse-* correspondente —\n'
-            'ou use --teste pra um ensaio.')
+            f'não achei nenhuma imagem nos JSONs de {OUT}.\n'
+            'Rode antes os dumps no jogo e os parse-* correspondentes.')
     return alvos
 
 
@@ -188,50 +181,11 @@ def alvos_de_teste(n):
     icones = [e for e in pbo.entradas
               if e['nome'].lower().endswith('_ca.paa') and '/ui/' in e['nome'].lower()]
     pref = pbo.prefixo.replace('/', '\\').strip('\\')
-    return {os.path.splitext(os.path.basename(e['nome']))[0].lower():
-            '\\' + pref + '\\' + e['nome'].replace('/', '\\')
-            for e in icones[:n]}
-
-
-def para_webp():
-    """Converte os PNG já extraídos em WebP e reescreve o mapa.
-
-    2.250 ícones em PNG dão ~174 MB, e isso entra no histórico do git pra
-    sempre — pesa em todo clone e em todo build da Vercel. Em WebP o mesmo
-    ícone 256x256 com transparência cai pra poucos KB, sem diferença visível."""
-    from PIL import Image                              # só neste modo
-
-    antes = depois = n = 0
-    for arq in sorted(os.listdir(DESTINO_PNG)):
-        if not arq.lower().endswith('.png'):
-            continue
-        origem = os.path.join(DESTINO_PNG, arq)
-        destino = origem[:-4] + '.webp'
-        antes += os.path.getsize(origem)
-        if not os.path.isfile(destino):
-            with Image.open(origem) as im:
-                im.save(destino, 'WEBP', quality=90, method=4)
-        depois += os.path.getsize(destino)
-        os.remove(origem)
-        n += 1
-        if n % 500 == 0:
-            print(f'  {n} convertidos…')
-
-    if os.path.isfile(MAPA_SAIDA):
-        with open(MAPA_SAIDA, encoding='utf-8') as f:
-            mapa = json.load(f)
-        mapa = {c: (v[:-4] + '.webp' if v.endswith('.png') else v) for c, v in mapa.items()}
-        with open(MAPA_SAIDA, 'w', encoding='utf-8') as f:
-            json.dump(dict(sorted(mapa.items())), f, ensure_ascii=False, indent=1)
-
-    print(f'\n{n} imagens: {antes / 1048576:.0f} MB -> {depois / 1048576:.1f} MB')
-    print(f'mapa atualizado: {MAPA_SAIDA}')
+    return {'\\' + pref + '\\' + e['nome'].replace('/', '\\') for e in icones[:n]}
 
 
 def main():
     argv = sys.argv[1:]
-    if '--webp' in argv:
-        return para_webp()
 
     reindexar = '--reindexar' in argv
     teste = int(argv[argv.index('--teste') + 1]) if '--teste' in argv else 0
@@ -243,104 +197,107 @@ def main():
     print(f'índice: {len(indice)} prefixos, '
           f'{sum(len(v) for v in indice.values())} PBOs')
 
-    # PBOs agrupados pela primeira parte do prefixo — a rede de segurança
     por_raiz = {}
     for pref, caminhos in indice.items():
         por_raiz.setdefault(pref.split('\\')[0], []).extend(caminhos)
 
     alvos = alvos_de_teste(teste) if teste else alvos_do_dump()
+    print(f'caminhos virtuais únicos a converter: {len(alvos)}\n')
 
-    # Muitas variantes compartilham o MESMO .paa (camo, retextura, versão de
-    # mod): converte uma vez por imagem e aponta todas as classes pra ela.
-    por_imagem = {}
-    for classe, virtual in alvos.items():
-        por_imagem.setdefault(virtual.lower(), []).append(classe)
-    print(f'armas: {len(alvos)} | imagens distintas: {len(por_imagem)}\n')
-
-    os.makedirs(DESTINO_PNG, exist_ok=True)
+    os.makedirs(DESTINO_ICONES, exist_ok=True)
     mapa, sem_pbo, falhou = {}, [], []
     cache = CachePBO()
     convertidas = 0
 
-    lista = sorted(por_imagem.items())
+    lista = sorted(list(alvos))
     if limite:
         lista = lista[:limite]
 
-    for i, (virtual, classes) in enumerate(lista, 1):
+    # Carrega o mapa anterior se existir para não reprocessar o que já foi
+    if os.path.isfile(MAPA_SAIDA):
+        with open(MAPA_SAIDA, encoding='utf-8') as f:
+            mapa = json.load(f)
+
+    for i, virtual in enumerate(lista, 1):
+        if virtual in mapa and os.path.isfile(os.path.join(RAIZ, 'public', mapa[virtual].lstrip('/'))):
+            # Já existe e está mapeado, pula!
+            if i % 250 == 0 or i == len(lista):
+                print(f'  {i}/{len(lista)} imagens...')
+            continue
+
         nome = re.sub(r'[^a-z0-9_-]+', '-',
                       os.path.splitext(os.path.basename(virtual.replace('\\', '/')))[0].lower())
-        for ext in ('.png', '.webp'):
-            destino = os.path.join(DESTINO_PNG, nome + ext)
-            if os.path.isfile(destino):
-                for c in classes:
-                    mapa[c] = f'/arma3/armas/{nome}{ext}'
-                break
-        else:
-            destino = os.path.join(DESTINO_PNG, nome + '.png')
-            dados = None
+        
+        # Pode haver colisão de nomes se dois PBOs tiverem arquivos com mesmo nome mas prefixo diferente.
+        # Vamos adicionar os primeiros caracteres de um hash simples se houver conflito? 
+        # Na maioria das vezes o nome final bate sem problemas, mas pra garantir, checamos.
+        destino = os.path.join(DESTINO_ICONES, nome + '.webp')
+        c = 1
+        while os.path.isfile(destino) and mapa.get(virtual) != f'/arma3/icones/{nome}.webp':
+            nome = f"{nome}-{c}"
+            destino = os.path.join(DESTINO_ICONES, nome + '.webp')
+            c += 1
 
-            for caminho_pbo, interno in candidatos(virtual, indice):
+        dados = None
+        for caminho_pbo, interno in candidatos(virtual, indice):
+            pbo = cache.get(caminho_pbo)
+            if not pbo:
+                continue
+            entrada = (pbo.achar(interno)
+                        or pbo.achar(interno + '.paa')
+                        or pbo.achar(interno + '.pac'))
+            if entrada:
+                try:
+                    dados = pbo.ler(entrada)
+                except Exception as err:
+                    falhou.append((virtual, str(err)[:90]))
+                break
+
+        if dados is None:                       # rede de segurança: por nome
+            alvo = os.path.splitext(
+                os.path.basename(virtual.replace('\\', '/')))[0].lower()
+            raiz = virtual.replace('\\', '/').strip('/').split('/')[0].lower()
+            for caminho_pbo in por_raiz.get(raiz, [])[:60]:
                 pbo = cache.get(caminho_pbo)
                 if not pbo:
                     continue
-                # Muito config escreve o picture SEM extensão
-                # (`.../ui/gear_g17-b_ca`), e dentro do PBO o arquivo é .paa.
-                entrada = (pbo.achar(interno)
-                           or pbo.achar(interno + '.paa')
-                           or pbo.achar(interno + '.pac'))
-                if entrada:
+                achado = next((e for e in pbo.entradas
+                                if os.path.splitext(os.path.basename(e['nome']))[0].lower() == alvo
+                                and e['nome'].lower().endswith(('.paa', '.pac'))), None)
+                if achado:
                     try:
-                        dados = pbo.ler(entrada)
+                        dados = pbo.ler(achado)
                     except Exception as err:
-                        falhou.append((classes[0], str(err)[:90]))
+                        falhou.append((virtual, str(err)[:90]))
                     break
 
-            if dados is None:                       # rede de segurança: por nome
-                alvo = os.path.splitext(
-                    os.path.basename(virtual.replace('\\', '/')))[0].lower()
-                raiz = virtual.replace('\\', '/').strip('/').split('/')[0].lower()
-                for caminho_pbo in por_raiz.get(raiz, [])[:60]:
-                    pbo = cache.get(caminho_pbo)
-                    if not pbo:
-                        continue
-                    achado = next((e for e in pbo.entradas
-                                   if os.path.splitext(os.path.basename(e['nome']))[0].lower() == alvo
-                                   and e['nome'].lower().endswith(('.paa', '.pac'))), None)
-                    if achado:
-                        try:
-                            dados = pbo.ler(achado)
-                        except Exception as err:
-                            falhou.append((classes[0], str(err)[:90]))
-                        break
-
-            if dados is None:
-                sem_pbo.append((classes[0], virtual))
+        if dados is None:
+            sem_pbo.append((virtual, virtual))
+        else:
+            ok, err = converter_webp(pal2pace, dados, destino)
+            if ok:
+                convertidas += 1
+                mapa[virtual] = f'/arma3/icones/{os.path.basename(destino)}'
             else:
-                ok, err = converter(pal2pace, dados, destino)
-                if ok:
-                    convertidas += 1
-                    for c in classes:
-                        mapa[c] = f'/arma3/armas/{nome}.png'
-                else:
-                    falhou.append((classes[0], err))
+                falhou.append((virtual, err))
 
         if i % 250 == 0 or i == len(lista):
-            print(f'  {i}/{len(lista)} imagens — {convertidas} PNG novos, '
-                  f'{len(mapa)} armas mapeadas')
+            print(f'  {i}/{len(lista)} imagens — {convertidas} novos, '
+                  f'{len(mapa)} virtuais mapeados no total')
 
     os.makedirs(OUT, exist_ok=True)
     with open(MAPA_SAIDA, 'w', encoding='utf-8') as f:
         json.dump(dict(sorted(mapa.items())), f, ensure_ascii=False, indent=1)
 
-    print(f'\nPNG novos ......... {convertidas}')
-    print(f'armas mapeadas .... {len(mapa)} de {len(alvos)} com ícone no config')
+    print(f'\nWebP novos ........ {convertidas}')
+    print(f'caminhos mapeados . {len(mapa)} de {len(alvos)}')
     print(f'sem PBO ........... {len(sem_pbo)} imagens')
     print(f'falha na conversão  {len(falhou)}')
     for c, v in sem_pbo[:5]:
-        print(f'  ? {c}: {v}')
+        print(f'  ? NÃO ACHOU NO PBO: {v}')
     for c, e in falhou[:5]:
-        print(f'  ! {c}: {e}')
-    print(f'\nimagens: {DESTINO_PNG}')
+        print(f'  ! FALHOU AO CONVERTER: {c}: {e}')
+    print(f'\nimagens: {DESTINO_ICONES}')
     print(f'mapa:    {MAPA_SAIDA}')
 
 
