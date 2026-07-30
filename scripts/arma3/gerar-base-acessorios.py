@@ -224,7 +224,7 @@ def carregar():
     return itens, acess
 
 
-def montar(itens, acess):
+def montar(itens, acess, icones):
     """Uma entrada por acessório, só com o que foi medido."""
     grupos = acess.get('grupos') or {}
     entradas = []
@@ -238,6 +238,11 @@ def montar(itens, acess):
         amp, ampRotulo = ampliacao_de(desc)
         dlc, dlcFonte = origem(classe, it)
 
+        pic = it.get('picture')
+        img_url = None
+        if pic:
+            img_url = icones.get(pic.replace('/', '\\').lower())
+
         entradas.append({
             'id': slug(classe),
             'classe': classe,
@@ -248,7 +253,7 @@ def montar(itens, acess):
             'dlcFonte': dlcFonte,
             'descricao': desc or None,
             'massa': num(it.get('massa')),
-            'imagem': it.get('picture') or None,
+            'imagem': img_url,
             'ampliacao': amp,
             'ampliacaoRotulo': ampRotulo,
             'ampliacaoFonte': 'descricao' if amp is not None else None,
@@ -389,7 +394,15 @@ def escrever_json(entradas, armas):
 
 def main():
     itens, acess = carregar()
-    entradas, armas = montar(itens, acess)
+    
+    icones_path = os.path.join(OUT, 'arma3-icones.json')
+    icones = {}
+    if os.path.isfile(icones_path):
+        with open(icones_path, encoding='utf-8') as f:
+            raw_icones = json.load(f)
+            icones = {k.replace('/', '\\').lower(): v for k, v in raw_icones.items()}
+
+    entradas, armas = montar(itens, acess, icones)
 
     erros = verificar(entradas, armas)
     if erros:

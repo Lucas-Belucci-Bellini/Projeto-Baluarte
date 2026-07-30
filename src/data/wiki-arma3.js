@@ -341,7 +341,7 @@ function construir() {
       nivel: tp.nivel,
       /* `c.imagem` é caminho .paa cru do config — o extrator de ícones ainda
        * não cobriu acessórios. Capa ausente é ausente, não <img> quebrado. */
-      img: '',
+      img: c.imagem || '',
       resumo: [tp.nome, c.ampliacaoRotulo, c.dlc].filter(Boolean).join(' · '),
       corpo: frases.join(' '),
       guia: '', sqf: `this addPrimaryWeaponItem "${c.classe}";`,
@@ -459,7 +459,7 @@ function construir() {
       catNome: cat.nome,
       icon: cat.icon,
       nivel: v.categoria === 'blindado' || v.categoria === 'aereo' ? 3 : 2,
-      img: '',
+      img: v.imagem || '',
       resumo: [cat.nome, v.faccao, v.dlc].filter(Boolean).join(' · '),
       corpo: frases.join(' '),
       guia: '',
@@ -520,7 +520,7 @@ function construir() {
       catNome: cat.nome,
       icon: cat.icon,
       nivel: q.tipo === 'colete' || q.tipo === 'capacete' ? 2 : 1,
-      img: '',
+      img: q.imagem || '',
       resumo: [cat.nome, p && p.maior != null ? `proteção ${p.maior}` : null,
         q.dlc].filter(Boolean).join(' · '),
       corpo: frases.join(' '),

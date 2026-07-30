@@ -167,7 +167,7 @@ def blindagem(v):
     }
 
 
-def montar(dump):
+def montar(dump, icones):
     todos = dump.get('veiculos') or {}
     faccoes = dump.get('faccoes') or {}
     entradas, completos = [], {}
@@ -177,6 +177,11 @@ def montar(dump):
             continue
         dlc, dlcFonte = origem(classe, v)
         fac = faccoes.get(v.get('faccao')) or {}
+
+        pic = v.get('picture') or v.get('editorPreview')
+        img_url = None
+        if pic:
+            img_url = icones.get(pic.replace('/', '\\').lower())
 
         e = {
             'id': slug(classe),
@@ -198,7 +203,7 @@ def montar(dump):
             'combustivel': num(v.get('combustivel')),
             'custo': num(v.get('custo')),
             'armas': len(v.get('armas') or []) or None,
-            'imagem': v.get('picture') or v.get('editorPreview') or None,
+            'imagem': img_url,
             '_ehMod': dlcFonte in ('mod', 'classe') or dlc == 'desconhecida',
         }
         entradas.append(e)
@@ -322,7 +327,14 @@ def main():
     with open(ENTRADA, encoding='utf-8') as f:
         dump = json.load(f)
 
-    entradas, completos, faccoes = montar(dump)
+    icones_path = os.path.join(os.path.dirname(ENTRADA), 'arma3-icones.json')
+    icones = {}
+    if os.path.isfile(icones_path):
+        with open(icones_path, encoding='utf-8') as f:
+            raw_icones = json.load(f)
+            icones = {k.replace('/', '\\').lower(): v for k, v in raw_icones.items()}
+
+    entradas, completos, faccoes = montar(dump, icones)
     erros = verificar(entradas)
     if erros:
         print(f'{len(erros)} violação(ões) — NADA foi gerado:')

@@ -149,13 +149,19 @@ def protecao(item):
     }
 
 
-def montar(dump):
+def montar(dump, icones):
     it = dump.get('itens') or {}
     entradas, detalhe = [], {}
 
     def add(classe, v, tipo, extra=None):
         dlc, dlcFonte = origem(classe, v)
         pr = protecao(v) if extra is None else None
+        
+        pic = v.get('picture')
+        img_url = None
+        if pic:
+            img_url = icones.get(pic.replace('/', '\\').lower())
+
         e = {
             'id': slug(classe),
             'classe': classe,
@@ -169,7 +175,7 @@ def montar(dump):
             'containerClass': v.get('containerClass') or None,
             'uniformeDe': v.get('uniformeDe') or None,
             'protecao': pr,
-            'imagem': v.get('picture') or None,
+            'imagem': img_url,
             '_ehMod': dlcFonte in ('mod', 'classe') or dlc == 'desconhecida',
         }
         entradas.append(e)
@@ -320,7 +326,14 @@ def main():
     with open(ENTRADA, encoding='utf-8') as f:
         dump = json.load(f)
 
-    entradas, detalhe = montar(dump)
+    icones_path = os.path.join(os.path.dirname(ENTRADA), 'arma3-icones.json')
+    icones = {}
+    if os.path.isfile(icones_path):
+        with open(icones_path, encoding='utf-8') as f:
+            raw_icones = json.load(f)
+            icones = {k.replace('/', '\\').lower(): v for k, v in raw_icones.items()}
+
+    entradas, detalhe = montar(dump, icones)
     erros = verificar(entradas)
     if erros:
         print(f'{len(erros)} violação(ões) — NADA foi gerado:')
