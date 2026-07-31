@@ -12,6 +12,14 @@ Sem TypeScript. Sem framework. Sem JSX.
 > **v1.0.0**. A partir dela, a **v2.0.0** expande a plataforma com novas
 > ferramentas, mais conteúdo e um catálogo militar completo.
 
+## Nota de rumo: Projeto Nexus Baluarte
+
+A ideia de desmembrar o projeto em 20 repositórios dedicados para reescrever
+cada função com mais calma e depois consolidar tudo em uma plataforma única é
+válida, mas só faz sentido se for tratada como uma migração arquitetural, e não
+como uma fragmentação sem controle. O plano completo de transição, domínios,
+contratos de integração e fases de execução está em [docs/PROJETO-NEXUS-BALUARTE.md](docs/PROJETO-NEXUS-BALUARTE.md).
+
 ---
 
 ## Como rodar
