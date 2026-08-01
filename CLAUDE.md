@@ -14,6 +14,21 @@ Antes de mexer, leia:
 remoto/local. · 👉 **issue #240** — Roadmap mestre: a fila de continuação (pegue o
 próximo item não-marcado). **Não feche** essas issues (são referência viva).
 
+## 🧩 Existem 20 repos `baluarte-*` — eles não são projetos novos
+
+São **fatias deste aqui**. O Baluarte cresceu até 98 rotas num repo só, e a saída
+foi separar por domínio, reescrever cada um com calma e reunir tudo depois num
+orquestrador — o **Projeto Nexus Baluarte** ([#405](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/405)).
+
+👉 [`docs/PROJETO-NEXUS-BALUARTE.md`](docs/PROJETO-NEXUS-BALUARTE.md) — plano e estado ·
+👉 [`baluarte-docs`](https://github.com/Lucas-Belucci-Bellini/baluarte-docs) — índice,
+cobertura, schema de contrato e os geradores.
+
+**Estado: Fase 1 entregue, nenhum código migrado.** Os 20 repos têm só a fronteira
+do domínio (README, CLAUDE.md, `contrato.json`, `MIGRACAO.md`). Próximo passo é
+extrair `baluarte-core` e `baluarte-shell` — e **este monólito segue em produção**
+durante toda a migração. Nenhuma fase pode derrubá-lo.
+
 ## ⚠️ Sessão LOCAL (com skills)? Leia primeiro
 
 👉 **[`docs/HANDOFF-LOCAL.md`](docs/HANDOFF-LOCAL.md)** — tarefas que dependem das

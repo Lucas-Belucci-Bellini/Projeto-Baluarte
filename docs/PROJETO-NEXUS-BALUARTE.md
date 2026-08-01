@@ -1,5 +1,47 @@
 # Projeto Nexus Baluarte — plano de reestruturação e reescrita
 
+## Estado atual — Fase 1 entregue, nenhum código migrado
+
+> Atualizado em 2026-08-01. Discussão: [#405](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/405).
+
+Os **20 repositórios existem e estão semeados**. Nenhum deles tem código ainda —
+o que entrou foi a fronteira de cada domínio: README, contexto pro agente,
+contrato de integração e o inventário do que vem de cá.
+
+| entregue | o quê |
+| --- | --- |
+| ✅ | 20 repos criados e com branch de migração |
+| ✅ | 488 arquivos deste monólito mapeados por domínio, **0 com dois donos** |
+| ✅ | contrato mínimo definido e validado nos 20 (`status: "proposto"`) |
+| ✅ | template de repositório e gerador reprodutível |
+| ⬜ | extrair `baluarte-core` · ⬜ extrair `baluarte-shell` |
+| ⬜ | camada de composição · ⬜ validar no navegador sem regressão |
+
+**A régua da migração mora em [`baluarte-docs`](https://github.com/Lucas-Belucci-Bellini/baluarte-docs)**:
+`INDICE-NEXUS.md` (os 20 domínios com onda e prioridade), `COBERTURA-NEXUS.md`
+(451/464 arquivos com dono declarado, e por que os outros 13 ficaram de fora),
+`contrato.schema.json`, mais `gerar-nexus.py` e `validar-contratos.py`.
+
+Os dois scripts falham alto de propósito: o gerador aborta se um padrão do
+inventário não casar com nada nesta árvore, e o validador aborta se A depende de
+B sem B saber, ou se um domínio migraria antes da própria base. Inventário que
+não bate com o repo é pior do que inventário nenhum.
+
+### Três coisas para não esquecer na hora de extrair
+
+- **`src/main.js` não migra como está.** Ele vira a camada de composição do
+  orquestrador — o único arquivo que muda de natureza na migração.
+- **O Vanguard não vira um 21º domínio.** `src/utils/vanguard/` é ponte para o
+  [repo irmão](https://github.com/Lucas-Belucci-Bellini/Project-Vanguard), onde o
+  motor balístico já tem testes. Duplicar seria manter duas físicas divergindo.
+- **`src/styles/fase17.css` e companhia atravessam domínios** — estilizam páginas
+  de `tools` e de `arsenal` ao mesmo tempo. Fatiar na extração, não mover inteiro.
+
+### Próximo passo
+
+Onda 1: extrair `baluarte-core`, depois `baluarte-shell`. Enquanto isso, **este
+monólito continua sendo o sistema em produção** — nenhuma fase pode derrubá-lo.
+
 ## Visão
 
 A ideia de separar o Baluarte em 20 repositórios dedicados para reescrever cada função com mais calma e depois consolidar tudo em um projeto único é boa, desde que seja tratada como uma migração arquitetural e não como uma fragmentação sem controle.
@@ -371,10 +413,10 @@ Essa ordem prioriza o que sustenta o sistema antes do que depende dele.
 
 ## Checklist inicial de abertura
 
-- [ ] criar branch de migração;
-- [ ] mapear módulos atuais;
-- [ ] definir contratos mínimos;
-- [ ] criar template de repositório;
+- [x] criar branch de migração;
+- [x] mapear módulos atuais;
+- [x] definir contratos mínimos;
+- [x] criar template de repositório;
 - [ ] extrair core;
 - [ ] extrair shell;
 - [ ] validar o sistema no navegador;
@@ -544,21 +586,21 @@ Este plano foca na primeira onda real de migração: core, shell, profile e data
 
 ### Fase 1 — base de migração
 
-- [ ] P0 — criar branch de migração
+- [x] P0 — criar branch de migração
   - Dependência: nenhuma
-  - Status sugerido: Backlog
-- [ ] P0 — mapear rotas, módulos e dependências
+  - Status: **feito** — branch `claude/projeto-baluarte-issues-y7jv88` nos 20 repos
+- [x] P0 — mapear rotas, módulos e dependências
   - Dependência: branch criada
-  - Status sugerido: Backlog
-- [ ] P0 — definir o contrato mínimo de integração
+  - Status: **feito** — 488 arquivos, 0 com dois donos (`COBERTURA-NEXUS.md`)
+- [x] P0 — definir o contrato mínimo de integração
   - Dependência: mapeamento concluído
-  - Status sugerido: Backlog
-- [ ] P1 — criar template base de repositório e README
+  - Status: **feito** — `contrato.schema.json`; os 20 contratos passam no validador
+- [x] P1 — criar template base de repositório e README
   - Dependência: contrato definido
-  - Status sugerido: Backlog
-- [ ] P1 — preparar o estado inicial de cada domínio
+  - Status: **feito** — `gerar-nexus.py`, reprodutível e abortando em divergência
+- [x] P1 — preparar o estado inicial de cada domínio
   - Dependência: template criado
-  - Status sugerido: Backlog
+  - Status: **feito** — os 20 em `maturidade: backlog`, `versao: 0.0.0`
 
 ### Fase 2 — núcleo
 
