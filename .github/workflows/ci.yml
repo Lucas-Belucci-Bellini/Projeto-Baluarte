@@ -50,6 +50,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      # O mapa da migração (docs/nexus/dominios.json) só vale enquanto for
+      # verdade: rota nova em src/main.js sem dono declarado quebra aqui, em
+      # vez de virar órfã no meio da extração dos 20 domínios (#406).
+      - name: O mapa do Nexus bate com as rotas reais?
+        run: npm run verificar-nexus
+
       - name: Regerar as bases e conferir as invariantes
         run: npm run verificar-arma3
 
