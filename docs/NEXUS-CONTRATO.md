@@ -33,6 +33,7 @@ export default {
   nome: 'arsenal',              // == nome do repositório, sem o prefixo
   versao: '0.1.0',              // semver do DOMÍNIO, independente do site
   contrato: '1.0.0',            // versão deste contrato que o módulo implementa
+  natureza: 'paginas',          // paginas | biblioteca (ver §1.1)
 
   /* Rotas que o domínio publica. `load` é sempre import() dinâmico:
    * é o que mantém o code-splitting que o site já tem hoje. */
@@ -62,6 +63,18 @@ export default {
   async parar() {},
 };
 ```
+
+### 1.1 `natureza` — nem todo domínio publica tela
+
+Quatro dos 21 não têm rota e nunca vão ter: `core`, `data`, `infra` e `docs`.
+Eles são consumidos, não navegados. Sem essa distinção, "domínio sem rota"
+seria indistinguível de "domínio que ainda não extraiu nada" — e o verificador
+não teria como cobrar nem um nem outro.
+
+| `natureza` | Quem | Regra |
+|---|---|---|
+| `paginas` | os outros 17 | publica rota. Enquanto `rotas` estiver vazio, `planejado` diz o que vem — um dos dois é obrigatório. |
+| `biblioteca` | `core`, `data`, `infra`, `docs` | `rotas` **tem que** ficar vazio. Rota aqui é erro de contrato, não domínio adiantado. |
 
 ### Nomes de evento
 
