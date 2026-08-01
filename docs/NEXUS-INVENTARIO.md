@@ -3,7 +3,8 @@
 > **Medido em 2026-08-01** contra o `main`. Números saem de
 > `npm run verificar-nexus` e de `du`/`find` no repositório — nenhum foi digitado
 > de memória. Mapa completo: [`nexus/dominios.json`](nexus/dominios.json) ·
-> Contrato: [`NEXUS-CONTRATO.md`](NEXUS-CONTRATO.md) · Plano:
+> Contrato: [`NEXUS-CONTRATO.md`](NEXUS-CONTRATO.md) · Decisões:
+> [`NEXUS-DECISOES.md`](NEXUS-DECISOES.md) · Plano:
 > [`PROJETO-NEXUS-BALUARTE.md`](PROJETO-NEXUS-BALUARTE.md) (issues #405/#406).
 
 ## O que existe hoje
@@ -18,6 +19,7 @@
 | App desktop | `desktop/` · 16 arquivos |
 | Versão do site | 2.0.0 · wiki de Arma 3 em 0.9.1 (1.816 artigos) |
 | **Os 20 repositórios de domínio** | **criados e 100% vazios — nem README** |
+| 21º domínio (`baluarte-geo`, D-001) | decidido, repositório ainda **não criado** |
 
 O último ponto é o que importa: a migração está em **0%**. O plano foi escrito
 (#406, `docs/PROJETO-NEXUS-BALUARTE.md`, 651 linhas) e os 20 repositórios foram
@@ -37,27 +39,33 @@ abertos, mas nenhum recebeu um arquivo sequer. Tudo continua rodando do monólit
 | `baluarte-midia` | 4 | core, shell, data |
 | `baluarte-audio` · `baluarte-economia` | 3 cada | core, shell, data |
 | `baluarte-elites` | 2 | core, shell, data |
+| `baluarte-geo` | 6 | core, shell, data (+ Project-Vanguard) |
 | `academia` · `robotica` · `jarvis-memory` · `profile` · `desktop` | 1 cada | — |
 | `core` · `data` · `infra` · `docs` | 0 (não têm rota) | — |
-| **Sem dono (lacunas)** | **8** | ver abaixo |
+| **Externo** `Projeto-Baluarte-Social-Media` | 2 | contrato v1.0.0 |
+| **Sem dono (lacunas)** | **0** | — |
 
-## As 2 lacunas — decisão do operador, antes de começar
+## As 2 lacunas — decididas em 2026-08-01
 
-O plano tem 20 domínios; o site tem rotas que não cabem em nenhum deles. São 8
-rotas órfãs. Elas não podem ser descobertas no meio da migração.
+O plano tinha 20 domínios; o site tinha 8 rotas que não cabiam em nenhum deles.
+Registro completo com contexto e consequências em
+[`NEXUS-DECISOES.md`](NEXUS-DECISOES.md):
 
-**1. Geo/tático — 6 rotas** (`/mapa`, `/radar`, `/geo`, `/find`,
-`/triangulacao`, `/vanguard`).
-O repositório irmão **Project-Vanguard já é esse domínio** (GPS topográfico +
-computador de tiro, motor com zero dependência e zero DOM — feito exatamente
-pra ser consumido de fora).
-→ *Recomendo:* `baluarte-geo` como 21º domínio, acoplando o Vanguard por
-contrato. A alternativa (dobrar em `tools`) engorda o domínio que já é o maior.
+- **D-001 — geo/tático vira `baluarte-geo`, o 21º domínio.** Dono de `/mapa`,
+  `/radar`, `/geo`, `/find`, `/triangulacao` e `/vanguard`. Consome o motor do
+  **Project-Vanguard** em vez de reimplementar — hoje esse motor está
+  *vendorizado* em `src/utils/vanguard/`, e cópia de física é duas
+  implementações esperando divergir. Efeito colateral corrigido:
+  `fingerprint-engine.js` sai de `cibersec` e vai pro geo, porque `/find` é
+  posicionamento indoor por impressão acústica, não segurança.
+- **D-002 — social vai pro `Projeto-Baluarte-Social-Media`.** `/mural` e
+  `/comms` entram como **externo**: publicam rota pelo mesmo contrato, sem virar
+  um 22º domínio. `src/core/comms.js` e `src/core/realtime.js` migram junto.
 
-**2. Social — 2 rotas** (`/mural`, `/comms`).
-Feed + chat em tempo real, domínio que o plano não previu. Já existe o
-repositório **Projeto-Baluarte-Social-Media**.
-→ *Recomendo:* levar as duas pra lá, em vez de abrir um 22º.
+**Resultado: as 97 rotas têm dono. Zero órfãs.**
+
+Pendência operacional das decisões: **o repositório `baluarte-geo` ainda não
+existe no GitHub** — os outros 20 já foram criados.
 
 ## O gate da 1.0.0
 
@@ -68,8 +76,10 @@ O que **precisa** estar fechado antes de chamar qualquer coisa de
       `npm run verificar-nexus` (cobertura das 97 rotas, sem dono duplo, sem
       ciclo de dependência).
 - [x] **Contrato mínimo de integração v1.0.0** — `NEXUS-CONTRATO.md`.
-- [ ] **Decidir as 2 lacunas acima.** Bloqueia a primeira onda.
-- [ ] **Semear os 20 repositórios** com README + `baluarte.module.js` +
+- [x] **Decidir as 2 lacunas** — D-001 e D-002, em
+      [`NEXUS-DECISOES.md`](NEXUS-DECISOES.md). As 97 rotas têm dono.
+- [ ] **Criar o repositório `baluarte-geo`** (consequência de D-001).
+- [ ] **Semear os 21 repositórios** com README + `baluarte.module.js` +
       CI mínimo, a partir de `docs/nexus/template/`. Repositório vazio não tem
       como receber domínio.
 - [ ] **Primeira onda: `core` → `shell` → `profile` → `data`** extraídos e

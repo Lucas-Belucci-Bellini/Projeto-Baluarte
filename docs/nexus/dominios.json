@@ -294,7 +294,6 @@
         "src/pages/seguranca.js",
         "src/pages/shadow.js",
         "src/utils/cripto-engine.js",
-        "src/utils/fingerprint-engine.js",
         "src/data/ciberseg.js"
       ],
       "precisa": ["baluarte-core", "baluarte-shell"],
@@ -447,6 +446,32 @@
       "precisa": [],
       "peso": "leve"
     },
+    "baluarte-geo": {
+      "responsabilidade": "Geo/tático: mapa, radar acústico, rastreio de posição, triangulação, posicionamento indoor e o computador de tiro. Consome o motor do Project-Vanguard por contrato — não reimplementa física.",
+      "estado": "vazio",
+      "decidido": "2026-08-01 — 21º domínio (ver NEXUS-DECISOES.md, D-001).",
+      "rotas": ["/mapa", "/radar", "/geo", "/find", "/triangulacao", "/vanguard"],
+      "origem": [
+        "src/pages/mapa.js",
+        "src/pages/radar.js",
+        "src/pages/geopulse.js",
+        "src/pages/find.js",
+        "src/pages/triangulacao.js",
+        "src/pages/vanguard.js",
+        "src/utils/maplibre-loader.js",
+        "src/utils/geo-tracker.js",
+        "src/utils/radar-dsp.js",
+        "src/utils/radar-source.js",
+        "src/utils/radar-tracker.js",
+        "src/utils/triangulation.js",
+        "src/utils/fingerprint-engine.js",
+        "src/utils/vanguard/ (motor vendorizado — passa a vir do Project-Vanguard)",
+        "src/data/camadas-mapa.js"
+      ],
+      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "externosQueConsome": ["Project-Vanguard"],
+      "peso": "leve"
+    },
     "baluarte-docs": {
       "responsabilidade": "Documentação, contrato visual, manual de operação e histórico.",
       "estado": "vazio",
@@ -462,17 +487,29 @@
       "peso": "leve"
     }
   },
-  "lacunas": {
-    "$comentario": "Rotas REAIS do site que a divisão em 20 domínios do #406 não cobre. Precisam de decisão do operador ANTES da primeira onda — senão viram órfãs no meio da migração.",
-    "geo-tatico": {
-      "rotas": ["/mapa", "/radar", "/geo", "/find", "/triangulacao", "/vanguard"],
-      "problema": "Seis rotas de geolocalização/tático sem domínio no plano. O repo irmão Project-Vanguard já é exatamente esse domínio (motor de balística + GPS topográfico).",
-      "recomendacao": "Criar baluarte-geo como 21º domínio e acoplar o Project-Vanguard por contrato (o motor dele já é zero-dependência e zero-DOM, feito pra isso). Alternativa mais barata: dobrar em baluarte-tools, aceitando que fica gordo."
-    },
-    "social": {
+  "externos": {
+    "$comentario": "Repositórios FORA dos domínios do Nexus que, mesmo assim, entram na composição final. Ficam aqui pra que rota nenhuma fique sem dono — e pra que ninguém tente 'trazer de volta' o que já tem casa.",
+    "Projeto-Baluarte-Social-Media": {
+      "responsabilidade": "Domínio social: feed do Mural e chat em tempo real da Rede Neural.",
       "rotas": ["/mural", "/comms"],
-      "problema": "Mural (feed) e Rede Neural (chat em tempo real) são domínio social, que o plano não prevê.",
-      "recomendacao": "Levar para o repo Projeto-Baluarte-Social-Media, que já existe. Alternativa: dobrar em baluarte-profile (identidade + comunidade do operador)."
+      "origem": [
+        "src/pages/mural.js",
+        "src/pages/comms.js",
+        "src/core/comms.js",
+        "src/core/realtime.js"
+      ],
+      "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-002.",
+      "integracao": "contrato v1.0.0, igual a um domínio: publica rotas via baluarte.module.js."
+    },
+    "Project-Vanguard": {
+      "responsabilidade": "Motor de balística + GPS topográfico. Zero dependência e zero DOM em src/engine/ — feito pra ser consumido de fora.",
+      "rotas": [],
+      "origem": ["consumido por baluarte-geo (hoje vendorizado em src/utils/vanguard/)"],
+      "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-001.",
+      "integracao": "biblioteca: baluarte-geo importa o motor; a física tem UMA implementação, nunca duas."
     }
+  },
+  "lacunas": {
+    "$comentario": "Rota do site sem domínio. Vazio é o estado saudável — o que já foi decidido virou registro em NEXUS-DECISOES.md. Lacuna nova entra aqui com problema E recomendação, nunca só o buraco."
   }
 }

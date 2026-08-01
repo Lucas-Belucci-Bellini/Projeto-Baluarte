@@ -6,10 +6,12 @@
  *
  *  1. cobertura total — toda rota registrada em src/main.js aparece no mapa;
  *  2. sem órfã — toda rota do mapa existe de fato em src/main.js;
- *  3. sem dono duplo — nenhuma rota em dois domínios ao mesmo tempo;
- *  4. os 20 domínios do plano (#406) estão todos declarados;
+ *  3. sem dono duplo — nenhuma rota em dois donos ao mesmo tempo;
+ *  4. os domínios aprovados (#406 + decisões) estão todos declarados;
  *  5. `precisa` aponta só para domínio que existe, e o grafo não tem ciclo;
- *  6. `estado` e `peso` usam o vocabulário combinado.
+ *  6. `estado` e `peso` usam o vocabulário combinado;
+ *  7. domínio fora dos 20 originais aponta a decisão que o criou;
+ *  8. repositório externo declara decisão e forma de integração.
  *
  * Rodar: node scripts/verificar-nexus.mjs   (ou npm run verificar-nexus)
  * Sai com código 1 se algo divergir — dá pra plugar no CI.
@@ -24,8 +26,9 @@ const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const MAPA = join(raiz, 'docs/nexus/dominios.json');
 const MAIN = join(raiz, 'src/main.js');
 
-/* Os 20 do plano. A lista é fixa de propósito: se alguém inventar um domínio
- * novo sem passar pelo #406, o verificador reclama em vez de aceitar calado. */
+/* Os domínios aprovados. A lista é fixa de propósito: se alguém inventar um
+ * domínio novo sem passar pelo #406, o verificador reclama em vez de aceitar
+ * calado. Entrada nova aqui exige registro em docs/NEXUS-DECISOES.md. */
 const DOMINIOS_DO_PLANO = [
   'baluarte-core', 'baluarte-shell', 'baluarte-content', 'baluarte-tools',
   'baluarte-arsenal', 'baluarte-elites', 'baluarte-academia', 'baluarte-robotica',
@@ -33,6 +36,7 @@ const DOMINIOS_DO_PLANO = [
   'baluarte-jarvis-core', 'baluarte-jarvis-tools', 'baluarte-jarvis-memory',
   'baluarte-profile', 'baluarte-data', 'baluarte-desktop', 'baluarte-infra',
   'baluarte-docs',
+  'baluarte-geo',   // D-001 (2026-08-01): 21º domínio, geo/tático.
 ];
 
 const ESTADOS = ['vazio', 'backlog', 'desenvolvimento', 'teste', 'estavel'];
@@ -65,10 +69,26 @@ for (const [nome, d] of Object.entries(mapa.dominios)) {
   if (!Array.isArray(d.origem) || d.origem.length === 0) falhar(`${nome}: sem origem no monólito`);
 }
 
+/* Externos: repositórios de fora do Nexus que entram na composição final
+ * (D-001/D-002). Publicam rota pelo mesmo contrato, então contam como dono. */
+for (const [nome, e] of Object.entries(mapa.externos)) {
+  if (nome.startsWith('$')) continue;
+  for (const rota of e.rotas) declarar(rota, `externo:${nome}`);
+  if (!e.decidido?.trim()) falhar(`externo ${nome}: sem a decisão que o trouxe pra cá`);
+  if (!e.integracao?.trim()) falhar(`externo ${nome}: sem forma de integração declarada`);
+}
+
 for (const [nome, l] of Object.entries(mapa.lacunas)) {
   if (nome.startsWith('$')) continue;
   for (const rota of l.rotas) declarar(rota, `lacuna:${nome}`);
   if (!l.recomendacao?.trim()) falhar(`lacuna ${nome}: sem recomendação — lacuna sem saída proposta é só um buraco`);
+}
+
+/* Domínio que veio de decisão precisa apontar pra ela. Sem isso, daqui a três
+ * meses ninguém lembra por que existe um 21º e a discussão recomeça. */
+for (const [nome, d] of Object.entries(mapa.dominios)) {
+  const noPlanoOriginal = DOMINIOS_DO_PLANO.indexOf(nome) < 20;
+  if (!noPlanoOriginal && !d.decidido?.trim()) falhar(`${nome}: domínio fora dos 20 originais sem registro de decisão`);
 }
 
 /* 1 e 2 — cobertura nos dois sentidos. */
@@ -107,14 +127,18 @@ function ciclo(nome, caminho) {
 for (const nome of Object.keys(mapa.dominios)) ciclo(nome, []);
 
 /* Relatório. */
-const emDominio = [...declaradas.values()].filter((d) => !d.startsWith('lacuna:')).length;
-const emLacuna = declaradas.size - emDominio;
+const donos = [...declaradas.values()];
+const emDominio = donos.filter((d) => !d.startsWith('lacuna:') && !d.startsWith('externo:')).length;
+const emExterno = donos.filter((d) => d.startsWith('externo:')).length;
+const emLacuna = donos.filter((d) => d.startsWith('lacuna:')).length;
 
 console.log(`Nexus — mapa de migração (contrato ${mapa.versaoContrato})`);
 console.log(`  rotas em src/main.js ....... ${rotasReais.length}`);
 console.log(`  com domínio definido ....... ${emDominio}`);
+console.log(`  em repositório externo ..... ${emExterno}`);
 console.log(`  em lacuna (sem dono) ....... ${emLacuna}`);
-console.log(`  domínios declarados ........ ${Object.keys(mapa.dominios).length}/20`);
+console.log(`  domínios declarados ........ ${Object.keys(mapa.dominios).length}/${DOMINIOS_DO_PLANO.length}`);
+console.log(`  repositórios externos ...... ${Object.keys(mapa.externos).filter((k) => !k.startsWith("$")).length}`);
 
 const porEstado = {};
 for (const d of Object.values(mapa.dominios)) porEstado[d.estado] = (porEstado[d.estado] ?? 0) + 1;

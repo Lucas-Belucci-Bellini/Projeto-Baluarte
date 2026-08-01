@@ -5,6 +5,8 @@
 > - 🗺️ [`NEXUS-INVENTARIO.md`](NEXUS-INVENTARIO.md) — estado real medido + o
 >   gate da 1.0.0 + as 2 lacunas que dependem de decisão do operador.
 > - 📐 [`NEXUS-CONTRATO.md`](NEXUS-CONTRATO.md) — contrato de integração v1.0.0.
+> - ⚖️ [`NEXUS-DECISOES.md`](NEXUS-DECISOES.md) — decisões fechadas (D-001 geo,
+>   D-002 social). São **21** domínios + externos, não mais os 20 da lista abaixo.
 > - 📊 [`nexus/dominios.json`](nexus/dominios.json) — quem leva o quê, cobrado
 >   por `npm run verificar-nexus` contra o `src/main.js` real.
 > - 🧩 [`nexus/template/`](nexus/template/) — esqueleto de repositório de domínio.
