@@ -31,7 +31,8 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 - `desktop/` — app Electron (main, preload, nexus, ipc) + workflow de release · **Node 24** (engines do site e do app)
 - `historico/CHANGELOG.md` — registro do que entra no `main`
 - `docs/DESIGN-SYSTEM.md` — **contrato visual** (tokens/componentes/diretrizes do redesign #246/#195); todo design novo sai daqui · `docs/REACT-BITS.md` (efeitos) · `docs/CENTRO-MILITAR.md` (hub militar)
-- Issues guarda-chuva (**não fechar**): **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign)
+- **Migração Nexus** (#405/#406): `docs/NEXUS-INVENTARIO.md` (estado real + gate da 1.0.0) · `docs/NEXUS-CONTRATO.md` (contrato v1.0.0) · `docs/nexus/dominios.json` (mapa dos 20 domínios, cobrado por `npm run verificar-nexus`). Os 20 repositórios `baluarte-*` existem mas estão **vazios** — enquanto um domínio não estiver `estavel`, **a versão que vale é a deste repositório**.
+- Issues guarda-chuva (**não fechar**): **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign) · **#406** (Nexus/migração)
 
 ## Regras do projeto
 
