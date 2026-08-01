@@ -11,7 +11,7 @@
   "dominios": {
     "baluarte-core": {
       "responsabilidade": "Base da aplicação: router, estado, eventos, storage, sessão/banco e helpers compartilhados. Não tem rota própria — é o que todo mundo importa.",
-      "estado": "vazio",
+      "estado": "desenvolvimento",
       "rotas": [],
       "origem": [
         "src/core/router.js",

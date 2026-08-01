@@ -10,8 +10,17 @@
  * e os recursos caem no modo local (ex.: o mural volta pro localStorage).
  */
 
-const URL = (import.meta.env.VITE_SUPABASE_URL || 'https://hcwzsxdcvmswebunznak.supabase.co').replace(/\/+$/, '');
-const ANON = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_uR0aJkZN54dkQJY0Tnx6GA_-4ehyOCm';
+/* Lê do Vite (`import.meta.env`) quando empacotado, do ambiente quando rodando
+ * em Node — teste, Web Worker ou host serverless. `import.meta.env` só existe
+ * sob o Vite; ler direto derruba o módulo no import fora dele. Mesma correção
+ * aplicada no baluarte-core, pra as duas cópias não divergirem durante a
+ * migração (#406). No navegador o comportamento é idêntico ao de antes. */
+const env = (typeof import.meta !== 'undefined' && import.meta.env)
+  || globalThis.process?.env
+  || {};
+
+const URL = (env.VITE_SUPABASE_URL || 'https://hcwzsxdcvmswebunznak.supabase.co').replace(/\/+$/, '');
+const ANON = env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_uR0aJkZN54dkQJY0Tnx6GA_-4ehyOCm';
 
 export function supabaseConfigured() { return !!(URL && ANON); }
 export function supabaseUrl() { return URL; }
