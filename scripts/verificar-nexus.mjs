@@ -11,7 +11,8 @@
  *  5. `precisa` aponta só para domínio que existe, e o grafo não tem ciclo;
  *  6. `estado` e `peso` usam o vocabulário combinado;
  *  7. domínio fora dos 20 originais aponta a decisão que o criou;
- *  8. repositório externo declara decisão e forma de integração.
+ *  8. repositório externo declara decisão e forma de integração;
+ *  9. nenhum arquivo do monólito aparece em dois domínios.
  *
  * Rodar: node scripts/verificar-nexus.mjs   (ou npm run verificar-nexus)
  * Sai com código 1 se algo divergir — dá pra plugar no CI.
@@ -91,6 +92,24 @@ for (const [nome, d] of Object.entries(mapa.dominios)) {
   if (!noPlanoOriginal && !d.decidido?.trim()) falhar(`${nome}: domínio fora dos 20 originais sem registro de decisão`);
 }
 
+/* Arquivo com dois donos é a mesma doença da rota com dono duplo, um nível
+ * abaixo — e mais traiçoeira: os dois domínios extraem, ninguém percebe, e o
+ * arquivo passa a existir em duas versões que divergem em silêncio. Apareceu
+ * de verdade ao extrair o core (user-prefs, memory-cloud, comms, realtime). */
+const donoArquivo = new Map();
+const declararArquivo = (arq, dono) => {
+  if (arq.endsWith('/') || arq.includes('(')) return;   // pasta ou anotação em prosa
+  if (donoArquivo.has(arq)) falhar(`arquivo com dono duplo: ${arq} (${donoArquivo.get(arq)} e ${dono})`);
+  else donoArquivo.set(arq, dono);
+};
+for (const [nome, d] of Object.entries(mapa.dominios)) {
+  for (const arq of d.origem) declararArquivo(arq, nome);
+}
+for (const [nome, e] of Object.entries(mapa.externos)) {
+  if (nome.startsWith('$')) continue;
+  for (const arq of e.origem) declararArquivo(arq, `externo:${nome}`);
+}
+
 /* 1 e 2 — cobertura nos dois sentidos. */
 for (const rota of rotasReais) {
   if (!declaradas.has(rota)) falhar(`rota do site fora do mapa: ${rota} (registrada em src/main.js)`);
@@ -137,6 +156,7 @@ console.log(`  rotas em src/main.js ....... ${rotasReais.length}`);
 console.log(`  com domínio definido ....... ${emDominio}`);
 console.log(`  em repositório externo ..... ${emExterno}`);
 console.log(`  em lacuna (sem dono) ....... ${emLacuna}`);
+console.log(`  arquivos com dono .......... ${donoArquivo.size}`);
 console.log(`  domínios declarados ........ ${Object.keys(mapa.dominios).length}/${DOMINIOS_DO_PLANO.length}`);
 console.log(`  repositórios externos ...... ${Object.keys(mapa.externos).filter((k) => !k.startsWith("$")).length}`);
 

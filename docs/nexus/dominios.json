@@ -18,13 +18,9 @@
         "src/core/state.js",
         "src/core/events.js",
         "src/core/storage.js",
-        "src/core/user-prefs.js",
         "src/core/supabase.js",
         "src/core/supabase-auth.js",
-        "src/core/realtime.js",
-        "src/core/memory-cloud.js",
         "src/core/media-sync.js",
-        "src/core/comms.js",
         "src/utils/helpers.js",
         "src/utils/icons.js",
         "src/utils/toast.js",
@@ -32,8 +28,8 @@
         "src/utils/pwa.js",
         "src/utils/page-views.js",
         "src/utils/visit-counter.js",
-        "src/utils/shadow-gate.js",
-        "src/utils/hx-beacon.js"
+        "src/utils/hx-beacon.js",
+        "src/utils/auth-engine.js"
       ],
       "precisa": [],
       "peso": "leve"
@@ -41,7 +37,14 @@
     "baluarte-shell": {
       "responsabilidade": "Casca visual: layout, sidebar, header, overlay, tokens, efeitos e as páginas institucionais que moram no shell.",
       "estado": "vazio",
-      "rotas": ["/home", "/home-3d", "/home2", "/sobre", "/roadmap", "/projetos"],
+      "rotas": [
+        "/home",
+        "/home-3d",
+        "/home2",
+        "/sobre",
+        "/roadmap",
+        "/projetos"
+      ],
       "origem": [
         "src/layout/shell.js",
         "src/layout/header.js",
@@ -61,7 +64,9 @@
         "src/utils/hero-rays.js",
         "src/utils/hero3d.js"
       ],
-      "precisa": ["baluarte-core"],
+      "precisa": [
+        "baluarte-core"
+      ],
       "peso": "leve"
     },
     "baluarte-content": {
@@ -95,7 +100,11 @@
         "src/data/zomboid-mods.js",
         "src/data/zomboid-admin.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "leve"
     },
     "baluarte-tools": {
@@ -159,7 +168,10 @@
         "src/utils/syntax-highlight.js",
         "src/utils/vfs.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell"
+      ],
       "peso": "leve"
     },
     "baluarte-arsenal": {
@@ -209,13 +221,20 @@
         "src/utils/arma3-balistica.js",
         "src/utils/arma3-grade.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "leve"
     },
     "baluarte-elites": {
       "responsabilidade": "Equipes, unidades e dossiês operacionais.",
       "estado": "vazio",
-      "rotas": ["/elites", "/dossie"],
+      "rotas": [
+        "/elites",
+        "/dossie"
+      ],
       "origem": [
         "src/pages/elites.js",
         "src/pages/dossie.js",
@@ -223,29 +242,56 @@
         "src/data/elites-rosters.js",
         "src/data/dossie.json"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "leve"
     },
     "baluarte-academia": {
       "responsabilidade": "Conteúdo acadêmico e trilhas de estudo.",
       "estado": "vazio",
-      "rotas": ["/academia"],
-      "origem": ["src/pages/academia.js", "src/data/academia.js"],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "rotas": [
+        "/academia"
+      ],
+      "origem": [
+        "src/pages/academia.js",
+        "src/data/academia.js"
+      ],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "leve"
     },
     "baluarte-robotica": {
       "responsabilidade": "Currículo de robótica: módulos teóricos e práticos.",
       "estado": "vazio",
-      "rotas": ["/robotica"],
-      "origem": ["src/pages/robotica.js", "src/data/robotica.js"],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "rotas": [
+        "/robotica"
+      ],
+      "origem": [
+        "src/pages/robotica.js",
+        "src/data/robotica.js"
+      ],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "leve"
     },
     "baluarte-midia": {
       "responsabilidade": "Player de vídeo, galerias, TV e visor 3D de modelos.",
       "estado": "vazio",
-      "rotas": ["/media", "/videos", "/tv", "/modelos-3d"],
+      "rotas": [
+        "/media",
+        "/videos",
+        "/tv",
+        "/modelos-3d"
+      ],
       "origem": [
         "src/pages/media.js",
         "src/pages/videos.js",
@@ -261,13 +307,21 @@
         "src/data/modelos-3d.json",
         "src/data/spline-scenes.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "pesado"
     },
     "baluarte-audio": {
       "responsabilidade": "Áudio: FFT, síntese, rádio e player de músicas.",
       "estado": "vazio",
-      "rotas": ["/fft", "/radio", "/musicas"],
+      "rotas": [
+        "/fft",
+        "/radio",
+        "/musicas"
+      ],
       "origem": [
         "src/pages/fft.js",
         "src/pages/radio.js",
@@ -280,13 +334,23 @@
         "src/data/soundcloud-tracks.js",
         "src/data/albuns.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "leve"
     },
     "baluarte-cibersec": {
       "responsabilidade": "Segurança digital: criptografia, esteganografia, análise e o gate oculto.",
       "estado": "vazio",
-      "rotas": ["/ciberseg", "/cripto", "/esteganografia", "/seguranca", "/shadow"],
+      "rotas": [
+        "/ciberseg",
+        "/cripto",
+        "/esteganografia",
+        "/seguranca",
+        "/shadow"
+      ],
       "origem": [
         "src/pages/ciberseg.js",
         "src/pages/cripto/",
@@ -294,15 +358,23 @@
         "src/pages/seguranca.js",
         "src/pages/shadow.js",
         "src/utils/cripto-engine.js",
-        "src/data/ciberseg.js"
+        "src/data/ciberseg.js",
+        "src/utils/shadow-gate.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell"
+      ],
       "peso": "leve"
     },
     "baluarte-economia": {
       "responsabilidade": "Economia: câmbio, cripto de mercado, banco e séries financeiras.",
       "estado": "vazio",
-      "rotas": ["/economia", "/dolar", "/banco"],
+      "rotas": [
+        "/economia",
+        "/dolar",
+        "/banco"
+      ],
       "origem": [
         "src/pages/economia.js",
         "src/pages/dolar.js",
@@ -311,7 +383,11 @@
         "src/data/cambio-historico.json",
         "reports/cambio/"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
       "peso": "leve"
     },
     "baluarte-jarvis-core": {
@@ -348,13 +424,23 @@
         "src/utils/llm-mini.js",
         "src/utils/memory-ml.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-jarvis-memory"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-jarvis-memory"
+      ],
       "peso": "pesado"
     },
     "baluarte-jarvis-tools": {
       "responsabilidade": "Capacidades do agente: skills do Git Nexus, visão, geração de código e ponte de APIs.",
       "estado": "vazio",
-      "rotas": ["/git-nexus", "/gerar-codigo", "/jarvis-vision", "/visao", "/apis"],
+      "rotas": [
+        "/git-nexus",
+        "/gerar-codigo",
+        "/jarvis-vision",
+        "/visao",
+        "/apis"
+      ],
       "origem": [
         "src/pages/git-nexus.js",
         "src/pages/git-nexus-gate.js",
@@ -377,13 +463,19 @@
         "src/utils/nucleo-scene.js",
         "src/utils/nucleo-socket.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-jarvis-core", "baluarte-desktop"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-jarvis-core",
+        "baluarte-desktop"
+      ],
       "peso": "pesado"
     },
     "baluarte-jarvis-memory": {
       "responsabilidade": "Memória do agente: histórico, recall e contexto persistente.",
       "estado": "vazio",
-      "rotas": ["/memoria"],
+      "rotas": [
+        "/memoria"
+      ],
       "origem": [
         "src/pages/memoria.js",
         "src/utils/jarvis-memory.js",
@@ -391,21 +483,27 @@
         "src/utils/jarvis-repo-memory.js",
         "src/core/memory-cloud.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-data"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-data"
+      ],
       "peso": "pesado"
     },
     "baluarte-profile": {
       "responsabilidade": "Identidade do operador: dossiê pessoal, estatísticas, preferências e autenticação.",
       "estado": "vazio",
-      "rotas": ["/perfil"],
+      "rotas": [
+        "/perfil"
+      ],
       "origem": [
         "src/pages/perfil.js",
-        "src/utils/auth-engine.js",
         "src/core/user-prefs.js",
         "src/data/perfis.js",
         "src/data/skills.js"
       ],
-      "precisa": ["baluarte-core"],
+      "precisa": [
+        "baluarte-core"
+      ],
       "peso": "leve"
     },
     "baluarte-data": {
@@ -427,9 +525,17 @@
     "baluarte-desktop": {
       "responsabilidade": "App Electron (Baluarte Launcher), ponte IPC, detecção do motor e a página de download.",
       "estado": "vazio",
-      "rotas": ["/baixar"],
-      "origem": ["desktop/", "src/pages/baixar.js", "src/data/site-capabilities.js"],
-      "precisa": ["baluarte-core"],
+      "rotas": [
+        "/baixar"
+      ],
+      "origem": [
+        "desktop/",
+        "src/pages/baixar.js",
+        "src/data/site-capabilities.js"
+      ],
+      "precisa": [
+        "baluarte-core"
+      ],
       "peso": "pesado"
     },
     "baluarte-infra": {
@@ -450,7 +556,14 @@
       "responsabilidade": "Geo/tático: mapa, radar acústico, rastreio de posição, triangulação, posicionamento indoor e o computador de tiro. Consome o motor do Project-Vanguard por contrato — não reimplementa física.",
       "estado": "vazio",
       "decidido": "2026-08-01 — 21º domínio (ver NEXUS-DECISOES.md, D-001).",
-      "rotas": ["/mapa", "/radar", "/geo", "/find", "/triangulacao", "/vanguard"],
+      "rotas": [
+        "/mapa",
+        "/radar",
+        "/geo",
+        "/find",
+        "/triangulacao",
+        "/vanguard"
+      ],
       "origem": [
         "src/pages/mapa.js",
         "src/pages/radar.js",
@@ -468,8 +581,14 @@
         "src/utils/vanguard/ (motor vendorizado — passa a vir do Project-Vanguard)",
         "src/data/camadas-mapa.js"
       ],
-      "precisa": ["baluarte-core", "baluarte-shell", "baluarte-data"],
-      "externosQueConsome": ["Project-Vanguard"],
+      "precisa": [
+        "baluarte-core",
+        "baluarte-shell",
+        "baluarte-data"
+      ],
+      "externosQueConsome": [
+        "Project-Vanguard"
+      ],
       "peso": "leve"
     },
     "baluarte-docs": {
@@ -491,7 +610,10 @@
     "$comentario": "Repositórios FORA dos domínios do Nexus que, mesmo assim, entram na composição final. Ficam aqui pra que rota nenhuma fique sem dono — e pra que ninguém tente 'trazer de volta' o que já tem casa.",
     "Projeto-Baluarte-Social-Media": {
       "responsabilidade": "Domínio social: feed do Mural e chat em tempo real da Rede Neural.",
-      "rotas": ["/mural", "/comms"],
+      "rotas": [
+        "/mural",
+        "/comms"
+      ],
       "origem": [
         "src/pages/mural.js",
         "src/pages/comms.js",
@@ -504,7 +626,9 @@
     "Project-Vanguard": {
       "responsabilidade": "Motor de balística + GPS topográfico. Zero dependência e zero DOM em src/engine/ — feito pra ser consumido de fora.",
       "rotas": [],
-      "origem": ["consumido por baluarte-geo (hoje vendorizado em src/utils/vanguard/)"],
+      "origem": [
+        "consumido por baluarte-geo (hoje vendorizado em src/utils/vanguard/)"
+      ],
       "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-001.",
       "integracao": "biblioteca: baluarte-geo importa o motor; a física tem UMA implementação, nunca duas."
     }
