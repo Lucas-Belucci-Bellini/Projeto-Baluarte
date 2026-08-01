@@ -12,7 +12,8 @@
  *  6. `estado` e `peso` usam o vocabulário combinado;
  *  7. domínio fora dos 20 originais aponta a decisão que o criou;
  *  8. repositório externo declara decisão e forma de integração;
- *  9. nenhum arquivo do monólito aparece em dois domínios.
+ *  9. nenhum arquivo do monólito aparece em dois domínios;
+ * 10. toda página que atende rota está na origem de algum domínio.
  *
  * Rodar: node scripts/verificar-nexus.mjs   (ou npm run verificar-nexus)
  * Sai com código 1 se algo divergir — dá pra plugar no CI.
@@ -97,10 +98,12 @@ for (const [nome, d] of Object.entries(mapa.dominios)) {
  * arquivo passa a existir em duas versões que divergem em silêncio. Apareceu
  * de verdade ao extrair o core (user-prefs, memory-cloud, comms, realtime). */
 const donoArquivo = new Map();
+const donoPasta = new Map();   // entradas do mapa que cobrem uma pasta inteira
 const declararArquivo = (arq, dono) => {
-  if (arq.endsWith('/') || arq.includes('(')) return;   // pasta ou anotação em prosa
-  if (donoArquivo.has(arq)) falhar(`arquivo com dono duplo: ${arq} (${donoArquivo.get(arq)} e ${dono})`);
-  else donoArquivo.set(arq, dono);
+  if (arq.includes('(')) return;                        // anotação em prosa
+  const onde = arq.endsWith('/') ? donoPasta : donoArquivo;
+  if (onde.has(arq)) falhar(`arquivo com dono duplo: ${arq} (${onde.get(arq)} e ${dono})`);
+  else onde.set(arq, dono);
 };
 for (const [nome, d] of Object.entries(mapa.dominios)) {
   for (const arq of d.origem) declararArquivo(arq, nome);
@@ -108,6 +111,20 @@ for (const [nome, d] of Object.entries(mapa.dominios)) {
 for (const [nome, e] of Object.entries(mapa.externos)) {
   if (nome.startsWith('$')) continue;
   for (const arq of e.origem) declararArquivo(arq, `externo:${nome}`);
+}
+
+/* Rota declarada mas página não listada em `origem` é armadilha de extração:
+ * o domínio promete a tela e chega na hora de mover sem saber qual arquivo
+ * levar. Aconteceu com o shell, que declarava /sobre, /roadmap e /projetos
+ * sem nenhuma delas na origem. Aqui o main.js é a fonte: ele diz qual arquivo
+ * atende cada rota. */
+const paginaDaRota = [...main.matchAll(/^router\.register\('([^']+)'.*?\.\/pages\/([^']+)'/gm)];
+for (const [, rota, arquivo] of paginaDaRota) {
+  const caminho = `src/pages/${arquivo}`;
+  const pasta = `${caminho.slice(0, caminho.lastIndexOf('/'))}/`;
+  if (!donoArquivo.has(caminho) && !donoPasta.has(pasta)) {
+    falhar(`página sem dono: ${caminho} atende ${rota}, mas não está na origem de ninguém`);
+  }
 }
 
 /* 1 e 2 — cobertura nos dois sentidos. */

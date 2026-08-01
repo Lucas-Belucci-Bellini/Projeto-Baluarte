@@ -46,6 +46,10 @@
         "/projetos"
       ],
       "origem": [
+        "src/pages/projetos.js",
+        "src/pages/sobre.js",
+        "src/pages/roadmap.js",
+        "src/pages/home.js",
         "src/layout/shell.js",
         "src/layout/header.js",
         "src/layout/sidebar.js",
