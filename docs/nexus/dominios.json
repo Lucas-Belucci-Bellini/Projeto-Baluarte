@@ -29,7 +29,9 @@
         "src/utils/page-views.js",
         "src/utils/visit-counter.js",
         "src/utils/hx-beacon.js",
-        "src/utils/auth-engine.js"
+        "src/utils/auth-engine.js",
+        "src/utils/baluarte-status.js",
+        "src/data/version.js"
       ],
       "precisa": [],
       "peso": "leve"
@@ -66,10 +68,38 @@
         "src/utils/universe-theme.js",
         "src/utils/hero-webgl.js",
         "src/utils/hero-rays.js",
-        "src/utils/hero3d.js"
+        "src/utils/hero3d.js",
+        "src/utils/spline-embed.js",
+        "src/data/spline-scenes.js",
+        "src/data/projetos.json",
+        "src/styles/boot-intro.css",
+        "src/styles/projetos.css",
+        "src/styles/roadmap.css",
+        "src/styles/sobre.css",
+        "src/styles/biblioteca.css",
+        "src/styles/editor.css",
+        "src/styles/fase18.css",
+        "src/styles/graficos.css",
+        "src/styles/simbolos.css",
+        "src/styles/terminal.css",
+        "src/styles/animations.css",
+        "src/styles/atmosphere.css",
+        "src/styles/base.css",
+        "src/styles/components.css",
+        "src/styles/fase17.css",
+        "src/styles/fase19.css",
+        "src/styles/home-v2.css",
+        "src/styles/immersive.css",
+        "src/styles/layout.css",
+        "src/styles/overlay.css",
+        "src/styles/reveal.css",
+        "src/styles/scroll-progress.css",
+        "src/styles/theme-universos.css",
+        "src/styles/reset.css"
       ],
       "precisa": [
-        "baluarte-core"
+        "baluarte-core",
+        "baluarte-data"
       ],
       "peso": "leve"
     },
@@ -102,7 +132,14 @@
         "src/data/memes.js",
         "src/data/jogos.js",
         "src/data/zomboid-mods.js",
-        "src/data/zomboid-admin.js"
+        "src/data/zomboid-admin.js",
+        "src/styles/batalha-naval.css",
+        "src/styles/filmes.css",
+        "src/styles/jogos.css",
+        "src/styles/memes.css",
+        "src/styles/universo.css",
+        "src/styles/zomboid-admin.css",
+        "src/styles/zomboid.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -170,7 +207,22 @@
         "src/utils/logic-sim-engine.js",
         "src/utils/qr-encoder.js",
         "src/utils/syntax-highlight.js",
-        "src/utils/vfs.js"
+        "src/utils/vfs.js",
+        "src/styles/calc.css",
+        "src/styles/calculadoras.css",
+        "src/styles/codigo.css",
+        "src/styles/color-studio.css",
+        "src/styles/ferramentas.css",
+        "src/styles/git-helper.css",
+        "src/styles/json-studio.css",
+        "src/styles/logic-sim.css",
+        "src/styles/morse.css",
+        "src/styles/ocr.css",
+        "src/styles/portas.css",
+        "src/styles/qr-studio.css",
+        "src/styles/regex.css",
+        "src/styles/tabela-verdade.css",
+        "src/styles/utilidades.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -223,7 +275,14 @@
         "src/utils/mil-curation.js",
         "src/utils/wikipedia.js",
         "src/utils/arma3-balistica.js",
-        "src/utils/arma3-grade.js"
+        "src/utils/arma3-grade.js",
+        "src/data/arsenal.js",
+        "src/styles/arma3-tutorial.css",
+        "src/styles/centro-militar.css",
+        "src/styles/enciclopedia-militar.css",
+        "src/styles/militar.css",
+        "src/styles/wiki-arma3.css",
+        "src/styles/arsenal.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -244,7 +303,9 @@
         "src/pages/dossie.js",
         "src/data/elites.js",
         "src/data/elites-rosters.js",
-        "src/data/dossie.json"
+        "src/data/dossie.json",
+        "src/styles/dossie.css",
+        "src/styles/elites.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -261,7 +322,8 @@
       ],
       "origem": [
         "src/pages/academia.js",
-        "src/data/academia.js"
+        "src/data/academia.js",
+        "src/styles/academia.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -278,7 +340,8 @@
       ],
       "origem": [
         "src/pages/robotica.js",
-        "src/data/robotica.js"
+        "src/data/robotica.js",
+        "src/styles/robotica.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -303,13 +366,15 @@
         "src/pages/modelos-3d.js",
         "src/utils/players-engine.js",
         "src/utils/visor-3d.js",
-        "src/utils/spline-embed.js",
         "src/utils/diag-3d.js",
         "src/data/videos.js",
         "src/data/tv.js",
         "src/data/galeria-3d.js",
         "src/data/modelos-3d.json",
-        "src/data/spline-scenes.js"
+        "src/styles/media.css",
+        "src/styles/modelos-3d.css",
+        "src/styles/tv.css",
+        "src/styles/videos.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -336,7 +401,10 @@
         "src/data/musicas-proprias.js",
         "src/data/musicas-yt.js",
         "src/data/soundcloud-tracks.js",
-        "src/data/albuns.js"
+        "src/data/albuns.js",
+        "src/styles/fft.css",
+        "src/styles/musicas.css",
+        "src/styles/radio.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -363,7 +431,11 @@
         "src/pages/shadow.js",
         "src/utils/cripto-engine.js",
         "src/data/ciberseg.js",
-        "src/utils/shadow-gate.js"
+        "src/utils/shadow-gate.js",
+        "src/styles/ciberseg.css",
+        "src/styles/cripto.css",
+        "src/styles/esteganografia.css",
+        "src/styles/seguranca.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -385,7 +457,9 @@
         "src/pages/banco.js",
         "src/utils/economia-api.js",
         "src/data/cambio-historico.json",
-        "reports/cambio/"
+        "reports/cambio/",
+        "src/styles/banco.css",
+        "src/styles/dolar.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -426,7 +500,14 @@
         "src/utils/jarvis-webllm.js",
         "src/utils/hermes-local.js",
         "src/utils/llm-mini.js",
-        "src/utils/memory-ml.js"
+        "src/utils/memory-ml.js",
+        "src/styles/aprendizado.css",
+        "src/styles/cerebro.css",
+        "src/styles/conselho.css",
+        "src/styles/fase21.css",
+        "src/styles/jarvis-dashboard.css",
+        "src/styles/llm-lab.css",
+        "src/styles/terminal-ia.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -465,7 +546,13 @@
         "src/utils/jarvis-hermes-native.js",
         "src/utils/nexus.js",
         "src/utils/nucleo-scene.js",
-        "src/utils/nucleo-socket.js"
+        "src/utils/nucleo-socket.js",
+        "src/styles/apis.css",
+        "src/styles/gerar-codigo.css",
+        "src/styles/git-nexus.css",
+        "src/styles/jarvis-vision.css",
+        "src/styles/nucleo-screen.css",
+        "src/styles/visao.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -485,7 +572,8 @@
         "src/utils/jarvis-memory.js",
         "src/utils/jarvis-recall.js",
         "src/utils/jarvis-repo-memory.js",
-        "src/core/memory-cloud.js"
+        "src/core/memory-cloud.js",
+        "src/styles/memoria.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -503,7 +591,8 @@
         "src/pages/perfil.js",
         "src/core/user-prefs.js",
         "src/data/perfis.js",
-        "src/data/skills.js"
+        "src/data/skills.js",
+        "src/styles/perfil.css"
       ],
       "precisa": [
         "baluarte-core"
@@ -535,7 +624,8 @@
       "origem": [
         "desktop/",
         "src/pages/baixar.js",
-        "src/data/site-capabilities.js"
+        "src/data/site-capabilities.js",
+        "src/styles/baixar.css"
       ],
       "precisa": [
         "baluarte-core"
@@ -583,7 +673,13 @@
         "src/utils/triangulation.js",
         "src/utils/fingerprint-engine.js",
         "src/utils/vanguard/ (motor vendorizado — passa a vir do Project-Vanguard)",
-        "src/data/camadas-mapa.js"
+        "src/data/camadas-mapa.js",
+        "src/styles/find.css",
+        "src/styles/geopulse.css",
+        "src/styles/mapa.css",
+        "src/styles/radar.css",
+        "src/styles/triangulacao.css",
+        "src/styles/vanguard.css"
       ],
       "precisa": [
         "baluarte-core",
@@ -622,7 +718,9 @@
         "src/pages/mural.js",
         "src/pages/comms.js",
         "src/core/comms.js",
-        "src/core/realtime.js"
+        "src/core/realtime.js",
+        "src/styles/comms.css",
+        "src/styles/mural.css"
       ],
       "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-002.",
       "integracao": "contrato v1.0.0, igual a um domínio: publica rotas via baluarte.module.js."

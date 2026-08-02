@@ -13,13 +13,14 @@
  *  7. domínio fora dos 20 originais aponta a decisão que o criou;
  *  8. repositório externo declara decisão e forma de integração;
  *  9. nenhum arquivo do monólito aparece em dois domínios;
- * 10. toda página que atende rota está na origem de algum domínio.
+ * 10. toda página que atende rota está na origem de algum domínio;
+ * 11. toda folha de src/styles/ tem dono.
  *
  * Rodar: node scripts/verificar-nexus.mjs   (ou npm run verificar-nexus)
  * Sai com código 1 se algo divergir — dá pra plugar no CI.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -125,6 +126,15 @@ for (const [, rota, arquivo] of paginaDaRota) {
   if (!donoArquivo.has(caminho) && !donoPasta.has(pasta)) {
     falhar(`página sem dono: ${caminho} atende ${rota}, mas não está na origem de ninguém`);
   }
+}
+
+/* Folha de estilo sem dono é o mesmo buraco da página sem dono — e passava
+ * batido porque CSS não aparece em import de rota. Eram 93 de 95 quando este
+ * check entrou. A folha segue quem a importa; as globais do index.html e as
+ * multi-domínio ficam no shell, que é a fundação visual. */
+for (const folha of readdirSync(join(raiz, 'src/styles')).filter((f) => f.endsWith('.css'))) {
+  const caminho = `src/styles/${folha}`;
+  if (!donoArquivo.has(caminho)) falhar(`folha sem dono: ${caminho}`);
 }
 
 /* 1 e 2 — cobertura nos dois sentidos. */
