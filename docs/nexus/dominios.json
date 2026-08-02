@@ -282,6 +282,8 @@
     "src/pages/batalhas-historicas.js",
     "src/pages/wiki-arma3.js",
     "src/pages/arma3-tutorial.js",
+    "src/utils/arma3-extracao.js",
+    "src/pages/arma3-extracao-painel.js",
     "src/pages/modpack.js",
     "src/utils/mil-curation.js",
     "src/utils/wikipedia.js",

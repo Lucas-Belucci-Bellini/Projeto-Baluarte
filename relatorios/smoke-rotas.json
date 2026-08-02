@@ -1,65 +1,11 @@
 [
  {
-  "rota": "/economia",
+  "rota": "/arma3-tutorial",
   "estado": "verde",
-  "ms": 13832,
-  "texto": 347,
-  "nos": 27,
-  "titulo": "◈ Economia",
-  "naoEncontrada": false,
-  "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
- },
- {
-  "rota": "/mapa",
-  "estado": "verde",
-  "ms": 13749,
-  "texto": 563,
-  "nos": 69,
-  "titulo": "◗ Mapa Tático Mundial",
-  "naoEncontrada": false,
-  "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
- },
- {
-  "rota": "/memoria",
-  "estado": "verde",
-  "ms": 13747,
-  "texto": 663,
-  "nos": 43,
-  "titulo": "🧠 Memória do JARVIS",
-  "naoEncontrada": false,
-  "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET",
-   "HTTP 404: http://127.0.0.1:4173/api/memory",
-   "rede: http://127.0.0.1:4173/api/memory — net::ERR_ABORTED"
-  ]
- },
- {
-  "rota": "/portas",
-  "estado": "verde",
-  "ms": 14265,
-  "texto": 5840,
-  "nos": 854,
-  "titulo": "⊡ Enciclopédia de Lógica Digital",
-  "naoEncontrada": false,
-  "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
- },
- {
-  "rota": "/home",
-  "estado": "verde",
-  "ms": 13967,
-  "texto": 3689,
-  "nos": 384,
-  "titulo": "BALUARTE\nMARK XIII",
+  "ms": 15015,
+  "texto": 29101,
+  "nos": 957,
+  "titulo": "📖 Bíblia do Ar=S % U O XT+6 {9OL7YFN",
   "naoEncontrada": false,
   "erros": [],
   "avisos": [

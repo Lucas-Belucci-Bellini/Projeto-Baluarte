@@ -13,6 +13,7 @@ const { ipcMain, shell, app } = require('electron');
 const nexus = require('./nexus');
 const hermes = require('./hermes');
 const arquivos = require('./arquivos');
+const arma3 = require('./arma3');
 
 /**
  * Monta os handlers permitidos. `ctx` injeta o que vem do main:
@@ -89,7 +90,21 @@ function buildHandlers(ctx) {
 
     // 0.7.1 (#369 fase 4): Sentinela — higiene defensiva READ-ONLY
     // (iscas de dupla extensão, executáveis em Downloads/Desktop, autostart).
-    'arquivos:sentinela': async () => arquivos.sentinela()
+    'arquivos:sentinela': async () => arquivos.sentinela(),
+
+    // 0.9.1 (#405): ponte de extração do Arma 3 — do debug console do jogo até
+    // um ramo no repositório, sem passo manual no meio.
+    //
+    // Os três passos são SEPARADOS de propósito: o operador vê o que o jogo
+    // dumpou, roda a extração, confere o resultado, e só então manda. Um botão
+    // só que fizesse tudo esconderia justamente o momento de conferir.
+    //
+    // Segurança (ver desktop/src/arma3.js): o app NÃO guarda token do GitHub —
+    // quem empurra é o git da máquina, com a credencial que já existe. Nunca
+    // empurra para ramo protegido, e só commita os JSONs de scripts/arma3/out.
+    'arma3:status': async (payload = {}) => arma3.status(payload),
+    'arma3:extrair': async (payload = {}) => arma3.extrair(payload),
+    'arma3:entregar': async (payload = {}) => arma3.entregar(payload)
   };
 }
 

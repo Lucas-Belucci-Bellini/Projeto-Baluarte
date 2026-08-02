@@ -113,10 +113,12 @@ def rodar(nome, marca, script, saida, linhas):
         for l in linhas:
             f.write(f'2026/08/02, 12:00:00 {marca}{l}\n')
         rpt = f.name
+    destino = os.path.join(AQUI, 'out', saida)
+    tinha_antes = os.path.exists(destino)
+    guardado = open(destino, 'rb').read() if tinha_antes else None
     try:
         r = subprocess.run([sys.executable, os.path.join(AQUI, script), rpt],
                            capture_output=True, text=True, cwd=RAIZ)
-        destino = os.path.join(AQUI, 'out', saida)
         if r.returncode != 0:
             return False, (r.stderr or r.stdout).strip().splitlines()[-1:] or ['(sem mensagem)']
         if not os.path.exists(destino):
@@ -125,6 +127,14 @@ def rodar(nome, marca, script, saida, linhas):
             return True, json.load(g)
     finally:
         os.unlink(rpt)
+        # A saída deste teste é dado FABRICADO. Deixá-la em out/ seria pior que
+        # não testar: o próximo `git add` a levaria para o repositório e ela
+        # passaria por base de verdade. Restaura o que havia, ou apaga.
+        if guardado is not None:
+            with open(destino, 'wb') as g:
+                g.write(guardado)
+        elif os.path.exists(destino):
+            os.unlink(destino)
 
 
 # ── o que se cobra de cada saída ───────────────────────────────────────────

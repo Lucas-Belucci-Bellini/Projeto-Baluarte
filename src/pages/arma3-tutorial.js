@@ -30,6 +30,9 @@ import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
 
+/* Roda dentro do Baluarte Launcher? A ponte só existe no app. */
+const NO_APP = typeof window !== 'undefined' && !!window.baluarte && window.baluarte.native === true;
+
 /* ===================== bases sob demanda =====================
  *
  * Esta tela tem 15 abas e mostra UMA por vez. Importar as 15 bases
@@ -207,6 +210,15 @@ export async function arma3TutorialPage(args = {}) {
     abaBtn('comandos', `⌨️ Comandos & Spawn · ${A3CMD_TOTAL}`),
     abaBtn('campanhas', `🏴 Campanhas · ${A3CAMP_TOTAL}`),
     abaBtn('drive', `☁️ Arquivos (Drive) · ${A3DRV_TOTAL}`));
+
+  /* A aba de extração só aparece dentro do Launcher: ela precisa do log do jogo
+   * e do clone do repositório, duas coisas que só a máquina tem. Na web pura
+   * nem é oferecida — mostrar um botão que não funciona é pior que não ter
+   * botão (regra do #238: o nativo mora no app). */
+  if (NO_APP) {
+    ABAS.push('extrair');
+    abas.appendChild(abaBtn('extrair', '📡 Extrair do jogo'));
+  }
   page.appendChild(abas);
 
   /* busca + chips (as categorias mudam conforme a aba) */
@@ -1313,6 +1325,16 @@ export async function arma3TutorialPage(args = {}) {
       visiveis = lista.length;
       if (lista.length) corpo.appendChild(tabelaMunicao(lista));
       contador.textContent = `${visiveis} de ${total} munições`;
+    } else if (aba === 'extrair') {
+      /* Painel operacional, não conteúdo: sai do fluxo de busca/contador e é
+       * carregado sob demanda — o resto da tela não paga por ele. */
+      corpo.appendChild(h('p', { className: 'u-text-muted' }, 'Abrindo o painel de extração…'));
+      import('./arma3-extracao-painel.js')
+        .then((m) => { if (aba === 'extrair') { corpo.replaceChildren(); return m.montarPainelExtracao(corpo); } })
+        .catch((e) => { corpo.replaceChildren(h('p', { className: 'u-text-danger' },
+          `Falha ao abrir o painel: ${e.message}`)); });
+      contador.textContent = 'extração do Arma 3';
+      return;
     } else if (aba === 'carregadores') {
       total = A3MAG_TOTAL;
       if (!termo) corpo.appendChild(cardCarregadores());
