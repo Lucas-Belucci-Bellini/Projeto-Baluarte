@@ -70,11 +70,25 @@ function alvos() {
 const ESPIAO = `
 window.__espiao = { globais: 0, intervals: 0, audio: 0, observers: 0, quadros: 0 };
 
-/* Só listener de window/document: os de elemento vão embora com o DOM. */
+/* Só listener de window/document: os de elemento vão embora com o DOM.
+ *
+ * \`{ once: true }\` precisa de tratamento próprio: o navegador remove o listener
+ * sozinho depois do primeiro disparo, SEM passar por \`removeEventListener\` — o
+ * contador ingênuo nunca decrementava e acusava vazamento em quem estava
+ * limpando certo. Foi o que fez /radar e /triangulacao aparecerem vazando: as
+ * duas usam \`hashchange\` com \`once\` para se despedir, que é correto. */
 for (const alvo of [window, document]) {
   const _add = alvo.addEventListener.bind(alvo);
   const _rem = alvo.removeEventListener.bind(alvo);
-  alvo.addEventListener = function (...a) { window.__espiao.globais++; return _add(...a); };
+  alvo.addEventListener = function (tipo, fn, opts) {
+    window.__espiao.globais++;
+    const umaVez = opts === true ? false : !!(opts && opts.once);
+    if (umaVez && typeof fn === 'function') {
+      const original = fn;
+      fn = function (...ev) { window.__espiao.globais--; return original.apply(this, ev); };
+    }
+    return _add(tipo, fn, opts);
+  };
   alvo.removeEventListener = function (...a) { window.__espiao.globais--; return _rem(...a); };
 }
 

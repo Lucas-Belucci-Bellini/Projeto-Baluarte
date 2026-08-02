@@ -7,7 +7,7 @@
  * - Código Morse (encode/decode + áudio via Web Audio API)
  */
 
-import { MORSE_TABLE, MORSE_REVERSE, wpmToDitMs } from '../data/morse-code.js';
+import { wpmToDitMs } from '../data/morse-code.js';
 
 /* ============ Cifra de César ============ */
 
@@ -144,22 +144,24 @@ export async function allHashes(text) {
   return results;
 }
 
-/* ============ Código Morse ============ */
-
-export function toMorse(text) {
-  return [...text.toUpperCase()].map((ch) => {
-    if (ch === ' ') return '/';
-    const m = MORSE_TABLE[ch];
-    return m || '';
-  }).filter(Boolean).join(' ');
-}
-
-export function fromMorse(morse) {
-  return morse.split(/\s+/).map((tok) => {
-    if (tok === '/' || tok === '|') return ' ';
-    return MORSE_REVERSE[tok] || '';
-  }).join('');
-}
+/* ============ Código Morse ============
+ *
+ * Delegado para `data/morse-code.js`, a implementação canônica — a mesma que a
+ * tela `/morse` usa. Havia uma segunda cópia aqui, e ela já tinha divergido:
+ *
+ *   entrada   /morse            /cripto (antes)
+ *   ÍNDIA     .. -. -.. .. .-   -. -.. .. .-      ← o Í sumia
+ *   VOCÊ      ...- --- -.-. .   ...- --- -.-.     ← o Ê sumia
+ *   A§B       .- # -...         .- -...           ← o § sumia
+ *
+ * A cópia daqui DESCARTAVA em silêncio todo caractere fora da tabela, em vez de
+ * marcar com '#' e de dobrar acento na letra-base. Duas telas do mesmo site
+ * davam respostas diferentes para a mesma mensagem, e a daqui entregava texto
+ * com letra faltando sem avisar ninguém.
+ *
+ * Uma implementação, dois chamadores — é a mesma regra que o repo irmão aplica
+ * ao motor de balística. */
+export { textToMorse as toMorse, morseToText as fromMorse } from '../data/morse-code.js';
 
 /* Áudio Morse: toca a sequência via OscillatorNode */
 let audioCtx = null;

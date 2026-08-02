@@ -8,6 +8,7 @@
 
 import '../styles/geopulse.css';
 import { h, empty } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { toast } from '../utils/toast.js';
 import { createGeoTracker } from '../utils/geo-tracker.js';
 
@@ -114,7 +115,9 @@ export function geopulsePage() {
       h('div', { className: 'geo-scope__head' }, h('span', null, '📍 PONTOS')), listEl));
 
   refresh();
-  window.addEventListener('hashchange', () => tracker.stop(), { once: true });
+  /* Solta o GPS ao sair da tela. Com `hashchange` + `{ once: true }`, uma troca
+   * de query na própria rota já derrubava o rastreio. */
+  aoSair(page, () => tracker.stop());
   return page;
 }
 

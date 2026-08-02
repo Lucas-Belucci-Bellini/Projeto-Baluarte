@@ -406,7 +406,8 @@ export function mapaPage() {
   );
 
   /* Terreno 3D + exagero */
-  const exag = h('input', { type: 'range', min: 1, max: 4, step: 0.5, value: 1.5, className: 'mapa-slider' });
+  const exag = h('input', { type: 'range', min: 1, max: 4, step: 0.5, value: 1.5, className: 'mapa-slider',
+    'aria-label': 'Exagero vertical do relevo' });
   const terrain3dBtn = h('button', { className: 'mapa-btn', onclick: () => {
     if (!_map) return;
     _terrainOn = !_terrainOn;
