@@ -24,12 +24,20 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 
 # nome curto -> (script, o .sqf que precisa ter rodado no jogo antes)
 ETAPAS = [
+    # ── o que já existia ──────────────────────────────────────────────────
     ('armas', 'parse-dump.py', 'dump-config.sqf'),
     ('mapas', 'parse-mapas.py', 'dump-mapas.sqf'),
     ('itens', 'parse-itens.py', 'dump-itens.sqf'),
     ('veiculos', 'parse-veiculos.py', 'dump-veiculos.sqf'),
     ('acessorios', 'parse-acessorios.py', 'dump-acessorios.sqf'),
     ('animacoes', 'parse-animacoes.py', 'dump-animacoes.sqf'),
+    # ── segunda leva: o que o config tem e a plataforma ainda não usava ───
+    ('grupos', 'parse-grupos.py', 'dump-grupos.sqf'),
+    ('funcoes', 'parse-funcoes.py', 'dump-funcoes.sqf'),
+    ('manual', 'parse-manual.py', 'dump-manual.sqf'),
+    ('simbologia', 'parse-simbologia.py', 'dump-simbologia.sqf'),
+    ('terreno-fisico', 'parse-terreno-fisico.py', 'dump-terreno-fisico.sqf'),
+    ('proveniencia', 'parse-proveniencia.py', 'dump-proveniencia.sqf'),
 ]
 
 IMAGENS = ('imagens', 'extrair-imagens.py', '(usa o arma3-config.json)')

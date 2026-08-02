@@ -315,6 +315,61 @@ importe para este caso.
 Comece pelo **núcleo** (`--so-nucleo`): ~100 modelos do jogo base cobrem quase
 todo o uso, e converter 1.337 à mão não se paga.
 
+## F. Segunda leva de extratores (#405) · **tudo pronto, falta rodar no jogo**
+
+Seis extratores novos, escritos e **provados contra dump sintético** — mas
+nenhum viu o jogo ainda. Eles cobrem o que o config do Arma 3 tem e a
+plataforma nunca usou.
+
+```bash
+# no jogo: Esc -> DEBUG CONSOLE -> cola o .sqf -> EXECUTE. Um de cada vez.
+python scripts/arma3/extrair-tudo.py grupos funcoes manual simbologia terreno-fisico proveniencia
+# ou tudo de uma vez (inclui as 6 etapas antigas):
+python scripts/arma3/extrair-tudo.py
+```
+
+| etapa | `.sqf` a colar | o que traz |
+|---|---|---|
+| `grupos` | `dump-grupos.sqf` | **ordem de batalha** — a composição de cada esquadrão/pelotão por facção, na ordem, com quem é o líder |
+| `funcoes` | `dump-funcoes.sqf` | catálogo das ~3000 funções SQF (`BIS_fnc_*` + as de cada mod), com arquivo e flags |
+| `manual` | `dump-manual.sqf` | o **Field Manual** inteiro: categorias, tópicos, texto e imagem |
+| `simbologia` | `dump-simbologia.sqf` | marcadores de carta (APP-6), cores de lado com RGBA, patentes e insígnias |
+| `terreno-fisico` | `dump-terreno-fisico.sqf` | superfícies: quanto freiam o passo, que som e que poeira fazem; vegetação e clima |
+| `proveniencia` | `dump-proveniencia.sqf` | `CfgPatches`/`CfgMods` — **quem registra cada classe** |
+
+### Por que a proveniência importa mais do que parece
+
+`scripts/arma3/gerar_base_armas_comum.py` tem hoje um `DIR_DLC` escrito **à
+mão** (diretório → DLC), porque o campo `fonte` do dump é `configSourceMod`, que
+diz quem patcheou por ÚLTIMO — com ACE carregado, quase todo o vanilla apareceria
+como do ACE.
+
+Dicionário à mão envelhece calado: DLC novo sai, o diretório não está na lista,
+e as armas passam a mostrar origem errada sem ninguém perceber. O `donoDe` do
+`arma3-proveniencia.json` mapeia classe → addon que a **registra**, que é a
+pergunta certa. Depois de rodar, dá para trocar o dicionário por consulta ao
+índice — a regra do projeto ("dado de armamento nunca é inventado, deriva-se")
+passa a valer também para a origem.
+
+### O que já está provado e o que não está
+
+`python scripts/arma3/testar-parsers.py` roda os seis contra um `.rpt`
+fabricado e confere: formato lido, campo picado remontado, ausência preservada
+(vazio → `null`, nunca zero), entrada malformada não derruba. **Os seis passam.**
+
+O que isso **não** prova: que o `.sqf` emite exatamente aquele formato — só o
+jogo diz. Por isso cada dump imprime um **PLACAR** no fim e cada parser compara
+com o que chegou; se divergir, ele avisa em vez de deixar dado sumir em
+silêncio. Se aparecer aviso de placar ao rodar, é o `.sqf` e o parser que
+saíram de sincronia, não o jogo.
+
+⚠️ Rode com **todos os DLCs e mods** carregados — o dump lê o config da sessão
+em execução, então o que não estiver carregado simplesmente não existe para ele.
+
+⚠️ O texto do Field Manual é **© Bohemia Interactive**. A base já carrega o
+campo `licenca` junto com o conteúdo; a tela que exibir precisa creditar, igual
+ao que o Centro Militar faz com a Wikipédia.
+
 ## C. Mega-plano #238 — app completo / site leve
 
 - [x] **Fase 1 — medir** ✅ (comentário no #238): boot web ~111 kB gz; pesados lazos por rota.
