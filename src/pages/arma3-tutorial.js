@@ -12,29 +12,83 @@ import '../styles/arma3-tutorial.css';
 import '../styles/simbolos.css';
 import { h, debounce, normalize } from '../utils/helpers.js';
 import { ARMA3_PRESETS } from '../data/arma3-presets.js';
-import { A3TUT_CATEGORIAS, A3TUT_MODS, A3TUT_TOTAL, A3TUT_DUAL_ARMS } from '../data/arma3-tutoriais.js';
 import { A3TUT_DEPS } from '../data/arma3-deps.js';
+/* Só os CONTADORES (1 kB): a barra de abas precisa dos totais, e lê-los das
+ * bases obrigava a carregar 2,2 MB antes de desenhar um rótulo. As bases em si
+ * descem sob demanda — ver `BASES`/`carregarAba` abaixo. */
+import {
+  A3ARM_TOTAL, A3ACC_TOTAL, A3VEI_TOTAL, A3EQP_TOTAL, A3SOL_TOTAL, A3TER_TOTAL,
+  A3MUN_TOTAL, A3MAG_TOTAL, A3COL_TOTAL, A3TUT_TOTAL
+} from '../data/arma3-totais.js';
 import { A3VAN_SECOES, A3VAN_TOTAL_TOPICOS } from '../data/arma3-vanilla.js';
 import { A3CFG_SECOES, A3CFG_TOTAL_TOPICOS } from '../data/arma3-config.js';
 import { A3CMD_SECOES, A3CMD_TOTAL } from '../data/arma3-comandos.js';
 import { A3CAMP_SECOES, A3CAMP_TOTAL } from '../data/arma3-campanhas.js';
-import { A3COL_INFO, A3COL_CATS, A3COL_ITENS, A3COL_TOTAL } from '../data/arma3-colecao.js';
 import { A3DRV_PASTAS, A3DRV_SECOES, A3DRV_TOTAL } from '../data/arma3-drive.js';
-import {
-  A3ARM, A3ARM_TIPOS, A3ARM_TOTAL, A3ARM_META, carregarArsenal,
-} from '../data/arma3-armas.js';
-import { A3MUN, A3MAG, A3MUN_TOTAL, A3MAG_TOTAL } from '../data/arma3-municao.js';
-import { A3ACC, A3ACC_TOTAL, A3ACC_META } from '../data/arma3-acessorios.js';
-import { A3TER, A3TER_TOTAL, A3TER_META } from '../data/arma3-terrenos.js';
-import { A3VEI, A3VEI_TOTAL, A3VEI_CATEGORIAS, A3VEI_META } from '../data/arma3-veiculos.js';
-import { A3EQP, A3EQP_TOTAL, A3EQP_CATEGORIAS } from '../data/arma3-equipamento.js';
-import { A3SOL, A3SOL_TOTAL, A3SOL_META } from '../data/arma3-soldados.js';
 import { resumirClasse } from '../data/arma3-classes.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
 
-export function arma3TutorialPage(args = {}) {
+/* ===================== bases sob demanda =====================
+ *
+ * Esta tela tem 15 abas e mostra UMA por vez. Importar as 15 bases
+ * estaticamente custava 2,2 MB de JavaScript na abertura — para desenhar a aba
+ * padrão, que precisa de 33 kB. Era o maior peso do site.
+ *
+ * Agora cada base desce quando a aba dela é aberta. `D` é o depósito do que já
+ * chegou; as funções de render leem de `D`, nunca de um import.
+ *
+ * Os TOTAIS não moram aqui: eles vêm de `arma3-totais.js` (1 kB), porque a
+ * barra de abas mostra o número de todas as abas desde o primeiro quadro.
+ */
+const D = {};
+
+const CARREGADORES = {
+  armas: () => import('../data/arma3-armas.js'),
+  municao: () => import('../data/arma3-municao.js'),
+  carregadores: () => import('../data/arma3-municao.js'),   // carregadores saem da mesma base
+  acessorios: () => import('../data/arma3-acessorios.js'),
+  terrenos: () => import('../data/arma3-terrenos.js'),
+  veiculos: () => import('../data/arma3-veiculos.js'),
+  equipamento: () => import('../data/arma3-equipamento.js'),
+  soldados: () => import('../data/arma3-soldados.js'),
+  colecao: () => import('../data/arma3-colecao.js'),
+  mods: () => import('../data/arma3-tutoriais.js')
+};
+
+/* A aba de mods cita a coleção no cabeçalho, então pede as duas bases.
+ * Carregar a segunda é barato e evita render pela metade. */
+const EXTRA = { mods: ['colecao'] };
+
+/* Um export por base, para saber se ela já está em `D` sem repetir a lista de
+ * carregadores. Serve só para decidir se vale mostrar "carregando". */
+const PRIMEIRA_CHAVE = {
+  armas: 'A3ARM', municao: 'A3MUN', carregadores: 'A3MAG', acessorios: 'A3ACC',
+  terrenos: 'A3TER', veiculos: 'A3VEI', equipamento: 'A3EQP', soldados: 'A3SOL',
+  colecao: 'A3COL_ITENS', mods: 'A3TUT_MODS'
+};
+
+const pendente = {};
+
+/** Garante que as bases de `aba` estejam em `D`. Idempotente e sem corrida. */
+async function carregarAba(aba) {
+  const alvos = [aba, ...(EXTRA[aba] || [])].filter((a) => CARREGADORES[a]);
+  await Promise.all(alvos.map((a) => {
+    if (pendente[a]) return pendente[a];
+    pendente[a] = CARREGADORES[a]().then((mod) => { Object.assign(D, mod); });
+    return pendente[a];
+  }));
+}
+
+export async function arma3TutorialPage(args = {}) {
+  /* O router já sabe esperar handler que devolve Promise (`resolve()` em
+   * `core/router.js` trata `view.then`), então dá para ter as bases da aba
+   * inicial em mãos antes de montar — sem tela pela metade e sem render
+   * assíncrono espalhado pelo arquivo. */
+  const _abaPedida = (args.query || {}).aba;
+  const _armaPedida = (args.query || {}).arma;
+  await carregarAba(_abaPedida || (_armaPedida ? 'armas' : 'vanilla'));
   const page = h('div', { className: 'page-a3tut' });
   const preset = ARMA3_PRESETS.find((p) => p.id === PRESET_ID);
   const urlPorId = Object.fromEntries(preset.mods.map((m) => [m.url.match(/id=(\d+)/)[1], m.url]));
@@ -42,9 +96,13 @@ export function arma3TutorialPage(args = {}) {
   let catAtiva = 'all';
 
   /* Armas que a calculadora aceita: só as que têm um projétil balístico de
-   * verdade (ver dadosBalisticos). Calculada uma vez — é o mesmo filtro do
-   * seletor, do botão da tabela e do contador do cabeçalho. */
-  const armasCalculaveis = A3ARM.filter((a) => dadosBalisticos(a));
+   * verdade (ver dadosBalisticos). É o mesmo filtro do seletor, do botão da
+   * tabela e do contador do cabeçalho.
+   *
+   * Vazio enquanto a base de armas não desceu: quem abre em `vanilla` não paga
+   * os 122 kB do arsenal só para a calculadora existir escondida. É recalculado
+   * assim que a aba de armas carrega (`sincronizarCalculadora`). */
+  let armasCalculaveis = D.A3ARM ? D.A3ARM.filter((a) => dadosBalisticos(a)) : [];
 
   /* estado da calculadora de balística (sobrevive aos re-renders).
    *
@@ -65,6 +123,18 @@ export function arma3TutorialPage(args = {}) {
     || armasCalculaveis.find((a) => a.origem === 'Base' && a.tipo === 'fuzil')
     || armasCalculaveis[0] || {}).id;
   let calcZero = 300, calcAlvo = 600, calcVento = 0;
+
+  /* Chamada depois de cada carregamento: a lista de armas calculáveis e a arma
+   * escolhida dependem de uma base que agora pode chegar depois da montagem. */
+  function sincronizarCalculadora() {
+    if (!D.A3ARM || armasCalculaveis.length) return;
+    armasCalculaveis = D.A3ARM.filter((a) => dadosBalisticos(a));
+    calcArmaId = (armasCalculaveis.find((a) => a.id === armaPedida)
+      || armasCalculaveis.find((a) => a.classe === 'arifle_MX_F')
+      || armasCalculaveis.find((a) => a.origem === 'Base' && a.tipo === 'fuzil')
+      || armasCalculaveis[0] || {}).id;
+  }
+  sincronizarCalculadora();
 
   /* arsenal completo (mods) — só desce quando o operador pede */
   let expandido = null;   // id da arma com os modos de tiro abertos
@@ -107,9 +177,17 @@ export function arma3TutorialPage(args = {}) {
   const abas = h('div', { className: 'symbols-cats a3tut-abas' });
   const abaBtn = (id, label) => h('button', {
     className: 'symbols-cat a3tut-aba' + (aba === id ? ' is-active' : ''), dataset: { aba: id },
-    onclick: () => {
+    onclick: async () => {
       aba = id; busca = ''; buscaInput.value = ''; catAtiva = 'all';
       abas.querySelectorAll('.a3tut-aba').forEach((b) => b.classList.toggle('is-active', b.dataset.aba === id));
+      /* A base da aba pode ainda não ter descido. Enquanto desce, a tela avisa
+       * — melhor um "carregando" de um quadro que um corpo vazio sem motivo. */
+      if (!D[PRIMEIRA_CHAVE[id]] && CARREGADORES[id]) {
+        corpo.replaceChildren(h('p', { className: 'u-text-muted' }, 'Carregando base…'));
+      }
+      await carregarAba(id);
+      sincronizarCalculadora();
+      if (aba !== id) return;            // o operador já trocou de aba de novo
       montarChips(); render();
     }
   }, h('span', { className: 'symbols-cat__label' }, label));
@@ -146,7 +224,7 @@ export function arma3TutorialPage(args = {}) {
     if (aba === 'campanhas') return A3CAMP_SECOES;
     if (aba === 'drive') return A3DRV_SECOES;
     if (aba === 'vanilla') return A3VAN_SECOES;
-    return null; // mods usa A3TUT_CATEGORIAS · colecao usa A3COL_CATS
+    return null; // mods usa D.A3TUT_CATEGORIAS · colecao usa D.A3COL_CATS
   }
   function montarChips() {
     chips.replaceChildren();
@@ -157,11 +235,11 @@ export function arma3TutorialPage(args = {}) {
      * agora é uma linha aqui. */
     const TUDO = { id: 'all', nome: 'Tudo', icon: '⬡' };
     const CATS_DA_ABA = {
-      mods: A3TUT_CATEGORIAS,
-      colecao: A3COL_CATS,
-      armas: A3ARM_TIPOS,
-      veiculos: A3VEI_CATEGORIAS,
-      equipamento: A3EQP_CATEGORIAS,
+      mods: D.A3TUT_CATEGORIAS,
+      colecao: D.A3COL_CATS,
+      armas: D.A3ARM_TIPOS,
+      veiculos: D.A3VEI_CATEGORIAS,
+      equipamento: D.A3EQP_CATEGORIAS,
     };
     let cats;
     if (CATS_DA_ABA[aba]) {
@@ -390,7 +468,7 @@ export function arma3TutorialPage(args = {}) {
     const saida = h('div', { className: 'a3arm-calc__saida' });
 
     function recalc() {
-      const a = A3ARM.find((w) => w.id === calcArmaId) || armasCalculaveis[0];
+      const a = D.A3ARM.find((w) => w.id === calcArmaId) || armasCalculaveis[0];
       const bal = dadosBalisticos(a);
       if (!bal) {
         /* Só chega aqui se a lista mudar: o seletor já filtra o não-balístico. */
@@ -423,7 +501,7 @@ export function arma3TutorialPage(args = {}) {
     }
 
     const selArma = h('select', { className: 'input a3arm-sel', onchange: (e) => { calcArmaId = e.target.value; recalc(); } });
-    A3ARM_TIPOS.forEach((tp) => {
+    D.A3ARM_TIPOS.forEach((tp) => {
       const grp = h('optgroup', { label: tp.nome });
       armasCalculaveis.filter((a) => a.tipo === tp.id).forEach((a) =>
         grp.appendChild(h('option', { value: a.id, selected: a.id === calcArmaId },
@@ -572,10 +650,10 @@ export function arma3TutorialPage(args = {}) {
 
   /* ===== munições ===== */
   function cardFurtividade() {
-    const q = A3MUN.filter((m) => typeof m.audibleFire === 'number')
+    const q = D.A3MUN.filter((m) => typeof m.audibleFire === 'number')
       .sort((a, b) => a.audibleFire - b.audibleFire);
-    const sub = A3MUN.filter((m) => m.subsonico).length;
-    const exp = A3MUN.filter((m) => m.explosivo).length;
+    const sub = D.A3MUN.filter((m) => m.subsonico).length;
+    const exp = D.A3MUN.filter((m) => m.explosivo).length;
     return h('div', { className: 'card a3tut-card a3arm-proc' },
       h('div', { className: 'a3tut-card__head' },
         h('b', { className: 'a3tut-card__nome' }, '💥 Munição — o que estes números querem dizer')),
@@ -651,7 +729,7 @@ export function arma3TutorialPage(args = {}) {
    * escrito pela Bohemia. Uma coluna só, "zoom", esconderia isso.
    */
   function cardAcessorios() {
-    const miras = A3ACC.filter((a) => a.tipo === 'mira');
+    const miras = D.A3ACC.filter((a) => a.tipo === 'mira');
     const comAmp = miras.filter((a) => a.ampliacao !== null).length;
     return h('div', { className: 'card a3tut-card' },
       h('div', { className: 'a3tut-card__head' },
@@ -670,9 +748,9 @@ export function arma3TutorialPage(args = {}) {
         + 'Bohemia escreve "2x" na descrição. Preencher a coluna com a conta '
         + 'seria inventar número com cara de medição.'),
       h('p', { className: 'a3arm-proc__nota u-text-muted' },
-        `Núcleo do jogo e DLCs: ${A3ACC.length} acessórios. `
+        `Núcleo do jogo e DLCs: ${D.A3ACC.length} acessórios. `
         + `O acervo completo com mods tem ${A3ACC_TOTAL} — `,
-        h('code', null, A3ACC_META.dbUrl), '.'));
+        h('code', null, D.A3ACC_META.dbUrl), '.'));
   }
 
   function tabelaAcessorios(lista) {
@@ -721,7 +799,7 @@ export function arma3TutorialPage(args = {}) {
    * acervo, quase todas rodas), e misturar as duas anunciaria "ponto fraco:
    * −100". As relativas ficam numa coluna própria, contadas. */
   function tabelaVeiculos(lista) {
-    const CAT = Object.fromEntries(A3VEI_CATEGORIAS.map((c) => [c.id, c]));
+    const CAT = Object.fromEntries(D.A3VEI_CATEGORIAS.map((c) => [c.id, c]));
     const colunas = [
       { k: 'nome', rot: 'Veículo', celCls: 'a3arm-td--nome', val: (v) => v.nome,
         cel: (v) => h('b', null, v.nome) },
@@ -779,7 +857,7 @@ export function arma3TutorialPage(args = {}) {
    * no ponto coberto — um colete de proteção 16 com 30% de passagem para
    * bem menos que o número sozinho promete. */
   function tabelaEquipamento(lista) {
-    const CAT = Object.fromEntries(A3EQP_CATEGORIAS.map((c) => [c.id, c]));
+    const CAT = Object.fromEntries(D.A3EQP_CATEGORIAS.map((c) => [c.id, c]));
     const colunas = [
       { k: 'nome', rot: 'Item', celCls: 'a3arm-td--nome', val: (e) => e.nome,
         cel: (e) => h('b', null, e.nome) },
@@ -876,8 +954,8 @@ export function arma3TutorialPage(args = {}) {
    * 30 dos 31 mundos contam de cima pra baixo (convenção vanilla) e 1 conta
    * pra cima — quem assumir um só erra o eixo N-S em 180°. */
   function cardTerrenos() {
-    const desce = A3TER.filter((t) => t.grade && t.grade.passoY < 0).length;
-    const sobe = A3TER.filter((t) => t.grade && t.grade.passoY > 0).length;
+    const desce = D.A3TER.filter((t) => t.grade && t.grade.passoY < 0).length;
+    const sobe = D.A3TER.filter((t) => t.grade && t.grade.passoY > 0).length;
     return h('div', { className: 'card a3tut-card' },
       h('div', { className: 'a3tut-card__head' },
         h('b', { className: 'a3tut-card__nome' }, '🗺️ A grade de cada mundo é diferente')),
@@ -935,7 +1013,7 @@ export function arma3TutorialPage(args = {}) {
   /* ===== carregadores ===== */
   function cardCarregadores() {
     const variam = {};
-    A3MAG.forEach((m) => {
+    D.A3MAG.forEach((m) => {
       if (!m.municao || !m.v0) return;
       (variam[m.municao.toLowerCase()] ||= new Set()).add(m.v0);
     });
@@ -1039,7 +1117,7 @@ export function arma3TutorialPage(args = {}) {
   /* Painel de procedência: de onde vem cada número e o que falta. É o que
    * separa "database" de "tabela bonita" — o leitor consegue auditar. */
   function procedenciaArmas() {
-    const m = A3ARM_META;
+    const m = D.A3ARM_META;
     const pct = (n, d) => `${((n / d) * 100).toFixed(0)}%`;
     const linha = (rot, valor, nota) => h('div', { className: 'a3arm-proc__linha' },
       h('span', { className: 'a3arm-proc__rot' }, rot),
@@ -1052,7 +1130,7 @@ export function arma3TutorialPage(args = {}) {
         arsenalEstado = 'carregando';
         btn.textContent = 'baixando…'; btn.disabled = true;
         try {
-          arsenalMods = (await carregarArsenal()).filter((a) => a.ehMod);
+          arsenalMods = (await D.carregarArsenal()).filter((a) => a.ehMod);
           arsenalEstado = 'pronto';
           render();
         } catch (err) {
@@ -1110,7 +1188,7 @@ export function arma3TutorialPage(args = {}) {
       total = A3TUT_TOTAL;
       /* destaque pedido pelo operador: o mod das 2 armas principais (fora do
        * preset — Dual Arms). Aparece no topo da aba, some se a busca não bater. */
-      const da = A3TUT_DUAL_ARMS;
+      const da = D.A3TUT_DUAL_ARMS;
       if (!termo || normalize(`${da.nome} ${da.oQue} duas armas principais primarias`).includes(termo)) {
         corpo.appendChild(h('div', { className: 'card a3tut-card a3tut-card--destaque' },
           h('div', { className: 'a3tut-card__head' },
@@ -1129,9 +1207,9 @@ export function arma3TutorialPage(args = {}) {
             h('span', { className: 'a3tut-card__label' }, 'DICAS'),
             h('ul', { className: 'a3tut-dicas' }, ...da.dicas.map((d) => h('li', null, d))))));
       }
-      A3TUT_CATEGORIAS.forEach((cat) => {
+      D.A3TUT_CATEGORIAS.forEach((cat) => {
         if (catAtiva !== 'all' && catAtiva !== cat.id) return;
-        const doCat = Object.entries(A3TUT_MODS).filter(([, t]) => t.cat === cat.id);
+        const doCat = Object.entries(D.A3TUT_MODS).filter(([, t]) => t.cat === cat.id);
         const filtrados = !termo ? doCat : doCat.filter(([, t]) =>
           normalize(`${t.nome} ${t.oQue} ${t.como}`).includes(termo));
         if (!filtrados.length) return;
@@ -1145,14 +1223,14 @@ export function arma3TutorialPage(args = {}) {
       if (!termo) {
         corpo.appendChild(h('div', { className: 'card a3tut-card a3tut-card--destaque' },
           h('div', { className: 'a3tut-card__head' },
-            h('b', { className: 'a3tut-card__nome' }, `📦 Coleção "${A3COL_INFO.nome}"`),
-            h('a', { className: 'a3tut-card__ws', href: A3COL_INFO.url, target: '_blank', rel: 'noopener noreferrer' }, 'assinar na Steam ↗')),
+            h('b', { className: 'a3tut-card__nome' }, `📦 Coleção "${D.A3COL_INFO.nome}"`),
+            h('a', { className: 'a3tut-card__ws', href: D.A3COL_INFO.url, target: '_blank', rel: 'noopener noreferrer' }, 'assinar na Steam ↗')),
           h('p', { className: 'a3tut-card__oque' },
-            `A coleção oficial do site, montada por ${A3COL_INFO.autor}: ${A3COL_TOTAL} itens entre mods, cenários, composições e terrenos — TUDO catalogado abaixo com capa, tamanho, dependências e o guia de cada um. Assinou a coleção, o Launcher baixa tudo sozinho.`)));
+            `A coleção oficial do site, montada por ${D.A3COL_INFO.autor}: ${A3COL_TOTAL} itens entre mods, cenários, composições e terrenos — TUDO catalogado abaixo com capa, tamanho, dependências e o guia de cada um. Assinou a coleção, o Launcher baixa tudo sozinho.`)));
       }
-      A3COL_CATS.forEach((cat) => {
+      D.A3COL_CATS.forEach((cat) => {
         if (catAtiva !== 'all' && catAtiva !== cat.id) return;
-        const doCat = Object.entries(A3COL_ITENS).filter(([, it]) => it.cat === cat.id);
+        const doCat = Object.entries(D.A3COL_ITENS).filter(([, it]) => it.cat === cat.id);
         const filtrados = !termo ? doCat : doCat.filter(([id, it]) =>
           normalize(`${it.nome} ${it.resumo} ${it.tags.join(' ')} ${id}`).includes(termo));
         if (!filtrados.length) return;
@@ -1161,13 +1239,13 @@ export function arma3TutorialPage(args = {}) {
       });
       contador.textContent = `${visiveis} de ${total} itens da coleção`;
     } else if (aba === 'armas') {
-      const base = arsenalMods ? A3ARM.concat(arsenalMods) : A3ARM;
+      const base = arsenalMods ? D.A3ARM.concat(arsenalMods) : D.A3ARM;
       total = base.length;
       if (!termo && catAtiva === 'all') {
         corpo.appendChild(calcBalistica());
         corpo.appendChild(procedenciaArmas());
       }
-      A3ARM_TIPOS.forEach((tp) => {
+      D.A3ARM_TIPOS.forEach((tp) => {
         if (catAtiva !== 'all' && catAtiva !== tp.id) return;
         const doTipo = base.filter((a) => a.tipo === tp.id);
         const filtrados = !termo ? doTipo : doTipo.filter((a) => normalize(
@@ -1178,11 +1256,11 @@ export function arma3TutorialPage(args = {}) {
         corpo.appendChild(tabelaTipo(tp, filtrados));
       });
       contador.textContent = `${visiveis} de ${total} armas`
-        + (arsenalMods ? ' (núcleo + mods)' : ` no núcleo · ${A3ARM_META.mods} de mods sob demanda`);
+        + (arsenalMods ? ' (núcleo + mods)' : ` no núcleo · ${D.A3ARM_META.mods} de mods sob demanda`);
     } else if (aba === 'acessorios') {
-      total = A3ACC.length;
+      total = D.A3ACC.length;
       if (!termo) corpo.appendChild(cardAcessorios());
-      const lista = !termo ? A3ACC : A3ACC.filter((a) => normalize(
+      const lista = !termo ? D.A3ACC : D.A3ACC.filter((a) => normalize(
         `${a.nome} ${a.classe} ${a.tipo} ${a.dlc} ${a.ampliacaoRotulo || ''} `
         + `${a.descricao || ''}`).includes(termo));
       visiveis = lista.length;
@@ -1191,25 +1269,25 @@ export function arma3TutorialPage(args = {}) {
     } else if (aba === 'terrenos') {
       total = A3TER_TOTAL;
       if (!termo) corpo.appendChild(cardTerrenos());
-      const lista = !termo ? A3TER : A3TER.filter((t) => normalize(
+      const lista = !termo ? D.A3TER : D.A3TER.filter((t) => normalize(
         `${t.nome} ${t.classe} ${t.dlc} ${t.autor || ''} `
         + `${(t.capitais || []).join(' ')}`).includes(termo));
       visiveis = lista.length;
       if (lista.length) corpo.appendChild(tabelaTerrenos(lista));
       contador.textContent = `${visiveis} de ${total} terrenos`;
     } else if (aba === 'veiculos') {
-      total = A3VEI.length;
-      const daCat = catAtiva === 'all' ? A3VEI : A3VEI.filter((v) => v.categoria === catAtiva);
+      total = D.A3VEI.length;
+      const daCat = catAtiva === 'all' ? D.A3VEI : D.A3VEI.filter((v) => v.categoria === catAtiva);
       const lista = !termo ? daCat : daCat.filter((v) => normalize(
         `${v.nome} ${v.classe} ${v.dlc} ${v.lado || ''} ${v.faccao || ''} ${v.categoria}`
       ).includes(termo));
       visiveis = lista.length;
       if (lista.length) corpo.appendChild(tabelaVeiculos(lista));
       contador.textContent = `${visiveis} de ${total} veículos do núcleo `
-        + `(${A3VEI_META.porCategoria ? Object.values(A3VEI_META.porCategoria).reduce((a, b) => a + b, 0) : 0} no acervo com mods)`;
+        + `(${D.A3VEI_META.porCategoria ? Object.values(D.A3VEI_META.porCategoria).reduce((a, b) => a + b, 0) : 0} no acervo com mods)`;
     } else if (aba === 'equipamento') {
-      total = A3EQP.length;
-      const daCat = catAtiva === 'all' ? A3EQP : A3EQP.filter((e) => e.tipo === catAtiva);
+      total = D.A3EQP.length;
+      const daCat = catAtiva === 'all' ? D.A3EQP : D.A3EQP.filter((e) => e.tipo === catAtiva);
       const lista = !termo ? daCat : daCat.filter((e) => normalize(
         `${e.nome} ${e.classe} ${e.dlc} ${e.tipo} ${(e.nomes || []).join(' ')}`
       ).includes(termo));
@@ -1218,8 +1296,8 @@ export function arma3TutorialPage(args = {}) {
       contador.textContent = `${visiveis} de ${total} peças do núcleo `
         + `(${A3EQP_TOTAL} classes no config, variante cosmética colapsada)`;
     } else if (aba === 'soldados') {
-      total = A3SOL.length;
-      const lista = !termo ? A3SOL : A3SOL.filter((s) => normalize(
+      total = D.A3SOL.length;
+      const lista = !termo ? D.A3SOL : D.A3SOL.filter((s) => normalize(
         `${s.nome} ${s.classe} ${s.faccao || ''} ${s.lado || ''} ${s.dlc} `
         + `${(s.armas || []).join(' ')} ${(s.classes || []).join(' ')}`
       ).includes(termo));
@@ -1230,7 +1308,7 @@ export function arma3TutorialPage(args = {}) {
     } else if (aba === 'municao') {
       total = A3MUN_TOTAL;
       if (!termo) corpo.appendChild(cardFurtividade());
-      const lista = !termo ? A3MUN : A3MUN.filter((m) =>
+      const lista = !termo ? D.A3MUN : D.A3MUN.filter((m) =>
         normalize(`${m.classe} ${m.subsonico ? 'subsonica' : ''} ${m.explosivo ? 'explosiva' : ''}`).includes(termo));
       visiveis = lista.length;
       if (lista.length) corpo.appendChild(tabelaMunicao(lista));
@@ -1238,7 +1316,7 @@ export function arma3TutorialPage(args = {}) {
     } else if (aba === 'carregadores') {
       total = A3MAG_TOTAL;
       if (!termo) corpo.appendChild(cardCarregadores());
-      const lista = !termo ? A3MAG : A3MAG.filter((m) =>
+      const lista = !termo ? D.A3MAG : D.A3MAG.filter((m) =>
         normalize(`${m.nome} ${m.classe} ${m.municao || ''} ${m.origem || ''}`).includes(termo));
       visiveis = lista.length;
       if (lista.length) corpo.appendChild(tabelaCarregadores(lista));
