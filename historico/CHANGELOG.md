@@ -149,6 +149,53 @@ estão na máquina. Os dois defeitos foram conferidos reintroduzindo cada um.
 
 Falta rodar na máquina: `docs/HANDOFF-LOCAL.md` § E1-b. É retomável.
 
+### 🗺️ `dump-icones.sqf` — a varredura do config inteiro
+
+Os doze dumps existentes varrem **árvores nomeadas** (`CfgWeapons`,
+`CfgVehicles`, `CfgGlasses`) com **lista de campo fixa**. Imagem declarada em
+qualquer outra classe era invisível para o pipeline — foi assim que ele chegou a
+2.417 ícones enquanto o config declara 26.956. Este visita **toda classe do
+`configFile`** e recolhe toda propriedade de texto que aponta para `.paa`/`.pac`.
+
+Mods e DLCs entram de graça: o config da sessão em execução já é a união de tudo
+que está carregado.
+
+```
+I |id|caminho              imagem distinta, numerada na ordem de aparição
+R |classe|propriedade|id   a classe DECLARA este retrato
+PLACAR|classes|imagens|retratos
+```
+
+O `id` existe para a linha `R` não repetir o caminho — o mesmo `.paa` é
+declarado por milhares de classes. Por dentro: pilha explícita em vez de
+recursão (sem limite de profundidade), `createHashMap` para deduplicar em O(1)
+(`pushBackUnique` sobre dezenas de milhares de caminhos seria O(n²) e travaria
+o jogo), e teste barato antes da limpeza cara, para não rodar quatro
+`regexReplace` em milhões de propriedades.
+
+**Três limites declarados**, porque nenhum é óbvio:
+
+- **um `.sqf` não extrai imagem.** A única saída do motor é texto no `.rpt`; não
+  existe API para despejar os bytes de um `.paa`. Este dump diz *quais imagens
+  existem*, e os pixels continuam saindo do PBO com `Pal2PacE`;
+- **nem toda imagem do config é ícone.** A varredura pega qualquer textura
+  declarada como texto — fundo de interface, textura de material, arte de
+  carregamento. Só as propriedades que **significam** "a cara desta coisa"
+  alimentam a extração; o inventário completo serve para diagnóstico;
+- **não diz qual imagem cada classe EFETIVAMENTE usa.** Lê só o que a classe
+  declara, sem herança, e a maioria dos itens herda o `picture` do pai. Quem
+  resolve herança são os dumps específicos.
+
+É o mais caro dos treze — visita todas as classes do config, o que num jogo bem
+modificado passa de 200 mil, e emite `ANDAMENTO` a cada 20 mil para dar sinal de
+vida.
+
+O sétimo parser entrou no teste e foi conferido reintroduzindo dois defeitos. O
+primeiro conferidor que escrevi para a linha `ANDAMENTO` **testava algo
+impossível** — procurava o nome do tipo num dado de onde o tipo já tinha sido
+removido, e por isso passava com o defeito presente. Trocado pela asserção do
+conjunto exato de classes, que pega `ANDAMENTO` e `PLACAR` virando retrato.
+
 ### 🔍 Auditoria página a página — as 97 telas
 
 Nove rodadas, agrupadas por domínio do Nexus. **Vazamento 0/97 ·
