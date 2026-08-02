@@ -77,6 +77,33 @@ lido, campo picado remontado, ausência preservada (vazio → `null`, nunca zero
 Pegou um defeito meu — a conversão de cor usava `round()`, que em Python
 arredonda meio para o **par**: 0,3 × 255 = 76,5 virava 76, e navegador dá 77.
 
+#### Nenhum dos seis rodava no jogo — dois defeitos, a mesma causa raiz
+
+O teste provava que o **parser** lia o formato. Não provava que o `.sqf`
+**sobrevive ao caminho até o jogo** — e ele é colado no debug console, que é
+bem menos tolerante que um arquivo.
+
+- **Acento e caractere de caixa** (PR #410). Os seis saíram em UTF-8, com
+  acentuação e 502 ocorrências de `─`/`│` desenhando moldura de comentário. O
+  campo de entrada do console não é UTF-8. Os seis que funcionam são `us-ascii`.
+- **Comentário** (PR #411). Colando, as quebras de linha não sobrevivem: o
+  script vira uma linha só, e aí um `//` deixa de comentar uma linha e comenta
+  **todo o resto do arquivo**. O jogo acusa erro de sintaxe apontando para um
+  ponto que não tem nada de errado. A correlação foi exata — os seis que
+  funcionam têm **zero** comentário, os seis novos tinham 23 a 31.
+
+Os comentários saíram e a documentação foi para [`scripts/arma3/DUMPS.md`](../scripts/arma3/DUMPS.md),
+que é onde ela podia morar: o que cada dump traz, o formato que emite, e as
+ressalvas que estavam nos cabeçalhos (o que **não** existe no config, a licença
+do Field Manual, `size`/`scope` que valem zero legitimamente, `coefVelocidade`
+ausente ≠ 1).
+
+`testar-parsers.py` ganhou a etapa 0, que cobra as duas regras nos doze `.sqf`
+e roda no CI. As duas foram conferidas reintroduzindo cada defeito.
+
+A lição vale além do Arma 3: **teste de formato não é teste de transporte.**
+O dado passava no parser e morria no caminho.
+
 ### 🔍 Auditoria página a página — as 97 telas
 
 Nove rodadas, agrupadas por domínio do Nexus. **Vazamento 0/97 ·
