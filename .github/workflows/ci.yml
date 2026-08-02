@@ -56,6 +56,12 @@ jobs:
       - name: O mapa do Nexus bate com as rotas reais?
         run: npm run verificar-nexus
 
+      # O orquestrador é o que recusa módulo torto ANTES de o sistema montar.
+      # Se ele deixar passar rota duplicada ou ciclo, a falha aparece meia tela
+      # depois, em runtime, sem dizer de quem é a culpa.
+      - name: Testes
+        run: npm test
+
       - name: Regerar as bases e conferir as invariantes
         run: npm run verificar-arma3
 
