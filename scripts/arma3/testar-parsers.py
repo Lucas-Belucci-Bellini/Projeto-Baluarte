@@ -246,30 +246,46 @@ def conferir_sqf_ascii():
     import glob
     problemas = []
     for caminho in sorted(glob.glob(os.path.join(AQUI, '*.sqf'))):
+        nome = os.path.basename(caminho)
         bruto = open(caminho, 'rb').read()
+
+        # 1) ASCII puro — o campo de entrada do jogo nao e UTF-8
         try:
-            bruto.decode('ascii')
+            texto = bruto.decode('ascii')
         except UnicodeDecodeError:
             texto = bruto.decode('utf-8', errors='replace')
             fora = sorted({c for c in texto if ord(c) > 127})
             linhas = [i + 1 for i, l in enumerate(texto.split('\n'))
                       if any(ord(c) > 127 for c in l)]
-            problemas.append((os.path.basename(caminho), fora[:8], linhas[:5], len(linhas)))
+            problemas.append((nome, f'{len(linhas)} linha(s) com nao-ASCII '
+                                    f'(ex.: linhas {linhas[:5]}, chars {fora[:6]})'))
+            continue
+
+        # 2) ZERO comentario. Ao colar no console as quebras de linha se
+        #    perdem, e um `//` comenta TODO o resto do script — o jogo acusa
+        #    "Invalid number in expression" apontando para um ponto que nao tem
+        #    defeito nenhum. Os seis dumps que sempre funcionaram tem zero
+        #    comentario; os seis novos sairam com 23 a 31 e nenhum rodou.
+        linhas_com = [i + 1 for i, l in enumerate(texto.split('\n')) if '//' in l]
+        if linhas_com:
+            problemas.append((nome, f'{len(linhas_com)} linha(s) com comentario // '
+                                    f'(ex.: linhas {linhas_com[:5]}) — ao colar no console '
+                                    f'o // engole o resto do script'))
     return problemas
 
 
 def main():
     print('provando os parsers contra dump sintético\n')
 
-    print('0. codificação dos .sqf (precisam ser ASCII puro para colar no jogo)')
+    print('0. os .sqf sobrevivem ao debug console? (ASCII puro, zero comentário)')
     ruins = conferir_sqf_ascii()
     if ruins:
-        for nome, chars, linhas, total in ruins:
-            print(f'  ✗ {nome}: {total} linha(s) com não-ASCII '
-                  f'(ex.: linhas {linhas}, chars {chars})')
-        print('    Conserto: reescreva sem acento e sem caractere de caixa.')
+        for nome, motivo in ruins:
+            print(f'  ✗ {nome}: {motivo}')
+        print('    Ver scripts/arma3/DUMPS.md — os .sqf sao colados no console do jogo,')
+        print('    onde acento quebra a codificacao e // engole o resto do script.')
     else:
-        print(f'  ✓ os .sqf são ASCII puro')
+        print('  ✓ os .sqf são ASCII puro e sem comentário')
     print()
     falhas = 0
     for nome, (marca, script, saida, linhas) in DUMPS.items():
