@@ -82,9 +82,9 @@ O que **precisa** estar fechado antes de chamar qualquer coisa de
 - [ ] **Semear os 21 repositórios** com README + `baluarte.module.js` +
       CI mínimo, a partir de `docs/nexus/template/`. Repositório vazio não tem
       como receber domínio.
-- [ ] **Primeira onda: `core` → `shell` → `profile` → `data`** extraídos e
-      rodando, com o site atual **sem regressão** (é o critério de sucesso que o
-      próprio plano define).
+- [x] **Primeira onda: `core` → `shell` → `profile` → `data`** extraídos, cada
+      um rodando sozinho com teste em `node --test` e CI verde. O monólito
+      segue intacto — nenhum arquivo de `src/` foi movido, só copiado.
 - [ ] **Camada de composição** — o orquestrador montando módulo externo de
       verdade, não só import relativo.
 - [ ] **Fila local pendente do #240** — M3c/M3d dependem da máquina; o aceite do

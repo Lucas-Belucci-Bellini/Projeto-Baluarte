@@ -292,7 +292,9 @@
         "src/styles/arsenal.css",
         "src/data/arsenal-expandido.json",
         "src/data/militar-db.js",
-        "src/data/wiki-arma3.js"
+        "src/data/wiki-arma3.js",
+        "scripts/verificar-wiki-arsenal.mjs",
+        "scripts/verificar-grade.mjs"
       ],
       "precisa": [
         "baluarte-core",
@@ -613,14 +615,12 @@
     },
     "baluarte-data": {
       "responsabilidade": "Datasets GERADOS e datasets compartilhados por mais de um domínio, mais os geradores e verificadores que os produzem. Dataset de consumidor único mora no domínio dele. Nenhuma rota — é consumido por todo mundo.",
-      "estado": "vazio",
+      "estado": "desenvolvimento",
       "rotas": [],
       "origem": [
         "scripts/sync-cronicas.mjs",
         "scripts/gen-symbols.mjs",
         "scripts/gen-codemap.mjs",
-        "scripts/verificar-wiki-arsenal.mjs",
-        "scripts/verificar-grade.mjs",
         "src/data/arma3-acessorios.js",
         "src/data/arma3-campanhas.js",
         "src/data/arma3-classes.js",
