@@ -104,6 +104,20 @@ DUMPS = {
         'PLACAR|2|1',
         'FIM|1.00',
     ]),
+
+    'icones': ('<<A3ICO>>', 'parse-icones.py', 'arma3-icones.json', [
+        'INICIO|v1',
+        'I|0|a3/weapons_f/data/ui/gear_mx_ca.paa',
+        'R|arifle_MX_F|picture|0',
+        'R|arifle_MX_Black_F|picture|0',                  # duas classes, uma imagem
+        'I|1|a3/ui_f/data/map/markers/nato/b_inf_ca.paa',
+        'R|b_inf|icon|1',
+        'I|2|fir_f14/icon.paa',
+        'R|FIR_F14D|editorPreview|2',
+        'ANDAMENTO|20000|2|4.1',                          # ruído: não vira dado
+        'PLACAR|248000|3|4',
+        'FIM|12.30',
+    ]),
 }
 
 
@@ -225,6 +239,24 @@ def conferir(nome, d):
         m = next((x for x in d['mods'] if x['mod'] == 'Expansion'), None)
         if not m or m['appId'] != 395180:
             p.append('appId do mod não veio')
+
+    elif nome == 'icones':
+        if d['imagens'] != ['a3/weapons_f/data/ui/gear_mx_ca.paa',
+                            'a3/ui_f/data/map/markers/nato/b_inf_ca.paa',
+                            'fir_f14/icon.paa']:
+            p.append('o inventário não saiu na ordem dos ids')
+        # o id existe para o caminho não se repetir: duas classes, uma imagem
+        r = d['retratos']
+        if r.get('arifle_MX_F', {}).get('picture') != '0':
+            p.append('o vínculo classe -> imagem não montou')
+        if r.get('arifle_MX_Black_F', {}).get('picture') != '0':
+            p.append('duas classes deveriam poder apontar para a MESMA imagem')
+        if r.get('FIR_F14D', {}).get('editorPreview') != '2':
+            p.append('editorPreview não foi reconhecido como retrato')
+        # ANDAMENTO e PLACAR também têm 3 campos. Um parser que só olhasse a
+        # contagem os leria como retrato de uma classe chamada "20000".
+        if set(r) != {'arifle_MX_F', 'arifle_MX_Black_F', 'b_inf', 'FIR_F14D'}:
+            p.append(f'linha de controle virou classe: {sorted(set(r))}')
     return p
 
 

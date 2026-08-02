@@ -165,6 +165,49 @@ e as armas passam a mostrar origem errada sem ninguém perceber. O índice
 `donoDe` mapeia classe → addon que a **registra**, que é a pergunta certa, e
 permite derivar a origem em vez de mantê-la.
 
+## `dump-icones.sqf` → inventário de imagens do config inteiro
+
+Os seis dumps acima e os seis antigos varrem **árvores nomeadas** (`CfgWeapons`,
+`CfgVehicles`, `CfgGlasses`) com **lista de campo fixa**. Imagem declarada em
+qualquer outra classe é invisível para eles — e é assim que o pipeline chegou a
+2.417 ícones enquanto o config declara 26.956.
+
+Este varre o `configFile` **inteiro**, classe por classe, e recolhe toda
+propriedade de texto cujo valor aponta para `.paa`/`.pac`.
+
+```
+I |id|caminho              imagem distinta, numerada na ordem de aparição
+R |classe|propriedade|id   a classe DECLARA este retrato
+ANDAMENTO|classes|imagens|segundos
+PLACAR|classes|imagens|retratos
+```
+
+O `id` existe para a linha `R` não repetir o caminho: o mesmo `.paa` é declarado
+por milhares de classes, e repetir o texto multiplicaria o `.rpt` por uma ordem
+de grandeza sem acrescentar nada.
+
+⚠️ **Um `.sqf` não extrai imagem.** Ele roda dentro do motor e a única saída é
+texto no `.rpt` — não existe API para despejar os bytes de um `.paa`. Este dump
+diz **quais imagens existem**; os pixels continuam saindo do PBO com
+`extrair-imagens.py` + `Pal2PacE`, na máquina do operador.
+
+⚠️ **Nem toda imagem do config é ícone.** A varredura recolhe *qualquer*
+textura declarada como texto — fundo de interface, textura de material, arte de
+carregamento. Por isso só as linhas `R`, cujas propriedades **significam** "esta
+é a cara desta coisa" (`picture`, `icon`, `texture`, `editorPreview`, `logo`…),
+alimentam a extração. O inventário `I` completo serve para diagnóstico: é como
+se descobre que uma imagem existe e ninguém a estava pegando.
+
+⚠️ **Isto não diz qual imagem cada classe EFETIVAMENTE usa.** O dump lê só o que
+a classe **declara** (`configProperties` sem herança), e no Arma 3 a maioria dos
+itens herda o `picture` do pai. Quem resolve herança é `getText (_c >> "picture")`,
+que os dumps específicos já fazem. A pergunta aqui é outra — "que imagens
+existem" — e é a que a extração precisa responder.
+
+**É o dump mais caro.** Ele visita todas as classes do config, o que num jogo
+bem modificado passa de 200 mil. Espere alguns minutos e um `.rpt` grande; a
+linha `ANDAMENTO` sai a cada 20 mil classes para dar sinal de vida.
+
 ---
 
 ## Detalhes do formato, para quem for escrever outro dump
