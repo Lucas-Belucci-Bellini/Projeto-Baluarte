@@ -583,7 +583,7 @@
     },
     "baluarte-profile": {
       "responsabilidade": "Identidade do operador: dossiê pessoal, estatísticas, preferências e autenticação.",
-      "estado": "vazio",
+      "estado": "desenvolvimento",
       "rotas": [
         "/perfil"
       ],
@@ -595,7 +595,8 @@
         "src/styles/perfil.css"
       ],
       "precisa": [
-        "baluarte-core"
+        "baluarte-core",
+        "baluarte-shell"
       ],
       "peso": "leve"
     },
