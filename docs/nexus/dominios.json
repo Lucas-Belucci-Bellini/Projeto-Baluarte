@@ -640,6 +640,7 @@
     "src/data/arma3-presets.js",
     "src/data/arma3-soldados.js",
     "src/data/arma3-terrenos.js",
+    "src/data/arma3-totais.js",
     "src/data/arma3-tutoriais.js",
     "src/data/arma3-vanilla.js",
     "src/data/arma3-veiculos.js",
