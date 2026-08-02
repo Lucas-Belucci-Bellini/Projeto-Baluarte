@@ -1,0 +1,221 @@
+{
+  "$comentario": [
+    "Divisão das 97 telas em 9 grupos para a auditoria página a página.",
+    "Os grupos seguem os DOMÍNIOS do Nexus (dominios.json), não uma divisão nova:",
+    "assim o trabalho de melhorar cada página já prepara a extração daquele domínio,",
+    "em vez de correr por fora e ter que ser refeito.",
+    "Verificado por scripts/verificar-nexus.mjs: as 97 rotas aparecem aqui",
+    "exatamente uma vez — nem sobra nem falta."
+  ],
+  "criterio": "~11 telas por grupo, mantendo a coesão de domínio. Grupo grande demais vira trabalho malfeito; grupo picado demais perde o contexto compartilhado entre telas irmãs.",
+  "grupos": [
+    {
+      "id": 1,
+      "nome": "Casca, perfil e social",
+      "porque": "É o que todo visitante vê primeiro e o que sustenta a navegação. Defeito aqui aparece em todas as outras telas.",
+      "dominios": [
+        "baluarte-shell",
+        "baluarte-profile",
+        "baluarte-desktop",
+        "Projeto-Baluarte-Social-Media"
+      ],
+      "rotas": [
+        "/home",
+        "/home-3d",
+        "/home2",
+        "/sobre",
+        "/roadmap",
+        "/projetos",
+        "/perfil",
+        "/baixar",
+        "/mural",
+        "/comms"
+      ]
+    },
+    {
+      "id": 2,
+      "nome": "Ferramentas · código e texto",
+      "porque": "As ferramentas mais usadas no dia a dia, e as que mais abrem worker, listener e editor — onde vazamento entre rotas costuma morar.",
+      "dominios": [
+        "baluarte-tools"
+      ],
+      "rotas": [
+        "/ferramentas",
+        "/editor",
+        "/terminal",
+        "/json-studio",
+        "/git-helper",
+        "/regex",
+        "/codigo",
+        "/utilidades",
+        "/morse",
+        "/simbolos",
+        "/ocr"
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "Ferramentas · cálculo, lógica e visual",
+      "porque": "Telas de cálculo puro: o teste aqui é de PRECISÃO, não só de render. Número errado numa calculadora é pior que tela quebrada.",
+      "dominios": [
+        "baluarte-tools"
+      ],
+      "rotas": [
+        "/calculadoras",
+        "/calc-cientifica",
+        "/calc-numerica",
+        "/tabela-verdade",
+        "/logic-sim",
+        "/portas",
+        "/graficos",
+        "/tabela-periodica",
+        "/color-studio",
+        "/qr-studio",
+        "/guia-pc"
+      ]
+    },
+    {
+      "id": 4,
+      "nome": "Centro Militar e as 13 frentes",
+      "porque": "O hub que consolidou 13 páginas. Todas puxam extrato da Wikipédia — o mesmo motor, então o que se corrigir numa vale para as treze.",
+      "dominios": [
+        "baluarte-arsenal"
+      ],
+      "rotas": [
+        "/militar",
+        "/forcas-armadas",
+        "/orcamentos-militares",
+        "/poder-militar",
+        "/organizacao-militar",
+        "/tecnologia-militar",
+        "/taticas-estrategias",
+        "/historia-militar",
+        "/guerras-conflitos",
+        "/batalhas-historicas",
+        "/enciclopedia-militar"
+      ]
+    },
+    {
+      "id": 5,
+      "nome": "Arsenal, Arma 3 e elites",
+      "porque": "As telas mais pesadas do site — o chunk do arsenal-expandido tem 420 kB e o de soldados 1,47 MB. É aqui que peso vira lentidão de verdade.",
+      "dominios": [
+        "baluarte-arsenal",
+        "baluarte-elites"
+      ],
+      "rotas": [
+        "/arsenal",
+        "/arsenal-expandido",
+        "/armas-por-pais",
+        "/forcas-especiais",
+        "/wiki-arma3",
+        "/arma3-tutorial",
+        "/modpack",
+        "/elites",
+        "/dossie"
+      ]
+    },
+    {
+      "id": 6,
+      "nome": "Campo, vigilância e segurança",
+      "porque": "Sensoriamento e defesa: mapa, radar acústico, posição indoor, balística — e o lado digital, cripto e esteganografia. Precisão aqui é a razão de o Vanguard existir: azimute de GRADE, mil NATO e reprojeção de fuso não podem errar.",
+      "dominios": [
+        "baluarte-geo",
+        "baluarte-cibersec"
+      ],
+      "rotas": [
+        "/mapa",
+        "/radar",
+        "/geo",
+        "/find",
+        "/triangulacao",
+        "/vanguard",
+        "/cripto",
+        "/esteganografia",
+        "/ciberseg",
+        "/seguranca",
+        "/shadow"
+      ]
+    },
+    {
+      "id": 7,
+      "nome": "Conteúdo, jogos, economia e formação",
+      "porque": "Telas de leitura e consulta: narrativa, entretenimento, câmbio e trilhas de estudo. Pouco motor e muito conteúdo — o ganho aqui é de peso e de legibilidade.",
+      "dominios": [
+        "baluarte-content",
+        "baluarte-economia",
+        "baluarte-academia",
+        "baluarte-robotica"
+      ],
+      "rotas": [
+        "/biblioteca",
+        "/universo",
+        "/filmes",
+        "/memes",
+        "/jogos",
+        "/batalha-naval",
+        "/zomboid",
+        "/zomboid-admin",
+        "/economia",
+        "/dolar",
+        "/banco",
+        "/academia",
+        "/robotica"
+      ]
+    },
+    {
+      "id": 8,
+      "nome": "Mídia, áudio e 3D",
+      "porque": "Player, galeria, FFT e visor 3D: tudo que abre contexto de áudio, canvas ou WebGL. Se não soltar no `parar()`, vaza entre rotas.",
+      "dominios": [
+        "baluarte-midia",
+        "baluarte-audio"
+      ],
+      "rotas": [
+        "/media",
+        "/videos",
+        "/tv",
+        "/modelos-3d",
+        "/fft",
+        "/radio",
+        "/musicas"
+      ]
+    },
+    {
+      "id": 9,
+      "nome": "IA e JARVIS",
+      "porque": "As nove telas que hoje NÃO têm entrada no menu, mais o Núcleo de IA. Quase tudo aqui é gateado por app, então na web o que se testa é o teaser — e é justamente o teaser que ninguém olha.",
+      "dominios": [
+        "baluarte-jarvis-core",
+        "baluarte-jarvis-tools",
+        "baluarte-jarvis-memory"
+      ],
+      "rotas": [
+        "/jarvis",
+        "/jarvis-dashboard",
+        "/ia-proprietaria",
+        "/llm-lab",
+        "/terminal-ia",
+        "/cerebro",
+        "/conselho",
+        "/aprendizado",
+        "/git-nexus",
+        "/gerar-codigo",
+        "/jarvis-vision",
+        "/visao",
+        "/apis",
+        "/memoria"
+      ]
+    }
+  ],
+  "rubrica": {
+    "$comentario": "O que se cobra em CADA tela. Sem rubrica, 'melhorar' vira gosto pessoal e o resultado é inconsistente entre os grupos.",
+    "funciona": "renderiza sem exceção, sem 404 do próprio site e com conteúdo de verdade (o vigia já cobre)",
+    "limpa": "solta listener, timer, rAF, worker e faixa de áudio ao trocar de rota — vazamento é o defeito clássico de SPA e não aparece em teste de tela única",
+    "peso": "chunk da rota medido; dado grande carrega sob demanda, não no import estático",
+    "precisao": "onde a tela calcula, o número é conferido contra fonte independente ou propriedade estrutural — nunca contra valor digitado de memória",
+    "achavel": "tem ícone, entrada no menu ou está na paleta; nenhuma tela fica inalcançável",
+    "limpeza": "sem console.log esquecido, sem TODO que já foi feito, sem código morto",
+    "acessivel": "um h1 por tela, campo com rótulo, foco visível, e funciona em tela estreita"
+  }
+}
