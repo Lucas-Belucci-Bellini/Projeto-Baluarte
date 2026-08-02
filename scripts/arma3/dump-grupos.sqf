@@ -1,23 +1,23 @@
-// Dump da ORDEM DE BATALHA — CfgGroups.
+// Dump da ORDEM DE BATALHA - CfgGroups.
 //
-// Cole isto inteiro no debug console do Arma 3 (Esc → Debug Console → Execute)
+// Cole isto inteiro no debug console do Arma 3 (Esc -> Debug Console -> Execute)
 // com TODOS os DLCs e mods carregados. Depois rode:
 //     python scripts/arma3/parse-grupos.py
 //
-// O que sai daqui: a composição real de cada grupo do jogo — pelotão, esquadrão,
-// patrulha, seção de morteiro — por lado, facção e categoria, com a lista
-// ordenada de unidades e o posto/função de cada uma.
+// O que sai daqui: a composicao real de cada grupo do jogo - pelotao, esquadrao,
+// patrulha, secao de morteiro - por lado, faccao e categoria, com a lista
+// ordenada de unidades e o posto/funcao de cada uma.
 //
-// É o dado que falta para a plataforma responder "o que é um esquadrão de fuzileiros"
-// com a estrutura DO JOGO em vez de com um texto genérico. As bases existentes têm
+// E o dado que falta para a plataforma responder "o que e um esquadrao de fuzileiros"
+// com a estrutura DO JOGO em vez de com um texto generico. As bases existentes tem
 // as unidades soltas (CfgVehicles); nenhuma tem como elas se organizam.
 //
-// FORMATO — registro picado de propósito: o diag_log corta em 1012 caracteres,
-// e o corte é SILENCIOSO (na v1 do dump de armas comeu 11% dos dados).
+// FORMATO - registro picado de proposito: o diag_log corta em 1012 caracteres,
+// e o corte e SILENCIOSO (na v1 do dump de armas comeu 11% dos dados).
 //     G  |id|lado|faccao|categoria|classe|nome|
-//     GU |id|<json das unidades, em pedaços de 700>
+//     GU |id|<json das unidades, em pedacos de 700>
 //
-// `id` é `lado/faccao/categoria/classe` — único e estável entre execuções.
+// `id` e `lado/faccao/categoria/classe` - unico e estavel entre execucoes.
 
 private _t0 = diag_tickTime;
 
@@ -47,7 +47,7 @@ private _nLados = 0;
 private _nGrupos = 0;
 private _nUnidades = 0;
 
-// CfgGroups tem 4 níveis: lado > facção > categoria > grupo.
+// CfgGroups tem 4 niveis: lado > faccao > categoria > grupo.
 {
     private _cfgLado = _x;
     private _lado = configName _cfgLado;
@@ -74,8 +74,8 @@ private _nUnidades = 0;
                 diag_log text (format ["<<A3GRUPO>>G|%1|%2|%3|%4|%5|%6",
                     _id, _lado, _faccao, _categoria, _classe, _nome]);
 
-                // As unidades são subclasses numeradas (Unit0, Unit1, …), e a
-                // ORDEM importa: a primeira é o líder do grupo.
+                // As unidades sao subclasses numeradas (Unit0, Unit1, ...), e a
+                // ORDEM importa: a primeira e o lider do grupo.
                 private _unidades = [];
                 {
                     private _u = _x;
@@ -93,7 +93,7 @@ private _nUnidades = 0;
                     };
                 } forEach ("true" configClasses _cfgGrp);
 
-                [_id, str _unidades] call { params ["_i", "_t"]; ["GU", _i, _t] call _fnc_pedacos };
+                ["GU", _id, [str _unidades] call _fnc_lim] call _fnc_pedacos;
                 _nGrupos = _nGrupos + 1;
             } forEach ("true" configClasses _cfgCat);
         } forEach ("true" configClasses _cfgFac);
@@ -103,5 +103,5 @@ private _nUnidades = 0;
 diag_log text (format ["<<A3GRUPO>>PLACAR|%1|%2|%3", _nLados, _nGrupos, _nUnidades]);
 diag_log text (format ["<<A3GRUPO>>FIM|%1", (diag_tickTime - _t0) toFixed 2]);
 
-hint format ["Dump de grupos pronto.\n%1 lados · %2 grupos · %3 unidades\n%4 s\n\nRode: python scripts/arma3/parse-grupos.py",
+hint format ["Dump de grupos pronto.\n%1 lados . %2 grupos . %3 unidades\n%4 s\n\nRode: python scripts/arma3/parse-grupos.py",
     _nLados, _nGrupos, _nUnidades, (diag_tickTime - _t0) toFixed 1];

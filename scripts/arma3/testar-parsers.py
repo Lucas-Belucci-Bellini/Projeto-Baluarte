@@ -228,8 +228,49 @@ def conferir(nome, d):
     return p
 
 
+def conferir_sqf_ascii():
+    """Todo .sqf tem de ser ASCII PURO.
+
+    Este é o defeito que fez os seis dumps novos falharem na primeira tentativa
+    de uso: eu os escrevi em UTF-8, com acento nos comentários e caracteres de
+    caixa (U+2500) nos banners. Os dois dumps que já funcionavam eram us-ascii.
+
+    O debug console do Arma 3 recebe o script COLADO, e o caminho do texto até
+    lá passa por área de transferência e por um campo de entrada do jogo — que
+    não é UTF-8. O resultado é script corrompido antes de o parser existir, e a
+    mensagem de erro não fala nada sobre codificação.
+
+    Não é preferência de estilo: é requisito de funcionamento do único jeito que
+    esses arquivos são executados.
+    """
+    import glob
+    problemas = []
+    for caminho in sorted(glob.glob(os.path.join(AQUI, '*.sqf'))):
+        bruto = open(caminho, 'rb').read()
+        try:
+            bruto.decode('ascii')
+        except UnicodeDecodeError:
+            texto = bruto.decode('utf-8', errors='replace')
+            fora = sorted({c for c in texto if ord(c) > 127})
+            linhas = [i + 1 for i, l in enumerate(texto.split('\n'))
+                      if any(ord(c) > 127 for c in l)]
+            problemas.append((os.path.basename(caminho), fora[:8], linhas[:5], len(linhas)))
+    return problemas
+
+
 def main():
     print('provando os parsers contra dump sintético\n')
+
+    print('0. codificação dos .sqf (precisam ser ASCII puro para colar no jogo)')
+    ruins = conferir_sqf_ascii()
+    if ruins:
+        for nome, chars, linhas, total in ruins:
+            print(f'  ✗ {nome}: {total} linha(s) com não-ASCII '
+                  f'(ex.: linhas {linhas}, chars {chars})')
+        print('    Conserto: reescreva sem acento e sem caractere de caixa.')
+    else:
+        print(f'  ✓ os .sqf são ASCII puro')
+    print()
     falhas = 0
     for nome, (marca, script, saida, linhas) in DUMPS.items():
         ok, res = rodar(nome, marca, script, saida, linhas)
@@ -247,8 +288,10 @@ def main():
             print(f'  ✓ {nome:16} formato lido, campo picado remontado, ausência preservada')
 
     print()
+    if ruins:
+        falhas += len(ruins)
     if falhas:
-        print(f'✗ {falhas} parser(es) com problema')
+        print(f'✗ {falhas} problema(s)')
         return 1
     print(f'✓ os {len(DUMPS)} parsers leem o formato que declaram ler.')
     print('  (isto não prova que o .sqf emite este formato — só o jogo diz. O placar')

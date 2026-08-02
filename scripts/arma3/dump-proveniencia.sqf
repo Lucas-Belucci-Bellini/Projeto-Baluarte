@@ -1,28 +1,28 @@
-// Dump da PROVENIÊNCIA — CfgPatches e CfgMods.
+// Dump da PROVENIENCIA - CfgPatches e CfgMods.
 //
 // Cole no debug console do Arma 3 com todos os DLCs e mods carregados. Depois:
 //     python scripts/arma3/parse-proveniencia.py
 //
-// O que sai: quem é dono de cada coisa. `CfgPatches` lista, por addon, exatamente
-// quais unidades e armas ele registra; `CfgMods` diz que DLC/mod é aquele, com
+// O que sai: quem e dono de cada coisa. `CfgPatches` lista, por addon, exatamente
+// quais unidades e armas ele registra; `CfgMods` diz que DLC/mod e aquele, com
 // nome, cor e appId da Steam.
 //
 // POR QUE ISTO IMPORTA MAIS DO QUE PARECE
 //
-// `scripts/arma3/gerar_base_armas_comum.py` tem hoje um dicionário `DIR_DLC`
-// escrito À MÃO — diretório do asset → DLC — porque o campo `fonte` do dump não
-// serve (é `configSourceMod`, ou seja, quem patcheou por ÚLTIMO: o ACE
+// `scripts/arma3/gerar_base_armas_comum.py` tem hoje um dicionario `DIR_DLC`
+// escrito A MAO - diretorio do asset -> DLC - porque o campo `fonte` do dump nao
+// serve (e `configSourceMod`, ou seja, quem patcheou por ULTIMO: o ACE
 // sobrescreve quase todo o vanilla e apareceria como dono de tudo).
 //
-// Um dicionário à mão envelhece calado: DLC novo sai, o diretório dele não está
-// na lista, e as armas aparecem com origem errada sem ninguém perceber. Com este
-// dump a origem passa a ser DERIVADA do jogo — que é a regra do projeto para
-// dado de armamento ("nunca é inventado").
+// Um dicionario a mao envelhece calado: DLC novo sai, o diretorio dele nao esta
+// na lista, e as armas aparecem com origem errada sem ninguem perceber. Com este
+// dump a origem passa a ser DERIVADA do jogo - que e a regra do projeto para
+// dado de armamento ("nunca e inventado").
 //
 // FORMATO:
-//     P |addon|autor|nome|requiredVersion|<em pedaços: requiredAddons>
-//     PU|addon|<unidades em pedaços>
-//     PW|addon|<armas em pedaços>
+//     P |addon|autor|nome|requiredVersion|<em pedacos: requiredAddons>
+//     PU|addon|<unidades em pedacos>
+//     PW|addon|<armas em pedacos>
 //     M |mod|nome|dir|autor|appId|cor|logo
 //     PLACAR|addons|mods
 
@@ -55,7 +55,7 @@ diag_log text "<<A3PROV>>INICIO|v1";
 
 private _nP = 0; private _nM = 0;
 
-// ── addons (CfgPatches) ───────────────────────────────────────────────────
+// -- addons (CfgPatches) ---------------------------------------------------
 {
     private _c = _x;
     private _addon = configName _c;
@@ -72,7 +72,7 @@ private _nP = 0; private _nM = 0;
     _nP = _nP + 1;
 } forEach ("true" configClasses (configFile >> "CfgPatches"));
 
-// ── DLCs e mods (CfgMods) ─────────────────────────────────────────────────
+// -- DLCs e mods (CfgMods) -------------------------------------------------
 {
     private _c = _x;
     diag_log text (format ["<<A3PROV>>M|%1|%2|%3|%4|%5|%6|%7",
@@ -89,5 +89,5 @@ private _nP = 0; private _nM = 0;
 diag_log text (format ["<<A3PROV>>PLACAR|%1|%2", _nP, _nM]);
 diag_log text (format ["<<A3PROV>>FIM|%1", (diag_tickTime - _t0) toFixed 2]);
 
-hint format ["Dump de proveniência pronto.\n%1 addons · %2 mods/DLCs\n%3 s\n\nRode: python scripts/arma3/parse-proveniencia.py",
+hint format ["Dump de proveniencia pronto.\n%1 addons . %2 mods/DLCs\n%3 s\n\nRode: python scripts/arma3/parse-proveniencia.py",
     _nP, _nM, (diag_tickTime - _t0) toFixed 1];
