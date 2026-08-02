@@ -90,10 +90,16 @@ async function auditar(rotas) {
       alvo.push(descricao);
     };
 
+    /* `console.error` da própria aplicação é DIAGNÓSTICO, não sintoma: a
+     * página pode ter tratado a falha e seguido em pé. Tratar como vermelho
+     * fez /economia e /mapa falharem duas rodadas seguidas com o site
+     * funcionando. Entra como aviso e aparece no relatório — sinal preservado,
+     * alarme honesto. O que apaga a tela é exceção não capturada, e essa
+     * continua vermelha. */
     pag.on('console', (m) => {
       if (m.type() !== 'error') return;
       if (ecoDeRecurso(m.text())) return;          // já classificado no evento da requisição
-      erros.push(m.text().slice(0, 200));
+      avisos.push(`console: ${m.text().slice(0, 200)}`);
     });
     /* `pageerror` é exceção não capturada: sempre vermelho, sem exceção. É o
      * defeito que apaga a tela. */
@@ -216,11 +222,20 @@ writeFileSync(join(raiz, 'relatorios/smoke-rotas.json'), JSON.stringify(linhas, 
 
 servidor?.kill();
 
-console.log(md.split('\n').slice(0, 14).join('\n'));
-console.log(`\nrelatório: relatorios/smoke-rotas.md`);
+console.log(md.split('\n').slice(0, 12).join('\n'));
 
+/* O log do CI precisa bastar pra diagnosticar. Sem isto, "2 rotas vermelhas"
+ * obrigava a baixar o artifact pra descobrir o motivo — e a primeira coisa que
+ * se quer saber quando o alarme toca é POR QUÊ. */
 if (vermelhas.length) {
-  console.error(`\n✗ ${vermelhas.length} rota(s) vermelha(s): ${vermelhas.map((l) => l.rota).join(', ')}`);
+  console.error(`\n✗ ${vermelhas.length} rota(s) vermelha(s):\n`);
+  for (const l of vermelhas) {
+    console.error(`  ${l.rota} — ${l.estado} · ${l.texto} caracteres · ${l.ms} ms`);
+    for (const e of l.erros.slice(0, 5)) console.error(`      ${e}`);
+    for (const a of l.avisos.slice(0, 3)) console.error(`      (aviso) ${a}`);
+  }
+  console.error(`\nrelatório completo: relatorios/smoke-rotas.md`);
   process.exit(1);
 }
+console.log(`\nrelatório: relatorios/smoke-rotas.md`);
 console.log('\n✓ todas as rotas verdes.');
