@@ -104,6 +104,51 @@ e roda no CI. As duas foram conferidas reintroduzindo cada defeito.
 A lição vale além do Arma 3: **teste de formato não é teste de transporte.**
 O dado passava no parser e morria no caminho.
 
+### 🖼️ O extrator de ícones cobria 9% do jogo — e não dizia
+
+Pedido: extrair os ícones de tudo. Extrair exige a máquina do operador (os
+`.paa` estão nos PBOs da instalação, e o `Pal2PacE.exe` é do Arma 3 Tools). Mas
+o que travava não era a máquina — eram **dois defeitos já no ar**.
+
+**O extrator só pegava armas.** `alvos_do_dump()` lia `arma3-config.json` e
+`arma3-catalogo.json`. O segundo **nunca existiu**: o plano previa um
+`dump-catalogo.sqf` que foi substituído por `dump-itens.sqf` e
+`dump-veiculos.sqf` — que rodaram, e cujos JSONs estavam em `out/` desde 26/07
+com 67.368 itens, 24.261 veículos e 44.761 soldados. Arquivo ausente não dá
+erro em Python: ele pulava tudo que não fosse arma, calado. **2.417 imagens no
+site contra 26.956 que o config declara.** O `HANDOFF-LOCAL.md` também mandava
+rodar `parse-catalogo.py` e `gerar-catalogo.py`, que também não existem.
+
+**310 imagens receberiam a foto de outra.** O nome do arquivo saía do *basename*
+do caminho virtual, e `\fir_f14\icon.paa` e `\fir_f15\icon.paa` têm o mesmo
+basename — o segundo reaproveitava a imagem do primeiro pela checagem de "já
+existe no destino". No dado real: **186 basenames colidindo, 12 deles em armas
+já publicadas.** O `scripts/arma3/README.md` já tinha diagnosticado isso e
+concluído que estender exigia "uma mudança de projeto, não só um parâmetro
+novo" — estava certo.
+
+`imagens_catalogo.py` separa **o quê** extrair (testável sem o jogo) de **como**
+(precisa dos PBOs):
+
+- dedupe pelo caminho virtual inteiro, normalizado — o config escreve o mesmo
+  `.paa` com `/` ou `\`, com e sem barra inicial, em qualquer caixa;
+- nome desambiguado por hash, e o **grupo inteiro** ganha sufixo, não só os
+  repetidos: se só o segundo ganhasse, quem fica com o nome limpo dependeria da
+  ordem de iteração, e um mod novo faria dois ícones trocarem de lugar sem nada
+  no diff explicando;
+- uma pasta por categoria, porque a garantia de unicidade é intracategoria;
+- **dump ausente devolve `None`, não `{}`** — "não rodei" e "rodei e não achei
+  nada" pararam de ser a mesma coisa. É o primeiro defeito em uma linha.
+
+Os 16.550 `editorPreview` são renders grandes do editor, não ícones: vão para
+`out/renders/`, fora de `public/` (mega-plano #238 — web leve, app completo).
+
+`npm run testar-imagens-arma3` prova injetividade, determinismo e independência
+de ordem, e roda a propriedade contra os 26.956 caminhos reais quando os dumps
+estão na máquina. Os dois defeitos foram conferidos reintroduzindo cada um.
+
+Falta rodar na máquina: `docs/HANDOFF-LOCAL.md` § E1-b. É retomável.
+
 ### 🔍 Auditoria página a página — as 97 telas
 
 Nove rodadas, agrupadas por domínio do Nexus. **Vazamento 0/97 ·
