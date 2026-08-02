@@ -104,6 +104,7 @@ export function colorStudioPage() {
     });
     const hexInput = h('input', {
       className: 'input cs-input', type: 'text', spellcheck: 'false',
+      'aria-label': 'Cor em hexadecimal',
       oninput: () => {
         const rgb = hexToRgb(hexInput.value);
         if (rgb) setColor(rgb);
@@ -114,17 +115,19 @@ export function colorStudioPage() {
       onclick: () => copy(rgbToHex(color))
     }, '⧉ Copiar');
 
-    const rgbInputs = ['r', 'g', 'b'].map(() =>
+    const rgbInputs = ['r', 'g', 'b'].map((canal) =>
       h('input', {
         className: 'input cs-num', type: 'number', min: '0', max: '255',
+        'aria-label': { r: 'Vermelho', g: 'Verde', b: 'Azul' }[canal] + ' (0 a 255)',
         oninput: () => setColor({
           r: +rgbInputs[0].value, g: +rgbInputs[1].value, b: +rgbInputs[2].value
         })
       }));
 
-    const hslInputs = [360, 100, 100].map((max) =>
+    const hslInputs = [360, 100, 100].map((max, i) =>
       h('input', {
         className: 'input cs-num', type: 'number', min: '0', max: String(max),
+        'aria-label': ['Matiz (0 a 360 graus)', 'Saturação (0 a 100%)', 'Luminosidade (0 a 100%)'][i],
         oninput: () => setColor(hslToRgb({
           h: +hslInputs[0].value, s: +hslInputs[1].value, l: +hslInputs[2].value
         }))

@@ -450,6 +450,10 @@ export function calcNumericaPage() {
       type: 'text',
       spellcheck: 'false',
       autocomplete: 'off',
+      /* O rótulo visível (DEC/BIN/HEX/OCT) é um `<span>` irmão, que o leitor de
+       * tela não associa sozinho — sem isto os quatro campos se anunciavam
+       * iguais, e não dava para saber em qual base se estava digitando. */
+      'aria-label': `Valor em ${label}`,
       onchange: (e) => setFromInput(base, e.target.value)
     });
     refSetter(input);

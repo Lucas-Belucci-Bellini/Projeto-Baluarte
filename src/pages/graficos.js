@@ -11,6 +11,7 @@
 
 import '../styles/graficos.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { CHART_TYPES, PALETTES, drawChart, exportPNG } from '../utils/chart-engine.js';
@@ -161,6 +162,7 @@ function renderToolbar() {
 function renderEditor() {
   dataTextarea = h('textarea', {
     className: 'input graficos-data',
+    'aria-label': 'Dados do gráfico em JSON',
     rows: 18,
     spellcheck: 'false',
     value: state.rawData,
@@ -249,13 +251,18 @@ export function graficosPage() {
   );
   fullPage.appendChild(main);
 
-  /* Render inicial — usa requestAnimationFrame pra garantir que o canvas tem dimensões */
-  setTimeout(() => {
+  /* Render inicial adiado pra garantir que o canvas já tem dimensões. */
+  const resizeHandler = debounce(() => renderChart(), 100);
+  const inicial = setTimeout(() => {
     renderChart();
-    /* Re-render no resize da janela */
-    const resizeHandler = debounce(() => renderChart(), 100);
-    window.addEventListener('resize', resizeHandler);
+    window.addEventListener('resize', resizeHandler);   // re-render no resize
   }, 50);
+
+  /* O listener de resize ficava pendurado para sempre — um por visita à tela. */
+  aoSair(fullPage, () => {
+    clearTimeout(inicial);
+    window.removeEventListener('resize', resizeHandler);
+  });
 
   return fullPage;
 }

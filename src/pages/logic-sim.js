@@ -9,6 +9,7 @@
 
 import '../styles/logic-sim.css';
 import { h, empty } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { setStatus } from '../utils/baluarte-status.js';
@@ -374,7 +375,7 @@ export function logicSimPage() {
   const SAVED_KEY = 'logic-sim:saved';
   const getSaved = () => storage.get(SAVED_KEY) || {};
 
-  const savedSelect = h('select', { className: 'lsim-select input' });
+  const savedSelect = h('select', { className: 'lsim-select input', 'aria-label': 'Circuito salvo' });
   function refreshSaved() {
     empty(savedSelect);
     savedSelect.appendChild(h('option', { value: '' }, '⭱ Abrir salvo…'));
@@ -474,8 +475,12 @@ export function logicSimPage() {
     }
   });
 
-  window.addEventListener('mouseup', function onUp(e) {
-    if (!canvas.isConnected) { window.removeEventListener('mouseup', onUp); return; }
+  /* Em `window` porque soltar o botão FORA do canvas também encerra o arrasto.
+   * A limpeza era preguiçosa: o próprio listener se removia, mas só no PRÓXIMO
+   * mouseup — até lá continuava pendurado depois de a tela sair. Agora sai na
+   * troca de rota, junto com a tela que o criou. */
+  const onUp = (e) => {
+    if (!canvas.isConnected) return;
     const { x, y } = mousePos(e);
     if (wiring) {
       const ip = inPortAt(x, y);
@@ -490,7 +495,8 @@ export function logicSimPage() {
       }
       drag = null;
     }
-  });
+  };
+  window.addEventListener('mouseup', onUp);
 
   /* ===== Loop de simulação ===== */
   const loop = setInterval(() => {
@@ -503,6 +509,14 @@ export function logicSimPage() {
     simulate(circuit);
     draw(ctx);
   }, 50);
+
+  /* Solta o listener global e para o laço de simulação ao sair da tela. O laço
+   * já se encerrava sozinho, mas só no tique seguinte à desconexão — 50 ms
+   * simulando um circuito que ninguém está mais vendo. */
+  aoSair(page, () => {
+    window.removeEventListener('mouseup', onUp);
+    clearInterval(loop);
+  });
 
   return page;
 }
