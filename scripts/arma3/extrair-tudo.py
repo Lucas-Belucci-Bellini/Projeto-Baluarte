@@ -40,7 +40,7 @@ ETAPAS = [
     ('proveniencia', 'parse-proveniencia.py', 'dump-proveniencia.sqf'),
 ]
 
-IMAGENS = ('imagens', 'extrair-imagens.py', '(usa o arma3-config.json)')
+IMAGENS = ('imagens', 'extrair-imagens.py', '(lê os dumps que existirem)')
 
 
 def rodar(nome, script, sqf):

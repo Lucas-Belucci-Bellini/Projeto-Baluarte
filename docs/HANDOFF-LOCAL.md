@@ -254,27 +254,65 @@ Falta a **máquina** (os arquivos do Drive + Arma 3 Tools). Passos:
 A extração de **armas** terminou e já está no site (valores medidos, ícones,
 calculadora). Faltam duas coisas que **só a máquina do operador** consegue.
 
-### E1 — Dump do CATÁLOGO (veículos, soldados, miras, uniformes, coletes…)
+### E1 — Dump do CATÁLOGO · ✅ **feito, por outro caminho**
 
-Tudo pronto do lado remoto; é só rodar. A aba **🎒 Catálogo** do
-`/arma3-tutorial` já existe com as **23 categorias** e mostra "aguardando
-extração" até o dado chegar.
+Este item pedia `dump-catalogo.sqf` → `parse-catalogo.py` → `gerar-catalogo.py`.
+**Nenhum dos três chegou a existir.** O catálogo foi extraído por
+`dump-itens.sqf` e `dump-veiculos.sqf`, que fazem a mesma coisa e já rodaram
+(`.rpt` de 2026-07-26):
 
-```bash
-# 1. no jogo: Esc -> DEBUG CONSOLE -> cola scripts/arma3/dump-catalogo.sqf -> EXECUTE
-python scripts/arma3/parse-catalogo.py
-python scripts/arma3/extrair-imagens.py          # pega os ícones dos itens novos
-python scripts/arma3/extrair-imagens.py --webp
-python scripts/arma3/gerar-catalogo.py
-```
+| dump | seções | registros |
+|---|---|---|
+| `arma3-itens.json` | itens · óculos · mochilas | 67.368 · 6.560 · 1.086 |
+| `arma3-veiculos.json` | veículos · soldados · facções | 24.261 · 44.761 · 248 |
 
-O que sai: blindagem/velocidade/transporte por veículo, **zoom real** das miras
-(o config guarda FOV em radianos), **proteção por ponto do corpo** de colete e
-uniforme, capacidade de mochila, armamento inicial de cada função de soldado.
+O plano velho ficou nesta página apontando para scripts que não existem, e
+`extrair-imagens.py` ficou lendo `arma3-catalogo.json` — um arquivo que nunca
+foi gerado. Como arquivo ausente não dava erro, o extrator **só pegava armas** e
+não dizia nada. É o que E1-b conserta.
 
-⚠️ **Não troque o `_fnc_n` por `getNumber` no `.sqf`.** `getNumber` devolve 0
+⚠️ **Não troque o `_fnc_n` por `getNumber` nos `.sqf`.** `getNumber` devolve 0
 pra propriedade que **não existe**, e "sem blindagem declarada" viraria
 "blindagem 0". O helper testa `isNumber` antes e emite vazio.
+
+### E1-b — Ícones de TUDO (⏳ **preparado, falta rodar na máquina**)
+
+Hoje há **2.417 ícones no site, todos de arma**. O jogo declara **26.956**
+imagens distintas. O extrator foi reescrito para cobrir todas — falta só rodar,
+porque os `.paa` estão nos PBOs da sua instalação e o `Pal2PacE.exe` é do
+Arma 3 Tools (Windows). Nada disso existe numa sessão remota.
+
+```bash
+python scripts/arma3/extrair-imagens.py --listar   # o que dá pra extrair agora
+python scripts/arma3/extrair-imagens.py            # todas as categorias web
+python scripts/arma3/extrair-imagens.py --webp     # PNG -> WebP (obrigatório)
+npm run verificar-arma3
+```
+
+É **retomável**: imagem que já está no destino não é reextraída, então dá pra
+parar no meio e continuar. Rode uma categoria por vez se preferir
+(`extrair-imagens.py itens`).
+
+| categoria | alvos | peso |
+|---|---|---|
+| `armas` · `itens` · `veiculos` · `mapa` · `mundos` | 2.543 · 6.104 · 730 · 966 · 3 | web |
+| `simbologia` · `dlc` · `manual` | dependem dos dumps novos (§ `DUMPS.md`) | web |
+| `previews-veiculos` · `previews-soldados` · `cartas` | 13.101 · 3.449 · 60 | **app** |
+
+**Os `previews-*` não entram em `public/`.** São renders do editor, não ícones:
+16,5 mil imagens grandes que engordariam todo clone e todo build da Vercel.
+Ficam em `scripts/arma3/out/renders/`, para o app (mega-plano #238: web leve,
+app completo). Rode-os só com `--tudo`, e decida o destino antes de commitar.
+
+⚠️ **Confira a contagem antes de commitar.** Se `--listar` mostrar "no disco"
+muito abaixo de "alvos", faltou PBO no índice — rode com `--reindexar`.
+
+⚠️ **12 ícones de arma que já estão no ar estão errados.** O nome do arquivo
+saía do basename do caminho virtual, e `\fir_f14\icon.paa` e `\fir_f15\icon.paa`
+têm o mesmo basename — o segundo reaproveitava a imagem do primeiro. A regra
+nova desambigua por hash, então esses 12 ganham nome novo e são reextraídos
+sozinhos na primeira passada. Os arquivos antigos ficam órfãos no destino; o
+extrator **conta** os órfãos no fim e não apaga nada — confira antes de remover.
 
 ### E2 — Modelos 3D: o que dá e o que não dá
 
