@@ -382,6 +382,7 @@
     "src/pages/modelos-3d.js",
     "src/utils/players-engine.js",
     "src/utils/visor-3d.js",
+    "src/utils/webgl-probe.js",
     "src/utils/diag-3d.js",
     "src/data/videos.js",
     "src/data/tv.js",

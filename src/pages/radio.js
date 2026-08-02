@@ -298,6 +298,7 @@ function buildSynthView(state) {
   const dial = h('input', {
     className: 'radio-dial',
     type: 'range',
+    'aria-label': 'Sintonia — frequência em MHz',
     min: String(BAND_MIN),
     max: String(BAND_MAX),
     step: '0.1',
