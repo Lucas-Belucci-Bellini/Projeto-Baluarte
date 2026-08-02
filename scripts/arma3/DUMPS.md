@@ -31,14 +31,35 @@ No jogo: `Esc` → **Debug Console** → cola o arquivo inteiro → `LOCAL EXEC`
 Com **todos os DLCs e mods carregados** — o dump lê o config da sessão em
 execução, então o que não estiver carregado não existe para ele.
 
-Depois, no repositório:
+Depois, no repositório, **um comando só**:
 
 ```bash
-python scripts/arma3/extrair-tudo.py            # todas as etapas
-python scripts/arma3/extrair-tudo.py grupos     # só uma
+npm run atualizar-arma3              # lê o que é novo, extrai, regera
+npm run atualizar-arma3 -- --ver     # só diz o que faria, sem mexer em nada
+```
+
+Ele varre a pasta de `.rpt` **uma vez** procurando as 13 marcas, roda só os
+parsers cujo dump é novo, extrai só as imagens que faltam, regera só as bases
+cuja entrada mudou, e no fim lista os `.sqf` que você ainda não colou no jogo.
+
+Rodar de novo sem dump novo não faz nada além de dizer que está tudo em dia.
+
+Ainda dá para chamar uma etapa isolada, quando quiser:
+
+```bash
+python scripts/arma3/extrair-tudo.py grupos
 ```
 
 Ou pelo app: aba **📡 Extrair** em `/arma3-tutorial` (só no Baluarte Launcher).
+
+⚠️ **Nenhum script alcança o jogo.** O `.rpt` só tem dado depois que você colou
+o `.sqf` no console. O atualizador diz qual falta; colar é sempre manual.
+
+⚠️ **Modelo 3D não entra nesse "um comando".** `extrair-modelos.py` tira o
+`.p3d` do PBO, mas `.p3d` → glTF **não tem caminho por script**: o formato ODOL
+é fechado, sem especificação pública estável, e muda entre versões do engine. A
+conversão passa pelo Blender com o Arma Toolbox, na mão, modelo a modelo. Ver
+`docs/HANDOFF-LOCAL.md` § E2.
 
 ---
 
