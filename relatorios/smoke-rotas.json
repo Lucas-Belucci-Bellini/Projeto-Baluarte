@@ -1,0 +1,69 @@
+[
+ {
+  "rota": "/portas",
+  "estado": "verde",
+  "ms": 13827,
+  "texto": 5840,
+  "nos": 854,
+  "titulo": "⊡ Enciclopédia de Lógica Digital",
+  "naoEncontrada": false,
+  "erros": [],
+  "avisos": [
+   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
+  ]
+ },
+ {
+  "rota": "/roadmap",
+  "estado": "verde",
+  "ms": 13584,
+  "texto": 4342,
+  "nos": 315,
+  "titulo": "Roadmap",
+  "naoEncontrada": false,
+  "erros": [],
+  "avisos": [
+   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
+  ]
+ },
+ {
+  "rota": "/economia",
+  "estado": "verde",
+  "ms": 13711,
+  "texto": 347,
+  "nos": 27,
+  "titulo": "◈ Economia",
+  "naoEncontrada": false,
+  "erros": [],
+  "avisos": [
+   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
+  ]
+ },
+ {
+  "rota": "/mapa",
+  "estado": "verde",
+  "ms": 13805,
+  "texto": 563,
+  "nos": 69,
+  "titulo": "◗ Mapa Tático Mundial",
+  "naoEncontrada": false,
+  "erros": [],
+  "avisos": [
+   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
+  ]
+ },
+ {
+  "rota": "/memoria",
+  "estado": "verde",
+  "ms": 13672,
+  "texto": 663,
+  "nos": 43,
+  "titulo": "🧠 Memória do JARVIS",
+  "naoEncontrada": false,
+  "erros": [],
+  "avisos": [
+   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET",
+   "HTTP 404: http://127.0.0.1:4173/api/memory",
+   "rede: http://127.0.0.1:4173/api/memory — net::ERR_ABORTED"
+  ]
+ }
+]

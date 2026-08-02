@@ -41,12 +41,30 @@ const TEXTO_MINIMO = 60;
 const CHROME = process.env.CHROME_PATH || undefined;
 
 function rotasRegistradas() {
+  /* `ROTAS=/a,/b` roda só as indicadas — pra investigar uma rota vermelha sem
+   * esperar as outras 96. */
+  if (process.env.ROTAS) return process.env.ROTAS.split(',').map((r) => r.trim());
   const main = readFileSync(join(raiz, 'src/main.js'), 'utf8');
   return [...main.matchAll(/^router\.register\('([^']+)'/gm)].map((m) => m[1]);
 }
 
 /** Host externo: falha dele é aviso, não defeito do site. */
 const externo = (url) => !url.startsWith(BASE) && !url.startsWith('/');
+
+/* As rotas /api/* são funções serverless da Vercel. Elas NÃO existem no
+ * `vite preview`, então dão 404 em qualquer rodada local ou de CI que não seja
+ * contra um deploy de verdade. Sem esta exceção, /memoria ficaria vermelha
+ * para sempre por um motivo que não é defeito — e alarme que mente sempre é
+ * alarme que ninguém lê. Passe COM_BACKEND=1 ao rodar contra a Vercel. */
+const COM_BACKEND = process.env.COM_BACKEND === '1';
+const backendAusente = (url) => !COM_BACKEND && url.replace(BASE, '').startsWith('/api/');
+
+/* O Chromium ecoa toda falha de recurso como `console.error`. Esse eco não
+ * pode ser classificado de novo: a decisão externo/interno já foi tomada no
+ * evento da requisição, e contar duas vezes transformava aviso em vermelho.
+ * Foi o que deixou /economia, /mapa e /memoria falsamente vermelhas na
+ * primeira rodada real do vigia. */
+const ecoDeRecurso = (texto) => /Failed to load resource|net::ERR_/i.test(texto);
 
 async function esperarPreview(url, tentativas = 40) {
   for (let i = 0; i < tentativas; i += 1) {
@@ -67,11 +85,25 @@ async function auditar(rotas) {
     const pag = await nav.newPage({ viewport: { width: 1440, height: 900 } });
     const erros = [];
     const avisos = [];
-    pag.on('console', (m) => { if (m.type() === 'error') erros.push(m.text().slice(0, 200)); });
+    const classificar = (url, descricao) => {
+      const alvo = (externo(url) || backendAusente(url)) ? avisos : erros;
+      alvo.push(descricao);
+    };
+
+    pag.on('console', (m) => {
+      if (m.type() !== 'error') return;
+      if (ecoDeRecurso(m.text())) return;          // já classificado no evento da requisição
+      erros.push(m.text().slice(0, 200));
+    });
+    /* `pageerror` é exceção não capturada: sempre vermelho, sem exceção. É o
+     * defeito que apaga a tela. */
     pag.on('pageerror', (e) => erros.push(`JS: ${String(e.message).slice(0, 200)}`));
-    pag.on('requestfailed', (r) => {
-      const alvo = externo(r.url()) ? avisos : erros;
-      alvo.push(`rede: ${r.url().slice(0, 90)} — ${r.failure()?.errorText}`);
+    pag.on('requestfailed', (r) => classificar(r.url(), `rede: ${r.url().slice(0, 90)} — ${r.failure()?.errorText}`));
+    /* 404/500 NÃO são `requestfailed` — a requisição completou. Sem isto, uma
+     * rota que serve erro do próprio site passava por verde. */
+    pag.on('response', (r) => {
+      if (r.status() < 400) return;
+      classificar(r.url(), `HTTP ${r.status()}: ${r.url().slice(0, 90)}`);
     });
 
     const t0 = Date.now();
@@ -81,11 +113,18 @@ async function auditar(rotas) {
       const info = await pag.evaluate(() => {
         const alvo = document.querySelector('main') || document.body;
         const texto = (alvo.innerText || '').trim();
+        /* Detecção ESTRUTURAL, não por texto: o 404 e o "falha ao carregar" do
+         * router renderizam `.empty-state` com o título próprio. Procurar a
+         * expressão no innerText inteiro acusava página legítima — a
+         * enciclopédia de lógica digital caiu assim, porque o conteúdo dela
+         * cita a frase. */
+        const vazia = alvo.querySelector('.empty-state__title');
+        const rotuloVazio = (vazia?.innerText || '').trim();
         return {
           texto: texto.length,
           nos: alvo.querySelectorAll('*').length,
           titulo: (document.querySelector('h1, .page-title')?.innerText || '').trim().slice(0, 60),
-          naoEncontrada: /não encontrad|falha ao carregar/i.test(texto),
+          naoEncontrada: /rota não encontrada|falha ao carregar/i.test(rotuloVazio),
         };
       });
 

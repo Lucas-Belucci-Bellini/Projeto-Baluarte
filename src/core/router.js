@@ -128,4 +128,11 @@ function current() {
   return currentMatch;
 }
 
-export const router = { register, setNotFound, navigate, start, current, count: () => routes.length };
+/* `list()` devolve os padrões registrados, na ordem de registro. Existe pra
+ * quem precisa enxergar o site inteiro sem manter uma segunda lista — a
+ * paleta de comandos indexa daqui, então rota nova aparece na busca sozinha.
+ * Rotas com parâmetro (`/perfil/:id`) ficam de fora: elas não são um destino
+ * navegável por si só. */
+const list = () => routes.map((r) => r.pattern).filter((p) => !p.includes(':'));
+
+export const router = { register, setNotFound, navigate, start, current, list, count: () => routes.length };

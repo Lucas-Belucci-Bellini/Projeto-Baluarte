@@ -24,6 +24,8 @@ import { notFoundPage, loadErrorPage } from './pages/_placeholder.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast } from './utils/toast.js';
+import { initPaleta } from './utils/paleta.js';
+import './styles/paleta.css';
 import { initTheme } from './utils/theme.js';
 import { initUniverse } from './utils/universe-theme.js';
 import { playBootIntro } from './utils/boot-intro.js';
@@ -261,6 +263,10 @@ function boot() {
 
   mountShell(root);
   initToast();
+  /* Ctrl/⌘+K acha qualquer uma das rotas registradas. Vai DEPOIS do
+   * router.register de todas elas (o índice sai do próprio router), e antes do
+   * start só pra o atalho já valer no primeiro paint. */
+  initPaleta();
   initShadowGate();
   /* Se o usuário voltou de um login OAuth (tokens no #fragmento), captura a
    * sessão e limpa o hash ANTES do router interpretar a URL. No-op normalmente. */
