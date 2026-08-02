@@ -9,6 +9,7 @@
 
 import '../styles/morse.css';
 import { h, cx } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { setStatus } from '../utils/baluarte-status.js';
@@ -29,9 +30,10 @@ function loadState() {
   };
 }
 
+/* O AudioContext é de MÓDULO de propósito: o navegador limita quantos existem
+ * por aba, então reaproveitar um entre visitas é o certo. O que NÃO pode ser de
+ * módulo é o estado da transmissão — ver `morsePage()`. */
 let audioCtx = null;
-let playing = false;
-let stopFlag = false;
 
 function getCtx() {
   if (!audioCtx) {
@@ -45,6 +47,18 @@ function getCtx() {
 export function morsePage() {
   const state = loadState();
   const fullPage = h('div', { className: 'page-morse' });
+
+  /* Estado da transmissão — POR INSTÂNCIA, não de módulo.
+   *
+   * Era `let playing` no topo do arquivo, e isso quebrava a tela de um jeito
+   * que nenhum teste de tela única pega: quem saísse no meio da transmissão
+   * deixava `playing === true` para sempre. Ao voltar, a página nova via a
+   * bandeira levantada pela página velha, e o Play só respondia com
+   * `stopFlag = true` — botão morto, sem erro no console, sem pista nenhuma.
+   * Medido antes do conserto: voltar e clicar Play criava zero osciladores. */
+  let playing = false;
+  let stopFlag = false;
+  let transmissao = null;      // { osc, timers, guard } da transmissão em curso
 
   fullPage.appendChild(
     h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
@@ -104,12 +118,14 @@ export function morsePage() {
   const wpmLabel = h('span', { className: 'u-mono u-text-cyan morse-ctl__val' }, `${state.wpm} WPM`);
   const wpmSlider = h('input', {
     type: 'range', min: '5', max: '40', step: '1', value: String(state.wpm),
+    'aria-label': 'Velocidade em palavras por minuto',
     oninput: (e) => { state.wpm = parseInt(e.target.value, 10); wpmLabel.textContent = `${state.wpm} WPM`; persist(); }
   });
 
   const freqLabel = h('span', { className: 'u-mono u-text-cyan morse-ctl__val' }, `${state.freq} Hz`);
   const freqSlider = h('input', {
     type: 'range', min: '300', max: '1000', step: '20', value: String(state.freq),
+    'aria-label': 'Tom do sinal em hertz',
     oninput: (e) => { state.freq = parseInt(e.target.value, 10); freqLabel.textContent = `${state.freq} Hz`; persist(); }
   });
 
@@ -174,18 +190,36 @@ export function morsePage() {
 
     const finish = () => {
       playing = false;
+      transmissao = null;
       playBtn.textContent = '▶ Reproduzir';
       playBtn.disabled = false;
       lamp.classList.remove('is-on');
       lampTrack.textContent = stopFlag ? 'parado' : 'concluído';
       timers.forEach(clearTimeout);
-      if (stopFlag) { try { osc.stop(); } catch {} }
+      clearInterval(guard);
+      if (stopFlag) { try { osc.stop(); } catch { /* já parou sozinho */ } }
     };
-    setTimeout(finish, elapsed + 120);
+    const fim = setTimeout(finish, elapsed + 120);
     const guard = setInterval(() => {
-      if (stopFlag || !playing) { clearInterval(guard); finish(); }
+      if (stopFlag || !playing) finish();
     }, 100);
+    timers.push(fim);
+    transmissao = { osc, timers, guard };
   }
+
+  /* Sair da tela no meio da transmissão precisa CALAR o oscilador: ele já está
+   * agendado até o fim da mensagem no relógio do AudioContext e continuaria
+   * apitando por cima da tela seguinte. */
+  function pararTransmissao() {
+    if (!transmissao) return;
+    stopFlag = true;
+    playing = false;
+    clearInterval(transmissao.guard);
+    transmissao.timers.forEach(clearTimeout);
+    try { transmissao.osc.stop(); } catch { /* já parou sozinho */ }
+    transmissao = null;
+  }
+  aoSair(fullPage, pararTransmissao);
 
   /* ===== Botões utilitários ===== */
   const copyBtn = h('button', {

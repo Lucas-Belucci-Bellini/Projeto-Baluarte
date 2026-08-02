@@ -9,8 +9,14 @@ export const MORSE_TABLE = {
   M: '--',    N: '-.',    O: '---',   P: '.--.',  Q: '--.-',  R: '.-.',
   S: '...',   T: '-',     U: '..-',   V: '...-',  W: '.--',   X: '-..-',
   Y: '-.--',  Z: '--..',
-  /* Acentuadas (PT-BR) */
-  Á: '.--.-', É: '..-..', Í: '..',    Ó: '---.',  Ú: '..--',  Ç: '-.-..',
+  /* Acentuadas com código PRÓPRIO no Morse internacional.
+   *
+   * `Í: '..'` já esteve nesta lista e era um erro grave: '..' é o I, e como a
+   * inversa é construída varrendo a tabela, o último a escrever vencia — toda
+   * decodificação devolvia Í no lugar de I. "SIM" virava "SÍM", "INDIA" virava
+   * "ÍNDÍA". O Morse internacional não tem Í; quem não tem código é dobrado
+   * para a letra-base em `textToMorse`. */
+  Á: '.--.-', É: '..-..', Ó: '---.',  Ú: '..--',  Ç: '-.-..',
   Ñ: '--.--',
   /* Dígitos */
   '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
@@ -22,10 +28,25 @@ export const MORSE_TABLE = {
   '"': '.-..-.',  '$': '...-..-', '@': '.--.-.'
 };
 
-/* Inversa: morse → caractere */
+/* Inversa: morse → caractere.
+ *
+ * Só é bem-definida porque a tabela não tem dois caracteres com o mesmo código
+ * — se voltar a ter, o último silenciosamente vence e a decodificação passa a
+ * mentir. Há teste cobrindo exatamente isso. */
 export const MORSE_REVERSE = Object.fromEntries(
   Object.entries(MORSE_TABLE).map(([k, v]) => [v, k])
 );
+
+/* Acentos que o Morse internacional NÃO distingue: valem pela letra-base.
+ * Sem isto, "índia" e "você" saem cheios de '#' — que é pior do que a perda do
+ * acento, porque perde a letra inteira. */
+const SEM_CODIGO = {
+  À: 'A', Â: 'A', Ã: 'A', Ä: 'A',
+  Ê: 'E', Ë: 'E',
+  Ì: 'I', Í: 'I', Î: 'I', Ï: 'I',
+  Ò: 'O', Ô: 'O', Õ: 'O', Ö: 'O',
+  Ù: 'U', Û: 'U', Ü: 'U'
+};
 
 /* Velocidade WPM padrão Morse: PARIS = 50 dits → 1 dit em ms */
 export function wpmToDitMs(wpm) {
@@ -35,16 +56,17 @@ export function wpmToDitMs(wpm) {
 /**
  * Codifica texto → Morse.
  * Letras separadas por espaço, palavras separadas por ' / '.
- * Caracteres sem correspondência viram '#'.
+ * Acento sem código próprio vale pela letra-base; o resto vira '#'.
  */
 export function textToMorse(text) {
+  const codigo = (ch) => MORSE_TABLE[ch] || MORSE_TABLE[SEM_CODIGO[ch]] || (ch.trim() ? '#' : '');
   return String(text)
     .toUpperCase()
     .split(/\s+/)
     .filter(Boolean)
     .map((word) =>
       [...word]
-        .map((ch) => MORSE_TABLE[ch] || (ch.trim() ? '#' : ''))
+        .map(codigo)
         .filter(Boolean)
         .join(' ')
     )

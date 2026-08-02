@@ -27,6 +27,7 @@ function toolSenha() {
   const out = h('input', { className: 'input util-out u-mono', readonly: true, placeholder: 'Sua senha aparece aqui' });
   const lenLabel = h('span', { className: 'u-text-cyan u-mono' }, '16');
   const len = h('input', { type: 'range', min: '6', max: '48', value: '16',
+    'aria-label': 'Tamanho da senha em caracteres',
     oninput: (e) => { lenLabel.textContent = e.target.value; } });
   const opts = {
     lower: h('input', { type: 'checkbox', checked: true }),
@@ -73,8 +74,10 @@ function toolSenha() {
 
 /* ===== 2) Gerador de UUID ===== */
 function toolUuid() {
-  const out = h('textarea', { className: 'input util-out u-mono', rows: 4, readonly: true });
-  const qty = h('input', { className: 'input util-qty', type: 'number', min: '1', max: '100', value: '5' });
+  const out = h('textarea', { className: 'input util-out u-mono', rows: 4, readonly: true,
+    'aria-label': 'UUIDs gerados' });
+  const qty = h('input', { className: 'input util-qty', type: 'number', min: '1', max: '100', value: '5',
+    'aria-label': 'Quantidade de UUIDs' });
   function gen() {
     const n = Math.max(1, Math.min(100, parseInt(qty.value, 10) || 1));
     const ids = [];
@@ -121,7 +124,7 @@ function toolContador() {
 function toolTimestamp() {
   const tsIn = h('input', { className: 'input u-mono', type: 'text', placeholder: 'Unix (s ou ms), ex: 1716661200' });
   const tsOut = h('div', { className: 'util-result u-mono' }, '—');
-  const dtIn = h('input', { className: 'input', type: 'datetime-local' });
+  const dtIn = h('input', { className: 'input', type: 'datetime-local', 'aria-label': 'Data e hora para converter em Unix' });
   const dtOut = h('div', { className: 'util-result u-mono' }, '—');
 
   tsIn.oninput = () => {
@@ -197,8 +200,10 @@ function toolLorem() {
     + 'dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo '
     + 'consequat duis aute irure voluptate velit esse cillum eu fugiat nulla pariatur excepteur sint occaecat cupidatat '
     + 'non proident sunt culpa qui officia deserunt mollit anim id est laborum').split(' ');
-  const out = h('textarea', { className: 'input util-out', rows: 6, readonly: true });
-  const qty = h('input', { className: 'input util-qty', type: 'number', min: '1', max: '20', value: '3' });
+  const out = h('textarea', { className: 'input util-out', rows: 6, readonly: true,
+    'aria-label': 'Texto Lorem Ipsum gerado' });
+  const qty = h('input', { className: 'input util-qty', type: 'number', min: '1', max: '20', value: '3',
+    'aria-label': 'Quantidade de parágrafos' });
   const sentence = () => {
     const len = 6 + Math.floor(Math.random() * 10), s = [];
     for (let i = 0; i < len; i++) s.push(W[Math.floor(Math.random() * W.length)]);
@@ -266,7 +271,7 @@ function toolImgBase64() {
   const out = h('textarea', { className: 'input util-out u-mono', rows: 4, readonly: true, placeholder: 'data:image/...;base64,...' });
   const prev = h('div', { className: 'util-imgprev' });
   const file = h('input', {
-    className: 'input', type: 'file', accept: 'image/*',
+    className: 'input', type: 'file', accept: 'image/*', 'aria-label': 'Escolher imagem para converter em data URI',
     onchange: (e) => {
       const f = e.target.files?.[0];
       if (!f) return;
@@ -304,7 +309,7 @@ function toolCaso() {
   const inp = h('textarea', { className: 'input util-textarea', rows: 2, placeholder: 'Digite um texto...' });
   const out = h('div', { className: 'util-body' });
   function row(label, value) {
-    const v = h('input', { className: 'input util-out u-mono', readonly: true, value });
+    const v = h('input', { className: 'input util-out u-mono', readonly: true, value, 'aria-label': label });
     return h('div', { className: 'util-row' }, h('span', null, label), v,
       h('button', { className: 'btn btn--ghost btn--sm', onclick: () => copy(value) }, '⧉'));
   }
@@ -335,7 +340,7 @@ function toolCaso() {
 /* ===== 12) Gerador de Slug ===== */
 function toolSlug() {
   const inp = h('input', { className: 'input', type: 'text', placeholder: 'Título do artigo: Olá, Mundo!' });
-  const out = h('input', { className: 'input util-out u-mono', readonly: true });
+  const out = h('input', { className: 'input util-out u-mono', readonly: true, 'aria-label': 'Slug gerado' });
   const slugify = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   inp.oninput = () => { out.value = slugify(inp.value); };
@@ -391,8 +396,8 @@ function toolRomanos() {
 
 /* ===== 15) Calculadora de Datas ===== */
 function toolDatas() {
-  const d1 = h('input', { className: 'input', type: 'date' });
-  const d2 = h('input', { className: 'input', type: 'date' });
+  const d1 = h('input', { className: 'input', type: 'date', 'aria-label': 'Data inicial' });
+  const d2 = h('input', { className: 'input', type: 'date', 'aria-label': 'Data final' });
   const diffOut = h('div', { className: 'util-result u-text-cyan' }, '—');
   const calcDiff = () => {
     if (!d1.value || !d2.value) { diffOut.textContent = '—'; return; }
@@ -401,7 +406,7 @@ function toolDatas() {
     diffOut.textContent = `${Math.abs(dias)} dia(s)` + (dias < 0 ? ' (d2 antes de d1)' : '');
   };
   d1.oninput = d2.oninput = calcDiff;
-  const base = h('input', { className: 'input', type: 'date' });
+  const base = h('input', { className: 'input', type: 'date', 'aria-label': 'Data de partida' });
   const n = h('input', { className: 'input util-qty', type: 'number', value: '30', placeholder: 'dias' });
   const addOut = h('div', { className: 'util-result u-text-cyan' }, '—');
   const calcAdd = () => {
@@ -420,7 +425,8 @@ function toolDatas() {
 
 /* ===== px ↔ rem ===== */
 function toolPxRem() {
-  const base = h('input', { className: 'input util-qty', type: 'number', value: '16' });
+  const base = h('input', { className: 'input util-qty', type: 'number', value: '16',
+    'aria-label': 'Tamanho base em pixels' });
   const px = h('input', { className: 'input util-qty', type: 'number', placeholder: 'px' });
   const rem = h('input', { className: 'input util-qty', type: 'number', placeholder: 'rem' });
   const b = () => parseFloat(base.value) || 16;
@@ -472,7 +478,8 @@ function mdToHtml(md) {
 function toolMarkdown() {
   const ta = h('textarea', { className: 'input util-textarea', rows: 6, placeholder: '# Título\n\nTexto **negrito**, *itálico*, `código` e [link](https://...)\n\n- item 1\n- item 2' });
   const preview = h('div', { className: 'util-mdprev' });
-  const src = h('textarea', { className: 'input util-out u-mono', rows: 4, readonly: true });
+  const src = h('textarea', { className: 'input util-out u-mono', rows: 4, readonly: true,
+    'aria-label': 'HTML gerado' });
   function update() { const html = mdToHtml(ta.value); preview.innerHTML = html; src.value = html; }
   ta.oninput = update; update();
   return h('div', { className: 'util-body' }, ta,
@@ -538,8 +545,9 @@ function toolRegraTres() {
 /* ===== Conversor de Bytes ===== */
 function toolBytes() {
   const UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const val = h('input', { className: 'input util-qty', type: 'number', value: '1024' });
-  const unit = h('select', { className: 'input util-qty' }, ...UNITS.map((u, i) => h('option', { value: String(1024 ** i) }, u)));
+  const val = h('input', { className: 'input util-qty', type: 'number', value: '1024', 'aria-label': 'Quantidade a converter' });
+  const unit = h('select', { className: 'input util-qty', 'aria-label': 'Unidade de origem' },
+    ...UNITS.map((u, i) => h('option', { value: String(1024 ** i) }, u)));
   const out = h('div', { className: 'util-stats' });
   const update = () => {
     const bytes = (parseFloat(val.value) || 0) * (+unit.value);

@@ -1,778 +1,779 @@
 {
-  "$comentario": [
-    "Mapa de migração do Projeto Nexus Baluarte (issue #406 / docs/PROJETO-NEXUS-BALUARTE.md).",
-    "FONTE DA VERDADE de quem leva o quê para qual dos 20 repositórios de domínio.",
-    "Verificado por scripts/verificar-nexus.mjs: toda rota registrada em src/main.js",
-    "precisa aparecer aqui EXATAMENTE uma vez — nem sobra nem falta.",
-    "'estado' é a maturidade do repositório: vazio | backlog | desenvolvimento | teste | estavel."
-  ],
-  "versaoContrato": "1.1.0",
-  "gerado": "2026-08-01",
-  "dominios": {
-    "baluarte-core": {
-      "responsabilidade": "Base da aplicação: router, estado, eventos, storage, sessão/banco e helpers compartilhados. Não tem rota própria — é o que todo mundo importa.",
-      "estado": "desenvolvimento",
-      "rotas": [],
-      "origem": [
-        "src/core/router.js",
-        "src/core/state.js",
-        "src/core/events.js",
-        "src/core/storage.js",
-        "src/core/supabase.js",
-        "src/core/supabase-auth.js",
-        "src/core/media-sync.js",
-        "src/utils/helpers.js",
-        "src/utils/icons.js",
-        "src/utils/toast.js",
-        "src/utils/theme.js",
-        "src/utils/pwa.js",
-        "src/utils/page-views.js",
-        "src/utils/visit-counter.js",
-        "src/utils/hx-beacon.js",
-        "src/utils/auth-engine.js",
-        "src/utils/baluarte-status.js",
-        "src/data/version.js"
-      ],
-      "precisa": [],
-      "peso": "leve"
-    },
-    "baluarte-shell": {
-      "responsabilidade": "Casca visual: layout, sidebar, header, overlay, tokens, efeitos e as páginas institucionais que moram no shell.",
-      "estado": "desenvolvimento",
-      "rotas": [
-        "/home",
-        "/home-3d",
-        "/home2",
-        "/sobre",
-        "/roadmap",
-        "/projetos"
-      ],
-      "origem": [
-        "src/pages/projetos.js",
-        "src/pages/sobre.js",
-        "src/pages/roadmap.js",
-        "src/pages/home.js",
-        "src/layout/shell.js",
-        "src/layout/header.js",
-        "src/layout/sidebar.js",
-        "src/layout/overlay.js",
-        "src/styles/variables.css",
-        "src/styles/effects.css",
-        "src/utils/effects.js",
-        "src/utils/boot-intro.js",
-        "src/utils/scroll-reveal.js",
-        "src/utils/scroll-progress.js",
-        "src/utils/immersive.js",
-        "src/utils/atmosphere.js",
-        "src/utils/card-spotlight.js",
-        "src/utils/universe-theme.js",
-        "src/utils/hero-webgl.js",
-        "src/utils/hero-rays.js",
-        "src/utils/hero3d.js",
-        "src/utils/spline-embed.js",
-        "src/data/spline-scenes.js",
-        "src/data/projetos.json",
-        "src/styles/boot-intro.css",
-        "src/styles/projetos.css",
-        "src/styles/roadmap.css",
-        "src/styles/sobre.css",
-        "src/styles/biblioteca.css",
-        "src/styles/editor.css",
-        "src/styles/fase18.css",
-        "src/styles/graficos.css",
-        "src/styles/simbolos.css",
-        "src/styles/terminal.css",
-        "src/styles/animations.css",
-        "src/styles/atmosphere.css",
-        "src/styles/base.css",
-        "src/styles/components.css",
-        "src/styles/fase17.css",
-        "src/styles/fase19.css",
-        "src/styles/home-v2.css",
-        "src/styles/immersive.css",
-        "src/styles/layout.css",
-        "src/styles/overlay.css",
-        "src/styles/reveal.css",
-        "src/styles/scroll-progress.css",
-        "src/styles/theme-universos.css",
-        "src/styles/reset.css",
-        "src/utils/paleta.js",
-        "src/styles/paleta.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-content": {
-      "responsabilidade": "Conteúdo narrativo e de entretenimento: crônicas, universos, biblioteca, filmes, memes, jogos leves e guias de jogo.",
-      "estado": "vazio",
-      "rotas": [
-        "/biblioteca",
-        "/universo",
-        "/filmes",
-        "/memes",
-        "/jogos",
-        "/batalha-naval",
-        "/zomboid",
-        "/zomboid-admin"
-      ],
-      "origem": [
-        "src/pages/biblioteca.js",
-        "src/pages/universo.js",
-        "src/pages/filmes.js",
-        "src/pages/memes.js",
-        "src/pages/jogos.js",
-        "src/pages/batalha-naval.js",
-        "src/pages/zomboid.js",
-        "src/pages/zomboid-admin.js",
-        "src/data/cronicas.js",
-        "src/data/universos.js",
-        "src/data/fanfic.json",
-        "src/data/filmes.js",
-        "src/data/memes.js",
-        "src/data/jogos.js",
-        "src/data/zomboid-mods.js",
-        "src/data/zomboid-admin.js",
-        "src/styles/batalha-naval.css",
-        "src/styles/filmes.css",
-        "src/styles/jogos.css",
-        "src/styles/memes.css",
-        "src/styles/universo.css",
-        "src/styles/zomboid-admin.css",
-        "src/styles/zomboid.css",
-        "src/data/code-quest.js"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-tools": {
-      "responsabilidade": "Ferramentas técnicas de uso geral: editor, terminal, calculadoras, conversores, geradores e utilitários.",
-      "estado": "vazio",
-      "rotas": [
-        "/ferramentas",
-        "/editor",
-        "/json-studio",
-        "/qr-studio",
-        "/git-helper",
-        "/terminal",
-        "/calc-cientifica",
-        "/calc-numerica",
-        "/calculadoras",
-        "/tabela-verdade",
-        "/graficos",
-        "/simbolos",
-        "/color-studio",
-        "/regex",
-        "/utilidades",
-        "/codigo",
-        "/logic-sim",
-        "/portas",
-        "/morse",
-        "/tabela-periodica",
-        "/guia-pc",
-        "/ocr"
-      ],
-      "origem": [
-        "src/pages/ferramentas.js",
-        "src/pages/editor.js",
-        "src/pages/json-studio.js",
-        "src/pages/qr-studio.js",
-        "src/pages/git-helper.js",
-        "src/pages/terminal.js",
-        "src/pages/calc-cientifica.js",
-        "src/pages/calc-numerica.js",
-        "src/pages/calculadoras/",
-        "src/pages/tabela-verdade.js",
-        "src/pages/graficos.js",
-        "src/pages/simbolos.js",
-        "src/pages/color-studio.js",
-        "src/pages/regex.js",
-        "src/pages/utilidades.js",
-        "src/pages/codigo.js",
-        "src/pages/logic-sim.js",
-        "src/pages/portas.js",
-        "src/pages/morse.js",
-        "src/pages/tabela-periodica.js",
-        "src/pages/guia-pc.js",
-        "src/pages/ocr.js",
-        "src/utils/editor-engine.js",
-        "src/utils/editor-autocomplete.js",
-        "src/utils/terminal-engine.js",
-        "src/utils/calc-engine.js",
-        "src/utils/chart-engine.js",
-        "src/utils/logic-parser.js",
-        "src/utils/logic-sim-engine.js",
-        "src/utils/qr-encoder.js",
-        "src/utils/syntax-highlight.js",
-        "src/utils/vfs.js",
-        "src/styles/calc.css",
-        "src/styles/calculadoras.css",
-        "src/styles/codigo.css",
-        "src/styles/color-studio.css",
-        "src/styles/ferramentas.css",
-        "src/styles/git-helper.css",
-        "src/styles/json-studio.css",
-        "src/styles/logic-sim.css",
-        "src/styles/morse.css",
-        "src/styles/ocr.css",
-        "src/styles/portas.css",
-        "src/styles/qr-studio.css",
-        "src/styles/regex.css",
-        "src/styles/tabela-verdade.css",
-        "src/styles/utilidades.css",
-        "src/data/editor-snippets.js",
-        "src/data/git-helper.js",
-        "src/data/logic-circuits.js",
-        "src/data/logic-gates.js",
-        "src/data/periodic.js",
-        "src/data/terminal-commands.js"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-arsenal": {
-      "responsabilidade": "Centro Militar inteiro: arsenal, as 13 frentes militares, enciclopédia e a wiki de Arma 3 (armas, veículos, terrenos, equipamento).",
-      "estado": "vazio",
-      "rotas": [
-        "/arsenal",
-        "/militar",
-        "/arsenal-expandido",
-        "/enciclopedia-militar",
-        "/armas-por-pais",
-        "/forcas-armadas",
-        "/forcas-especiais",
-        "/orcamentos-militares",
-        "/poder-militar",
-        "/organizacao-militar",
-        "/tecnologia-militar",
-        "/taticas-estrategias",
-        "/historia-militar",
-        "/guerras-conflitos",
-        "/batalhas-historicas",
-        "/wiki-arma3",
-        "/arma3-tutorial",
-        "/modpack"
-      ],
-      "origem": [
-        "src/pages/arsenal.js",
-        "src/pages/militar.js",
-        "src/pages/arsenal-expandido.js",
-        "src/pages/enciclopedia-militar.js",
-        "src/pages/armas-por-pais.js",
-        "src/pages/forcas-armadas.js",
-        "src/pages/forcas-especiais.js",
-        "src/pages/orcamentos-militares.js",
-        "src/pages/poder-militar.js",
-        "src/pages/organizacao-militar.js",
-        "src/pages/tecnologia-militar.js",
-        "src/pages/taticas-estrategias.js",
-        "src/pages/historia-militar.js",
-        "src/pages/guerras-conflitos.js",
-        "src/pages/batalhas-historicas.js",
-        "src/pages/wiki-arma3.js",
-        "src/pages/arma3-tutorial.js",
-        "src/pages/modpack.js",
-        "src/utils/mil-curation.js",
-        "src/utils/wikipedia.js",
-        "src/utils/arma3-balistica.js",
-        "src/utils/arma3-grade.js",
-        "src/data/arsenal.js",
-        "src/styles/arma3-tutorial.css",
-        "src/styles/centro-militar.css",
-        "src/styles/enciclopedia-militar.css",
-        "src/styles/militar.css",
-        "src/styles/wiki-arma3.css",
-        "src/styles/arsenal.css",
-        "src/data/arsenal-expandido.json",
-        "src/data/militar-db.js",
-        "src/data/wiki-arma3.js",
-        "scripts/verificar-wiki-arsenal.mjs",
-        "scripts/verificar-grade.mjs"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-elites": {
-      "responsabilidade": "Equipes, unidades e dossiês operacionais.",
-      "estado": "vazio",
-      "rotas": [
-        "/elites",
-        "/dossie"
-      ],
-      "origem": [
-        "src/pages/elites.js",
-        "src/pages/dossie.js",
-        "src/data/elites.js",
-        "src/data/elites-rosters.js",
-        "src/data/dossie.json",
-        "src/styles/dossie.css",
-        "src/styles/elites.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-academia": {
-      "responsabilidade": "Conteúdo acadêmico e trilhas de estudo.",
-      "estado": "vazio",
-      "rotas": [
-        "/academia"
-      ],
-      "origem": [
-        "src/pages/academia.js",
-        "src/data/academia.js",
-        "src/styles/academia.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-robotica": {
-      "responsabilidade": "Currículo de robótica: módulos teóricos e práticos.",
-      "estado": "vazio",
-      "rotas": [
-        "/robotica"
-      ],
-      "origem": [
-        "src/pages/robotica.js",
-        "src/data/robotica.js",
-        "src/styles/robotica.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-midia": {
-      "responsabilidade": "Player de vídeo, galerias, TV e visor 3D de modelos.",
-      "estado": "vazio",
-      "rotas": [
-        "/media",
-        "/videos",
-        "/tv",
-        "/modelos-3d"
-      ],
-      "origem": [
-        "src/pages/media.js",
-        "src/pages/videos.js",
-        "src/pages/tv.js",
-        "src/pages/modelos-3d.js",
-        "src/utils/players-engine.js",
-        "src/utils/visor-3d.js",
-        "src/utils/diag-3d.js",
-        "src/data/videos.js",
-        "src/data/tv.js",
-        "src/data/galeria-3d.js",
-        "src/data/modelos-3d.json",
-        "src/styles/media.css",
-        "src/styles/modelos-3d.css",
-        "src/styles/tv.css",
-        "src/styles/videos.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "pesado"
-    },
-    "baluarte-audio": {
-      "responsabilidade": "Áudio: FFT, síntese, rádio e player de músicas.",
-      "estado": "vazio",
-      "rotas": [
-        "/fft",
-        "/radio",
-        "/musicas"
-      ],
-      "origem": [
-        "src/pages/fft.js",
-        "src/pages/radio.js",
-        "src/pages/musicas.js",
-        "src/utils/fft-engine.js",
-        "src/utils/offline-audio.js",
-        "src/utils/radio-api.js",
-        "src/data/musicas-proprias.js",
-        "src/data/musicas-yt.js",
-        "src/data/soundcloud-tracks.js",
-        "src/data/albuns.js",
-        "src/styles/fft.css",
-        "src/styles/musicas.css",
-        "src/styles/radio.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-cibersec": {
-      "responsabilidade": "Segurança digital: criptografia, esteganografia, análise e o gate oculto.",
-      "estado": "vazio",
-      "rotas": [
-        "/ciberseg",
-        "/cripto",
-        "/esteganografia",
-        "/seguranca",
-        "/shadow"
-      ],
-      "origem": [
-        "src/pages/ciberseg.js",
-        "src/pages/cripto/",
-        "src/pages/esteganografia.js",
-        "src/pages/seguranca.js",
-        "src/pages/shadow.js",
-        "src/utils/cripto-engine.js",
-        "src/data/ciberseg.js",
-        "src/utils/shadow-gate.js",
-        "src/styles/ciberseg.css",
-        "src/styles/cripto.css",
-        "src/styles/esteganografia.css",
-        "src/styles/seguranca.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-economia": {
-      "responsabilidade": "Economia: câmbio, cripto de mercado, banco e séries financeiras.",
-      "estado": "vazio",
-      "rotas": [
-        "/economia",
-        "/dolar",
-        "/banco"
-      ],
-      "origem": [
-        "src/pages/economia.js",
-        "src/pages/dolar.js",
-        "src/pages/banco.js",
-        "src/utils/economia-api.js",
-        "src/data/cambio-historico.json",
-        "reports/cambio/",
-        "src/styles/banco.css",
-        "src/styles/dolar.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-jarvis-core": {
-      "responsabilidade": "Motor do J.A.R.V.I.S.: cérebro, conselho, laboratório de LLM e o cockpit da IA.",
-      "estado": "vazio",
-      "rotas": [
-        "/jarvis",
-        "/jarvis-dashboard",
-        "/ia-proprietaria",
-        "/llm-lab",
-        "/terminal-ia",
-        "/cerebro",
-        "/conselho",
-        "/aprendizado"
-      ],
-      "origem": [
-        "src/pages/jarvis.js",
-        "src/pages/jarvis-dashboard.js",
-        "src/pages/ia-proprietaria.js",
-        "src/pages/llm-lab.js",
-        "src/pages/terminal-ia.js",
-        "src/pages/cerebro.js",
-        "src/pages/conselho.js",
-        "src/pages/aprendizado.js",
-        "src/utils/jarvis-engine.js",
-        "src/utils/jarvis-agent-core.js",
-        "src/utils/jarvis-brain.js",
-        "src/utils/jarvis-council.js",
-        "src/utils/jarvis-guard.js",
-        "src/utils/jarvis-style.js",
-        "src/utils/jarvis-voice.js",
-        "src/utils/jarvis-webllm.js",
-        "src/utils/hermes-local.js",
-        "src/utils/llm-mini.js",
-        "src/utils/memory-ml.js",
-        "src/styles/aprendizado.css",
-        "src/styles/cerebro.css",
-        "src/styles/conselho.css",
-        "src/styles/fase21.css",
-        "src/styles/jarvis-dashboard.css",
-        "src/styles/llm-lab.css",
-        "src/styles/terminal-ia.css",
-        "src/data/cerebro.json"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-jarvis-memory"
-      ],
-      "peso": "pesado"
-    },
-    "baluarte-jarvis-tools": {
-      "responsabilidade": "Capacidades do agente: skills do Git Nexus, visão, geração de código e ponte de APIs.",
-      "estado": "vazio",
-      "rotas": [
-        "/git-nexus",
-        "/gerar-codigo",
-        "/jarvis-vision",
-        "/visao",
-        "/apis"
-      ],
-      "origem": [
-        "src/pages/git-nexus.js",
-        "src/pages/git-nexus-gate.js",
-        "src/pages/git-nexus-cockpit.js",
-        "src/pages/git-nexus-nucleo.js",
-        "src/pages/gerar-codigo.js",
-        "src/pages/jarvis-vision.js",
-        "src/pages/visao.js",
-        "src/pages/apis.js",
-        "src/utils/git-nexus-engine.js",
-        "src/utils/git-nexus-graph.js",
-        "src/utils/git-nexus-graph3d.js",
-        "src/utils/jarvis-tools.js",
-        "src/utils/jarvis-skills.js",
-        "src/utils/jarvis-nexus-tools.js",
-        "src/utils/jarvis-arquivos.js",
-        "src/utils/jarvis-hermes-agent.js",
-        "src/utils/jarvis-hermes-native.js",
-        "src/utils/nexus.js",
-        "src/utils/nucleo-scene.js",
-        "src/utils/nucleo-socket.js",
-        "src/styles/apis.css",
-        "src/styles/gerar-codigo.css",
-        "src/styles/git-nexus.css",
-        "src/styles/jarvis-vision.css",
-        "src/styles/nucleo-screen.css",
-        "src/styles/visao.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-jarvis-core",
-        "baluarte-desktop"
-      ],
-      "peso": "pesado"
-    },
-    "baluarte-jarvis-memory": {
-      "responsabilidade": "Memória do agente: histórico, recall e contexto persistente.",
-      "estado": "vazio",
-      "rotas": [
-        "/memoria"
-      ],
-      "origem": [
-        "src/pages/memoria.js",
-        "src/utils/jarvis-memory.js",
-        "src/utils/jarvis-recall.js",
-        "src/utils/jarvis-repo-memory.js",
-        "src/core/memory-cloud.js",
-        "src/styles/memoria.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-data"
-      ],
-      "peso": "pesado"
-    },
-    "baluarte-profile": {
-      "responsabilidade": "Identidade do operador: dossiê pessoal, estatísticas, preferências e autenticação.",
-      "estado": "desenvolvimento",
-      "rotas": [
-        "/perfil"
-      ],
-      "origem": [
-        "src/pages/perfil.js",
-        "src/core/user-prefs.js",
-        "src/data/perfis.js",
-        "src/data/skills.js",
-        "src/styles/perfil.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-data": {
-      "responsabilidade": "Datasets GERADOS e datasets compartilhados por mais de um domínio, mais os geradores e verificadores que os produzem. Dataset de consumidor único mora no domínio dele. Nenhuma rota — é consumido por todo mundo.",
-      "estado": "desenvolvimento",
-      "rotas": [],
-      "origem": [
-        "scripts/sync-cronicas.mjs",
-        "scripts/gen-symbols.mjs",
-        "scripts/gen-codemap.mjs",
-        "src/data/arma3-acessorios.js",
-        "src/data/arma3-campanhas.js",
-        "src/data/arma3-classes.js",
-        "src/data/arma3-colecao.js",
-        "src/data/arma3-comandos.js",
-        "src/data/arma3-config.js",
-        "src/data/arma3-deps.js",
-        "src/data/arma3-drive.js",
-        "src/data/arma3-equipamento.js",
-        "src/data/arma3-extracao.js",
-        "src/data/arma3-instalacao.js",
-        "src/data/arma3-municao.js",
-        "src/data/arma3-presets.js",
-        "src/data/arma3-soldados.js",
-        "src/data/arma3-terrenos.js",
-        "src/data/arma3-tutoriais.js",
-        "src/data/arma3-vanilla.js",
-        "src/data/arma3-veiculos.js",
-        "src/data/codemap.json",
-        "src/data/codemap-symbols.json",
-        "src/data/symbols.js",
-        "src/data/editor-langs.js",
-        "src/data/morse-code.js",
-        "src/data/modpack.js",
-        "src/data/arma3-armas.js"
-      ],
-      "precisa": [],
-      "peso": "leve"
-    },
-    "baluarte-desktop": {
-      "responsabilidade": "App Electron (Baluarte Launcher), ponte IPC, detecção do motor e a página de download.",
-      "estado": "vazio",
-      "rotas": [
-        "/baixar"
-      ],
-      "origem": [
-        "desktop/",
-        "src/pages/baixar.js",
-        "src/data/site-capabilities.js",
-        "src/styles/baixar.css"
-      ],
-      "precisa": [
-        "baluarte-core"
-      ],
-      "peso": "pesado"
-    },
-    "baluarte-infra": {
-      "responsabilidade": "Build, deploy, CI e empacotamento mobile.",
-      "estado": "vazio",
-      "rotas": [],
-      "origem": [
-        ".github/workflows/",
-        "vite.config.js",
-        "vercel.json",
-        "capacitor.config.json",
-        "api/"
-      ],
-      "precisa": [],
-      "peso": "leve"
-    },
-    "baluarte-geo": {
-      "responsabilidade": "Geo/tático: mapa, radar acústico, rastreio de posição, triangulação, posicionamento indoor e o computador de tiro. Consome o motor do Project-Vanguard por contrato — não reimplementa física.",
-      "estado": "vazio",
-      "decidido": "2026-08-01 — 21º domínio (ver NEXUS-DECISOES.md, D-001).",
-      "rotas": [
-        "/mapa",
-        "/radar",
-        "/geo",
-        "/find",
-        "/triangulacao",
-        "/vanguard"
-      ],
-      "origem": [
-        "src/pages/mapa.js",
-        "src/pages/radar.js",
-        "src/pages/geopulse.js",
-        "src/pages/find.js",
-        "src/pages/triangulacao.js",
-        "src/pages/vanguard.js",
-        "src/utils/maplibre-loader.js",
-        "src/utils/geo-tracker.js",
-        "src/utils/radar-dsp.js",
-        "src/utils/radar-source.js",
-        "src/utils/radar-tracker.js",
-        "src/utils/triangulation.js",
-        "src/utils/fingerprint-engine.js",
-        "src/utils/vanguard/ (motor vendorizado — passa a vir do Project-Vanguard)",
-        "src/data/camadas-mapa.js",
-        "src/styles/find.css",
-        "src/styles/geopulse.css",
-        "src/styles/mapa.css",
-        "src/styles/radar.css",
-        "src/styles/triangulacao.css",
-        "src/styles/vanguard.css"
-      ],
-      "precisa": [
-        "baluarte-core",
-        "baluarte-shell",
-        "baluarte-data"
-      ],
-      "externosQueConsome": [
-        "Project-Vanguard"
-      ],
-      "peso": "leve"
-    },
-    "baluarte-docs": {
-      "responsabilidade": "Documentação, contrato visual, manual de operação e histórico.",
-      "estado": "vazio",
-      "rotas": [],
-      "origem": [
-        "docs/",
-        "historico/CHANGELOG.md",
-        "CONTRIBUTING.md",
-        "CLAUDE.md",
-        "README.md"
-      ],
-      "precisa": [],
-      "peso": "leve"
-    }
+ "$comentario": [
+  "Mapa de migração do Projeto Nexus Baluarte (issue #406 / docs/PROJETO-NEXUS-BALUARTE.md).",
+  "FONTE DA VERDADE de quem leva o quê para qual dos 20 repositórios de domínio.",
+  "Verificado por scripts/verificar-nexus.mjs: toda rota registrada em src/main.js",
+  "precisa aparecer aqui EXATAMENTE uma vez — nem sobra nem falta.",
+  "'estado' é a maturidade do repositório: vazio | backlog | desenvolvimento | teste | estavel."
+ ],
+ "versaoContrato": "1.1.0",
+ "gerado": "2026-08-01",
+ "dominios": {
+  "baluarte-core": {
+   "responsabilidade": "Base da aplicação: router, estado, eventos, storage, sessão/banco e helpers compartilhados. Não tem rota própria — é o que todo mundo importa.",
+   "estado": "desenvolvimento",
+   "rotas": [],
+   "origem": [
+    "src/core/router.js",
+    "src/core/state.js",
+    "src/core/events.js",
+    "src/core/storage.js",
+    "src/core/ciclo-vida.js",
+    "src/core/supabase.js",
+    "src/core/supabase-auth.js",
+    "src/core/media-sync.js",
+    "src/utils/helpers.js",
+    "src/utils/icons.js",
+    "src/utils/toast.js",
+    "src/utils/theme.js",
+    "src/utils/pwa.js",
+    "src/utils/page-views.js",
+    "src/utils/visit-counter.js",
+    "src/utils/hx-beacon.js",
+    "src/utils/auth-engine.js",
+    "src/utils/baluarte-status.js",
+    "src/data/version.js"
+   ],
+   "precisa": [],
+   "peso": "leve"
   },
-  "externos": {
-    "$comentario": "Repositórios FORA dos domínios do Nexus que, mesmo assim, entram na composição final. Ficam aqui pra que rota nenhuma fique sem dono — e pra que ninguém tente 'trazer de volta' o que já tem casa.",
-    "Projeto-Baluarte-Social-Media": {
-      "responsabilidade": "Domínio social: feed do Mural e chat em tempo real da Rede Neural.",
-      "rotas": [
-        "/mural",
-        "/comms"
-      ],
-      "origem": [
-        "src/pages/mural.js",
-        "src/pages/comms.js",
-        "src/core/comms.js",
-        "src/core/realtime.js",
-        "src/styles/comms.css",
-        "src/styles/mural.css"
-      ],
-      "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-002.",
-      "integracao": "contrato v1.0.0, igual a um domínio: publica rotas via baluarte.module.js."
-    },
-    "Project-Vanguard": {
-      "responsabilidade": "Motor de balística + GPS topográfico. Zero dependência e zero DOM em src/engine/ — feito pra ser consumido de fora.",
-      "rotas": [],
-      "origem": [
-        "consumido por baluarte-geo (hoje vendorizado em src/utils/vanguard/)"
-      ],
-      "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-001.",
-      "integracao": "biblioteca: baluarte-geo importa o motor; a física tem UMA implementação, nunca duas."
-    }
+  "baluarte-shell": {
+   "responsabilidade": "Casca visual: layout, sidebar, header, overlay, tokens, efeitos e as páginas institucionais que moram no shell.",
+   "estado": "desenvolvimento",
+   "rotas": [
+    "/home",
+    "/home-3d",
+    "/home2",
+    "/sobre",
+    "/roadmap",
+    "/projetos"
+   ],
+   "origem": [
+    "src/pages/projetos.js",
+    "src/pages/sobre.js",
+    "src/pages/roadmap.js",
+    "src/pages/home.js",
+    "src/layout/shell.js",
+    "src/layout/header.js",
+    "src/layout/sidebar.js",
+    "src/layout/overlay.js",
+    "src/styles/variables.css",
+    "src/styles/effects.css",
+    "src/utils/effects.js",
+    "src/utils/boot-intro.js",
+    "src/utils/scroll-reveal.js",
+    "src/utils/scroll-progress.js",
+    "src/utils/immersive.js",
+    "src/utils/atmosphere.js",
+    "src/utils/card-spotlight.js",
+    "src/utils/universe-theme.js",
+    "src/utils/hero-webgl.js",
+    "src/utils/hero-rays.js",
+    "src/utils/hero3d.js",
+    "src/utils/spline-embed.js",
+    "src/data/spline-scenes.js",
+    "src/data/projetos.json",
+    "src/styles/boot-intro.css",
+    "src/styles/projetos.css",
+    "src/styles/roadmap.css",
+    "src/styles/sobre.css",
+    "src/styles/biblioteca.css",
+    "src/styles/editor.css",
+    "src/styles/fase18.css",
+    "src/styles/graficos.css",
+    "src/styles/simbolos.css",
+    "src/styles/terminal.css",
+    "src/styles/animations.css",
+    "src/styles/atmosphere.css",
+    "src/styles/base.css",
+    "src/styles/components.css",
+    "src/styles/fase17.css",
+    "src/styles/fase19.css",
+    "src/styles/home-v2.css",
+    "src/styles/immersive.css",
+    "src/styles/layout.css",
+    "src/styles/overlay.css",
+    "src/styles/reveal.css",
+    "src/styles/scroll-progress.css",
+    "src/styles/theme-universos.css",
+    "src/styles/reset.css",
+    "src/utils/paleta.js",
+    "src/styles/paleta.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-data"
+   ],
+   "peso": "leve"
   },
-  "lacunas": {
-    "$comentario": "Rota do site sem domínio. Vazio é o estado saudável — o que já foi decidido virou registro em NEXUS-DECISOES.md. Lacuna nova entra aqui com problema E recomendação, nunca só o buraco."
+  "baluarte-content": {
+   "responsabilidade": "Conteúdo narrativo e de entretenimento: crônicas, universos, biblioteca, filmes, memes, jogos leves e guias de jogo.",
+   "estado": "vazio",
+   "rotas": [
+    "/biblioteca",
+    "/universo",
+    "/filmes",
+    "/memes",
+    "/jogos",
+    "/batalha-naval",
+    "/zomboid",
+    "/zomboid-admin"
+   ],
+   "origem": [
+    "src/pages/biblioteca.js",
+    "src/pages/universo.js",
+    "src/pages/filmes.js",
+    "src/pages/memes.js",
+    "src/pages/jogos.js",
+    "src/pages/batalha-naval.js",
+    "src/pages/zomboid.js",
+    "src/pages/zomboid-admin.js",
+    "src/data/cronicas.js",
+    "src/data/universos.js",
+    "src/data/fanfic.json",
+    "src/data/filmes.js",
+    "src/data/memes.js",
+    "src/data/jogos.js",
+    "src/data/zomboid-mods.js",
+    "src/data/zomboid-admin.js",
+    "src/styles/batalha-naval.css",
+    "src/styles/filmes.css",
+    "src/styles/jogos.css",
+    "src/styles/memes.css",
+    "src/styles/universo.css",
+    "src/styles/zomboid-admin.css",
+    "src/styles/zomboid.css",
+    "src/data/code-quest.js"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-tools": {
+   "responsabilidade": "Ferramentas técnicas de uso geral: editor, terminal, calculadoras, conversores, geradores e utilitários.",
+   "estado": "vazio",
+   "rotas": [
+    "/ferramentas",
+    "/editor",
+    "/json-studio",
+    "/qr-studio",
+    "/git-helper",
+    "/terminal",
+    "/calc-cientifica",
+    "/calc-numerica",
+    "/calculadoras",
+    "/tabela-verdade",
+    "/graficos",
+    "/simbolos",
+    "/color-studio",
+    "/regex",
+    "/utilidades",
+    "/codigo",
+    "/logic-sim",
+    "/portas",
+    "/morse",
+    "/tabela-periodica",
+    "/guia-pc",
+    "/ocr"
+   ],
+   "origem": [
+    "src/pages/ferramentas.js",
+    "src/pages/editor.js",
+    "src/pages/json-studio.js",
+    "src/pages/qr-studio.js",
+    "src/pages/git-helper.js",
+    "src/pages/terminal.js",
+    "src/pages/calc-cientifica.js",
+    "src/pages/calc-numerica.js",
+    "src/pages/calculadoras/",
+    "src/pages/tabela-verdade.js",
+    "src/pages/graficos.js",
+    "src/pages/simbolos.js",
+    "src/pages/color-studio.js",
+    "src/pages/regex.js",
+    "src/pages/utilidades.js",
+    "src/pages/codigo.js",
+    "src/pages/logic-sim.js",
+    "src/pages/portas.js",
+    "src/pages/morse.js",
+    "src/pages/tabela-periodica.js",
+    "src/pages/guia-pc.js",
+    "src/pages/ocr.js",
+    "src/utils/editor-engine.js",
+    "src/utils/editor-autocomplete.js",
+    "src/utils/terminal-engine.js",
+    "src/utils/calc-engine.js",
+    "src/utils/chart-engine.js",
+    "src/utils/logic-parser.js",
+    "src/utils/logic-sim-engine.js",
+    "src/utils/qr-encoder.js",
+    "src/utils/syntax-highlight.js",
+    "src/utils/vfs.js",
+    "src/styles/calc.css",
+    "src/styles/calculadoras.css",
+    "src/styles/codigo.css",
+    "src/styles/color-studio.css",
+    "src/styles/ferramentas.css",
+    "src/styles/git-helper.css",
+    "src/styles/json-studio.css",
+    "src/styles/logic-sim.css",
+    "src/styles/morse.css",
+    "src/styles/ocr.css",
+    "src/styles/portas.css",
+    "src/styles/qr-studio.css",
+    "src/styles/regex.css",
+    "src/styles/tabela-verdade.css",
+    "src/styles/utilidades.css",
+    "src/data/editor-snippets.js",
+    "src/data/git-helper.js",
+    "src/data/logic-circuits.js",
+    "src/data/logic-gates.js",
+    "src/data/periodic.js",
+    "src/data/terminal-commands.js"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-arsenal": {
+   "responsabilidade": "Centro Militar inteiro: arsenal, as 13 frentes militares, enciclopédia e a wiki de Arma 3 (armas, veículos, terrenos, equipamento).",
+   "estado": "vazio",
+   "rotas": [
+    "/arsenal",
+    "/militar",
+    "/arsenal-expandido",
+    "/enciclopedia-militar",
+    "/armas-por-pais",
+    "/forcas-armadas",
+    "/forcas-especiais",
+    "/orcamentos-militares",
+    "/poder-militar",
+    "/organizacao-militar",
+    "/tecnologia-militar",
+    "/taticas-estrategias",
+    "/historia-militar",
+    "/guerras-conflitos",
+    "/batalhas-historicas",
+    "/wiki-arma3",
+    "/arma3-tutorial",
+    "/modpack"
+   ],
+   "origem": [
+    "src/pages/arsenal.js",
+    "src/pages/militar.js",
+    "src/pages/arsenal-expandido.js",
+    "src/pages/enciclopedia-militar.js",
+    "src/pages/armas-por-pais.js",
+    "src/pages/forcas-armadas.js",
+    "src/pages/forcas-especiais.js",
+    "src/pages/orcamentos-militares.js",
+    "src/pages/poder-militar.js",
+    "src/pages/organizacao-militar.js",
+    "src/pages/tecnologia-militar.js",
+    "src/pages/taticas-estrategias.js",
+    "src/pages/historia-militar.js",
+    "src/pages/guerras-conflitos.js",
+    "src/pages/batalhas-historicas.js",
+    "src/pages/wiki-arma3.js",
+    "src/pages/arma3-tutorial.js",
+    "src/pages/modpack.js",
+    "src/utils/mil-curation.js",
+    "src/utils/wikipedia.js",
+    "src/utils/arma3-balistica.js",
+    "src/utils/arma3-grade.js",
+    "src/data/arsenal.js",
+    "src/styles/arma3-tutorial.css",
+    "src/styles/centro-militar.css",
+    "src/styles/enciclopedia-militar.css",
+    "src/styles/militar.css",
+    "src/styles/wiki-arma3.css",
+    "src/styles/arsenal.css",
+    "src/data/arsenal-expandido.json",
+    "src/data/militar-db.js",
+    "src/data/wiki-arma3.js",
+    "scripts/verificar-wiki-arsenal.mjs",
+    "scripts/verificar-grade.mjs"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-elites": {
+   "responsabilidade": "Equipes, unidades e dossiês operacionais.",
+   "estado": "vazio",
+   "rotas": [
+    "/elites",
+    "/dossie"
+   ],
+   "origem": [
+    "src/pages/elites.js",
+    "src/pages/dossie.js",
+    "src/data/elites.js",
+    "src/data/elites-rosters.js",
+    "src/data/dossie.json",
+    "src/styles/dossie.css",
+    "src/styles/elites.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-academia": {
+   "responsabilidade": "Conteúdo acadêmico e trilhas de estudo.",
+   "estado": "vazio",
+   "rotas": [
+    "/academia"
+   ],
+   "origem": [
+    "src/pages/academia.js",
+    "src/data/academia.js",
+    "src/styles/academia.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-robotica": {
+   "responsabilidade": "Currículo de robótica: módulos teóricos e práticos.",
+   "estado": "vazio",
+   "rotas": [
+    "/robotica"
+   ],
+   "origem": [
+    "src/pages/robotica.js",
+    "src/data/robotica.js",
+    "src/styles/robotica.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-midia": {
+   "responsabilidade": "Player de vídeo, galerias, TV e visor 3D de modelos.",
+   "estado": "vazio",
+   "rotas": [
+    "/media",
+    "/videos",
+    "/tv",
+    "/modelos-3d"
+   ],
+   "origem": [
+    "src/pages/media.js",
+    "src/pages/videos.js",
+    "src/pages/tv.js",
+    "src/pages/modelos-3d.js",
+    "src/utils/players-engine.js",
+    "src/utils/visor-3d.js",
+    "src/utils/diag-3d.js",
+    "src/data/videos.js",
+    "src/data/tv.js",
+    "src/data/galeria-3d.js",
+    "src/data/modelos-3d.json",
+    "src/styles/media.css",
+    "src/styles/modelos-3d.css",
+    "src/styles/tv.css",
+    "src/styles/videos.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "pesado"
+  },
+  "baluarte-audio": {
+   "responsabilidade": "Áudio: FFT, síntese, rádio e player de músicas.",
+   "estado": "vazio",
+   "rotas": [
+    "/fft",
+    "/radio",
+    "/musicas"
+   ],
+   "origem": [
+    "src/pages/fft.js",
+    "src/pages/radio.js",
+    "src/pages/musicas.js",
+    "src/utils/fft-engine.js",
+    "src/utils/offline-audio.js",
+    "src/utils/radio-api.js",
+    "src/data/musicas-proprias.js",
+    "src/data/musicas-yt.js",
+    "src/data/soundcloud-tracks.js",
+    "src/data/albuns.js",
+    "src/styles/fft.css",
+    "src/styles/musicas.css",
+    "src/styles/radio.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-cibersec": {
+   "responsabilidade": "Segurança digital: criptografia, esteganografia, análise e o gate oculto.",
+   "estado": "vazio",
+   "rotas": [
+    "/ciberseg",
+    "/cripto",
+    "/esteganografia",
+    "/seguranca",
+    "/shadow"
+   ],
+   "origem": [
+    "src/pages/ciberseg.js",
+    "src/pages/cripto/",
+    "src/pages/esteganografia.js",
+    "src/pages/seguranca.js",
+    "src/pages/shadow.js",
+    "src/utils/cripto-engine.js",
+    "src/data/ciberseg.js",
+    "src/utils/shadow-gate.js",
+    "src/styles/ciberseg.css",
+    "src/styles/cripto.css",
+    "src/styles/esteganografia.css",
+    "src/styles/seguranca.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-economia": {
+   "responsabilidade": "Economia: câmbio, cripto de mercado, banco e séries financeiras.",
+   "estado": "vazio",
+   "rotas": [
+    "/economia",
+    "/dolar",
+    "/banco"
+   ],
+   "origem": [
+    "src/pages/economia.js",
+    "src/pages/dolar.js",
+    "src/pages/banco.js",
+    "src/utils/economia-api.js",
+    "src/data/cambio-historico.json",
+    "reports/cambio/",
+    "src/styles/banco.css",
+    "src/styles/dolar.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-jarvis-core": {
+   "responsabilidade": "Motor do J.A.R.V.I.S.: cérebro, conselho, laboratório de LLM e o cockpit da IA.",
+   "estado": "vazio",
+   "rotas": [
+    "/jarvis",
+    "/jarvis-dashboard",
+    "/ia-proprietaria",
+    "/llm-lab",
+    "/terminal-ia",
+    "/cerebro",
+    "/conselho",
+    "/aprendizado"
+   ],
+   "origem": [
+    "src/pages/jarvis.js",
+    "src/pages/jarvis-dashboard.js",
+    "src/pages/ia-proprietaria.js",
+    "src/pages/llm-lab.js",
+    "src/pages/terminal-ia.js",
+    "src/pages/cerebro.js",
+    "src/pages/conselho.js",
+    "src/pages/aprendizado.js",
+    "src/utils/jarvis-engine.js",
+    "src/utils/jarvis-agent-core.js",
+    "src/utils/jarvis-brain.js",
+    "src/utils/jarvis-council.js",
+    "src/utils/jarvis-guard.js",
+    "src/utils/jarvis-style.js",
+    "src/utils/jarvis-voice.js",
+    "src/utils/jarvis-webllm.js",
+    "src/utils/hermes-local.js",
+    "src/utils/llm-mini.js",
+    "src/utils/memory-ml.js",
+    "src/styles/aprendizado.css",
+    "src/styles/cerebro.css",
+    "src/styles/conselho.css",
+    "src/styles/fase21.css",
+    "src/styles/jarvis-dashboard.css",
+    "src/styles/llm-lab.css",
+    "src/styles/terminal-ia.css",
+    "src/data/cerebro.json"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-jarvis-memory"
+   ],
+   "peso": "pesado"
+  },
+  "baluarte-jarvis-tools": {
+   "responsabilidade": "Capacidades do agente: skills do Git Nexus, visão, geração de código e ponte de APIs.",
+   "estado": "vazio",
+   "rotas": [
+    "/git-nexus",
+    "/gerar-codigo",
+    "/jarvis-vision",
+    "/visao",
+    "/apis"
+   ],
+   "origem": [
+    "src/pages/git-nexus.js",
+    "src/pages/git-nexus-gate.js",
+    "src/pages/git-nexus-cockpit.js",
+    "src/pages/git-nexus-nucleo.js",
+    "src/pages/gerar-codigo.js",
+    "src/pages/jarvis-vision.js",
+    "src/pages/visao.js",
+    "src/pages/apis.js",
+    "src/utils/git-nexus-engine.js",
+    "src/utils/git-nexus-graph.js",
+    "src/utils/git-nexus-graph3d.js",
+    "src/utils/jarvis-tools.js",
+    "src/utils/jarvis-skills.js",
+    "src/utils/jarvis-nexus-tools.js",
+    "src/utils/jarvis-arquivos.js",
+    "src/utils/jarvis-hermes-agent.js",
+    "src/utils/jarvis-hermes-native.js",
+    "src/utils/nexus.js",
+    "src/utils/nucleo-scene.js",
+    "src/utils/nucleo-socket.js",
+    "src/styles/apis.css",
+    "src/styles/gerar-codigo.css",
+    "src/styles/git-nexus.css",
+    "src/styles/jarvis-vision.css",
+    "src/styles/nucleo-screen.css",
+    "src/styles/visao.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-jarvis-core",
+    "baluarte-desktop"
+   ],
+   "peso": "pesado"
+  },
+  "baluarte-jarvis-memory": {
+   "responsabilidade": "Memória do agente: histórico, recall e contexto persistente.",
+   "estado": "vazio",
+   "rotas": [
+    "/memoria"
+   ],
+   "origem": [
+    "src/pages/memoria.js",
+    "src/utils/jarvis-memory.js",
+    "src/utils/jarvis-recall.js",
+    "src/utils/jarvis-repo-memory.js",
+    "src/core/memory-cloud.js",
+    "src/styles/memoria.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-data"
+   ],
+   "peso": "pesado"
+  },
+  "baluarte-profile": {
+   "responsabilidade": "Identidade do operador: dossiê pessoal, estatísticas, preferências e autenticação.",
+   "estado": "desenvolvimento",
+   "rotas": [
+    "/perfil"
+   ],
+   "origem": [
+    "src/pages/perfil.js",
+    "src/core/user-prefs.js",
+    "src/data/perfis.js",
+    "src/data/skills.js",
+    "src/styles/perfil.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-data": {
+   "responsabilidade": "Datasets GERADOS e datasets compartilhados por mais de um domínio, mais os geradores e verificadores que os produzem. Dataset de consumidor único mora no domínio dele. Nenhuma rota — é consumido por todo mundo.",
+   "estado": "desenvolvimento",
+   "rotas": [],
+   "origem": [
+    "scripts/sync-cronicas.mjs",
+    "scripts/gen-symbols.mjs",
+    "scripts/gen-codemap.mjs",
+    "src/data/arma3-acessorios.js",
+    "src/data/arma3-campanhas.js",
+    "src/data/arma3-classes.js",
+    "src/data/arma3-colecao.js",
+    "src/data/arma3-comandos.js",
+    "src/data/arma3-config.js",
+    "src/data/arma3-deps.js",
+    "src/data/arma3-drive.js",
+    "src/data/arma3-equipamento.js",
+    "src/data/arma3-extracao.js",
+    "src/data/arma3-instalacao.js",
+    "src/data/arma3-municao.js",
+    "src/data/arma3-presets.js",
+    "src/data/arma3-soldados.js",
+    "src/data/arma3-terrenos.js",
+    "src/data/arma3-tutoriais.js",
+    "src/data/arma3-vanilla.js",
+    "src/data/arma3-veiculos.js",
+    "src/data/codemap.json",
+    "src/data/codemap-symbols.json",
+    "src/data/symbols.js",
+    "src/data/editor-langs.js",
+    "src/data/morse-code.js",
+    "src/data/modpack.js",
+    "src/data/arma3-armas.js"
+   ],
+   "precisa": [],
+   "peso": "leve"
+  },
+  "baluarte-desktop": {
+   "responsabilidade": "App Electron (Baluarte Launcher), ponte IPC, detecção do motor e a página de download.",
+   "estado": "vazio",
+   "rotas": [
+    "/baixar"
+   ],
+   "origem": [
+    "desktop/",
+    "src/pages/baixar.js",
+    "src/data/site-capabilities.js",
+    "src/styles/baixar.css"
+   ],
+   "precisa": [
+    "baluarte-core"
+   ],
+   "peso": "pesado"
+  },
+  "baluarte-infra": {
+   "responsabilidade": "Build, deploy, CI e empacotamento mobile.",
+   "estado": "vazio",
+   "rotas": [],
+   "origem": [
+    ".github/workflows/",
+    "vite.config.js",
+    "vercel.json",
+    "capacitor.config.json",
+    "api/"
+   ],
+   "precisa": [],
+   "peso": "leve"
+  },
+  "baluarte-geo": {
+   "responsabilidade": "Geo/tático: mapa, radar acústico, rastreio de posição, triangulação, posicionamento indoor e o computador de tiro. Consome o motor do Project-Vanguard por contrato — não reimplementa física.",
+   "estado": "vazio",
+   "decidido": "2026-08-01 — 21º domínio (ver NEXUS-DECISOES.md, D-001).",
+   "rotas": [
+    "/mapa",
+    "/radar",
+    "/geo",
+    "/find",
+    "/triangulacao",
+    "/vanguard"
+   ],
+   "origem": [
+    "src/pages/mapa.js",
+    "src/pages/radar.js",
+    "src/pages/geopulse.js",
+    "src/pages/find.js",
+    "src/pages/triangulacao.js",
+    "src/pages/vanguard.js",
+    "src/utils/maplibre-loader.js",
+    "src/utils/geo-tracker.js",
+    "src/utils/radar-dsp.js",
+    "src/utils/radar-source.js",
+    "src/utils/radar-tracker.js",
+    "src/utils/triangulation.js",
+    "src/utils/fingerprint-engine.js",
+    "src/utils/vanguard/ (motor vendorizado — passa a vir do Project-Vanguard)",
+    "src/data/camadas-mapa.js",
+    "src/styles/find.css",
+    "src/styles/geopulse.css",
+    "src/styles/mapa.css",
+    "src/styles/radar.css",
+    "src/styles/triangulacao.css",
+    "src/styles/vanguard.css"
+   ],
+   "precisa": [
+    "baluarte-core",
+    "baluarte-shell",
+    "baluarte-data"
+   ],
+   "externosQueConsome": [
+    "Project-Vanguard"
+   ],
+   "peso": "leve"
+  },
+  "baluarte-docs": {
+   "responsabilidade": "Documentação, contrato visual, manual de operação e histórico.",
+   "estado": "vazio",
+   "rotas": [],
+   "origem": [
+    "docs/",
+    "historico/CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CLAUDE.md",
+    "README.md"
+   ],
+   "precisa": [],
+   "peso": "leve"
   }
+ },
+ "externos": {
+  "$comentario": "Repositórios FORA dos domínios do Nexus que, mesmo assim, entram na composição final. Ficam aqui pra que rota nenhuma fique sem dono — e pra que ninguém tente 'trazer de volta' o que já tem casa.",
+  "Projeto-Baluarte-Social-Media": {
+   "responsabilidade": "Domínio social: feed do Mural e chat em tempo real da Rede Neural.",
+   "rotas": [
+    "/mural",
+    "/comms"
+   ],
+   "origem": [
+    "src/pages/mural.js",
+    "src/pages/comms.js",
+    "src/core/comms.js",
+    "src/core/realtime.js",
+    "src/styles/comms.css",
+    "src/styles/mural.css"
+   ],
+   "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-002.",
+   "integracao": "contrato v1.0.0, igual a um domínio: publica rotas via baluarte.module.js."
+  },
+  "Project-Vanguard": {
+   "responsabilidade": "Motor de balística + GPS topográfico. Zero dependência e zero DOM em src/engine/ — feito pra ser consumido de fora.",
+   "rotas": [],
+   "origem": [
+    "consumido por baluarte-geo (hoje vendorizado em src/utils/vanguard/)"
+   ],
+   "decidido": "2026-08-01 — ver NEXUS-DECISOES.md, D-001.",
+   "integracao": "biblioteca: baluarte-geo importa o motor; a física tem UMA implementação, nunca duas."
+  }
+ },
+ "lacunas": {
+  "$comentario": "Rota do site sem domínio. Vazio é o estado saudável — o que já foi decidido virou registro em NEXUS-DECISOES.md. Lacuna nova entra aqui com problema E recomendação, nunca só o buraco."
+ }
 }

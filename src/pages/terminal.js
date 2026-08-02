@@ -12,6 +12,7 @@
 
 import '../styles/terminal.css';
 import { h, empty, mount } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { execute, autocomplete, createContext } from '../utils/terminal-engine.js';
 import { COMMANDS } from '../data/terminal-commands.js';
 import { setStatus } from '../utils/baluarte-status.js';
@@ -293,6 +294,12 @@ export function terminalPage() {
 
   setupKeys();
   attachGlobalKeys();
+  /* Mesmo caso do /editor: o handler tem guarda de rota, mas não precisa
+   * sobreviver à tela que o instalou. */
+  aoSair(fullPage, () => {
+    window.removeEventListener('keydown', kbHandler);
+    kbHandler = null;
+  });
   showBanner();
 
   setTimeout(() => inputEl.focus(), 0);

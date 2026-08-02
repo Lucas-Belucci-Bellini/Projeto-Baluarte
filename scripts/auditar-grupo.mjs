@@ -161,6 +161,12 @@ async function auditarRota(nav, rota) {
     const alvo = document.querySelector('main') || document.body;
     const semRotulo = [...alvo.querySelectorAll('input,select,textarea')].filter((c) => {
       if (c.type === 'hidden') return false;
+      /* Sem caixa de layout = fora da árvore de acessibilidade: um leitor de
+       * tela nunca chega nele. É o caso do `input type=file` escondido atrás de
+       * um botão (`/ocr`), padrão comum e correto — cobrar rótulo dele seria
+       * alarme falso. `getClientRects()` e não `offsetParent`, que também é
+       * nulo em elemento `position: fixed` — esse aparece e precisa de rótulo. */
+      if (!c.getClientRects().length) return false;
       return !c.labels?.length && !c.getAttribute('aria-label') && !c.getAttribute('aria-labelledby')
         && !c.getAttribute('placeholder') && !c.getAttribute('title');
     }).length;
