@@ -135,3 +135,39 @@ bundle e a prateleira sai do caminho crítico.
   senão "destaque" viraria porta dos fundos pro acoplamento que a regra proíbe.
 - Cada repositório carrega o verificador da versão que implementa; não há
   atualização em massa dos 21 por uma mudança que 3 usam.
+
+---
+
+## D-004 — O rótulo do skin de universo é do shell, não do content
+
+**Data:** 2026-08-02 · **Estado:** aceita · **Contexto:** extração do shell
+
+### O problema
+
+`src/utils/universe-theme.js` (shell) importava `UNIVERSOS` do dataset do
+**content** para montar o seletor de skin. Do dataset inteiro ele usava três
+campos: `id`, `name` e `color` de fallback — a tabela de skin (cores, fonte,
+raio) já morava no próprio motor, enumerando cada universo à mão.
+
+Cross-domain import pra pegar um rótulo.
+
+### A decisão
+
+O `label` passa a morar na tabela `SKIN` do shell, junto do resto da
+configuração visual. O motor deixa de importar o content.
+
+### Por quê
+
+O que aparece no seletor de skin é **decisão visual da casca**, não conteúdo
+narrativo. A tabela já listava todos os ids um a um; o rótulo estava separado
+do resto da configuração por conveniência, não por arquitetura.
+
+Usar `destaques` (D-003) aqui não serviria: aquilo é vitrine da home, e o
+seletor de skin precisa da lista no boot.
+
+### Consequências
+
+- **Custo declarado: o nome fica duplicado.** Se o content renomear um
+  universo, o rótulo do skin não segue sozinho. São 20 rótulos, mudam pouco, e
+  a alternativa era a casca depender de um domínio de conteúdo pra se pintar.
+- Universo sem entrada na `SKIN` continua caindo no tema padrão, como antes.

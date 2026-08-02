@@ -38,7 +38,7 @@
     },
     "baluarte-shell": {
       "responsabilidade": "Casca visual: layout, sidebar, header, overlay, tokens, efeitos e as páginas institucionais que moram no shell.",
-      "estado": "vazio",
+      "estado": "desenvolvimento",
       "rotas": [
         "/home",
         "/home-3d",
