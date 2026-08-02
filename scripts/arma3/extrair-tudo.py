@@ -38,6 +38,8 @@ ETAPAS = [
     ('simbologia', 'parse-simbologia.py', 'dump-simbologia.sqf'),
     ('terreno-fisico', 'parse-terreno-fisico.py', 'dump-terreno-fisico.sqf'),
     ('proveniencia', 'parse-proveniencia.py', 'dump-proveniencia.sqf'),
+    # varredura do config INTEIRO; roda por último porque é a mais cara
+    ('icones', 'parse-icones.py', 'dump-icones.sqf'),
 ]
 
 IMAGENS = ('imagens', 'extrair-imagens.py', '(lê os dumps que existirem)')

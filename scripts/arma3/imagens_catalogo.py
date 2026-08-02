@@ -99,6 +99,20 @@ CATEGORIAS = [
         'public/arma3/icones/manual', 'web', 'imagens-manual.json',
         'ilustração do Manual de Campo'),
 
+    # A varredura geral: pega retrato de classe que nenhum dump específico
+    # visita. Os outros varrem árvores nomeadas com lista de campo fixa; este
+    # varre o configFile inteiro. Vem por último de propósito — o que as
+    # categorias acima já resolveram fica com o destino delas, e aqui só sobra
+    # o que ninguém reclamou.
+    Categoria(
+        'varredura', 'arma3-icones.json',
+        [('porClasse', p) for p in
+         ('picture', 'icon', 'texture', 'editorPreview', 'picturePreview',
+          'uiPicture', 'logo', 'image', 'overviewPicture', 'previewPicture',
+          'portrait', 'pictureLogo')],
+        'public/arma3/icones/varredura', 'web', 'imagens-varredura.json',
+        'retrato de classe que nenhum outro dump alcança'),
+
     # --- daqui pra baixo NÃO entra no site ---
     Categoria(
         'previews-veiculos', 'arma3-veiculos.json', [('veiculos', 'editorPreview')],
