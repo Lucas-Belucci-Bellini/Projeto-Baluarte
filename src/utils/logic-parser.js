@@ -6,6 +6,9 @@
  *   AND      &&  &  *  ∧  AND
  *   XOR      ^  ⊕  XOR
  *   OR       ||  |  +  ∨  OR
+ *   NAND     ⊼  NAND        (negação do AND)
+ *   NOR      ⊽  NOR         (negação do OR)
+ *   XNOR     ⊙  XNOR        (negação do XOR — igualdade)
  *   IMPLIES  ->  →  =>  IMPLIES
  *   IFF      <->  ↔  <=>  IFF
  *
@@ -16,14 +19,21 @@
  * caso contrário identificadores são tratados como uma letra de cada vez (ex: AB = A AND B).
  */
 
-const KEYWORDS = new Set(['AND', 'OR', 'NOT', 'XOR', 'IMPLIES', 'IFF', 'TRUE', 'FALSE']);
+/* NAND/NOR/XNOR entram aqui porque a página /portas ensina que NAND e NOR são
+ * as portas UNIVERSAIS, e quem sai de lá e escreve "A NAND B" na tabela-verdade
+ * levava um "tokens extras após expressão" — o tokenizador quebrava a palavra
+ * em N·A·N·D e o erro não dizia nada sobre o que faltava. */
+const KEYWORDS = new Set(['AND', 'OR', 'NOT', 'XOR', 'NAND', 'NOR', 'XNOR', 'IMPLIES', 'IFF', 'TRUE', 'FALSE']);
 
 const PRECEDENCE = {
   iff: 1,
   implies: 2,
   or: 3,
+  nor: 3,        // a negada tem a mesma força da positiva que ela nega
   xor: 4,
+  xnor: 4,
   and: 5,
+  nand: 5,
   not: 6
 };
 
@@ -52,6 +62,9 @@ function tokenize(input) {
     if (c === '∨') { tokens.push({ type: 'op', value: 'or' }); i++; continue; }
     if (c === '¬') { tokens.push({ type: 'op', value: 'not' }); i++; continue; }
     if (c === '⊕') { tokens.push({ type: 'op', value: 'xor' }); i++; continue; }
+    if (c === '⊼') { tokens.push({ type: 'op', value: 'nand' }); i++; continue; }
+    if (c === '⊽') { tokens.push({ type: 'op', value: 'nor' }); i++; continue; }
+    if (c === '⊙') { tokens.push({ type: 'op', value: 'xnor' }); i++; continue; }
 
     /* Single-char ops */
     if (c === '&' || c === '*') { tokens.push({ type: 'op', value: 'and' }); i++; continue; }
@@ -162,6 +175,12 @@ function evalAst(node, env) {
       return !a || b;
     }
     case 'iff': return evalAst(node.left, env) === evalAst(node.right, env);
+    /* Definidas COMO a negação da positiva: é o que garante que De Morgan
+     * feche por construção, em vez de depender de eu ter escrito a tabela
+     * certa de cabeça. */
+    case 'nand': return !(evalAst(node.left, env) && evalAst(node.right, env));
+    case 'nor': return !(evalAst(node.left, env) || evalAst(node.right, env));
+    case 'xnor': return evalAst(node.left, env) === evalAst(node.right, env);
     default: throw new Error('nó desconhecido: ' + node.type);
   }
 }
@@ -231,6 +250,9 @@ export function astToString(node) {
   if (node.type === 'xor') return `(${astToString(node.left)} ⊕ ${astToString(node.right)})`;
   if (node.type === 'implies') return `(${astToString(node.left)} → ${astToString(node.right)})`;
   if (node.type === 'iff') return `(${astToString(node.left)} ↔ ${astToString(node.right)})`;
+  if (node.type === 'nand') return `(${astToString(node.left)} ⊼ ${astToString(node.right)})`;
+  if (node.type === 'nor') return `(${astToString(node.left)} ⊽ ${astToString(node.right)})`;
+  if (node.type === 'xnor') return `(${astToString(node.left)} ⊙ ${astToString(node.right)})`;
   return '?';
 }
 

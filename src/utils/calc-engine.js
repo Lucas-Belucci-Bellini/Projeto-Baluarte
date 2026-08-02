@@ -130,10 +130,10 @@ function makeParser(tokens, mode, scope) {
 
   /* Termo: fator * fator */
   function parseTerm() {
-    let left = parseFactor();
+    let left = parseUnary();
     while (peek() && peek().type === 'op' && (peek().value === '*' || peek().value === '/' || peek().value === '%')) {
       const op = eat().value;
-      const right = parseFactor();
+      const right = parseUnary();
       if (op === '*') left = left * right;
       else if (op === '/') left = left / right;
       else left = left % right;
@@ -141,18 +141,16 @@ function makeParser(tokens, mode, scope) {
     return left;
   }
 
-  /* Fator: potência ^ potência (right-associative) */
-  function parseFactor() {
-    let base = parseUnary();
-    if (peek() && peek().type === 'op' && peek().value === '^') {
-      eat();
-      const exp = parseFactor();
-      return Math.pow(base, exp);
-    }
-    return base;
-  }
-
-  /* Unário: -fator | +fator | fator */
+  /* Unário: -unário | +unário | potência
+   *
+   * O sinal fica ACIMA da potência de propósito: na convenção matemática o
+   * menos unário liga mais FRACO que o expoente, então `-2^2` é `-(2^2)` = -4,
+   * e não `(-2)^2` = 4. Era o contrário aqui, e a tela devolvia 4 — que é o que
+   * a planilha faz, mas não é o que faz calculadora científica nenhuma
+   * (TI, Casio), nem o WolframAlpha, nem a notação de qualquer livro. Numa tela
+   * chamada "calculadora científica", a convenção científica é a certa.
+   *
+   * Só muda o sinal quando o expoente é par; `-2^3` continua -8. */
   function parseUnary() {
     if (peek() && peek().type === 'op' && peek().value === '-') {
       eat();
@@ -162,7 +160,18 @@ function makeParser(tokens, mode, scope) {
       eat();
       return parseUnary();
     }
-    return parsePostfix();
+    return parsePotencia();
+  }
+
+  /* Potência: postfix ^ unário (associativa à DIREITA, e o expoente aceita
+   * sinal — `2^-1` é 0,5 e `2^3^2` é 2^(3^2) = 512). */
+  function parsePotencia() {
+    const base = parsePostfix();
+    if (peek() && peek().type === 'op' && peek().value === '^') {
+      eat();
+      return Math.pow(base, parseUnary());
+    }
+    return base;
   }
 
   /* Postfix: fator ! (factorial) */
@@ -279,15 +288,23 @@ export function fromBase(str, base) {
 
 /**
  * Operações bit-a-bit em inteiros (até 32 bits). Para 64 bits usaríamos BigInt.
+ *
+ * ⚠ A máscara de `bits` sai de `2 ** bits`, NUNCA de `1 << bits`: em JavaScript
+ * o deslocamento conta módulo 32, então `1 << 32` é 1 e não 4294967296. O NOT
+ * usava `(1 << bits) - 1`, que com os 32 bits padrão da tela dava máscara ZERO
+ * — e o botão NOT da calculadora numérica devolvia 0 para qualquer entrada.
+ * Resposta errada, sem erro nenhum na tela. Há teste cobrindo cada largura.
  */
+const mascara = (bits) => 2 ** bits;          // 2^bits; o resto por ele isola os bits baixos
+
 export const bitOps = {
   and: (a, b) => (a & b) >>> 0,
   or:  (a, b) => (a | b) >>> 0,
   xor: (a, b) => (a ^ b) >>> 0,
-  not: (a, bits = 32) => ((~a) & ((1 << bits) - 1)) >>> 0,
-  nand: (a, b) => (~(a & b) & 0xFFFFFFFF) >>> 0,
-  nor:  (a, b) => (~(a | b) & 0xFFFFFFFF) >>> 0,
-  xnor: (a, b) => (~(a ^ b) & 0xFFFFFFFF) >>> 0,
+  not: (a, bits = 32) => (~a >>> 0) % mascara(bits),
+  nand: (a, b, bits = 32) => (~(a & b) >>> 0) % mascara(bits),
+  nor:  (a, b, bits = 32) => (~(a | b) >>> 0) % mascara(bits),
+  xnor: (a, b, bits = 32) => (~(a ^ b) >>> 0) % mascara(bits),
   shl: (a, n) => (a << n) >>> 0,
   shr: (a, n) => a >>> n,
   sar: (a, n) => a >> n
