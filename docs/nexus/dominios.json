@@ -95,7 +95,9 @@
         "src/styles/reveal.css",
         "src/styles/scroll-progress.css",
         "src/styles/theme-universos.css",
-        "src/styles/reset.css"
+        "src/styles/reset.css",
+        "src/utils/paleta.js",
+        "src/styles/paleta.css"
       ],
       "precisa": [
         "baluarte-core",
