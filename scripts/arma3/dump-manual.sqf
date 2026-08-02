@@ -1,28 +1,3 @@
-// Dump do MANUAL DE CAMPO - CfgHints.
-//
-// Cole no debug console do Arma 3 com todos os DLCs carregados. Depois:
-//     python scripts/arma3/parse-manual.py
-//
-// O que sai: o Field Manual do jogo inteiro - todas as categorias e topicos, com
-// titulo, texto e imagem. E conteudo didatico escrito pela Bohemia sobre como o
-// jogo funciona: comandos de esquadrao, balistica, navegacao, sinalizacao,
-// veiculos, primeiros socorros.
-//
-// A tela de tutorial hoje tem 42 topicos escritos a mao. Isto traz a fonte
-// oficial, com atribuicao.
-//
-// ATENCAO A LICENCA: o texto e da Bohemia Interactive. A base guarda para
-// CONSULTA e o site precisa creditar - igual ao que ja se faz com a Wikipedia
-// no Centro Militar. Nao e conteudo do projeto e nao deve ser apresentado como
-// se fosse.
-//
-// FORMATO - texto picado de proposito (o diag_log corta em 1012):
-//     C |categoria|nome
-//     H |id|categoria|classe|titulo|imagem
-//     HT|id|<texto em pedacos de 700>
-//     HA|id|<argumentos em pedacos>     (as teclas citadas no texto)
-//     PLACAR|categorias|topicos
-
 private _t0 = diag_tickTime;
 
 private _fnc_lim = {
@@ -71,8 +46,6 @@ private _nTopicos = 0;
 
         ["HT", _id, [getText (_cfgH >> "description")] call _fnc_lim] call _fnc_pedacos;
 
-        // `arguments` lista as teclas/acoes citadas no texto (o jogo troca por
-        // icone na tela). Guardar cru: quem exibir decide como mostrar.
         private _args = getArray (_cfgH >> "arguments");
         if (count _args > 0) then {
             ["HA", _id, [str _args] call _fnc_lim] call _fnc_pedacos;

@@ -1,27 +1,3 @@
-// Dump da BIBLIOTECA DE FUNCOES - CfgFunctions.
-//
-// Cole no debug console do Arma 3 com todos os DLCs e mods carregados. Depois:
-//     python scripts/arma3/parse-funcoes.py
-//
-// O que sai: o catalogo de TODAS as funcoes SQF registradas - as ~3000 do jogo
-// base (BIS_fnc_*) mais as de cada mod carregado, com tag, categoria, caminho do
-// arquivo e as marcas de execucao (preInit/postInit/recompile).
-//
-// Valor direto para a tela de tutorial: hoje ela ensina comandos soltos; isto da
-// a biblioteca inteira, organizada por categoria, com o arquivo de origem para
-// quem quiser ler a implementacao.
-//
-// LIMITE HONESTO: a DESCRICAO de uma funcao nao esta no config - mora no
-// cabecalho do .sqf dela, dentro do PBO. Este dump traz o que o config declara;
-// quem quiser a descricao precisa do extrator de PBO (scripts/arma3/pbo.py).
-// Melhor um catalogo honesto sem descricao que um catalogo com descricao
-// inventada.
-//
-// FORMATO:
-//     T |tag|prefixo|dirBase
-//     F |tag|categoria|nome|arquivo|ext|preInit|postInit|recompile
-//     PLACAR|tags|funcoes
-
 private _t0 = diag_tickTime;
 
 private _fnc_lim = {
@@ -61,8 +37,6 @@ private _nFuncs = 0;
             private _cfgF = _x;
             private _nome = configName _cfgF;
 
-            // O caminho pode vir explicito na funcao, ou ser montado a partir do
-            // diretorio da categoria (e como o jogo resolve).
             private _arquivo = [getText (_cfgF >> "file")] call _fnc_lim;
             if (_arquivo == "" && _dirCat != "") then {
                 _arquivo = format ["%1/fn_%2.sqf", _dirCat, _nome];

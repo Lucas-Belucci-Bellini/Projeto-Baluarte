@@ -1,31 +1,3 @@
-// Dump da PROVENIENCIA - CfgPatches e CfgMods.
-//
-// Cole no debug console do Arma 3 com todos os DLCs e mods carregados. Depois:
-//     python scripts/arma3/parse-proveniencia.py
-//
-// O que sai: quem e dono de cada coisa. `CfgPatches` lista, por addon, exatamente
-// quais unidades e armas ele registra; `CfgMods` diz que DLC/mod e aquele, com
-// nome, cor e appId da Steam.
-//
-// POR QUE ISTO IMPORTA MAIS DO QUE PARECE
-//
-// `scripts/arma3/gerar_base_armas_comum.py` tem hoje um dicionario `DIR_DLC`
-// escrito A MAO - diretorio do asset -> DLC - porque o campo `fonte` do dump nao
-// serve (e `configSourceMod`, ou seja, quem patcheou por ULTIMO: o ACE
-// sobrescreve quase todo o vanilla e apareceria como dono de tudo).
-//
-// Um dicionario a mao envelhece calado: DLC novo sai, o diretorio dele nao esta
-// na lista, e as armas aparecem com origem errada sem ninguem perceber. Com este
-// dump a origem passa a ser DERIVADA do jogo - que e a regra do projeto para
-// dado de armamento ("nunca e inventado").
-//
-// FORMATO:
-//     P |addon|autor|nome|requiredVersion|<em pedacos: requiredAddons>
-//     PU|addon|<unidades em pedacos>
-//     PW|addon|<armas em pedacos>
-//     M |mod|nome|dir|autor|appId|cor|logo
-//     PLACAR|addons|mods
-
 private _t0 = diag_tickTime;
 
 private _fnc_lim = {
@@ -55,7 +27,6 @@ diag_log text "<<A3PROV>>INICIO|v1";
 
 private _nP = 0; private _nM = 0;
 
-// -- addons (CfgPatches) ---------------------------------------------------
 {
     private _c = _x;
     private _addon = configName _c;
@@ -72,7 +43,6 @@ private _nP = 0; private _nM = 0;
     _nP = _nP + 1;
 } forEach ("true" configClasses (configFile >> "CfgPatches"));
 
-// -- DLCs e mods (CfgMods) -------------------------------------------------
 {
     private _c = _x;
     diag_log text (format ["<<A3PROV>>M|%1|%2|%3|%4|%5|%6|%7",
