@@ -1,0 +1,118 @@
+/* Paleta de comandos (Ctrl/⌘+K).
+ *
+ * Só tokens — nenhum hex ou px solto, como manda o Design System. A paleta
+ * aparece por cima de tudo e some sem deixar rastro: enquanto fechada, custa
+ * zero pixel de tela, que é o ponto dela existir. */
+
+.paleta__fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 12vh;
+  background: rgba(4, 6, 10, 0.72);
+  backdrop-filter: blur(6px);
+  animation: paleta-entra 120ms ease-out;
+}
+
+.paleta {
+  width: min(680px, 92vw);
+  max-height: 66vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-border, rgba(212, 162, 78, 0.28));
+  border-radius: var(--radius-lg, 14px);
+  background: var(--color-surface, #0d1017);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+.paleta__topo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  padding: var(--space-md, 14px) var(--space-lg, 18px);
+  border-bottom: 1px solid var(--color-border, rgba(212, 162, 78, 0.18));
+}
+
+.paleta__lupa {
+  color: var(--color-primary, #d4a24e);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.paleta__campo {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text, #ecf3ff);
+  font-family: inherit;
+  font-size: 1.02rem;
+}
+
+.paleta__campo::placeholder { color: var(--color-text-muted, #828ea0); }
+
+.paleta__lista {
+  overflow-y: auto;
+  padding: var(--space-xs, 6px);
+}
+
+.paleta__item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.6rem 1fr auto auto;
+  align-items: center;
+  gap: var(--space-sm, 10px);
+  padding: var(--space-sm, 9px) var(--space-md, 12px);
+  border: 0;
+  border-radius: var(--radius-sm, 8px);
+  background: transparent;
+  color: var(--color-text, #ecf3ff);
+  font-family: inherit;
+  font-size: 0.94rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.paleta__item.is-ativo {
+  background: color-mix(in srgb, var(--color-primary, #d4a24e) 16%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--color-primary, #d4a24e) 42%, transparent);
+}
+
+.paleta__ico { text-align: center; opacity: 0.85; }
+.paleta__rotulo { font-weight: 500; }
+
+.paleta__grupo,
+.paleta__path {
+  color: var(--color-text-muted, #828ea0);
+  font-size: 0.78rem;
+}
+
+.paleta__path { font-family: var(--font-mono, ui-monospace, monospace); opacity: 0.7; }
+
+/* Em tela estreita o caminho sai: o rótulo e o grupo bastam pra decidir. */
+@media (max-width: 560px) {
+  .paleta__item { grid-template-columns: 1.6rem 1fr auto; }
+  .paleta__path { display: none; }
+}
+
+.paleta__vazio,
+.paleta__dica {
+  padding: var(--space-md, 14px) var(--space-lg, 18px);
+  color: var(--color-text-muted, #828ea0);
+  font-size: 0.82rem;
+}
+
+.paleta__dica { border-top: 1px solid var(--color-border, rgba(212, 162, 78, 0.14)); }
+
+@keyframes paleta-entra {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paleta__fundo { animation: none; }
+}

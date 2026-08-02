@@ -11,6 +11,7 @@
 
 import '../styles/triangulacao.css';
 import { h, empty } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { triangulate, bearingTo, gaussianNoise, dist } from '../utils/triangulation.js';
 
 /* Posições das estações (normalizadas 0..1) por quantidade. */
@@ -52,6 +53,7 @@ export function triangulacaoPage() {
   const sigmaVal = h('span', { className: 'tri-slider__val u-mono' }, `${sigmaDeg}°`);
   const sigmaSlider = h('input', {
     type: 'range', min: 0, max: 15, step: 0.5, value: sigmaDeg, className: 'tri-slider',
+    'aria-label': 'Erro angular do sensor, em graus',
     oninput: (e) => { sigmaDeg = parseFloat(e.target.value); sigmaVal.textContent = `${sigmaDeg}°`; }
   });
   const stationBtns = h('div', { className: 'tri-seg' },
@@ -163,6 +165,8 @@ export function triangulacaoPage() {
   }
 
   raf = requestAnimationFrame(loop);
-  window.addEventListener('hashchange', () => { if (raf) cancelAnimationFrame(raf); }, { once: true });
+  /* Para o laço de animação ao sair — e só ao sair, não em qualquer troca de
+   * hash como fazia o `hashchange` com `{ once: true }`. */
+  aoSair(page, () => { if (raf) cancelAnimationFrame(raf); });
   return page;
 }

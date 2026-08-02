@@ -1,0 +1,15 @@
+[
+ {
+  "rota": "/arma3-tutorial",
+  "estado": "verde",
+  "ms": 15015,
+  "texto": 29101,
+  "nos": 957,
+  "titulo": "📖 Bíblia do Ar=S % U O XT+6 {9OL7YFN",
+  "naoEncontrada": false,
+  "erros": [],
+  "avisos": [
+   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
+  ]
+ }
+]

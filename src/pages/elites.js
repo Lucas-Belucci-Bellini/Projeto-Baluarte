@@ -250,6 +250,7 @@ export function elitesPage(args) {
 
   const statusSel = h('select', {
     className: 'input',
+    'aria-label': 'Filtrar por status',
     onchange: (e) => { state.activeStatus = e.target.value; persist(); renderGrid(); }
   },
     h('option', { value: 'all', selected: state.activeStatus === 'all' }, 'Todos status'),
@@ -260,6 +261,7 @@ export function elitesPage(args) {
 
   const specSel = h('select', {
     className: 'input',
+    'aria-label': 'Filtrar por especialidade',
     onchange: (e) => { state.activeSpec = e.target.value; persist(); renderGrid(); }
   },
     h('option', { value: 'all', selected: state.activeSpec === 'all' }, 'Todas especialidades'),

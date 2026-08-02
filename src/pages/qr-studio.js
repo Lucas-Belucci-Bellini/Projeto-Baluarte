@@ -287,6 +287,7 @@ function buildGenerateView() {
   const scaleLabel = h('span', { className: 'u-mono u-text-cyan qr-scale__val' }, `${scale}px`);
   const scaleSlider = h('input', {
     type: 'range', min: '4', max: '16', step: '1', value: String(scale),
+    'aria-label': 'Tamanho do módulo do QR, em pixels',
     oninput: (e) => { scale = parseInt(e.target.value, 10); scaleLabel.textContent = `${scale}px`; render(); }
   });
 

@@ -23,3 +23,14 @@ venv/
 # VERSIONADA por decisão do operador: os dados vão pro repositório, não só
 # as ferramentas. São ~150 MB e o histórico do git guarda isso pra sempre.
 # Regenerável em minutos com os parsers, se um dia quiser reverter.
+
+# ── Peso morto tirado do versionamento (nada em src/ referencia) ─────────────
+# Os arquivos continuam no disco e no histórico — só param de entrar em commit
+# novo. 311 MB que todo clone e todo job de CI baixava à toa.
+Humanity always first/
+GitNexus-1.6.7/
+
+# Mídia pesada: git não é depósito de vídeo. Cada versão fica no histórico
+# para sempre, e o site não referencia nenhum destes.
+*.mp4
+*.mov

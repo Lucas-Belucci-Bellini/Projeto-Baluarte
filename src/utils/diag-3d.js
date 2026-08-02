@@ -9,6 +9,8 @@
  * capturando o erro exato se falhar.
  */
 
+import { liberar } from './webgl-probe.js';
+
 const GLB_TESTE = 'modelos-3d/Soldier.glb';
 const DRACO_TESTE = 'modelos-3d/draco/draco_decoder.wasm';
 const base = () => (import.meta.env && import.meta.env.BASE_URL) || '/';
@@ -20,12 +22,14 @@ function infoGPU() {
     const gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
     if (!gl) return { contexto: null };
     const dbg = gl.getExtension('WEBGL_debug_renderer_info');
-    return {
+    const info = {
       contexto: gl.getParameter ? (c.getContext('webgl2') ? 'webgl2' : 'webgl1') : 'sim',
       fornecedor: dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR),
       renderizador: dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
       versao: gl.getParameter(gl.VERSION)
     };
+    liberar(gl);                      // sonda não pode reter contexto (são ~16 por aba)
+    return info;
   } catch (e) { return { contexto: null, erro: String(e && e.message || e) }; }
 }
 
@@ -44,7 +48,9 @@ function testeRender() {
     gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
     const vermelho = px[0] > 200 && px[1] < 60 && px[2] < 60;
     const perdido = gl.isContextLost && gl.isContextLost();
-    return { ok: vermelho && !perdido, pixel: `rgba(${px.join(',')})`, contextoPerdido: !!perdido };
+    const laudo = { ok: vermelho && !perdido, pixel: `rgba(${px.join(',')})`, contextoPerdido: !!perdido };
+    liberar(gl);
+    return laudo;
   } catch (e) { return { ok: false, motivo: String(e && e.message || e) }; }
 }
 

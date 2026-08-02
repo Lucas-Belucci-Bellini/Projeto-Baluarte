@@ -269,6 +269,7 @@ function renderViewer() {
       h('span', { className: 'u-text-muted', style: { fontSize: '11px' } }, 'A'),
       h('input', {
         type: 'range', min: '13', max: '22', step: '1', value: state.fontSize,
+        'aria-label': 'Tamanho da letra na leitura',
         oninput: (e) => {
           state.fontSize = parseInt(e.target.value, 10);
           persist();
@@ -448,6 +449,7 @@ export function bibliotecaPage(args) {
 
   univSelect = h('select', {
     className: 'input',
+    'aria-label': 'Filtrar por universo',
     onchange: (e) => {
       state.universe = e.target.value;
       persist();

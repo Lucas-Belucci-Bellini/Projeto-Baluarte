@@ -230,6 +230,15 @@ export function disconnect() {
     sourceNode = null;
   }
   sourceType = null;
+  /* SUSPENDE, não fecha: o AudioContext é reaproveitado entre visitas de
+   * propósito (o navegador limita quantos existem, e `close()` é irreversível).
+   * Mas deixá-lo `running` depois de sair da tela mantém o hardware de áudio
+   * ligado à toa, gastando bateria — medido: ao sair do /fft o contexto
+   * continuava rodando. Suspenso, ele solta o hardware e volta no `resume()`
+   * da próxima captura. */
+  if (audioCtx && audioCtx.state === 'running') {
+    audioCtx.suspend().catch(() => { /* já suspenso ou fechado */ });
+  }
 }
 
 export function getSourceType() {

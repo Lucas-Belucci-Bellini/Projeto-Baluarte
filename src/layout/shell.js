@@ -7,6 +7,7 @@ import { h, mount, empty } from '../utils/helpers.js';
 import { renderHeader } from './header.js';
 import { renderSidebar, wireSidebar, updateActiveNav } from './sidebar.js';
 import { bus } from '../core/events.js';
+import { encerrar } from '../core/ciclo-vida.js';
 import { appState } from '../core/state.js';
 import { setCurrentFunction } from '../utils/baluarte-status.js';
 import { pinElement } from './overlay.js';
@@ -87,6 +88,10 @@ export function mountShell(rootEl) {
   return shellRefs;
 }
 
+/* A tela que está no ar agora. Guardada para que a PRÓXIMA troca consiga
+ * avisá-la que ela está saindo — ver `encerrar()` logo abaixo. */
+let paginaAtual = null;
+
 /**
  * Renderiza uma página (HTMLElement) na área principal.
  * É o ponto único de troca de tela: o router emite 'route:change' (ver main.js)
@@ -94,6 +99,12 @@ export function mountShell(rootEl) {
  */
 export function renderPage(pageEl, route) {
   if (!mainInner) return;
+  /* Despedida da tela anterior ANTES de montar a nova: é aqui que morrem os
+   * listeners globais, timers, osciladores e loops de animação que a tela
+   * abriu. Sem isto cada página precisava vigiar o `document.body` inteiro pra
+   * descobrir sozinha que tinha saído — e as que esqueciam, vazavam. */
+  encerrar(paginaAtual);
+  paginaAtual = pageEl;
   mount(mainInner, pageEl);              // troca o conteúdo do <main> (descarta a página antiga)
   if (pageEl && pageEl.classList) pageEl.classList.add('route-enter'); // transição de entrada (#246)
   revealScan(pageEl, route);             // anima os blocos entrando na viewport (scroll-reveal)

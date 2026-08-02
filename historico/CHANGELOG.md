@@ -6,6 +6,120 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-02
+
+### 📡 App extrai o Arma 3 e manda pro repositório · **0.9.1**
+
+O caminho do dado deixou de ter cinco ferramentas. Era: colar o `.sqf` no jogo →
+abrir o terminal → rodar o parser Python → abrir o git → commitar → empurrar.
+Agora o app cuida de tudo depois do jogo, na aba **📡 Extrair** de
+`/arma3-tutorial` (só dentro do Launcher).
+
+Três passos separados **de propósito** — um botão único que fizesse tudo
+esconderia o momento de conferir, e o que sai daqui vira commit no repositório:
+
+1. **ver** — lê o `.rpt` e diz o que o jogo já dumpou, com contagem de registros
+   e aviso de dump incompleto; lista o que falta colar no console, com o caminho
+   de cada `.sqf`;
+2. **extrair** — roda os parsers e mostra o log inteiro, destacando os avisos
+   (placar divergente, campo truncado) que são o sinal de que algo se perdeu;
+3. **entregar** — commita num ramo próprio. Empurrar é um segundo clique.
+
+#### As quatro regras que definem a ponte
+
+- **Nenhum segredo nosso.** O app não guarda token do GitHub, não pede senha e
+  não fala com a API. Quem empurra é o `git` da máquina, com a credencial que já
+  existe. Guardar token de repositório num app de desktop seria trocar
+  conveniência por mais um segredo para vazar — e contradiria a postura que o
+  `arquivos.js` já sustenta.
+- **Nunca no ramo principal.** Só empurra para `arma3/extracao-*`, e recusa
+  `main`/`master`/`HEAD`/`production` explicitamente. O que sai daqui vira PR.
+- **Só o que a extração produz.** O `git add` recebe lista fixa de JSONs de
+  `scripts/arma3/out/`. Alteração pendente fora dali **bloqueia** a entrega —
+  extração não carrega edição alheia junto.
+- **Uma implementação do parsing.** Os parsers continuam em Python; o app
+  orquestra. Portar seis parsers para Node criaria duas versões da mesma
+  leitura — o defeito que já apareceu aqui (o `/cripto` tinha uma segunda
+  implementação de Morse e ela engolia letra em silêncio).
+
+Tudo por `execFile` com argv fixo — nunca `shell`.
+
+`desktop/testar-arma3.js` prova as regras num repositório descartável com
+`origin` local: ramo protegido recusado (4 nomes), arquivo alheio bloqueado,
+arquivo de nome estranho na pasta de saída não commitado, e o empurrão só
+acontecendo com `empurrar: true`. O teste pegou um defeito real antes do
+commit — `git status --porcelain` agrupa diretório não rastreado numa linha só
+(`?? out/`), então a peneira por nome não via nada e a entrega diria "nada
+mudou" com a pasta cheia. Justamente no caso que mais importa: a primeira
+extração de uma base nova.
+
+### 🧰 Seis extratores novos para o Arma 3
+
+Antes de acrescentar coisa nova, tirar do jogo o que o config já tem:
+
+| etapa | o que traz |
+|---|---|
+| `grupos` | **ordem de batalha** — a composição de cada esquadrão por facção, na ordem, com quem lidera |
+| `funcoes` | catálogo das ~3000 funções SQF |
+| `manual` | o Field Manual inteiro |
+| `simbologia` | marcadores de carta (APP-6), cores de lado, patentes, insígnias |
+| `terreno-fisico` | superfícies: quanto freiam o passo, som, poeira; vegetação e clima |
+| `proveniencia` | `CfgPatches`/`CfgMods` — quem **registra** cada classe |
+
+`proveniencia` conserta algo hoje mantido à mão: o `DIR_DLC` de
+`gerar_base_armas_comum.py` é um dicionário escrito manualmente porque o campo
+`fonte` do dump é `configSourceMod` — quem patcheou por último, e com ACE
+carregado quase todo o vanilla apareceria como do ACE. Dicionário à mão
+envelhece calado. O índice `donoDe` responde a pergunta certa.
+
+`npm run testar-parsers-arma3` roda os seis contra `.rpt` sintético: formato
+lido, campo picado remontado, ausência preservada (vazio → `null`, nunca zero).
+Pegou um defeito meu — a conversão de cor usava `round()`, que em Python
+arredonda meio para o **par**: 0,3 × 255 = 76,5 virava 76, e navegador dá 77.
+
+### 🔍 Auditoria página a página — as 97 telas
+
+Nove rodadas, agrupadas por domínio do Nexus. **Vazamento 0/97 ·
+acessibilidade 0/97 · estreito 0/97.** 136 testes (eram 21), cada conserto
+conferido reintroduzindo o próprio defeito.
+
+Oito defeitos reais, sendo três que davam **resposta errada em silêncio**:
+
+- **Morse decodificava I como Í em toda mensagem** — "SIM" saía "SÍM". A tabela
+  tinha código repetido e o último vencia na inversa;
+- **o NOT bit-a-bit devolvia 0 para qualquer entrada** — `(1 << 32) - 1` é zero
+  em JavaScript, e 32 bits é o padrão da tela;
+- **`/cripto` engolia letras** — segunda implementação de Morse, que descartava
+  em silêncio o que não estava na tabela;
+- **a carga fria resolvia a rota duas vezes** — `router.start()` chamava
+  `resolve()` e ainda registrava `DOMContentLoaded`, que dispara depois porque
+  módulo é deferido. As 25 páginas que guardam elemento em variável de módulo
+  ficavam apontando para a cópia órfã: link direto, F5 e favorito entregavam
+  tela que renderiza e não obedece. A `/calc-cientifica` abria com o teclado
+  inteiramente morto;
+- **`/modelos-3d` retinha um contexto WebGL por visita** — o navegador só
+  permite ~16, então a galeria parava de renderizar depois de algumas idas e
+  vindas;
+- `/fft` deixava o AudioContext ligado ao sair; `/morse` ficava com o Play morto
+  ao voltar; as 200 casas da batalha naval não tinham nome.
+
+**`/arma3-tutorial`: 1885 kB → 122 kB.** Importava 15 bases estaticamente para
+mostrar uma aba de 33 kB. O que prendia era a barra de abas mostrar o total de
+cada base — o número só existia dentro dos megabytes. Os totais saíram para
+`arma3-totais.js` (1 kB, gerado, com teste conferindo contra a base real) e as
+bases passaram a descer por aba. `/wiki-arma3` caiu de 1595 para 480 kB junto.
+
+`src/core/ciclo-vida.js` deu ao shell o gancho de saída que faltava — 19 páginas
+vigiavam o `document.body` inteiro com `MutationObserver` só para descobrir que
+tinham saído.
+
+O limite do instrumento ficou registrado em `docs/nexus/grupos-auditoria.json`:
+o vigia não pega defeito que só aparece ao ACIONAR a tela, nem na CARGA FRIA,
+nem resposta errada. As três classes só apareceram lendo o código. Verde no
+vigia é o piso, não o teto.
+
+---
+
 ## 2026-07-27
 
 ### 📚 Wiki de Arma 3 **0.9.1** — 459 → 1.816 artigos, tudo medido no config

@@ -115,7 +115,25 @@ function start(initial = '/home') {
   if (started) return;
   started = true;
   window.addEventListener('hashchange', resolve);
-  window.addEventListener('DOMContentLoaded', resolve);
+
+  /* `DOMContentLoaded` só é esperado se o documento AINDA estiver sendo lido.
+   *
+   * Antes o listener era registrado sempre — e como `main.js` é
+   * `<script type="module">` (portanto deferido), ele roda ANTES do evento.
+   * Resultado: a rota inicial resolvia duas vezes em toda carga fria, a página
+   * era construída duas vezes e só a segunda ia para o DOM.
+   *
+   * Para a maioria das telas isso só desperdiçava trabalho. Para as que guardam
+   * referência de elemento em variável de módulo, quebrava a tela: a variável
+   * ficava apontando para a cópia ÓRFÃ, e a que o usuário via não respondia a
+   * nada. Foi o que aconteceu com `/calc-cientifica` — abrir o link direto, dar
+   * F5 ou usar um favorito entregava uma calculadora morta, sem erro no
+   * console. Entrando pela navegação interna funcionava, que é o que escondeu
+   * o defeito o tempo todo (e o que faz o vigia de rotas não pegar: a tela
+   * RENDERIZA, ela só não obedece). */
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', resolve, { once: true });
+  }
 
   if (!window.location.hash || window.location.hash === '#') {
     navigate(initial, { replace: true });
@@ -128,4 +146,11 @@ function current() {
   return currentMatch;
 }
 
-export const router = { register, setNotFound, navigate, start, current, count: () => routes.length };
+/* `list()` devolve os padrões registrados, na ordem de registro. Existe pra
+ * quem precisa enxergar o site inteiro sem manter uma segunda lista — a
+ * paleta de comandos indexa daqui, então rota nova aparece na busca sozinha.
+ * Rotas com parâmetro (`/perfil/:id`) ficam de fora: elas não são um destino
+ * navegável por si só. */
+const list = () => routes.map((r) => r.pattern).filter((p) => !p.includes(':'));
+
+export const router = { register, setNotFound, navigate, start, current, list, count: () => routes.length };

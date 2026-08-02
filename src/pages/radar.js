@@ -11,6 +11,7 @@
 
 import '../styles/radar.css';
 import { h, cx, empty } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { makeSource } from '../utils/radar-source.js';
 import { cfar2d, rangeMeters, velocityMs } from '../utils/radar-dsp.js';
 import { createTracker } from '../utils/radar-tracker.js';
@@ -247,8 +248,11 @@ export function radarPage() {
   /* Inicia fonte default (mock). */
   setTimeout(() => switchSource('mock'), 0);
 
-  /* Cleanup quando trocar de rota — observa hash. */
-  window.addEventListener('hashchange', cleanup, { once: true });
+  /* Desliga o sensor ao sair da tela. Era um `hashchange` com `{ once: true }`,
+   * que funcionava para a saída mas disparava em QUALQUER troca de hash — uma
+   * mudança de query na própria rota desligaria o radar com o operador
+   * olhando. O gancho de saída dispara só quando a tela realmente sai. */
+  aoSair(page, cleanup);
 
   return page;
 }
@@ -281,6 +285,7 @@ function buildConsole() {
   const cfarSlider = h('input', {
     type: 'range', min: 2, max: 10, step: 0.1, value: cfg.cfarK,
     className: 'rdr-slider',
+    'aria-label': 'Fator K do detector CFAR',
     oninput: (e) => {
       cfg.cfarK = parseFloat(e.target.value);
       const lbl = e.target.parentElement.querySelector('.rdr-slider__val');

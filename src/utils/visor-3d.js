@@ -18,6 +18,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { sondarWebGL, liberar } from './webgl-probe.js';
 
 export const FORMATOS = ['glb', 'gltf', 'stl', 'obj', 'fbx'];
 
@@ -115,14 +116,7 @@ async function carregarObjeto({ url, files, nome }) {
  * claro o que falta.)
  */
 export function diagnosticoWebGL() {
-  try {
-    const c = document.createElement('canvas');
-    const gl2 = !!c.getContext('webgl2');
-    const gl1 = gl2 || !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
-    return { ok: gl1, webgl2: gl2 };
-  } catch {
-    return { ok: false, webgl2: false };
-  }
+  return sondarWebGL();
 }
 
 /**
@@ -319,6 +313,14 @@ export async function montarVisor3D(host, fonte) {
         }
       });
       if (pmrem) pmrem.dispose();
+      /* `dispose()` libera os recursos de GPU, mas NÃO devolve o contexto
+       * WebGL — ele só some quando o canvas é coletado, e isso pode demorar.
+       * O navegador limita o número de contextos vivos (por volta de 16), então
+       * um contexto retido por visita faz a galeria parar de renderizar depois
+       * de algumas idas e vindas. `forceContextLoss` é a forma documentada de
+       * devolvê-lo na hora. Medido antes: 3 contextos por visita a
+       * `/modelos-3d` sem nenhum liberado. */
+      try { renderer.forceContextLoss(); } catch { /* contexto já perdido */ }
       renderer.dispose();
       renderer.domElement.remove();
       fim();

@@ -14,6 +14,7 @@
 
 import '../styles/editor.css';
 import { h, cx, debounce, mount, empty } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { toast } from '../utils/toast.js';
 import { highlight } from '../utils/syntax-highlight.js';
 import { createAutocomplete } from '../utils/editor-autocomplete.js';
@@ -956,9 +957,16 @@ export function editorPage() {
 
   render();
 
-  /* Atalhos globais */
+  /* Atalhos globais. O handler já se protegia com um guarda de rota (só age
+   * dentro de `#/editor`), então nunca sequestrou o teclado das outras telas —
+   * mas ficava instalado para sempre depois da primeira visita. Com o gancho de
+   * saída ele vai embora junto com a tela. */
   if (kbHandler) window.removeEventListener('keydown', kbHandler);
   attachKeyboard();
+  aoSair(fullPage, () => {
+    window.removeEventListener('keydown', kbHandler);
+    kbHandler = null;
+  });
 
   return fullPage;
 }

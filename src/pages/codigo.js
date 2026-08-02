@@ -7,6 +7,7 @@
 
 import '../styles/codigo.css';
 import { h, empty } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import codemap from '../data/codemap.json';
 import { codeMemoryCounts } from '../utils/jarvis-brain.js';
 
@@ -208,7 +209,12 @@ export function codigoPage() {
     dragging = true; moved = false;
     lastX = e.clientX; lastY = e.clientY;
   });
-  window.addEventListener('mouseup', () => { dragging = false; });
+  /* Em `window` e não no canvas de propósito: soltar o botão FORA do canvas
+   * também precisa encerrar o arrasto. Por isso mesmo precisa ser removido na
+   * saída — foi o listener que a limpeza antiga esquecia, e cada visita a esta
+   * tela deixava um para trás (medido: +1 por visita). */
+  const onMouseUp = () => { dragging = false; };
+  window.addEventListener('mouseup', onMouseUp);
   canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left, my = e.clientY - rect.top;
@@ -237,15 +243,15 @@ export function codigoPage() {
   const onResize = () => size();
   window.addEventListener('resize', onResize);
 
-  /* limpeza ao sair do DOM (cancela rAF e listeners) */
-  const obs = new MutationObserver(() => {
-    if (!document.body.contains(page)) {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', onResize);
-      obs.disconnect();
-    }
+  /* Limpeza ao sair da tela: cancela o loop de animação e devolve os dois
+   * listeners globais. Era um `MutationObserver` sobre o `document.body`
+   * inteiro — que rodava a cada mutação do documento só pra descobrir uma coisa
+   * que o shell já sabe na hora da troca. */
+  aoSair(page, () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener('resize', onResize);
+    window.removeEventListener('mouseup', onMouseUp);
   });
-  obs.observe(document.body, { childList: true, subtree: true });
 
   return page;
 }

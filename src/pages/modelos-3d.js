@@ -21,6 +21,7 @@ import { attachSpotlight } from '../utils/effects.js';
 import SEED from '../data/modelos-3d.json';
 import { GALERIA_3D } from '../data/galeria-3d.js';
 import '../styles/modelos-3d.css';
+import { sondarWebGL } from '../utils/webgl-probe.js';
 
 const GRUPOS = [
   ['todos', 'Todos'],
@@ -45,6 +46,22 @@ export function modelos3dPage(args = {}) {
   let grupo = 'todos', colecao = '', busca = '';
 
   const page = h('div', { className: 'page-m3d' });
+
+  /* Cabeçalho de página. Faltava: esta era a única das 97 telas sem `h1`
+   * nenhum — quem navega por títulos (leitor de tela, modo leitura) caía numa
+   * página sem começo declarado, e o site perdia a hierarquia de documento que
+   * todas as outras seguem. */
+  page.appendChild(
+    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
+      h('div', { className: 'page-header__crumbs' },
+        h('span', null, 'BALUARTE'), h('span', null, '›'),
+        h('span', null, 'ACERVO'), h('span', null, '›'),
+        h('span', null, 'MODELOS 3D')),
+      h('h1', { className: 'page-header__title' }, '◈ Modelos 3D'),
+      h('p', { className: 'page-header__description' },
+        'Acervo 3D militar renderizado ',
+        h('span', { className: 'u-text-cyan' }, 'no próprio site'),
+        ' (three.js), com visualizador universal para abrir os seus arquivos.')));
 
   /* ----- intro + aviso de créditos ----- */
   page.appendChild(h('div', { className: 'card m3d-intro' },
@@ -81,12 +98,7 @@ export function modelos3dPage(args = {}) {
   /* autodiagnóstico do "não vai" (0.7.2.1): se o WebGL estiver desligado na
    * máquina, avisa NA CARA — sem esperar o clique falhar. Teste barato, sem
    * puxar o chunk do three.js. */
-  const semWebGL = (() => {
-    try {
-      const c = document.createElement('canvas');
-      return !(c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl'));
-    } catch { return true; }
-  })();
+  const semWebGL = !sondarWebGL().ok;
   /* Diagnóstico do "não abre" (0.7.6): botão que roda a cadeia inteira do 3D
    * NA MÁQUINA do operador e mostra onde quebra, com copiar. Substitui o
    * chute remoto por dado real. */
@@ -182,6 +194,7 @@ export function modelos3dPage(args = {}) {
   }, label));
   const colSel = h('select', {
     className: 'input m3d-colsel',
+    'aria-label': 'Filtrar por coleção',
     onchange: (e) => { colecao = e.target.value; renderGrid(); }
   },
     h('option', { value: '' }, 'Todas as coleções'),

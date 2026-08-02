@@ -8,6 +8,7 @@
 
 import '../styles/ocr.css';
 import { h } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { toast } from '../utils/toast.js';
 
 const TESSERACT_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
@@ -202,16 +203,14 @@ export function ocrPage() {
   }
   window.addEventListener('paste', onPaste);
 
-  /* Limpeza ao sair do DOM. */
-  const obs = new MutationObserver(() => {
-    if (!document.body.contains(page)) {
-      window.removeEventListener('paste', onPaste);
-      stopCamera();
-      if (currentURL && currentURL.startsWith('blob:')) URL.revokeObjectURL(currentURL);
-      obs.disconnect();
-    }
+  /* Limpeza ao sair da tela: solta o listener de colar, desliga a câmera e
+   * devolve a URL do blob. Era um `MutationObserver` sobre o `document.body`
+   * inteiro — caro e desnecessário, já que o shell avisa na troca de tela. */
+  aoSair(page, () => {
+    window.removeEventListener('paste', onPaste);
+    stopCamera();
+    if (currentURL && currentURL.startsWith('blob:')) URL.revokeObjectURL(currentURL);
   });
-  obs.observe(document.body, { childList: true, subtree: true });
 
   return page;
 }

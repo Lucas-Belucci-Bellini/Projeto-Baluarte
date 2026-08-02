@@ -173,6 +173,7 @@ export function cibersegPage() {
 
   const sevSel = h('select', {
     className: 'input',
+    'aria-label': 'Filtrar por severidade',
     onchange: (e) => { state.severity = e.target.value; persist(); renderList(); }
   },
     h('option', { value: 'all', selected: state.severity === 'all' }, 'Todas severidades'),

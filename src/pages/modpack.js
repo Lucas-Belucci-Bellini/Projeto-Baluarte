@@ -119,6 +119,7 @@ export function modpackPage() {
 
   const tierSel = h('select', {
     className: 'input',
+    'aria-label': 'Filtrar por tier',
     onchange: (e) => { state.tier = e.target.value; persist(); renderList(); }
   },
     h('option', { value: 'all', selected: state.tier === 'all' }, 'Todos os tiers'),
