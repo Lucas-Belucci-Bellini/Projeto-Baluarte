@@ -62,6 +62,13 @@ jobs:
       - name: Testes
         run: npm test
 
+      # Os .sqf sao COLADOS no debug console do jogo, que nao e UTF-8. Um
+      # acento no arquivo corrompe o script antes de o parser existir, e o
+      # erro no jogo nao fala nada sobre codificacao. Ja aconteceu: os seis
+      # dumps novos sairam em UTF-8 e nenhum rodou.
+      - name: Parsers do Arma 3 (formato + .sqf em ASCII puro)
+        run: npm run testar-parsers-arma3
+
       - name: Regerar as bases e conferir as invariantes
         run: npm run verificar-arma3
 

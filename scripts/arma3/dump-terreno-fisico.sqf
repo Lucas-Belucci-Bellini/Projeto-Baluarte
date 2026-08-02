@@ -1,21 +1,21 @@
-// Dump das SUPERFÍCIES e do CLIMA — CfgSurfaces, CfgSurfaceCharacters, CfgWeather.
+// Dump das SUPERFICIES e do CLIMA - CfgSurfaces, CfgSurfaceCharacters, CfgWeather.
 //
 // Cole no debug console do Arma 3 com todos os DLCs carregados. Depois:
 //     python scripts/arma3/parse-terreno-fisico.py
 //
-// O que sai: como cada superfície do terreno se COMPORTA — quanto ela freia o
+// O que sai: como cada superficie do terreno se COMPORTA - quanto ela freia o
 // deslocamento, quanto barulho faz o passo, que poeira levanta, que impacto de
-// projétil produz — mais a vegetação que nasce em cima dela e as camadas de
+// projetil produz - mais a vegetacao que nasce em cima dela e as camadas de
 // clima do mundo.
 //
-// Por que importa aqui: é o dado que liga o terreno à balística e ao movimento,
-// os dois assuntos do repo irmão (Vanguard). A base de terrenos que já existe
-// descreve a GRADE do mapa; nenhuma descreve o CHÃO.
+// Por que importa aqui: e o dado que liga o terreno a balistica e ao movimento,
+// os dois assuntos do repo irmao (Vanguard). A base de terrenos que ja existe
+// descreve a GRADE do mapa; nenhuma descreve o CHAO.
 //
 // FORMATO:
 //     S |classe|arquivos|aspero|coefVelocidade|somAmbiente|somBater|poeira|impacto|personagem
-//     SC|classe|probabilidade|densidade|<objetos em pedaços>
-//     W |classe|nome|<parametros em pedaços>
+//     SC|classe|probabilidade|densidade|<objetos em pedacos>
+//     W |classe|nome|<parametros em pedacos>
 //     PLACAR|superficies|personagens|clima
 
 private _t0 = diag_tickTime;
@@ -47,7 +47,7 @@ diag_log text "<<A3CHAO>>INICIO|v1";
 
 private _nS = 0; private _nSC = 0; private _nW = 0;
 
-// ── superfícies ───────────────────────────────────────────────────────────
+// -- superficies -----------------------------------------------------------
 {
     private _c = _x;
     private _nome = configName _c;
@@ -56,7 +56,7 @@ private _nS = 0; private _nSC = 0; private _nW = 0;
             _nome,
             [getText (_c >> "files")] call _fnc_lim,
             (_c >> "rough") call _fnc_num,
-            (_c >> "maxSpeedCoef") call _fnc_num,       // quanto a superfície freia
+            (_c >> "maxSpeedCoef") call _fnc_num,       // quanto a superficie freia
             [getText (_c >> "soundEnviron")] call _fnc_lim,
             [getText (_c >> "soundHit")] call _fnc_lim,
             [getText (_c >> "dust")] call _fnc_lim,
@@ -66,7 +66,7 @@ private _nS = 0; private _nSC = 0; private _nW = 0;
     };
 } forEach ("true" configClasses (configFile >> "CfgSurfaces"));
 
-// ── vegetação por superfície ──────────────────────────────────────────────
+// -- vegetacao por superficie ----------------------------------------------
 {
     private _c = _x;
     private _nome = configName _c;
@@ -80,9 +80,9 @@ private _nS = 0; private _nSC = 0; private _nW = 0;
     };
 } forEach ("true" configClasses (configFile >> "CfgSurfaceCharacters"));
 
-// ── camadas de clima ──────────────────────────────────────────────────────
-// CfgWeather é raso e varia entre DLCs; guardamos os parâmetros crus em vez de
-// escolher um subconjunto que pode não existir em todo mundo.
+// -- camadas de clima ------------------------------------------------------
+// CfgWeather e raso e varia entre DLCs; guardamos os parametros crus em vez de
+// escolher um subconjunto que pode nao existir em todo mundo.
 {
     private _c = _x;
     private _nome = configName _c;
@@ -101,5 +101,5 @@ private _nS = 0; private _nSC = 0; private _nW = 0;
 diag_log text (format ["<<A3CHAO>>PLACAR|%1|%2|%3", _nS, _nSC, _nW]);
 diag_log text (format ["<<A3CHAO>>FIM|%1", (diag_tickTime - _t0) toFixed 2]);
 
-hint format ["Dump de terreno físico pronto.\n%1 superfícies · %2 caracteres · %3 climas\n%4 s\n\nRode: python scripts/arma3/parse-terreno-fisico.py",
+hint format ["Dump de terreno fisico pronto.\n%1 superficies . %2 caracteres . %3 climas\n%4 s\n\nRode: python scripts/arma3/parse-terreno-fisico.py",
     _nS, _nSC, _nW, (diag_tickTime - _t0) toFixed 1];
