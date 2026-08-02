@@ -9,6 +9,7 @@
 
 import '../styles/cerebro.css';
 import { h } from '../utils/helpers.js';
+import { aoSair } from '../core/ciclo-vida.js';
 import { router } from '../core/router.js';
 import cerebro from '../data/cerebro.json';
 import { getMemories } from '../utils/jarvis-brain.js';
@@ -74,7 +75,7 @@ export function cerebroPage() {
   );
 
   /* ===== Simulação força-dirigida ===== */
-  requestAnimationFrame(() => initGraph(canvas, tip, mg));
+  requestAnimationFrame(() => initGraph(canvas, tip, mg, page));
 
   return page;
 }
@@ -85,7 +86,7 @@ function metric(v, l) {
     h('div', { className: 'cer-metric__l' }, l));
 }
 
-function initGraph(canvas, tip, extra) {
+function initGraph(canvas, tip, extra, page) {
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
   let W = 0, H = 0;
@@ -245,7 +246,11 @@ function initGraph(canvas, tip, extra) {
     const rect = canvas.getBoundingClientRect();
     dragging = pick(e.clientX - rect.left, e.clientY - rect.top);
   });
-  window.addEventListener('mouseup', () => { dragging = null; });
+  /* Em `window` porque soltar o botão fora do canvas também encerra o arrasto —
+   * e por isso mesmo precisa ser devolvido na saída. Era anônimo, então não
+   * havia como removê-lo: um listener por visita, para sempre. */
+  const onMouseUp = () => { dragging = null; };
+  window.addEventListener('mouseup', onMouseUp);
   canvas.addEventListener('mouseleave', () => { hover = null; tip.style.display = 'none'; });
   canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -253,13 +258,13 @@ function initGraph(canvas, tip, extra) {
     if (n && n.rota) router.navigate(n.rota);
   });
 
-  /* Limpa quando a página sai do DOM */
-  const obs = new MutationObserver(() => {
-    if (!document.body.contains(canvas)) {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      obs.disconnect();
-    }
+  /* Limpeza ao sair da tela. Era um `MutationObserver` sobre o `document.body`
+   * inteiro, que rodava a cada mutação do documento só para descobrir uma coisa
+   * que o shell já sabe na hora da troca — e que ainda por cima esquecia o
+   * listener de `mouseup`. */
+  aoSair(page, () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    window.removeEventListener('mouseup', onMouseUp);
   });
-  obs.observe(document.body, { childList: true, subtree: true });
 }

@@ -44,7 +44,7 @@ export function gerarCodigoPage() {
         ' escreve o código. Depois copie ou abra direto no Editor.'))
   );
 
-  const langSel = h('select', { className: 'ger-select' },
+  const langSel = h('select', { className: 'ger-select', 'aria-label': 'Linguagem do código gerado' },
     ...LANGS.map(([v, label]) => h('option', { value: v }, label)));
   const promptEl = h('textarea', {
     className: 'ger-prompt', rows: 3,
