@@ -193,6 +193,7 @@
     "src/pages/graficos.js",
     "src/pages/simbolos.js",
     "src/pages/color-studio.js",
+    "src/utils/cor.js",
     "src/pages/regex.js",
     "src/pages/utilidades.js",
     "src/pages/codigo.js",
