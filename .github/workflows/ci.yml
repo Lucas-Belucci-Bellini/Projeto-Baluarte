@@ -69,6 +69,13 @@ jobs:
       - name: Parsers do Arma 3 (formato + .sqf em ASCII puro)
         run: npm run testar-parsers-arma3
 
+      # O nome do arquivo de icone saia do basename do caminho virtual, e
+      # \fir_f14\icon.paa e \fir_f15\icon.paa tem o MESMO basename: o segundo
+      # reaproveitava a imagem do primeiro em silencio. 310 imagens erradas,
+      # 12 delas ja publicadas. Aqui a injetividade e cobrada.
+      - name: Catalogo de imagens do Arma 3 (nome sem colisao)
+        run: npm run testar-imagens-arma3
+
       - name: Regerar as bases e conferir as invariantes
         run: npm run verificar-arma3
 

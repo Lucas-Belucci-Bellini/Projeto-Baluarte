@@ -418,17 +418,43 @@ resto mostra o FOV cru. Armadilha nova paga aqui: mod que reusa modelo E
 ícone vanilla (`ACE_DBAL_A3_Red`) — o desempate final é o PREFIXO da classe
 (a Bohemia só usa `optic_/muzzle_/bipod_/acc_/chemicaldetector_`).
 
-### Imagens — só as armas, por enquanto
+### Imagens — a colisão de nome, e como ela foi resolvida
 
-`extrair-imagens.py` cobre apenas os ícones de arma. Estender para mapas,
-veículos e itens exige **uma mudança de projeto, não só um parâmetro novo**: o
-extrator nomeia o arquivo de saída pelo *basename* do caminho virtual, e para
-armas isso é uma vantagem (variantes de camo compartilham o mesmo `.paa`, e
-converter uma vez serve todas). Nos mapas isso **colide**: quase todo terreno
-chama sua miniatura de `pictureMap_ca.paa`, então mundos diferentes
-sobrescreveriam o mesmo arquivo e a wiki mostraria o mapa errado. A saída
-precisa ser chaveada por classe (`altis-mapa.webp`), com dedupe pelo caminho
-virtual completo — não pelo nome do arquivo.
+Esta seção descrevia por que o extrator só cobria armas: ele nomeia o arquivo
+de saída pelo *basename* do caminho virtual, e para armas isso é uma vantagem
+(variantes de camo compartilham o mesmo `.paa`, e converter uma vez serve
+todas). Fora das armas o basename **colide** — quase todo terreno chama sua
+miniatura de `pictureMap_ca.paa`.
+
+O diagnóstico estava certo e a conta é maior do que parecia: sobre os 26.956
+caminhos que o config declara, **186 basenames colidem e 310 imagens
+receberiam a foto de outra**. `icon.paa` sozinho é usado por 12 mods — o F-14
+ficaria com o ícone do F-15. **12 dessas colisões estão nas armas que já foram
+publicadas.**
+
+Resolvido em `imagens_catalogo.py`:
+
+- **dedupe pelo caminho virtual inteiro**, normalizado (o config escreve o
+  mesmo `.paa` com `/` ou `\`, com e sem barra inicial, em qualquer caixa);
+- **nome = basename**, e quando um basename é reivindicado por mais de um
+  caminho, **todos** os membros do grupo ganham sufixo `-hash6` — inclusive o
+  primeiro. Simétrico de propósito: se só os repetidos ganhassem sufixo, quem
+  fica com o nome limpo dependeria da ordem de iteração, e um mod novo faria
+  dois ícones trocarem de lugar sem nada no diff explicando;
+- **uma pasta por categoria**, porque `nomear()` só garante unicidade dentro da
+  categoria — duas gravando no mesmo lugar poderiam colidir entre si.
+
+`npm run testar-imagens-arma3` prova a injetividade, o determinismo e a
+independência de ordem — e roda a propriedade contra os 26.956 caminhos reais
+quando os dumps estão na máquina. Roda no CI.
+
+### Imagens — o que é ícone e o que é render
+
+Nem toda imagem do config é ícone. `editorPreview` é um render grande do
+editor, e são **16,5 mil** deles; `pictureMap`/`pictureShot` são a carta e a
+foto do mundo. Esses ficam em `scripts/arma3/out/renders/` (peso `app`) e
+**não** entram em `public/` — mega-plano #238, web leve e app completo. Só
+`--tudo` os extrai.
 
 ### O que NÃO dá pra extrair (limite conhecido, não bug)
 
