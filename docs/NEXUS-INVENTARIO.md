@@ -1,6 +1,6 @@
 # Inventário da migração — estado real antes da 1.0.0
 
-> **Medido em 2026-08-01** contra o `main`. Números saem de
+> **Medido em 2026-08-02** contra o `main`. Números saem de
 > `npm run verificar-nexus` e de `du`/`find` no repositório — nenhum foi digitado
 > de memória. Mapa completo: [`nexus/dominios.json`](nexus/dominios.json) ·
 > Contrato: [`NEXUS-CONTRATO.md`](NEXUS-CONTRATO.md) · Decisões:
@@ -18,12 +18,13 @@
 | Datasets em `src/data/` | 67 arquivos · **10 MB** |
 | App desktop | `desktop/` · 16 arquivos |
 | Versão do site | 2.0.0 · wiki de Arma 3 em 0.9.1 (1.816 artigos) |
-| **Os 20 repositórios de domínio** | **criados e 100% vazios — nem README** |
-| 21º domínio (`baluarte-geo`, D-001) | decidido, repositório ainda **não criado** |
+| Repositórios de domínio | **21**, todos semeados (manifesto + verificador + CI) |
+| Extraídos e rodando sozinhos | **4** — core, shell, profile, data |
+| Arquivos com dono no mapa | **363** (rotas, páginas, folhas, datasets) |
 
-O último ponto é o que importa: a migração está em **0%**. O plano foi escrito
-(#406, `docs/PROJETO-NEXUS-BALUARTE.md`, 651 linhas) e os 20 repositórios foram
-abertos, mas nenhum recebeu um arquivo sequer. Tudo continua rodando do monólito.
+**O monólito segue intacto.** Nenhum arquivo de `src/` foi movido — só copiado.
+Enquanto um domínio não estiver `estavel`, a versão que vale é a deste
+repositório. É o que permite migrar sem apostar o site.
 
 ## Distribuição das 97 rotas
 
@@ -64,8 +65,12 @@ Registro completo com contexto e consequências em
 
 **Resultado: as 97 rotas têm dono. Zero órfãs.**
 
-Pendência operacional das decisões: **o repositório `baluarte-geo` ainda não
-existe no GitHub** — os outros 20 já foram criados.
+Duas decisões vieram depois, ao extrair de verdade:
+
+- **D-003 — a home recebe destaques declarados** em vez de importar dataset de
+  três domínios. Tirou 122 kB do boot da web e fechou a maior violação de
+  contrato que existia.
+- **D-004 — o rótulo do skin de universo é do shell**, não do content.
 
 ## O gate da 1.0.0
 
@@ -78,10 +83,9 @@ O que **precisa** estar fechado antes de chamar qualquer coisa de
 - [x] **Contrato mínimo de integração v1.0.0** — `NEXUS-CONTRATO.md`.
 - [x] **Decidir as 2 lacunas** — D-001 e D-002, em
       [`NEXUS-DECISOES.md`](NEXUS-DECISOES.md). As 97 rotas têm dono.
-- [ ] **Criar o repositório `baluarte-geo`** (consequência de D-001).
-- [ ] **Semear os 21 repositórios** com README + `baluarte.module.js` +
-      CI mínimo, a partir de `docs/nexus/template/`. Repositório vazio não tem
-      como receber domínio.
+- [x] **Criar o repositório `baluarte-geo`** (consequência de D-001).
+- [x] **Semear os 21 repositórios** — manifesto, verificador de contrato e CI
+      em cada um, derivados do mapa.
 - [x] **Primeira onda: `core` → `shell` → `profile` → `data`** extraídos, cada
       um rodando sozinho com teste em `node --test` e CI verde. O monólito
       segue intacto — nenhum arquivo de `src/` foi movido, só copiado.
@@ -92,10 +96,26 @@ O que **precisa** estar fechado antes de chamar qualquer coisa de
 - [ ] **Rebranding por último.** Renomear antes de os domínios estarem estáveis
       troca o nome sem trocar o problema.
 
-## O risco declarado
+## O que a extração real ensinou
 
-O plano diz "não migrar tudo de uma vez". O estado atual — 20 repositórios
-vazios abertos de uma vez — é justamente a foto do risco de fragmentação sem
-controle que ele mesmo lista. O antídoto que ficou combinado é este: contrato
-antes de extração, um domínio por vez, e o monólito mandando enquanto o domínio
-não passa no aceite.
+Cada domínio extraído achou problema que o mapa sozinho não mostrava — e todos
+viraram check no `verificar-nexus`, que hoje cobra **12 invariantes**:
+
+| Achado | Como apareceu | Guarda que ficou |
+|---|---|---|
+| 4 arquivos com **dois donos** | lendo o grafo de imports do core | check 9: arquivo com dono duplo |
+| 4 páginas do shell **sem dono** | shell prometia `/sobre` sem ter o arquivo | check 10: página de rota tem dono |
+| **93 de 95 folhas** de CSS sem dono | CSS não aparece em import de rota | check 11: folha tem dono |
+| **36 datasets** sem dono | a entrada do data era prosa, não lista | check 12: dataset tem dono |
+| core **não carregava fora do Vite** | `import.meta.env` no topo do módulo | teste que importa o barril em Node |
+| home importava 3 domínios | extração do shell | D-003 + teste que varre `src/` |
+
+O plano dizia "não migrar tudo de uma vez", e o antídoto seguiu valendo:
+contrato antes de extração, um domínio por vez, e o monólito mandando enquanto
+o domínio não passa no aceite.
+
+## Próximo passo
+
+A **camada de composição**: o orquestrador montando módulo externo de verdade —
+carregando os manifestos, juntando os `destaques` e registrando as rotas no
+router. É o que transforma quatro repositórios que rodam sozinhos num sistema.
