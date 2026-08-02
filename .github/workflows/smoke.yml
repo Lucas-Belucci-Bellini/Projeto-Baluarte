@@ -1,0 +1,93 @@
+# Vigia das rotas — abre TODAS as telas do site num navegador de verdade e diz
+# quais estão verdes.
+#
+# Por que existe: são 97 rotas hoje e o plano passa de 150. Ninguém clica em 150
+# telas pra saber se um deploy quebrou alguma. As rotas são descobertas de
+# `src/main.js`, então o vigia cresce junto com o site — rota nova entra no
+# teste sozinha, e rota nova é justamente a mais provável de estar quebrada.
+#
+# ⚠️ CUSTO: a cada hora são 24 execuções por dia, ~4 min cada — cerca de
+# 2.900 min/mês. Em repositório PÚBLICO o Actions é gratuito e isso não custa
+# nada. Em repositório PRIVADO o plano free dá 2.000 min/mês, e este workflow
+# sozinho estoura. Se o repo for privado, troque a linha do cron para
+# '0 */6 * * *' (4x/dia, ~480 min/mês) — o PR e o push continuam cobrindo o
+# resto.
+name: Vigia das rotas
+
+on:
+  schedule:
+    - cron: '0 * * * *'      # de hora em hora (ver nota de custo acima)
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write               # pra abrir/atualizar a issue quando algo ficar vermelho
+
+jobs:
+  rotas:
+    name: Todas as rotas estão verdes?
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Navegador
+        run: npx playwright install --with-deps chromium
+
+      - name: Build de produção
+        run: npm run build
+
+      # O smoke sobe o `vite preview` sozinho e derruba no fim.
+      - name: Abrir todas as rotas
+        id: smoke
+        run: npm run smoke
+
+      - name: Guardar o relatório
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-rotas
+          path: relatorios/
+          retention-days: 30
+
+      # Vermelho vira issue com o relatório dentro — e a MESMA issue é
+      # atualizada nas próximas rodadas, em vez de abrir uma por hora.
+      - name: Avisar quando houver rota vermelha
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const corpo = fs.existsSync('relatorios/smoke-rotas.md')
+              ? fs.readFileSync('relatorios/smoke-rotas.md', 'utf8')
+              : 'O smoke falhou antes de gerar o relatório.';
+            const titulo = '🔴 Vigia das rotas: há tela quebrada';
+            const abertas = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'vigia-rotas',
+            });
+            const rodada = `\n\n---\nRodada: ${context.runId} · ${new Date().toISOString()}`;
+            if (abertas.data.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: abertas.data[0].number, body: corpo + rodada,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: titulo, labels: ['vigia-rotas'], body: corpo + rodada,
+              });
+            }

@@ -15,11 +15,13 @@
     "mobile:sync": "vite build && cap sync android",
     "mobile:open": "cap open android",
     "verificar-nexus": "node scripts/verificar-nexus.mjs",
-    "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && python3 scripts/arma3/gerar-base-acessorios.py && python3 scripts/arma3/gerar-base-terrenos.py && python3 scripts/arma3/gerar-base-veiculos.py && python3 scripts/arma3/gerar-base-equipamento.py && python3 scripts/arma3/gerar-base-soldados.py && python3 scripts/arma3/gerar-base-extracao.py && node scripts/verificar-wiki-arsenal.mjs && node scripts/verificar-grade.mjs"
+    "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && python3 scripts/arma3/gerar-base-acessorios.py && python3 scripts/arma3/gerar-base-terrenos.py && python3 scripts/arma3/gerar-base-veiculos.py && python3 scripts/arma3/gerar-base-equipamento.py && python3 scripts/arma3/gerar-base-soldados.py && python3 scripts/arma3/gerar-base-extracao.py && node scripts/verificar-wiki-arsenal.mjs && node scripts/verificar-grade.mjs",
+    "smoke": "node scripts/smoke-rotas.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
+    "playwright": "^1.49.0",
     "vite": "^5.4.10"
   },
   "engines": {
