@@ -1,4 +1,4 @@
-# Contrato de integração do Nexus — v1.0.0
+# Contrato de integração do Nexus — v1.1.0
 
 > **O que é:** a interface única entre os 20 repositórios de domínio e o
 > orquestrador. Enquanto isto não existir, "separar em 20 repositórios" é
@@ -75,6 +75,49 @@ não teria como cobrar nem um nem outro.
 |---|---|---|
 | `paginas` | os outros 17 | publica rota. Enquanto `rotas` estiver vazio, `planejado` diz o que vem — um dos dois é obrigatório. |
 | `biblioteca` | `core`, `data`, `infra`, `docs` | `rotas` **tem que** ficar vazio. Rota aqui é erro de contrato, não domínio adiantado. |
+
+### 1.2 `destaques` — como a home mostra o que não é dela (v1.1.0)
+
+A home exibe contadores e prateleiras de arsenal, elites, crônicas e universos.
+Fazer isso importando os datasets desses domínios quebraria a regra que sustenta
+o Nexus — e, pior, arrasta **122 kB de dado pro boot da web**, porque a home é
+eager (é o primeiro paint).
+
+Então o fluxo se inverte: **quem tem o dado declara o que quer expor**; a casca
+só renderiza o que recebe, sem saber de onde veio.
+
+```js
+destaques: [
+  {
+    rotulo: 'Arsenal',
+    rota: '/arsenal',                 // precisa ser rota DESTE domínio
+    total: 1247,                      // número declarado — vira o contador
+    itens: () => import('./src/destaques.js'),   // lazy: só quando a home pedir
+  },
+],
+```
+
+Duas consequências que valem a mudança:
+
+- **O contador não custa bundle.** `total` é número no manifesto; hoje a home
+  importa o dataset inteiro só pra contar o tamanho de um array.
+- **A prateleira carrega sob demanda.** `itens` é `() => import(...)`, então o
+  peso sai do caminho crítico do boot.
+
+Um domínio **não pode apontar `rota` pra tela de outro** — o verificador cobra
+que a rota esteja entre as que ele mesmo publica (ou planeja). Sem isso,
+"destaque" viraria uma porta dos fundos pro acoplamento que a regra proíbe.
+
+Decisão de origem: **D-003** em [`NEXUS-DECISOES.md`](NEXUS-DECISOES.md).
+
+### Versões deste contrato
+
+- **1.0.0** — manifesto, rotas, eventos, dependências, peso, natureza.
+- **1.1.0** — acrescenta `destaques` (opcional; nada quebra em quem não usa).
+
+O orquestrador recusa **major** diferente; `1.0.0` e `1.1.0` convivem. Por isso
+o verificador de cada repositório conhece a versão que **aquele** domínio
+implementa — um domínio só migra de versão quando tem motivo.
 
 ### Nomes de evento
 

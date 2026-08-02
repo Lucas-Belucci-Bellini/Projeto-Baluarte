@@ -88,3 +88,50 @@ depende de banco e tempo real).
 - `src/core/comms.js` e `src/core/realtime.js` migram junto: são a plumbing de
   tempo real dessas duas telas, e ninguém mais depende delas.
 - Com D-001 e D-002, **as 97 rotas têm dono. Zero lacunas.**
+
+---
+
+## D-003 — A home recebe destaques declarados, não importa dados alheios
+
+**Data:** 2026-08-02 · **Estado:** aceita · **Contexto:** extração do shell
+
+### O problema
+
+`src/pages/home.js` importa quatro datasets de três outros domínios —
+`data/arsenal.js` (arsenal), `data/elites.js` (elites), `data/cronicas.js` e
+`data/universos.js` (content) — para mostrar contadores e duas prateleiras de
+destaque.
+
+Isso quebra a regra que sustenta o Nexus: **um domínio não importa outro
+domínio**. E cobra caro por isso: a home é **eager** (primeiro paint), então os
+**122 kB** desses datasets entram no bundle do boot da web — contra a regra do
+mega-plano #238 de que a web é o lado leve.
+
+### A decisão
+
+O contrato ganha `destaques` (v1.1.0): **quem tem o dado declara o que quer
+expor**. A casca só renderiza o que recebe.
+
+### Por quê
+
+As alternativas resolviam metade:
+
+- **mover os 4 datasets pro `baluarte-data`** — some o import cruzado, mas o
+  shell continua acoplado ao formato dos dados alheios e os 122 kB seguem no
+  boot. Trocaria uma violação visível por uma invisível;
+- **home sem destaques** — resolve tudo e destrói a vitrine que a home é.
+
+A escolha inverte o fluxo em vez de mudar o dono do dado. E como `total` vira
+número declarado e `itens` vira `() => import(...)`, o contador para de custar
+bundle e a prateleira sai do caminho crítico.
+
+### Consequências
+
+- Contrato vai a **1.1.0**. `destaques` é opcional: quem não usa segue em
+  1.0.0 sem mudar nada, e o orquestrador só recusa **major** diferente.
+- `arsenal`, `elites` e `content` passam a declarar `destaques` e sobem para
+  1.1.0. Os outros 18 ficam em 1.0.0 até terem motivo.
+- O verificador cobra que a `rota` de um destaque seja do próprio domínio —
+  senão "destaque" viraria porta dos fundos pro acoplamento que a regra proíbe.
+- Cada repositório carrega o verificador da versão que implementa; não há
+  atualização em massa dos 21 por uma mudança que 3 usam.

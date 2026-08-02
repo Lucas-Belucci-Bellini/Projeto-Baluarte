@@ -6,7 +6,7 @@
     "precisa aparecer aqui EXATAMENTE uma vez — nem sobra nem falta.",
     "'estado' é a maturidade do repositório: vazio | backlog | desenvolvimento | teste | estavel."
   ],
-  "versaoContrato": "1.0.0",
+  "versaoContrato": "1.1.0",
   "gerado": "2026-08-01",
   "dominios": {
     "baluarte-core": {
