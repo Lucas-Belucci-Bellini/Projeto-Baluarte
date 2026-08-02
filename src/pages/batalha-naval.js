@@ -107,8 +107,14 @@ export function batalhaNavalPage() {
       const row = [];
       const rowEl = h('div', { className: 'bn-row' }, h('span', { className: 'bn-axis__lbl bn-axis__lbl--row' }, String(r + 1)));
       for (let c = 0; c < N; c++) {
+        /* Cada casa é um botão SEM texto — o estado é só cor. Sem rótulo, um
+         * leitor de tela anuncia 200 "botão" idênticos e o jogo fica
+         * impossível de jogar sem enxergar. O rótulo carrega a coordenada e
+         * o lado; `renderCell` acrescenta o resultado do tiro. */
         const cellEl = h('button', {
           className: 'bn-cell', type: 'button',
+          dataset: { pos: `${COLS[c]}${r + 1}`, lado: enemySide ? 'Inimigo' : 'Sua frota' },
+          'aria-label': `${enemySide ? 'Inimigo' : 'Sua frota'} ${COLS[c]}${r + 1}`,
           onclick: enemySide ? () => fireAtEnemy(r, c) : null
         });
         rowEl.appendChild(cellEl);
@@ -121,9 +127,26 @@ export function batalhaNavalPage() {
 
   function renderCell(cellEl, cell, reveal) {
     let cls = 'bn-cell';
-    if (cell.ship && (reveal || cell.hit)) cls += cell.hit ? (cell.ship.hits >= cell.ship.size ? ' is-sunk' : ' is-hit') : ' is-ship';
-    else if (cell.hit) cls += ' is-miss';
+    let estado = 'inexplorado';
+    if (cell.ship && (reveal || cell.hit)) {
+      if (cell.hit) {
+        const afundado = cell.ship.hits >= cell.ship.size;
+        cls += afundado ? ' is-sunk' : ' is-hit';
+        estado = afundado ? 'navio afundado' : 'acerto';
+      } else {
+        cls += ' is-ship';
+        estado = 'navio';
+      }
+    } else if (cell.hit) {
+      cls += ' is-miss';
+      estado = 'água';
+    }
     cellEl.className = cls;
+    /* O resultado do tiro é comunicado só por cor. O rótulo é o que faz a
+     * partida existir para quem não enxerga a cor — e também para quem usa
+     * daltonismo severo, onde acerto e erro podem virar o mesmo tom. */
+    cellEl.setAttribute('aria-label', `${cellEl.dataset.lado} ${cellEl.dataset.pos}: ${estado}`);
+    if (cell.hit) cellEl.setAttribute('aria-disabled', 'true');
   }
 
   function renderBoard(board, cellStore, reveal) {
