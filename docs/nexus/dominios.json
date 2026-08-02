@@ -139,7 +139,8 @@
         "src/styles/memes.css",
         "src/styles/universo.css",
         "src/styles/zomboid-admin.css",
-        "src/styles/zomboid.css"
+        "src/styles/zomboid.css",
+        "src/data/code-quest.js"
       ],
       "precisa": [
         "baluarte-core",
@@ -222,7 +223,13 @@
         "src/styles/qr-studio.css",
         "src/styles/regex.css",
         "src/styles/tabela-verdade.css",
-        "src/styles/utilidades.css"
+        "src/styles/utilidades.css",
+        "src/data/editor-snippets.js",
+        "src/data/git-helper.js",
+        "src/data/logic-circuits.js",
+        "src/data/logic-gates.js",
+        "src/data/periodic.js",
+        "src/data/terminal-commands.js"
       ],
       "precisa": [
         "baluarte-core",
@@ -282,7 +289,10 @@
         "src/styles/enciclopedia-militar.css",
         "src/styles/militar.css",
         "src/styles/wiki-arma3.css",
-        "src/styles/arsenal.css"
+        "src/styles/arsenal.css",
+        "src/data/arsenal-expandido.json",
+        "src/data/militar-db.js",
+        "src/data/wiki-arma3.js"
       ],
       "precisa": [
         "baluarte-core",
@@ -507,7 +517,8 @@
         "src/styles/fase21.css",
         "src/styles/jarvis-dashboard.css",
         "src/styles/llm-lab.css",
-        "src/styles/terminal-ia.css"
+        "src/styles/terminal-ia.css",
+        "src/data/cerebro.json"
       ],
       "precisa": [
         "baluarte-core",
@@ -601,17 +612,40 @@
       "peso": "leve"
     },
     "baluarte-data": {
-      "responsabilidade": "Datasets, schemas e geradores. Nenhuma rota — é consumido por todo mundo. Inclui as bases GERADAS por script (arma3-*), que nunca se edita à mão.",
+      "responsabilidade": "Datasets GERADOS e datasets compartilhados por mais de um domínio, mais os geradores e verificadores que os produzem. Dataset de consumidor único mora no domínio dele. Nenhuma rota — é consumido por todo mundo.",
       "estado": "vazio",
       "rotas": [],
       "origem": [
-        "src/data/ (67 arquivos, ~10 MB)",
-        "scripts/arma3/ (geradores das bases)",
         "scripts/sync-cronicas.mjs",
         "scripts/gen-symbols.mjs",
         "scripts/gen-codemap.mjs",
         "scripts/verificar-wiki-arsenal.mjs",
-        "scripts/verificar-grade.mjs"
+        "scripts/verificar-grade.mjs",
+        "src/data/arma3-acessorios.js",
+        "src/data/arma3-campanhas.js",
+        "src/data/arma3-classes.js",
+        "src/data/arma3-colecao.js",
+        "src/data/arma3-comandos.js",
+        "src/data/arma3-config.js",
+        "src/data/arma3-deps.js",
+        "src/data/arma3-drive.js",
+        "src/data/arma3-equipamento.js",
+        "src/data/arma3-extracao.js",
+        "src/data/arma3-instalacao.js",
+        "src/data/arma3-municao.js",
+        "src/data/arma3-presets.js",
+        "src/data/arma3-soldados.js",
+        "src/data/arma3-terrenos.js",
+        "src/data/arma3-tutoriais.js",
+        "src/data/arma3-vanilla.js",
+        "src/data/arma3-veiculos.js",
+        "src/data/codemap.json",
+        "src/data/codemap-symbols.json",
+        "src/data/symbols.js",
+        "src/data/editor-langs.js",
+        "src/data/morse-code.js",
+        "src/data/modpack.js",
+        "src/data/arma3-armas.js"
       ],
       "precisa": [],
       "peso": "leve"

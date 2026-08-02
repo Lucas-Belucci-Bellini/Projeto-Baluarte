@@ -14,7 +14,8 @@
  *  8. repositório externo declara decisão e forma de integração;
  *  9. nenhum arquivo do monólito aparece em dois domínios;
  * 10. toda página que atende rota está na origem de algum domínio;
- * 11. toda folha de src/styles/ tem dono.
+ * 11. toda folha de src/styles/ tem dono;
+ * 12. todo dataset de src/data/ tem dono.
  *
  * Rodar: node scripts/verificar-nexus.mjs   (ou npm run verificar-nexus)
  * Sai com código 1 se algo divergir — dá pra plugar no CI.
@@ -126,6 +127,15 @@ for (const [, rota, arquivo] of paginaDaRota) {
   if (!donoArquivo.has(caminho) && !donoPasta.has(pasta)) {
     falhar(`página sem dono: ${caminho} atende ${rota}, mas não está na origem de ninguém`);
   }
+}
+
+/* Dataset sem dono: mesmo buraco das folhas, e o mais caro dos três, porque
+ * `src/data/` são 10 MB. O critério de quem fica com o quê está no contrato
+ * §5: `data` leva o que é GERADO por script ou consumido por mais de um
+ * domínio; dataset de consumidor único mora no domínio dele. */
+for (const arq of readdirSync(join(raiz, 'src/data')).filter((f) => /\.(js|json)$/.test(f))) {
+  const caminho = `src/data/${arq}`;
+  if (!donoArquivo.has(caminho)) falhar(`dataset sem dono: ${caminho}`);
 }
 
 /* Folha de estilo sem dono é o mesmo buraco da página sem dono — e passava

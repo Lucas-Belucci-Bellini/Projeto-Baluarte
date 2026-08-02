@@ -173,6 +173,20 @@ e está medido no #238.
 
 ## 5. Dados
 
+### Quem fica com qual dataset
+
+`src/data/` são 67 arquivos e ~10 MB. A regra de partilha, aplicada na primeira
+onda e cobrada pelo verificador:
+
+> **`data` leva o que é GERADO por script ou consumido por mais de um domínio.
+> Dataset de consumidor único mora no domínio dele.**
+
+Assim `arma3-*` (geradas, e ainda por cima alimentam o Project-Vanguard),
+`codemap*` e `symbols` ficam no `data`; `editor-langs` (editor, JARVIS e
+academia), `morse-code` (morse e cripto) e `modpack` (guia-pc e modpack) também,
+por serem compartilhados. Já `periodic`, `militar-db` ou `cerebro` vão para
+tools, arsenal e jarvis-core — quem os consome é um só.
+
 `baluarte-data` não tem rota: ele publica datasets e schemas. Duas regras que já
 custaram caro e continuam valendo:
 
