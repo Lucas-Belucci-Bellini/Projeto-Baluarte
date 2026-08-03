@@ -45,11 +45,24 @@ from gerar_base_armas_comum import (  # noqa: E402
     DIR_CDLC, DIR_DLC, FONTE_DLC, cam, js_valor, num, slug,
 )
 
+import gerar_imagens_comum as gic
+
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))
 ENTRADA = os.path.join(AQUI, 'out', 'arma3-veiculos.json')
 SAIDA_JS = os.path.join(RAIZ, 'src', 'data', 'arma3-veiculos.js')
 SAIDA_JSON = os.path.join(RAIZ, 'public', 'arma3', 'veiculos-db.json')
+
+# Ícone de inventário do veículo. Mapa ausente = extração não rodou: cada
+# registro sai com o motivo em vez de a base não sair.
+#
+# O segundo mapa fecha a maior parte da base: 17.316 veículos escrevem
+# `picture = "pictureStaticObject"` — um NOME de `CfgVehicleIcons`, não um
+# caminho — e outros milhares fazem o mesmo no `icon` (`iconObject_1x1`).
+# Sem a tabela, três quartos do acervo ficariam sem imagem por falta de
+# indireção, não de dado.
+_MAPA_IMG = gic.carregar_mapa('imagens-veiculos.json')
+_MAPA_NOMES = gic.carregar_mapa('imagens-nomeadas.json')
 
 CATEGORIAS = [
     ('blindado', '🛡️', 'Blindados', 'Carros de combate e transportes blindados.'),
@@ -178,9 +191,15 @@ def montar(dump):
         dlc, dlcFonte = origem(classe, v)
         fac = faccoes.get(v.get('faccao')) or {}
 
+        img, imgAusente = gic.resolver(
+            classe, _MAPA_IMG, (v.get('picture') or v.get('icon') or ''),
+            nomeados=_MAPA_NOMES)
+
         e = {
             'id': slug(classe),
             'classe': classe,
+            'img': img,
+            'imgAusente': imgAusente,
             'nome': v.get('nome') or classe,
             'categoria': v.get('classeVeiculo') or 'terrestre',
             'categoriaFonte': 'classeVeiculo',
@@ -214,7 +233,7 @@ def montar(dump):
 
 def verificar(entradas):
     """Invariantes. Recusa gerar: dado errado publicado ninguém percebe."""
-    erros = []
+    erros = list(gic.conferir(entradas, 'veículo'))
     vistos = set()
     for e in entradas:
         if e['id'] in vistos:
@@ -302,7 +321,8 @@ def escrever(entradas, completos, faccoes):
     with open(SAIDA_JS, 'w', encoding='utf-8') as f:
         f.write('\n'.join(linhas))
 
-    pubTodos = [{k: v for k, v in e.items() if not k.startswith('_')} for e in entradas]
+    pubTodos = [gic.enxugar({k: v for k, v in e.items() if not k.startswith('_')})
+                for e in entradas]
     os.makedirs(os.path.dirname(SAIDA_JSON), exist_ok=True)
     # O mapa `completos` (hitpoints parte a parte dos 5.425) sozinho pesa
     # 4,2 MB dos 6,6 MB do arquivo. O resumo por veículo -- casco, parte mais
@@ -343,6 +363,7 @@ def main():
     print(f'núcleo (bundle) ..... {len(nucleo)}')
     print(f'com hitpoints ....... {sum(1 for e in entradas if e["blindagem"])}')
     print(f'facções ............. {len(faccoes)}')
+    gic.imprimir_placar(entradas)
     print(f'\nescrito: {SAIDA_JS}\n         {SAIDA_JSON}')
 
 

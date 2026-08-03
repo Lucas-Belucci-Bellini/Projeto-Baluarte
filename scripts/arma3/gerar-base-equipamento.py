@@ -53,11 +53,17 @@ from gerar_base_armas_comum import (  # noqa: E402
     DIR_CDLC, DIR_DLC, FONTE_DLC, cam, js_valor, num, slug,
 )
 
+import gerar_imagens_comum as gic
+
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))
 ENTRADA = os.path.join(AQUI, 'out', 'arma3-itens.json')
 SAIDA_JS = os.path.join(RAIZ, 'src', 'data', 'arma3-equipamento.js')
 SAIDA_JSON = os.path.join(RAIZ, 'public', 'arma3', 'equipamento-db.json')
+
+# Ícone do registro. Mapa ausente = extração não rodou: cada entrada sai com o
+# motivo em vez de a base não sair.
+_MAPA_IMG = gic.carregar_mapa('imagens-itens.json')
 
 TIPO_POR_INFO = {801: 'uniforme', 701: 'colete', 605: 'capacete', 616: 'cabeca'}
 
@@ -156,9 +162,14 @@ def montar(dump):
     def add(classe, v, tipo, extra=None):
         dlc, dlcFonte = origem(classe, v)
         pr = protecao(v) if extra is None else None
+        img, imgAusente = gic.resolver(
+            classe, _MAPA_IMG, (v.get('picture') or ''))
+
         e = {
             'id': slug(classe),
             'classe': classe,
+            'img': img,
+            'imgAusente': imgAusente,
             'nome': v.get('nome') or classe,
             'tipo': tipo,
             'tipoFonte': 'itemInfoType' if extra is None else 'lista',
@@ -190,7 +201,7 @@ def montar(dump):
 
 
 def verificar(entradas):
-    erros = []
+    erros = list(gic.conferir(entradas, 'item'))
     vistos = set()
     for e in entradas:
         if e['id'] in vistos:
@@ -303,7 +314,8 @@ def escrever(todas, detalhe):
     with open(SAIDA_JS, 'w', encoding='utf-8') as f:
         f.write('\n'.join(linhas))
 
-    pubTodos = [{k: v for k, v in e.items() if not k.startswith('_')} for e in entradas]
+    pubTodos = [gic.enxugar({k: v for k, v in e.items() if not k.startswith('_')})
+                for e in entradas]
     os.makedirs(os.path.dirname(SAIDA_JSON), exist_ok=True)
     # O mapa `detalhe` (proteção ponto a ponto das 19.616) fica FORA: sozinho
     # ele levava o arquivo a 29 MB. O resumo por item basta pra tabela e pra
@@ -340,6 +352,10 @@ def main():
             print(f'  {c[2]:18} {porTipo[c[0]]}')
     print(f'núcleo (bundle) ...... {len(nucleo)}')
     print(f'com proteção medida .. {sum(1 for e in colapsadas if e["protecao"])}')
+    # Placar sobre o que é PUBLICADO (as 987 colapsadas), não sobre as 71.373
+    # classes cruas: número que não corresponde a nada que a wiki mostra
+    # informa errado com a mesma confiança de um que corresponde.
+    gic.imprimir_placar(colapsadas)
     print(f'\nescrito: {SAIDA_JS}\n         {SAIDA_JSON}')
 
 

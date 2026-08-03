@@ -37,6 +37,7 @@ import { A3VEI } from '../src/data/arma3-veiculos.js';
 import { A3EQP } from '../src/data/arma3-equipamento.js';
 import { A3SOL } from '../src/data/arma3-soldados.js';
 import { WIKI_ARTIGOS } from '../src/data/wiki-arma3.js';
+import { MOTIVO_SEM_IMG } from '../src/data/arma3-imagens.js';
 import { dadosBalisticos } from '../src/utils/arma3-balistica.js';
 
 const porId = new Map(A3ARM.map((a) => [a.id, a]));
@@ -204,6 +205,45 @@ for (const s of A3SOL) {
   }
 }
 
+/* ── a capa dos artigos que vêm de base extraída ──
+ *
+ * Cinco portais mostram ícone tirado do jogo. O defeito que este bloco fecha
+ * não é "artigo feio": é a capa CALADA. `img` com caminho cru do config
+ * (`\A3\...\x.paa`) vira um <img> quebrado no navegador, que o leitor lê como
+ * "a wiki está quebrada" em vez de "esta imagem não foi extraída"; e artigo
+ * sem capa E sem motivo não diz ao próximo operador se falta rodar o extrator
+ * ou se o jogo não tem imagem nenhuma.
+ *
+ * Foi assim que os ícones ficaram 4,3 MB parados em out/ sem ninguém ver: a
+ * base tinha o campo, a wiki escrevia `img: ''` fixo, e nada reclamava. */
+const PORTAIS_COM_CAPA = ['arsenal', 'veiculos', 'equipamento', 'soldados'];
+const MOTIVOS_CONHECIDOS = new Set(Object.keys(MOTIVO_SEM_IMG));
+const capa = { com: 0, sem: 0 };
+for (const art of WIKI_ARTIGOS) {
+  if (!PORTAIS_COM_CAPA.includes(art.portal)) continue;
+  if (art.img) {
+    capa.com += 1;
+    if (!art.img.startsWith('/')) {
+      falhas.push(`${art.titulo}: img "${art.img}" não é caminho público — `
+        + 'caminho cru do config vira <img> quebrado');
+    }
+    if (/\.(paa|pac)$/i.test(art.img)) {
+      falhas.push(`${art.titulo}: img aponta um .paa; o navegador não abre esse formato`);
+    }
+    if (art.imgAusente) {
+      falhas.push(`${art.titulo}: tem img E motivo de ausência ao mesmo tempo`);
+    }
+  } else {
+    capa.sem += 1;
+    if (!art.imgAusente) {
+      falhas.push(`${art.titulo}: sem capa e sem motivo — a wiki não sabe o que dizer`);
+    } else if (!MOTIVOS_CONHECIDOS.has(art.imgAusente)) {
+      falhas.push(`${art.titulo}: motivo "${art.imgAusente}" não está em `
+        + 'src/data/arma3-imagens.js — a wiki mostraria o texto padrão');
+    }
+  }
+}
+
 /* Ids duplicados ENTRE portais: os três prefixam (ars-/opt-/ter-), mas uma
  * colisão levaria dois assuntos ao mesmo deep-link. */
 const todosIds = WIKI_ARTIGOS.map((a) => a.id);
@@ -218,6 +258,7 @@ console.log(`artigos de terreno: ${artsTer.length} (${terComGrade.size} com grad
 console.log(`artigos de veículo: ${artsVei.length}`);
 console.log(`artigos de equip.:  ${artsEqp.length}`);
 console.log(`artigos de soldado: ${artsSol.length}`);
+console.log(`capa extraída do jogo: ${capa.com}  (sem capa, com motivo: ${capa.sem})`);
 
 if (falhas.length) {
   console.error(`\n${falhas.length} problema(s):`);

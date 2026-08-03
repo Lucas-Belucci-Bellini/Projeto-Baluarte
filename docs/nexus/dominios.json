@@ -638,6 +638,7 @@
     "src/data/arma3-drive.js",
     "src/data/arma3-equipamento.js",
     "src/data/arma3-extracao.js",
+    "src/data/arma3-imagens.js",
     "src/data/arma3-instalacao.js",
     "src/data/arma3-municao.js",
     "src/data/arma3-presets.js",
