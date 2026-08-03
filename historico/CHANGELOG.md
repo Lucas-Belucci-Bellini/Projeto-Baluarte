@@ -334,6 +334,89 @@ Toolbox não é nosso, muda de versão e já mudou de nome de operador. Fixar o 
 e errar daria `AttributeError`, que não distingue "addon faltando" de "addon
 desligado" de "nome mudou".
 
+### 👂 O ouvido do J.A.R.V.I.S. (#405)
+
+Ele **falava e não ouvia**. `jarvis-voice.js` tem três motores de fala desde a
+0.5.0 — ElevenLabs local, ElevenLabs pelo servidor, `speechSynthesis` offline —
+mas não havia `SpeechRecognition` nem detecção de palma em lugar nenhum. O
+gatilho que a issue pede em detalhe simplesmente não existia.
+
+`escuta-nucleo.js` é a metade que dá para provar: zero DOM, zero dependência.
+O `fft-engine` cuida do áudio; aqui entra energia por quadro e saem eventos.
+
+O teste que importa **não é "palma dispara"** — é **música alta não dispara**. O
+primeiro é fácil, qualquer som passa de um limiar. O segundo decide se dá para
+deixar ligado, porque um detector ingênuo dispara a noite inteira e ninguém
+entende por quê. A discriminação é por forma, não por volume: palma sobe muito
+acima do fundo, sobe rápido e cai quase tão rápido; música e voz sustentam.
+
+O gesto é palma **dupla** de propósito — palma sozinha acontece o tempo todo:
+porta batendo, objeto caindo, aplauso na TV.
+
+Um dos 17 testes reprovou, e o defeito era do **teste**: o gerador de sinal
+decaía em número de quadros, então a mesma palma durava 100 ms a 60 fps e
+200 ms a 30 fps. Palma real dura o que dura.
+
+Privacidade: a janela guarda um número por quadro, nunca amostra de áudio.
+
+### 📈 Análise de série temporal — o núcleo de decisão
+
+Portado de `server/indicators.ts` do `stock-analyzer-bot`. O nome do repo de
+origem engana o escopo: SMA, EMA, RSI, MACD e Bollinger não são operadores
+financeiros, são operadores de **série temporal**. Servem para qualquer número
+que chegue periodicamente.
+
+**Dois defeitos do original não foram portados:**
+
+- **o histograma do MACD era sempre zero.** A linha de sinal estava marcada
+  como `Placeholder - would need full history` e recebia o próprio MACD, então
+  `histograma = macd − macd`. O histograma *é* o sinal do MACD;
+- **`determineTrend` devolvia "Sideways" por falta de dado.** Com coleta a cada
+  2h30, a SMA(200) exige **21 dias** de histórico — três semanas dizendo "está
+  de lado" quando o certo é "ainda não sei". Só um dos dois autoriza agir.
+
+Os dois viraram teste de regressão, conferidos reintroduzindo cada defeito.
+
+O intervalo entre amostras viaja junto e cada indicador reporta a janela em
+horas: RSI(14) a cada 2h30 cobre 35 h. E `analisar()` devolve o que ainda
+**não** dá para afirmar, com quantas amostras faltam.
+
+### 🎯 Três domínios, um motor
+
+Economia, saúde do próprio ecossistema e comunidade usam o mesmo cérebro. O que
+permite isso é a **polaridade declarada**:
+
+```
+direção é MATEMÁTICA     → analise-serie.js
+significado é DECLARAÇÃO → a polaridade da fonte
+```
+
+Bitcoin subindo é uma coisa; bundle inchando é outra. A matemática devolve
+"alta" nas duas e está certa nas duas — sem a polaridade, o relatório anunciaria
+regressão como boa notícia. O teste central prova isso: a **mesma série** dá
+`MELHORANDO` em jogadores online e `PIORANDO` em peso de bundle.
+
+Polaridade não declarada não vira palpite, vira `indefinido`. Limites de
+plausibilidade são por fonte — zero rota quebrada é ótimo, bitcoin a zero é a
+API falhando.
+
+### 🧊 Modelo 3D: medido, e a resposta é não
+
+Os 1.302 `.p3d` extraídos foram classificados pelo cabeçalho:
+
+```
+MLOD (converte)      0
+ODOL (binarizado) 1302     v71 ×85 · v73 ×586 · v75 ×631
+```
+
+**Zero MLOD.** O importador do Arma Toolbox lê MLOD, então o Blender não
+resolve este acervo — e três versões de engine no mesmo conjunto são a
+demonstração de por que não existe leitor confiável de ODOL.
+
+O diagnóstico levou dois segundos e dispensou montar a ferramenta. O que sobra:
+**Arma 3 Samples** (a Bohemia publica modelos de exemplo em MLOD), ou pedir o
+fonte a autores de mod. O pipeline funciona neles sem mudar uma linha.
+
 ### 🔍 Auditoria página a página — as 97 telas
 
 Nove rodadas, agrupadas por domínio do Nexus. **Vazamento 0/97 ·
