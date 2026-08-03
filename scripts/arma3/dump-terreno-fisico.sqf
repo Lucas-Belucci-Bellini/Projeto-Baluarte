@@ -33,14 +33,14 @@ private _nS = 0; private _nSC = 0; private _nW = 0;
     if (_nome != "Default") then {
         diag_log text (format ["<<A3CHAO>>S|%1|%2|%3|%4|%5|%6|%7|%8|%9",
             _nome,
-            [getText (_c >> "files")] call _fnc_lim,
+            (getText (_c >> "files")) call _fnc_lim,
             (_c >> "rough") call _fnc_num,
             (_c >> "maxSpeedCoef") call _fnc_num,
-            [getText (_c >> "soundEnviron")] call _fnc_lim,
-            [getText (_c >> "soundHit")] call _fnc_lim,
-            [getText (_c >> "dust")] call _fnc_lim,
-            [getText (_c >> "impact")] call _fnc_lim,
-            [getText (_c >> "character")] call _fnc_lim]);
+            (getText (_c >> "soundEnviron")) call _fnc_lim,
+            (getText (_c >> "soundHit")) call _fnc_lim,
+            (getText (_c >> "dust")) call _fnc_lim,
+            (getText (_c >> "impact")) call _fnc_lim,
+            (getText (_c >> "character")) call _fnc_lim]);
         _nS = _nS + 1;
     };
 } forEach ("true" configClasses (configFile >> "CfgSurfaces"));
@@ -51,9 +51,9 @@ private _nS = 0; private _nSC = 0; private _nW = 0;
     if (_nome != "Empty") then {
         diag_log text (format ["<<A3CHAO>>SC|%1|%2|%3",
             _nome,
-            [str (getArray (_c >> "probability"))] call _fnc_lim,
+            (str (getArray (_c >> "probability"))) call _fnc_lim,
             (_c >> "density") call _fnc_num]);
-        ["SCO", _nome, [str (getArray (_c >> "names"))] call _fnc_lim] call _fnc_pedacos;
+        ["SCO", _nome, (str (getArray (_c >> "names"))) call _fnc_lim] call _fnc_pedacos;
         _nSC = _nSC + 1;
     };
 } forEach ("true" configClasses (configFile >> "CfgSurfaceCharacters"));
@@ -68,8 +68,8 @@ private _nS = 0; private _nSC = 0; private _nW = 0;
         if (isText _p) then { _params pushBack [configName _p, getText _p] };
     } forEach (configProperties [_c, "true", false]);
 
-    diag_log text (format ["<<A3CHAO>>W|%1|%2", _nome, [getText (_c >> "name")] call _fnc_lim]);
-    ["WP", _nome, [str _params] call _fnc_lim] call _fnc_pedacos;
+    diag_log text (format ["<<A3CHAO>>W|%1|%2", _nome, (getText (_c >> "name")) call _fnc_lim]);
+    ["WP", _nome, (str _params) call _fnc_lim] call _fnc_pedacos;
     _nW = _nW + 1;
 } forEach ("true" configClasses (configFile >> "CfgWeather"));
 

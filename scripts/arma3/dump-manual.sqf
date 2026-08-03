@@ -32,7 +32,7 @@ private _nTopicos = 0;
     _nCats = _nCats + 1;
 
     diag_log text (format ["<<A3MANUAL>>C|%1|%2",
-        _categoria, [getText (_cfgCat >> "displayName")] call _fnc_lim]);
+        _categoria, (getText (_cfgCat >> "displayName")) call _fnc_lim]);
 
     {
         private _cfgH = _x;
@@ -41,14 +41,14 @@ private _nTopicos = 0;
 
         diag_log text (format ["<<A3MANUAL>>H|%1|%2|%3|%4|%5",
             _id, _categoria, _classe,
-            [getText (_cfgH >> "displayName")] call _fnc_lim,
-            [getText (_cfgH >> "image")] call _fnc_lim]);
+            (getText (_cfgH >> "displayName")) call _fnc_lim,
+            (getText (_cfgH >> "image")) call _fnc_lim]);
 
-        ["HT", _id, [getText (_cfgH >> "description")] call _fnc_lim] call _fnc_pedacos;
+        ["HT", _id, (getText (_cfgH >> "description")) call _fnc_lim] call _fnc_pedacos;
 
         private _args = getArray (_cfgH >> "arguments");
         if (count _args > 0) then {
-            ["HA", _id, [str _args] call _fnc_lim] call _fnc_pedacos;
+            ["HA", _id, (str _args) call _fnc_lim] call _fnc_pedacos;
         };
 
         _nTopicos = _nTopicos + 1;

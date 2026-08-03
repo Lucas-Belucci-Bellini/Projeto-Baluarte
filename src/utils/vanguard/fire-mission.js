@@ -23,7 +23,13 @@
  * lat/lon, por exemplo):
  *   { "tipo": "latlon", "lat": -22.95, "lon": -43.21, "alt": 30 }
  *   { "tipo": "mgrs",   "valor": "23K PQ 83477 60685", "alt": 30 }
- *   { "tipo": "local",  "x": 12340, "y": 5670, "alt": 30 }   ← grade do Arma
+ *   { "tipo": "local",  "x": 12340, "y": 5670, "alt": 30 }   ← metros do mundo
+ *   { "tipo": "local",  "grid": "034056", "terreno": "altis", "alt": 30 }
+ *
+ * A última forma é a grade lida NA CARTA DO ARMA 3: com `terreno`, o grid é
+ * convertido pelo config daquele mundo (offset e sinal do passo). Sem
+ * `terreno`, `grid` cai na grade local genérica do `gridref.js` — que é a
+ * convenção MGRS e está invertida no eixo N-S em quase todo mapa do jogo.
  *
  * ── Resposta (`vanguard.fire-solution/1`) ────────────────────────────────
  * Ver `resolverMissao()`. O princípio: devolver **números prontos para gritar
@@ -34,6 +40,7 @@
 import { radToMil, normDeg } from './angles.js';
 import { gridVector, mgrsParaLatLon, convergenciaMeridianos } from './mgrs.js';
 import { gridParaLocal, vetorLocal } from './gridref.js';
+import { acharTerreno, gradeParaMetros } from './arma3-grid.js';
 import { resolverVacuo, resolverComArrasto, MODO, G_PADRAO } from './ballistics.js';
 import { SISTEMAS, arrastoDaCarga, zonaBatida } from './charges.js';
 
@@ -65,6 +72,22 @@ export function normalizarPosicao(pos, rotulo = 'posição') {
     case 'local': {
       /* aceita x/y numéricos OU a string de grid ("123456") */
       if (typeof pos.grid === 'string') {
+        /* Com `terreno`, a grade é lida pelo config DAQUELE mundo do Arma 3:
+         * offset e SINAL do passo. Sem ele, cai na grade local genérica
+         * (origem no canto sudoeste, northing pra cima), que é a convenção
+         * MGRS — e que está INVERTIDA em 30 dos 31 mundos do jogo. Por isso o
+         * terreno não tem padrão: adivinhar erraria o eixo N-S calado. */
+        if (pos.terreno) {
+          const t = acharTerreno(pos.terreno);
+          if (!t) throw new RangeError(`${rotulo}: terreno "${pos.terreno}" não está na base`);
+          if (!t.grade) {
+            throw new RangeError(`${rotulo}: o terreno ${t.nome} não declara grade no config — `
+              + 'informe x/y em metros do mundo');
+          }
+          const m = gradeParaMetros(pos.grid, t);
+          if (!m) throw new SyntaxError(`${rotulo}: grade "${pos.grid}" ilegível (use 4 a 10 dígitos, em par)`);
+          return { tipo: 'local', x: m.x, y: m.y, alt };
+        }
         const g = gridParaLocal(pos.grid);
         return { tipo: 'local', x: g.x, y: g.y, alt };
       }
@@ -105,6 +128,16 @@ export function validarMissao(missao) {
     /* Misturar geo com local não tem como funcionar: são quadros diferentes
      * sem uma âncora que os relacione. Falha explícita > resposta errada. */
     erros.push('peça e alvo em quadros diferentes (um geográfico, outro local) — converta antes com criarQuadro()');
+  }
+
+  /* Dois TERRENOS diferentes é o mesmo erro num disfarce pior: os dois viram
+   * `local` e a conta fecha, devolvendo um azimute com cara de válido entre
+   * pontos de mundos que não se tocam. Só pega quando ambos declaram terreno —
+   * grade sem terreno é a grade genérica, e aí não há o que comparar. */
+  const tp = missao.peca?.pos?.terreno;
+  const ta = missao.alvo?.pos?.terreno;
+  if (tp && ta && String(tp).toLowerCase() !== String(ta).toLowerCase()) {
+    erros.push(`peça em "${tp}" e alvo em "${ta}" — são terrenos diferentes, não há linha de tiro entre eles`);
   }
   return erros;
 }

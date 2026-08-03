@@ -25,26 +25,26 @@ private _nFuncs = 0;
 
     diag_log text (format ["<<A3FUNC>>T|%1|%2|%3",
         _tag,
-        [getText (_cfgTag >> "tag")] call _fnc_lim,
-        [getText (_cfgTag >> "file")] call _fnc_lim]);
+        (getText (_cfgTag >> "tag")) call _fnc_lim,
+        (getText (_cfgTag >> "file")) call _fnc_lim]);
 
     {
         private _cfgCat = _x;
         private _categoria = configName _cfgCat;
-        private _dirCat = [getText (_cfgCat >> "file")] call _fnc_lim;
+        private _dirCat = (getText (_cfgCat >> "file")) call _fnc_lim;
 
         {
             private _cfgF = _x;
             private _nome = configName _cfgF;
 
-            private _arquivo = [getText (_cfgF >> "file")] call _fnc_lim;
+            private _arquivo = (getText (_cfgF >> "file")) call _fnc_lim;
             if (_arquivo == "" && _dirCat != "") then {
                 _arquivo = format ["%1/fn_%2.sqf", _dirCat, _nome];
             };
 
             diag_log text (format ["<<A3FUNC>>F|%1|%2|%3|%4|%5|%6|%7|%8",
                 _tag, _categoria, _nome, _arquivo,
-                [getText (_cfgF >> "ext")] call _fnc_lim,
+                (getText (_cfgF >> "ext")) call _fnc_lim,
                 (_cfgF >> "preInit") call _fnc_flag,
                 (_cfgF >> "postInit") call _fnc_flag,
                 (_cfgF >> "recompile") call _fnc_flag]);
