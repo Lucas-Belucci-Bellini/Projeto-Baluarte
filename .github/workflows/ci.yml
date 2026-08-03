@@ -82,6 +82,12 @@ jobs:
       - name: Pipeline do Arma 3 (sabe o que precisa refazer)
         run: npm run testar-pipeline-arma3
 
+      # MLOD o Blender importa; ODOL nao tem leitor confiavel. Confundir os
+      # dois custa caro: dizer que ODOL converte manda o operador montar o
+      # Blender e colher milhares de falhas sem entender por que.
+      - name: Modelos do Arma 3 (MLOD converte, ODOL nao)
+        run: npm run testar-modelos-arma3
+
       - name: Regerar as bases e conferir as invariantes
         run: npm run verificar-arma3
 

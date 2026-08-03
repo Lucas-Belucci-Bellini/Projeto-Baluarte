@@ -19,6 +19,8 @@
     "testar-parsers-arma3": "python3 scripts/arma3/testar-parsers.py",
     "testar-imagens-arma3": "python3 scripts/arma3/testar-imagens.py",
     "testar-pipeline-arma3": "python3 scripts/arma3/testar-pipeline.py",
+    "testar-modelos-arma3": "python3 scripts/arma3/testar-modelos.py",
+    "diagnostico-modelos": "python3 scripts/arma3/converter-modelos.py --diagnostico",
     "atualizar-arma3": "python3 scripts/arma3/atualizar-arma3.py",
     "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && python3 scripts/arma3/gerar-base-acessorios.py && python3 scripts/arma3/gerar-base-terrenos.py && python3 scripts/arma3/gerar-base-veiculos.py && python3 scripts/arma3/gerar-base-equipamento.py && python3 scripts/arma3/gerar-base-soldados.py && python3 scripts/arma3/gerar-base-extracao.py && node scripts/verificar-wiki-arsenal.mjs && node scripts/verificar-grade.mjs",
     "smoke": "node scripts/smoke-rotas.mjs",

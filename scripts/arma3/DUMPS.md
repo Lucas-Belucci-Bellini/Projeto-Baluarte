@@ -55,11 +55,42 @@ Ou pelo app: aba **📡 Extrair** em `/arma3-tutorial` (só no Baluarte Launcher
 ⚠️ **Nenhum script alcança o jogo.** O `.rpt` só tem dado depois que você colou
 o `.sqf` no console. O atualizador diz qual falta; colar é sempre manual.
 
-⚠️ **Modelo 3D não entra nesse "um comando".** `extrair-modelos.py` tira o
-`.p3d` do PBO, mas `.p3d` → glTF **não tem caminho por script**: o formato ODOL
-é fechado, sem especificação pública estável, e muda entre versões do engine. A
-conversão passa pelo Blender com o Arma Toolbox, na mão, modelo a modelo. Ver
-`docs/HANDOFF-LOCAL.md` § E2.
+⚠️ **Modelo 3D é outro caminho.** Comece sempre pelo diagnóstico:
+
+```bash
+python scripts/arma3/extrair-modelos.py       # tira os .p3d dos PBOs
+npm run diagnostico-modelos                   # 2 segundos, decide o resto
+```
+
+Um `.p3d` diz o que é nos primeiros quatro bytes:
+
+| assinatura | o que é | Blender importa? |
+|---|---|---|
+| `MLOD` / `P3DM` | editável, o que o Object Builder salva | **sim** |
+| `ODOL` | binarizado pela Bohemia antes de empacotar | **não** |
+
+O que o jogo distribui é quase tudo ODOL — binarizar é justamente o passo de
+publicação. O importador do Arma Toolbox lê MLOD. Se o acervo extraído for todo
+ODOL, **montar o Blender não resolve nada**, e o diagnóstico diz isso em dois
+segundos em vez de depois de uma tarde perdida.
+
+Havendo MLOD, a sonda testa o caminho na máquina antes do lote:
+
+```bash
+python scripts/arma3/converter-modelos.py --sonda    # 1 modelo, com relatório
+python scripts/arma3/converter-modelos.py            # lote, retomável
+```
+
+A sonda roda o Blender **sem janela** e relata o que achou: se o addon está
+instalado, se está ligado, que operador de importação existe, e se a importação
+sem interface funciona. Muitos operadores de importação dependem de contexto de
+janela e falham em `--background` — a sonda responde isso para a sua máquina em
+vez de alguém adivinhar.
+
+O `blender_p3d_glb.py` **procura** o operador em vez de chamar pelo nome: o
+Arma Toolbox não é nosso, muda de versão e já mudou de nome de operador. Fixar
+o nome e errar daria `AttributeError`, que não distingue "addon faltando" de
+"addon desligado" de "nome mudou".
 
 ---
 
