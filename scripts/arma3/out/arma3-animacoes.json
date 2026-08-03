@@ -1,5 +1,5 @@
 {
- "fonte": "Arma3_x64_2026-07-26_21-21-55.rpt",
+ "fonte": "Arma3_x64_2026-08-02_16-41-54.rpt",
  "estados": {
   "ACE_AmovPercMstpScapWnonDnon": {
    "classe": "ACE_AmovPercMstpScapWnonDnon",
@@ -362569,6 +362569,48 @@
    "semArma": true,
    "otica": false,
    "podeAtirar": false,
+   "actions": "NoActions",
+   "transicoes": null,
+   "interpolaPara": null
+  },
+  "MSS_GestureReloadMk18Mjolnir": {
+   "classe": "MSS_GestureReloadMk18Mjolnir",
+   "rtm": "MSS/MSS_Mk18/Mk18/Data/Mk18_reloadanim.rtm",
+   "speed": 0.2308,
+   "duracaoS": null,
+   "loop": false,
+   "terminal": false,
+   "semArma": true,
+   "otica": false,
+   "podeAtirar": true,
+   "actions": "NoActions",
+   "transicoes": null,
+   "interpolaPara": null
+  },
+  "MSS_GestureReloadMk18Mjolnir_Context": {
+   "classe": "MSS_GestureReloadMk18Mjolnir_Context",
+   "rtm": "MSS/MSS_Mk18/Mk18/Data/Mk18_reloadanim.rtm",
+   "speed": 0.2308,
+   "duracaoS": null,
+   "loop": false,
+   "terminal": false,
+   "semArma": true,
+   "otica": false,
+   "podeAtirar": true,
+   "actions": "NoActions",
+   "transicoes": null,
+   "interpolaPara": null
+  },
+  "MSS_GestureReloadMk18Mjolnir_Prone": {
+   "classe": "MSS_GestureReloadMk18Mjolnir_Prone",
+   "rtm": "MSS/MSS_Mk18/Mk18/Data/Mk18_reloadanim.rtm",
+   "speed": 0.2308,
+   "duracaoS": null,
+   "loop": false,
+   "terminal": false,
+   "semArma": true,
+   "otica": false,
+   "podeAtirar": true,
    "actions": "NoActions",
    "transicoes": null,
    "interpolaPara": null

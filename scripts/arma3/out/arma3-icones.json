@@ -1,0 +1,2463 @@
+{
+ "fonte": "Arma3_x64_2026-08-02_16-41-54.rpt",
+ "imagens": [
+  "[\"\\CUP\\Weapons\\CUP_Weapons_G36\\data\\ui\\attachment_g36top.paa\"]",
+  "[\"\\A3\\Weapons_F\\Data\\UI\\attachment_muzzle.paa\"]",
+  "[\"\\A3\\weapons_f_mark\\data\\UI\\attachment_under.paa\"]",
+  "[\"\\A3\\Weapons_F\\Data\\UI\\attachment_top.paa\"]",
+  "[\"\\A3\\Weapons_F\\Data\\UI\\attachment_side.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_empty_co.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_rmk30_full_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_rmk30_half_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_rmk30_empty_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_gunpod_full_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_gunpod_half_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_gunpod_empty_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_pars3_4_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_pars3_3_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_pars3_2_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_pars3_1_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_pars3_0_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_fz70_full_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_fz70_half_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_fz70_empty_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_stinger_2_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_stinger_1_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_stinger_0_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_0_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_1_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_2_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_3_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_4_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_5_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_6_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_7_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_8_ca.paa\"]",
+  "[\"\\bwa3_tiger\\data\\mfd\\bwa3_mfd_9_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_switch_off_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_button_yellow_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_button_red_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_0_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_1_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_2_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_3_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_4_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_5_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_6_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_7_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_8_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_dig_9_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_light_red_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_light_green_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_light_yellow_ca.paa\"]",
+  "[\"\\bwa3_skorpion\\epag\\epag_background_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\rangecard\\UI\\RangeCard.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\triage_card\\corner_right.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\triage_card\\corner_left.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\toggle_to_other.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\carry.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\advanced_treatment.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\airway_management.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\medication.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\bandage_fracture.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\examine_patient.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\categories\\triage_card.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_right_s.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_left_s.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_right_s.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_left_s.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\torso_s.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\head_s.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_right_t.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_left_t.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_right_t.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_left_t.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_right_b.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_left_b.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_right_b.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_left_b.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_right.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\leg_left.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_right.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\arm_left.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\torso.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\head.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\data\\body_image\\background.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Displays\\Display3DEN\\search_end_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\atragmx\\UI\\atrag_d.paa\"]",
+  "[\"\\A3\\ui_f\\data\\gui\\cfg\\scrollbar\\arrowEmpty_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\gui\\cfg\\scrollbar\\arrowFull_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\gui\\cfg\\scrollbar\\border_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\gui\\cfg\\scrollbar\\thumb_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\igui\\cfg\\actions\\open_door_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\Logos\\arma3_curator_eye_256_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\marker_ca.paa\"]",
+  "[\"\\a3\\modules_f_curator\\data\\portraitremotecontrol_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\modules\\ui\\edit_obj_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\remove_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\add_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\truck_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\IGUI\\Cfg\\Actions\\unloadVehicle_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\GUI\\Cfg\\Hints\\VehicleAmmo_CA.paa\"]",
+  "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\refuel_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\rearm_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\repair_ca.paa\"]",
+  "[\"\\a3\\3den\\data\\displays\\display3den\\entitymenu\\garage_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\paste_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\copy_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Displays\\Display3DEN\\PanelRight\\customcomposition_edit_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeInventory\\filter_0_ca.paa\"]",
+  "[\"\\a3\\3den\\data\\displays\\display3den\\entitymenu\\arsenal_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\IGUI\\Cfg\\Actions\\reammo_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\binoculars_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\handgun_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\primaryWeapon_ca.paa\"]",
+  "[\"\\a3\\3den\\Data\\Displays\\Display3DEN\\ToolBar\\undo_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\captives\\UI\\handcuff_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\captives\\UI\\Surrender_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\medical_cross_ca.paa\"]",
+  "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_stand_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\default_ca.paa\"]",
+  "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_prone_ca.paa\"]",
+  "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_crouch_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\normal_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\full_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\limited_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\attack_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\engage_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\hold_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\defend_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\careless_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\stealth_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\combat_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\aware_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\safe_ca.paa\"]",
+  "[\"\\a3\\3den\\data\\displays\\display3den\\entitymenu\\movetoformation_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\diamond_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\ech_right_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\ech_left_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\stag_column_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\file_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\column_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\line_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\vee_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\wedge_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\context_actions\\ui\\grenade_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\gui\\cfg\\communicationmenu\\artillery_ca.paa\"]",
+  "[\"\\overthrow_main\\ui\\logo_overthrow.paa\"]",
+  "[\"A3\\Ui_f\\data\\GUI\\RscCommon\\RscCheckBox\\CheckBox_checked_ca.paa\"]",
+  "[\"A3\\Ui_f\\data\\GUI\\RscCommon\\RscCheckBox\\CheckBox_unchecked_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButtonMain\\normal_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButtonMain\\disabled_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButtonMain\\over_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButtonMain\\focus_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButtonMain\\down_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButton\\normal_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButton\\over_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButton\\focus_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscShortcutButton\\down_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\gui\\cfg\\slider\\arrowEmpty_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\gui\\cfg\\slider\\arrowFull_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\gui\\cfg\\slider\\border_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\rsccombo\\arrow_combo_active_ca.paa\"]",
+  "[\"bwa3_mells\\data\\seekerTL.paa\"]",
+  "[\"bwa3_mells\\data\\seekerT.paa\"]",
+  "[\"bwa3_mells\\data\\seekerBox.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscOptics\\square.paa\"]",
+  "[\"\\z\\aceax\\addons\\arsenal\\data\\ui\\checked.paa\"]",
+  "[\"\\z\\aceax\\addons\\arsenal\\data\\ui\\unchecked.paa\"]",
+  "[\"\\z\\aceax\\addons\\arsenal\\data\\ui\\disabled.paa\"]",
+  "[\"a3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayEGSpectator\\Fps.paa\"]",
+  "[\"a3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayEGSpectator\\Follow.paa\"]",
+  "[\"a3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayEGSpectator\\Free.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\Displays\\RscDisplayCurator\\side_civ_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\Displays\\RscDisplayCurator\\side_guer_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\Displays\\RscDisplayCurator\\side_east_ca.paa\"]",
+  "[\"\\a3\\Ui_F_Curator\\Data\\Displays\\RscDisplayCurator\\side_west_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\map\\diary\\icons\\playerciv_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\map\\diary\\icons\\playerguer_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\map\\diary\\icons\\playereast_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\map\\diary\\icons\\playerwest_ca.paa\"]",
+  "[\"\\a3\\ui_f_curator\\data\\displays\\rscdisplaycurator\\modegroups_ca.paa\"]",
+  "[\"\\a3\\Ui_f\\data\\GUI\\RscCommon\\RscButtonSearch\\search_start_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\surgical_kit.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\grave.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\bodybag.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\iv.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\painkillers.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\auto_injector.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\splint.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\tourniquet.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\packing_bandage.paa\"]",
+  "[\"\\z\\ace\\addons\\medical_gui\\ui\\bandage.paa\"]",
+  "[\"\\z\\ace\\addons\\kestrel4500\\UI\\Kestrel4500.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\UI\\seven_segment_0.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\UI\\seven_segment_separator.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\UI\\seven_segment_8.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Cellphone_Background.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Tripwire.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\data\\UI\\Timer.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\PressurePlate.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Cellphone_UI.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\DeadmanSwitch.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\MK16_Reciever_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Clacker.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArcadeMap\\icon_exit_cross_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\dagr\\UI\\dagr_menu.paa\"]",
+  "[\"A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArcadeMap\\icon_exit_cross_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\artillerytables\\UI\\RangeTable_background.paa\"]",
+  "[\"\\z\\ace\\addons\\arsenal\\data\\iconCustom.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\Logos\\a_64_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\Logos\\arsenal_1024_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\arsenal\\data\\iconClearContainer.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\CargoMisc_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\CargoPut_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\CargoThrow_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\CargoMagAll_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\CargoMag_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\ItemBipod_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\ItemMuzzle_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\ItemAcc_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\ItemOptic_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Insignia_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Voice_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Face_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Watch_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Compass_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Radio_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\GPS_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Map_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\NVGs_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Goggles_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Backpack_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Vest_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Uniform_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\Headgear_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\SecondaryWeapon_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\stamina_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\watertower_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\viewtower_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\transmitter_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\tourism_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\bush_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\tree_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\stack_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\shipwreck_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\ruin_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\rock_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\quay_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powerwind_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powerwave_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powersolar_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\lighthouse_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\hospital_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\fountain_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\fuelstation_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\fortress_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\cross_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\church_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\chapel_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\cave_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\business_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\busstop_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\bunker_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\waypoint_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\waypointsetter_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\waypointCompleted_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\custommark_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\taskIcon_ca.paa\"]",
+  "[\"\\a3\\3den\\data\\cfg3den\\history\\deleteitems_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\modules\\ui\\person_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\common\\ui\\icon_independent_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\common\\ui\\icon_opfor_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\common\\ui\\icon_blufor_ca.paa\"]",
+  "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpletasks\\types\\help_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Attributes\\SliderTimeDay\\border_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Attributes\\SliderTimeDay\\thumb_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Attributes\\SliderTimeDay\\sun_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Attributes\\SliderTimeDay\\sunset_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Attributes\\SliderTimeDay\\sunrise_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Attributes\\SliderTimeDay\\day_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Attributes\\SliderTimeDay\\night_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\texturechecked_destroyed_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\textureunchecked_destroyed_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\texturechecked_damaged12_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\textureunchecked_damaged12_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\texturechecked_damaged2_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\textureunchecked_damaged2_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\texturechecked_damaged1_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\textureunchecked_damaged1_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\texturechecked_undamaged_ca.paa\"]",
+  "[\"\\a3\\modules_f\\data\\editterrainobject\\textureunchecked_undamaged_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\common\\ui\\icon_civilian_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\inventory\\ui\\reset_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayGarage\\TextureSources_ca.paa\"]",
+  "[\"\\A3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayGarage\\AnimationSources_ca.paa\"]",
+  "[\"\\a3\\3den\\data\\cfg3den\\marker\\texturecenter_ca.paa\"]",
+  "[\"\\A3\\Weapons_F\\Data\\clear_empty.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\indicators\\UI\\indicators\\circle.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\indicators\\UI\\indicators\\diamond.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\indicators\\UI\\indicators\\square.paa\"]",
+  "[\"\\A3\\ui_f\\data\\igui\\cfg\\cursors\\select_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\igui\\cfg\\cursors\\leader_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\igui\\cfg\\cursors\\unitHealer_ca.paa\"]",
+  "[\"\\A3\\ui_f_curator\\Data\\Displays\\RscDisplayCurator\\modeUnits_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlue.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingGreen.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingRed.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlack.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\triangle_inverted.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\triangle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\square_filled.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\square.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\diamond.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\cross.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\circle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_right.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_left.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_down.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_up.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\triangle_inverted.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\triangle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\square_filled.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\square.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\diamond.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\cross.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\circle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_right.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_left.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_down.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_up.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\triangle_inverted.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\triangle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\square_filled.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\square.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\diamond.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\cross.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\circle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_right.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_left.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_down.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_up.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\triangle_inverted.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\triangle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\square_filled.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\square.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\diamond.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\cross.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\circle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_right.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_left.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_down.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_up.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\triangle_inverted.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\triangle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\square_filled.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\square.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\diamond.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\cross.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\circle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_right.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_left.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_down.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_up.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\triangle_inverted.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\triangle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\square_filled.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\square.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\diamond.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\cross.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\circle.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_right.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_left.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_down.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_up.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\0.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\0.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\0.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\0.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\0.paa\"]",
+  "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\0.paa\"]",
+  "[\"a3\\Ui_f\\data\\IGUI\\Cfg\\MPTable\\total_ca.paa\"]",
+  "[\"a3\\Ui_f\\data\\IGUI\\Cfg\\MPTable\\killed_ca.paa\"]",
+  "[\"a3\\Ui_f\\data\\IGUI\\Cfg\\MPTable\\air_ca.paa\"]",
+  "[\"a3\\Ui_f\\data\\IGUI\\Cfg\\MPTable\\armored_ca.paa\"]",
+  "[\"a3\\Ui_f\\data\\IGUI\\Cfg\\MPTable\\soft_ca.paa\"]",
+  "[\"a3\\Ui_f\\data\\IGUI\\Cfg\\MPTable\\infantry_ca.paa\"]",
+  "[\"a3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayEGSpectator\\FpsSelected.paa\"]",
+  "[\"a3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayEGSpectator\\FollowSelected.paa\"]",
+  "[\"a3\\Ui_f\\data\\GUI\\Rsc\\RscDisplayEGSpectator\\FreeSelected.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Controls\\ctrlCombo\\arrowEmpty_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Controls\\ctrlCombo\\arrowFull_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\markers\\military\\circle_CA.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\microDAGR_shellPicture.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_map.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_compass.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_info.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\button_pushedDown.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_deleteButton.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_menuSettings.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_menuLaser.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_menuWaypoints.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_menuMark.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_mapMinus.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_mapPlus.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_mapTrack.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_infoClock.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_infoCompass.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\icon_self.paa\"]",
+  "[\"\\z\\ace\\addons\\microdagr\\images\\microDAGR_topBar.paa\"]",
+  "[\"\\A3\\UI_F_Curator\\Data\\Displays\\RscDisplayCurator\\modeMarkers_ca.paa\"]",
+  "[\"\\A3\\UI_F_Curator\\Data\\Displays\\RscDisplayCurator\\modeRecent_ca.paa\"]",
+  "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\stealth_ca.paa\"]",
+  "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\combat_ca.paa\"]",
+  "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\aware_ca.paa\"]",
+  "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\safe_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\rearm\\ui\\icon_rearm_interact.paa\"]",
+  "[\"\\A3\\ui_f\\data\\igui\\cfg\\actions\\repair_ca.paa\"]",
+  "[\"\\A3\\UI_F_Curator\\Data\\default_ca.paa\"]",
+  "[\"\\z\\ace\\addons\\huntir\\UI\\ace_huntir_monitor_off.paa\"]",
+  "[\"\\z\\ace\\addons\\huntir\\UI\\ace_huntir_monitor_on.paa\"]",
+  "[\"\\a3\\ui_f_curator\\Data\\CfgIngameUI\\Compass\\texture270_ca.paa\"]",
+  "[\"\\a3\\ui_f_curator\\Data\\CfgIngameUI\\Compass\\texture180_ca.paa\"]",
+  "[\"\\a3\\ui_f_curator\\Data\\CfgIngameUI\\Compass\\texture90_ca.paa\"]",
+  "[\"\\a3\\ui_f_curator\\Data\\CfgIngameUI\\Compass\\texture0_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\power_CA.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\taskIconCreated_CA.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\taskIconCanceled_CA.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\taskIconDone_CA.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\taskIconFailed_CA.paa\"]",
+  "[\"\\x\\zen\\addons\\context_menu\\ui\\arrow_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\common\\ui\\check_all_ca.paa\"]",
+  "[\"\\x\\zen\\addons\\common\\ui\\uncheck_all_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Controls\\ctrlDefault\\thumb_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Controls\\ctrlDefault\\border_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Controls\\ctrlDefault\\arrowFull_ca.paa\"]",
+  "[\"\\a3\\3DEN\\Data\\Controls\\ctrlDefault\\arrowEmpty_ca.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\TGT_self.paa\"]",
+  "[\"A3\\Map_VR\\data\\pictureMap_ca.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\SHUDUI_laser.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\SHUDUI_tgt.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\SHUDUI_marker.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\SHUDUI_base.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\MUD_laser.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\MUD_target.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\MUD_line.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\MUD_mk.paa\"]",
+  "[\"STmod_airplane_AC130J\\data\\ui\\MUD_base.paa\"]",
+  "[\"\\bwa3_radios\\data\\bwa3_sem90_decimal_dot.paa\"]",
+  "[\"\\bwa3_radios\\data\\bwa3_sem90_digit8.paa\"]",
+  "[\"\\bwa3_radios\\data\\bwa3_sem90_volume.paa\"]",
+  "[\"\\bwa3_radios\\data\\bwa3_sem90.paa\"]",
+  "[\"\\bwa3_pzf3\\data\\reticles\\bwa3_pzf3-reticle_ca.paa\"]",
+  "[\"\\bwa3_pzf3\\data\\reticles\\bwa3_pzf3-body_ca.paa\"]",
+  "[\"\\bwa3_pzf3\\data\\reticles\\bwa3_pzf3-bodyNight_ca.paa\"]",
+  "[\"\\bwa3_optics\\data\\reticles\\bwa3_g36_reticle_ca.paa\"]",
+  "[\"\\bwa3_optics\\data\\reticles\\bwa3_g36_body_ca.paa\"]",
+  "[\"\\bwa3_optics\\data\\reticles\\bwa3_g36_body_night_ca.paa\"]",
+  "[\"\\bwa3_navipad\\data\\navipad_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\pointing_styles\\arrowhead.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\pointing_styles\\arrow.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\pointing_styles\\wedge.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\pointing_styles\\standard.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\milint\\full.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\milint\\limited.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\xeno\\bluef.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\xeno\\blue.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\xeno\\greenf.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\xeno\\green.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\xeno\\redf.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\xeno\\red.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\classic\\full.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\classic\\limited.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\clock\\full.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\clock\\limited.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\olde\\full.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\olde\\limited.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\pizza\\compass.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\pizza\\compass_limited.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\bi\\compass.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\bi\\compass_limited.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\standard\\compass.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\radar\\UI\\compass_styles\\standard\\compass_limited.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_iconManLeader_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_iconManMedic_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_iconManMG_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_iconManAT_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_iconManEngineer_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_iconManExplosive_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_iconMan_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\everlight\\Everlight_buddy_compass.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\clones\\icon_leader.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\clones\\icon_medic.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\clones\\icon_mg.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\clones\\icon_at.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\clones\\icon_engineer.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\clones\\icon_grenadier.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\clones\\icon_rifleman.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\nato\\GAR_iconManLeader_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\nato\\GAR_iconManMedic_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\nato\\GAR_iconManMG_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\nato\\GAR_iconManAT_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\nato\\GAR_iconManEngineer_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\nato\\GAR_iconManExplosive_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\iconManLeader_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\iconManMedic_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\iconManMG_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\iconManAT_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\iconManEngineer_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\iconManExplosive_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\iconMan_ca.paa\"]",
+  "[\"\\z\\diwako_dui\\addons\\main\\UI\\icon_styles\\terry\\buddy_compass.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\vehicleicons\\iconManLeader_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\vehicleicons\\iconManMedic_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\vehicleicons\\iconManMG_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\vehicleicons\\iconManAT_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\vehicleicons\\iconManEngineer_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\vehicleicons\\iconManExplosive_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\map\\vehicleicons\\iconMan_ca.paa\"]",
+  "[\"a3\\ui_f\\data\\igui\\cfg\\commandbar\\imagecargo_ca.paa\"]",
+  "[\"a3\\ui_f\\data\\igui\\cfg\\commandbar\\imagedriver_ca.paa\"]",
+  "[\"a3\\ui_f\\data\\igui\\cfg\\simpletasks\\types\\rifle_ca.paa\"]",
+  "[\"a3\\ui_f\\data\\igui\\cfg\\commandbar\\imagegunner_ca.paa\"]",
+  "[\"a3\\ui_f\\data\\igui\\cfg\\commandbar\\imagecommander_ca.paa\"]",
+  "[\"a3\\ui_f\\data\\GUI\\Cfg\\Ranks\\private_gs.paa\"]",
+  "[\"a3\\ui_f\\data\\GUI\\Cfg\\Ranks\\corporal_gs.paa\"]",
+  "[\"a3\\ui_f\\data\\GUI\\Cfg\\Ranks\\sergeant_gs.paa\"]",
+  "[\"a3\\ui_f\\data\\GUI\\Cfg\\Ranks\\lieutenant_gs.paa\"]",
+  "[\"a3\\ui_f\\data\\GUI\\Cfg\\Ranks\\captain_gs.paa\"]",
+  "[\"a3\\ui_f\\data\\GUI\\Cfg\\Ranks\\major_gs.paa\"]",
+  "[\"a3\\ui_f\\data\\GUI\\Cfg\\Ranks\\colonel_gs.paa\"]",
+  "[\"a3\\ui_f_curator\\Data\\Displays\\RscDisplayCurator\\modeUnits_ca.paa\"]",
+  "[\"\\A3\\ui_f\\data\\GUI\\RscCommon\\RscDebugConsole\\feedback_ca.paa\"]",
+  "[\"\\A3\\modules_f_curator\\Data\\portraitRadio_ca.paa\"]"
+ ],
+ "retratos": {
+  "[\"10m\"]": {
+   "icon": "94"
+  },
+  "[\"ACE_Black\"]": {
+   "icon": "376"
+  },
+  "[\"ACE_Black_Chalk\"]": {
+   "icon": "376"
+  },
+  "[\"ACE_Blue\"]": {
+   "icon": "375"
+  },
+  "[\"ACE_Blue_Chalk\"]": {
+   "icon": "375"
+  },
+  "[\"ACE_Green\"]": {
+   "icon": "374"
+  },
+  "[\"ACE_Green_Chalk\"]": {
+   "icon": "374"
+  },
+  "[\"ACE_Red\"]": {
+   "icon": "373"
+  },
+  "[\"ACE_Red_Chalk\"]": {
+   "icon": "373"
+  },
+  "[\"ACE_White\"]": {
+   "icon": "371"
+  },
+  "[\"ACE_White_Chalk\"]": {
+   "icon": "371"
+  },
+  "[\"ACE_Yellow\"]": {
+   "icon": "372"
+  },
+  "[\"ACE_Yellow_Chalk\"]": {
+   "icon": "372"
+  },
+  "[\"ACE_arrow_down_black\"]": {
+   "icon": "369"
+  },
+  "[\"ACE_arrow_down_black_chalk\"]": {
+   "icon": "369"
+  },
+  "[\"ACE_arrow_down_blue\"]": {
+   "icon": "358"
+  },
+  "[\"ACE_arrow_down_blue_chalk\"]": {
+   "icon": "358"
+  },
+  "[\"ACE_arrow_down_green\"]": {
+   "icon": "347"
+  },
+  "[\"ACE_arrow_down_green_chalk\"]": {
+   "icon": "347"
+  },
+  "[\"ACE_arrow_down_red\"]": {
+   "icon": "336"
+  },
+  "[\"ACE_arrow_down_red_chalk\"]": {
+   "icon": "336"
+  },
+  "[\"ACE_arrow_down_white\"]": {
+   "icon": "314"
+  },
+  "[\"ACE_arrow_down_white_chalk\"]": {
+   "icon": "314"
+  },
+  "[\"ACE_arrow_down_yellow\"]": {
+   "icon": "325"
+  },
+  "[\"ACE_arrow_down_yellow_chalk\"]": {
+   "icon": "325"
+  },
+  "[\"ACE_arrow_left_black\"]": {
+   "icon": "368"
+  },
+  "[\"ACE_arrow_left_black_chalk\"]": {
+   "icon": "368"
+  },
+  "[\"ACE_arrow_left_blue\"]": {
+   "icon": "357"
+  },
+  "[\"ACE_arrow_left_blue_chalk\"]": {
+   "icon": "357"
+  },
+  "[\"ACE_arrow_left_green\"]": {
+   "icon": "346"
+  },
+  "[\"ACE_arrow_left_green_chalk\"]": {
+   "icon": "346"
+  },
+  "[\"ACE_arrow_left_red\"]": {
+   "icon": "335"
+  },
+  "[\"ACE_arrow_left_red_chalk\"]": {
+   "icon": "335"
+  },
+  "[\"ACE_arrow_left_white\"]": {
+   "icon": "313"
+  },
+  "[\"ACE_arrow_left_white_chalk\"]": {
+   "icon": "313"
+  },
+  "[\"ACE_arrow_left_yellow\"]": {
+   "icon": "324"
+  },
+  "[\"ACE_arrow_left_yellow_chalk\"]": {
+   "icon": "324"
+  },
+  "[\"ACE_arrow_right_black\"]": {
+   "icon": "367"
+  },
+  "[\"ACE_arrow_right_black_chalk\"]": {
+   "icon": "367"
+  },
+  "[\"ACE_arrow_right_blue\"]": {
+   "icon": "356"
+  },
+  "[\"ACE_arrow_right_blue_chalk\"]": {
+   "icon": "356"
+  },
+  "[\"ACE_arrow_right_green\"]": {
+   "icon": "345"
+  },
+  "[\"ACE_arrow_right_green_chalk\"]": {
+   "icon": "345"
+  },
+  "[\"ACE_arrow_right_red\"]": {
+   "icon": "334"
+  },
+  "[\"ACE_arrow_right_red_chalk\"]": {
+   "icon": "334"
+  },
+  "[\"ACE_arrow_right_white\"]": {
+   "icon": "312"
+  },
+  "[\"ACE_arrow_right_white_chalk\"]": {
+   "icon": "312"
+  },
+  "[\"ACE_arrow_right_yellow\"]": {
+   "icon": "323"
+  },
+  "[\"ACE_arrow_right_yellow_chalk\"]": {
+   "icon": "323"
+  },
+  "[\"ACE_arrow_up_black\"]": {
+   "icon": "370"
+  },
+  "[\"ACE_arrow_up_black_chalk\"]": {
+   "icon": "370"
+  },
+  "[\"ACE_arrow_up_blue\"]": {
+   "icon": "359"
+  },
+  "[\"ACE_arrow_up_blue_chalk\"]": {
+   "icon": "359"
+  },
+  "[\"ACE_arrow_up_green\"]": {
+   "icon": "348"
+  },
+  "[\"ACE_arrow_up_green_chalk\"]": {
+   "icon": "348"
+  },
+  "[\"ACE_arrow_up_red\"]": {
+   "icon": "337"
+  },
+  "[\"ACE_arrow_up_red_chalk\"]": {
+   "icon": "337"
+  },
+  "[\"ACE_arrow_up_white\"]": {
+   "icon": "315"
+  },
+  "[\"ACE_arrow_up_white_chalk\"]": {
+   "icon": "315"
+  },
+  "[\"ACE_arrow_up_yellow\"]": {
+   "icon": "326"
+  },
+  "[\"ACE_arrow_up_yellow_chalk\"]": {
+   "icon": "326"
+  },
+  "[\"ACE_circle_black\"]": {
+   "icon": "366"
+  },
+  "[\"ACE_circle_black_chalk\"]": {
+   "icon": "366"
+  },
+  "[\"ACE_circle_blue\"]": {
+   "icon": "355"
+  },
+  "[\"ACE_circle_blue_chalk\"]": {
+   "icon": "355"
+  },
+  "[\"ACE_circle_green\"]": {
+   "icon": "344"
+  },
+  "[\"ACE_circle_green_chalk\"]": {
+   "icon": "344"
+  },
+  "[\"ACE_circle_red\"]": {
+   "icon": "333"
+  },
+  "[\"ACE_circle_red_chalk\"]": {
+   "icon": "333"
+  },
+  "[\"ACE_circle_white\"]": {
+   "icon": "311"
+  },
+  "[\"ACE_circle_white_chalk\"]": {
+   "icon": "311"
+  },
+  "[\"ACE_circle_yellow\"]": {
+   "icon": "322"
+  },
+  "[\"ACE_circle_yellow_chalk\"]": {
+   "icon": "322"
+  },
+  "[\"ACE_cross_black\"]": {
+   "icon": "365"
+  },
+  "[\"ACE_cross_black_chalk\"]": {
+   "icon": "365"
+  },
+  "[\"ACE_cross_blue\"]": {
+   "icon": "354"
+  },
+  "[\"ACE_cross_blue_chalk\"]": {
+   "icon": "354"
+  },
+  "[\"ACE_cross_green\"]": {
+   "icon": "343"
+  },
+  "[\"ACE_cross_green_chalk\"]": {
+   "icon": "343"
+  },
+  "[\"ACE_cross_red\"]": {
+   "icon": "332"
+  },
+  "[\"ACE_cross_red_chalk\"]": {
+   "icon": "332"
+  },
+  "[\"ACE_cross_white\"]": {
+   "icon": "310"
+  },
+  "[\"ACE_cross_white_chalk\"]": {
+   "icon": "310"
+  },
+  "[\"ACE_cross_yellow\"]": {
+   "icon": "321"
+  },
+  "[\"ACE_cross_yellow_chalk\"]": {
+   "icon": "321"
+  },
+  "[\"ACE_diamond_black\"]": {
+   "icon": "364"
+  },
+  "[\"ACE_diamond_black_chalk\"]": {
+   "icon": "364"
+  },
+  "[\"ACE_diamond_blue\"]": {
+   "icon": "353"
+  },
+  "[\"ACE_diamond_blue_chalk\"]": {
+   "icon": "353"
+  },
+  "[\"ACE_diamond_green\"]": {
+   "icon": "342"
+  },
+  "[\"ACE_diamond_green_chalk\"]": {
+   "icon": "342"
+  },
+  "[\"ACE_diamond_red\"]": {
+   "icon": "331"
+  },
+  "[\"ACE_diamond_red_chalk\"]": {
+   "icon": "331"
+  },
+  "[\"ACE_diamond_white\"]": {
+   "icon": "309"
+  },
+  "[\"ACE_diamond_white_chalk\"]": {
+   "icon": "309"
+  },
+  "[\"ACE_diamond_yellow\"]": {
+   "icon": "320"
+  },
+  "[\"ACE_diamond_yellow_chalk\"]": {
+   "icon": "320"
+  },
+  "[\"ACE_square_black\"]": {
+   "icon": "363"
+  },
+  "[\"ACE_square_black_chalk\"]": {
+   "icon": "363"
+  },
+  "[\"ACE_square_blue\"]": {
+   "icon": "352"
+  },
+  "[\"ACE_square_blue_chalk\"]": {
+   "icon": "352"
+  },
+  "[\"ACE_square_filled_black\"]": {
+   "icon": "362"
+  },
+  "[\"ACE_square_filled_black_chalk\"]": {
+   "icon": "362"
+  },
+  "[\"ACE_square_filled_blue\"]": {
+   "icon": "351"
+  },
+  "[\"ACE_square_filled_blue_chalk\"]": {
+   "icon": "351"
+  },
+  "[\"ACE_square_filled_green\"]": {
+   "icon": "340"
+  },
+  "[\"ACE_square_filled_green_chalk\"]": {
+   "icon": "340"
+  },
+  "[\"ACE_square_filled_red\"]": {
+   "icon": "329"
+  },
+  "[\"ACE_square_filled_red_chalk\"]": {
+   "icon": "329"
+  },
+  "[\"ACE_square_filled_white\"]": {
+   "icon": "307"
+  },
+  "[\"ACE_square_filled_white_chalk\"]": {
+   "icon": "307"
+  },
+  "[\"ACE_square_filled_yellow\"]": {
+   "icon": "318"
+  },
+  "[\"ACE_square_filled_yellow_chalk\"]": {
+   "icon": "318"
+  },
+  "[\"ACE_square_green\"]": {
+   "icon": "341"
+  },
+  "[\"ACE_square_green_chalk\"]": {
+   "icon": "341"
+  },
+  "[\"ACE_square_red\"]": {
+   "icon": "330"
+  },
+  "[\"ACE_square_red_chalk\"]": {
+   "icon": "330"
+  },
+  "[\"ACE_square_white\"]": {
+   "icon": "308"
+  },
+  "[\"ACE_square_white_chalk\"]": {
+   "icon": "308"
+  },
+  "[\"ACE_square_yellow\"]": {
+   "icon": "319"
+  },
+  "[\"ACE_square_yellow_chalk\"]": {
+   "icon": "319"
+  },
+  "[\"ACE_triangle_black\"]": {
+   "icon": "361"
+  },
+  "[\"ACE_triangle_black_chalk\"]": {
+   "icon": "361"
+  },
+  "[\"ACE_triangle_blue\"]": {
+   "icon": "350"
+  },
+  "[\"ACE_triangle_blue_chalk\"]": {
+   "icon": "350"
+  },
+  "[\"ACE_triangle_green\"]": {
+   "icon": "339"
+  },
+  "[\"ACE_triangle_green_chalk\"]": {
+   "icon": "339"
+  },
+  "[\"ACE_triangle_inverted_black\"]": {
+   "icon": "360"
+  },
+  "[\"ACE_triangle_inverted_black_chalk\"]": {
+   "icon": "360"
+  },
+  "[\"ACE_triangle_inverted_blue\"]": {
+   "icon": "349"
+  },
+  "[\"ACE_triangle_inverted_blue_chalk\"]": {
+   "icon": "349"
+  },
+  "[\"ACE_triangle_inverted_green\"]": {
+   "icon": "338"
+  },
+  "[\"ACE_triangle_inverted_green_chalk\"]": {
+   "icon": "338"
+  },
+  "[\"ACE_triangle_inverted_red\"]": {
+   "icon": "327"
+  },
+  "[\"ACE_triangle_inverted_red_chalk\"]": {
+   "icon": "327"
+  },
+  "[\"ACE_triangle_inverted_white\"]": {
+   "icon": "305"
+  },
+  "[\"ACE_triangle_inverted_white_chalk\"]": {
+   "icon": "305"
+  },
+  "[\"ACE_triangle_inverted_yellow\"]": {
+   "icon": "316"
+  },
+  "[\"ACE_triangle_inverted_yellow_chalk\"]": {
+   "icon": "316"
+  },
+  "[\"ACE_triangle_red\"]": {
+   "icon": "328"
+  },
+  "[\"ACE_triangle_red_chalk\"]": {
+   "icon": "328"
+  },
+  "[\"ACE_triangle_white\"]": {
+   "icon": "306"
+  },
+  "[\"ACE_triangle_white_chalk\"]": {
+   "icon": "306"
+  },
+  "[\"ACE_triangle_yellow\"]": {
+   "icon": "317"
+  },
+  "[\"ACE_triangle_yellow_chalk\"]": {
+   "icon": "317"
+  },
+  "[\"Add\"]": {
+   "icon": "94"
+  },
+  "[\"All\"]": {
+   "icon": "114"
+  },
+  "[\"ApplyTourniquet\"]": {
+   "icon": "186"
+  },
+  "[\"Auto\"]": {
+   "icon": "116"
+  },
+  "[\"Aware\"]": {
+   "icon": "129"
+  },
+  "[\"BLUFOR\"]": {
+   "picture": "269"
+  },
+  "[\"BasicBandage\"]": {
+   "icon": "188"
+  },
+  "[\"Behaviour\"]": {
+   "icon": "126"
+  },
+  "[\"Binoculars\"]": {
+   "icon": "108"
+  },
+  "[\"BloodIV\"]": {
+   "icon": "182"
+  },
+  "[\"Blue\"]": {
+   "icon": "124"
+  },
+  "[\"BodyBag\"]": {
+   "icon": "181"
+  },
+  "[\"Bunker\"]": {
+   "icon": "259"
+  },
+  "[\"BusStop\"]": {
+   "icon": "258"
+  },
+  "[\"Bush\"]": {
+   "icon": "238"
+  },
+  "[\"Business\"]": {
+   "icon": "257"
+  },
+  "[\"Captives\"]": {
+   "icon": "112"
+  },
+  "[\"Careless\"]": {
+   "icon": "126"
+  },
+  "[\"Cave\"]": {
+   "icon": "256"
+  },
+  "[\"Cellphone\"]": {
+   "picture": "197"
+  },
+  "[\"Chapel\"]": {
+   "icon": "255"
+  },
+  "[\"Church\"]": {
+   "icon": "254"
+  },
+  "[\"Civilian\"]": {
+   "picture": "288"
+  },
+  "[\"Column\"]": {
+   "icon": "137"
+  },
+  "[\"Combat\"]": {
+   "icon": "128"
+  },
+  "[\"CombatMode\"]": {
+   "icon": "122"
+  },
+  "[\"Command\"]": {
+   "picture": "200",
+   "icon": "260"
+  },
+  "[\"Copy\"]": {
+   "icon": "103"
+  },
+  "[\"Cross\"]": {
+   "icon": "253"
+  },
+  "[\"CustomMark\"]": {
+   "icon": "263"
+  },
+  "[\"DeadManSwitch\"]": {
+   "picture": "198"
+  },
+  "[\"Diamond\"]": {
+   "icon": "132"
+  },
+  "[\"Down\"]": {
+   "icon": "117"
+  },
+  "[\"EchLeft\"]": {
+   "icon": "134"
+  },
+  "[\"EchRight\"]": {
+   "icon": "133"
+  },
+  "[\"Edit\"]": {
+   "icon": "104"
+  },
+  "[\"EditableObjects\"]": {
+   "icon": "92"
+  },
+  "[\"File\"]": {
+   "icon": "136"
+  },
+  "[\"FireArtillery\"]": {
+   "icon": "142"
+  },
+  "[\"Formation\"]": {
+   "icon": "131"
+  },
+  "[\"Fortress\"]": {
+   "icon": "259"
+  },
+  "[\"Fountain\"]": {
+   "icon": "250"
+  },
+  "[\"Fuelstation\"]": {
+   "icon": "251"
+  },
+  "[\"Full\"]": {
+   "icon": "120"
+  },
+  "[\"Grave\"]": {
+   "icon": "180"
+  },
+  "[\"Green\"]": {
+   "icon": "125"
+  },
+  "[\"Group\"]": {
+   "picture": "177"
+  },
+  "[\"Handgun\"]": {
+   "icon": "109"
+  },
+  "[\"HealUnits\"]": {
+   "icon": "114"
+  },
+  "[\"Hospital\"]": {
+   "icon": "249"
+  },
+  "[\"IRSensor\"]": {
+   "picture": "196"
+  },
+  "[\"Independent\"]": {
+   "picture": "267"
+  },
+  "[\"Inventory\"]": {
+   "icon": "105"
+  },
+  "[\"Lighthouse\"]": {
+   "icon": "248"
+  },
+  "[\"Limited\"]": {
+   "icon": "121"
+  },
+  "[\"Line\"]": {
+   "icon": "138"
+  },
+  "[\"Loadout\"]": {
+   "icon": "106"
+  },
+  "[\"MK16_Transmitter\"]": {
+   "picture": "199"
+  },
+  "[\"Middle\"]": {
+   "icon": "118"
+  },
+  "[\"Morphine\"]": {
+   "icon": "184"
+  },
+  "[\"Normal\"]": {
+   "icon": "119"
+  },
+  "[\"OPFOR\"]": {
+   "picture": "268"
+  },
+  "[\"OT_fuckNATOBlack\"]": {
+   "icon": "304"
+  },
+  "[\"OT_fuckNATOBlue\"]": {
+   "icon": "301"
+  },
+  "[\"OT_fuckNATOGreen\"]": {
+   "icon": "302"
+  },
+  "[\"OT_fuckNATORed\"]": {
+   "icon": "303"
+  },
+  "[\"OT_goHomeBlack\"]": {
+   "icon": "304"
+  },
+  "[\"OT_goHomeBlue\"]": {
+   "icon": "301"
+  },
+  "[\"OT_goHomeGreen\"]": {
+   "icon": "302"
+  },
+  "[\"OT_goHomeRed\"]": {
+   "icon": "303"
+  },
+  "[\"OT_joinBlack\"]": {
+   "icon": "304"
+  },
+  "[\"OT_joinBlue\"]": {
+   "icon": "301"
+  },
+  "[\"OT_joinGreen\"]": {
+   "icon": "302"
+  },
+  "[\"OT_joinRed\"]": {
+   "icon": "303"
+  },
+  "[\"OT_overthrowBlack\"]": {
+   "icon": "304"
+  },
+  "[\"OT_overthrowBlue\"]": {
+   "icon": "301"
+  },
+  "[\"OT_overthrowGreen\"]": {
+   "icon": "302"
+  },
+  "[\"OT_overthrowRed\"]": {
+   "icon": "303"
+  },
+  "[\"PackingBandage\"]": {
+   "icon": "187"
+  },
+  "[\"Painkillers\"]": {
+   "icon": "183"
+  },
+  "[\"Paste\"]": {
+   "icon": "102"
+  },
+  "[\"PowerSolar\"]": {
+   "icon": "247"
+  },
+  "[\"PowerWave\"]": {
+   "icon": "246"
+  },
+  "[\"PowerWind\"]": {
+   "icon": "245"
+  },
+  "[\"PressurePlate\"]": {
+   "picture": "196"
+  },
+  "[\"Primary\"]": {
+   "icon": "110"
+  },
+  "[\"Quay\"]": {
+   "icon": "244"
+  },
+  "[\"Rearm\"]": {
+   "icon": "99"
+  },
+  "[\"Red\"]": {
+   "icon": "123"
+  },
+  "[\"Refuel\"]": {
+   "icon": "98"
+  },
+  "[\"RemoteControl\"]": {
+   "icon": "91"
+  },
+  "[\"Remove\"]": {
+   "icon": "93"
+  },
+  "[\"Repair\"]": {
+   "icon": "100"
+  },
+  "[\"Reset\"]": {
+   "icon": "111"
+  },
+  "[\"Rock\"]": {
+   "icon": "243"
+  },
+  "[\"Ruin\"]": {
+   "icon": "242"
+  },
+  "[\"Safe\"]": {
+   "icon": "130"
+  },
+  "[\"Selected\"]": {
+   "icon": "93"
+  },
+  "[\"Shipwreck\"]": {
+   "icon": "241"
+  },
+  "[\"SmallTree\"]": {
+   "icon": "238"
+  },
+  "[\"SpeedMode\"]": {
+   "icon": "119"
+  },
+  "[\"Splint\"]": {
+   "icon": "185"
+  },
+  "[\"Stack\"]": {
+   "icon": "240"
+  },
+  "[\"StagColumn\"]": {
+   "icon": "135"
+  },
+  "[\"Stance\"]": {
+   "icon": "115"
+  },
+  "[\"Stealth\"]": {
+   "icon": "127"
+  },
+  "[\"SurgicalKit\"]": {
+   "icon": "179"
+  },
+  "[\"SwitchWeapon\"]": {
+   "icon": "107"
+  },
+  "[\"Task\"]": {
+   "icon": "264"
+  },
+  "[\"TeleportPlayers\"]": {
+   "icon": "90"
+  },
+  "[\"TeleportZeus\"]": {
+   "icon": "89"
+  },
+  "[\"ThrowGrenade\"]": {
+   "icon": "141"
+  },
+  "[\"Timer\"]": {
+   "picture": "195"
+  },
+  "[\"ToggleCaptive\"]": {
+   "icon": "112"
+  },
+  "[\"ToggleSurrender\"]": {
+   "icon": "113"
+  },
+  "[\"Tourism\"]": {
+   "icon": "237"
+  },
+  "[\"Transmitter\"]": {
+   "icon": "236"
+  },
+  "[\"Tree\"]": {
+   "icon": "238"
+  },
+  "[\"Tripwire\"]": {
+   "picture": "194"
+  },
+  "[\"Tripwire_Airburst\"]": {
+   "picture": "194"
+  },
+  "[\"UnloadViV\"]": {
+   "icon": "96"
+  },
+  "[\"Up\"]": {
+   "icon": "115"
+  },
+  "[\"Vee\"]": {
+   "icon": "139"
+  },
+  "[\"VehicleAppearance\"]": {
+   "icon": "101"
+  },
+  "[\"VehicleLogistics\"]": {
+   "icon": "95"
+  },
+  "[\"ViewTower\"]": {
+   "icon": "235"
+  },
+  "[\"Watertower\"]": {
+   "icon": "234"
+  },
+  "[\"Waypoint\"]": {
+   "icon": "260"
+  },
+  "[\"WaypointCompleted\"]": {
+   "icon": "262"
+  },
+  "[\"WaypointSetter\"]": {
+   "icon": "261"
+  },
+  "[\"Wedge\"]": {
+   "icon": "140"
+  },
+  "[\"White\"]": {
+   "icon": "123"
+  },
+  "[\"Yellow\"]": {
+   "icon": "124"
+  },
+  "[\"ZeusGroups\"]": {
+   "icon": "177"
+  },
+  "[\"ZeusMarkers\"]": {
+   "icon": "406"
+  },
+  "[\"ZeusUnits\"]": {
+   "icon": "300"
+  },
+  "[\"ZeusWaypoints\"]": {
+   "icon": "407"
+  },
+  "[\"ace_arsenal_display\"]": {
+   "icon": "206",
+   "logo": "207"
+  },
+  "[\"ace_interaction_repair\"]": {
+   "icon": "413"
+  },
+  "[\"ace_rearm_rearm\"]": {
+   "icon": "412"
+  },
+  "[\"auto\"]": {
+   "icon": "414"
+  },
+  "[\"aware\"]": {
+   "icon": "410"
+  },
+  "[\"busstop\"]": {
+   "icon": "258"
+  },
+  "[\"church\"]": {
+   "icon": "254"
+  },
+  "[\"column\"]": {
+   "icon": "137"
+  },
+  "[\"combat\"]": {
+   "icon": "409"
+  },
+  "[\"crouch\"]": {
+   "icon": "118"
+  },
+  "[\"diamond\"]": {
+   "icon": "132"
+  },
+  "[\"ech_left\"]": {
+   "icon": "134"
+  },
+  "[\"ech_right\"]": {
+   "icon": "133"
+  },
+  "[\"file\"]": {
+   "icon": "136"
+  },
+  "[\"fuelstation\"]": {
+   "icon": "251"
+  },
+  "[\"full\"]": {
+   "icon": "120"
+  },
+  "[\"hospital\"]": {
+   "icon": "249"
+  },
+  "[\"lighthouse\"]": {
+   "icon": "248"
+  },
+  "[\"limited\"]": {
+   "icon": "121"
+  },
+  "[\"line\"]": {
+   "icon": "138"
+  },
+  "[\"normal\"]": {
+   "icon": "119"
+  },
+  "[\"power\"]": {
+   "icon": "421"
+  },
+  "[\"powersolar\"]": {
+   "icon": "247"
+  },
+  "[\"powerwave\"]": {
+   "icon": "246"
+  },
+  "[\"powerwind\"]": {
+   "icon": "245"
+  },
+  "[\"prone\"]": {
+   "icon": "117"
+  },
+  "[\"quay\"]": {
+   "icon": "244"
+  },
+  "[\"remoteControl\"]": {
+   "icon": "91"
+  },
+  "[\"safe\"]": {
+   "icon": "411"
+  },
+  "[\"shipwreck\"]": {
+   "icon": "241"
+  },
+  "[\"stag_column\"]": {
+   "icon": "135"
+  },
+  "[\"stand\"]": {
+   "icon": "115"
+  },
+  "[\"stealth\"]": {
+   "icon": "408"
+  },
+  "[\"transmitter\"]": {
+   "icon": "236"
+  },
+  "[\"vee\"]": {
+   "icon": "139"
+  },
+  "[\"watertower\"]": {
+   "icon": "234"
+  },
+  "[\"wedge\"]": {
+   "icon": "140"
+  },
+  "[\"zen_doors_state\"]": {
+   "icon": "88"
+  }
+ },
+ "porClasse": {
+  "[\"10m\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\add_ca.paa\"]"
+  },
+  "[\"ACE_Black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\0.paa\"]"
+  },
+  "[\"ACE_Black_Chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\0.paa\"]"
+  },
+  "[\"ACE_Blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\0.paa\"]"
+  },
+  "[\"ACE_Blue_Chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\0.paa\"]"
+  },
+  "[\"ACE_Green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\0.paa\"]"
+  },
+  "[\"ACE_Green_Chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\0.paa\"]"
+  },
+  "[\"ACE_Red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\0.paa\"]"
+  },
+  "[\"ACE_Red_Chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\0.paa\"]"
+  },
+  "[\"ACE_White\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\0.paa\"]"
+  },
+  "[\"ACE_White_Chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\0.paa\"]"
+  },
+  "[\"ACE_Yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\0.paa\"]"
+  },
+  "[\"ACE_Yellow_Chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\0.paa\"]"
+  },
+  "[\"ACE_arrow_down_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_down_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_down.paa\"]"
+  },
+  "[\"ACE_arrow_left_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_left_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_left.paa\"]"
+  },
+  "[\"ACE_arrow_right_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_right_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_right.paa\"]"
+  },
+  "[\"ACE_arrow_up_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_up.paa\"]"
+  },
+  "[\"ACE_arrow_up_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\arrow_up.paa\"]"
+  },
+  "[\"ACE_circle_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\circle.paa\"]"
+  },
+  "[\"ACE_circle_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\circle.paa\"]"
+  },
+  "[\"ACE_circle_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\circle.paa\"]"
+  },
+  "[\"ACE_circle_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\circle.paa\"]"
+  },
+  "[\"ACE_circle_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\circle.paa\"]"
+  },
+  "[\"ACE_circle_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\circle.paa\"]"
+  },
+  "[\"ACE_circle_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\circle.paa\"]"
+  },
+  "[\"ACE_circle_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\circle.paa\"]"
+  },
+  "[\"ACE_circle_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\circle.paa\"]"
+  },
+  "[\"ACE_circle_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\circle.paa\"]"
+  },
+  "[\"ACE_circle_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\circle.paa\"]"
+  },
+  "[\"ACE_circle_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\circle.paa\"]"
+  },
+  "[\"ACE_cross_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\cross.paa\"]"
+  },
+  "[\"ACE_cross_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\cross.paa\"]"
+  },
+  "[\"ACE_cross_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\cross.paa\"]"
+  },
+  "[\"ACE_cross_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\cross.paa\"]"
+  },
+  "[\"ACE_cross_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\cross.paa\"]"
+  },
+  "[\"ACE_cross_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\cross.paa\"]"
+  },
+  "[\"ACE_cross_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\cross.paa\"]"
+  },
+  "[\"ACE_cross_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\cross.paa\"]"
+  },
+  "[\"ACE_cross_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\cross.paa\"]"
+  },
+  "[\"ACE_cross_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\cross.paa\"]"
+  },
+  "[\"ACE_cross_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\cross.paa\"]"
+  },
+  "[\"ACE_cross_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\cross.paa\"]"
+  },
+  "[\"ACE_diamond_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\diamond.paa\"]"
+  },
+  "[\"ACE_diamond_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\diamond.paa\"]"
+  },
+  "[\"ACE_square_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\square.paa\"]"
+  },
+  "[\"ACE_square_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\square.paa\"]"
+  },
+  "[\"ACE_square_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\square.paa\"]"
+  },
+  "[\"ACE_square_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\square.paa\"]"
+  },
+  "[\"ACE_square_filled_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_filled_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\square_filled.paa\"]"
+  },
+  "[\"ACE_square_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\square.paa\"]"
+  },
+  "[\"ACE_square_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\square.paa\"]"
+  },
+  "[\"ACE_square_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\square.paa\"]"
+  },
+  "[\"ACE_square_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\square.paa\"]"
+  },
+  "[\"ACE_square_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\square.paa\"]"
+  },
+  "[\"ACE_square_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\square.paa\"]"
+  },
+  "[\"ACE_square_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\square.paa\"]"
+  },
+  "[\"ACE_square_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\square.paa\"]"
+  },
+  "[\"ACE_triangle_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_black\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_black_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\black\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_blue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_blue_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\blue\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_green\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_green_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\green\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_inverted_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\triangle_inverted.paa\"]"
+  },
+  "[\"ACE_triangle_red\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_red_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\red\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_white\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_white_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\white\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_yellow\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\triangle.paa\"]"
+  },
+  "[\"ACE_triangle_yellow_chalk\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\tags\\yellow\\triangle.paa\"]"
+  },
+  "[\"Add\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\add_ca.paa\"]"
+  },
+  "[\"All\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\medical_cross_ca.paa\"]"
+  },
+  "[\"ApplyTourniquet\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\tourniquet.paa\"]"
+  },
+  "[\"Auto\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\default_ca.paa\"]"
+  },
+  "[\"Aware\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\aware_ca.paa\"]"
+  },
+  "[\"BLUFOR\"]": {
+   "picture": "[\"\\x\\zen\\addons\\common\\ui\\icon_blufor_ca.paa\"]"
+  },
+  "[\"BasicBandage\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\bandage.paa\"]"
+  },
+  "[\"Behaviour\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\careless_ca.paa\"]"
+  },
+  "[\"Binoculars\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\binoculars_ca.paa\"]"
+  },
+  "[\"BloodIV\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\iv.paa\"]"
+  },
+  "[\"Blue\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\hold_ca.paa\"]"
+  },
+  "[\"BodyBag\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\bodybag.paa\"]"
+  },
+  "[\"Bunker\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\bunker_ca.paa\"]"
+  },
+  "[\"BusStop\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\busstop_ca.paa\"]"
+  },
+  "[\"Bush\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\bush_ca.paa\"]"
+  },
+  "[\"Business\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\business_ca.paa\"]"
+  },
+  "[\"Captives\"]": {
+   "icon": "[\"\\z\\ace\\addons\\captives\\UI\\handcuff_ca.paa\"]"
+  },
+  "[\"Careless\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\careless_ca.paa\"]"
+  },
+  "[\"Cave\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\cave_ca.paa\"]"
+  },
+  "[\"Cellphone\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Cellphone_UI.paa\"]"
+  },
+  "[\"Chapel\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\chapel_ca.paa\"]"
+  },
+  "[\"Church\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\church_ca.paa\"]"
+  },
+  "[\"Civilian\"]": {
+   "picture": "[\"\\x\\zen\\addons\\common\\ui\\icon_civilian_ca.paa\"]"
+  },
+  "[\"Column\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\column_ca.paa\"]"
+  },
+  "[\"Combat\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\combat_ca.paa\"]"
+  },
+  "[\"CombatMode\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\attack_ca.paa\"]"
+  },
+  "[\"Command\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Clacker.paa\"]",
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\waypoint_ca.paa\"]"
+  },
+  "[\"Copy\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\copy_ca.paa\"]"
+  },
+  "[\"Cross\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\cross_ca.paa\"]"
+  },
+  "[\"CustomMark\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\custommark_ca.paa\"]"
+  },
+  "[\"DeadManSwitch\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\DeadmanSwitch.paa\"]"
+  },
+  "[\"Diamond\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\diamond_ca.paa\"]"
+  },
+  "[\"Down\"]": {
+   "icon": "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_prone_ca.paa\"]"
+  },
+  "[\"EchLeft\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\ech_left_ca.paa\"]"
+  },
+  "[\"EchRight\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\ech_right_ca.paa\"]"
+  },
+  "[\"Edit\"]": {
+   "icon": "[\"\\a3\\3DEN\\Data\\Displays\\Display3DEN\\PanelRight\\customcomposition_edit_ca.paa\"]"
+  },
+  "[\"EditableObjects\"]": {
+   "icon": "[\"\\x\\zen\\addons\\modules\\ui\\edit_obj_ca.paa\"]"
+  },
+  "[\"File\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\file_ca.paa\"]"
+  },
+  "[\"FireArtillery\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\gui\\cfg\\communicationmenu\\artillery_ca.paa\"]"
+  },
+  "[\"Formation\"]": {
+   "icon": "[\"\\a3\\3den\\data\\displays\\display3den\\entitymenu\\movetoformation_ca.paa\"]"
+  },
+  "[\"Fortress\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\bunker_ca.paa\"]"
+  },
+  "[\"Fountain\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\fountain_ca.paa\"]"
+  },
+  "[\"Fuelstation\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\fuelstation_ca.paa\"]"
+  },
+  "[\"Full\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\full_ca.paa\"]"
+  },
+  "[\"Grave\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\grave.paa\"]"
+  },
+  "[\"Green\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\defend_ca.paa\"]"
+  },
+  "[\"Group\"]": {
+   "picture": "[\"\\a3\\ui_f_curator\\data\\displays\\rscdisplaycurator\\modegroups_ca.paa\"]"
+  },
+  "[\"Handgun\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\handgun_ca.paa\"]"
+  },
+  "[\"HealUnits\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\medical_cross_ca.paa\"]"
+  },
+  "[\"Hospital\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\hospital_ca.paa\"]"
+  },
+  "[\"IRSensor\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\PressurePlate.paa\"]"
+  },
+  "[\"Independent\"]": {
+   "picture": "[\"\\x\\zen\\addons\\common\\ui\\icon_independent_ca.paa\"]"
+  },
+  "[\"Inventory\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeInventory\\filter_0_ca.paa\"]"
+  },
+  "[\"Lighthouse\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\lighthouse_ca.paa\"]"
+  },
+  "[\"Limited\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\limited_ca.paa\"]"
+  },
+  "[\"Line\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\line_ca.paa\"]"
+  },
+  "[\"Loadout\"]": {
+   "icon": "[\"\\a3\\3den\\data\\displays\\display3den\\entitymenu\\arsenal_ca.paa\"]"
+  },
+  "[\"MK16_Transmitter\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\MK16_Reciever_ca.paa\"]"
+  },
+  "[\"Middle\"]": {
+   "icon": "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_crouch_ca.paa\"]"
+  },
+  "[\"Morphine\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\auto_injector.paa\"]"
+  },
+  "[\"Normal\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\normal_ca.paa\"]"
+  },
+  "[\"OPFOR\"]": {
+   "picture": "[\"\\x\\zen\\addons\\common\\ui\\icon_opfor_ca.paa\"]"
+  },
+  "[\"OT_fuckNATOBlack\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlack.paa\"]"
+  },
+  "[\"OT_fuckNATOBlue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlue.paa\"]"
+  },
+  "[\"OT_fuckNATOGreen\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingGreen.paa\"]"
+  },
+  "[\"OT_fuckNATORed\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingRed.paa\"]"
+  },
+  "[\"OT_goHomeBlack\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlack.paa\"]"
+  },
+  "[\"OT_goHomeBlue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlue.paa\"]"
+  },
+  "[\"OT_goHomeGreen\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingGreen.paa\"]"
+  },
+  "[\"OT_goHomeRed\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingRed.paa\"]"
+  },
+  "[\"OT_joinBlack\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlack.paa\"]"
+  },
+  "[\"OT_joinBlue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlue.paa\"]"
+  },
+  "[\"OT_joinGreen\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingGreen.paa\"]"
+  },
+  "[\"OT_joinRed\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingRed.paa\"]"
+  },
+  "[\"OT_overthrowBlack\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlack.paa\"]"
+  },
+  "[\"OT_overthrowBlue\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingBlue.paa\"]"
+  },
+  "[\"OT_overthrowGreen\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingGreen.paa\"]"
+  },
+  "[\"OT_overthrowRed\"]": {
+   "icon": "[\"\\z\\ace\\addons\\tagging\\UI\\icons\\iconTaggingRed.paa\"]"
+  },
+  "[\"PackingBandage\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\packing_bandage.paa\"]"
+  },
+  "[\"Painkillers\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\painkillers.paa\"]"
+  },
+  "[\"Paste\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\paste_ca.paa\"]"
+  },
+  "[\"PowerSolar\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powersolar_ca.paa\"]"
+  },
+  "[\"PowerWave\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powerwave_ca.paa\"]"
+  },
+  "[\"PowerWind\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powerwind_ca.paa\"]"
+  },
+  "[\"PressurePlate\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\PressurePlate.paa\"]"
+  },
+  "[\"Primary\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\GUI\\Rsc\\RscDisplayArsenal\\primaryWeapon_ca.paa\"]"
+  },
+  "[\"Quay\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\quay_ca.paa\"]"
+  },
+  "[\"Rearm\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\rearm_ca.paa\"]"
+  },
+  "[\"Red\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\engage_ca.paa\"]"
+  },
+  "[\"Refuel\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\refuel_ca.paa\"]"
+  },
+  "[\"RemoteControl\"]": {
+   "icon": "[\"\\a3\\modules_f_curator\\data\\portraitremotecontrol_ca.paa\"]"
+  },
+  "[\"Remove\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\remove_ca.paa\"]"
+  },
+  "[\"Repair\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\repair_ca.paa\"]"
+  },
+  "[\"Reset\"]": {
+   "icon": "[\"\\a3\\3den\\Data\\Displays\\Display3DEN\\ToolBar\\undo_ca.paa\"]"
+  },
+  "[\"Rock\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\rock_ca.paa\"]"
+  },
+  "[\"Ruin\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\ruin_ca.paa\"]"
+  },
+  "[\"Safe\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\safe_ca.paa\"]"
+  },
+  "[\"Selected\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\remove_ca.paa\"]"
+  },
+  "[\"Shipwreck\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\shipwreck_ca.paa\"]"
+  },
+  "[\"SmallTree\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\bush_ca.paa\"]"
+  },
+  "[\"SpeedMode\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\normal_ca.paa\"]"
+  },
+  "[\"Splint\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\splint.paa\"]"
+  },
+  "[\"Stack\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\stack_ca.paa\"]"
+  },
+  "[\"StagColumn\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\stag_column_ca.paa\"]"
+  },
+  "[\"Stance\"]": {
+   "icon": "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_stand_ca.paa\"]"
+  },
+  "[\"Stealth\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\stealth_ca.paa\"]"
+  },
+  "[\"SurgicalKit\"]": {
+   "icon": "[\"\\z\\ace\\addons\\medical_gui\\ui\\surgical_kit.paa\"]"
+  },
+  "[\"SwitchWeapon\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\IGUI\\Cfg\\Actions\\reammo_ca.paa\"]"
+  },
+  "[\"Task\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\taskIcon_ca.paa\"]"
+  },
+  "[\"TeleportPlayers\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\marker_ca.paa\"]"
+  },
+  "[\"TeleportZeus\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\Logos\\arma3_curator_eye_256_ca.paa\"]"
+  },
+  "[\"ThrowGrenade\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\grenade_ca.paa\"]"
+  },
+  "[\"Timer\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\data\\UI\\Timer.paa\"]"
+  },
+  "[\"ToggleCaptive\"]": {
+   "icon": "[\"\\z\\ace\\addons\\captives\\UI\\handcuff_ca.paa\"]"
+  },
+  "[\"ToggleSurrender\"]": {
+   "icon": "[\"\\z\\ace\\addons\\captives\\UI\\Surrender_ca.paa\"]"
+  },
+  "[\"Tourism\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\tourism_ca.paa\"]"
+  },
+  "[\"Transmitter\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\transmitter_ca.paa\"]"
+  },
+  "[\"Tree\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\bush_ca.paa\"]"
+  },
+  "[\"Tripwire\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Tripwire.paa\"]"
+  },
+  "[\"Tripwire_Airburst\"]": {
+   "picture": "[\"\\z\\ace\\addons\\explosives\\Data\\UI\\Tripwire.paa\"]"
+  },
+  "[\"UnloadViV\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\IGUI\\Cfg\\Actions\\unloadVehicle_ca.paa\"]"
+  },
+  "[\"Up\"]": {
+   "icon": "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_stand_ca.paa\"]"
+  },
+  "[\"Vee\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\vee_ca.paa\"]"
+  },
+  "[\"VehicleAppearance\"]": {
+   "icon": "[\"\\a3\\3den\\data\\displays\\display3den\\entitymenu\\garage_ca.paa\"]"
+  },
+  "[\"VehicleLogistics\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\igui\\cfg\\simpleTasks\\types\\truck_ca.paa\"]"
+  },
+  "[\"ViewTower\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\viewtower_ca.paa\"]"
+  },
+  "[\"Watertower\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\watertower_ca.paa\"]"
+  },
+  "[\"Waypoint\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\waypoint_ca.paa\"]"
+  },
+  "[\"WaypointCompleted\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\waypointCompleted_ca.paa\"]"
+  },
+  "[\"WaypointSetter\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\waypointsetter_ca.paa\"]"
+  },
+  "[\"Wedge\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\wedge_ca.paa\"]"
+  },
+  "[\"White\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\engage_ca.paa\"]"
+  },
+  "[\"Yellow\"]": {
+   "icon": "[\"\\x\\zen\\addons\\context_actions\\ui\\hold_ca.paa\"]"
+  },
+  "[\"ZeusGroups\"]": {
+   "icon": "[\"\\a3\\ui_f_curator\\data\\displays\\rscdisplaycurator\\modegroups_ca.paa\"]"
+  },
+  "[\"ZeusMarkers\"]": {
+   "icon": "[\"\\A3\\UI_F_Curator\\Data\\Displays\\RscDisplayCurator\\modeMarkers_ca.paa\"]"
+  },
+  "[\"ZeusUnits\"]": {
+   "icon": "[\"\\A3\\ui_f_curator\\Data\\Displays\\RscDisplayCurator\\modeUnits_ca.paa\"]"
+  },
+  "[\"ZeusWaypoints\"]": {
+   "icon": "[\"\\A3\\UI_F_Curator\\Data\\Displays\\RscDisplayCurator\\modeRecent_ca.paa\"]"
+  },
+  "[\"ace_arsenal_display\"]": {
+   "icon": "[\"\\A3\\Ui_f\\data\\Logos\\a_64_ca.paa\"]",
+   "logo": "[\"\\A3\\Ui_f\\data\\Logos\\arsenal_1024_ca.paa\"]"
+  },
+  "[\"ace_interaction_repair\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\igui\\cfg\\actions\\repair_ca.paa\"]"
+  },
+  "[\"ace_rearm_rearm\"]": {
+   "icon": "[\"\\z\\ace\\addons\\rearm\\ui\\icon_rearm_interact.paa\"]"
+  },
+  "[\"auto\"]": {
+   "icon": "[\"\\A3\\UI_F_Curator\\Data\\default_ca.paa\"]"
+  },
+  "[\"aware\"]": {
+   "icon": "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\aware_ca.paa\"]"
+  },
+  "[\"busstop\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\busstop_ca.paa\"]"
+  },
+  "[\"church\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\church_ca.paa\"]"
+  },
+  "[\"column\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\column_ca.paa\"]"
+  },
+  "[\"combat\"]": {
+   "icon": "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\combat_ca.paa\"]"
+  },
+  "[\"crouch\"]": {
+   "icon": "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_crouch_ca.paa\"]"
+  },
+  "[\"diamond\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\diamond_ca.paa\"]"
+  },
+  "[\"ech_left\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\ech_left_ca.paa\"]"
+  },
+  "[\"ech_right\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\ech_right_ca.paa\"]"
+  },
+  "[\"file\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\file_ca.paa\"]"
+  },
+  "[\"fuelstation\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\fuelstation_ca.paa\"]"
+  },
+  "[\"full\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\full_ca.paa\"]"
+  },
+  "[\"hospital\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\hospital_ca.paa\"]"
+  },
+  "[\"lighthouse\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\lighthouse_ca.paa\"]"
+  },
+  "[\"limited\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\limited_ca.paa\"]"
+  },
+  "[\"line\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\line_ca.paa\"]"
+  },
+  "[\"normal\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeSpeedMode\\normal_ca.paa\"]"
+  },
+  "[\"power\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\power_CA.paa\"]"
+  },
+  "[\"powersolar\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powersolar_ca.paa\"]"
+  },
+  "[\"powerwave\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powerwave_ca.paa\"]"
+  },
+  "[\"powerwind\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\powerwind_ca.paa\"]"
+  },
+  "[\"prone\"]": {
+   "icon": "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_prone_ca.paa\"]"
+  },
+  "[\"quay\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\quay_ca.paa\"]"
+  },
+  "[\"remoteControl\"]": {
+   "icon": "[\"\\a3\\modules_f_curator\\data\\portraitremotecontrol_ca.paa\"]"
+  },
+  "[\"safe\"]": {
+   "icon": "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\safe_ca.paa\"]"
+  },
+  "[\"shipwreck\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\shipwreck_ca.paa\"]"
+  },
+  "[\"stag_column\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\stag_column_ca.paa\"]"
+  },
+  "[\"stand\"]": {
+   "icon": "[\"\\a3\\Ui_f\\data\\IGUI\\RscIngameUI\\RscUnitInfo\\SI_stand_ca.paa\"]"
+  },
+  "[\"stealth\"]": {
+   "icon": "[\"\\A3\\UI_F_Curator\\Data\\RscCommon\\RscAttributeBehaviour\\stealth_ca.paa\"]"
+  },
+  "[\"transmitter\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\transmitter_ca.paa\"]"
+  },
+  "[\"vee\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\vee_ca.paa\"]"
+  },
+  "[\"watertower\"]": {
+   "icon": "[\"\\A3\\ui_f\\data\\map\\mapcontrol\\watertower_ca.paa\"]"
+  },
+  "[\"wedge\"]": {
+   "icon": "[\"\\a3\\Ui_F_Curator\\Data\\RscCommon\\RscAttributeFormation\\wedge_ca.paa\"]"
+  },
+  "[\"zen_doors_state\"]": {
+   "icon": "[\"\\a3\\ui_f\\data\\igui\\cfg\\actions\\open_door_ca.paa\"]"
+  }
+ }
+}
