@@ -34,7 +34,7 @@ while { count _pilha > 0 } do {
             private _v = getText _p;
             private _b = toLower _v;
             if (_b find ".paa" > -1 || _b find ".pac" > -1) then {
-                private _limpo = [_v] call _fnc_lim;
+                private _limpo = (_v) call _fnc_lim;
                 private _chave = toLower _limpo;
                 private _id = _mapa getOrDefault [_chave, -1];
                 if (_id < 0) then {
@@ -46,7 +46,7 @@ while { count _pilha > 0 } do {
                 private _nome = toLower (configName _p);
                 if (_nome in _RETRATO) then {
                     diag_log text (format ["<<A3ICO>>R|%1|%2|%3",
-                        [configName _c] call _fnc_lim, _nome, _id]);
+                        (configName _c) call _fnc_lim, _nome, _id]);
                     _nVinculos = _nVinculos + 1;
                 };
             };

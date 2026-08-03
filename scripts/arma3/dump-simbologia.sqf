@@ -21,9 +21,9 @@ private _nM = 0; private _nC = 0; private _nR = 0; private _nI = 0;
     private _c = _x;
     diag_log text (format ["<<A3SIMB>>M|%1|%2|%3|%4|%5|%6|%7",
         configName _c,
-        [getText (_c >> "name")] call _fnc_lim,
-        [getText (_c >> "icon")] call _fnc_lim,
-        [getText (_c >> "color")] call _fnc_lim,
+        (getText (_c >> "name")) call _fnc_lim,
+        (getText (_c >> "icon")) call _fnc_lim,
+        (getText (_c >> "color")) call _fnc_lim,
         (_c >> "size") call _fnc_num,
         (_c >> "scope") call _fnc_num,
         (_c >> "shadow") call _fnc_num]);
@@ -40,7 +40,7 @@ private _nM = 0; private _nC = 0; private _nR = 0; private _nI = 0;
 
     diag_log text (format ["<<A3SIMB>>MC|%1|%2|%3|%4|%5|%6",
         configName _c,
-        [getText (_c >> "name")] call _fnc_lim,
+        (getText (_c >> "name")) call _fnc_lim,
         _v select 0, _v select 1, _v select 2, _v select 3]);
     _nC = _nC + 1;
 } forEach ("true" configClasses (configFile >> "CfgMarkerColors"));
@@ -49,8 +49,8 @@ private _nM = 0; private _nC = 0; private _nR = 0; private _nI = 0;
     private _c = _x;
     diag_log text (format ["<<A3SIMB>>R|%1|%2|%3",
         configName _c,
-        [getText (_c >> "displayName")] call _fnc_lim,
-        [getText (_c >> "texture")] call _fnc_lim]);
+        (getText (_c >> "displayName")) call _fnc_lim,
+        (getText (_c >> "texture")) call _fnc_lim]);
     _nR = _nR + 1;
 } forEach ("true" configClasses (configFile >> "CfgRanks"));
 
@@ -58,9 +58,9 @@ private _nM = 0; private _nC = 0; private _nR = 0; private _nI = 0;
     private _c = _x;
     diag_log text (format ["<<A3SIMB>>I|%1|%2|%3|%4",
         configName _c,
-        [getText (_c >> "displayName")] call _fnc_lim,
-        [getText (_c >> "texture")] call _fnc_lim,
-        [getText (_c >> "author")] call _fnc_lim]);
+        (getText (_c >> "displayName")) call _fnc_lim,
+        (getText (_c >> "texture")) call _fnc_lim,
+        (getText (_c >> "author")) call _fnc_lim]);
     _nI = _nI + 1;
 } forEach ("true" configClasses (configFile >> "CfgUnitInsignia"));
 

@@ -34,20 +34,20 @@ private _nUnidades = 0;
     {
         private _cfgFac = _x;
         private _faccao = configName _cfgFac;
-        private _nomeFac = [getText (_cfgFac >> "name")] call _fnc_lim;
+        private _nomeFac = (getText (_cfgFac >> "name")) call _fnc_lim;
         diag_log text (format ["<<A3GRUPO>>F|%1|%2|%3", _lado, _faccao, _nomeFac]);
 
         {
             private _cfgCat = _x;
             private _categoria = configName _cfgCat;
-            private _nomeCat = [getText (_cfgCat >> "name")] call _fnc_lim;
+            private _nomeCat = (getText (_cfgCat >> "name")) call _fnc_lim;
             diag_log text (format ["<<A3GRUPO>>C|%1|%2|%3|%4", _lado, _faccao, _categoria, _nomeCat]);
 
             {
                 private _cfgGrp = _x;
                 private _classe = configName _cfgGrp;
                 private _id = format ["%1/%2/%3/%4", _lado, _faccao, _categoria, _classe];
-                private _nome = [getText (_cfgGrp >> "name")] call _fnc_lim;
+                private _nome = (getText (_cfgGrp >> "name")) call _fnc_lim;
 
                 diag_log text (format ["<<A3GRUPO>>G|%1|%2|%3|%4|%5|%6",
                     _id, _lado, _faccao, _categoria, _classe, _nome]);
@@ -55,21 +55,21 @@ private _nUnidades = 0;
                 private _unidades = [];
                 {
                     private _u = _x;
-                    private _tipo = [getText (_u >> "vehicle")] call _fnc_lim;
+                    private _tipo = (getText (_u >> "vehicle")) call _fnc_lim;
                     if (_tipo != "") then {
                         private _cfgV = configFile >> "CfgVehicles" >> _tipo;
                         _unidades pushBack [
                             configName _u,
                             _tipo,
-                            [if (isClass _cfgV) then { getText (_cfgV >> "displayName") } else { "" }] call _fnc_lim,
-                            [getText (_u >> "rank")] call _fnc_lim,
+                            (if (isClass _cfgV) then { getText (_cfgV >> "displayName") } else { "" }) call _fnc_lim,
+                            (getText (_u >> "rank")) call _fnc_lim,
                             if (isNumber (_u >> "position")) then { getNumber (_u >> "position") } else { -1 }
                         ];
                         _nUnidades = _nUnidades + 1;
                     };
                 } forEach ("true" configClasses _cfgGrp);
 
-                ["GU", _id, [str _unidades] call _fnc_lim] call _fnc_pedacos;
+                ["GU", _id, (str _unidades) call _fnc_lim] call _fnc_pedacos;
                 _nGrupos = _nGrupos + 1;
             } forEach ("true" configClasses _cfgCat);
         } forEach ("true" configClasses _cfgFac);

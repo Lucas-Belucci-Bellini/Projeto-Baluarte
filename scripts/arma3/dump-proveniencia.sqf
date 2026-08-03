@@ -33,13 +33,13 @@ private _nP = 0; private _nM = 0;
 
     diag_log text (format ["<<A3PROV>>P|%1|%2|%3|%4",
         _addon,
-        [getText (_c >> "author")] call _fnc_lim,
-        [getText (_c >> "name")] call _fnc_lim,
+        (getText (_c >> "author")) call _fnc_lim,
+        (getText (_c >> "name")) call _fnc_lim,
         (_c >> "requiredVersion") call _fnc_num]);
 
-    ["PR", _addon, [str (getArray (_c >> "requiredAddons"))] call _fnc_lim] call _fnc_pedacos;
-    ["PU", _addon, [str (getArray (_c >> "units"))] call _fnc_lim] call _fnc_pedacos;
-    ["PW", _addon, [str (getArray (_c >> "weapons"))] call _fnc_lim] call _fnc_pedacos;
+    ["PR", _addon, (str (getArray (_c >> "requiredAddons"))) call _fnc_lim] call _fnc_pedacos;
+    ["PU", _addon, (str (getArray (_c >> "units"))) call _fnc_lim] call _fnc_pedacos;
+    ["PW", _addon, (str (getArray (_c >> "weapons"))) call _fnc_lim] call _fnc_pedacos;
     _nP = _nP + 1;
 } forEach ("true" configClasses (configFile >> "CfgPatches"));
 
@@ -47,12 +47,12 @@ private _nP = 0; private _nM = 0;
     private _c = _x;
     diag_log text (format ["<<A3PROV>>M|%1|%2|%3|%4|%5|%6|%7",
         configName _c,
-        [getText (_c >> "name")] call _fnc_lim,
-        [getText (_c >> "dir")] call _fnc_lim,
-        [getText (_c >> "author")] call _fnc_lim,
+        (getText (_c >> "name")) call _fnc_lim,
+        (getText (_c >> "dir")) call _fnc_lim,
+        (getText (_c >> "author")) call _fnc_lim,
         (_c >> "appId") call _fnc_num,
-        [str (getArray (_c >> "dlcColor"))] call _fnc_lim,
-        [getText (_c >> "logo")] call _fnc_lim]);
+        (str (getArray (_c >> "dlcColor"))) call _fnc_lim,
+        (getText (_c >> "logo")) call _fnc_lim]);
     _nM = _nM + 1;
 } forEach ("true" configClasses (configFile >> "CfgMods"));
 

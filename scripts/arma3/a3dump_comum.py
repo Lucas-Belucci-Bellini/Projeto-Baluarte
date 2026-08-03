@@ -82,13 +82,40 @@ def achar_rpt(marca, oquefalta):
     return escolhido[2]
 
 
+def desembrulhar(v):
+    """`["texto"]` -> `texto`. Conserta dump feito com o `.sqf` da leva errada.
+
+    Os dumps da segunda leva chamavam o helper de limpeza como
+    `[x] call _fnc_lim`. Em SQF isso faz `_this` ser o ARRAY `[x]`, e o helper,
+    que só sabe limpar string, cai no `exitWith { str _s }` e devolve a
+    representação do array: `["texto"]`.
+
+    O estrago não é só feio. Campo AUSENTE virava `[""]` em vez de `""` — ou
+    seja, "o config não declara" passava a parecer "declara e está vazio",
+    que é justamente a distinção que esta pipeline existe para preservar.
+
+    Desembrulhar aqui, e não em cada parser, é o que permite reaproveitar um
+    `.rpt` já gravado: o `.sqf` foi corrigido, mas quem já rodou o dump antigo
+    só precisa reprocessar o log, sem voltar ao jogo.
+
+    Só desfaz o caso inequívoco (`["` … `"]`). Dump antigo nunca casa: o
+    `_fnc_lim` deles troca aspas duplas por simples, então array serializado
+    lá sai como `['a','b']`.
+    """
+    if not isinstance(v, str) or len(v) < 4:
+        return v
+    if v.startswith('["') and v.endswith('"]'):
+        return v[2:-2].replace('""', '"')
+    return v
+
+
 def registros(caminho, marca):
     """Gera `(tipo, campos)` de cada linha marcada, na ordem do log.
 
     `campos` é a lista já separada por `|`. Linha truncada pelo log vira aviso,
     não silêncio — é o defeito que mais custou caro nesta pipeline.
     """
-    truncadas = 0
+    truncadas = embrulhadas = 0
     with open(caminho, encoding='cp1252', errors='replace') as f:
         for linha in f:
             i = linha.find(marca)
@@ -98,10 +125,16 @@ def registros(caminho, marca):
             if len(linha.rstrip('\n\r')) >= LIMITE_LOG:
                 truncadas += 1
             partes = corpo.split('|')
-            yield partes[0], partes[1:]
+            limpas = [desembrulhar(p) for p in partes[1:]]
+            embrulhadas += sum(1 for a, b in zip(partes[1:], limpas) if a != b)
+            yield partes[0], limpas
     if truncadas:
         print(f'  ! {truncadas} linha(s) no limite de {LIMITE_LOG} caracteres — '
               f'possível truncamento. Confira o dump se algum campo vier cortado.')
+    if embrulhadas:
+        print(f'  ! {embrulhadas} campo(s) vieram como ["texto"] e foram '
+              f'desembrulhados — este .rpt saiu de um .sqf com o defeito do '
+              f'[x] call _fnc_lim. O dado está correto; o .sqf já foi consertado.')
 
 
 class Pedacos:

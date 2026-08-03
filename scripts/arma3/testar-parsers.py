@@ -20,6 +20,7 @@ Rodar:  python scripts/arma3/testar-parsers.py
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -260,6 +261,74 @@ def conferir(nome, d):
     return p
 
 
+def conferir_desembrulho():
+    """`[x] call _fnc_lim` embrulhava TODO texto — o terceiro defeito da leva.
+
+    Em SQF, `[x] call f` faz `_this` ser o array `[x]`. O `_fnc_lim` só sabe
+    limpar string, cai no `exitWith { str _s }` e devolve `["texto"]`. Passou
+    por dois testes verdes porque o `.rpt` sintético era escrito à mão, com os
+    valores já limpos: mais uma vez, o formato estava provado e o transporte
+    não."""
+    from a3dump_comum import desembrulhar
+    p = []
+
+    casos = [
+        ('["Economic Victory Marker"]', 'Economic Victory Marker'),
+        (r'["\A3\Ui_f\data\GUI\Cfg\Ranks\private_gs.paa"]',
+         r'\A3\Ui_f\data\GUI\Cfg\Ranks\private_gs.paa'),
+        ('[""]', ''),                       # o pior: ausência virava presença
+        ('["[US] 101st Airborne - OCP"]', '[US] 101st Airborne - OCP'),
+        ('["diz ""oi"" assim"]', 'diz "oi" assim'),
+    ]
+    for entrada, esperado in casos:
+        obtido = desembrulhar(entrada)
+        if obtido != esperado:
+            p.append(f'{entrada!r} -> {obtido!r}, esperado {esperado!r}')
+
+    # dump ANTIGO nunca pode ser mexido: o _fnc_lim dele troca " por ', então
+    # array serializado sai com aspas simples e não casa com o padrão
+    intactos = ["['a','b']", 'texto simples', '', '[]', '[1,2]',
+                r'\a3\ui\gear_ca.paa', '["sem fecho', 'sem abertura"]']
+    for v in intactos:
+        if desembrulhar(v) != v:
+            p.append(f'mexeu no que não devia: {v!r} -> {desembrulhar(v)!r}')
+
+    for v in (None, 42, [], {'a': 1}):
+        if desembrulhar(v) != v:
+            p.append(f'não-string deveria passar intacto: {v!r}')
+
+    if p:
+        print('  ✗ desembrulho de campo')
+        for x in p:
+            print(f'      - {x}')
+        return False
+    print('  ✓ campo embrulhado em ["texto"] é desfeito, e o resto fica intacto')
+    return True
+
+
+def conferir_sqf_sem_array_no_lim():
+    """A guarda que impede o defeito de voltar.
+
+    `(x) call _fnc_lim` passa a string; `[x] call _fnc_lim` passa um array e
+    estraga o valor. A diferença é um caractere e não dá erro nenhum — some
+    dentro de um dump de 900 linhas e só aparece quando alguém repara que todo
+    caminho está embrulhado."""
+    import glob
+    ruins = []
+    for caminho in sorted(glob.glob(os.path.join(AQUI, 'dump-*.sqf'))):
+        with open(caminho, encoding='ascii') as f:
+            for n, linha in enumerate(f, 1):
+                if re.search(r'\[[^\[\]]*\]\s+call\s+_fnc_lim', linha):
+                    ruins.append(f'{os.path.basename(caminho)}:{n}')
+    if ruins:
+        print(f'  ✗ {len(ruins)} chamada(s) de _fnc_lim com ARRAY em vez de string')
+        for r in ruins[:5]:
+            print(f'      - {r}   use (x) call _fnc_lim, não [x] call')
+        return False
+    print('  ✓ todo _fnc_lim recebe string, não array')
+    return True
+
+
 def conferir_sqf_ascii():
     """Todo .sqf tem de ser ASCII PURO.
 
@@ -318,6 +387,10 @@ def main():
         print('    onde acento quebra a codificacao e // engole o resto do script.')
     else:
         print('  ✓ os .sqf são ASCII puro e sem comentário')
+    if not conferir_sqf_sem_array_no_lim():
+        ruins = ruins or [('_fnc_lim', 'recebeu array')]
+    if not conferir_desembrulho():
+        ruins = ruins or [('desembrulhar', 'não desfaz o embrulho')]
     print()
     falhas = 0
     for nome, (marca, script, saida, linhas) in DUMPS.items():
