@@ -30,9 +30,16 @@ OUT = os.path.join(AQUI, 'out')
 
 
 class Categoria:
-    """Uma leva de imagens: de que dump sai, que campo ler, onde gravar."""
+    """Uma leva de imagens: de que dump sai, que campo ler, onde gravar.
 
-    def __init__(self, nome, dump, fontes, destino, peso, mapa, sobre):
+    `chave` só importa quando a seção do dump é LISTA. Os parsers antigos
+    escrevem `{classe: {...}}` e os novos escrevem `[{classe: ..., ...}]` —
+    as duas formas convivem, e quem lê precisa saber qual campo do item é o
+    nome dele. Declarado em vez de adivinhado: chutar 'classe' e cair em
+    string vazia juntaria todas as entradas numa só, calado."""
+
+    def __init__(self, nome, dump, fontes, destino, peso, mapa, sobre,
+                 chave='classe'):
         self.nome = nome
         self.dump = dump              # arquivo em out/
         self.fontes = fontes          # [(secao, campo)]
@@ -40,6 +47,7 @@ class Categoria:
         self.peso = peso              # 'web' (vai pro site) | 'app' (fica fora)
         self.mapa = mapa              # arquivo de saída em out/
         self.sobre = sobre
+        self.chave = chave            # só usado quando a seção é lista
 
     @property
     def destino_abs(self):
@@ -92,7 +100,7 @@ CATEGORIAS = [
     Categoria(
         'dlc', 'arma3-proveniencia.json', [('mods', 'logo')],
         'public/arma3/icones/dlc', 'web', 'imagens-dlc.json',
-        'logo de cada DLC e mod'),
+        'logo de cada DLC e mod', chave='mod'),
 
     Categoria(
         'manual', 'arma3-manual.json', [('topicos', 'imagem')],
@@ -179,6 +187,28 @@ def nomear(virtuais):
     return nomes
 
 
+def registros(secao, chave='classe'):
+    """[(nome, item)] a partir de uma seção de dump, seja ela dict ou lista.
+
+    Os parsers antigos escrevem `{classe: {...}}`; os que vieram depois
+    (simbologia, proveniência, manual) escrevem `[{classe: ..., ...}]`. Assumir
+    dicionário quebrava com `AttributeError` no instante em que o operador
+    rodasse um dos dumps novos — e como esses dumps não existem no repositório,
+    nenhum teste tocava nesse caminho."""
+    if isinstance(secao, dict):
+        return [(nome, e) for nome, e in secao.items() if isinstance(e, dict)]
+    if isinstance(secao, list):
+        saida = []
+        for e in secao:
+            if not isinstance(e, dict):
+                continue
+            nome = e.get(chave)
+            if nome:                  # sem nome não dá para mapear classe→imagem
+                saida.append((nome, e))
+        return saida
+    return []
+
+
 def alvos(categoria, carregar):
     """{caminho virtual: [classes que usam]} de uma categoria.
 
@@ -192,9 +222,7 @@ def alvos(categoria, carregar):
 
     saida = {}
     for secao, campo in categoria.fontes:
-        for classe, e in (dump.get(secao) or {}).items():
-            if not isinstance(e, dict):
-                continue
+        for classe, e in registros(dump.get(secao), categoria.chave):
             v = normalizar(e.get(campo))
             if v:
                 saida.setdefault(v, []).append(classe)

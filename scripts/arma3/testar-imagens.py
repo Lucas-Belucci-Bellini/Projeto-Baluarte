@@ -137,6 +137,36 @@ def teste_ausencia_nao_e_vazio():
            f'{r}')
 
 
+def teste_secao_lista():
+    """Os dumps NOVOS escrevem lista, não dicionário.
+
+    `simbologia`, `proveniencia` e `manual` emitem `[{classe: ..., ...}]`
+    enquanto os antigos emitem `{classe: {...}}`. Assumir dicionário estourava
+    com `AttributeError` — e como esses dumps não existem no repositório,
+    nenhum teste passava por esse caminho até o CI tropeçar nele."""
+    simb = next(c for c in CATEGORIAS if c.nome == 'simbologia')
+    dump = {'marcadores': [{'classe': 'b_inf', 'icone': r'\ui\b_inf.paa'},
+                           {'classe': 'sem_icone', 'icone': ''},
+                           {'icone': r'\ui\orfao.paa'}],       # sem chave
+            'patentes': [{'classe': 'PRIVATE', 'textura': r'\ui\pvt.paa'}],
+            'insignias': []}
+    r = alvos(simb, lambda _: dump)
+    checar(r == {r'ui\b_inf.paa': ['b_inf'], r'ui\pvt.paa': ['PRIVATE']},
+           'seção em LISTA é lida igual à seção em dicionário', f'{r}')
+    checar(all(c for cs in r.values() for c in cs),
+           'item de lista sem o campo-chave é descartado, não vira classe ""')
+
+    # a proveniência chama de `mod` o que as outras chamam de `classe`
+    dlc = next(c for c in CATEGORIAS if c.nome == 'dlc')
+    r = alvos(dlc, lambda _: {'mods': [{'mod': 'Expansion', 'logo': r'\a\l.paa'}]})
+    checar(r == {r'a\l.paa': ['Expansion']},
+           'categoria declara a própria chave (mods usa `mod`, não `classe`)',
+           f'{r}')
+
+    r = alvos(simb, lambda _: {'marcadores': 'isto não é seção'})
+    checar(r == {}, 'seção de tipo inesperado devolve vazio em vez de estourar')
+
+
 # ------------------------------------------------------------- o catálogo
 
 def teste_catalogo_coerente():
@@ -189,7 +219,15 @@ def teste_contra_os_dumps_reais():
     total = 0
     rodou = []
     for cat in CATEGORIAS:
-        a = alvos(cat, carregar)
+        # Uma seção com forma inesperada estourava aqui como traceback cru, sem
+        # dizer QUAL categoria. Foi assim que o CI reprovou, e o log não dizia
+        # onde olhar. Erro de leitura é falha desta categoria, não do teste.
+        try:
+            a = alvos(cat, carregar)
+        except Exception as err:
+            checar(False, f'[{cat.nome}] não consegui ler {cat.dump}',
+                   f'{type(err).__name__}: {err}')
+            continue
         if a is None:
             continue
         nomes = nomear(list(a))
@@ -217,6 +255,7 @@ def main():
     teste_normalizar()
     print('\n3. leitura do dump')
     teste_ausencia_nao_e_vazio()
+    teste_secao_lista()
     print('\n4. o catálogo')
     teste_catalogo_coerente()
     print('\n5. contra os dumps reais')
