@@ -15,6 +15,7 @@
     "mobile:sync": "vite build && cap sync android",
     "mobile:open": "cap open android",
     "verificar-nexus": "node scripts/verificar-nexus.mjs",
+    "verificar-gerados": "node scripts/verificar-gerados.mjs",
     "gen-arma3-totais": "node scripts/gerar-arma3-totais.mjs",
     "testar-parsers-arma3": "python3 scripts/arma3/testar-parsers.py",
     "testar-imagens-arma3": "python3 scripts/arma3/testar-imagens.py",

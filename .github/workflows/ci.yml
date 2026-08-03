@@ -56,6 +56,14 @@ jobs:
       - name: O mapa do Nexus bate com as rotas reais?
         run: npm run verificar-nexus
 
+      # 2,2 MB de tabela despejada do Arma 3 moram em .js. Sem
+      # linguist-generated no .gitattributes o GitHub conta isso como
+      # JavaScript escrito a mao — 45,7% do JS de src/ — e a barra de
+      # linguagens do repo (e o README do perfil, que bebe dela) mentem.
+      # Lista de caminhos apodrece: aqui ela e cobrada contra os geradores.
+      - name: O .gitattributes acompanha os geradores?
+        run: npm run verificar-gerados
+
       # O orquestrador é o que recusa módulo torto ANTES de o sistema montar.
       # Se ele deixar passar rota duplicada ou ciclo, a falha aparece meia tela
       # depois, em runtime, sem dizer de quem é a culpa.
