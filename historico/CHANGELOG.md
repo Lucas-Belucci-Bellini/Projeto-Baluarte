@@ -196,6 +196,87 @@ impossível** — procurava o nome do tipo num dado de onde o tipo já tinha sid
 removido, e por isso passava com o defeito presente. Trocado pela asserção do
 conjunto exato de classes, que pega `ANDAMENTO` e `PLACAR` virando retrato.
 
+### ⚙️ `npm run atualizar-arma3` — um comando que só mexe no que mudou
+
+O pipeline tinha treze parsers, um extrator de imagem e sete geradores de base,
+cada um chamado à mão. Agora há um comando que percorre o grafo inteiro e roda
+só o que ficou para trás.
+
+O ganho maior não é a conveniência. `achar_rpt` lia **cada `.rpt` inteiro**
+procurando **uma** marca; chamado pelos treze parsers, eram treze leituras
+completas de uma pasta cujos arquivos passam de 1 GB. Agora é uma passada,
+procurando as treze marcas ao mesmo tempo.
+
+| degrau | como decide |
+|---|---|
+| parse | cada `out/*.json` guarda em `fonte` o `.rpt` de onde saiu — mesmo nome e mais velho que o JSON? já foi lido |
+| imagens | já era retomável: imagem no destino não é reextraída |
+| bases | mtime — entrada mais nova que saída, regera |
+
+Por que mtime e não hash: o `.rpt` passa de 1 GB, e ler tudo para decidir se
+vale a pena ler tudo não faz sentido. Misturar hash nos intermediários criaria
+dois conceitos de "mudou" no mesmo pipeline. mtime é o critério do `make` há
+cinquenta anos e o modo de errar dele é conhecido — `touch` regera à toa, o que
+custa tempo, não corretude.
+
+`pipeline_arma3.py` guarda o grafo e as regras, separado do executor: decisão é
+lógica pura, e lógica pura dá para provar sem ter o jogo. A escolha do `.rpt` é
+conferida por **equivalência com o `achar_rpt` de verdade**, não contra uma
+reimplementação da regra — se divergisse, rodar um parser sozinho daria um
+resultado e pelo orquestrador daria outro.
+
+### 🐛 `alvos()` assumia dicionário, e os dumps novos escrevem lista
+
+As categorias de imagem que eu criei para `simbologia`, `dlc` e `manual`
+estourariam com `AttributeError` **na máquina do operador**, no instante em que
+esses dumps existissem: os parsers novos emitem `[{classe: ...}]` e os antigos
+emitem `{classe: {...}}`.
+
+Nenhum teste pegava, porque esses JSON não estavam no repositório — o caminho
+nunca era exercitado. Só o CI tropeçou, e o traceback nem dizia qual categoria.
+
+`registros()` lê as duas formas; a categoria **declara** qual campo do item é o
+nome dele (o de `mods` é `mod`, não `classe` — adivinhar e cair em string vazia
+juntaria todas as entradas numa só, calado); item sem o campo-chave é
+descartado; e a checagem contra o dado real reporta a categoria em vez de
+estourar. Validado contra a extração de 02/08: **28.310 caminhos, zero colisão,
+12 categorias**.
+
+### 🔧 As bases não tinham sido regeradas depois da extração
+
+Os commits `528eec0b`, `5fefd6f9` e `94b73ae5` deixaram o `main` **vermelho**: a
+extração nova entrou em `out/`, mas `src/data` e `public/arma3` continuaram com
+o conteúdo derivado do dump de julho, e o passo *"As bases geradas batem com o
+commit?"* reprovou. Regeradas aqui:
+
+```
+.rpt de origem        2026-07-26 → 2026-08-02
+grupos de compat.     107 → 580
+registros CfgVehicles 24261 → 23531
+facções               248 → 237
+```
+
+O teste dos totais pegou `A3EQP_TOTAL` defasado (988 na tabela, 987 na base).
+
+### 🧊 Modelo 3D: medir antes de montar o Blender
+
+Um `.p3d` diz o que é nos primeiros quatro bytes — `MLOD`/`P3DM` (editável, o
+Arma Toolbox importa) ou `ODOL` (binarizado, sem leitor confiável). O que o jogo
+distribui é quase tudo ODOL, porque binarizar **é** o passo de publicação.
+
+`npm run diagnostico-modelos` dá a proporção em dois segundos, lendo só o
+cabeçalho: sem jogo, sem Blender, sem Arma 3 Tools. Se der zero MLOD, montar o
+Blender não resolveria nada — e é melhor saber disso antes de gastar a tarde.
+
+Havendo MLOD, `converter-modelos.py --sonda` roda o Blender **sem janela** sobre
+um modelo e relata o que achou na máquina: addon instalado, addon ligado, que
+operador de importação existe, e se a importação funciona em `--background`.
+
+`blender_p3d_glb.py` **procura** o operador em vez de chamar pelo nome: o Arma
+Toolbox não é nosso, muda de versão e já mudou de nome de operador. Fixar o nome
+e errar daria `AttributeError`, que não distingue "addon faltando" de "addon
+desligado" de "nome mudou".
+
 ### 🔍 Auditoria página a página — as 97 telas
 
 Nove rodadas, agrupadas por domínio do Nexus. **Vazamento 0/97 ·
