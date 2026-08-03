@@ -956,7 +956,7 @@ export const A3SOL_TOTAL = 44761;
 export const A3SOL_COLAPSADOS = 44761;
 export const A3SOL_NUCLEO = 940;
 
-export const A3SOL_META = { porLado: { "não declarado": 40430, Civil: 416, OPFOR: 1270, BLUFOR: 1938, Independente: 707 }, comLado: 4331, faccoes: 248, dbUrl: "/arma3/soldados-db.json" };
+export const A3SOL_META = { porLado: { "não declarado": 40430, Civil: 416, OPFOR: 1270, BLUFOR: 1938, Independente: 707 }, comLado: 4331, faccoes: 237, dbUrl: "/arma3/soldados-db.json" };
 
 /* Acervo completo (com mods) e as facções, sob demanda. */
 let _db = null;

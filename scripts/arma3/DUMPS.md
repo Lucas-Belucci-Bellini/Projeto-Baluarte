@@ -31,14 +31,66 @@ No jogo: `Esc` → **Debug Console** → cola o arquivo inteiro → `LOCAL EXEC`
 Com **todos os DLCs e mods carregados** — o dump lê o config da sessão em
 execução, então o que não estiver carregado não existe para ele.
 
-Depois, no repositório:
+Depois, no repositório, **um comando só**:
 
 ```bash
-python scripts/arma3/extrair-tudo.py            # todas as etapas
-python scripts/arma3/extrair-tudo.py grupos     # só uma
+npm run atualizar-arma3              # lê o que é novo, extrai, regera
+npm run atualizar-arma3 -- --ver     # só diz o que faria, sem mexer em nada
+```
+
+Ele varre a pasta de `.rpt` **uma vez** procurando as 13 marcas, roda só os
+parsers cujo dump é novo, extrai só as imagens que faltam, regera só as bases
+cuja entrada mudou, e no fim lista os `.sqf` que você ainda não colou no jogo.
+
+Rodar de novo sem dump novo não faz nada além de dizer que está tudo em dia.
+
+Ainda dá para chamar uma etapa isolada, quando quiser:
+
+```bash
+python scripts/arma3/extrair-tudo.py grupos
 ```
 
 Ou pelo app: aba **📡 Extrair** em `/arma3-tutorial` (só no Baluarte Launcher).
+
+⚠️ **Nenhum script alcança o jogo.** O `.rpt` só tem dado depois que você colou
+o `.sqf` no console. O atualizador diz qual falta; colar é sempre manual.
+
+⚠️ **Modelo 3D é outro caminho.** Comece sempre pelo diagnóstico:
+
+```bash
+python scripts/arma3/extrair-modelos.py       # tira os .p3d dos PBOs
+npm run diagnostico-modelos                   # 2 segundos, decide o resto
+```
+
+Um `.p3d` diz o que é nos primeiros quatro bytes:
+
+| assinatura | o que é | Blender importa? |
+|---|---|---|
+| `MLOD` / `P3DM` | editável, o que o Object Builder salva | **sim** |
+| `ODOL` | binarizado pela Bohemia antes de empacotar | **não** |
+
+O que o jogo distribui é quase tudo ODOL — binarizar é justamente o passo de
+publicação. O importador do Arma Toolbox lê MLOD. Se o acervo extraído for todo
+ODOL, **montar o Blender não resolve nada**, e o diagnóstico diz isso em dois
+segundos em vez de depois de uma tarde perdida.
+
+Havendo MLOD, a sonda testa o caminho na máquina antes do lote:
+
+```bash
+python scripts/arma3/converter-modelos.py --sonda    # 1 modelo, com relatório
+python scripts/arma3/converter-modelos.py            # lote, retomável
+```
+
+A sonda roda o Blender **sem janela** e relata o que achou: se o addon está
+instalado, se está ligado, que operador de importação existe, e se a importação
+sem interface funciona. Muitos operadores de importação dependem de contexto de
+janela e falham em `--background` — a sonda responde isso para a sua máquina em
+vez de alguém adivinhar.
+
+O `blender_p3d_glb.py` **procura** o operador em vez de chamar pelo nome: o
+Arma Toolbox não é nosso, muda de versão e já mudou de nome de operador. Fixar
+o nome e errar daria `AttributeError`, que não distingue "addon faltando" de
+"addon desligado" de "nome mudou".
 
 ---
 

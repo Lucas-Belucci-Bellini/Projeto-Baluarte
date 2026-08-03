@@ -253,12 +253,12 @@ export const A3EQP = [
   { id: "g-goggles-vr", classe: "G_Goggles_VR", nome: "VR Goggles", tipo: "oculos", tipoFonte: "lista", dlc: "Base", dlcFonte: "fonte", massa: 6, capacidade: null, containerClass: null, uniformeDe: null, protecao: null, imagem: "/A3/Characters_F_Bootcamp/Data/UI/icon_G_Goggles_VR_ca.paa", variantes: 9, nomes: ["Balaclava (Blue Stripe)", "Balaclava (Flecktarn)", "Balaclava (Halloween)", "Balaclava (Olive)", "Balaclava (Orange Pattern)", "Balaclava (Scarecrow)"], classes: ["G_Goggles_VR", "G_Balaclava_oli", "G_Balaclava_Skull1", "G_Balaclava_Flecktarn", "G_Balaclava_Halloween_01", "G_Balaclava_Scarecrow_01", "G_Balaclava_Tropentarn", "G_Balaclava_BlueStrips", "G_Balaclava_Flames1"] },
 ];
 
-export const A3EQP_TOTAL = 988;
+export const A3EQP_TOTAL = 987;
 export const A3EQP_NUCLEO = 241;
 
 export const A3EQP_CATEGORIAS = [{ id: "colete", icon: "🦺", nome: "Coletes", desc: "Proteção de tronco, com blindagem por ponto do corpo." }, { id: "capacete", icon: "⛑️", nome: "Capacetes", desc: "Proteção de cabeça e pescoço." }, { id: "uniforme", icon: "👕", nome: "Uniformes", desc: "Fardamento — quase sempre sem blindagem própria." }, { id: "cabeca", icon: "🥽", nome: "Equip. de cabeça", desc: "Visão noturna, fones e acessórios de cabeça." }, { id: "mochila", icon: "🎒", nome: "Mochilas", desc: "Capacidade de carga." }, { id: "oculos", icon: "😎", nome: "Óculos e máscaras", desc: "Itens do slot de rosto." }];
 
-export const A3EQP_META = { porTipo: { uniforme: 90, colete: 404, cabeca: 36, capacete: 214, mochila: 195, oculos: 49 }, comProtecao: 594, dbUrl: "/arma3/equipamento-db.json" };
+export const A3EQP_META = { porTipo: { uniforme: 89, colete: 404, cabeca: 36, capacete: 214, mochila: 195, oculos: 49 }, comProtecao: 594, dbUrl: "/arma3/equipamento-db.json" };
 
 /* Acervo completo e a proteção ponto a ponto, sob demanda. */
 let _db = null;

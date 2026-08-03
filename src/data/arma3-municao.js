@@ -2,7 +2,7 @@
  * Munições e carregadores do Arma 3 — valores medidos no config do jogo.
  *
  * ⚠️ ARQUIVO GERADO — não edite à mão (scripts/arma3/gerar-base-armas.py).
- *   Dump de origem: Arma3_x64_2026-07-26_11-41-37.rpt
+ *   Dump de origem: Arma3_x64_2026-08-02_16-41-54.rpt
  *
  * CUIDADO COM DOIS NOMES DO CONFIG
  *   `penetracao` é o campo `caliber` da munição — NÃO é o calibre em mm.
