@@ -314,7 +314,30 @@ nova desambigua por hash, então esses 12 ganham nome novo e são reextraídos
 sozinhos na primeira passada. Os arquivos antigos ficam órfãos no destino; o
 extrator **conta** os órfãos no fim e não apaga nada — confira antes de remover.
 
-### E2 — Modelos 3D: o que dá e o que não dá
+### E2 — Modelos 3D: ⛔ **MEDIDO E ENCERRADO** (03/08/2026)
+
+Os 1.302 `.p3d` foram extraídos e classificados pelo cabeçalho: **zero MLOD,
+1.302 ODOL** (v71 ×85, v73 ×586, v75 ×631). O Blender não resolve este acervo,
+e trocar o visualizador não ajuda — nenhum visor lê ODOL.
+
+Só 6% é da Bohemia; 94% vem de 74 mods, com licença individual e vários
+restritivos (RHS veda derivados; CUP é em boa parte Arma 1/2 re-portado).
+
+**Não reabra sem fato novo.** O detalhe completo, incluindo as três saídas
+possíveis, está em [`scripts/arma3/DUMPS.md`](../scripts/arma3/DUMPS.md).
+Recomendação de lá: **Arma 3 Samples**, que a Bohemia publica em MLOD e
+licenciado — o pipeline daqui roda neles sem mudar uma linha.
+
+Diagnóstico reproduzível em dois segundos:
+
+```bash
+python scripts/arma3/converter-modelos.py --diagnostico
+```
+
+<details>
+<summary>O plano original, mantido para contexto</summary>
+
+### E2 (histórico) — Modelos 3D: o que dá e o que não dá
 
 O operador pediu para **ver as armas em 3D**. Situação real:
 
