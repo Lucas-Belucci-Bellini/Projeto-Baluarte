@@ -17,13 +17,22 @@
  * outra, e `test/arma3-imagens.test.js` cobra isso lendo o `.py`.
  */
 
+/* ⚠️ Estas frases são lidas por QUEM USA A WIKI, não por quem mexe no
+ * pipeline. Elas apareciam em 936 artigos de soldado dizendo "a tabela
+ * CfgVehicleIcons ainda não foi dumpada" — verdade, e jargão nosso numa tela
+ * pública: o leitor não tem o que fazer com isso.
+ *
+ * O código (`icone-por-nome`) continua carregando a instrução operacional; ela
+ * mora no placar de `verificar-arma3`, no `gerar_imagens_comum.py` e no
+ * `DUMPS.md`, que é onde quem vai agir procura. Aqui fica o que o leitor
+ * precisa saber: se a falta é do jogo, do formato, ou nossa. */
 export const MOTIVO_SEM_IMG = {
   'sem-picture-no-config':
-    'o config desta classe não aponta nenhuma imagem — não há o que extrair',
+    'o Arma 3 não define nenhuma imagem para esta classe',
   'paa-nao-extraido':
-    'o config aponta um .paa que não saiu do PBO (DLC cifrado em .ebo, ou mod fora da sessão do dump)',
+    'a imagem existe no jogo, mas está num DLC cifrado que não abre fora dele',
   'icone-por-nome':
-    'o config declara um NOME de ícone (`iconMan`), e a tabela CfgVehicleIcons que traduz nome em imagem ainda não foi dumpada',
+    'esta classe usa um símbolo genérico do jogo, que ainda não foi extraído',
 };
 
 /* O texto do `title`, com um padrão para motivo que a base traga e este módulo
