@@ -14,6 +14,10 @@ export * from './angles.js';
 export * from './geo.js';
 export * from './mgrs.js';
 export * from './gridref.js';
+/* Grade REAL dos terrenos do Arma 3 (offset e SINAL do passo por mundo).
+ * Diferente do gridref.js, que e MGRS local: 30 dos 31 mundos do jogo contam
+ * o northing de cima pra baixo, e assumir a convencao MGRS erra o eixo N-S. */
+export * from './arma3-grid.js';
 export * from './ballistics.js';
 export * from './charges.js';
 export * from './fire-mission.js';
