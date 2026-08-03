@@ -890,7 +890,7 @@ export const A3VEI_NUCLEO = 874;
 
 export const A3VEI_CATEGORIAS = [{ id: "blindado", icon: "🛡️", nome: "Blindados", desc: "Carros de combate e transportes blindados." }, { id: "terrestre", icon: "🚙", nome: "Terrestres", desc: "Viaturas de roda e lagarta sem blindagem pesada." }, { id: "aereo", icon: "🚁", nome: "Aéreos", desc: "Helicópteros, aviões e drones." }, { id: "naval", icon: "🚤", nome: "Navais", desc: "Botes, lanchas e navios." }, { id: "estatico", icon: "🔫", nome: "Estáticos", desc: "Armamento de posição: metralhadora, morteiro, AA." }];
 
-export const A3VEI_META = { porCategoria: { estatico: 596, naval: 138, terrestre: 2836, aereo: 1167, blindado: 688 }, comBlindagem: 5281, faccoes: 248, dbUrl: "/arma3/veiculos-db.json" };
+export const A3VEI_META = { porCategoria: { estatico: 596, naval: 138, terrestre: 2836, aereo: 1167, blindado: 688 }, comBlindagem: 5281, faccoes: 237, dbUrl: "/arma3/veiculos-db.json" };
 
 /* Acervo completo (com mods), hitpoints por parte e as facções. */
 let _db = null;
