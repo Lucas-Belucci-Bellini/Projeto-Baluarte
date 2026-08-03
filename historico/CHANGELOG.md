@@ -6,6 +6,63 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-03
+
+### 🐞 `call _fnc_lim` recebia ARRAY: todo texto dos dumps novos saiu embrulhado
+
+Os dumps antigos chamam o helper de limpeza como `(x) call _fnc_lim` — string
+direta. Os sete novos chamavam `[x] call _fnc_lim`, e em SQF isso faz `_this`
+ser o **array** `[x]`. O helper só sabe limpar string, cai no
+`exitWith { str _s }` e devolve a representação do array:
+
+```
+"nome":  "[\"Economic Victory Marker\"]"
+"icone": "[\"\\x\\A3A\\...\\EconomicVictory.paa\"]"
+```
+
+8841 campos embrulhados só em simbologia — e é por isso que simbologia, dlc,
+manual e varredura acusaram 1390 imagens "sem PBO": o caminho não era um
+caminho, era o texto de um array.
+
+Pior que feio: campo **ausente** virava `[""]` em vez de `""`. "O config não
+declara" passava a parecer "declara e está vazio" — exatamente a distinção que
+esta pipeline existe para preservar.
+
+Dois consertos, de propósito:
+
+1. os 48 usos de `[x] call` viraram `(x) call` nos sete `.sqf`, e uma guarda no
+   CI impede a volta. A diferença é um caractere, não dá erro nenhum, e some
+   dentro de um dump de 900 linhas;
+2. `desembrulhar()` em `a3dump_comum`, aplicado em `registros()`, desfaz o
+   embrulho **ao ler**. Quem já rodou o dump antigo só reprocessa o `.rpt`, sem
+   voltar ao jogo. Ele avisa quantos campos desembrulhou, para não virar
+   conserto silencioso; só desfaz o caso inequívoco (`[" ... "]`), porque o
+   `_fnc_lim` dos dumps antigos troca aspas duplas por simples e nunca casa.
+
+Passou por dois testes verdes porque o `.rpt` sintético era escrito à mão, com
+os valores já limpos. Terceira vez que o formato estava provado e o
+**transporte** não — as outras duas foram o UTF-8 e o comentário.
+
+### 🎯 Motor do Vanguard sincronizado, com os 65 testes que nunca vieram
+
+A cópia vendorizada em `src/utils/vanguard/` estava atrasada em uma feature
+inteira: faltava `arma3-grid.js` e o `fire-mission.js` estava 33 linhas atrás.
+Justamente a integração dos terrenos do Arma 3 — a peça que converte referência
+de grade do jogo em metros e resolve o vetor de tiro nos 31 mundos medidos, que
+é o que liga o computador de tiro ao acervo da wiki.
+
+O passo 1 do `Project-Vanguard/docs/INTEGRACAO-BALUARTE.md` manda copiar o motor
+**e** os testes. Só a primeira metade tinha sido feita: o Baluarte rodava o motor
+do Vanguard sem nenhum teste dele. Agora são 65 (11 de grade do Arma 3, 30 de
+balística, 24 de coordenadas), e a suíte do repositório foi de **136 para 201**.
+
+Única adaptação: o import da base de terrenos, que em `src/utils/vanguard/` está
+um nível mais fundo que em `src/engine/`. Nada mais foi tocado — a regra do
+`src/utils/vanguard/LEIA-ME.md` vale: conserto vai no repositório de origem
+(`Project-Vanguard`) e volta por cópia.
+
+---
+
 ## 2026-08-02
 
 ### 📡 App extrai o Arma 3 e manda pro repositório · **0.9.1**
