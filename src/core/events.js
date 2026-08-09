@@ -99,7 +99,7 @@ function createBus() {
       try {
         handler(payload, meta);
       } catch (err) {
-        console.error(`[bus] Erro no handler de "${event}":`, err);
+        console.error('[bus] erro no handler:', { evento: event }, err);
       }
     }
   }

@@ -20,6 +20,17 @@
  * migra o que estiver velho e regrava. Chave sem esquema registrado se comporta
  * exatamente como antes — nada do que já está gravado quebra.
  *
+ * ── ⚠️ Sobre os `console.warn` deste arquivo ────────────────────────────────
+ * A chave **nunca** entra no primeiro argumento do console. `console.warn(fmt,
+ * ...args)` trata o primeiro argumento como *format string*: uma chave contendo
+ * `%s` engoliria o `err` seguinte (escondendo o erro de verdade) e `%c` injeta
+ * CSS no console — o vetor clássico de mensagem falsa convincente.
+ *
+ * Não é hipotético aqui: desde que o cache da Wikipédia passou pelo wrapper, a
+ * chave é `wiki:sum:<lang>:<título>`, e o título vem de dado de página. O CodeQL
+ * pegou isso no PR. Regra: **string estática primeiro, dado dinâmico como
+ * argumento separado.**
+ *
  * ── Classificação de dado (item 🟡 7) ────────────────────────────────────────
  * Cada esquema declara o que a chave guarda: `publico`, `local`, `sensivel` ou
  * `secreto`. E `secreto` é RECUSADO na gravação, alto. O frontend é público:
@@ -140,14 +151,17 @@ export function get(k, fallback = null) {
        * dá pra "desmigrar" — tentar adivinhar destrói o dado bom. Recua pro
        * fallback e deixa o valor gravado intacto. */
       console.warn(
-        `[storage] "${k}" está na versão ${de} e este código entende até a ${esq.versao}. ` +
-        `Usando o fallback e preservando o dado.`
+        '[storage] chave em versão mais nova que este código — usando o fallback e preservando o dado:',
+        { chave: k, gravada: de, entendo: esq.versao }
       );
       return fallback;
     }
 
     if (!esq.migrar) {
-      console.warn(`[storage] "${k}" está na versão ${de} (atual: ${esq.versao}) e o esquema não tem migrar(). Usando o fallback.`);
+      console.warn(
+        '[storage] esquema sem migrar() para dado antigo — usando o fallback:',
+        { chave: k, gravada: de, atual: esq.versao }
+      );
       return fallback;
     }
 
@@ -158,11 +172,11 @@ export function get(k, fallback = null) {
     try {
       gravarCru(fullKey, { [MARCA]: esq.versao, d: migrado });
     } catch (err) {
-      console.warn(`[storage] Migrou "${k}" (${de}→${esq.versao}) mas não conseguiu regravar:`, err);
+      console.warn('[storage] migrou mas não conseguiu regravar:', { chave: k, de, para: esq.versao }, err);
     }
     return migrado;
   } catch (err) {
-    console.warn(`[storage] Falha ao ler "${k}":`, err);
+    console.warn('[storage] falha ao ler:', { chave: k }, err);
     return fallback;
   }
 }
@@ -184,7 +198,7 @@ export function set(k, value) {
     gravarCru(fullKey, esq ? { [MARCA]: esq.versao, d: value } : value);
     return true;
   } catch (err) {
-    console.warn(`[storage] Falha ao gravar "${k}":`, err);
+    console.warn('[storage] falha ao gravar:', { chave: k }, err);
     return false;
   }
 }

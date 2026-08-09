@@ -221,7 +221,9 @@ export function aplicarDaURL(search) {
     const desliga = item.startsWith('-');
     const id = desliga ? item.slice(1) : item;
     if (!registro.has(id)) {
-      console.warn(`[flags] "?flags=" pediu "${id}", que não existe. Ignorado.`);
+      /* `id` vem da barra de endereços — nunca no primeiro argumento do
+       * console (ver a nota sobre format string em `storage.js`). */
+      console.warn('[flags] "?flags=" pediu uma flag que não existe. Ignorada:', id);
       continue;
     }
     escolhas.set(id, !desliga);

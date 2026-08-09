@@ -221,7 +221,7 @@ bus.on('route:notfound', ({ view, path }) => {
 });
 
 bus.on('route:error', ({ path, error }) => {
-  console.error(`[main] Erro ao carregar a rota ${path}:`, error);
+  console.error('[main] erro ao carregar a rota:', { rota: path }, error);
   /* A rota EXISTE (senão era route:notfound); o que falhou foi o carregamento
    * do chunk. Mostra "falha ao carregar" (com Recarregar), não um 404 falso. */
   renderPage(loadErrorPage(path), path);

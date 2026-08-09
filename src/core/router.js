@@ -80,14 +80,16 @@ function resolve() {
             bus.emit('route:change', { ...currentMatch, view: resolved });
           })
           .catch((err) => {
-            console.error(`[router] Erro ao carregar "${path}":`, err);
+            /* `path` vem de `location.hash`: fora do primeiro argumento do
+             * console, senão vira format string controlada de fora. */
+            console.error('[router] erro ao carregar rota:', { rota: path }, err);
             bus.emit('route:error', { path, error: err });
           });
       } else {
         bus.emit('route:change', { ...currentMatch, view });
       }
     } catch (err) {
-      console.error(`[router] Erro ao renderizar "${path}":`, err);
+      console.error('[router] erro ao renderizar rota:', { rota: path }, err);
       bus.emit('route:error', { path, error: err });
     }
   } else {
