@@ -6,6 +6,8 @@
  * cru fica em `fov` — 0.75/FOV NÃO é a ampliação (erra por 6x no ELCAN).
  */
 
+import { buscarDataset } from '../core/dados-remotos.js';
+
 export const A3ACC = [
   { id: "acc-pointer-ir-arid-lxws", classe: "acc_pointer_IR_arid_lxWS", nome: "IR Laser Pointer (Arid)", tipo: "apontador", tipoFonte: "itemInfoType", dlc: "Western Sahara", dlcFonte: "caminho", descricao: "Emits light visible in the image intensification mode (night vision).", massa: 6, imagem: "/lxWS/weapons_1_f_lxws/Acc/data/UI/icon_gear_accv_pointer_arid_CA.paa", ampliacao: null, ampliacaoRotulo: null, ampliacaoFonte: null, fov: null, coefSilenciador: null },
   { id: "ef-acc-pointer-ir-coy", classe: "EF_acc_pointer_IR_coy", nome: "IR Laser Pointer (Coyote)", tipo: "apontador", tipoFonte: "itemInfoType", dlc: "Expeditionary Forces", dlcFonte: "caminho", descricao: "Emits light visible in the image intensification mode (night vision).", massa: 6, imagem: "/ef/ef_weapons/data/ui/EF_acc_pointer_IR_coy_CA.paa", ampliacao: null, ampliacaoRotulo: null, ampliacaoFonte: null, fov: null, coefSilenciador: null },
@@ -234,8 +236,7 @@ export const A3ACC_META = { porTipo: { apontador: 24, bipe: 14, mira: 104, silen
 let _db = null;
 export function carregarAcessorios() {
   if (!_db) {
-    _db = fetch(A3ACC_META.dbUrl)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    _db = buscarDataset(A3ACC_META.dbUrl, { rotulo: 'a base de acessórios do Arma 3' })
       .catch((err) => { _db = null; throw err; });
   }
   return _db;

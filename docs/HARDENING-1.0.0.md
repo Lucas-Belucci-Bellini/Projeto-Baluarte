@@ -213,9 +213,23 @@ que é exatamente onde esta fase começou.
       `navigator.serviceWorker.ready` nunca resolve nesse caso, não rejeita. Em
       CI isso queimaria o job por timeout em vez de acusar. Teto de 15 s e falha
       imediata com a causa dita.
-- [ ] **Schemas dos datasets** — a garantia mínima: **um JSON quebrado não derruba
-      a página**. Proveniência (fonte, data, revisão, confiança por campo) e fila
-      de revisão **não** entram aqui — exigem banco e são V2 (#422).
+- [x] **Datasets buscados em runtime** — medido antes: são **7** (6 bases do
+      Arma 3 + a saga das Crônicas). Dataset *importado* quebrado falha o
+      **build**; buscado quebrado falha **na cara do operador**, e é essa a
+      categoria que importava.
+      A garantia "JSON quebrado não derruba a página" **já estava de pé** — os
+      dois consumidores tratam a rejeição com mensagem legível. O que faltava:
+      **(a)** teto de espera — sem ele a tela ficava em "baixando…" para sempre
+      (a base de armas tem ~1,9 MB); **(b)** conferência de **forma** — JSON
+      *válido* sem o campo esperado resolvia `undefined`, e o `.filter()` de quem
+      chamou estourava com "Cannot read properties of undefined", erro que não
+      menciona dataset nenhum.
+      Extraído para `src/core/dados-remotos.js` (teto de 20 s — são megabytes, o
+      teto é contra rede *pendurada*, não contra rede lenta; forma conferida;
+      cache que **não guarda fracasso**, senão o "tentar de novo" mentiria).
+      10 testes. Verificado no navegador: `/biblioteca` carrega os 1178
+      capítulos, sem erro.
+      Proveniência (fonte, data, confiança por campo) segue **V2** — #422.
 
 ## 🟡 Pode esperar a 1.1
 

@@ -12,6 +12,7 @@
  * é grande demais para o bundle — carrega sob demanda via loadSaga().
  */
 
+import { buscarDataset } from '../core/dados-remotos.js';
 import fanficUrl from './fanfic.json?url';
 
 const slayer = `O ar dentro do bunker cheirava a ozônio queimado e ferro. Lucas
@@ -449,9 +450,7 @@ let sagaCache = null;
 
 export async function loadSaga() {
   if (sagaCache) return sagaCache;
-  const res = await fetch(fanficUrl);
-  if (!res.ok) throw new Error('Falha ao carregar a saga (HTTP ' + res.status + ').');
-  const data = await res.json();
+  const data = await buscarDataset(fanficUrl, { rotulo: 'a saga das Crônicas' });
   const arcos = (data.arcos || []).map((arco) => {
     const blocks = (arco.chapters && arco.chapters[0] && arco.chapters[0].blocks) || [];
     const firstP = blocks.find((b) => b && b.t === 'p');

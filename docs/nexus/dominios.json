@@ -39,7 +39,8 @@
     "src/core/flags.js",
     "src/core/politica.js",
     "src/pages/diagnostico.js",
-    "src/styles/diagnostico.css"
+    "src/styles/diagnostico.css",
+    "src/core/dados-remotos.js"
    ],
    "precisa": [],
    "peso": "leve"

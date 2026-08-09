@@ -6,6 +6,47 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (13)
+
+### 📦 Os datasets buscados em runtime — o último 🟠
+
+Medido antes de executar: são **7** (as 6 bases do Arma 3 e a saga das Crônicas).
+Eles são uma categoria diferente do resto de `src/data/`, e a diferença é a que
+importa: dataset **importado** quebrado falha o **build**, e alguém conserta
+antes de publicar; dataset **buscado** quebrado falha **na cara do operador**.
+
+A garantia do item — *"um JSON quebrado não derruba a página"* — **já estava de
+pé**: os dois consumidores (`/arma3-tutorial` e `/biblioteca`) tratam a rejeição
+e mostram "falhou — tentar de novo" e "capítulos indisponíveis". Registrar isso
+importa tanto quanto consertar o que falta.
+
+**O que faltava eram outras duas coisas:**
+
+*Teto de espera.* A base de armas tem ~1,9 MB crus. Sem timeout, uma rede
+pendurada deixava o botão em "baixando…" para sempre — mesmo modo de falha que
+o `dbFetch` tinha. 20 s aqui, não os 8 s do banco: o teto é contra rede
+*pendurada*, não contra rede lenta, e um teto curto demais transformaria conexão
+ruim em erro.
+
+*Conferência de forma.* Este era o sutil: `d.armas` de um JSON **válido** sem a
+chave `armas` resolvia `undefined`, a promessa **cumpria**, e o erro só aparecia
+lá na frente como "Cannot read properties of undefined" — sem mencionar dataset
+nenhum. Agora rejeita dizendo o que faltou.
+
+Extraído para `src/core/dados-remotos.js`, com uma terceira garantia que os
+loaders já tinham e valia preservar explicitamente: **o cache não guarda
+fracasso**. Se guardasse, o primeiro erro condenaria a sessão inteira e o botão
+"tentar de novo" mentiria.
+
+10 testes. Verificado no navegador: `/biblioteca` carrega os **1178 capítulos**,
+sem erro de JS.
+
+Proveniência (fonte, data, confiança por campo) segue sendo **V2** — #422.
+
+422 testes verdes.
+
+---
+
 ## 2026-08-09 (12)
 
 ### 📴 Prova de offline — e um teste que travava em vez de falhar

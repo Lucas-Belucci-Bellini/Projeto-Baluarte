@@ -35,6 +35,8 @@
 
 /* Tipos — separadores da tabela. `primaria` fecha a lista de propósito:
  * é onde cai a arma que o config não deixa classificar. */
+import { buscarDataset } from '../core/dados-remotos.js';
+
 export const A3ARM_TIPOS = [
   { id: "fuzil", nome: "Fuzis de assalto", icon: "🔫", desc: "A espinha dorsal da infantaria: 5.56/6.5/7.62, semi + automático, trilhos pra tudo." },
   { id: "dmr", nome: "Fuzis de precisão (DMR)", icon: "🎯", desc: "Alcance de tirador designado: semi-auto, calibres cheios, miras de médio/longo." },
@@ -213,9 +215,11 @@ export const A3ARM_META = {
 let _arsenal = null;
 export function carregarArsenal() {
   if (!_arsenal) {
-    _arsenal = fetch(A3ARM_META.arsenalUrl)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then((d) => d.armas)
+    /* `campo: 'armas'` não é enfeite: antes, um JSON válido sem essa chave
+     * resolvia `undefined`, e o `.filter()` de quem chamou estourava com
+     * "Cannot read properties of undefined" — erro que não diz nada sobre o
+     * dataset. Agora rejeita dizendo o que faltou. */
+    _arsenal = buscarDataset(A3ARM_META.arsenalUrl, { campo: 'armas', rotulo: 'o arsenal completo do Arma 3' })
       .catch((err) => { _arsenal = null; throw err; });
   }
   return _arsenal;
