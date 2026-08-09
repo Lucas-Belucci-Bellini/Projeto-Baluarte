@@ -138,10 +138,45 @@ export const ESQUEMAS = [
    * afirmação honesta — fingir que é segredo seria pior. */
   { chave: 'nexus:key', versao: 1, classe: 'publico', migrar: IDENTIDADE },
 
+  /* Histórico de comandos do terminal — o que o operador digitou. */
+  { chave: 'terminal:history', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'perfil:config', versao: 1, classe: 'local', migrar: IDENTIDADE },
+
+  /* A sessão do usuário (JWT + refresh token do Supabase).
+   *
+   * `sensivel`, **não** `secreto`, e a distinção é o ponto: `secreto` é recusado
+   * na gravação, e a sessão PRECISA viver no navegador — é assim que auth web
+   * funciona. O que a protege não é escondê-la do frontend (impossível), é ela
+   * ser o JWT do próprio usuário, de vida curta, renovável, com o RLS do banco
+   * decidindo o que ele alcança. Classificar como `secreto` aqui não deixaria
+   * o Baluarte mais seguro — deixaria o login quebrado. */
+  { chave: 'auth:session', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+
   /* Estado da própria política. */
   { chave: 'permissoes', versao: 1, classe: 'local', migrar: IDENTIDADE },
   { chave: 'flags', versao: 1, classe: 'local', migrar: IDENTIDADE }
 ];
+
+/**
+ * ℹ️ O que **não** está aqui, e por quê.
+ *
+ * **`sessionStorage`.** Sete lugares usam `sessionStorage` direto (guarda do
+ * reload de chunk, `booted` da intro, `sw:recarregou`, a sessão da Ponte Shadow,
+ * flags de page-view/beacon/visita). Eles **continuam diretos de propósito**: o
+ * wrapper é `localStorage`, que persiste para sempre, e a razão de existirem é
+ * exatamente morrer quando a aba fecha. Migrá-los trocaria a semântica —
+ * "já recarreguei uma vez" virando permanente transformaria a guarda anti-loop
+ * do boot num bloqueio permanente. São flags de sessão, não dado do operador,
+ * e todos já tratam a ausência de storage.
+ *
+ * **O cache da Wikipédia.** Passa pelo wrapper (`utils/wikipedia.js`), mas não
+ * tem esquema: as chaves são dinâmicas (`wiki:sum:<lang>:<título>`) e esquema é
+ * por chave. O que importava ali era o namespace, não a versão.
+ *
+ * **A varredura da `/shadow`.** Continua lendo `localStorage` cru porque o
+ * trabalho dela é *medir* o que está gravado, incluindo o que o wrapper não
+ * escreveu. É o único lugar onde acesso cru é a resposta certa.
+ */
 
 /* ==============================================================
  *  3. FLAGS — a tabela de estabilidade da 1.0.0

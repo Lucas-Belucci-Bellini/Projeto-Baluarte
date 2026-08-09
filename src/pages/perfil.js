@@ -25,6 +25,30 @@ import { PERFIS } from '../data/perfis.js';
 
 const STORAGE_KEY = 'perfil:config';
 
+/**
+ * Varre o cache da Wikipédia gravado FORA do namespace, por versões anteriores
+ * à 1.0.0-rc.
+ *
+ * Até aqui `utils/wikipedia.js` gravava `wiki:sum:pt:Título` cru, sem o
+ * `baluarte:`. Como este botão sempre filtrou pelo prefixo, ele nunca alcançou
+ * essas chaves: o operador pedia para apagar tudo, lia "todos os dados locais
+ * foram apagados", e o registro do que ele consultou continuava no disco.
+ * Agora a gravação é namespaced; isto aqui limpa o que ficou para trás.
+ *
+ * **Descartável depois da 1.0.0** — quando ninguém mais tiver cache antigo, é
+ * só apagar esta função.
+ */
+function limparCacheWikiLegado() {
+  try {
+    const antigas = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('wiki:sum:')) antigas.push(k);
+    }
+    antigas.forEach((k) => localStorage.removeItem(k));
+  } catch { /* sem localStorage — nada a limpar */ }
+}
+
 function loadConfig() {
   return storage.get(STORAGE_KEY) || {
     nome: 'Lucas Belucci Bellini',
@@ -305,12 +329,11 @@ export function perfilPage() {
           className: 'btn btn--ghost btn--sm u-text-danger',
           onclick: () => {
             if (confirm('Isto apaga TODOS os dados locais do Baluarte (editor, terminal, configs, progresso). Continuar?')) {
-              const keys = [];
-              for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                if (k && k.startsWith('baluarte:')) keys.push(k);
-              }
-              keys.forEach((k) => localStorage.removeItem(k));
+              /* Pelo wrapper: ele é dono do namespace `baluarte:` e sabe varrer
+               * o que gravou. Antes esta função reimplementava a varredura à
+               * mão — e por isso ficava fora de sincronia com quem gravava. */
+              storage.clearAll();
+              limparCacheWikiLegado();
               toast('Todos os dados locais foram apagados', { type: 'warning' });
               setTimeout(() => location.reload(), 1000);
             }

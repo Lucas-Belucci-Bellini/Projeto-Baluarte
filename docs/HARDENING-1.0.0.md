@@ -72,11 +72,19 @@ que é exatamente onde esta fase começou.
       frontend é público, e a regra "nunca segredo no frontend" agora é cobrada.
 - [x] **Auditoria de dependências no CI** — `npm audit --omit=dev --audit-level=high`
       bloqueia; o audit completo (com dev) fica informativo, sem travar merge.
-- [ ] **Migrar os 25 `localStorage` diretos** para `storage.set/get`, aproveitando
-      para classificar cada chave. Sem isso não dá para trocar o backend de
-      persistência nem saber o que é sensível. Arquivos: `main.js`,
-      `core/supabase-auth.js`, `utils/{shadow-gate,page-views,hx-beacon,visit-counter,terminal-engine,wikipedia}.js`,
-      `pages/{perfil,shadow}.js`.
+- [x] **Migrar o `localStorage` direto para o wrapper** — de 11 chamadas cruas
+      para **2**, ambas intencionais e documentadas (`/shadow` mede o storage;
+      `/perfil` varre o cache legado). `auth:session`, `terminal:history` e
+      `perfil:config` ganharam esquema e classificação. **Achou dois bugs reais:**
+      o cache da Wikipédia gravava fora do namespace — o "Limpar todos os dados
+      locais" nunca o alcançava, então o operador lia "tudo apagado" e o registro
+      do que ele consultou ficava no disco; e `loadHistory()` do terminal fazia
+      `JSON.parse` sem `try`, derrubando a página com uma entrada corrompida.
+      `test/storage-namespace.test.js` impede a reincidência.
+      As 14 chamadas a **`sessionStorage` ficam diretas por decisão**: o wrapper é
+      `localStorage` (persiste para sempre) e essas flags existem para morrer com
+      a aba — migrá-las trocaria a semântica e transformaria a guarda anti-loop do
+      boot num bloqueio permanente. Justificado em `core/politica.js`.
 - [ ] **Triagem dos 58 `innerHTML`** — separar "HTML que eu mesmo escrevi" (ok) de
       "HTML com dado do operador ou de API" (vira `textContent` ou sanitização).
       Começar pelas calculadoras.

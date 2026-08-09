@@ -7,6 +7,8 @@
  * SEMPRE credita a Wikipédia e linka o artigo.
  */
 
+import { storage } from '../core/storage.js';
+
 const TTL = 7 * 24 * 60 * 60 * 1000;   // 7 dias
 const mem = new Map();
 
@@ -20,13 +22,17 @@ export async function fetchWikiSummary(title, lang = 'pt') {
   const key = `wiki:sum:${lang}:${title}`;
   if (mem.has(key)) return mem.get(key);
 
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw) {
-      const o = JSON.parse(raw);
-      if (o && Date.now() - o.ts < TTL) { mem.set(key, o.data); return o.data; }
-    }
-  } catch {}
+  /* Pelo wrapper — e isso CONSERTA um vazamento de dado: a chave era gravada
+   * crua (`wiki:sum:pt:Título`), sem o `baluarte:`. Como o botão "Limpar todos
+   * os dados locais" do /perfil filtra por esse prefixo, ele nunca apagava o
+   * cache da Wikipédia: o operador pedia para apagar tudo, recebia a mensagem
+   * de que tudo foi apagado, e o histórico do que ele consultou ficava. O
+   * relatório de storage da /shadow também não os contava. */
+  const doDisco = storage.get(key, null);
+  if (doDisco && Date.now() - doDisco.ts < TTL) {
+    mem.set(key, doDisco.data);
+    return doDisco.data;
+  }
 
   const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
   const res = await fetch(url, { headers: { accept: 'application/json' } });
@@ -43,7 +49,7 @@ export async function fetchWikiSummary(title, lang = 'pt') {
   };
 
   mem.set(key, data);
-  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch {}
+  storage.set(key, { ts: Date.now(), data });
   return data;
 }
 

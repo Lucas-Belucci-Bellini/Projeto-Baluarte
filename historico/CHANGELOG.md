@@ -6,6 +6,52 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (3)
+
+### 🗄️ O storage direto some — e dois bugs saem junto
+
+Item 🔴 da fila: 11 chamadas cruas a `localStorage` viviam fora do wrapper, sem
+versão e sem classificação. Sobraram **2**, ambas intencionais e documentadas.
+Mas o valor não foi a arrumação — foram os dois defeitos que a varredura achou.
+
+**O "Limpar todos os dados locais" mentia.** `utils/wikipedia.js` gravava o cache
+como `wiki:sum:pt:Título`, **cru, sem o `baluarte:`**. O botão do `/perfil`
+sempre filtrou por esse prefixo — então nunca alcançou essas chaves. O operador
+clicava, lia *"todos os dados locais foram apagados"*, e o registro do que ele
+consultou continuava no disco. O relatório de storage da `/shadow` também não os
+contava. Agora a gravação é namespaced, e o botão varre o legado que ficou para
+trás (varredura descartável depois da 1.0.0).
+
+**O terminal caía com uma entrada corrompida.** `loadHistory()` fazia
+`JSON.parse` direto, sem `try` — `saveHistory()` tinha proteção, a leitura não.
+Cota estourada no meio de uma gravação e a página inteira parava de abrir. O
+wrapper trata e devolve o fallback.
+
+**Classificação.** `auth:session` é **`sensivel`, não `secreto`** — e a distinção
+importa: `secreto` é recusado na gravação, e a sessão *precisa* viver no
+navegador; é assim que auth web funciona. O que a protege não é escondê-la do
+frontend (impossível), é ser o JWT do próprio usuário, curto, renovável, com o
+RLS decidindo o alcance. Classificar como `secreto` não deixaria mais seguro,
+deixaria o login quebrado. `terminal:history` também é `sensivel` (é o que o
+operador digitou).
+
+**As 14 chamadas a `sessionStorage` ficam diretas, por decisão.** O wrapper é
+`localStorage`, que persiste para sempre, e essas flags existem justamente para
+morrer com a aba. Migrá-las trocaria a semântica — "já recarreguei uma vez"
+virando permanente transformaria a guarda anti-loop do boot num bloqueio
+permanente. Justificado em `core/politica.js`.
+
+**`test/storage-namespace.test.js`** impede a reincidência: falha se um arquivo
+novo tocar `localStorage` fora da lista de exceções — que tem teto e exige
+justificativa por linha, senão vira o lugar onde a regra morre aos poucos.
+
+Verificado no navegador com dado legado semeado: o histórico do terminal
+sobreviveu e foi migrado (`{"__bv":1,"d":[…]}`), a sessão continuou válida
+(ninguém foi deslogado) e o "limpar tudo" apagou inclusive a chave fora do
+namespace. 371 testes verdes.
+
+---
+
 ## 2026-08-09 (2)
 
 ### 🔐 A fronteira de permissão sai do papel — política, boot e `/diagnostico`

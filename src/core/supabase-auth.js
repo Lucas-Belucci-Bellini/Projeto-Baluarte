@@ -10,19 +10,27 @@
  */
 
 import { supabaseUrl, supabaseAnonKey, supabaseConfigured } from './supabase.js';
+import { storage } from './storage.js';
 
-const SESSION_KEY = 'baluarte:auth:session';
+/* Chave SEM o prefixo — o wrapper põe `baluarte:` sozinho, então o nome completo
+ * continua sendo `baluarte:auth:session`, exatamente o que já está gravado no
+ * navegador de quem usa. A migração não desloga ninguém.
+ *
+ * A classe é `sensivel`, não `secreto` (declarado em `core/politica.js`), e a
+ * distinção é proposital: `secreto` é recusado na gravação, e a sessão do
+ * usuário PRECISA viver no navegador — é assim que auth web funciona. O que a
+ * protege não é escondê-la do frontend (impossível), é ela ser o JWT do próprio
+ * usuário, curto, renovável, e com o RLS do banco decidindo o que ele alcança. */
+const SESSION_KEY = 'auth:session';
 const listeners = new Set();
 
 function loadSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+  return storage.get(SESSION_KEY, null);
 }
 
 function storeSession(s) {
-  try {
-    if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
-    else localStorage.removeItem(SESSION_KEY);
-  } catch { /* sem storage */ }
+  if (s) storage.set(SESSION_KEY, s);
+  else storage.remove(SESSION_KEY);
   listeners.forEach((fn) => { try { fn(s); } catch { /* listener falhou */ } });
 }
 
