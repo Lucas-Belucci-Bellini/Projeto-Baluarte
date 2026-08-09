@@ -1,5 +1,5 @@
 /*
- * Service Worker — Baluarte (v2.0.0)
+ * Service Worker — Baluarte
  *
  * Estratégia: stale-while-revalidate para assets, network-first para
  * navegação. A VERSION abaixo muda a cada release — ao mudar, o
@@ -7,11 +7,19 @@
  * Isso evita servir assets velhos após um deploy (ex.: no Vercel).
  */
 
-/* 0.7.3: a VERSION ficou parada na v0.5.0 por DUAS releases — todo mundo que
- * visitou naquela época carregava cache velho (o "3D não funciona" mesmo com
- * o site novo no ar). Bump = SW novo instala, limpa os caches antigos e
- * assume na hora. */
-const VERSION = 'baluarte-v0.9.1';
+/* ⚠️ Este arquivo é servido CRU (não passa pelo bundler), então não dá para
+ * importar `src/data/version.js`. A VERSION abaixo é uma cópia manual e
+ * precisa mudar junto — é a única forma.
+ *
+ * Isso já falhou duas vezes:
+ *   0.7.3 — ficou parada na v0.5.0 por DUAS releases; quem visitou naquela
+ *           época carregava cache velho (o "3D não funciona" mesmo com o site
+ *           novo no ar).
+ *   1.0.0-rc — ficou em v0.9.1 enquanto o site já dizia 2.0.0.
+ *
+ * Na terceira não vai passar: `test/versao.test.js` compara este número com o
+ * `package.json` e o `version.js` e reprova o CI se divergirem. */
+const VERSION = 'baluarte-v1.0.0-rc';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 

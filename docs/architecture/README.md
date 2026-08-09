@@ -12,7 +12,7 @@ existir — o mapa já está no `CLAUDE.md`.
 |---|---|---|
 | [`overview.md`](./overview.md) | ✅ escrito | O que é o Baluarte hoje, quais são as camadas e o que atravessa quais fronteiras |
 | [`v2-vision.md`](./v2-vision.md) | ✅ escrito (**bússola, não obra**) | Para onde a V2 vai — e o que **não** fazer até a 1.0.0 fechar |
-| [`decisions/`](./decisions/) | ✅ 2 ADRs | Decisões fechadas, com o contexto que as gerou |
+| [`decisions/`](./decisions/) | ✅ 3 ADRs | Decisões fechadas, com o contexto que as gerou |
 | `core.md` | ⬜ a escrever | Router, state, storage, events, permissions, flags: contratos e quem depende de quem |
 | `events.md` | ⬜ a escrever | Catálogo dos eventos do bus e quem escuta cada um |
 | `storage.md` | ⬜ a escrever | Chaves, esquemas, classes de dado e como migrar sem perder o do operador |
@@ -34,3 +34,4 @@ anterior, nunca edição silenciosa do existente.
 
 - [ADR-001](./decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md) — A 1.0.0 é um ponto de congelamento, não a versão final
 - [ADR-002](./decisions/ADR-002-permissoes-deny-by-default.md) — Acesso é negado por omissão e permissão precisa ser declarada
+- [ADR-003](./decisions/ADR-003-congelamento-e-manutencao-da-v1.md) — O que "congelar a V1" significa na prática (numeração, o que o `main` aceita, o app travado na 1.x)

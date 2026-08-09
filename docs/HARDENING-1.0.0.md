@@ -121,6 +121,9 @@ que é exatamente onde esta fase começou.
       `boot()` de `src/main.js`, antes do shell e do router (página que consulte
       flag antes disso receberia `false` e se desenharia errada).
 - [ ] **Auditoria do Service Worker** — v1 em cache → deploy v2 → usuário preso na v1.
+      *(Meio caminho andado: a causa mais comum — a VERSION do `sw.js` parada
+      enquanto o site avança — agora é cobrada por `test/versao.test.js`. Falta
+      testar o ciclo de troca de SW de verdade, num navegador.)*
 - [ ] **Teste de offline real** — online → offline → navega → online → sincroniza.
 - [ ] **Schemas dos datasets** — a garantia mínima: **um JSON quebrado não derruba
       a página**. Proveniência (fonte, data, revisão, confiança por campo) e fila
@@ -138,13 +141,13 @@ que é exatamente onde esta fase começou.
 Os itens acima são o trabalho. Estes cinco são o **fechamento**, e sem eles não
 existe "1.0.0", só um monte de item marcado:
 
-- [ ] **Decidir o número da versão.** ⚠️ `package.json` e `src/data/version.js`
-      dizem **`2.0.0`**, mas o plano inteiro fala em fechar a **1.0.0** com a V2
-      virando 2.0.0 depois. Não há **nenhuma tag git** no repositório — nada foi
-      publicado com esse número, e o app desktop tem versionamento próprio
-      (`0.9.2`). Ou seja, o `2.0.0` é numeração interna do Mark XIII.
-      **Recomendação:** renumerar para `1.0.0-rc` agora e `1.0.0` no congelamento.
-      É de graça e faz o plano fechar. *(Decisão do operador — pendente.)*
+- [x] **Decidir o número da versão** — decidido pelo operador: `1.0.0-rc` agora,
+      `1.0.0` no congelamento; a V2 vira 2.0.0 (ADR-003). O `2.0.0` que estava no
+      `package.json` era numeração interna do Mark XIII, nunca publicada (o repo
+      não tinha nenhuma tag). **Os três arquivos que carregam a versão foram
+      alinhados** e `test/versao.test.js` passa a cobrar que continuem — o
+      `public/sw.js` estava em `v0.9.1` enquanto o site dizia `2.0.0`, que é
+      exatamente o bug "cache velho servido após deploy" (já aconteceu 2×).
 - [ ] **Publicar a tag `v1.0.0`** — é o **ponto de retorno**. Sem tag não existe
       "voltar para a 1.0", e a linha-base que justifica o ADR-001 não existe.
 - [ ] **Tabela de estabilidade no `README.md`**, gerada de `flags.porNivel()` —
