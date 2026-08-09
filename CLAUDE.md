@@ -14,17 +14,30 @@ Antes de mexer, leia:
 remoto/local. · 👉 **issue #240** — Roadmap mestre: a fila de continuação (pegue o
 próximo item não-marcado). **Não feche** essas issues (são referência viva).
 
-## 🛡️ Fase atual: hardening até a 1.0.0 (#420)
+## 🛡️ Fase atual: hardening até a 1.0.0
 
-A prioridade agora **não é funcionalidade nova**. A issue **#420** (guarda-chuva,
-**não fechar**) fixou: `1.0.0 = tudo que está marcado como estável é previsível,
-testado, recuperável e seguro` — e a 1.0.0 é um **ponto de congelamento**, com a
-V2 (plataforma/TypeScript/MCP) só depois, alvo de meados de 2027.
+A prioridade agora **não é funcionalidade nova**. A definição em vigor:
+`1.0.0 = tudo que está marcado como estável é previsível, testado, recuperável e
+seguro` — e a 1.0.0 é um **ponto de congelamento**, com a V2 só depois, alvo de
+meados de 2027.
 
-👉 **[`docs/HARDENING-1.0.0.md`](docs/HARDENING-1.0.0.md)** — a fila executável:
-pegue o próximo item não-marcado. · 👉 **[`docs/architecture/`](docs/architecture/)**
+👉 **[`docs/HARDENING-1.0.0.md`](docs/HARDENING-1.0.0.md)** — a fila executável da
+1.0.0: pegue o próximo item não-marcado. · 👉 **[`docs/architecture/`](docs/architecture/)**
 — overview, `v2-vision.md` (**bússola, não obra**: diz o que *não* fazer agora) e
 os ADRs (decisões fechadas, não re-litigar).
+
+### 📐 Os dois planos da V2 (**não fechar** nenhum dos dois)
+
+- **#420 — plataforma e arquitetura.** É onde a fase de hardening foi definida
+  *e* onde a V2 foi desenhada: arquitetura modular, sistema de plugins, JARVIS
+  como cérebro, Project Registry, stack TypeScript + Python + SQL, calendário até
+  meados de 2027. A decisão de **fechar a 1.0.0 antes** mora aqui (ADR-001).
+- **#422 — produtos e projetos da V2.** O backlog: wikis (Arma 3 com motor
+  refeito, Project Zomboid), parser framework Lua/SQF, Baluarte Social, IDE web,
+  3D engine, Knowledge Engine, MCP.
+
+Regra prática: **#420 = a forma · #422 = a lista.** Ideia de produto novo para a
+V2 vai para o #422; decisão arquitetural vai para o #420 e vira ADR.
 
 ## ⚠️ Sessão LOCAL (com skills)? Leia primeiro
 
@@ -49,7 +62,7 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 - `historico/CHANGELOG.md` — registro do que entra no `main`
 - `docs/DESIGN-SYSTEM.md` — **contrato visual** (tokens/componentes/diretrizes do redesign #246/#195); todo design novo sai daqui · `docs/REACT-BITS.md` (efeitos) · `docs/CENTRO-MILITAR.md` (hub militar)
 - **Migração Nexus** (#405/#406): `docs/NEXUS-INVENTARIO.md` (estado real + gate da 1.0.0) · `docs/NEXUS-CONTRATO.md` (contrato v1.0.0) · `docs/NEXUS-DECISOES.md` (decisões fechadas — não re-litigar) · `docs/nexus/dominios.json` (mapa dos **21** domínios + externos, cobrado por `npm run verificar-nexus`). Os repositórios `baluarte-*` existem mas estão **vazios** — enquanto um domínio não estiver `estavel`, **a versão que vale é a deste repositório**.
-- Issues guarda-chuva (**não fechar**): **#420** (hardening → 1.0.0 · *fase atual*) · **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign) · **#406** (Nexus/migração)
+- Issues guarda-chuva (**não fechar**): **#420** (hardening 1.0.0 + arquitetura da V2 · *fase atual*) · **#422** (produtos/backlog da V2) · **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign) · **#406** (Nexus/migração)
 
 ## Regras do projeto
 

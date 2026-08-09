@@ -6,6 +6,13 @@
 >
 > A #420 é **guarda-chuva — não fechar**. Este arquivo é o braço executável dela;
 > a issue guarda o raciocínio, o arquivo guarda o estado.
+>
+> ℹ️ A #420 tem **dois assuntos**: esta fase de hardening **e** a arquitetura da
+> V2 (junto com a [#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422),
+> que carrega os produtos). Não é confusão — é o mesmo argumento contínuo:
+> *endurecer → congelar a 1.0.0 → reconstruir como V2*. O que é V2 está resumido
+> em [`architecture/v2-vision.md`](./architecture/v2-vision.md) e **não se executa
+> agora**; o que se executa agora é a fila abaixo.
 
 ---
 

@@ -9,10 +9,18 @@
 >
 > Decisão fechada em [ADR-001](./decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md).
 >
-> 📋 **O backlog da V2 mora na issue [#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422)**
-> — wikis (Arma 3, Zomboid), parser framework Lua/SQF, Baluarte Social, IDE web,
-> 3D engine. Este documento é a **forma**; a #422 é a **lista**. Ideia nova de V2
-> vai para lá, não para cá.
+> 📋 **A V2 tem dois planos, e nenhum dos dois fecha:**
+>
+> - **[#420](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420) — plataforma e arquitetura.**
+>   Onde a V2 foi desenhada (modularização, plugins, Project Registry, stack,
+>   calendário) *e* onde a decisão de fechar a 1.0.0 antes foi tomada. Este
+>   documento é o resumo executável dela.
+> - **[#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422) — produtos e projetos.**
+>   O backlog: wikis (Arma 3, Zomboid), parser Lua/SQF, Baluarte Social, IDE web,
+>   3D engine, Knowledge Engine.
+>
+> Regra prática: **#420 = a forma · #422 = a lista.** Produto novo vai para a
+> #422; decisão arquitetural vai para a #420 e vira ADR aqui.
 
 ---
 
