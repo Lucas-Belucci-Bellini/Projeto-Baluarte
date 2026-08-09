@@ -6,6 +6,50 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (4)
+
+### 🩹 XSS no preview de markdown — a única das 58
+
+Item 🔴 da fila: triar os 58 `innerHTML`. Feita uma a uma. **Uma era
+vulnerabilidade de verdade**; as outras 57 são seguras, e agora o motivo de cada
+categoria está escrito em vez de suposto.
+
+**O buraco.** O renderizador de markdown da `/utilidades` escapava `<`, `>` e `&`
+do texto e parava aí. Mas `href` **não precisa de tag nenhuma**:
+
+```
+[clique](javascript:alert(1))
+  → <a href="javascript:alert(1)" target="_blank">clique</a>
+```
+
+e executava no clique. O escape do texto nunca tocou nisso, porque o problema
+nunca esteve no texto — esteve no atributo. É o caminho de quem cola markdown de
+qualquer lugar no preview.
+
+**A correção.** Filtro de esquema: sem esquema (relativo, âncora, caminho) passa;
+com esquema, só `http`, `https` e `mailto`. Qualquer outro vira `#` — inerte e
+visível, o link continua lá e não faz nada. Caracteres de controle são removidos
+antes de olhar o esquema, porque o navegador também os ignora ao resolver a URL
+(`java<TAB>script:` executaria enquanto uma checagem ingênua não veria esquema).
+Aspas passaram a ser escapadas junto com `<`/`>`/`&`.
+
+Extraído para `src/utils/markdown.js` para poder ser testado sem navegador — um
+renderizador que produz HTML a partir de texto de fora precisa de teste. **15
+testes**, e 4 deles falham se o comportamento antigo voltar (verificado).
+
+**As outras 57, por categoria:** 21 são `innerHTML = ''`; 8 são HTML literal
+estático; 17 interpolam só números calculados; 3 passam por `highlight()`, que
+escapa nos três caminhos; 1 usa `escapeHtml()` explícito; 6 interpolam
+identificadores internos. E 1 é o console do runner do editor, que roda dentro de
+um iframe `sandbox="allow-scripts"` **sem** `allow-same-origin` — origem opaca,
+sem acesso ao DOM ou storage do pai. Executar ali é o propósito do recurso.
+
+Verificado no navegador: `javascript:` vira `href="#"`, o clique não dispara
+nada, o link legítimo continua funcionando e a tag no texto sai escapada.
+386 testes verdes.
+
+---
+
 ## 2026-08-09 (3)
 
 ### 🗄️ O storage direto some — e dois bugs saem junto

@@ -240,7 +240,8 @@
     "src/data/logic-circuits.js",
     "src/data/logic-gates.js",
     "src/data/periodic.js",
-    "src/data/terminal-commands.js"
+    "src/data/terminal-commands.js",
+    "src/utils/markdown.js"
    ],
    "precisa": [
     "baluarte-core",

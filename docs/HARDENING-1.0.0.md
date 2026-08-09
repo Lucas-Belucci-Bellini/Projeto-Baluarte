@@ -46,7 +46,7 @@ Primeira varredura da fase, sobre `src/`, `api/`, `scripts/`, `public/`,
 |---|---|---|
 | **Segredos no frontend** | ✅ **limpo** — nenhuma chave, token ou senha embutida. Nenhum `sk-`/`AIza`/`ghp_`/JWT em código. | manter; cobrar no CI (item aberto) |
 | **`eval` / `new Function`** | ⚠️ **1 ocorrência**, `src/utils/jarvis-skills.js:89` — e ela **já está sandboxed** em duas camadas (lista de bloqueio por regex + globais perigosos sombreados como parâmetros `undefined`). | revisar na frente do JARVIS, não é buraco aberto |
-| **`innerHTML`** | ⚠️ **58 atribuições** em 40 arquivos. Concentração nas calculadoras (`engenharia` 8, `saude` 5, `financeira` 5, `estatistica` 4). | triar: quais recebem entrada do operador? |
+| **`innerHTML`** | ⚠️→✅ **58 atribuições** triadas uma a uma: **1 era XSS real** (`javascript:` no preview de markdown da `/utilidades`), as outras 57 são seguras. | corrigida; detalhe na fila abaixo |
 | **Dependências** | ⚠️ **6 avisos** (4 altos), **todos em devDependencies** — `postcss` (via `vite`), `tar` (via `@capacitor/cli`). `npm audit --omit=dev` → **0**. Nada disso chega ao navegador. | CI cobra produção; dev fica informativo |
 | **Armazenamento** | ⚠️ **25 chamadas diretas** a `localStorage`/`sessionStorage` fora de `src/core/storage.js`, em 10 arquivos. | migrar pro wrapper, item aberto |
 | **CI** | ✅ melhor que o esperado — `ci.yml` (build + testes + invariantes do Arma 3), `smoke.yml` (todas as rotas num navegador real, de hora em hora), `codeql.yml`. | somar `npm audit` |
@@ -85,9 +85,33 @@ que é exatamente onde esta fase começou.
       `localStorage` (persiste para sempre) e essas flags existem para morrer com
       a aba — migrá-las trocaria a semântica e transformaria a guarda anti-loop do
       boot num bloqueio permanente. Justificado em `core/politica.js`.
-- [ ] **Triagem dos 58 `innerHTML`** — separar "HTML que eu mesmo escrevi" (ok) de
-      "HTML com dado do operador ou de API" (vira `textContent` ou sanitização).
-      Começar pelas calculadoras.
+- [x] **Triagem dos 58 `innerHTML`** — feita, uma a uma. **Uma era vulnerabilidade
+      real**, as outras 57 são seguras e o motivo está registrado abaixo.
+
+      🔴 **`pages/utilidades.js` — XSS por `javascript:` no preview de markdown.**
+      O renderizador escapava `<`, `>` e `&` do texto e parava aí. Mas `href` não
+      precisa de tag: `[clique](javascript:alert(1))` virava
+      `<a href="javascript:alert(1)">` e executava no clique. O escape do texto
+      nunca tocou nisso — o problema estava no atributo. Corrigido com filtro de
+      esquema (só `http`/`https`/`mailto`; o resto vira `#`, inerte e visível).
+      Extraído para `src/utils/markdown.js` para poder ser testado sem navegador:
+      **15 testes**, e 4 deles falham se o comportamento antigo voltar.
+
+      ✅ **As outras 57**, por categoria:
+      **21** são `innerHTML = ''` (limpar container) — sem conteúdo, sem risco.
+      **8** são HTML literal estático escrito no próprio arquivo.
+      **17** interpolam apenas números calculados (calculadoras, métricas de FPS,
+      dimensões de imagem).
+      **3** passam por `highlight()` (editor, JARVIS, gerar-código) — o
+      highlighter escapa tudo com `escapeHtml` nos três caminhos (genérico,
+      markdown e markup), verificado.
+      **1** usa `escapeHtml()` explicitamente (`terminal.js`).
+      **1** é o `log` do runner do editor, que roda **dentro de um iframe
+      `sandbox="allow-scripts"` sem `allow-same-origin`** — origem opaca, sem
+      acesso ao DOM/storage do pai. Executar ali é o propósito do recurso, não
+      escalada.
+      **6** interpolam identificadores internos (rótulo de nó do cérebro, id de
+      aba, nome de RPC) sem caminho para dado externo.
 - [ ] **Sandbox do Terminal** — confirmar **por teste** que o FS virtual de
       `utils/terminal-engine.js` não alcança nada real, e que os 60+ comandos
       passam por uma API explícita. O terminal está `beta`, mas fuga de sandbox é
