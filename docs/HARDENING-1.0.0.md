@@ -233,8 +233,21 @@ que é exatamente onde esta fase começou.
 
 ## 🟡 Pode esperar a 1.1
 
-- [ ] Organização do `.smart-env/` (19 MB, 96 arquivos gerados) em `generated/`,
+- [x] Organização do `.smart-env/` (19 MB, 96 arquivos gerados) em `generated/`,
       `cache/`, `indexes/` — e o máximo possível no `.gitignore`.
+      **Resolvido por remoção, não por reorganização.** Reorganizar em três
+      subpastas pressupõe que o diretório é nosso; ele não é. Os 96 `.ajson` são
+      índice do **Smart Connections** (embeddings + logs de evento derivados dos
+      nossos próprios READMEs), e **nenhum arquivo de `src/` ou `scripts/` lê ou
+      escreve qualquer um deles** — não há gerador nosso nem consumidor nosso.
+      Inventar `generated/cache/indexes/` numa pasta de ferramenta externa só
+      quebraria a ferramenta. Foi para o `.gitignore` e saiu do índice, no mesmo
+      bloco onde `Humanity always first/` e `GitNexus-1.6.7/` já tinham ido pelo
+      mesmo motivo.
+      ⚠️ **O `.gitignore` estanca o futuro, não o passado**: os 19 MB continuam
+      no histórico e todo clone ainda os baixa. Tirá-los de lá exige reescrever
+      histórico, o que invalidaria todo hash já publicado — decisão do operador,
+      e péssima ideia às vésperas de congelar a 1.0.0.
 
 ---
 

@@ -30,6 +30,15 @@ venv/
 Humanity always first/
 GitNexus-1.6.7/
 
+# Índice do Smart Connections (#420, item 7). 19 MB, 96 arquivos `.ajson` de
+# embeddings e logs de evento DERIVADOS dos nossos próprios READMEs e docs —
+# nenhum arquivo de src/ ou scripts/ lê ou escreve isto, é cache de ferramenta
+# externa. A regra do #420 é "SOURCE → GERADOR → ÍNDICE → APLICAÇÃO", e índice
+# regenerável não se versiona: ele reaparece sozinho na máquina de quem usa a
+# ferramenta, e num commit ele só produz conflito de merge em arquivo que
+# ninguém sabe ler.
+.smart-env/
+
 # Mídia pesada: git não é depósito de vídeo. Cada versão fica no histórico
 # para sempre, e o site não referencia nenhum destes.
 *.mp4
