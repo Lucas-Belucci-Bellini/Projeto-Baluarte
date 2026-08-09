@@ -6,6 +6,42 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (11)
+
+### 🧹 Auditoria do Service Worker — e um bug que eu mesmo plantei hoje
+
+`pwa` está marcado **estável**, e este é o componente que já deixou gente presa
+em cache velho **duas vezes** neste projeto. A primeira metade da auditoria já
+estava fechada: `test/versao.test.js` impede a VERSION do `sw.js` de ficar para
+trás. Esta é a segunda.
+
+**O bug.** A limpeza de caches antigos comparava por **prefixo**:
+
+```js
+keys.filter((k) => k.startsWith('baluarte-') && !k.startsWith(VERSION))
+```
+
+E `'baluarte-v1.0.0-rc-static'.startsWith('baluarte-v1.0.0')` é **`true`**. Ou
+seja: na subida de `1.0.0-rc` para `1.0.0`, os caches da rc **sobreviveriam para
+sempre** — invisíveis, ocupando espaço, nunca servidos. O mesmo valeria de `v1.0`
+para `v1.0.1`.
+
+E o cenário foi criado **hoje**, pela renumeração para `-rc` de dois commits
+atrás. Um item da fila achando o defeito que outro item da fila plantou.
+
+Agora a comparação é por **nome exato** contra a lista dos caches desta versão.
+
+**O teste executa o `sw.js` de verdade.** O arquivo é servido cru e usa globais
+de Service Worker, então não dá para importar. Em vez de reimplementar a lógica
+no teste — que testaria uma cópia, não o código —, ele roda num sandbox `vm` com
+`self` e `caches` de mentira, e o handler de `activate` é chamado com chaves
+semeadas. Verificado revertendo para o prefixo: o teste acusa com o nome do cache
+que sobreviveria.
+
+412 testes verdes.
+
+---
+
 ## 2026-08-09 (10)
 
 ### 📋 A tabela de estabilidade entra no README — gerada, não escrita

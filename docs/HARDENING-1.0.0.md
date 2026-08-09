@@ -187,10 +187,20 @@ que é exatamente onde esta fase começou.
 - [x] **Conectar flags e permissões ao boot** — `aplicarPolitica()` no topo do
       `boot()` de `src/main.js`, antes do shell e do router (página que consulte
       flag antes disso receberia `false` e se desenharia errada).
-- [ ] **Auditoria do Service Worker** — v1 em cache → deploy v2 → usuário preso na v1.
-      *(Meio caminho andado: a causa mais comum — a VERSION do `sw.js` parada
-      enquanto o site avança — agora é cobrada por `test/versao.test.js`. Falta
-      testar o ciclo de troca de SW de verdade, num navegador.)*
+- [x] **Auditoria do Service Worker** — as duas metades fechadas, e **achou um
+      bug que eu mesmo ativei**.
+      A primeira metade já estava: `test/versao.test.js` impede a VERSION do
+      `sw.js` de ficar para trás (a causa das duas vezes em que gente ficou presa
+      em cache velho).
+      A segunda metade: a limpeza de caches antigos comparava por **prefixo**, e
+      `'baluarte-v1.0.0-rc-static'.startsWith('baluarte-v1.0.0')` é **`true`** —
+      então na subida de `1.0.0-rc` para `1.0.0` os caches da rc sobreviveriam
+      **para sempre**: invisíveis, ocupando espaço, nunca servidos. Renumerar
+      para `-rc` foi o que criou o cenário. Agora compara por **nome exato**.
+      `test/service-worker.test.js` (6 testes) **executa o `sw.js` de verdade**
+      num sandbox `vm` com `self`/`caches` de mentira — testa o arquivo servido,
+      não uma cópia da lógica. Verificado revertendo para o prefixo: o teste
+      acusa.
 - [ ] **Teste de offline real** — online → offline → navega → online → sincroniza.
 - [ ] **Schemas dos datasets** — a garantia mínima: **um JSON quebrado não derruba
       a página**. Proveniência (fonte, data, revisão, confiança por campo) e fila

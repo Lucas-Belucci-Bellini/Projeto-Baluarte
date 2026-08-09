@@ -23,6 +23,16 @@ const VERSION = 'baluarte-v1.0.0-rc';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
+/* Os caches que ESTA versão usa. A limpeza compara por nome exato contra esta
+ * lista — nunca por prefixo.
+ *
+ * Por quê: prefixo mente quando uma versão é prefixo da outra.
+ * `baluarte-v1.0.0-rc-static`.startsWith(`baluarte-v1.0.0`) é **true**, então na
+ * subida de `1.0.0-rc` para `1.0.0` os caches da rc sobreviveriam para sempre —
+ * invisíveis, ocupando espaço, nunca servidos. O mesmo valeria de `v1.0` para
+ * `v1.0.1`. Nome exato não tem essa ambiguidade. */
+const CACHES_DESTA_VERSAO = [STATIC_CACHE, RUNTIME_CACHE];
+
 /* Assets críticos para o app shell */
 const CORE_ASSETS = [
   '/',
@@ -42,7 +52,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
-        keys.filter((k) => k.startsWith('baluarte-') && !k.startsWith(VERSION))
+        keys.filter((k) => k.startsWith('baluarte-') && !CACHES_DESTA_VERSAO.includes(k))
           .map((k) => caches.delete(k))
       )
     ).then(() => self.clients.claim())
