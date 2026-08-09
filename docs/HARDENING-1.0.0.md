@@ -145,10 +145,16 @@ que é exatamente onde esta fase começou.
       externa") não tinha critério de pronto: são ~100 páginas, a maioria `beta`,
       e item sem definição de fim segura release para sempre. Beta não promete
       recuperabilidade — estável promete.
-- [ ] **Teste de vazamento de memória — ESCOPO CORTADO** para uma sonda nas ~5
-      rotas mais pesadas (3D, áudio, canvas). Se vier limpo, fecha; se acusar,
-      vira item próprio com o vazamento nomeado. `core/ciclo-vida.js` já existe;
-      falta cobrar.
+- [x] **Sonda de vazamento** — `scripts/sonda-memoria.mjs` (`npm run sonda-memoria`,
+      no CI). **Veio limpo:** `/home`, `/cerebro`, `/radio`, `/visao` e `/mapa`
+      visitadas 6× cada não acumulam timer, contexto de áudio nem laço de
+      animação. O `ciclo-vida` está fazendo o trabalho dele.
+      Mede **inclinação**, não valor absoluto — número alto e estável é legítimo
+      (a página abre 3 timers e fecha 3); o que acusa é crescer a cada visita.
+      Heap é reportado mas **não reprova**: oscila com o coletor, e limiar grande
+      o bastante para não dar falso positivo não pega vazamento pequeno.
+      Verificado plantando um `setInterval` e um laço de `rAF` sem limpeza em
+      `/cerebro`: a sonda acusou `timers 2→3→4→5→6→7`.
 
 ## 🟠 Muito recomendado
 

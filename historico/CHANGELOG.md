@@ -6,6 +6,41 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (7)
+
+### 🧪 Sonda de vazamento — e veio limpa
+
+`core/ciclo-vida.js` existe para desmontar o que a página montou, mas ninguém
+cobrava. `scripts/sonda-memoria.mjs` visita as rotas pesadas (`/home`,
+`/cerebro`, `/radio`, `/visao`, `/mapa`) **6× cada** e mede o que sobra.
+
+**Resultado: nada sobra.** Nem timer, nem contexto de áudio, nem laço de
+animação. O ciclo de vida está fazendo o trabalho dele — este é o primeiro item
+da fase que não achou defeito, e isso também é resultado.
+
+**Por que não mede heap.** Heap depois de GC é o instrumento óbvio e o pior:
+oscila com o coletor, com o cache de imagem, com o JIT. Para não dar falso
+positivo precisa de limiar grande, e limiar grande não pega vazamento pequeno —
+que é exatamente o que se acumula em cem trocas de rota. Heap entra como número
+informativo e não reprova nada.
+
+**O que reprova** são contadores determinísticos instrumentados antes do boot:
+`setInterval` sem `clearInterval`, `AudioContext` sem `close()`, e — o que mais
+importa neste código, onde 12 páginas rodam laço de animação — **quantos quadros
+são pedidos enquanto se está FORA da rota**. Um laço de `requestAnimationFrame`
+não cancelado continua queimando CPU numa tela fechada, e cada visita deixa mais
+um rodando.
+
+Mede **inclinação**, não valor absoluto: número alto e estável é legítimo (a
+página abre 3 timers e fecha 3); o que acusa é crescer a cada visita.
+
+A primeira versão instrumentava só `setInterval` e deu tudo plano — o que era
+suspeito, não tranquilizador, já que essas páginas usam `rAF`. Confirmado
+plantando um `setInterval` e um laço de `rAF` sem limpeza em `/cerebro`: a sonda
+acusou `timers 2→3→4→5→6→7` e quadros ociosos subindo.
+
+---
+
 ## 2026-08-09 (6)
 
 ### 🧭 Critical Path Test — e duas versões dele que passavam com o defeito presente
