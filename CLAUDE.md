@@ -36,9 +36,12 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 ## Mapa rápido
 
 - `src/pages/` — uma página por rota · `src/styles/` — CSS (1 por página + tokens em `variables.css`)
-- `src/core/` — router (hash), eventos, estado, storage, **permissions** (deny-by-default; `JARVIS → Permission → Tool`), **flags** (estável/beta/experimental + gate web/app) · `src/layout/` — shell, sidebar, header
+- `src/core/` — router (hash), eventos, estado, storage, **permissions** (deny-by-default; `JARVIS → Permission → Tool`), **flags** (estável/beta/experimental + gate web/app), **politica** · `src/layout/` — shell, sidebar, header
+  - **`politica.js` é o lugar único onde o Baluarte declara o que existe**: permissões, esquemas de storage e a tabela de estabilidade. Capacidade nova (tool, chave, módulo) se declara **ali**, não espalhada. Rodada no topo do `boot()`.
   - `events.js` aceita curinga: `bus.on('*')` / `bus.on('arsenal:*')`, com o nome do evento em `meta.event`.
-  - `storage.js` tem esquema por chave (versão + migração + classe). Mudou o formato de uma chave? **suba a `versao` e escreva o `migrar`** — o dado do operador não migra sozinho.
+  - `storage.js` tem esquema por chave (versão + migração + classe). Mudou o formato de uma chave? **suba a `versao` e escreva o `migrar`** — o dado do operador não migra sozinho. Declarar esquema numa chave que **já tem dado** exige `migrar` (nem que seja identidade), senão o dado antigo do operador cai no fallback em silêncio.
+  - Tool nova do JARVIS: mapeie a permissão em `src/utils/jarvis-permissoes.js`. Sem mapa ela nasce **negada** (padrão fechado) — é de propósito.
+  - **`/diagnostico`** mostra tudo isso na tela (permissões, flags, esquemas, sondas do ambiente).
 - `src/utils/` — helpers, jarvis-engine/tools, git-nexus-engine, scroll-reveal, **effects** (efeitos portados do react-bits: `.fx-*` + `attachSpotlight/Tilt`, `decryptTitles`), **hero-webgl/hero-rays** (fundos WebGL sem dep), **wikipedia** (Centro Militar)…
 - **Camada de efeitos** (#246): `src/utils/effects.js` + `src/styles/effects.css` (no boot) — porta vanilla do **react-bits** (NÃO usar React; ver `docs/REACT-BITS.md`).
 - **Centro Militar** (`/militar`, `src/pages/militar.js`): hub que **consolidou as 13 frentes militares + Arsenal** (sidebar = 1 entrada) com extrato vivo da Wikipédia (`src/utils/wikipedia.js`). As páginas individuais seguem registradas. Plano: `docs/CENTRO-MILITAR.md`.

@@ -52,7 +52,14 @@ import { bus } from './events.js';
  *   leitura  — lê dado que o operador já podia ver na tela. Curinga alcança.
  *   escrita  — altera dado/estado persistente. Curinga alcança.
  *   restrito — executa código, alcança arquivo real, fala com a rede em nome do
- *              operador, ou gasta dinheiro. Curinga NÃO alcança.
+ *              operador, gasta dinheiro, OU expõe dado classificado como
+ *              `sensivel`/`secreto` (ver as classes em `storage.js`).
+ *              Curinga NÃO alcança.
+ *
+ * A última cláusula liga os dois eixos e não é redundante: `jarvis.memoria.ler`
+ * é leitura pela mecânica, mas o que ela devolve são as conversas do operador.
+ * Sensibilidade do DADO promove o risco da AÇÃO — senão um `conceder('*')`
+ * entregaria o histórico privado junto com a busca no Arsenal.
  */
 export const RISCOS = Object.freeze(['leitura', 'escrita', 'restrito']);
 

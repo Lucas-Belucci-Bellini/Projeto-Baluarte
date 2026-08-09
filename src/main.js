@@ -15,6 +15,7 @@
 import { router } from './core/router.js';
 import { bus } from './core/events.js';
 import { appState } from './core/state.js';
+import { aplicarPolitica } from './core/politica.js';
 import { mountShell, renderPage } from './layout/shell.js';
 /* Home é eager (primeiro paint instantâneo). As demais páginas carregam sob
  * demanda via import() dinâmico — o Vite faz code-splitting automático, então
@@ -152,6 +153,7 @@ router.register('/llm-lab', lazyNexus('llm'));
 
 router.register('/sobre', lazy(() => import('./pages/sobre.js'), 'sobrePage'));
 router.register('/roadmap', lazy(() => import('./pages/roadmap.js'), 'roadmapPage'));
+router.register('/diagnostico', lazy(() => import('./pages/diagnostico.js'), 'diagnosticoPage'));
 router.register('/jarvis-dashboard', lazyNexus('dashboard'));
 router.register('/mapa', lazy(() => import('./pages/mapa.js'), 'mapaPage'));
 router.register('/visao', lazy(() => import('./pages/visao.js'), 'visaoPage'));
@@ -248,6 +250,15 @@ function boot() {
     if (lowfx) document.documentElement.classList.add('is-lowfx');
     window.__baluarteLowFx = !!lowfx;
   } catch { /* sem as APIs → assume normal */ }
+
+  /* Política (#420) — declara permissões, esquemas de storage e flags ANTES de
+   * qualquer página existir. A ordem é o ponto: uma página que consulta flag ou
+   * permissão antes disso receberia `false` (deny-by-default) e se desenharia
+   * errada. Por isso vem no topo do boot, antes do shell e do router. */
+  aplicarPolitica({
+    ambiente: isNative() ? 'app' : 'web',
+    search: typeof location !== 'undefined' ? location.search : ''
+  });
 
   initTheme();
   initUniverse();

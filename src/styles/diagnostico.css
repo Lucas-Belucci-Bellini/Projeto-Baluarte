@@ -1,0 +1,254 @@
+/**
+ * /diagnostico — painel de estado do sistema (#420).
+ *
+ * Página densa e informativa: a hierarquia visual carrega o estado (verde =
+ * disponível/concedido, âmbar = atenção, apagado = ausente/negado), então o
+ * operador lê a tela sem precisar ler cada palavra. Tudo com os tokens do
+ * design system (docs/DESIGN-SYSTEM.md) — nada de cor solta.
+ */
+
+.diag {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md) var(--space-xl);
+}
+
+/* ===== Cabeçalho ===== */
+
+.diag-hero {
+  border: var(--border-base);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-elevated);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.diag-hero__titulo {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.diag-hero__sub {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-md);
+}
+
+.diag-hero__resumo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* ===== Seções ===== */
+
+.diag-secao { margin-bottom: var(--space-xl); }
+
+.diag-secao__titulo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--color-cyan);
+  margin: 0 0 var(--space-xs);
+  padding-bottom: var(--space-xs);
+  border-bottom: var(--border-thin);
+}
+
+.diag-secao__sub {
+  font-size: var(--font-size-sm, 13px);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-md);
+  max-width: 70ch;
+}
+
+/* ===== Selos de estado ===== */
+
+.diag-selo {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  line-height: 1;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.diag-selo--ok {
+  color: var(--color-success);
+  background: var(--color-success-soft);
+  border: 1px solid rgba(61, 220, 132, 0.3);
+}
+
+.diag-selo--risco {
+  color: var(--color-warning);
+  background: var(--color-warning-soft);
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.diag-selo--neutro {
+  color: var(--color-text-secondary);
+  background: var(--color-cyan-soft);
+  border: var(--border-thin);
+}
+
+/* Ausente/negado fica apagado de propósito: não é erro, é estado. Pintar de
+ * vermelho ensinaria o operador a ignorar vermelho. */
+.diag-selo--off {
+  color: var(--color-text-muted);
+  background: transparent;
+  border: var(--border-thin);
+}
+
+/* ===== Sondas do ambiente ===== */
+
+.diag-sondas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-sm);
+}
+
+.diag-sonda {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.diag-sonda__nome {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+}
+
+/* ===== Listas de itens (permissões, flags, esquemas) ===== */
+
+.diag-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.diag-item {
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  padding: var(--space-md);
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.diag-item--compacto { padding: var(--space-sm) var(--space-md); }
+
+.diag-item__cabeca {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.diag-item__id {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  border: var(--border-thin);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+}
+
+.diag-item__desc {
+  margin: 0;
+  font-size: var(--font-size-sm, 13px);
+  color: var(--color-text-secondary);
+  max-width: 75ch;
+}
+
+.diag-item__acao {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* ===== Botões ===== */
+
+.diag-btn {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  background: var(--color-bg-elevated);
+  border: var(--border-base);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+
+.diag-btn:hover {
+  border-color: var(--color-cyan-edge);
+  color: var(--color-cyan);
+}
+
+.diag-btn:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+.diag-btn--fraco { color: var(--color-text-muted); }
+
+/* Explicação no lugar do botão, quando não há ação possível. */
+.diag-item__nota {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ===== Log de decisões ===== */
+
+.diag-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+}
+
+.diag-log__linha {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-sm);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.diag-log__linha code { color: var(--color-cyan); }
+
+.diag-vazio {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .diag { padding: var(--space-md) var(--space-sm) var(--space-xl); }
+  .diag-hero { padding: var(--space-md); }
+  .diag-item__acao { justify-content: flex-start; }
+}

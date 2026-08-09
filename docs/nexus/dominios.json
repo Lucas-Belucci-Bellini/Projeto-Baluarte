@@ -10,9 +10,11 @@
  "gerado": "2026-08-01",
  "dominios": {
   "baluarte-core": {
-   "responsabilidade": "Base da aplicação: router, estado, eventos, storage, sessão/banco e helpers compartilhados. Não tem rota própria — é o que todo mundo importa.",
+   "responsabilidade": "Base da aplicação: router, estado, eventos, storage, permissões, flags, política, sessão/banco e helpers compartilhados. É o que todo mundo importa. Só tem uma rota própria — /diagnostico, que mostra o estado desse núcleo.",
    "estado": "desenvolvimento",
-   "rotas": [],
+   "rotas": [
+    "/diagnostico"
+   ],
    "origem": [
     "src/core/router.js",
     "src/core/state.js",
@@ -32,7 +34,12 @@
     "src/utils/hx-beacon.js",
     "src/utils/auth-engine.js",
     "src/utils/baluarte-status.js",
-    "src/data/version.js"
+    "src/data/version.js",
+    "src/core/permissions.js",
+    "src/core/flags.js",
+    "src/core/politica.js",
+    "src/pages/diagnostico.js",
+    "src/styles/diagnostico.css"
    ],
    "precisa": [],
    "peso": "leve"

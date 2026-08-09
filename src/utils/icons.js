@@ -98,6 +98,7 @@ const PATHS = {
 /** Rota → ícone. Itens sem entrada caem no fallback (hex). */
 export const iconByPath = {
   '/home': 'home', '/baixar': 'download', '/perfil': 'user', '/roadmap': 'flag', '/sobre': 'info',
+  '/diagnostico': 'shield',
   '/git-nexus': 'nexus',
   '/jarvis': 'orbit', '/jarvis-dashboard': 'grid', '/llm-lab': 'flask', '/ia-proprietaria': 'chip',
   '/editor': 'code', '/terminal': 'terminal', '/json-studio': 'braces', '/git-helper': 'branch',

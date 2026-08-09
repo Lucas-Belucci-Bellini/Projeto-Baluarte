@@ -6,6 +6,62 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (2)
+
+### 🔐 A fronteira de permissão sai do papel — política, boot e `/diagnostico`
+
+O PR anterior entregou os motores; eles estavam **vazios**. Este liga tudo.
+
+**`src/core/politica.js` (novo) — o lugar único onde o Baluarte declara o que
+existe.** Lido de cima a baixo responde três perguntas: o que o sistema é capaz
+de fazer (**19 permissões**, 7 delas `restrito`), o que ele guarda no navegador
+(9 chaves com versão e classificação) e o que está pronto para a 1.0.0 (6
+estáveis, 5 beta, 3 experimentais). Espalhado por 100 páginas ninguém consegue
+responder *"o que um agente com acesso total conseguiria fazer aqui?"* — e é
+justamente essa a pergunta da fase.
+
+Quatro permissões estão declaradas **antes de existirem** (`terminal.executar`,
+`arquivos.ler`, `arquivos.escrever`, `rede.chamar`). No dia em que a ferramenta
+aparecer, ela já nasce atrás de uma permissão que ninguém concedeu, em vez de
+nascer aberta e "ser protegida depois".
+
+**Uma armadilha que quase entrou.** Declarar esquema numa chave que já tem dado
+gravado faz o storage tratar esse dado como versão 0 — e sem `migrar` o `get()`
+devolve o fallback. Na prática: as abas do editor do operador sumiriam no
+primeiro deploy, sem um erro no console. Na máquina de quem programa isso nunca
+aparece, porque lá o dado já nasceu versionado. Todo esquema declarado leva
+`migrar` identidade (v0 e v1 têm o mesmo formato), e há teste cobrando que
+**nenhuma chave declarada perca dado legado**.
+
+**JARVIS atrás da fronteira.** `runTool()` é o gargalo por onde toda chamada do
+agente passa; agora ele exige a permissão antes de executar — e **antes do
+guard**, porque perguntar "esse comando é perigoso?" sobre uma ação que nem devia
+estar disponível é responder tarde. O mapa mora em `src/utils/jarvis-permissoes.js`
+(separado para poder ser testado sem navegador). Ferramenta fora do mapa cai no
+padrão **fechado**: tool nova nasce negada, com mensagem dizendo qual permissão
+falta e onde liberar.
+
+**O padrão do operador não quebra o que já funcionava.** Concede `'*'` — que por
+construção exclui `restrito` — mais as três capacidades restritas que a interface
+**já expunha** (`jarvis.memoria.ler`, `jarvis.skills.escrever/executar`),
+escritas uma a uma por extenso. Conceder `restrito` por engano não pode ser
+possível. A escolha do operador persiste: revogar não volta no boot seguinte.
+
+**`/diagnostico` (rota nova).** O painel do item 8 do #420: 9 sondas do ambiente,
+a tabela de estabilidade, as 19 permissões com liga/desliga, os esquemas com
+versão gravada vs. esperada, e o rastro das últimas decisões. Sem `innerHTML` em
+lugar nenhum — nada que venha do storage do operador vira markup. Flag de outro
+ambiente mostra a explicação no lugar do botão: botão que não faz nada é pior que
+botão nenhum.
+
+Verificado no navegador (Chromium): a página desenha, o liga/desliga funciona e a
+gravação sai no envelope versionado — `{"__bv":1,"d":{…}}`, o storage novo
+trabalhando ponta a ponta.
+
+29 testes novos (19 política · 10 mapa de tools). Suíte: **365 verdes**. Build ok.
+
+---
+
 ## 2026-08-09
 
 ### 🛡️ Começa a fase de hardening até a 1.0.0 (#420)

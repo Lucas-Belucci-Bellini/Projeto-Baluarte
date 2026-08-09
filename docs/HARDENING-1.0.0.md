@@ -76,9 +76,11 @@ que é exatamente onde esta fase começou.
 - [ ] **Sandbox do Terminal** — confirmar por teste que o VFS de
       `utils/terminal-engine.js` não alcança nada real, e que os 60+ comandos
       passam obrigatoriamente por uma API explícita.
-- [ ] **JARVIS atrás do Permission Manager** — cada tool declarada com a permissão
-      que exige, registrada via `protegido()`. É o item que a #420 chama de regra
-      de ouro: `JARVIS → Permission → Tool`, nunca `JARVIS → Tool`.
+- [x] **JARVIS atrás do Permission Manager** — `runTool()` é o gargalo por onde
+      toda chamada do agente passa, e exige a permissão do mapa
+      `src/utils/jarvis-permissoes.js` antes de executar. Ferramenta fora do mapa
+      cai no padrão **fechado** (`jarvis.skills.executar`, risco `restrito`), então
+      tool nova nasce negada em vez de nascer aberta. 10 testes.
 - [ ] **Critical Path Test** — o `smoke` já abre todas as rotas; falta afirmar
       *jornada* (home → arsenal → item → volta → JARVIS → estado íntegro) e
       "zero erro de JS no console".
@@ -97,13 +99,18 @@ que é exatamente onde esta fase começou.
 - [x] **Feature flags + níveis de estabilidade** — `src/core/flags.js`.
       `estavel`/`beta`/`experimental`, gate de ambiente web/app (#238) sem porta
       dos fundos, override por `?flags=` que não persiste. 23 testes.
-- [ ] **Página `/sistema/diagnostico`** — o painel de status do #420, item 8.
-      Os três módulos novos já expõem o que ela precisa: `permissions.estado()`,
-      `storage.estadoEsquemas()`, `flags.listar()`, `bus.contarOuvintes()`.
-- [ ] **Declarar as permissões reais do Baluarte** — hoje o gerente existe e está
-      vazio. Falta o catálogo (`arsenal.read`, `terminal.execute`, `jarvis.use`…).
-- [ ] **Conectar flags e permissões ao boot** — `configurarAmbiente()` a partir de
-      `window.baluarte.native`, persistência via `storage`, `aplicarDaURL(location.search)`.
+- [x] **Página `/diagnostico`** — o painel de status do #420, item 8. Sondas do
+      ambiente, tabela de estabilidade, permissões com liga/desliga, esquemas de
+      storage com versão gravada vs. esperada, e o rastro das últimas decisões.
+      Sem `innerHTML` em lugar nenhum. Verificada no navegador.
+- [x] **Declarar as permissões reais do Baluarte** — `src/core/politica.js`:
+      **19 permissões**, sendo 7 `restrito`. Quatro delas (`terminal.executar`,
+      `arquivos.ler`, `arquivos.escrever`, `rede.chamar`) estão declaradas **antes
+      de existirem**, para que a tool nasça atrás de uma permissão que ninguém
+      concedeu em vez de nascer aberta e "ser protegida depois".
+- [x] **Conectar flags e permissões ao boot** — `aplicarPolitica()` no topo do
+      `boot()` de `src/main.js`, antes do shell e do router (página que consulte
+      flag antes disso receberia `false` e se desenharia errada).
 - [ ] **Auditoria do Service Worker** — v1 em cache → deploy v2 → usuário preso na v1.
 - [ ] **Teste de offline real** — online → offline → navega → online → sincroniza.
 - [ ] **Schemas dos datasets** — um JSON quebrado não pode derrubar a página.
