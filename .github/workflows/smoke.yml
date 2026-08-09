@@ -55,6 +55,15 @@ jobs:
         id: smoke
         run: npm run smoke
 
+      # O smoke abre cada rota numa aba NOVA, e por isso é cego para estado que
+      # corrompe ENTRE navegações — a página que só quebra depois de você ter
+      # passado por outras três. O caminho crítico percorre uma sessão contínua
+      # e afirma estado: o que foi escrito sobrevive à ida e volta, e a escolha
+      # do operador sobrevive ao reload. É o teste que, daqui a um ano, diz se a
+      # 1.0.0 congelada ainda funciona (#420 / ADR-001).
+      - name: A jornada continua íntegra?
+        run: npm run caminho-critico
+
       - name: Guardar o relatório
         if: always()
         uses: actions/upload-artifact@v4

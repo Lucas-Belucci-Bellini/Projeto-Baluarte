@@ -127,9 +127,19 @@ que é exatamente onde esta fase começou.
       `src/utils/jarvis-permissoes.js` antes de executar. Ferramenta fora do mapa
       cai no padrão **fechado** (`jarvis.skills.executar`, risco `restrito`), então
       tool nova nasce negada em vez de nascer aberta. 10 testes.
-- [ ] **Critical Path Test** — o `smoke` já abre todas as rotas; falta afirmar
-      *jornada* (home → arsenal → item → volta → JARVIS → estado íntegro) e
-      "zero erro de JS no console".
+- [x] **Critical Path Test** — `scripts/caminho-critico.mjs` (`npm run caminho-critico`,
+      no CI junto do smoke). O smoke abre cada rota numa **aba nova** e por isso
+      é cego para estado que corrompe *entre* navegações. Este percorre **uma
+      sessão contínua** — boot → arsenal → home → editor (escreve) → terminal →
+      volta no editor → diagnóstico (revoga) → **reload** → a escolha sobreviveu?
+      — com **15 afirmações de estado** e zero exceção não capturada.
+      Nota honesta: as duas primeiras versões **passavam com a persistência
+      quebrada**. A primeira comparava estado *relativo* (`!antes`), que não
+      distingue "voltou ao padrão" de "nunca mudou"; a segunda usava `goto()`
+      para a mesma rota, que é navegação no mesmo documento e **não recarrega** —
+      o teste lia o heap achando que lia o disco. Só a terceira versão morde:
+      verificado quebrando `persistirPermissoes` e vendo a afirmação do reload
+      ficar vermelha.
 - [ ] **Error handling nas bordas — ESCOPO CORTADO** para as chamadas externas
       das superfícies marcadas **`estavel`**. A versão anterior ("toda chamada
       externa") não tinha critério de pronto: são ~100 páginas, a maioria `beta`,

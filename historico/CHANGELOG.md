@@ -6,6 +6,44 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (6)
+
+### 🧭 Critical Path Test — e duas versões dele que passavam com o defeito presente
+
+O `smoke` abre as 99 rotas, mas **cada uma numa aba nova**. Isso o deixa cego
+para a classe de defeito mais chata de um SPA: estado que corrompe *entre*
+navegações. A página que só quebra depois de você ter passado por outras três é
+verde no smoke e vermelha para quem usa.
+
+`scripts/caminho-critico.mjs` percorre **uma sessão contínua** — boot → arsenal →
+home → editor (escreve) → terminal → volta no editor → diagnóstico (revoga
+permissão) → **reload** → a escolha sobreviveu? São 15 afirmações de **estado**,
+não de pixel. Roda no CI junto do smoke.
+
+**A parte que importa: as duas primeiras versões deste teste eram inúteis.**
+
+A primeira comparava estado *relativo* — "depois do reload é o contrário do que
+era antes". Com a persistência quebrada, o boot re-semeia o padrão e o valor
+"volta ao que era", que a comparação relativa não distingue de "nunca mudou".
+Verde com o defeito presente.
+
+A segunda corrigiu para estado absoluto (revoga → recarrega → **exige negada**) e
+**continuou verde**. O motivo era outro: `goto()` para uma URL que difere só no
+fragmento é navegação *no mesmo documento* — o JavaScript não recarrega. O passo
+chamado "reload de verdade" nunca recarregou, e o teste lia o heap achando que
+lia o disco. Corrigido com `reload()` explícito.
+
+Só a terceira versão morde. Verificado quebrando `persistirPermissoes` e vendo a
+afirmação do reload ficar vermelha com `concedida=true`.
+
+Um teste que passa com o defeito presente é pior do que não ter teste: ele
+compra confiança que não existe. Os dois motivos ficaram escritos em comentário
+no próprio script, porque são exatamente os erros que se repetem.
+
+400 testes de unidade + 15 afirmações de jornada.
+
+---
+
 ## 2026-08-09 (5)
 
 ### 🔒 O sandbox do terminal, provado — e a fila cortada ao que cabe
