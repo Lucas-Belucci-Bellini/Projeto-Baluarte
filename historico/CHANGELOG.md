@@ -6,6 +6,67 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09
+
+### 🛡️ Começa a fase de hardening até a 1.0.0 (#420)
+
+A issue #420 fixou o que a 1.0.0 significa — *"tudo que está marcado como estável
+é previsível, testado, recuperável e seguro"* — e que ela é um **ponto de
+congelamento**, com a V2 (plataforma/TypeScript/MCP) só depois. Este é o primeiro
+PR dessa fase: a fundação do Core, mais a fila e as decisões que sobrevivem à
+sessão.
+
+**Auditoria de segurança — primeira varredura.** Resultado melhor que o esperado:
+**nenhum segredo** no frontend (nada de `sk-`/`AIza`/`ghp_`/JWT em código), e o
+único `new Function` do repositório (`utils/jarvis-skills.js`) já estava
+sandboxed em duas camadas. Os buracos reais eram outros — 58 `innerHTML` a
+triar, 25 chamadas diretas a `localStorage` fora do wrapper, e nenhuma fronteira
+de permissão. Tabela completa em `docs/HARDENING-1.0.0.md`.
+
+**`src/core/permissions.js` — a fronteira de acesso (novo).** `JARVIS → Permission
+→ Tool`, nunca `JARVIS → Tool`. Deny-by-default; permissão precisa ser
+**declarada** antes de usada — `exigir('arsenl.read')` com typo falha alto em vez
+de virar negação silenciosa que a UI tenta consertar pedindo autorização ao
+operador; e curinga (`arsenal.*`) **nunca** alcança risco `restrito`, enquanto
+revogar por curinga alcança tudo (tirar acesso é sempre seguro, dar não é).
+Motivo e alternativas descartadas em `ADR-002`.
+
+**`src/core/events.js` — curinga.** `bus.on('*')` e `bus.on('arsenal:*')`, com o
+nome real do evento em `meta.event`. É o que permite histórico, telemetria,
+diagnóstico e o contexto do JARVIS existirem sem manter uma lista fixa de
+eventos — a lista que ninguém lembra de atualizar. A API antiga não mudou:
+handler de um argumento só ignora o `meta`.
+
+**`src/core/storage.js` — versionamento e classificação.** Uma chave pode
+registrar esquema (versão + `migrar` + classe de dado); o valor passa a ser
+gravado num envelope e o dado legado é migrado a partir da versão 0, uma vez, e
+regravado. Dado de uma versão **mais nova** (o operador usou o app atualizado e
+depois abriu uma aba com o bundle em cache) é preservado em vez de adivinhado.
+E a classe `secreto` é **recusada na gravação**: o frontend é público, e a regra
+"nunca segredo no frontend" agora é cobrada em vez de lembrada.
+
+**`src/core/flags.js` — estabilidade e liberação (novo).**
+`estavel`/`beta`/`experimental` + gate `web`/`app` do #238. Uma flag experimental
+**não pode** nascer ligada por padrão — é o que impede a 1.0.0 de prometer
+estabilidade e entregar experimento. E nem a escolha do operador liga uma flag
+app-only na web: o gate do #238 não pode ter porta dos fundos.
+
+**CI: auditoria de dependências.** `npm audit --omit=dev --audit-level=high`
+bloqueia; o audit completo fica informativo. As 6 vulnerabilidades atuais são
+**todas** de devDependency (`postcss` via vite, `tar` via `@capacitor/cli`) e
+nenhuma chega ao navegador de quem visita o site — reprovar merge por causa
+delas ensinaria a ignorar o vermelho.
+
+**Documentação que sobrevive à sessão.** `docs/HARDENING-1.0.0.md` (fila
+executável, com o resultado da auditoria), `docs/architecture/` com `overview.md`,
+`v2-vision.md` (**bússola, não obra** — lista explicitamente o que *não* fazer
+até a 1.0.0 fechar) e dois ADRs. `CLAUDE.md` aponta para a fase atual.
+
+79 testes novos (23 flags · 22 permissions · 18 storage · 16 events). Suíte
+completa: **336 verdes**. Build ok.
+
+---
+
 ## 2026-08-03
 
 ### 🐞 `call _fnc_lim` recebia ARRAY: todo texto dos dumps novos saiu embrulhado

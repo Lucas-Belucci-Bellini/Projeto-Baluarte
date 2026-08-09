@@ -14,6 +14,18 @@ Antes de mexer, leia:
 remoto/local. · 👉 **issue #240** — Roadmap mestre: a fila de continuação (pegue o
 próximo item não-marcado). **Não feche** essas issues (são referência viva).
 
+## 🛡️ Fase atual: hardening até a 1.0.0 (#420)
+
+A prioridade agora **não é funcionalidade nova**. A issue **#420** (guarda-chuva,
+**não fechar**) fixou: `1.0.0 = tudo que está marcado como estável é previsível,
+testado, recuperável e seguro` — e a 1.0.0 é um **ponto de congelamento**, com a
+V2 (plataforma/TypeScript/MCP) só depois, alvo de meados de 2027.
+
+👉 **[`docs/HARDENING-1.0.0.md`](docs/HARDENING-1.0.0.md)** — a fila executável:
+pegue o próximo item não-marcado. · 👉 **[`docs/architecture/`](docs/architecture/)**
+— overview, `v2-vision.md` (**bússola, não obra**: diz o que *não* fazer agora) e
+os ADRs (decisões fechadas, não re-litigar).
+
 ## ⚠️ Sessão LOCAL (com skills)? Leia primeiro
 
 👉 **[`docs/HANDOFF-LOCAL.md`](docs/HANDOFF-LOCAL.md)** — tarefas que dependem das
@@ -24,7 +36,9 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 ## Mapa rápido
 
 - `src/pages/` — uma página por rota · `src/styles/` — CSS (1 por página + tokens em `variables.css`)
-- `src/core/` — router (hash), eventos, estado, storage · `src/layout/` — shell, sidebar, header
+- `src/core/` — router (hash), eventos, estado, storage, **permissions** (deny-by-default; `JARVIS → Permission → Tool`), **flags** (estável/beta/experimental + gate web/app) · `src/layout/` — shell, sidebar, header
+  - `events.js` aceita curinga: `bus.on('*')` / `bus.on('arsenal:*')`, com o nome do evento em `meta.event`.
+  - `storage.js` tem esquema por chave (versão + migração + classe). Mudou o formato de uma chave? **suba a `versao` e escreva o `migrar`** — o dado do operador não migra sozinho.
 - `src/utils/` — helpers, jarvis-engine/tools, git-nexus-engine, scroll-reveal, **effects** (efeitos portados do react-bits: `.fx-*` + `attachSpotlight/Tilt`, `decryptTitles`), **hero-webgl/hero-rays** (fundos WebGL sem dep), **wikipedia** (Centro Militar)…
 - **Camada de efeitos** (#246): `src/utils/effects.js` + `src/styles/effects.css` (no boot) — porta vanilla do **react-bits** (NÃO usar React; ver `docs/REACT-BITS.md`).
 - **Centro Militar** (`/militar`, `src/pages/militar.js`): hub que **consolidou as 13 frentes militares + Arsenal** (sidebar = 1 entrada) com extrato vivo da Wikipédia (`src/utils/wikipedia.js`). As páginas individuais seguem registradas. Plano: `docs/CENTRO-MILITAR.md`.
@@ -32,7 +46,7 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 - `historico/CHANGELOG.md` — registro do que entra no `main`
 - `docs/DESIGN-SYSTEM.md` — **contrato visual** (tokens/componentes/diretrizes do redesign #246/#195); todo design novo sai daqui · `docs/REACT-BITS.md` (efeitos) · `docs/CENTRO-MILITAR.md` (hub militar)
 - **Migração Nexus** (#405/#406): `docs/NEXUS-INVENTARIO.md` (estado real + gate da 1.0.0) · `docs/NEXUS-CONTRATO.md` (contrato v1.0.0) · `docs/NEXUS-DECISOES.md` (decisões fechadas — não re-litigar) · `docs/nexus/dominios.json` (mapa dos **21** domínios + externos, cobrado por `npm run verificar-nexus`). Os repositórios `baluarte-*` existem mas estão **vazios** — enquanto um domínio não estiver `estavel`, **a versão que vale é a deste repositório**.
-- Issues guarda-chuva (**não fechar**): **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign) · **#406** (Nexus/migração)
+- Issues guarda-chuva (**não fechar**): **#420** (hardening → 1.0.0 · *fase atual*) · **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign) · **#406** (Nexus/migração)
 
 ## Regras do projeto
 

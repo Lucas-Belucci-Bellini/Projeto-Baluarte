@@ -47,6 +47,21 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      # Auditoria de dependências (#420, item 🟠 8). Bloqueia só o que CHEGA no
+      # navegador do operador: --omit=dev. A varredura de 09/08/2026 achou 6
+      # avisos, todos em devDependency (postcss via vite, tar via @capacitor/cli)
+      # — nenhum roda na máquina de quem visita o site.
+      #
+      # Reprovar merge por causa de aviso em build tool ensina a ignorar o
+      # vermelho, e é assim que um aviso de produção passa despercebido depois.
+      - name: Dependências de produção sem vulnerabilidade alta
+        run: npm audit --omit=dev --audit-level=high
+
+      # As de desenvolvimento ficam VISÍVEIS sem travar o merge.
+      - name: Dependências de desenvolvimento (informativo)
+        continue-on-error: true
+        run: npm audit --audit-level=high
+
       - name: Build
         run: npm run build
 
