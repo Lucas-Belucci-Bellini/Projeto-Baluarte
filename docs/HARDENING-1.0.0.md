@@ -73,9 +73,11 @@ que é exatamente onde esta fase começou.
 - [ ] **Triagem dos 58 `innerHTML`** — separar "HTML que eu mesmo escrevi" (ok) de
       "HTML com dado do operador ou de API" (vira `textContent` ou sanitização).
       Começar pelas calculadoras.
-- [ ] **Sandbox do Terminal** — confirmar por teste que o VFS de
+- [ ] **Sandbox do Terminal** — confirmar **por teste** que o FS virtual de
       `utils/terminal-engine.js` não alcança nada real, e que os 60+ comandos
-      passam obrigatoriamente por uma API explícita.
+      passam por uma API explícita. O terminal está `beta`, mas fuga de sandbox é
+      buraco de segurança e segurança não é dispensável por estar em beta.
+      *(Terminal com processo de verdade é da IDE da V2 — #422.)*
 - [x] **JARVIS atrás do Permission Manager** — `runTool()` é o gargalo por onde
       toda chamada do agente passa, e exige a permissão do mapa
       `src/utils/jarvis-permissoes.js` antes de executar. Ferramenta fora do mapa
@@ -113,16 +115,62 @@ que é exatamente onde esta fase começou.
       flag antes disso receberia `false` e se desenharia errada).
 - [ ] **Auditoria do Service Worker** — v1 em cache → deploy v2 → usuário preso na v1.
 - [ ] **Teste de offline real** — online → offline → navega → online → sincroniza.
-- [ ] **Schemas dos datasets** — um JSON quebrado não pode derrubar a página.
+- [ ] **Schemas dos datasets** — a garantia mínima: **um JSON quebrado não derruba
+      a página**. Proveniência (fonte, data, revisão, confiança por campo) e fila
+      de revisão **não** entram aqui — exigem banco e são V2 (#422).
 
 ## 🟡 Pode esperar a 1.1
 
 - [ ] Organização do `.smart-env/` (19 MB, 96 arquivos gerados) em `generated/`,
       `cache/`, `indexes/` — e o máximo possível no `.gitignore`.
-- [ ] Triagem completa das issues abertas (o que é 1.0, o que é pós-1.0, o que fecha).
-- [ ] Tabela de estabilidade no `README.md`, gerada de `flags.porNivel()`.
-- [ ] Baluarte MCP · Knowledge Engine · Project Registry — **tudo V2**, ver
-      [`architecture/v2-vision.md`](./architecture/v2-vision.md).
+
+---
+
+## 🚪 O gate da 1.0.0 — o que fecha a versão
+
+Os itens acima são o trabalho. Estes cinco são o **fechamento**, e sem eles não
+existe "1.0.0", só um monte de item marcado:
+
+- [ ] **Decidir o número da versão.** ⚠️ `package.json` e `src/data/version.js`
+      dizem **`2.0.0`**, mas o plano inteiro fala em fechar a **1.0.0** com a V2
+      virando 2.0.0 depois. Não há **nenhuma tag git** no repositório — nada foi
+      publicado com esse número, e o app desktop tem versionamento próprio
+      (`0.9.2`). Ou seja, o `2.0.0` é numeração interna do Mark XIII.
+      **Recomendação:** renumerar para `1.0.0-rc` agora e `1.0.0` no congelamento.
+      É de graça e faz o plano fechar. *(Decisão do operador — pendente.)*
+- [ ] **Publicar a tag `v1.0.0`** — é o **ponto de retorno**. Sem tag não existe
+      "voltar para a 1.0", e a linha-base que justifica o ADR-001 não existe.
+- [ ] **Tabela de estabilidade no `README.md`**, gerada de `flags.porNivel()` —
+      é onde a 1.0.0 diz publicamente o que promete.
+- [ ] **Triagem das 53 issues abertas** (o que é 1.0, o que é V2, o que fecha).
+      Estava em "pode esperar a 1.1" e foi **promovida**: a lista mistura bug real
+      com ideia solta (`#197 resolver o editor de codigo`, `#307 arrumar (supabase)`,
+      `#210 temos que arrumar`), e não dá para afirmar que a 1.0.0 é sólida sem
+      saber se alguma delas descreve algo quebrado no que está marcado estável.
+      É varredura de leitura, não de código.
+- [ ] **Suíte verde no congelamento** — `npm test` · `npm run smoke` ·
+      `npm run build` · `npm audit --omit=dev`.
+
+---
+
+## 🔵 Fora do escopo — vai para a V2 (issue #422)
+
+Registrado aqui para não voltar à fila por engano. O **backlog** está na
+[#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422); a
+**forma** está em [`architecture/v2-vision.md`](./architecture/v2-vision.md).
+
+| Item | Por que não cabe na 1.0.0 |
+|---|---|
+| Proveniência dos dados (fonte · data · confiança) | Exige banco relacional e histórico; em JSON no frontend vira campo decorativo |
+| Fila de revisão / curadoria do conhecimento | Idem — é o Knowledge Engine |
+| Terminal com processo real | O da V1 é FS virtual; terminal real é peça da IDE web, com sandbox de servidor |
+| Storage como camada trocável | A V2 tem banco — abstrair `localStorage` agora é abstrair o que será substituído |
+| Baluarte MCP · Knowledge Engine · Project Registry | Vêm **depois** da fronteira de permissão, que a 1.0.0 entrega |
+| Wikis (Arma 3 com motor refeito, Zomboid) · parser Lua/SQF · Social · IDE web · 3D engine | São **projetos consumidores** da plataforma V2, não parte dela |
+
+> ⚠️ A V2 entregável é a **fundação**. Os projetos vêm depois, e o critério de
+> aceitação é: *construir uma wiki nova usando só as interfaces da V2, sem tocar
+> no Core.*
 
 ---
 

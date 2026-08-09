@@ -8,6 +8,11 @@
 > **decidir o que não fazer** — nada mais.
 >
 > Decisão fechada em [ADR-001](./decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md).
+>
+> 📋 **O backlog da V2 mora na issue [#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422)**
+> — wikis (Arma 3, Zomboid), parser framework Lua/SQF, Baluarte Social, IDE web,
+> 3D engine. Este documento é a **forma**; a #422 é a **lista**. Ideia nova de V2
+> vai para lá, não para cá.
 
 ---
 
@@ -166,6 +171,38 @@ existe. O objetivo não é preservar cada linha do Baluarte atual — é **prese
 o conhecimento e as funcionalidades importantes enquanto a engenharia melhora**.
 
 ---
+
+## O gate — o que precisa ser verdade antes de abrir a `architecture/v2`
+
+Sem isto escrito em termos verificáveis, "terminar a V1" vira opinião:
+
+- [ ] Itens 🔴 de [`../HARDENING-1.0.0.md`](../HARDENING-1.0.0.md) fechados
+- [ ] `npm test` · `npm run smoke` · `npm run build` · `npm audit --omit=dev` verdes
+- [ ] **Tag `v1.0.0` publicada** — é o ponto de retorno. Sem tag não existe "voltar
+      para a 1.0", e a linha-base que justifica a decisão do ADR-001 não existe
+- [ ] Tabela de estabilidade no `README.md` dizendo o que a 1.0.0 promete
+- [ ] Triagem das issues abertas (o que é 1.0, o que é V2, o que fecha)
+
+### O critério de aceitação da própria V2
+
+> **Construir uma wiki nova usando só as interfaces da V2, sem tocar no Core.**
+
+Se for preciso entrar no Core para criar a wiki de Zomboid, a V2 não está pronta —
+independentemente de quantas funcionalidades ela tenha. A wiki de Zomboid é a
+cobaia natural: é a menos acoplada ao que já existe.
+
+### O que a 1.0.0 deixa de herança
+
+Não se recomeça do zero em outubro. A fase de hardening produziu peças desenhadas
+para atravessar a fronteira:
+
+| Peça | Na V2 |
+|---|---|
+| `core/permissions.js` | **herda o desenho** — é o que o MCP vai precisar; porta para TS, não reprojeta |
+| `core/politica.js` | **herda o conceito** — vira Project Registry + capabilities |
+| `core/flags.js` | **herda inteiro** — é como a migração gradual acontece sem quebrar a V1 |
+| `core/events.js` (curinga) | **herda** — módulo novo observável sem editar o Core |
+| `core/storage.js` | **não herda** — é solução de `localStorage`; sobrevive só a classificação das chaves |
 
 ## O que **não** fazer até a 1.0.0 fechar
 
