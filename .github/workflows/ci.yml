@@ -84,6 +84,13 @@ jobs:
       - name: A tabela de estabilidade bate com a política?
         run: node scripts/gen-tabela-estabilidade.mjs --verificar
 
+      # Mesmo raciocínio, outro alvo: o catálogo de eventos responde "se eu
+      # renomear este evento, quem para de funcionar?". A resposta é quem
+      # escuta, e isso vive espalhado por 11 arquivos. Escrito à mão, o
+      # catálogo mentiria no primeiro rename; gerado, o rename aparece aqui.
+      - name: O catálogo de eventos bate com o código?
+        run: node scripts/gen-catalogo-eventos.mjs --verificar
+
       # Os .sqf sao COLADOS no debug console do jogo, que nao e UTF-8. Um
       # acento no arquivo corrompe o script antes de o parser existir, e o
       # erro no jogo nao fala nada sobre codificacao. Ja aconteceu: os seis

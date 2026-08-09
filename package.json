@@ -28,6 +28,7 @@
     "caminho-critico": "node scripts/caminho-critico.mjs",
     "sonda-memoria": "node scripts/sonda-memoria.mjs",
     "gen-tabela-estabilidade": "node scripts/gen-tabela-estabilidade.mjs",
+    "gen-catalogo-eventos": "node scripts/gen-catalogo-eventos.mjs",
     "prova-offline": "node scripts/prova-offline.mjs"
   },
   "devDependencies": {
