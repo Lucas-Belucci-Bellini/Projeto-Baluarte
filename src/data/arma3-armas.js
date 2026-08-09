@@ -33,10 +33,10 @@
  *     significa "o ACE mexeu neste número", não "arma do ACE".
  */
 
-/* Tipos — separadores da tabela. `primaria` fecha a lista de propósito:
- * é onde cai a arma que o config não deixa classificar. */
 import { buscarDataset } from '../core/dados-remotos.js';
 
+/* Tipos — separadores da tabela. `primaria` fecha a lista de propósito:
+ * é onde cai a arma que o config não deixa classificar. */
 export const A3ARM_TIPOS = [
   { id: "fuzil", nome: "Fuzis de assalto", icon: "🔫", desc: "A espinha dorsal da infantaria: 5.56/6.5/7.62, semi + automático, trilhos pra tudo." },
   { id: "dmr", nome: "Fuzis de precisão (DMR)", icon: "🎯", desc: "Alcance de tirador designado: semi-auto, calibres cheios, miras de médio/longo." },
