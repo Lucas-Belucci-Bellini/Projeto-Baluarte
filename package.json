@@ -27,7 +27,8 @@
     "auditar": "node scripts/auditar-grupo.mjs",
     "caminho-critico": "node scripts/caminho-critico.mjs",
     "sonda-memoria": "node scripts/sonda-memoria.mjs",
-    "gen-tabela-estabilidade": "node scripts/gen-tabela-estabilidade.mjs"
+    "gen-tabela-estabilidade": "node scripts/gen-tabela-estabilidade.mjs",
+    "prova-offline": "node scripts/prova-offline.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",

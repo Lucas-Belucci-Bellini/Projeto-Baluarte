@@ -6,6 +6,40 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (12)
+
+### 📴 Prova de offline — e um teste que travava em vez de falhar
+
+"Recuperável" é uma das quatro palavras da definição de 1.0.0, e `pwa` está
+marcado **estável**. Um PWA que instala Service Worker e mesmo assim mostra o
+dinossauro do navegador quando o wi-fi cai não é estável — é decorativo.
+
+`scripts/prova-offline.mjs` percorre: online (SW assume o controle) → **offline**
+→ recarrega → navega → **online de volta**. Passou nas 9 afirmações.
+
+O percurso distingue dois casos porque a arquitetura os separa: com roteamento
+por **hash**, trocar de rota offline **não** dispara requisição de navegação — o
+shell já está na memória. O que pode faltar é o **chunk** de uma página nunca
+visitada, já que cada rota é um `import()` separado. Então:
+
+- rota já visitada → tem que abrir normalmente (chunk em cache);
+- rota nunca aberta → tem que dizer "falha ao carregar" e seguir de pé. **Tela
+  branca é o defeito.**
+
+**A parte que interessa.** A primeira versão do script **travava** quando não
+havia Service Worker — `navigator.serviceWorker.ready` nunca resolve nesse caso;
+ele não rejeita, pendura. Descobri porque o teste de quebra (desligar o registro
+do SW para ver o script ficar vermelho) estourou o tempo em vez de falhar. Em CI
+isso queimaria o job inteiro por timeout — e justamente no cenário que o teste
+existe para detectar. Teste que trava é pior que teste que falha.
+
+Agora tem teto de 15 s e para na hora, dizendo a causa.
+
+412 testes verdes; 4 passagens de navegador no CI (rotas · jornada · vazamento ·
+offline).
+
+---
+
 ## 2026-08-09 (11)
 
 ### 🧹 Auditoria do Service Worker — e um bug que eu mesmo plantei hoje

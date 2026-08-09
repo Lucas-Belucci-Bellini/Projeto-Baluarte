@@ -71,6 +71,12 @@ jobs:
       - name: As rotas pesadas soltam o que pegaram?
         run: npm run sonda-memoria
 
+      # "Recuperável" é uma das quatro palavras da definição de 1.0.0, e `pwa`
+      # está marcado ESTÁVEL. Um PWA que instala Service Worker e mesmo assim
+      # mostra o dinossauro quando o wi-fi cai não é estável, é decorativo.
+      - name: O site sobrevive a perder a rede?
+        run: npm run prova-offline
+
       - name: Guardar o relatório
         if: always()
         uses: actions/upload-artifact@v4

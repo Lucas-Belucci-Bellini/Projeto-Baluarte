@@ -201,7 +201,18 @@ que é exatamente onde esta fase começou.
       num sandbox `vm` com `self`/`caches` de mentira — testa o arquivo servido,
       não uma cópia da lógica. Verificado revertendo para o prefixo: o teste
       acusa.
-- [ ] **Teste de offline real** — online → offline → navega → online → sincroniza.
+- [x] **Prova de offline** — `scripts/prova-offline.mjs` (`npm run prova-offline`,
+      no CI). **Passou:** o site volta depois de recarregar sem rede, não cai na
+      tela de erro do navegador, rota já visitada abre do cache, rota nunca
+      aberta **degrada com aviso em vez de tela branca**, e tudo volta quando a
+      rede volta.
+      O percurso distingue os dois casos porque a arquitetura os separa: com
+      roteamento por hash, trocar de rota offline não dispara requisição — o que
+      pode faltar é o **chunk** de uma página nunca visitada.
+      Nota: a primeira versão **travava** em vez de falhar quando não havia SW —
+      `navigator.serviceWorker.ready` nunca resolve nesse caso, não rejeita. Em
+      CI isso queimaria o job por timeout em vez de acusar. Teto de 15 s e falha
+      imediata com a causa dita.
 - [ ] **Schemas dos datasets** — a garantia mínima: **um JSON quebrado não derruba
       a página**. Proveniência (fonte, data, revisão, confiança por campo) e fila
       de revisão **não** entram aqui — exigem banco e são V2 (#422).
