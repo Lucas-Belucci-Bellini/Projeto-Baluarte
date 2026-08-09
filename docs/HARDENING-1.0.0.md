@@ -140,11 +140,21 @@ que é exatamente onde esta fase começou.
       o teste lia o heap achando que lia o disco. Só a terceira versão morde:
       verificado quebrando `persistirPermissoes` e vendo a afirmação do reload
       ficar vermelha.
-- [ ] **Error handling nas bordas — ESCOPO CORTADO** para as chamadas externas
-      das superfícies marcadas **`estavel`**. A versão anterior ("toda chamada
-      externa") não tinha critério de pronto: são ~100 páginas, a maioria `beta`,
-      e item sem definição de fim segura release para sempre. Beta não promete
-      recuperabilidade — estável promete.
+- [x] **Error handling nas bordas (superfícies `estavel`)** — medido antes de
+      executar: são **5 pontos de chamada**, não 100 páginas. Todos ganharam teto
+      de espera.
+      O modo de falha coberto é o que **não parece falha**: rede que *pendura* em
+      vez de recusar. Recusa é fácil — rejeita, o `catch` roda, a UI mostra erro.
+      Pendurar deixa o `await` esperando para sempre: nenhum erro, nenhum
+      fallback, a tela girando.
+      O pior era `getAccessToken()`, que roda **antes de quase toda operação
+      autenticada** — um refresh pendurado pendurava junto tudo que depende de
+      dado. Também: `dbFetch` (caminho de toda ida ao banco, 8 s + mensagem
+      legível em vez de `TimeoutError` cru), o `signOut` (4 s — revogar no
+      servidor é bônus, sair é o que foi pedido) e a Wikipédia do Centro Militar
+      (6 s, o mesmo teto que `pages/arsenal.js` já usava).
+      6 testes, com um `fetch` que pendura de verdade; verificado que todos ficam
+      vermelhos sem o `signal`.
 - [x] **Sonda de vazamento** — `scripts/sonda-memoria.mjs` (`npm run sonda-memoria`,
       no CI). **Veio limpo:** `/home`, `/cerebro`, `/radio`, `/visao` e `/mapa`
       visitadas 6× cada não acumulam timer, contexto de áudio nem laço de

@@ -6,6 +6,43 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (8)
+
+### ⏱️ Teto de espera nas idas ao mundo externo — o último 🔴
+
+O item dizia "toda chamada externa" e não tinha critério de pronto. Medido antes
+de executar: nas superfícies marcadas **estável** são **5 pontos de chamada**,
+não 100 páginas.
+
+**O modo de falha coberto é o que não parece falha.** Rede que *recusa* é fácil:
+o `fetch` rejeita, o `catch` roda, a UI mostra o erro. Rede que **pendura** é o
+problema — o `await` nunca resolve, nenhum `catch` dispara, nenhum fallback
+acontece, e o operador fica olhando a tela girar sem nada no console. Não parece
+defeito, parece lentidão.
+
+O pior caso era **`getAccessToken()`**: ele roda antes de quase toda operação
+autenticada, então um refresh pendurado penduraria junto tudo que depende de
+dado. Agora tem teto de 8 s.
+
+Também ganharam teto: **`dbFetch`** (caminho de toda ida ao banco — 8 s, e a
+falha vira mensagem legível em vez de um `TimeoutError` cru que ninguém entende
+num toast), **`signOut`** (4 s — revogar no servidor é bônus, *sair* é o que o
+operador pediu, e um servidor pendurado não pode travar o botão) e a **Wikipédia
+do Centro Militar** (6 s, o mesmo teto que `pages/arsenal.js` já usava — o padrão
+certo já existia no repo, só não estava em todo lugar).
+
+6 testes com um `fetch` que pendura de verdade e honra o `AbortSignal`.
+Verificado que todos ficam vermelhos sem o `signal`.
+
+Detalhe de quem for mexer: `AbortSignal.timeout()` em Node usa timer **unref'd**,
+que não segura o event loop — sem um timer comum por perto, o processo encerra
+antes de o abort disparar e o runner derruba o arquivo inteiro com "promise still
+pending". No navegador não existe esse detalhe. Está comentado no teste.
+
+406 testes verdes.
+
+---
+
 ## 2026-08-09 (7)
 
 ### 🧪 Sonda de vazamento — e veio limpa

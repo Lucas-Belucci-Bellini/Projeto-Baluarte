@@ -72,11 +72,14 @@ export async function signOut() {
   const s = loadSession();
   if (s && s.access_token) {
     try {
+      /* Teto curto: revogar no servidor é bônus, sair é o que o operador pediu.
+       * Sem timeout, um servidor pendurado deixaria o botão "sair" travado. */
       await fetch(`${supabaseUrl()}/auth/v1/logout`, {
         method: 'POST',
-        headers: { apikey: supabaseAnonKey(), authorization: `Bearer ${s.access_token}` }
+        headers: { apikey: supabaseAnonKey(), authorization: `Bearer ${s.access_token}` },
+        signal: AbortSignal.timeout(4000)
       });
-    } catch { /* offline: limpa local mesmo assim */ }
+    } catch { /* offline ou pendurado: limpa local mesmo assim */ }
   }
   storeSession(null);
 }
@@ -88,10 +91,14 @@ export async function getAccessToken() {
   const now = Math.floor(Date.now() / 1000);
   if (s.access_token && s.expires_at && s.expires_at - 60 > now) return s.access_token;
   try {
+    /* Timeout obrigatório aqui: `getAccessToken()` roda ANTES de quase toda
+     * operação autenticada. Sem teto, um refresh que pendura pendura junto tudo
+     * que depende de dado — e o sintoma é a tela girando, não um erro. */
     const res = await fetch(`${supabaseUrl()}/auth/v1/token?grant_type=refresh_token`, {
       method: 'POST',
       headers: { apikey: supabaseAnonKey(), 'content-type': 'application/json' },
-      body: JSON.stringify({ refresh_token: s.refresh_token })
+      body: JSON.stringify({ refresh_token: s.refresh_token }),
+      signal: AbortSignal.timeout(8000)
     });
     if (!res.ok) { storeSession(null); return null; }
     const data = await res.json();

@@ -35,7 +35,13 @@ export async function fetchWikiSummary(title, lang = 'pt') {
   }
 
   const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
-  const res = await fetch(url, { headers: { accept: 'application/json' } });
+  /* Mesmo teto que `pages/arsenal.js` já usava para a Wikipédia. O Centro
+   * Militar chama isto uma vez por tópico ao abrir; sem timeout, um host lento
+   * segura o extrato de cada card indefinidamente. */
+  const res = await fetch(url, {
+    headers: { accept: 'application/json' },
+    signal: AbortSignal.timeout(6000)
+  });
   if (!res.ok) throw new Error(`wiki ${lang} ${res.status}`);
   const j = await res.json();
 
