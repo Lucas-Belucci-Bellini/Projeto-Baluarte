@@ -6,6 +6,44 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (5)
+
+### 🔒 O sandbox do terminal, provado — e a fila cortada ao que cabe
+
+**O terminal já estava fechado.** O VFS é uma árvore de objetos em memória
+(persistida pelo wrapper), o `..` era contido por construção (`stack.pop()` em
+array vazio é no-op) e nenhum dos 60+ comandos referencia rede, execução de
+código ou a ponte do Launcher — os únicos toques no mundo real são `location`
+para navegar e recarregar, que é UI.
+
+O que faltava não era conserto, era **prova**. `test/terminal-sandbox.test.js`
+executa comandos de verdade contra a fronteira: `cat /etc/passwd` (o arquivo
+existe na máquina do CI — se o terminal alcançasse o disco, apareceria),
+`rm -rf /`, escrita com `/../../../../tmp/`, `ls /` conferindo que `proc`,
+`sys` e `root` não aparecem. Mais uma varredura que reprova o commit se algum
+dos três arquivos passar a citar `fetch`, `eval`, `import(` ou `baluarte.invoke`
+— verificada introduzindo um `fetch` e vendo o teste falhar.
+
+E roda em **Node puro**, sem navegador e sem DOM: se o terminal precisasse de
+filesystem real, nada disso teria funcionado.
+
+Nota honesta: a única falha da rodada foi **do teste**, não do código. A primeira
+versão confundia substring com segmento e acusava `....` — nome de diretório
+perfeitamente legítimo — de ser travessia. O invariante certo é por segmento.
+
+**Corte de escopo em dois itens da fila**, decidido junto com o operador:
+
+- *Error handling nas bordas* passa a valer só para as superfícies marcadas
+  **`estavel`**. A versão anterior ("toda chamada externa") não tinha critério de
+  pronto — são ~100 páginas, a maioria `beta` — e item sem fim definido segura
+  release para sempre. Beta não promete recuperabilidade; estável promete.
+- *Vazamento de memória* vira uma sonda nas ~5 rotas mais pesadas (3D, áudio,
+  canvas). Limpo, fecha; acusou, vira item próprio com o vazamento nomeado.
+
+400 testes verdes (14 novos).
+
+---
+
 ## 2026-08-09 (4)
 
 ### 🩹 XSS no preview de markdown — a única das 58

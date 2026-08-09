@@ -112,11 +112,16 @@ que é exatamente onde esta fase começou.
       escalada.
       **6** interpolam identificadores internos (rótulo de nó do cérebro, id de
       aba, nome de RPC) sem caminho para dado externo.
-- [ ] **Sandbox do Terminal** — confirmar **por teste** que o FS virtual de
-      `utils/terminal-engine.js` não alcança nada real, e que os 60+ comandos
-      passam por uma API explícita. O terminal está `beta`, mas fuga de sandbox é
-      buraco de segurança e segurança não é dispensável por estar em beta.
-      *(Terminal com processo de verdade é da IDE da V2 — #422.)*
+- [x] **Sandbox do Terminal** — provado por teste. **A fronteira estava fechada**:
+      o VFS é uma árvore de objetos em memória (persistida pelo wrapper), `..`
+      já era contido por construção, e nenhum comando alcança rede, execução de
+      código ou a ponte do Launcher. `test/terminal-sandbox.test.js` (14 testes)
+      **executa comandos de verdade** contra a fronteira — `cat /etc/passwd`,
+      `rm -rf /`, escrita com `../../..` — e roda em Node puro, o que também
+      prova que o terminal nunca precisou de filesystem.
+      Nota honesta: a única falha foi **do teste**, não do código — a primeira
+      versão confundia substring com segmento e acusava `....` (nome legítimo)
+      de travessia. *(Terminal com processo real é da IDE da V2 — #422.)*
 - [x] **JARVIS atrás do Permission Manager** — `runTool()` é o gargalo por onde
       toda chamada do agente passa, e exige a permissão do mapa
       `src/utils/jarvis-permissoes.js` antes de executar. Ferramenta fora do mapa
@@ -125,11 +130,15 @@ que é exatamente onde esta fase começou.
 - [ ] **Critical Path Test** — o `smoke` já abre todas as rotas; falta afirmar
       *jornada* (home → arsenal → item → volta → JARVIS → estado íntegro) e
       "zero erro de JS no console".
-- [ ] **Error handling nas bordas** — timeout/retry/fallback/mensagem legível em
-      toda chamada externa (API, IA, IndexedDB, Service Worker, rede).
-- [ ] **Teste de vazamento de memória** — abrir/fechar página 100× e conferir se
-      listeners, timers, AudioNodes e objetos Three.js são liberados.
-      `core/ciclo-vida.js` já existe; falta cobrar.
+- [ ] **Error handling nas bordas — ESCOPO CORTADO** para as chamadas externas
+      das superfícies marcadas **`estavel`**. A versão anterior ("toda chamada
+      externa") não tinha critério de pronto: são ~100 páginas, a maioria `beta`,
+      e item sem definição de fim segura release para sempre. Beta não promete
+      recuperabilidade — estável promete.
+- [ ] **Teste de vazamento de memória — ESCOPO CORTADO** para uma sonda nas ~5
+      rotas mais pesadas (3D, áudio, canvas). Se vier limpo, fecha; se acusar,
+      vira item próprio com o vazamento nomeado. `core/ciclo-vida.js` já existe;
+      falta cobrar.
 
 ## 🟠 Muito recomendado
 
