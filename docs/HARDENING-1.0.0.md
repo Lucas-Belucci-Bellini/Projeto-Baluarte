@@ -221,8 +221,12 @@ existe "1.0.0", só um monte de item marcado:
       A 1.0.0 é a última versão que o app instala sozinho, e a mudança do
       `autoDownload` precisa estar **dentro** dessa release. Passo a passo (com a
       ordem, que importa) em [`HANDOFF-LOCAL.md`](./HANDOFF-LOCAL.md#a0).
-- [ ] **Tabela de estabilidade no `README.md`**, gerada de `flags.porNivel()` —
-      é onde a 1.0.0 diz publicamente o que promete.
+- [x] **Tabela de estabilidade no `README.md`** — **gerada** de
+      `src/core/politica.js` por `npm run gen-tabela-estabilidade`, e o CI regera
+      com `--verificar` e falha se divergir (mesmo padrão das bases do Arma 3).
+      Escrever à mão seria promessa em dois lugares, e promessa em dois lugares
+      diverge: alguém promove uma flag no código, esquece o README, e o README
+      passa a mentir. Hoje: **6 estáveis · 5 beta · 3 experimentais**.
 - [ ] **Triagem das 53 issues abertas** (o que é 1.0, o que é V2, o que fecha).
       Estava em "pode esperar a 1.1" e foi **promovida**: a lista mistura bug real
       com ideia solta (`#197 resolver o editor de codigo`, `#307 arrumar (supabase)`,

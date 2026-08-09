@@ -6,6 +6,31 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (10)
+
+### 📋 A tabela de estabilidade entra no README — gerada, não escrita
+
+O `README.md` ganhou a seção **"O que a 1.0.0 promete"**: a definição em vigor,
+o que ela significa (ponto de congelamento, não "tudo pronto") e a tabela do que
+está `estavel`, `beta` e `experimental` — hoje **6 · 5 · 3**.
+
+**Gerada de `src/core/politica.js`**, não escrita à mão, e o CI regera com
+`--verificar` e falha se divergir — o mesmo padrão que o repositório já usa para
+as bases do Arma 3.
+
+O motivo é específico: esta tabela é a **promessa pública da 1.0.0**. Promessa
+que mora em dois lugares diverge, sempre — alguém promove uma flag para
+`estavel` no código, esquece o README, e a partir daí o README mente para quem
+lê. Com a política como fonte, mentir exige passar pelo CI.
+
+Verificado promovendo `jarvis` de beta para estável em `politica.js` sem
+regenerar: o verificador acusou e saiu com código 1.
+
+E a tabela é honesta sobre o que **não** está pronto, que é o ponto do ADR-001 —
+uma 1.0.0 que promete menos e cumpre vale mais que uma que promete tudo.
+
+---
+
 ## 2026-08-09 (9)
 
 ### 🔌 A 1.0.0 é a última versão que o app instala sozinho

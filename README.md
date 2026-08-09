@@ -22,6 +22,54 @@ contratos de integração e fases de execução está em [docs/PROJETO-NEXUS-BAL
 
 ---
 
+## O que a 1.0.0 promete
+
+A 1.0.0 **não** é "todas as funcionalidades prontas" — é um **ponto de
+congelamento**: a última versão da arquitetura atual considerada estável, a
+linha-base para onde voltar enquanto a V2 é construída
+([ADR-001](docs/architecture/decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md)).
+
+A definição em vigor é:
+
+> **1.0.0 = tudo que está marcado como estável é previsível, testado,
+> recuperável e seguro.**
+
+Por isso esta tabela existe, e por isso ela é honesta sobre o que ainda não é
+estável. O nível não é adjetivo: `src/core/flags.js` **recusa** uma flag
+experimental que tente nascer ligada.
+
+<!-- ESTABILIDADE:INICIO -->
+
+| Módulo | Nível | Onde |
+|---|---|---|
+| `arsenal` — Arsenal e Centro Militar | 🟢 **Estável** | web e app |
+| `biblioteca` — Biblioteca e Crônicas | 🟢 **Estável** | web e app |
+| `calculadoras` — Calculadoras e conversores | 🟢 **Estável** | web e app |
+| `core` — Router, estado, eventos, storage | 🟢 **Estável** | web e app |
+| `cripto` — Criptografia e esteganografia | 🟢 **Estável** | web e app |
+| `pwa` — PWA e Service Worker | 🟢 **Estável** | web e app |
+| `editor` — Editor de código | 🟡 Beta | web e app |
+| `gitNexus` — Git Nexus com o motor real (só no Launcher) | 🟡 Beta | só no app |
+| `jarvis` — JARVIS (chat e provedores) | 🟡 Beta | web e app |
+| `media` — Media, FFT e áudio | 🟡 Beta | web e app |
+| `terminal` — Terminal web (filesystem virtual) | 🟡 Beta | web e app |
+| `jarvisAgente` — JARVIS escolhendo ferramentas sozinho | 🔴 Experimental | web e app |
+| `mcp` — Baluarte como servidor MCP (V2 — ver docs/architecture/v2-vision.md) | 🔴 Experimental | web e app |
+| `nexusSync` — Sincronização distribuída do Nexus | 🔴 Experimental | web e app |
+
+- 🟢 **Estável** — previsível, testado, recuperável e seguro — é o que a 1.0.0 promete
+- 🟡 Beta — funciona e é usável, mas ainda não cumpre todos os critérios acima
+- 🔴 Experimental — em construção; **não vem ligado** — precisa ser ativado à mão
+
+> Gerado de [`src/core/politica.js`](src/core/politica.js) por `npm run gen-tabela-estabilidade`. O CI regera e falha se divergir — promessa que mora em dois lugares diverge.
+
+<!-- ESTABILIDADE:FIM -->
+
+A fase de hardening que leva até lá está em
+[`docs/HARDENING-1.0.0.md`](docs/HARDENING-1.0.0.md) (issue #420).
+
+---
+
 ## Como rodar
 
 ### Windows (duplo-clique)

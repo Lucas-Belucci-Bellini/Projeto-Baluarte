@@ -77,6 +77,13 @@ jobs:
       - name: Testes
         run: npm test
 
+      # A tabela de estabilidade do README é a PROMESSA PÚBLICA da 1.0.0 — "isto
+      # aqui é estável". Promessa que mora em dois lugares diverge: alguém
+      # promove uma flag no código, esquece o README, e a partir daí o README
+      # mente para quem lê. Aqui a divergência aparece no PR.
+      - name: A tabela de estabilidade bate com a política?
+        run: node scripts/gen-tabela-estabilidade.mjs --verificar
+
       # Os .sqf sao COLADOS no debug console do jogo, que nao e UTF-8. Um
       # acento no arquivo corrompe o script antes de o parser existir, e o
       # erro no jogo nao fala nada sobre codificacao. Ja aconteceu: os seis
