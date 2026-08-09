@@ -46,6 +46,35 @@
 - [ ] **(Opcional, app-only) Bloom/glow** no herói WebGL via post-processing (FBO +
       blur pass) — medir custo antes; é o "wow" 3D que falta e pesa demais pra web.
 
+## A0. 🛡️ Congelamento da 1.0.0 — o que só a máquina consegue fazer (#420 / ADR-003)
+
+A regra fechada: **a 1.0.0 é a última versão que o app instala sozinho.** Depois
+dela, quem usa o app decide se instala — por conta e risco. Quem usa o *site*
+continua recebendo tudo, inclusive a V2.
+
+O código já está no `main` (`desktop/src/main.js`): `autoDownload = false`, aviso
+com "Agora não" como padrão, e `REMOTE_URL` apontando para o alias fixado da 1.x.
+**Nada disso vale até uma release empacotada sair com essas mudanças dentro.**
+
+Na ordem, porque a ordem importa:
+
+1. **Criar o alias `v1.projeto-baluarte.vercel.app`** na Vercel, apontando para o
+   deploy da 1.0.0. ⚠️ **Antes** de publicar o app — um launcher que aponta para
+   um endereço que não resolve simplesmente não abre. (`ALLOWED_ORIGINS` ainda
+   aceita o endereço principal durante a transição, e `BALUARTE_URL=<url>` deixa
+   testar sem editar código.)
+2. **Conferir no app empacotado**: abre no alias, e o aviso de atualização
+   pergunta antes de baixar (não baixa sozinho).
+3. **Alinhar `desktop/package.json`** para `1.0.0` (hoje está em `0.9.2` — tem
+   versionamento próprio, não é o mesmo número do site).
+4. **Publicar a release** → Actions → Desktop Release → Run workflow.
+
+> ⚠️ A mudança do `autoDownload` precisa estar **dentro** da 1.0.0. Se sair numa
+> release posterior, a 1.0.0 ainda terá auto-update e a regra começa uma versão
+> atrasada — exatamente o que ela existe para evitar.
+
+---
+
 ## B. App / Git Nexus real — M3c · M3d · M4 (precisa da máquina)
 
 > O launcher já é um "cliente bridge" do gitnexus (M3a/M3b: detecta a 4747,

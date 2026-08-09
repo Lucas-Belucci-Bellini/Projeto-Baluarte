@@ -6,6 +6,39 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-09 (9)
+
+### 🔌 A 1.0.0 é a última versão que o app instala sozinho
+
+Regra do operador, e ela é mais precisa do que o ADR-003 tinha registrado.
+A primeira redação dizia "o app trava na linha 1.x e recebe correção"; a decisão
+real é outra: **o auto-update termina na 1.0.0**. Depois dela, instalar é escolha
+de quem usa — por conta e risco, porque o que vem depois é código novo. Quem usa
+o **site** continua recebendo tudo, inclusive a V2. ADR-003 corrigido com a
+correção marcada, não reescrito em silêncio.
+
+`desktop/src/main.js`: `autoDownload` vira **`false`**. O app ainda avisa que
+existe versão nova — avisar é serviço, baixar sozinho é decidir pelo outro — e o
+botão padrão do aviso é **"Agora não"**, para que quem não decidir nada fique
+onde está.
+
+**A metade que quase passou batido.** O launcher não embute conteúdo: ele faz
+`loadURL` do site ao vivo. Existem **dois** canais de atualização, e desligar o
+auto-update fecha só um — se a V2 subisse no mesmo endereço, o app "congelado"
+mostraria a V2 sem instalar nada, e o congelamento seria enfeite. Por isso o app
+passa a apontar para um alias fixado da linha 1.x, enquanto o endereço principal
+segue recebendo o que for publicado.
+
+A distinção que sustenta a regra: *no site você escolhe a cada visita; no app
+você escolheu uma vez, ao instalar.*
+
+⚠️ Nada disso vale até sair uma **release empacotada com essas mudanças dentro**,
+e o alias `v1.` precisa existir **antes** — um app que aponta para endereço que
+não resolve não abre. Passo a passo, na ordem, em `HANDOFF-LOCAL.md` (seção A0):
+é trabalho de sessão local.
+
+---
+
 ## 2026-08-09 (8)
 
 ### ⏱️ Teto de espera nas idas ao mundo externo — o último 🔴

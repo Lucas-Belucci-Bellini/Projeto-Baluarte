@@ -217,6 +217,10 @@ existe "1.0.0", só um monte de item marcado:
       exatamente o bug "cache velho servido após deploy" (já aconteceu 2×).
 - [ ] **Publicar a tag `v1.0.0`** — é o **ponto de retorno**. Sem tag não existe
       "voltar para a 1.0", e a linha-base que justifica o ADR-001 não existe.
+- [ ] **🖥 Release 1.0.0 do app + alias `v1.` na Vercel** — só numa sessão LOCAL.
+      A 1.0.0 é a última versão que o app instala sozinho, e a mudança do
+      `autoDownload` precisa estar **dentro** dessa release. Passo a passo (com a
+      ordem, que importa) em [`HANDOFF-LOCAL.md`](./HANDOFF-LOCAL.md#a0).
 - [ ] **Tabela de estabilidade no `README.md`**, gerada de `flags.porNivel()` —
       é onde a 1.0.0 diz publicamente o que promete.
 - [ ] **Triagem das 53 issues abertas** (o que é 1.0, o que é V2, o que fecha).

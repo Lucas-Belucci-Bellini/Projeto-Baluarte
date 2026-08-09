@@ -34,13 +34,42 @@ a fase de hardening, e vira `1.0.0` no congelamento.
 dependência que não seja correção de segurança. Isso tudo vai para a
 `architecture/v2`.
 
-### 3. O app desktop trava na V1
+### 3. A 1.0.0 é a última versão que o app instala sozinho
 
-O Baluarte Launcher carrega a produção e se auto-atualiza. A partir da 1.0.0 ele
-fica **preso na linha 1.x**: recebe correção, não recebe funcionalidade. A V2 vai
-ter release própria quando existir — o operador não é migrado sem decidir.
+> **Correção (mesmo dia).** A primeira redação desta seção dizia "o app trava na
+> linha 1.x: recebe correção, não recebe funcionalidade". Isso registrava mal a
+> decisão do operador, que é outra e mais precisa: **o auto-update termina na
+> 1.0.0**. Depois dela, instalar é escolha de quem usa. Corrigido aqui em vez de
+> num ADR novo porque nunca chegou a valer — não é reversão de decisão em vigor,
+> é conserto de registro.
 
-### 4. A régua para decidir
+O Baluarte Launcher se auto-atualiza (`electron-updater`, `autoDownload = true`,
+checagem a cada 2 h). A partir da 1.0.0:
+
+- `autoDownload` passa a **`false`**. O app ainda **avisa** que existe versão
+  nova — avisar é serviço —, mas só baixa se mandarem. Baixar sozinho é decidir
+  pelo outro, e o que vem depois da 1.0.0 é código novo.
+- O botão padrão do aviso é **"Agora não"**. Quem não decidir nada fica onde
+  está, que é o comportamento seguro.
+- Instalar a V2 é **por conta e risco**, dito com essas palavras na caixa de
+  diálogo.
+
+### 3b. O app aponta para um endereço fixado da 1.x
+
+Consequência que quase passou batido: o launcher **não embute conteúdo**, ele faz
+`loadURL` do site ao vivo. Existem portanto **dois** canais de atualização, e
+desligar o auto-update fecha só um. Se a V2 subir no mesmo endereço, o app
+"congelado na 1.0.0" passa a mostrar a V2 sem instalar nada — e o congelamento
+vira enfeite.
+
+Por isso o app aponta para um alias fixado na linha 1.x
+(`v1.projeto-baluarte.vercel.app`), não para o endereço principal.
+
+**O site principal continua recebendo tudo, inclusive a V2** — quem abre o
+navegador escolheu isso ao digitar a URL. A distinção é essa: *no site você
+escolhe a cada visita; no app você escolheu uma vez, ao instalar.*
+
+### 4. A régua para decidir o que entra na 1.x
 
 Quando não estiver claro se algo entra na 1.x ou vai para a V2:
 
@@ -58,9 +87,11 @@ versões vivas ao mesmo tempo.
 recebendo funcionalidade não é linha-base, é uma segunda frente de trabalho — e
 duas frentes ao mesmo tempo é como as versões Mark anteriores quebraram.
 
-**Travar o app é o que torna o congelamento real para quem usa.** Se o launcher
-continuar puxando tudo que entra na produção, "congelado" vira só uma palavra no
-repositório: o operador segue recebendo mudança.
+**Parar o auto-update é o que torna o congelamento real para quem usa.** Se o
+launcher continuar puxando tudo que entra na produção, "congelado" vira só uma
+palavra no repositório: o operador segue recebendo mudança que não pediu. E a
+troca é assimétrica — quem quer a V2 tem trabalho de um clique; quem não quer,
+sem esta regra, não teria escolha nenhuma.
 
 ## Consequências
 
@@ -74,6 +105,14 @@ repositório: o operador segue recebendo mudança.
 - O `desktop/package.json` tem versionamento próprio (`0.9.2`) e precisa de uma
   sessão **local** para alinhar e publicar a release da 1.0.0 — está na fila de
   [`../../HANDOFF-LOCAL.md`](../../HANDOFF-LOCAL.md).
+- **O alias `v1.` precisa existir na Vercel antes de a 1.0.0 do app ser
+  publicada.** Se o app sair apontando para um endereço que não resolve, ele não
+  abre. Por isso `ALLOWED_ORIGINS` mantém também o endereço principal durante a
+  transição, e `BALUARTE_URL` permite apontar para um deploy de teste sem editar
+  código.
+- A mudança do `autoDownload` só tem efeito no app **empacotado**: ela precisa
+  estar DENTRO da release 1.0.0. Se sair depois, a 1.0.0 ainda terá auto-update e
+  a regra começa uma versão atrasada.
 - Três arquivos carregam o número da versão (`package.json`, `src/data/version.js`,
   `public/sw.js`) e não conseguem se importar. `test/versao.test.js` cobra que
   concordem — a divergência do Service Worker já causou "cache velho servido após

@@ -44,8 +44,26 @@ try {
   /* ausente em dev cru — segue sem auto-update */
 }
 
-const REMOTE_URL = 'https://projeto-baluarte.vercel.app/';
-const ALLOWED_ORIGINS = ['https://projeto-baluarte.vercel.app'];
+/* ⚠️ O launcher é uma CASCA em volta do site ao vivo — ele não embute conteúdo,
+ * carrega esta URL. Isso significa que existem DOIS canais de atualização, e
+ * desligar o auto-update do instalador só fecha um deles: se a V2 subir no mesmo
+ * endereço, o app "congelado na 1.0.0" passa a mostrar a V2 sem instalar nada, e
+ * o congelamento vira enfeite.
+ *
+ * Por isso o app aponta para um alias FIXADO na linha 1.x, e não para o endereço
+ * principal. O site principal segue recebendo o que for publicado — inclusive a
+ * V2 — porque quem usa o navegador escolheu isso ao abrir a URL. Quem usa o app
+ * fica na 1.0.0 até decidir instalar a V2 (ADR-003).
+ *
+ * `BALUARTE_URL` existe para o aceite local: dá pra apontar o app para um deploy
+ * de teste sem editar código. */
+const REMOTE_URL = process.env.BALUARTE_URL || 'https://v1.projeto-baluarte.vercel.app/';
+const ALLOWED_ORIGINS = [
+  'https://v1.projeto-baluarte.vercel.app',
+  /* O endereço principal continua permitido: durante a transição o alias v1
+   * pode ainda não existir, e um app que recusa a própria origem não abre. */
+  'https://projeto-baluarte.vercel.app'
+];
 
 /* A outra metade do login Google no app: o fluxo OAuth NAVEGA pra fora do
  * site (supabase.co/auth → accounts.google.com → de volta ao site) e o
@@ -248,11 +266,42 @@ function deepLinkFromArgv(argv) {
 
 /* ============================ auto-update ============================ */
 
+/* ⚠️ A 1.0.0 é a ÚLTIMA versão que o app instala sozinho (ADR-003).
+ *
+ * Daqui em diante o operador **decide** se instala. O motivo não é capricho: o
+ * que vem depois da 1.0.0 é a V2 — código novo, arquitetura nova — e empurrar
+ * isso por auto-update para quem estava usando uma versão estável é trocar o
+ * chão de alguém sem perguntar. Quem quiser a V2 instala por conta e risco;
+ * quem não quiser fica na 1.0.0, que é justamente a linha-base que o ADR-001
+ * existe para preservar.
+ *
+ * `autoDownload = false`: o app ainda AVISA que existe versão nova, mas só baixa
+ * se mandarem. Avisar é serviço; baixar sozinho é decidir pelo outro. */
 function setupUpdates() {
   if (!autoUpdater || !app.isPackaged) return;
-  autoUpdater.autoDownload = true;
+  autoUpdater.autoDownload = false;
   autoUpdater.on('error', () => {
     /* silencioso por enquanto; UI de update no M1+ */
+  });
+
+  /* Versão nova disponível → pergunta ANTES de baixar. */
+  autoUpdater.on('update-available', (info) => {
+    const win = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
+    dialog.showMessageBox(win, {
+      type: 'question',
+      title: 'Existe uma versão nova',
+      message: `Baluarte ${info && info.version ? info.version : 'novo'} está disponível.`,
+      detail:
+        'A 1.0.0 é a última versão que o Baluarte instalava sozinho. O que vem ' +
+        'depois dela é código novo (V2) — baixar é por sua conta e risco.\n\n' +
+        'Se preferir ficar onde está, é só recusar: a 1.0.0 continua funcionando ' +
+        'e você pode instalar depois, quando quiser.',
+      buttons: ['Baixar agora', 'Agora não'],
+      defaultId: 1,        // o padrão é NÃO mexer no que funciona
+      cancelId: 1
+    }).then(({ response }) => {
+      if (response === 0) autoUpdater.downloadUpdate().catch(() => {});
+    }).catch(() => { /* best-effort */ });
   });
   /* A ARMADILHA DA BANDEJA: fechar a janela só esconde (o app segue vivo) e o
    * update baixado só instala no quit — que nunca vinha. Agora, quando o
