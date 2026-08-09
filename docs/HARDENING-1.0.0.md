@@ -268,6 +268,12 @@ existe "1.0.0", só um monte de item marcado:
       `#210 temos que arrumar`), e não dá para afirmar que a 1.0.0 é sólida sem
       saber se alguma delas descreve algo quebrado no que está marcado estável.
       É varredura de leitura, não de código.
+      **Levantamento feito** → [`TRIAGEM-1.0.0.md`](./TRIAGEM-1.0.0.md): as 53
+      lidas, e **nenhuma descreve defeito no que está `estavel`**. As três de
+      título alarmante se dissolvem — #197 é o editor (`beta`), #307 é pedido de
+      V2 disfarçado de conserto, #210 é log de build de junho cujos três alertas
+      já morreram. Falta só o operador **concordar com a leitura** e decidir o
+      que fechar; fechar issue é decisão dele, não da sessão.
 - [ ] **Suíte verde no congelamento** — `npm test` · `npm run smoke` ·
       `npm run build` · `npm audit --omit=dev`.
 
