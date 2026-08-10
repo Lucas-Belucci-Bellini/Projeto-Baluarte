@@ -75,16 +75,37 @@ try {
   conferir('o nome vem do manifesto, não da sidebar da V1',
     /Lab de Criptografia/.test(textoNav), textoNav.slice(0, 80));
 
-  /* O DEFEITO 1: se `view` devolver o módulo, isto fica vazio. */
+  /* O DEFEITO 1: se `view` devolver o módulo em vez do elemento, isto fica
+   * vazio. A asserção é de IDENTIDADE, não de tamanho — a versão anterior media
+   * `length > 100` e reprovou quando a view nativa (mais enxuta que a página da
+   * V1) passou a renderizar. Limiar de tamanho é asserção fraca: aprova
+   * qualquer coisa grande e reprova o certo quando ele encolhe. */
   const conteudo = await pagina.locator('#saida').innerText().catch(() => '');
-  conferir('a página real da V1 RENDERIZA pelo boot da V2',
-    conteudo.length > 100 && !/falhou|não é um nó/.test(conteudo), conteudo.slice(0, 90));
+  conferir('a view NATIVA da V2 renderiza',
+    /Lab de Criptografia/.test(conteudo) && /AES-GCM/.test(conteudo)
+      && !/falhou|não é um nó/.test(conteudo),
+    conteudo.slice(0, 90));
 
-  /* O DEFEITO 2: navegar exercita o route:change de novo. */
+  /* O módulo nativo usa ctx.trabalho e ctx.metricas — que só existem se o boot
+   * os injetou. Clicar é o que prova; renderizar não prova nada disso. */
+  await pagina.fill('.cripto-entrada', 'texto de prova');
+  await pagina.fill('input[type=password]', 'senha-de-prova');
+  await pagina.getByRole('button', { name: 'SHA-256' }).click();
+  await pagina.waitForTimeout(1200);
+  const hashNaTela = await pagina.locator('.cripto-saida').innerText().catch(() => '');
+  conferir('o módulo EXECUTA usando o contexto (escalonador + métricas)',
+    /^[0-9a-f]{64}$/.test(hashNaTela.trim()), hashNaTela.slice(0, 70));
+
+  const metricas = await pagina.evaluate(() => window.__v2?.metricas?.());
+  conferir('a execução foi medida pelo módulo',
+    !!metricas?.contadores?.cripto_hash, JSON.stringify(metricas?.contadores ?? {}).slice(0, 80));
+
+  /* Um módulo ADAPTADOR (militar → páginas da V1) continua funcionando: a V2
+   * serve os dois mundos enquanto a migração acontece. */
   await pagina.evaluate(() => { window.location.hash = '#/arsenal'; });
   await pagina.waitForTimeout(1800);
   const conteudo2 = await pagina.locator('#saida').innerText().catch(() => '');
-  conferir('navegar para outra rota do mesmo módulo funciona',
+  conferir('módulo adaptador ainda serve a página da V1',
     conteudo2.length > 100 && conteudo2 !== conteudo, conteudo2.slice(0, 70));
 
   conferir('nenhum erro de JS', errosJs.length === 0, errosJs.slice(0, 2).join(' | '));

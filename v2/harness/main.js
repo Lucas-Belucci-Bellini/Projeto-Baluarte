@@ -12,6 +12,12 @@ import { criarRegistry } from '../core/registry.js';
 import { criarBoot } from '../core/boot.js';
 import { criarBus } from '../core/bus.js';
 import { criarLog, definirDestino } from '../core/log.js';
+/* O módulo nativo usa métricas, escalonador e contratos. Sem injetá-los aqui, o
+ * contexto não os expõe e a view quebra no primeiro clique — construir o
+ * ambiente pela metade é o jeito mais fácil de "passar" sem funcionar. */
+import { criarMetricas } from '../core/metricas.js';
+import { criarEscalonador } from '../core/trabalho.js';
+import { criarResolvedorApi } from '../core/api.js';
 
 /* O router da V1, sem alteração nenhuma. É o ponto: adaptar, não reescrever. */
 import { router } from '../../src/core/router.js';
@@ -43,9 +49,12 @@ async function principal() {
   const selo = registry.selar();
 
   const bus = criarBus({ log });
+  const metricas = criarMetricas();
+  const trabalho = criarEscalonador({ limite: 4 }, { log, metricas });
+  const apis = criarResolvedorApi(registry, { log });
   const saida = document.getElementById('saida');
 
-  const boot = criarBoot(registry, { storage, bus }, {
+  const boot = criarBoot(registry, { storage, bus, metricas, trabalho, apis }, {
     router,
     renderNav: (itens) => {
       const nav = document.getElementById('nav');
@@ -99,7 +108,14 @@ async function principal() {
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
     registros,
-    eventos: bus.contagem()
+    eventos: bus.contagem(),
+    /* FUNÇÃO, não valor: a primeira versão tirava o retrato uma vez, no boot, e
+     * o teste lia um instantâneo anterior ao clique — dava "medido: {}" com a
+     * métrica funcionando. Ponte de teste que congela estado mente sobre o
+     * sistema vivo. */
+    metricas: () => metricas.retrato(),
+    /* Superfície para o teste exercitar a api sem passar pela UI. */
+    api: (alvo, metodo, ...args) => apis.usar('harness', [alvo], alvo)[metodo](...args)
   };
 
   log.info('banco de prova pronto', { modulos: r.vivos.length, rotas: r.rotas });

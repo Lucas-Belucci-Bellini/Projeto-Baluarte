@@ -23,7 +23,7 @@ core/
   metricas.js   contagem e tempo, com teto de cardinalidade   17 testes · 6 mutantes
   trabalho.js   concorrência: teto, cancelamento, justiça     19 testes · 7 mutantes
 modules/
-  cripto/       o caso fácil (prova que o formato serve)
+  cripto/       ⭐ o primeiro módulo NATIVO — view própria, usa todo o contexto
   editor/       o caso do acoplamento (JARVIS escreve na chave dele)
   militar/      o caso difícil (15 rotas, rede, id que não bate)
 data/

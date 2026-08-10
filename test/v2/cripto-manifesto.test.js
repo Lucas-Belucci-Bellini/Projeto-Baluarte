@@ -31,31 +31,39 @@ test('o manifesto de /cripto é válido', () => {
   assert.equal(r.ok, true, r.erros.join(' | '));
 });
 
-test('a rota existe de verdade em main.js', () => {
-  const main = ler('src/main.js');
-  const paths = manifesto.routes.map((r) => r.path);
-  assert.deepEqual(paths, ['/cripto']);
-  assert.ok(main.includes("router.register('/cripto'"), 'a V1 não registra /cripto');
+test('a rota aponta para a view PRÓPRIA, não para a página da V1', () => {
+  /* É o que distingue módulo nativo de adaptador. */
+  assert.deepEqual(manifesto.routes.map((r) => r.path), ['/cripto']);
+  const fonte = ler('v2/modules/cripto/module.js');
+  assert.match(fonte, /import\('\.\/view\.js'\)/);
+  assert.ok(!/src\/pages/.test(fonte), 'o módulo nativo ainda aponta para a V1');
 });
 
-test('a chave de storage é a MESMA que a V1 declara — herda, não reinventa', () => {
+test('a chave de storage MUDOU — e a divergência é deliberada', () => {
+  /* A versão adaptadora deste módulo herdava `cripto:active` da V1. O módulo
+   * nativo usa `cripto:painel`, e isso não é descuido:
+   *
+   * A V1 tem oito painéis; este módulo tem dois. O valor guardado lá ("morse",
+   * "vigenere") não significa nada aqui, então herdar a chave seria herdar um
+   * dado que o novo código não sabe interpretar — e cair no fallback em silêncio,
+   * que é exatamente o modo de falha que esta arquitetura combate.
+   *
+   * Nada se perde: a V1 continua lendo `cripto:active`, porque a V1 continua
+   * existindo. São dois módulos, dois namespaces. */
+  assert.deepEqual(manifesto.storage.map((s) => s.key), ['cripto:painel']);
+
   const politica = ler('src/core/politica.js');
-  for (const s of manifesto.storage) {
-    assert.ok(
-      politica.includes(`chave: '${s.key}'`),
-      `${s.key} não existe em politica.js — o manifesto inventou uma chave`
-    );
-    assert.ok(
-      politica.includes(`chave: '${s.key}', versao: ${s.version}`),
-      `${s.key} está em versão diferente da V1`
-    );
-  }
+  assert.match(politica, /chave: 'cripto:active'/,
+    'a V1 deixou de declarar a própria chave — revise esta decisão');
 });
 
-test('a estabilidade bate com a tabela da V1', () => {
-  const politica = ler('src/core/politica.js');
-  assert.match(politica, /\{ id: 'cripto', nivel: 'estavel'/);
-  assert.equal(manifesto.stability, 'estavel');
+test('a estabilidade é BETA, não estável — código novo não nasce maduro', () => {
+  /* A V1 declara `cripto: estavel` e tem razão: são 27 testes sobre oito
+   * painéis rodando há tempo. Este módulo é código novo com escopo estreito.
+   * Carimbá-lo de `estavel` por herança seria emprestar credibilidade que ele
+   * ainda não tem — e `estavel`, pela definição em vigor, promete previsível,
+   * testado, recuperável e seguro. */
+  assert.equal(manifesto.stability, 'beta');
 });
 
 test('declara permissão nenhuma — e isso é uma afirmação, não esquecimento', () => {
@@ -67,10 +75,30 @@ test('declara permissão nenhuma — e isso é uma afirmação, não esqueciment
   assert.ok(!src.includes('fetch('), 'o motor passou a usar rede — revise permissions');
 });
 
-test('não emite nem consome evento, como o código', () => {
+test('emite o que faz, sem o conteúdo do que cifrou', () => {
+  /* Evento carregando texto cifrado vazaria pelo caminho de quem observa —
+   * qualquer módulo com `bus.on('*')` veria. O evento diz que aconteceu e o
+   * tamanho; o conteúdo fica no módulo. */
   const n = normalizar(manifesto);
-  assert.deepEqual(n.events.emits, []);
+  assert.deepEqual(n.events.emits, ['cripto:cifrou', 'cripto:decifrou']);
   assert.deepEqual(n.events.consumes, []);
+
+  /* A checagem no código-fonte precisa ser PRECISA, não aproximada: a primeira
+   * versão desta asserção reprovava `{ tamanho: entrada.value.length }`, que é
+   * justamente a forma correta. Regex grosseira em teste de segurança dá os dois
+   * erros possíveis — reprova o certo e, quando afrouxada, aprova o errado.
+   *
+   * Aqui: extrai cada `emit(...)` e confere que o payload só tem `tamanho`. */
+  const view = ler('v2/modules/cripto/view.js');
+  const emits = [...view.matchAll(/bus\?\.emit\((.*?)\);/g)].map((m) => m[1]);
+  assert.equal(emits.length, 2, `esperava 2 emits na view, achei ${emits.length}`);
+
+  for (const chamada of emits) {
+    assert.ok(/\{\s*tamanho:/.test(chamada), `payload sem tamanho: ${chamada}`);
+    assert.ok(!/senha/.test(chamada), `senha no evento: ${chamada}`);
+    /* `entrada.value` só pode aparecer seguido de `.length`. */
+    assert.ok(!/entrada\.value(?!\.length)/.test(chamada), `conteúdo cru no evento: ${chamada}`);
+  }
 });
 
 test('UM manifesto substitui o que hoje mora em oito arquivos', () => {
