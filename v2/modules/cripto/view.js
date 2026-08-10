@@ -34,7 +34,18 @@
 
 import { cifrar, decifrar, hash } from './motor.js';
 
-/** @param {string} tag @param {Record<string, any>} [attrs] @param {...any} filhos */
+/**
+ * `@template` em vez de `string`: assim `h('textarea', …)` devolve
+ * `HTMLTextAreaElement` e `entrada.value` é conhecido. Com `tag: string` o
+ * retorno é `HTMLElement` genérico, e o verificador reprova o acesso a `.value`
+ * — corretamente, porque nem todo elemento tem.
+ *
+ * @template {keyof HTMLElementTagNameMap} K
+ * @param {K} tag
+ * @param {Record<string, any>} [attrs]
+ * @param {...any} filhos
+ * @returns {HTMLElementTagNameMap[K]}
+ */
 function h(tag, attrs = {}, ...filhos) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -50,7 +61,8 @@ function h(tag, attrs = {}, ...filhos) {
 }
 
 /**
- * @param {{ctx: any, painel: string}} estado o que o `init()` guardou
+ * @param {{ctx: any, painel: string}|null} estado o que o `init()` guardou —
+ * `null` quando o módulo não subiu, e esse caso é tratado logo abaixo
  * @param {any} [_args]
  */
 export function criarView(estado, _args) {
@@ -92,7 +104,7 @@ export function criarView(estado, _args) {
     try {
       const r = await ctx.trabalho.fazer(
         rotulo,
-        ({ sinal }) => fn(sinal ?? ctrl.signal),
+        (/** @type {{sinal?: AbortSignal}} */ { sinal }) => fn(sinal ?? ctrl.signal),
         { prioridade: ctx.trabalho.INTERATIVO, sinal: ctrl.signal }
       );
       if (ctrl.signal.aborted) return;      // chegou tarde: outro pedido venceu
@@ -103,7 +115,7 @@ export function criarView(estado, _args) {
       if (ctrl.signal.aborted) return;
       /* Mensagem para o operador, detalhe para o log. Jogar o `err` cru na tela
        * mostra stack a quem quer saber se a senha está errada. */
-      aviso.textContent = err?.message ?? 'não deu certo';
+      aviso.textContent = err instanceof Error ? err.message : 'não deu certo';
       ctx.log.erro(`falha em ${rotulo}`, err);
       ctx.metricas.contar('cripto_falha', { op: rotulo });
     } finally {

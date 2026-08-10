@@ -34,7 +34,12 @@ const TAMANHO_IV = 12;
 /** Algoritmos de hash aceitos. Lista fechada: nome livre viraria erro do WebCrypto. */
 export const ALGOS_HASH = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
 
-/** @param {number} tamanho */
+/**
+ * @param {number} tamanho
+ * @returns {Uint8Array<ArrayBuffer>} o parâmetro de tipo **não** é decoração:
+ * `Uint8Array` sozinho vira `Uint8Array<ArrayBufferLike>`, que o WebCrypto
+ * recusa — `SharedArrayBuffer` cabe em `ArrayBufferLike` e não em `BufferSource`
+ */
 export function bytesAleatorios(tamanho) {
   const bytes = new Uint8Array(tamanho);
   crypto.getRandomValues(bytes);
@@ -50,8 +55,9 @@ export function bytesParaBase64(bytes) {
 
 /**
  * @param {string} b64
- * @returns {Uint8Array|null} `null` quando não é base64 — não levanta, porque
- * a entrada vem do operador e texto colado errado é caso normal, não excepcional
+ * @returns {Uint8Array<ArrayBuffer>|null} `null` quando não é base64 — não
+ * levanta, porque a entrada vem do operador e texto colado errado é caso normal,
+ * não excepcional
  */
 export function base64ParaBytes(b64) {
   try {
@@ -66,7 +72,7 @@ export function base64ParaBytes(b64) {
 
 /**
  * @param {string} senha
- * @param {Uint8Array} salt
+ * @param {Uint8Array<ArrayBuffer>} salt
  */
 async function derivarChave(senha, salt) {
   const base = await crypto.subtle.importKey(

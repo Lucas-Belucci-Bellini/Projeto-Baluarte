@@ -29,8 +29,11 @@
 
 import { cifrar, decifrar, hash, ALGOS_HASH } from './motor.js';
 
+/** @typedef {{ctx: any, painel: string}} Estado o que sobrevive entre init e dispose */
+
 /* A instância viva do módulo. Fica no escopo do arquivo — e não em `globalThis`
  * — porque `dispose()` precisa alcançá-la, e estado global é a Regra 8. */
+/** @type {Estado|null} */
 let estado = null;
 
 export default {
@@ -78,7 +81,11 @@ export default {
   apiVersion: 1,
 
   routes: [
-    { path: '/cripto', view: (args) => import('./view.js').then((m) => m.criarView(estado, args)) }
+    {
+      path: '/cripto',
+      /** @param {any} [args] */
+      view: (args) => import('./view.js').then((m) => m.criarView(estado, args))
+    }
   ],
 
   lifecycle: {
