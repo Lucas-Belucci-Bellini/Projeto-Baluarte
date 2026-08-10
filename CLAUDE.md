@@ -31,14 +31,16 @@ os ADRs (decisões fechadas, não re-litigar).
 O operador **fixou estes três no topo do repositório** justamente para serem o
 que se vê primeiro. Se você está numa sessão nova, é por aqui que se começa.
 
-- **#423 — Master Construction Plan.** ⭐ O plano-mestre da reconstrução. É o
-  documento que outras instruções chamam de `V2_MASTER_PLAN.md` — **ele não
-  existe como arquivo**, mora na issue, e procurar pelo arquivo não acha nada.
-  Traz as 26 seções: ordem de construção (arquitetura → Core → Module System →
-  contratos → migração → só então módulos grandes), o princípio
-  **"preparar ≠ implementar"**, a regra contra feature creep, a estratégia de
-  branches (`main` · `release/v1.x` · `v2-development`) e o roadmap V1→V10 com o
-  Baluarte OS em 2030.
+- **#423 — Master Construction Plan.** ⭐ O plano-mestre da reconstrução, agora
+  transcrito para **[`docs/v2/`](docs/v2/)** — comece por lá, não pela issue:
+  [`V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md) (as 26 seções),
+  [`V2_RULES.md`](docs/v2/V2_RULES.md) (as 40 regras) e
+  [`V2_DECISION_LOG.md`](docs/v2/V2_DECISION_LOG.md) (**as 9 decisões que não
+  estão no corpo do plano** — nasceram nos comentários e se perderiam).
+  Em resumo: ordem de construção (arquitetura → Core → Module System → contratos
+  → migração → só então módulos grandes), **"preparar ≠ implementar"**, regra
+  contra feature creep, branches (`main` · `release/v1.x` · `v2-development`) e o
+  roadmap V1→V10 com o Baluarte OS em 2030.
 - **#420 — plataforma e arquitetura.** É onde a fase de hardening foi definida
   *e* onde a V2 foi desenhada: arquitetura modular, sistema de plugins, JARVIS
   como cérebro, Project Registry, calendário até meados de 2027. A decisão de
