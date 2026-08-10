@@ -41,8 +41,23 @@ import { criarLog } from './log.js';
  */
 
 /**
+ * O boot precisa de MAIS do que o contexto de um módulo precisa.
+ *
+ * O contexto quer `metricas.paraModulo()` e `apis.usar()` — o recorte de um
+ * módulo. O boot quer o retrato do conjunto: `metricas.retrato()`,
+ * `apis.catalogo()`, `apis.uso()`. Declarar um `Deps` só para os dois foi erro
+ * meu, e o verificador de tipos apontou: consumidores diferentes têm contratos
+ * diferentes — que é o princípio desta arquitetura aplicado a ela mesma.
+ *
+ * @typedef {import('./contexto.js').Deps & {
+ *   metricas?: import('./contexto.js').Deps['metricas'] & { retrato: () => any },
+ *   apis?: import('./contexto.js').Deps['apis'] & { catalogo: () => any, uso: () => any }
+ * }} DepsBoot
+ */
+
+/**
  * @param {ReturnType<typeof import('./registry.js').criarRegistry>} registry selado
- * @param {import('./contexto.js').Deps} deps
+ * @param {DepsBoot} deps
  * @param {Adaptadores} adaptadores
  * @param {{tetoInitMs?: number}} [opcoes]
  */
@@ -107,7 +122,13 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
         };
       }),
       falhas: ciclo.falhas(),
-      eventosOrfaos: registry.eventosOrfaos()
+      eventosOrfaos: registry.eventosOrfaos(),
+      /* Um retrato só. Sem isto o operador junta métricas de um lugar, módulos
+       * de outro e falhas de um terceiro — que é o que a página /diagnostico da
+       * V1 faz hoje, vasculhando cinco fontes. */
+      metricas: deps.metricas?.retrato() ?? null,
+      apis: deps.apis?.catalogo?.() ?? null,
+      usoDeApi: deps.apis?.uso?.() ?? null
     };
   }
 

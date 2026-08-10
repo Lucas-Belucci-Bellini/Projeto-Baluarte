@@ -75,6 +75,7 @@ export class ErroChave extends Error {
  * @property {{get: (k: string) => any, set: (k: string, v: any) => boolean, remove?: (k: string) => void}} storage
  * @property {BusV2} [bus]
  * @property {{usar: (solicitante: string, declaradas: string[], alvo: string, exigencia?: {versao?: number}) => Record<string, Function>}} [apis]
+ * @property {{paraModulo: (id: string) => {contar: Function, medir: Function, cronometrar: Function}}} [metricas]
  */
 
 /**
@@ -181,6 +182,9 @@ export function criarContexto(manifesto, deps) {
     pode,
     exigir,
     storage,
+    /* Métricas já carimbadas com o módulo. Ausente quando não injetadas — a
+     * mesma regra das outras capacidades: o que não foi dado não aparece. */
+    ...(deps.metricas ? { metricas: deps.metricas.paraModulo(id) } : {}),
     ...(deps.apis ? { usar } : {}),
     ...(bus ? { bus } : {}),
     /** O que este módulo declarou — para o `/diagnostico` mostrar sem adivinhar. */

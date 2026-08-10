@@ -218,3 +218,39 @@ test('descer desmonta tudo e o diagnóstico reflete', async () => {
   assert.equal(boot.diagnostico().fase, 'parado');
   assert.deepEqual(boot.diagnostico().modulos, []);
 });
+
+/* ═══════════ observabilidade no retrato ═══════════ */
+
+test('diagnostico() junta métricas, apis e uso — UMA fonte', async () => {
+  /* A /diagnostico da V1 vasculha cinco lugares pra montar isso. Aqui o retrato
+   * é derivado do registro e das dependências injetadas. */
+  const { criarMetricas } = await import('../../v2/core/metricas.js');
+  const { criarResolvedorApi } = await import('../../v2/core/api.js');
+  const { criarRegistry } = await import('../../v2/core/registry.js');
+  const { criarBoot } = await import('../../v2/core/boot.js');
+
+  const registry = criarRegistry();
+  registry.registrar(mod('editor', { api: { abrirAba: () => 'ok' } }));
+  registry.registrar(mod('jarvis', { dependencies: ['editor'] }));
+  registry.selar();
+
+  const metricas = criarMetricas();
+  const apis = criarResolvedorApi(registry);
+  const boot = criarBoot(registry, { ...deps, metricas, apis }, { router: routerFalso() });
+  await boot.subir();
+
+  metricas.paraModulo('editor').contar('salvou');
+  apis.usar('jarvis', ['editor'], 'editor').abrirAba();
+
+  const d = boot.diagnostico();
+  assert.equal(d.metricas.contadores.salvou['modulo=editor'], 1);
+  assert.deepEqual(d.apis, [{ modulo: 'editor', versao: 1, metodos: ['abrirAba'] }]);
+  assert.equal(d.usoDeApi['editor.abrirAba'], 1);
+});
+
+test('sem métricas injetadas o retrato diz null, não finge zero', async () => {
+  /* `{}` faria parecer "medido e vazio"; null diz "não há medição". */
+  const boot = montar([mod('a')], { router: routerFalso() });
+  await boot.subir();
+  assert.equal(boot.diagnostico().metricas, null);
+});
