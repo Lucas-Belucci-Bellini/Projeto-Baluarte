@@ -18,6 +18,7 @@ core/
   ciclo.js      init/start → stop/dispose, isolado       17 testes · 5 mutantes
   boot.js       o Core CONSUMINDO o Registry              11 testes · 4 mutantes
   bus.js        eventos com origem, versão e curinga      16 testes · 6 mutantes
+  config.js     declarada, com faixa e SEGREDO que não vaza 19 testes · 6 mutantes
 modules/
   cripto/       o caso fácil (prova que o formato serve)
   editor/       o caso do acoplamento (JARVIS escreve na chave dele)
@@ -58,5 +59,4 @@ Fundação, não módulos — §23 do plano, *preparar ≠ implementar*:
   sem editar nenhum arquivo do Core*. Falta o `src/main.js` da V1 usá-lo em vez
   de seus 99 `router.register()` — e isso **mexe na V1**, que está congelando.
   É a primeira coisa depois da tag `v1.0.0`.
-- **Config** — a Regra 9 pede fonte única; hoje continua espalhada.
 - **Ingestão, busca e migração de `src/data/`** (21k linhas de JS que são banco).
