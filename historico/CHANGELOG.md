@@ -56,6 +56,33 @@ produto: ele se chamava "salt/IV novos" mas só comparava a saída inteira, e o
 salt aleatório já basta para a saída diferir. Reescrito para decompor
 `salt(16) || iv(12) || cifra` e conferir cada campo.
 
+### 🚧 Aviso de V2 em construção, e a peça que ele exigia
+
+Decisão do operador, com o trade-off na mesa: não há como impedir que a
+construção da V2 afete o site e o app, então o certo é **avisar**. Faixa
+dispensável no topo do site — e o app vê a mesma coisa, porque o launcher é uma
+casca que carrega o site ao vivo. A dispensa é gravada **por versão do aviso**,
+não como booleano: quando o texto mudar de verdade, a faixa reaparece para quem
+já tinha fechado, em vez de nascer invisível justamente para quem acompanha.
+
+O aviso mandava *"guarde o que for importante fora do navegador"* — e não existia
+como fazer isso a não ser pelo DevTools. Aviso que pede o impossível ensina a
+ignorar avisos, então veio o **exportar/importar** (`src/core/backup.js` + botões
+em `/perfil`, antes do "limpar todos os dados", porque quem chega ali pensando em
+apagar tudo deve passar primeiro pela opção de salvar).
+
+O arquivo carrega **versão por chave**: seria absurdo fechar esse buraco no
+`localStorage` e reabri-lo no backup. `auth:session` fica **de fora** — JWT de
+vida curta, inútil restaurado e perigoso num arquivo que o operador manda por
+e-mail para si mesmo. A importação recusa chave não declarada, versão futura e
+entrada malformada: é a única porta pela qual dado externo entra no storage, e
+não pode virar a janela por onde os buracos fechados voltam.
+
+Com isso, as quatro palavras da definição da 1.0.0 têm lastro:
+**previsível** (esquemas + catálogos gerados) · **testado** (463 testes + 5
+passagens de navegador no CI) · **recuperável** (offline + backup) ·
+**seguro** (permissões negadas por omissão + as 72 chaves classificadas).
+
 ### Também entrou
 
 - **Catálogos gerados** (`docs/architecture/events.md` e `storage.md`): 19
@@ -70,7 +97,7 @@ salt aleatório já basta para a saída diferir. Reescrito para decompor
 - **Triagem das 53 issues** (`docs/TRIAGEM-1.0.0.md`): nenhuma descreve defeito
   no que está marcado estável.
 
-**449 testes.**
+**463 testes.**
 
 ---
 

@@ -223,10 +223,27 @@ que é exatamente onde esta fase começou.
       confirmar que continua lá*.
 
       ⚠️ **Fica em aberto para o operador:** o endereço principal passa a servir
-      a V1 até ele decidir promover a V2, e **não existe exportar/importar** do
-      dado local — só "limpar". Qualquer mudança de origem futura precisa de uma
-      das duas: ponte entre origens (iframe + `postMessage`) ou exportação. É
-      decisão dele, não da sessão.
+      a V1 até ele decidir promover a V2. Qualquer mudança de origem futura
+      precisa de ponte entre origens (iframe + `postMessage`) **ou** do backup —
+      e o backup passou a existir (item abaixo), então a segunda via está aberta.
+
+- [x] **Exportar e importar o dado local** — `src/core/backup.js` + botões em
+      `/perfil`, antes do "limpar todos os dados". Fechou duas coisas de uma vez:
+      **"recuperável"** era a única das quatro palavras da definição da 1.0.0 sem
+      lastro (o site sabia apagar e não sabia devolver), e o aviso de "V2 em
+      construção" mandava *guardar o que for importante fora do navegador* sem
+      que houvesse como — instrução impossível ensina a ignorar avisos.
+
+      O arquivo carrega **versão por chave**: seria absurdo fechar esse buraco no
+      `localStorage` e reabri-lo no backup. `auth:session` fica de fora (JWT curto,
+      inútil restaurado, perigoso num arquivo). A importação recusa chave não
+      declarada, versão futura e entrada malformada — é a única porta pela qual
+      dado externo entra no storage.
+
+      14 testes + 3 mutantes (import gravando chave não declarada · `auth:session`
+      vazando · aceitar versão futura), todos vermelhos quando plantados. Ponta a
+      ponta no navegador 10/10: exporta com acento intacto, apaga tudo, importa,
+      e o editor e o cofre de chaves voltam.
 
 ## 🟠 Muito recomendado
 
