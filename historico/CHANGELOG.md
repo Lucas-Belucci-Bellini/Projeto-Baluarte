@@ -6,6 +6,74 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-10 — três bloqueadores achados às vésperas do congelamento
+
+A varredura final da 1.0.0 não era para achar nada. Achou três, e o pior deles
+era meu.
+
+### ⛔ A 1.0.0 apagaria o dado de quem já usa o app
+
+A ADR-003 mandava o app apontar para `v1.projeto-baluarte.vercel.app`, para o
+launcher não drenar para a V2 sem instalar nada. A intenção estava certa; a
+execução era um apagador silencioso.
+
+`localStorage` é escopado por **origem**. O app publicado (0.9.2) aponta para o
+endereço principal, e `v1.` é outra origem. Quem atualizasse encontraria as
+**71 chaves vazias**: abas do editor, conversas e memórias do JARVIS, histórico
+do terminal e o cofre de chaves de API. Sem erro, sem aviso, sem desfazer.
+Pareceria que o app apagou tudo — numa versão chamada "ponto de congelamento".
+E o passo 1 do handoff mandava criar o alias **antes** de publicar, ou seja: a
+ordem escrita levava direto ao estrago.
+
+A correção inverte quem se muda. A **V1 fica onde o dado já está**; a **V2**
+nasce em endereço próprio. O pin continua valendo, porque quem fica parado é a
+V1. A ADR-003 foi corrigida **com o erro registrado**, não reescrita em silêncio.
+
+### ⛔ 59 chaves de storage sem esquema declarado
+
+Só 12 estavam em `politica.js`. A varredura de `src/` achou outras 59 em uso —
+quase todas acessadas por constante (`const KEY = 'ui:theme'`), forma que um
+grep pelo literal dentro de `storage.get(...)` não enxerga. Passaram batido
+porque quem procurou procurou pelo padrão errado.
+
+Chave sem esquema não tem versão, e congelar assim deixaria a V2 **sem contrato
+para ler o dado da V1**. Entre elas: `apis:vault`, `voice:elevenKey`,
+`nucleo:wsToken`, `shadow:auth`, `jarvis:history`, `jarvis:memories`.
+
+Nenhuma virou `secreto` — `secreto` é recusado na gravação, e chave de API que o
+operador digita precisa viver no navegador; marcar assim quebraria o cofre em
+vez de protegê-lo. Ficou **21 `sensivel` · 48 `local` · 2 `publico`**.
+
+### ⛔ `cripto` marcado estável com 24 exports sem teste
+
+O motor tem 372 linhas e 26 exports; os testes importavam **dois**. AES, OTP,
+base64/32/hex, vigenère, atbash, césar e os hashes sustentavam uma promessa que
+nada verificava — e `estavel`, pela definição em vigor, inclui *testado*.
+
+O motor passou de primeira nos 26 testes novos. Plantando defeitos, dois foram
+pegos e o terceiro (IV fixo no AES-GCM) **passou** — furo no teste, não no
+produto: ele se chamava "salt/IV novos" mas só comparava a saída inteira, e o
+salt aleatório já basta para a saída diferir. Reescrito para decompor
+`salt(16) || iv(12) || cifra` e conferir cada campo.
+
+### Também entrou
+
+- **Catálogos gerados** (`docs/architecture/events.md` e `storage.md`): 19
+  eventos em 8 namespaces, 71 chaves com classe e dono. Gerados do código e
+  cobrados pelo CI, como a tabela de estabilidade — catálogo à mão mente no
+  primeiro rename. O de storage **se recusa a rodar** com chave fora da política.
+- **Geradores do Arma 3 corrigidos**: a migração para `dados-remotos` tinha sido
+  feita à mão em seis arquivos **gerados**, e a próxima execução do gerador a
+  desfaria calada. O CI pegou — é exatamente o que aquele passo existe para pegar.
+- **`.smart-env/` fora do versionamento**: 19 MB de índice do Smart Connections,
+  derivado dos nossos próprios READMEs, sem gerador nem consumidor nosso.
+- **Triagem das 53 issues** (`docs/TRIAGEM-1.0.0.md`): nenhuma descreve defeito
+  no que está marcado estável.
+
+**449 testes.**
+
+---
+
 ## 2026-08-09 (13)
 
 ### 📦 Os datasets buscados em runtime — o último 🟠
