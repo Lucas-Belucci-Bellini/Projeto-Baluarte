@@ -105,7 +105,7 @@ Diz respeito ao operador. Fica no navegador porque precisa, e nunca é enviada a
 | Chave | Versão | Tocada por |
 | --- | --- | --- |
 | `baluarte:terminal:history` | 1 | `src/utils/terminal-engine.js` |
-| `baluarte:auth:session` | 1 | `src/core/supabase-auth.js` |
+| `baluarte:auth:session` | 1 | `src/core/backup.js` · `src/core/supabase-auth.js` |
 | `baluarte:apis:vault` | 1 | `src/pages/apis.js` |
 | `baluarte:voice:elevenKey` | 1 | `src/utils/jarvis-voice.js` |
 | `baluarte:jarvis:config` | 1 | `src/utils/jarvis-engine.js` |
