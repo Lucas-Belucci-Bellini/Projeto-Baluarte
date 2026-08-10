@@ -30,12 +30,14 @@
     "gen-tabela-estabilidade": "node scripts/gen-tabela-estabilidade.mjs",
     "gen-catalogo-eventos": "node scripts/gen-catalogo-eventos.mjs",
     "gen-catalogo-storage": "node scripts/gen-catalogo-storage.mjs",
-    "prova-offline": "node scripts/prova-offline.mjs"
+    "prova-offline": "node scripts/prova-offline.mjs",
+    "tipos:v2": "tsc -p v2/jsconfig.json"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "playwright": "^1.49.0",
+    "typescript": "^7.0.2",
     "vite": "^5.4.10"
   },
   "engines": {

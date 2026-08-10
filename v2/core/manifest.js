@@ -48,20 +48,65 @@ export const PERMISSOES = [
 const KEBAB = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const SEMVER = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
 
+/** @param {unknown} v */
 const ehObjeto = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+/** @param {unknown} v */
 const ehFuncao = (v) => typeof v === 'function';
+
+/**
+ * @typedef {object} Rota
+ * @property {string} path
+ * @property {() => Promise<unknown>} view import preguiçoso da view
+ */
+
+/**
+ * @typedef {object} EsquemaStorage
+ * @property {string} key       precisa começar com `<id>:`
+ * @property {number} version   inteiro ≥ 1
+ * @property {string} class     uma de `CLASSES`
+ * @property {Function} [migrate] obrigatório quando `version > 1`
+ */
+
+/**
+ * @typedef {object} Manifesto
+ * @property {string} id
+ * @property {string} name
+ * @property {string} version
+ * @property {string} [description]
+ * @property {string} [stability]
+ * @property {string} [ambiente]
+ * @property {string} [icon]
+ * @property {Rota[]} [routes]
+ * @property {{section?: string|null, order?: number}} [nav]
+ * @property {string[]} [dependencies]
+ * @property {string[]} [permissions]
+ * @property {EsquemaStorage[]} [storage]
+ * @property {{emits?: string[], consumes?: string[]}} [events]
+ * @property {Record<string, unknown>} [api]
+ * @property {Record<string, Function>} [lifecycle]
+ */
 
 /**
  * Valida um manifesto de módulo isolado.
  *
- * @param {object} m o manifesto
+ * A entrada é `unknown` de propósito, não `Manifesto`: o valor vem de um arquivo
+ * que outra pessoa escreveu, e declarar o tipo do que ainda não foi validado
+ * seria afirmar justamente o que esta função existe para verificar.
+ *
+ * @param {unknown} entrada
  * @returns {{ok: boolean, erros: string[]}} `erros` vazio quando `ok`
  */
-export function validar(m) {
+export function validar(entrada) {
+  /** @type {string[]} */
   const erros = [];
+  /** @param {string} msg */
   const e = (msg) => erros.push(msg);
 
-  if (!ehObjeto(m)) return { ok: false, erros: ['manifesto não é um objeto'] };
+  if (!ehObjeto(entrada)) return { ok: false, erros: ['manifesto não é um objeto'] };
+
+  /* Depois do guarda acima é objeto. O cast é para leitura de campo ainda não
+   * verificado — cada um é conferido logo abaixo. */
+  const m = /** @type {Record<string, any>} */ (entrada);
 
   /* ── identidade ─────────────────────────────────────────────────────── */
   const id = m.id;
@@ -204,6 +249,9 @@ export function validar(m) {
  * Padrão de `stability` é **experimental**, não estável: o mesmo raciocínio do
  * deny-by-default das permissões da V1 — quem não declarou não recebe a
  * promessa mais forte por omissão.
+ *
+ * @param {Manifesto} m manifesto já validado
+ * @returns {Required<Pick<Manifesto, 'stability'|'ambiente'|'description'|'icon'|'routes'|'dependencies'|'permissions'|'storage'>> & Manifesto & {events: {emits: string[], consumes: string[]}, nav: {section: string|null, order: number}, api: Record<string, unknown>, lifecycle: Record<string, Function>}}
  */
 export function normalizar(m) {
   return {

@@ -174,8 +174,22 @@ pelo esforço já gasto.
 | 16 | **Versioning** | ✅ por chave de storage · ✗ por módulo | **estender** | |
 | 17 | **Compatibility Layer** | ✗ | **construir** | é onde entra o backup V1 como ponte |
 
-**Sete dos dezessete já existem e ficam.** A fase de hardening não foi um desvio
-antes da V2 — ela construiu, sem saber, um terço da fundação que o plano pede.
+> ⚠️ **Correção — esta tabela tinha um viés.** A versão original concluía aqui
+> *"sete dos dezessete já existem e ficam"*, apresentando isso como economia. Era
+> o argumento do esforço já gasto, que a [Regra 2](./V2_MASTER_PLAN.md#2-a-regra-mais-importante)
+> proíbe em uma frase: *"'nós já temos isso' NÃO é motivo suficiente para manter
+> código"*.
+>
+> A leitura correta: sete peças **passam no critério da V2 por mérito próprio** —
+> o Event Bus tem catálogo gerado, o Storage tem versão e migração por chave, as
+> Permissions negam por omissão. Elas ficam porque atendem ao que a arquitetura
+> nova exige, e não porque custaram caro. Se alguma deixar de atender quando o
+> Module System existir, ela sai.
+>
+> E a decisão vale por **camada**, não pelo projeto: as tabelas acima falam da
+> arquitetura, não da linguagem. A escolha de tecnologia foi refeita do zero em
+> [`V2_STACK.md`](./V2_STACK.md) — inclusive a de `src/data/`, 21 mil linhas de JS
+> que são banco de dados disfarçado de código e **não sobrevivem** à V2.
 
 ---
 

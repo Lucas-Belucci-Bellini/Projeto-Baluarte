@@ -1,0 +1,22 @@
+{
+  "// por que este arquivo existe": [
+    "Etapa 1 da decisão de tipos (docs/v2/V2_STACK.md §2). Verificação de tipo",
+    "COMPLETA sobre JS+JSDoc: zero mudança de build, zero migração de sintaxe,",
+    "e reversível apagando este arquivo. O README lembra que TypeScript ajudou a",
+    "matar as 12 iterações anteriores do projeto — a diferença aqui é que nada",
+    "no caminho de execução muda: o Vite não lê isto, e `npm run build` não",
+    "depende disso. Se atrapalhar, some sem deixar rastro."
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true
+  },
+  "include": ["core/**/*.js"]
+}
