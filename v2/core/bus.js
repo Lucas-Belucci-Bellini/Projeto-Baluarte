@@ -52,8 +52,8 @@ export function criarBus(deps = {}) {
   /** @param {string} padrao @param {Function} fn */
   function on(padrao, fn) {
     if (typeof fn !== 'function') throw new TypeError('[bus] handler precisa ser função');
-    if (!inscritos.has(padrao)) inscritos.set(padrao, new Set());
-    const conjunto = inscritos.get(padrao);
+    let conjunto = inscritos.get(padrao);
+    if (!conjunto) { conjunto = new Set(); inscritos.set(padrao, conjunto); }
     conjunto.add(fn);
     /* Devolve a baixa em vez de exigir `off(padrao, fn)`: guardar a referência
      * exata da função para desinscrever é a fonte clássica de vazamento de
