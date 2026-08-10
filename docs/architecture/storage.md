@@ -7,7 +7,7 @@ Tudo que o Baluarte grava no navegador do operador. A pergunta que este
 documento responde é **"se eu mexer aqui, o que quebro?"** — e para uma chave
 de storage a resposta é: *quem toca*, *que classe* e *que versão*.
 
-Hoje: **71 chaves declaradas**, todas com `migrar`.
+Hoje: **72 chaves declaradas**, todas com `migrar`.
 
 As chaves aparecem no `localStorage` com o prefixo `baluarte:` — é assim
 que elas surgem no DevTools, e é por isso que `clearAll()` alcança todas: o
@@ -52,6 +52,7 @@ Preferência da máquina. Não sai do navegador e não vale nada fora dele.
 | `baluarte:flags` | 1 | `src/core/flags.js` |
 | `baluarte:ui:theme` | 1 | `src/utils/theme.js` |
 | `baluarte:ui:universe` | 1 | `src/utils/universe-theme.js` |
+| `baluarte:aviso:v2` | 1 | `src/layout/aviso-v2.js` |
 | `baluarte:mark11:state` | 1 | `src/pages/ia-proprietaria.js` |
 | `baluarte:academia:state` | 1 | `src/pages/academia.js` |
 | `baluarte:arcade:current` | 1 | `src/utils/players-engine.js` |
@@ -95,6 +96,7 @@ Preferência da máquina. Não sai do navegador e não vale nada fora dele.
 
 - `permissoes` — Estado da própria política.
 - `ui:theme` — ── local: estado de tela, preferência e cache de dado público ────────── Não sai do navegador e não vale nada fora dele. `json-studio:input` e `qr-studio:text` guardam o que o operador digitou e ficaram AQUI de propósito: são rascunho de ferramenta, e classificar todo campo de texto como `sensivel` esvaziaria o sentido da palavra.
+- `aviso:v2` — Em que versão o operador fechou a faixa "V2 em construção". Guarda a VERSÃO, não um booleano: quando o aviso mudar de conteúdo, sobe-se `VERSAO_AVISO` em `layout/aviso-v2.js` e a faixa reaparece para quem já tinha dispensado — senão um aviso novo nasceria invisível justamente para quem mais acompanha o projeto. Temporária, sai com a faixa.
 
 ## `sensivel`
 

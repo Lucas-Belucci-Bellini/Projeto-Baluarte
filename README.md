@@ -1,5 +1,19 @@
 # ⬡ Projeto Baluarte — Mark XIII
 
+> ## 🚧 A V2 está em construção — o site e o app podem não funcionar direito
+>
+> A partir de agora o Baluarte entrou na **reconstrução arquitetural da V2**
+> (issues [#420](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420)
+> e [#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422)).
+> Enquanto ela durar, **partes do site e do app podem falhar, sumir ou mudar sem
+> aviso**.
+>
+> Não dá para blindar isso, então fica dito: quem usa o Baluarte no dia a dia
+> deve esperar instabilidade. A mesma faixa aparece no topo do site.
+>
+> ⚠️ **Guarde o que for importante fora do navegador.** O dado do operador mora
+> no `localStorage`, e hoje o Baluarte sabe apagá-lo mas **não sabe exportá-lo**.
+
 Plataforma web narrativa, militar e de ferramentas técnicas de **Lucas Belucci
 Bellini**.
 

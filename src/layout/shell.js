@@ -7,6 +7,7 @@ import { h, mount, empty } from '../utils/helpers.js';
 import { renderHeader } from './header.js';
 import { renderSidebar, wireSidebar, updateActiveNav } from './sidebar.js';
 import { bus } from '../core/events.js';
+import { mountAvisoV2 } from './aviso-v2.js';
 import { encerrar } from '../core/ciclo-vida.js';
 import { appState } from '../core/state.js';
 import { setCurrentFunction } from '../utils/baluarte-status.js';
@@ -79,6 +80,11 @@ export function mountShell(rootEl) {
   rootEl.appendChild(shell);
   rootEl.appendChild(overlay);
   rootEl.appendChild(buildThemePill());
+
+  /* Vai ANTES do shell no DOM (o módulo faz o insertBefore), para o aviso ser a
+   * primeira coisa da página — inclusive para leitor de tela. Temporário: some
+   * junto com `aviso-v2.js` quando a V2 estabilizar (#420). */
+  mountAvisoV2(rootEl);
 
   shellRefs = { shell, sidebar, header, main, overlay };
   mountScrollProgress();                 // barra de progresso de leitura no topo (#246)

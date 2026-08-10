@@ -218,6 +218,13 @@ export const ESQUEMAS = [
    * como `sensivel` esvaziaria o sentido da palavra. */
   { chave: 'ui:theme', versao: 1, classe: 'local', migrar: IDENTIDADE },
   { chave: 'ui:universe', versao: 1, classe: 'local', migrar: IDENTIDADE },
+
+  /* Em que versão o operador fechou a faixa "V2 em construção". Guarda a
+   * VERSÃO, não um booleano: quando o aviso mudar de conteúdo, sobe-se
+   * `VERSAO_AVISO` em `layout/aviso-v2.js` e a faixa reaparece para quem já
+   * tinha dispensado — senão um aviso novo nasceria invisível justamente para
+   * quem mais acompanha o projeto. Temporária, sai com a faixa. */
+  { chave: 'aviso:v2', versao: 1, classe: 'local', migrar: IDENTIDADE },
   { chave: 'mark11:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
   { chave: 'academia:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
   { chave: 'arcade:current', versao: 1, classe: 'local', migrar: IDENTIDADE },
