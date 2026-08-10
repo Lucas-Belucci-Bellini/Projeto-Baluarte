@@ -56,7 +56,11 @@ export default {
   ambiente: 'ambos',
 
   routes: [
-    { path: '/cripto', view: () => import('../../../src/pages/cripto/index.js') }
+    /* `view` devolve o ELEMENTO da página, não o módulo. Parece detalhe e não
+     * é: a primeira versão fazia `() => import(...)`, que resolve para o
+     * namespace do módulo — o router receberia um objeto e não teria o que
+     * montar. Descoberto no banco de prova, com o router de verdade. */
+    { path: '/cripto', view: (args) => import('../../../src/pages/cripto/index.js').then((m) => m.criptoPage(args)) }
   ],
 
   nav: { section: 'ferramentas', order: 30 },

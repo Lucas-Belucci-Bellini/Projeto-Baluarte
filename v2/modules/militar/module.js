@@ -30,6 +30,29 @@
 
 /* As 14 frentes que o hub consolidou, mais o próprio hub. Uma lista, um lugar —
  * hoje elas vivem em `main.js`, `sidebar.js`, `militar.js` e `dominios.json`. */
+/**
+ * `view` devolve o ELEMENTO da página, não o módulo.
+ *
+ * A primeira versão fazia `() => import(...)`, que resolve para o namespace do
+ * módulo — o router receberia um objeto e não teria o que montar. O banco de
+ * prova pegou, com o router de verdade; nenhum teste com mock pegaria.
+ *
+ * O nome do export segue a convenção `kebab → camelCasePage`. Isso foi
+ * **conferido nas 15**, não suposto: convenção não verificada é suposição com
+ * cara de regra. Se uma página fugir do padrão, o `[nome]` devolve `undefined`
+ * e a linha abaixo levanta dizendo qual — em vez de montar `undefined`.
+ *
+ * @param {string} rota @param {any} args
+ */
+async function carregar(rota, args) {
+  const nome = rota.split('-').map((p, i) => (i ? p[0].toUpperCase() + p.slice(1) : p)).join('') + 'Page';
+  const mod = await import(`../../../src/pages/${rota}.js`);
+  if (typeof mod[nome] !== 'function') {
+    throw new Error(`página "${rota}" não exporta ${nome}() — a convenção não vale para ela`);
+  }
+  return mod[nome](args);
+}
+
 const FRENTES = [
   'enciclopedia-militar', 'forcas-armadas', 'orcamentos-militares', 'poder-militar',
   'forcas-especiais', 'guerras-conflitos', 'historia-militar', 'batalhas-historicas',
@@ -49,11 +72,8 @@ export default {
   ambiente: 'ambos',
 
   routes: [
-    { path: '/militar', view: () => import('../../../src/pages/militar.js') },
-    ...FRENTES.map((f) => ({
-      path: `/${f}`,
-      view: () => import(`../../../src/pages/${f}.js`)
-    }))
+    { path: '/militar', view: (a) => carregar('militar', a) },
+    ...FRENTES.map((f) => ({ path: `/${f}`, view: (/** @type {any} */ a) => carregar(f, a) }))
   ],
 
   nav: { section: 'militar', order: 10 },

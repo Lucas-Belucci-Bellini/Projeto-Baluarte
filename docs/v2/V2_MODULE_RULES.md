@@ -65,13 +65,38 @@ export default {
 | 7 | `storage[]` com `version` inteira ≥ 1 e `class` válida | é o contrato do storage da V1, que fica |
 | 8 | **chave versão > 1 exige `migrate`** | a lição das 59 chaves: dado do operador não migra sozinho |
 | 9 | `routes[].path` começa com `/` e é único no módulo | |
-| 10 | `routes[].view` é função | carregamento é preguiçoso; `view` importa sob demanda |
+| 10 | `routes[].view` é função | ver abaixo — o **retorno** dela é o que importa |
 | 11 | `dependencies[]` não contém o próprio `id` | ciclo trivial |
 | 12 | `permissions[]` só nomes conhecidos | Regra 11 — permissão mínima e explícita |
 | 13 | `lifecycle.*` são funções quando presentes | |
 
 O validador **acumula** os erros em vez de parar no primeiro: quem escreve um
 manifesto quer a lista inteira, não descobrir um problema por execução.
+
+## `view` devolve o ELEMENTO, não o módulo
+
+O invariante 10 diz que `view` é função. Isso **não basta**, e a primeira versão
+deste contrato errou aí:
+
+```js
+view: () => import('./pagina.js')                      // ❌ resolve para o MÓDULO
+view: (args) => import('./pagina.js')
+        .then((m) => m.minhaPagina(args))              // ✅ resolve para o ELEMENTO
+```
+
+O router recebe um objeto e não tem o que montar — e o erro **não aparece no
+registro**: as rotas registram, o `count()` bate, e a tela fica vazia. Nenhum
+teste com router falso pega isso, porque o falso só guarda a função.
+
+Foi o **banco de prova** (`v2/harness/`) que revelou, com o router de verdade num
+navegador de verdade. É a razão de ele existir.
+
+### A outra metade: o router anuncia, não monta
+
+O router da V1 resolve a rota e emite `route:change` no bus; quem monta é quem
+escuta. É desenho bom — desacopla resolução de renderização —, mas significa que
+**registrar rotas não põe nada na tela**. Quem ligar a V2 ao shell precisa assinar
+`route:change`, `route:notfound` e `route:error`.
 
 ## O que o validador **não** faz
 

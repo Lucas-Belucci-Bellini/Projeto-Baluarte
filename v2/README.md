@@ -28,6 +28,8 @@ data/
   test_*.sql    6 garantias, contra Postgres real
 services/
   tarefas/      worker Python: backoff, heartbeat, lote  14 testes
+harness/      banco de prova: a V2 dirigindo o router REAL da V1
+
 ```
 
 ## Rodar
@@ -53,7 +55,9 @@ tem zero inversão de dependência); foi **não existir onde um módulo se decla
 
 Fundação, não módulos — §23 do plano, *preparar ≠ implementar*:
 
-- **Ligar o boot da V2 ao shell da V1.** O `boot.js` já inverte a direção — o
+- **Ligar o boot da V2 ao shell da V1.** O banco de prova (`harness/`) já
+  provou que funciona: 17 rotas no router de verdade, páginas reais renderizando,
+  navegação vinda do manifesto — 12/12 num navegador. O `boot.js` já inverte a direção — o
   router **recebe** as rotas do Registry, e o critério de pronto da
   `V2_ARCHITECTURE.md` §8 passa: *um módulo novo aparece em rotas e navegação
   sem editar nenhum arquivo do Core*. Falta o `src/main.js` da V1 usá-lo em vez

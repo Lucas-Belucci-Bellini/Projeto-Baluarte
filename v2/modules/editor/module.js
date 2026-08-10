@@ -44,7 +44,7 @@ export default {
   ambiente: 'ambos',
 
   routes: [
-    { path: '/editor', view: () => import('../../../src/pages/editor.js') }
+    { path: '/editor', view: (args) => import('../../../src/pages/editor.js').then((m) => m.editorPage(args)) }
   ],
 
   nav: { section: 'ferramentas', order: 10 },
