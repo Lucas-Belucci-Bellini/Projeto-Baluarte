@@ -210,6 +210,6 @@ test('declarado{} espelha o manifesto — é o que o /diagnostico mostra', () =>
     { storage: storageFalso() }
   );
   assert.deepEqual(ctx.declarado, {
-    permissoes: ['NETWORK'], chaves: ['cripto:p'], emite: ['cripto:x']
+    permissoes: ['NETWORK'], chaves: ['cripto:p'], emite: ['cripto:x'], depende: []
   });
 });

@@ -83,6 +83,7 @@ const ehFuncao = (v) => typeof v === 'function';
  * @property {EsquemaStorage[]} [storage]
  * @property {{emits?: string[], consumes?: string[]}} [events]
  * @property {Record<string, unknown>} [api]
+ * @property {number} [apiVersion] versão do CONTRATO oferecido (padrão 1)
  * @property {Record<string, Function>} [lifecycle]
  */
 
@@ -222,6 +223,16 @@ export function validar(entrada) {
 
   /* ── api e ciclo de vida ────────────────────────────────────────────── */
   if (m.api !== undefined && !ehObjeto(m.api)) e('`api` deve ser objeto');
+
+  /* Versão de api sem api é declaração órfã — quase sempre sinal de que alguém
+   * removeu os métodos e esqueceu o resto. */
+  if (m.apiVersion !== undefined) {
+    if (!Number.isInteger(m.apiVersion) || m.apiVersion < 1) {
+      e(`\`apiVersion\` deve ser inteiro >= 1: ${JSON.stringify(m.apiVersion)}`);
+    } else if (!ehObjeto(m.api) || Object.keys(m.api).length === 0) {
+      e('`apiVersion` declarada sem `api` — versão de contrato que não existe');
+    }
+  }
 
   if (m.lifecycle !== undefined) {
     if (!ehObjeto(m.lifecycle)) e('`lifecycle` deve ser objeto');

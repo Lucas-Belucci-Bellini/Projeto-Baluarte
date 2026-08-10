@@ -74,12 +74,13 @@ export class ErroChave extends Error {
  * @typedef {object} Deps
  * @property {{get: (k: string) => any, set: (k: string, v: any) => boolean, remove?: (k: string) => void}} storage
  * @property {BusV2} [bus]
+ * @property {{usar: (solicitante: string, declaradas: string[], alvo: string, exigencia?: {versao?: number}) => Record<string, Function>}} [apis]
  */
 
 /**
  * Monta o contexto de um módulo a partir do manifesto normalizado.
  *
- * @param {{id: string, permissions: string[], storage: {key: string}[], events: {emits: string[], consumes: string[]}}} manifesto
+ * @param {{id: string, permissions: string[], storage: {key: string}[], events: {emits: string[], consumes: string[]}, dependencies?: string[]}} manifesto
  * @param {Deps} deps implementações reais do Core (injetadas para poder testar)
  */
 export function criarContexto(manifesto, deps) {
@@ -154,18 +155,40 @@ export function criarContexto(manifesto, deps) {
     on: (evento, fn) => barramento.on(evento, fn)
   };
 
+  /* ── contratos com outros módulos ───────────────────────────────────── */
+
+  /**
+   * A api de outro módulo, se este declarou depender dele.
+   *
+   * Fica no contexto — e não num import — porque é isso que torna a dependência
+   * **visível ao Registry**: importar o arquivo do outro módulo funcionaria e
+   * seria invisível, e aí ordenar a subida ou cortar em cascata viraria
+   * adivinhação.
+   *
+   * @param {string} alvo
+   * @param {{versao?: number}} [exigencia]
+   */
+  const usar = (alvo, exigencia) => {
+    if (!deps.apis) {
+      throw new Error(`contexto de "${id}" foi montado sem resolvedor de apis`);
+    }
+    return deps.apis.usar(id, manifesto.dependencies ?? [], alvo, exigencia);
+  };
+
   return {
     modulo: id,
     log,
     pode,
     exigir,
     storage,
+    ...(deps.apis ? { usar } : {}),
     ...(bus ? { bus } : {}),
     /** O que este módulo declarou — para o `/diagnostico` mostrar sem adivinhar. */
     declarado: {
       permissoes: [...declaradas],
       chaves: [...chaves],
-      emite: [...podeEmitir]
+      emite: [...podeEmitir],
+      depende: [...(manifesto.dependencies ?? [])]
     }
   };
 }

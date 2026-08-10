@@ -98,6 +98,38 @@ escuta. É desenho bom — desacopla resolução de renderização —, mas sign
 **registrar rotas não põe nada na tela**. Quem ligar a V2 ao shell precisa assinar
 `route:change`, `route:notfound` e `route:error`.
 
+## Chamar outro módulo: `ctx.usar()`
+
+Um módulo **não importa** outro. Ele declara a dependência e pede a api:
+
+```js
+// no manifesto de quem OFERECE
+api: { abrirAba, fecharAba },
+apiVersion: 1,
+
+// no manifesto de quem USA
+dependencies: ['editor'],
+
+// em runtime
+const editor = ctx.usar('editor', { versao: 1 });
+editor.abrirAba({ nome: 'a.js' });
+```
+
+Quatro regras, todas cobradas por teste (`test/v2/api.test.js`):
+
+| Regra | O que ela impede |
+| --- | --- |
+| **chamar exige declarar** | dependência invisível — sem ela o Registry não ordena a subida nem corta em cascata |
+| **versão é negociada** | `undefined is not a function` seis frames depois; a falha vira erro na resolução, com os dois números |
+| **a culpa tem dono** | o log culpar quem chamou; `ErroApiModulo` carrega `dono`, `metodo` e a `causa` original, inclusive em promessa rejeitada |
+| **superfície congelada** | o chamador remendar a api de quem ofereceu — usar o contrato ≠ mexer no módulo alheio |
+
+> **Isto não é RPC.** É chamada de função no mesmo runtime, com fronteira
+> declarada. O dia em que um módulo morar noutro processo — ou noutro
+> repositório — o contrato já existe e o transporte entra por baixo, sem o
+> chamador saber. É a preparação para integrar outros repositórios: **a
+> fronteira nasce agora, o transporte depois.**
+
 ## O que o validador **não** faz
 
 - **Não** checa colisão entre módulos (dois módulos com o mesmo `id`, ou rotas
