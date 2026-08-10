@@ -86,7 +86,7 @@ export class ErroChave extends Error {
  * @typedef {object} Deps
  * @property {{get: (k: string) => any, set: (k: string, v: any) => boolean, remove?: (k: string) => void}} storage
  * @property {BusV2} [bus]
- * @property {{usar: (solicitante: string, declaradas: string[], alvo: string, exigencia?: {versao?: number}) => Record<string, Function>}} [apis]
+ * @property {{usar: (solicitante: string, declaradas: string[], alvo: string, exigencia?: {versao?: number}) => Record<string, Function>, talvez: (solicitante: string, declaradas: string[], alvo: string, exigencia?: {versao?: number}) => Record<string, Function>|null}} [apis]
  * @property {{paraModulo: (id: string) => {contar: Function, medir: Function, cronometrar: Function}}} [metricas]
  * @property {{paraModulo: (id: string) => {fazer: Function, INTERATIVO: number, NORMAL: number, FUNDO: number}}} [trabalho]
  * @property {import('./permissoes.js').Permissoes} [permissoes] quem DECIDE; sem
@@ -96,7 +96,7 @@ export class ErroChave extends Error {
 /**
  * Monta o contexto de um módulo a partir do manifesto normalizado.
  *
- * @param {{id: string, permissions: string[], storage: {key: string}[], events: {emits: string[], consumes: string[]}, dependencies?: string[]}} manifesto
+ * @param {{id: string, permissions: string[], storage: {key: string}[], events: {emits: string[], consumes: string[]}, dependencies?: string[], references?: {routes?: string[], modules?: string[]}}} manifesto
  * @param {Deps} deps implementações reais do Core (injetadas para poder testar)
  */
 export function criarContexto(manifesto, deps) {
@@ -230,6 +230,29 @@ export function criarContexto(manifesto, deps) {
     return deps.apis.usar(id, manifesto.dependencies ?? [], alvo, exigencia);
   };
 
+  /**
+   * A api de outro módulo **se ele estiver lá** — devolve `null` em vez de
+   * levantar. É o par de `references.modules`: o módulo declarou que aponta
+   * para o outro e que funciona sem ele.
+   *
+   *   const editor = ctx.talvez('editor');
+   *   editor?.abrirAba({ nome: 'a.js' });   // simplesmente não acontece
+   *
+   * Declarar continua obrigatório: a diferença entre dura e fraca é o que
+   * acontece na ausência, não se precisa declarar. Referência que ninguém
+   * declara é invisível ao Registry, e invisível é o problema que o manifesto
+   * existe para resolver.
+   *
+   * @param {string} alvo
+   * @param {{versao?: number}} [exigencia]
+   */
+  const talvez = (alvo, exigencia) => {
+    if (!deps.apis) {
+      throw new Error(`contexto de "${id}" foi montado sem resolvedor de apis`);
+    }
+    return deps.apis.talvez(id, manifesto.references?.modules ?? [], alvo, exigencia);
+  };
+
   return {
     modulo: id,
     log,
@@ -242,7 +265,7 @@ export function criarContexto(manifesto, deps) {
     /* O escalonador, já carimbado com o módulo. Sem isto ele existiria e
      * nenhum módulo alcançaria — foi o que aconteceu até esta linha existir. */
     ...(deps.trabalho ? { trabalho: deps.trabalho.paraModulo(id) } : {}),
-    ...(deps.apis ? { usar } : {}),
+    ...(deps.apis ? { usar, talvez } : {}),
     ...(bus ? { bus } : {}),
     /** O que este módulo declarou — para o `/diagnostico` mostrar sem adivinhar. */
     declarado: {

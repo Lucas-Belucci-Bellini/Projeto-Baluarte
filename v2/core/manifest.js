@@ -78,7 +78,9 @@ const ehFuncao = (v) => typeof v === 'function';
  * @property {string} [icon]
  * @property {Rota[]} [routes]
  * @property {{section?: string|null, order?: number}} [nav]
- * @property {string[]} [dependencies]
+ * @property {string[]} [dependencies] duras — sem elas o módulo não funciona
+ * @property {{routes?: string[], modules?: string[]}} [references] fracas — sem
+ *   elas o módulo degrada; ver o bloco de comentário em `validar()`
  * @property {string[]} [permissions]
  * @property {EsquemaStorage[]} [storage]
  * @property {{emits?: string[], consumes?: string[]}} [events]
@@ -212,6 +214,56 @@ export function validar(entrada) {
     });
   }
 
+  /* ── referências fracas ─────────────────────────────────────────────────
+   *
+   * A diferença entre `dependencies` e `references` é o que acontece quando o
+   * outro lado some:
+   *
+   *   dependencies  → o módulo NÃO FUNCIONA sem. Some o outro, este é cortado
+   *                   em cascata na subida, e a ordem de init respeita.
+   *   references    → o módulo DEGRADA. Some o outro, este sobe igual; só o
+   *                   link fica morto, e o Registry avisa qual.
+   *
+   * Isto era pendência declarada na `V2_MODULE_RULES.md`, e tem caso concreto:
+   * o hub militar chama `router.navigate()` para 14 rotas. Some uma e o botão
+   * cai no `notFound` calado. Declarar todas como `dependencies` seria mentira
+   * — o hub funciona sem qualquer uma delas; não declarar nada deixa o link
+   * morto invisível até alguém clicar. */
+  if (m.references !== undefined) {
+    if (!ehObjeto(m.references)) e('`references` deve ser objeto');
+    else {
+      const { routes: rr, modules: mm, ...sobra } = /** @type {any} */ (m.references);
+      /* Chave desconhecida vira erro em vez de ser ignorada: `refereces` ou
+       * `route` (singular) passariam calados e a referência sumiria — que é
+       * justamente o modo de falha que este campo existe para acabar. */
+      for (const k of Object.keys(sobra)) e(`\`references.${k}\` não existe (use routes | modules)`);
+
+      if (rr !== undefined) {
+        if (!Array.isArray(rr)) e('`references.routes` deve ser array');
+        else rr.forEach((/** @type {any} */ p, /** @type {number} */ i) => {
+          if (typeof p !== 'string' || !p.startsWith('/')) {
+            e(`\`references.routes[${i}]\` deve ser caminho começando com "/": ${JSON.stringify(p)}`);
+          }
+        });
+      }
+      if (mm !== undefined) {
+        if (!Array.isArray(mm)) e('`references.modules` deve ser array');
+        else mm.forEach((/** @type {any} */ d, /** @type {number} */ i) => {
+          if (typeof d !== 'string' || !KEBAB.test(d)) {
+            e(`\`references.modules[${i}]\` deve ser id kebab-case: ${JSON.stringify(d)}`);
+          } else if (d === id) {
+            e('`references.modules` contém o próprio módulo');
+          } else if (Array.isArray(m.dependencies) && m.dependencies.includes(d)) {
+            /* Os dois ao mesmo tempo é contradição, não redundância: um diz
+             * "não funciono sem", o outro diz "funciono sem". Deixar passar
+             * obrigaria o Registry a escolher, e a escolha seria arbitrária. */
+            e(`"${d}" está em \`dependencies\` E em \`references.modules\` — decida se é dura ou fraca`);
+          }
+        });
+      }
+    }
+  }
+
   if (m.permissions !== undefined) {
     if (!Array.isArray(m.permissions)) e('`permissions` deve ser array');
     else m.permissions.forEach((p, i) => {
@@ -262,7 +314,7 @@ export function validar(entrada) {
  * promessa mais forte por omissão.
  *
  * @param {Manifesto} m manifesto já validado
- * @returns {Required<Pick<Manifesto, 'stability'|'ambiente'|'description'|'icon'|'routes'|'dependencies'|'permissions'|'storage'>> & Manifesto & {events: {emits: string[], consumes: string[]}, nav: {section: string|null, order: number}, api: Record<string, unknown>, lifecycle: Record<string, Function>}}
+ * @returns {Required<Pick<Manifesto, 'stability'|'ambiente'|'description'|'icon'|'routes'|'dependencies'|'permissions'|'storage'>> & Manifesto & {events: {emits: string[], consumes: string[]}, references: {routes: string[], modules: string[]}, nav: {section: string|null, order: number}, api: Record<string, unknown>, lifecycle: Record<string, Function>}}
  */
 export function normalizar(m) {
   return {
@@ -276,6 +328,7 @@ export function normalizar(m) {
     storage: [],
     ...m,
     events: { emits: [], consumes: [], ...(m.events || {}) },
+    references: { routes: [], modules: [], ...(m.references || {}) },
     nav: { section: null, order: 0, ...(m.nav || {}) },
     api: m.api || {},
     lifecycle: m.lifecycle || {}

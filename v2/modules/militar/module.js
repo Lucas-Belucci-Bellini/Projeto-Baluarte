@@ -16,16 +16,22 @@
  * `routes[]` é plural desde o primeiro rascunho do contrato — o formato já
  * aguentava; faltava a evidência de que precisava.
  *
- * ── Achado 2: o que o contrato NÃO expressa ─────────────────────────────────
- * O hub chama `router.navigate(t.route)` para as 14 frentes. Se uma delas sumir,
- * o botão leva ao `notFound` — sem erro, sem aviso, e o operador descobre
- * clicando. A V1 não tem como dizer "eu dependo desta rota existir".
+ * ── Achado 2: o que o contrato não expressava — e passou a expressar ────────
+ * O hub chama `router.navigate(t.route)` para as 14 frentes. Se uma delas
+ * sumisse, o botão levaria ao `notFound` — sem erro, sem aviso, e o operador
+ * descobriria clicando. A V1 não tem como dizer "eu aponto para esta rota".
  *
- * Aqui isso deixa de ser problema porque as 15 rotas são do MESMO módulo: some
- * o módulo, somem juntas. Mas o dia em que um módulo linkar para outro, o
- * contrato vai precisar distinguir dependência dura (não funciona sem) de
- * referência fraca (degrada). Está anotado como pendência real, não resolvido
- * por conveniência.
+ * Aqui as 15 rotas são do MESMO módulo (some o módulo, somem juntas), então
+ * ficou anotado como pendência em vez de resolvido por conveniência. O campo
+ * `references` fechou a pendência:
+ *
+ *   dependencies  → não funciona sem. Some o alvo, este é cortado em cascata.
+ *   references    → degrada. Some o alvo, este sobe igual e o Registry avisa.
+ *
+ * As frentes entram como `references.routes` mesmo sendo do próprio módulo: é
+ * exatamente o que elas são — links que o hub pinta —, e no dia em que uma
+ * frente virar módulo separado (que é o rumo), a declaração já está certa e o
+ * `referenciasOrfas()` passa a cobrar sozinho.
  */
 
 /* As 14 frentes que o hub consolidou, mais o próprio hub. Uma lista, um lugar —
@@ -79,6 +85,12 @@ export default {
   nav: { section: 'militar', order: 10 },
 
   dependencies: [],
+
+  /* Os 14 links que o hub pinta. Fracos de propósito: o Centro Militar abre e
+   * funciona com qualquer uma delas ausente — só aquele cartão fica morto. É a
+   * diferença que `dependencies` não sabe expressar, porque ali a ausência
+   * derrubaria o hub inteiro. */
+  references: { routes: FRENTES.map((f) => `/${f}`) },
 
   /* Busca extrato na Wikipédia (`src/utils/wikipedia.js`). É a diferença
    * concreta para o `/cripto`, que declara permissão nenhuma — e a razão de

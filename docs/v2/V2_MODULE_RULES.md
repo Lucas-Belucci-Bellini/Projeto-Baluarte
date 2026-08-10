@@ -42,8 +42,9 @@ export default {
   routes: [{ path: '/cripto', view: () => import('../modules/cripto/view.js') }],
   nav:    { section: 'ferramentas', order: 30 },
 
-  dependencies: [],                    // ids de outros módulos
-  permissions:  ['USER_DATA'],         // o que ELE pode pedir
+  dependencies: [],                    // duras: não funciona sem
+  references:   { routes: [], modules: [] },   // fracas: degrada (ver abaixo)
+  permissions:  ['USER_DATA'],         // o TETO do que ele pode receber
   storage: [{ key: 'cripto:prefs', version: 1, class: 'local', migrate: (v) => v }],
   events:  { emits: ['cripto:cifrado'], consumes: [] },
 
@@ -179,11 +180,35 @@ disfarçado, e nenhuma análise estática aponta. O namespace obrigatório torna
 **impossível por construção** — um módulo `jarvis` que declarasse `editor:state`
 é recusado —, e o caminho legítimo passa a ser a `api` do editor.
 
-**O contrato ainda não distingue dependência de referência.** O hub militar chama
-`router.navigate()` para 14 rotas; some uma, o botão vai ao `notFound` calado.
-Ali não dói porque as 15 rotas são do mesmo módulo, mas quando um módulo linkar
-para outro vai ser preciso separar *dependência dura* (não funciona sem) de
-*referência fraca* (degrada). **Pendência real, não resolvida.**
+**Dependência dura ≠ referência fraca — resolvido, e era pendência declarada.**
+O hub militar chama `router.navigate()` para 14 rotas; some uma, o botão ia ao
+`notFound` calado. Declarar as 14 como `dependencies` seria mentira (o hub
+funciona sem qualquer uma); não declarar nada deixava o link morto invisível.
+
+```js
+dependencies: ['editor'],                          // NÃO funciona sem
+references:   { routes: ['/arsenal'], modules: ['editor'] }   // degrada
+```
+
+| | ausência do alvo | ordem de subida | quem avisa |
+| --- | --- | --- | --- |
+| `dependencies` | módulo **cortado** em cascata | respeita | `selar()`, nas recusas |
+| `references` | módulo **sobe igual** | não influi | `referenciasOrfas()` |
+
+Em runtime, `ctx.talvez('editor')` é o par fraco de `ctx.usar()`: devolve a api
+ou **`null`**, inclusive quando o alvo existe e não fala a versão pedida —
+incompatibilidade de versão é justamente quando "funciono sem" precisa valer.
+
+Três coisas que o validador cobra, cada uma por um modo de falha concreto:
+
+- **chave desconhecida em `references` é erro** — `route` no singular passaria
+  calado e a referência sumiria, que é o defeito que o campo existe para acabar;
+- **o mesmo id em `dependencies` e em `references.modules` é contradição** — um
+  diz "não funciono sem", o outro diz "funciono sem"; deixar passar obrigaria o
+  Registry a escolher, e a escolha seria arbitrária;
+- **declarar continua obrigatório nas duas.** A diferença é o que acontece na
+  ausência, não se precisa declarar: referência que ninguém declara é invisível
+  ao Registry, e invisível é o problema que o manifesto existe para resolver.
 
 **Chave que não cabe no namespace vira migração, não exceção.** `/militar` grava
 `militar-enc:cat`, que o validador recusa. A saída foi deixá-la fora e registrar

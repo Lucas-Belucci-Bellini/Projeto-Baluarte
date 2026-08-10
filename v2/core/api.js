@@ -81,26 +81,66 @@ export function criarResolvedorApi(registry, deps = {}) {
    * @param {{versao?: number}} [exigencia]
    */
   function usar(solicitante, declaradas, alvo, exigencia = {}) {
+    return resolver(solicitante, declaradas, alvo, exigencia, 'dura');
+  }
+
+  /**
+   * A versão FRACA: devolve `null` em vez de levantar quando o alvo não está
+   * lá. É o par de `references.modules` — o módulo declarou que aponta para o
+   * outro e que **funciona sem ele**.
+   *
+   * O que continua sendo erro, mesmo aqui: chamar sem ter declarado. A
+   * declaração é o que torna a ligação visível ao Registry, e uma referência
+   * invisível é o mesmo import disfarçado que a arquitetura combate — a
+   * diferença entre dura e fraca é o que acontece na AUSÊNCIA, não se precisa
+   * declarar.
+   *
+   * @param {string} solicitante
+   * @param {string[]} declaradas as `references.modules` do solicitante
+   * @param {string} alvo
+   * @param {{versao?: number}} [exigencia]
+   * @returns {Record<string, Function>|null}
+   */
+  function talvez(solicitante, declaradas, alvo, exigencia = {}) {
+    return /** @type {Record<string, Function>|null} */ (
+      resolver(solicitante, declaradas, alvo, exigencia, 'fraca')
+    );
+  }
+
+  /**
+   * @param {string} solicitante @param {string[]} declaradas @param {string} alvo
+   * @param {{versao?: number}} exigencia @param {'dura'|'fraca'} forca
+   */
+  function resolver(solicitante, declaradas, alvo, exigencia, forca) {
+    /** Ausência: erro na dura, `null` na fraca. @param {string} msg */
+    const ausente = (msg) => {
+      if (forca === 'dura') throw new ErroContrato(msg);
+      deps.log?.debug?.('referência fraca sem alvo', { de: solicitante, alvo, motivo: msg });
+      return null;
+    };
+
     if (alvo === solicitante) {
       throw new ErroContrato(`módulo "${solicitante}" não precisa de usar() para a própria api`);
     }
     if (!declaradas.includes(alvo)) {
+      /* Levanta nas DUAS forças: não declarar é sempre defeito. */
       throw new ErroContrato(
-        `módulo "${solicitante}" não declarou depender de "${alvo}" — acrescente em dependencies[]`
+        `módulo "${solicitante}" não declarou ${forca === 'dura' ? 'depender de' : 'referenciar'} ` +
+        `"${alvo}" — acrescente em ${forca === 'dura' ? 'dependencies[]' : 'references.modules[]'}`
       );
     }
 
     const m = registry.modulo(alvo);
     if (!m) {
-      /* Não deveria acontecer: o Registry corta em cascata quem depende de
-       * módulo ausente. Se acontecer, é inconsistência de verdade e merece erro
-       * alto em vez de `undefined`. */
-      throw new ErroContrato(`módulo "${alvo}" não está no ar (dependência de "${solicitante}")`);
+      /* Na dura não deveria acontecer: o Registry corta em cascata quem depende
+       * de módulo ausente. Se acontecer, é inconsistência de verdade e merece
+       * erro alto em vez de `undefined`. Na fraca é o caso ESPERADO. */
+      return ausente(`módulo "${alvo}" não está no ar (dependência de "${solicitante}")`);
     }
 
     const metodos = Object.keys(m.api ?? {});
     if (metodos.length === 0) {
-      throw new ErroContrato(`módulo "${alvo}" não oferece api — nada a usar`);
+      return ausente(`módulo "${alvo}" não oferece api — nada a usar`);
     }
 
     /* Versão: quem oferece declara; quem chama exige. O padrão é 1 dos dois
@@ -108,7 +148,11 @@ export function criarResolvedorApi(registry, deps = {}) {
      * funcionam — e o dia em que pensarem, o mecanismo já está lá. */
     const oferecida = m.apiVersion ?? 1;
     if (exigencia.versao !== undefined && exigencia.versao !== oferecida) {
-      throw new ErroContrato(
+      /* Também degrada na fraca: o alvo existe e não fala a versão pedida, o
+       * que para quem referencia é o mesmo que não estar lá. Levantar aqui
+       * derrubaria um módulo que declarou funcionar sem — e a incompatibilidade
+       * de versão é exatamente quando isso acontece na vida real. */
+      return ausente(
         `"${solicitante}" exige a api v${exigencia.versao} de "${alvo}", que oferece v${oferecida}`
       );
     }
@@ -170,5 +214,5 @@ export function criarResolvedorApi(registry, deps = {}) {
     return Object.fromEntries(chamadas);
   }
 
-  return { usar, catalogo, uso };
+  return { usar, talvez, catalogo, uso };
 }

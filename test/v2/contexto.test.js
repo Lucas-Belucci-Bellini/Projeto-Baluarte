@@ -307,14 +307,14 @@ test('o contexto entrega TODAS as capacidades injetadas — nada construído e n
   const ctx = criarContexto(manifesto({ dependencies: [] }), {
     storage: storageFalso(),
     bus: busFalso(),
-    apis: { usar: () => ({}) },
+    apis: { usar: () => ({}), talvez: () => null },
     metricas: { paraModulo: () => ({ contar: () => {}, medir: () => {}, cronometrar: (n, f) => f() }) },
     trabalho: { paraModulo: () => ({ fazer: (n, f) => f({}), INTERATIVO: 10, NORMAL: 100, FUNDO: 500 }) }
   });
 
   assert.deepEqual(
     Object.keys(ctx).sort(),
-    ['bus', 'declarado', 'exigir', 'log', 'metricas', 'modulo', 'pode', 'storage', 'trabalho', 'usar'],
+    ['bus', 'declarado', 'exigir', 'log', 'metricas', 'modulo', 'pode', 'storage', 'talvez', 'trabalho', 'usar'],
     'a superfície do contexto mudou — alguma capacidade foi construída e não ligada?'
   );
 });

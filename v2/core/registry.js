@@ -287,13 +287,43 @@ export function criarRegistry() {
       .map(([nome, v]) => ({ evento: nome, escutadoPor: v.escutam }));
   }
 
+  /**
+   * Referências FRACAS que não têm alvo — link para rota inexistente, api de
+   * módulo ausente.
+   *
+   * Não é erro, e por isso não entra nas recusas do `selar()`: referência fraca
+   * existe justamente para o módulo continuar funcionando sem o alvo. Mas é o
+   * inverso do órfão de evento: ali alguém escuta o que ninguém emite; aqui
+   * alguém **aponta** para o que não existe, e o sintoma é um botão que leva ao
+   * `notFound` calado — o caso concreto das 14 rotas do hub militar.
+   *
+   * Diagnóstico, portanto, e não exceção: o boot registra, o `/diagnostico`
+   * mostra, e quem removeu o módulo alvo descobre antes do operador clicar.
+   */
+  function referenciasOrfas() {
+    exigirSelado();
+    const caminhos = new Set(rotas().map((r) => r.path));
+    const soltas = [];
+
+    for (const id of ordem) {
+      const m = obrig(ativos, id);
+      for (const p of m.references.routes) {
+        if (!caminhos.has(p)) soltas.push({ modulo: id, tipo: 'rota', alvo: p });
+      }
+      for (const outro of m.references.modules) {
+        if (!ativos.has(outro)) soltas.push({ modulo: id, tipo: 'modulo', alvo: outro });
+      }
+    }
+    return soltas;
+  }
+
   /** @param {string} id */
   function modulo(id) { exigirSelado(); return ativos.get(id) ?? null; }
   function listar() { exigirSelado(); return [...ordem]; }
 
   return {
     registrar, selar,
-    rotas, navegacao, esquemas, permissoes, eventos, eventosOrfaos,
+    rotas, navegacao, esquemas, permissoes, eventos, eventosOrfaos, referenciasOrfas,
     modulo, listar,
     get selado() { return selado; }
   };

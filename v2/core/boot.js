@@ -113,6 +113,14 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
     const nav = registry.navegacao().filter((i) => vivos.has(i.modulo));
     adaptadores.renderNav?.(nav);
 
+    /* Referência fraca sem alvo não impede nada — é o ponto dela. Mas fica
+     * dita: sem isto, o sintoma é um botão que leva ao `notFound` calado, e a
+     * causa (alguém removeu o módulo dono da rota) está a semanas de distância
+     * do clique. */
+    for (const r of registry.referenciasOrfas()) {
+      log.aviso('referência fraca sem alvo', { modulo: r.modulo, tipo: r.tipo, alvo: r.alvo });
+    }
+
     log.info('boot concluído', {
       modulos: resultado.vivos.length, rotas, nav: nav.length, falhas: resultado.falhas.length
     });
@@ -148,6 +156,7 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
       }),
       falhas: ciclo.falhas(),
       eventosOrfaos: registry.eventosOrfaos(),
+      referenciasOrfas: registry.referenciasOrfas(),
       /* Um retrato só. Sem isto o operador junta métricas de um lugar, módulos
        * de outro e falhas de um terceiro — que é o que a página /diagnostico da
        * V1 faz hoje, vasculhando cinco fontes. */
