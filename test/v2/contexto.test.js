@@ -213,3 +213,39 @@ test('declarado{} espelha o manifesto — é o que o /diagnostico mostra', () =>
     permissoes: ['NETWORK'], chaves: ['cripto:p'], emite: ['cripto:x'], depende: []
   });
 });
+
+/* ═══════════ a superfície completa ═══════════ */
+
+test('o contexto entrega TODAS as capacidades injetadas — nada construído e não ligado', () => {
+  /* Este teste existe por um erro concreto: o escalonador de trabalho foi
+   * construído, testado e ficou INALCANÇÁVEL — o contexto não o expunha, então
+   * nenhum módulo poderia usá-lo. Peça pronta e não ligada é pior que peça
+   * ausente, porque parece feita.
+   *
+   * Enumerar a superfície aqui faz a próxima capacidade nova falhar este teste
+   * até ser ligada de verdade. */
+  const ctx = criarContexto(manifesto({ dependencies: [] }), {
+    storage: storageFalso(),
+    bus: busFalso(),
+    apis: { usar: () => ({}) },
+    metricas: { paraModulo: () => ({ contar: () => {}, medir: () => {}, cronometrar: (n, f) => f() }) },
+    trabalho: { paraModulo: () => ({ fazer: (n, f) => f({}), INTERATIVO: 10, NORMAL: 100, FUNDO: 500 }) }
+  });
+
+  assert.deepEqual(
+    Object.keys(ctx).sort(),
+    ['bus', 'declarado', 'exigir', 'log', 'metricas', 'modulo', 'pode', 'storage', 'trabalho', 'usar'],
+    'a superfície do contexto mudou — alguma capacidade foi construída e não ligada?'
+  );
+});
+
+test('ctx.trabalho carimba o módulo e executa', async () => {
+  const { criarEscalonador } = await import('../../v2/core/trabalho.js');
+  const { criarMetricas } = await import('../../v2/core/metricas.js');
+  const metricas = criarMetricas();
+  const trabalho = criarEscalonador({}, { metricas });
+
+  const ctx = criarContexto(manifesto(), { storage: storageFalso(), trabalho });
+  assert.equal(await ctx.trabalho.fazer('busca', () => 'ok'), 'ok');
+  assert.equal(metricas.retrato().contadores.trabalho_enfileirado['modulo=cripto'], 1);
+});

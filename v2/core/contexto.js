@@ -76,6 +76,7 @@ export class ErroChave extends Error {
  * @property {BusV2} [bus]
  * @property {{usar: (solicitante: string, declaradas: string[], alvo: string, exigencia?: {versao?: number}) => Record<string, Function>}} [apis]
  * @property {{paraModulo: (id: string) => {contar: Function, medir: Function, cronometrar: Function}}} [metricas]
+ * @property {{paraModulo: (id: string) => {fazer: Function, INTERATIVO: number, NORMAL: number, FUNDO: number}}} [trabalho]
  */
 
 /**
@@ -185,6 +186,9 @@ export function criarContexto(manifesto, deps) {
     /* Métricas já carimbadas com o módulo. Ausente quando não injetadas — a
      * mesma regra das outras capacidades: o que não foi dado não aparece. */
     ...(deps.metricas ? { metricas: deps.metricas.paraModulo(id) } : {}),
+    /* O escalonador, já carimbado com o módulo. Sem isto ele existiria e
+     * nenhum módulo alcançaria — foi o que aconteceu até esta linha existir. */
+    ...(deps.trabalho ? { trabalho: deps.trabalho.paraModulo(id) } : {}),
     ...(deps.apis ? { usar } : {}),
     ...(bus ? { bus } : {}),
     /** O que este módulo declarou — para o `/diagnostico` mostrar sem adivinhar. */
