@@ -160,7 +160,7 @@ pelo esforço já gasto.
 | 2 | **Module System** | ✗ inexistente | **construir** | é *a* entrega da V2 |
 | 3 | **Module Registry** | ✗ (`main.js` é registro implícito de rotas) | **construir** | |
 | 4 | **Module Lifecycle** | parcial: `utils/ciclo-vida.js` (12 importadores) | **refatorar** | o conceito existe e funciona; falta contrato e `dispose` garantido |
-| 5 | **Event Bus** | ✅ `core/events.js` — curinga, `meta.event`, catálogo gerado | **manter** | atende a §7 do plano quase inteira; falta `versão` e `origem` no envelope |
+| 5 | **Event Bus** | ✅ `core/events.js` — curinga, `meta.event`, catálogo gerado | **estender** | ⚠️ `emit(event, payload)` tem **2 parâmetros** e monta `meta` sozinho: um terceiro argumento é descartado em silêncio. A §7 exige nome, **origem**, timestamp, payload e **versão** — a V1 carrega dois. Item de migração concreto, achado pelo verificador de tipos |
 | 6 | **API interna** | ✗ módulos não expõem API; comunicação é import direto | **construir** | |
 | 7 | **API externa** | ✗ | **preparar só a interface** | Regra 17/18 — projetos externos são V2 tardia |
 | 8 | **Storage Layer** | ✅ `core/storage.js` — 72 chaves, versão, migração, classe, backup | **manter e generalizar** | a peça mais madura da V1; falta ser *por módulo* |
