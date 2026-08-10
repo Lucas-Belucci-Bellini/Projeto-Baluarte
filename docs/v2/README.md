@@ -27,7 +27,7 @@ conversas que os geraram.
 | [`V2_MODULE_RULES.md`](./V2_MODULE_RULES.md) | ✅ escrito | especificação do Module Manifest; espelha `v2/core/manifest.js` |
 | [`V2_TESTING_RULES.md`](./V2_TESTING_RULES.md) | ✅ escrito | 10 regras, cada uma de um defeito real da construção |
 | [`V2_CODING_STANDARDS.md`](./V2_CODING_STANDARDS.md) | ✅ escrito | 12 padrões, mesma origem — mais as convenções mecânicas |
-| `V2_SECURITY_RULES.md` | ⬜ a escrever | o que já vale está em `V2_CODING_STANDARDS.md` §10 e no `config.js` |
+| [`V2_SECURITY_RULES.md`](./V2_SECURITY_RULES.md) | ✅ escrito | 10 regras; nasceu do buraco no deny-by-default, que era afirmação sem implementação |
 | `V2_AI_RULES.md` | ⬜ a escrever | |
 | `V2_DATA_RULES.md` | ⬜ a escrever | prioridade alta — ver a Decisão 5 do log; a fundação SQL já existe em `v2/data/` |
 | `V2_GIT_RULES.md` | ⬜ a escrever | |
@@ -60,7 +60,7 @@ construir a V2", "pode trabalhar diretamente no `main`"). O que existe em códig
 
 | | |
 | --- | --- |
-| [`v2/core/`](../../v2/core/) | 11 arquivos: manifest, registry, contexto, ciclo, boot, bus, log, config, api, métricas, trabalho |
+| [`v2/core/`](../../v2/core/) | 12 arquivos: manifest, registry, contexto, ciclo, boot, bus, log, config, api, métricas, trabalho, permissões |
 | [`v2/modules/`](../../v2/modules/) | `cripto` (**nativo** — o caso de prova da ergonomia), `editor` e `militar` (adaptadores, servem página da V1) |
 | [`v2/data/`](../../v2/data/) | fundação SQL append-only + fila de tarefas; worker Python |
 | [`v2/harness/`](../../v2/harness/) | banco de prova — router e navegador **de verdade**, no CI |

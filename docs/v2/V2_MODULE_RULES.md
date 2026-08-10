@@ -145,9 +145,18 @@ Herdadas do vocabulário do #423 §9:
 READ_FILES · WRITE_FILES · NETWORK · DATABASE · SYSTEM_INFO · USER_DATA · EXECUTION
 ```
 
-Deny-by-default segue valendo (é o modelo da V1 que fica): **declarar não é
-receber**. O manifesto diz o que o módulo *pode pedir*; conceder é decisão do
-Permission System.
+Deny-by-default vale: **declarar não é receber**. O manifesto diz o que o módulo
+*pode pedir* — é o **teto**; conceder é decisão do decisor
+([`v2/core/permissoes.js`](../../v2/core/permissoes.js)), cobrada por
+`test/v2/permissoes.test.js` e verificada no navegador pelo `v2:integracao`.
+
+> ⚠️ **Esta frase ficou aqui um bom tempo sem nada por trás dela.** O
+> `contexto.js` respondia `pode(p)` com `manifesto.permissions.includes(p)`: na
+> prática, declarar **era** receber, e este parágrafo descrevia um sistema que
+> ninguém tinha escrito. Fica registrado em vez de reescrito porque é a lição
+> mais cara desta fase — garantia documentada e não implementada é pior que
+> garantia nenhuma: a ausência ninguém confia, a falsa todo mundo confia. Os
+> detalhes estão em [`V2_SECURITY_RULES.md`](./V2_SECURITY_RULES.md) §1.
 
 ## Respondido pela evidência: módulo **não** é rota
 

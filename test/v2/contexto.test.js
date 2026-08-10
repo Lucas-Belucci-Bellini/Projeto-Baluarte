@@ -12,6 +12,7 @@ import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { criarContexto, ErroPermissao, ErroChave } from '../../v2/core/contexto.js';
+import { criarPermissoes } from '../../v2/core/permissoes.js';
 import { criarLog, definirDestino, coletor, definirNivelMinimo } from '../../v2/core/log.js';
 import { normalizar } from '../../v2/core/manifest.js';
 
@@ -45,20 +46,91 @@ beforeEach(() => {
   definirNivelMinimo('debug');
 });
 
-/* ═══════════ permissões ═══════════ */
+/* ═══════════ permissões ═══════════
+ *
+ * ⚠️ Esta seção foi REESCRITA, e o motivo importa mais que os testes.
+ *
+ * A versão anterior afirmava «exigir() passa quando o manifesto declarou» — e
+ * passava, porque `pode()` era `manifesto.permissions.includes(p)`. Os testes
+ * estavam verdes e **cobravam o defeito**: declarar era receber, exatamente o
+ * que a `V2_MODULE_RULES.md` diz que não pode acontecer.
+ *
+ * É o caso inverso da Regra 8 dos testes ("suposição do teste ≠ defeito do
+ * código"): aqui o código estava errado e o teste, escrito olhando a
+ * implementação, fixou o erro no lugar. Teste escrito a partir do código
+ * confirma o código; só teste escrito a partir do CONTRATO confere o contrato. */
 
-test('exigir() passa quando o manifesto declarou', () => {
-  const ctx = criarContexto(manifesto({ permissions: ['NETWORK'] }), { storage: storageFalso() });
+/** Decisor de verdade, já sabendo do módulo — é o que o boot monta. */
+function decisorPara(m) {
+  const p = criarPermissoes();
+  p.conhecerModulos([m]);
+  return p;
+}
+
+test('declarar NÃO é receber — o manifesto é o teto, não a concessão', () => {
+  const m = manifesto({ permissions: ['NETWORK'] });
+  const ctx = criarContexto(m, { storage: storageFalso(), permissoes: decisorPara(m) });
+
+  assert.equal(ctx.pode('NETWORK'), false, 'ganhou por ter declarado');
+  assert.throws(() => ctx.exigir('NETWORK'), ErroPermissao);
+});
+
+test('depois de concedida, passa', () => {
+  const m = manifesto({ permissions: ['NETWORK'] });
+  const permissoes = decisorPara(m);
+  const ctx = criarContexto(m, { storage: storageFalso(), permissoes });
+
+  permissoes.conceder('cripto', 'NETWORK', { origem: 'operador' });
   assert.equal(ctx.exigir('NETWORK'), true);
   assert.equal(ctx.pode('NETWORK'), true);
 });
 
-test('exigir() LEVANTA quando não declarou — e o tipo é distinguível', () => {
-  /* Tipo próprio para o chamador separar "não pode" de "quebrou": um é pedir
-   * autorização, o outro é abrir bug. */
-  const ctx = criarContexto(manifesto({ permissions: [] }), { storage: storageFalso() });
-  assert.throws(() => ctx.exigir('NETWORK'), ErroPermissao);
+test('revogar alcança módulo que JÁ está no ar', () => {
+  /* Se `pode()` fosse fotografia do init, revogar seria enfeite: o módulo
+   * continuaria autorizado até reiniciar o Baluarte — e "reinicie para a
+   * revogação valer" não é revogação. */
+  const m = manifesto({ permissions: ['NETWORK'] });
+  const permissoes = decisorPara(m);
+  const ctx = criarContexto(m, { storage: storageFalso(), permissoes });
+
+  permissoes.conceder('cripto', 'NETWORK', { origem: 'operador' });
+  assert.equal(ctx.pode('NETWORK'), true);
+
+  permissoes.revogar('cripto', 'NETWORK', { origem: 'operador' });
+  assert.equal(ctx.pode('NETWORK'), false, 'a consulta ficou congelada no init');
+});
+
+test('os três "nãos" são distinguíveis — só um deles vale perguntar ao operador', () => {
+  const m = manifesto({ permissions: ['NETWORK'] });
+  const ctx = criarContexto(m, { storage: storageFalso(), permissoes: decisorPara(m) });
+
+  /* declarada e não concedida → negativa LEGÍTIMA: cabe oferecer conceder */
   assert.equal(ctx.pode('NETWORK'), false);
+  try { ctx.exigir('NETWORK'); } catch (e) { assert.equal(e.veredicto, 'negada'); }
+
+  /* não declarada → defeito do módulo: não há o que oferecer */
+  try { ctx.exigir('DATABASE'); } catch (e) { assert.equal(e.veredicto, 'nao-declarada'); }
+
+  /* fora do vocabulário → typo de quem chamou */
+  assert.throws(() => ctx.exigir('ROOT'), /desconhecida/);
+});
+
+test('contexto sem decisor: módulo que declara permissão NÃO monta', () => {
+  /* As duas alternativas são piores. Negar tudo em silêncio quebra o módulo
+   * longe da causa; liberar tudo devolve o buraco. Falhar aqui aponta o Core
+   * mal montado no lugar onde ele foi mal montado. */
+  assert.throws(
+    () => criarContexto(manifesto({ permissions: ['NETWORK'] }), { storage: storageFalso() }),
+    /sem decisor/
+  );
+});
+
+test('módulo que NÃO declara nada dispensa decisor — e não ganha nada', () => {
+  /* O caso do cripto de verdade: `permissions: []`. Exigir decisor aqui seria
+   * burocracia sem ganho. */
+  const ctx = criarContexto(manifesto({ permissions: [] }), { storage: storageFalso() });
+  assert.equal(ctx.pode('NETWORK'), false);
+  assert.throws(() => ctx.exigir('NETWORK'), ErroPermissao);
 });
 
 test('a negação é REGISTRADA antes de levantar', () => {
@@ -71,6 +143,7 @@ test('a negação é REGISTRADA antes de levantar', () => {
   assert.equal(avisos.length, 1);
   assert.equal(avisos[0].modulo, 'cripto');
   assert.equal(avisos[0].campos.permissao, 'DATABASE');
+  assert.equal(avisos[0].campos.veredicto, 'nao-declarada');
 });
 
 test('permissão fora do vocabulário é erro de programação, não negação', () => {
@@ -201,17 +274,24 @@ test('destino que explode não derruba quem estava registrando', () => {
 /* ═══════════ o conjunto ═══════════ */
 
 test('declarado{} espelha o manifesto — é o que o /diagnostico mostra', () => {
-  const ctx = criarContexto(
-    manifesto({
-      permissions: ['NETWORK'],
-      storage: [{ key: 'cripto:p', version: 1, class: 'local' }],
-      events: { emits: ['cripto:x'], consumes: [] }
-    }),
-    { storage: storageFalso() }
-  );
-  assert.deepEqual(ctx.declarado, {
+  const m = manifesto({
+    permissions: ['NETWORK'],
+    storage: [{ key: 'cripto:p', version: 1, class: 'local' }],
+    events: { emits: ['cripto:x'], consumes: [] }
+  });
+  const permissoes = decisorPara(m);
+  const ctx = criarContexto(m, { storage: storageFalso(), permissoes });
+
+  const { concedidas, ...estaticos } = ctx.declarado;
+  assert.deepEqual(estaticos, {
     permissoes: ['NETWORK'], chaves: ['cripto:p'], emite: ['cripto:x'], depende: []
   });
+
+  /* `concedidas` é FUNÇÃO, e é a diferença entre "o que pediu" e "o que tem" —
+   * mostrar só o primeiro no /diagnostico é como deny-by-default vira slogan. */
+  assert.deepEqual(concedidas(), [], 'declarado veio concedido');
+  permissoes.conceder('cripto', 'NETWORK', { origem: 'operador' });
+  assert.deepEqual(concedidas(), ['NETWORK']);
 });
 
 /* ═══════════ a superfície completa ═══════════ */

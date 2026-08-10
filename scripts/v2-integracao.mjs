@@ -100,6 +100,36 @@ try {
   conferir('a execução foi medida pelo módulo',
     !!metricas?.contadores?.cripto_hash, JSON.stringify(metricas?.contadores ?? {}).slice(0, 80));
 
+  /* ── permissões, no navegador ───────────────────────────────────────────
+   * `militar` declara NETWORK. Sem política, o banco de prova não concede nada
+   * — e é isso que "deny-by-default" tem que significar quando o sistema está
+   * de fato no ar, não só num teste de unidade. */
+  const permAntes = await pagina.evaluate(() => window.__v2?.permissoes?.());
+  const militarAntes = permAntes?.find((x) => x.modulo === 'militar');
+  conferir('declarar não é receber: militar sobe com NETWORK negada',
+    militarAntes?.declaradas?.includes('NETWORK') === true
+      && militarAntes?.concedidas?.length === 0
+      && militarAntes?.pendentes?.includes('NETWORK') === true,
+    JSON.stringify(militarAntes ?? null));
+
+  /* E a concessão precisa alcançar um módulo que JÁ está no ar — se `pode()`
+   * fosse fotografia do init, isto continuaria negado. */
+  const depoisDeConceder = await pagina.evaluate(() => {
+    window.__v2.conceder('militar', 'NETWORK');
+    return window.__v2.diagnostico().modulos.find((m) => m.id === 'militar');
+  });
+  conferir('conceder alcança módulo já no ar',
+    depoisDeConceder?.concedidas?.includes('NETWORK') === true,
+    JSON.stringify(depoisDeConceder?.concedidas ?? null));
+
+  const depoisDeRevogar = await pagina.evaluate(() => {
+    window.__v2.revogar('militar', 'NETWORK');
+    return window.__v2.diagnostico().modulos.find((m) => m.id === 'militar');
+  });
+  conferir('revogar também alcança — senão "revogar" é enfeite',
+    depoisDeRevogar?.concedidas?.length === 0,
+    JSON.stringify(depoisDeRevogar?.concedidas ?? null));
+
   /* Um módulo ADAPTADOR (militar → páginas da V1) continua funcionando: a V2
    * serve os dois mundos enquanto a migração acontece. */
   await pagina.evaluate(() => { window.location.hash = '#/arsenal'; });

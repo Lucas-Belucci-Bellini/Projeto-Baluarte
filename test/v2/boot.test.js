@@ -19,8 +19,15 @@ import assert from 'node:assert/strict';
 import { criarRegistry } from '../../v2/core/registry.js';
 import { criarBoot } from '../../v2/core/boot.js';
 import { definirDestino, coletor } from '../../v2/core/log.js';
+import { criarPermissoes } from '../../v2/core/permissoes.js';
 
-const deps = { storage: { get: () => undefined, set: () => true } };
+/* FUNÇÃO, não constante: o decisor guarda estado (tetos, concessões, trilha), e
+ * um único objeto compartilhado entre testes é o defeito de singleton que a V2
+ * evita de propósito — o teste do módulo A veria a concessão do teste do B. */
+const criarDeps = () => ({
+  storage: { get: () => undefined, set: () => true },
+  permissoes: criarPermissoes()
+});
 
 /** Router de mentira com a mesma superfície do da V1. */
 function routerFalso() {
@@ -41,7 +48,7 @@ function montar(mods, adaptadores, opcoes) {
   const registry = criarRegistry();
   mods.forEach((m) => registry.registrar(m));
   registry.selar();
-  return criarBoot(registry, deps, adaptadores, opcoes);
+  return criarBoot(registry, criarDeps(), adaptadores, opcoes);
 }
 
 let col;
@@ -236,7 +243,7 @@ test('diagnostico() junta métricas, apis e uso — UMA fonte', async () => {
 
   const metricas = criarMetricas();
   const apis = criarResolvedorApi(registry);
-  const boot = criarBoot(registry, { ...deps, metricas, apis }, { router: routerFalso() });
+  const boot = criarBoot(registry, { ...criarDeps(), metricas, apis }, { router: routerFalso() });
   await boot.subir();
 
   metricas.paraModulo('editor').contar('salvou');

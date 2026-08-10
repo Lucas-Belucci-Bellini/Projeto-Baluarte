@@ -18,8 +18,15 @@ import assert from 'node:assert/strict';
 import { criarRegistry } from '../../v2/core/registry.js';
 import { criarCiclo } from '../../v2/core/ciclo.js';
 import { definirDestino, coletor } from '../../v2/core/log.js';
+import { criarPermissoes } from '../../v2/core/permissoes.js';
 
-const deps = { storage: { get: () => undefined, set: () => true } };
+/* O decisor entra aqui porque `criarContexto` recusa montar um módulo que
+ * declara permissão sem ter a quem perguntar. Sem política: nada concedido —
+ * que é o padrão do sistema, não uma escolha do teste. */
+const deps = {
+  storage: { get: () => undefined, set: () => true },
+  permissoes: criarPermissoes()
+};
 
 const mod = (id, lifecycle = {}, extra = {}) => ({
   id, name: `M ${id}`, version: '1.0.0',
@@ -70,8 +77,12 @@ test('o contexto chega ao init já recortado pelo manifesto', async () => {
   await criarCiclo(registry, deps).subir();
 
   assert.equal(recebido.modulo, 'cripto');
-  assert.equal(recebido.pode('NETWORK'), true);
+  /* Declarou NETWORK e NÃO recebeu: sem política, nada é concedido. A versão
+   * anterior deste teste afirmava `true` aqui — cobrando o defeito de que
+   * declarar era receber. */
+  assert.equal(recebido.pode('NETWORK'), false);
   assert.equal(recebido.pode('DATABASE'), false);
+  assert.deepEqual(recebido.declarado.permissoes, ['NETWORK'], 'o teto continua sendo o manifesto');
   assert.deepEqual(recebido.storage.chaves(), ['cripto:p']);
 });
 

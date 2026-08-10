@@ -74,6 +74,27 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
    * tarde. Só entra no router o que está de fato no ar.
    */
   async function subir() {
+    /* As permissões são resolvidas ANTES de qualquer contexto existir. A ordem
+     * é obrigatória, não estilo: o `criarContexto` recusa montar um módulo que
+     * declara permissão quando o decisor não conhece o módulo, e o `init` do
+     * módulo pode perfeitamente chamar `ctx.exigir()` na primeira linha. */
+    if (deps.permissoes) {
+      deps.permissoes.conhecerModulos(
+        registry.listar().map((id) => ({ id, permissions: registry.permissoes().get(id) ?? [] }))
+      );
+      const { concedidas, recusas } = deps.permissoes.aplicarPolitica();
+
+      for (const r of recusas) {
+        /* Recusa de política não impede a subida: nove módulos certos não param
+         * por causa do décimo mal configurado. Mas ela nunca é silenciosa — uma
+         * política que não pega e ninguém vê é o pior dos dois mundos. */
+        log.aviso('política recusada', { modulo: r.modulo, motivo: r.motivo });
+      }
+      if (concedidas.length || recusas.length) {
+        log.info('política aplicada', { concedidas: concedidas.length, recusas: recusas.length });
+      }
+    }
+
     const resultado = await ciclo.subir();
     const vivos = new Set(resultado.vivos);
 
@@ -117,6 +138,10 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
           estabilidade: m?.stability,
           rotas: m?.routes.map((/** @type {any} */ r) => r.path) ?? [],
           permissoes: ctx?.declarado.permissoes ?? [],
+          /* Declarado e concedido lado a lado: a diferença entre os dois é o
+           * que o operador tem para decidir, e mostrar só um dos números é
+           * como "deny-by-default" vira slogan. */
+          concedidas: ctx?.declarado.concedidas() ?? [],
           chaves: ctx?.declarado.chaves ?? [],
           emite: ctx?.declarado.emite ?? []
         };
@@ -128,7 +153,9 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
        * V1 faz hoje, vasculhando cinco fontes. */
       metricas: deps.metricas?.retrato() ?? null,
       apis: deps.apis?.catalogo?.() ?? null,
-      usoDeApi: deps.apis?.uso?.() ?? null
+      usoDeApi: deps.apis?.uso?.() ?? null,
+      permissoes: deps.permissoes?.retrato() ?? null,
+      decisoesDePermissao: deps.permissoes?.ultimasDecisoes(20) ?? null
     };
   }
 

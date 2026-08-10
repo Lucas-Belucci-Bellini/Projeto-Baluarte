@@ -32,14 +32,26 @@ import { PERMISSOES } from './manifest.js';
 /**
  * Erro de permissão. Tipo próprio para o chamador poder distinguir "não pode"
  * de "quebrou" — que é a diferença entre pedir autorização e abrir um bug.
+ *
+ * O `veredicto` refina isso mais um passo, e a diferença é operacional: com
+ * `negada`, a interface pode oferecer ao operador conceder; com `nao-declarada`
+ * ou `desconhecida`, não há nada a oferecer — é defeito, e pedir autorização
+ * para um defeito ensina o operador a clicar "sim" sem ler.
  */
 export class ErroPermissao extends Error {
-  /** @param {string} modulo @param {string} permissao */
-  constructor(modulo, permissao) {
-    super(`módulo "${modulo}" não declarou a permissão ${permissao}`);
+  /**
+   * @param {string} modulo
+   * @param {string} permissao
+   * @param {import('./permissoes.js').Veredicto} [veredicto]
+   */
+  constructor(modulo, permissao, veredicto = 'nao-declarada') {
+    super(veredicto === 'negada'
+      ? `módulo "${modulo}" declarou ${permissao} e não recebeu a concessão`
+      : `módulo "${modulo}" não declarou a permissão ${permissao}`);
     this.name = 'ErroPermissao';
     this.modulo = modulo;
     this.permissao = permissao;
+    this.veredicto = veredicto;
   }
 }
 
@@ -77,6 +89,8 @@ export class ErroChave extends Error {
  * @property {{usar: (solicitante: string, declaradas: string[], alvo: string, exigencia?: {versao?: number}) => Record<string, Function>}} [apis]
  * @property {{paraModulo: (id: string) => {contar: Function, medir: Function, cronometrar: Function}}} [metricas]
  * @property {{paraModulo: (id: string) => {fazer: Function, INTERATIVO: number, NORMAL: number, FUNDO: number}}} [trabalho]
+ * @property {import('./permissoes.js').Permissoes} [permissoes] quem DECIDE; sem
+ *   ele, um manifesto que declara permissão não monta contexto — ver abaixo
  */
 
 /**
@@ -94,9 +108,42 @@ export function criarContexto(manifesto, deps) {
 
   /* ── permissões ─────────────────────────────────────────────────────── */
 
+  /**
+   * Declarar não é receber — e por um bom tempo, aqui, era.
+   *
+   * Este bloco respondia `pode(p)` com `declaradas.has(p)`: o módulo ganhava
+   * tudo que escrevesse no próprio manifesto. A `V2_MODULE_RULES.md` afirmava
+   * deny-by-default o tempo todo, e a afirmação não tinha implementação por
+   * trás. Fica registrado em vez de apagado (§12 dos padrões): garantia
+   * documentada e não implementada é pior que garantia nenhuma.
+   *
+   * Agora quem decide é o `permissoes.js`, injetado — e a consulta é **viva**,
+   * não uma fotografia do init: revogar em runtime tem que alcançar o módulo
+   * que já está no ar, senão "revogar" é enfeite.
+   */
+  const decisor = deps.permissoes;
+
+  /* O teto sai do manifesto, aqui também. O `boot` já ensina o conjunto antes de
+   * subir; isto cobre quem monta contexto avulso (teste, ferramenta) e mantém o
+   * veredicto honesto: sem isto, um módulo que declarou receberia
+   * `nao-declarada` — a mensagem erraria de culpado. É idempotente, e a fonte é
+   * a mesma dos dois lados: o manifesto. */
+  decisor?.conhecerModulos([{ id, permissions: [...declaradas] }]);
+
+  if (declaradas.size && !decisor) {
+    /* Falha alta em vez de cair para o comportamento antigo. Um Core montado
+     * sem decisor, servindo um módulo que pede NETWORK, tem duas saídas ruins:
+     * negar tudo (o módulo quebra longe da causa) ou liberar tudo (volta o
+     * buraco). A terceira é dizer o que está errado, agora. */
+    throw new Error(
+      `módulo "${id}" declara permissões (${[...declaradas].join(', ')}) e o contexto ` +
+      'foi montado sem decisor — injete `permissoes` no Core'
+    );
+  }
+
   /** @param {string} p */
   function pode(p) {
-    return declaradas.has(p);
+    return decisor ? decisor.pode(id, p) : false;
   }
 
   /**
@@ -109,12 +156,18 @@ export function criarContexto(manifesto, deps) {
     if (!PERMISSOES.includes(/** @type {any} */ (p))) {
       throw new Error(`permissão desconhecida: ${p}`);
     }
-    if (!declaradas.has(p)) {
+    const veredicto = decisor ? decisor.avaliar(id, p) : 'nao-declarada';
+    if (veredicto !== 'ok') {
       /* Registra ANTES de levantar: quem captura a exceção pode engoli-la, e aí
        * a tentativa de acesso indevido some sem deixar rastro. */
-      log.aviso('acesso negado', { permissao: p });
-      throw new ErroPermissao(id, p);
+      log.aviso('acesso negado', { permissao: p, veredicto });
+      decisor?.anotar(id, p, veredicto);
+      throw new ErroPermissao(id, p, veredicto);
     }
+    /* `?.` e não cast: sem decisor não existe trilha onde anotar, e isso é um
+     * estado real (módulo sem permissão declarada), não uma impossibilidade que
+     * o verificador não enxerga. §3 dos padrões vale nos dois sentidos. */
+    decisor?.anotar(id, p, 'ok');
     return true;
   }
 
@@ -196,7 +249,11 @@ export function criarContexto(manifesto, deps) {
       permissoes: [...declaradas],
       chaves: [...chaves],
       emite: [...podeEmitir],
-      depende: [...(manifesto.dependencies ?? [])]
+      depende: [...(manifesto.dependencies ?? [])],
+      /* Função, não valor: concessão muda em runtime, e valor congelado no init
+       * responderia sobre o passado — o mesmo defeito que a ponte do banco de
+       * prova teve (Regra 5 dos testes), aqui em código de produção. */
+      concedidas: () => [...declaradas].filter((p) => pode(p))
     }
   };
 }

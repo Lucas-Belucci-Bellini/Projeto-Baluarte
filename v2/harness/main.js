@@ -18,6 +18,10 @@ import { criarLog, definirDestino } from '../core/log.js';
 import { criarMetricas } from '../core/metricas.js';
 import { criarEscalonador } from '../core/trabalho.js';
 import { criarResolvedorApi } from '../core/api.js';
+/* Sem o decisor, o `militar` — que declara NETWORK — nem monta contexto. É de
+ * propósito: um Core que serve módulo com permissão declarada e não tem a quem
+ * perguntar está mal montado, e o lugar de descobrir isso é aqui. */
+import { criarPermissoes } from '../core/permissoes.js';
 
 /* O router da V1, sem alteração nenhuma. É o ponto: adaptar, não reescrever. */
 import { router } from '../../src/core/router.js';
@@ -52,9 +56,13 @@ async function principal() {
   const metricas = criarMetricas();
   const trabalho = criarEscalonador({ limite: 4 }, { log, metricas });
   const apis = criarResolvedorApi(registry, { log });
+  /* SEM política: nenhum módulo recebe nada. É o estado padrão do sistema, não
+   * uma escolha do banco de prova — e é o que faz `militar` subir com NETWORK
+   * declarada e negada, que é exatamente o que se quer ver funcionando. */
+  const permissoes = criarPermissoes({ bus });
   const saida = document.getElementById('saida');
 
-  const boot = criarBoot(registry, { storage, bus, metricas, trabalho, apis }, {
+  const boot = criarBoot(registry, { storage, bus, metricas, trabalho, apis, permissoes }, {
     router,
     renderNav: (itens) => {
       const nav = document.getElementById('nav');
@@ -104,7 +112,12 @@ async function principal() {
   window.__v2 = {
     selo,
     resultado: r,
-    diagnostico: boot.diagnostico(),
+    /* Também função — e este escapou da primeira correção. Quando as métricas
+     * deixaram de ser valor congelado, o `diagnostico` continuou sendo: um
+     * retrato do boot, servido como se fosse o estado atual. Bastou existir algo
+     * que muda em runtime (concessão de permissão) para o defeito reaparecer no
+     * campo vizinho. Regra 5 dos testes, segunda vez. */
+    diagnostico: () => boot.diagnostico(),
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
     registros,
@@ -114,6 +127,11 @@ async function principal() {
      * métrica funcionando. Ponte de teste que congela estado mente sobre o
      * sistema vivo. */
     metricas: () => metricas.retrato(),
+    /* Idem: função, porque concessão muda em runtime e o teste precisa ver a
+     * mudança, não o retrato do boot. */
+    permissoes: () => permissoes.retrato(),
+    conceder: (m, p) => permissoes.conceder(m, p, { origem: 'teste' }),
+    revogar: (m, p) => permissoes.revogar(m, p, { origem: 'teste' }),
     /* Superfície para o teste exercitar a api sem passar pela UI. */
     api: (alvo, metodo, ...args) => apis.usar('harness', [alvo], alvo)[metodo](...args)
   };
