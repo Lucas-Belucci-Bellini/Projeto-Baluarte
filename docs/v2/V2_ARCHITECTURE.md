@@ -212,6 +212,15 @@ com essas características não couber no manifesto sem gambiarra, o formato est
 errado — e é infinitamente mais barato descobrir isso no primeiro do que no
 quinquagésimo.
 
+> ✅ **Feito, e os casos difíceis também.** O risco que estava escrito aqui —
+> *formato validado só contra o caso fácil erra nos difíceis* — foi fechado com
+> `/militar` (15 rotas, rede, id de estabilidade que não bate) e `/editor` (chave
+> escrita por outro módulo). O contrato aguentou os dois **sem mudar**, e os dois
+> revelaram achados que estão em [`V2_MODULE_RULES.md`](./V2_MODULE_RULES.md):
+> módulo **não** é rota (as 99 não viram 99 módulos), e o namespace de storage
+> torna impossível por construção o acoplamento que o JARVIS tem hoje com o
+> editor. Testes: `test/v2/modulos-dificeis.test.js`.
+
 ---
 
 ## 6. Riscos

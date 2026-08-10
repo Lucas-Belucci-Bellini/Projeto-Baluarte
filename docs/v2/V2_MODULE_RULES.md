@@ -92,13 +92,42 @@ Deny-by-default segue valendo (é o modelo da V1 que fica): **declarar não é
 receber**. O manifesto diz o que o módulo *pode pedir*; conceder é decisão do
 Permission System.
 
+## Respondido pela evidência: módulo **não** é rota
+
+A pergunta da granularidade tinha ficado em aberto. A V1 já a respondia, e não
+tinha sido lida: a tabela de estabilidade declara `{ id: 'arsenal', descricao:
+'Arsenal e Centro Militar' }` — **um id cobrindo duas rotas**. E o Centro Militar
+consolidou 13 frentes numa entrada de sidebar porque são uma coisa só para quem
+usa.
+
+**As 99 rotas não viram 99 módulos.** Um módulo é unidade de propósito;
+`routes[]` é plural desde o primeiro rascunho, e o formato aguentou 15 rotas num
+módulo sem alteração (`v2/modules/militar/`).
+
+## O que os casos difíceis revelaram
+
+**O JARVIS escreve na chave do editor.** `src/utils/jarvis-tools.js:232` faz
+`storage.set('editor:state', …)`, conhecendo o formato interno (`tabs`,
+`activeId`). É a Regra 2 violada numa linha: storage compartilhado é import
+disfarçado, e nenhuma análise estática aponta. O namespace obrigatório torna isso
+**impossível por construção** — um módulo `jarvis` que declarasse `editor:state`
+é recusado —, e o caminho legítimo passa a ser a `api` do editor.
+
+**O contrato ainda não distingue dependência de referência.** O hub militar chama
+`router.navigate()` para 14 rotas; some uma, o botão vai ao `notFound` calado.
+Ali não dói porque as 15 rotas são do mesmo módulo, mas quando um módulo linkar
+para outro vai ser preciso separar *dependência dura* (não funciona sem) de
+*referência fraca* (degrada). **Pendência real, não resolvida.**
+
+**Chave que não cabe no namespace vira migração, não exceção.** `/militar` grava
+`militar-enc:cat`, que o validador recusa. A saída foi deixá-la fora e registrar
+o alvo (`militar:enc-cat` v2 com `migrate`) — renomear dado do operador num
+arquivo de exemplo, ou afrouxar o invariante para passar, seriam as duas formas
+de fingir que o caso difícil era fácil.
+
 ## Ainda em aberto
 
 Depende de decisão do operador (ver o fim da `V2_ARCHITECTURE.md`):
-
-- **granularidade** — 99 módulos de uma rota, ou módulos maiores com várias? O
-  contrato já aceita `routes[]` plural, então suporta os dois; o que muda é a
-  convenção.
 - **tipos** — se a V2 abrir mão do "JS puro", `stability`, `class` e
   `permissions` viram uniões de tipo e metade destes invariantes deixa de
   precisar de teste em runtime.
