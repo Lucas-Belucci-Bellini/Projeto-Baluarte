@@ -50,19 +50,32 @@ try {
  * endereço, o app "congelado na 1.0.0" passa a mostrar a V2 sem instalar nada, e
  * o congelamento vira enfeite.
  *
- * Por isso o app aponta para um alias FIXADO na linha 1.x, e não para o endereço
- * principal. O site principal segue recebendo o que for publicado — inclusive a
- * V2 — porque quem usa o navegador escolheu isso ao abrir a URL. Quem usa o app
- * fica na 1.0.0 até decidir instalar a V2 (ADR-003).
+ * ⛔ ESTA URL NÃO PODE MUDAR SEM PLANO DE MIGRAÇÃO. Leia antes de editar.
+ *
+ * A 1.0.0 chegou a apontar para `v1.projeto-baluarte.vercel.app` — e isso era um
+ * apagador de dados silencioso. `localStorage` é escopado por ORIGEM, e
+ * `projeto-baluarte.vercel.app` e `v1.projeto-baluarte.vercel.app` são origens
+ * diferentes. Todo mundo que já usa o app (0.9.2 aponta para o endereço
+ * principal) atualizaria para a 1.0.0 e encontraria as 71 chaves vazias: abas do
+ * editor, conversas e memórias do JARVIS, histórico do terminal e o cofre de
+ * chaves de API do `apis:vault`. Sem erro, sem aviso, sem desfazer — pareceria
+ * que o app apagou tudo. Era o pior modo de falha possível numa versão que se
+ * chama "ponto de congelamento".
+ *
+ * O pin continua sendo necessário, mas quem se muda tem que ser a V2, não a V1:
+ * a V1 fica onde o dado dos operadores JÁ está, e a V2 nasce em endereço próprio
+ * (ADR-003). Mover a V1 exigiria uma ponte entre origens (iframe + postMessage)
+ * ou exportar/importar, e nenhum dos dois vale o risco numa versão que congela.
  *
  * `BALUARTE_URL` existe para o aceite local: dá pra apontar o app para um deploy
  * de teste sem editar código. */
-const REMOTE_URL = process.env.BALUARTE_URL || 'https://v1.projeto-baluarte.vercel.app/';
+const REMOTE_URL = process.env.BALUARTE_URL || 'https://projeto-baluarte.vercel.app/';
 const ALLOWED_ORIGINS = [
-  'https://v1.projeto-baluarte.vercel.app',
-  /* O endereço principal continua permitido: durante a transição o alias v1
-   * pode ainda não existir, e um app que recusa a própria origem não abre. */
-  'https://projeto-baluarte.vercel.app'
+  'https://projeto-baluarte.vercel.app',
+  /* O alias `v1.` segue permitido — se um dia ele existir e o app for movido
+   * PARA lá, será com migração planejada, e recusar a origem faria o app não
+   * abrir justamente no momento do teste. */
+  'https://v1.projeto-baluarte.vercel.app'
 ];
 
 /* A outra metade do login Google no app: o fluxo OAuth NAVEGA pra fora do

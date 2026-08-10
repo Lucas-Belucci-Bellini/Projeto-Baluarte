@@ -62,12 +62,43 @@ desligar o auto-update fecha só um. Se a V2 subir no mesmo endereço, o app
 "congelado na 1.0.0" passa a mostrar a V2 sem instalar nada — e o congelamento
 vira enfeite.
 
-Por isso o app aponta para um alias fixado na linha 1.x
-(`v1.projeto-baluarte.vercel.app`), não para o endereço principal.
+Por isso o app precisa ficar preso à linha 1.x. **Mas a primeira tentativa de
+fazer isso estava errada, e o erro merece ficar registrado**, porque ele quase
+entrou na release.
 
-**O site principal continua recebendo tudo, inclusive a V2** — quem abre o
-navegador escolheu isso ao digitar a URL. A distinção é essa: *no site você
-escolhe a cada visita; no app você escolheu uma vez, ao instalar.*
+#### ⛔ Correção: quem muda de endereço é a V2, não a V1
+
+A versão original deste ADR mandava o app apontar para
+`v1.projeto-baluarte.vercel.app`. Isso era um **apagador de dados silencioso**.
+
+`localStorage` é escopado por **origem**, e `projeto-baluarte.vercel.app` e
+`v1.projeto-baluarte.vercel.app` são origens diferentes. O app publicado hoje
+(0.9.2) aponta para o endereço principal. Quem atualizasse para a 1.0.0
+encontraria as **71 chaves vazias**: abas do editor, conversas e memórias do
+JARVIS, histórico do terminal e o cofre de chaves de API (`apis:vault`). Sem
+erro, sem aviso, sem desfazer — pareceria que o app apagou tudo. O pior modo de
+falha possível numa versão chamada "ponto de congelamento".
+
+A decisão corrigida inverte quem se muda:
+
+| | Endereço | Por quê |
+| --- | --- | --- |
+| **V1 (congelada)** | `projeto-baluarte.vercel.app` | é onde o dado dos operadores **já está** |
+| **V2 (reconstrução)** | endereço próprio (`v2.` ou domínio novo) | nasce limpa, sem herdar origem |
+
+O pin continua valendo — o app fica na V1 porque a V1 é que fica parada no
+endereço dele. E a V2, sendo reconstrução arquitetural e não evolução, tem
+motivo independente para nascer em outra origem: ela não quer o `localStorage`
+da V1 no formato da V1.
+
+⚠️ **Consequência aceita:** o endereço principal serve a V1 até o operador
+decidir promover a V2. Enquanto isso, quem chega pelo navegador vê a V1. Trocar
+essa ordem depois exige plano de migração — ponte entre origens (iframe +
+`postMessage`) ou exportar/importar —, e é decisão do operador, não da sessão.
+
+**O site continua recebendo correções da 1.x** — quem abre o navegador escolheu
+isso ao digitar a URL. A distinção original permanece: *no site você escolhe a
+cada visita; no app você escolheu uma vez, ao instalar.*
 
 ### 4. A régua para decidir o que entra na 1.x
 

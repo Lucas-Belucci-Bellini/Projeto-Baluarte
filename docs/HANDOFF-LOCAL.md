@@ -52,19 +52,27 @@ A regra fechada: **a 1.0.0 é a última versão que o app instala sozinho.** Dep
 dela, quem usa o app decide se instala — por conta e risco. Quem usa o *site*
 continua recebendo tudo, inclusive a V2.
 
-O código já está no `main` (`desktop/src/main.js`): `autoDownload = false`, aviso
-com "Agora não" como padrão, e `REMOTE_URL` apontando para o alias fixado da 1.x.
-**Nada disso vale até uma release empacotada sair com essas mudanças dentro.**
+O código já está no `main` (`desktop/src/main.js`): `autoDownload = false` e aviso
+com "Agora não" como padrão. **Nada disso vale até uma release empacotada sair
+com essas mudanças dentro.**
+
+> ⛔ **Não crie alias nenhum, e não mexa no `REMOTE_URL`.** Uma versão anterior
+> deste handoff mandava criar `v1.projeto-baluarte.vercel.app` e apontar o app
+> para lá. Isso apagaria o dado de todo mundo: `localStorage` é escopado por
+> origem, o app publicado (0.9.2) aponta para o endereço principal, e mudar de
+> origem deixaria as 71 chaves vazias — abas do editor, JARVIS, histórico do
+> terminal e o cofre de chaves de API. Sem erro e sem desfazer. Quem muda de
+> endereço é a **V2**, não a V1 (ADR-003). O `REMOTE_URL` já foi revertido para
+> `projeto-baluarte.vercel.app`.
 
 Na ordem, porque a ordem importa:
 
-1. **Criar o alias `v1.projeto-baluarte.vercel.app`** na Vercel, apontando para o
-   deploy da 1.0.0. ⚠️ **Antes** de publicar o app — um launcher que aponta para
-   um endereço que não resolve simplesmente não abre. (`ALLOWED_ORIGINS` ainda
-   aceita o endereço principal durante a transição, e `BALUARTE_URL=<url>` deixa
-   testar sem editar código.)
-2. **Conferir no app empacotado**: abre no alias, e o aviso de atualização
-   pergunta antes de baixar (não baixa sozinho).
+1. **Conferir no app empacotado**: abre no endereço principal, e o aviso de
+   atualização pergunta antes de baixar (não baixa sozinho). `BALUARTE_URL=<url>`
+   deixa testar contra um deploy de preview sem editar código.
+2. **Conferir que o dado sobrevive**: abra o app atual (0.9.2), deixe algo no
+   editor, atualize para a 1.0.0 e confirme que ainda está lá. É o teste que a
+   ordem antiga teria reprovado.
 3. **Alinhar `desktop/package.json`** para `1.0.0` (hoje está em `0.9.2` — tem
    versionamento próprio, não é o mesmo número do site).
 4. **Publicar a release** → Actions → Desktop Release → Run workflow.

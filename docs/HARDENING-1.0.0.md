@@ -197,6 +197,37 @@ que é exatamente onde esta fase começou.
       e **se recusa a rodar** enquanto houver chave fora da política; o CI cobra
       a mesma coisa com `--verificar`.
 
+- [x] **A 1.0.0 apagaria o dado de quem já usa o app — e o defeito era meu.**
+      A ADR-003 mandava o app apontar para `v1.projeto-baluarte.vercel.app` para
+      não drenar para a V2. A intenção estava certa; a execução era um apagador
+      silencioso.
+
+      `localStorage` é escopado por **origem**. O app publicado (0.9.2) aponta
+      para `projeto-baluarte.vercel.app`; `v1.` é **outra origem**. Quem
+      atualizasse para a 1.0.0 encontraria as **71 chaves vazias** — abas do
+      editor, conversas e memórias do JARVIS, histórico do terminal e o cofre de
+      chaves de API (`apis:vault`). Sem erro, sem aviso, sem desfazer. Pareceria
+      que o app apagou tudo, numa versão chamada "ponto de congelamento".
+
+      Pior: o passo 1 do [`HANDOFF-LOCAL.md`](./HANDOFF-LOCAL.md#a0) mandava
+      criar o alias **antes** de publicar o app. A ordem escrita levava direto ao
+      estrago.
+
+      **A correção inverte quem se muda:** a V1 fica onde o dado já está, e a
+      **V2** nasce em endereço próprio. O pin continua valendo — o app fica na V1
+      porque a V1 é que fica parada. E a V2, sendo reconstrução, tem motivo
+      independente para não herdar o `localStorage` da V1.
+      `REMOTE_URL` revertido, ADR-003 corrigida com o erro registrado (não
+      reescrita em silêncio), handoff com um ⛔ no lugar do passo perigoso e um
+      passo novo de aceite: *abrir o 0.9.2, deixar algo no editor, atualizar e
+      confirmar que continua lá*.
+
+      ⚠️ **Fica em aberto para o operador:** o endereço principal passa a servir
+      a V1 até ele decidir promover a V2, e **não existe exportar/importar** do
+      dado local — só "limpar". Qualquer mudança de origem futura precisa de uma
+      das duas: ponte entre origens (iframe + `postMessage`) ou exportação. É
+      decisão dele, não da sessão.
+
 ## 🟠 Muito recomendado
 
 - [x] **Event bus como sistema nervoso** — `src/core/events.js` ganhou curinga
