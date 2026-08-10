@@ -17,6 +17,7 @@ core/
   log.js        registro estruturado com dono
   ciclo.js      init/start → stop/dispose, isolado       17 testes · 5 mutantes
   boot.js       o Core CONSUMINDO o Registry              11 testes · 4 mutantes
+  bus.js        eventos com origem, versão e curinga      16 testes · 6 mutantes
 modules/
   cripto/       o caso fácil (prova que o formato serve)
   editor/       o caso do acoplamento (JARVIS escreve na chave dele)
@@ -57,7 +58,5 @@ Fundação, não módulos — §23 do plano, *preparar ≠ implementar*:
   sem editar nenhum arquivo do Core*. Falta o `src/main.js` da V1 usá-lo em vez
   de seus 99 `router.register()` — e isso **mexe na V1**, que está congelando.
   É a primeira coisa depois da tag `v1.0.0`.
-- **Event Bus da V2** — o da V1 tem `emit(event, payload)` e descarta um terceiro
-  argumento em silêncio; a §7 exige origem e versão no envelope.
 - **Config** — a Regra 9 pede fonte única; hoje continua espalhada.
 - **Ingestão, busca e migração de `src/data/`** (21k linhas de JS que são banco).
