@@ -155,6 +155,12 @@ CREATE TABLE tarefa (
   -- renovado por heartbeat; vencido, a tarefa volta para a fila.
   lease_ate    timestamptz,
   worker       text,
+  -- Espera antes da próxima tentativa. Sem isto, tarefa que falha volta a
+  -- QUEUED e é reivindicada no mesmo instante: o worker gira nela em laço
+  -- quente, queima as tentativas em milissegundos e MATA DE FOME o resto da
+  -- fila. Descoberto por teste, não por raciocínio — o teste do "handler que
+  -- explode" mostrou a tarefa boa nunca chegando a rodar.
+  disponivel_em timestamptz NOT NULL DEFAULT now(),
   erro         text,
   resultado    jsonb,
   criada_em    timestamptz NOT NULL DEFAULT now(),
@@ -163,7 +169,7 @@ CREATE TABLE tarefa (
 );
 
 -- Índice parcial: a fila quente é minúscula perto do histórico de concluídas.
-CREATE INDEX tarefa_fila ON tarefa (prioridade, id) WHERE estado = 'QUEUED';
+CREATE INDEX tarefa_fila ON tarefa (disponivel_em, prioridade, id) WHERE estado = 'QUEUED';
 CREATE INDEX tarefa_lease ON tarefa (lease_ate)     WHERE estado = 'RUNNING';
 
 -- Reivindicar trabalho. `SKIP LOCKED` é o que permite N workers em paralelo sem
@@ -179,12 +185,13 @@ RETURNS SETOF tarefa AS $$
   WHERE id = (
     SELECT t.id FROM tarefa t
     WHERE t.estado = 'QUEUED'
+      AND t.disponivel_em <= now()
       AND (p_tipos IS NULL OR t.tipo = ANY(p_tipos))
       -- dependência não satisfeita não é elegível: é o que impede um bot de
       -- classificar um dado que ainda não foi coletado
       AND (t.depende_de IS NULL OR EXISTS (
             SELECT 1 FROM tarefa d WHERE d.id = t.depende_de AND d.estado = 'COMPLETED'))
-    ORDER BY t.prioridade, t.id
+    ORDER BY t.prioridade, t.disponivel_em, t.id
     FOR UPDATE SKIP LOCKED
     LIMIT 1
   )
@@ -199,6 +206,9 @@ RETURNS TABLE (id bigint, novo_estado text) AS $$
     estado    = CASE WHEN tentativas >= max_tentativas THEN 'FAILED' ELSE 'QUEUED' END,
     worker    = NULL,
     lease_ate = NULL,
+    -- backoff também aqui: worker que morreu provavelmente morreu POR CAUSA
+    -- destas tarefas, e devolvê-las todas no mesmo instante repete a queda.
+    disponivel_em = now() + make_interval(secs => least(300, power(2, tentativas)::int * 5)),
     erro      = CASE WHEN tentativas >= max_tentativas
                      THEN 'lease vencido; excedeu max_tentativas' ELSE erro END
   WHERE estado = 'RUNNING' AND lease_ate < now()

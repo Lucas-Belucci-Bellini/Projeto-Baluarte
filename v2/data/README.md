@@ -62,12 +62,19 @@ Redis, sem Celery e sem coordenação externa. Um componente a menos para operar
 fazer backup e ver quebrar — e a escala atual não justifica mais que isso.
 Reabre-se quando a taxa de reivindicação virar gargalo medido.
 
+## O worker
+
+`../services/tarefas/` consome esta fila. Testes contra Postgres real:
+
+```sh
+pip install -r ../services/tarefas/requirements.txt
+BALUARTE_TEST_DSN="postgresql://baluarte@/postgres?host=/tmp&port=55432" \
+  python3 -m pytest ../services/tarefas -q --timeout=25
+```
+
 ## O que ainda não existe
 
 Fundação, não módulos (§23 do plano — *preparar ≠ implementar*):
-
-- **worker Python** que consome a fila — próximo passo
-- **heartbeat** renovando `lease_ate` durante execução longa
 - **ingestão**: normalização, deduplicação, classificação
 - **busca**: full-text e `pgvector`, quando houver consulta real para medir
 - **migração** de `src/data/` (21k linhas de JS) para tabelas
