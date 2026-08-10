@@ -61,6 +61,14 @@ jobs:
       # e afirma estado: o que foi escrito sobrevive à ida e volta, e a escolha
       # do operador sobrevive ao reload. É o teste que, daqui a um ano, diz se a
       # 1.0.0 congelada ainda funciona (#420 / ADR-001).
+      # A fundação da V2 dirige o router REAL da V1. Guarda dois defeitos que já
+      # aconteceram e que NENHUM teste com mock pega: `view` devolvendo o módulo
+      # em vez do elemento, e esquecer que o router ANUNCIA em vez de montar. Nos
+      # dois, as rotas registram, o count() bate e a tela fica vazia — sucesso
+      # aparente. Ver docs/v2/V2_MODULE_RULES.md.
+      - name: A V2 ainda dirige o router da V1?
+        run: npm run v2:integracao
+
       - name: A jornada continua íntegra?
         run: npm run caminho-critico
 

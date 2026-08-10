@@ -31,7 +31,8 @@
     "gen-catalogo-eventos": "node scripts/gen-catalogo-eventos.mjs",
     "gen-catalogo-storage": "node scripts/gen-catalogo-storage.mjs",
     "prova-offline": "node scripts/prova-offline.mjs",
-    "tipos:v2": "tsc -p v2/jsconfig.json"
+    "tipos:v2": "tsc -p v2/jsconfig.json",
+    "v2:integracao": "node scripts/v2-integracao.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",
