@@ -16,6 +16,7 @@ core/
   contexto.js   capacidade recortada por módulo          16 testes · 6 mutantes
   log.js        registro estruturado com dono
   ciclo.js      init/start → stop/dispose, isolado       17 testes · 5 mutantes
+  boot.js       o Core CONSUMINDO o Registry              11 testes · 4 mutantes
 modules/
   cripto/       o caso fácil (prova que o formato serve)
   editor/       o caso do acoplamento (JARVIS escreve na chave dele)
@@ -50,10 +51,12 @@ tem zero inversão de dependência); foi **não existir onde um módulo se decla
 
 Fundação, não módulos — §23 do plano, *preparar ≠ implementar*:
 
-- **Core consumindo o Registry** de verdade: router e sidebar da V1 ainda se
-  registram sozinhos. Enquanto isso não acontecer, o manifesto **descreve** em
-  vez de **mandar**, e esse é o modo de falha que a `V2_ARCHITECTURE.md` §3 marca
-  como o mais provável desta arquitetura.
+- **Ligar o boot da V2 ao shell da V1.** O `boot.js` já inverte a direção — o
+  router **recebe** as rotas do Registry, e o critério de pronto da
+  `V2_ARCHITECTURE.md` §8 passa: *um módulo novo aparece em rotas e navegação
+  sem editar nenhum arquivo do Core*. Falta o `src/main.js` da V1 usá-lo em vez
+  de seus 99 `router.register()` — e isso **mexe na V1**, que está congelando.
+  É a primeira coisa depois da tag `v1.0.0`.
 - **Event Bus da V2** — o da V1 tem `emit(event, payload)` e descarta um terceiro
   argumento em silêncio; a §7 exige origem e versão no envelope.
 - **Config** — a Regra 9 pede fonte única; hoje continua espalhada.
