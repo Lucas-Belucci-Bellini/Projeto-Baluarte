@@ -29,6 +29,7 @@
     "sonda-memoria": "node scripts/sonda-memoria.mjs",
     "gen-tabela-estabilidade": "node scripts/gen-tabela-estabilidade.mjs",
     "gen-catalogo-eventos": "node scripts/gen-catalogo-eventos.mjs",
+    "gen-catalogo-storage": "node scripts/gen-catalogo-storage.mjs",
     "prova-offline": "node scripts/prova-offline.mjs"
   },
   "devDependencies": {

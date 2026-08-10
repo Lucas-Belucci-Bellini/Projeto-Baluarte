@@ -130,6 +130,7 @@ export const ESQUEMAS = [
   { chave: 'ui:sidebarCollapsed', versao: 1, classe: 'local', migrar: IDENTIDADE },
   { chave: 'musicas:acervoLoop', versao: 1, classe: 'local', migrar: IDENTIDADE },
   { chave: 'nucleo:glbUrl', versao: 1, classe: 'local', migrar: IDENTIDADE },
+
   { chave: 'color-studio:color', versao: 1, classe: 'publico', migrar: IDENTIDADE },
 
   /* Pública POR DESIGN, não por descuido: é chave de anti-abuso da RPC de
@@ -154,7 +155,107 @@ export const ESQUEMAS = [
 
   /* Estado da própria política. */
   { chave: 'permissoes', versao: 1, classe: 'local', migrar: IDENTIDADE },
-  { chave: 'flags', versao: 1, classe: 'local', migrar: IDENTIDADE }
+  { chave: 'flags', versao: 1, classe: 'local', migrar: IDENTIDADE },
+
+  /* ══════════════════════════════════════════════════════════════════════════
+   *  A VARREDURA (#420 — bloqueador achado às vésperas do congelamento)
+   * ══════════════════════════════════════════════════════════════════════════
+   *
+   * As 12 chaves acima eram as declaradas. `scripts/gen-catalogo-storage.mjs`
+   * varreu `src/` e achou **outras 59 em uso e sem esquema** — quase todas
+   * acessadas por constante (`const KEY = 'ui:theme'`), forma que um grep pelo
+   * literal dentro de `storage.get(...)` não enxerga. Por isso passaram batido
+   * por tanto tempo: quem procurou, procurou pelo padrão errado.
+   *
+   * POR QUE ISSO BLOQUEIA A 1.0.0, e não é arrumação cosmética:
+   *
+   * Chave sem esquema não tem versão. Congelar a V1 assim deixaria a V2 — que
+   * é reconstrução arquitetural, não evolução — **sem contrato nenhum** para ler
+   * o dado gravado pela V1. E o modo de falha não avisa: uma chave que ganhe
+   * esquema depois tem o dado antigo lido como versão 0 e, sem `migrar`,
+   * `storage.get` devolve o fallback (storage.js:160-166). O operador perde o
+   * que tinha sem erro, sem log, sem pista.
+   *
+   * Declarar agora, com identidade, é o que torna o congelamento reversível:
+   * a partir daqui existe um formato v1 nomeado, e a V2 tem de onde migrar.
+   *
+   * SOBRE AS CLASSES: nenhuma credencial virou `secreto`. `secreto` é RECUSADO
+   * na gravação por `core/storage.js`, e chave de API que o próprio operador
+   * digita para usar a conta dele precisa viver no navegador — marcar assim não
+   * deixaria o Baluarte mais seguro, deixaria o cofre quebrado. É o mesmo
+   * raciocínio já registrado em `auth:session` acima. `sensivel` é a afirmação
+   * correta: fica no navegador porque precisa, e o Baluarte não a envia a lugar
+   * nenhum. */
+
+  /* ── sensivel: credenciais, autenticação e conteúdo do operador ──────────
+   * O critério é "o operador se importaria se isto aparecesse numa captura de
+   * tela?". Chave de API, sessão, conversa, memória, localização, identidade e
+   * o que ele escreveu entram; estado de tela, não. */
+  { chave: 'apis:vault', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'voice:elevenKey', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'jarvis:config', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'jarvis:history', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'jarvis:memories', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'jarvis:skills', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'jarvis:guard', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'jarvis:guardlog', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'mark11:custom-skills', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'shadow:auth', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'shadow:session', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'nucleo:wsToken', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'nucleo:wsUrl', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'geo:track', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'find:db', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'media:bookmarks', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'mural:author', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'mural:posts', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+  { chave: 'vfs:tree', versao: 1, classe: 'sensivel', migrar: IDENTIDADE },
+
+  /* ── local: estado de tela, preferência e cache de dado público ──────────
+   * Não sai do navegador e não vale nada fora dele. `json-studio:input` e
+   * `qr-studio:text` guardam o que o operador digitou e ficaram AQUI de
+   * propósito: são rascunho de ferramenta, e classificar todo campo de texto
+   * como `sensivel` esvaziaria o sentido da palavra. */
+  { chave: 'ui:theme', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'ui:universe', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'mark11:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'academia:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'arcade:current', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'arcade:players', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'arsenal:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'calc:cientifica', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'calc:numerica', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'calculadoras:active', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'ciberseg:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'cripto:active', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'dolar:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'dossie:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'economia:cache', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'elites:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'graficos:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'guia-pc:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'json-studio:input', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'logic-sim:circuit', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'logic-sim:saved', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'militar-enc:cat', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'modpack:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'morse:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'musicas:custom', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'nexus:lastTab', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'paleta:recentes', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'periodic:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'qr-studio:mode', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'qr-studio:text', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'radio:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'regex:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'robotica:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'simbolos:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'tabela-verdade:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'universo:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'videos:state', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'voice:lang', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'voice:on', versao: 1, classe: 'local', migrar: IDENTIDADE },
+  { chave: 'webllm:semF16', versao: 1, classe: 'local', migrar: IDENTIDADE }
 ];
 
 /**

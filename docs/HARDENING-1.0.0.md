@@ -166,6 +166,37 @@ que é exatamente onde esta fase começou.
       Verificado plantando um `setInterval` e um laço de `rAF` sem limpeza em
       `/cerebro`: a sonda acusou `timers 2→3→4→5→6→7`.
 
+- [x] **As 59 chaves de storage sem esquema — o bloqueador achado por último.**
+      Só 12 chaves estavam declaradas em `politica.js`. Uma varredura de `src/`
+      achou **outras 59 em uso e sem esquema**, quase todas acessadas por
+      constante (`const KEY = 'ui:theme'`) — forma que um grep pelo literal
+      dentro de `storage.get(...)` não enxerga, e a razão de terem passado
+      batido: quem procurou, procurou pelo padrão errado.
+
+      **Por que bloqueava a 1.0.0.** Chave sem esquema não tem versão. Congelar
+      a V1 assim deixaria a V2 — que é reconstrução, não evolução — sem contrato
+      para ler o dado da V1. E a perda é silenciosa: chave que ganhe esquema
+      depois tem o dado antigo lido como versão 0 e, sem `migrar`, `get()`
+      devolve o fallback (`storage.js:160-166`) — sem erro, sem log, sem pista.
+      Entre as 59 havia `apis:vault` (cofre de chaves de API), `voice:elevenKey`,
+      `nucleo:wsToken`, `shadow:auth`/`shadow:session` e o histórico e a memória
+      do JARVIS.
+
+      **Nenhuma virou `secreto`**, e isso é decisão, não omissão: `secreto` é
+      recusado na gravação, e chave de API que o operador digita para usar a
+      conta dele precisa viver no navegador. Marcar assim não deixaria o
+      Baluarte mais seguro — deixaria o cofre quebrado. Mesmo raciocínio já
+      registrado em `auth:session`. Hoje: **21 `sensivel` · 48 `local` ·
+      2 `publico` · 0 `secreto`**.
+
+      Verificado tirando o `migrar` de `apis:vault`: `npm test` foi de 422 para
+      420 com a mensagem *"perdeu o dado legado ao ganhar esquema"*. O caminho
+      crítico passou 15/15 depois da mudança — o que o editor escreveu sobrevive
+      à ida e volta, e a permissão revogada sobrevive ao reload.
+      `npm run gen-catalogo-storage` gera [`architecture/storage.md`](./architecture/storage.md)
+      e **se recusa a rodar** enquanto houver chave fora da política; o CI cobra
+      a mesma coisa com `--verificar`.
+
 ## 🟠 Muito recomendado
 
 - [x] **Event bus como sistema nervoso** — `src/core/events.js` ganhou curinga

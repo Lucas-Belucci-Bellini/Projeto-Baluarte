@@ -32,39 +32,11 @@ import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
 
+import { semComentarios } from './lib/sem-comentarios.mjs';
+
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(raiz, 'src');
 const DESTINO = join(raiz, 'docs/architecture/events.md');
-
-/* ── Tirar comentários sem quebrar strings ──────────────────────────────────
- * Máquina de estados mínima. Não trata literal de regex (`/ab\/c/`), e não
- * precisa: o que se procura é `bus.emit(` / `bus.on(`, e nenhum deles aparece
- * dentro de regex neste código. O que ela PRECISA acertar é `'https://...'` —
- * uma barra dupla dentro de string não pode virar comentário. */
-function semComentarios(txt) {
-  let saida = '';
-  let estado = 'codigo';
-  let aspa = '';
-  for (let i = 0; i < txt.length; i += 1) {
-    const c = txt[i];
-    const prox = txt[i + 1];
-    if (estado === 'codigo') {
-      if (c === '/' && prox === '/') { estado = 'linha'; i += 1; continue; }
-      if (c === '/' && prox === '*') { estado = 'bloco'; i += 1; continue; }
-      if (c === "'" || c === '"' || c === '`') { estado = 'string'; aspa = c; }
-      saida += c;
-    } else if (estado === 'linha') {
-      if (c === '\n') { estado = 'codigo'; saida += c; }
-    } else if (estado === 'bloco') {
-      if (c === '*' && prox === '/') { estado = 'codigo'; i += 1; }
-    } else if (estado === 'string') {
-      if (c === '\\') { saida += c + (prox ?? ''); i += 1; continue; }
-      if (c === aspa) estado = 'codigo';
-      saida += c;
-    }
-  }
-  return saida;
-}
 
 function arquivosJS(dir) {
   const out = [];

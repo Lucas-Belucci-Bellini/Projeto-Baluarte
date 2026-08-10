@@ -91,6 +91,16 @@ jobs:
       - name: O catálogo de eventos bate com o código?
         run: node scripts/gen-catalogo-eventos.mjs --verificar
 
+      # Este não só documenta: ele COBRA a invariante de que toda chave tocada
+      # por src/ está declarada em politica.js. Chave sem esquema não tem versão
+      # nem migração, e congelar a 1.0.0 assim deixaria a V2 sem contrato pra
+      # ler o dado da V1 — com o agravante de que a perda é silenciosa
+      # (storage.get devolve o fallback, sem erro). A varredura que introduziu
+      # este passo achou 59 chaves nessa situação, entre elas cofres de chave
+      # de API.
+      - name: Toda chave de storage está declarada na política?
+        run: node scripts/gen-catalogo-storage.mjs --verificar
+
       # Os .sqf sao COLADOS no debug console do jogo, que nao e UTF-8. Um
       # acento no arquivo corrompe o script antes de o parser existir, e o
       # erro no jogo nao fala nada sobre codificacao. Ja aconteceu: os seis

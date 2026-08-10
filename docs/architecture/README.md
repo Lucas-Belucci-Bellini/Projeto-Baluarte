@@ -15,7 +15,7 @@ existir — o mapa já está no `CLAUDE.md`.
 | [`decisions/`](./decisions/) | ✅ 3 ADRs | Decisões fechadas, com o contexto que as gerou |
 | `core.md` | ⬜ a escrever | Router, state, storage, events, permissions, flags: contratos e quem depende de quem |
 | [`events.md`](./events.md) | ✅ **gerado** | Catálogo dos eventos do bus e quem escuta cada um — `npm run gen-catalogo-eventos`, cobrado pelo CI |
-| `storage.md` | ⬜ a escrever | Chaves, esquemas, classes de dado e como migrar sem perder o do operador |
+| [`storage.md`](./storage.md) | ✅ **gerado** | Chaves, esquemas, classes de dado e como migrar sem perder o do operador — `npm run gen-catalogo-storage`, cobrado pelo CI |
 | `jarvis.md` | ⬜ a escrever | Orquestrador, memória, tools, providers, limites |
 | `security.md` | ⬜ a escrever | Fronteiras: sandbox do terminal, permissões, sanitização, política de segredo |
 | `nexus.md` | ⬜ *provavelmente não* | Já coberto por [`../NEXUS-CONTRATO.md`](../NEXUS-CONTRATO.md), [`../NEXUS-DECISOES.md`](../NEXUS-DECISOES.md) e [`../NEXUS-INVENTARIO.md`](../NEXUS-INVENTARIO.md) |
