@@ -22,7 +22,7 @@ conversas que os geraram.
 | [`V2_MASTER_PLAN.md`](./V2_MASTER_PLAN.md) | ✅ transcrito | corpo da #423 (26 seções) |
 | [`V2_RULES.md`](./V2_RULES.md) | ✅ transcrito | comentário 2 da #423 (40 regras) |
 | [`V2_DECISION_LOG.md`](./V2_DECISION_LOG.md) | ✅ escrito | comentário 4 da #423 — **decisões que não estão no corpo do plano** |
-| `V2_ARCHITECTURE.md` | ⬜ a escrever | é o `V2_ARCHITECTURE_PROPOSAL.md` que o operador pediu; sai **depois** do congelamento da V1 |
+| [`V2_ARCHITECTURE.md`](./V2_ARCHITECTURE.md) | ✅ **proposta** | os 17 sistemas com decisão manter/refatorar/construir, medido no repo; aguarda 4 decisões do operador |
 | `V2_CODING_STANDARDS.md` | ⬜ a escrever | |
 | `V2_SECURITY_RULES.md` | ⬜ a escrever | |
 | `V2_MODULE_RULES.md` | ⬜ a escrever | |
