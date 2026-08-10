@@ -77,6 +77,17 @@ jobs:
       - name: Testes
         run: npm test
 
+      # Acrescentado depois de um erro concreto: um commit da V2 afirmou
+      # "tsc exit=0" quando havia 3 erros de tipo. O comando estava encadeado de
+      # um jeito que commitou com o verificador vermelho, e a saída lida foi a
+      # errada. Verificação que depende de alguém ler direito não é verificação.
+      #
+      # Só o `v2/`: a V1 é JS puro e continua sendo (ver docs/v2/V2_STACK.md §2).
+      # Este passo não pode quebrar nada da V1 — se o v2/ sumir, o tsc não acha
+      # arquivo e sai zero.
+      - name: Tipos da V2 (JSDoc + checkJs)
+        run: npm run tipos:v2
+
       # A tabela de estabilidade do README é a PROMESSA PÚBLICA da 1.0.0 — "isto
       # aqui é estável". Promessa que mora em dois lugares diverge: alguém
       # promove uma flag no código, esquece o README, e a partir daí o README
