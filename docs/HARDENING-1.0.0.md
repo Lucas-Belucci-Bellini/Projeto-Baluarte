@@ -342,6 +342,23 @@ existe "1.0.0", só um monte de item marcado:
       alinhados** e `test/versao.test.js` passa a cobrar que continuem — o
       `public/sw.js` estava em `v0.9.1` enquanto o site dizia `2.0.0`, que é
       exatamente o bug "cache velho servido após deploy" (já aconteceu 2×).
+- [ ] **Criar a branch `release/v1.x`** — exigência do
+      [#423 §21](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423),
+      e a peça que faltava aqui: *"a V1 e a V2 devem possuir separação clara"*.
+      Hoje tudo vai para o `main` por PR, o que funcionava enquanto só existia
+      uma linha. A partir do congelamento são duas, e sem a separação a primeira
+      correção da 1.x e o primeiro commit da V2 disputam o mesmo lugar.
+
+      ```
+      main
+      ├── release/v1.x       ← correção crítica da V1 vive aqui
+      └── v2-development     ← a reconstrução vive aqui
+      ```
+
+      Ordem: sai a tag `v1.0.0`, e a `release/v1.x` nasce **dela** — assim a
+      linha de manutenção começa exatamente no que foi congelado, não em algo
+      que entrou no `main` depois.
+
 - [ ] **Publicar a tag `v1.0.0`** — é o **ponto de retorno**. Sem tag não existe
       "voltar para a 1.0", e a linha-base que justifica o ADR-001 não existe.
 - [ ] **🖥 Release 1.0.0 do app + alias `v1.` na Vercel** — só numa sessão LOCAL.

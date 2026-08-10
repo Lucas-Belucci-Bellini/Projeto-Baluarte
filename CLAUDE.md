@@ -26,18 +26,35 @@ meados de 2027.
 — overview, `v2-vision.md` (**bússola, não obra**: diz o que *não* fazer agora) e
 os ADRs (decisões fechadas, não re-litigar).
 
-### 📐 Os dois planos da V2 (**não fechar** nenhum dos dois)
+### 📐 Os três planos da V2 (**não fechar** nenhum dos três · são os FIXADOS)
 
+O operador **fixou estes três no topo do repositório** justamente para serem o
+que se vê primeiro. Se você está numa sessão nova, é por aqui que se começa.
+
+- **#423 — Master Construction Plan.** ⭐ O plano-mestre da reconstrução. É o
+  documento que outras instruções chamam de `V2_MASTER_PLAN.md` — **ele não
+  existe como arquivo**, mora na issue, e procurar pelo arquivo não acha nada.
+  Traz as 26 seções: ordem de construção (arquitetura → Core → Module System →
+  contratos → migração → só então módulos grandes), o princípio
+  **"preparar ≠ implementar"**, a regra contra feature creep, a estratégia de
+  branches (`main` · `release/v1.x` · `v2-development`) e o roadmap V1→V10 com o
+  Baluarte OS em 2030.
 - **#420 — plataforma e arquitetura.** É onde a fase de hardening foi definida
   *e* onde a V2 foi desenhada: arquitetura modular, sistema de plugins, JARVIS
-  como cérebro, Project Registry, stack TypeScript + Python + SQL, calendário até
-  meados de 2027. A decisão de **fechar a 1.0.0 antes** mora aqui (ADR-001).
+  como cérebro, Project Registry, calendário até meados de 2027. A decisão de
+  **fechar a 1.0.0 antes** mora aqui (ADR-001).
 - **#422 — produtos e projetos da V2.** O backlog: wikis (Arma 3 com motor
   refeito, Project Zomboid), parser framework Lua/SQF, Baluarte Social, IDE web,
   3D engine, Knowledge Engine, MCP.
 
-Regra prática: **#420 = a forma · #422 = a lista.** Ideia de produto novo para a
-V2 vai para o #422; decisão arquitetural vai para o #420 e vira ADR.
+Regra prática: **#423 = a ordem · #420 = a forma · #422 = a lista.** Ideia de
+produto novo para a V2 vai para o #422; decisão arquitetural vai para o #420 e
+vira ADR; *como e em que ordem construir* está no #423.
+
+> ⚠️ **Issue antiga é matéria-prima, não requisito** (#423 §3). As 53 abertas
+> foram trianguladas em [`docs/TRIAGEM-1.0.0.md`](docs/TRIAGEM-1.0.0.md): nenhuma
+> descreve defeito no que está marcado estável. Não as transforme em backlog da
+> V2 por existirem.
 
 ## ⚠️ Sessão LOCAL (com skills)? Leia primeiro
 
@@ -62,7 +79,7 @@ motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 - `historico/CHANGELOG.md` — registro do que entra no `main`
 - `docs/DESIGN-SYSTEM.md` — **contrato visual** (tokens/componentes/diretrizes do redesign #246/#195); todo design novo sai daqui · `docs/REACT-BITS.md` (efeitos) · `docs/CENTRO-MILITAR.md` (hub militar)
 - **Migração Nexus** (#405/#406): `docs/NEXUS-INVENTARIO.md` (estado real + gate da 1.0.0) · `docs/NEXUS-CONTRATO.md` (contrato v1.0.0) · `docs/NEXUS-DECISOES.md` (decisões fechadas — não re-litigar) · `docs/nexus/dominios.json` (mapa dos **21** domínios + externos, cobrado por `npm run verificar-nexus`). Os repositórios `baluarte-*` existem mas estão **vazios** — enquanto um domínio não estiver `estavel`, **a versão que vale é a deste repositório**.
-- Issues guarda-chuva (**não fechar**): **#420** (hardening 1.0.0 + arquitetura da V2 · *fase atual*) · **#422** (produtos/backlog da V2) · **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign) · **#406** (Nexus/migração)
+- Issues guarda-chuva (**não fechar**): 📌 **#423** (Master Construction Plan da V2 — *fixada*) · 📌 **#420** (hardening 1.0.0 + arquitetura da V2 — *fixada, fase atual*) · 📌 **#422** (produtos/backlog da V2 — *fixada*) · **#248** (manual/regras) · **#240** (roadmap/fila) · **#238** (app completo/site leve) · **#222** (app desktop) · **#231** (JARVIS↔Git Nexus) · **#195** (redesign) · **#406** (Nexus/migração)
 
 ## Regras do projeto
 
