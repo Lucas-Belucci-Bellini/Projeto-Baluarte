@@ -21,6 +21,7 @@ core/
   config.js     declarada, com faixa e SEGREDO que não vaza 19 testes · 6 mutantes
   api.js        contratos entre módulos: usar() declarado     18 testes · 6 mutantes
   metricas.js   contagem e tempo, com teto de cardinalidade   17 testes · 6 mutantes
+  trabalho.js   concorrência: teto, cancelamento, justiça     19 testes · 7 mutantes
 modules/
   cripto/       o caso fácil (prova que o formato serve)
   editor/       o caso do acoplamento (JARVIS escreve na chave dele)
