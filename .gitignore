@@ -43,3 +43,8 @@ GitNexus-1.6.7/
 # para sempre, e o site não referencia nenhum destes.
 *.mp4
 *.mov
+
+# Alvos de compilação Rust (v2/bench/*/target). O .wasm e o binário são
+# gerados — o que vale versionar é o fonte e os RESULTADOS.md.
+target/
+Cargo.lock

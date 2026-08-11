@@ -1,5 +1,25 @@
 # V2 — Decisões de stack
 
+> # ⛔ SUPERADO por [`V2_STACK_REVIEW.md`](./V2_STACK_REVIEW.md) e pelo [ADR-004](../architecture/decisions/ADR-004-stack-poliglota-por-responsabilidade.md)
+>
+> **O que este documento errou, e vale saber por quê.** Ele tentou responder à
+> diretriz de reavaliar o stack e concluiu "três linguagens, cada uma com sua
+> responsabilidade" — mas **nunca perguntou se o Core deveria ser JavaScript**.
+> Assumiu que sim, porque a V1 é. O operador viu:
+>
+> > *"ele ainda está entendendo a V2 como uma reconstrução arquitetural
+> > principalmente dentro do stack atual […] A V1 é uma referência de
+> > comportamento e dados. Ela não é uma referência obrigatória de arquitetura ou
+> > linguagem."*
+>
+> A revisão nova mede em vez de supor, e chega a **cinco** mudanças de
+> linguagem que esta análise não viu — inclusive um sistema inteiro que não
+> existia (o Core de Runtime, em Rust) e a migração de Electron para Tauri.
+>
+> Fica no repositório em vez de ser apagado: o inventário da §1 continua correto
+> e é a base da revisão nova, e o erro de método — *reavaliar o stack sem
+> questionar a premissa* — é mais útil registrado do que sumido.
+
 > **Diretriz do operador (2026-08-10):** *"Não quero que JavaScript seja mantido
 > simplesmente porque a maior parte da V1 foi escrita em JavaScript. […] Não
 > quero trocar linguagens por trocar. Quero que cada linguagem tenha uma

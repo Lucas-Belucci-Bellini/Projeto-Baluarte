@@ -309,3 +309,95 @@ test('sinal JÁ abortado no enfileiramento não executa a função', async () =>
   );
   assert.equal(rodou, false, 'executou uma tarefa com sinal já abortado');
 });
+
+/* ═══════════ o defeito que só aparece sob carga ═══════════ */
+
+test('ESCALA: 20 000 tarefas não podem virar O(n²)', async () => {
+  /* Este teste existe por um defeito real que passou por 19 testes verdes.
+   *
+   * A primeira versão escolhia o próximo varrendo a fila inteira e retirava com
+   * `splice` — O(n) e O(n), ou seja O(n²) no total. Com três tarefas, invisível.
+   * Com 50 000, o banco de medição mostrou **1073 µs por tarefa trivial**: 53
+   * segundos para a leva. Depois do monte: 4 µs.
+   *
+   * A asserção é sobre TEMPO, o que normalmente é teste frágil — e aqui é o
+   * único jeito de expressar o defeito, porque o resultado estava correto: só
+   * demorava mil vezes mais. O limite é folgado de propósito (a versão
+   * quadrática levaria ~8 s só com 20 000; a linear leva ~80 ms), então máquina
+   * lenta não deixa isto instável. É a Regra 10 dos testes: para código
+   * concorrente, pense no caso de mil. */
+  const e = criarEscalonador({ limite: 8, tetoFila: 50_000 });
+
+  const t0 = Date.now();
+  const todas = [];
+  for (let i = 0; i < 20_000; i++) todas.push(e.enfileirar('carga', 't', () => i));
+  const r = await Promise.all(todas);
+  const ms = Date.now() - t0;
+
+  assert.equal(r.length, 20_000);
+  assert.equal(e.estado().naFila, 0, 'sobrou tarefa na fila');
+  assert.ok(ms < 3000, `20 000 tarefas levaram ${ms} ms — a seleção voltou a ser quadrática`);
+});
+
+test('ESCALA: cancelar 10 000 na fila também não pode ser O(n²)', async () => {
+  /* O outro extremo do mesmo defeito: retirar do monte caçando o elemento
+   * seria O(n) por cancelamento. A retirada é preguiçosa — marca e desconta
+   * agora, descarta na vez dela. */
+  const e = criarEscalonador({ limite: 1, tetoFila: 50_000 });
+  const bloqueio = e.enfileirar('a', 'trava', () => new Promise((r) => setTimeout(r, 60)));
+
+  const ctrls = [];
+  const promessas = [];
+  for (let i = 0; i < 10_000; i++) {
+    const c = new AbortController();
+    ctrls.push(c);
+    promessas.push(e.enfileirar('a', 't', () => i, { sinal: c.signal }).catch(() => 'cancelada'));
+  }
+  assert.equal(e.estado().naFila, 10_000);
+
+  const t0 = Date.now();
+  for (const c of ctrls) c.abort();
+  const ms = Date.now() - t0;
+
+  assert.equal(e.estado().naFila, 0, 'o cancelamento não devolveu os lugares');
+  assert.ok(ms < 2000, `cancelar 10 000 levou ${ms} ms — a retirada voltou a ser linear`);
+
+  await bloqueio;
+  assert.deepEqual([...new Set(await Promise.all(promessas))], ['cancelada']);
+});
+
+test('entrada obsoleta no monte não inverte prioridade ENTRE módulos', async () => {
+  /* Mutante que sobreviveu: apagar a checagem de "entrada obsoleta" não fazia
+   * nenhum dos 21 testes cair. Ela parecia otimização e não é.
+   *
+   * O monte de candidatos guarda a chave da CABEÇA no momento em que a entrada
+   * foi empurrada. Se aquela cabeça sair (cancelada, por exemplo), a entrada
+   * fica valendo mais do que o módulo merece — e o módulo passa na frente de
+   * outro com trabalho mais urgente. Ordem de prioridade quebrada em silêncio:
+   * o resultado sai certo, na ordem errada.
+   *
+   * Cenário mínimo: A anuncia INTERATIVO e cancela; sobra FUNDO. B chega com
+   * NORMAL. Sem a checagem, a entrada velha de A (INTERATIVO) vence a de B. */
+  const e = criarEscalonador({ limite: 1, limitePorModulo: 1 });
+
+  let liberar;
+  const trava = e.enfileirar('trava', 'x', () => new Promise((r) => { liberar = r; }));
+  await espera(5);                                     // garante que a trava pegou a vaga
+
+  const ctrl = new AbortController();
+  const cancelada = e.enfileirar('a', 'interativa', () => 'não roda',
+    { prioridade: 10, sinal: ctrl.signal }).catch(() => 'cancelada');
+
+  const ordem = [];
+  const fundoA = e.enfileirar('a', 'fundo', () => { ordem.push('a-fundo'); }, { prioridade: 500 });
+  const normalB = e.enfileirar('b', 'normal', () => { ordem.push('b-normal'); }, { prioridade: 100 });
+
+  ctrl.abort();                                        // a cabeça de "a" some
+  await cancelada;
+
+  liberar();
+  await Promise.all([trava, fundoA, normalB]);
+
+  assert.deepEqual(ordem, ['b-normal', 'a-fundo'],
+    'o módulo "a" passou na frente com uma entrada de prioridade que ele não tem mais');
+});
