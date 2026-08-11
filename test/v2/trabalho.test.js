@@ -312,58 +312,78 @@ test('sinal JÁ abortado no enfileiramento não executa a função', async () =>
 
 /* ═══════════ o defeito que só aparece sob carga ═══════════ */
 
-test('ESCALA: 20 000 tarefas não podem virar O(n²)', async () => {
+test('ESCALA: a seleção do próximo não pode voltar a ser O(n²)', async () => {
   /* Este teste existe por um defeito real que passou por 19 testes verdes.
    *
    * A primeira versão escolhia o próximo varrendo a fila inteira e retirava com
    * `splice` — O(n) e O(n), ou seja O(n²) no total. Com três tarefas, invisível.
    * Com 50 000, o banco de medição mostrou **1073 µs por tarefa trivial**: 53
-   * segundos para a leva. Depois do monte: 4 µs.
+   * segundos para a leva. Depois dos montes: 4 µs.
    *
-   * A asserção é sobre TEMPO, o que normalmente é teste frágil — e aqui é o
-   * único jeito de expressar o defeito, porque o resultado estava correto: só
-   * demorava mil vezes mais. O limite é folgado de propósito (a versão
-   * quadrática levaria ~8 s só com 20 000; a linear leva ~80 ms), então máquina
-   * lenta não deixa isto instável. É a Regra 10 dos testes: para código
-   * concorrente, pense no caso de mil. */
-  const e = criarEscalonador({ limite: 8, tetoFila: 50_000 });
+   * ── Por que a asserção é de RAZÃO e não de relógio ────────────────────────
+   * A primeira versão deste teste afirmava `ms < 3000`. Media 803 ms aqui, o
+   * que parece folgado — e não é: runner compartilhado 4× mais lento reprova, e
+   * teste que falha por máquina lenta ensina todo mundo a apertar "re-run".
+   *
+   * A razão se calibra sozinha: dobrando a carga, o linear dobra o tempo e o
+   * quadrático quadruplica. O limiar fica no meio, longe dos dois. */
+  const rodar = async (n) => {
+    const e = criarEscalonador({ limite: 8, tetoFila: n + 10 });
+    const t0 = Date.now();
+    const todas = [];
+    for (let i = 0; i < n; i++) todas.push(e.enfileirar('carga', 't', () => i));
+    const r = await Promise.all(todas);
+    const ms = Date.now() - t0;
+    assert.equal(r.length, n);
+    assert.equal(e.estado().naFila, 0, 'sobrou tarefa na fila');
+    return ms;
+  };
 
-  const t0 = Date.now();
-  const todas = [];
-  for (let i = 0; i < 20_000; i++) todas.push(e.enfileirar('carga', 't', () => i));
-  const r = await Promise.all(todas);
-  const ms = Date.now() - t0;
+  await rodar(2000);                       // aquece o JIT fora da medição
+  const pequeno = Math.max(await rodar(5000), 5);   // piso: evita dividir por ruído
+  const grande = await rodar(20_000);      // 4× a carga
 
-  assert.equal(r.length, 20_000);
-  assert.equal(e.estado().naFila, 0, 'sobrou tarefa na fila');
-  assert.ok(ms < 3000, `20 000 tarefas levaram ${ms} ms — a seleção voltou a ser quadrática`);
+  /* Linear → ~4×. Quadrático → ~16×. O limiar em 9 fica a meio caminho dos dois
+   * em escala logarítmica: nem o ruído reprova, nem o quadrático passa. */
+  const razao = grande / pequeno;
+  assert.ok(razao < 9,
+    `4× a carga custou ${razao.toFixed(1)}× o tempo (${pequeno}→${grande} ms) — a seleção voltou a ser quadrática`);
 });
 
-test('ESCALA: cancelar 10 000 na fila também não pode ser O(n²)', async () => {
-  /* O outro extremo do mesmo defeito: retirar do monte caçando o elemento
-   * seria O(n) por cancelamento. A retirada é preguiçosa — marca e desconta
-   * agora, descarta na vez dela. */
-  const e = criarEscalonador({ limite: 1, tetoFila: 50_000 });
-  const bloqueio = e.enfileirar('a', 'trava', () => new Promise((r) => setTimeout(r, 60)));
+test('ESCALA: cancelar em massa também não pode ser O(n²)', async () => {
+  /* O outro extremo do mesmo defeito: retirar do monte caçando o elemento seria
+   * O(n) por cancelamento. A retirada é preguiçosa — marca e desconta agora,
+   * descarta na vez dele. Mesma asserção de razão, mesmo motivo. */
+  const cancelar = async (n) => {
+    const e = criarEscalonador({ limite: 1, tetoFila: n + 10 });
+    const trava = e.enfileirar('a', 'trava', () => new Promise((r) => setTimeout(r, 40)));
 
-  const ctrls = [];
-  const promessas = [];
-  for (let i = 0; i < 10_000; i++) {
-    const c = new AbortController();
-    ctrls.push(c);
-    promessas.push(e.enfileirar('a', 't', () => i, { sinal: c.signal }).catch(() => 'cancelada'));
-  }
-  assert.equal(e.estado().naFila, 10_000);
+    const ctrls = [];
+    const promessas = [];
+    for (let i = 0; i < n; i++) {
+      const c = new AbortController();
+      ctrls.push(c);
+      promessas.push(e.enfileirar('a', 't', () => i, { sinal: c.signal }).catch(() => 'cancelada'));
+    }
+    assert.equal(e.estado().naFila, n);
 
-  const t0 = Date.now();
-  for (const c of ctrls) c.abort();
-  const ms = Date.now() - t0;
+    const t0 = Date.now();
+    for (const c of ctrls) c.abort();
+    const ms = Date.now() - t0;
 
-  assert.equal(e.estado().naFila, 0, 'o cancelamento não devolveu os lugares');
-  assert.ok(ms < 2000, `cancelar 10 000 levou ${ms} ms — a retirada voltou a ser linear`);
+    assert.equal(e.estado().naFila, 0, 'o cancelamento não devolveu os lugares');
+    await trava;
+    assert.deepEqual([...new Set(await Promise.all(promessas))], ['cancelada']);
+    return ms;
+  };
 
-  await bloqueio;
-  assert.deepEqual([...new Set(await Promise.all(promessas))], ['cancelada']);
+  await cancelar(1000);
+  const pequeno = Math.max(await cancelar(2500), 5);
+  const grande = await cancelar(10_000);
+
+  const razao = grande / pequeno;
+  assert.ok(razao < 9,
+    `4× os cancelamentos custaram ${razao.toFixed(1)}× o tempo (${pequeno}→${grande} ms) — a retirada voltou a ser linear`);
 });
 
 test('entrada obsoleta no monte não inverte prioridade ENTRE módulos', async () => {
