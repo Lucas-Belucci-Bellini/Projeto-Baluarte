@@ -26,6 +26,34 @@ meados de 2027.
 — overview, `v2-vision.md` (**bússola, não obra**: diz o que *não* fazer agora) e
 os ADRs (decisões fechadas, não re-litigar).
 
+### 🧭 Antes de escrever qualquer linha da V2: o stack já foi decidido, e medido
+
+👉 **[`docs/v2/V2_STACK_REVIEW.md`](docs/v2/V2_STACK_REVIEW.md)** + **[ADR-004](docs/architecture/decisions/ADR-004-stack-poliglota-por-responsabilidade.md)**
+
+A V2 **não é JavaScript por padrão**. O princípio em vigor, do operador: *"A V1 é
+uma referência de comportamento e dados. Ela **não** é uma referência obrigatória
+de arquitetura ou linguagem."* Cada camada tem a linguagem escolhida pela função
+que exerce, com benchmark em [`v2/bench/`](v2/bench/) — dá para rodar de novo:
+
+| camada | linguagem | |
+| --- | --- | --- |
+| interface web e 3D | **TypeScript** | hoje JSDoc+`checkJs` (etapa 1) |
+| Core de **Orquestração** (navegador) | **TypeScript** | WASM mediu **4,7× mais lento** no despacho real |
+| Core de **Runtime** (processo local) | **Rust** | ⚠️ **ainda não existe** — é o próximo grande passo |
+| IA, coleta, automação | **Python** | ecossistema é a razão inteira |
+| parsers binários (`.p3d`/`.pbo`) | **Rust** | Python é 140× mais lento em laço de byte |
+| dados e fila entre processos | **PostgreSQL** | `SKIP LOCKED`, sem broker |
+| app desktop | **Tauri (Rust)** | migra do Electron, **pós-1.0.0** |
+
+Go, C e C++ ficam de fora, com motivo escrito no ADR. **A fronteira entre
+linguagens vai onde o volume por travessia é alto e a frequência é baixa** — onde
+a frequência é alta e o volume é baixo, a fronteira é o gargalo.
+
+> A lição mais cara da Fase 0: o escalonador media **1073 µs** por tarefa e virou
+> **4,0 µs** — 265× mais rápido, **em JavaScript**, porque o defeito era O(n²).
+> Trocar de linguagem para consertar algoritmo é pagar caro por um conserto que
+> não aconteceu. **Meça antes de culpar a linguagem.**
+
 ### 📐 Os três planos da V2 (**não fechar** nenhum dos três · são os FIXADOS)
 
 O operador **fixou estes três no topo do repositório** justamente para serem o
