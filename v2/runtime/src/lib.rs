@@ -5,6 +5,7 @@
 
 use std::fs;
 use std::path::{Component, Path, PathBuf};
+use std::str::FromStr;
 
 /// Capacidades reconhecidas pelo contrato V2.
 ///
@@ -34,7 +35,39 @@ impl Capability {
             Self::Execution => "EXECUTION",
         }
     }
+
+    pub const fn implemented(self) -> bool {
+        matches!(self, Self::ReadFiles)
+    }
 }
+
+impl FromStr for Capability {
+    type Err = UnknownCapability;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "READ_FILES" => Ok(Self::ReadFiles),
+            "WRITE_FILES" => Ok(Self::WriteFiles),
+            "NETWORK" => Ok(Self::Network),
+            "DATABASE" => Ok(Self::Database),
+            "SYSTEM_INFO" => Ok(Self::SystemInfo),
+            "USER_DATA" => Ok(Self::UserData),
+            "EXECUTION" => Ok(Self::Execution),
+            _ => Err(UnknownCapability(value.to_owned())),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct UnknownCapability(pub String);
+
+impl std::fmt::Display for UnknownCapability {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "capacidade desconhecida: {}", self.0)
+    }
+}
+
+impl std::error::Error for UnknownCapability {}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RuntimeState {
@@ -71,6 +104,19 @@ impl std::fmt::Display for RuntimeError {
 
 impl std::error::Error for RuntimeError {}
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RuntimePolicyError {
+    pub unknown: Vec<String>,
+}
+
+impl std::fmt::Display for RuntimePolicyError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "capacidades desconhecidas: {}", self.unknown.join(", "))
+    }
+}
+
+impl std::error::Error for RuntimePolicyError {}
+
 #[derive(Debug, Clone)]
 pub struct RuntimePolicy {
     root: PathBuf,
@@ -85,6 +131,28 @@ impl RuntimePolicy {
         }
     }
 
+    /// Constrói a política a partir dos nomes que virão do manifesto do módulo.
+    /// Nomes desconhecidos são rejeitados; o Runtime nunca ignora silenciosamente
+    /// uma permissão escrita pelo consumidor.
+    pub fn from_names(
+        root: impl Into<PathBuf>,
+        names: impl IntoIterator<Item = impl AsRef<str>>,
+    ) -> Result<Self, RuntimePolicyError> {
+        let mut capabilities = Vec::new();
+        let mut unknown = Vec::new();
+        for name in names {
+            match Capability::from_str(name.as_ref()) {
+                Ok(capability) if !capabilities.contains(&capability) => capabilities.push(capability),
+                Ok(_) => {}
+                Err(_) => unknown.push(name.as_ref().to_owned()),
+            }
+        }
+        if !unknown.is_empty() {
+            return Err(RuntimePolicyError { unknown });
+        }
+        Ok(Self::new(root, capabilities))
+    }
+
     pub fn has(&self, capability: Capability) -> bool {
         self.capabilities.contains(&capability)
     }
@@ -95,9 +163,6 @@ impl RuntimePolicy {
 
     fn confined_file(&self, relative: impl AsRef<Path>) -> Result<PathBuf, RuntimeError> {
         let relative = relative.as_ref();
-
-        // O contrato aceita apenas caminhos relativos. Isto evita que uma
-        // string absoluta substitua a raiz autorizada antes do confinamento.
         if relative.is_absolute()
             || relative.components().any(|component| {
                 matches!(component, Component::RootDir | Component::Prefix(_))
@@ -129,25 +194,13 @@ pub struct Runtime {
 }
 
 impl Runtime {
-    /// Um Runtime recém-criado está pronto para receber operações.
     pub fn new(policy: RuntimePolicy) -> Self {
-        Self {
-            policy,
-            state: RuntimeState::Running,
-        }
+        Self { policy, state: RuntimeState::Running }
     }
 
-    pub fn state(&self) -> RuntimeState {
-        self.state
-    }
-
-    pub fn start(&mut self) {
-        self.state = RuntimeState::Running;
-    }
-
-    pub fn stop(&mut self) {
-        self.state = RuntimeState::Stopped;
-    }
+    pub fn state(&self) -> RuntimeState { self.state }
+    pub fn start(&mut self) { self.state = RuntimeState::Running; }
+    pub fn stop(&mut self) { self.state = RuntimeState::Stopped; }
 
     pub fn read_file(&self, relative: impl AsRef<Path>) -> Result<Vec<u8>, RuntimeError> {
         if self.state != RuntimeState::Running {
@@ -161,10 +214,6 @@ impl Runtime {
     }
 }
 
-/// Primeiro contrato lógico da fronteira Runtime ↔ Orquestração.
-///
-/// O transporte permanece deliberadamente indefinido nesta fase. Tauri/IPC
-/// só deve ser escolhido quando o contrato estiver estável.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RuntimeRequest {
     ReadFile { path: String },
@@ -201,14 +250,31 @@ mod tests {
     }
 
     #[test]
-    fn capability_names_are_stable() {
-        assert_eq!(Capability::ReadFiles.as_str(), "READ_FILES");
-        assert_eq!(Capability::WriteFiles.as_str(), "WRITE_FILES");
-        assert_eq!(Capability::Network.as_str(), "NETWORK");
-        assert_eq!(Capability::Database.as_str(), "DATABASE");
-        assert_eq!(Capability::SystemInfo.as_str(), "SYSTEM_INFO");
-        assert_eq!(Capability::UserData.as_str(), "USER_DATA");
-        assert_eq!(Capability::Execution.as_str(), "EXECUTION");
+    fn capability_names_are_stable_and_round_trip() {
+        let all = [
+            Capability::ReadFiles, Capability::WriteFiles, Capability::Network,
+            Capability::Database, Capability::SystemInfo, Capability::UserData,
+            Capability::Execution,
+        ];
+        for capability in all {
+            assert_eq!(Capability::from_str(capability.as_str()).unwrap(), capability);
+        }
+        assert!(Capability::ReadFiles.implemented());
+        assert!(!Capability::Execution.implemented());
+    }
+
+    #[test]
+    fn unknown_capability_is_rejected() {
+        let (_dir, root) = fixture();
+        let error = RuntimePolicy::from_names(root, ["READ_FILES", "MAGIC_ROOT"]).unwrap_err();
+        assert_eq!(error.unknown, vec!["MAGIC_ROOT"]);
+    }
+
+    #[test]
+    fn duplicate_capabilities_are_collapsed() {
+        let (_dir, root) = fixture();
+        let policy = RuntimePolicy::from_names(root, ["READ_FILES", "READ_FILES"]).unwrap();
+        assert!(policy.has(Capability::ReadFiles));
     }
 
     #[test]
@@ -223,8 +289,7 @@ mod tests {
     #[test]
     fn new_runtime_starts_running() {
         let (_dir, root) = fixture();
-        let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
-        assert_eq!(runtime.state(), RuntimeState::Running);
+        assert_eq!(Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles])).state(), RuntimeState::Running);
     }
 
     #[test]
@@ -232,7 +297,6 @@ mod tests {
         let (_dir, root) = fixture();
         let mut runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
         runtime.stop();
-        assert_eq!(runtime.state(), RuntimeState::Stopped);
         assert_eq!(runtime.read_file("hello.txt"), Err(RuntimeError::RuntimeStopped));
     }
 
@@ -256,10 +320,7 @@ mod tests {
     fn denies_read_without_capability() {
         let (_dir, root) = fixture();
         let runtime = Runtime::new(RuntimePolicy::new(root, []));
-        assert_eq!(
-            runtime.read_file("hello.txt"),
-            Err(RuntimeError::CapabilityDenied(Capability::ReadFiles))
-        );
+        assert_eq!(runtime.read_file("hello.txt"), Err(RuntimeError::CapabilityDenied(Capability::ReadFiles)));
     }
 
     #[test]
@@ -267,40 +328,28 @@ mod tests {
         let (_dir, root) = fixture();
         fs::write(_dir.path().join("outside.txt"), b"fora").expect("outside fixture");
         let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
-        assert!(matches!(
-            runtime.read_file("../outside.txt"),
-            Err(RuntimeError::PathOutsideRoot)
-        ));
+        assert!(matches!(runtime.read_file("../outside.txt"), Err(RuntimeError::PathOutsideRoot)));
     }
 
     #[test]
     fn rejects_absolute_path() {
         let (_dir, root) = fixture();
         let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
-        assert_eq!(
-            runtime.read_file("/etc/passwd"),
-            Err(RuntimeError::InvalidPath)
-        );
+        assert_eq!(runtime.read_file("/etc/passwd"), Err(RuntimeError::InvalidPath));
     }
 
     #[test]
     fn handle_maps_success_to_contract_response() {
         let (_dir, root) = fixture();
         let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
-        assert_eq!(
-            runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }),
-            RuntimeResponse::FileContents(b"baluarte".to_vec())
-        );
+        assert_eq!(runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }), RuntimeResponse::FileContents(b"baluarte".to_vec()));
     }
 
     #[test]
     fn handle_maps_denial_to_contract_response() {
         let (_dir, root) = fixture();
         let runtime = Runtime::new(RuntimePolicy::new(root, []));
-        assert_eq!(
-            runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }),
-            RuntimeResponse::Error(RuntimeError::CapabilityDenied(Capability::ReadFiles))
-        );
+        assert_eq!(runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }), RuntimeResponse::Error(RuntimeError::CapabilityDenied(Capability::ReadFiles)));
     }
 
     #[test]
@@ -308,9 +357,6 @@ mod tests {
         let (_dir, root) = fixture();
         let mut runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
         runtime.stop();
-        assert_eq!(
-            runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }),
-            RuntimeResponse::Error(RuntimeError::RuntimeStopped)
-        );
+        assert_eq!(runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }), RuntimeResponse::Error(RuntimeError::RuntimeStopped));
     }
 }
