@@ -2,8 +2,7 @@
 
 ## Objetivo
 
-Definir a fronteira lógica entre o Core de Orquestração e o Core de Runtime sem
-acoplar a API a um transporte específico.
+Definir a fronteira lógica entre o Core de Orquestração e o Core de Runtime sem acoplar a API a um transporte específico.
 
 ## Estado do Runtime
 
@@ -14,13 +13,11 @@ Running  <── start() ──>  Stopped
              stop()
 ```
 
-Uma operação recebida enquanto o Runtime está `Stopped` falha com
-`RuntimeStopped`. Isso permite que o transporte futuro tenha um comportamento
-claro durante desligamento, reinício e supervisão.
+Uma operação recebida enquanto o Runtime está `Stopped` falha com `RuntimeStopped`. Isso dá ao transporte futuro um comportamento claro durante desligamento, reinício e supervisão.
 
 ## Capacidades
 
-O vocabulário de autorização do contrato é:
+O vocabulário de autorização é:
 
 ```text
 READ_FILES
@@ -32,10 +29,11 @@ USER_DATA
 EXECUTION
 ```
 
-**Somente `READ_FILES` possui uma operação implementada neste corte.** Os demais
-nomes são parte do vocabulário estável de permissões, não permissões implícitas.
-Uma capacidade nova só ganha comportamento depois de uma implementação e testes
-específicos.
+Somente `READ_FILES` possui operação implementada neste corte. Os demais nomes são vocabulário estável de permissões, não permissões implícitas.
+
+O Runtime aceita nomes de capacidades vindos do manifesto por `RuntimePolicy::from_names()`. Nomes desconhecidos são rejeitados; permissões duplicadas são normalizadas. O consumidor não pode inventar uma capacidade e esperar que ela seja ignorada silenciosamente.
+
+Cada capacidade também declara se possui implementação (`Capability::implemented()`). Isso permite distinguir uma permissão concedida de uma operação que ainda não existe.
 
 ## Requisições atuais
 
@@ -55,8 +53,7 @@ Error(error)
 Erros relevantes:
 
 - `CapabilityDenied` — a capacidade necessária não foi concedida;
-- `CapabilityNotImplemented` — a capacidade existe no vocabulário, mas a
-  operação ainda não foi implementada;
+- `CapabilityNotImplemented` — a capacidade existe no vocabulário, mas a operação ainda não foi implementada;
 - `RuntimeStopped` — o Runtime não está aceitando operações;
 - `InvalidPath` — o pedido não é um caminho relativo válido;
 - `PathOutsideRoot` — o caminho resolvido escaparia da raiz autorizada;
@@ -68,12 +65,10 @@ Erros relevantes:
 1. O consumidor não acessa o filesystem diretamente.
 2. Cada nova operação precisa de uma capacidade explícita.
 3. A capacidade deve ser verificada no Runtime, e não apenas no consumidor.
-4. O contrato lógico deve ser testado antes de escolher IPC, Tauri ou
-   serialização.
-5. Não adicionar capacidades apenas porque serão úteis para um módulo futuro.
-6. Mudanças incompatíveis devem ser registradas em ADR antes de migrar
-   consumidores.
-7. O transporte não pode conceder uma capacidade que a `RuntimePolicy` não
-   concedeu.
-8. `Stopped` é uma barreira operacional: requisições não devem ser enfileiradas
-   silenciosamente para execução posterior.
+4. Nomes de capacidade desconhecidos devem ser rejeitados no limite do Runtime.
+5. O contrato lógico deve ser testado antes de escolher IPC, Tauri ou serialização.
+6. Não adicionar capacidades apenas porque serão úteis para um módulo futuro.
+7. Mudanças incompatíveis devem ser registradas em ADR antes de migrar consumidores.
+8. O transporte não pode conceder uma capacidade que a `RuntimePolicy` não concedeu.
+9. `Stopped` é uma barreira operacional: requisições não devem ser enfileiradas silenciosamente para execução posterior.
+10. Uma capacidade declarada não significa que sua operação já esteja disponível.
