@@ -8,6 +8,8 @@
  * `massa` não existe aqui de propósito: vem null em 100% do dump.
  */
 
+import { buscarDataset } from '../core/dados-remotos.js';
+
 export const A3VEI = [
   { id: "o-mbt-02-arty-f", classe: "O_MBT_02_arty_F", nome: "2S9 Sochor", categoria: "blindado", categoriaFonte: "classeVeiculo", dlc: "Base", dlcFonte: "caminho", lado: "OPFOR", faccao: "CSAT", armor: 425, armorEstrutural: 4.5, blindagem: { partes: 3, menor: 0.5, menorParte: "Fuel", maior: 2, relativas: 0 }, maxSpeed: 75, potencia: 1045, lotacao: 0, cargaMax: 3000, combustivel: 99, custo: 2500000, armas: 1, imagem: "/A3/armor_f_gamma/MBT_02/Data/ui/MBT_02_Arty_ca.paa" },
   { id: "o-t-mbt-02-arty-ghex-f", classe: "O_T_MBT_02_arty_ghex_F", nome: "2S9 Sochor", categoria: "blindado", categoriaFonte: "classeVeiculo", dlc: "Base", dlcFonte: "caminho", lado: "OPFOR", faccao: "CSAT (Pacific)", armor: 425, armorEstrutural: 4.5, blindagem: { partes: 3, menor: 0.5, menorParte: "Fuel", maior: 2, relativas: 0 }, maxSpeed: 75, potencia: 1045, lotacao: 0, cargaMax: 3000, combustivel: 99, custo: 2500000, armas: 1, imagem: "/A3/armor_f_gamma/MBT_02/Data/ui/MBT_02_Arty_ca.paa" },
@@ -896,8 +898,7 @@ export const A3VEI_META = { porCategoria: { estatico: 596, naval: 138, terrestre
 let _db = null;
 export function carregarVeiculos() {
   if (!_db) {
-    _db = fetch(A3VEI_META.dbUrl)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    _db = buscarDataset(A3VEI_META.dbUrl, { rotulo: 'a base de veículos do Arma 3' })
       .catch((err) => { _db = null; throw err; });
   }
   return _db;

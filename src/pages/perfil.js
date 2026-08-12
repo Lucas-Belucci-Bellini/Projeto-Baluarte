@@ -21,9 +21,34 @@ import { UNIVERSE_SKINS, getUniverseId, setUniverse } from '../utils/universe-th
 import { supabaseConfigured } from '../core/supabase.js';
 import { isLoggedIn, currentUser, signInWithGoogle, signOut } from '../core/supabase-auth.js';
 import { loadProfile, saveProfile } from '../core/user-prefs.js';
+import { montarBackup, resumoBackup, validarBackup, restaurarBackup, nomeDoArquivo } from '../core/backup.js';
 import { PERFIS } from '../data/perfis.js';
 
 const STORAGE_KEY = 'perfil:config';
+
+/**
+ * Varre o cache da Wikipédia gravado FORA do namespace, por versões anteriores
+ * à 1.0.0-rc.
+ *
+ * Até aqui `utils/wikipedia.js` gravava `wiki:sum:pt:Título` cru, sem o
+ * `baluarte:`. Como este botão sempre filtrou pelo prefixo, ele nunca alcançou
+ * essas chaves: o operador pedia para apagar tudo, lia "todos os dados locais
+ * foram apagados", e o registro do que ele consultou continuava no disco.
+ * Agora a gravação é namespaced; isto aqui limpa o que ficou para trás.
+ *
+ * **Descartável depois da 1.0.0** — quando ninguém mais tiver cache antigo, é
+ * só apagar esta função.
+ */
+function limparCacheWikiLegado() {
+  try {
+    const antigas = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('wiki:sum:')) antigas.push(k);
+    }
+    antigas.forEach((k) => localStorage.removeItem(k));
+  } catch { /* sem localStorage — nada a limpar */ }
+}
 
 function loadConfig() {
   return storage.get(STORAGE_KEY) || {
@@ -300,17 +325,84 @@ export function perfilPage() {
         '🌌 15 universos com skin completo — cor, tipografia, formas e atmosfera próprias.'),
       toggle('reduceMotion', 'Reduzir animações', 'Desativa transições e efeitos de movimento.'),
       toggle('confirmActions', 'Confirmar ações destrutivas', 'Pede confirmação antes de limpar dados.'),
+      /* Exportar/importar vem ANTES do "limpar", e a ordem é o argumento: quem
+       * chega aqui pensando em apagar tudo passa primeiro pela opção de salvar.
+       * "Recuperável" é uma das quatro palavras da definição da 1.0.0, e até
+       * agora esta tela só sabia destruir. */
+      h('div', { className: 'pf-backup' },
+        h('button', {
+          className: 'btn btn--ghost btn--sm',
+          onclick: () => {
+            try {
+              const backup = montarBackup();
+              const { total, sensiveis } = resumoBackup(backup);
+              if (!total) { toast('Não há dado local para exportar', { type: 'warning' }); return; }
+
+              const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = h('a', { href: url, download: nomeDoArquivo() });
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              /* Sem revoke imediato: em alguns navegadores o download ainda não
+               * leu o blob quando o clique retorna, e revogar cedo baixa 0 byte. */
+              setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+              toast(sensiveis
+                ? `${total} chaves exportadas — ${sensiveis} contêm dado sensível (chaves de API, conversas). Guarde o arquivo como guardaria uma senha.`
+                : `${total} chaves exportadas`,
+              { type: sensiveis ? 'warning' : 'success' });
+            } catch (err) {
+              console.warn('[perfil] falha ao exportar:', err);
+              toast('Não foi possível gerar o backup', { type: 'error' });
+            }
+          }
+        }, '⬇ Exportar meus dados'),
+
+        h('button', {
+          className: 'btn btn--ghost btn--sm',
+          onclick: () => {
+            const entrada = h('input', { type: 'file', accept: 'application/json,.json' });
+            entrada.onchange = async () => {
+              const arquivo = entrada.files && entrada.files[0];
+              if (!arquivo) return;
+              let obj;
+              try {
+                obj = JSON.parse(await arquivo.text());
+              } catch {
+                toast('O arquivo não é um JSON válido', { type: 'error' });
+                return;
+              }
+              const v = validarBackup(obj);
+              if (!v.ok) { toast(v.erro, { type: 'error' }); return; }
+
+              const { total } = resumoBackup(obj);
+              if (!confirm(`Importar ${total} chaves deste backup? O que estiver gravado agora nessas chaves será SUBSTITUÍDO.`)) return;
+
+              const { restauradas, ignoradas } = restaurarBackup(obj);
+              if (ignoradas.length) {
+                console.warn('[perfil] chaves ignoradas na importação:', ignoradas);
+              }
+              toast(ignoradas.length
+                ? `${restauradas.length} restauradas · ${ignoradas.length} ignoradas (ver console)`
+                : `${restauradas.length} chaves restauradas`,
+              { type: 'success' });
+              setTimeout(() => location.reload(), 1200);
+            };
+            entrada.click();
+          }
+        }, '⬆ Importar backup')),
+
       h('div', { className: 'pf-danger' },
         h('button', {
           className: 'btn btn--ghost btn--sm u-text-danger',
           onclick: () => {
             if (confirm('Isto apaga TODOS os dados locais do Baluarte (editor, terminal, configs, progresso). Continuar?')) {
-              const keys = [];
-              for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                if (k && k.startsWith('baluarte:')) keys.push(k);
-              }
-              keys.forEach((k) => localStorage.removeItem(k));
+              /* Pelo wrapper: ele é dono do namespace `baluarte:` e sabe varrer
+               * o que gravou. Antes esta função reimplementava a varredura à
+               * mão — e por isso ficava fora de sincronia com quem gravava. */
+              storage.clearAll();
+              limparCacheWikiLegado();
               toast('Todos os dados locais foram apagados', { type: 'warning' });
               setTimeout(() => location.reload(), 1000);
             }

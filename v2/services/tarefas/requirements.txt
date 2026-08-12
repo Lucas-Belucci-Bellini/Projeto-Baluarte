@@ -1,0 +1,7 @@
+# Task Manager. Deliberadamente curta — Regra 5: dependência precisa de
+# justificativa. Não há broker, não há framework de fila: o Postgres faz os dois.
+psycopg[binary]>=3.1
+
+# só para teste
+pytest>=8.0
+pytest-timeout>=2.3

@@ -33,6 +33,7 @@ export const NAV_GROUPS = [
       { path: '/mural',       label: 'Mural',              icon: '📣', phase: 1 },
       { path: '/comms',       label: 'Rede Neural',        icon: '📡', phase: 1 },
       { path: '/roadmap',     label: 'Roadmap',            icon: '◈', phase: 1 },
+      { path: '/diagnostico', label: 'Diagnóstico',        icon: '🛡', phase: 1 },
       { path: '/sobre',       label: 'Sobre o Projeto',    icon: '◇', phase: 1 }
     ]
   },

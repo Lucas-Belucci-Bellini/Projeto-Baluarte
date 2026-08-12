@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Baluarte V2 — banco de prova</title>
+  <!--
+    Banco de prova da fundação da V2. NÃO é o site.
+
+    Existe por um motivo específico: até aqui, todo teste do boot usava um router
+    FALSO. Isso prova a lógica e não prova a integração — e "funciona com mock"
+    é exatamente o tipo de garantia que quebra no primeiro contato com o real.
+
+    Aqui o boot da V2 dirige o router DE VERDADE da V1 (`src/core/router.js`,
+    sem uma linha alterada) e renderiza as páginas de verdade. Se a V2 não
+    conseguir servir a V1, é melhor descobrir num arquivo descartável do que
+    depois de mexer no `main.js` do site que está congelando.
+
+    Não entra no bundle: o Vite empacota a partir do `index.html` da raiz.
+  -->
+  <link rel="stylesheet" href="/src/styles/reset.css" />
+  <link rel="stylesheet" href="/src/styles/variables.css" />
+  <link rel="stylesheet" href="/src/styles/base.css" />
+  <style>
+    body { padding: 16px; font-family: system-ui, sans-serif; }
+    .hud { border: 1px solid var(--color-warning, #fa0); padding: 10px 14px;
+           margin-bottom: 14px; border-radius: 6px; font-size: 13px; }
+    .hud b { color: var(--color-warning, #fa0); }
+    #saida { min-height: 200px; border: 1px dashed #666; padding: 12px; border-radius: 6px; }
+    nav a { margin-right: 12px; }
+  </style>
+</head>
+<body>
+  <div class="hud">
+    <b>Banco de prova da V2.</b> O boot da V2 dirige o router da V1.
+    Nenhum <code>router.register()</code> escrito à mão — tudo vem do Registry.
+    <div id="resumo"></div>
+  </div>
+  <nav id="nav"></nav>
+  <div id="saida">carregando…</div>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 {
   "name": "projeto-baluarte",
   "private": true,
-  "version": "2.0.0",
+  "version": "1.0.0-rc",
   "type": "module",
   "description": "Projeto Baluarte Mark XIII — plataforma narrativa/militar em JavaScript puro",
   "scripts": {
@@ -24,12 +24,21 @@
     "atualizar-arma3": "python3 scripts/arma3/atualizar-arma3.py",
     "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && python3 scripts/arma3/gerar-base-acessorios.py && python3 scripts/arma3/gerar-base-terrenos.py && python3 scripts/arma3/gerar-base-veiculos.py && python3 scripts/arma3/gerar-base-equipamento.py && python3 scripts/arma3/gerar-base-soldados.py && python3 scripts/arma3/gerar-base-extracao.py && node scripts/verificar-wiki-arsenal.mjs && node scripts/verificar-grade.mjs",
     "smoke": "node scripts/smoke-rotas.mjs",
-    "auditar": "node scripts/auditar-grupo.mjs"
+    "auditar": "node scripts/auditar-grupo.mjs",
+    "caminho-critico": "node scripts/caminho-critico.mjs",
+    "sonda-memoria": "node scripts/sonda-memoria.mjs",
+    "gen-tabela-estabilidade": "node scripts/gen-tabela-estabilidade.mjs",
+    "gen-catalogo-eventos": "node scripts/gen-catalogo-eventos.mjs",
+    "gen-catalogo-storage": "node scripts/gen-catalogo-storage.mjs",
+    "prova-offline": "node scripts/prova-offline.mjs",
+    "tipos:v2": "tsc -p v2/jsconfig.json",
+    "v2:integracao": "node scripts/v2-integracao.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "playwright": "^1.49.0",
+    "typescript": "^7.0.2",
     "vite": "^5.4.10"
   },
   "engines": {

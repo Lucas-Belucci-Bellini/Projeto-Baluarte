@@ -1,0 +1,15 @@
+# Sem dependência NENHUMA — nem wasm-bindgen. O ponto da medição é o custo da
+# FRONTEIRA crua entre JS e WASM; qualquer camada de conveniência por cima só
+# somaria trabalho e embaralharia o número que se quer conhecer.
+[package]
+name = "baluarte-bench"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 3
+lto = true
+panic = "abort"

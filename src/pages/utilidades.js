@@ -8,6 +8,7 @@
 import '../styles/utilidades.css';
 import { h, empty, pad2 } from '../utils/helpers.js';
 import { toast } from '../utils/toast.js';
+import { mdToHtml } from '../utils/markdown.js';
 
 function copy(text) {
   if (!text) return;
@@ -464,17 +465,6 @@ function toolFusos() {
 }
 
 /* ===== Markdown → HTML ===== */
-function mdToHtml(md) {
-  let s = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  s = s.replace(/```([\s\S]*?)```/g, (m, c) => `<pre><code>${c.replace(/^\n/, '')}</code></pre>`);
-  s = s.replace(/^###### (.*)$/gm, '<h6>$1</h6>').replace(/^##### (.*)$/gm, '<h5>$1</h5>')
-    .replace(/^#### (.*)$/gm, '<h4>$1</h4>').replace(/^### (.*)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.*)$/gm, '<h2>$1</h2>').replace(/^# (.*)$/gm, '<h1>$1</h1>');
-  s = s.replace(/(?:^- .*(?:\n|$))+/gm, (b) => '<ul>' + b.trim().split('\n').map((l) => '<li>' + l.replace(/^- /, '') + '</li>').join('') + '</ul>');
-  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*\n]+)\*/g, '<em>$1</em>').replace(/`([^`]+)`/g, '<code>$1</code>');
-  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  return s.split(/\n{2,}/).map((blk) => /^<(h\d|ul|pre)/.test(blk.trim()) ? blk : '<p>' + blk.replace(/\n/g, '<br>') + '</p>').join('\n');
-}
 function toolMarkdown() {
   const ta = h('textarea', { className: 'input util-textarea', rows: 6, placeholder: '# Título\n\nTexto **negrito**, *itálico*, `código` e [link](https://...)\n\n- item 1\n- item 2' });
   const preview = h('div', { className: 'util-mdprev' });

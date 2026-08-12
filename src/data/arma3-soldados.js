@@ -9,6 +9,8 @@
  * como arma na lista, e contá-los inflaria todo mundo em 2.
  */
 
+import { buscarDataset } from '../core/dados-remotos.js';
+
 export const A3SOL = [
   { id: "b-d-soldier-a-lxws", classe: "B_D_Soldier_A_lxWS", nome: "Ammo Bearer", faccao: "NATO (Desert)", faccaoClasse: "BLU_NATO_lxWS", lado: "BLUFOR", ladoFonte: "faccao", sideCru: 1, dlc: "Western Sahara", dlcFonte: "caminho", uniforme: "U_lxWS_B_CombatUniform_desert", mochila: "B_AssaultPack_desert_Ammo_lxWS", armas: ["arifle_MX_ACO_pointer_F", "hgun_P07_F"], nArmas: 2, nGranadas: 2, nCarregadores: 21, nItens: 7, preview: "/lxws/editorpreviews_f_lxws/Data/CfgVehicles/B_D_Soldier_A_lxWS.jpg" },
   { id: "b-patrol-soldier-a-f", classe: "B_Patrol_Soldier_A_F", nome: "Ammo Bearer", faccao: "NATO", faccaoClasse: "BLU_F", lado: "BLUFOR", ladoFonte: "faccao", sideCru: 1, dlc: "Base", dlcFonte: "caminho", uniforme: "U_B_CombatUniform_mcam_vest", mochila: "B_Patrol_supply_bag_F", armas: ["B_Patrol_Soldier_Carrier_weapon_F", "B_Patrol_Soldier_Pistol_F", "Rangefinder"], nArmas: 3, nGranadas: 2, nCarregadores: 15, nItens: 7, preview: "/A3/EditorPreviews_F_Argo/Data/CfgVehicles/B_Patrol_Soldier_A_F.jpg" },
@@ -962,8 +964,7 @@ export const A3SOL_META = { porLado: { "não declarado": 40430, Civil: 416, OPFO
 let _db = null;
 export function carregarSoldados() {
   if (!_db) {
-    _db = fetch(A3SOL_META.dbUrl)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    _db = buscarDataset(A3SOL_META.dbUrl, { rotulo: 'a base de soldados do Arma 3' })
       .catch((err) => { _db = null; throw err; });
   }
   return _db;

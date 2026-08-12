@@ -217,3 +217,14 @@
   .pf-account__card { flex-wrap: wrap; }
   .btn-google { width: 100%; justify-content: center; }
 }
+
+/* Exportar/importar (#420). Vem antes do `.pf-danger` na tela de propósito:
+   quem chega pensando em apagar tudo passa primeiro pela opção de salvar. */
+.pf-backup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: var(--border-thin);
+}

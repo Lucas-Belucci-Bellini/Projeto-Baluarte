@@ -26,19 +26,43 @@ export function supabaseConfigured() { return !!(URL && ANON); }
 export function supabaseUrl() { return URL; }
 export function supabaseAnonKey() { return ANON; }
 
+/**
+ * Teto de espera de qualquer ida ao banco.
+ *
+ * Sem isto, uma rede que **pendura** (não recusa — pendura) deixa o `await`
+ * esperando para sempre: nenhum erro, nenhum fallback, a tela girando. É o pior
+ * modo de falha de rede porque não parece falha, parece lentidão, e o operador
+ * fica olhando. Preferir falhar em 8 s a não falhar nunca. */
+const TIMEOUT_MS = 8000;
+
 /** fetch genérico na REST do PostgREST. `token` = JWT do usuário logado (senão anon). */
-export async function dbFetch(path, { method = 'GET', body, token, prefer, headers = {} } = {}) {
-  const res = await fetch(`${URL}/rest/v1/${path}`, {
-    method,
-    headers: {
-      apikey: ANON,
-      authorization: `Bearer ${token || ANON}`,
-      ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
-      ...(prefer ? { prefer } : {}),
-      ...headers
-    },
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  });
+export async function dbFetch(path, { method = 'GET', body, token, prefer, headers = {}, timeoutMs = TIMEOUT_MS } = {}) {
+  let res;
+  try {
+    res = await fetch(`${URL}/rest/v1/${path}`, {
+      method,
+      headers: {
+        apikey: ANON,
+        authorization: `Bearer ${token || ANON}`,
+        ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
+        ...(prefer ? { prefer } : {}),
+        ...headers
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(timeoutMs)
+    });
+  } catch (e) {
+    /* Mensagem legível: `AbortError`/`TimeoutError` cru não diz a ninguém o que
+     * aconteceu, e é o que apareceria no toast do operador. */
+    const err = new Error(
+      e && (e.name === 'TimeoutError' || e.name === 'AbortError')
+        ? `O banco não respondeu em ${Math.round(timeoutMs / 1000)}s.`
+        : `Não foi possível falar com o banco: ${e?.message || 'falha de rede'}`
+    );
+    err.causa = e;
+    err.timeout = e?.name === 'TimeoutError' || e?.name === 'AbortError';
+    throw err;
+  }
   const raw = await res.text();
   let data = null;
   try { data = raw ? JSON.parse(raw) : null; } catch { data = raw; }

@@ -14,6 +14,7 @@
 
 import { COMMANDS } from '../data/terminal-commands.js';
 import * as vfs from './vfs.js';
+import { storage } from '../core/storage.js';
 
 const HISTORY_KEY = 'terminal:history';
 const HISTORY_MAX = 200;
@@ -202,15 +203,21 @@ async function runPipeline(tokens, ctx) {
 
 /* ===== History ===== */
 
+/* Pelo wrapper (`storage` põe o `baluarte:` sozinho), então a chave gravada
+ * continua sendo `baluarte:terminal:history` — o histórico de quem já usa o
+ * terminal sobrevive.
+ *
+ * Antes daqui o `JSON.parse` era direto e SEM try/catch: uma entrada corrompida
+ * (cota estourada no meio de uma gravação, ou alguém mexendo no DevTools)
+ * derrubava a página do terminal inteira no import. O wrapper trata e devolve o
+ * fallback. */
 export function loadHistory() {
-  const list = JSON.parse(localStorage.getItem('baluarte:' + HISTORY_KEY) || '[]');
+  const list = storage.get(HISTORY_KEY, []);
   return Array.isArray(list) ? list : [];
 }
 
 export function saveHistory(history) {
-  try {
-    localStorage.setItem('baluarte:' + HISTORY_KEY, JSON.stringify(history.slice(-HISTORY_MAX)));
-  } catch {}
+  storage.set(HISTORY_KEY, history.slice(-HISTORY_MAX));
 }
 
 export function pushHistory(ctx, line) {
