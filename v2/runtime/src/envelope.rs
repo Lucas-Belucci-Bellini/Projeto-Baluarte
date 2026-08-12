@@ -25,6 +25,7 @@ pub struct RuntimeEnvelope {
 pub enum EnvelopeError {
     InvalidVersion(u32),
     EmptyModuleId,
+    UnsafeModuleId(String),
     DuplicateModule(String),
     InvalidPermission { modulo: String, permission: String },
     DuplicatePermission { modulo: String, permission: String },
@@ -37,6 +38,7 @@ impl std::fmt::Display for EnvelopeError {
         match self {
             Self::InvalidVersion(v) => write!(f, "versão de envelope não suportada: {v}"),
             Self::EmptyModuleId => write!(f, "grant sem identificador de módulo"),
+            Self::UnsafeModuleId(id) => write!(f, "identificador de módulo inseguro: {id}"),
             Self::DuplicateModule(id) => write!(f, "módulo duplicado: {id}"),
             Self::InvalidPermission { modulo, permission } => {
                 write!(f, "permissão inválida em {modulo}: {permission}")
@@ -62,6 +64,18 @@ impl RuntimeEnvelope {
         for grant in &self.modulos {
             if grant.modulo.is_empty() {
                 return Err(EnvelopeError::EmptyModuleId);
+            }
+            // O identificador vira parte de uma raiz física no RuntimeHost.
+            // Portanto ele não pode ser um caminho, nem conter separadores ou
+            // componentes de subida. A raiz confiável nunca deve ser escapável
+            // por dados vindos do Core.
+            if grant.modulo == "."
+                || grant.modulo == ".."
+                || grant.modulo.contains('/')
+                || grant.modulo.contains('\\')
+                || grant.modulo.contains('\0')
+            {
+                return Err(EnvelopeError::UnsafeModuleId(grant.modulo.clone()));
             }
             if !modules.insert(&grant.modulo) {
                 return Err(EnvelopeError::DuplicateModule(grant.modulo.clone()));
@@ -155,6 +169,17 @@ mod tests {
     }
 
     #[test]
+    fn rejects_unsafe_module_ids_before_path_construction() {
+        for id in ["..", ".", "../secret", "alpha/beta", "alpha\\beta", "alpha\0beta"] {
+            let envelope = RuntimeEnvelope {
+                versao: ENVELOPE_VERSION,
+                modulos: vec![RuntimeGrant { modulo: id.into(), permissoes: vec![] }],
+            };
+            assert!(matches!(envelope.validate(), Err(EnvelopeError::UnsafeModuleId(_))), "id: {id:?}");
+        }
+    }
+
+    #[test]
     fn rejects_unknown_permission_before_policy_creation() {
         let envelope = RuntimeEnvelope {
             versao: 1,
@@ -178,7 +203,7 @@ mod tests {
                 permissoes: vec!["READ_FILES".into()],
             }],
         };
-        let policy = envelope.policy_for_module("a", PathBuf::from("." )).unwrap();
+        let policy = envelope.policy_for_module("a", PathBuf::from(".")).unwrap();
         assert!(policy.has(Capability::ReadFiles));
         assert!(!policy.has(Capability::Execution));
     }
