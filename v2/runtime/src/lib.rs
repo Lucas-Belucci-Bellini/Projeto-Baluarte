@@ -86,6 +86,34 @@ impl Runtime {
     }
 }
 
+/// Primeiro contrato lógico da fronteira Runtime ↔ Orquestração.
+///
+/// O transporte permanece deliberadamente indefinido nesta fase. Assim,
+/// Tauri/IPC não vira uma decisão prematura antes de o contrato ser testado.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RuntimeRequest {
+    ReadFile { path: String },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RuntimeResponse {
+    FileContents(Vec<u8>),
+    Error(RuntimeError),
+}
+
+impl Runtime {
+    /// Executa uma requisição do contrato sem expor diretamente detalhes do
+    /// filesystem ao consumidor do Runtime.
+    pub fn handle(&self, request: RuntimeRequest) -> RuntimeResponse {
+        match request {
+            RuntimeRequest::ReadFile { path } => match self.read_file(path) {
+                Ok(contents) => RuntimeResponse::FileContents(contents),
+                Err(error) => RuntimeResponse::Error(error),
+            },
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -122,5 +150,25 @@ mod tests {
         fs::write(_dir.path().join("outside.txt"), b"fora").expect("outside fixture");
         let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
         assert!(matches!(runtime.read_file("../outside.txt"), Err(RuntimeError::PathOutsideRoot)));
+    }
+
+    #[test]
+    fn handle_maps_success_to_contract_response() {
+        let (_dir, root) = fixture();
+        let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
+        assert_eq!(
+            runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }),
+            RuntimeResponse::FileContents(b"baluarte".to_vec())
+        );
+    }
+
+    #[test]
+    fn handle_maps_denial_to_contract_response() {
+        let (_dir, root) = fixture();
+        let runtime = Runtime::new(RuntimePolicy::new(root, []));
+        assert_eq!(
+            runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }),
+            RuntimeResponse::Error(RuntimeError::CapabilityDenied(Capability::ReadFiles))
+        );
     }
 }
