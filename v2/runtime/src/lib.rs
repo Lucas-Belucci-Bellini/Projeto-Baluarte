@@ -11,9 +11,16 @@ pub enum Capability {
     ReadFiles,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RuntimeState {
+    Running,
+    Stopped,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RuntimeError {
     CapabilityDenied(Capability),
+    RuntimeStopped,
     InvalidPath,
     PathOutsideRoot,
     NotAFile,
@@ -24,6 +31,7 @@ impl std::fmt::Display for RuntimeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::CapabilityDenied(cap) => write!(f, "capacidade negada: {cap:?}"),
+            Self::RuntimeStopped => write!(f, "runtime está parado"),
             Self::InvalidPath => write!(f, "caminho inválido para uma operação confinada"),
             Self::PathOutsideRoot => write!(f, "caminho fora da raiz autorizada"),
             Self::NotAFile => write!(f, "o caminho autorizado não é um arquivo"),
@@ -84,14 +92,34 @@ impl RuntimePolicy {
 #[derive(Debug, Clone)]
 pub struct Runtime {
     policy: RuntimePolicy,
+    state: RuntimeState,
 }
 
 impl Runtime {
+    /// Um Runtime recém-criado está pronto para receber operações.
     pub fn new(policy: RuntimePolicy) -> Self {
-        Self { policy }
+        Self {
+            policy,
+            state: RuntimeState::Running,
+        }
+    }
+
+    pub fn state(&self) -> RuntimeState {
+        self.state
+    }
+
+    pub fn start(&mut self) {
+        self.state = RuntimeState::Running;
+    }
+
+    pub fn stop(&mut self) {
+        self.state = RuntimeState::Stopped;
     }
 
     pub fn read_file(&self, relative: impl AsRef<Path>) -> Result<Vec<u8>, RuntimeError> {
+        if self.state != RuntimeState::Running {
+            return Err(RuntimeError::RuntimeStopped);
+        }
         if !self.policy.allows(Capability::ReadFiles) {
             return Err(RuntimeError::CapabilityDenied(Capability::ReadFiles));
         }
@@ -137,6 +165,31 @@ mod tests {
         fs::create_dir(&root).expect("allowed dir");
         fs::write(root.join("hello.txt"), b"baluarte").expect("fixture file");
         (dir, root)
+    }
+
+    #[test]
+    fn new_runtime_starts_running() {
+        let (_dir, root) = fixture();
+        let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
+        assert_eq!(runtime.state(), RuntimeState::Running);
+    }
+
+    #[test]
+    fn stopped_runtime_rejects_requests() {
+        let (_dir, root) = fixture();
+        let mut runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
+        runtime.stop();
+        assert_eq!(runtime.state(), RuntimeState::Stopped);
+        assert_eq!(runtime.read_file("hello.txt"), Err(RuntimeError::RuntimeStopped));
+    }
+
+    #[test]
+    fn runtime_can_start_again_after_stop() {
+        let (_dir, root) = fixture();
+        let mut runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
+        runtime.stop();
+        runtime.start();
+        assert_eq!(runtime.read_file("hello.txt").unwrap(), b"baluarte");
     }
 
     #[test]
@@ -194,6 +247,17 @@ mod tests {
         assert_eq!(
             runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }),
             RuntimeResponse::Error(RuntimeError::CapabilityDenied(Capability::ReadFiles))
+        );
+    }
+
+    #[test]
+    fn handle_maps_stopped_state_to_contract_response() {
+        let (_dir, root) = fixture();
+        let mut runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
+        runtime.stop();
+        assert_eq!(
+            runtime.handle(RuntimeRequest::ReadFile { path: "hello.txt".into() }),
+            RuntimeResponse::Error(RuntimeError::RuntimeStopped)
         );
     }
 }
