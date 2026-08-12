@@ -1,12 +1,10 @@
 //! Baluarte V2 — Core de Runtime local.
 //!
-//! Esta crate é deliberadamente pequena no primeiro corte. Ela estabelece a
-//! fronteira que o Core de Orquestração (TypeScript/browser) poderá consumir:
-//! capacidades são dados explícitos, e acesso a filesystem é confinado a uma
-//! raiz autorizada. Não há execução de processos, rede ou secrets nesta etapa.
+//! O Runtime é a fronteira de confiança para operações que não devem ser
+//! executadas diretamente pelo Core de Orquestração no navegador.
 
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Capability {
@@ -16,6 +14,7 @@ pub enum Capability {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RuntimeError {
     CapabilityDenied(Capability),
+    InvalidPath,
     PathOutsideRoot,
     NotAFile,
     Io(String),
@@ -25,6 +24,7 @@ impl std::fmt::Display for RuntimeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::CapabilityDenied(cap) => write!(f, "capacidade negada: {cap:?}"),
+            Self::InvalidPath => write!(f, "caminho inválido para uma operação confinada"),
             Self::PathOutsideRoot => write!(f, "caminho fora da raiz autorizada"),
             Self::NotAFile => write!(f, "o caminho autorizado não é um arquivo"),
             Self::Io(message) => write!(f, "erro de I/O: {message}"),
@@ -53,9 +53,23 @@ impl RuntimePolicy {
     }
 
     fn confined_file(&self, relative: impl AsRef<Path>) -> Result<PathBuf, RuntimeError> {
-        let root = fs::canonicalize(&self.root).map_err(|e| RuntimeError::Io(e.to_string()))?;
-        let candidate = root.join(relative.as_ref());
-        let resolved = fs::canonicalize(&candidate).map_err(|e| RuntimeError::Io(e.to_string()))?;
+        let relative = relative.as_ref();
+
+        // O contrato aceita apenas caminhos relativos. Isto evita que uma
+        // string absoluta substitua a raiz autorizada antes do confinamento.
+        if relative.is_absolute()
+            || relative.components().any(|component| {
+                matches!(component, Component::RootDir | Component::Prefix(_))
+            })
+        {
+            return Err(RuntimeError::InvalidPath);
+        }
+
+        let root = fs::canonicalize(&self.root)
+            .map_err(|e| RuntimeError::Io(e.to_string()))?;
+        let candidate = root.join(relative);
+        let resolved = fs::canonicalize(&candidate)
+            .map_err(|e| RuntimeError::Io(e.to_string()))?;
 
         if !resolved.starts_with(&root) {
             return Err(RuntimeError::PathOutsideRoot);
@@ -88,8 +102,8 @@ impl Runtime {
 
 /// Primeiro contrato lógico da fronteira Runtime ↔ Orquestração.
 ///
-/// O transporte permanece deliberadamente indefinido nesta fase. Assim,
-/// Tauri/IPC não vira uma decisão prematura antes de o contrato ser testado.
+/// O transporte permanece deliberadamente indefinido nesta fase. Tauri/IPC
+/// só deve ser escolhido quando o contrato estiver estável.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RuntimeRequest {
     ReadFile { path: String },
@@ -102,8 +116,6 @@ pub enum RuntimeResponse {
 }
 
 impl Runtime {
-    /// Executa uma requisição do contrato sem expor diretamente detalhes do
-    /// filesystem ao consumidor do Runtime.
     pub fn handle(&self, request: RuntimeRequest) -> RuntimeResponse {
         match request {
             RuntimeRequest::ReadFile { path } => match self.read_file(path) {
@@ -149,7 +161,20 @@ mod tests {
         let (_dir, root) = fixture();
         fs::write(_dir.path().join("outside.txt"), b"fora").expect("outside fixture");
         let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
-        assert!(matches!(runtime.read_file("../outside.txt"), Err(RuntimeError::PathOutsideRoot)));
+        assert!(matches!(
+            runtime.read_file("../outside.txt"),
+            Err(RuntimeError::PathOutsideRoot)
+        ));
+    }
+
+    #[test]
+    fn rejects_absolute_path() {
+        let (_dir, root) = fixture();
+        let runtime = Runtime::new(RuntimePolicy::new(root, [Capability::ReadFiles]));
+        assert_eq!(
+            runtime.read_file("/etc/passwd"),
+            Err(RuntimeError::InvalidPath)
+        );
     }
 
     #[test]
