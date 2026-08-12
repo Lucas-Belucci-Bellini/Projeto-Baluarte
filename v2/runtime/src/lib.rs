@@ -6,9 +6,34 @@
 use std::fs;
 use std::path::{Component, Path, PathBuf};
 
+/// Capacidades reconhecidas pelo contrato V2.
+///
+/// Só `ReadFiles` possui operação implementada neste corte. As demais existem
+/// como vocabulário estável do contrato de autorização, não como autorização
+/// implícita nem como funcionalidades já disponíveis.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Capability {
     ReadFiles,
+    WriteFiles,
+    Network,
+    Database,
+    SystemInfo,
+    UserData,
+    Execution,
+}
+
+impl Capability {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::ReadFiles => "READ_FILES",
+            Self::WriteFiles => "WRITE_FILES",
+            Self::Network => "NETWORK",
+            Self::Database => "DATABASE",
+            Self::SystemInfo => "SYSTEM_INFO",
+            Self::UserData => "USER_DATA",
+            Self::Execution => "EXECUTION",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -20,6 +45,7 @@ pub enum RuntimeState {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RuntimeError {
     CapabilityDenied(Capability),
+    CapabilityNotImplemented(Capability),
     RuntimeStopped,
     InvalidPath,
     PathOutsideRoot,
@@ -30,7 +56,10 @@ pub enum RuntimeError {
 impl std::fmt::Display for RuntimeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::CapabilityDenied(cap) => write!(f, "capacidade negada: {cap:?}"),
+            Self::CapabilityDenied(cap) => write!(f, "capacidade negada: {}", cap.as_str()),
+            Self::CapabilityNotImplemented(cap) => {
+                write!(f, "capacidade ainda não implementada: {}", cap.as_str())
+            }
             Self::RuntimeStopped => write!(f, "runtime está parado"),
             Self::InvalidPath => write!(f, "caminho inválido para uma operação confinada"),
             Self::PathOutsideRoot => write!(f, "caminho fora da raiz autorizada"),
@@ -56,8 +85,12 @@ impl RuntimePolicy {
         }
     }
 
-    fn allows(&self, capability: Capability) -> bool {
+    pub fn has(&self, capability: Capability) -> bool {
         self.capabilities.contains(&capability)
+    }
+
+    fn allows(&self, capability: Capability) -> bool {
+        self.has(capability)
     }
 
     fn confined_file(&self, relative: impl AsRef<Path>) -> Result<PathBuf, RuntimeError> {
@@ -165,6 +198,26 @@ mod tests {
         fs::create_dir(&root).expect("allowed dir");
         fs::write(root.join("hello.txt"), b"baluarte").expect("fixture file");
         (dir, root)
+    }
+
+    #[test]
+    fn capability_names_are_stable() {
+        assert_eq!(Capability::ReadFiles.as_str(), "READ_FILES");
+        assert_eq!(Capability::WriteFiles.as_str(), "WRITE_FILES");
+        assert_eq!(Capability::Network.as_str(), "NETWORK");
+        assert_eq!(Capability::Database.as_str(), "DATABASE");
+        assert_eq!(Capability::SystemInfo.as_str(), "SYSTEM_INFO");
+        assert_eq!(Capability::UserData.as_str(), "USER_DATA");
+        assert_eq!(Capability::Execution.as_str(), "EXECUTION");
+    }
+
+    #[test]
+    fn policy_exposes_only_explicit_capabilities() {
+        let (_dir, root) = fixture();
+        let policy = RuntimePolicy::new(root, [Capability::ReadFiles]);
+        assert!(policy.has(Capability::ReadFiles));
+        assert!(!policy.has(Capability::Network));
+        assert!(!policy.has(Capability::Execution));
     }
 
     #[test]
