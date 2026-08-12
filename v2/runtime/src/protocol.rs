@@ -79,4 +79,18 @@ mod tests {
         let response = handle(Request::ReadFile { envelope: envelope(), modulo: "alpha".into(), path: "../secret.txt".into() }, dir.path().to_path_buf());
         assert!(matches!(response, Response::Error { message } if message.contains("fora da raiz")));
     }
+
+    #[test]
+    fn unknown_module_is_rejected_without_creating_a_root() {
+        let dir = tempfile::tempdir().unwrap();
+        let response = handle(Request::ReadFile { envelope: envelope(), modulo: "missing".into(), path: "hello.txt".into() }, dir.path().to_path_buf());
+        assert!(matches!(response, Response::Error { .. }));
+        assert!(!dir.path().join("missing").exists());
+    }
+
+    #[test]
+    fn malformed_json_is_not_a_valid_request() {
+        let result = serde_json::from_str::<Request>(r#"{"op":"read_file","modulo":"alpha"}"#);
+        assert!(result.is_err());
+    }
 }
