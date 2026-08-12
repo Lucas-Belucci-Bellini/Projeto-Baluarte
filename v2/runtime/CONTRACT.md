@@ -4,6 +4,26 @@
 
 Definir a fronteira lógica entre o Core de Orquestração e o Core de Runtime sem acoplar a API a um transporte específico.
 
+## Fluxo de autorização
+
+```text
+Manifesto
+   ↓
+Module Registry
+   ↓
+Permission System
+   ↓
+runtime-bridge.js
+   ↓
+RuntimePolicy::from_names()
+   ↓
+Runtime Rust
+```
+
+A ponte `v2/core/runtime-bridge.js` produz apenas um envelope serializável de
+permissões **já concedidas**. Ela não concede acesso. O Runtime Rust continua
+sendo a autoridade final para aceitar ou negar uma operação.
+
 ## Estado do Runtime
 
 O Runtime possui dois estados operacionais:
@@ -66,9 +86,11 @@ Erros relevantes:
 2. Cada nova operação precisa de uma capacidade explícita.
 3. A capacidade deve ser verificada no Runtime, e não apenas no consumidor.
 4. Nomes de capacidade desconhecidos devem ser rejeitados no limite do Runtime.
-5. O contrato lógico deve ser testado antes de escolher IPC, Tauri ou serialização.
-6. Não adicionar capacidades apenas porque serão úteis para um módulo futuro.
-7. Mudanças incompatíveis devem ser registradas em ADR antes de migrar consumidores.
-8. O transporte não pode conceder uma capacidade que a `RuntimePolicy` não concedeu.
-9. `Stopped` é uma barreira operacional: requisições não devem ser enfileiradas silenciosamente para execução posterior.
-10. Uma capacidade declarada não significa que sua operação já esteja disponível.
+5. O `runtime-bridge.js` só transporta concessões existentes; ele nunca aumenta o conjunto de permissões.
+6. O contrato lógico deve ser testado antes de escolher IPC, Tauri ou serialização.
+7. Não adicionar capacidades apenas porque serão úteis para um módulo futuro.
+8. Mudanças incompatíveis devem ser registradas em ADR antes de migrar consumidores.
+9. O transporte não pode conceder uma capacidade que a `RuntimePolicy` não concedeu.
+10. `Stopped` é uma barreira operacional: requisições não devem ser enfileiradas silenciosamente para execução posterior.
+11. Uma capacidade declarada não significa que sua operação já esteja disponível.
+12. O envelope de autorização é versionado para permitir rejeição segura de formatos incompatíveis antes da execução.
