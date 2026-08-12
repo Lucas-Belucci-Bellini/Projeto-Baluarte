@@ -8,7 +8,16 @@ Core de Orquestração do navegador.
 - política explícita de capacidades;
 - leitura de arquivos somente quando `READ_FILES` foi concedida;
 - confinamento do caminho a uma raiz autorizada;
-- testes da fronteira de permissão e filesystem.
+- contrato lógico `RuntimeRequest` → `RuntimeResponse`;
+- testes da fronteira de permissão, filesystem e contrato.
+
+## Contrato atual
+
+O Runtime recebe uma operação `ReadFile { path }` e devolve `FileContents`
+ou `Error`. Esse contrato é intencionalmente independente de transporte.
+
+**Ainda não há IPC, Tauri ou serialização JSON.** O transporte será escolhido
+somente depois que a fronteira lógica estiver estável e testada.
 
 ## Deliberadamente fora desta etapa
 
