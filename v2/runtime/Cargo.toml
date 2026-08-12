@@ -1,0 +1,14 @@
+[package]
+name = "baluarte-runtime"
+version = "0.1.0"
+edition = "2021"
+description = "Core de Runtime local do Baluarte V2"
+license = "MIT"
+
+[lib]
+name = "baluarte_runtime"
+path = "src/lib.rs"
+
+[[bin]]
+name = "baluarte-runtime"
+path = "src/main.rs"
