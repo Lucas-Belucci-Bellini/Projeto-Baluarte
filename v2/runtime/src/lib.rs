@@ -9,6 +9,7 @@ use std::str::FromStr;
 
 pub mod envelope;
 pub mod host;
+pub mod security;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Capability { ReadFiles, WriteFiles, Network, Database, SystemInfo, UserData, Execution }
