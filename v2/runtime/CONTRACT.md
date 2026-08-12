@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Definir a fronteira lógica entre o Core de Orquestração e o Core de Runtime sem acoplar a API a um transporte específico.
+Definir a fronteira lógica entre o Core de Orquestração e o Core de Runtime sem acoplar a API a um transporte físico específico.
 
 ## Fluxo de autorização
 
@@ -15,14 +15,43 @@ Permission System
    ↓
 runtime-bridge.js
    ↓
-RuntimePolicy::from_names()
+envelope JSON v1
    ↓
-Runtime Rust
+RuntimeEnvelope::validate()
+   ↓
+RuntimeHost
+   ├── módulo A → RuntimePolicy A → raiz A
+   ├── módulo B → RuntimePolicy B → raiz B
+   └── ...
 ```
 
 A ponte `v2/core/runtime-bridge.js` produz apenas um envelope serializável de
-permissões **já concedidas**. Ela não concede acesso. O Runtime Rust continua
-sendo a autoridade final para aceitar ou negar uma operação.
+permissões **já concedidas**. Ela não concede acesso. O Runtime Rust valida o
+envelope novamente e o `RuntimeHost` cria uma política isolada para cada módulo.
+
+A raiz física não vem do manifesto: ela é fornecida pelo host confiável. Assim,
+um módulo não consegue escolher a própria área de filesystem apenas alterando o
+manifesto.
+
+## Envelope
+
+Formato atual:
+
+```json
+{
+  "versao": 1,
+  "modulos": [
+    {
+      "modulo": "wiki",
+      "permissoes": ["READ_FILES"]
+    }
+  ]
+}
+```
+
+O Runtime rejeita versões incompatíveis, módulos duplicados, IDs vazios,
+permissões desconhecidas e permissões duplicadas. O envelope pode ser convertido
+para `RuntimePolicy` somente depois da validação.
 
 ## Estado do Runtime
 
@@ -33,7 +62,7 @@ Running  <── start() ──>  Stopped
              stop()
 ```
 
-Uma operação recebida enquanto o Runtime está `Stopped` falha com `RuntimeStopped`. Isso dá ao transporte futuro um comportamento claro durante desligamento, reinício e supervisão.
+Uma operação recebida enquanto o Runtime está `Stopped` falha com `RuntimeStopped`.
 
 ## Capacidades
 
@@ -49,11 +78,12 @@ USER_DATA
 EXECUTION
 ```
 
-Somente `READ_FILES` possui operação implementada neste corte. Os demais nomes são vocabulário estável de permissões, não permissões implícitas.
+Somente `READ_FILES` possui operação implementada neste corte. Os demais nomes
+são vocabulário estável de permissões, não permissões implícitas.
 
-O Runtime aceita nomes de capacidades vindos do manifesto por `RuntimePolicy::from_names()`. Nomes desconhecidos são rejeitados; permissões duplicadas são normalizadas. O consumidor não pode inventar uma capacidade e esperar que ela seja ignorada silenciosamente.
-
-Cada capacidade também declara se possui implementação (`Capability::implemented()`). Isso permite distinguir uma permissão concedida de uma operação que ainda não existe.
+O Runtime aceita nomes de capacidades vindos do manifesto por
+`RuntimePolicy::from_names()`. Nomes desconhecidos são rejeitados; permissões
+duplicadas são normalizadas na criação da policy e rejeitadas no envelope.
 
 ## Requisições atuais
 
@@ -80,6 +110,15 @@ Erros relevantes:
 - `NotAFile` — o alvo não é um arquivo;
 - `Io` — falha operacional de filesystem.
 
+## Transporte
+
+O Core possui `runtime-transport.js`, mas ele é uma **abstração**, não uma
+implementação de IPC. Seu contrato recebe uma função `enviar(payload)` e trabalha
+somente com JSON serializável.
+
+Isso permite testar toda a fronteira sem escolher ainda entre Tauri, stdio,
+socket ou outro transporte físico.
+
 ## Regras de evolução
 
 1. O consumidor não acessa o filesystem diretamente.
@@ -87,10 +126,13 @@ Erros relevantes:
 3. A capacidade deve ser verificada no Runtime, e não apenas no consumidor.
 4. Nomes de capacidade desconhecidos devem ser rejeitados no limite do Runtime.
 5. O `runtime-bridge.js` só transporta concessões existentes; ele nunca aumenta o conjunto de permissões.
-6. O contrato lógico deve ser testado antes de escolher IPC, Tauri ou serialização.
+6. O contrato lógico deve ser testado antes de escolher o transporte físico.
 7. Não adicionar capacidades apenas porque serão úteis para um módulo futuro.
 8. Mudanças incompatíveis devem ser registradas em ADR antes de migrar consumidores.
 9. O transporte não pode conceder uma capacidade que a `RuntimePolicy` não concedeu.
 10. `Stopped` é uma barreira operacional: requisições não devem ser enfileiradas silenciosamente para execução posterior.
 11. Uma capacidade declarada não significa que sua operação já esteja disponível.
 12. O envelope de autorização é versionado para permitir rejeição segura de formatos incompatíveis antes da execução.
+13. A raiz física de um módulo é responsabilidade do host confiável, nunca do manifesto.
+14. Cada módulo recebe uma `RuntimePolicy` própria; permissões de um módulo não são compartilhadas implicitamente com outro.
+15. O Runtime deve falhar fechado quando faltar configuração de sandbox, raiz ou capacidade.
