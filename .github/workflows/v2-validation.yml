@@ -1,0 +1,57 @@
+name: V2 Validation
+
+on:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+      - 'v2-development'
+  pull_request:
+    branches:
+      - main
+      - 'v2-development'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck V2
+        run: npm run tipos:v2
+
+      - name: V2 integration
+        run: npm run v2:integracao
+
+      - name: JavaScript tests
+        run: npm test
+
+      - name: Vite build
+        run: npm run build
+
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Runtime tests
+        run: npm run v2:runtime
