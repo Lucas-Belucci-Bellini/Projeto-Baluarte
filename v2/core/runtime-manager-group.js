@@ -1,5 +1,26 @@
 /** Coordinates multiple Runtime-managed modules using dependency-safe parallel batches. */
-export function criarRuntimeManagerGroup({ manager, registry, dependencies, batches, readinessWait, events } = {}) {
+
+/** @typedef {{start: (id: string) => Promise<unknown>, stop: (id: string) => Promise<unknown>}} RuntimeGroupManager */
+/** @typedef {{listar: () => ReadonlyArray<{id: string}>}} RuntimeGroupRegistry */
+/** @typedef {{order: () => ReadonlyArray<string>}} RuntimeDependencies */
+/** @typedef {{batches: () => ReadonlyArray<ReadonlyArray<string>>}} RuntimeBatches */
+/** @typedef {{groupBatchStarted?: (index: number, batch: ReadonlyArray<string>) => void, groupBatchReady?: (index: number, batch: ReadonlyArray<string>) => void, groupStartupFailed?: (error: unknown) => void, groupRollback?: (ids: ReadonlyArray<string>) => void, groupBatchStopped?: (index: number, ids: ReadonlyArray<string>) => void, groupShutdownFailed?: (errors: ReadonlyArray<{id: string, error: unknown}>) => void}} RuntimeGroupEvents */
+/** @typedef {(id: string) => Promise<unknown>} RuntimeReadinessWait */
+/**
+ * @typedef {{
+ *   manager: RuntimeGroupManager,
+ *   registry: RuntimeGroupRegistry,
+ *   dependencies: RuntimeDependencies,
+ *   batches: RuntimeBatches,
+ *   readinessWait?: RuntimeReadinessWait,
+ *   events?: RuntimeGroupEvents
+ * }} RuntimeManagerGroupOptions
+ */
+/** @typedef {{startAll: () => Promise<string[]>, stopAll: () => Promise<void>}} RuntimeManagerGroup */
+
+/** @param {RuntimeManagerGroupOptions} [options] @returns {RuntimeManagerGroup} */
+export function criarRuntimeManagerGroup(options = {}) {
+  const { manager, registry, dependencies, batches, readinessWait, events } = options;
   if (!manager || typeof manager.start !== 'function' || typeof manager.stop !== 'function') throw new TypeError('manager inválido');
   if (!registry || typeof registry.listar !== 'function') throw new TypeError('registry inválido');
   if (!dependencies || typeof dependencies.order !== 'function') throw new TypeError('dependencies inválido');
