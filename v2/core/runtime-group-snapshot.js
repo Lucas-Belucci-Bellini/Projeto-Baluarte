@@ -12,7 +12,7 @@
  */
 /** @typedef {{snapshot: () => Readonly<{capturedAt: number, modules: ReadonlyArray<Readonly<{id: string, state: unknown}>>}>}} RuntimeGroupSnapshot */
 
-/** @param {RuntimeGroupSnapshotOptions} [options] @returns {RuntimeGroupSnapshot} */
+/** @param {Partial<RuntimeGroupSnapshotOptions>} [options] @returns {RuntimeGroupSnapshot} */
 export function criarRuntimeGroupSnapshot(options = {}) {
   const { registry, stateOf, now = () => Date.now() } = options;
   if (!registry || typeof registry.listar !== 'function') throw new TypeError('registry inválido');
