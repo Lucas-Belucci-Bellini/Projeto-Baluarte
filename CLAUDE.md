@@ -14,6 +14,10 @@ Antes de mexer, leia:
 remoto/local. · 👉 **issue #240** — Roadmap mestre: a fila de continuação (pegue o
 próximo item não-marcado). **Não feche** essas issues (são referência viva).
 
+👉 **[`docs/PLANO-MESTRE.md`](docs/PLANO-MESTRE.md)** — handoff entre conversas:
+onde paramos (Omega Prism, vendors, #299/#300) + os planos das frentes grandes
+(organizar o repo, otimizar site/app, multi-repo hub, design/IA com nano-banana).
+
 ## ⚠️ Sessão LOCAL (com skills)? Leia primeiro
 
 👉 **[`docs/HANDOFF-LOCAL.md`](docs/HANDOFF-LOCAL.md)** — tarefas que dependem das
