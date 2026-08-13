@@ -1,0 +1,88 @@
+name: V2 specialists
+
+on:
+  pull_request:
+    branches: [v2-sync-current, v2-development]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  javascript-specialist:
+    name: JS / V2-JSDoc specialist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: npm
+      - run: npm ci
+      - name: JavaScript tests
+        run: npm test
+      - name: V2 JSDoc type gate
+        run: npm run tipos:v2
+
+  rust-specialist:
+    name: Rust / Runtime specialist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Runtime source exists
+        id: exists
+        shell: bash
+        run: test -f v2/runtime/Cargo.toml
+      - name: Rust format
+        if: steps.exists.outcome == 'success'
+        run: cargo fmt --manifest-path v2/runtime/Cargo.toml -- --check
+      - name: Rust tests
+        if: steps.exists.outcome == 'success'
+        run: cargo test --manifest-path v2/runtime/Cargo.toml
+
+  python-specialist:
+    name: Python / data specialist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax
+        run: python3 -m compileall -q scripts
+      - name: Arma 3 parser tests
+        run: python3 scripts/arma3/testar-parsers.py
+      - name: Arma 3 image tests
+        run: python3 scripts/arma3/testar-imagens.py
+      - name: Arma 3 pipeline tests
+        run: python3 scripts/arma3/testar-pipeline.py
+      - name: Arma 3 model tests
+        run: python3 scripts/arma3/testar-modelos.py
+
+  sql-specialist:
+    name: SQL / Supabase specialist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: npm
+      - run: npm ci
+      - name: Tenant isolation contracts
+        run: node --test test/security/tenant-isolation-contract.test.js
+
+  integration:
+    name: V2 specialists / aggregate
+    if: ${{ always() }}
+    needs: [javascript-specialist, rust-specialist, python-specialist, sql-specialist]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish specialist verdicts
+        shell: bash
+        run: |
+          echo "JavaScript: ${{ needs.javascript-specialist.result }}"
+          echo "Rust:       ${{ needs.rust-specialist.result }}"
+          echo "Python:     ${{ needs.python-specialist.result }}"
+          echo "SQL:        ${{ needs.sql-specialist.result }}"
+          test "${{ needs.javascript-specialist.result }}" = success
+          test "${{ needs.rust-specialist.result }}" = success
+          test "${{ needs.python-specialist.result }}" = success
+          test "${{ needs.sql-specialist.result }}" = success
