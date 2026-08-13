@@ -4,9 +4,9 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use crate::envelope::RuntimeEnvelope;
-use crate::host::RuntimeHost;
-use crate::{RuntimeRequest, RuntimeResponse};
+use baluarte_runtime::envelope::RuntimeEnvelope;
+use baluarte_runtime::host::RuntimeHost;
+use baluarte_runtime::{RuntimeRequest, RuntimeResponse};
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case")]
@@ -48,7 +48,7 @@ pub fn handle(request: Request, root: PathBuf) -> Response {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::envelope::{RuntimeGrant, ENVELOPE_VERSION};
+    use baluarte_runtime::envelope::{RuntimeGrant, ENVELOPE_VERSION};
     use std::fs;
 
     fn envelope() -> RuntimeEnvelope { RuntimeEnvelope { versao: ENVELOPE_VERSION, modulos: vec![RuntimeGrant { modulo: "alpha".into(), permissoes: vec!["READ_FILES".into()] }] } }

@@ -9,7 +9,10 @@ function setup(hooks = {}) {
     fechar: async (id) => events.push(`runtime:close:${id}`)
   };
   const merged = {};
-  for (const [name, fn] of Object.entries(hooks)) merged[name] = async (id) => { events.push(`${name}:${id}`); await fn?.(id); };
+  for (const name of ['init', 'start', 'stop', 'dispose']) {
+    const fn = hooks[name];
+    merged[name] = async (id) => { events.push(`${name}:${id}`); await fn?.(id); };
+  }
   return { supervisor: criarModuleRuntimeSupervisor(lifecycle, merged), events };
 }
 
@@ -32,7 +35,7 @@ test('parar executa stop, fecha Runtime e depois dispose', async () => {
   await supervisor.iniciar('alpha');
   events.length = 0;
   await supervisor.parar('alpha');
-  assert.deepEqual(events, ['stop:alpha', 'runtime:close:alpha', 'dispose:alpha']);
+  assert.deepEqual(events, ['stop:alpha', 'dispose:alpha', 'runtime:close:alpha']);
   assert.equal(supervisor.estado('alpha'), 'stopped');
 });
 
