@@ -15,7 +15,7 @@
  * }} RuntimeGroupStatus
  */
 
-/** @param {RuntimeGroupStatusOptions} [options] @returns {RuntimeGroupStatus} */
+/** @param {Partial<RuntimeGroupStatusOptions>} [options] @returns {RuntimeGroupStatus} */
 export function criarRuntimeGroupStatus(options = {}) {
   const { batches, states = new Map() } = options;
   if (!batches || typeof batches.batches !== 'function') throw new TypeError('batches inválidos');
