@@ -20,7 +20,7 @@ pub enum Request {
 pub enum Response {
     Authorized { modulos: Vec<String> },
     File { modulo: String, bytes: Vec<u8> },
-    Error { message: String },
+    Error { code: String, message: String },
 }
 
 fn roots_for(envelope: &RuntimeEnvelope, root: &PathBuf) -> HashMap<String, PathBuf> {
@@ -34,13 +34,13 @@ pub fn handle(request: Request, root: PathBuf) -> Response {
     let roots = roots_for(envelope, &root);
     let host = match RuntimeHost::from_envelope(envelope, &roots) {
         Ok(host) => host,
-        Err(error) => return Response::Error { message: error.to_string() },
+        Err(error) => return Response::Error { code: "RUNTIME_REJECTED".into(), message: error.to_string() },
     };
     match request {
         Request::Authorize { .. } => Response::Authorized { modulos: host.modules().map(str::to_owned).collect() },
         Request::ReadFile { modulo, path, .. } => match host.handle(&modulo, RuntimeRequest::ReadFile { path }) {
             RuntimeResponse::FileContents(bytes) => Response::File { modulo, bytes },
-            RuntimeResponse::Error(error) => Response::Error { message: error.to_string() },
+            RuntimeResponse::Error(error) => Response::Error { code: "RUNTIME_ERROR".into(), message: error.to_string() },
         },
     }
 }
@@ -77,14 +77,14 @@ mod tests {
         fs::create_dir_all(dir.path().join("alpha")).unwrap();
         fs::write(dir.path().join("secret.txt"), b"secret").unwrap();
         let response = handle(Request::ReadFile { envelope: envelope(), modulo: "alpha".into(), path: "../secret.txt".into() }, dir.path().to_path_buf());
-        assert!(matches!(response, Response::Error { message } if message.contains("fora da raiz")));
+        assert!(matches!(response, Response::Error { code, message } if code == "RUNTIME_ERROR" && message.contains("fora da raiz")));
     }
 
     #[test]
     fn unknown_module_is_rejected_without_creating_a_root() {
         let dir = tempfile::tempdir().unwrap();
         let response = handle(Request::ReadFile { envelope: envelope(), modulo: "missing".into(), path: "hello.txt".into() }, dir.path().to_path_buf());
-        assert!(matches!(response, Response::Error { .. }));
+        assert!(matches!(response, Response::Error { code, .. } if code == "RUNTIME_ERROR"));
         assert!(!dir.path().join("missing").exists());
     }
 
