@@ -6,6 +6,7 @@ on:
       - main
       - release/v1.x
       - v2-development
+      - v2-integration
       - 'claude/**'
     paths:
       - 'v2/core/**'
