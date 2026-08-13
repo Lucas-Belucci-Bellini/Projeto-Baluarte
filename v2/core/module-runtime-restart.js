@@ -5,8 +5,8 @@
 /** @typedef {(ms: number) => Promise<void>} Sleep */
 /**
  * @typedef {{
- *   supervisor: RuntimeSupervisor,
- *   health: RuntimeHealth,
+ *   supervisor?: RuntimeSupervisor,
+ *   health?: RuntimeHealth,
  *   sleep?: Sleep,
  *   baseDelayMs?: number,
  *   maxDelayMs?: number
@@ -28,17 +28,20 @@ export function criarRuntimeRestart(options = {}) {
   if (!supervisor || typeof supervisor.iniciar !== 'function' || typeof supervisor.parar !== 'function') throw new TypeError('supervisor inválido');
   if (!health || typeof health.marcarFalha !== 'function' || typeof health.podeReiniciar !== 'function') throw new TypeError('health inválido');
 
+  const runtimeSupervisor = supervisor;
+  const runtimeHealth = health;
+
   /** @param {string} id @param {unknown} error */
   async function reiniciar(id, error) {
-    const permitido = health.marcarFalha(id, error);
-    if (!permitido || !health.podeReiniciar(id)) return { restarted: false, reason: 'restart_budget_exhausted' };
+    const permitido = runtimeHealth.marcarFalha(id, error);
+    if (!permitido || !runtimeHealth.podeReiniciar(id)) return { restarted: false, reason: 'restart_budget_exhausted' };
 
-    const tentativas = health.estado(id).restarts.length;
+    const tentativas = runtimeHealth.estado(id).restarts.length;
     const delay = Math.min(maxDelayMs, baseDelayMs * (2 ** Math.max(0, tentativas - 1)));
-    await supervisor.parar(id);
+    await runtimeSupervisor.parar(id);
     await sleep(delay);
-    await supervisor.iniciar(id);
-    health.marcarSaudavel(id);
+    await runtimeSupervisor.iniciar(id);
+    runtimeHealth.marcarSaudavel(id);
     return { restarted: true, delayMs: delay, attempts: tentativas };
   }
 
