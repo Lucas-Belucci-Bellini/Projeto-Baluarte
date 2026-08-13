@@ -55,6 +55,55 @@ Ou pelo app: aba **📡 Extrair** em `/arma3-tutorial` (só no Baluarte Launcher
 ⚠️ **Nenhum script alcança o jogo.** O `.rpt` só tem dado depois que você colou
 o `.sqf` no console. O atualizador diz qual falta; colar é sempre manual.
 
+## 🧊 Modelo 3D — MEDIDO, e a decisão está tomada (03/08/2026)
+
+**Não reabra isto sem um fato novo.** A medição já foi feita sobre o acervo
+real, e o resultado fecha o assunto por ora:
+
+```
+1302 modelos extraídos
+  MLOD (converte)      0
+  ODOL (binarizado) 1302     v71 ×85 · v73 ×586 · v75 ×631
+```
+
+**Zero MLOD.** O importador do Arma Toolbox lê MLOD; o Blender não resolve este
+acervo. Três versões de engine no mesmo conjunto são a demonstração de por que
+não existe leitor confiável de ODOL.
+
+**Trocar o visualizador não ajuda.** Nenhum visor — three.js, Babylon,
+Online3DViewer — lê ODOL. O gargalo é a conversão, e ela fica antes do visor. O
+`visor-3d.js` que já existe abre `.glb/.gltf/.stl/.obj/.fbx` e não é o problema.
+
+### De quem são os modelos
+
+| origem | modelos | |
+|---|---|---|
+| Bohemia (`a3/*`) | 80 | 6,1% |
+| mods (74 distintos) | 1.222 | 93,9% |
+
+Os maiores: CUP 463 (em boa parte conteúdo do Arma 1/2 re-portado, ou seja arte
+da Bohemia por baixo), RHS 229 (licença restritiva, veda derivados), depois 71
+mods menores com licença individual.
+
+⚠️ **"Não é da Bohemia" ≠ "pode".** Muito mod do ecossistema Arma usa APL-ND,
+que proíbe obra derivada — e converter formato é obra derivada.
+
+### Se um dia valer retomar
+
+1. **Arma 3 Samples** — a Bohemia publica de graça modelos de exemplo **em
+   MLOD**, licenciados para uso. Sem desbinarizador e sem zona cinzenta; o
+   pipeline daqui roda neles sem mudar uma linha. **É o caminho recomendado.**
+2. Pedir o MLOD original ao autor dos poucos mods que importam.
+3. `Wesley-TB/P3DDebinarizer` (MIT, ativo) faz ODOL → MLOD, mas: Windows x64 +
+   .NET 8, depende da `BisDll.dll` proprietária da Bohemia, e **não declara
+   quais versões ODOL suporta** — o v75, que é a maior fatia aqui, é o mais
+   provável de falhar. Testar UM arquivo antes de qualquer investimento.
+
+Os 3 GB de `.p3d` extraídos continuam em `scripts/arma3/out/modelos/` e não
+servem para nada até que isso mude.
+
+---
+
 ⚠️ **Modelo 3D é outro caminho.** Comece sempre pelo diagnóstico:
 
 ```bash

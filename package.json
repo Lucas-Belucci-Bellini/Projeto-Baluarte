@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@capacitor/core": "^8.4.1",
+    "maplibre-gl": "^4.7.1",
     "three": "^0.161.0"
   }
 }
