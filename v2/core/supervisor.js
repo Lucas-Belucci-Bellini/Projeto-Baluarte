@@ -1,96 +1,86 @@
 /**
- * Supervisor V2 — coordena o ciclo de vida do Core sem duplicar o Boot.
+ * Supervisor V2 — coordena boot, readiness e shutdown sem assumir o transporte.
  *
- * O Boot continua sendo dono da subida/descida dos módulos. O Supervisor é
- * dono apenas do estado global, concorrência e política de falha do processo.
+ * O Supervisor não executa módulos nem concede permissões. Ele apenas governa
+ * o ciclo de vida do conjunto e transforma falhas de boot em estado observável.
  */
 
-export const ESTADOS_SUPERVISOR = Object.freeze([
-  'idle', 'starting', 'ready', 'degraded', 'stopping', 'stopped', 'failed'
-]);
+const ESTADOS = Object.freeze(['idle', 'starting', 'ready', 'degraded', 'stopping', 'stopped', 'failed']);
 
-/**
- * @param {{subir: () => Promise<any>, descer: () => Promise<any>}} boot
- * @param {{verificar: () => any}} [saude]
- */
-export function criarSupervisor(boot, saude) {
-  if (!boot || typeof boot.subir !== 'function' || typeof boot.descer !== 'function') {
-    throw new TypeError('boot.subir e boot.descer são obrigatórios');
-  }
+export function criarSupervisor(boot, saude, { agora = () => Date.now() } = {}) {
+  if (!boot?.subir || !boot?.descer) throw new TypeError('Supervisor exige Boot com subir/descer');
+  if (!saude?.definirEstado || !saude?.retrato) throw new TypeError('Supervisor exige monitor de saúde');
 
   let estado = 'idle';
-  let ultimaSubida = null;
-  let ultimoErro = null;
-  let operacao = null;
+  let inicio = null;
+  let ultimaFalha = null;
+
+  const mudar = (novo) => {
+    if (!ESTADOS.includes(novo)) throw new Error(`estado inválido: ${novo}`);
+    estado = novo;
+    saude.definirEstado(novo);
+  };
 
   async function iniciar() {
-    if (estado === 'ready' || estado === 'degraded') return diagnostico();
-    if (estado === 'starting') return operacao;
+    if (estado === 'starting' || estado === 'ready' || estado === 'degraded') {
+      return { estado, idempotente: true, diagnostico: boot.diagnostico() };
+    }
     if (estado === 'stopping') throw new Error('não é possível iniciar durante shutdown');
 
-    estado = 'starting';
-    ultimoErro = null;
-    operacao = (async () => {
-      try {
-        ultimaSubida = await boot.subir();
-        const health = saude?.verificar?.();
-        const degradado = Boolean(ultimaSubida?.falhas?.length) || health?.readiness === 'unhealthy';
-        estado = degradado ? 'degraded' : 'ready';
-        return diagnostico();
-      } catch (error) {
-        ultimoErro = error instanceof Error ? error.message : String(error);
-        estado = 'failed';
-        throw error;
-      } finally {
-        operacao = null;
-      }
-    })();
-    return operacao;
+    inicio = agora();
+    ultimaFalha = null;
+    mudar('starting');
+
+    try {
+      const resultado = await boot.subir();
+      const degradado = resultado.falhas.length > 0;
+      mudar(degradado ? 'degraded' : 'ready');
+      return {
+        estado,
+        duracaoMs: agora() - inicio,
+        resultado,
+        diagnostico: boot.diagnostico()
+      };
+    } catch (erro) {
+      ultimaFalha = erro instanceof Error ? erro.message : String(erro);
+      mudar('failed');
+      throw erro;
+    }
   }
 
   async function parar() {
     if (estado === 'idle' || estado === 'stopped') {
-      estado = 'stopped';
-      return { estado };
+      mudar('stopped');
+      return { estado, idempotente: true };
     }
-    if (estado === 'starting') throw new Error('não é possível parar durante startup');
-    if (estado === 'stopping') return operacao;
+    if (estado === 'stopping') return { estado, idempotente: true };
 
-    estado = 'stopping';
-    operacao = (async () => {
-      try {
-        const resultado = await boot.descer();
-        if (resultado?.ok === false) {
-          ultimoErro = resultado.problemas;
-          estado = 'degraded';
-        } else {
-          estado = 'stopped';
-        }
-        return { estado, resultado };
-      } catch (error) {
-        ultimoErro = error instanceof Error ? error.message : String(error);
-        estado = 'failed';
-        throw error;
-      } finally {
-        operacao = null;
-      }
-    })();
-    return operacao;
+    mudar('stopping');
+    try {
+      await boot.descer();
+      mudar('stopped');
+      return { estado };
+    } catch (erro) {
+      ultimaFalha = erro instanceof Error ? erro.message : String(erro);
+      mudar('failed');
+      throw erro;
+    }
   }
 
-  function diagnostico() {
+  function status() {
+    const diagnostico = boot.diagnostico();
+    const health = saude.retrato();
     return {
       estado,
-      ultimaSubida,
-      ultimoErro,
-      saude: saude?.verificar?.() ?? null
+      inicio,
+      duracaoMs: inicio === null ? null : agora() - inicio,
+      ultimaFalha,
+      health,
+      diagnostico
     };
   }
 
-  return {
-    iniciar,
-    parar,
-    diagnostico,
-    get estado() { return estado; }
-  };
+  return { iniciar, parar, status, estado: () => estado };
 }
+
+export { ESTADOS as ESTADOS_SUPERVISOR };
