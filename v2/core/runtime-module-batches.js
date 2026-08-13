@@ -1,11 +1,18 @@
 /** Groups independent modules into dependency-safe startup batches. */
+
+/** @typedef {{id: string, dependsOn?: string[]}} RuntimeBatchEntry */
+/** @typedef {{listar: () => RuntimeBatchEntry[]}} RuntimeBatchRegistry */
+
+/**
+ * @param {RuntimeBatchRegistry} registry
+ */
 export function criarRuntimeDependencyBatches(registry) {
   if (!registry || typeof registry.listar !== 'function') throw new TypeError('registry inválido');
 
   function batches() {
     const entries = registry.listar();
-    const ids = new Set(entries.map(e => e.id));
-    const deps = new Map(entries.map(e => [e.id, new Set(e.dependsOn ?? [])]));
+    const ids = new Set(entries.map((/** @type {RuntimeBatchEntry} */ e) => e.id));
+    const deps = new Map(entries.map((/** @type {RuntimeBatchEntry} */ e) => [e.id, new Set(e.dependsOn ?? [])]));
     for (const [id, requirements] of deps) {
       for (const dependency of requirements) {
         if (!ids.has(dependency)) throw new Error(`Dependência inexistente: ${id} -> ${dependency}`);
