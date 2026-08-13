@@ -18,14 +18,10 @@ import { PERMISSOES } from './manifest.js';
 /**
  * @typedef {{modulo: string, permissoes: string[]}} RuntimeGrant
  */
+/** @typedef {{versao: 1, modulos: RuntimeGrant[]}} RuntimeEnvelope */
+/** @typedef {{modulo: string, permissoes: unknown}} UnknownRuntimeGrant */
 
 /**
- * Cria o snapshot de autorização de um módulo.
- *
- * Só permissões atualmente concedidas atravessam a fronteira. As declaradas
- * mas negadas ficam no Permission System e continuam disponíveis para o
- * diagnóstico do operador.
- *
  * @param {{avaliar: (modulo: string, permissao: string) => string}} permissoes
  * @param {string} modulo
  * @returns {RuntimeGrant}
@@ -35,32 +31,19 @@ export function snapshotRuntime(permissoes, modulo) {
   return Object.freeze({ modulo, permissoes: Object.freeze([...concedidas]) });
 }
 
-/**
- * Converte um conjunto de snapshots em uma carga transportável.
- *
- * A versão pertence ao envelope, não ao mecanismo de transporte. Assim um
- * futuro IPC pode rejeitar uma versão incompatível antes de entregar qualquer
- * capacidade ao Runtime.
- *
- * @param {RuntimeGrant[]} grants
- */
+/** @param {RuntimeGrant[]} grants @returns {RuntimeEnvelope} */
 export function envelopeRuntime(grants) {
   const ids = new Set();
   const modulos = grants.map((grant) => {
     if (!grant || typeof grant.modulo !== 'string' || !grant.modulo) {
       throw new TypeError('grant de Runtime precisa de modulo');
     }
-    if (ids.has(grant.modulo)) {
-      throw new TypeError(`grant duplicado para o módulo "${grant.modulo}"`);
-    }
+    if (ids.has(grant.modulo)) throw new TypeError(`grant duplicado para o módulo "${grant.modulo}"`);
     ids.add(grant.modulo);
 
     const permissoes = [...new Set(grant.permissoes)];
     const desconhecidas = permissoes.filter((p) => !PERMISSOES.includes(p));
-    if (desconhecidas.length) {
-      throw new TypeError(`permissões desconhecidas no grant de "${grant.modulo}": ${desconhecidas.join(', ')}`);
-    }
-
+    if (desconhecidas.length) throw new TypeError(`permissões desconhecidas no grant de "${grant.modulo}": ${desconhecidas.join(', ')}`);
     return { modulo: grant.modulo, permissoes };
   });
 
@@ -68,14 +51,8 @@ export function envelopeRuntime(grants) {
 }
 
 /**
- * Valida uma carga recebida antes que ela seja entregue ao Runtime.
- *
- * Isto é uma segunda barreira, não uma substituição da RuntimePolicy. O
- * processo Rust continua sendo a autoridade final; a ponte apenas impede que
- * o Core envie uma carga obviamente inválida ao transporte.
- *
  * @param {unknown} envelope
- * @returns {{ok: true, envelope: {versao: 1, modulos: RuntimeGrant[]}} | {ok: false, erros: string[]}}
+ * @returns {{ok: true, envelope: RuntimeEnvelope} | {ok: false, erros: string[]}}
  */
 export function validarEnvelopeRuntime(envelope) {
   const erros = [];
@@ -83,36 +60,39 @@ export function validarEnvelopeRuntime(envelope) {
     return { ok: false, erros: ['envelope não é objeto'] };
   }
 
-  const e = /** @type {Record<string, any>} */ (envelope);
-  if (e.versao !== 1) erros.push(`versão de envelope não suportada: ${JSON.stringify(e.versao)}`);
-  if (!Array.isArray(e.modulos)) erros.push('`modulos` deve ser array');
-  else {
+  const candidato = /** @type {Record<string, unknown>} */ (envelope);
+  if (candidato.versao !== 1) erros.push(`versão de envelope não suportada: ${JSON.stringify(candidato.versao)}`);
+  if (!Array.isArray(candidato.modulos)) {
+    erros.push('`modulos` deve ser array');
+  } else {
     const ids = new Set();
-    e.modulos.forEach((m, i) => {
-      if (!m || typeof m !== 'object' || Array.isArray(m)) {
+    candidato.modulos.forEach((item, i) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) {
         erros.push(`modulos[${i}] deve ser objeto`);
         return;
       }
-      if (typeof m.modulo !== 'string' || !m.modulo) erros.push(`modulos[${i}].modulo inválido`);
-      else if (ids.has(m.modulo)) erros.push(`módulo duplicado: "${m.modulo}"`);
-      else ids.add(m.modulo);
+      const modulo = /** @type {Record<string, unknown>} */ (item);
+      if (typeof modulo.modulo !== 'string' || !modulo.modulo) erros.push(`modulos[${i}].modulo inválido`);
+      else if (ids.has(modulo.modulo)) erros.push(`módulo duplicado: "${modulo.modulo}"`);
+      else ids.add(modulo.modulo);
 
-      if (!Array.isArray(m.permissoes)) {
+      if (!Array.isArray(modulo.permissoes)) {
         erros.push(`modulos[${i}].permissoes deve ser array`);
         return;
       }
       const vistas = new Set();
-      m.permissoes.forEach((p, j) => {
-        if (typeof p !== 'string' || !PERMISSOES.includes(p)) {
-          erros.push(`modulos[${i}].permissoes[${j}] desconhecida: ${JSON.stringify(p)}`);
-        } else if (vistas.has(p)) {
-          erros.push(`permissão duplicada em ${m.modulo}: "${p}"`);
-        } else vistas.add(p);
+      modulo.permissoes.forEach((permissao, j) => {
+        if (typeof permissao !== 'string' || !PERMISSOES.includes(permissao)) {
+          erros.push(`modulos[${i}].permissoes[${j}] desconhecida: ${JSON.stringify(permissao)}`);
+        } else if (vistas.has(permissao)) {
+          erros.push(`permissão duplicada em ${modulo.modulo}: "${permissao}"`);
+        } else vistas.add(permissao);
       });
     });
   }
 
-  return erros.length
-    ? { ok: false, erros }
-    : { ok: true, envelope: { versao: 1, modulos: e.modulos } };
+  if (erros.length) return { ok: false, erros };
+
+  const modulos = /** @type {RuntimeGrant[]} */ (candidato.modulos);
+  return { ok: true, envelope: { versao: 1, modulos } };
 }
