@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { criarRuntimeModuleRegistry } from '../../v2/core/runtime-module-registry.js';
 import { criarRuntimeDependencyGraph } from '../../v2/core/runtime-module-dependencies.js';
+import { criarRuntimeDependencyBatches } from '../../v2/core/runtime-module-batches.js';
 import { criarRuntimeManagerGroup } from '../../v2/core/runtime-manager-group.js';
 
 function makeRegistry(entries) {
@@ -40,12 +41,13 @@ test('group inicia e encerra segundo o grafo', async () => {
     { id: 'db' }
   ]);
   const dependencies = criarRuntimeDependencyGraph(registry);
+  const batches = criarRuntimeDependencyBatches(registry);
   const events = [];
   const manager = {
     start: async id => events.push(`start:${id}`),
     stop: async id => events.push(`stop:${id}`)
   };
-  const group = criarRuntimeManagerGroup({ manager, registry, dependencies });
+  const group = criarRuntimeManagerGroup({ manager, registry, dependencies, batches });
   await group.startAll();
   await group.stopAll();
   assert.deepEqual(events, [
