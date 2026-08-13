@@ -6,6 +6,7 @@
  * Tauri/IPC quando a decisão arquitetural estiver fechada.
  */
 import { envelopeRuntime, snapshotRuntime, validarEnvelopeRuntime } from './runtime-bridge.js';
+import { validarRespostaRuntime } from './runtime-transport.js';
 
 export const ESTADOS_RUNTIME_SESSION = Object.freeze([
   'closed', 'opening', 'open', 'closing', 'failed'
@@ -33,10 +34,8 @@ export function criarSessaoRuntime(permissoes, transporte) {
       const validacao = validarEnvelopeRuntime(candidato);
       if (!validacao.ok) throw new Error(`envelope inválido: ${validacao.erros.join('; ')}`);
 
-      const resposta = await transporte.enviar(JSON.stringify(validacao.envelope));
-      if (resposta === undefined || resposta === null) {
-        throw new Error('transporte não devolveu resposta');
-      }
+      const respostaBruta = await transporte.enviar(JSON.stringify(validacao.envelope));
+      const resposta = validarRespostaRuntime(respostaBruta);
 
       envelope = validacao.envelope;
       estado = 'open';
