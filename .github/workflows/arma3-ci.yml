@@ -1,0 +1,66 @@
+name: Arma 3 Data CI
+
+on:
+  push:
+    branches:
+      - main
+      - v2-development
+      - v2-integration
+      - v2-sync-current
+  pull_request:
+    paths:
+      - 'scripts/arma3/**'
+      - 'src/data/arma3-*.js'
+      - 'public/arma3/**'
+      - 'scripts/verificar-wiki-arsenal.mjs'
+      - 'scripts/verificar-grade.mjs'
+      - '.github/workflows/arma3-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  arma3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: npm
+
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Parsers
+        run: npm run testar-parsers-arma3
+
+      - name: Image catalog
+        run: npm run testar-imagens-arma3
+
+      - name: Pipeline
+        run: npm run testar-pipeline-arma3
+
+      - name: Models
+        run: npm run testar-modelos-arma3
+
+      - name: Regenerate and validate data
+        run: npm run verificar-arma3
+
+      - name: Generated data matches commit
+        run: |
+          if ! git diff --quiet -- src/data public/arma3; then
+            echo "::error::Generated Arma 3 data diverges from the commit."
+            git diff --stat -- src/data public/arma3
+            exit 1
+          fi
