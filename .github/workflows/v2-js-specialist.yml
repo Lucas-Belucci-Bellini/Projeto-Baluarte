@@ -1,0 +1,36 @@
+name: V2 JS specialist
+
+on:
+  pull_request:
+    paths:
+      - 'v2/core/**'
+      - 'v2/modules/cripto/**'
+      - 'test/v2/**'
+      - 'v2/jsconfig.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/v2-js-specialist.yml'
+  push:
+    branches:
+      - v2/ci-specialists
+      - v2/ci-specialists-type-hardening
+      - 'v2/js-specialist-*'
+
+permissions:
+  contents: read
+
+jobs:
+  javascript:
+    name: JavaScript/JSDoc specialist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tests
+        run: npm test
+      - name: Strict V2 type contract
+        run: npm run tipos:v2 -- --pretty false
