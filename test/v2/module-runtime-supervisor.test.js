@@ -9,7 +9,13 @@ function setup(hooks = {}) {
     fechar: async (id) => events.push(`runtime:close:${id}`)
   };
   const merged = {};
-  for (const [name, fn] of Object.entries(hooks)) merged[name] = async (id) => { events.push(`${name}:${id}`); await fn?.(id); };
+  for (const name of ['init', 'start', 'stop', 'dispose']) {
+    const fn = hooks[name];
+    merged[name] = async (id) => {
+      events.push(`${name}:${id}`);
+      await fn?.(id);
+    };
+  }
   return { supervisor: criarModuleRuntimeSupervisor(lifecycle, merged), events };
 }
 
@@ -23,7 +29,7 @@ test('iniciar executa Runtime, init e start nessa ordem', async () => {
 test('falha no start faz cleanup e marca failed', async () => {
   const { supervisor, events } = setup({ start: async () => { throw new Error('boom'); } });
   await assert.rejects(() => supervisor.iniciar('alpha'), /boom/);
-  assert.deepEqual(events, ['runtime:open:alpha', 'init:alpha', 'start:alpha', 'dispose:alpha', 'runtime:close:alpha']);
+  assert.deepEqual(events, ['runtime:open:alpha', 'init:alpha', 'start:alpha', 'runtime:close:alpha', 'dispose:alpha']);
   assert.equal(supervisor.estado('alpha'), 'failed');
 });
 
