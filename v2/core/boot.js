@@ -80,18 +80,10 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
   const log = criarLog('core:boot');
   const ciclo = criarCiclo(registry, deps, opcoes);
 
-  /**
-   * Sobe: primeiro os módulos, depois as rotas.
-   *
-   * A ordem importa e não é arbitrária. Registrar a rota antes do `init` abriria
-   * uma janela em que o operador pode navegar para um módulo que ainda não
-   * iniciou — e "às vezes a página abre vazia" é o tipo de bug que consome uma
-   * tarde. Só entra no router o que está de fato no ar.
-   */
   async function subir() {
     if (deps.permissoes) {
       deps.permissoes.conhecerModulos(
-        registry.listar().map((id) => ({ id, permissions: registry.permissoes().get(id) ?? [] }))
+        registry.listar().map((id) => ({ id, permissions: [...(registry.permissoes().get(id) ?? [])] }))
       );
       const { concedidas, recusas } = deps.permissoes.aplicarPolitica();
 
@@ -130,10 +122,6 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
     return { ...resultado, rotas, nav };
   }
 
-  /**
-   * Retrato do que está no ar. É o que a página `/diagnostico` mostra — e ela
-   * deixa de precisar saber onde procurar cada coisa, porque tudo tem uma fonte.
-   */
   function diagnostico() {
     const vivos = ciclo.vivos();
     return {
