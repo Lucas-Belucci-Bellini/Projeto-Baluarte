@@ -34,16 +34,16 @@ test('tenant isolation contracts', async (t) => {
       const block = migration.match(
         new RegExp(`create table if not exists public\\.${table} \\(([\\s\\S]*?)\\);`, 'i')
       )?.[1] ?? '';
-      assert.match(block, /tenant_id\\s+uuid/i, `${table} must declare tenant_id`);
+      assert.match(block, /tenant_id\s+uuid/i, `${table} must declare tenant_id`);
     }
   });
 
   await t.test('ingestion RPCs resolve tenant before writing', () => {
     for (const fn of ['ingest_event', 'ingest_memory', 'ingest_stat']) {
       const block = migration.match(
-        new RegExp(`create or replace function public\\.${fn}\\([\\s\\S]*?end; \\;\\$\\$;`, 'i')
+        new RegExp(`create or replace function public\\.${fn}\\([\\s\\S]*?end; \\\$\\$;`, 'i')
       )?.[0] ?? '';
-      assert.match(block, /v_tenant\\s*:=\\s*nexus\.resolve_tenant/i, `${fn} must resolve tenant`);
+      assert.match(block, /v_tenant\s*:=\s*nexus\.resolve_tenant/i, `${fn} must resolve tenant`);
       assert.match(block, /insert into public\./i, `${fn} must write through an explicit table insert`);
     }
   });
