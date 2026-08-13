@@ -556,3 +556,61 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--space-md);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ *  FAIXA "V2 EM CONSTRUÇÃO" — temporária (#420)
+ *  Some junto com `src/layout/aviso-v2.js` quando a V2 estabilizar. Está aqui,
+ *  e não num arquivo próprio, para não custar um <link> bloqueante por um
+ *  aviso que é para durar pouco. Bloco delimitado justamente para o dia da
+ *  remoção ser um recorte, não uma caça.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.aviso-v2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  padding: 8px var(--space-lg, 20px);
+  background: var(--color-warning-soft);
+  border-bottom: 1px solid var(--color-warning);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.aviso-v2__selo {
+  flex: 0 0 auto;
+  font-weight: 600;
+  color: var(--color-warning);
+  white-space: nowrap;
+}
+
+.aviso-v2__texto {
+  flex: 1 1 auto;
+  color: var(--color-text-secondary);
+}
+
+.aviso-v2__fechar {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.aviso-v2__fechar:hover { color: var(--color-text-primary); }
+.aviso-v2__fechar:focus-visible { outline: 2px solid var(--color-warning); }
+
+/* O shell é `min-height: 100vh`; sem descontar a faixa, toda página curta
+ * ganharia barra de rolagem só por causa do aviso. A altura é aproximada de
+ * propósito — o texto quebra em telas estreitas, e perseguir o valor exato
+ * exigiria medir no JS um número que não vale o acoplamento. */
+:root.tem-aviso-v2 .shell { min-height: calc(100vh - 37px); }
+
+@media (max-width: 720px) {
+  .aviso-v2 { flex-wrap: wrap; padding: 8px 12px; }
+  .aviso-v2__texto { flex-basis: 100%; order: 3; }
+  :root.tem-aviso-v2 .shell { min-height: calc(100vh - 66px); }
+}

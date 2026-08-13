@@ -55,6 +55,36 @@ jobs:
         id: smoke
         run: npm run smoke
 
+      # O smoke abre cada rota numa aba NOVA, e por isso é cego para estado que
+      # corrompe ENTRE navegações — a página que só quebra depois de você ter
+      # passado por outras três. O caminho crítico percorre uma sessão contínua
+      # e afirma estado: o que foi escrito sobrevive à ida e volta, e a escolha
+      # do operador sobrevive ao reload. É o teste que, daqui a um ano, diz se a
+      # 1.0.0 congelada ainda funciona (#420 / ADR-001).
+      # A fundação da V2 dirige o router REAL da V1. Guarda dois defeitos que já
+      # aconteceram e que NENHUM teste com mock pega: `view` devolvendo o módulo
+      # em vez do elemento, e esquecer que o router ANUNCIA em vez de montar. Nos
+      # dois, as rotas registram, o count() bate e a tela fica vazia — sucesso
+      # aparente. Ver docs/v2/V2_MODULE_RULES.md.
+      - name: A V2 ainda dirige o router da V1?
+        run: npm run v2:integracao
+
+      - name: A jornada continua íntegra?
+        run: npm run caminho-critico
+
+      # `core/ciclo-vida.js` existe pra desmontar o que a página montou, mas
+      # ninguém cobrava. Aqui as rotas pesadas são visitadas 6× e o que se mede é
+      # a INCLINAÇÃO: timer, contexto de áudio ou laço de animação que sobra a
+      # cada visita. Um número alto e estável é legítimo; o que acusa é crescer.
+      - name: As rotas pesadas soltam o que pegaram?
+        run: npm run sonda-memoria
+
+      # "Recuperável" é uma das quatro palavras da definição de 1.0.0, e `pwa`
+      # está marcado ESTÁVEL. Um PWA que instala Service Worker e mesmo assim
+      # mostra o dinossauro quando o wi-fi cai não é estável, é decorativo.
+      - name: O site sobrevive a perder a rede?
+        run: npm run prova-offline
+
       - name: Guardar o relatório
         if: always()
         uses: actions/upload-artifact@v4

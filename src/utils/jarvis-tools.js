@@ -20,6 +20,10 @@ import {
   createSkill, deleteSkill, listSkillSummaries, loadSkills, runSkill
 } from './jarvis-skills.js';
 import { guardEnabled, evaluateToolCall, logDecision } from './jarvis-guard.js';
+import { exigir, PermissionError } from '../core/permissions.js';
+/* O mapa tool→permissão mora à parte para poder ser testado sem navegador
+ * (este arquivo importa JSON via bundler e não abre em Node puro). */
+import { permissaoDe } from './jarvis-permissoes.js';
 
 /* ===== Schema das ferramentas (formato Claude API) ===== */
 
@@ -295,7 +299,12 @@ const dynamicTools = new Map();
 
 /**
  * Registra uma ferramenta nova no catálogo do agente.
- * @param {{name:string, description:string, input_schema:object, run:Function}} tool
+ *
+ * `permissao` é opcional mas recomendada: sem ela a ferramenta cai no padrão
+ * fechado `jarvis.skills.executar` (ver `permissaoDe`). Declare uma permissão do
+ * catálogo de `src/core/politica.js` que descreva o que a tool realmente faz.
+ *
+ * @param {{name:string, description:string, input_schema:object, run:Function, permissao?:string}} tool
  */
 export function registerTool(tool) {
   if (!tool || !tool.name || typeof tool.run !== 'function') return false;
@@ -319,8 +328,31 @@ export function getToolSchemas() {
  * @returns {object} resultado serializável
  */
 export function runTool(name, input) {
-  const impl = IMPLEMENTATIONS[name] || dynamicTools.get(name)?.run;
+  const dinamica = dynamicTools.get(name);
+  const impl = IMPLEMENTATIONS[name] || dinamica?.run;
   if (!impl) return { ok: false, error: `ferramenta desconhecida: ${name}` };
+
+  /* Fronteira de permissão (#420) — ANTES de tudo, inclusive do guard.
+   * O guard (Sponsio) julga o CONTEÚDO da chamada; a permissão julga se essa
+   * chamada podia sequer ser tentada. Perguntar "esse comando é perigoso?"
+   * sobre uma ação que nem devia estar disponível é responder tarde. */
+  const permissao = permissaoDe(name, dinamica);
+  try {
+    exigir(permissao, { alvo: name });
+  } catch (err) {
+    if (!(err instanceof PermissionError)) throw err;
+    /* Erro acionável: sem dizer QUAL permissão falta e ONDE liberar, o operador
+     * só vê a ferramenta parar de funcionar sem explicação. */
+    return {
+      ok: false,
+      negado: true,
+      permissao,
+      error: err.code === 'desconhecida'
+        ? `🔒 A ferramenta "${name}" exige a permissão "${permissao}", que não está declarada em src/core/politica.js.`
+        : `🔒 Permissão "${permissao}" não concedida. Libere em /diagnostico para usar "${name}".`
+    };
+  }
+
   /* Segurança do agente (Sponsio): avalia e registra antes de executar. */
   if (guardEnabled()) {
     const verdict = evaluateToolCall(name, input);

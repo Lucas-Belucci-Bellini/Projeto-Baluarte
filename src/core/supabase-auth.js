@@ -10,19 +10,27 @@
  */
 
 import { supabaseUrl, supabaseAnonKey, supabaseConfigured } from './supabase.js';
+import { storage } from './storage.js';
 
-const SESSION_KEY = 'baluarte:auth:session';
+/* Chave SEM o prefixo — o wrapper põe `baluarte:` sozinho, então o nome completo
+ * continua sendo `baluarte:auth:session`, exatamente o que já está gravado no
+ * navegador de quem usa. A migração não desloga ninguém.
+ *
+ * A classe é `sensivel`, não `secreto` (declarado em `core/politica.js`), e a
+ * distinção é proposital: `secreto` é recusado na gravação, e a sessão do
+ * usuário PRECISA viver no navegador — é assim que auth web funciona. O que a
+ * protege não é escondê-la do frontend (impossível), é ela ser o JWT do próprio
+ * usuário, curto, renovável, e com o RLS do banco decidindo o que ele alcança. */
+const SESSION_KEY = 'auth:session';
 const listeners = new Set();
 
 function loadSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+  return storage.get(SESSION_KEY, null);
 }
 
 function storeSession(s) {
-  try {
-    if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
-    else localStorage.removeItem(SESSION_KEY);
-  } catch { /* sem storage */ }
+  if (s) storage.set(SESSION_KEY, s);
+  else storage.remove(SESSION_KEY);
   listeners.forEach((fn) => { try { fn(s); } catch { /* listener falhou */ } });
 }
 
@@ -64,11 +72,14 @@ export async function signOut() {
   const s = loadSession();
   if (s && s.access_token) {
     try {
+      /* Teto curto: revogar no servidor é bônus, sair é o que o operador pediu.
+       * Sem timeout, um servidor pendurado deixaria o botão "sair" travado. */
       await fetch(`${supabaseUrl()}/auth/v1/logout`, {
         method: 'POST',
-        headers: { apikey: supabaseAnonKey(), authorization: `Bearer ${s.access_token}` }
+        headers: { apikey: supabaseAnonKey(), authorization: `Bearer ${s.access_token}` },
+        signal: AbortSignal.timeout(4000)
       });
-    } catch { /* offline: limpa local mesmo assim */ }
+    } catch { /* offline ou pendurado: limpa local mesmo assim */ }
   }
   storeSession(null);
 }
@@ -80,10 +91,14 @@ export async function getAccessToken() {
   const now = Math.floor(Date.now() / 1000);
   if (s.access_token && s.expires_at && s.expires_at - 60 > now) return s.access_token;
   try {
+    /* Timeout obrigatório aqui: `getAccessToken()` roda ANTES de quase toda
+     * operação autenticada. Sem teto, um refresh que pendura pendura junto tudo
+     * que depende de dado — e o sintoma é a tela girando, não um erro. */
     const res = await fetch(`${supabaseUrl()}/auth/v1/token?grant_type=refresh_token`, {
       method: 'POST',
       headers: { apikey: supabaseAnonKey(), 'content-type': 'application/json' },
-      body: JSON.stringify({ refresh_token: s.refresh_token })
+      body: JSON.stringify({ refresh_token: s.refresh_token }),
+      signal: AbortSignal.timeout(8000)
     });
     if (!res.ok) { storeSession(null); return null; }
     const data = await res.json();

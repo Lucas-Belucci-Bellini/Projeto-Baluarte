@@ -14,6 +14,10 @@ import { router } from '../core/router.js';
 import { toast } from '../utils/toast.js';
 import { isShadowUnlocked, openShadowGate, lockShadow } from '../utils/shadow-gate.js';
 
+/* Único lugar do `src/` que lê `localStorage` cru de propósito: o trabalho aqui
+ * é MEDIR o que está gravado, e uma medição que só enxerga o que o wrapper
+ * escreveu não mede nada — perderia justamente a chave gravada errado, que é o
+ * que vale a pena descobrir. Ver a nota em `core/politica.js`. */
 function storageReport() {
   let keys = 0;
   let bytes = 0;

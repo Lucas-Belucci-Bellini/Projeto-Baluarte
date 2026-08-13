@@ -9,6 +9,8 @@
  * `armor: null` numa parte é ausência declarada, nunca zero.
  */
 
+import { buscarDataset } from '../core/dados-remotos.js';
+
 export const A3EQP = [
   { id: "ef-v-aav-black", classe: "EF_V_AAV_Black", nome: "Amphibious Assault Vest (Black)", tipo: "colete", tipoFonte: "itemInfoType", dlc: "Expeditionary Forces", dlcFonte: "caminho", massa: 100, capacidade: 40, containerClass: "Supply40", uniformeDe: null, protecao: { partes: 4, cobertas: 3, maior: 24, maiorParte: "Chest", passagem: 0.1 }, imagem: "/ef/ef_marines/data/ui/EF_V_AAV_Black_CA.paa", variantes: 3, nomes: ["Amphibious Assault Vest (Black)", "Amphibious Assault Vest (Coyote Brown)", "Amphibious Assault Vest (Olive)"], classes: ["EF_V_AAV_Black", "EF_V_AAV_Olive", "EF_V_AAV_Coy"] },
   { id: "ef-v-aav-diver-black", classe: "EF_V_AAV_Diver_Black", nome: "Amphibious Assault Vest (Black/Diver)", tipo: "colete", tipoFonte: "itemInfoType", dlc: "Expeditionary Forces", dlcFonte: "caminho", massa: 140, capacidade: 80, containerClass: "Supply80", uniformeDe: null, protecao: { partes: 4, cobertas: 3, maior: 24, maiorParte: "Chest", passagem: 0.1 }, imagem: "/ef/ef_marines/data/ui/EF_V_AAV_Diver_Black_CA.paa", variantes: 3, nomes: ["Amphibious Assault Vest (Black/Diver)", "Amphibious Assault Vest (Coyote Brown/Diver)", "Amphibious Assault Vest (Olive/Diver)"], classes: ["EF_V_AAV_Diver_Black", "EF_V_AAV_Diver_Olive", "EF_V_AAV_Diver_Coy"] },
@@ -264,8 +266,7 @@ export const A3EQP_META = { porTipo: { uniforme: 89, colete: 404, cabeca: 36, ca
 let _db = null;
 export function carregarEquipamento() {
   if (!_db) {
-    _db = fetch(A3EQP_META.dbUrl)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    _db = buscarDataset(A3EQP_META.dbUrl, { rotulo: 'a base de equipamento do Arma 3' })
       .catch((err) => { _db = null; throw err; });
   }
   return _db;

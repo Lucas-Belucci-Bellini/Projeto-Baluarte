@@ -6,6 +6,625 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-10 — três bloqueadores achados às vésperas do congelamento
+
+A varredura final da 1.0.0 não era para achar nada. Achou três, e o pior deles
+era meu.
+
+### ⛔ A 1.0.0 apagaria o dado de quem já usa o app
+
+A ADR-003 mandava o app apontar para `v1.projeto-baluarte.vercel.app`, para o
+launcher não drenar para a V2 sem instalar nada. A intenção estava certa; a
+execução era um apagador silencioso.
+
+`localStorage` é escopado por **origem**. O app publicado (0.9.2) aponta para o
+endereço principal, e `v1.` é outra origem. Quem atualizasse encontraria as
+**71 chaves vazias**: abas do editor, conversas e memórias do JARVIS, histórico
+do terminal e o cofre de chaves de API. Sem erro, sem aviso, sem desfazer.
+Pareceria que o app apagou tudo — numa versão chamada "ponto de congelamento".
+E o passo 1 do handoff mandava criar o alias **antes** de publicar, ou seja: a
+ordem escrita levava direto ao estrago.
+
+A correção inverte quem se muda. A **V1 fica onde o dado já está**; a **V2**
+nasce em endereço próprio. O pin continua valendo, porque quem fica parado é a
+V1. A ADR-003 foi corrigida **com o erro registrado**, não reescrita em silêncio.
+
+### ⛔ 59 chaves de storage sem esquema declarado
+
+Só 12 estavam em `politica.js`. A varredura de `src/` achou outras 59 em uso —
+quase todas acessadas por constante (`const KEY = 'ui:theme'`), forma que um
+grep pelo literal dentro de `storage.get(...)` não enxerga. Passaram batido
+porque quem procurou procurou pelo padrão errado.
+
+Chave sem esquema não tem versão, e congelar assim deixaria a V2 **sem contrato
+para ler o dado da V1**. Entre elas: `apis:vault`, `voice:elevenKey`,
+`nucleo:wsToken`, `shadow:auth`, `jarvis:history`, `jarvis:memories`.
+
+Nenhuma virou `secreto` — `secreto` é recusado na gravação, e chave de API que o
+operador digita precisa viver no navegador; marcar assim quebraria o cofre em
+vez de protegê-lo. Ficou **21 `sensivel` · 48 `local` · 2 `publico`**.
+
+### ⛔ `cripto` marcado estável com 24 exports sem teste
+
+O motor tem 372 linhas e 26 exports; os testes importavam **dois**. AES, OTP,
+base64/32/hex, vigenère, atbash, césar e os hashes sustentavam uma promessa que
+nada verificava — e `estavel`, pela definição em vigor, inclui *testado*.
+
+O motor passou de primeira nos 26 testes novos. Plantando defeitos, dois foram
+pegos e o terceiro (IV fixo no AES-GCM) **passou** — furo no teste, não no
+produto: ele se chamava "salt/IV novos" mas só comparava a saída inteira, e o
+salt aleatório já basta para a saída diferir. Reescrito para decompor
+`salt(16) || iv(12) || cifra` e conferir cada campo.
+
+### 🚧 Aviso de V2 em construção, e a peça que ele exigia
+
+Decisão do operador, com o trade-off na mesa: não há como impedir que a
+construção da V2 afete o site e o app, então o certo é **avisar**. Faixa
+dispensável no topo do site — e o app vê a mesma coisa, porque o launcher é uma
+casca que carrega o site ao vivo. A dispensa é gravada **por versão do aviso**,
+não como booleano: quando o texto mudar de verdade, a faixa reaparece para quem
+já tinha fechado, em vez de nascer invisível justamente para quem acompanha.
+
+O aviso mandava *"guarde o que for importante fora do navegador"* — e não existia
+como fazer isso a não ser pelo DevTools. Aviso que pede o impossível ensina a
+ignorar avisos, então veio o **exportar/importar** (`src/core/backup.js` + botões
+em `/perfil`, antes do "limpar todos os dados", porque quem chega ali pensando em
+apagar tudo deve passar primeiro pela opção de salvar).
+
+O arquivo carrega **versão por chave**: seria absurdo fechar esse buraco no
+`localStorage` e reabri-lo no backup. `auth:session` fica **de fora** — JWT de
+vida curta, inútil restaurado e perigoso num arquivo que o operador manda por
+e-mail para si mesmo. A importação recusa chave não declarada, versão futura e
+entrada malformada: é a única porta pela qual dado externo entra no storage, e
+não pode virar a janela por onde os buracos fechados voltam.
+
+Com isso, as quatro palavras da definição da 1.0.0 têm lastro:
+**previsível** (esquemas + catálogos gerados) · **testado** (463 testes + 5
+passagens de navegador no CI) · **recuperável** (offline + backup) ·
+**seguro** (permissões negadas por omissão + as 72 chaves classificadas).
+
+### Também entrou
+
+- **Catálogos gerados** (`docs/architecture/events.md` e `storage.md`): 19
+  eventos em 8 namespaces, 71 chaves com classe e dono. Gerados do código e
+  cobrados pelo CI, como a tabela de estabilidade — catálogo à mão mente no
+  primeiro rename. O de storage **se recusa a rodar** com chave fora da política.
+- **Geradores do Arma 3 corrigidos**: a migração para `dados-remotos` tinha sido
+  feita à mão em seis arquivos **gerados**, e a próxima execução do gerador a
+  desfaria calada. O CI pegou — é exatamente o que aquele passo existe para pegar.
+- **`.smart-env/` fora do versionamento**: 19 MB de índice do Smart Connections,
+  derivado dos nossos próprios READMEs, sem gerador nem consumidor nosso.
+- **Triagem das 53 issues** (`docs/TRIAGEM-1.0.0.md`): nenhuma descreve defeito
+  no que está marcado estável.
+
+**463 testes.**
+
+---
+
+## 2026-08-09 (13)
+
+### 📦 Os datasets buscados em runtime — o último 🟠
+
+Medido antes de executar: são **7** (as 6 bases do Arma 3 e a saga das Crônicas).
+Eles são uma categoria diferente do resto de `src/data/`, e a diferença é a que
+importa: dataset **importado** quebrado falha o **build**, e alguém conserta
+antes de publicar; dataset **buscado** quebrado falha **na cara do operador**.
+
+A garantia do item — *"um JSON quebrado não derruba a página"* — **já estava de
+pé**: os dois consumidores (`/arma3-tutorial` e `/biblioteca`) tratam a rejeição
+e mostram "falhou — tentar de novo" e "capítulos indisponíveis". Registrar isso
+importa tanto quanto consertar o que falta.
+
+**O que faltava eram outras duas coisas:**
+
+*Teto de espera.* A base de armas tem ~1,9 MB crus. Sem timeout, uma rede
+pendurada deixava o botão em "baixando…" para sempre — mesmo modo de falha que
+o `dbFetch` tinha. 20 s aqui, não os 8 s do banco: o teto é contra rede
+*pendurada*, não contra rede lenta, e um teto curto demais transformaria conexão
+ruim em erro.
+
+*Conferência de forma.* Este era o sutil: `d.armas` de um JSON **válido** sem a
+chave `armas` resolvia `undefined`, a promessa **cumpria**, e o erro só aparecia
+lá na frente como "Cannot read properties of undefined" — sem mencionar dataset
+nenhum. Agora rejeita dizendo o que faltou.
+
+Extraído para `src/core/dados-remotos.js`, com uma terceira garantia que os
+loaders já tinham e valia preservar explicitamente: **o cache não guarda
+fracasso**. Se guardasse, o primeiro erro condenaria a sessão inteira e o botão
+"tentar de novo" mentiria.
+
+10 testes. Verificado no navegador: `/biblioteca` carrega os **1178 capítulos**,
+sem erro de JS.
+
+Proveniência (fonte, data, confiança por campo) segue sendo **V2** — #422.
+
+422 testes verdes.
+
+---
+
+## 2026-08-09 (12)
+
+### 📴 Prova de offline — e um teste que travava em vez de falhar
+
+"Recuperável" é uma das quatro palavras da definição de 1.0.0, e `pwa` está
+marcado **estável**. Um PWA que instala Service Worker e mesmo assim mostra o
+dinossauro do navegador quando o wi-fi cai não é estável — é decorativo.
+
+`scripts/prova-offline.mjs` percorre: online (SW assume o controle) → **offline**
+→ recarrega → navega → **online de volta**. Passou nas 9 afirmações.
+
+O percurso distingue dois casos porque a arquitetura os separa: com roteamento
+por **hash**, trocar de rota offline **não** dispara requisição de navegação — o
+shell já está na memória. O que pode faltar é o **chunk** de uma página nunca
+visitada, já que cada rota é um `import()` separado. Então:
+
+- rota já visitada → tem que abrir normalmente (chunk em cache);
+- rota nunca aberta → tem que dizer "falha ao carregar" e seguir de pé. **Tela
+  branca é o defeito.**
+
+**A parte que interessa.** A primeira versão do script **travava** quando não
+havia Service Worker — `navigator.serviceWorker.ready` nunca resolve nesse caso;
+ele não rejeita, pendura. Descobri porque o teste de quebra (desligar o registro
+do SW para ver o script ficar vermelho) estourou o tempo em vez de falhar. Em CI
+isso queimaria o job inteiro por timeout — e justamente no cenário que o teste
+existe para detectar. Teste que trava é pior que teste que falha.
+
+Agora tem teto de 15 s e para na hora, dizendo a causa.
+
+412 testes verdes; 4 passagens de navegador no CI (rotas · jornada · vazamento ·
+offline).
+
+---
+
+## 2026-08-09 (11)
+
+### 🧹 Auditoria do Service Worker — e um bug que eu mesmo plantei hoje
+
+`pwa` está marcado **estável**, e este é o componente que já deixou gente presa
+em cache velho **duas vezes** neste projeto. A primeira metade da auditoria já
+estava fechada: `test/versao.test.js` impede a VERSION do `sw.js` de ficar para
+trás. Esta é a segunda.
+
+**O bug.** A limpeza de caches antigos comparava por **prefixo**:
+
+```js
+keys.filter((k) => k.startsWith('baluarte-') && !k.startsWith(VERSION))
+```
+
+E `'baluarte-v1.0.0-rc-static'.startsWith('baluarte-v1.0.0')` é **`true`**. Ou
+seja: na subida de `1.0.0-rc` para `1.0.0`, os caches da rc **sobreviveriam para
+sempre** — invisíveis, ocupando espaço, nunca servidos. O mesmo valeria de `v1.0`
+para `v1.0.1`.
+
+E o cenário foi criado **hoje**, pela renumeração para `-rc` de dois commits
+atrás. Um item da fila achando o defeito que outro item da fila plantou.
+
+Agora a comparação é por **nome exato** contra a lista dos caches desta versão.
+
+**O teste executa o `sw.js` de verdade.** O arquivo é servido cru e usa globais
+de Service Worker, então não dá para importar. Em vez de reimplementar a lógica
+no teste — que testaria uma cópia, não o código —, ele roda num sandbox `vm` com
+`self` e `caches` de mentira, e o handler de `activate` é chamado com chaves
+semeadas. Verificado revertendo para o prefixo: o teste acusa com o nome do cache
+que sobreviveria.
+
+412 testes verdes.
+
+---
+
+## 2026-08-09 (10)
+
+### 📋 A tabela de estabilidade entra no README — gerada, não escrita
+
+O `README.md` ganhou a seção **"O que a 1.0.0 promete"**: a definição em vigor,
+o que ela significa (ponto de congelamento, não "tudo pronto") e a tabela do que
+está `estavel`, `beta` e `experimental` — hoje **6 · 5 · 3**.
+
+**Gerada de `src/core/politica.js`**, não escrita à mão, e o CI regera com
+`--verificar` e falha se divergir — o mesmo padrão que o repositório já usa para
+as bases do Arma 3.
+
+O motivo é específico: esta tabela é a **promessa pública da 1.0.0**. Promessa
+que mora em dois lugares diverge, sempre — alguém promove uma flag para
+`estavel` no código, esquece o README, e a partir daí o README mente para quem
+lê. Com a política como fonte, mentir exige passar pelo CI.
+
+Verificado promovendo `jarvis` de beta para estável em `politica.js` sem
+regenerar: o verificador acusou e saiu com código 1.
+
+E a tabela é honesta sobre o que **não** está pronto, que é o ponto do ADR-001 —
+uma 1.0.0 que promete menos e cumpre vale mais que uma que promete tudo.
+
+---
+
+## 2026-08-09 (9)
+
+### 🔌 A 1.0.0 é a última versão que o app instala sozinho
+
+Regra do operador, e ela é mais precisa do que o ADR-003 tinha registrado.
+A primeira redação dizia "o app trava na linha 1.x e recebe correção"; a decisão
+real é outra: **o auto-update termina na 1.0.0**. Depois dela, instalar é escolha
+de quem usa — por conta e risco, porque o que vem depois é código novo. Quem usa
+o **site** continua recebendo tudo, inclusive a V2. ADR-003 corrigido com a
+correção marcada, não reescrito em silêncio.
+
+`desktop/src/main.js`: `autoDownload` vira **`false`**. O app ainda avisa que
+existe versão nova — avisar é serviço, baixar sozinho é decidir pelo outro — e o
+botão padrão do aviso é **"Agora não"**, para que quem não decidir nada fique
+onde está.
+
+**A metade que quase passou batido.** O launcher não embute conteúdo: ele faz
+`loadURL` do site ao vivo. Existem **dois** canais de atualização, e desligar o
+auto-update fecha só um — se a V2 subisse no mesmo endereço, o app "congelado"
+mostraria a V2 sem instalar nada, e o congelamento seria enfeite. Por isso o app
+passa a apontar para um alias fixado da linha 1.x, enquanto o endereço principal
+segue recebendo o que for publicado.
+
+A distinção que sustenta a regra: *no site você escolhe a cada visita; no app
+você escolheu uma vez, ao instalar.*
+
+⚠️ Nada disso vale até sair uma **release empacotada com essas mudanças dentro**,
+e o alias `v1.` precisa existir **antes** — um app que aponta para endereço que
+não resolve não abre. Passo a passo, na ordem, em `HANDOFF-LOCAL.md` (seção A0):
+é trabalho de sessão local.
+
+---
+
+## 2026-08-09 (8)
+
+### ⏱️ Teto de espera nas idas ao mundo externo — o último 🔴
+
+O item dizia "toda chamada externa" e não tinha critério de pronto. Medido antes
+de executar: nas superfícies marcadas **estável** são **5 pontos de chamada**,
+não 100 páginas.
+
+**O modo de falha coberto é o que não parece falha.** Rede que *recusa* é fácil:
+o `fetch` rejeita, o `catch` roda, a UI mostra o erro. Rede que **pendura** é o
+problema — o `await` nunca resolve, nenhum `catch` dispara, nenhum fallback
+acontece, e o operador fica olhando a tela girar sem nada no console. Não parece
+defeito, parece lentidão.
+
+O pior caso era **`getAccessToken()`**: ele roda antes de quase toda operação
+autenticada, então um refresh pendurado penduraria junto tudo que depende de
+dado. Agora tem teto de 8 s.
+
+Também ganharam teto: **`dbFetch`** (caminho de toda ida ao banco — 8 s, e a
+falha vira mensagem legível em vez de um `TimeoutError` cru que ninguém entende
+num toast), **`signOut`** (4 s — revogar no servidor é bônus, *sair* é o que o
+operador pediu, e um servidor pendurado não pode travar o botão) e a **Wikipédia
+do Centro Militar** (6 s, o mesmo teto que `pages/arsenal.js` já usava — o padrão
+certo já existia no repo, só não estava em todo lugar).
+
+6 testes com um `fetch` que pendura de verdade e honra o `AbortSignal`.
+Verificado que todos ficam vermelhos sem o `signal`.
+
+Detalhe de quem for mexer: `AbortSignal.timeout()` em Node usa timer **unref'd**,
+que não segura o event loop — sem um timer comum por perto, o processo encerra
+antes de o abort disparar e o runner derruba o arquivo inteiro com "promise still
+pending". No navegador não existe esse detalhe. Está comentado no teste.
+
+406 testes verdes.
+
+---
+
+## 2026-08-09 (7)
+
+### 🧪 Sonda de vazamento — e veio limpa
+
+`core/ciclo-vida.js` existe para desmontar o que a página montou, mas ninguém
+cobrava. `scripts/sonda-memoria.mjs` visita as rotas pesadas (`/home`,
+`/cerebro`, `/radio`, `/visao`, `/mapa`) **6× cada** e mede o que sobra.
+
+**Resultado: nada sobra.** Nem timer, nem contexto de áudio, nem laço de
+animação. O ciclo de vida está fazendo o trabalho dele — este é o primeiro item
+da fase que não achou defeito, e isso também é resultado.
+
+**Por que não mede heap.** Heap depois de GC é o instrumento óbvio e o pior:
+oscila com o coletor, com o cache de imagem, com o JIT. Para não dar falso
+positivo precisa de limiar grande, e limiar grande não pega vazamento pequeno —
+que é exatamente o que se acumula em cem trocas de rota. Heap entra como número
+informativo e não reprova nada.
+
+**O que reprova** são contadores determinísticos instrumentados antes do boot:
+`setInterval` sem `clearInterval`, `AudioContext` sem `close()`, e — o que mais
+importa neste código, onde 12 páginas rodam laço de animação — **quantos quadros
+são pedidos enquanto se está FORA da rota**. Um laço de `requestAnimationFrame`
+não cancelado continua queimando CPU numa tela fechada, e cada visita deixa mais
+um rodando.
+
+Mede **inclinação**, não valor absoluto: número alto e estável é legítimo (a
+página abre 3 timers e fecha 3); o que acusa é crescer a cada visita.
+
+A primeira versão instrumentava só `setInterval` e deu tudo plano — o que era
+suspeito, não tranquilizador, já que essas páginas usam `rAF`. Confirmado
+plantando um `setInterval` e um laço de `rAF` sem limpeza em `/cerebro`: a sonda
+acusou `timers 2→3→4→5→6→7` e quadros ociosos subindo.
+
+---
+
+## 2026-08-09 (6)
+
+### 🧭 Critical Path Test — e duas versões dele que passavam com o defeito presente
+
+O `smoke` abre as 99 rotas, mas **cada uma numa aba nova**. Isso o deixa cego
+para a classe de defeito mais chata de um SPA: estado que corrompe *entre*
+navegações. A página que só quebra depois de você ter passado por outras três é
+verde no smoke e vermelha para quem usa.
+
+`scripts/caminho-critico.mjs` percorre **uma sessão contínua** — boot → arsenal →
+home → editor (escreve) → terminal → volta no editor → diagnóstico (revoga
+permissão) → **reload** → a escolha sobreviveu? São 15 afirmações de **estado**,
+não de pixel. Roda no CI junto do smoke.
+
+**A parte que importa: as duas primeiras versões deste teste eram inúteis.**
+
+A primeira comparava estado *relativo* — "depois do reload é o contrário do que
+era antes". Com a persistência quebrada, o boot re-semeia o padrão e o valor
+"volta ao que era", que a comparação relativa não distingue de "nunca mudou".
+Verde com o defeito presente.
+
+A segunda corrigiu para estado absoluto (revoga → recarrega → **exige negada**) e
+**continuou verde**. O motivo era outro: `goto()` para uma URL que difere só no
+fragmento é navegação *no mesmo documento* — o JavaScript não recarrega. O passo
+chamado "reload de verdade" nunca recarregou, e o teste lia o heap achando que
+lia o disco. Corrigido com `reload()` explícito.
+
+Só a terceira versão morde. Verificado quebrando `persistirPermissoes` e vendo a
+afirmação do reload ficar vermelha com `concedida=true`.
+
+Um teste que passa com o defeito presente é pior do que não ter teste: ele
+compra confiança que não existe. Os dois motivos ficaram escritos em comentário
+no próprio script, porque são exatamente os erros que se repetem.
+
+400 testes de unidade + 15 afirmações de jornada.
+
+---
+
+## 2026-08-09 (5)
+
+### 🔒 O sandbox do terminal, provado — e a fila cortada ao que cabe
+
+**O terminal já estava fechado.** O VFS é uma árvore de objetos em memória
+(persistida pelo wrapper), o `..` era contido por construção (`stack.pop()` em
+array vazio é no-op) e nenhum dos 60+ comandos referencia rede, execução de
+código ou a ponte do Launcher — os únicos toques no mundo real são `location`
+para navegar e recarregar, que é UI.
+
+O que faltava não era conserto, era **prova**. `test/terminal-sandbox.test.js`
+executa comandos de verdade contra a fronteira: `cat /etc/passwd` (o arquivo
+existe na máquina do CI — se o terminal alcançasse o disco, apareceria),
+`rm -rf /`, escrita com `/../../../../tmp/`, `ls /` conferindo que `proc`,
+`sys` e `root` não aparecem. Mais uma varredura que reprova o commit se algum
+dos três arquivos passar a citar `fetch`, `eval`, `import(` ou `baluarte.invoke`
+— verificada introduzindo um `fetch` e vendo o teste falhar.
+
+E roda em **Node puro**, sem navegador e sem DOM: se o terminal precisasse de
+filesystem real, nada disso teria funcionado.
+
+Nota honesta: a única falha da rodada foi **do teste**, não do código. A primeira
+versão confundia substring com segmento e acusava `....` — nome de diretório
+perfeitamente legítimo — de ser travessia. O invariante certo é por segmento.
+
+**Corte de escopo em dois itens da fila**, decidido junto com o operador:
+
+- *Error handling nas bordas* passa a valer só para as superfícies marcadas
+  **`estavel`**. A versão anterior ("toda chamada externa") não tinha critério de
+  pronto — são ~100 páginas, a maioria `beta` — e item sem fim definido segura
+  release para sempre. Beta não promete recuperabilidade; estável promete.
+- *Vazamento de memória* vira uma sonda nas ~5 rotas mais pesadas (3D, áudio,
+  canvas). Limpo, fecha; acusou, vira item próprio com o vazamento nomeado.
+
+400 testes verdes (14 novos).
+
+---
+
+## 2026-08-09 (4)
+
+### 🩹 XSS no preview de markdown — a única das 58
+
+Item 🔴 da fila: triar os 58 `innerHTML`. Feita uma a uma. **Uma era
+vulnerabilidade de verdade**; as outras 57 são seguras, e agora o motivo de cada
+categoria está escrito em vez de suposto.
+
+**O buraco.** O renderizador de markdown da `/utilidades` escapava `<`, `>` e `&`
+do texto e parava aí. Mas `href` **não precisa de tag nenhuma**:
+
+```
+[clique](javascript:alert(1))
+  → <a href="javascript:alert(1)" target="_blank">clique</a>
+```
+
+e executava no clique. O escape do texto nunca tocou nisso, porque o problema
+nunca esteve no texto — esteve no atributo. É o caminho de quem cola markdown de
+qualquer lugar no preview.
+
+**A correção.** Filtro de esquema: sem esquema (relativo, âncora, caminho) passa;
+com esquema, só `http`, `https` e `mailto`. Qualquer outro vira `#` — inerte e
+visível, o link continua lá e não faz nada. Caracteres de controle são removidos
+antes de olhar o esquema, porque o navegador também os ignora ao resolver a URL
+(`java<TAB>script:` executaria enquanto uma checagem ingênua não veria esquema).
+Aspas passaram a ser escapadas junto com `<`/`>`/`&`.
+
+Extraído para `src/utils/markdown.js` para poder ser testado sem navegador — um
+renderizador que produz HTML a partir de texto de fora precisa de teste. **15
+testes**, e 4 deles falham se o comportamento antigo voltar (verificado).
+
+**As outras 57, por categoria:** 21 são `innerHTML = ''`; 8 são HTML literal
+estático; 17 interpolam só números calculados; 3 passam por `highlight()`, que
+escapa nos três caminhos; 1 usa `escapeHtml()` explícito; 6 interpolam
+identificadores internos. E 1 é o console do runner do editor, que roda dentro de
+um iframe `sandbox="allow-scripts"` **sem** `allow-same-origin` — origem opaca,
+sem acesso ao DOM ou storage do pai. Executar ali é o propósito do recurso.
+
+Verificado no navegador: `javascript:` vira `href="#"`, o clique não dispara
+nada, o link legítimo continua funcionando e a tag no texto sai escapada.
+386 testes verdes.
+
+---
+
+## 2026-08-09 (3)
+
+### 🗄️ O storage direto some — e dois bugs saem junto
+
+Item 🔴 da fila: 11 chamadas cruas a `localStorage` viviam fora do wrapper, sem
+versão e sem classificação. Sobraram **2**, ambas intencionais e documentadas.
+Mas o valor não foi a arrumação — foram os dois defeitos que a varredura achou.
+
+**O "Limpar todos os dados locais" mentia.** `utils/wikipedia.js` gravava o cache
+como `wiki:sum:pt:Título`, **cru, sem o `baluarte:`**. O botão do `/perfil`
+sempre filtrou por esse prefixo — então nunca alcançou essas chaves. O operador
+clicava, lia *"todos os dados locais foram apagados"*, e o registro do que ele
+consultou continuava no disco. O relatório de storage da `/shadow` também não os
+contava. Agora a gravação é namespaced, e o botão varre o legado que ficou para
+trás (varredura descartável depois da 1.0.0).
+
+**O terminal caía com uma entrada corrompida.** `loadHistory()` fazia
+`JSON.parse` direto, sem `try` — `saveHistory()` tinha proteção, a leitura não.
+Cota estourada no meio de uma gravação e a página inteira parava de abrir. O
+wrapper trata e devolve o fallback.
+
+**Classificação.** `auth:session` é **`sensivel`, não `secreto`** — e a distinção
+importa: `secreto` é recusado na gravação, e a sessão *precisa* viver no
+navegador; é assim que auth web funciona. O que a protege não é escondê-la do
+frontend (impossível), é ser o JWT do próprio usuário, curto, renovável, com o
+RLS decidindo o alcance. Classificar como `secreto` não deixaria mais seguro,
+deixaria o login quebrado. `terminal:history` também é `sensivel` (é o que o
+operador digitou).
+
+**As 14 chamadas a `sessionStorage` ficam diretas, por decisão.** O wrapper é
+`localStorage`, que persiste para sempre, e essas flags existem justamente para
+morrer com a aba. Migrá-las trocaria a semântica — "já recarreguei uma vez"
+virando permanente transformaria a guarda anti-loop do boot num bloqueio
+permanente. Justificado em `core/politica.js`.
+
+**`test/storage-namespace.test.js`** impede a reincidência: falha se um arquivo
+novo tocar `localStorage` fora da lista de exceções — que tem teto e exige
+justificativa por linha, senão vira o lugar onde a regra morre aos poucos.
+
+Verificado no navegador com dado legado semeado: o histórico do terminal
+sobreviveu e foi migrado (`{"__bv":1,"d":[…]}`), a sessão continuou válida
+(ninguém foi deslogado) e o "limpar tudo" apagou inclusive a chave fora do
+namespace. 371 testes verdes.
+
+---
+
+## 2026-08-09 (2)
+
+### 🔐 A fronteira de permissão sai do papel — política, boot e `/diagnostico`
+
+O PR anterior entregou os motores; eles estavam **vazios**. Este liga tudo.
+
+**`src/core/politica.js` (novo) — o lugar único onde o Baluarte declara o que
+existe.** Lido de cima a baixo responde três perguntas: o que o sistema é capaz
+de fazer (**19 permissões**, 7 delas `restrito`), o que ele guarda no navegador
+(9 chaves com versão e classificação) e o que está pronto para a 1.0.0 (6
+estáveis, 5 beta, 3 experimentais). Espalhado por 100 páginas ninguém consegue
+responder *"o que um agente com acesso total conseguiria fazer aqui?"* — e é
+justamente essa a pergunta da fase.
+
+Quatro permissões estão declaradas **antes de existirem** (`terminal.executar`,
+`arquivos.ler`, `arquivos.escrever`, `rede.chamar`). No dia em que a ferramenta
+aparecer, ela já nasce atrás de uma permissão que ninguém concedeu, em vez de
+nascer aberta e "ser protegida depois".
+
+**Uma armadilha que quase entrou.** Declarar esquema numa chave que já tem dado
+gravado faz o storage tratar esse dado como versão 0 — e sem `migrar` o `get()`
+devolve o fallback. Na prática: as abas do editor do operador sumiriam no
+primeiro deploy, sem um erro no console. Na máquina de quem programa isso nunca
+aparece, porque lá o dado já nasceu versionado. Todo esquema declarado leva
+`migrar` identidade (v0 e v1 têm o mesmo formato), e há teste cobrando que
+**nenhuma chave declarada perca dado legado**.
+
+**JARVIS atrás da fronteira.** `runTool()` é o gargalo por onde toda chamada do
+agente passa; agora ele exige a permissão antes de executar — e **antes do
+guard**, porque perguntar "esse comando é perigoso?" sobre uma ação que nem devia
+estar disponível é responder tarde. O mapa mora em `src/utils/jarvis-permissoes.js`
+(separado para poder ser testado sem navegador). Ferramenta fora do mapa cai no
+padrão **fechado**: tool nova nasce negada, com mensagem dizendo qual permissão
+falta e onde liberar.
+
+**O padrão do operador não quebra o que já funcionava.** Concede `'*'` — que por
+construção exclui `restrito` — mais as três capacidades restritas que a interface
+**já expunha** (`jarvis.memoria.ler`, `jarvis.skills.escrever/executar`),
+escritas uma a uma por extenso. Conceder `restrito` por engano não pode ser
+possível. A escolha do operador persiste: revogar não volta no boot seguinte.
+
+**`/diagnostico` (rota nova).** O painel do item 8 do #420: 9 sondas do ambiente,
+a tabela de estabilidade, as 19 permissões com liga/desliga, os esquemas com
+versão gravada vs. esperada, e o rastro das últimas decisões. Sem `innerHTML` em
+lugar nenhum — nada que venha do storage do operador vira markup. Flag de outro
+ambiente mostra a explicação no lugar do botão: botão que não faz nada é pior que
+botão nenhum.
+
+Verificado no navegador (Chromium): a página desenha, o liga/desliga funciona e a
+gravação sai no envelope versionado — `{"__bv":1,"d":{…}}`, o storage novo
+trabalhando ponta a ponta.
+
+29 testes novos (19 política · 10 mapa de tools). Suíte: **365 verdes**. Build ok.
+
+---
+
+## 2026-08-09
+
+### 🛡️ Começa a fase de hardening até a 1.0.0 (#420)
+
+A issue #420 fixou o que a 1.0.0 significa — *"tudo que está marcado como estável
+é previsível, testado, recuperável e seguro"* — e que ela é um **ponto de
+congelamento**, com a V2 (plataforma/TypeScript/MCP) só depois. Este é o primeiro
+PR dessa fase: a fundação do Core, mais a fila e as decisões que sobrevivem à
+sessão.
+
+**Auditoria de segurança — primeira varredura.** Resultado melhor que o esperado:
+**nenhum segredo** no frontend (nada de `sk-`/`AIza`/`ghp_`/JWT em código), e o
+único `new Function` do repositório (`utils/jarvis-skills.js`) já estava
+sandboxed em duas camadas. Os buracos reais eram outros — 58 `innerHTML` a
+triar, 25 chamadas diretas a `localStorage` fora do wrapper, e nenhuma fronteira
+de permissão. Tabela completa em `docs/HARDENING-1.0.0.md`.
+
+**`src/core/permissions.js` — a fronteira de acesso (novo).** `JARVIS → Permission
+→ Tool`, nunca `JARVIS → Tool`. Deny-by-default; permissão precisa ser
+**declarada** antes de usada — `exigir('arsenl.read')` com typo falha alto em vez
+de virar negação silenciosa que a UI tenta consertar pedindo autorização ao
+operador; e curinga (`arsenal.*`) **nunca** alcança risco `restrito`, enquanto
+revogar por curinga alcança tudo (tirar acesso é sempre seguro, dar não é).
+Motivo e alternativas descartadas em `ADR-002`.
+
+**`src/core/events.js` — curinga.** `bus.on('*')` e `bus.on('arsenal:*')`, com o
+nome real do evento em `meta.event`. É o que permite histórico, telemetria,
+diagnóstico e o contexto do JARVIS existirem sem manter uma lista fixa de
+eventos — a lista que ninguém lembra de atualizar. A API antiga não mudou:
+handler de um argumento só ignora o `meta`.
+
+**`src/core/storage.js` — versionamento e classificação.** Uma chave pode
+registrar esquema (versão + `migrar` + classe de dado); o valor passa a ser
+gravado num envelope e o dado legado é migrado a partir da versão 0, uma vez, e
+regravado. Dado de uma versão **mais nova** (o operador usou o app atualizado e
+depois abriu uma aba com o bundle em cache) é preservado em vez de adivinhado.
+E a classe `secreto` é **recusada na gravação**: o frontend é público, e a regra
+"nunca segredo no frontend" agora é cobrada em vez de lembrada.
+
+**`src/core/flags.js` — estabilidade e liberação (novo).**
+`estavel`/`beta`/`experimental` + gate `web`/`app` do #238. Uma flag experimental
+**não pode** nascer ligada por padrão — é o que impede a 1.0.0 de prometer
+estabilidade e entregar experimento. E nem a escolha do operador liga uma flag
+app-only na web: o gate do #238 não pode ter porta dos fundos.
+
+**CI: auditoria de dependências.** `npm audit --omit=dev --audit-level=high`
+bloqueia; o audit completo fica informativo. As 6 vulnerabilidades atuais são
+**todas** de devDependency (`postcss` via vite, `tar` via `@capacitor/cli`) e
+nenhuma chega ao navegador de quem visita o site — reprovar merge por causa
+delas ensinaria a ignorar o vermelho.
+
+**Documentação que sobrevive à sessão.** `docs/HARDENING-1.0.0.md` (fila
+executável, com o resultado da auditoria), `docs/architecture/` com `overview.md`,
+`v2-vision.md` (**bússola, não obra** — lista explicitamente o que *não* fazer
+até a 1.0.0 fechar) e dois ADRs. `CLAUDE.md` aponta para a fase atual.
+
+79 testes novos (23 flags · 22 permissions · 18 storage · 16 events). Suíte
+completa: **336 verdes**. Build ok.
+
+---
+
 ## 2026-08-03
 
 ### 🐞 `call _fnc_lim` recebia ARRAY: todo texto dos dumps novos saiu embrulhado

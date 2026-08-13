@@ -1,0 +1,42 @@
+name: V2 Runtime
+
+on:
+  push:
+    branches:
+      - main
+      - release/v1.x
+      - v2-development
+      - v2-integration
+      - 'claude/**'
+  pull_request:
+    paths:
+      - 'v2/runtime/**'
+      - '.github/workflows/v2-runtime.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  rust-runtime:
+    name: Rust Runtime — fmt + test + clippy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: v2/runtime
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Format
+        run: cargo fmt --all -- --check
+
+      - name: Tests
+        run: cargo test --all-targets
+
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings

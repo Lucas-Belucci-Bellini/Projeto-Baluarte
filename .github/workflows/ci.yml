@@ -47,6 +47,21 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      # Auditoria de dependências (#420, item 🟠 8). Bloqueia só o que CHEGA no
+      # navegador do operador: --omit=dev. A varredura de 09/08/2026 achou 6
+      # avisos, todos em devDependency (postcss via vite, tar via @capacitor/cli)
+      # — nenhum roda na máquina de quem visita o site.
+      #
+      # Reprovar merge por causa de aviso em build tool ensina a ignorar o
+      # vermelho, e é assim que um aviso de produção passa despercebido depois.
+      - name: Dependências de produção sem vulnerabilidade alta
+        run: npm audit --omit=dev --audit-level=high
+
+      # As de desenvolvimento ficam VISÍVEIS sem travar o merge.
+      - name: Dependências de desenvolvimento (informativo)
+        continue-on-error: true
+        run: npm audit --audit-level=high
+
       - name: Build
         run: npm run build
 
@@ -61,6 +76,41 @@ jobs:
       # depois, em runtime, sem dizer de quem é a culpa.
       - name: Testes
         run: npm test
+
+      # Acrescentado depois de um erro concreto: um commit da V2 afirmou
+      # "tsc exit=0" quando havia 3 erros de tipo. O comando estava encadeado de
+      # um jeito que commitou com o verificador vermelho, e a saída lida foi a
+      # errada. Verificação que depende de alguém ler direito não é verificação.
+      #
+      # Só o `v2/`: a V1 é JS puro e continua sendo (ver docs/v2/V2_STACK.md §2).
+      # Este passo não pode quebrar nada da V1 — se o v2/ sumir, o tsc não acha
+      # arquivo e sai zero.
+      - name: Tipos da V2 (JSDoc + checkJs)
+        run: npm run tipos:v2
+
+      # A tabela de estabilidade do README é a PROMESSA PÚBLICA da 1.0.0 — "isto
+      # aqui é estável". Promessa que mora em dois lugares diverge: alguém
+      # promove uma flag no código, esquece o README, e a partir daí o README
+      # mente para quem lê. Aqui a divergência aparece no PR.
+      - name: A tabela de estabilidade bate com a política?
+        run: node scripts/gen-tabela-estabilidade.mjs --verificar
+
+      # Mesmo raciocínio, outro alvo: o catálogo de eventos responde "se eu
+      # renomear este evento, quem para de funcionar?". A resposta é quem
+      # escuta, e isso vive espalhado por 11 arquivos. Escrito à mão, o
+      # catálogo mentiria no primeiro rename; gerado, o rename aparece aqui.
+      - name: O catálogo de eventos bate com o código?
+        run: node scripts/gen-catalogo-eventos.mjs --verificar
+
+      # Este não só documenta: ele COBRA a invariante de que toda chave tocada
+      # por src/ está declarada em politica.js. Chave sem esquema não tem versão
+      # nem migração, e congelar a 1.0.0 assim deixaria a V2 sem contrato pra
+      # ler o dado da V1 — com o agravante de que a perda é silenciosa
+      # (storage.get devolve o fallback, sem erro). A varredura que introduziu
+      # este passo achou 59 chaves nessa situação, entre elas cofres de chave
+      # de API.
+      - name: Toda chave de storage está declarada na política?
+        run: node scripts/gen-catalogo-storage.mjs --verificar
 
       # Os .sqf sao COLADOS no debug console do jogo, que nao e UTF-8. Um
       # acento no arquivo corrompe o script antes de o parser existir, e o

@@ -7,6 +7,8 @@
  * A conversão mora em src/utils/arma3-grade.js.
  */
 
+import { buscarDataset } from '../core/dados-remotos.js';
+
 export const A3TER = [
   { id: "altis", classe: "Altis", nome: "Altis", autor: "Bohemia Interactive", dlc: "Base", dlcFonte: "tabela", tamanhoM: 30720, areaKm2: 943.7, latitude: -35.152, longitude: 16.661, grade: { offsetX: 0, offsetY: 30720, passoX: 100, passoY: -100, digitos: 3 }, localidades: 176, localidadesPorTipo: { NameLocal: 79, NameVillage: 27, Hill: 25, NameMarine: 20, NameCity: 18, CityCenter: 4, NameCityCapital: 3 }, capitais: ["Athira", "Pyrgos", "Kavala"], aeroportos: 6, ehMod: false },
   { id: "bootcamp-acr", classe: "Bootcamp_ACR", nome: "Bukovina", autor: "Bohemia Interactive", dlc: "CUP Terrains - Core", dlcFonte: "mod", tamanhoM: 3840, areaKm2: 14.7, latitude: -45, longitude: 30, grade: { offsetX: 0, offsetY: 3840, passoX: 100, passoY: -100, digitos: 3 }, localidades: 7, localidadesPorTipo: { NameCity: 3, VegetationFir: 2, Airport: 1, VegetationBroadleaf: 1 }, capitais: null, aeroportos: 1, ehMod: true },
@@ -49,8 +51,7 @@ export const A3TER_META = { oficiais: 8, mods: 23, comGrade: 31, dbUrl: "/arma3/
 let _db = null;
 export function carregarTerrenos() {
   if (!_db) {
-    _db = fetch(A3TER_META.dbUrl)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    _db = buscarDataset(A3TER_META.dbUrl, { rotulo: 'a base de terrenos do Arma 3' })
       .catch((err) => { _db = null; throw err; });
   }
   return _db;

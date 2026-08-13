@@ -1,0 +1,34 @@
+name: V2 Runtime E2E
+
+on:
+  push:
+    branches:
+      - main
+      - release/v1.x
+      - v2-development
+      - v2-integration
+      - 'claude/**'
+    paths:
+      - 'v2/runtime/**'
+      - 'scripts/v2-runtime-smoke.mjs'
+      - '.github/workflows/v2-runtime-e2e.yml'
+  pull_request:
+    paths:
+      - 'v2/runtime/**'
+      - 'scripts/v2-runtime-smoke.mjs'
+      - '.github/workflows/v2-runtime-e2e.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: cargo build --manifest-path v2/runtime/Cargo.toml
+      - run: node scripts/v2-runtime-smoke.mjs
