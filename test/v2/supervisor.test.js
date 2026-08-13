@@ -8,7 +8,12 @@ function bootFake(resultado = { ok: true, vivos: ['alpha'], falhas: [] }) {
   return {
     boot: {
       async subir() { subirChamadas += 1; return resultado; },
-      async descer() { descerChamadas += 1; return { ok: true, problemas: [] }; }
+      async descer() { descerChamadas += 1; return { ok: true, problemas: [] }; },
+      diagnostico() { return { resultado }; }
+    },
+    saude: {
+      definirEstado() {},
+      retrato() { return { readiness: 'healthy' }; }
     },
     contagem: () => ({ subir: subirChamadas, descer: descerChamadas })
   };
@@ -16,22 +21,23 @@ function bootFake(resultado = { ok: true, vivos: ['alpha'], falhas: [] }) {
 
 test('supervisor chega a ready quando boot e readiness estão saudáveis', async () => {
   const fake = bootFake();
-  const supervisor = criarSupervisor(fake.boot, { verificar: () => ({ readiness: 'healthy' }) });
+  const supervisor = criarSupervisor(fake.boot, fake.saude);
   const resultado = await supervisor.iniciar();
   assert.equal(resultado.estado, 'ready');
-  assert.equal(supervisor.estado, 'ready');
+  assert.equal(supervisor.estado(), 'ready');
+  assert.equal(supervisor.status().health.readiness, 'healthy');
 });
 
 test('falha de módulo produz estado degraded sem derrubar o processo', async () => {
   const fake = bootFake({ ok: false, vivos: ['alpha'], falhas: [{ modulo: 'beta' }] });
-  const supervisor = criarSupervisor(fake.boot, { verificar: () => ({ readiness: 'healthy' }) });
+  const supervisor = criarSupervisor(fake.boot, fake.saude);
   await supervisor.iniciar();
-  assert.equal(supervisor.estado, 'degraded');
+  assert.equal(supervisor.estado(), 'degraded');
 });
 
 test('iniciar duas vezes não sobe o Boot duas vezes', async () => {
   const fake = bootFake();
-  const supervisor = criarSupervisor(fake.boot, { verificar: () => ({ readiness: 'healthy' }) });
+  const supervisor = criarSupervisor(fake.boot, fake.saude);
   await supervisor.iniciar();
   await supervisor.iniciar();
   assert.deepEqual(fake.contagem(), { subir: 1, descer: 0 });
@@ -39,21 +45,26 @@ test('iniciar duas vezes não sobe o Boot duas vezes', async () => {
 
 test('parar é idempotente depois de parado', async () => {
   const fake = bootFake();
-  const supervisor = criarSupervisor(fake.boot, { verificar: () => ({ readiness: 'healthy' }) });
+  const supervisor = criarSupervisor(fake.boot, fake.saude);
   await supervisor.iniciar();
   await supervisor.parar();
   await supervisor.parar();
-  assert.equal(supervisor.estado, 'stopped');
+  assert.equal(supervisor.estado(), 'stopped');
   assert.deepEqual(fake.contagem(), { subir: 1, descer: 1 });
 });
 
 test('erro de boot leva o supervisor para failed', async () => {
   const boot = {
     async subir() { throw new Error('boot explodiu'); },
-    async descer() { return { ok: true }; }
+    async descer() {},
+    diagnostico() { return { resultado: null }; }
   };
-  const supervisor = criarSupervisor(boot);
-  await assert.rejects(supervisor.iniciar(), /boot explodiu/);
-  assert.equal(supervisor.estado, 'failed');
-  assert.equal(supervisor.diagnostico().ultimoErro, 'boot explodiu');
+  const saude = {
+    definirEstado() {},
+    retrato() { return { readiness: 'unknown' }; }
+  };
+  const supervisor = criarSupervisor(boot, saude);
+  await assert.rejects(() => supervisor.iniciar(), /boot explodiu/);
+  assert.equal(supervisor.estado(), 'failed');
+  assert.equal(supervisor.status().ultimaFalha, 'boot explodiu');
 });
