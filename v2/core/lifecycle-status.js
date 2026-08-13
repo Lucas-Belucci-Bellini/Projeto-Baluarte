@@ -14,7 +14,7 @@ export const ESTADOS_MODULO = Object.freeze([
 ]);
 
 /**
- * @param {ReturnType<import('./registry.js').criarRegistry>} registry
+ * @param {ReturnType<typeof import('./registry.js').criarRegistry>} registry
  * @param {{vivos: () => string[], falhas: () => Array<{modulo: string, fase: string, motivo: string}>, fase: string}} ciclo
  */
 export function criarStatusLifecycle(registry, ciclo) {
@@ -25,6 +25,7 @@ export function criarStatusLifecycle(registry, ciclo) {
     throw new TypeError('ciclo é obrigatório');
   }
 
+  /** @param {string} id */
   function estadoDo(id) {
     if (ciclo.vivos().includes(id)) return 'running';
     if (ciclo.falhas().some((f) => f.modulo === id)) return 'failed';
