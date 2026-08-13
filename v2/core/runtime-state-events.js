@@ -8,7 +8,7 @@
 export function criarRuntimeStateEvents() {
   /** @type {Set<RuntimeStateListener>} */
   const listeners = new Set();
-  /** @type {ReadonlyArray<Readonly<RuntimeStateEvent>>} */
+  /** @type {Array<Readonly<RuntimeStateEvent>>} */
   const history = [];
 
   /** @param {RuntimeStateEvent} event */
