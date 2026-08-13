@@ -1,122 +1,96 @@
-//! Baluarte V2 — Core de Runtime local.
-//!
-//! O Runtime é a fronteira de confiança para operações que não devem ser
-//! executadas diretamente pelo Core de Orquestração no navegador.
-
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Component, Path, PathBuf};
-use std::str::FromStr;
 
-pub mod envelope;
-pub mod host;
-pub mod security;
+pub const ENVELOPE_VERSION: u32 = 1;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Capability { ReadFiles, WriteFiles, Network, Database, SystemInfo, UserData, Execution }
+
 impl Capability {
-    pub const fn as_str(self) -> &'static str { match self {
-        Self::ReadFiles => "READ_FILES", Self::WriteFiles => "WRITE_FILES", Self::Network => "NETWORK",
-        Self::Database => "DATABASE", Self::SystemInfo => "SYSTEM_INFO", Self::UserData => "USER_DATA", Self::Execution => "EXECUTION",
-    }}
-    pub const fn implemented(self) -> bool { matches!(self, Self::ReadFiles) }
+    pub fn from_name(name: &str) -> Result<Self, RuntimeError> {
+        match name { "READ_FILES"=>Ok(Self::ReadFiles), "WRITE_FILES"=>Ok(Self::WriteFiles), "NETWORK"=>Ok(Self::Network), "DATABASE"=>Ok(Self::Database), "SYSTEM_INFO"=>Ok(Self::SystemInfo), "USER_DATA"=>Ok(Self::UserData), "EXECUTION"=>Ok(Self::Execution), _=>Err(RuntimeError::UnknownCapability(name.to_owned())) }
+    }
 }
-impl FromStr for Capability {
-    type Err = UnknownCapability;
-    fn from_str(value: &str) -> Result<Self, Self::Err> { match value {
-        "READ_FILES" => Ok(Self::ReadFiles), "WRITE_FILES" => Ok(Self::WriteFiles), "NETWORK" => Ok(Self::Network),
-        "DATABASE" => Ok(Self::Database), "SYSTEM_INFO" => Ok(Self::SystemInfo), "USER_DATA" => Ok(Self::UserData),
-        "EXECUTION" => Ok(Self::Execution), _ => Err(UnknownCapability(value.to_owned())),
-    }}
-}
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct UnknownCapability(pub String);
-impl std::fmt::Display for UnknownCapability { fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "capacidade desconhecida: {}", self.0) } }
-impl std::error::Error for UnknownCapability {}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RuntimeState { Running, Stopped }
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum RuntimeError {
-    CapabilityDenied(Capability), CapabilityNotImplemented(Capability), RuntimeStopped,
-    InvalidPath, PathOutsideRoot, NotAFile, Io(String),
-}
-impl std::fmt::Display for RuntimeError { fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { match self {
-    Self::CapabilityDenied(cap) => write!(f, "capacidade negada: {}", cap.as_str()),
-    Self::CapabilityNotImplemented(cap) => write!(f, "capacidade ainda não implementada: {}", cap.as_str()),
-    Self::RuntimeStopped => write!(f, "runtime está parado"), Self::InvalidPath => write!(f, "caminho inválido para uma operação confinada"),
-    Self::PathOutsideRoot => write!(f, "caminho fora da raiz autorizada"), Self::NotAFile => write!(f, "o caminho autorizado não é um arquivo"),
-    Self::Io(message) => write!(f, "erro de I/O: {message}"),
-} } }
-impl std::error::Error for RuntimeError {}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RuntimePolicyError { pub unknown: Vec<String> }
-impl std::fmt::Display for RuntimePolicyError { fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "capacidades desconhecidas: {}", self.unknown.join(", ")) } }
-impl std::error::Error for RuntimePolicyError {}
+pub struct RuntimePolicy { module: String, root: PathBuf, capabilities: HashSet<Capability> }
 
-#[derive(Debug, Clone)]
-pub struct RuntimePolicy { root: PathBuf, capabilities: Vec<Capability> }
 impl RuntimePolicy {
-    pub fn new(root: impl Into<PathBuf>, capabilities: impl IntoIterator<Item = Capability>) -> Self { Self { root: root.into(), capabilities: capabilities.into_iter().collect() } }
-    pub fn from_names(root: impl Into<PathBuf>, names: impl IntoIterator<Item = impl AsRef<str>>) -> Result<Self, RuntimePolicyError> {
-        let mut capabilities = Vec::new(); let mut unknown = Vec::new();
-        for name in names { match Capability::from_str(name.as_ref()) {
-            Ok(capability) if !capabilities.contains(&capability) => capabilities.push(capability), Ok(_) => {}, Err(_) => unknown.push(name.as_ref().to_owned())
-        }}
-        if !unknown.is_empty() { return Err(RuntimePolicyError { unknown }); }
-        Ok(Self::new(root, capabilities))
+    pub fn from_names(module: impl Into<String>, root: impl Into<PathBuf>, names: &[String]) -> Result<Self, RuntimeError> {
+        let module=module.into(); if module.trim().is_empty(){return Err(RuntimeError::InvalidModule)}
+        let mut capabilities=HashSet::new(); for name in names { capabilities.insert(Capability::from_name(name)?); }
+        Ok(Self{module,root:root.into(),capabilities})
     }
-    pub fn has(&self, capability: Capability) -> bool { self.capabilities.contains(&capability) }
-    fn allows(&self, capability: Capability) -> bool { self.has(capability) }
-    fn confined_file(&self, relative: impl AsRef<Path>) -> Result<PathBuf, RuntimeError> {
-        let relative = relative.as_ref();
-        if relative.is_absolute() || relative.components().any(|c| matches!(c, Component::RootDir | Component::Prefix(_))) { return Err(RuntimeError::InvalidPath); }
-        let root = fs::canonicalize(&self.root).map_err(|e| RuntimeError::Io(e.to_string()))?;
-        let resolved = fs::canonicalize(root.join(relative)).map_err(|e| RuntimeError::Io(e.to_string()))?;
-        if !resolved.starts_with(&root) { return Err(RuntimeError::PathOutsideRoot); }
-        if !resolved.is_file() { return Err(RuntimeError::NotAFile); }
-        Ok(resolved)
+    pub fn allows(&self, capability: Capability)->bool{self.capabilities.contains(&capability)}
+    pub fn module(&self)->&str{&self.module}
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RuntimeEnvelope { pub versao:u32, pub modulos:Vec<RuntimeGrant> }
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RuntimeGrant { pub modulo:String, pub permissoes:Vec<String> }
+
+impl RuntimeEnvelope {
+    pub fn validate(&self)->Result<(),RuntimeError>{
+        if self.versao!=ENVELOPE_VERSION{return Err(RuntimeError::UnsupportedVersion(self.versao))}
+        let mut modules=HashSet::new();
+        for grant in &self.modulos {
+            if grant.modulo.trim().is_empty(){return Err(RuntimeError::InvalidModule)}
+            if !modules.insert(grant.modulo.clone()){return Err(RuntimeError::DuplicateModule(grant.modulo.clone()))}
+            let mut permissions=HashSet::new();
+            for permission in &grant.permissoes { Capability::from_name(permission)?; if !permissions.insert(permission.clone()){return Err(RuntimeError::DuplicateCapability{module:grant.modulo.clone(),capability:permission.clone()})} }
+        }
+        Ok(())
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Runtime { policy: RuntimePolicy, state: RuntimeState }
-impl Runtime {
-    pub fn new(policy: RuntimePolicy) -> Self { Self { policy, state: RuntimeState::Running } }
-    pub fn state(&self) -> RuntimeState { self.state }
-    pub fn start(&mut self) { self.state = RuntimeState::Running; }
-    pub fn stop(&mut self) { self.state = RuntimeState::Stopped; }
-    pub fn read_file(&self, relative: impl AsRef<Path>) -> Result<Vec<u8>, RuntimeError> {
-        if self.state != RuntimeState::Running { return Err(RuntimeError::RuntimeStopped); }
-        if !self.policy.allows(Capability::ReadFiles) { return Err(RuntimeError::CapabilityDenied(Capability::ReadFiles)); }
-        let path = self.policy.confined_file(relative)?; fs::read(path).map_err(|e| RuntimeError::Io(e.to_string()))
+#[derive(Debug, Clone, PartialEq, Eq)] pub enum RuntimeState{Running,Stopped}
+#[derive(Debug, Clone, PartialEq, Eq)] pub enum RuntimeRequest{ReadFile{path:String}}
+#[derive(Debug, Clone, PartialEq, Eq)] pub enum RuntimeResponse{FileContents(Vec<u8>),Error(RuntimeError)}
+#[derive(Debug, Clone, PartialEq, Eq)] pub enum RuntimeError{UnsupportedVersion(u32),InvalidModule,DuplicateModule(String),UnknownCapability(String),DuplicateCapability{module:String,capability:String},CapabilityDenied,CapabilityNotImplemented,RuntimeStopped,InvalidPath,PathOutsideRoot,NotAFile,Io(String),MissingPolicy(String)}
+
+pub struct RuntimeHost{state:RuntimeState,policies:HashMap<String,RuntimePolicy>}
+impl RuntimeHost{
+    pub fn from_envelope(envelope:&RuntimeEnvelope,roots:&HashMap<String,PathBuf>)->Result<Self,RuntimeError>{
+        envelope.validate()?; let mut policies=HashMap::new();
+        for grant in &envelope.modulos { let root=roots.get(&grant.modulo).ok_or_else(||RuntimeError::MissingPolicy(grant.modulo.clone()))?; let policy=RuntimePolicy::from_names(grant.modulo.clone(),root.clone(),&grant.permissoes)?; policies.insert(grant.modulo.clone(),policy); }
+        Ok(Self{state:RuntimeState::Stopped,policies})
+    }
+    pub fn start(&mut self){self.state=RuntimeState::Running}
+    pub fn stop(&mut self){self.state=RuntimeState::Stopped}
+    pub fn state(&self)->&RuntimeState{&self.state}
+    pub fn handle(&self,module:&str,request:RuntimeRequest)->RuntimeResponse{
+        if self.state!=RuntimeState::Running{return RuntimeResponse::Error(RuntimeError::RuntimeStopped)}
+        let Some(policy)=self.policies.get(module) else{return RuntimeResponse::Error(RuntimeError::MissingPolicy(module.to_owned()))};
+        match request { RuntimeRequest::ReadFile{path}=>{if !policy.allows(Capability::ReadFiles){RuntimeResponse::Error(RuntimeError::CapabilityDenied)}else{read_file(policy,&path)}} }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum RuntimeRequest { ReadFile { path: String } }
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum RuntimeResponse { FileContents(Vec<u8>), Error(RuntimeError) }
-impl Runtime { pub fn handle(&self, request: RuntimeRequest) -> RuntimeResponse { match request {
-    RuntimeRequest::ReadFile { path } => match self.read_file(path) { Ok(contents) => RuntimeResponse::FileContents(contents), Err(error) => RuntimeResponse::Error(error) }
-} } }
+fn read_file(policy:&RuntimePolicy,relative:&str)->RuntimeResponse{
+    let path=Path::new(relative);
+    if relative.trim().is_empty()||path.is_absolute(){return RuntimeResponse::Error(RuntimeError::InvalidPath)}
+    if path.components().any(|c|matches!(c,Component::ParentDir)){return RuntimeResponse::Error(RuntimeError::PathOutsideRoot)}
+    let candidate=policy.root.join(path);
+    let root=match fs::canonicalize(&policy.root){Ok(v)=>v,Err(e)=>return RuntimeResponse::Error(RuntimeError::Io(e.to_string()))};
+    let resolved=match fs::canonicalize(&candidate){Ok(v)=>v,Err(e)=>return RuntimeResponse::Error(RuntimeError::Io(e.to_string()))};
+    if !resolved.starts_with(&root){return RuntimeResponse::Error(RuntimeError::PathOutsideRoot)}
+    if !resolved.is_file(){return RuntimeResponse::Error(RuntimeError::NotAFile)}
+    match fs::read(resolved){Ok(v)=>RuntimeResponse::FileContents(v),Err(e)=>RuntimeResponse::Error(RuntimeError::Io(e.to_string()))}
+}
 
 #[cfg(test)]
-mod tests {
-    use super::*; use std::fs;
-    fn fixture() -> (tempfile::TempDir, PathBuf) { let dir=tempfile::tempdir().unwrap(); let root=dir.path().join("allowed"); fs::create_dir(&root).unwrap(); fs::write(root.join("hello.txt"), b"baluarte").unwrap(); (dir,root) }
-    #[test] fn capability_names_are_stable_and_round_trip() { let all=[Capability::ReadFiles,Capability::WriteFiles,Capability::Network,Capability::Database,Capability::SystemInfo,Capability::UserData,Capability::Execution]; for c in all { assert_eq!(Capability::from_str(c.as_str()).unwrap(),c); } assert!(Capability::ReadFiles.implemented()); assert!(!Capability::Execution.implemented()); }
-    #[test] fn unknown_capability_is_rejected() { let (_d,r)=fixture(); let e=RuntimePolicy::from_names(r,["READ_FILES","MAGIC_ROOT"]).unwrap_err(); assert_eq!(e.unknown,vec!["MAGIC_ROOT"]); }
-    #[test] fn duplicate_capabilities_are_collapsed() { let (_d,r)=fixture(); let p=RuntimePolicy::from_names(r,["READ_FILES","READ_FILES"]).unwrap(); assert!(p.has(Capability::ReadFiles)); }
-    #[test] fn policy_exposes_only_explicit_capabilities() { let (_d,r)=fixture(); let p=RuntimePolicy::new(r,[Capability::ReadFiles]); assert!(p.has(Capability::ReadFiles)); assert!(!p.has(Capability::Network)); assert!(!p.has(Capability::Execution)); }
-    #[test] fn new_runtime_starts_running() { let (_d,r)=fixture(); assert_eq!(Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])).state(),RuntimeState::Running); }
-    #[test] fn stopped_runtime_rejects_requests() { let (_d,r)=fixture(); let mut x=Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])); x.stop(); assert_eq!(x.read_file("hello.txt"),Err(RuntimeError::RuntimeStopped)); }
-    #[test] fn runtime_can_start_again_after_stop() { let (_d,r)=fixture(); let mut x=Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])); x.stop(); x.start(); assert_eq!(x.read_file("hello.txt").unwrap(),b"baluarte"); }
-    #[test] fn reads_file_inside_authorized_root() { let (_d,r)=fixture(); let x=Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])); assert_eq!(x.read_file("hello.txt").unwrap(),b"baluarte"); }
-    #[test] fn denies_read_without_capability() { let (_d,r)=fixture(); let x=Runtime::new(RuntimePolicy::new(r,[])); assert_eq!(x.read_file("hello.txt"),Err(RuntimeError::CapabilityDenied(Capability::ReadFiles))); }
-    #[test] fn rejects_path_escape() { let (_d,r)=fixture(); fs::write(_d.path().join("outside.txt"),b"fora").unwrap(); let x=Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])); assert!(matches!(x.read_file("../outside.txt"),Err(RuntimeError::PathOutsideRoot))); }
-    #[test] fn rejects_absolute_path() { let (_d,r)=fixture(); let x=Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])); assert_eq!(x.read_file("/etc/passwd"),Err(RuntimeError::InvalidPath)); }
-    #[test] fn handle_maps_success_to_contract_response() { let (_d,r)=fixture(); let x=Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])); assert_eq!(x.handle(RuntimeRequest::ReadFile{path:"hello.txt".into()}),RuntimeResponse::FileContents(b"baluarte".to_vec())); }
-    #[test] fn handle_maps_denial_to_contract_response() { let (_d,r)=fixture(); let x=Runtime::new(RuntimePolicy::new(r,[])); assert_eq!(x.handle(RuntimeRequest::ReadFile{path:"hello.txt".into()}),RuntimeResponse::Error(RuntimeError::CapabilityDenied(Capability::ReadFiles))); }
-    #[test] fn handle_maps_stopped_state_to_contract_response() { let (_d,r)=fixture(); let mut x=Runtime::new(RuntimePolicy::new(r,[Capability::ReadFiles])); x.stop(); assert_eq!(x.handle(RuntimeRequest::ReadFile{path:"hello.txt".into()}),RuntimeResponse::Error(RuntimeError::RuntimeStopped)); }
+mod tests{
+ use super::*; use tempfile::tempdir;
+ fn grant(module:&str,permissions:&[&str])->RuntimeGrant{RuntimeGrant{modulo:module.into(),permissoes:permissions.iter().map(|p|(*p).into()).collect()}}
+ fn host(module:&str,permissions:&[&str])->(RuntimeHost,tempfile::TempDir){let dir=tempdir().unwrap();let envelope=RuntimeEnvelope{versao:1,modulos:vec![grant(module,permissions)]};let roots=HashMap::from([(module.into(),dir.path().to_path_buf())]);(RuntimeHost::from_envelope(&envelope,&roots).unwrap(),dir)}
+ #[test]fn rejects_unknown_capability(){let e=RuntimeEnvelope{versao:1,modulos:vec![grant("wiki",&["NOPE"])]};assert!(matches!(e.validate(),Err(RuntimeError::UnknownCapability(_))))}
+ #[test]fn rejects_duplicate_modules(){let e=RuntimeEnvelope{versao:1,modulos:vec![grant("wiki",&[]),grant("wiki",&[])]};assert!(matches!(e.validate(),Err(RuntimeError::DuplicateModule(_))))}
+ #[test]fn requires_running_state(){let(h,_)=host("wiki",&["READ_FILES"]);assert_eq!(h.handle("wiki",RuntimeRequest::ReadFile{path:"a.txt".into()}),RuntimeResponse::Error(RuntimeError::RuntimeStopped))}
+ #[test]fn reads_inside_authorized_root(){let(mut h,d)=host("wiki",&["READ_FILES"]);fs::write(d.path().join("ok.txt"),b"hello").unwrap();h.start();assert_eq!(h.handle("wiki",RuntimeRequest::ReadFile{path:"ok.txt".into()}),RuntimeResponse::FileContents(b"hello".to_vec()))}
+ #[test]fn denies_without_capability(){let(mut h,_)=host("wiki",&[]);h.start();assert_eq!(h.handle("wiki",RuntimeRequest::ReadFile{path:"ok.txt".into()}),RuntimeResponse::Error(RuntimeError::CapabilityDenied))}
+ #[test]fn rejects_parent_path(){let(mut h,_)=host("wiki",&["READ_FILES"]);h.start();assert_eq!(h.handle("wiki",RuntimeRequest::ReadFile{path:"../secret".into()}),RuntimeResponse::Error(RuntimeError::PathOutsideRoot))}
+ #[test]fn stop_is_barrier(){let(mut h,_)=host("wiki",&["READ_FILES"]);h.start();h.stop();assert_eq!(h.handle("wiki",RuntimeRequest::ReadFile{path:"ok.txt".into()}),RuntimeResponse::Error(RuntimeError::RuntimeStopped))}
 }
