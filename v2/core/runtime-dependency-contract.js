@@ -3,9 +3,10 @@ export function validarRuntimeDependencyContract({ registry, spec } = {}) {
   if (!registry || typeof registry.listar !== 'function') throw new TypeError('registry inválido');
   if (!spec || typeof spec.spec !== 'function') throw new TypeError('spec inválido');
 
-  const ids = new Set(registry.listar().map(entry => entry.id));
+  const entries = registry.listar();
+  const ids = new Set(entries.map(entry => entry.id));
   const errors = [];
-  for (const entry of registry.listar()) {
+  for (const entry of entries) {
     let dependencies;
     try { dependencies = spec.spec(entry.id); } catch (error) { errors.push({ module: entry.id, message: error.message }); continue; }
     for (const dependency of dependencies) {
