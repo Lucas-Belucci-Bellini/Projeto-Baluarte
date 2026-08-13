@@ -1,8 +1,8 @@
 /** Dependency graph and deterministic topological startup order. */
 
 /** @typedef {{id: string, dependsOn?: string[]}} RuntimeDependencyEntry */
-/** @typedef {{listar: () => RuntimeDependencyEntry[]}} RuntimeDependencyRegistry */
-/** @typedef {{order: () => string[]}} RuntimeDependencyGraph */
+/** @typedef {{listar: () => ReadonlyArray<RuntimeDependencyEntry>}} RuntimeDependencyRegistry */
+/** @typedef {{order: () => ReadonlyArray<string>}} RuntimeDependencyGraph */
 
 /** @param {RuntimeDependencyRegistry} registry @returns {RuntimeDependencyGraph} */
 export function criarRuntimeDependencyGraph(registry) {
@@ -10,8 +10,8 @@ export function criarRuntimeDependencyGraph(registry) {
 
   function order() {
     const entries = registry.listar();
-    const ids = new Set(entries.map(e => e.id));
-    const deps = new Map(entries.map(e => [e.id, new Set(e.dependsOn ?? [])]));
+    const ids = new Set(entries.map(entry => entry.id));
+    const deps = new Map(entries.map(entry => [entry.id, new Set(entry.dependsOn ?? [])]));
 
     for (const [id, requirements] of deps) {
       for (const dependency of requirements) {
@@ -20,6 +20,7 @@ export function criarRuntimeDependencyGraph(registry) {
       }
     }
 
+    /** @type {string[]} */
     const result = [];
     const temporary = new Set();
     const permanent = new Set();
