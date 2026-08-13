@@ -22,3 +22,9 @@ test('dependência inexistente falha antes do boot', () => {
   const spec = criarRuntimeDependencySpec(registry);
   assert.throws(() => validarRuntimeDependencyContract({ registry, spec }), /Contrato de dependências inválido/);
 });
+
+test('ciclo falha antes do boot', () => {
+  const registry = make([{ id: 'a', dependsOn: ['b'] }, { id: 'b', dependsOn: ['a'] }]);
+  const spec = criarRuntimeDependencySpec(registry);
+  assert.throws(() => validarRuntimeDependencyContract({ registry, spec }), /Contrato de dependências inválido/);
+});
