@@ -6,7 +6,8 @@
 /** @typedef {{group?: RuntimeGroup, events?: RuntimeGroupEvents, supervisor?: RuntimeGroupSupervisor}} RuntimeGroupLifecycleOptions */
 
 /** @param {RuntimeGroupLifecycleOptions} [options] */
-export function criarRuntimeGroupLifecycle({ group, events, supervisor } = {}) {
+export function criarRuntimeGroupLifecycle(options = {}) {
+  const { group, events, supervisor } = options;
   if (!group || typeof group.startAll !== 'function' || typeof group.stopAll !== 'function') throw new TypeError('group inválido');
   if (!events || typeof events.emit !== 'function') throw new TypeError('events inválidos');
   if (!supervisor || typeof supervisor.snapshot !== 'function') throw new TypeError('supervisor inválido');
