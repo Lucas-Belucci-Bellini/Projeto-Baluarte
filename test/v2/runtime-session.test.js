@@ -22,13 +22,13 @@ test('abre sessão enviando apenas permissões efetivas', async () => {
 
 test('resposta fora do contrato impede sessão de ficar aberta', async () => {
   const session = criarSessaoRuntime(permissions({ alpha: ['READ_FILES'] }), {
-    async enviar() { return JSON.stringify({ accepted: true }); }
+    async enviar() { return JSON.stringify({ versao: 1, accepted: true }); }
   });
   await assert.rejects(session.abrir(['alpha']), /resposta do Runtime precisa de resultados/);
   assert.equal(session.estado, 'failed');
 });
 
-test('resposta válida do Runtime permite abrir a sessão', async () => {
+test('resposta válida do Runtime permite abrir a sessëo', async () => {
   const session = criarSessaoRuntime(permissions({ alpha: ['READ_FILES'] }), {
     async enviar() { return respostaValida; }
   });
@@ -46,7 +46,7 @@ test('falha de transporte impede sessão de ficar aberta', async () => {
 });
 
 test('fechar é idempotente', async () => {
-  const session = criarSessaoRuntime(permissions({}), {
+  const session = criarSessaoRuntime(permissions({ }), {
     async enviar() { return respostaValida; }
   });
   assert.equal((await session.fechar()).estado, 'closed');

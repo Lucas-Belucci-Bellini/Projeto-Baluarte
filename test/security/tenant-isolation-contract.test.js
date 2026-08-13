@@ -40,7 +40,7 @@ test('tenant isolation contracts', async (t) => {
       const block = migration.match(
         new RegExp(`create table if not exists public\\.${table} \\(([\\s\\S]*?)\\);`, 'i')
       )?.[1] ?? '';
-      assert.match(block, /tenant_id\\s+uuid/i, `${table} must declare tenant_id`);
+      assert.match(block, /tenant_id\s+uuid/i, `${table} must declare tenant_id`);
     }
   });
 
@@ -49,8 +49,8 @@ test('tenant isolation contracts', async (t) => {
       const block = functionBlock(fn);
       assert.notEqual(block, '', `${fn} must have a discoverable function definition`);
       assert.match(block, /security definer/i, `${fn} must be an explicit privileged boundary`);
-      assert.match(block, /set search_path\\s*=\\s*public(?:,\\s*extensions)?/i, `${fn} must pin search_path`);
-      assert.match(block, /v_tenant\\s*:=\\s*nexus\.resolve_tenant/i, `${fn} must resolve tenant`);
+      assert.match(block, /set search_path\s*=\s*public(?:,\s*extensions)?/i, `${fn} must pin search_path`);
+      assert.match(block, /v_tenant\s*:=\s*nexus\.resolve_tenant/i, `${fn} must resolve tenant`);
       assert.match(block, /insert into public\./i, `${fn} must write through an explicit table insert`);
     }
   });
@@ -59,7 +59,7 @@ test('tenant isolation contracts', async (t) => {
     const block = functionBlock('buscar_juris');
     assert.notEqual(block, '', 'buscar_juris must have a discoverable function definition');
     assert.match(block, /security definer/i);
-    assert.match(block, /set search_path\\s*=\\s*public/i);
+    assert.match(block, /set search_path\s*=\s*public/i);
     assert.match(block, /j\.tenant_id\s*=\s*p_tenant/i);
     assert.match(block, /nexus\.is_member\(p_tenant\)/i);
   });
