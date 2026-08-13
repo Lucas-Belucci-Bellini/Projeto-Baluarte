@@ -6,10 +6,12 @@ on:
       - main
       - 'claude/**'
       - 'v2-development'
+      - 'v2-integration'
   pull_request:
     branches:
       - main
       - 'v2-development'
+      - 'v2-integration'
 
 permissions:
   contents: read
