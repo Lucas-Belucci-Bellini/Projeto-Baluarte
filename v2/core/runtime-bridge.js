@@ -16,9 +16,9 @@
 import { PERMISSOES } from './manifest.js';
 
 /**
- * @typedef {{modulo: string, permissoes: string[]}} RuntimeGrant
+ * @typedef {{modulo: string, permissoes: ReadonlyArray<string>}} RuntimeGrant
  */
-/** @typedef {{versao: 1, modulos: RuntimeGrant[]}} RuntimeEnvelope */
+/** @typedef {{versao: 1, modulos: ReadonlyArray<RuntimeGrant>}} RuntimeEnvelope */
 /** @typedef {{modulo: string, permissoes: unknown}} UnknownRuntimeGrant */
 
 /**
@@ -31,7 +31,7 @@ export function snapshotRuntime(permissoes, modulo) {
   return Object.freeze({ modulo, permissoes: Object.freeze([...concedidas]) });
 }
 
-/** @param {RuntimeGrant[]} grants @returns {RuntimeEnvelope} */
+/** @param {ReadonlyArray<RuntimeGrant>} grants @returns {RuntimeEnvelope} */
 export function envelopeRuntime(grants) {
   const ids = new Set();
   const modulos = grants.map((grant) => {
