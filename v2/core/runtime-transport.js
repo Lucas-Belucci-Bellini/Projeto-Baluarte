@@ -33,8 +33,8 @@ export function validarRespostaRuntime(payload) {
   if (!resposta || typeof resposta !== 'object' || Array.isArray(resposta)) {
     throw new TypeError('resposta do Runtime deve ser objeto');
   }
-  if (resposta.versao !== 1) throw new TypeError(`versão de resposta não suportada: ${JSON.stringify(resposta.versao)}`);
   if (!Array.isArray(resposta.resultados)) throw new TypeError('resposta do Runtime precisa de resultados');
+  if (resposta.versao !== 1) throw new TypeError(`versão de resposta não suportada: ${JSON.stringify(resposta.versao)}`);
 
   return resposta;
 }
