@@ -3,10 +3,11 @@
  * @typedef {{listar: () => RuntimeDependencyEntry[], obter?: (id: string) => RuntimeDependencyEntry | undefined}} RuntimeDependencyRegistry
  * @typedef {{id: string, required: boolean, failure: 'stop'|'degrade'|'ignore'}} RuntimeDependency
  * @typedef {{spec: (id: string) => RuntimeDependency[]}} RuntimeDependencySpec
+ * @typedef {Error & {details?: unknown[]}} RuntimeDependencyContractError
  */
 
 /** Validates dependency specifications against the registered module graph. */
-export function validarRuntimeDependencyContract(/** @type {{registry?: RuntimeDependencyRegistry, spec?: RuntimeDependencySpec}} */ { registry, spec } = {}) {
+export function validarRuntimeDependencyContract(/** @type {Partial<{registry: RuntimeDependencyRegistry, spec: RuntimeDependencySpec}>} */ { registry, spec } = {}) {
   if (!registry || typeof registry.listar !== 'function') throw new TypeError('registry inválido');
   if (!spec || typeof spec.spec !== 'function') throw new TypeError('spec inválido');
   const entries = registry.listar();
@@ -39,6 +40,7 @@ export function validarRuntimeDependencyContract(/** @type {{registry?: RuntimeD
   }
   for (const id of graph.keys()) visit(id);
   if (errors.length) {
+    /** @type {RuntimeDependencyContractError} */
     const error = new Error('Contrato de dependências inválido');
     error.details = errors;
     throw error;
