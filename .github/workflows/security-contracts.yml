@@ -40,4 +40,4 @@ jobs:
         run: npm ci
 
       - name: Run security contract tests
-        run: npx vitest run test/security/supabase-contract.test.js
+        run: node --test test/security/supabase-contract.test.js
