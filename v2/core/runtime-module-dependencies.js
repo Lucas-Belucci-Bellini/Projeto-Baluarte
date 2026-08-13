@@ -1,4 +1,10 @@
 /** Dependency graph and deterministic topological startup order. */
+
+/** @typedef {{id: string, dependsOn?: string[]}} RuntimeDependencyEntry */
+/** @typedef {{listar: () => RuntimeDependencyEntry[]}} RuntimeDependencyRegistry */
+/** @typedef {{order: () => string[]}} RuntimeDependencyGraph */
+
+/** @param {RuntimeDependencyRegistry} registry @returns {RuntimeDependencyGraph} */
 export function criarRuntimeDependencyGraph(registry) {
   if (!registry || typeof registry.listar !== 'function') throw new TypeError('registry inválido');
 
@@ -18,11 +24,12 @@ export function criarRuntimeDependencyGraph(registry) {
     const temporary = new Set();
     const permanent = new Set();
 
+    /** @param {string} id */
     function visit(id) {
       if (permanent.has(id)) return;
       if (temporary.has(id)) throw new Error(`Dependência circular envolvendo: ${id}`);
       temporary.add(id);
-      for (const dependency of deps.get(id)) visit(dependency);
+      for (const dependency of deps.get(id) ?? []) visit(dependency);
       temporary.delete(id);
       permanent.add(id);
       result.push(id);
