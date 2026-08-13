@@ -29,15 +29,30 @@
 import { criarCiclo } from './ciclo.js';
 import { criarLog } from './log.js';
 
+/** @typedef {(path: string, view: Function) => void} RouterRegister */
+/** @typedef {{register: RouterRegister}} Router */
+/** @typedef {{path: string, view: Function, modulo: string}} RuntimeRoute */
+/** @typedef {{modulo: string, tipo: string, alvo: string}} RuntimeReference */
+/** @typedef {{modulo: string, permissions: ReadonlyArray<string>}} RuntimePermissionModule */
+/** @typedef {{id: string, name?: string, version?: string, stability?: string, routes: ReadonlyArray<{path: string}>, permissoes?: ReadonlyArray<string>}} RuntimeModule */
+/** @typedef {{id: string, modulo: string, tipo?: string}} RuntimeNavigationItem */
 /**
- * @typedef {object} Router
- * @property {(path: string, view: Function) => void} register
+ * @typedef {{
+ *   selado: boolean,
+ *   listar: () => ReadonlyArray<string>,
+ *   modulo: (id: string) => RuntimeModule | undefined,
+ *   permissoes: () => ReadonlyMap<string, ReadonlyArray<string>>,
+ *   rotas: () => ReadonlyArray<RuntimeRoute>,
+ *   navegacao: () => ReadonlyArray<RuntimeNavigationItem>,
+ *   referenciasOrfas: () => ReadonlyArray<RuntimeReference>,
+ *   eventosOrfaos: () => ReadonlyArray<RuntimeReference>
+ * }} RuntimeBootRegistry
  */
 
 /**
  * @typedef {object} Adaptadores
- * @property {Router} router          quem passa a receber as rotas
- * @property {(itens: any[]) => void} [renderNav]  quem desenha a navegação
+ * @property {Router} router
+ * @property {(itens: ReadonlyArray<RuntimeNavigationItem>) => void} [renderNav]
  */
 
 /**
@@ -56,7 +71,7 @@ import { criarLog } from './log.js';
  */
 
 /**
- * @param {ReturnType<typeof import('./registry.js').criarRegistry>} registry selado
+ * @param {RuntimeBootRegistry} registry selado
  * @param {DepsBoot} deps
  * @param {Adaptadores} adaptadores
  * @param {{tetoInitMs?: number}} [opcoes]
@@ -74,10 +89,6 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
    * tarde. Só entra no router o que está de fato no ar.
    */
   async function subir() {
-    /* As permissões são resolvidas ANTES de qualquer contexto existir. A ordem
-     * é obrigatória, não estilo: o `criarContexto` recusa montar um módulo que
-     * declara permissão quando o decisor não conhece o módulo, e o `init` do
-     * módulo pode perfeitamente chamar `ctx.exigir()` na primeira linha. */
     if (deps.permissoes) {
       deps.permissoes.conhecerModulos(
         registry.listar().map((id) => ({ id, permissions: registry.permissoes().get(id) ?? [] }))
@@ -85,9 +96,6 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
       const { concedidas, recusas } = deps.permissoes.aplicarPolitica();
 
       for (const r of recusas) {
-        /* Recusa de política não impede a subida: nove módulos certos não param
-         * por causa do décimo mal configurado. Mas ela nunca é silenciosa — uma
-         * política que não pega e ninguém vê é o pior dos dois mundos. */
         log.aviso('política recusada', { modulo: r.modulo, motivo: r.motivo });
       }
       if (concedidas.length || recusas.length) {
@@ -101,8 +109,6 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
     let rotas = 0;
     for (const { path, view, modulo } of registry.rotas()) {
       if (!vivos.has(modulo)) {
-        /* Módulo que não subiu não ganha rota. Sem isto, um módulo quebrado
-         * continuaria "navegável" e falharia no clique, longe da causa. */
         log.aviso('rota omitida: módulo não está no ar', { rota: path, modulo });
         continue;
       }
@@ -113,10 +119,6 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
     const nav = registry.navegacao().filter((i) => vivos.has(i.modulo));
     adaptadores.renderNav?.(nav);
 
-    /* Referência fraca sem alvo não impede nada — é o ponto dela. Mas fica
-     * dita: sem isto, o sintoma é um botão que leva ao `notFound` calado, e a
-     * causa (alguém removeu o módulo dono da rota) está a semanas de distância
-     * do clique. */
     for (const r of registry.referenciasOrfas()) {
       log.aviso('referência fraca sem alvo', { modulo: r.modulo, tipo: r.tipo, alvo: r.alvo });
     }
@@ -144,11 +146,8 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
           nome: m?.name,
           versao: m?.version,
           estabilidade: m?.stability,
-          rotas: m?.routes.map((/** @type {any} */ r) => r.path) ?? [],
+          rotas: m?.routes.map((/** @type {{path: string}} */ r) => r.path) ?? [],
           permissoes: ctx?.declarado.permissoes ?? [],
-          /* Declarado e concedido lado a lado: a diferença entre os dois é o
-           * que o operador tem para decidir, e mostrar só um dos números é
-           * como "deny-by-default" vira slogan. */
           concedidas: ctx?.declarado.concedidas() ?? [],
           chaves: ctx?.declarado.chaves ?? [],
           emite: ctx?.declarado.emite ?? []
@@ -157,9 +156,6 @@ export function criarBoot(registry, deps, adaptadores, opcoes = {}) {
       falhas: ciclo.falhas(),
       eventosOrfaos: registry.eventosOrfaos(),
       referenciasOrfas: registry.referenciasOrfas(),
-      /* Um retrato só. Sem isto o operador junta métricas de um lugar, módulos
-       * de outro e falhas de um terceiro — que é o que a página /diagnostico da
-       * V1 faz hoje, vasculhando cinco fontes. */
       metricas: deps.metricas?.retrato() ?? null,
       apis: deps.apis?.catalogo?.() ?? null,
       usoDeApi: deps.apis?.uso?.() ?? null,
