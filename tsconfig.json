@@ -77,6 +77,8 @@
     "src/utils/jarvis-hermes-native.d.ts",
     "src/utils/jarvis-repo-memory.ts",
     "src/utils/jarvis-repo-memory.d.ts",
+    "src/utils/jarvis-permissoes.ts",
+    "src/utils/jarvis-permissoes.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
