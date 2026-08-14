@@ -204,7 +204,7 @@ if (!process.env.BASE) {
     console.error('smoke: não há dist/. Rode `npm run build` antes, ou passe BASE=<url>.');
     process.exit(1);
   }
-  servidor = spawn('npx', ['vite', 'preview', '--port', String(PORTA), '--host', '127.0.0.1'],
+  servidor = spawn(process.execPath, [join(raiz, 'node_modules/vite/bin/vite.js'), 'preview', '--port', String(PORTA), '--host', '127.0.0.1'],
     { cwd: raiz, stdio: 'ignore', detached: false });
   if (!await esperarPreview(BASE)) {
     console.error('smoke: o preview não subiu.');

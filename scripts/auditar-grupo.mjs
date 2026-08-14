@@ -231,7 +231,7 @@ const { nome, rotas } = alvos();
 console.log(`auditoria: ${nome} — ${rotas.length} telas\n`);
 
 const servidor = process.env.BASE ? null
-  : spawn('npx', ['vite', 'preview', '--port', String(PORTA), '--host', '127.0.0.1'], { cwd: raiz, stdio: 'ignore' });
+  : spawn(process.execPath, [join(raiz, 'node_modules/vite/bin/vite.js'), 'preview', '--port', String(PORTA), '--host', '127.0.0.1'], { cwd: raiz, stdio: 'ignore' });
 if (servidor) {
   for (let i = 0; i < 40; i += 1) {
     try { if ((await fetch(BASE, { signal: AbortSignal.timeout(1500) })).ok) break; } catch { /* subindo */ }

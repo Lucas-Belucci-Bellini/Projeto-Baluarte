@@ -59,6 +59,49 @@ export function signInWithGoogle() {
     `${supabaseUrl()}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
 }
 
+/**
+ * Cria conta por e-mail/senha (`/auth/v1/signup`). Se o projeto exigir
+ * confirmação por e-mail, o Supabase NÃO devolve tokens ainda — devolve
+ * `{ confirmed: false }` e o usuário loga depois de clicar no link recebido.
+ * Se confirmação automática estiver ligada, já vem sessão pronta.
+ */
+export async function signUpWithPassword(email, password) {
+  if (!supabaseConfigured()) throw new Error('Cadastro indisponível (banco não configurado neste ambiente).');
+  const res = await fetch(`${supabaseUrl()}/auth/v1/signup`, {
+    method: 'POST',
+    headers: { apikey: supabaseAnonKey(), 'content-type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.msg || data.error_description || data.error || 'Não foi possível criar a conta.');
+  if (data.access_token && data.refresh_token) {
+    storeSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
+    });
+    return { confirmed: true };
+  }
+  return { confirmed: false };
+}
+
+/** Login por e-mail/senha (`/auth/v1/token?grant_type=password`). */
+export async function signInWithPassword(email, password) {
+  if (!supabaseConfigured()) throw new Error('Login indisponível (banco não configurado neste ambiente).');
+  const res = await fetch(`${supabaseUrl()}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: { apikey: supabaseAnonKey(), 'content-type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error_description || data.msg || 'E-mail ou senha inválidos.');
+  storeSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
+  });
+}
+
 /** Encerra a sessão (revoga no servidor, best-effort, e limpa local). */
 export async function signOut() {
   const s = loadSession();

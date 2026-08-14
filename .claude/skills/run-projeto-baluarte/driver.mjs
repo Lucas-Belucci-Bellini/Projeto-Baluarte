@@ -14,8 +14,11 @@
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 const require = createRequire(import.meta.url);
+const raiz = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 
 function loadPlaywright() {
   /* playwright local → global do container (instalado em /opt/node22) */
@@ -42,7 +45,8 @@ const BASE = `http://localhost:${PORT}/`;
 
 async function ensureServer() {
   try { await fetch(BASE); return; } catch { /* não está de pé — sobe */ }
-  const child = spawn('npx', ['vite', '--port', String(PORT), '--strictPort'], {
+  const child = spawn(process.execPath, [join(raiz, 'node_modules/vite/bin/vite.js'), '--port', String(PORT), '--strictPort'], {
+    cwd: raiz,
     stdio: 'ignore',
     detached: true
   });
