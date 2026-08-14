@@ -6,19 +6,10 @@
 /** @typedef {{batches: () => ReadonlyArray<ReadonlyArray<string>>}} RuntimeBatches */
 /** @typedef {{groupBatchStarted?: (index: number, batch: ReadonlyArray<string>) => void, groupBatchReady?: (index: number, batch: ReadonlyArray<string>) => void, groupStartupFailed?: (error: unknown) => void, groupRollback?: (ids: ReadonlyArray<string>) => void, groupBatchStopped?: (index: number, ids: ReadonlyArray<string>) => void, groupShutdownFailed?: (errors: ReadonlyArray<{id: string, error: unknown}>) => void}} RuntimeGroupEvents */
 /** @typedef {(id: string) => Promise<unknown>} RuntimeReadinessWait */
-/**
- * @typedef {{
- *   manager: RuntimeGroupManager,
- *   registry: RuntimeGroupRegistry,
- *   dependencies: RuntimeDependencies,
- *   batches: RuntimeBatches,
- *   readinessWait?: RuntimeReadinessWait,
- *   events?: RuntimeGroupEvents
- * }} RuntimeManagerGroupOptions
- */
+/** @typedef {{manager: RuntimeGroupManager, registry: RuntimeGroupRegistry, dependencies: RuntimeDependencies, batches: RuntimeBatches, readinessWait?: RuntimeReadinessWait, events?: RuntimeGroupEvents}} RuntimeManagerGroupOptions */
 /** @typedef {{startAll: () => Promise<string[]>, stopAll: () => Promise<void>}} RuntimeManagerGroup */
 
-/** @param {RuntimeManagerGroupOptions} [options] @returns {RuntimeManagerGroup} */
+/** @param {Partial<RuntimeManagerGroupOptions>} [options] @returns {RuntimeManagerGroup} */
 export function criarRuntimeManagerGroup(options = {}) {
   const { manager, registry, dependencies, batches, readinessWait, events } = options;
   if (!manager || typeof manager.start !== 'function' || typeof manager.stop !== 'function') throw new TypeError('manager inválido');
@@ -28,49 +19,56 @@ export function criarRuntimeManagerGroup(options = {}) {
   if (readinessWait && typeof readinessWait !== 'function') throw new TypeError('readinessWait inválido');
   if (events && typeof events !== 'object') throw new TypeError('events inválido');
 
+  const runtimeManager = manager;
+  const runtimeBatches = batches;
+  const runtimeReadinessWait = readinessWait;
+  const runtimeEvents = events;
+
   async function startAll() {
     const started = [];
     try {
-      for (const [index, batch] of batches.batches().entries()) {
-        events?.groupBatchStarted?.(index, batch);
-        const results = await Promise.allSettled(batch.map(id => manager.start(id)));
-        const failure = results.find(result => result.status === 'rejected');
+      for (const [index, batch] of runtimeBatches.batches().entries()) {
+        runtimeEvents?.groupBatchStarted?.(index, batch);
+        const results = await Promise.allSettled(batch.map(id => runtimeManager.start(id)));
+        const failure = results.find((result) => result.status === 'rejected');
         for (let i = 0; i < results.length; i++) {
-          if (results[i].status === 'fulfilled') started.push(batch[i]);
+          const result = results[i];
+          if (result.status === 'fulfilled') started.push(batch[i]);
         }
-        if (failure) throw failure.reason;
-        if (readinessWait) await Promise.all(batch.map(id => readinessWait(id)));
-        events?.groupBatchReady?.(index, batch);
+        if (failure?.status === 'rejected') throw failure.reason;
+        if (runtimeReadinessWait) await Promise.all(batch.map(id => runtimeReadinessWait(id)));
+        runtimeEvents?.groupBatchReady?.(index, batch);
       }
       return started;
     } catch (error) {
-      events?.groupStartupFailed?.(error);
+      runtimeEvents?.groupStartupFailed?.(error);
       const rollback = [...started].reverse();
       for (const id of rollback) {
-        try { await manager.stop(id); } catch { /* original startup/readiness error wins */ }
+        try { await runtimeManager.stop(id); } catch { /* original startup/readiness error wins */ }
       }
-      if (rollback.length) events?.groupRollback?.(rollback);
+      if (rollback.length) runtimeEvents?.groupRollback?.(rollback);
       throw error;
     }
   }
 
   async function stopAll() {
     const errors = [];
-    const batchesInReverse = [...batches.batches()].reverse();
+    const batchesInReverse = [...runtimeBatches.batches()].reverse();
     for (let reverseIndex = 0; reverseIndex < batchesInReverse.length; reverseIndex++) {
       const batch = batchesInReverse[reverseIndex];
       const index = batchesInReverse.length - reverseIndex - 1;
       const ids = [...batch].reverse();
-      const results = await Promise.allSettled(ids.map(id => manager.stop(id)));
+      const results = await Promise.allSettled(ids.map(id => runtimeManager.stop(id)));
       for (let i = 0; i < results.length; i++) {
-        if (results[i].status === 'rejected') errors.push({ id: ids[i], error: results[i].reason });
+        const result = results[i];
+        if (result.status === 'rejected') errors.push({ id: ids[i], error: result.reason });
       }
-      events?.groupBatchStopped?.(index, ids);
+      runtimeEvents?.groupBatchStopped?.(index, ids);
     }
     if (errors.length) {
-      events?.groupShutdownFailed?.(errors);
+      runtimeEvents?.groupShutdownFailed?.(errors);
       const aggregate = new AggregateError(errors.map(item => item.error), 'Falha ao encerrar um ou mais módulos');
-      aggregate.details = errors;
+      Object.defineProperty(aggregate, 'details', { value: errors, enumerable: true });
       throw aggregate;
     }
   }
