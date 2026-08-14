@@ -5,7 +5,7 @@
 **Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
 **Commit de referência da Wave 5:** [`8ea0ae88`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8ea0ae8833281fe3fe357c4449693a7492e8c80f)
 **Commit de referência da Wave 6:** [`1d8e1f5e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/1d8e1f5e1f37cdfd33ff9b99bad98b6c7667357b) — correção final do wrapper
-**Slice seguinte:** Ciclo de Vida V2; `v2/core/ciclo.ts` é a fonte canônica
+**Commit de referência do slice de Ciclo:** [`cb4c0872`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/cb4c08724f91e9add6198e12ec19b54610c0bef5)
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -76,7 +76,7 @@ O slice seguinte converteu o Ciclo de Vida. `ciclo.ts` preserva a execução `in
 | `CHROME_PATH=/usr/bin/chromium node scripts/v2-integracao.mjs` | Verde: 13/13 | Boot V2 no navegador, 17 rotas no router V1, view nativa, contexto, permissões e adaptador V1 |
 | `npx tsx --test test/v2/ciclo.test.js` | Verde: 17/17 | Ordem de fases, timeout, cascata, descida inversa e módulos reais |
 
-As Waves 4–6 e o slice de Ciclo estão publicados no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O Registry TypeScript preserva 22/22 testes específicos; o Ciclo preserva 17/17 testes específicos. O build permanece verde, a suíte geral em 865/871 e o smoke V1 em 98/98 rotas. O `tipos:v2` permanece em 70 diagnósticos históricos; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4–6 e o slice de Ciclo estão publicados no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O slice de Ciclo foi publicado em `cb4c0872`; no commit remoto, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram. O Registry TypeScript preserva 22/22 testes específicos; o Ciclo preserva 17/17 testes específicos. O build permanece verde, a suíte geral em 865/871 e o smoke V1 em 98/98 rotas. O `tipos:v2` permanece em 70 diagnósticos históricos; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. `CI`, `Core CI`, `V2 Core` e `V2 Validation` continuam representando a dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
