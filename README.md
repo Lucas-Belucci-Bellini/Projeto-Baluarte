@@ -251,7 +251,7 @@ Projeto-Baluarte/
 │   ├── manifest.json         PWA
 │   └── sw.js                 Service Worker (stale-while-revalidate, versionado)
 └── src/
-    ├── main.js               Bootstrap: registra as 36 rotas + monta o shell
+    ├── main.js               Bootstrap: registra as 98 rotas + monta o shell
     ├── core/                 Engine
     │   ├── router.js         Router SPA por hash (#/home, #/arsenal…)
     │   ├── state.js          Store reativo
@@ -284,6 +284,95 @@ A área operacional usa a autenticação Supabase e papéis atribuídos no servi
 | `owner` | Conteúdo permitido pela política | Controle de papéis, quarentena e reativação |
 
 A especificação completa, o inventário de todas as rotas, os estados `enabled/degraded/disabled/maintenance/experimental/quarantined` e o primeiro slice recomendado estão em [`docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md).
+
+## Proposta de layout: Command Shell Modular
+
+> **Autoria da proposta:** Manus AI.
+> **Status:** recomendação de produto e arquitetura visual; ainda não implementada como substituição do shell atual.
+
+Com base nas issues #420, #422 e #423 e no inventário atual do site, a proposta é evoluir o shell para um **Command Shell Modular**. A ideia preserva a identidade militar, técnica e narrativa do Baluarte, mas torna visíveis os conceitos de módulos, maturidade, saúde e acesso por função. O layout deve orientar três públicos diferentes sem misturar a superfície pública com a área operacional protegida.
+
+### Estrutura visual proposta
+
+| Região | Conteúdo | Regra de comportamento |
+|---|---|---|
+| **Barra superior** | Marca Baluarte, busca global, status público do sistema, ambiente V1/V2 e login/perfil | Mostra somente informações públicas; nunca expõe stack trace, tokens ou diagnóstico interno. |
+| **Sidebar por domínio** | Ferramentas, Conhecimento, Militar, Mídia, Jogos, Núcleo e Desenvolvimento | Os itens são derivados do estado público do Module Registry; módulos desligados não aparecem para usuários comuns. |
+| **Painel principal** | Breadcrumb, título, conteúdo da página, estado do módulo e ações contextuais | Cada página fica isolada; uma falha deve renderizar seu fallback sem derrubar o shell. |
+| **Barra de contexto** | Favoritos, voltar, compartilhar, ajuda/tutorial e ações da página | Ações dependem do módulo e das permissões, não de botões globais indiscriminados. |
+| **Área operacional** | Incidentes, health checks, retry, manutenção e reativação | Separada da navegação pública e disponível somente após autenticação e autorização server-side. |
+
+A Home deve funcionar como uma **Ponte de Comando**, não como um painel administrativo. Ela pode apresentar módulos em destaque, favoritos, atalhos, atividades recentes, saúde pública dos domínios e o tutorial inicial. Informações de incidente e controles de reativação permanecem exclusivamente na área operacional.
+
+### Públicos e caminhos de entrada
+
+| Público | Primeiro caminho recomendado | O que pode ver |
+|---|---|---|
+| **Visitante** | Home → domínio → página pública → tutorial | Conteúdo público, módulos ligados e mensagens neutras de manutenção. |
+| **Usuário autenticado** | Login → perfil → favoritos → módulos disponíveis | Conteúdo público e recursos vinculados à própria conta, conforme RLS. |
+| **Developer** | Login → diagnóstico técnico → módulo → testes/retry autorizados | Diagnóstico técnico redigido e ações explicitamente concedidas. |
+| **Admin** | Login → área operacional → módulos/incidentes | Operações de manutenção e disponibilidade dentro do escopo administrativo. |
+| **Owner** | Login → governança → papéis → módulos → auditoria | Controle máximo previsto pela política, incluindo aprovação de papéis e quarentena. |
+
+O papel nunca deve ser obtido de `localStorage`, query string ou `user_metadata` controlada pelo navegador. A identidade vem do Supabase Auth; a autorização vem de uma fonte server-side, como perfis e papéis protegidos por RLS.
+
+### Maturidade dos módulos
+
+O README e a interface devem diferenciar claramente o que está pronto, o que está em teste e o que ainda é experimental. Um módulo não deve parecer estável somente porque possui uma rota.
+
+| Estado | Significado para o produto | Visibilidade pública |
+|---|---|---|
+| **Stable** | Contrato, testes, fallback e operação previsíveis | Botão normal e conteúdo disponível. |
+| **Beta** | Funciona, mas ainda possui critérios pendentes | Disponível com sinalização discreta. |
+| **Experimental** | Pesquisa ou integração em desenvolvimento | Oculto por padrão ou visível apenas para perfis autorizados. |
+| **Degraded** | Parte do módulo funciona, mas há risco ou dependência instável | Pode permanecer visível com aviso controlado. |
+| **Maintenance** | Intervenção planejada | Botão pode permanecer visível com mensagem de manutenção. |
+| **Disabled/Quarantined** | Falha persistente, risco ou desligamento administrativo | Botão oculto; usuário recebe mensagem neutra. |
+
+### Exemplo de falha isolada na Wiki Arma 3
+
+Se a Wiki Arma 3 apresentar uma falha repetida, o fluxo visual esperado é:
+
+```text
+Wiki Arma 3 falha
+      ↓
+Health Monitor registra o incidente
+      ↓
+Module Registry muda o estado para disabled ou quarantined
+      ↓
+Usuário normal: botão oculto + mensagem neutra
+Developer/Admin/Owner: área operacional + diagnóstico autorizado
+      ↓
+Retry controlado → health check → reativação auditada, se estiver saudável
+```
+
+O sistema não apaga a página e não desliga o site inteiro. Ele remove a superfície pública defeituosa, conserva o incidente para investigação e exige autorização para tentar a recuperação. Usuários normais não devem receber stack trace, caminho de arquivo, tokens ou dados internos.
+
+### Tutorial de entrada para visitantes
+
+O layout proposto deve incluir uma ajuda simples e persistente para quem chega pela primeira vez:
+
+1. **Comece pela Home.** A Ponte de Comando explica os domínios e oferece atalhos.
+2. **Escolha um domínio.** Ferramentas, Conhecimento, Militar, Mídia, Jogos e Núcleo agrupam as páginas por finalidade.
+3. **Abra um módulo.** A página informa seu propósito, estado de maturidade e como usar seus recursos.
+4. **Use a busca global.** A busca deve localizar rotas, módulos e conteúdos sem exigir que a pessoa conheça o nome técnico do arquivo.
+5. **Consulte a ajuda da página.** Cada módulo deve explicar entradas, resultados, limitações e como reportar um problema.
+6. **Faça login somente quando necessário.** Conteúdo público deve continuar acessível sem conta; recursos pessoais ou operacionais usam Supabase Auth.
+
+### Glossário rápido
+
+| Termo | Definição |
+|---|---|
+| **Module Registry** | Catálogo central de módulos, rotas, loaders, dependências, permissões e estado operacional. |
+| **Health Monitor** | Componente que observa carregamento, inicialização e falhas repetidas de um módulo. |
+| **Circuit breaker** | Mecanismo que interrompe novas tentativas após falhas repetidas e abre espaço para recuperação controlada. |
+| **Fallback** | Tela ou comportamento seguro apresentado quando a página não pode ser carregada. |
+| **Evidence Layer** | Camada de fontes, evidências, versões, datas e validação para conteúdo de conhecimento. |
+| **RLS** | Row Level Security do PostgreSQL/Supabase, usada para limitar dados por usuário e função no servidor. |
+| **Runtime** | Processo isolado responsável por capacidades que não devem ficar diretamente no navegador. |
+| **Core** | Camada de orquestração, eventos, estado, roteamento e contratos compartilhados. |
+
+A especificação técnica do Module Registry, o inventário de rotas e a matriz detalhada de acesso estão em [`docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). O roadmap de fases está em [`docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md).
 
 ---
 
