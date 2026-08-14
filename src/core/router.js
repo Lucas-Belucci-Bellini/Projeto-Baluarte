@@ -7,6 +7,10 @@
  *   router.register('/perfil/:id', ({ id }) => profile(id));
  *   router.start();
  *   router.navigate('/home');
+ *
+ * A lista de rotas é também o registro central do shell: `list()` e
+ * `describe()` permitem que busca/sidebar/diagnóstico consumam a mesma fonte,
+ * sem manter uma segunda lista manual de páginas.
  */
 
 import { bus } from './events.js';
@@ -33,7 +37,22 @@ function compile(pattern) {
 }
 
 function register(pattern, handler, meta = {}) {
-  routes.push({ pattern, handler, meta, ...compile(pattern) });
+  if (typeof pattern !== 'string' || !pattern.startsWith('/')) {
+    throw new TypeError('router.register(): pattern deve começar com /');
+  }
+  if (typeof handler !== 'function') {
+    throw new TypeError(`router.register(${pattern}): handler deve ser uma função`);
+  }
+  if (routes.some((route) => route.pattern === pattern)) {
+    throw new Error(`router.register(): rota duplicada: ${pattern}`);
+  }
+
+  routes.push({
+    pattern,
+    handler,
+    meta: { ...meta },
+    ...compile(pattern)
+  });
 }
 
 function setNotFound(handler) {
@@ -47,6 +66,16 @@ function parseHash() {
   return { path: path || '/', query };
 }
 
+function decodeParam(value, key, path) {
+  try {
+    return decodeURIComponent(value);
+  } catch (err) {
+    const error = new Error(`Parâmetro de rota inválido (${key}) em ${path}`);
+    error.cause = err;
+    throw error;
+  }
+}
+
 /* Acha a PRIMEIRA rota cujo regex casa com o path e extrai os params
  * nomeados (decodificando %20 etc.). Retorna null se nada casar. */
 function match(path) {
@@ -54,7 +83,7 @@ function match(path) {
     const m = route.regex.exec(path);
     if (m) {
       const params = {};
-      route.keys.forEach((k, i) => (params[k] = decodeURIComponent(m[i + 1])));
+      route.keys.forEach((k, i) => (params[k] = decodeParam(m[i + 1], k, path)));
       return { route, params };
     }
   }
@@ -83,14 +112,14 @@ function resolve() {
             /* `path` vem de `location.hash`: fora do primeiro argumento do
              * console, senão vira format string controlada de fora. */
             console.error('[router] erro ao carregar rota:', { rota: path }, err);
-            bus.emit('route:error', { path, error: err });
+            if (currentMatch === token) bus.emit('route:error', { path, error: err, route: found.route });
           });
       } else {
         bus.emit('route:change', { ...currentMatch, view });
       }
     } catch (err) {
       console.error('[router] erro ao renderizar rota:', { rota: path }, err);
-      bus.emit('route:error', { path, error: err });
+      if (currentMatch === token) bus.emit('route:error', { path, error: err, route: found.route });
     }
   } else {
     const view = notFoundHandler ? notFoundHandler(path) : null;
@@ -152,7 +181,35 @@ function current() {
  * quem precisa enxergar o site inteiro sem manter uma segunda lista — a
  * paleta de comandos indexa daqui, então rota nova aparece na busca sozinha.
  * Rotas com parâmetro (`/perfil/:id`) ficam de fora: elas não são um destino
- * navegável por si só. */
+ * navegável por si. */
 const list = () => routes.map((r) => r.pattern).filter((p) => !p.includes(':'));
 
-export const router = { register, setNotFound, navigate, start, current, list, count: () => routes.length };
+/* Registro consultável para a V2. Não expõe handlers, regex ou referências
+ * internas: UI, busca e diagnóstico recebem apenas dados serializáveis. */
+const describe = () => routes.map((route) => ({
+  pattern: route.pattern,
+  meta: { ...route.meta },
+  parameterized: route.keys.length > 0
+}));
+
+const find = (pattern) => {
+  const route = routes.find((item) => item.pattern === pattern);
+  if (!route) return null;
+  return {
+    pattern: route.pattern,
+    meta: { ...route.meta },
+    parameterized: route.keys.length > 0
+  };
+};
+
+export const router = {
+  register,
+  setNotFound,
+  navigate,
+  start,
+  current,
+  list,
+  describe,
+  find,
+  count: () => routes.length
+};
