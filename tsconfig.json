@@ -20,6 +20,7 @@
     "src/layout/sidebar.ts",
     "src/layout/overlay.ts",
     "src/layout/shell.ts",
-    "v2/core/registry.ts"
+    "v2/core/registry.ts",
+    "v2/core/ciclo.ts"
   ]
 }

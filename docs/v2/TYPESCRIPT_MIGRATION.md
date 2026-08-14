@@ -1,10 +1,11 @@
 # Migração do Baluarte de JavaScript para TypeScript
 
-**Status:** migração incremental ativa; Runtime Rust e Waves 4–6 publicadas
+**Status:** migração incremental ativa; Runtime Rust, Waves 4–6 e slice de Ciclo publicados
 **Commit de referência do Runtime:** [`8f0062d6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8f0062d6b3a254a7b070bced5e3b43b3109b2674)
 **Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
 **Commit de referência da Wave 5:** [`8ea0ae88`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8ea0ae8833281fe3fe357c4449693a7492e8c80f)
 **Commit de referência da Wave 6:** [`1d8e1f5e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/1d8e1f5e1f37cdfd33ff9b99bad98b6c7667357b) — correção final do wrapper
+**Slice seguinte:** Ciclo de Vida V2; `v2/core/ciclo.ts` é a fonte canônica
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -49,6 +50,7 @@ As ondas anteriores migraram os contratos centrais sem remover os caminhos de im
 | Shell | `src/layout/shell.ts` | `src/layout/shell.js` | Publicado na Wave 5 |
 | Manifesto — fronteira declarativa | `v2/core/manifest.d.ts` | `v2/core/manifest.js` | Contrato declarado na Wave 6 |
 | Registry — invariantes do conjunto | `v2/core/registry.ts` | `v2/core/registry.js` | Publicado na Wave 6 |
+| Ciclo de Vida — execução de fases | `v2/core/ciclo.ts` | `v2/core/ciclo.js` | Publicado no slice pós-Wave 6 |
 
 O Event Bus possui tipos explícitos para `EventMeta`, `EventHandler`, `EventBus`, mapas de handlers e buckets de eventos. O State possui `createStore<State>`, `StoreListener`, `Store` e `AppState`. Router, Flags e Permissions possuem fábricas, contratos de rota, níveis, ambientes, grants e estados de permissão tipados.
 
@@ -57,6 +59,8 @@ O Storage foi migrado sem duplicar a lógica. A implementação TypeScript cobre
 A Wave 5 converteu o contrato de layout completo: Header, Sidebar, Overlay e Shell. A Sidebar agora exporta tipos explícitos para grupos, itens e referências de montagem; o Shell tipa as referências do layout, a troca de páginas, o estado de tema e a sobreposição de páginas vivas; o Overlay tipa o arrasto por ponteiro e a integração opcional com Media Session. Adaptadores `.d.ts` pequenos declaram as fronteiras JavaScript já estáveis — helpers DOM, efeitos visuais, PWA, tema e ciclo de vida — sem mover esses módulos para TypeScript antes da sua própria onda.
 
 A Wave 6 migrou o Registry como fonte canônica TypeScript. O contrato declarativo do Manifesto foi exposto em `manifest.d.ts`, e `registry.ts` tipa o isolamento de módulos inválidos, colisões de rotas e chaves, dependências ausentes em cascata, ciclos, ordem topológica de carga, navegação, esquemas, permissões, catálogo de eventos e referências órfãs. O wrapper `registry.js` continua sendo a porta de compatibilidade para Boot, Ciclo, Plataforma, testes e módulos legados. Os consumidores JSDoc diretos foram alinhados à nova superfície sem ampliar o escopo para os demais arquivos V2.
+
+O slice seguinte converteu o Ciclo de Vida. `ciclo.ts` preserva a execução `init → start`, o isolamento de falhas e de dependências mortas, o timeout de `init`, a chamada de `dispose` após falha parcial, a descida inversa `stop → dispose`, o estado operacional e a possibilidade de subir novamente após uma descida completa. `contexto.d.ts` e `log.d.ts` funcionam como adaptadores declarativos mínimos para não converter Contexto e Log fora de sua própria onda.
 
 ## 4. Gates das ondas TypeScript
 
@@ -70,8 +74,9 @@ A Wave 6 migrou o Registry como fonte canônica TypeScript. O contrato declarati
 | `npm test` | 865/871 | Mesmas seis falhas preexistentes de Supervisor/Health |
 | `npm run tipos:v2` | 70 erros históricos | O Registry não adiciona erros ao gate; os dois diagnósticos de fronteira introduzidos durante a migração foram corrigidos |
 | `CHROME_PATH=/usr/bin/chromium node scripts/v2-integracao.mjs` | Verde: 13/13 | Boot V2 no navegador, 17 rotas no router V1, view nativa, contexto, permissões e adaptador V1 |
+| `npx tsx --test test/v2/ciclo.test.js` | Verde: 17/17 | Ordem de fases, timeout, cascata, descida inversa e módulos reais |
 
-As Waves 4–6 estão publicadas no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O Registry TypeScript preserva o baseline comportamental: 22/22 testes específicos, build verde, suíte geral em 865/871 e smoke V1 em 98/98 rotas. O `tipos:v2` caiu de 71 para 70 diagnósticos porque as duas falhas de fronteira do wrapper foram corrigidas; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. No commit corretivo, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram; `CI`, `Core CI`, `V2 Core` e `V2 Validation` continuam representando a dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4–6 e o slice de Ciclo estão publicados no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O Registry TypeScript preserva 22/22 testes específicos; o Ciclo preserva 17/17 testes específicos. O build permanece verde, a suíte geral em 865/871 e o smoke V1 em 98/98 rotas. O `tipos:v2` permanece em 70 diagnósticos históricos; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
@@ -85,7 +90,7 @@ Os testes de Storage continuam importando `../src/core/storage.js`. Isso verific
 | 4 | Storage | Schemas, migrações, classificação e namespace tipados |
 | 5 | Shell, Header, Sidebar e Layout | Publicada: boot, navegação, overlay e contratos DOM tipados por wrappers mínimos |
 | 6 | Registry/Module System | Publicada: manifesto, isolamento, ordem topológica, fallback, referências e wrapper de navegador tipados |
-| 7 | Páginas de maior valor | Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico por slices |
+| 7 | Ciclo, Boot e páginas de maior valor | Ciclo publicado por slice; depois Boot e páginas Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico |
 | 8 | Data e integrações | Contratos de dados, Supabase, Evidence Layer e Runtime bridge |
 
 A conversão de páginas deve ocorrer depois do Core, porque cada página depende de router, eventos, estado, permissões, shell e storage. Migrar páginas antes de fechar esses contratos apenas deslocaria a dívida para dezenas de arquivos.
@@ -112,7 +117,7 @@ cargo clippy --manifest-path v2/runtime/Cargo.toml --all-targets --all-features 
 node scripts/v2-runtime-smoke.mjs
 ```
 
-O próximo incremento recomendado é tipar o Ciclo de vida e o Boot do Module System por slices, sem converter todos os adaptadores V2 de uma vez. O Registry já é a fonte canônica para que uma página com problema possa ser desabilitada sem comprometer as rotas restantes.
+O próximo incremento recomendado é tipar o Boot do Module System por slice, preservando o adaptador estrutural para o Router V1. Depois dele, as páginas de maior valor podem migrar por fatias, sempre mantendo o fallback de módulos e a navegação funcional.
 
 ## 8. Referências
 
