@@ -69,6 +69,8 @@
     "src/utils/arma3-extracao.d.ts",
     "src/utils/cor.ts",
     "src/utils/cor.d.ts",
+    "src/utils/fingerprint-engine.ts",
+    "src/utils/fingerprint-engine.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
