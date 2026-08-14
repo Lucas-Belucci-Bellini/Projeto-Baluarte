@@ -51,6 +51,8 @@
     "src/utils/baluarte-status.ts",
     "src/utils/theme.ts",
     "src/utils/mil-curation.ts",
+    "src/utils/maplibre-loader.ts",
+    "src/utils/maplibre-loader.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
