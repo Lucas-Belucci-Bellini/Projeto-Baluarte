@@ -57,8 +57,46 @@ O contexto das sessões de reconstrução e dos merges também está preservado 
 | **5 — Módulos** | Adicionar Wiki, Arsenal, JARVIS, IDE, Social e outros sem acoplamento indevido | Contratos e invariantes por módulo |
 | **6 — Evolução** | Observar uso real e receber contribuições com segurança | Incrementos testáveis, documentação e regressão controlada |
 
-As linguagens e responsabilidades da V2 são: **JavaScript ES2022/ESM** para o frontend e Core de Orquestração; **JSDoc + `checkJs`** para verificar contratos JavaScript; **Rust** para o Runtime e a fronteira de processo; **Python 3.12** para parsers, geradores e workers de dados; **SQL/PostgreSQL/Supabase** para Data Layer, Evidence Layer e isolamento; **HTML5/CSS3** para as superfícies web; e **YAML/GitHub Actions** para CI/CD. JSON, Markdown e Shell apoiam contratos, documentação e automação reprodutível.
+As linguagens e responsabilidades da V2 são: **TypeScript** para páginas, componentes e superfícies do frontend, com migração progressiva da base existente; **JavaScript ES2022/ESM + JSDoc** para o Core de Orquestração e contratos legados durante a transição; **Rust** para o Runtime e a fronteira de processo; **Python 3.12** para parsers, geradores e workers de dados; **SQL/PostgreSQL/Supabase** para Data Layer, Evidence Layer e isolamento; **HTML5/CSS3** para as superfícies web; e **YAML/GitHub Actions** para CI/CD. JSON, Markdown e Shell apoiam contratos, documentação e automação reprodutível.
 
+## Sistema modular e recuperação de páginas
+
+## Disponibilidade de recursos e manutenção segura
+
+Uma falha em uma funcionalidade não deve exigir a remoção ou indisponibilidade da página inteira quando o recurso puder ser isolado.
+
+Cada página ou módulo pode controlar individualmente a disponibilidade de seus recursos. Por exemplo, se o visualizador 3D da Wiki Arma 3 apresentar problemas, a Wiki continuará disponível normalmente e somente o recurso 3D poderá ficar temporariamente bloqueado.
+
+Durante a manutenção, o usuário comum recebe uma indicação neutra de que o recurso está temporariamente indisponível. O restante da página continua funcionando normalmente.
+
+Recursos em manutenção podem permanecer acessíveis para `developer`, `admin` e `owner` quando isso for necessário para diagnóstico, desenvolvimento e validação. O acesso deve ser controlado no servidor e nunca depender apenas de código do cliente, `localStorage`, query string ou flags manipuláveis pelo usuário.
+
+Quando o recurso estiver corrigido e validado, ele pode voltar ao estado `enabled` sem necessidade de remover ou reconstruir a página inteira.
+
+### Papéis de acesso
+
+| Papel | Acesso |
+|---|---|
+| `user` | Funcionalidades públicas e recursos `enabled` |
+| `developer` | Funcionalidades públicas + recursos de desenvolvimento autorizados |
+| `admin` | Operação e manutenção dentro das permissões concedidas |
+| `owner` | Controle máximo do projeto, papéis, quarentena e reativação |
+
+A autenticação dos colaboradores pode utilizar o GitHub como provedor de identidade através do sistema de autenticação do projeto. A autorização efetiva permanece sob controle do backend e das políticas do Supabase/RLS.
+
+**Regra principal:** quebrar um recurso não deve significar quebrar o site inteiro.
+
+## Novas ideias e contribuições de layout
+
+O Baluarte está aberto a novas ideias para páginas, layouts, componentes, navegação e experiências de uso.
+
+Colaboradores e membros da comunidade podem propor novas soluções visuais ou melhorias para páginas existentes. Uma proposta não precisa ser adotada automaticamente, mas será considerada de acordo com os objetivos do projeto, acessibilidade, usabilidade, desempenho, arquitetura e consistência do design system.
+
+A intenção é que o Baluarte não fique limitado às ideias de uma única pessoa: **se você tem uma ideia melhor para uma página ou para a experiência do site, estamos de braços abertos para recebê-la.**
+
+Toda contribuição deve passar pelo fluxo normal de revisão, testes e integração do projeto.
+
+A escolha de TypeScript para o frontend da V2 é uma decisão de escalabilidade: o Baluarte possui centenas de páginas e continuará crescendo. A tipagem estática será usada para reduzir regressões, facilitar manutenção entre colaboradores e permitir que páginas e componentes evoluam sem quebrar contratos existentes. A migração será progressiva; a V1 permanece preservada como linha de referência.
 Antes de alterar a V2, leia [`docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md), [`docs/v2/V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md), [`docs/v2/V2_RULES.md`](docs/v2/V2_RULES.md), a documentação da área afetada e o [mapa atual de erros](docs/v2/MAIN_ERROR_AUDIT.md). Examine os consumidores do contrato, consulte as issues relacionadas, escreva ou atualize testes e execute os gates antes de propor um marco.
 
 Não use `@ts-ignore`, `any`, exclusões ou relaxamento de `strict`/`checkJs` para esconder falhas. Não crie um segundo Event Bus, Storage ou Permission Manager sem justificativa. Mudanças arquiteturais devem ser documentadas antes da implementação.
