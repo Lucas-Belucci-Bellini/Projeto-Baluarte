@@ -18,7 +18,7 @@ export interface HAttributes {
 
 export function h<K extends keyof HTMLElementTagNameMap>(
   tag: K,
-  attrs?: HAttributes,
+  attrs?: HAttributes | null,
   ...children: HChild[]
 ): HTMLElementTagNameMap[K];
 
