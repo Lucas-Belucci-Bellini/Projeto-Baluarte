@@ -10,13 +10,13 @@ import { criarMonitorSaude } from './saude.js';
 import { criarStatusLifecycle } from './lifecycle-status.js';
 import { criarSupervisor } from './supervisor.js';
 
-/** @typedef {ReturnType<import('./registry.js').criarRegistry>} Registry */
+/** @typedef {ReturnType<typeof import('./registry.js').criarRegistry>} Registry */
 /**
  * @typedef {{
  *   subir: () => Promise<{falhas: unknown[]}>,
  *   descer: () => Promise<void>,
  *   diagnostico: () => {fase: string, modulos?: unknown[], falhas?: unknown[], eventosOrfaos?: unknown[], referenciasOrfas?: unknown[]},
- *   ciclo: object
+ *   ciclo: {vivos: () => string[], falhas: () => {modulo: string, fase: string, motivo: string}[], fase: string}
  * }} Boot
  */
 

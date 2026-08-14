@@ -1,9 +1,10 @@
 # Migração do Baluarte de JavaScript para TypeScript
 
-**Status:** migração incremental ativa; Runtime Rust e Wave 4 de Storage publicados
+**Status:** migração incremental ativa; Runtime Rust e Waves 4–6 publicadas
 **Commit de referência do Runtime:** [`8f0062d6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8f0062d6b3a254a7b070bced5e3b43b3109b2674)
 **Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
 **Commit de referência da Wave 5:** [`8ea0ae88`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8ea0ae8833281fe3fe357c4449693a7492e8c80f)
+**Wave 6 em validação:** Registry/Module System; o SHA será registrado após a publicação
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -46,6 +47,8 @@ As ondas anteriores migraram os contratos centrais sem remover os caminhos de im
 | Sidebar | `src/layout/sidebar.ts` | `src/layout/sidebar.js` | Publicado na Wave 5 |
 | Overlay | `src/layout/overlay.ts` | `src/layout/overlay.js` | Publicado na Wave 5 |
 | Shell | `src/layout/shell.ts` | `src/layout/shell.js` | Publicado na Wave 5 |
+| Manifesto — fronteira declarativa | `v2/core/manifest.d.ts` | `v2/core/manifest.js` | Contrato declarado na Wave 6 |
+| Registry — invariantes do conjunto | `v2/core/registry.ts` | `v2/core/registry.js` | Publicado na Wave 6 |
 
 O Event Bus possui tipos explícitos para `EventMeta`, `EventHandler`, `EventBus`, mapas de handlers e buckets de eventos. O State possui `createStore<State>`, `StoreListener`, `Store` e `AppState`. Router, Flags e Permissions possuem fábricas, contratos de rota, níveis, ambientes, grants e estados de permissão tipados.
 
@@ -53,18 +56,21 @@ O Storage foi migrado sem duplicar a lógica. A implementação TypeScript cobre
 
 A Wave 5 converteu o contrato de layout completo: Header, Sidebar, Overlay e Shell. A Sidebar agora exporta tipos explícitos para grupos, itens e referências de montagem; o Shell tipa as referências do layout, a troca de páginas, o estado de tema e a sobreposição de páginas vivas; o Overlay tipa o arrasto por ponteiro e a integração opcional com Media Session. Adaptadores `.d.ts` pequenos declaram as fronteiras JavaScript já estáveis — helpers DOM, efeitos visuais, PWA, tema e ciclo de vida — sem mover esses módulos para TypeScript antes da sua própria onda.
 
+A Wave 6 migrou o Registry como fonte canônica TypeScript. O contrato declarativo do Manifesto foi exposto em `manifest.d.ts`, e `registry.ts` tipa o isolamento de módulos inválidos, colisões de rotas e chaves, dependências ausentes em cascata, ciclos, ordem topológica de carga, navegação, esquemas, permissões, catálogo de eventos e referências órfãs. O wrapper `registry.js` continua sendo a porta de compatibilidade para Boot, Ciclo, Plataforma, testes e módulos legados. Os consumidores JSDoc diretos foram alinhados à nova superfície sem ampliar o escopo para os demais arquivos V2.
+
 ## 4. Gates das ondas TypeScript
 
-| Comando | Resultado das Waves 4 e 5 | Observação |
+| Comando | Resultado das Waves 4–6 | Observação |
 | --- | --- | --- |
-| `npm run tipos:ts` | Verde | Inclui Storage, Header, Sidebar, Overlay e Shell |
+| `npm run tipos:ts` | Verde | Inclui Storage, layout e `v2/core/registry.ts` |
 | `npx tsx --test test/storage.test.js test/storage-namespace.test.js` | Verde: 20/20 | Testes de esquema, migração, namespace e classificação |
+| `npx tsx --test test/v2/registry.test.js` | Verde: 22/22 | Registro, selagem, isolamento, dependências e saídas do Core |
 | `npm run build` | Verde | Vite compilou a aplicação; há apenas o aviso histórico de chunks grandes |
 | `CHROME_PATH=/usr/bin/chromium npm run smoke` | Verde: 98/98 rotas | Produção local, navegação e router V1 preservados [3] |
 | `npm test` | 865/871 | Mesmas seis falhas preexistentes de Supervisor/Health |
-| `npm run tipos:v2` | 71 erros históricos | Dívida JS/JSDoc fora do escopo destas ondas |
+| `npm run tipos:v2` | 70 erros históricos | O Registry não adiciona erros ao gate; os dois diagnósticos de fronteira introduzidos durante a migração foram corrigidos |
 
-As Waves 4 e 5 foram publicadas no `main` com validação local estrita. No commit da Wave 5, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram; `CI`, `Core CI`, `V2 Core` e `V2 Validation` repetiram a dívida conhecida de Supervisor/Health e JS/JSDoc. O smoke mais recente substituiu o relatório anterior, que continha um timeout histórico em `/ia-proprietaria`, por uma rodada de 98 rotas verdes. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4 e 5 foram publicadas no `main` com validação local estrita, e a Wave 6 está pronta para publicação após os gates locais verdes. O Registry TypeScript preserva o baseline comportamental: 22/22 testes específicos, build verde, suíte geral em 865/871 e smoke V1 em 98/98 rotas. O `tipos:v2` caiu de 71 para 70 diagnósticos porque duas falhas de fronteira do wrapper foram corrigidas durante esta onda; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
@@ -77,7 +83,7 @@ Os testes de Storage continuam importando `../src/core/storage.js`. Isso verific
 | 3 | Permissions e Flags | Permissões, estados e ambientes tipados |
 | 4 | Storage | Schemas, migrações, classificação e namespace tipados |
 | 5 | Shell, Header, Sidebar e Layout | Publicada: boot, navegação, overlay e contratos DOM tipados por wrappers mínimos |
-| 6 | Registry/Module System | Manifesto, estados de módulo, fallback e circuit breaker tipados |
+| 6 | Registry/Module System | Publicada em validação local: manifesto, isolamento, ordem topológica, fallback e referências tipados |
 | 7 | Páginas de maior valor | Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico por slices |
 | 8 | Data e integrações | Contratos de dados, Supabase, Evidence Layer e Runtime bridge |
 
@@ -105,7 +111,7 @@ cargo clippy --manifest-path v2/runtime/Cargo.toml --all-targets --all-features 
 node scripts/v2-runtime-smoke.mjs
 ```
 
-O próximo incremento recomendado é o Registry/Module System. Ele deve começar pelo contrato de manifesto, disponibilidade e fallback por módulo, para que uma página com problema possa ser desabilitada sem comprometer as rotas restantes.
+O próximo incremento recomendado é tipar o Ciclo de vida e o Boot do Module System por slices, sem converter todos os adaptadores V2 de uma vez. O Registry já é a fonte canônica para que uma página com problema possa ser desabilitada sem comprometer as rotas restantes.
 
 ## 8. Referências
 

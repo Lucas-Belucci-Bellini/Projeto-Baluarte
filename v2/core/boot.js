@@ -35,7 +35,7 @@ import { criarLog } from './log.js';
 /** @typedef {{modulo: string, tipo: string, alvo: string}} RuntimeReference */
 /** @typedef {{modulo: string, permissions: ReadonlyArray<string>}} RuntimePermissionModule */
 /** @typedef {{id: string, name?: string, version?: string, stability?: string, routes: ReadonlyArray<{path: string}>, permissoes?: ReadonlyArray<string>}} RuntimeModule */
-/** @typedef {{id: string, modulo: string, tipo?: string}} RuntimeNavigationItem */
+/** @typedef {{modulo: string, nome: string, icone: string, secao: string|null, ordem: number, path: string, estabilidade: string}} RuntimeNavigationItem */
 /**
  * @typedef {{
  *   selado: boolean,
@@ -71,7 +71,7 @@ import { criarLog } from './log.js';
  */
 
 /**
- * @param {RuntimeBootRegistry} registry selado
+ * @param {ReturnType<typeof import('./registry.js').criarRegistry>} registry selado
  * @param {DepsBoot} deps
  * @param {Adaptadores} adaptadores
  * @param {{tetoInitMs?: number}} [opcoes]

@@ -19,6 +19,7 @@
     "src/layout/header.ts",
     "src/layout/sidebar.ts",
     "src/layout/overlay.ts",
-    "src/layout/shell.ts"
+    "src/layout/shell.ts",
+    "v2/core/registry.ts"
   ]
 }
