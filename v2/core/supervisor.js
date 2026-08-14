@@ -5,16 +5,23 @@
  * o ciclo de vida do conjunto e transforma falhas de boot em estado observável.
  */
 
+/** @typedef {'idle'|'starting'|'ready'|'degraded'|'stopping'|'stopped'|'failed'} SupervisorState */
+/** @typedef {{subir: () => Promise<{falhas: unknown[]}>, descer: () => Promise<void>, diagnostico: () => unknown}} SupervisorBoot */
+/** @typedef {{definirEstado: (estado: SupervisorState) => void, retrato: () => unknown}} SupervisorHealth */
+
 const ESTADOS = Object.freeze(['idle', 'starting', 'ready', 'degraded', 'stopping', 'stopped', 'failed']);
 
+/** @param {SupervisorBoot} boot @param {SupervisorHealth} saude @param {{agora?: () => number}} [options] */
 export function criarSupervisor(boot, saude, { agora = () => Date.now() } = {}) {
   if (!boot?.subir || !boot?.descer) throw new TypeError('Supervisor exige Boot com subir/descer');
   if (!saude?.definirEstado || !saude?.retrato) throw new TypeError('Supervisor exige monitor de saúde');
 
+  /** @type {SupervisorState} */
   let estado = 'idle';
-  let inicio = null;
-  let ultimaFalha = null;
+  let inicio = /** @type {number|null} */ (null);
+  let ultimaFalha = /** @type {string|null} */ (null);
 
+  /** @param {SupervisorState} novo */
   const mudar = (novo) => {
     if (!ESTADOS.includes(novo)) throw new Error(`estado inválido: ${novo}`);
     estado = novo;
@@ -35,12 +42,7 @@ export function criarSupervisor(boot, saude, { agora = () => Date.now() } = {}) 
       const resultado = await boot.subir();
       const degradado = resultado.falhas.length > 0;
       mudar(degradado ? 'degraded' : 'ready');
-      return {
-        estado,
-        duracaoMs: agora() - inicio,
-        resultado,
-        diagnostico: boot.diagnostico()
-      };
+      return { estado, duracaoMs: agora() - inicio, resultado, diagnostico: boot.diagnostico() };
     } catch (erro) {
       ultimaFalha = erro instanceof Error ? erro.message : String(erro);
       mudar('failed');
@@ -70,14 +72,7 @@ export function criarSupervisor(boot, saude, { agora = () => Date.now() } = {}) 
   function status() {
     const diagnostico = boot.diagnostico();
     const health = saude.retrato();
-    return {
-      estado,
-      inicio,
-      duracaoMs: inicio === null ? null : agora() - inicio,
-      ultimaFalha,
-      health,
-      diagnostico
-    };
+    return { estado, inicio, duracaoMs: inicio === null ? null : agora() - inicio, ultimaFalha, health, diagnostico };
   }
 
   return { iniciar, parar, status, estado: () => estado };
