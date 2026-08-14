@@ -1,6 +1,6 @@
 # Migração do Baluarte de JavaScript para TypeScript
 
-**Status:** migração incremental ativa; Runtime Rust, Waves 4–6, Ciclo, Boot, Plataforma e página Sobre publicados; Health/Supervisor corrigidos
+**Status:** migração incremental ativa; Runtime Rust, Waves 4–6, Ciclo, Boot, Plataforma e páginas Sobre, Arsenal e Home publicados; Health/Supervisor corrigidos
 **Commit de referência do Runtime:** [`8f0062d6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8f0062d6b3a254a7b070bced5e3b43b3109b2674)
 **Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
 **Commit de referência da Wave 5:** [`8ea0ae88`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8ea0ae8833281fe3fe357c4449693a7492e8c80f)
@@ -10,6 +10,7 @@
 **Commit de referência da correção Health/Supervisor e Plataforma:** [`df0dd975`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/df0dd975d23719d5f69dd047eb8144c7ff568fe2)
 **Commit de referência da página Sobre TypeScript:** [`d310a02e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/d310a02e681156342295dbbc4c1e1f9d595052a9)
 **Commit de referência da página Arsenal TypeScript:** [`b35b6bd6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/b35b6bd639e4fad82d6abc10b6eaa5f7367096e3)
+**Commit de referência da página Home TypeScript:** [`58b9b7dc`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/58b9b7dc6ebe2982865adf2b543fe0a82e6fc861)
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -60,6 +61,7 @@ As ondas anteriores migraram os contratos centrais sem remover os caminhos de im
 | Health/Supervisor — fronteiras operacionais | `v2/core/saude.d.ts`, `v2/core/supervisor.d.ts` | `v2/core/saude.js`, `v2/core/supervisor.js` | Contrato corrigido junto da Plataforma |
 | Sobre — página documental | `src/pages/sobre.ts` | `src/pages/sobre.js` | Publicado como primeiro slice de página |
 | Arsenal — catálogo militar | `src/pages/arsenal.ts` | `src/pages/arsenal.js` | Publicado como segundo slice de página |
+| Home — ponte de comando e primeira pintura | `src/pages/home.ts` | `src/pages/home.js` | Publicado como terceiro slice de página |
 
 O Event Bus possui tipos explícitos para `EventMeta`, `EventHandler`, `EventBus`, mapas de handlers e buckets de eventos. O State possui `createStore<State>`, `StoreListener`, `Store` e `AppState`. Router, Flags e Permissions possuem fábricas, contratos de rota, níveis, ambientes, grants e estados de permissão tipados.
 
@@ -81,6 +83,8 @@ O primeiro slice de páginas converteu `/sobre` para `src/pages/sobre.ts`. A pá
 
 O segundo slice converteu `/arsenal` para `src/pages/arsenal.ts`. A página mantém filtros por categoria, equipe, tier e busca textual, estado persistido em Storage, seleção de detalhes, imagens Wikipedia com fallback, exportação JSON, aba de Doutrinas e hero imersivo. A fronteira declarativa de `arsenal.d.ts` descreve o catálogo sem duplicar os dados; `toast.d.ts` e o helper DOM fecham somente as APIs consumidas pela página.
 
+O terceiro slice converteu a Home eager-loaded para `src/pages/home.ts`, preservando o wrapper JavaScript e o contrato `RouteArgs` do Router V1. A conversão foi dividida em três fronteiras de comportamento: o hero nativo com WebGL e fallback 2D, o bento com métricas/integrações opcionais e as prateleiras com navegação e limpeza de efeitos. Os dados de elites, crônicas, universos e cenas Spline receberam declarações estruturais mínimas; os adaptadores de efeitos, page views, contador de visitas e motores visuais continuam JavaScript, mas agora têm contratos explícitos. O ciclo de vida mantém `countUp`, `MutationObserver`, `requestAnimationFrame`, limpeza de listeners e destruição dos efeitos ao sair da página. Nenhuma lógica foi duplicada e não foram usados `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`.
+
 ## 4. Gates das ondas TypeScript
 
 | Comando | Resultado das Waves 4–6 e Plataforma | Observação |
@@ -93,11 +97,12 @@ O segundo slice converteu `/arsenal` para `src/pages/arsenal.ts`. A página mant
 | `npm test` | Verde: 871/871 | As seis falhas de Supervisor/Health/Plataforma e três do Orquestrador foram corrigidas |
 | `npm run tipos:v2` | 61 erros históricos | A correção das fronteiras de Supervisor reduziu 9 diagnósticos; os 61 restantes pertencem a módulos V2 ainda não migrados |
 | `CHROME_PATH=/usr/bin/chromium node scripts/v2-integracao.mjs` | Verde: 13/13 | Boot V2 no navegador, 17 rotas no router V1, view nativa, contexto, permissões e adaptador V1 |
+| `CHROME_PATH=/usr/bin/chromium node scripts/caminho-critico.mjs` | Verde: 15/15 | Home no boot, navegação Arsenal → Home, estado do Editor/Terminal, persistência após reload e Home no fim da jornada |
 | `npx tsx --test test/v2/ciclo.test.js` | Verde: 17/17 | Ordem de fases, timeout, cascata, descida inversa e módulos reais |
 | `npx tsx --test test/v2/boot.test.js` | Verde: 13/13 | Registry → Ciclo → Router V1, navegação, diagnóstico e isolamento |
 | `npx tsx --test test/v2/saude.test.js test/v2/supervisor.test.js test/v2/orquestrador.test.js test/v2/plataforma.test.js` | Verde: 18/18 | Health, estados do Supervisor, Orquestrador e fachada Plataforma |
 
-As Waves 4–6 e os slices de Ciclo, Boot, Plataforma, Sobre e Arsenal estão publicados no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O slice de Ciclo foi publicado em `cb4c0872`; no commit remoto, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram. O slice de Boot foi publicado em `a23eaa5d`; também passou nesses quatro gates. A correção Health/Supervisor e a Plataforma foram publicadas em `df0dd975`; no commit remoto, `Core CI` voltou a passar, além de `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas. A página Sobre foi publicada em `d310a02e` e preservou `Core CI`, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas verdes. Arsenal foi publicado em `b35b6bd6`; também preservou `Core CI`, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas. Arsenal passou localmente em `npm test` 871/871, build, `tipos:ts`, integração V2 13/13 e smoke V1 98/98; o `tipos:v2` permaneceu em 61 erros históricos. O Registry TypeScript preserva 22/22 testes específicos; o Ciclo preserva 17/17; o Boot preserva 13/13; Health, Supervisor e Plataforma preservam 18/18. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4–6 e os slices de Ciclo, Boot, Plataforma, Sobre, Arsenal e Home estão publicados no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O slice de Ciclo foi publicado em `cb4c0872`; no commit remoto, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram. O slice de Boot foi publicado em `a23eaa5d`; também passou nesses quatro gates. A correção Health/Supervisor e a Plataforma foram publicadas em `df0dd975`; no commit remoto, `Core CI` voltou a passar, além de `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas. A página Sobre foi publicada em `d310a02e` e preservou `Core CI`, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas verdes. Arsenal foi publicado em `b35b6bd6`; também preservou `Core CI`, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas. Arsenal passou localmente em `npm test` 871/871, build, `tipos:ts`, integração V2 13/13 e smoke V1 98/98; o `tipos:v2` permaneceu em 61 erros históricos. A Home foi publicada em `58b9b7dc`; a validação local desse commit passou em `npm test` 871/871, `npm run build`, `npm run tipos:ts`, integração V2 13/13, smoke V1 98/98 e caminho crítico 15/15. O `tipos:v2` permaneceu em 61 diagnósticos históricos, sem crescimento atribuído à Home. O Registry TypeScript preserva 22/22 testes específicos; o Ciclo preserva 17/17; o Boot preserva 13/13; Health, Supervisor e Plataforma preservam 18/18. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
@@ -111,7 +116,7 @@ Os testes de Storage continuam importando `../src/core/storage.js`. Isso verific
 | 4 | Storage | Schemas, migrações, classificação e namespace tipados |
 | 5 | Shell, Header, Sidebar e Layout | Publicada: boot, navegação, overlay e contratos DOM tipados por wrappers mínimos |
 | 6 | Registry/Module System | Publicada: manifesto, isolamento, ordem topológica, fallback, referências e wrapper de navegador tipados |
-| 7 | Ciclo, Boot, Plataforma e páginas de maior valor | Ciclo, Boot, Plataforma e Sobre por slices; depois páginas Home, Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico |
+| 7 | Ciclo, Boot, Plataforma e páginas de maior valor | Publicada: Ciclo, Boot, Plataforma, Sobre, Arsenal e Home por slices; o próximo grupo seguro é Roadmap, Ferramentas, Elites e Universo |
 | 8 | Data e integrações | Contratos de dados, Supabase, Evidence Layer e Runtime bridge |
 
 A conversão de páginas deve ocorrer depois do Core, porque cada página depende de router, eventos, estado, permissões, shell e storage. Migrar páginas antes de fechar esses contratos apenas deslocaria a dívida para dezenas de arquivos.
@@ -136,9 +141,10 @@ cargo fmt --manifest-path v2/runtime/Cargo.toml -- --check
 cargo test --manifest-path v2/runtime/Cargo.toml --all-targets
 cargo clippy --manifest-path v2/runtime/Cargo.toml --all-targets --all-features -- -D warnings
 node scripts/v2-runtime-smoke.mjs
+CHROME_PATH=/usr/bin/chromium node scripts/caminho-critico.mjs
 ```
 
-O próximo incremento recomendado é migrar Home por slice. Runtime Manager/Restart continua um corte de Core recomendado em paralelo, sempre preservando o fallback de módulos, o Router V1 e a navegação funcional.
+O próximo incremento recomendado é migrar `/roadmap`, seguido por `/ferramentas`, `/elites` e `/universo`, nessa ordem de risco crescente. Runtime Manager/Restart continua um corte de Core recomendado em paralelo, sempre preservando o fallback de módulos, o Router V1 e a navegação funcional.
 
 ## 8. Referências
 
