@@ -42,6 +42,8 @@
     "src/pages/forcas-armadas.ts",
     "src/pages/armas-por-pais.ts",
     "src/pages/enciclopedia-militar.ts",
+    "src/utils/pwa.ts",
+    "src/utils/toast.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
     "src/data/elites-rosters.d.ts",
