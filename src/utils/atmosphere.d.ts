@@ -1,1 +1,1 @@
-export function mountAtmosphere(root: HTMLElement): void;
+export function mountAtmosphere(root: HTMLElement | null): HTMLDivElement | null;
