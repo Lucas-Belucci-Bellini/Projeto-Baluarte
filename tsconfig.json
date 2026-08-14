@@ -47,6 +47,7 @@
     "src/utils/scroll-progress.ts",
     "src/utils/scroll-reveal.ts",
     "src/utils/atmosphere.ts",
+    "src/utils/card-spotlight.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
     "src/data/elites-rosters.d.ts",

@@ -1,1 +1,1 @@
-export function mountCardSpotlight(root: HTMLElement): void;
+export function mountCardSpotlight(root?: HTMLElement | null): void;
