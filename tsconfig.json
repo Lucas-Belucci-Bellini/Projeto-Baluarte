@@ -67,6 +67,8 @@
     "src/utils/webgl-probe.d.ts",
     "src/utils/arma3-extracao.ts",
     "src/utils/arma3-extracao.d.ts",
+    "src/utils/cor.ts",
+    "src/utils/cor.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
