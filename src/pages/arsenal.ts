@@ -419,7 +419,7 @@ function renderMainView(): void {
 
 /* ===== Page builder ===== */
 
-interface ArsenalPageArgs { query?: string | null }
+interface ArsenalPageArgs { query?: Readonly<Record<string, string>> | null }
 
 export function arsenalPage(args: ArsenalPageArgs = {}): HTMLDivElement {
   state = loadState();

@@ -28,6 +28,8 @@
     "src/styles.d.ts",
     "src/pages/arsenal.ts",
     "src/pages/home.ts",
+    "src/pages/roadmap.ts",
+    "src/pages/ferramentas.ts",
     "src/data/arsenal.d.ts",
     "src/data/elites.d.ts",
     "src/data/cronicas.d.ts",

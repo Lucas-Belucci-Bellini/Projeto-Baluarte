@@ -4,7 +4,7 @@ import { router } from '../core/router.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
 
 interface PageArgs {
-  query?: string | null;
+  query?: Readonly<Record<string, string>> | null;
 }
 
 interface TimelineEntry {

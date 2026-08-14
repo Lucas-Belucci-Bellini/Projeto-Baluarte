@@ -16,7 +16,7 @@ export interface ImmersiveHeroOptions {
   accent2?: string;
   variant?: string;
   sceneKey?: string;
-  query?: string | null;
+  query?: Readonly<Record<string, string>> | null;
   hudLeft?: string;
   hudRight?: string;
 }
