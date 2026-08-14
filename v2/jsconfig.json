@@ -33,5 +33,5 @@
     "skipLibCheck": true,
     "noImplicitAny": true
   },
-  "include": ["core/**/*.js", "modules/cripto/**/*.js"]
+  "include": ["core/**/*.js", "modules/cripto/**/*.js", "modules/briefing/**/*.js"]
 }

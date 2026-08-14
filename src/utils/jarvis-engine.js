@@ -18,8 +18,10 @@ import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { getToolSchemas, runTool } from './jarvis-tools.js';
 import './jarvis-nexus-tools.js'; // registra o Git Nexus como skills do JARVIS (#231)
-import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
-import { addMemory, searchMemories, conceptLabel, codeContext } from './jarvis-brain.js';
+import { findCapability } from '../data/site-capabilities.js';
+import { addMemory, searchMemories, conceptLabel } from './jarvis-brain.js';
+import { getBaluarteBriefing } from './jarvis-context.js';
+import { buildNewsBriefingPrompt } from './news-briefing.js';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
@@ -109,24 +111,7 @@ export function clearHistory() {
  * J.A.R.V.I.S. conhecimento do projeto (identidade, operador, contagens,
  * universos e equipes) sem depender de busca externa. Usado nos modos de IA.
  */
-export function getBaluarteBriefing() {
-  const universos = UNIVERSOS.map((u) => `${u.name} — ${u.tagline}`).join('; ');
-  const equipes = EQUIPES.map((e) => `${e.code} (${e.name})`).join(', ');
-  return [
-    '## DOSSIÊ DO BALUARTE (use para falar do universo)',
-    'Identidade: você é o J.A.R.V.I.S., núcleo de IA do Projeto Baluarte Mark XIII. Operador-líder: Lucas Belucci Bellini.',
-    `Plataforma v${VERSION}: ${TOTAL} itens no Arsenal · ${TOTAL_EQUIPES} equipes de elite · ${ARCS_TOTAL} arcos nas Crônicas · ${UNIVERSOS.length} universos.`,
-    `Crônicas "Onde os Deuses Sangram" — universos: ${universos}.`,
-    `Equipes (alfabeto OTAN): ${equipes}.`,
-    'Para o universo Baluarte, baseie-se neste dossiê e no estado do site. Para fatos recentes do mundo real, use a busca na internet quando disponível.',
-    '',
-    capabilitiesText(),
-    '',
-    codeContext(),
-    '',
-    '## GRÁFICOS: para MOSTRAR um gráfico ao operador, inclua no fim da resposta um bloco cercado ```chart``` contendo JSON {"type":"bar|line|pie|donut|area|hbar|radar","title":"...","labels":[...],"values":[...]}. A interface desenha a imagem automaticamente — não descreva o JSON, apenas inclua o bloco.'
-  ].join('\n');
-}
+export { getBaluarteBriefing };
 
 /* ===== Modo LOCAL — assistente de regras ===== */
 
@@ -450,11 +435,36 @@ export async function processOllama(messages, config) {
 /* ===== Modo SERVIDOR — backend Python + Gemini (busca web) ===== */
 
 /**
- * Chama o backend Python (backend/server.py) que usa Gemini com busca no
- * Google. Stateless: envia a conversa inteira; o servidor responde com a
- * camada 2 (web) habilitada. Requer o servidor rodando em config.serverUrl.
+ * Gera um briefing somente leitura pelo backend existente com busca web.
+ * A resposta deve preservar fontes e não autoriza envio/publicação externos.
  * @returns {Promise<string>}
  */
+export async function processNewsBriefing(question, config = {}) {
+  const url = resolveServerBase(config.serverUrl);
+  const system = [
+    config.systemPrompt || 'Você é o J.A.R.V.I.S. do Projeto Baluarte.',
+    buildNewsBriefingPrompt({ topic: question, limit: 6 }),
+  ].join('\n\n');
+  const body = {
+    system,
+    messages: [{ role: 'user', content: question }],
+  };
+  let res;
+  try {
+    res = await fetchWithTimeout(`${url}/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    }, 60000);
+  } catch (error) {
+    if (error.message === 'timeout') throw new Error('O briefing de notícias demorou demais para responder.');
+    throw new Error('Backend de notícias inacessível. Configure o modo Servidor ou deixe a URL vazia para usar /api.');
+  }
+  if (!res.ok) throw new Error(`Notícias HTTP ${res.status}`);
+  const data = await res.json();
+  return data.resposta || '(briefing vazio)';
+}
+
 export async function processServer(messages, config) {
   const url = resolveServerBase(config.serverUrl);
 

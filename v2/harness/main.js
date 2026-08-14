@@ -36,6 +36,7 @@ import { aplicarPolitica } from '../../src/core/politica.js';
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
 import militar from '../modules/militar/module.js';
+import briefing from '../modules/briefing/module.js';
 
 /* Expõe os registros para o teste de navegador inspecionar sem depender de
  * texto na tela — asserção sobre pixel é frágil, sobre estado não. */
@@ -49,7 +50,7 @@ async function principal() {
   aplicarPolitica();
 
   const registry = criarRegistry();
-  [cripto, editor, militar].forEach((m) => registry.registrar(m));
+  [cripto, editor, militar, briefing].forEach((m) => registry.registrar(m));
   const selo = registry.selar();
 
   const bus = criarBus({ log });

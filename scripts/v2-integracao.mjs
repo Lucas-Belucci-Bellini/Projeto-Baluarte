@@ -60,20 +60,29 @@ try {
   const v2 = await pagina.evaluate(() => window.__v2);
 
   conferir('o boot da V2 roda no navegador', v2 && !v2.erro, v2?.erro);
-  conferir('os 3 módulos sobem sem falha',
-    v2?.resultado?.vivos?.length === 3 && v2?.resultado?.falhas?.length === 0,
+  conferir('os 4 módulos sobem sem falha',
+    v2?.resultado?.vivos?.length === 4 && v2?.resultado?.falhas?.length === 0,
     JSON.stringify(v2?.resultado?.falhas ?? []));
-  conferir('as 17 rotas chegam ao router REAL da V1',
-    v2?.resultado?.rotas === 17 && v2?.totalRotas === 17,
+  conferir('as 18 rotas chegam ao router REAL da V1',
+    v2?.resultado?.rotas === 18 && v2?.totalRotas === 18,
     `boot=${v2?.resultado?.rotas} router=${v2?.totalRotas}`);
   conferir('a navegação vem do manifesto',
-    v2?.resultado?.nav?.length === 3, String(v2?.resultado?.nav?.length));
+    v2?.resultado?.nav?.length === 4, String(v2?.resultado?.nav?.length));
 
   /* O nome longo prova a fonte: a sidebar da V1 diz "Lab de Cripto"; o manifesto
    * diz "Lab de Criptografia". Se aparecer o curto, alguém voltou a ler da V1. */
   const textoNav = await pagina.locator('#nav').innerText().catch(() => '');
   conferir('o nome vem do manifesto, não da sidebar da V1',
     /Lab de Criptografia/.test(textoNav), textoNav.slice(0, 80));
+
+  await pagina.evaluate(() => { window.location.hash = '#/briefing'; });
+  await pagina.waitForTimeout(900);
+  const briefingNaTela = await pagina.locator('#saida').innerText().catch(() => '');
+  conferir('a superfície de briefing V2 renderiza',
+    /Briefing de Notícias/.test(briefingNaTela) && /módulo experimental V2/i.test(briefingNaTela), briefingNaTela.slice(0, 90));
+
+  await pagina.evaluate(() => { window.location.hash = '#/cripto'; });
+  await pagina.waitForTimeout(900);
 
   /* O DEFEITO 1: se `view` devolver o módulo em vez do elemento, isto fica
    * vazio. A asserção é de IDENTIDADE, não de tamanho — a versão anterior media

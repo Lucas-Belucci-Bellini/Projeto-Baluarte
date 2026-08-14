@@ -289,3 +289,14 @@ O próximo incremento recomendado é migrar páginas militares estáticas pequen
 [1]: ../../../docs/architecture/decisions/ADR-004-stack-poliglota-por-responsabilidade.md "ADR-004 — Stack poliglota por responsabilidade"
 [2]: ../../test/storage.test.js "Testes comportamentais do Storage"
 [3]: ../../relatorios/smoke-rotas.md "Smoke de rotas mais recente"
+
+
+## 4.1 Marco 1 — JARVIS, contexto compacto e Briefing de Notícias
+
+O Marco 1 adicionou `src/utils/jarvis-context.ts` como implementação canônica do briefing do JARVIS, com wrapper `jarvis-context.js`, cache por versão/contagens, variante compacta e janela limitada de mensagens. A camada `src/utils/news-briefing.ts` recebeu o contrato de notícias com wrapper JavaScript, normalização, URL segura, deduplicação, confiança e estados de revisão. As fronteiras `site-capabilities.d.ts` e `jarvis-brain.d.ts` foram declaradas para que o novo TypeScript não tratasse módulos JavaScript legados como `any` implícito.
+
+O modo `Briefing` foi conectado à página existente do JARVIS e usa o backend de busca web já disponível para produzir rascunhos somente de leitura. O modo OpenClaw mantém o endpoint configurável, enquanto o bridge local em `scripts/openclaw-bridge.mjs` mantém tokens fora do navegador e encaminha apenas `/v1/chat/completions`.
+
+O primeiro módulo nativo V2 de briefing está em `v2/modules/briefing/`, foi incluído no `v2/jsconfig.json` e registrado no harness. O manifesto declara `NETWORK`, storage próprio, evento de atualização, API de health/prompt/ingest/list e view lazy. O `npm run tipos:v2` voltou ao baseline documentado de 61 diagnósticos em 12 arquivos do Core, sem novo diagnóstico no módulo briefing.
+
+A suíte comportamental passou em 876/876 após a adição dos cinco testes do marco. A integração V2 passou em 14/14, o smoke permaneceu em 98/98, o caminho crítico passou em 15/15, o build e `npm run tipos:ts` passaram. O Runtime Rust não pôde ser executado neste ambiente porque o Cargo disponível é 1.75 e rejeita o `Cargo.lock` versão 4; nenhum lockfile foi alterado e o gate remoto do Runtime continua sendo a referência adequada até a execução com toolchain compatível.
