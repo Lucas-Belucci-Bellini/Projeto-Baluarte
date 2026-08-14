@@ -63,11 +63,11 @@ const counts = rows.reduce((acc, row) => {
 }, {});
 const sha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const generatedAt = new Date().toISOString();
-const selected = new Set(['simbolos', 'gerar-codigo', 'git-helper', 'dolar']);
+const selected = new Set(['biblioteca', 'academia', 'ciberseg', 'robotica']);
 const remainingSelected = rows.filter((row) => selected.has(row.name)).map((row) => row.name);
 const waveSummary = remainingSelected.length
   ? 'A onda atual ainda contém: ' + remainingSelected.map((name) => String.fromCharCode(96) + name + '.js' + String.fromCharCode(96)).join(', ') + '.'
-  : 'A onda de simbolos, gerar-codigo, git-helper e dolar foi concluída; a próxima onda deve ser escolhida pelo risco documentado.';
+  : 'A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado.';
 
 const lines = [
   '# Inventário detalhado — páginas JavaScript restantes',

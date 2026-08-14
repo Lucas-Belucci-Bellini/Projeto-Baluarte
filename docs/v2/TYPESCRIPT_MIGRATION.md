@@ -325,3 +325,14 @@ A segunda onda de páginas pequenas converteu `simbolos.js`, `gerar-codigo.js`, 
 A onda também gerou o relatório determinístico [`PAGES_JS_REMAINING_INVENTORY.md`](./PAGES_JS_REMAINING_INVENTORY.md), com a matriz completa, grupo, risco, linhas, bytes e próxima ação. O total caiu de 95 para **91 páginas JavaScript canônicas restantes**. JARVIS e Editor não foram migrados: seus contratos pesados estão em [`JARVIS_EDITOR_MIGRATION_PLAN.md`](./JARVIS_EDITOR_MIGRATION_PLAN.md).
 
 Validação da onda: `npm run tipos:ts` verde; `npm run build` verde; `npm test` 876/876; `npm run smoke` 98/98; `npm run v2:integracao` 14/14; `npm run caminho-critico` 15/15. `npm run tipos:v2` permaneceu nos 61 diagnósticos históricos, sem erro nos quatro módulos novos. A onda não executa envio externo, chamada WhatsApp ou ação comercial.
+
+
+## 4.4 Onda de hubs de conhecimento e segurança
+
+A onda seguinte converteu `biblioteca.js`, `academia.js`, `ciberseg.js` e `robotica.js` para implementações canônicas TypeScript, mantendo wrappers `.js` nos caminhos legados. Foram adicionadas fronteiras para `academia.js`, `ciberseg.js`, `robotica.js` e ampliado o contrato de `cronicas.js` para capítulos estruturados, arcos canônicos e retorno tipado de `loadSaga()`.
+
+`biblioteca.ts` valida o estado persistido, preserva carregamento lazy da saga, filtros, favoritos, retomada, tema, tamanho de fonte e navegação entre capítulos; `academia.ts` fecha os contratos dos módulos de linguagem e abre tabs tipadas no Editor; `ciberseg.ts` usa severidades e categorias fechadas; `robotica.ts` valida o módulo persistido contra o currículo estático. Nenhuma dessas páginas cria uma nova camada de storage ou altera o Router V1.
+
+O plano operacional da primeira onda de JARVIS está em [`roadmap/JARVIS_WAVE_1_CONTRACTS.md`](./roadmap/JARVIS_WAVE_1_CONTRACTS.md). A J1 tratará contratos de sessão, mensagem, configuração pública, adapters, eventos de streaming, fallback e permissões sem converter ainda a superfície `jarvis.js`. A J2 virá depois para memória e recall.
+
+Validação local desta onda: `npm run tipos:ts` verde; `npm test` 876/876; `npm run build` verde; `npm run smoke` 98/98; `npm run v2:integracao` e `npm run caminho-critico` verdes. `npm run tipos:v2` permaneceu nos 61 diagnósticos JSDoc históricos, sem erro novo nos quatro hubs. O inventário operacional caiu de 91 para **87 páginas JavaScript canônicas restantes**.

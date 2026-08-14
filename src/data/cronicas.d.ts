@@ -1,19 +1,30 @@
+export interface CronicaBlock {
+  readonly t?: string;
+  readonly v?: string;
+}
+
 export interface CronicaChapter {
-  id: string;
-  title: string;
-  content: string;
+  readonly id: string;
+  readonly title: string;
+  readonly content?: string;
+  readonly blocks?: readonly CronicaBlock[];
 }
 
 export interface CronicaArc {
-  id: string;
-  code: string;
-  title: string;
-  universe: string;
-  tags: readonly string[];
-  cover: string;
-  equipe: string;
-  synopsis: string;
-  chapters: readonly CronicaChapter[];
+  readonly id: string;
+  readonly code: string;
+  readonly title: string;
+  readonly universe: string;
+  readonly tags: readonly string[];
+  readonly cover: string;
+  readonly equipe: string;
+  readonly synopsis: string;
+  readonly canonical?: boolean;
+  readonly chapters: readonly CronicaChapter[];
+}
+
+export interface SagaLoadResult {
+  readonly arcos: readonly CronicaArc[];
 }
 
 export const ARCS: readonly CronicaArc[];
@@ -21,6 +32,6 @@ export const ARCS_TOTAL: number;
 export const CHAPTERS_TOTAL: number;
 export const UNIVERSES: readonly string[];
 export const ALL_TAGS: readonly string[];
-export function loadSaga(): Promise<unknown>;
+export function loadSaga(): Promise<SagaLoadResult>;
 export function findArc(id: string): CronicaArc | null;
 export function findChapter(arcId: string, chapterId: string): CronicaChapter | null;
