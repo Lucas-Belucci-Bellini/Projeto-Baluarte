@@ -29,6 +29,7 @@
     "strict": true,
     "noEmit": true,
     "allowJs": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "noImplicitAny": true
   },
