@@ -1,6 +1,7 @@
 # Marco 1 V2 — JARVIS, OpenClaw e Briefing de Notícias
 
-**Estado:** validado localmente; aguardando commit e CI remoto
+**Estado:** publicado no `main`; gates operacionais verdes e dívida V2 conhecida preservada
+**Commit:** [`446a272e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/446a272e1c96113b715e90a3727184db8d84786a)
 **Escopo:** primeiro vertical slice orientado a leitura
 **Objetivo:** reduzir o custo repetido do contexto do JARVIS, integrar o Gateway OpenClaw pelo contrato oficial atual e criar uma superfície V2 de briefing com proveniência.
 
@@ -35,7 +36,9 @@ O navegador não recebe `OPENCLAW_GATEWAY_TOKEN` ou `OPENCLAW_GATEWAY_PASSWORD`.
 
 O teste focal `test/jarvis-first-slice.test.js` cobre cinco cenários: cache e variante compacta; limite de contexto; rejeição/deduplicação de notícia; bridge contra upstream fake com CORS; e registro/abrir/fechar do vertical slice V2.
 
-O `npm run tipos:ts` permanece verde. O `npm run tipos:v2` retorna os 61 diagnósticos históricos nos 12 arquivos de Core já documentados e não apresenta diagnóstico novo em `v2/modules/briefing/`. A suíte completa passou em 876/876, o build passou, a integração V2 passou em 14/14, o smoke permaneceu em 98/98 e o caminho crítico passou em 15/15. O Runtime Rust foi tentado, mas o Cargo 1.75 disponível no sandbox rejeita o `Cargo.lock` versão 4; nenhum lockfile foi alterado, e a validação remota do Runtime continua sendo a referência até usar toolchain compatível.
+O `npm run tipos:ts` permanece verde. O `npm run tipos:v2` retorna os 61 diagnósticos históricos nos 12 arquivos de Core já documentados e não apresenta diagnóstico novo em `v2/modules/briefing/`. A suíte completa passou em 876/876, o build passou, a integração V2 passou em 14/14, o smoke permaneceu em 98/98 e o caminho crítico passou em 15/15. O Runtime Rust foi tentado, mas o Cargo 1.75 disponível no sandbox rejeita o `Cargo.lock` versão 4; nenhum lockfile foi alterado.
+
+No SHA publicado, `Core CI`, `V2 Runtime`, `CodeQL`, `Arma 3 Data CI` e `Vigia das rotas` passaram. `CI`, `V2 Core` e `V2 Validation` falharam pelos mesmos 61 diagnósticos históricos do typecheck V2; os logs não apontaram erro novo em `v2/modules/briefing/`. O Vigia confirmou build, 98 rotas, integração V2 14/14, caminho crítico e sobrevivência à perda de rede.
 
 ## Rollback
 

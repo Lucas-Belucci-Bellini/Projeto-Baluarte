@@ -300,3 +300,8 @@ O modo `Briefing` foi conectado à página existente do JARVIS e usa o backend d
 O primeiro módulo nativo V2 de briefing está em `v2/modules/briefing/`, foi incluído no `v2/jsconfig.json` e registrado no harness. O manifesto declara `NETWORK`, storage próprio, evento de atualização, API de health/prompt/ingest/list e view lazy. O `npm run tipos:v2` voltou ao baseline documentado de 61 diagnósticos em 12 arquivos do Core, sem novo diagnóstico no módulo briefing.
 
 A suíte comportamental passou em 876/876 após a adição dos cinco testes do marco. A integração V2 passou em 14/14, o smoke permaneceu em 98/98, o caminho crítico passou em 15/15, o build e `npm run tipos:ts` passaram. O Runtime Rust não pôde ser executado neste ambiente porque o Cargo disponível é 1.75 e rejeita o `Cargo.lock` versão 4; nenhum lockfile foi alterado e o gate remoto do Runtime continua sendo a referência adequada até a execução com toolchain compatível.
+
+
+### Publicação do Marco 1
+
+O Marco 1 foi publicado no commit [`446a272e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/446a272e1c96113b715e90a3727184db8d84786a). A matriz remota desse SHA foi: `Core CI` verde, `V2 Runtime` verde, `CodeQL` verde, `Arma 3 Data CI` verde e `Vigia das rotas` verde; `CI`, `V2 Core` e `V2 Validation` vermelhos pelos mesmos 61 diagnósticos históricos do `tipos:v2`. O `Vigia` confirmou 98 rotas, build de produção, integração V2 14/14, caminho crítico e teste de perda de rede. CodeQL não encontrou vulnerabilidade; registrou apenas avisos de manutenção sobre Node 20 e CodeQL Action v3.
