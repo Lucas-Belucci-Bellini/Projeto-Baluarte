@@ -314,3 +314,14 @@ A página `/dossie` foi convertida para `src/pages/dossie.ts`, mantendo `src/pag
 O JSON gerado não foi duplicado nem convertido junto com a página. A entrada externa passa por `unknown` e valida título, identificador, nível e blocos antes de entrar no estado. A paginação, o sumário, os CTAs, o hero, a persistência e a mensagem de erro permanecem compatíveis com a V1.
 
 Validação da onda: `npm run tipos:ts` verde; `npm run build` verde; `npm test` 876/876; `npm run smoke` 98/98; `npm run v2:integracao` 14/14; `npm run caminho-critico` 15/15. `npm run tipos:v2` permaneceu na dívida histórica de 61 diagnósticos, sem relação com Dossiê.
+
+
+## 4.3 Onda de ferramentas e utilitários de baixo acoplamento
+
+A segunda onda de páginas pequenas converteu `simbolos.js`, `gerar-codigo.js`, `git-helper.js` e `dolar.js` para implementações canônicas TypeScript. Cada página mantém um wrapper JavaScript no caminho original. Foram adicionadas fronteiras declarativas para `symbols.js`, `git-helper.js`, `editor-langs.js`, `jarvis-engine.js` e `syntax-highlight.js`; a migração não duplicou os catálogos ou datasets gerados.
+
+`simbolos.ts` valida o estado de favoritos antes de persistir e preserva a busca por caractere, nome e code point. `gerar-codigo.ts` compartilha o catálogo de linguagens com Editor/JARVIS, tipa o request ao backend, remove cercas Markdown da resposta e valida o estado de tabs antes de abrir o resultado no Editor. `git-helper.ts` é uma composição estática de comandos e templates com clipboard assíncrono. `dolar.ts` valida o JSON de câmbio, estreita moedas e ranges, calcula estatísticas e preserva o SVG controlado do gráfico.
+
+A onda também gerou o relatório determinístico [`PAGES_JS_REMAINING_INVENTORY.md`](./PAGES_JS_REMAINING_INVENTORY.md), com a matriz completa, grupo, risco, linhas, bytes e próxima ação. O total caiu de 95 para **91 páginas JavaScript canônicas restantes**. JARVIS e Editor não foram migrados: seus contratos pesados estão em [`JARVIS_EDITOR_MIGRATION_PLAN.md`](./JARVIS_EDITOR_MIGRATION_PLAN.md).
+
+Validação da onda: `npm run tipos:ts` verde; `npm run build` verde; `npm test` 876/876; `npm run smoke` 98/98; `npm run v2:integracao` 14/14; `npm run caminho-critico` 15/15. `npm run tipos:v2` permaneceu nos 61 diagnósticos históricos, sem erro nos quatro módulos novos. A onda não executa envio externo, chamada WhatsApp ou ação comercial.

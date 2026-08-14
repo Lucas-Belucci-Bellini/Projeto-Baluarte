@@ -1,20 +1,20 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
 **Audited commit:** `bbae05e682fa5b3641f3b7051ba0838784d78876`
-**Status:** INVENTÁRIO ATUALIZADO — a página Dossiê foi migrada nesta onda; os demais módulos continuam no mapa abaixo.
+**Status:** INVENTÁRIO ATUALIZADO — Dossiê, Simbolos, Gerar Código, Git Helper e Dólar foram migrados; 91 páginas canônicas continuam no mapa abaixo.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
 > **Conclusão executiva:** ainda há muito JavaScript no repositório, mas ele não representa um único bloco de trabalho. O próximo passo não deve ser converter todos os arquivos de uma vez. O caminho correto é continuar por contratos: páginas pequenas e de baixo risco, depois dados com declarações estruturais, depois Core/integrations e, em paralelo controlado, os contratos V2 que concentram os 61 erros atuais.
 
 ## 1. Fotografia atual
 
-A contagem foi feita diretamente no workspace do commit auditado. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **293 módulos JavaScript canônicos restantes** depois de retirar 59 wrappers; `vite.config.js` é uma configuração opcional fora do domínio da aplicação.
+A contagem foi feita diretamente no workspace do commit auditado e revisada após a onda de quatro páginas. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **289 módulos JavaScript canônicos restantes** depois de retirar 63 wrappers; `vite.config.js` é uma configuração opcional fora do domínio da aplicação.
 
 | Área | JavaScript total | JavaScript canônico restante | TypeScript de implementação | `.d.ts` de fronteira |
 | --- | ---: | ---: | ---: | ---: |
 | `src/core` | 17 | 11 | 6 | 2 |
 | `src/layout` | 5 | 1 | 4 | 1 |
-| `src/pages` | 114 | 95 | 19 | 0 |
+| `src/pages` | 114 | 91 | 23 | 0 |
 | `src/data` | 59 | 59 | 0 | 9 |
 | `src/utils` | 98 | 72 | 26 | 31 |
 | `v2/core` | 47 | 43 | 4 | 6 |
@@ -24,13 +24,13 @@ A contagem foi feita diretamente no workspace do commit auditado. Os arquivos `.
 | `src/main.js` | 1 | 1 | 0 | 0 |
 | `src/styles.d.ts` | 0 | 0 | 0 | 1 |
 | `vite.config.js` | 1 | Opcional | 0 | 0 |
-| **Total** | **352** | **293** | **59** | **51** |
+| **Total** | **352** | **289** | **63** | **51** |
 
-A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **295 arquivos JS em `src`**, **56 em `v2`**, **59 wrappers de compatibilidade** e **59 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, 19 páginas, adaptadores visuais/integrações e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
+A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **295 arquivos JS em `src`**, **56 em `v2`**, **63 wrappers de compatibilidade** e **63 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, 23 páginas, adaptadores visuais/integrações e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
 
 ## 2. O que já não precisa ser convertido agora
 
-Cinquenta e nove arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
+Sessenta e três arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
 
 | Wrapper | Implementação canônica |
 | --- | --- |
@@ -60,12 +60,12 @@ Esses wrappers **não são dívida de conversão funcional**. Removê-los agora 
 
 ### 3.1 Páginas — maior volume, mas não todo o maior risco
 
-Ainda existem **95 módulos de páginas em JavaScript canônico**. A migração deve ser feita por risco, não apenas por tamanho; a página Dossiê saiu desta contagem nesta onda.
+Ainda existem **91 módulos de páginas em JavaScript canônico**. A migração deve ser feita por risco, não apenas por tamanho; Dossiê, Simbolos, Gerar Código, Git Helper e Dólar já saíram desta contagem.
 
 | Grupo | Exemplos | Estado | Risco |
 | --- | --- | --- | --- |
-| Onda concluída | `src/pages/dossie.ts` + wrapper | Migrado nesta onda | Baixo a médio |
-| Próxima onda segura | `src/pages/simbolos.js`, `src/pages/gerar-codigo.js`, `src/pages/git-helper.js`, `src/pages/dolar.js` | Ainda JS canônico | Baixo a médio |
+| Onda concluída | `dossie.ts`, `simbolos.ts`, `gerar-codigo.ts`, `git-helper.ts`, `dolar.ts` + wrappers | Migrado nesta onda | Baixo a médio |
+| Próxima onda segura | `biblioteca.js`, `academia.js`, `ciberseg.js`, `robotica.js`, `jogos.js`, `modpack.js`, `zomboid.js` | Ainda JS canônico | Baixo a médio |
 | Conteúdo estático militar | `guerras-conflitos.js`, `taticas-estrategias.js`, `historia-militar.js`, `tecnologia-militar.js`, `forcas-especiais.js`, `batalhas-historicas.js` | Ainda JS canônico | Baixo |
 | Hubs e catálogos médios | `biblioteca.js`, `academia.js`, `ciberseg.js`, `robotica.js`, `jogos.js`, `modpack.js`, `zomboid.js` | Ainda JS canônico | Médio |
 | Ferramentas interativas | `editor.js`, `terminal.js`, `qr-studio.js`, `calc-numerica.js`, `logic-sim.js`, `tabela-verdade.js`, `graficos.js` | Ainda JS canônico | Médio a alto |

@@ -27,6 +27,7 @@ export function cx(
 ): string;
 
 export const pad2: (value: number) => string;
+export function randHex(bytes?: number): string;
 
 export function empty<T extends HTMLElement>(element: T): T;
 export function mount(container: HTMLElement, child: Node | null | undefined): void;
