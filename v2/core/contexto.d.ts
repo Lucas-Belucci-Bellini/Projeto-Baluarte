@@ -39,7 +39,7 @@ export interface ContextDependencies {
     conhecerModulos(modulos: ReadonlyArray<{ id: string; permissions: string[] }>): void;
     aplicarPolitica(): {
       concedidas: unknown[];
-      recusas: Array<{ modulo: string; motivo: string }>;
+      recusas: ReadonlyArray<{ modulo: string; motivo: string }>;
     };
     retrato(): unknown;
     ultimasDecisoes(limit: number): unknown;
