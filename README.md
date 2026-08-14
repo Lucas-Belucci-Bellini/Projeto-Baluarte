@@ -144,7 +144,7 @@ Vercel, reconstruído a partir da branch `main`.
 
 ## O que tem no Baluarte
 
-São **36 rotas**, todas implementadas. O menu lateral organiza tudo em 6 grupos.
+São **98 rotas registradas** no router atual, além de 114 arquivos JavaScript em `src/pages/` que incluem páginas, submódulos, gates e componentes de superfície. O menu lateral organiza as superfícies públicas por domínio. O inventário completo está em [`docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md).
 
 ### Operações
 - **Ponte de Comando** — painel inicial com status do sistema.
@@ -229,6 +229,23 @@ Projeto-Baluarte/
 Cada página é uma função pura que devolve um `HTMLElement`, montado pelo `h()`
 — um helper de ~30 linhas em `utils/helpers.js`. Não há virtual DOM nem
 framework.
+
+## Sistema modular e recuperação de páginas
+
+A próxima evolução transforma cada página em um módulo operacional com manifesto, estado de saúde, permissões, fallback e telemetria. A rota continua registrada, mas a disponibilidade pública passa a depender do estado do módulo. O objetivo é que um problema na Wiki Arma 3, por exemplo, não derrube a Home, o Router ou qualquer outra ferramenta.
+
+Se `/wiki-arma3` apresentar falhas repetidas, o `Module Health Monitor` registra um incidente e o circuito muda o módulo para `disabled`, `maintenance` ou `quarantined`. O botão público é ocultado e o acesso direto recebe uma mensagem neutra. O código não é apagado: a área operacional permite diagnóstico e reativação controlada.
+
+A área operacional usa a autenticação Supabase e papéis atribuídos no servidor, protegidos por RLS. **Usuários normais** não veem o painel, stack traces ou detalhes internos. **Desenvolvedores** podem consultar diagnósticos técnicos autorizados; **administradores** podem operar módulos dentro do escopo concedido; e o **proprietário** pode aprovar papéis, colocar módulos em quarentena e reativar componentes após validação. Nenhum papel pode ser confiado a `localStorage`, query string ou metadata controlada pelo cliente.
+
+| Papel | Acesso ao site | Acesso a módulos com problema |
+|---|---|---|
+| `user` | Conteúdo público e módulos `enabled` | Mensagem neutra; sem painel interno |
+| `developer` | Conteúdo público e experimentos autorizados | Diagnóstico técnico, retry e testes autorizados |
+| `admin` | Conteúdo público | Gestão operacional de incidentes e módulos |
+| `owner` | Conteúdo permitido pela política | Controle de papéis, quarentena e reativação |
+
+A especificação completa, o inventário de todas as rotas, os estados `enabled/degraded/disabled/maintenance/experimental/quarantined` e o primeiro slice recomendado estão em [`docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md).
 
 ---
 

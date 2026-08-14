@@ -7,6 +7,7 @@
 **Implementação:** parcial e incremental  
 **Fonte completa das issues:** [`ISSUES_420_422_423_COMPLETE.md`](ISSUES_420_422_423_COMPLETE.md)  
 **Histórico de reconstrução e merges:** [`../history/2026-08-13_V2_MERGE_HISTORY.md`](../history/2026-08-13_V2_MERGE_HISTORY.md)
+**Inventário de páginas e módulos:** [`../MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](../MODULE_SYSTEM_AND_PAGE_INVENTORY.md)
 
 ## 1. Como ler este roadmap
 
@@ -80,7 +81,15 @@ A V1 é a superfície recomendada para uso normal enquanto a V2 estiver em recon
 
 O roadmap não promete que todos os módulos estejam igualmente prontos. A estabilidade deve ser declarada por módulo: estável, beta ou experimental.
 
-## 6. Roadmap por fases
+## 6. Inventário atual e sistema modular
+
+O site atual possui 98 rotas registradas e 114 arquivos JavaScript em `src/pages/`. Esse inventário inclui Home, ferramentas, conhecimento, mídia, Arsenal, Wiki Arma 3, Project Zomboid, JARVIS, Núcleo, áreas militares e superfícies de desenvolvimento. A lista completa, com rota, módulo e estratégia de carregamento, está em [`../MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](../MODULE_SYSTEM_AND_PAGE_INVENTORY.md).
+
+A evolução da V2 transforma cada rota em uma unidade operacional: **Module Registry → loader → health monitor → estado público → permissões → fallback**. Uma página com defeito não deve derrubar o Core ou o restante do site. No caso da Wiki Arma 3, o sistema poderá marcar o módulo como `disabled`, ocultar o botão público e mostrar uma mensagem neutra para usuários normais, enquanto uma área protegida oferece diagnóstico e recuperação a desenvolvedores, administradores e proprietário autenticados.
+
+O papel de uma pessoa não será aceito a partir de `localStorage`, query string ou `user_metadata` editável pelo cliente. A identidade vem do Supabase Auth; o papel e as permissões operacionais vêm de uma fonte server-side protegida por RLS. A especificação inclui estados `enabled`, `degraded`, `disabled`, `maintenance`, `experimental` e `quarantined`, além de retry limitado, auditoria e reativação controlada.
+
+## 7. Roadmap por fases
 
 ### Fase 0 — Governança e separação V1/V2
 
@@ -118,7 +127,7 @@ Depois do Core e do slice, módulos entram sem acoplamento indevido. Cada módul
 
 A V2 deve receber incrementos publicáveis, observar o comportamento real e corrigir regressões rapidamente. O objetivo é permitir contribuições de outras pessoas sem quebrar os contratos do Core. Decisões importantes permanecem documentadas durante a evolução.
 
-## 7. Hardening antes da 1.0.0
+## 8. Hardening antes da 1.0.0
 
 A #420 define que `1.0.0` não significa “todas as funcionalidades prontas”. Significa que tudo marcado como estável é **previsível, testado, recuperável e seguro**.
 
@@ -128,7 +137,7 @@ JARVIS deve usar permission boundaries e um Tool Registry. A camada de permissã
 
 Testes prioritários são jornadas de integração, Critical Path, memória, offline, Service Worker, tratamento de erro, validação de schemas e consistência entre fonte e dados gerados. A recomendação é refatoração cirúrgica, não um rewrite total.
 
-## 8. Wiki Project Zomboid e Evidence Layer
+## 9. Wiki Project Zomboid e Evidence Layer
 
 A Wiki não deve ser somente uma coleção de textos. Ela deve organizar entidades, relações, fontes, evidências, versões, compatibilidade e atualização incremental.
 
@@ -165,7 +174,7 @@ fonte → ingestão → normalização → evidência → validação → conte�
 
 A Wiki deve integrar o Module System da V2, a Data Layer e a Evidence Layer sem depender da infraestrutura legada da V1.
 
-## 9. JARVIS, Knowledge Engine, MCP e Nexus
+## 10. JARVIS, Knowledge Engine, MCP e Nexus
 
 A visão registrada na #420 recomenda começar com um JARVIS Core pequeno: entender uma pergunta, descobrir o contexto, consultar uma fonte/ferramenta e responder. A inteligência não deve depender apenas de um modelo maior. O sistema deve melhorar por meio de conhecimento, ferramentas, contexto e ranking de resultados.
 
@@ -186,7 +195,7 @@ A base de conhecimento pode usar indexação e RAG controlado, mas ingestão aut
 
 Nexus é a evolução de integração entre projetos, conhecimento e serviços. Deve ser construído depois de o Core, as permissões, a proveniência e os contratos estarem estáveis.
 
-## 10. Organização recomendada do repositório
+## 11. Organização recomendada do repositório
 
 A organização atual deve evoluir de modo cirúrgico:
 
@@ -229,7 +238,7 @@ tests/
 
 A migração não deve mover tudo de uma vez. A ordem sugerida é Core/permissions/diagnostics/registry, depois `pages` para `modules`, depois redução de `utils`, depois `services`, depois organização de testes e somente então MCP.
 
-## 11. Guia para novos colaboradores
+## 12. Guia para novos colaboradores
 
 Antes de alterar qualquer código da V2, leia o [Plano Mestre V2](../V2_MASTER_PLAN.md), as [Regras V2](../V2_RULES.md), a [Arquitetura](../V2_ARCHITECTURE.md), os padrões de código e os documentos específicos da área. Consulte também [`docs/v2/MAIN_ERROR_AUDIT.md`](../MAIN_ERROR_AUDIT.md) para conhecer o estado de erros que já foi observado.
 
@@ -248,17 +257,17 @@ Depois, siga este fluxo:
 
 Não use `@ts-ignore`, relaxe `checkJs`, introduza `any` para silenciar o compilador, crie um segundo Event Bus/Storage/Permission Manager sem justificativa ou acople uma interface diretamente a uma implementação interna. Se a mudança for arquitetural, documente a decisão antes da implementação.
 
-## 12. Critérios para marcar um marco como pronto
+## 13. Critérios para marcar um marco como pronto
 
 Um marco pode ser publicado quando os contratos do escopo estiverem definidos, os testes relevantes passarem, os especialistas do domínio estiverem verdes, as invariantes críticas passarem, o deploy aplicável tiver sido validado e a documentação estiver atualizada.
 
 A V2 só pode ser considerada concluída quando o Core, Data Layer/Evidence Layer, especialistas, integrador, módulos independentes e CI estiverem estáveis, com processo de contribuição documentado e V1 preservada como referência compatível quando necessário.
 
-## 13. Histórico e referências
+## 14. Histórico e referências
 
 Para entender o estado atual sem confundir snapshots antigos com a `main` atual, leia [`../history/2026-08-13_V2_MERGE_HISTORY.md`](../history/2026-08-13_V2_MERGE_HISTORY.md). Ele preserva a transcrição completa da sessão e o relatório original dos merges, reconcilia os hashes históricos com o merge `1fe33468` publicado depois e aponta para a auditoria atual da `main`.
 
-## 14. Referências
+## 15. Referências
 
 [1]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420 "Issue #420 — Plano 01"
 [2]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422 "Issue #422 — Wiki Project Zomboid"
