@@ -49,6 +49,7 @@
     "src/utils/atmosphere.ts",
     "src/utils/card-spotlight.ts",
     "src/utils/baluarte-status.ts",
+    "src/utils/theme.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
     "src/data/elites-rosters.d.ts",
