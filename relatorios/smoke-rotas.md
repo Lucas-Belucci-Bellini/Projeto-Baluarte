@@ -1,6 +1,6 @@
 # Smoke das rotas — Projeto Baluarte
 
-Rodado em 2026-08-14T18:22:42.754Z · **98 rotas** descobertas de `src/main.js`.
+Rodado em 2026-08-14T18:33:52.560Z · **98 rotas** descobertas de `src/main.js`.
 
 | Estado | Rotas |
 |---|---:|
@@ -10,7 +10,7 @@ Rodado em 2026-08-14T18:22:42.754Z · **98 rotas** descobertas de `src/main.js`.
 
 ## 🟡 Avisos (host externo — não falham o teste)
 
-- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=9MIqVEOD6JQv8dRf&el=embedded&ns=yt&fexp — net::ERR_ABORTED
+- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=cGshIcZUS_cizirh&el=embedded&ns=yt&fexp — net::ERR_ABORTED
 - `/mapa`: console: Error: sources.gebco.maxzoom: number expected, undefined found
     at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
     at ce (https://unpkg.com/maplibre-gl@4.7.
@@ -20,11 +20,11 @@ Rodado em 2026-08-14T18:22:42.754Z · **98 rotas** descobertas de `src/main.js`.
 
 | Rota | ms | texto |
 |---|---:|---:|
-| `/modelos-3d` | 1691 | 34924 |
-| `/home` | 1618 | 3772 |
-| `/arsenal-expandido` | 1529 | 112566 |
-| `/vanguard` | 1519 | 12141 |
-| `/taticas-estrategias` | 1464 | 2634 |
-| `/enciclopedia-militar` | 1448 | 1638 |
-| `/filmes` | 1445 | 2953 |
-| `/triangulacao` | 1441 | 332 |
+| `/simbolos` | 2029 | 17538 |
+| `/arsenal-expandido` | 1847 | 112566 |
+| `/modelos-3d` | 1699 | 34924 |
+| `/memes` | 1537 | 10310 |
+| `/vanguard` | 1526 | 12141 |
+| `/home` | 1500 | 3772 |
+| `/organizacao-militar` | 1455 | 763 |
+| `/biblioteca` | 1446 | 19259 |

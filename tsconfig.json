@@ -57,6 +57,8 @@
     "src/utils/page-views.ts",
     "src/utils/triangulation.ts",
     "src/utils/triangulation.d.ts",
+    "src/utils/hx-beacon.ts",
+    "src/utils/hx-beacon.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
