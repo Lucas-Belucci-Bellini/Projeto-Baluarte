@@ -48,7 +48,8 @@ async function montarRouter({ hash = '', readyState = 'complete' } = {}) {
 
   /* Import com sufixo único: cada teste precisa de um router zerado, e o cache
    * de módulos do Node devolveria sempre a mesma instância. */
-  const { router } = await import(`../src/core/router.js?t=${Math.random()}`);
+  const { createRouter } = await import(`../src/core/router.js?t=${Math.random()}`);
+  const router = createRouter();
   return {
     router,
     listeners,

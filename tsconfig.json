@@ -11,6 +11,9 @@
   },
   "include": [
     "src/core/events.ts",
-    "src/core/state.ts"
+    "src/core/state.ts",
+    "src/core/router.ts",
+    "src/core/flags.ts",
+    "src/core/permissions.ts"
   ]
 }
