@@ -71,6 +71,8 @@
     "src/utils/cor.d.ts",
     "src/utils/fingerprint-engine.ts",
     "src/utils/fingerprint-engine.d.ts",
+    "src/utils/geo-tracker.ts",
+    "src/utils/geo-tracker.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
