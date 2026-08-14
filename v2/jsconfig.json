@@ -8,18 +8,10 @@
     "depende disso. Se atrapalhar, some sem deixar rastro."
   ],
   "// por que o include não é v2 inteiro": [
-    "`include` cobria só `core/**`, e por meses isso pareceu suficiente — mas o",
-    "primeiro módulo NATIVO ficou fora do portão sem ninguém notar: 12 erros de",
-    "tipo, num arquivo que é o modelo de todo módulo futuro.",
-    "",
-    "Os módulos ADAPTADORES (editor, militar) importam páginas da V1, e o tsc",
-    "segue import — `exclude` não impede isso. Incluí-los arrastaria 297 erros",
-    "de código CONGELADO, que não é nosso para consertar. A fronteira é essa, e",
-    "ela é honesta: quem importa a V1 fica fora; quem é nativo entra.",
-    "",
-    "Para a fronteira não virar 'lembre-se de se acrescentar aqui', ela é",
-    "cobrada por teste — test/v2/tipos-cobertura.test.js fica vermelho quando um",
-    "módulo nativo novo não aparece neste include."
+    "`include` cobre o Core nativo e os módulos nativos; adaptadores que importam V1",
+    "ficam fora da fronteira deliberadamente. Declarações locais de plataforma",
+    "também entram no portão para que o contrato Node não dependa de @types/node.",
+    "A cobertura continua sendo cobrada por test/v2/tipos-cobertura.test.js."
   ],
   "compilerOptions": {
     "target": "ES2022",
@@ -32,5 +24,5 @@
     "skipLibCheck": true,
     "noImplicitAny": true
   },
-  "include": ["core/**/*.js", "modules/cripto/**/*.js"]
+  "include": ["core/**/*.js", "core/**/*.d.ts", "modules/cripto/**/*.js"]
 }

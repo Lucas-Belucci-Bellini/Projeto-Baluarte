@@ -1,7 +1,14 @@
+/**
+ * @typedef {{id: string, dependsOn?: (string | {id: string, required?: boolean, failure?: 'stop'|'degrade'|'ignore'})[]}} RuntimeDependencyEntry
+ * @typedef {{listar: () => RuntimeDependencyEntry[], obter?: (id: string) => RuntimeDependencyEntry | undefined}} RuntimeDependencyRegistry
+ * @typedef {{id: string, required: boolean, failure: 'stop'|'degrade'|'ignore'}} RuntimeDependency
+ */
+
 /** Normalizes dependency declarations without applying recovery policy. */
-export function criarRuntimeDependencySpec(registry) {
+export function criarRuntimeDependencySpec(/** @type {RuntimeDependencyRegistry} */ registry) {
   if (!registry || typeof registry.listar !== 'function') throw new TypeError('registry inválido');
 
+  /** @param {string} id @returns {RuntimeDependency[]} */
   function spec(id) {
     const entry = registry.obter?.(id) ?? registry.listar().find(item => item.id === id);
     if (!entry) throw new Error(`Módulo inexistente: ${id}`);
