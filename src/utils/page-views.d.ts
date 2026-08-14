@@ -1,12 +1,12 @@
 export interface PageViewTop {
-  route: string;
-  count: number;
+  readonly route: string;
+  readonly count: number;
 }
 
 export interface PageViewsResult {
-  top: readonly PageViewTop[];
-  total: number;
+  readonly top: readonly PageViewTop[];
+  readonly total: number;
 }
 
 export function readPageViews(limit?: number): Promise<PageViewsResult | null>;
-export function countPageView(route: string): Promise<boolean>;
+export function countPageView(route: string): Promise<void>;

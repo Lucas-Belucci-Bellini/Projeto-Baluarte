@@ -54,6 +54,7 @@
     "src/utils/maplibre-loader.ts",
     "src/utils/maplibre-loader.d.ts",
     "src/utils/visit-counter.ts",
+    "src/utils/page-views.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",

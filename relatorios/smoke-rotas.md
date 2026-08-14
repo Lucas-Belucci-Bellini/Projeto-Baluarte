@@ -1,6 +1,6 @@
 # Smoke das rotas — Projeto Baluarte
 
-Rodado em 2026-08-14T17:57:56.908Z · **98 rotas** descobertas de `src/main.js`.
+Rodado em 2026-08-14T18:12:16.729Z · **98 rotas** descobertas de `src/main.js`.
 
 | Estado | Rotas |
 |---|---:|
@@ -10,8 +10,10 @@ Rodado em 2026-08-14T17:57:56.908Z · **98 rotas** descobertas de `src/main.js`.
 
 ## 🟡 Avisos (host externo — não falham o teste)
 
-- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=-YQa1jxHB-wchXkg&el=embedded&ns=yt&fexp — net::ERR_ABORTED
-- `/tv`: rede: https://www.youtube.com/api/stats/qoe?cpn=ZsZTorzRoQyAGcoL&el=embedded&ns=yt&fexp=v1%2C100 — net::ERR_ABORTED
+- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=l7RGYxHI46lFRyRb&el=embedded&ns=yt&fexp — net::ERR_ABORTED
+- `/vanguard`: console: Error: sources.gebco.maxzoom: number expected, undefined found
+    at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
+    at ce (https://unpkg.com/maplibre-gl@4.7.
 - `/mapa`: console: Error: sources.gebco.maxzoom: number expected, undefined found
     at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
     at ce (https://unpkg.com/maplibre-gl@4.7.
@@ -21,11 +23,11 @@ Rodado em 2026-08-14T17:57:56.908Z · **98 rotas** descobertas de `src/main.js`.
 
 | Rota | ms | texto |
 |---|---:|---:|
-| `/modelos-3d` | 1855 | 34924 |
-| `/home` | 1561 | 3772 |
-| `/vanguard` | 1546 | 12141 |
-| `/sobre` | 1500 | 5508 |
-| `/radar` | 1499 | 1414 |
-| `/arsenal` | 1485 | 14499 |
-| `/jarvis` | 1482 | 913 |
-| `/academia` | 1468 | 5365 |
+| `/vanguard` | 2836 | 12141 |
+| `/arsenal-expandido` | 1772 | 112566 |
+| `/modelos-3d` | 1752 | 34924 |
+| `/home` | 1660 | 3772 |
+| `/robotica` | 1519 | 1177 |
+| `/forcas-armadas` | 1460 | 2757 |
+| `/elites` | 1456 | 4956 |
+| `/arma3-tutorial` | 1456 | 29101 |
