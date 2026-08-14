@@ -305,3 +305,12 @@ A suíte comportamental passou em 876/876 após a adição dos cinco testes do m
 ### Publicação do Marco 1
 
 O Marco 1 foi publicado no commit [`446a272e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/446a272e1c96113b715e90a3727184db8d84786a). A matriz remota desse SHA foi: `Core CI` verde, `V2 Runtime` verde, `CodeQL` verde, `Arma 3 Data CI` verde e `Vigia das rotas` verde; `CI`, `V2 Core` e `V2 Validation` vermelhos pelos mesmos 61 diagnósticos históricos do `tipos:v2`. O `Vigia` confirmou 98 rotas, build de produção, integração V2 14/14, caminho crítico e teste de perda de rede. CodeQL não encontrou vulnerabilidade; registrou apenas avisos de manutenção sobre Node 20 e CodeQL Action v3.
+
+
+## 4.2 Onda Dossiê
+
+A página `/dossie` foi convertida para `src/pages/dossie.ts`, mantendo `src/pages/dossie.js` como wrapper de compatibilidade. A implementação canônica tipa o estado persistido, o status de carregamento, o catálogo de seções e blocos, o parser defensivo do JSON gerado, a busca textual, a seleção de seção, a renderização do leitor e o carregamento lazy do asset. `src/assets.d.ts` declara a fronteira `*.json?url` usada pelo Vite.
+
+O JSON gerado não foi duplicado nem convertido junto com a página. A entrada externa passa por `unknown` e valida título, identificador, nível e blocos antes de entrar no estado. A paginação, o sumário, os CTAs, o hero, a persistência e a mensagem de erro permanecem compatíveis com a V1.
+
+Validação da onda: `npm run tipos:ts` verde; `npm run build` verde; `npm test` 876/876; `npm run smoke` 98/98; `npm run v2:integracao` 14/14; `npm run caminho-critico` 15/15. `npm run tipos:v2` permaneceu na dívida histórica de 61 diagnósticos, sem relação com Dossiê.
