@@ -17,8 +17,11 @@
 Plataforma web narrativa, militar e de ferramentas técnicas de **Lucas Belucci
 Bellini**.
 
-**Stack (não negociável):** JavaScript puro (ES2022) + HTML5 + CSS3 + Vite 5.
-Sem TypeScript. Sem framework. Sem JSX.
+**Stack V1 do navegador:** JavaScript puro (ES2022/ESM) + HTML5 + CSS3 + Vite 5.
+Sem React, Vue, JSX ou TypeScript como linguagem de execução do frontend.
+
+A V2 é multi-linguagem: JavaScript/JSDoc para o Core de Orquestração, Rust para o Runtime isolado, Python para pipelines de dados, SQL/PostgreSQL/Supabase para persistência e RLS, e YAML/GitHub Actions para os gates de CI. O compilador TypeScript é usado apenas para verificar contratos JSDoc da V2; não transforma o produto em TypeScript.
+
 
 > Esta é a 13ª iteração do projeto. As 12 anteriores quebraram por TypeScript,
 > stubs incompletos ou HTMLs gigantes inline. O Mark XIII foi construído
@@ -33,6 +36,32 @@ cada função com mais calma e depois consolidar tudo em uma plataforma única �
 válida, mas só faz sentido se for tratada como uma migração arquitetural, e não
 como uma fragmentação sem controle. O plano completo de transição, domínios,
 contratos de integração e fases de execução está em [docs/PROJETO-NEXUS-BALUARTE.md](docs/PROJETO-NEXUS-BALUARTE.md).
+
+---
+
+## Roadmap V2 e guia para novos colaboradores
+
+A V2 é guiada por três planos complementares: [#420 — Fundação, Hardening e Transição V1 → V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420), [#422 — Wiki Project Zomboid na V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422) e [#423 — Plano Mestre V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423). A documentação consolidada, com a fonte completa das descrições e comentários coletados, está em [`docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md) e [`docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md`](docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md).
+
+O contexto das sessões de reconstrução e dos merges também está preservado em [`docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md). Esse índice reconcilia o relatório histórico com o estado atual da `main` e aponta para a [transcrição completa da sessão](docs/v2/history/2026-08-13_CHATGPT_SESSION_TRANSCRIPT.txt) e o [relatório original dos merges](docs/v2/history/2026-08-13_MERGE_AUDIT_SOURCE.md).
+
+> **A V2 é uma reconstrução arquitetural, não uma V1.5.** A V1 continua sendo a superfície estável para uso normal; a V2 pode permanecer instável, incompleta ou indisponível durante a reconstrução.
+
+| Fase | Objetivo | Entregáveis principais |
+|---|---|---|
+| **0 — Governança** | Separar V1, V2 Preview e V2 Development | Regras, decisões, branches e gates claros |
+| **1 — Core V2** | Fechar Runtime, Event Bus, Task Manager, Boot, Config e Context | Contratos, isolamento de falhas e testes de Core |
+| **2 — Dados** | Criar Data Layer, Evidence Layer e persistência | Schemas, proveniência, versionamento e RLS |
+| **3 — Especialistas** | Validar JS/JSDoc, Rust, Python/Data, SQL/Supabase e YAML/CI | Gates por domínio e integrador de contratos |
+| **4 — Vertical slice** | Conectar Core + dados + módulo + superfície mínima | Integração, E2E e primeiro marco publicável |
+| **5 — Módulos** | Adicionar Wiki, Arsenal, JARVIS, IDE, Social e outros sem acoplamento indevido | Contratos e invariantes por módulo |
+| **6 — Evolução** | Observar uso real e receber contribuições com segurança | Incrementos testáveis, documentação e regressão controlada |
+
+As linguagens e responsabilidades da V2 são: **JavaScript ES2022/ESM** para o frontend e Core de Orquestração; **JSDoc + `checkJs`** para verificar contratos JavaScript; **Rust** para o Runtime e a fronteira de processo; **Python 3.12** para parsers, geradores e workers de dados; **SQL/PostgreSQL/Supabase** para Data Layer, Evidence Layer e isolamento; **HTML5/CSS3** para as superfícies web; e **YAML/GitHub Actions** para CI/CD. JSON, Markdown e Shell apoiam contratos, documentação e automação reprodutível.
+
+Antes de alterar a V2, leia [`docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md), [`docs/v2/V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md), [`docs/v2/V2_RULES.md`](docs/v2/V2_RULES.md), a documentação da área afetada e o [mapa atual de erros](docs/v2/MAIN_ERROR_AUDIT.md). Examine os consumidores do contrato, consulte as issues relacionadas, escreva ou atualize testes e execute os gates antes de propor um marco.
+
+Não use `@ts-ignore`, `any`, exclusões ou relaxamento de `strict`/`checkJs` para esconder falhas. Não crie um segundo Event Bus, Storage ou Permission Manager sem justificativa. Mudanças arquiteturais devem ser documentadas antes da implementação.
 
 ---
 
@@ -203,14 +232,18 @@ framework.
 
 ---
 
-## Stack (não negociável)
+## Stack e responsabilidades
 
-- **Frontend:** JavaScript ES2022 (módulos ESM nativos), HTML5, CSS3.
+- **Frontend V1:** JavaScript ES2022 em módulos ESM nativos, HTML5 e CSS3.
+- **Core V2:** JavaScript ES2022 com contratos JSDoc verificados por TypeScript `checkJs`.
+- **Runtime V2:** Rust estável para processo, sandbox, política e isolamento do Runtime.
+- **Dados:** Python 3.12 para parsers e geração; SQL/PostgreSQL/Supabase para persistência, evidências e RLS.
 - **Build:** Vite 5.
-- **Persistência:** localStorage + IndexedDB (J.A.R.V.I.S.).
+- **Persistência local:** localStorage + IndexedDB, sempre atrás dos contratos de Storage.
 - **Cripto:** Web Crypto API nativa.
 - **Áudio:** Web Audio API nativa.
 - **Gráficos:** Canvas 2D puro.
+- **CI/CD:** YAML/GitHub Actions, com gates de Core, Runtime, especialistas, segurança, dados, smoke e deploy.
 - **Fontes:** Inter + JetBrains Mono.
 - **Design:** Material 3 Dark + Neon (cyan `#00f0ff` / magenta `#ff00aa`).
 
