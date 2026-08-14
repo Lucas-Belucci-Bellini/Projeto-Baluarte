@@ -75,6 +75,8 @@
     "src/utils/geo-tracker.d.ts",
     "src/utils/jarvis-hermes-native.ts",
     "src/utils/jarvis-hermes-native.d.ts",
+    "src/utils/jarvis-repo-memory.ts",
+    "src/utils/jarvis-repo-memory.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
