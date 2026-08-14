@@ -8,7 +8,7 @@
 
 ## 1. Fotografia atual
 
-A contagem foi feita diretamente no workspace do commit auditado. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida.
+A contagem foi feita diretamente no workspace do commit auditado. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **328 módulos JavaScript canônicos restantes** depois de retirar os 18 wrappers; `vite.config.js` é uma configuração opcional fora do domínio da aplicação.
 
 | Área | JavaScript total | JavaScript canônico restante | TypeScript de implementação | `.d.ts` de fronteira |
 | --- | ---: | ---: | ---: | ---: |
@@ -17,15 +17,16 @@ A contagem foi feita diretamente no workspace do commit auditado. Os arquivos `.
 | `src/pages` | 114 | 110 | 4 | 0 |
 | `src/data` | 59 | 59 | 0 | 6 |
 | `src/utils` | 96 | 96 | 0 | 17 |
-| `v2/core` | 47 | 37 | 4 | 6 |
+| `v2/core` | 47 | 43 | 4 | 6 |
 | `v2/modules` | 5 | 5 | 0 | 0 |
 | `v2/harness` | 1 | 1 | 0 | 0 |
 | `src/nexus` | 1 | 1 | 0 | 0 |
 | `src/main.js` | 1 | 1 | 0 | 0 |
+| `src/styles.d.ts` | 0 | 0 | 0 | 1 |
 | `vite.config.js` | 1 | Opcional | 0 | 0 |
-| **Total** | **347** | **337** | **18** | **33** |
+| **Total** | **347** | **329** | **18** | **32** |
 
-A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **293 arquivos JS em `src`**, **53 em `v2`** e **18 implementações TypeScript canônicas**. Os 18 módulos já migrados são a base atual: Event Bus, State, Router, Flags, Permissions, Storage, Layout, Home, Sobre, Arsenal, Find, Registry, Ciclo, Boot e Plataforma.
+A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **293 arquivos JS em `src`**, **53 em `v2`**, **18 wrappers de compatibilidade** e **18 implementações TypeScript canônicas**. Os 18 módulos já migrados são a base atual: Event Bus, State, Router, Flags, Permissions, Storage, Layout, Home, Sobre, Arsenal, Find, Registry, Ciclo, Boot e Plataforma.
 
 ## 2. O que já não precisa ser convertido agora
 
