@@ -27,7 +27,18 @@
     "src/pages/sobre.ts",
     "src/styles.d.ts",
     "src/pages/arsenal.ts",
+    "src/pages/home.ts",
     "src/data/arsenal.d.ts",
-    "src/utils/toast.d.ts"
+    "src/data/elites.d.ts",
+    "src/data/cronicas.d.ts",
+    "src/data/universos.d.ts",
+    "src/data/spline-scenes.d.ts",
+    "src/utils/toast.d.ts",
+    "src/utils/effects.d.ts",
+    "src/utils/hero-webgl.d.ts",
+    "src/utils/hero3d.d.ts",
+    "src/utils/spline-embed.d.ts",
+    "src/utils/visit-counter.d.ts",
+    "src/utils/page-views.d.ts"
   ]
 }
