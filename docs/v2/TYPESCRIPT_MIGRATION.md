@@ -1,7 +1,8 @@
 # Migração do Baluarte de JavaScript para TypeScript
 
-**Status:** migração incremental ativa; Runtime Rust publicado e Wave 4 de Storage validada localmente
+**Status:** migração incremental ativa; Runtime Rust e Wave 4 de Storage publicados
 **Commit de referência do Runtime:** [`8f0062d6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8f0062d6b3a254a7b070bced5e3b43b3109b2674)
+**Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -39,7 +40,7 @@ As ondas anteriores migraram os contratos centrais sem remover os caminhos de im
 | Router | `src/core/router.ts` | `src/core/router.js` | Publicado |
 | Feature Flags | `src/core/flags.ts` | `src/core/flags.js` | Publicado |
 | Permissions | `src/core/permissions.ts` | `src/core/permissions.js` | Publicado |
-| Storage | `src/core/storage.ts` | `src/core/storage.js` | Wave 4 validada localmente |
+| Storage | `src/core/storage.ts` | `src/core/storage.js` | Publicado na Wave 4 |
 
 O Event Bus possui tipos explícitos para `EventMeta`, `EventHandler`, `EventBus`, mapas de handlers e buckets de eventos. O State possui `createStore<State>`, `StoreListener`, `Store` e `AppState`. Router, Flags e Permissions possuem fábricas, contratos de rota, níveis, ambientes, grants e estados de permissão tipados.
 
@@ -55,7 +56,7 @@ O Storage foi migrado sem duplicar a lógica. A implementação TypeScript cobre
 | `npm test` | 865/871 | Mesmas seis falhas preexistentes de Supervisor/Health |
 | `npm run tipos:v2` | 71 erros históricos | Dívida JS/JSDoc fora do escopo desta onda |
 
-O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+A Wave 4 foi publicada no `main` e o `V2 Runtime` remoto passou novamente no commit `e75619da`; os demais gates verdes também permaneceram verdes, enquanto os quatro gates vermelhos repetiram exclusivamente a dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
