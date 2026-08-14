@@ -14,6 +14,7 @@
     "src/core/state.ts",
     "src/core/router.ts",
     "src/core/flags.ts",
-    "src/core/permissions.ts"
+    "src/core/permissions.ts",
+    "src/core/storage.ts"
   ]
 }
