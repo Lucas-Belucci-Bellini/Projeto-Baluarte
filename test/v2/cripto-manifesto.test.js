@@ -115,8 +115,8 @@ test('UM manifesto substitui o que hoje mora em oito arquivos', () => {
 
 test('DÍVIDA CONHECIDA: sidebar e shell divergem no nome de /cripto', () => {
   /* Este teste falha de propósito quando a V1 for corrigida. Ver o cabeçalho. */
-  const sidebar = ler('src/layout/sidebar.js');
-  const shell = ler('src/layout/shell.js');
+  const sidebar = ler('src/layout/sidebar.ts');
+  const shell = ler('src/layout/shell.ts');
 
   const naSidebar = sidebar.match(/path: '\/cripto',\s*label: '([^']+)'/)?.[1];
   const noShell = shell.match(/'\/cripto': '([^']+)'/)?.[1];

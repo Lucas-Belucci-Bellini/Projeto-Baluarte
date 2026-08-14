@@ -2,1159 +2,985 @@
  {
   "rota": "/home",
   "estado": "verde",
-  "ms": 14224,
-  "texto": 3695,
+  "ms": 1579,
+  "texto": 3771,
   "nos": 384,
   "titulo": "BALUARTE\nMARK XIII",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/baixar",
   "estado": "verde",
-  "ms": 13699,
-  "texto": 1411,
+  "ms": 1257,
+  "texto": 1388,
   "nos": 56,
   "titulo": "Baluarte Launcher",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET",
-   "rede: https://api.github.com/repos/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/latest — net::ERR_CERT_AUTHORITY_INVALID",
-   "rede: https://api.github.com/repos/Lucas-Belucci-Bellini/Projeto-Baluarte/releases?per_page=15 — net::ERR_CERT_AUTHORITY_INVALID"
-  ]
+  "avisos": []
  },
  {
   "rota": "/ferramentas",
   "estado": "verde",
-  "ms": 13835,
+  "ms": 1321,
   "texto": 7625,
   "nos": 520,
   "titulo": "Hub de Ferramentas\nCAIXA DE FERRAMENTAS TÉCNICAS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/editor",
   "estado": "verde",
-  "ms": 13609,
+  "ms": 1381,
   "texto": 1216,
   "nos": 146,
-  "titulo": "⌨ Editor de CódiUQ E *#K",
+  "titulo": "⌨ Editor de Códi+F / 3B2",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/json-studio",
   "estado": "verde",
-  "ms": 14544,
+  "ms": 1374,
   "texto": 519,
   "nos": 72,
-  "titulo": "{ } JLMO SQR_89",
+  "titulo": "{ } JSON S9C0&{",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/qr-studio",
   "estado": "verde",
-  "ms": 13706,
+  "ms": 1346,
   "texto": 318,
   "nos": 36,
-  "titulo": "▦ QR Code ]A*Z+U",
+  "titulo": "▦ QR Code T&}]M5",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/git-helper",
   "estado": "verde",
-  "ms": 13731,
+  "ms": 1268,
   "texto": 2241,
   "nos": 139,
-  "titulo": "⎇ Git HW\\XU*",
+  "titulo": "⎇ Git HelRQ{",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/terminal",
   "estado": "verde",
-  "ms": 13551,
+  "ms": 1354,
   "texto": 478,
   "nos": 44,
-  "titulo": "▶ Terminal XOW",
+  "titulo": "▶ TermiC08 \\}<",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/calc-cientifica",
   "estado": "verde",
-  "ms": 14707,
+  "ms": 1503,
   "texto": 385,
   "nos": 61,
-  "titulo": "∑ Calculadora Ci1%45B_/Y",
+  "titulo": "∑ Calculador* O<&{#%7YSJ",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/calc-numerica",
   "estado": "verde",
-  "ms": 14205,
+  "ms": 1439,
   "texto": 525,
   "nos": 164,
-  "titulo": "01 CaN+8=MY0QH A725NNXS",
+  "titulo": "01 Calcul72Q{J I>DNY3LB",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/calculadoras",
   "estado": "verde",
-  "ms": 13615,
+  "ms": 1379,
   "texto": 1264,
   "nos": 137,
-  "titulo": "∑ Hub de Calcul78292+",
+  "titulo": "∑ Hub WO ALKGP]L\\Q*4O",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/tabela-verdade",
   "estado": "verde",
-  "ms": 13872,
+  "ms": 1393,
   "texto": 1004,
   "nos": 151,
-  "titulo": "⊨ Tabela Verdade & M]ZI Q9 3+YL\\\\2Q",
+  "titulo": "⊨ Tabela Verdade K #A4+ VY FY/_RDD/",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/cripto",
   "estado": "verde",
-  "ms": 13722,
+  "ms": 1548,
   "texto": 1303,
   "nos": 162,
-  "titulo": "⚿ Lab de CriG1]%&_GF4",
+  "titulo": "⚿ Lab de Cri[{=C]C{+2",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/esteganografia",
   "estado": "verde",
-  "ms": 13719,
+  "ms": 1497,
   "texto": 976,
   "nos": 56,
-  "titulo": "EsteganoAT75{Z",
+  "titulo": "EsteganoR0]>HB",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/graficos",
   "estado": "verde",
-  "ms": 13670,
+  "ms": 1290,
   "texto": 545,
   "nos": 85,
-  "titulo": "◢ Gerador de *V%MUZUV",
+  "titulo": "◢ Gerador de +{009#%B",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/simbolos",
   "estado": "verde",
-  "ms": 13833,
+  "ms": 1366,
   "texto": 17538,
   "nos": 5749,
-  "titulo": "✦ 512 %& PHS7]UC9",
+  "titulo": "✦ =#M [O VLEX<}]8",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/color-studio",
   "estado": "verde",
-  "ms": 13594,
+  "ms": 1283,
   "texto": 787,
   "nos": 123,
-  "titulo": "◐ Color StV%HJ",
+  "titulo": "◐ Color StR3><",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/regex",
   "estado": "verde",
-  "ms": 14189,
+  "ms": 1269,
   "texto": 1268,
   "nos": 180,
-  "titulo": "✱ Lab de R[N3G",
+  "titulo": "✱ Lab de R9IJ0",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/arsenal",
   "estado": "verde",
-  "ms": 13845,
-  "texto": 14501,
-  "nos": 3171,
+  "ms": 1405,
+  "texto": 14499,
+  "nos": 3172,
   "titulo": "Arsenal\nCATÁLOGO MILITAR COMPLETO",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/militar",
   "estado": "verde",
-  "ms": 13692,
-  "texto": 2292,
-  "nos": 265,
+  "ms": 1392,
+  "texto": 4435,
+  "nos": 285,
   "titulo": "Centro Militar\nTUDO NUM LUGAR SÓ",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/modelos-3d",
   "estado": "verde",
-  "ms": 13799,
+  "ms": 1912,
   "texto": 34924,
   "nos": 4906,
-  "titulo": "◈ Mo>R4\\> #5",
+  "titulo": "◈ M]B1F=> 1U",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/biblioteca",
   "estado": "verde",
-  "ms": 14010,
+  "ms": 1420,
   "texto": 19259,
   "nos": 658,
   "titulo": "Crônicas da Baluarte\nONDE OS DEUSES SANGRAM",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/elites",
   "estado": "verde",
-  "ms": 13771,
+  "ms": 1417,
   "texto": 4956,
   "nos": 467,
   "titulo": "Elites do Baluarte\nESQUADRÕES ALFA → ZULU",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/dossie",
   "estado": "verde",
-  "ms": 13748,
+  "ms": 1397,
   "texto": 4198,
   "nos": 159,
   "titulo": "Dossiê das Forças\nINFINITY DREADNOUGHT",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/ciberseg",
   "estado": "verde",
-  "ms": 13736,
+  "ms": 1528,
   "texto": 2604,
   "nos": 379,
-  "titulo": "⚿ CiberSeg [ KS<*14 3 \\\\U1KH",
+  "titulo": "⚿ CiberSeg — A\\U%D\\ P 5X]4{Z",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/academia",
   "estado": "verde",
-  "ms": 14085,
+  "ms": 1508,
   "texto": 5365,
   "nos": 315,
-  "titulo": "◬ Acad3X]<",
+  "titulo": "◬ AcadeHQS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/robotica",
   "estado": "verde",
-  "ms": 13628,
+  "ms": 1204,
   "texto": 1177,
   "nos": 83,
-  "titulo": "⚙ Currículo de Robó{WID",
+  "titulo": "⚙ Currículo UD _R*6_]]N",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/fft",
   "estado": "verde",
-  "ms": 13708,
+  "ms": 1204,
   "texto": 967,
   "nos": 100,
-  "titulo": "~ Visualizador FO7",
+  "titulo": "~ VisualizadL8 +>5",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/radio",
   "estado": "verde",
-  "ms": 13865,
+  "ms": 1304,
   "texto": 772,
   "nos": 87,
   "titulo": "Rádio\nSINTETIZADOR & ONLINE",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/musicas",
   "estado": "verde",
-  "ms": 13750,
+  "ms": 1224,
   "texto": 3622,
   "nos": 564,
   "titulo": "Central de Música\nPLAYLIST & LOOP",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/media",
   "estado": "verde",
-  "ms": 13844,
+  "ms": 1242,
   "texto": 425,
   "nos": 37,
   "titulo": "Media Hub\nÁUDIO · VÍDEO · IMAGENS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/videos",
   "estado": "verde",
-  "ms": 13811,
+  "ms": 1859,
   "texto": 867,
   "nos": 129,
   "titulo": "Central de Vídeos\nYOUTUBE & PLAYLISTS",
   "naoEncontrada": false,
   "erros": [],
   "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
+   "rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=Gr7mebVPzKOUOR47&el=embedded&ns=yt&fexp — net::ERR_ABORTED"
   ]
  },
  {
   "rota": "/tv",
   "estado": "verde",
-  "ms": 13879,
+  "ms": 1281,
   "texto": 851,
   "nos": 204,
   "titulo": "TV do Baluarte\nROTAÇÃO CONTÍNUA",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/utilidades",
   "estado": "verde",
-  "ms": 13648,
+  "ms": 1335,
   "texto": 1965,
   "nos": 608,
-  "titulo": "🧰 Caixa de FerXM8MU*#O",
+  "titulo": "🧰 Caixa de Ferra73Z0QK",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/jogos",
   "estado": "verde",
-  "ms": 13638,
+  "ms": 1344,
   "texto": 665,
   "nos": 51,
-  "titulo": "🎮 Arcade BalVXJVJ",
+  "titulo": "🎮 Arcade Ba}]>XMQ",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/batalha-naval",
   "estado": "verde",
-  "ms": 13784,
+  "ms": 1278,
   "texto": 443,
   "nos": 301,
-  "titulo": "🚢 Batalha %ZYDJ",
+  "titulo": "🚢 Batalha +X*#_",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/universo",
   "estado": "verde",
-  "ms": 13787,
+  "ms": 1445,
   "texto": 1491,
   "nos": 153,
   "titulo": "Hub de Universos\nMULTIVERSO BALUARTE",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/tabela-periodica",
   "estado": "verde",
-  "ms": 13838,
+  "ms": 1316,
   "texto": 1768,
   "nos": 702,
-  "titulo": "⚛ Tabela PA4&]5F9*",
+  "titulo": "⚛ Tabela Peri6\\YN/",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/modpack",
   "estado": "verde",
-  "ms": 13761,
+  "ms": 1477,
   "texto": 6741,
   "nos": 1355,
-  "titulo": "◧ Central de Mo\\%3Z{#",
+  "titulo": "◧ Central {U FSW+<T0K",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/wiki-arma3",
   "estado": "verde",
-  "ms": 13861,
+  "ms": 1485,
   "texto": 3658,
   "nos": 263,
   "titulo": "Wiki de Arma 3",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/arma3-tutorial",
   "estado": "verde",
-  "ms": 13803,
+  "ms": 1375,
   "texto": 29101,
   "nos": 957,
-  "titulo": "📖 Bíblia do Arma 3 — { ==_Z 2>/]L8*]",
+  "titulo": "📖 Bíblia RA <8** F J F N24& U\\KT&LD#",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/vanguard",
   "estado": "verde",
-  "ms": 13783,
+  "ms": 1877,
   "texto": 12141,
   "nos": 659,
   "titulo": "⌖ Project Vanguard",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/zomboid",
   "estado": "verde",
-  "ms": 13609,
+  "ms": 1456,
   "texto": 1447,
   "nos": 109,
   "titulo": "ALFA\nPROJECT ZOMBOID · 159 MODS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/zomboid-admin",
   "estado": "verde",
-  "ms": 13795,
+  "ms": 1289,
   "texto": 14021,
   "nos": 2629,
   "titulo": "🧟 Administração de Servidor",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/guia-pc",
   "estado": "verde",
-  "ms": 13974,
+  "ms": 1251,
   "texto": 2828,
   "nos": 111,
-  "titulo": "◨ Guia para Mon%H= FK",
+  "titulo": "◨ Guia para CQR0EE _>",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/logic-sim",
   "estado": "verde",
-  "ms": 13774,
+  "ms": 1390,
   "texto": 704,
   "nos": 50,
-  "titulo": "⊻ Simulador de Lógica Di[{>7F",
+  "titulo": "⊻ Simulador de L_02*N &%RYQ={",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/portas",
   "estado": "verde",
-  "ms": 13690,
+  "ms": 1427,
   "texto": 5840,
   "nos": 854,
-  "titulo": "⊡ Enciclopédia de Lógica UIH=E=6",
+  "titulo": "⊡ Enciclopédia de W{[<BP Q/A1YUT",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/morse",
   "estado": "verde",
-  "ms": 14486,
+  "ms": 1400,
   "texto": 922,
   "nos": 227,
-  "titulo": "··− Gerador de Código FTI]C",
+  "titulo": "··− Gerador LC IZ1PN3 GQC%K",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/memes",
   "estado": "verde",
-  "ms": 13667,
+  "ms": 1341,
   "texto": 10310,
   "nos": 415,
-  "titulo": "◫ Arquivo de Memes — 2L0%",
+  "titulo": "◫ Arquivo TI K6OH] 8 8HR\\",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/filmes",
   "estado": "verde",
-  "ms": 13616,
+  "ms": 1446,
   "texto": 2953,
   "nos": 181,
   "titulo": "Cinema do Baluarte\nACERVO DE FILMES",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/shadow",
   "estado": "verde",
-  "ms": 14841,
+  "ms": 1391,
   "texto": 156,
   "nos": 7,
   "titulo": "Setor selado",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/perfil",
   "estado": "verde",
-  "ms": 13796,
-  "texto": 1799,
-  "nos": 215,
-  "titulo": "◔ Perfil C1 {1DW+BC1",
+  "ms": 1492,
+  "texto": 1844,
+  "nos": 218,
+  "titulo": "◔ Perfil 3\\ Z*A8QJO2",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/economia",
   "estado": "verde",
-  "ms": 13573,
+  "ms": 1324,
   "texto": 346,
   "nos": 27,
-  "titulo": "◈ Econom=8",
+  "titulo": "◈ EcoG3U{3",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/dolar",
   "estado": "verde",
-  "ms": 13675,
+  "ms": 1274,
   "texto": 545,
   "nos": 72,
   "titulo": "💹 Radar do Câmbio",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/jarvis",
   "estado": "verde",
-  "ms": 15361,
+  "ms": 1374,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/ia-proprietaria",
-  "estado": "TIMEOUT",
-  "ms": 30011,
-  "texto": 0,
-  "nos": 0,
-  "titulo": "",
-  "erros": [
-   "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/#/ia-proprietaria\", waiting until \"load\"\u001b[22m\n"
-  ],
+  "estado": "verde",
+  "ms": 1439,
+  "texto": 913,
+  "nos": 47,
+  "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
+  "naoEncontrada": false,
+  "erros": [],
   "avisos": []
  },
  {
   "rota": "/radar",
   "estado": "verde",
-  "ms": 14297,
-  "texto": 1073,
-  "nos": 105,
-  "titulo": "⌖ R>>IK W]<+2\\",
+  "ms": 1343,
+  "texto": 1415,
+  "nos": 164,
+  "titulo": "⌖ RadT_ 1S+[2#",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/geo",
   "estado": "verde",
-  "ms": 14111,
+  "ms": 1412,
   "texto": 335,
   "nos": 45,
-  "titulo": "\ud83dC {M&{/UUB",
+  "titulo": "🛰 Geo>6YG>",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/find",
   "estado": "verde",
-  "ms": 14120,
+  "ms": 1218,
   "texto": 268,
   "nos": 25,
-  "titulo": "🧭 T{W8 M]#OU}",
+  "titulo": "🧭 Onde EsDMQD",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/triangulacao",
   "estado": "verde",
-  "ms": 14187,
+  "ms": 1267,
   "texto": 332,
   "nos": 42,
-  "titulo": "△ T]0399C8>JA]",
+  "titulo": "△ TrianguW&Y[8",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/llm-lab",
   "estado": "verde",
-  "ms": 13833,
+  "ms": 1408,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/sobre",
   "estado": "verde",
-  "ms": 13940,
+  "ms": 1403,
   "texto": 5508,
   "nos": 183,
   "titulo": "Sobre o Baluarte\nUMA PLATAFORMA, MUITAS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/roadmap",
   "estado": "verde",
-  "ms": 13728,
+  "ms": 1316,
   "texto": 4342,
   "nos": 315,
   "titulo": "Roadmap",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/diagnostico",
   "estado": "verde",
-  "ms": 13913,
-  "texto": 8763,
-  "nos": 681,
+  "ms": 1411,
+  "texto": 8828,
+  "nos": 686,
   "titulo": "Diagnóstico do sistema",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/jarvis-dashboard",
   "estado": "verde",
-  "ms": 13857,
+  "ms": 1286,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/mapa",
   "estado": "verde",
-  "ms": 13687,
-  "texto": 563,
-  "nos": 69,
+  "ms": 1188,
+  "texto": 570,
+  "nos": 87,
   "titulo": "◗ Mapa Tático Mundial",
   "naoEncontrada": false,
   "erros": [],
   "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
+   "console: Error: sources.gebco.maxzoom: number expected, undefined found\n    at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)\n    at ce (https://unpkg.com/maplibre-gl@4.7."
   ]
  },
  {
   "rota": "/visao",
   "estado": "verde",
-  "ms": 13651,
+  "ms": 1230,
   "texto": 242,
   "nos": 27,
   "titulo": "👁 Visão & Câmera",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/jarvis-vision",
   "estado": "verde",
-  "ms": 13731,
+  "ms": 1197,
   "texto": 569,
   "nos": 38,
   "titulo": "🤖 JARVIS · Rastreamento Multi-Corporal",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/forcas-armadas",
   "estado": "verde",
-  "ms": 13731,
+  "ms": 1373,
   "texto": 2759,
   "nos": 310,
   "titulo": "Forças Armadas do Mundo\nEFETIVOS & ORÇAMENTOS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/orcamentos-militares",
   "estado": "verde",
-  "ms": 13816,
+  "ms": 1289,
   "texto": 1576,
   "nos": 344,
   "titulo": "Orçamentos Militares\nSIPRI 2024",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/poder-militar",
   "estado": "verde",
-  "ms": 13833,
+  "ms": 1269,
   "texto": 1365,
   "nos": 247,
   "titulo": "Poder Militar\nGFP INDEX 2024",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/arsenal-expandido",
   "estado": "verde",
-  "ms": 13784,
+  "ms": 1415,
   "texto": 112566,
   "nos": 14058,
   "titulo": "⚔ Arsenal Expandido",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/forcas-especiais",
   "estado": "verde",
-  "ms": 14524,
+  "ms": 1345,
   "texto": 3113,
   "nos": 231,
   "titulo": "Forças Especiais\nOPERAÇÕES ESPECIAIS · SOF",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/organizacao-militar",
   "estado": "verde",
-  "ms": 13871,
+  "ms": 1324,
   "texto": 763,
   "nos": 92,
   "titulo": "Organização Militar\nPATENTES & ESTRUTURA",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/tecnologia-militar",
   "estado": "verde",
-  "ms": 14006,
+  "ms": 1336,
   "texto": 888,
   "nos": 69,
   "titulo": "Tecnologia Militar\nSISTEMAS DE COMBATE",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/taticas-estrategias",
   "estado": "verde",
-  "ms": 14004,
+  "ms": 1237,
   "texto": 2634,
   "nos": 158,
   "titulo": "Táticas & Estratégias\nA ARTE DA GUERRA",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/historia-militar",
   "estado": "verde",
-  "ms": 13693,
+  "ms": 1416,
   "texto": 416,
   "nos": 123,
   "titulo": "História Militar\nDA PRÉ-HISTÓRIA À ERA MODERNA",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/armas-por-pais",
   "estado": "verde",
-  "ms": 13760,
+  "ms": 1410,
   "texto": 1989,
   "nos": 412,
   "titulo": "Armas por País\nCATÁLOGO DE SISTEMAS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/guerras-conflitos",
   "estado": "verde",
-  "ms": 13745,
+  "ms": 1308,
   "texto": 2274,
   "nos": 177,
   "titulo": "Guerras & Conflitos\nLINHA DO TEMPO",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/batalhas-historicas",
   "estado": "verde",
-  "ms": 13659,
+  "ms": 1378,
   "texto": 2885,
   "nos": 260,
   "titulo": "Batalhas Históricas\nDECISIVAS NA HISTÓRIA",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/enciclopedia-militar",
   "estado": "verde",
-  "ms": 13665,
+  "ms": 1243,
   "texto": 1638,
   "nos": 111,
-  "titulo": "🎖 EnciclopédQH 85B9DLV",
+  "titulo": "🎖 EnciclopédDP 1T#S5ER",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/codigo",
   "estado": "verde",
-  "ms": 13808,
+  "ms": 1190,
   "texto": 905,
   "nos": 123,
-  "titulo": "🔬 Raio-X dT _%L#GZ",
+  "titulo": "🔬 Raio-X do }V[200",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/projetos",
   "estado": "verde",
-  "ms": 13686,
+  "ms": 1243,
   "texto": 2265,
   "nos": 165,
-  "titulo": "📁 Pro\\%Q07",
+  "titulo": "📁 Proj\\I2\\",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/mural",
   "estado": "verde",
-  "ms": 13764,
-  "texto": 230,
-  "nos": 14,
-  "titulo": "📣 Mural do Balu_P={",
+  "ms": 1394,
+  "texto": 380,
+  "nos": 19,
+  "titulo": "📣 Mural do B7}4W4YM",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/comms",
   "estado": "verde",
-  "ms": 13609,
-  "texto": 330,
-  "nos": 28,
+  "ms": 1443,
+  "texto": 358,
+  "nos": 31,
   "titulo": "Rede Neural\nCHAT GLOBAL · TEMPO REAL",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/banco",
   "estado": "verde",
-  "ms": 13733,
-  "texto": 394,
-  "nos": 38,
-  "titulo": "🗄️ Painel do BanRB",
+  "ms": 1360,
+  "texto": 515,
+  "nos": 87,
+  "titulo": "🗄️ Painel d1 Y9X1W",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/cerebro",
   "estado": "verde",
-  "ms": 13720,
+  "ms": 1357,
   "texto": 354,
   "nos": 38,
-  "titulo": "🧠 SeguND4 5UT6I2[",
+  "titulo": "🧠 Segundo CéUDUB/",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/ocr",
   "estado": "verde",
-  "ms": 13710,
+  "ms": 1359,
   "texto": 363,
   "nos": 39,
-  "titulo": "👁️ Leitor OCR",
+  "titulo": "👁️ Leitor }O}",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/memoria",
   "estado": "verde",
-  "ms": 13685,
+  "ms": 1364,
   "texto": 663,
   "nos": 43,
-  "titulo": "🧠 Memória do JAG<P*",
+  "titulo": "🧠 Memória Z{ QUO]FS",
   "naoEncontrada": false,
   "erros": [],
   "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET",
    "HTTP 404: http://127.0.0.1:4173/api/memory",
    "rede: http://127.0.0.1:4173/api/memory — net::ERR_ABORTED"
   ]
@@ -1162,118 +988,100 @@
  {
   "rota": "/terminal-ia",
   "estado": "verde",
-  "ms": 13680,
+  "ms": 1318,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/seguranca",
   "estado": "verde",
-  "ms": 14027,
+  "ms": 1268,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/gerar-codigo",
   "estado": "verde",
-  "ms": 13736,
+  "ms": 1349,
   "texto": 235,
   "nos": 35,
-  "titulo": "🧬 Gerador de CóJ3B3",
+  "titulo": "🧬 Gerador }B C43PXS",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/conselho",
   "estado": "verde",
-  "ms": 13805,
+  "ms": 1398,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/apis",
   "estado": "verde",
-  "ms": 13731,
+  "ms": 1325,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/git-nexus",
   "estado": "verde",
-  "ms": 14836,
+  "ms": 1173,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/aprendizado",
   "estado": "verde",
-  "ms": 13744,
+  "ms": 1296,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/home-3d",
   "estado": "verde",
-  "ms": 13756,
-  "texto": 3695,
+  "ms": 1375,
+  "texto": 3771,
   "nos": 384,
   "titulo": "BALUARTE\nMARK XIII",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  },
  {
   "rota": "/home2",
   "estado": "verde",
-  "ms": 13863,
-  "texto": 3695,
+  "ms": 1351,
+  "texto": 3771,
   "nos": 384,
   "titulo": "BALUARTE\nMARK XIII",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET"
-  ]
+  "avisos": []
  }
 ]

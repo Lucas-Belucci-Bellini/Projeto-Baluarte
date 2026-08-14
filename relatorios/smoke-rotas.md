@@ -1,44 +1,30 @@
 # Smoke das rotas — Projeto Baluarte
 
-Rodado em 2026-08-10T01:27:59.766Z · **98 rotas** descobertas de `src/main.js`.
+Rodado em 2026-08-14T05:04:20.930Z · **98 rotas** descobertas de `src/main.js`.
 
 | Estado | Rotas |
 |---|---:|
-| 🟢 verde | 97 |
-| 🔴 TIMEOUT | 1 |
+| 🟢 verde | 98 |
 
-## 🔴 O que está vermelho
-
-### `/ia-proprietaria` — TIMEOUT
-
-- texto renderizado: 0 caracteres · 0 nós · 30011 ms
-- `page.goto: Timeout 30000ms exceeded.
-Call log:
-[2m  - navigating to "http://127.0.0.1:4173/#/ia-proprietaria", waiting until "load"[22m
-`
+## 🟢 Todas as rotas verdes
 
 ## 🟡 Avisos (host externo — não falham o teste)
 
-- `/home`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/baixar`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/ferramentas`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/editor`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/json-studio`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/qr-studio`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/git-helper`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/terminal`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/calc-cientifica`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
-- `/calc-numerica`: rede: https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Pl — net::ERR_CONNECTION_RESET
+- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=Gr7mebVPzKOUOR47&el=embedded&ns=yt&fexp — net::ERR_ABORTED
+- `/mapa`: console: Error: sources.gebco.maxzoom: number expected, undefined found
+    at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
+    at ce (https://unpkg.com/maplibre-gl@4.7.
+- `/memoria`: HTTP 404: http://127.0.0.1:4173/api/memory
 
 ## As 8 rotas mais lentas
 
 | Rota | ms | texto |
 |---|---:|---:|
-| `/ia-proprietaria` | 30011 | 0 |
-| `/jarvis` | 15361 | 913 |
-| `/shadow` | 14841 | 156 |
-| `/git-nexus` | 14836 | 913 |
-| `/calc-cientifica` | 14707 | 385 |
-| `/json-studio` | 14544 | 519 |
-| `/forcas-especiais` | 14524 | 3113 |
-| `/morse` | 14486 | 922 |
+| `/modelos-3d` | 1912 | 34924 |
+| `/vanguard` | 1877 | 12141 |
+| `/videos` | 1859 | 867 |
+| `/home` | 1579 | 3771 |
+| `/cripto` | 1548 | 1303 |
+| `/ciberseg` | 1528 | 2604 |
+| `/academia` | 1508 | 5365 |
+| `/calc-cientifica` | 1503 | 385 |

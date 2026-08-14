@@ -41,22 +41,29 @@ As ondas anteriores migraram os contratos centrais sem remover os caminhos de im
 | Feature Flags | `src/core/flags.ts` | `src/core/flags.js` | Publicado |
 | Permissions | `src/core/permissions.ts` | `src/core/permissions.js` | Publicado |
 | Storage | `src/core/storage.ts` | `src/core/storage.js` | Publicado na Wave 4 |
+| Header | `src/layout/header.ts` | `src/layout/header.js` | Publicado na Wave 5 |
+| Sidebar | `src/layout/sidebar.ts` | `src/layout/sidebar.js` | Publicado na Wave 5 |
+| Overlay | `src/layout/overlay.ts` | `src/layout/overlay.js` | Publicado na Wave 5 |
+| Shell | `src/layout/shell.ts` | `src/layout/shell.js` | Publicado na Wave 5 |
 
 O Event Bus possui tipos explícitos para `EventMeta`, `EventHandler`, `EventBus`, mapas de handlers e buckets de eventos. O State possui `createStore<State>`, `StoreListener`, `Store` e `AppState`. Router, Flags e Permissions possuem fábricas, contratos de rota, níveis, ambientes, grants e estados de permissão tipados.
 
 O Storage foi migrado sem duplicar a lógica. A implementação TypeScript cobre namespace `baluarte:`, fallback in-memory, envelopes versionados, migração de esquemas, classificação `publico`/`local`/`sensivel`/`secreto`, introspecção de esquemas e a API agregada `storage`. A fronteira de dados não confiáveis usa `unknown` e é estreitada no envelope; não foi usado `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`.
 
+A Wave 5 converteu o contrato de layout completo: Header, Sidebar, Overlay e Shell. A Sidebar agora exporta tipos explícitos para grupos, itens e referências de montagem; o Shell tipa as referências do layout, a troca de páginas, o estado de tema e a sobreposição de páginas vivas; o Overlay tipa o arrasto por ponteiro e a integração opcional com Media Session. Adaptadores `.d.ts` pequenos declaram as fronteiras JavaScript já estáveis — helpers DOM, efeitos visuais, PWA, tema e ciclo de vida — sem mover esses módulos para TypeScript antes da sua própria onda.
+
 ## 4. Gates das ondas TypeScript
 
-| Comando | Resultado da Wave 4 | Observação |
+| Comando | Resultado das Waves 4 e 5 | Observação |
 | --- | --- | --- |
-| `npm run tipos:ts` | Verde | Inclui agora `src/core/storage.ts` |
+| `npm run tipos:ts` | Verde | Inclui Storage, Header, Sidebar, Overlay e Shell |
 | `npx tsx --test test/storage.test.js test/storage-namespace.test.js` | Verde: 20/20 | Testes de esquema, migração, namespace e classificação |
 | `npm run build` | Verde | Vite compilou a aplicação; há apenas o aviso histórico de chunks grandes |
+| `CHROME_PATH=/usr/bin/chromium npm run smoke` | Verde: 98/98 rotas | Produção local, navegação e router V1 preservados [3] |
 | `npm test` | 865/871 | Mesmas seis falhas preexistentes de Supervisor/Health |
-| `npm run tipos:v2` | 71 erros históricos | Dívida JS/JSDoc fora do escopo desta onda |
+| `npm run tipos:v2` | 71 erros históricos | Dívida JS/JSDoc fora do escopo destas ondas |
 
-A Wave 4 foi publicada no `main` e o `V2 Runtime` remoto passou novamente no commit `e75619da`; os demais gates verdes também permaneceram verdes, enquanto os quatro gates vermelhos repetiram exclusivamente a dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4 e 5 foram publicadas no `main` com validação local estrita. O smoke mais recente substituiu o relatório anterior, que continha um timeout histórico em `/ia-proprietaria`, por uma rodada de 98 rotas verdes. Os gates gerais que permanecem vermelhos continuam restritos à dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
@@ -68,7 +75,7 @@ Os testes de Storage continuam importando `../src/core/storage.js`. Isso verific
 | 2 | Router e contratos de navegação | Rotas, aliases, 404, route error e loaders tipados |
 | 3 | Permissions e Flags | Permissões, estados e ambientes tipados |
 | 4 | Storage | Schemas, migrações, classificação e namespace tipados |
-| 5 | Shell, Header, Sidebar e Layout | Boot e navegação consumindo contratos TS por wrappers mínimos |
+| 5 | Shell, Header, Sidebar e Layout | Publicada: boot, navegação, overlay e contratos DOM tipados por wrappers mínimos |
 | 6 | Registry/Module System | Manifesto, estados de módulo, fallback e circuit breaker tipados |
 | 7 | Páginas de maior valor | Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico por slices |
 | 8 | Data e integrações | Contratos de dados, Supabase, Evidence Layer e Runtime bridge |
@@ -97,9 +104,10 @@ cargo clippy --manifest-path v2/runtime/Cargo.toml --all-targets --all-features 
 node scripts/v2-runtime-smoke.mjs
 ```
 
-O próximo incremento recomendado é Shell, Header, Sidebar e Layout. Ele deve começar pelo contrato de montagem e desmontagem, não pela conversão visual das páginas, para preservar a navegação V1 e preparar o Module Registry.
+O próximo incremento recomendado é o Registry/Module System. Ele deve começar pelo contrato de manifesto, disponibilidade e fallback por módulo, para que uma página com problema possa ser desabilitada sem comprometer as rotas restantes.
 
 ## 8. Referências
 
 [1]: ../../../docs/architecture/decisions/ADR-004-stack-poliglota-por-responsabilidade.md "ADR-004 — Stack poliglota por responsabilidade"
 [2]: ../../test/storage.test.js "Testes comportamentais do Storage"
+[3]: ../../relatorios/smoke-rotas.md "Smoke de rotas mais recente"
