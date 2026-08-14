@@ -1,6 +1,6 @@
 # Smoke das rotas — Projeto Baluarte
 
-Rodado em 2026-08-14T18:45:41.102Z · **98 rotas** descobertas de `src/main.js`.
+Rodado em 2026-08-14T18:59:07.392Z · **98 rotas** descobertas de `src/main.js`.
 
 | Estado | Rotas |
 |---|---:|
@@ -10,8 +10,7 @@ Rodado em 2026-08-14T18:45:41.102Z · **98 rotas** descobertas de `src/main.js`.
 
 ## 🟡 Avisos (host externo — não falham o teste)
 
-- `/musicas`: HTTP 401: https://hcwzsxdcvmswebunznak.supabase.co/rest/v1/rpc/ingest_stat
-- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=X6AGhbm5hLcJr_PP&el=embedded&ns=yt&fexp — net::ERR_ABORTED
+- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=9NkwZt1VVynozjL7&el=embedded&ns=yt&fexp — net::ERR_ABORTED
 - `/mapa`: console: Error: sources.gebco.maxzoom: number expected, undefined found
     at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
     at ce (https://unpkg.com/maplibre-gl@4.7.
@@ -21,11 +20,11 @@ Rodado em 2026-08-14T18:45:41.102Z · **98 rotas** descobertas de `src/main.js`.
 
 | Rota | ms | texto |
 |---|---:|---:|
-| `/musicas` | 18727 | 3622 |
-| `/simbolos` | 2012 | 17538 |
-| `/modelos-3d` | 1680 | 34924 |
-| `/home` | 1563 | 3772 |
-| `/vanguard` | 1523 | 12141 |
-| `/home2` | 1488 | 3772 |
-| `/arsenal-expandido` | 1481 | 112566 |
-| `/poder-militar` | 1478 | 1365 |
+| `/modelos-3d` | 2223 | 34924 |
+| `/biblioteca` | 1524 | 19259 |
+| `/elites` | 1503 | 4956 |
+| `/vanguard` | 1500 | 12141 |
+| `/arsenal` | 1493 | 14499 |
+| `/home` | 1484 | 3772 |
+| `/media` | 1478 | 425 |
+| `/musicas` | 1470 | 3622 |

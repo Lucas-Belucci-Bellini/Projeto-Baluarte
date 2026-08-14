@@ -61,6 +61,8 @@
     "src/utils/hx-beacon.d.ts",
     "src/utils/markdown.ts",
     "src/utils/markdown.d.ts",
+    "src/utils/immersive.ts",
+    "src/utils/hero-rays.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
