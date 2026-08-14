@@ -5,8 +5,9 @@
 /** @typedef {{estado: (id: string) => unknown, marcarSaudavel?: (id: string) => void}} RuntimeManagerHealth */
 /** @typedef {{started?: (id: string) => void, stopped?: (id: string) => void, failed?: (id: string, error: unknown) => void, restarting?: (id: string, attempts: number, delayMs: number) => void, exhausted?: (id: string) => void}} RuntimeManagerEvents */
 /** @typedef {{id: string, lifecycle: string, health: unknown}} RuntimeManagerStatus */
+/** @typedef {{restarted: boolean, attempts?: number, delayMs?: number, reason?: string, status: RuntimeManagerStatus}} RuntimeManagerRestartResult */
 /** @typedef {{supervisor: RuntimeManagerSupervisor, restart: RuntimeManagerRestart, health: RuntimeManagerHealth, events?: RuntimeManagerEvents}} RuntimeManagerOptions */
-/** @typedef {{start: (id: string) => Promise<RuntimeManagerStatus>, stop: (id: string) => Promise<RuntimeManagerStatus>, restart: (id: string, error?: Error) => Promise<RuntimeManagerStatus & {restarted: boolean, attempts?: number, delayMs?: number, reason?: string}>, status: (id: string) => RuntimeManagerStatus}} RuntimeManager */
+/** @typedef {{start: (id: string) => Promise<RuntimeManagerStatus>, stop: (id: string) => Promise<RuntimeManagerStatus>, restart: (id: string, error?: Error) => Promise<RuntimeManagerRestartResult>, status: (id: string) => RuntimeManagerStatus}} RuntimeManager */
 
 /** @param {RuntimeManagerOptions} [options] @returns {RuntimeManager} */
 export function criarRuntimeManager(options = {}) {
@@ -30,7 +31,7 @@ export function criarRuntimeManager(options = {}) {
     return status(id);
   }
 
-  /** @param {string} id @param {Error} [error] */
+  /** @param {string} id @param {Error} [error] @returns {Promise<RuntimeManagerRestartResult>} */
   async function restartModule(id, error = new Error('restart requested')) {
     events?.failed?.(id, error);
     const result = await restart.reiniciar(id, error);
