@@ -320,12 +320,16 @@ captura do áudio do PC no FFT.
 
 ## Regras de ouro
 
-1. **Nada de TypeScript.** Nunca — 12 versões anteriores quebraram por isso.
-2. **Nada de JSX/React/Vue.** JavaScript puro + funções que retornam `HTMLElement`.
-3. **Só fecha quando funciona no navegador** — não basta compilar.
-4. **Trabalho incremental e versionado** no GitHub.
-
+1. **V1 preservada, V2 evolutiva.** A V1 permanece como referência estável; a V2 pode adotar novas tecnologias quando houver justificativa arquitetural.
+2. **TypeScript é a linguagem das páginas e componentes da V2.** A adoção é progressiva e deve priorizar segurança de tipos, manutenção e escalabilidade.
+3. **Sem JSX/React/Vue por obrigação histórica.** Frameworks ou tecnologias adicionais só devem entrar mediante decisão arquitetural documentada.
+4. **Uma falha isolada não deve derrubar o site inteiro.** Recursos problemáticos devem poder ser colocados em manutenção, desabilitados ou isolados individualmente.
+5. **Só fecha quando funciona no navegador** — não basta compilar.
+6. **Trabalho incremental e versionado** no GitHub.
+7. **Novas ideias são bem-vindas.** Layouts, componentes e melhorias de experiência podem ser propostos por colaboradores e comunidade e serão avaliados pelo projeto.
 ---
+
+
 
 ## Contato
 
