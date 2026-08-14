@@ -3,6 +3,7 @@
 **Status:** migração incremental ativa; Runtime Rust e Wave 4 de Storage publicados
 **Commit de referência do Runtime:** [`8f0062d6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8f0062d6b3a254a7b070bced5e3b43b3109b2674)
 **Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
+**Commit de referência da Wave 5:** [`8ea0ae88`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8ea0ae8833281fe3fe357c4449693a7492e8c80f)
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -63,7 +64,7 @@ A Wave 5 converteu o contrato de layout completo: Header, Sidebar, Overlay e She
 | `npm test` | 865/871 | Mesmas seis falhas preexistentes de Supervisor/Health |
 | `npm run tipos:v2` | 71 erros históricos | Dívida JS/JSDoc fora do escopo destas ondas |
 
-As Waves 4 e 5 foram publicadas no `main` com validação local estrita. O smoke mais recente substituiu o relatório anterior, que continha um timeout histórico em `/ia-proprietaria`, por uma rodada de 98 rotas verdes. Os gates gerais que permanecem vermelhos continuam restritos à dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4 e 5 foram publicadas no `main` com validação local estrita. No commit da Wave 5, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram; `CI`, `Core CI`, `V2 Core` e `V2 Validation` repetiram a dívida conhecida de Supervisor/Health e JS/JSDoc. O smoke mais recente substituiu o relatório anterior, que continha um timeout histórico em `/ia-proprietaria`, por uma rodada de 98 rotas verdes. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
