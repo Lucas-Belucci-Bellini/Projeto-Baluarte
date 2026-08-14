@@ -22,6 +22,7 @@
     "src/layout/shell.ts",
     "v2/core/registry.ts",
     "v2/core/ciclo.ts",
-    "v2/core/boot.ts"
+    "v2/core/boot.ts",
+    "v2/core/plataforma.ts"
   ]
 }

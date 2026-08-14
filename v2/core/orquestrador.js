@@ -14,6 +14,15 @@ import { criarSupervisor } from './supervisor.js';
 /** @param {RuntimeBootFacade} boot @param {RuntimeHealthFacade} saude @returns {RuntimeOrchestrator} */
 export function criarOrquestrador(boot, saude) {
   const supervisor = criarSupervisor(boot, saude);
+  /* O Supervisor interno preserva `estado()` para os consumidores de baixo
+   * nível. A fachada do Orquestrador expõe o estado como valor, que é o
+   * contrato usado pelo diagnóstico e pela camada de transporte. */
+  const supervisorPublico = {
+    iniciar: supervisor.iniciar,
+    parar: supervisor.parar,
+    status: supervisor.status,
+    get estado() { return supervisor.estado(); }
+  };
 
   return {
     iniciar: () => supervisor.iniciar(),
@@ -23,6 +32,6 @@ export function criarOrquestrador(boot, saude) {
       boot: boot.diagnostico?.() ?? null,
       health: saude.retrato?.() ?? saude.verificar?.() ?? null
     }),
-    supervisor
+    supervisor: supervisorPublico
   };
 }

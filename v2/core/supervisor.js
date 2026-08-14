@@ -7,23 +7,36 @@
 
 const ESTADOS = Object.freeze(['idle', 'starting', 'ready', 'degraded', 'stopping', 'stopped', 'failed']);
 
+/** @typedef {'idle'|'starting'|'ready'|'degraded'|'stopping'|'stopped'|'failed'} EstadoSupervisor */
+/** @typedef {{subir: () => Promise<{falhas: ReadonlyArray<unknown>}>, descer: () => Promise<unknown>, diagnostico?: () => unknown}} BootSupervisor */
+/** @typedef {{definirEstado?: (estado: EstadoSupervisor) => void, retrato: () => unknown}} SaudeSupervisor */
+
+/**
+ * @param {BootSupervisor} boot
+ * @param {SaudeSupervisor} saude
+ * @param {{agora?: () => number}} [opcoes]
+ */
 export function criarSupervisor(boot, saude, { agora = () => Date.now() } = {}) {
   if (!boot?.subir || !boot?.descer) throw new TypeError('Supervisor exige Boot com subir/descer');
-  if (!saude?.definirEstado || !saude?.retrato) throw new TypeError('Supervisor exige monitor de saúde');
+  if (typeof saude?.retrato !== 'function') throw new TypeError('Supervisor exige monitor de saúde');
 
+  /** @type {EstadoSupervisor} */
   let estado = 'idle';
+  /** @type {number|null} */
   let inicio = null;
+  /** @type {string|null} */
   let ultimaFalha = null;
 
+  /** @param {EstadoSupervisor} novo */
   const mudar = (novo) => {
     if (!ESTADOS.includes(novo)) throw new Error(`estado inválido: ${novo}`);
     estado = novo;
-    saude.definirEstado(novo);
+    saude.definirEstado?.(novo);
   };
 
   async function iniciar() {
     if (estado === 'starting' || estado === 'ready' || estado === 'degraded') {
-      return { estado, idempotente: true, diagnostico: boot.diagnostico() };
+      return { estado, idempotente: true, diagnostico: boot.diagnostico?.() ?? null };
     }
     if (estado === 'stopping') throw new Error('não é possível iniciar durante shutdown');
 
@@ -39,7 +52,7 @@ export function criarSupervisor(boot, saude, { agora = () => Date.now() } = {}) 
         estado,
         duracaoMs: agora() - inicio,
         resultado,
-        diagnostico: boot.diagnostico()
+        diagnostico: boot.diagnostico?.() ?? null
       };
     } catch (erro) {
       ultimaFalha = erro instanceof Error ? erro.message : String(erro);
@@ -68,7 +81,7 @@ export function criarSupervisor(boot, saude, { agora = () => Date.now() } = {}) 
   }
 
   function status() {
-    const diagnostico = boot.diagnostico();
+    const diagnostico = boot.diagnostico?.() ?? null;
     const health = saude.retrato();
     return {
       estado,

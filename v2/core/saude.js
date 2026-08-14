@@ -71,9 +71,25 @@ export function criarMonitorSaude(boot) {
     throw new TypeError('boot.diagnostico é obrigatório');
   }
 
-  return {
-    verificar() {
-      return avaliarSaude(boot.diagnostico());
-    }
-  };
+  let estado = 'idle';
+
+  /**
+   * O Supervisor é o dono da máquina operacional; Health apenas conserva o
+   * estado publicado para que o retrato combine liveness/readiness com a fase
+   * observada. O snapshot do Boot continua sendo consultado a cada chamada.
+   * @param {string} novoEstado
+   */
+  function definirEstado(novoEstado) {
+    estado = novoEstado;
+  }
+
+  function verificar() {
+    return avaliarSaude(boot.diagnostico());
+  }
+
+  function retrato() {
+    return { ...verificar(), estado };
+  }
+
+  return { verificar, retrato, definirEstado };
 }

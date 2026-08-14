@@ -1,12 +1,13 @@
 # Migração do Baluarte de JavaScript para TypeScript
 
-**Status:** migração incremental ativa; Runtime Rust, Waves 4–6 e slice de Ciclo publicados
+**Status:** migração incremental ativa; Runtime Rust, Waves 4–6 e slices de Ciclo e Boot publicados; Plataforma em validação para publicação
 **Commit de referência do Runtime:** [`8f0062d6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8f0062d6b3a254a7b070bced5e3b43b3109b2674)
 **Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
 **Commit de referência da Wave 5:** [`8ea0ae88`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8ea0ae8833281fe3fe357c4449693a7492e8c80f)
 **Commit de referência da Wave 6:** [`1d8e1f5e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/1d8e1f5e1f37cdfd33ff9b99bad98b6c7667357b) — correção final do wrapper
 **Commit de referência do slice de Ciclo:** [`cb4c0872`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/cb4c08724f91e9add6198e12ec19b54610c0bef5)
 **Commit de referência do slice de Boot:** [`a23eaa5d`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/a23eaa5d6597f1037a6bd515b20f908fd043d57c)
+**Correção Health/Supervisor e Plataforma:** em validação local; o SHA será registrado após a publicação
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -53,6 +54,8 @@ As ondas anteriores migraram os contratos centrais sem remover os caminhos de im
 | Registry — invariantes do conjunto | `v2/core/registry.ts` | `v2/core/registry.js` | Publicado na Wave 6 |
 | Ciclo de Vida — execução de fases | `v2/core/ciclo.ts` | `v2/core/ciclo.js` | Publicado no slice pós-Wave 6 |
 | Boot — publicação para Router V1 | `v2/core/boot.ts` | `v2/core/boot.js` | Publicado no slice seguinte |
+| Plataforma — fachada operacional | `v2/core/plataforma.ts` | `v2/core/plataforma.js` | Em validação para publicação |
+| Health/Supervisor — fronteiras operacionais | `v2/core/saude.d.ts`, `v2/core/supervisor.d.ts` | `v2/core/saude.js`, `v2/core/supervisor.js` | Contrato corrigido junto da Plataforma |
 
 O Event Bus possui tipos explícitos para `EventMeta`, `EventHandler`, `EventBus`, mapas de handlers e buckets de eventos. O State possui `createStore<State>`, `StoreListener`, `Store` e `AppState`. Router, Flags e Permissions possuem fábricas, contratos de rota, níveis, ambientes, grants e estados de permissão tipados.
 
@@ -66,22 +69,27 @@ O slice seguinte converteu o Ciclo de Vida. `ciclo.ts` preserva a execução `in
 
 O slice de Boot converteu a publicação do conjunto para o Router V1: somente módulos vivos registram rotas, somente módulos vivos aparecem na navegação, referências órfãs são registradas como aviso e o diagnóstico deriva do Registry, do Ciclo e das dependências injetadas. `boot.ts` também preserva a política de permissões antes da subida e a superfície de diagnóstico de métricas, APIs e decisões de permissão.
 
+A correção Health/Supervisor eliminou a divergência que fazia `criarSupervisor()` exigir `definirEstado()` enquanto `criarMonitorSaude()` expunha apenas `verificar()`. Health agora mantém o estado publicado pelo Supervisor e oferece `retrato()` derivado do Boot; o Supervisor aceita adaptadores legados com setter opcional e diagnósticos opcionais; o Orquestrador expõe `estado` como valor na sua fachada sem alterar a API funcional de baixo nível. Essa correção recuperou os 6 testes originais de Supervisor/Health/Plataforma e os 3 testes do Orquestrador.
+
+A Plataforma foi convertida para `plataforma.ts`, com wrappers JavaScript e fronteiras declarativas para Health, Supervisor e Lifecycle Status. Seu diagnóstico continua sendo uma composição única de Supervisor, Health, Lifecycle e Boot, sem duplicar a lógica operacional desses módulos.
+
 ## 4. Gates das ondas TypeScript
 
-| Comando | Resultado das Waves 4–6 | Observação |
+| Comando | Resultado das Waves 4–6 e Plataforma | Observação |
 | --- | --- | --- |
-| `npm run tipos:ts` | Verde | Inclui Storage, layout e `v2/core/registry.ts` |
+| `npm run tipos:ts` | Verde | Inclui Storage, layout, Registry, Ciclo, Boot e Plataforma |
 | `npx tsx --test test/storage.test.js test/storage-namespace.test.js` | Verde: 20/20 | Testes de esquema, migração, namespace e classificação |
 | `npx tsx --test test/v2/registry.test.js` | Verde: 22/22 | Registro, selagem, isolamento, dependências e saídas do Core |
 | `npm run build` | Verde | Vite compilou a aplicação; há apenas o aviso histórico de chunks grandes |
 | `CHROME_PATH=/usr/bin/chromium npm run smoke` | Verde: 98/98 rotas | Produção local, navegação e router V1 preservados [3] |
-| `npm test` | 865/871 | Mesmas seis falhas preexistentes de Supervisor/Health |
-| `npm run tipos:v2` | 70 erros históricos | O Registry não adiciona erros ao gate; os dois diagnósticos de fronteira introduzidos durante a migração foram corrigidos |
+| `npm test` | Verde: 871/871 | As seis falhas de Supervisor/Health/Plataforma e três do Orquestrador foram corrigidas |
+| `npm run tipos:v2` | 61 erros históricos | A correção das fronteiras de Supervisor reduziu 9 diagnósticos; os 61 restantes pertencem a módulos V2 ainda não migrados |
 | `CHROME_PATH=/usr/bin/chromium node scripts/v2-integracao.mjs` | Verde: 13/13 | Boot V2 no navegador, 17 rotas no router V1, view nativa, contexto, permissões e adaptador V1 |
 | `npx tsx --test test/v2/ciclo.test.js` | Verde: 17/17 | Ordem de fases, timeout, cascata, descida inversa e módulos reais |
 | `npx tsx --test test/v2/boot.test.js` | Verde: 13/13 | Registry → Ciclo → Router V1, navegação, diagnóstico e isolamento |
+| `npx tsx --test test/v2/saude.test.js test/v2/supervisor.test.js test/v2/orquestrador.test.js test/v2/plataforma.test.js` | Verde: 18/18 | Health, estados do Supervisor, Orquestrador e fachada Plataforma |
 
-As Waves 4–6 e os slices de Ciclo e Boot estão publicados no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O slice de Ciclo foi publicado em `cb4c0872`; no commit remoto, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram. O slice de Boot foi publicado em `a23eaa5d`; também passou em `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas. O Registry TypeScript preserva 22/22 testes específicos; o Ciclo preserva 17/17; o Boot preserva 13/13. O build permanece verde, a suíte geral em 865/871 e o smoke V1 em 98/98 rotas. O `tipos:v2` permanece em 70 diagnósticos históricos; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. `CI`, `Core CI`, `V2 Core` e `V2 Validation` continuam representando a dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4–6 e os slices de Ciclo e Boot estão publicados no `main`; a correção Health/Supervisor e a Plataforma estão prontas para publicação após validação local. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O slice de Ciclo foi publicado em `cb4c0872`; no commit remoto, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram. O slice de Boot foi publicado em `a23eaa5d`; também passou em `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas. O Registry TypeScript preserva 22/22 testes específicos; o Ciclo preserva 17/17; o Boot preserva 13/13; Health, Supervisor, Orquestrador e Plataforma preservam 18/18. O build permanece verde, a suíte geral agora está em 871/871 e o smoke V1 em 98/98 rotas. O `tipos:v2` caiu para 61 diagnósticos históricos depois da correção das fronteiras de Supervisor; os 61 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. `CI`, `Core CI`, `V2 Core` e `V2 Validation` permanecem gates a monitorar, mas as falhas de Supervisor/Health não fazem mais parte da suíte local. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
@@ -95,7 +103,7 @@ Os testes de Storage continuam importando `../src/core/storage.js`. Isso verific
 | 4 | Storage | Schemas, migrações, classificação e namespace tipados |
 | 5 | Shell, Header, Sidebar e Layout | Publicada: boot, navegação, overlay e contratos DOM tipados por wrappers mínimos |
 | 6 | Registry/Module System | Publicada: manifesto, isolamento, ordem topológica, fallback, referências e wrapper de navegador tipados |
-| 7 | Ciclo, Boot e páginas de maior valor | Ciclo e Boot publicados por slice; depois páginas Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico |
+| 7 | Ciclo, Boot, Plataforma e páginas de maior valor | Ciclo, Boot e Plataforma por slices; depois páginas Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico |
 | 8 | Data e integrações | Contratos de dados, Supabase, Evidence Layer e Runtime bridge |
 
 A conversão de páginas deve ocorrer depois do Core, porque cada página depende de router, eventos, estado, permissões, shell e storage. Migrar páginas antes de fechar esses contratos apenas deslocaria a dívida para dezenas de arquivos.
@@ -122,7 +130,7 @@ cargo clippy --manifest-path v2/runtime/Cargo.toml --all-targets --all-features 
 node scripts/v2-runtime-smoke.mjs
 ```
 
-O próximo incremento recomendado é tipar a Plataforma/diagnóstico operacional por slice e, em seguida, começar as páginas de maior valor. A ordem deve continuar preservando o fallback de módulos, o Router V1 e a navegação funcional.
+O próximo incremento recomendado é publicar a correção Health/Supervisor e a Plataforma após o CI. Depois, a migração pode avançar para Runtime Manager/Restart e para as páginas de maior valor, sempre preservando o fallback de módulos, o Router V1 e a navegação funcional.
 
 ## 8. Referências
 
