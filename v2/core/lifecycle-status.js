@@ -5,20 +5,14 @@
  * operacional do ciclo para um contrato estável de diagnóstico.
  */
 
-export const ESTADOS_MODULO = Object.freeze([
-  'registered',
-  'starting',
-  'running',
-  'failed',
-  'stopped'
-]);
+/** @typedef {{listar: () => ReadonlyArray<string>, modulo: (id: string) => {name?: string, version?: string} | undefined}} LifecycleRegistry */
+/** @typedef {{vivos: () => string[], falhas: () => Array<{modulo: string, fase: string, motivo: string}>, fase: string}} LifecycleCycle */
 
-/**
- * @param {ReturnType<typeof import('./registry.js').criarRegistry>} registry
- * @param {{vivos: () => string[], falhas: () => Array<{modulo: string, fase: string, motivo: string}>, fase: string}} ciclo
- */
+export const ESTADOS_MODULO = Object.freeze(['registered', 'starting', 'running', 'failed', 'stopped']);
+
+/** @param {LifecycleRegistry} registry @param {LifecycleCycle} ciclo */
 export function criarStatusLifecycle(registry, ciclo) {
-  if (!registry || typeof registry.listar !== 'function') {
+  if (!registry || typeof registry.listar !== 'function' || typeof registry.modulo !== 'function') {
     throw new TypeError('registry é obrigatório');
   }
   if (!ciclo || typeof ciclo.vivos !== 'function' || typeof ciclo.falhas !== 'function') {
@@ -37,13 +31,7 @@ export function criarStatusLifecycle(registry, ciclo) {
     return registry.listar().map((id) => {
       const manifesto = registry.modulo(id);
       const falha = falhas.find((f) => f.modulo === id) ?? null;
-      return {
-        modulo: id,
-        nome: manifesto?.name ?? id,
-        versao: manifesto?.version ?? null,
-        estado: estadoDo(id),
-        falha
-      };
+      return { modulo: id, nome: manifesto?.name ?? id, versao: manifesto?.version ?? null, estado: estadoDo(id), falha };
     });
   }
 
