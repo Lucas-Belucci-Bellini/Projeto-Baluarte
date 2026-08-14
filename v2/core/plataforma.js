@@ -10,20 +10,10 @@ import { criarMonitorSaude } from './saude.js';
 import { criarStatusLifecycle } from './lifecycle-status.js';
 import { criarSupervisor } from './supervisor.js';
 
-/** @typedef {ReturnType<import('./registry.js').criarRegistry>} Registry */
-/**
- * @typedef {{
- *   subir: () => Promise<{falhas: unknown[]}>,
- *   descer: () => Promise<void>,
- *   diagnostico: () => {fase: string, modulos?: unknown[], falhas?: unknown[], eventosOrfaos?: unknown[], referenciasOrfas?: unknown[]},
- *   ciclo: object
- * }} Boot
- */
+/** @typedef {{listar: () => ReadonlyArray<string>, modulo: (id: string) => unknown}} PlataformaRegistry */
+/** @typedef {{subir: () => Promise<{falhas: unknown[]}>, descer: () => Promise<void>, diagnostico: () => unknown, ciclo: {vivos: () => string[], falhas: () => Array<{modulo: string, fase: string, motivo: string}>, fase: string}}} PlataformaBoot */
 
-/**
- * @param {Registry} registry
- * @param {Boot} boot
- */
+/** @param {PlataformaRegistry} registry @param {PlataformaBoot} boot */
 export function criarPlataforma(registry, boot) {
   if (!registry || typeof registry.listar !== 'function' || typeof registry.modulo !== 'function') {
     throw new TypeError('registry inválido');
@@ -40,20 +30,10 @@ export function criarPlataforma(registry, boot) {
     return {
       supervisor: supervisor.status(),
       saude: saude.verificar(),
-      lifecycle: {
-        modulos: lifecycle.retrato(),
-        resumo: lifecycle.resumo()
-      },
+      lifecycle: { modulos: lifecycle.retrato(), resumo: lifecycle.resumo() },
       boot: boot.diagnostico()
     };
   }
 
-  return {
-    iniciar: () => supervisor.iniciar(),
-    parar: () => supervisor.parar(),
-    diagnostico,
-    supervisor,
-    saude,
-    lifecycle
-  };
+  return { iniciar: () => supervisor.iniciar(), parar: () => supervisor.parar(), diagnostico, supervisor, saude, lifecycle };
 }
