@@ -8,14 +8,15 @@
 /** @param {RuntimeReadinessOptions} [options] @returns {RuntimeReadiness} */
 export function criarRuntimeReadiness({ manager } = {}) {
   if (!manager || typeof manager.status !== 'function') throw new TypeError('manager inválido');
+  const runtimeManager = manager;
 
-  /** @param {string} id */
+  /** @param {string} id @returns {boolean} */
   function ready(id) {
-    const status = manager.status(id);
+    const status = runtimeManager.status(id);
     return status?.lifecycle === 'running' && status?.health?.status === 'healthy';
   }
 
-  /** @param {string} id */
+  /** @param {string} id @returns {true} */
   function assertReady(id) {
     if (!ready(id)) throw new Error(`Módulo não está pronto: ${id}`);
     return true;
