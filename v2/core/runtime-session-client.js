@@ -31,9 +31,10 @@ export function criarRuntimeSession(client, envelope) {
       throw new Error(resultado.message || 'Runtime não autorizado');
     }
     aberta = true;
-    return /** @type {RuntimeSessionSuccessResponse} */ (resultado);
+    return /** @type {RuntimeSessionSuccessResponse} */ ({ ...resultado, status: 'authorized' });
   }
 
+  /** @param {string} modulo @param {string} path */
   async function lerArquivo(modulo, path) {
     if (!aberta) throw new Error('Runtime Session não está aberta');
     const resposta = await client.request({ op: 'read_file', envelope, modulo, path });
@@ -44,7 +45,7 @@ export function criarRuntimeSession(client, envelope) {
     if (resultado.status !== 'file') {
       throw new Error(resultado.message || 'Runtime não conseguiu ler o arquivo');
     }
-    return /** @type {RuntimeSessionSuccessResponse} */ (resultado);
+    return /** @type {RuntimeSessionSuccessResponse} */ ({ ...resultado, status: 'file' });
   }
 
   async function fechar() {
