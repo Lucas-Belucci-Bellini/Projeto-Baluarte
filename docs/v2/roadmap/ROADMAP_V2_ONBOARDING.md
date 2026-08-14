@@ -6,6 +6,7 @@
 **Última coleta das issues:** 14 de agosto de 2026  
 **Implementação:** parcial e incremental  
 **Fonte completa das issues:** [`ISSUES_420_422_423_COMPLETE.md`](ISSUES_420_422_423_COMPLETE.md)  
+**Roadmap completo de produto, app, JARVIS, OpenClaw, PokeDesk e testes mensais:** [`../../ROADMAP_COMPLETO.md`](../../ROADMAP_COMPLETO.md)
 **Histórico de reconstrução e merges:** [`../history/2026-08-13_V2_MERGE_HISTORY.md`](../history/2026-08-13_V2_MERGE_HISTORY.md)
 **Inventário de páginas e módulos:** [`../MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](../MODULE_SYSTEM_AND_PAGE_INVENTORY.md)
 

@@ -17,10 +17,9 @@
 Plataforma web narrativa, militar e de ferramentas técnicas de **Lucas Belucci
 Bellini**.
 
-**Stack V1 do navegador:** JavaScript puro (ES2022/ESM) + HTML5 + CSS3 + Vite 5.
-Sem React, Vue, JSX ou TypeScript como linguagem de execução do frontend.
+**Base V1 do navegador:** JavaScript ES2022/ESM + HTML5 + CSS3 + Vite 5, preservada como referência estável. A migração do frontend para TypeScript é incremental: módulos já migrados possuem implementação canônica `.ts` e wrapper `.js` de compatibilidade; páginas e utilitários ainda não migrados continuam no caminho V1 até serem convertidos com testes.
 
-A V2 é multi-linguagem: JavaScript/JSDoc para o Core de Orquestração, Rust para o Runtime isolado, Python para pipelines de dados, SQL/PostgreSQL/Supabase para persistência e RLS, e YAML/GitHub Actions para os gates de CI. O compilador TypeScript é usado apenas para verificar contratos JSDoc da V2; não transforma o produto em TypeScript.
+A V2 é multi-linguagem: **TypeScript** para novas superfícies e módulos migrados do frontend; JavaScript/JSDoc para contratos do Core ainda em transição; **Rust** para o Runtime isolado; **Python** para parsers e pipelines de dados; **SQL/PostgreSQL/Supabase** para persistência, evidências e RLS; e **YAML/GitHub Actions** para os gates de CI. O compilador TypeScript também verifica contratos JSDoc da V2. Nenhuma linguagem será trocada por moda: cada camada precisa de uma responsabilidade documentada.
 
 
 > Esta é a 13ª iteração do projeto. As 12 anteriores quebraram por TypeScript,
@@ -41,7 +40,7 @@ contratos de integração e fases de execução está em [docs/PROJETO-NEXUS-BAL
 
 ## Roadmap V2 e guia para novos colaboradores
 
-A V2 é guiada por três planos complementares: [#420 — Fundação, Hardening e Transição V1 → V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420), [#422 — Wiki Project Zomboid na V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422) e [#423 — Plano Mestre V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423). A documentação consolidada, com a fonte completa das descrições e comentários coletados, está em [`docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md) e [`docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md`](docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md).
+A V2 é guiada por três planos complementares: [#420 — Fundação, Hardening e Transição V1 → V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420), [#422 — Wiki Project Zomboid na V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422) e [#423 — Plano Mestre V2](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423). O **roadmap geral de produto, arquitetura, app, JARVIS, OpenClaw, PokeDesk, Wikis e testes mensais** está em [`docs/ROADMAP_COMPLETO.md`](docs/ROADMAP_COMPLETO.md). A documentação consolidada da V2, com a fonte completa das descrições e comentários coletados, está em [`docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md) e [`docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md`](docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md).
 
 O contexto das sessões de reconstrução e dos merges também está preservado em [`docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md). Esse índice reconcilia o relatório histórico com o estado atual da `main` e aponta para a [transcrição completa da sessão](docs/v2/history/2026-08-13_CHATGPT_SESSION_TRANSCRIPT.txt) e o [relatório original dos merges](docs/v2/history/2026-08-13_MERGE_AUDIT_SOURCE.md).
 
@@ -96,7 +95,7 @@ A intenção é que o Baluarte não fique limitado às ideias de uma única pess
 
 Toda contribuição deve passar pelo fluxo normal de revisão, testes e integração do projeto.
 
-A escolha de TypeScript para o frontend da V2 é uma decisão de escalabilidade: o Baluarte possui centenas de páginas e continuará crescendo. A tipagem estática será usada para reduzir regressões, facilitar manutenção entre colaboradores e permitir que páginas e componentes evoluam sem quebrar contratos existentes. A migração será progressiva; a V1 permanece preservada como linha de referência. O plano e o primeiro slice implementado estão documentados em [`docs/v2/TYPESCRIPT_MIGRATION.md`](docs/v2/TYPESCRIPT_MIGRATION.md).
+A escolha de TypeScript para o frontend da V2 é uma decisão de escalabilidade: o Baluarte possui centenas de páginas e continuará crescendo. A tipagem estática será usada para reduzir regressões, facilitar manutenção entre colaboradores e permitir que páginas e componentes evoluam sem quebrar contratos existentes. A migração será progressiva; a V1 permanece preservada como linha de referência. O plano e os marcos publicados estão documentados em [`docs/v2/TYPESCRIPT_MIGRATION.md`](docs/v2/TYPESCRIPT_MIGRATION.md) e no [`roadmap completo`](docs/ROADMAP_COMPLETO.md).
 Antes de alterar a V2, leia [`docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md), [`docs/v2/V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md), [`docs/v2/V2_RULES.md`](docs/v2/V2_RULES.md), a documentação da área afetada e o [mapa atual de erros](docs/v2/MAIN_ERROR_AUDIT.md). Examine os consumidores do contrato, consulte as issues relacionadas, escreva ou atualize testes e execute os gates antes de propor um marco.
 
 Não use `@ts-ignore`, `any`, exclusões ou relaxamento de `strict`/`checkJs` para esconder falhas. Não crie um segundo Event Bus, Storage ou Permission Manager sem justificativa. Mudanças arquiteturais devem ser documentadas antes da implementação.
