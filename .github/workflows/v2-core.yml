@@ -9,14 +9,14 @@ on:
       - v2-integration
       - 'claude/**'
     paths:
-      - 'v2/core/**'
+      - 'v2/**'
       - 'test/v2/**'
       - 'package.json'
       - 'v2/jsconfig.json'
       - '.github/workflows/v2-core.yml'
   pull_request:
     paths:
-      - 'v2/core/**'
+      - 'v2/**'
       - 'test/v2/**'
       - 'package.json'
       - 'v2/jsconfig.json'
