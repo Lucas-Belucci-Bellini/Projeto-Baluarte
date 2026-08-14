@@ -7,7 +7,7 @@
 **Repositório:** [Lucas-Belucci-Bellini/Projeto-Baluarte](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte)
 **Issues-base:** [#420][1], [#422][2] e [#423][3]
 **Atualizado:** 14 de agosto de 2026
-**Estado local no momento da criação:** a migração `jarvis-permissoes` está commitada localmente em `1f950d1e`, mas aguarda reautenticação do GitHub para ser enviada ao `main` remoto, que permanece em `bc1854db`.
+**Estado publicado no momento da atualização:** a migração `jarvis-permissoes` está em `1f950d1e` e o roadmap, README e onboarding estão publicados no `main` em `6349b7bb`.
 
 ## 1. Visão executiva
 
