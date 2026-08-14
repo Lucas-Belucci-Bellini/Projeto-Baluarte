@@ -63,6 +63,8 @@
     "src/utils/markdown.d.ts",
     "src/utils/immersive.ts",
     "src/utils/hero-rays.d.ts",
+    "src/utils/webgl-probe.ts",
+    "src/utils/webgl-probe.d.ts",
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/militar-db.d.ts",
