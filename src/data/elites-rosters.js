@@ -75,12 +75,12 @@ export const ROSTERS = {
     "ECHO 4",
     "ECHO 5"
   ],
-  "FOXTROTT": [
-    "FOXTROTT 1",
-    "FOXTROTT 2",
-    "FOXTROTT 3",
-    "FOXTROTT 4",
-    "FOXTROTT 5"
+  "FOXTROT": [
+    "FOXTROT 1",
+    "FOXTROT 2",
+    "FOXTROT 3",
+    "FOXTROT 4",
+    "FOXTROT 5"
   ],
   "GOLF": [
     "GOLF 1",

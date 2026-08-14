@@ -1,3 +1,9 @@
+export interface EliteStatusInfo {
+  id: string;
+  label: string;
+  color: string;
+}
+
 export interface Equipe {
   code: string;
   name: string;
@@ -13,13 +19,13 @@ export interface Equipe {
   description: string;
   equipment: readonly string[];
   notableOps: readonly string[];
-  arc: string;
+  arc: string | null;
 }
 
 export const EQUIPES: readonly Equipe[];
 export const TOTAL_EQUIPES: number;
 export const ACTIVE_COUNT: number;
-export const STATUS_OPTIONS: readonly string[];
+export const STATUS_OPTIONS: readonly EliteStatusInfo[];
 export const SPECIALTIES: readonly string[];
-export function findEquipe(code: string): Equipe | undefined;
-export function statusInfo(id: string): { label: string; color: string } | undefined;
+export function findEquipe(code: string): Equipe | null;
+export function statusInfo(id: string): EliteStatusInfo;

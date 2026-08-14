@@ -22,5 +22,5 @@ export const CHAPTERS_TOTAL: number;
 export const UNIVERSES: readonly string[];
 export const ALL_TAGS: readonly string[];
 export function loadSaga(): Promise<unknown>;
-export function findArc(id: string): CronicaArc | undefined;
-export function findChapter(arcId: string, chapterId: string): CronicaChapter | undefined;
+export function findArc(id: string): CronicaArc | null;
+export function findChapter(arcId: string, chapterId: string): CronicaChapter | null;
