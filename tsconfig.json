@@ -39,6 +39,8 @@
     "src/pages/historia-militar.ts",
     "src/pages/batalhas-historicas.ts",
     "src/pages/organizacao-militar.ts",
+    "src/pages/forcas-armadas.ts",
+    "src/pages/armas-por-pais.ts",
     "src/data/arsenal.d.ts",
     "src/data/elites-rosters.d.ts",
     "src/data/elites.d.ts",
