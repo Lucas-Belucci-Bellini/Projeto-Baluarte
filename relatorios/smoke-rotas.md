@@ -1,6 +1,6 @@
 # Smoke das rotas — Projeto Baluarte
 
-Rodado em 2026-08-14T05:04:20.930Z · **98 rotas** descobertas de `src/main.js`.
+Rodado em 2026-08-14T05:30:33.878Z · **98 rotas** descobertas de `src/main.js`.
 
 | Estado | Rotas |
 |---|---:|
@@ -10,7 +10,7 @@ Rodado em 2026-08-14T05:04:20.930Z · **98 rotas** descobertas de `src/main.js`.
 
 ## 🟡 Avisos (host externo — não falham o teste)
 
-- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=Gr7mebVPzKOUOR47&el=embedded&ns=yt&fexp — net::ERR_ABORTED
+- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=nVLkpi3CJKDpBB6Z&el=embedded&ns=yt&fexp — net::ERR_ABORTED
 - `/mapa`: console: Error: sources.gebco.maxzoom: number expected, undefined found
     at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
     at ce (https://unpkg.com/maplibre-gl@4.7.
@@ -20,11 +20,11 @@ Rodado em 2026-08-14T05:04:20.930Z · **98 rotas** descobertas de `src/main.js`.
 
 | Rota | ms | texto |
 |---|---:|---:|
-| `/modelos-3d` | 1912 | 34924 |
-| `/vanguard` | 1877 | 12141 |
-| `/videos` | 1859 | 867 |
-| `/home` | 1579 | 3771 |
-| `/cripto` | 1548 | 1303 |
-| `/ciberseg` | 1528 | 2604 |
-| `/academia` | 1508 | 5365 |
-| `/calc-cientifica` | 1503 | 385 |
+| `/musicas` | 7315 | 3622 |
+| `/modelos-3d` | 1996 | 34924 |
+| `/videos` | 1825 | 867 |
+| `/home` | 1548 | 3771 |
+| `/vanguard` | 1516 | 12141 |
+| `/forcas-armadas` | 1463 | 2759 |
+| `/forcas-especiais` | 1446 | 3113 |
+| `/dossie` | 1436 | 4198 |

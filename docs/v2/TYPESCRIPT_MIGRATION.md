@@ -4,7 +4,7 @@
 **Commit de referência do Runtime:** [`8f0062d6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8f0062d6b3a254a7b070bced5e3b43b3109b2674)
 **Commit de referência da Wave 4:** [`e75619da`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/e75619dafa2d67dc68cef23715cc561f47779725)
 **Commit de referência da Wave 5:** [`8ea0ae88`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/8ea0ae8833281fe3fe357c4449693a7492e8c80f)
-**Wave 6 em validação:** Registry/Module System; o SHA será registrado após a publicação
+**Commit de referência da Wave 6:** [`1d8e1f5e`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/1d8e1f5e1f37cdfd33ff9b99bad98b6c7667357b) — correção final do wrapper
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
 
 ## 1. Objetivo
@@ -69,8 +69,9 @@ A Wave 6 migrou o Registry como fonte canônica TypeScript. O contrato declarati
 | `CHROME_PATH=/usr/bin/chromium npm run smoke` | Verde: 98/98 rotas | Produção local, navegação e router V1 preservados [3] |
 | `npm test` | 865/871 | Mesmas seis falhas preexistentes de Supervisor/Health |
 | `npm run tipos:v2` | 70 erros históricos | O Registry não adiciona erros ao gate; os dois diagnósticos de fronteira introduzidos durante a migração foram corrigidos |
+| `CHROME_PATH=/usr/bin/chromium node scripts/v2-integracao.mjs` | Verde: 13/13 | Boot V2 no navegador, 17 rotas no router V1, view nativa, contexto, permissões e adaptador V1 |
 
-As Waves 4 e 5 foram publicadas no `main` com validação local estrita, e a Wave 6 está pronta para publicação após os gates locais verdes. O Registry TypeScript preserva o baseline comportamental: 22/22 testes específicos, build verde, suíte geral em 865/871 e smoke V1 em 98/98 rotas. O `tipos:v2` caiu de 71 para 70 diagnósticos porque duas falhas de fronteira do wrapper foram corrigidas durante esta onda; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
+As Waves 4–6 estão publicadas no `main`. A Wave 6 foi publicada inicialmente em `92a5cc98` e recebeu a correção final do wrapper em `1d8e1f5e`, depois de o CI revelar um ciclo de resolução que impedia o boot V2 no navegador. A correção foi reproduzida localmente e remotamente: o Vigia voltou a passar e a integração V2 ficou verde em 13/13. O Registry TypeScript preserva o baseline comportamental: 22/22 testes específicos, build verde, suíte geral em 865/871 e smoke V1 em 98/98 rotas. O `tipos:v2` caiu de 71 para 70 diagnósticos porque as duas falhas de fronteira do wrapper foram corrigidas; os 70 restantes pertencem a módulos V2 ainda não migrados e não foram mascarados. No commit corretivo, `V2 Runtime`, CodeQL, Arma 3 Data CI e Vigia das rotas passaram; `CI`, `Core CI`, `V2 Core` e `V2 Validation` continuam representando a dívida conhecida de Supervisor/Health e JS/JSDoc. O `tsconfig.json` raiz inclui somente os arquivos efetivamente migrados. Isso é intencional: o portão cresce junto com a conversão e não finge que arquivos ainda JavaScript já possuem contratos TypeScript.
 
 Os testes de Storage continuam importando `../src/core/storage.js`. Isso verifica o caminho de compatibilidade real usado pelos consumidores legados, em vez de testar apenas o arquivo `.ts` diretamente.[2]
 
@@ -83,7 +84,7 @@ Os testes de Storage continuam importando `../src/core/storage.js`. Isso verific
 | 3 | Permissions e Flags | Permissões, estados e ambientes tipados |
 | 4 | Storage | Schemas, migrações, classificação e namespace tipados |
 | 5 | Shell, Header, Sidebar e Layout | Publicada: boot, navegação, overlay e contratos DOM tipados por wrappers mínimos |
-| 6 | Registry/Module System | Publicada em validação local: manifesto, isolamento, ordem topológica, fallback e referências tipados |
+| 6 | Registry/Module System | Publicada: manifesto, isolamento, ordem topológica, fallback, referências e wrapper de navegador tipados |
 | 7 | Páginas de maior valor | Wiki Arma 3, Arsenal, Biblioteca, JARVIS e diagnóstico por slices |
 | 8 | Data e integrações | Contratos de dados, Supabase, Evidence Layer e Runtime bridge |
 
