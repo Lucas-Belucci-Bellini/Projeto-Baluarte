@@ -12,6 +12,7 @@
 **Commit de referência da página Arsenal TypeScript:** [`b35b6bd6`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/b35b6bd639e4fad82d6abc10b6eaa5f7367096e3)
 **Commit de referência da página Home TypeScript:** [`a15523d5`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/commit/a15523d5d2371ebe9f124d67db4a59d131aebfd4)
 **Regra:** preservar a V1, migrar por contratos e validar cada onda
+**Inventário atualizado do JavaScript restante:** [`TYPESCRIPT_REMAINING.md`](./TYPESCRIPT_REMAINING.md)
 
 ## 1. Objetivo
 
