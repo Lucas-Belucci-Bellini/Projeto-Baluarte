@@ -9,41 +9,21 @@
 /** @typedef {{supervisor: RuntimeManagerSupervisor, restart: RuntimeManagerRestart, health: RuntimeManagerHealth, events?: RuntimeManagerEvents}} RuntimeManagerOptions */
 /** @typedef {{start: (id: string) => Promise<RuntimeManagerStatus>, stop: (id: string) => Promise<RuntimeManagerStatus>, restart: (id: string, error?: Error) => Promise<RuntimeManagerRestartResult>, status: (id: string) => RuntimeManagerStatus}} RuntimeManager */
 
-/** @param {RuntimeManagerOptions} [options] @returns {RuntimeManager} */
-export function criarRuntimeManager(options = {}) {
+/** @param {RuntimeManagerOptions} options @returns {RuntimeManager} */
+export function criarRuntimeManager(options) {
   const { supervisor, restart, health, events } = options;
   if (!supervisor || typeof supervisor.iniciar !== 'function' || typeof supervisor.parar !== 'function' || typeof supervisor.estado !== 'function') throw new TypeError('supervisor inválido');
   if (!restart || typeof restart.reiniciar !== 'function') throw new TypeError('restart inválido');
   if (!health || typeof health.estado !== 'function') throw new TypeError('health inválido');
 
-  /** @param {string} id @returns {Promise<RuntimeManagerStatus>} */
-  async function start(id) {
-    await supervisor.iniciar(id);
-    health.marcarSaudavel?.(id);
-    events?.started?.(id);
-    return status(id);
-  }
-
-  /** @param {string} id @returns {Promise<RuntimeManagerStatus>} */
-  async function stop(id) {
-    await supervisor.parar(id);
-    events?.stopped?.(id);
-    return status(id);
-  }
-
-  /** @param {string} id @param {Error} [error] @returns {Promise<RuntimeManagerRestartResult>} */
+  async function start(id) { await supervisor.iniciar(id); health.marcarSaudavel?.(id); events?.started?.(id); return status(id); }
+  async function stop(id) { await supervisor.parar(id); events?.stopped?.(id); return status(id); }
   async function restartModule(id, error = new Error('restart requested')) {
     events?.failed?.(id, error);
     const result = await restart.reiniciar(id, error);
-    if (result.restarted) events?.restarting?.(id, result.attempts ?? 0, result.delayMs ?? 0);
-    else events?.exhausted?.(id);
+    if (result.restarted) events?.restarting?.(id, result.attempts ?? 0, result.delayMs ?? 0); else events?.exhausted?.(id);
     return { ...result, status: status(id) };
   }
-
-  /** @param {string} id @returns {RuntimeManagerStatus} */
-  function status(id) {
-    return { id, lifecycle: supervisor.estado(id), health: health.estado(id) };
-  }
-
+  function status(id) { return { id, lifecycle: supervisor.estado(id), health: health.estado(id) }; }
   return { start, stop, restart: restartModule, status };
 }
