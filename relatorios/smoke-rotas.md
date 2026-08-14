@@ -1,6 +1,6 @@
 # Smoke das rotas — Projeto Baluarte
 
-Rodado em 2026-08-14T13:22:57.843Z · **98 rotas** descobertas de `src/main.js`.
+Rodado em 2026-08-14T13:41:52.705Z · **98 rotas** descobertas de `src/main.js`.
 
 | Estado | Rotas |
 |---|---:|
@@ -10,10 +10,8 @@ Rodado em 2026-08-14T13:22:57.843Z · **98 rotas** descobertas de `src/main.js`.
 
 ## 🟡 Avisos (host externo — não falham o teste)
 
-- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=XR4v_6FCnDxoBCVB&el=embedded&ns=yt&fexp — net::ERR_ABORTED
-- `/vanguard`: console: Error: sources.gebco.maxzoom: number expected, undefined found
-    at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
-    at ce (https://unpkg.com/maplibre-gl@4.7.
+- `/videos`: rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=1mC_sTNXE9vWJG6q&el=embedded&ns=yt&fexp — net::ERR_ABORTED
+- `/tv`: console: Permissions policy violation: compute-pressure is not allowed in this document.
 - `/mapa`: console: Error: sources.gebco.maxzoom: number expected, undefined found
     at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)
     at ce (https://unpkg.com/maplibre-gl@4.7.
@@ -23,11 +21,11 @@ Rodado em 2026-08-14T13:22:57.843Z · **98 rotas** descobertas de `src/main.js`.
 
 | Rota | ms | texto |
 |---|---:|---:|
-| `/vanguard` | 3498 | 12141 |
-| `/videos` | 1964 | 867 |
-| `/modelos-3d` | 1687 | 34924 |
-| `/home` | 1602 | 3772 |
-| `/robotica` | 1602 | 1177 |
-| `/orcamentos-militares` | 1520 | 1576 |
-| `/mural` | 1503 | 380 |
-| `/guerras-conflitos` | 1481 | 2274 |
+| `/simbolos` | 2077 | 17538 |
+| `/home` | 1646 | 3772 |
+| `/modelos-3d` | 1645 | 34924 |
+| `/vanguard` | 1582 | 12141 |
+| `/arsenal-expandido` | 1520 | 112566 |
+| `/aprendizado` | 1488 | 913 |
+| `/graficos` | 1487 | 545 |
+| `/radio` | 1475 | 772 |

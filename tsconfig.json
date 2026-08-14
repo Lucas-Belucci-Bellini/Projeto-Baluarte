@@ -25,6 +25,9 @@
     "v2/core/boot.ts",
     "v2/core/plataforma.ts",
     "src/pages/sobre.ts",
-    "src/styles.d.ts"
+    "src/styles.d.ts",
+    "src/pages/arsenal.ts",
+    "src/data/arsenal.d.ts",
+    "src/utils/toast.d.ts"
   ]
 }

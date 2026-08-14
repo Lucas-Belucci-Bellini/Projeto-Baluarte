@@ -2,7 +2,7 @@
  {
   "rota": "/home",
   "estado": "verde",
-  "ms": 1602,
+  "ms": 1646,
   "texto": 3772,
   "nos": 384,
   "titulo": "BALUARTE\nMARK XIII",
@@ -13,7 +13,7 @@
  {
   "rota": "/baixar",
   "estado": "verde",
-  "ms": 1273,
+  "ms": 1388,
   "texto": 1388,
   "nos": 56,
   "titulo": "Baluarte Launcher",
@@ -24,7 +24,7 @@
  {
   "rota": "/ferramentas",
   "estado": "verde",
-  "ms": 1365,
+  "ms": 1367,
   "texto": 7625,
   "nos": 520,
   "titulo": "Hub de Ferramentas\nCAIXA DE FERRAMENTAS TÉCNICAS",
@@ -35,10 +35,10 @@
  {
   "rota": "/editor",
   "estado": "verde",
-  "ms": 1437,
+  "ms": 1455,
   "texto": 1216,
   "nos": 146,
-  "titulo": "⌨ Editor de CódiTX 8 X\\N",
+  "titulo": "⌨ Editor de CódiBQ ] 6%/",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -46,10 +46,10 @@
  {
   "rota": "/json-studio",
   "estado": "verde",
-  "ms": 1272,
+  "ms": 1325,
   "texto": 519,
   "nos": 72,
-  "titulo": "{ } JSOH XA]J7\\",
+  "titulo": "{ } JSON StC%3X",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -57,10 +57,10 @@
  {
   "rota": "/qr-studio",
   "estado": "verde",
-  "ms": 1265,
+  "ms": 1364,
   "texto": 318,
   "nos": 36,
-  "titulo": "▦ QR Code St4M\\H",
+  "titulo": "▦ QR CodN BB{D=K",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -68,10 +68,10 @@
  {
   "rota": "/git-helper",
   "estado": "verde",
-  "ms": 1404,
+  "ms": 1442,
   "texto": 2241,
   "nos": 139,
-  "titulo": "⎇ Git H+#C3X",
+  "titulo": "⎇ Git HU1V<C",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -79,10 +79,10 @@
  {
   "rota": "/terminal",
   "estado": "verde",
-  "ms": 1214,
+  "ms": 1237,
   "texto": 478,
   "nos": 44,
-  "titulo": "▶ TerminNF 4<S",
+  "titulo": "▶ TermiY0D Q\\#",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -90,10 +90,10 @@
  {
   "rota": "/calc-cientifica",
   "estado": "verde",
-  "ms": 1293,
+  "ms": 1271,
   "texto": 385,
   "nos": 61,
-  "titulo": "∑ Calculadora CiJ1J+LRW/",
+  "titulo": "∑ Calculadora Ci9U<V[*W1",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -101,10 +101,10 @@
  {
   "rota": "/calc-numerica",
   "estado": "verde",
-  "ms": 1397,
+  "ms": 1373,
   "texto": 525,
   "nos": 164,
-  "titulo": "01 Calculadora Y]V=RGI>",
+  "titulo": "01 CalculadorO [{59}1\\S",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -112,10 +112,10 @@
  {
   "rota": "/calculadoras",
   "estado": "verde",
-  "ms": 1410,
+  "ms": 1438,
   "texto": 1264,
   "nos": 137,
-  "titulo": "∑ Hub de J\\G5R&D_TIE7",
+  "titulo": "∑ Hub de Calcu\\9_\\I]G",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -123,10 +123,10 @@
  {
   "rota": "/tabela-verdade",
   "estado": "verde",
-  "ms": 1427,
+  "ms": 1420,
   "texto": 1004,
   "nos": 151,
-  "titulo": "⊨ Tabela Verdade & Mapa de >G}2EV{6",
+  "titulo": "⊨ Tabela Verdade & M{{G MY /&_<C8OM",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -134,10 +134,10 @@
  {
   "rota": "/cripto",
   "estado": "verde",
-  "ms": 1251,
+  "ms": 1468,
   "texto": 1303,
   "nos": 162,
-  "titulo": "⚿ Lab de C_9%FOY/=JFN",
+  "titulo": "⚿ Lab de Cript/>++3X#",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -145,10 +145,10 @@
  {
   "rota": "/esteganografia",
   "estado": "verde",
-  "ms": 1350,
+  "ms": 1458,
   "texto": 976,
   "nos": 56,
-  "titulo": "Esteganogra}AB",
+  "titulo": "Estegano}OF3O/",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -156,10 +156,10 @@
  {
   "rota": "/graficos",
   "estado": "verde",
-  "ms": 1277,
+  "ms": 1487,
   "texto": 545,
   "nos": 85,
-  "titulo": "◢ Gerador de G6[IX04F",
+  "titulo": "◢ Gerador de W/PGU3QI",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -167,10 +167,10 @@
  {
   "rota": "/simbolos",
   "estado": "verde",
-  "ms": 1468,
+  "ms": 2077,
   "texto": 17538,
   "nos": 5749,
-  "titulo": "✦ X}Y 9F E7Y\\GJ{{",
+  "titulo": "✦ Hub de SímYB%W\\",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -178,10 +178,10 @@
  {
   "rota": "/color-studio",
   "estado": "verde",
-  "ms": 1207,
+  "ms": 1411,
   "texto": 787,
   "nos": 123,
-  "titulo": "◐ Color _]E94J",
+  "titulo": "◐ Color DY{#C6",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -189,10 +189,10 @@
  {
   "rota": "/regex",
   "estado": "verde",
-  "ms": 1407,
+  "ms": 1278,
   "texto": 1268,
   "nos": 180,
-  "titulo": "✱ Lab de R]E1J",
+  "titulo": "✱ Lab dM 56>HV",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -200,7 +200,7 @@
  {
   "rota": "/arsenal",
   "estado": "verde",
-  "ms": 1428,
+  "ms": 1442,
   "texto": 14499,
   "nos": 3172,
   "titulo": "Arsenal\nCATÁLOGO MILITAR COMPLETO",
@@ -211,7 +211,7 @@
  {
   "rota": "/militar",
   "estado": "verde",
-  "ms": 1410,
+  "ms": 1285,
   "texto": 4435,
   "nos": 285,
   "titulo": "Centro Militar\nTUDO NUM LUGAR SÓ",
@@ -222,10 +222,10 @@
  {
   "rota": "/modelos-3d",
   "estado": "verde",
-  "ms": 1687,
+  "ms": 1645,
   "texto": 34924,
   "nos": 4906,
-  "titulo": "◈ GI%DR&D >0",
+  "titulo": "◈ P2=V5AF %4",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -233,7 +233,7 @@
  {
   "rota": "/biblioteca",
   "estado": "verde",
-  "ms": 1467,
+  "ms": 1407,
   "texto": 19259,
   "nos": 658,
   "titulo": "Crônicas da Baluarte\nONDE OS DEUSES SANGRAM",
@@ -244,7 +244,7 @@
  {
   "rota": "/elites",
   "estado": "verde",
-  "ms": 1313,
+  "ms": 1431,
   "texto": 4956,
   "nos": 467,
   "titulo": "Elites do Baluarte\nESQUADRÕES ALFA → ZULU",
@@ -255,7 +255,7 @@
  {
   "rota": "/dossie",
   "estado": "verde",
-  "ms": 1442,
+  "ms": 1392,
   "texto": 4198,
   "nos": 159,
   "titulo": "Dossiê das Forças\nINFINITY DREADNOUGHT",
@@ -266,10 +266,10 @@
  {
   "rota": "/ciberseg",
   "estado": "verde",
-  "ms": 1357,
+  "ms": 1310,
   "texto": 2604,
   "nos": 379,
-  "titulo": "⚿ CiberSeg — Ata4%4 C EO+3%[",
+  "titulo": "⚿ CiberSeg — AtaquU W [N%K5L",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -277,10 +277,10 @@
  {
   "rota": "/academia",
   "estado": "verde",
-  "ms": 1399,
+  "ms": 1417,
   "texto": 5365,
   "nos": 315,
-  "titulo": "◬ Acad2Y_V",
+  "titulo": "◬ Aca\\&={%",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -288,10 +288,10 @@
  {
   "rota": "/robotica",
   "estado": "verde",
-  "ms": 1602,
+  "ms": 1331,
   "texto": 1177,
   "nos": 83,
-  "titulo": "⚙ Currículo de Robótica",
+  "titulo": "⚙ Currículo dL 1*>}/7GH",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -299,10 +299,10 @@
  {
   "rota": "/fft",
   "estado": "verde",
-  "ms": 1244,
+  "ms": 1332,
   "texto": 967,
   "nos": 100,
-  "titulo": "~ VisualizG[B1 HV/",
+  "titulo": "~ Visualizador 60V",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -310,7 +310,7 @@
  {
   "rota": "/radio",
   "estado": "verde",
-  "ms": 1440,
+  "ms": 1475,
   "texto": 772,
   "nos": 87,
   "titulo": "Rádio\nSINTETIZADOR & ONLINE",
@@ -321,7 +321,7 @@
  {
   "rota": "/musicas",
   "estado": "verde",
-  "ms": 1416,
+  "ms": 1462,
   "texto": 3622,
   "nos": 564,
   "titulo": "Central de Música\nPLAYLIST & LOOP",
@@ -332,7 +332,7 @@
  {
   "rota": "/media",
   "estado": "verde",
-  "ms": 1168,
+  "ms": 1349,
   "texto": 425,
   "nos": 37,
   "titulo": "Media Hub\nÁUDIO · VÍDEO · IMAGENS",
@@ -343,34 +343,36 @@
  {
   "rota": "/videos",
   "estado": "verde",
-  "ms": 1964,
+  "ms": 1377,
   "texto": 867,
   "nos": 129,
   "titulo": "Central de Vídeos\nYOUTUBE & PLAYLISTS",
   "naoEncontrada": false,
   "erros": [],
   "avisos": [
-   "rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=XR4v_6FCnDxoBCVB&el=embedded&ns=yt&fexp — net::ERR_ABORTED"
+   "rede: https://www.youtube-nocookie.com/api/stats/qoe?cpn=1mC_sTNXE9vWJG6q&el=embedded&ns=yt&fexp — net::ERR_ABORTED"
   ]
  },
  {
   "rota": "/tv",
   "estado": "verde",
-  "ms": 1206,
+  "ms": 1409,
   "texto": 852,
   "nos": 204,
   "titulo": "TV do Baluarte\nROTAÇÃO CONTÍNUA",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": []
+  "avisos": [
+   "console: Permissions policy violation: compute-pressure is not allowed in this document."
+  ]
  },
  {
   "rota": "/utilidades",
   "estado": "verde",
-  "ms": 1336,
+  "ms": 1329,
   "texto": 1965,
   "nos": 608,
-  "titulo": "🧰 Caixa de F[PF+>11>U7",
+  "titulo": "🧰 Caixa de FerraX1AOJ#",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -378,10 +380,10 @@
  {
   "rota": "/jogos",
   "estado": "verde",
-  "ms": 1344,
+  "ms": 1255,
   "texto": 665,
   "nos": 51,
-  "titulo": "🎮 Arcade }GX1%7=I",
+  "titulo": "🎮 Arcade BaNX[\\8I",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -389,10 +391,10 @@
  {
   "rota": "/batalha-naval",
   "estado": "verde",
-  "ms": 1387,
+  "ms": 1248,
   "texto": 443,
   "nos": 301,
-  "titulo": "🚢 Batalha NaM]_",
+  "titulo": "🚢 Batalha Na_/]",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -400,7 +402,7 @@
  {
   "rota": "/universo",
   "estado": "verde",
-  "ms": 1394,
+  "ms": 1378,
   "texto": 1491,
   "nos": 153,
   "titulo": "Hub de Universos\nMULTIVERSO BALUARTE",
@@ -411,10 +413,10 @@
  {
   "rota": "/tabela-periodica",
   "estado": "verde",
-  "ms": 1384,
+  "ms": 1438,
   "texto": 1768,
   "nos": 702,
-  "titulo": "⚛ Tabela Peri*Z_U%",
+  "titulo": "⚛ Tabela P8WJ\\{GYA",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -422,10 +424,10 @@
  {
   "rota": "/modpack",
   "estado": "verde",
-  "ms": 1292,
+  "ms": 1405,
   "texto": 6741,
   "nos": 1355,
-  "titulo": "◧ Central de Modpac\\Z",
+  "titulo": "◧ Central de CGH#KM%D",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -433,7 +435,7 @@
  {
   "rota": "/wiki-arma3",
   "estado": "verde",
-  "ms": 1347,
+  "ms": 1428,
   "texto": 3658,
   "nos": 263,
   "titulo": "Wiki de Arma 3",
@@ -444,10 +446,10 @@
  {
   "rota": "/arma3-tutorial",
   "estado": "verde",
-  "ms": 1385,
+  "ms": 1367,
   "texto": 29101,
   "nos": 957,
-  "titulo": "📖 Bíblia do Arma S V O OIL[ Z{WRU>P8",
+  "titulo": "📖 Bíblia do Arma 3 — % W3[< &I_X4Y+R",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -455,20 +457,18 @@
  {
   "rota": "/vanguard",
   "estado": "verde",
-  "ms": 3498,
+  "ms": 1582,
   "texto": 12141,
-  "nos": 676,
+  "nos": 659,
   "titulo": "⌖ Project Vanguard",
   "naoEncontrada": false,
   "erros": [],
-  "avisos": [
-   "console: Error: sources.gebco.maxzoom: number expected, undefined found\n    at Object.xi [as t] (https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js:42:133151)\n    at ce (https://unpkg.com/maplibre-gl@4.7."
-  ]
+  "avisos": []
  },
  {
   "rota": "/zomboid",
   "estado": "verde",
-  "ms": 1372,
+  "ms": 1405,
   "texto": 1447,
   "nos": 109,
   "titulo": "ALFA\nPROJECT ZOMBOID · 159 MODS",
@@ -490,10 +490,10 @@
  {
   "rota": "/guia-pc",
   "estado": "verde",
-  "ms": 1320,
+  "ms": 1361,
   "texto": 2828,
   "nos": 111,
-  "titulo": "◨ Guia pF&6 GQ*9=W NU",
+  "titulo": "◨ Guia para }XV7[+ 3U",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -501,10 +501,10 @@
  {
   "rota": "/logic-sim",
   "estado": "verde",
-  "ms": 1382,
+  "ms": 1411,
   "texto": 704,
   "nos": 50,
-  "titulo": "⊻ Simulador de Lógica HVS5&<#",
+  "titulo": "⊻ Simulador de Lógi</ DNV[>38",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -512,10 +512,10 @@
  {
   "rota": "/portas",
   "estado": "verde",
-  "ms": 1407,
+  "ms": 1391,
   "texto": 5840,
   "nos": 854,
-  "titulo": "⊡ Enciclopédia de &]D[K3 %<S#3_H",
+  "titulo": "⊡ Enciclopédia de FX531{ CA7ISS+",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -523,10 +523,10 @@
  {
   "rota": "/morse",
   "estado": "verde",
-  "ms": 1352,
+  "ms": 1365,
   "texto": 922,
   "nos": 227,
-  "titulo": "··− Gerador de Cód%9Q L19+I",
+  "titulo": "··− Gerador de CódigD <J33C",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -534,10 +534,10 @@
  {
   "rota": "/memes",
   "estado": "verde",
-  "ms": 1322,
+  "ms": 1366,
   "texto": 10310,
   "nos": 415,
-  "titulo": "◫ Arquivo de Memes — %==E",
+  "titulo": "◫ Arquivo de Mem/3 R Q}}R",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -545,7 +545,7 @@
  {
   "rota": "/filmes",
   "estado": "verde",
-  "ms": 1243,
+  "ms": 1308,
   "texto": 2953,
   "nos": 181,
   "titulo": "Cinema do Baluarte\nACERVO DE FILMES",
@@ -556,7 +556,7 @@
  {
   "rota": "/shadow",
   "estado": "verde",
-  "ms": 1251,
+  "ms": 1341,
   "texto": 156,
   "nos": 7,
   "titulo": "Setor selado",
@@ -567,10 +567,10 @@
  {
   "rota": "/perfil",
   "estado": "verde",
-  "ms": 1350,
+  "ms": 1252,
   "texto": 1844,
   "nos": 218,
-  "titulo": "◔ Perfil dP 1L8H]Q87",
+  "titulo": "◔ Perfil =< 8>/PU{1B",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -578,10 +578,10 @@
  {
   "rota": "/economia",
   "estado": "verde",
-  "ms": 1427,
+  "ms": 1361,
   "texto": 346,
   "nos": 27,
-  "titulo": "◈ Econ6*NA",
+  "titulo": "◈ Eco{QU0Z",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -589,7 +589,7 @@
  {
   "rota": "/dolar",
   "estado": "verde",
-  "ms": 1292,
+  "ms": 1384,
   "texto": 545,
   "nos": 72,
   "titulo": "💹 Radar do Câmbio",
@@ -600,7 +600,7 @@
  {
   "rota": "/jarvis",
   "estado": "verde",
-  "ms": 1423,
+  "ms": 1472,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -611,7 +611,7 @@
  {
   "rota": "/ia-proprietaria",
   "estado": "verde",
-  "ms": 1374,
+  "ms": 1412,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -622,10 +622,10 @@
  {
   "rota": "/radar",
   "estado": "verde",
-  "ms": 1279,
-  "texto": 1415,
+  "ms": 1416,
+  "texto": 1416,
   "nos": 164,
-  "titulo": "⌖ Radar TDD*<Q",
+  "titulo": "⌖ Radar TKT5P8",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -633,10 +633,10 @@
  {
   "rota": "/geo",
   "estado": "verde",
-  "ms": 1362,
+  "ms": 1420,
   "texto": 335,
   "nos": 45,
-  "titulo": "🛰 GeoA8G8A",
+  "titulo": "🛰 GeoP6+5*",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -644,10 +644,10 @@
  {
   "rota": "/find",
   "estado": "verde",
-  "ms": 1279,
+  "ms": 1404,
   "texto": 268,
   "nos": 25,
-  "titulo": "🧭 Onde EstE3}",
+  "titulo": "🧭 Onde E>DTXI",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -655,10 +655,10 @@
  {
   "rota": "/triangulacao",
   "estado": "verde",
-  "ms": 1376,
-  "texto": 332,
+  "ms": 1295,
+  "texto": 333,
   "nos": 42,
-  "titulo": "△ TriangB2{%/{",
+  "titulo": "△ TriangulVVHF",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -666,7 +666,7 @@
  {
   "rota": "/llm-lab",
   "estado": "verde",
-  "ms": 1476,
+  "ms": 1379,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -677,7 +677,7 @@
  {
   "rota": "/sobre",
   "estado": "verde",
-  "ms": 1420,
+  "ms": 1348,
   "texto": 5508,
   "nos": 183,
   "titulo": "Sobre o Baluarte\nUMA PLATAFORMA, MUITAS",
@@ -688,7 +688,7 @@
  {
   "rota": "/roadmap",
   "estado": "verde",
-  "ms": 1357,
+  "ms": 1375,
   "texto": 4342,
   "nos": 315,
   "titulo": "Roadmap",
@@ -699,7 +699,7 @@
  {
   "rota": "/diagnostico",
   "estado": "verde",
-  "ms": 1346,
+  "ms": 1339,
   "texto": 8828,
   "nos": 686,
   "titulo": "Diagnóstico do sistema",
@@ -710,7 +710,7 @@
  {
   "rota": "/jarvis-dashboard",
   "estado": "verde",
-  "ms": 1415,
+  "ms": 1428,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -721,7 +721,7 @@
  {
   "rota": "/mapa",
   "estado": "verde",
-  "ms": 1220,
+  "ms": 1397,
   "texto": 570,
   "nos": 87,
   "titulo": "◗ Mapa Tático Mundial",
@@ -734,7 +734,7 @@
  {
   "rota": "/visao",
   "estado": "verde",
-  "ms": 1409,
+  "ms": 1343,
   "texto": 242,
   "nos": 27,
   "titulo": "👁 Visão & Câmera",
@@ -745,7 +745,7 @@
  {
   "rota": "/jarvis-vision",
   "estado": "verde",
-  "ms": 1270,
+  "ms": 1161,
   "texto": 569,
   "nos": 38,
   "titulo": "🤖 JARVIS · Rastreamento Multi-Corporal",
@@ -756,7 +756,7 @@
  {
   "rota": "/forcas-armadas",
   "estado": "verde",
-  "ms": 1365,
+  "ms": 1463,
   "texto": 2759,
   "nos": 310,
   "titulo": "Forças Armadas do Mundo\nEFETIVOS & ORÇAMENTOS",
@@ -767,7 +767,7 @@
  {
   "rota": "/orcamentos-militares",
   "estado": "verde",
-  "ms": 1520,
+  "ms": 1357,
   "texto": 1576,
   "nos": 344,
   "titulo": "Orçamentos Militares\nSIPRI 2024",
@@ -778,7 +778,7 @@
  {
   "rota": "/poder-militar",
   "estado": "verde",
-  "ms": 1441,
+  "ms": 1382,
   "texto": 1365,
   "nos": 247,
   "titulo": "Poder Militar\nGFP INDEX 2024",
@@ -789,7 +789,7 @@
  {
   "rota": "/arsenal-expandido",
   "estado": "verde",
-  "ms": 1332,
+  "ms": 1520,
   "texto": 112566,
   "nos": 14058,
   "titulo": "⚔ Arsenal Expandido",
@@ -800,7 +800,7 @@
  {
   "rota": "/forcas-especiais",
   "estado": "verde",
-  "ms": 1325,
+  "ms": 1330,
   "texto": 3113,
   "nos": 231,
   "titulo": "Forças Especiais\nOPERAÇÕES ESPECIAIS · SOF",
@@ -811,7 +811,7 @@
  {
   "rota": "/organizacao-militar",
   "estado": "verde",
-  "ms": 1390,
+  "ms": 1448,
   "texto": 763,
   "nos": 92,
   "titulo": "Organização Militar\nPATENTES & ESTRUTURA",
@@ -822,7 +822,7 @@
  {
   "rota": "/tecnologia-militar",
   "estado": "verde",
-  "ms": 1380,
+  "ms": 1403,
   "texto": 888,
   "nos": 69,
   "titulo": "Tecnologia Militar\nSISTEMAS DE COMBATE",
@@ -833,7 +833,7 @@
  {
   "rota": "/taticas-estrategias",
   "estado": "verde",
-  "ms": 1363,
+  "ms": 1407,
   "texto": 2634,
   "nos": 158,
   "titulo": "Táticas & Estratégias\nA ARTE DA GUERRA",
@@ -844,7 +844,7 @@
  {
   "rota": "/historia-militar",
   "estado": "verde",
-  "ms": 1347,
+  "ms": 1329,
   "texto": 416,
   "nos": 123,
   "titulo": "História Militar\nDA PRÉ-HISTÓRIA À ERA MODERNA",
@@ -855,7 +855,7 @@
  {
   "rota": "/armas-por-pais",
   "estado": "verde",
-  "ms": 1336,
+  "ms": 1238,
   "texto": 1989,
   "nos": 412,
   "titulo": "Armas por País\nCATÁLOGO DE SISTEMAS",
@@ -866,7 +866,7 @@
  {
   "rota": "/guerras-conflitos",
   "estado": "verde",
-  "ms": 1481,
+  "ms": 1346,
   "texto": 2274,
   "nos": 177,
   "titulo": "Guerras & Conflitos\nLINHA DO TEMPO",
@@ -877,7 +877,7 @@
  {
   "rota": "/batalhas-historicas",
   "estado": "verde",
-  "ms": 1272,
+  "ms": 1288,
   "texto": 2885,
   "nos": 260,
   "titulo": "Batalhas Históricas\nDECISIVAS NA HISTÓRIA",
@@ -888,10 +888,10 @@
  {
   "rota": "/enciclopedia-militar",
   "estado": "verde",
-  "ms": 1219,
+  "ms": 1274,
   "texto": 1638,
   "nos": 111,
-  "titulo": "🎖 EnciclopS{Z} *ET>FNR",
+  "titulo": "🎖 EnciclRW<P6+ }R3KYQE",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -899,10 +899,10 @@
  {
   "rota": "/codigo",
   "estado": "verde",
-  "ms": 1381,
+  "ms": 1401,
   "texto": 905,
   "nos": 123,
-  "titulo": "🔬 Raio-X do VSS6F&",
+  "titulo": "🔬 Raio-X d7 7+JCOD",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -910,10 +910,10 @@
  {
   "rota": "/projetos",
   "estado": "verde",
-  "ms": 1376,
+  "ms": 1214,
   "texto": 2265,
   "nos": 165,
-  "titulo": "📁 ProVS1#&",
+  "titulo": "📁 PLCOG0\\L",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -921,10 +921,10 @@
  {
   "rota": "/mural",
   "estado": "verde",
-  "ms": 1503,
+  "ms": 1417,
   "texto": 380,
   "nos": 19,
-  "titulo": "📣 Mural do B6<K9{/1",
+  "titulo": "📣 Mural do BL_}IZZU",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -932,7 +932,7 @@
  {
   "rota": "/comms",
   "estado": "verde",
-  "ms": 1263,
+  "ms": 1422,
   "texto": 358,
   "nos": 31,
   "titulo": "Rede Neural\nCHAT GLOBAL · TEMPO REAL",
@@ -943,10 +943,10 @@
  {
   "rota": "/banco",
   "estado": "verde",
-  "ms": 1277,
+  "ms": 1263,
   "texto": 515,
   "nos": 87,
-  "titulo": "🗄️ Painel d2 &UK&+",
+  "titulo": "🗄️ Painel dQ _=4O8",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -954,10 +954,10 @@
  {
   "rota": "/cerebro",
   "estado": "verde",
-  "ms": 1382,
+  "ms": 1381,
   "texto": 354,
   "nos": 38,
-  "titulo": "🧠 Segundo BW{ABUF",
+  "titulo": "🧠 Segundo CONMIMS",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -965,10 +965,10 @@
  {
   "rota": "/ocr",
   "estado": "verde",
-  "ms": 1377,
+  "ms": 1366,
   "texto": 363,
   "nos": 39,
-  "titulo": "👁️ LeitoV ]B*",
+  "titulo": "👁️ Leitor ==[",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -976,10 +976,10 @@
  {
   "rota": "/memoria",
   "estado": "verde",
-  "ms": 1281,
+  "ms": 1402,
   "texto": 663,
   "nos": 43,
-  "titulo": "🧠 Memória do J01\\6%",
+  "titulo": "🧠 Memória do JT0B*[",
   "naoEncontrada": false,
   "erros": [],
   "avisos": [
@@ -990,7 +990,7 @@
  {
   "rota": "/terminal-ia",
   "estado": "verde",
-  "ms": 1275,
+  "ms": 1414,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -1001,7 +1001,7 @@
  {
   "rota": "/seguranca",
   "estado": "verde",
-  "ms": 1409,
+  "ms": 1412,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -1012,10 +1012,10 @@
  {
   "rota": "/gerar-codigo",
   "estado": "verde",
-  "ms": 1282,
+  "ms": 1409,
   "texto": 235,
   "nos": 35,
-  "titulo": "🧬 Gerador de UTVWL%",
+  "titulo": "🧬 Gerador de CGLPEK",
   "naoEncontrada": false,
   "erros": [],
   "avisos": []
@@ -1023,7 +1023,7 @@
  {
   "rota": "/conselho",
   "estado": "verde",
-  "ms": 1399,
+  "ms": 1403,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -1034,7 +1034,7 @@
  {
   "rota": "/apis",
   "estado": "verde",
-  "ms": 1319,
+  "ms": 1257,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -1045,7 +1045,7 @@
  {
   "rota": "/git-nexus",
   "estado": "verde",
-  "ms": 1414,
+  "ms": 1255,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -1056,7 +1056,7 @@
  {
   "rota": "/aprendizado",
   "estado": "verde",
-  "ms": 1439,
+  "ms": 1488,
   "texto": 913,
   "nos": 47,
   "titulo": "Núcleo de IA\nGRAFO · JARVIS · MEMÓRIA · ML",
@@ -1067,7 +1067,7 @@
  {
   "rota": "/home-3d",
   "estado": "verde",
-  "ms": 1466,
+  "ms": 1420,
   "texto": 3772,
   "nos": 384,
   "titulo": "BALUARTE\nMARK XIII",
@@ -1078,7 +1078,7 @@
  {
   "rota": "/home2",
   "estado": "verde",
-  "ms": 1473,
+  "ms": 1413,
   "texto": 3772,
   "nos": 384,
   "titulo": "BALUARTE\nMARK XIII",
