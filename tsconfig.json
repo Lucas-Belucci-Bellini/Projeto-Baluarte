@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "noImplicitAny": true
+  },
+  "include": [
+    "src/core/events.ts",
+    "src/core/state.ts"
+  ]
+}

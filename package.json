@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --host",
-    "test": "node --test $(find test -name '*.test.js')",
+    "test": "tsx --test $(find test -name '*.test.js')",
+    "tipos:ts": "tsc -p tsconfig.json",
     "sync-cronicas": "node scripts/sync-cronicas.mjs && node scripts/gen-fanfic-from-docs.mjs && node scripts/gen-elites-rosters.mjs",
     "gen-symbols": "node scripts/gen-symbols.mjs",
     "gen-codemap": "node scripts/gen-codemap.mjs",
@@ -39,6 +40,7 @@
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "playwright": "^1.49.0",
+    "tsx": "^4.23.12",
     "typescript": "^7.0.2",
     "vite": "^5.4.10"
   },
