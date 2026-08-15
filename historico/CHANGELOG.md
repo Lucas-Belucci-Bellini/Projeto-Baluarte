@@ -6,6 +6,83 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-15 — 7 ferramentas de IA instaladas, e nenhuma copiada pra dentro
+
+O operador pediu 7 repositórios instalados e configurados, com commit a cada um.
+O resultado interessante não foi a lista — foi o que a instalação revelou.
+
+### 🧰 Contrato versionado, clone ignorado
+
+`GitNexus-1.6.7/` (139 MB) e `Humanity always first/` (172 MB) já tinham sido
+copiados pra dentro deste repositório uma vez. O histórico carrega os dois pra
+sempre, e o build da Vercel tentava empacotá-los até estourar o limite de
+245 MB da Lambda. Então nada de repositório de terceiro entra aqui de novo:
+
+- `config/ai-tools.json` — o manifest: repo, caminho, commit instalado, como
+  rodar, passos de setup e as pegadinhas de cada ferramenta;
+- `scripts/sync-ai-tools.mjs` (`npm run tools:sync`) — clona ou `pull --ff-only`;
+  nunca faz merge sozinho, e o setup fica atrás de `--setup` porque compilar
+  custa minutos e GB;
+- `scripts/ai-tools-status.mjs` (`npm run tools:status`) — compara manifest ×
+  disco: `ok` / `sujo` / `movido` / `FALTA`;
+- `scripts/tool-run.mjs` — resolve e executa a CLI de qualquer uma delas;
+- os clones vivem em `.baluarte/tools/`, ignorado.
+
+A raiz das ferramentas é ancorada no repositório **principal** via
+`git rev-parse --git-common-dir`. Sem isso, cada worktree clonaria os mesmos
+gigabytes e uma ferramenta compilada de um lado apareceria como ausente do
+outro — mesmo disco, duas respostas.
+
+### 📦 O que entrou
+
+| ferramenta | estado | observação |
+|---|---|---|
+| **GitNexus** 1.6.9 | instalado e compilado | indexou este repo: 19.619 nós, 51.448 arestas, 818 fluxos |
+| **Hermes Agent** 0.20.1 | instalado (venv) | a origem do modo `hermes-agente` do JARVIS |
+| **OpenClaw** 2026.8.1 | instalado e compilado | o gateway que a ponte do repo já esperava |
+| **Claude Code Terminal** 1.0.1 | compilado e no vault | plugin do Obsidian, em `.obsidian/plugins/` |
+| **Claude Code** (repo público) | referência | plugins e exemplos; a CLI é outro pacote |
+| **OpenAI Codex** (fonte) | referência | não compilado: `cargo` não existe aqui |
+| **Graphify** 0.9.43 | instalado (venv) | indexa o acervo; o GitNexus indexa o código |
+
+### 🪤 As armadilhas que valeram o registro
+
+- **OpenClaw sem `pnpm build` mente pra você.** `--version` responde numa árvore
+  não compilada; qualquer subcomando morre com `missing dist/entry.(m)js`. Dá
+  uma falsa sensação de instalado.
+- **O terminal do Obsidian não acha o `node-pty` pelo `require` normal.** Ele é
+  `external` no esbuild e o plugin procura em `<pasta do plugin>/node_modules/`
+  (`src/main.ts:165`). Copiar só o `main.js` daria um plugin que instala e não
+  abre terminal. São 64 MB de binário nativo — ficam fora do git porque
+  `node_modules/` é a primeira linha do `.gitignore` e casa em qualquer
+  profundidade; versionados vão só os 457 KB de artefato.
+- **Dois projetos Python pedem venv FORA do clone.** O README do Hermes explica
+  por quê: um venv dentro da árvore em que o agente opera pode ser apagado por
+  um comando de caminho relativo do próprio agente, matando o runtime em pleno
+  voo.
+- **O `python` desta máquina é 3.14**, e o Hermes exige `>=3.11,<3.14`. Sem
+  fixar a versão no venv, o install falha.
+- **O npm 11 bloqueia install-scripts**, e o esbuild precisa do dele pra baixar
+  o binário da plataforma.
+- **`graphifyy` tem dois `y`** no PyPI; o comando é `graphify`.
+
+### 🚧 O que ficou de fora, e por quê
+
+- **Rust não foi instalado.** O `codex-rs` precisa de `cargo`, que não existe
+  nesta máquina. Instalar toolchain é mudança de máquina, não de repositório —
+  decisão do operador. O mesmo `cargo` ausente é o motivo de `npm run
+  v2:runtime` não rodar hoje.
+- **Instaladores oficiais não foram executados.** O do Hermes
+  (`iex (irm …/install.ps1)`) baixa Python, Node, ffmpeg e um Git portátil pra
+  `%LOCALAPPDATA%`. Usei o caminho manual documentado, que não mexe na máquina
+  inteira.
+- **Busca textual do GitNexus desligada no Windows**: a extensão FTS/BM25 da
+  LadybugDB exige VC++ 2015-2022 x64 + OpenSSL 3. Grafo e índice funcionam.
+
+Playbook completo em [`docs/local-ai-tools.md`](../docs/local-ai-tools.md).
+
+---
+
 ## 2026-08-10 — três bloqueadores achados às vésperas do congelamento
 
 A varredura final da 1.0.0 não era para achar nada. Achou três, e o pior deles
