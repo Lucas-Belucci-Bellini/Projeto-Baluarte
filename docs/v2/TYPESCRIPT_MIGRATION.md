@@ -605,3 +605,13 @@ O modo local continua salvando até 500 posts no storage, preserva o nome do aut
 No modo banco, a publicação permanece bloqueada conforme a implementação original e a leitura pública usa apenas os campos necessários. Registros remotos passam por guardas antes de converter `created_at` em timestamp. O wrapper JavaScript mantém a compatibilidade dos imports V1, sem alterar autenticação, RLS ou permissões.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **40 para 39 páginas JavaScript canônicas restantes**.
+
+## 4.35 Terminal-IA
+
+`src/pages/terminal-ia.ts` substituiu o REPL canônico do Terminal-IA. A implementação tipa o fluxo de linguagem natural para o servidor, o fallback local do JARVIS, ações de navegação e gráficos, histórico de comandos, memória durável, consulta do Raio-X e ligações do Segundo Cérebro.
+
+A fronteira de `jarvis-engine` passou a declarar `processLocal`, `getBaluarteBriefing`, o resultado local discriminado e o payload de gráfico. A fronteira de `jarvis-brain` passou a refletir memórias, busca, contexto, captura de conversa/resposta e limpeza. Foi adicionada uma declaração mínima de `chart-engine` para `Canvas`, dados labels/values e opções de desenho.
+
+Blocos Markdown com ```chart``` são tratados como JSON desconhecido antes de gerar o payload; respostas de erro são convertidas para texto sem assumir uma instância de `Error`. O fallback local continua navegando apenas quando a ação é explicitamente `navigate`, e nenhum novo envio automático foi introduzido: a chamada ao servidor continua dependente da entrada do operador no terminal.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **39 para 38 páginas JavaScript canônicas restantes**.
