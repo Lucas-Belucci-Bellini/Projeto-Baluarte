@@ -112,6 +112,38 @@ nativo) são opcionais:
 uv pip install --python .baluarte/venvs/hermes-agent/Scripts/python.exe -e ".[all,dev]"
 ```
 
+### OpenClaw
+
+Assistente self-hosted. Esta é a peça que **faltava**: o Baluarte já tinha o
+modo `openclaw` no JARVIS (`src/utils/jarvis-engine.js`), a ponte
+`scripts/openclaw-bridge.mjs` e o `docs/OPENCLAW.md` — tudo apontando para um
+gateway em `127.0.0.1:18789` que não existia na máquina.
+
+- Repositório: <https://github.com/openclaw/openclaw.git>
+- Clone: `.baluarte/tools/openclaw` · versão `2026.8.1`
+- Gateway: `127.0.0.1:18789` · ponte do Baluarte: `127.0.0.1:18790`
+
+```bash
+npm run tools:sync -- openclaw --setup   # pnpm install + build (obrigatório)
+npm run openclaw -- --help
+npm run openclaw:gateway                 # sobe o gateway na 18789
+npm run openclaw:bridge                  # sobe a ponte do Baluarte na 18790
+```
+
+**O build não é opcional.** Sem `dist/entry.mjs`, o CLI responde `--version` e
+morre em qualquer subcomando com `missing dist/entry.(m)js`. Foi assim que este
+clone se comportou antes de `pnpm build` — `--version` funcionando dá uma falsa
+sensação de instalado.
+
+`pnpm` não está instalado globalmente aqui; os passos de setup usam `corepack`,
+que baixa a versão exata fixada em `packageManager` sem criar shim global.
+
+Ligando no JARVIS: o modo `openclaw` aceita a URL nas configurações. Aponte para
+`http://localhost:18789` (gateway direto) ou `http://localhost:18790` (ponte),
+que é o caminho recomendado quando houver token — a ponte lê
+`OPENCLAW_GATEWAY_TOKEN` do processo local e **nunca** expõe a credencial ao
+navegador. Detalhes em [`OPENCLAW.md`](OPENCLAW.md).
+
 ## Regras
 
 - `.baluarte/` e `.gitnexus/` são ignorados — não force nada pra dentro do git.

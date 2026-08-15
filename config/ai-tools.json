@@ -74,6 +74,45 @@
           "windowsArgs": ["pip", "install", "--python", "../../venvs/hermes-agent/Scripts/python.exe", "-e", "."]
         }
       ]
+    },
+    {
+      "id": "openclaw",
+      "name": "OpenClaw",
+      "repo": "https://github.com/openclaw/openclaw.git",
+      "localPath": ".baluarte/tools/openclaw",
+      "installedCommit": "10a98702",
+      "version": "2026.8.1",
+      "role": "Assistente self-hosted. O Baluarte já tem o modo `openclaw` no JARVIS e a ponte `scripts/openclaw-bridge.mjs`; o que faltava era o gateway de verdade na 18789.",
+      "run": {
+        "kind": "node",
+        "entrypoint": ".baluarte/tools/openclaw/openclaw.mjs"
+      },
+      "commands": {
+        "sync": "npm run tools:sync -- openclaw --setup",
+        "cli": "npm run openclaw -- --help",
+        "gateway": "npm run openclaw:gateway",
+        "bridge": "npm run openclaw:bridge"
+      },
+      "notas": [
+        "`pnpm build` é obrigatório: sem `dist/entry.mjs` o CLI só responde `--version` e morre com 'missing dist/entry.(m)js' em qualquer subcomando.",
+        "pnpm não está instalado globalmente nesta máquina; os passos usam `corepack`, que baixa a versão exata fixada em `packageManager` sem mexer em shim global.",
+        "O gateway escuta em 127.0.0.1:18789 — exatamente o default de `scripts/openclaw-bridge.mjs` (OPENCLAW_GATEWAY_URL) e do modo `openclaw` do JARVIS.",
+        "Token do gateway fica no processo local (OPENCLAW_GATEWAY_TOKEN lido pela ponte), nunca no navegador."
+      ],
+      "setup": [
+        {
+          "cwd": ".baluarte/tools/openclaw",
+          "command": "corepack",
+          "windowsCommand": "corepack.cmd",
+          "args": ["pnpm", "install", "--prod=false"]
+        },
+        {
+          "cwd": ".baluarte/tools/openclaw",
+          "command": "corepack",
+          "windowsCommand": "corepack.cmd",
+          "args": ["pnpm", "build"]
+        }
+      ]
     }
   ]
 }
