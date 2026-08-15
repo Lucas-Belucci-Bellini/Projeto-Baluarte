@@ -683,3 +683,21 @@ O **Editor de Código** foi convertido mantendo tabs, runners, syntax highlight,
 Nenhuma credencial, operação de escrita externa ou relaxamento do strict mode foi adicionado. O inventário determinístico caiu de **33 para 25 páginas JavaScript canônicas restantes**; os oito arquivos `.js` desta onda continuam apenas como wrappers de compatibilidade.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
+
+## 4.42 Onda curta de IA, mídia e cockpit
+
+A onda 4.42 converteu nove páginas canônicas para TypeScript, mantendo wrappers JavaScript para compatibilidade V1: `conselho.ts`, `tv.ts`, `filmes.ts`, `memes.ts`, `llm-lab.ts`, `memoria.ts`, `git-nexus-cockpit.ts`, `videos.ts` e `media.ts`.
+
+O **Conselho de IAs** passou a tipar membros, callback de chegada incremental, consenso, estado ocupado e detecção opcional do modelo WebLLM. Foram criados `jarvis-council.d.ts` e `jarvis-webllm.d.ts`; a página mantém a convocação explícita pelo operador, os estados de falha e a publicação do consenso pela engine existente.
+
+A **TV do Baluarte** recebeu `tv.d.ts` com canais, playlists customizadas por `videoIds`, rotação horária e slots da grade. O **Cinema** recebeu `filmes.d.ts` com metadados, ano opcional e URL de embed do Google Drive. O **Arquivo de Memes** recebeu `memes.d.ts` para tiers, categorias, busca normalizada e filtros.
+
+O **Mini-LLM** passou a usar as declarações ampliadas de `llm-mini.d.ts`, incluindo `NgramModel`, dados de treino e `SAMPLE_CORPORA`, preservando o treino neural animado, curva de loss, geração e temperatura. A **Memória do JARVIS** passou a consumir `JarvisMemory` estritamente, com sincronização de repositório/conta, busca, conceitos e delete; durante a migração, o strict gate revelou e corrigiu a ausência de `syncUserMemories` e `deleteMemory` no contrato existente.
+
+O **Git Nexus Cockpit** recebeu contratos para o WebSocket do Núcleo, a cena 3D e cinco painéis JavaScript ainda não migrados. As abas continuam lazy-loaded, o deep-link `?tab=` e o último painel continuam persistidos, e os listeners do event bus e o controlador da cena são liberados quando o cockpit deixa o DOM. Nenhuma implementação JARVIS pesada foi convertida prematuramente; a fronteira foi reforçada para preparar ondas próprias.
+
+A **Central de Vídeos** recebeu `videos.d.ts` com playlists, sources YouTube/local, tags, busca persistida e marcadores assistidos. O **Media Hub** foi convertido com tipos de `File`, `DataTransfer`, object URLs, players locais, encaminhamento para FFT e limpeza de URLs ao remover, trocar de rota ou desmontar.
+
+Nenhuma credencial ou integração externa nova foi adicionada. O inventário determinístico caiu de **25 para 16 páginas JavaScript canônicas restantes**; os nove `.js` desta onda permanecem apenas como wrappers de compatibilidade. Foram adicionadas 13 declarações de fronteira, e o `tsconfig.json` continua em strict sem `any`, `@ts-ignore` ou relaxamento de configuração.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
