@@ -37,6 +37,11 @@ GitNexus-1.6.7/
 .baluarte/
 .gitnexus/
 
+# Motores encenados para o instalador por `npm run motores:empacotar`.
+# Sao ARTEFATO DE BUILD (so o gitnexus da ~460 MB): entram no instalador via
+# extraResources, nunca no git. Reconstroi com o comando acima.
+desktop/engine/
+
 
 # Índice do Smart Connections (#420, item 7). 19 MB, 96 arquivos `.ajson` de
 # embeddings e logs de evento DERIVADOS dos nossos próprios READMEs e docs —

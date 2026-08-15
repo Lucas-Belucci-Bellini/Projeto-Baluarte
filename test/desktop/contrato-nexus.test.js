@@ -39,12 +39,29 @@ test('o gitnexus declara o bloco `service` no manifest', () => {
   assert.ok(s, 'config/ai-tools.json: o tool `gitnexus` precisa do bloco `service`');
 });
 
-test('o contrato declarado é idêntico ao que estava hardcoded', () => {
+test('porta, health e readyMs seguem idênticos ao que estava hardcoded', () => {
   const s = servico();
   assert.equal(s.porta, ANTIGO.porta);
   assert.equal(s.health, ANTIGO.health);
-  assert.deepEqual(s.serveArgs, ANTIGO.serveArgs);
   assert.equal(s.readyMs, ANTIGO.readyMs);
+});
+
+test('serveArgs preserva os args antigos e acrescenta o --host explícito', () => {
+  // Este é o único ponto em que o contrato se afasta do hardcoded antigo, e é
+  // correção de defeito, não refatoração: o gitnexus 1.6.9 escuta em `::1` se o
+  // `--host` não for passado — mesmo anunciando 127.0.0.1 como default no
+  // `--help`. Como o app faz fetch em IPv4, sem esta flag o /api/health nunca
+  // responde e o badge fica âmbar com o motor vivo do lado.
+  const s = servico();
+  assert.deepEqual(s.serveArgs.slice(0, 3), ANTIGO.serveArgs, 'os 3 primeiros args têm que ser os de antes');
+  assert.ok(s.serveArgs.includes('--host'), 'serveArgs precisa do --host explícito');
+});
+
+test('o host do contrato bate com o que o serveArgs manda o motor abrir', () => {
+  const s = servico();
+  assert.equal(s.host, '127.0.0.1');
+  const i = s.serveArgs.indexOf('--host');
+  assert.equal(s.serveArgs[i + 1], s.host, 'service.host e o --host do serveArgs divergiram');
 });
 
 test('o nexus.js deriva PORT e BASE do manifest, sem mudar de valor', () => {

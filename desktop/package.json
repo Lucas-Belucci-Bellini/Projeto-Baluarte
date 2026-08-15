@@ -50,6 +50,13 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "engine",
+        "to": "engine",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "directories": {

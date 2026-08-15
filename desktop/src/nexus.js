@@ -24,7 +24,6 @@ const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const HOST = '127.0.0.1';
 const WIN = process.platform === 'win32';
 
 let child = null; // processo do motor que NÓS subimos (null se externo/ausente)
@@ -39,9 +38,13 @@ const log = (...a) => {
 
 // Fallback = exatamente o que estava hardcoded aqui antes da refatoração.
 const SERVICO_PADRAO = {
+  host: '127.0.0.1',
   porta: 4747,
   health: '/api/health',
-  serveArgs: ['serve', '--port', '4747'],
+  // O `--host` vai explícito de propósito: sem ele o gitnexus 1.6.9 escuta em
+  // `::1` (loopback IPv6), embora o `--help` anuncie 127.0.0.1 como default. O
+  // `fetch` daqui vai em IPv4 e nunca acharia o motor.
+  serveArgs: ['serve', '--port', '4747', '--host', '127.0.0.1'],
   readyMs: 20000,
   dependeDe: []
 };
@@ -85,6 +88,7 @@ function lerServico() {
     const porta = Number(s.porta);
     const readyMs = Number(s.readyMs);
     return {
+      host: typeof s.host === 'string' && s.host ? s.host : SERVICO_PADRAO.host,
       porta: Number.isInteger(porta) && porta > 0 ? porta : SERVICO_PADRAO.porta,
       health: typeof s.health === 'string' && s.health ? s.health : SERVICO_PADRAO.health,
       serveArgs:
@@ -101,13 +105,20 @@ function lerServico() {
 }
 
 const SERVICO = lerServico();
+const HOST = SERVICO.host;
 const PORT = SERVICO.porta;
 const BASE = `http://${HOST}:${PORT}`;
 
-// O contrato declara a porta em dois lugares (`porta` e dentro de `serveArgs`).
-// Não "consertamos" em silêncio — quem edita o manifest precisa saber.
-if (!SERVICO.serveArgs.includes(String(SERVICO.porta))) {
-  log(`aviso: service.serveArgs não cita a porta ${SERVICO.porta} — confira config/ai-tools.json`);
+// O contrato declara host e porta em dois lugares (os campos e o `serveArgs`).
+// Se divergirem, o app escuta num endereço e sobe o motor noutro — o badge fica
+// âmbar sem ninguém entender por quê. Não "consertamos" em silêncio: avisamos.
+for (const [campo, valor] of [
+  ['porta', String(SERVICO.porta)],
+  ['host', SERVICO.host]
+]) {
+  if (!SERVICO.serveArgs.includes(valor)) {
+    log(`aviso: service.serveArgs não cita ${campo}=${valor} — confira config/ai-tools.json`);
+  }
 }
 
 /** GET com timeout curto; devolve o JSON ou null se falhar/expirar. */
@@ -179,6 +190,11 @@ function vendoredEntry() {
   // do repo tem só `src/` (TS), então isto é um best-effort pós-build.
   const subdirs = [
     '.',
+    // Motor empacotado por `npm run motores:empacotar`. No app instalado o root
+    // é `resourcesPath/engine` e a subpasta é `gitnexus`; em dev o root é a raiz
+    // do repo, então o caminho completo entra aqui.
+    'desktop/engine/gitnexus',
+    'gitnexus',
     '.baluarte/tools/gitnexus/gitnexus',
     '.baluarte/tools/gitnexus',
     'GitNexus-1.6.7/GitNexus-1.6.7/gitnexus',
