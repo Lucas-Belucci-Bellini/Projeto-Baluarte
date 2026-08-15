@@ -192,6 +192,44 @@
         "Se um dia for compilar: `cargo build --release` em `codex-rs/`. O mesmo `cargo` destrava o `npm run v2:runtime` deste repo, que hoje também não roda.",
         "`docs/config.md` e `docs/agents_md.md` são a referência do formato de configuração que o Baluarte já usa em ~/.codex."
       ]
+    },
+    {
+      "id": "graphify",
+      "name": "Graphify",
+      "repo": "https://github.com/Graphify-Labs/graphify.git",
+      "localPath": ".baluarte/tools/graphify",
+      "installedCommit": "7281f27",
+      "version": "0.9.43",
+      "role": "Transforma pasta de código, docs, papers, imagens e vídeos num grafo de conhecimento consultável, com servidor MCP próprio. Complementa o GitNexus: aquele indexa código, este indexa o acervo (Crônicas, docs, relatórios).",
+      "venv": ".baluarte/venvs/graphify",
+      "run": {
+        "kind": "bin",
+        "windows": ".baluarte/venvs/graphify/Scripts/graphify.exe",
+        "posix": ".baluarte/venvs/graphify/bin/graphify"
+      },
+      "mcp": {
+        "windows": ".baluarte/venvs/graphify/Scripts/graphify-mcp.exe",
+        "posix": ".baluarte/venvs/graphify/bin/graphify-mcp"
+      },
+      "notas": [
+        "O pacote PyPI chama-se `graphifyy` (com dois y); o comando é `graphify`.",
+        "Instalado com o extra `[mcp]`, então o entry point `graphify-mcp` existe.",
+        "O README desaconselha `pip install` no Windows: o runtime resolve o Python a partir de `graphify-out/.graphify_python` e, se apontar pra outro ambiente, dá `ModuleNotFoundError`. Por isso venv isolado, fora do clone, igual ao hermes-agent.",
+        "Requer Python >=3.10; o venv é criado com 3.11 (o `python` padrão desta máquina é 3.14)."
+      ],
+      "setup": [
+        {
+          "cwd": ".",
+          "command": "uv",
+          "args": ["venv", ".baluarte/venvs/graphify", "--python", "3.11"]
+        },
+        {
+          "cwd": ".baluarte/tools/graphify",
+          "command": "uv",
+          "args": ["pip", "install", "--python", "../../venvs/graphify/bin/python", "-e", ".[mcp]"],
+          "windowsArgs": ["pip", "install", "--python", "../../venvs/graphify/Scripts/python.exe", "-e", ".[mcp]"]
+        }
+      ]
     }
   ]
 }

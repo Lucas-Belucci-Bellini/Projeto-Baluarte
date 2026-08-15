@@ -23,6 +23,7 @@
     "openclaw:gateway": "node scripts/tool-run.mjs openclaw gateway",
     "openclaw:bridge": "node scripts/openclaw-bridge.mjs",
     "obsidian:plugin": "node scripts/install-obsidian-plugin.mjs",
+    "graphify": "node scripts/tool-run.mjs graphify",
     "mobile:sync": "vite build && cap sync android",
     "mobile:open": "cap open android",
     "verificar-nexus": "node scripts/verificar-nexus.mjs",

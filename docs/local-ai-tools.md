@@ -217,6 +217,33 @@ implementação madura exatamente desse tipo de processo local. `docs/config.md`
 e `docs/agents_md.md` documentam o formato de configuração que já existe em
 `~/.codex` nesta máquina.
 
+### Graphify
+
+Transforma uma pasta de código, docs, papers, imagens e vídeos num grafo de
+conhecimento consultável, com servidor MCP próprio. **Complementa o GitNexus**
+em vez de repeti-lo: o GitNexus indexa *código* (símbolos, chamadas, impacto);
+o Graphify indexa o *acervo* — as Crônicas, `docs/`, `relatorios/`.
+
+- Repositório: <https://github.com/Graphify-Labs/graphify.git>
+- Clone: `.baluarte/tools/graphify` · venv: `.baluarte/venvs/graphify`
+- Versão instalada: `0.9.43` (com o extra `[mcp]`)
+
+```bash
+npm run tools:sync -- graphify --setup
+npm run graphify -- --help
+```
+
+Servidor MCP: `.baluarte/venvs/graphify/Scripts/graphify-mcp.exe`
+(`bin/graphify-mcp` fora do Windows).
+
+Duas pegadinhas registradas:
+
+1. O pacote no PyPI é **`graphifyy`**, com dois `y`; o comando é `graphify`.
+2. O README desaconselha `pip install` no Windows: o runtime resolve o Python
+   a partir de `graphify-out/.graphify_python` e, se isso apontar para outro
+   ambiente, o resultado é `ModuleNotFoundError: No module named 'graphify'`.
+   Daí o venv isolado e fora do clone, igual ao hermes-agent.
+
 ## Regras
 
 - `.baluarte/` e `.gitnexus/` são ignorados — não force nada pra dentro do git.
