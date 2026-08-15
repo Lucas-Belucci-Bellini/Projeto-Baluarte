@@ -113,6 +113,55 @@
           "args": ["pnpm", "build"]
         }
       ]
+    },
+    {
+      "id": "claude-code-terminal",
+      "name": "Claude Code Terminal (plugin do Obsidian)",
+      "repo": "https://github.com/dternyak/claude-code-terminal.git",
+      "localPath": ".baluarte/tools/claude-code-terminal",
+      "installedCommit": "48bed64",
+      "version": "1.0.1",
+      "role": "Terminal embutido com Claude Code dentro do Obsidian. A raiz deste repositório É um vault, e o plugin entra ao lado dos outros (claude-code-ide, claude-sessions, …).",
+      "obsidian": {
+        "pluginId": "claude-code-terminal",
+        "files": ["main.js", "manifest.json", "styles.css"],
+        "modules": ["node-pty"]
+      },
+      "commands": {
+        "sync": "npm run tools:sync -- claude-code-terminal --setup",
+        "install": "npm run obsidian:plugin -- claude-code-terminal"
+      },
+      "notas": [
+        "Desktop-only (`isDesktopOnly: true`) e exige o CLI do Claude Code instalado.",
+        "`node-pty` é `external` no esbuild e o plugin o resolve em `<pasta do plugin>/node_modules/node-pty` (src/main.ts:165) — por isso o instalador copia o módulo junto.",
+        "Sem toolchain MSVC nesta máquina, mas o node-pty traz prebuilds (inclusive win32-x64), então não precisa compilar nativo.",
+        "O npm 11 bloqueia install-scripts por padrão; o esbuild precisa do dele pra baixar o binário da plataforma (`npm approve-scripts esbuild` no clone)."
+      ],
+      "setup": [
+        {
+          "cwd": ".baluarte/tools/claude-code-terminal",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["install"]
+        },
+        {
+          "cwd": ".baluarte/tools/claude-code-terminal",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["approve-scripts", "esbuild"]
+        },
+        {
+          "cwd": ".baluarte/tools/claude-code-terminal",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["run", "build"]
+        },
+        {
+          "cwd": ".",
+          "command": "node",
+          "args": ["scripts/install-obsidian-plugin.mjs", "claude-code-terminal"]
+        }
+      ]
     }
   ]
 }

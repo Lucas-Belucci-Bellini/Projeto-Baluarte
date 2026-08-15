@@ -144,6 +144,40 @@ que é o caminho recomendado quando houver token — a ponte lê
 `OPENCLAW_GATEWAY_TOKEN` do processo local e **nunca** expõe a credencial ao
 navegador. Detalhes em [`OPENCLAW.md`](OPENCLAW.md).
 
+### Claude Code Terminal (plugin do Obsidian)
+
+Terminal embutido com Claude Code dentro do Obsidian. A raiz deste repositório
+**é** um vault, então o plugin entra ao lado dos que já estão lá
+(`claude-code-ide`, `claude-sessions`, `claude-sidebar`…).
+
+- Repositório: <https://github.com/dternyak/claude-code-terminal.git>
+- Clone: `.baluarte/tools/claude-code-terminal` · versão `1.0.1`
+- Instalado em: `.obsidian/plugins/claude-code-terminal/`
+
+```bash
+npm run tools:sync -- claude-code-terminal --setup   # instala, compila e copia pro vault
+npm run obsidian:plugin -- claude-code-terminal      # só recopia o artefato
+```
+
+Depois: **Obsidian → Configurações → Plugins da comunidade → ativar**. Precisa
+do CLI do Claude Code instalado; é desktop-only (`isDesktopOnly: true`).
+
+O que entra no git e o que não entra:
+
+| arquivo | versionado? | por quê |
+|---|---|---|
+| `main.js`, `manifest.json`, `styles.css` | sim (~457 KB) | é o padrão dos outros plugins do vault |
+| `node_modules/node-pty` | **não** (64 MB) | binário nativo regenerável; `node_modules/` é a 1ª linha do `.gitignore` e casa em qualquer profundidade |
+
+O `node-pty` precisa mesmo ficar ali: o plugin o resolve em
+`<pasta do plugin>/node_modules/node-pty` (`src/main.ts:165`), não pelo
+`require` normal — ele é `external` no esbuild. A máquina não tem toolchain
+MSVC, mas o pacote traz prebuilds para win32-x64, então nada é compilado.
+
+Detalhe do npm 11: install-scripts vêm bloqueados por padrão, e o esbuild
+precisa do dele para baixar o binário da plataforma — daí o
+`npm approve-scripts esbuild` nos passos de setup.
+
 ## Regras
 
 - `.baluarte/` e `.gitnexus/` são ignorados — não force nada pra dentro do git.
