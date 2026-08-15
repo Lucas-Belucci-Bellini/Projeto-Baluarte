@@ -83,6 +83,7 @@
     "src/pages/portas.ts",
     "src/pages/diagnostico.ts",
     "src/pages/economia.ts",
+    "src/pages/orcamentos-militares.ts",
     "src/utils/economia-api.d.ts",
     "src/core/politica.d.ts",
     "src/data/logic-circuits.d.ts",

@@ -1,14 +1,14 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `481cfc3ebc34ec33fc8244be22c01b113b706787`
-**Gerado em:** 2026-08-15T01:54:42.378Z
+**SHA auditado:** `88f54a71e9a0bc91366ea142a903669ae23bd55b`
+**Gerado em:** 2026-08-15T02:00:47.195Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **54 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **53 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
@@ -18,7 +18,6 @@ Existem **54 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | Mídia, rádio e DSP | 8 |
 | Arma 3, 3D e visualização | 7 |
 | Hubs e catálogos | 3 |
-| Conteúdo militar | 1 |
 
 ## Matriz completa
 
@@ -77,7 +76,6 @@ Existem **54 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 51 | `src/pages/geopulse.js` | 199 | 8125 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 52 | `src/pages/triangulacao.js` | 173 | 7442 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 53 | `src/pages/shadow.js` | 170 | 6837 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 54 | `src/pages/orcamentos-militares.js` | 166 | 7834 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
 
 ## Critérios de saída
 

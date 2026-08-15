@@ -473,3 +473,11 @@ Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run bu
 Durante a validação foi encontrado e corrigido um erro local de build: a implementação nova havia importado `styles/economia.css`, arquivo que não existia e também não era importado pela página original. A correção removeu somente essa importação indevida; depois disso todos os gates voltaram a passar.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **55 para 54 páginas JavaScript canônicas restantes**.
+
+## 4.20 Orçamentos Militares
+
+`src/pages/orcamentos-militares.ts` substituiu a implementação canônica de `/orcamentos-militares`. A página agora usa a interface `MilitaryBudget`, mantém o catálogo SIPRI 2024, ordenação por gasto, estatísticas, tabela, barras de comparação, alternância entre tabela e gráfico, fonte exibida e o hero imersivo. O arquivo `.js` permanece como wrapper de compatibilidade para consumidores V1.
+
+A migração não criou nova lógica de negócio nem alterou os dados apresentados. A tipagem fechou o modelo de cada país e os modos de visualização, sem recorrer a `any`, `@ts-ignore` ou relaxamento do `strict`.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **54 para 53 páginas JavaScript canônicas restantes**.
