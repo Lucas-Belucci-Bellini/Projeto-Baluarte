@@ -565,3 +565,13 @@ A fronteira de `jarvis-engine` foi ampliada somente com os exports reais utiliza
 Os testes de provedor continuam explícitos e sob ação do usuário: Claude navegador, Claude servidor, Gemini, Hermes e Ollama não são chamados automaticamente na abertura da página. Os retornos externos são estreitados por guards de `unknown`, e falhas de rede/timeout são convertidas em status visíveis sem quebrar a UI.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **44 para 43 páginas JavaScript canônicas restantes**.
+
+## 4.31 Perfil do Operador
+
+`src/pages/perfil.ts` substituiu a página canônica do Perfil do Operador. A implementação tipa a configuração local do perfil, estatísticas, links rápidos, catálogo social, estado de login, metadados do usuário, efeitos hero WebGL/Canvas, temas, skins de universo e sincronização de estética com o perfil em nuvem.
+
+Foram criadas fronteiras mínimas para `user-prefs`, `backup`, `universe-theme` e `perfis`. O fluxo de backup preserva o envelope validado, a confirmação antes da substituição, a lista de chaves restauradas/ignoradas e a exclusão da sessão de autenticação pelo adaptador existente. A importação trata o JSON como `unknown` antes da validação; não foram usados `any`, supressões ou permissões novas.
+
+O login Google continua acionado somente pelo botão do usuário; o logout re-renderiza a conta, e a estética sincroniza por `saveProfile` apenas quando há sessão. A página mantém a limpeza do cache Wikipédia legado, o descarte do efeito quando o hero sai do DOM, o contador de visualizações, os links externos e a limpeza total local com confirmação explícita.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **43 para 42 páginas JavaScript canônicas restantes**.
