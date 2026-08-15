@@ -547,3 +547,11 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A página preserva persistência da cor atual, sincronização entre controles, cópia de valores, preview, gerador de gradiente, saída CSS, razão de contraste e badges AA/AAA. Valores externos são estreitados por `hexToRgb` antes de entrar no cálculo, sem duplicar matemática nem introduzir dependências ou permissões novas.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **46 para 45 páginas JavaScript canônicas restantes**.
+
+## 4.29 Morse standalone
+
+`src/pages/morse.ts` substituiu a página canônica `/morse`, que é distinta de `src/pages/cripto/morse.ts`: a primeira é o gerador completo com transmissão de áudio e farol visual; a segunda é apenas o painel do laboratório cripto. A nova fronteira `src/data/morse-code.d.ts` declara a tabela internacional, codificação, decodificação e segmentos de timing PARIS.
+
+A implementação preserva modo texto→Morse, Morse→texto, inversão, cópia, limpeza, sliders de WPM/frequência, oscilador Web Audio, flash sincronizado, parada manual, encerramento por `aoSair`, persistência local e tabela de referência. O estado da transmissão continua por instância da página, evitando que uma visita anterior deixe o Play bloqueado. O typecheck encontrou apenas uma comparação impossível de inicialização e ela foi corrigida sem supressão.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **45 para 44 páginas JavaScript canônicas restantes**.
