@@ -1,6 +1,6 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Audited commit:** `a7607807aa77d5f798bb697bed49d9c7daaf0fa2`
+**Audited commit:** `490f2fad2caf982175936d979e20b63530a7ce23`
 **Status:** INVENTÁRIO ATUALIZADO — Dossiê, Simbolos, Gerar Código, Git Helper, Dólar, Biblioteca, Academia, CiberSeg e Robotica foram migrados; 87 páginas canônicas continuam no mapa abaixo.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
