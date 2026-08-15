@@ -645,3 +645,13 @@ Foram criadas fronteiras para `memory-ml` e `llm-mini`, enquanto `jarvis-brain.d
 O corpus demonstrativo permanece disponível quando há menos de oito memórias, o slider mantém o estado de k-means, e o treino mantém a curva de loss, a geração de texto e os limites do corpus. Dados de codemap são estreitados por interfaces locais, sem `any` ou supressões.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **36 para 35 páginas JavaScript canônicas restantes**.
+
+## 4.39 Terminal Web
+
+`src/pages/terminal.ts` substituiu o Terminal Web canônico. A implementação tipa o contexto do terminal, o ambiente de variáveis, o resultado de execução, os comandos, o histórico, autocomplete, pipes, redirects, ANSI, estado de processamento, atualização de status e limpeza de atalhos globais.
+
+Foram criadas declarações para `terminal-engine` e `terminal-commands`. O contexto mutável mantém `cwd`, `env`, `aliases`, `history`, `bootedAt` e `setCwd`; o resultado preserva `stdout`, `stderr` e `exit`, e os comandos aceitam retorno síncrono ou assíncrono sem recorrer a `any`.
+
+A página mantém o comportamento original de POSIX-like commands, histórico com setas, autocomplete por Tab, Ctrl+L/Ctrl+C, prompt baseado no diretório virtual e execução somente após ação do operador. `aoSair` remove o listener global, o wrapper JavaScript preserva os imports V1, e nenhum mecanismo de execução externa foi adicionado.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **35 para 34 páginas JavaScript canônicas restantes**.
