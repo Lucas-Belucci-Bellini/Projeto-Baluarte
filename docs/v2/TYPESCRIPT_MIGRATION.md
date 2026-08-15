@@ -420,3 +420,12 @@ Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run bu
 `src/pages/seguranca.ts` substituiu a página JavaScript de Segurança. A fronteira `jarvis-guard.d.ts` declara níveis `safe`, `caution` e `block`, logs read-only, decisões, estatísticas e o catálogo de ferramentas. A página preserva o toggle local, o log de decisões, a limpeza, as estatísticas e a classificação visual sem duplicar a política de segurança.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **63 para 62 páginas JavaScript canônicas restantes**.
+
+
+## 4.13 Banco ao vivo e Centro Militar
+
+`src/pages/banco.ts` substituiu o Painel do Banco com normalização explícita de retornos `unknown` do Supabase. As consultas continuam read-only (`site_stats` e `mural_posts`), o fallback offline permanece silencioso e nenhuma política RLS foi alterada.
+
+`src/pages/militar.ts` substituiu o hub Centro Militar com tópicos imutáveis, índice de conteúdo, observers de viewport, links internos pelo Router, extratos da Wikipédia e curadoria best-effort do Supabase. Foram adicionados os tipos de `WikiSummary`; a curadoria existente em `mil-curation.ts` foi reutilizada sem duplicação.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **62 para 60 páginas JavaScript canônicas restantes**.
