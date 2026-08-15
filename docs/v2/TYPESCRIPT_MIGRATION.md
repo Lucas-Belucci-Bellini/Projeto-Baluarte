@@ -373,3 +373,14 @@ A sub-onda seguinte concluiu a conversão do laboratório `/cripto`: `caesar.ts`
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **80 para 74 páginas JavaScript canônicas restantes**. Nenhuma API externa, segredo ou ação de alto impacto foi adicionada.
 
 O próximo passo permanece incremental: finalizar páginas cripto já isoladas, depois calculadoras e páginas utilitárias pequenas. O hub só foi convertido depois que todos os painéis que ele monta estavam protegidos por contratos TypeScript.
+
+
+## 4.8 Primeira onda de calculadoras
+
+Foram convertidos `src/pages/calculadoras/financeira.ts`, `estatistica.ts` e `engenharia.ts`. Os três caminhos `.js` permanecem como wrappers para os importadores legados, enquanto o hub ainda pode montar os painéis restantes sem mudança de rota.
+
+A calculadora financeira mantém juros simples e compostos, Price, VPL/TIR por Newton-Raphson e equivalência de taxas. A estatística mantém parsing de listas, descritiva com quartis/moda/desvios, regressão linear, Pearson, R² e predição. A engenharia mantém Lei de Ohm, divisor, código de cores de resistores, frequência/comprimento de onda e pressão hidrostática de Stevin. As fronteiras são locais: cada painel declara tipos de inputs, resultados e tabelas, sem introduzir `any` ou relaxar `strict`.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **74 para 71 páginas JavaScript canônicas restantes**.
+
+A próxima etapa do catálogo é converter o hub de calculadoras somente depois de fechar os cinco painéis. Os painéis restantes — conversores e saúde — serão convertidos antes do hub para manter a fronteira de montagem completamente tipada.
