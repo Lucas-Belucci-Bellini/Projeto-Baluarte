@@ -1,14 +1,14 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `080b82d1ad6c395738e76ca0e0548b8b22c0d4d0`
-**Gerado em:** 2026-08-15T02:59:12.657Z
+**SHA auditado:** `5c3fa5ec6177dba03162cdb2010ddd2bb5458429`
+**Gerado em:** 2026-08-15T03:13:21.825Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **41 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **40 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
@@ -17,7 +17,6 @@ Existem **41 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | Mídia, rádio e DSP | 8 |
 | Arma 3, 3D e visualização | 7 |
 | Hubs e catálogos | 3 |
-| Páginas utilitárias e conteúdo | 1 |
 
 ## Matriz completa
 
@@ -63,7 +62,6 @@ Existem **41 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 38 | `src/pages/ocr.js` | 217 | 9286 | Ferramentas interativas | médio | fechar tipos de entrada, estado e dependências |
 | 39 | `src/pages/terminal-ia.js` | 217 | 9857 | Ferramentas interativas | médio | fechar tipos de entrada, estado e dependências |
 | 40 | `src/pages/mural.js` | 168 | 7368 | Hubs e catálogos | médio | tipar catálogo, filtros e persistência local |
-| 41 | `src/pages/utilidades.js` | 613 | 31394 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 

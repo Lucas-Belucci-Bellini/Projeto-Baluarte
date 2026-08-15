@@ -585,3 +585,13 @@ A página preserva os dois painéis independentes: esconder texto com senha opci
 Os avisos da versão JavaScript que usavam `type: 'error'` foram alinhados ao contrato existente de toast (`danger`), sem alterar o significado visual das falhas. Não foram adicionados `any`, supressões ou mudanças na engine AES.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **42 para 41 páginas JavaScript canônicas restantes**.
+
+## 4.33 Caixa de Ferramentas — Utilidades
+
+`src/pages/utilidades.ts` substituiu a última página canônica de baixo risco do inventário. A implementação preserva o hub local com gerador de senhas usando `crypto.getRandomValues`, UUIDs, contador de texto, timestamp/data, porcentagens, diff LCS por linha, Lorem Ipsum, número por extenso, imagem para data URI, sorteador, conversores de caso e slug, tabela ASCII, números romanos, datas, px/rem, fusos horários, Markdown, binário, JSON/CSV, regra de três, bytes e frequência de palavras.
+
+Os dados dinâmicos foram estreitados sem `any`: registros JSON passam por guarda de `unknown`, frequências usam `Record<string, number>`, zonas usam tuplas, e o parser romano trata símbolos desconhecidos de forma defensiva. A conversão mantém o preview Markdown existente e o uso do `mdToHtml` local; nenhuma ferramenta introduz chamadas externas ou armazenamento de segredo.
+
+Durante o typecheck, os callbacks de timestamp e px/rem foram extraídos para funções nomeadas. Isso mantém o mesmo comportamento, mas evita invocar diretamente propriedades DOM anuláveis como `oninput`, em conformidade com o modo estrito. O arquivo JavaScript continua como wrapper de compatibilidade.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **41 para 40 páginas JavaScript canônicas restantes**.
