@@ -531,3 +531,11 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A nova fronteira `src/data/skills.d.ts` declara somente o catálogo real consumido pela página. O carregamento de storage passa por guards de `unknown`, a categoria do formulário é estreitada para a união válida e o renderizador Markdown mantém escaping antes de inserir a visualização controlada. Não foram adicionados serviços externos, execução de código ou permissões novas.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **48 para 47 páginas JavaScript canônicas restantes**.
+
+## 4.27 Visualizador FFT
+
+`src/pages/fft.ts` substituiu a página canônica do Visualizador FFT. A nova fronteira `src/utils/fft-engine.d.ts` declara os 16 modos de renderização, fontes de microfone/áudio do sistema/elemento de mídia/tom de teste, controles de FFT, smoothing, ganho, Canvas, desconexão e eventos de encerramento do stream.
+
+A página preserva a solicitação explícita de captura, as instruções de compartilhamento de aba, carregamento de arquivo, oscilador de teste, seletor de FFT, sliders, seleção de modo, reativação visual, status e encerramento ao sair da rota. Erros desconhecidos são convertidos em mensagens seguras; nenhum segredo, permissão adicional ou envio externo foi criado.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **47 para 46 páginas JavaScript canônicas restantes**.
