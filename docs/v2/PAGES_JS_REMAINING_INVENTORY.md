@@ -1,18 +1,18 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `4a0ffea4ce491676b39192d222f230b17045d353`
-**Gerado em:** 2026-08-15T01:39:02.007Z
+**SHA auditado:** `20318d57dc62a3146baa1170e90638328627eb2b`
+**Gerado em:** 2026-08-15T01:43:40.144Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **57 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **56 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
-| Páginas utilitárias e conteúdo | 16 |
+| Páginas utilitárias e conteúdo | 15 |
 | Ferramentas interativas | 12 |
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
@@ -75,12 +75,11 @@ Existem **57 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 49 | `src/pages/batalha-naval.js` | 253 | 10301 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 50 | `src/pages/economia.js` | 248 | 8251 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 51 | `src/pages/diagnostico.js` | 220 | 9304 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 52 | `src/pages/portas.js` | 213 | 8409 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 53 | `src/pages/json-studio.js` | 211 | 7148 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 54 | `src/pages/geopulse.js` | 199 | 8125 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 55 | `src/pages/triangulacao.js` | 173 | 7442 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 56 | `src/pages/shadow.js` | 170 | 6837 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 57 | `src/pages/orcamentos-militares.js` | 166 | 7834 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
+| 52 | `src/pages/json-studio.js` | 211 | 7148 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 53 | `src/pages/geopulse.js` | 199 | 8125 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 54 | `src/pages/triangulacao.js` | 173 | 7442 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 55 | `src/pages/shadow.js` | 170 | 6837 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 56 | `src/pages/orcamentos-militares.js` | 166 | 7834 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
 
 ## Critérios de saída
 
