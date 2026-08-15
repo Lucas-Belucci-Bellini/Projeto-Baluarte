@@ -729,3 +729,15 @@ O diagnóstico 3D permanece acionado pelo operador, reportando etapas de WebGL, 
 O inventário determinístico caiu de **12 para 11 páginas JavaScript canônicas restantes**. Foram adicionadas cinco declarações de fronteira e o `tsconfig.json` segue strict, sem `any`, `@ts-ignore` ou relaxamento.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
+
+## 4.45 Mapa Tático Mundial
+
+A onda 4.45 converteu `src/pages/mapa.js` para `mapa.ts`, mantendo o wrapper JavaScript de compatibilidade. O módulo preserva o MapLibre lazy, as bases satélite/topográfica/tática/ESRI, DEM e relevo 3D, globo, grid, cabos submarinos, batimetria, temperatura, radar de chuva, satélite NASA, espaço aéreo OpenSky e naval AIS Digitraffic.
+
+As respostas de rede entram como `unknown` e são estreitadas antes de virar FeatureCollections ou dados de camada. Cada feed continua opcional: falhas de rede deixam a interface viva e não derrubam a rota. O catálogo compartilhado `camadas-mapa.d.ts` documenta bases, overlays, DEM, créditos, estilo e helpers sem inserir chaves de API no frontend.
+
+A página mantém os controles táticos, popup de aeronaves/navios, atualização por viewport, localização do operador, zoom máximo e toggle de relevo/globo. Timers, radar e instância MapLibre são limpos ao sair da rota; nenhum polling permanece preso ao DOM desmontado.
+
+O inventário determinístico caiu de **11 para 10 páginas JavaScript canônicas restantes**. Foi adicionada uma declaração de fronteira para o catálogo de camadas, sem alterar a implementação compartilhada nem o loader MapLibre existente. Strict permaneceu ativo, sem `any`, `@ts-ignore` ou segredos.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
