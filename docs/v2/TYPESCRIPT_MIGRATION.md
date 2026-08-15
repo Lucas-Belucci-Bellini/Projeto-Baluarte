@@ -755,3 +755,14 @@ A limpeza usa `aoSair`: para a fonte atual, fecha o modo satélite, reseta o tra
 O inventário determinístico caiu de **10 para 9 páginas JavaScript canônicas restantes**. Foram adicionadas três declarações de fronteira. Strict permaneceu ativo, sem `any`, `@ts-ignore` ou relaxamento.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
+
+
+## 4.47 Rádio — sintetizador e Radio Browser
+
+A onda 4.47 converteu `src/pages/radio.js` para `src/pages/radio.ts`, mantendo o arquivo `.js` como wrapper de compatibilidade. A página preserva os dois modos da rota: o sintetizador offline via Web Audio, com sintonia, estações Morse, ruído, onda contínua, volume e limpeza completa do `AudioContext`; e o modo Online, com busca de estações reais pelo Radio Browser API, filtros por nome/país/gênero, player HTMLAudioElement, estados de carregamento/erro, bloqueio explícito de streams HTTP em páginas HTTPS e parada ao sair da rota.
+
+A fronteira `src/utils/radio-api.d.ts` descreve somente `RadioStation`, os filtros de busca, opções de países/gêneros e `searchStations()` usados pela página. Respostas remotas continuam entrando como `unknown` e são normalizadas no adaptador; nenhum segredo ou chave de API foi introduzido. O estado de frequência, volumes, modo e filtros permanece persistido pela Storage existente. Não foram usados `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **9 para 8 páginas JavaScript canônicas restantes**. Os relatórios temporários do smoke foram restaurados após a execução para não versionar timestamps de teste. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante esta onda.
+
+A próxima página recomendada é `src/pages/musicas.js`, por compartilhar o domínio de mídia e permitir reaproveitar o padrão de lifecycle de áudio sem misturar ainda os contratos pesados de JARVIS, Arma 3 e WebGL.
