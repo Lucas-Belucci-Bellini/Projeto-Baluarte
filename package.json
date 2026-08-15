@@ -44,6 +44,7 @@
     "gen-tabela-estabilidade": "node scripts/gen-tabela-estabilidade.mjs",
     "gen-catalogo-eventos": "node scripts/gen-catalogo-eventos.mjs",
     "gen-catalogo-storage": "node scripts/gen-catalogo-storage.mjs",
+    "gen-catalogo-skills": "node scripts/gen-catalogo-skills.mjs",
     "prova-offline": "node scripts/prova-offline.mjs",
     "tipos:v2": "tsc -p v2/jsconfig.json",
     "v2:integracao": "node scripts/v2-integracao.mjs",
