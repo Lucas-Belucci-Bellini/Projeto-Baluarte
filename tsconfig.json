@@ -88,6 +88,7 @@
     "src/pages/triangulacao.ts",
     "src/pages/geopulse.ts",
     "src/pages/json-studio.ts",
+    "src/pages/batalha-naval.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/core/politica.d.ts",

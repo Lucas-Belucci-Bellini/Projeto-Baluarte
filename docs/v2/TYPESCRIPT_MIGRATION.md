@@ -515,3 +515,11 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A página preserva o exemplo Baluarte, persistência em `storage`, cópia para clipboard, limpeza, árvore expandida, relatório de erro e publicação read-only de caracteres para o status global. Os erros externos e os valores desconhecidos são tratados defensivamente; não foram usados `any`, supressões ou alteração do contrato V1.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **50 para 49 páginas JavaScript canônicas restantes**.
+
+## 4.25 Batalha Naval
+
+`src/pages/batalha-naval.ts` substituiu a página canônica de Batalha Naval. A implementação fecha os contratos de frota, navio, célula, coordenada, tabuleiro, fase da partida e estado da IA, preservando posicionamento aleatório, tabuleiros 10×10, acessibilidade por `aria-label`, modo caça com vizinhança, turnos, afundamento, vitória, derrota, reposicionamento e nova partida.
+
+A conversão mantém o comportamento visual e os callbacks de jogo sem introduzir armazenamento, rede ou novos efeitos externos. O erro de definite assignment encontrado no primeiro typecheck foi corrigido inicializando as coordenadas potenciais da IA como opcionais e estreitando-as antes do acesso ao tabuleiro; nenhum diagnóstico foi silenciado.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **49 para 48 páginas JavaScript canônicas restantes**.
