@@ -1,20 +1,20 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Base de trabalho:** `fe981cdc2aba1a28397c426decdb5ed46b4764f4` (último `main` publicado antes da onda 4.49)
-**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas e Núcleo Mark XIII foram implementados; **6 páginas canônicas** continuam no mapa abaixo.
+**Base de trabalho:** `49466a54a3958381b7d22dad28b5678f64d53a71` (último `main` publicado antes da onda 4.50)
+**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas, Núcleo Mark XIII e JARVIS Vision foram implementados; **5 páginas canônicas** continuam no mapa abaixo.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
 > **Conclusão executiva:** ainda há muito JavaScript no repositório, mas ele não representa um único bloco de trabalho. O próximo passo não deve ser converter todos os arquivos de uma vez. O caminho correto é continuar por contratos: páginas pequenas e de baixo risco, depois dados com declarações estruturais, depois Core/integrations e, em paralelo controlado, os contratos V2 que concentram os 61 erros atuais.
 
 ## 1. Fotografia atual
 
-A contagem foi feita diretamente no workspace após a onda 4.49 e a migração das páginas anteriores. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **204 módulos JavaScript canônicos restantes** depois de retirar 148 wrappers; `vite.config.js` continua sendo uma configuração opcional fora do domínio da aplicação.
+A contagem foi feita diretamente no workspace após a onda 4.50 e a migração das páginas anteriores. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **203 módulos JavaScript canônicos restantes** depois de retirar 149 wrappers; `vite.config.js` continua sendo uma configuração opcional fora do domínio da aplicação.
 
 | Área | JavaScript total | JavaScript canônico restante | TypeScript de implementação | `.d.ts` de fronteira |
 | --- | ---: | ---: | ---: | ---: |
 | `src/core` | 17 | 11 | 6 | 8 |
 | `src/layout` | 5 | 1 | 4 | 1 |
-| `src/pages` | 114 | 6 | 108 | 7 |
+| `src/pages` | 114 | 5 | 109 | 7 |
 | `src/data` | 59 | 59 | 0 | 38 |
 | `src/utils` | 98 | 71 | 28 | 72 |
 | `v2/core` | 47 | 43 | 4 | 6 |
@@ -24,13 +24,13 @@ A contagem foi feita diretamente no workspace após a onda 4.49 e a migração d
 | `src/main.js` | 1 | 1 | 0 | 0 |
 | `src/styles.d.ts` | 0 | 0 | 0 | 1 |
 | `vite.config.js` | 1 | Opcional | 0 | 0 |
-| **Total** | **352** | **204** | **150** | **134** |
+| **Total** | **352** | **203** | **151** | **134** |
 
-A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **295 arquivos JS em `src`**, **56 em `v2`**, **148 wrappers de compatibilidade** e **150 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, **108 páginas**, adaptadores visuais/integrações, os contratos J1, a Central de Música, os painéis de mídia/IDE e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
+A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **295 arquivos JS em `src`**, **56 em `v2`**, **149 wrappers de compatibilidade** e **151 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, **109 páginas**, adaptadores visuais/integrações, os contratos J1, a Central de Música, os painéis de mídia/IDE e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
 
 ## 2. O que já não precisa ser convertido agora
 
-Cento e quarenta e oito arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
+Cento e quarenta e nove arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
 
 | Wrapper | Implementação canônica |
 | --- | --- |
@@ -60,20 +60,20 @@ Esses wrappers **não são dívida de conversão funcional**. Removê-los agora 
 
 ### 3.1 Páginas — maior volume, mas não todo o maior risco
 
-Ainda existem **6 módulos de páginas em JavaScript canônico**. A migração deve ser feita por risco, não apenas por tamanho; Dossiê, Simbolos, Gerar Código, Git Helper, Dólar, Biblioteca, Academia, CiberSeg, Robotica, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Filmes, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Núcleo Mark XIII, Modelos 3D, Mapa Tático, Radar, Rádio e Musicas já saíram desta contagem.
+Ainda existem **5 módulos de páginas em JavaScript canônico**. A migração deve ser feita por risco, não apenas por tamanho; Dossiê, Simbolos, Gerar Código, Git Helper, Dólar, Biblioteca, Academia, CiberSeg, Robotica, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Filmes, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Núcleo Mark XIII, JARVIS Vision, Modelos 3D, Mapa Tático, Radar, Rádio e Musicas já saíram desta contagem.
 
 | Grupo | Exemplos | Estado | Risco |
 | --- | --- | --- | --- |
 | Ondas concluídas | `dossie.ts`, `simbolos.ts`, `gerar-codigo.ts`, `git-helper.ts`, `dolar.ts`, `biblioteca.ts`, `academia.ts`, `ciberseg.ts`, `robotica.ts` + wrappers | Migrado até esta onda | Baixo a médio |
-| Próxima onda segura | `jarvis-vision.js` e contratos de câmera/visão | Ainda JS canônico | Alto |
+| Próxima onda segura | `wiki-arma3.js` e contratos de dados/ícones | Ainda JS canônico | Alto |
 | Conteúdo estático militar | ondas militares já convertidas | Migrado | Baixo |
 | Hubs e catálogos médios | nenhum canônico restante; Musicas concluída | Migrado | Médio a alto |
 | Ferramentas interativas | contratos de Nexus, Arma 3 e visão | Reservado para ondas próprias | Alto |
-| IA, Nexus e memória | `jarvis.js`, `jarvis-vision.js` | Ainda JS canônico | Alto |
+| IA, Nexus e memória | `jarvis.js` | Ainda JS canônico | Alto |
 | Arma 3 e 3D | `wiki-arma3.js`, `arma3-tutorial.js`, `vanguard.js`, `visao.js` | Ainda JS canônico | Alto |
 | Mídia, música e DSP | páginas concluídas; motores JS permanecem atrás de contratos | Página migrada | Alto |
 
-As maiores páginas restantes são `arma3-tutorial.js` com 1.375 linhas, `jarvis.js` com 977, `visao.js` com 831, `vanguard.js` com 821, `wiki-arma3.js` com 755 e `jarvis-vision.js` com 711. Elas **não devem** ser as próximas, porque cada uma arrasta muitos contratos de dados, APIs do navegador ou integrações pesadas.
+As maiores páginas restantes são `arma3-tutorial.js` com 1.375 linhas, `jarvis.js` com 977, `visao.js` com 831, `vanguard.js` com 821 e `wiki-arma3.js` com 755 linhas. Elas **não devem** ser as próximas, porque cada uma arrasta muitos contratos de dados, APIs do navegador ou integrações pesadas.
 
 ### 3.2 Dados — 59 módulos JavaScript, mas a conversão comportamental não é obrigatória em todos
 
@@ -162,13 +162,13 @@ A tabela mostra uma distinção importante: não são 61 causas independentes. O
 | 17 | Ferramentas e páginas médias | Migrar comportamento depois dos contratos | Tests, build, smoke e caminho crítico |
 | 18 | IA, Arma 3, 3D, mídia e `main.js` | Último bloco por maior raio de impacto | Suites específicas, performance e browser validation |
 
-A próxima execução segura é `jarvis-vision.js`, aproveitando os contratos do JARVIS e a ponte nativa/visual já estabilizados. JARVIS, Editor, Arma 3 e WebGL continuam reservados às ondas próprias e aos contratos específicos documentados.
+A próxima execução segura é `wiki-arma3.js`, aproveitando os ícones já versionados em `public/arma3/` e os contratos de dados da Enciclopédia Militar. JARVIS, Editor, Arma 3 e WebGL continuam reservados às ondas próprias e aos contratos específicos documentados.
 
 ## 6. O que não deve ser feito
 
-Não se deve transformar os 204 arquivos JavaScript canônicos restantes em TypeScript num único commit. Isso misturaria páginas, dados estáticos, motores gráficos, Auth, Supabase, V2 e bootstrap, tornando impossível diferenciar regressão local de efeito cascata.
+Não se deve transformar os 203 arquivos JavaScript canônicos restantes em TypeScript num único commit. Isso misturaria páginas, dados estáticos, motores gráficos, Auth, Supabase, V2 e bootstrap, tornando impossível diferenciar regressão local de efeito cascata.
 
-Também não se deve remover os 148 wrappers `.js`, incluir todo o `v2/core` no `tsconfig.json` raiz, silenciar os 61 erros com `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`, nem corrigir o Supabase Preview criando ou apagando migrações sem obter o catálogo remoto oficial.
+Também não se deve remover os 149 wrappers `.js`, incluir todo o `v2/core` no `tsconfig.json` raiz, silenciar os 61 erros com `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`, nem corrigir o Supabase Preview criando ou apagando migrações sem obter o catálogo remoto oficial.
 
 Os módulos Arma 3 grandes e os motores JARVIS/3D não devem ser escolhidos apenas porque possuem muitas linhas. Eles exigem contratos específicos, testes de browser e validação de performance. O tamanho é um indicador de risco, não uma ordem automática de migração.
 

@@ -790,3 +790,16 @@ O fluxo do Arquivista mantém a regra de segurança: leitura e análise podem se
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **7 para 6 páginas JavaScript canônicas restantes**. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante a conversão.
 
 O próximo grupo recomendado é `jarvis-vision.js`, porque reaproveita a ponte do JARVIS recém-fechada, seguido de `wiki-arma3.js` com os ícones já disponíveis em `public/arma3/`. As páginas Arma 3/3D maiores continuam em ondas próprias para limitar o raio de regressão.
+
+
+## 4.50 JARVIS Vision e rastreamento multi-corporal
+
+A onda 4.50 converteu `src/pages/jarvis-vision.js` para `src/pages/jarvis-vision.ts`, mantendo o wrapper JavaScript de compatibilidade. A implementação preserva o loader lazy de CDN com cache e timeout, câmera via `getUserMedia`, TF.js MoveNet MultiPose LIGHTNING para até 20 pessoas, MediaPipe Hands opcional para até 80 mãos, HUD tático, esqueleto interpolado, métricas de FPS/pessoas/mãos/pontos e seleção dinâmica do número de mãos.
+
+Foram mantidos os gestos posicionais e seus efeitos: Homem-Aranha, shaka, mão aberta, L, seis e OK continuam calculados sobre landmarks, com cooldown e áudio local para os gestos VAI TEIA e SHAKA. A camada `jarvis-vision-api.d.ts` declara somente os tipos necessários de pose, keypoints, detector, mãos e APIs globais `window.tf`, `window.poseDetection` e `window.Hands`; ela fica separada de `jarvis-vision.d.ts` para evitar colisão de resolução entre o entrypoint e o contrato de runtime.
+
+O lifecycle continua reversível: o botão nunca fica travado em erro, a câmera pode ser parada, tracks são encerradas, detector e MediaPipe são fechados, variáveis TF.js são descartadas e o `MutationObserver` limpa a instância quando a rota sai do DOM. Não foram adicionados segredos, upload de câmera ou envio de imagens; a visão permanece local no navegador. Não foram usados `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **6 para 5 páginas JavaScript canônicas restantes**. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante a conversão.
+
+A próxima página recomendada é `wiki-arma3.js`, aproveitando os assets de ícones já presentes em `public/arma3/`; depois vêm Vanguard, Visão e Arma 3 Tutorial, enquanto `jarvis.js` permanece para o fechamento dos contratos J2–J6.
