@@ -1,14 +1,14 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `f82b2abf0c1f58f9674d2a8f44eaf826e2485a27`
-**Gerado em:** 2026-08-15T02:42:27.451Z
+**SHA auditado:** `a25d696672db941e064b22fdaa495263b48d2526`
+**Gerado em:** 2026-08-15T02:48:04.040Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **44 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **43 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
@@ -16,8 +16,8 @@ Existem **44 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
 | Arma 3, 3D e visualização | 7 |
-| Páginas utilitárias e conteúdo | 4 |
 | Hubs e catálogos | 3 |
+| Páginas utilitárias e conteúdo | 3 |
 
 ## Matriz completa
 
@@ -66,7 +66,6 @@ Existem **44 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 41 | `src/pages/utilidades.js` | 613 | 31394 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 42 | `src/pages/esteganografia.js` | 440 | 14455 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 43 | `src/pages/perfil.js` | 430 | 20547 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 44 | `src/pages/apis.js` | 366 | 14773 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 

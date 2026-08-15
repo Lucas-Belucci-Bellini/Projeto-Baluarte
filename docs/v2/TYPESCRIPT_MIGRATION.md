@@ -555,3 +555,13 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A implementação preserva modo texto→Morse, Morse→texto, inversão, cópia, limpeza, sliders de WPM/frequência, oscilador Web Audio, flash sincronizado, parada manual, encerramento por `aoSair`, persistência local e tabela de referência. O estado da transmissão continua por instância da página, evitando que uma visita anterior deixe o Play bloqueado. O typecheck encontrou apenas uma comparação impossível de inicialização e ela foi corrigida sem supressão.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **45 para 44 páginas JavaScript canônicas restantes**.
+
+## 4.30 Central de APIs
+
+`src/pages/apis.ts` substituiu a página canônica da Central de APIs. A implementação tipa o cofre local, os resultados de testes com latência/status, os cards de provedores, o diagnóstico do `/health`, as respostas desconhecidas do backend e a edição da configuração do JARVIS.
+
+A fronteira de `jarvis-engine` foi ampliada somente com os exports reais utilizados: `saveConfig` e `resolveServerBase`, além dos campos mutáveis de configuração necessários para a ação explícita do usuário. A fronteira de `helpers` passou a declarar `uid`, usado para IDs aleatórios do cofre. As chaves continuam mascaradas por padrão e armazenadas apenas no navegador; nenhum segredo é enviado ao repositório ou introduzido em URL pública.
+
+Os testes de provedor continuam explícitos e sob ação do usuário: Claude navegador, Claude servidor, Gemini, Hermes e Ollama não são chamados automaticamente na abertura da página. Os retornos externos são estreitados por guards de `unknown`, e falhas de rede/timeout são convertidas em status visíveis sem quebrar a UI.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **44 para 43 páginas JavaScript canônicas restantes**.
