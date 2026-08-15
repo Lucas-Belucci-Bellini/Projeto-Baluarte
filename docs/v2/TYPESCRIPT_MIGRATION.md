@@ -351,3 +351,14 @@ O inventário determinístico foi regenerado sobre o workspace após a base `076
 Validação local desta onda: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com apenas o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. `npm run tipos:v2` continua vermelho com exatamente **61 erros em 12 arquivos**, sem crescimento e concentrado na dívida JSDoc preexistente de Runtime Manager/Group, stdio, supervisor, transporte e vertical slice. Os relatórios de smoke gerados localmente foram restaurados após a execução para não versionar timestamps de teste.
 
 O próximo passo seguro é fechar J2 de memória/recall do JARVIS e, em paralelo, tipar Jogos com testes do motor de jogadores. `jarvis.js`, `editor.js`, Arma 3, 3D e mídia continuam reservados para ondas próprias conforme [`JARVIS_EDITOR_MIGRATION_PLAN.md`](./JARVIS_EDITOR_MIGRATION_PLAN.md).
+
+
+## 4.6 Onda cripto de baixo acoplamento
+
+A continuação da migração converteu três painéis pequenos para implementações canônicas TypeScript: `src/pages/cripto/atbash.ts`, `src/pages/cripto/hash.ts` e `src/pages/cripto/vigenere.ts`. Os caminhos `.js` continuam como wrappers de compatibilidade, preservando o contrato consumido pelo hub `/cripto`.
+
+`atbash.ts` tipa a tabela de 26 pares, o textarea e a saída da involução. `hash.ts` fecha a união dos algoritmos SHA/MD5 informativo, estreita os resultados de `allHashes()` e mantém a cópia assíncrona para clipboard. `vigenere.ts` tipa texto, chave, encode/decode e a chave esticada exibida alinhada com o texto. A fronteira `src/utils/cripto-engine.d.ts` declara somente as funções reais consumidas pelos três painéis, sem converter o motor criptográfico inteiro nesta onda.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **83 para 80 páginas JavaScript canônicas restantes**. `tipos:v2` permanece acompanhado separadamente na dívida histórica de 61 diagnósticos, sem usar supressões ou relaxamento de strict.
+
+A próxima sub-onda segura é `cripto/caesar.ts`, `cripto/base.ts` e, depois, os painéis de maior estado como OTP, AES e Morse. O hub cripto só deve ser convertido quando o ciclo de áudio e a troca de abas tiverem fronteiras próprias.

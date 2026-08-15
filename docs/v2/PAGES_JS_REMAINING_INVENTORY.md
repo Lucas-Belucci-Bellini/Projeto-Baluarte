@@ -1,18 +1,18 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `0762acfb120c24e43ceab5ca82f00190acbfa4b1`
-**Gerado em:** 2026-08-15T00:21:57.585Z
+**SHA auditado:** `06c0afefcc0df63d10df60885712ec8ec8d672f8`
+**Gerado em:** 2026-08-15T00:44:23.807Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **83 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **80 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
-| Páginas utilitárias e conteúdo | 40 |
+| Páginas utilitárias e conteúdo | 37 |
 | Ferramentas interativas | 12 |
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
@@ -104,9 +104,6 @@ Existem **83 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 78 | `src/pages/cripto/morse.js` | 88 | 3272 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 79 | `src/pages/arsenal-expandido.js` | 84 | 2933 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 80 | `src/pages/cripto/caesar.js` | 80 | 2610 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 81 | `src/pages/cripto/vigenere.js` | 74 | 2555 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 82 | `src/pages/cripto/hash.js` | 63 | 2099 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 83 | `src/pages/cripto/atbash.js` | 58 | 1831 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 
