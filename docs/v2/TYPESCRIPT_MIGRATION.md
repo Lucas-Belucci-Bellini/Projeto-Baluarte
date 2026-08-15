@@ -625,3 +625,13 @@ O objeto global `window.Tesseract` foi declarado apenas com a operação `recogn
 A página continua carregando o OCR somente quando o operador aciona a leitura. Falhas de CDN, câmera, Clipboard e Canvas permanecem tratadas como estados visíveis sem quebrar o shell V1. O wrapper JavaScript preserva o contrato de importação legado e nenhuma credencial foi adicionada ao frontend.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **38 para 37 páginas JavaScript canônicas restantes**.
+
+## 4.37 Gerador de Gráficos
+
+`src/pages/graficos.ts` substituiu o gerador de gráficos canônico. A implementação tipa os 12 presets, estado persistido, seleção de tipo, paletas, opções de grid/rótulos/valores, editor JSON, debounce, redimensionamento, limpeza de listeners e exportação PNG.
+
+A fronteira de `chart-engine` foi ampliada para declarar `ChartPoint`, `ChartData`, `ChartOptions`, `CHART_TYPES`, `PALETTES`, `drawChart` e `exportPNG`. Dados JSON são parseados como `unknown` e só seguem para o Canvas quando são objetos; entradas inválidas usam o preset do tipo e exibem a mensagem de erro no painel.
+
+A página mantém o comportamento local-first: o estado é salvo pelo adaptador de storage, não há chamadas de rede, e o re-render inicial continua adiado até o Canvas possuir dimensões. O wrapper JavaScript conserva a compatibilidade das rotas e imports V1.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **37 para 36 páginas JavaScript canônicas restantes**.

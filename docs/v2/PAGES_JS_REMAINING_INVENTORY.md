@@ -1,19 +1,19 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `0afd9215bca1702424fc827b185f4fa9dd47d924`
-**Gerado em:** 2026-08-15T03:29:04.393Z
+**SHA auditado:** `a3ff11b184bdb1abc4a3e9e808a7c07e421870b9`
+**Gerado em:** 2026-08-15T03:33:52.917Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **37 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **36 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
 | IA, Nexus e memória | 10 |
-| Ferramentas interativas | 10 |
+| Ferramentas interativas | 9 |
 | Mídia, rádio e DSP | 8 |
 | Arma 3, 3D e visualização | 7 |
 | Hubs e catálogos | 2 |
@@ -58,7 +58,6 @@ Existem **37 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 34 | `src/pages/codigo.js` | 324 | 13976 | Ferramentas interativas | médio | fechar tipos de entrada, estado e dependências |
 | 35 | `src/pages/terminal.js` | 309 | 9926 | Ferramentas interativas | médio | fechar tipos de entrada, estado e dependências |
 | 36 | `src/pages/aprendizado.js` | 304 | 14176 | Hubs e catálogos | médio | tipar catálogo, filtros e persistência local |
-| 37 | `src/pages/graficos.js` | 269 | 8943 | Ferramentas interativas | médio | fechar tipos de entrada, estado e dependências |
 
 ## Critérios de saída
 
