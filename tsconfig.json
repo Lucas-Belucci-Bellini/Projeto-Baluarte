@@ -103,6 +103,7 @@
     "src/pages/graficos.ts",
     "src/pages/aprendizado.ts",
     "src/pages/terminal.ts",
+    "src/pages/codigo.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/data/skills.d.ts",

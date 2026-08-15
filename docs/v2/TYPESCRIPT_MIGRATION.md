@@ -655,3 +655,13 @@ Foram criadas declarações para `terminal-engine` e `terminal-commands`. O cont
 A página mantém o comportamento original de POSIX-like commands, histórico com setas, autocomplete por Tab, Ctrl+L/Ctrl+C, prompt baseado no diretório virtual e execução somente após ação do operador. `aoSair` remove o listener global, o wrapper JavaScript preserva os imports V1, e nenhum mecanismo de execução externa foi adicionado.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **35 para 34 páginas JavaScript canônicas restantes**.
+
+## 4.40 Raio-X do Código
+
+`src/pages/codigo.ts` substituiu o painel canônico do Raio-X do Código. A implementação tipa metadados, nós, links indexados, projeção 3D em Canvas, forças, adjacência, seleção por ponteiro, halos de memória do JARVIS, métricas, listas e o ciclo de limpeza de animação/resize/mouseup.
+
+O grafo codemap é estreitado por interfaces locais e os nós e links passam por índices seguros antes de entrar no cálculo. A resposta opcional da árvore GitHub ao vivo é tratada como `unknown`; somente blobs com `path`, `type` e `size` válidos entram no agrupamento por diretório e na listagem incremental.
+
+O loop force-directed continua sendo iniciado após o layout, mantém rotação automática e arraste, e é cancelado na saída da rota. O botão de leitura do repositório continua sendo uma ação explícita do operador; nenhuma nova operação de escrita ou credencial foi adicionada. O wrapper JavaScript preserva a compatibilidade das rotas V1.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **34 para 33 páginas JavaScript canônicas restantes**.
