@@ -1,6 +1,12 @@
 {
   "$comentario": "Ferramentas externas de IA instaladas LOCALMENTE. O repo versiona este manifest; os clones ficam em installRoot, que é ignorado pelo git. Veja docs/local-ai-tools.md.",
   "installRoot": ".baluarte/tools",
+  "$skillTargets": "Onde `npm run skills:distribuir` instala as skills do Baluarte. Caminhos relativos à pasta do usuário — ficam FORA do repositório, por isso o script só escreve com --sim.",
+  "skillTargets": [
+    { "id": "claude-code", "dir": ".claude/skills", "descricao": "Claude Code (CLI já instalada na máquina)" },
+    { "id": "hermes", "dir": ".hermes/skills", "descricao": "Hermes Agent — mesmo formato SKILL.md" },
+    { "id": "openclaw", "dir": ".openclaw/skills", "descricao": "OpenClaw — mesmo formato SKILL.md" }
+  ],
   "tools": [
     {
       "id": "gitnexus",
