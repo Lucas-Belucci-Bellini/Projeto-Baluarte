@@ -457,3 +457,10 @@ Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run bu
 `src/pages/portas.ts` substituiu a enciclopédia JavaScript de lógica digital. O contrato `logic-circuits.d.ts` tipa células de tabela verdade, portas fundamentais, blocos combinacionais/sequenciais, famílias de chips e estatísticas. A página preserva os símbolos SVG gerados, tabelas verdade, nota sobre NAND/NOR, catálogo 7400/4000 e link para o Logic Sim.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **57 para 56 páginas JavaScript canônicas restantes**.
+
+
+## 4.18 Diagnóstico do sistema
+
+`src/pages/diagnostico.ts` substituiu o painel de Diagnóstico. Foi criada a fronteira `politica.d.ts` para a fotografia completa de permissões, esquemas, flags, níveis e ambiente. A página preserva as sondas de capacidades do navegador, o estado de estabilidade, concessão/revogação de permissões, liga/desliga de flags, reset para padrão, divergência de esquemas e últimas decisões, sem `innerHTML`.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **56 para 55 páginas JavaScript canônicas restantes**.

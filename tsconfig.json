@@ -81,6 +81,8 @@
     "src/pages/comms.ts",
     "src/pages/baixar.ts",
     "src/pages/portas.ts",
+    "src/pages/diagnostico.ts",
+    "src/core/politica.d.ts",
     "src/data/logic-circuits.d.ts",
     "src/core/comms.d.ts",
     "src/core/supabase-auth.d.ts",
