@@ -497,3 +497,13 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A página preserva arraste do alvo, escolha do número de estações, slider de ruído, estimativa, erro, resíduo, linhas de rumo e a limpeza do `requestAnimationFrame` por `aoSair`. A declaração de ciclo de vida foi apenas estreitada para expor o callback real, mantendo `ciclo-vida.js` como fronteira legada.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **52 para 51 páginas JavaScript canônicas restantes**.
+
+## 4.23 GeoPulse e trilha de localização
+
+`src/pages/geopulse.ts` substituiu a página canônica do GeoPulse. A implementação tipa estatísticas, referências de DOM, Canvas 2D, pontos geográficos e o `GeoTracker`, preservando o início/parada do rastreamento, limpeza, demo de Brasília, lista dos pontos mais recentes, projeção da trilha, distância, duração e velocidades.
+
+A página continua usando a implementação TypeScript existente em `src/utils/geo-tracker.ts`; a migração não cria outra camada de geolocalização nem altera persistência. O callback de erro permanece visível via Toast, e `aoSair(page, () => tracker.stop())` garante que a permissão ativa não sobreviva à troca de rota.
+
+Durante o typecheck foi corrigida uma referência de tipo local: a projeção do trajeto precisava importar explicitamente `Point2D` do motor de triangulação. Depois dessa correção, todos os gates passaram.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **51 para 50 páginas JavaScript canônicas restantes**.

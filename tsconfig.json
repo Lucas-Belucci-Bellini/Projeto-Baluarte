@@ -86,6 +86,7 @@
     "src/pages/orcamentos-militares.ts",
     "src/pages/shadow.ts",
     "src/pages/triangulacao.ts",
+    "src/pages/geopulse.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/core/politica.d.ts",
