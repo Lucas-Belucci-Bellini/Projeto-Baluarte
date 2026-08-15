@@ -249,6 +249,7 @@
     "src/core/supabase.d.ts",
     "src/data/arsenal.d.ts",
     "src/data/site-capabilities.d.ts",
+    "src/data/skills-catalogo.d.ts",
     "src/data/symbols.d.ts",
     "src/data/git-helper.d.ts",
     "src/data/editor-langs.d.ts",

@@ -122,5 +122,29 @@ export function skillsBriefing() {
 `;
 
 writeFileSync(DESTINO, conteudo);
-console.log(`[skills] ${skills.length} skill(s) → src/data/skills-catalogo.js`);
+
+// O `.d.ts` também é gerado. O tsconfig roda com `allowJs: false`, então todo
+// módulo `.js` de `src/data` precisa de um companheiro declarado — e escrever
+// esse à mão seria promessa em dois lugares: muda o formato do catálogo, o
+// tipo continua dizendo o antigo, e o `tipos:ts` passa mentindo.
+const tipos = `/**
+ * Tipos do catálogo de skills — ARQUIVO GERADO junto de \`skills-catalogo.js\`.
+ * Não edite à mão: rode \`npm run gen-catalogo-skills\`.
+ */
+
+export interface Skill {
+  readonly id: string;
+  readonly nome: string;
+  readonly descricao: string;
+  readonly exemplos: readonly string[];
+}
+
+export declare const SKILLS: readonly Skill[];
+
+/** Texto compacto pro briefing do JARVIS (uma linha por skill). */
+export declare function skillsBriefing(): string;
+`;
+writeFileSync(DESTINO.replace(/\.js$/, '.d.ts'), tipos);
+
+console.log(`[skills] ${skills.length} skill(s) → src/data/skills-catalogo.js (+ .d.ts)`);
 for (const s of skills) console.log(`  · ${s.id}`);
