@@ -777,3 +777,16 @@ O Acervo continua usando IndexedDB por meio de `offline-audio.js`: aceita apenas
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **8 para 7 páginas JavaScript canônicas restantes**. Os relatórios temporários do smoke foram restaurados após a execução. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante a conversão.
 
 Com a camada de mídia de páginas concluída, o próximo grupo recomendado é `git-nexus-nucleo.js`, seguido de `jarvis-vision.js` e `wiki-arma3.js`, sempre fechando contratos de socket/cena, câmera e dados antes da troca de cada wrapper.
+
+
+## 4.49 Núcleo Mark XIII e contratos do Arquivista
+
+A onda 4.49 converteu `src/pages/git-nexus-nucleo.js` para `src/pages/git-nexus-nucleo.ts`, mantendo o wrapper JavaScript de compatibilidade. A tela única preserva a cena 3D lazy com fallback 2D, sinais vitais, pulso por eventos, Battery API best-effort, painel inline materializado por comando, chat do J.A.R.V.I.S., deep-link legado por `tab`, eventos remotos somente para intenções visuais e limpeza por `MutationObserver` com destruição da cena, listeners do Event Bus, voz e teclado.
+
+Foram fechados os contratos de `jarvis-hermes-agent.js`, `hermes-local.js`, `jarvis-arquivos.js` e `jarvis-voice.js`. A fronteira de `jarvis-engine.d.ts` passou a representar as mensagens com `text`/`content`, os processadores por modo e o callback de ferramentas; `jarvis-webllm.d.ts` recebeu catálogo e processador WebLLM; `nucleo-socket.d.ts` passou a incluir eventos `voice` e configuração de token; `nexus.d.ts` foi alinhado à assinatura real de memória com texto e tags. A adição de `voice` exigiu apenas completar a tabela de pulso do `git-nexus-cockpit.ts`.
+
+O fluxo do Arquivista mantém a regra de segurança: leitura e análise podem ser solicitadas pelo chat, mas mover, apagar e restaurar só criam uma ação pendente; a execução depende de uma mensagem explícita `confirmar`, e qualquer comando intermediário desarma a ação. Nenhum envio OpenClaw, WhatsApp, venda, alteração de arquivo local ou ação externa foi automatizado pela página. Não foram usados `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **7 para 6 páginas JavaScript canônicas restantes**. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante a conversão.
+
+O próximo grupo recomendado é `jarvis-vision.js`, porque reaproveita a ponte do JARVIS recém-fechada, seguido de `wiki-arma3.js` com os ícones já disponíveis em `public/arma3/`. As páginas Arma 3/3D maiores continuam em ondas próprias para limitar o raio de regressão.

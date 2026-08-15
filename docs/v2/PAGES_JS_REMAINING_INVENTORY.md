@@ -1,19 +1,19 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `00e8cc2d44eaa9f53ab92ede396a0411cc975e68`
-**Gerado em:** 2026-08-15T10:45:43.605Z
+**SHA auditado:** `fe981cdc2aba1a28397c426decdb5ed46b4764f4`
+**Gerado em:** 2026-08-15T10:55:30.117Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **7 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **6 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
 | Arma 3, 3D e visualização | 4 |
-| IA, Nexus e memória | 3 |
+| IA, Nexus e memória | 2 |
 
 ## Matriz completa
 
@@ -25,7 +25,6 @@ Existem **7 páginas JavaScript canônicas restantes**. A onda de biblioteca, ac
 | 4 | `src/pages/vanguard.js` | 822 | 39020 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
 | 5 | `src/pages/wiki-arma3.js` | 756 | 35414 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
 | 6 | `src/pages/jarvis-vision.js` | 712 | 27953 | IA, Nexus e memória | alto | tipar motores, transportes e memória antes da superfície |
-| 7 | `src/pages/git-nexus-nucleo.js` | 707 | 38355 | IA, Nexus e memória | alto | tipar motores, transportes e memória antes da superfície |
 
 ## Critérios de saída
 

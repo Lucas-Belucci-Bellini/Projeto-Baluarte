@@ -18,6 +18,7 @@ const PULSE_MS: Record<NucleoEventType, number> = {
   biometric: 300,
   telemetry: 200,
   system: 160,
+  voice: 360,
 };
 
 type CockpitTabId =

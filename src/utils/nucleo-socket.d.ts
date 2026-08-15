@@ -1,4 +1,4 @@
-export type NucleoEventType = 'telemetry' | 'biometric' | 'command' | 'system';
+export type NucleoEventType = 'telemetry' | 'biometric' | 'command' | 'system' | 'voice';
 
 export interface NucleoEvent {
   readonly type: NucleoEventType;
@@ -15,5 +15,6 @@ export interface NucleoStatus {
 
 export function getNucleoUrl(): string;
 export function setNucleoUrl(url: string): string;
+export function setNucleoToken(token: string): void;
 export function initNucleoLink(): void;
 export function simulateNucleoEvent(type?: NucleoEventType, payload?: unknown): void;

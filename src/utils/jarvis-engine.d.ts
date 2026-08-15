@@ -19,9 +19,13 @@ export interface JarvisLocalResult {
 }
 
 export interface JarvisMessage {
-  readonly role: 'user' | 'jarvis' | 'tool' | 'system';
-  readonly text: string;
+  readonly role: 'user' | 'assistant' | 'jarvis' | 'tool' | 'system';
+  readonly text?: string;
+  readonly content?: string;
 }
+
+export type JarvisConversation = JarvisMessage[];
+export type JarvisToolCallback = (name: string, input: unknown, result: Record<string, unknown> | null) => void;
 
 export interface JarvisConfig {
   mode?: string;
@@ -38,7 +42,10 @@ export function saveConfig(config: JarvisConfig): void;
 export function resolveServerBase(serverUrl?: string): string;
 export function processLocal(message: string): JarvisLocalResult;
 export function getBaluarteBriefing(): string;
-export function processServer(
-  messages: readonly JarvisMessage[],
-  config?: JarvisConfig,
-): Promise<string>;
+export function processServer(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
+export function processClaude(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
+export function processOllama(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
+export function processHermes(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
+export function processClaudeServer(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
+export function processOpenClaw(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
+export function processAgent(messages: readonly JarvisMessage[], config?: JarvisConfig, onTool?: JarvisToolCallback): Promise<string>;
