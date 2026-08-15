@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>JARVIS J1 — contratos puros</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 50px; padding-left: 70px; padding-right: 70px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.5px; }
+    h1 { font: 900 42px/1 Arial, sans-serif; letter-spacing: -1.5px; margin-top: 14px; }
+    .lead { font: 500 16px/1.45 "Courier New", monospace; color: #374151; margin-top: 15px; max-width: 1060px; }
+    .main-grid { margin-top: 34px; display: grid; grid-template-columns: 1.1fr 1.35fr 1.15fr; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .column { min-height: 392px; padding-top: 23px; padding-left: 22px; padding-right: 22px; }
+    .column + .column { border-left: 2px solid #111827; }
+    .cap { color: #0369A1; font: 700 12px/1.2 "Courier New", monospace; letter-spacing: 1px; text-transform: uppercase; }
+    h2 { font: 900 24px/1.08 Arial, sans-serif; margin-top: 12px; }
+    .mode-grid { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #9da9b6; }
+    .mode { min-height: 38px; padding-top: 10px; font: 700 12px/1 "Courier New", monospace; border-bottom: 1px solid #9da9b6; }
+    .mode:nth-child(odd) { border-right: 1px solid #9da9b6; }
+    .contract { min-height: 70px; border-top: 1px solid #9da9b6; padding-top: 11px; }
+    .contract:first-of-type { margin-top: 18px; }
+    .contract-name { color: #0369A1; font: 800 14px/1 "Courier New", monospace; }
+    .contract-desc { color: #374151; font: 500 12px/1.35 "Courier New", monospace; margin-top: 6px; }
+    .adapter { margin-top: 20px; border-top: 1px solid #9da9b6; }
+    .adapter-row { min-height: 64px; border-bottom: 1px solid #9da9b6; padding-top: 11px; }
+    .adapter-row strong { font: 900 15px/1 Arial, sans-serif; }
+    .adapter-row span { display: block; color: #374151; font: 500 12px/1.35 "Courier New", monospace; margin-top: 6px; }
+    /* Reduced top spacing on footer to remove small overflow without changing fonts or major layout */
+    .footer { margin-top: 6px; display: grid; grid-template-columns: 3fr 2fr; border-top: 2px solid #111827; }
+    .footer-main { padding-top: 12px; font: 800 16px/1.3 Arial, sans-serif; }
+    .footer-main b { color: #0369A1; }
+    .footer-side { border-left: 2px solid #111827; padding-top: 12px; padding-left: 22px; color: #374151; font: 700 11px/1.45 "Courier New", monospace; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">JARVIS · ONDA 1 · BASE CONTRATUAL</div>
+    <h1>J1 fecha as regras antes de mover a superfície pesada</h1>
+    <p class="lead">`jarvis-contracts.ts` transforma modos, sessões, requests, eventos e adapters em uma linguagem comum. A página `jarvis.js` continua intacta nesta etapa.</p>
+    <div class="main-grid">
+      <section class="column">
+        <div class="cap">12 modos fechados</div>
+        <h2>SESSION_MODES</h2>
+        <div class="mode-grid">
+          <div class="mode">local</div><div class="mode">webllm</div>
+          <div class="mode">hermes-agente</div><div class="mode">claude</div>
+          <div class="mode">ollama</div><div class="mode">hermes-local</div>
+          <div class="mode">noticias</div><div class="mode">servidor</div>
+          <div class="mode">hermes</div><div class="mode">claude-servidor</div>
+          <div class="mode">openclaw</div><div class="mode">agente</div>
+        </div>
+      </section>
+      <section class="column">
+        <div class="cap">Contratos de dados</div>
+        <h2>Sessão e conversa</h2>
+        <div class="contract"><div class="contract-name">JarvisMessage</div><div class="contract-desc">Papel, conteúdo, tempo e metadados da mensagem.</div></div>
+        <div class="contract"><div class="contract-name">JarvisSession</div><div class="contract-desc">Modo, mensagens e estado de continuidade sem dados secretos.</div></div>
+        <div class="contract"><div class="contract-name">JarvisPublicConfig</div><div class="contract-desc">Configuração que pode alcançar o frontend de forma controlada.</div></div>
+        <div class="contract"><div class="contract-name">ConversationRequest</div><div class="contract-desc">Entrada normalizada para qualquer adapter de modelo ou serviço.</div></div>
+      </section>
+      <section class="column">
+        <div class="cap">Fronteira de execução</div>
+        <h2>Adapter &amp; guards</h2>
+        <div class="adapter">
+          <div class="adapter-row"><strong>JarvisAdapter</strong><span>Interface única para geração, streaming, cancelamento e fallback.</span></div>
+          <div class="adapter-row"><strong>AdapterEvent</strong><span>Texto, progresso, tool call, erro, abort e timeout são eventos explícitos.</span></div>
+          <div class="adapter-row"><strong>Fakes determinísticos</strong><span>Todos os 12 modos são testáveis sem rede, token ou modelo real.</span></div>
+          <div class="adapter-row"><strong>Guards de segurança</strong><span>Narrowing defensivo e `hasSecretLikeKey` bloqueiam segredos na configuração pública.</span></div>
+        </div>
+      </section>
+    </div>
+    <div class="footer">
+      <div class="footer-main">Resultado: uma <b>superfície comum e testável</b> para adapters locais, Hermes, Claude, Ollama e OpenClaw — sem acoplar UI, memória e rede no mesmo commit.</div>
+      <div class="footer-side"><b>FORA DE ESCOPO J1</b><br>• converter `jarvis.js`<br>• enviar WhatsApp<br>• publicar conteúdo<br>• executar venda ou ação externa</div>
+    </div>
+  </div>
+</body>
+</html>

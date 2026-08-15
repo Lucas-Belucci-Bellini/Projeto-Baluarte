@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Roteiro J1 → J6</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 48px; padding-left: 68px; padding-right: 68px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.6px; }
+    h1 { font: 900 44px/1 Arial, sans-serif; letter-spacing: -1.6px; margin-top: 14px; }
+    .subtitle { font: 500 16px/1.45 "Courier New", monospace; color: #374151; margin-top: 15px; max-width: 1040px; }
+    .timeline { margin-top: 42px; display: grid; grid-template-columns: repeat(6, 1fr); border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .phase { min-height: 324px; padding-top: 21px; padding-left: 16px; padding-right: 16px; border-right: 2px solid #111827; }
+    .phase:last-child { border-right: 0; }
+    .phase.current { background: #0369A1; color: #ffffff; }
+    .phase-id { font: 900 28px/1 Arial, sans-serif; letter-spacing: -1px; }
+    .phase-state { display: inline-block; margin-top: 12px; border: 2px solid currentColor; padding-top: 4px; padding-left: 7px; padding-right: 7px; font: 700 10px/1.15 "Courier New", monospace; letter-spacing: .6px; }
+    .phase:not(.current) .phase-state { color: #0369A1; }
+    .phase h2 { font: 900 19px/1.08 Arial, sans-serif; margin-top: 22px; }
+    .phase p { font: 600 12px/1.45 "Courier New", monospace; margin-top: 16px; color: inherit; }
+    .phase:not(.current) p { color: #374151; }
+    .rail { height: 11px; background: #111827; margin-top: 18px; }
+    .phase.current .rail { background: #ffffff; }
+    .decision { margin-top: 22px; display: grid; grid-template-columns: 1.4fr 1fr; border-top: 2px solid #111827; }
+    .decision-main { padding-top: 18px; padding-right: 28px; font: 800 20px/1.32 Arial, sans-serif; }
+    .decision-main b { color: #0369A1; }
+    .decision-side { border-left: 2px solid #111827; padding-top: 16px; padding-left: 24px; font: 700 12px/1.48 "Courier New", monospace; color: #374151; }
+    .decision-side strong { color: #0369A1; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">ROTEIRO DE MIGRAÇÃO DO JARVIS</div>
+    <h1>J1 → J6: fechar a arquitetura antes de converter a superfície pesada</h1>
+    <p class="subtitle">A ordem evita misturar UI, memória, rede, permissões e streaming no mesmo commit. Cada etapa reduz uma fronteira e fornece o contrato da próxima.</p>
+    <div class="timeline">
+      <section class="phase current"><div class="phase-id">J1</div><div class="phase-state">PUBLICADO</div><h2>Contratos &amp; fakes</h2><div class="rail"></div><p>12 modos, sessão, mensagem, configuração pública, eventos, adapter e guards. Fakes determinísticos para testes sem rede.</p></section>
+      <section class="phase"><div class="phase-id">J2</div><div class="phase-state">PRÓXIMO</div><h2>Memória &amp; recall</h2><div class="rail"></div><p>Extrair briefing compacto, corpus, recall e memória durável para serviço sem DOM e com entradas validadas.</p></section>
+      <section class="phase"><div class="phase-id">J3</div><div class="phase-state">CONTRATO</div><h2>Permissões &amp; tools</h2><div class="rail"></div><p>Ferramentas com deny-by-default, escopo explícito, observabilidade e falhas de autorização testáveis.</p></section>
+      <section class="phase"><div class="phase-id">J4</div><div class="phase-state">ADAPTERS</div><h2>Fallback &amp; streaming</h2><div class="rail"></div><p>Uniformizar Hermes, local, Claude, Ollama e OpenClaw; aplicar abort, timeout e eventos de progresso.</p></section>
+      <section class="phase"><div class="phase-id">J5</div><div class="phase-state">SUPERFÍCIE</div><h2><code>jarvis.ts</code></h2><div class="rail"></div><p>Migrar a UI somente com os serviços fechados; manter <code>jarvis.js</code> como wrapper de compatibilidade.</p></section>
+      <section class="phase"><div class="phase-id">J6</div><div class="phase-state">EVIDÊNCIA</div><h2>Browser, E2E &amp; performance</h2><div class="rail"></div><p>Validar sessão real, ciclo de vida, orçamento de memória, latência e degradação segura no navegador.</p></section>
+    </div>
+    <div class="decision">
+      <div class="decision-main">A decisão de arquitetura é <b>serviços antes da UI</b>: a página de quase mil linhas só migra depois que memória, permissões e adapters tiverem contratos verificáveis.</div>
+      <div class="decision-side"><strong>SEGURANÇA OPERACIONAL</strong><br>OpenClaw continua read-first. Nenhum envio por WhatsApp, publicação ou ação comercial ocorre sem confirmação explícita e auditável do operador.</div>
+    </div>
+  </div>
+</body>
+</html>

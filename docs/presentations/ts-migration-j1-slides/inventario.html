@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventário restante por risco</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 48px; padding-left: 70px; padding-right: 70px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.6px; }
+    h1 { font: 900 43px/1 Arial, sans-serif; letter-spacing: -1.6px; margin-top: 13px; }
+    .lead { color: #374151; font: 500 16px/1.45 "Courier New", monospace; margin-top: 14px; max-width: 1050px; }
+    /* reduced top margin on main and tightened bar-row min-height to cut overall page height */
+    .main { margin-top: 20px; display: grid; grid-template-columns: 1.35fr 1fr; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .left { min-height: 420px; padding-top: 22px; padding-left: 19px; padding-right: 26px; }
+    .right { min-height: 420px; border-left: 2px solid #111827; padding-top: 22px; padding-left: 25px; padding-right: 20px; }
+    .cap { color: #0369A1; font: 700 12px/1 "Courier New", monospace; letter-spacing: 1.2px; text-transform: uppercase; }
+    /* tightened spacing in bars to reduce overall height */
+    .bars { margin-top: 12px; }
+    .bar-row { display: grid; grid-template-columns: 180px 1fr 38px; align-items: center; gap: 12px; min-height: 31px; border-top: 1px solid #a8b4c0; font: 700 12px/1.2 "Courier New", monospace; }
+    .bar-row:last-child { border-bottom: 1px solid #a8b4c0; }
+    .track { height: 17px; background: #c4cdd5; }
+    .fill { height: 17px; background: #0369A1; }
+    .b40 { width: 100%; } .b12 { width: 30%; } .b10 { width: 25%; } .b8 { width: 20%; } .b7 { width: 17.5%; } .b3 { width: 7.5%; }
+    .count { color: #0369A1; font: 900 17px/1 Arial, sans-serif; text-align: right; }
+    h2 { font: 900 25px/1.05 Arial, sans-serif; margin-top: 11px; }
+    .action { border-top: 2px solid #111827; margin-top: 20px; padding-top: 12px; }
+    .action:first-of-type { margin-top: 23px; }
+    .action-title { display: grid; grid-template-columns: 92px 1fr; gap: 12px; font: 900 14px/1.2 Arial, sans-serif; }
+    .priority { color: #0369A1; font: 700 10px/1.35 "Courier New", monospace; letter-spacing: .8px; }
+    .action p { margin-top: 7px; color: #374151; font: 500 12px/1.38 "Courier New", monospace; }
+    .bottom { margin-top: 24px; display: grid; grid-template-columns: 190px 1fr 332px; border-top: 2px solid #111827; }
+    .total { padding-top: 16px; color: #0369A1; font: 900 52px/.85 Arial, sans-serif; letter-spacing: -3px; }
+    .total span { display: block; color: #111827; font: 700 11px/1.25 "Courier New", monospace; letter-spacing: .6px; margin-top: 9px; }
+    .message { border-left: 2px solid #111827; padding-top: 16px; padding-left: 23px; padding-right: 25px; font: 800 17px/1.3 Arial, sans-serif; }
+    .reserved { border-left: 2px solid #111827; padding-top: 16px; padding-left: 22px; color: #374151; font: 700 11px/1.45 "Courier New", monospace; }
+    .reserved b { color: #0369A1; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">INVENTÁRIO OPERACIONAL · APÓS a805ff8b</div>
+    <h1>83 páginas JavaScript canônicas, classificadas por risco</h1>
+    <p class="lead">O volume restante não é uma fila única. O plano prioriza páginas pequenas e contratos fechados, enquanto reserva interfaces pesadas até que suas dependências tenham testes e fronteiras explícitas.</p>
+    <div class="main">
+      <section class="left">
+        <div class="cap">DISTRIBUIÇÃO POR GRUPO</div>
+        <div class="bars">
+          <div class="bar-row"><span>Utilitárias e conteúdo</span><div class="track"><div class="fill b40"></div></div><div class="count">40</div></div>
+          <div class="bar-row"><span>Ferramentas interativas</span><div class="track"><div class="fill b12"></div></div><div class="count">12</div></div>
+          <div class="bar-row"><span>IA, Nexus e memória</span><div class="track"><div class="fill b10"></div></div><div class="count">10</div></div>
+          <div class="bar-row"><span>Mídia, rádio e DSP</span><div class="track"><div class="fill b8"></div></div><div class="count">8</div></div>
+          <div class="bar-row"><span>Arma 3, 3D e visualização</span><div class="track"><div class="fill b7"></div></div><div class="count">7</div></div>
+          <div class="bar-row"><span>Hubs e catálogos</span><div class="track"><div class="fill b3"></div></div><div class="count">3</div></div>
+          <div class="bar-row"><span>Conteúdo militar</span><div class="track"><div class="fill b3"></div></div><div class="count">3</div></div>
+        </div>
+      </section>
+      <section class="right">
+        <div class="cap">ESTRATÉGIA DE EXECUÇÃO</div>
+        <h2>Reduzir risco antes de reduzir linhas</h2>
+        <div class="action"><div class="action-title"><span class="priority">PRIMEIRO</span><span>Utilitárias, cripto, calculadoras e conteúdo pequeno</span></div><p>Baixo acoplamento; repetir o padrão TypeScript + wrapper + boundary + gates para reduzir o inventário com segurança.</p></div>
+        <div class="action"><div class="action-title"><span class="priority">DEPOIS</span><span>Jogos, Aprendizado, Mural e ferramentas médias</span></div><p>Fechar estado local, DOM, runners e persistência; Jogos exige testes específicos do players engine antes da conversão.</p></div>
+        <div class="action"><div class="action-title"><span class="priority">POR ÚLTIMO</span><span>JARVIS, Editor, Arma 3, 3D e mídia</span></div><p>Exigem lifecycle, APIs de browser, memória, dados grandes, performance e testes de domínio antes do wrapper TypeScript.</p></div>
+      </section>
+    </div>
+    <div class="bottom">
+      <div class="total">83<span>PÁGINAS CANÔNICAS RESTANTES</span></div>
+      <div class="message">O inventário caiu de <b>87 para 83</b> nesta onda. A velocidade vem de repetir contratos pequenos, não de converter superfícies grandes sem preparação.</div>
+      <div class="reserved"><b>RESERVADAS PARA ONDAS PRÓPRIAS</b><br>jarvis.js · editor.js · wiki-arma3.js · arma3-tutorial.js · vanguard.js · visao.js · mídia e 3D.</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenClaw com fronteira segura</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 48px; padding-left: 70px; padding-right: 70px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.6px; text-transform: uppercase; }
+    h1 { font: 900 43px/1 Arial, sans-serif; letter-spacing: -1.6px; margin-top: 13px; }
+    .lead { color: #374151; font: 500 16px/1.45 "Courier New", monospace; margin-top: 15px; max-width: 1060px; }
+    .main { margin-top: 12px; display: grid; grid-template-columns: 3.1fr 1fr; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .flow-zone { min-height: 350px; padding-top: 12px; padding-right: 16px; }
+    .flow-title { color: #0369A1; font: 700 12px/1.2 "Courier New", monospace; letter-spacing: 1.1px; text-transform: uppercase; }
+    .flow { margin-top: 14px; display: grid; grid-template-columns: 1fr 44px 1fr 44px 1fr; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .node { min-height: 230px; padding-top: 12px; padding-left: 14px; padding-right: 14px; }
+    .node.blue { background: #0369A1; color: #ffffff; }
+    .node-id { font: 700 11px/1.2 "Courier New", monospace; letter-spacing: 1px; }
+    .node h2 { font: 900 23px/1.05 Arial, sans-serif; margin-top: 14px; letter-spacing: -0.5px; }
+    .node p { margin-top: 14px; font: 500 12px/1.43 "Courier New", monospace; color: inherit; }
+    .node:not(.blue) p { color: #374151; }
+    .node-rule { height: 8px; background: #111827; margin-top: 18px; }
+    .node.blue .node-rule { background: #ffffff; }
+    .arrow { min-height: 230px; display: flex; align-items: center; justify-content: center; border-left: 2px solid #111827; border-right: 2px solid #111827; color: #0369A1; font: 900 30px/1 Arial, sans-serif; }
+    .decision { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; border-top: 2px solid #111827; }
+    .decision-item { min-height: 68px; padding-top: 10px; padding-left: 13px; padding-right: 13px; font: 700 12px/1.42 "Courier New", monospace; color: #374151; }
+    .decision-item + .decision-item { border-left: 2px solid #111827; }
+    .decision-item b { color: #0369A1; }
+    .side { min-height: 350px; border-left: 2px solid #111827; padding-top: 12px; padding-left: 18px; }
+    .side-title { color: #0369A1; font: 700 12px/1.2 "Courier New", monospace; letter-spacing: 1px; }
+    .side img { width: 256px; height: 144px; display: block; object-fit: contain; background: #111827; margin-top: 14px; }
+    .caption { color: #374151; font: 700 10px/1.3 "Courier New", monospace; margin-top: 8px; }
+    .no-send { margin-top: 18px; border-top: 2px solid #111827; padding-top: 12px; padding-right: 18px; }
+    .no-send h2 { font: 900 22px/1.05 Arial, sans-serif; }
+    .no-send p { color: #374151; font: 700 12px/1.45 "Courier New", monospace; margin-top: 10px; }
+    .bottom { margin-top: 12px; display: grid; grid-template-columns: 170px 1fr 280px; border-top: 2px solid #111827; }
+    .bottom-label { color: #0369A1; font: 800 12px/1.2 "Courier New", monospace; padding-top: 17px; letter-spacing: 1px; }
+    .bottom-main { font: 800 17px/1.3 Arial, sans-serif; padding-top: 15px; padding-right: 22px; }
+    .bottom-note { border-left: 2px solid #111827; color: #374151; font: 700 11px/1.46 "Courier New", monospace; padding-top: 15px; padding-left: 19px; }
+    .bottom-note b { color: #0369A1; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">OPENCLAW · FRONTEIRA OPERACIONAL</div>
+    <h1>OpenClaw com fronteira segura</h1>
+    <p class="lead">A integração é preparada para briefing, conexões e rascunhos, mas a capacidade de agir permanece separada da capacidade de sugerir.</p>
+    <div class="main">
+      <section class="flow-zone">
+        <div class="flow-title">CAMINHO DE DADOS E DECISÃO</div>
+        <div class="flow">
+          <article class="node">
+            <div class="node-id">01 · BROWSER</div>
+            <h2>JARVIS</h2>
+            <div class="node-rule"></div>
+            <p>Normaliza pedido, usa briefing compacto e recebe respostas seguras. Nenhuma chave, token ou integração de envio fica nesta superfície.</p>
+          </article>
+          <div class="arrow">→</div>
+          <article class="node blue">
+            <div class="node-id">02 · LOOPBACK</div>
+            <h2>Bridge local</h2>
+            <div class="node-rule"></div>
+            <p>Executa somente métodos permitidos; encaminha o formato OpenAI-compatible e mantém credenciais fora do navegador.</p>
+          </article>
+          <div class="arrow">→</div>
+          <article class="node">
+            <div class="node-id">03 · ADAPTER</div>
+            <h2>OpenClaw</h2>
+            <div class="node-rule"></div>
+            <p>Produz resposta, notícia, rascunho ou proposta de automação. A saída ainda não equivale a envio, publicação ou venda.</p>
+          </article>
+        </div>
+        <div class="decision">
+          <div class="decision-item"><b>ANTES DA CONFIRMAÇÃO</b><br>WhatsApp, TikTok e comercial podem receber rascunhos, links ou propostas para revisão humana.</div>
+          <div class="decision-item"><b>APÓS CONFIRMAÇÃO EXPLÍCITA</b><br>Uma ação futura deve ser auditável, limitada ao escopo autorizado e executada fora da superfície pública.</div>
+        </div>
+      </section>
+      <aside class="side">
+        <div class="side-title">IMAGEM DE REFERÊNCIA</div>
+        <img src="/home/ubuntu/upload/search_images/kU6QYcKmDtkN.jpg" alt="Interface tática de comando">
+        <div class="caption">CONSOLE TÁTICO · VISUAL DE FRONTEIRA OPERACIONAL</div>
+        <div class="no-send">
+          <h2>Sem envio silencioso</h2>
+          <p>O bridge não envia mensagem de WhatsApp, não publica conteúdo e não executa processo de venda sem decisão explícita do operador.</p>
+        </div>
+      </aside>
+    </div>
+    <div class="bottom">
+      <div class="bottom-label">PRINCÍPIO</div>
+      <div class="bottom-main">Read-first e confirm-before-send: informação, contexto e proposta podem ser automatizados; o ato externo exige confirmação humana.</div>
+      <div class="bottom-note"><b>DEFESA EM PROFUNDIDADE</b><br>loopback · token fora do browser · allowlist · contratos de adapter · registro de decisão</div>
+    </div>
+  </div>
+</body>
+</html>

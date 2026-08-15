@@ -1,0 +1,135 @@
+{
+  "project_info": {
+    "title": "Projeto-Baluarte — Migração TypeScript & JARVIS J1",
+    "created": 1786753914.143,
+    "last_updated": 1786754150.47,
+    "total_slides": 12
+  },
+  "slides": [
+    {
+      "id": "capa",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "padrao",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "progresso",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "gates",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "marco1",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "j1_contratos",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "j1_testes",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "roteiro",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "paginas",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "inventario",
+      "state": "edited",
+      "pageNum": 10
+    },
+    {
+      "id": "openclaw",
+      "state": "edited",
+      "pageNum": 11
+    },
+    {
+      "id": "conclusao",
+      "state": "edited",
+      "pageNum": 12
+    }
+  ],
+  "outline": [
+    {
+      "id": "capa",
+      "title": "Projeto-Baluarte — Migração TypeScript & JARVIS J1",
+      "summary": "Capa executiva com o SHA a805ff8b, a promessa de migração incremental e os principais resultados de validação.",
+      "image_plan": "/home/ubuntu/upload/search_images/Q7Q9sTFbm714.jpg - Visual reference for tactical console and operations command center mentioned in Slide 1."
+    },
+    {
+      "id": "padrao",
+      "title": "O padrão de migração incremental",
+      "summary": "Explica o fluxo JS wrapper → TypeScript canônico → fronteira .d.ts → gates, e as restrições de strict mode."
+    },
+    {
+      "id": "progresso",
+      "title": "Progresso verificável",
+      "summary": "Mostra 31 páginas TypeScript, 83 páginas JS restantes, 884 testes e 98 rotas de smoke."
+    },
+    {
+      "id": "gates",
+      "title": "Matriz de gates no SHA publicado",
+      "summary": "Separa gates verdes dos três gates vermelhos pela dívida histórica de 61 erros JSDoc V2."
+    },
+    {
+      "id": "marco1",
+      "title": "Marco 1 — JARVIS, OpenClaw e Notícias",
+      "summary": "Resume briefing, notícias normalizadas, módulo V2 e bridge local seguro.",
+      "image_plan": "/home/ubuntu/upload/search_images/q6KdGRgduf2Q.jpg - Futuristic holographic control center matching JARVIS / OpenClaw theme."
+    },
+    {
+      "id": "j1_contratos",
+      "title": "JARVIS J1 — contratos puros",
+      "summary": "Apresenta modos, sessão, mensagem, configuração pública, eventos, adapter e guards."
+    },
+    {
+      "id": "j1_testes",
+      "title": "J1 — cobertura focal",
+      "summary": "Lista os oito cenários de teste de contratos e adapters determinísticos."
+    },
+    {
+      "id": "roteiro",
+      "title": "Roteiro J1 → J6",
+      "summary": "Mostra a sequência de contratos, memória, permissões, adapters, UI e E2E/performance."
+    },
+    {
+      "id": "paginas",
+      "title": "Onda de páginas publicada",
+      "summary": "Detalha Modpack, Projetos, Zomboid e Zomboid Admin; explica o adiamento seguro de Jogos."
+    },
+    {
+      "id": "inventario",
+      "title": "Inventário restante por risco",
+      "summary": "Apresenta a distribuição das 83 páginas canônicas restantes e a estratégia por grupo."
+    },
+    {
+      "id": "openclaw",
+      "title": "OpenClaw com fronteira segura",
+      "summary": "Explica bridge loopback, token fora do browser e confirmação explícita antes de enviar ou publicar.",
+      "image_plan": "/home/ubuntu/upload/search_images/kU6QYcKmDtkN.jpg - Tactical command interface matching the OpenClaw secure boundary architecture."
+    },
+    {
+      "id": "conclusao",
+      "title": "Caminho até V2 concluída",
+      "summary": "Define próximos marcos e o critério de testes mensais antes de declarar a V2 concluída."
+    }
+  ]
+}

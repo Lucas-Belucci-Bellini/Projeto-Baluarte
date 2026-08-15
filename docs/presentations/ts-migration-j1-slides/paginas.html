@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Onda de páginas publicada</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 48px; padding-left: 70px; padding-right: 70px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.6px; }
+    h1 { font: 900 43px/1 Arial, sans-serif; letter-spacing: -1.6px; margin-top: 13px; }
+    .lead { color: #374151; font: 500 16px/1.45 "Courier New", monospace; margin-top: 15px; max-width: 1070px; }
+    /* reduced top gap to shave 6px from the overall content height */
+    .strip { margin-top: 28px; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .unit { min-height: 326px; padding-top: 22px; padding-left: 18px; padding-right: 18px; border-right: 2px solid #111827; }
+    .unit:last-child { border-right: 0; }
+    .unit:nth-child(even) { background: #dce3e8; }
+    .number { color: #0369A1; font: 900 36px/1 Arial, sans-serif; letter-spacing: -1.5px; }
+    .path { color: #0369A1; font: 700 11px/1.2 "Courier New", monospace; margin-top: 13px; }
+    .unit h2 { font: 900 24px/1.05 Arial, sans-serif; letter-spacing: -0.7px; margin-top: 12px; }
+    .risk { display: inline-block; margin-top: 15px; border: 2px solid #111827; padding-top: 4px; padding-left: 8px; padding-right: 8px; font: 700 10px/1.1 "Courier New", monospace; letter-spacing: .7px; }
+    .unit p { color: #374151; font: 500 12px/1.45 "Courier New", monospace; margin-top: 18px; }
+    .bottom { margin-top: 28px; display: grid; grid-template-columns: 172px 1.4fr 1fr; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .defer-id { min-height: 147px; padding-top: 20px; padding-left: 16px; background: #0369A1; color: #ffffff; }
+    .defer-id b { display: block; font: 900 35px/1 Arial, sans-serif; letter-spacing: -1px; }
+    .defer-id span { display: block; margin-top: 10px; font: 700 11px/1.3 "Courier New", monospace; letter-spacing: .8px; }
+    .defer-main { min-height: 147px; padding-top: 18px; padding-left: 23px; padding-right: 25px; border-right: 2px solid #111827; }
+    .defer-main h2 { font: 900 21px/1.1 Arial, sans-serif; }
+    .defer-main p { margin-top: 10px; color: #374151; font: 500 12px/1.43 "Courier New", monospace; }
+    .defer-side { min-height: 147px; padding-top: 18px; padding-left: 21px; padding-right: 16px; font: 700 12px/1.5 "Courier New", monospace; color: #374151; }
+    .defer-side strong { color: #0369A1; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">ONDA PUBLICADA · a805ff8b</div>
+    <h1>Quatro páginas saíram do JavaScript canônico</h1>
+    <p class="lead">Cada conversão preserva rota, comportamento V1 e importadores legados por wrapper. A onda reduz o inventário de 87 para 83 páginas JS canônicas.</p>
+    <div class="strip">
+      <section class="unit">
+        <div class="number">01</div>
+        <div class="path">src/pages/modpack.ts</div>
+        <h2>Modpack</h2>
+        <div class="risk">BAIXO / MÉDIO</div>
+        <p>Estado persistido, filtros por categoria e tier, busca, abas Minecraft/Arma 3, presets e DLCs agora têm contratos explícitos.</p>
+      </section>
+      <section class="unit">
+        <div class="number">02</div>
+        <div class="path">src/pages/projetos.ts</div>
+        <h2>Projetos</h2>
+        <div class="risk">BAIXO</div>
+        <p>JSON importado, status, tags, cartões e navegação foram estreitados sem duplicar o catálogo nem alterar a rota.</p>
+      </section>
+      <section class="unit">
+        <div class="number">03</div>
+        <div class="path">src/pages/zomboid.ts</div>
+        <h2>Zomboid</h2>
+        <div class="risk">BAIXO</div>
+        <p>Coleção, categorias, destaques e link para a administração continuam data-driven, agora com fronteira tipada.</p>
+      </section>
+      <section class="unit">
+        <div class="number">04</div>
+        <div class="path">src/pages/zomboid-admin.ts</div>
+        <h2>Zomboid Admin</h2>
+        <div class="risk">MÉDIO</div>
+        <p>Comandos copiáveis, IDs de workshop, categorias e busca debounced preservam a regra de não inventar valores ausentes.</p>
+      </section>
+    </div>
+    <div class="bottom">
+      <div class="defer-id"><b>JOGOS</b><span>ADIADO COM SEGURANÇA</span></div>
+      <div class="defer-main"><h2>O adiamento reduz risco, não reduz prioridade</h2><p><code>jogos.js</code> combina contas locais, XP, ranking, Code Quest e múltiplos runners. Trocar a extensão sem fechar esses contratos aumentaria o raio de regressão.</p></div>
+      <div class="defer-side"><strong>JÁ PREPARADO</strong><br>Fronteiras de catálogo e players engine foram isoladas. A próxima onda deve adicionar testes comportamentais do motor antes do wrapper TypeScript.</div>
+    </div>
+  </div>
+</body>
+</html>

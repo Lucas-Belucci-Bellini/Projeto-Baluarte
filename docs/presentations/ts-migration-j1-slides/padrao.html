@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>O padrão de migração incremental</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 52px; padding-left: 72px; padding-right: 72px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.5px; }
+    h1 { font: 900 42px/1 Arial, sans-serif; letter-spacing: -1.5px; margin-top: 14px; }
+    .intro { font: 500 17px/1.45 "Courier New", monospace; color: #374151; margin-top: 16px; max-width: 940px; }
+    .flow { margin-top: 54px; display: grid; grid-template-columns: 1fr 46px 1fr 46px 1fr 46px 1fr; align-items: stretch; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .stage { min-height: 242px; padding-top: 25px; padding-left: 20px; padding-right: 20px; }
+    .stage-number { font: 700 13px/1 "Courier New", monospace; color: #0369A1; }
+    .stage h2 { font: 900 24px/1.05 Arial, sans-serif; margin-top: 14px; }
+    .stage p { font: 500 14px/1.45 "Courier New", monospace; color: #374151; margin-top: 18px; }
+    .arrow { min-height: 242px; display: flex; align-items: center; justify-content: center; font: 900 30px/1 Arial, sans-serif; color: #0369A1; border-left: 2px solid #111827; border-right: 2px solid #111827; }
+    .ruleband { margin-top: 46px; display: grid; grid-template-columns: 2fr 1fr; border-top: 2px solid #111827; }
+    .rule-text { padding-top: 20px; padding-right: 32px; font: 800 20px/1.25 Arial, sans-serif; }
+    .constraints { border-left: 2px solid #111827; padding-top: 18px; padding-left: 26px; font: 700 13px/1.55 "Courier New", monospace; color: #374151; }
+    .constraints b { color: #0369A1; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">ARQUITETURA DE MIGRAÇÃO</div>
+    <h1>O padrão que preserva a V1 enquanto a V2 cresce</h1>
+    <p class="intro">A implementação muda de lugar, não a superfície de importação. Cada onda fecha somente as fronteiras que realmente consome.</p>
+    <div class="flow">
+      <section class="stage"><div class="stage-number">01 · ORIGEM</div><h2>JS legado</h2><p>Rotas, testes e consumidores existentes continuam usando o caminho <b>.js</b>.</p></section>
+      <div class="arrow">→</div>
+      <section class="stage"><div class="stage-number">02 · COMPATIBILIDADE</div><h2>Wrapper .js</h2><p>Reexporta a implementação canônica e impede uma quebra em cascata nos importadores V1.</p></section>
+      <div class="arrow">→</div>
+      <section class="stage"><div class="stage-number">03 · FONTE DE VERDADE</div><h2>TypeScript</h2><p>Fecha estado, DOM, dados e eventos em <b>strict mode</b>, sem duplicar a lógica funcional.</p></section>
+      <div class="arrow">→</div>
+      <section class="stage"><div class="stage-number">04 · EVIDÊNCIA</div><h2>Fronteira + gates</h2><p><b>.d.ts</b> para legado; typecheck, testes, build, smoke e integração para liberar o commit.</p></section>
+    </div>
+    <div class="ruleband">
+      <div class="rule-text">A migração não é um rewrite simultâneo; é uma sequência de contratos pequenos, compatíveis e verificáveis.</div>
+      <div class="constraints"><b>NUNCA:</b> <br>• <code>any</code> ou supressões <br>• relaxar <code>strict</code> <br>• remover wrappers cedo <br>• mascarar a dívida V2</div>
+    </div>
+  </div>
+</body>
+</html>

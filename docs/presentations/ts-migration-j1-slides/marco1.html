@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Marco 1 — JARVIS, OpenClaw e Notícias</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 48px; padding-left: 70px; padding-right: 70px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.5px; text-transform: uppercase; }
+    h1 { font: 900 42px/1 Arial, sans-serif; letter-spacing: -1.5px; margin-top: 13px; }
+    .dek { font: 500 16px/1.4 "Courier New", monospace; color: #374151; margin-top: 15px; }
+    .main { margin-top: 30px; display: grid; grid-template-columns: 1.08fr 1.12fr .9fr; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .column { min-height: 422px; padding-top: 22px; padding-left: 20px; padding-right: 20px; }
+    .column + .column { border-left: 2px solid #111827; }
+    .kicker { font: 700 12px/1 "Courier New", monospace; letter-spacing: 1.2px; color: #0369A1; }
+    h2 { font: 900 22px/1.05 Arial, sans-serif; margin-top: 12px; }
+    .deliverable { border-top: 2px solid #111827; padding-top: 13px; margin-top: 16px; }
+    .deliverable:first-of-type { margin-top: 22px; }
+    .deliverable b { display: block; font: 800 14px/1.2 Arial, sans-serif; }
+    .deliverable p { margin-top: 5px; font: 500 12px/1.35 "Courier New", monospace; color: #374151; }
+    .flow { margin-top: 30px; }
+    .node { min-height: 56px; padding-top: 11px; padding-left: 14px; padding-right: 14px; border: 2px solid #111827; font: 800 14px/1.2 Arial, sans-serif; }
+    .node span { display: block; margin-top: 4px; color: #374151; font: 500 11px/1.25 "Courier New", monospace; }
+    .arrow { text-align: center; height: 31px; padding-top: 4px; color: #0369A1; font: 900 22px/1 Arial, sans-serif; }
+    .image { width: 284px; height: 160px; object-fit: contain; display: block; margin-top: 25px; background: #111827; }
+    .caption { margin-top: 9px; font: 700 10px/1.25 "Courier New", monospace; color: #374151; }
+    .limit { margin-top: 25px; border-top: 2px solid #111827; padding-top: 12px; font: 700 12px/1.42 "Courier New", monospace; color: #374151; }
+    .limit strong { color: #0369A1; }
+    .bottom { margin-top: 23px; display: grid; grid-template-columns: 185px 1fr; border-top: 2px solid #111827; }
+    .bottom-label { padding-top: 14px; font: 700 12px/1.25 "Courier New", monospace; color: #0369A1; letter-spacing: 1px; }
+    .bottom-copy { border-left: 2px solid #111827; padding-top: 12px; padding-left: 20px; font: 800 16px/1.28 Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">PRIMEIRO VERTICAL SLICE V2</div>
+    <h1>Marco 1 — JARVIS, OpenClaw e Notícias</h1>
+    <p class="dek">Uma base leve para briefing contextual, informação normalizada e integração externa controlada — sem ampliar a superfície de ação automática.</p>
+    <div class="main">
+      <section class="column">
+        <div class="kicker">ENTREGAS PUBLICADAS</div>
+        <h2>Capacidade que entrou no main</h2>
+        <div class="deliverable"><b>Contexto compacto do JARVIS</b><p>Cache por versão e contagens; variante reduzida para chamadas remotas.</p></div>
+        <div class="deliverable"><b>Camada de notícias</b><p>Normalização, URL segura, deduplicação, proveniência e estado de revisão.</p></div>
+        <div class="deliverable"><b>Módulo Briefing V2</b><p>Manifesto, dados, view, health e lifecycle no primeiro módulo nativo.</p></div>
+        <div class="deliverable"><b>Bridge OpenClaw local</b><p>Loopback e formato OpenAI-compatible em <code>/v1/chat/completions</code>.</p></div>
+      </section>
+      <section class="column">
+        <div class="kicker">FLUXO CONTROLADO</div>
+        <h2>O browser não carrega a chave</h2>
+        <div class="flow">
+          <div class="node">JARVIS no browser<span>pedido normalizado, briefing somente leitura</span></div>
+          <div class="arrow">↓</div>
+          <div class="node">Bridge local loopback<span>allowlist de método; token fora da superfície web</span></div>
+          <div class="arrow">↓</div>
+          <div class="node">OpenClaw / adapters<span>resposta, notícia, rascunho ou proposta de ação</span></div>
+          <div class="arrow">↓</div>
+          <div class="node">Operador decide<span>confirmação explícita antes de qualquer ação externa futura</span></div>
+        </div>
+      </section>
+      <section class="column">
+        <div class="kicker">FRONTEIRA DE SEGURANÇA</div>
+        <h2>Read-first, confirm-before-send</h2>
+        <img class="image" src="/home/ubuntu/upload/search_images/q6KdGRgduf2Q.jpg" alt="Centro de comando holográfico">
+        <div class="caption">REFERÊNCIA VISUAL · OPERAÇÃO JARVIS / OPENCLAW</div>
+        <p class="limit"><strong>NÃO EXECUTA:</strong><br>envio de WhatsApp, publicação de conteúdo, processo de venda ou ação comercial sem confirmação explícita do operador.</p>
+      </section>
+    </div>
+    <div class="bottom"><div class="bottom-label">PRINCÍPIO</div><div class="bottom-copy">O Marco 1 prepara informação e contexto para a decisão humana; não transforma uma integração em agente autônomo de envio.</div></div>
+  </div>
+</body>
+</html>

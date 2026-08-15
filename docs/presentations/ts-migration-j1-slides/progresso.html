@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Progresso verificável</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide-container { width: 1280px; min-height: 720px; background: #E8ECEF; color: #111827; padding-top: 52px; padding-left: 72px; padding-right: 72px; }
+    .eyebrow { color: #0369A1; font: 700 14px/1.2 "Courier New", monospace; letter-spacing: 1.5px; }
+    h1 { font: 900 42px/1 Arial, sans-serif; letter-spacing: -1.5px; margin-top: 14px; }
+    .grid { margin-top: 42px; display: grid; grid-template-columns: 1.15fr 1fr; border-top: 2px solid #111827; border-bottom: 2px solid #111827; }
+    .panel { min-height: 400px; padding-top: 27px; padding-left: 26px; padding-right: 26px; }
+    .panel + .panel { border-left: 2px solid #111827; }
+    .panel-title { font: 700 13px/1 "Courier New", monospace; color: #0369A1; letter-spacing: 1px; text-transform: uppercase; }
+    .bigpair { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 33px; }
+    .big { font: 900 74px/.86 Arial, sans-serif; letter-spacing: -4px; color: #0369A1; }
+    .big-label { font: 700 13px/1.35 "Courier New", monospace; margin-top: 12px; color: #374151; text-transform: uppercase; }
+    .barset { margin-top: 45px; }
+    .barline { display: grid; grid-template-columns: 138px 1fr 52px; align-items: center; gap: 12px; margin-top: 16px; font: 700 12px/1 "Courier New", monospace; }
+    .track { height: 18px; background: #c8d1da; }
+    .fill-ts { height: 18px; width: 27%; background: #0369A1; }
+    .fill-js { height: 18px; width: 73%; background: #374151; }
+    .validation { margin-top: 29px; display: grid; grid-template-columns: 1fr 1fr; border-top: 2px solid #111827; }
+    .vitem { min-height: 145px; padding-top: 18px; }
+    .vitem:nth-child(odd) { border-right: 2px solid #111827; padding-right: 18px; }
+    .vitem:nth-child(even) { padding-left: 18px; }
+    .vitem:nth-child(n+3) { border-top: 2px solid #111827; }
+    .vnum { font: 900 38px/1 Arial, sans-serif; color: #0369A1; }
+    .vlabel { font: 700 12px/1.35 "Courier New", monospace; color: #374151; margin-top: 10px; }
+    .foot { margin-top: 26px; font: 700 16px/1.35 Arial, sans-serif; }
+    .foot b { color: #0369A1; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">MEDIÇÃO APÓS A ONDA PUBLICADA</div>
+    <h1>Progresso verificável, não estimado</h1>
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-title">MIGRAÇÃO DE PÁGINAS</div>
+        <div class="bigpair"><div><div class="big">31</div><div class="big-label">páginas canônicas em TypeScript</div></div><div><div class="big">83</div><div class="big-label">páginas JS canônicas restantes</div></div></div>
+        <div class="barset">
+          <div class="barline"><span>TYPECRIPT</span><div class="track"><div class="fill-ts"></div></div><strong>31</strong></div>
+          <div class="barline"><span>JS RESTANTE</span><div class="track"><div class="fill-js"></div></div><strong>83</strong></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-title">EVIDÊNCIA DE VALIDAÇÃO</div>
+        <div class="validation">
+          <div class="vitem"><div class="vnum">884</div><div class="vlabel">testes aprovados na suíte completa</div></div>
+          <div class="vitem"><div class="vnum">98</div><div class="vlabel">rotas verdes no smoke</div></div>
+          <div class="vitem"><div class="vnum">14</div><div class="vlabel">verificações de integração V2</div></div>
+          <div class="vitem"><div class="vnum">15</div><div class="vlabel">afirmações do caminho crítico</div></div>
+        </div>
+      </section>
+    </div>
+    <p class="foot">Nesta onda, o inventário caiu de <b>87 → 83</b> páginas JS canônicas e o conjunto TypeScript de páginas passou de <b>27 → 31</b>.</p>
+  </div>
+</body>
+</html>
