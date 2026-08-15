@@ -481,3 +481,11 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A migração não criou nova lógica de negócio nem alterou os dados apresentados. A tipagem fechou o modelo de cada país e os modos de visualização, sem recorrer a `any`, `@ts-ignore` ou relaxamento do `strict`.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **54 para 53 páginas JavaScript canônicas restantes**.
+
+## 4.21 Shadow e gateway de sessão restrita
+
+`src/pages/shadow.ts` substituiu a página canônica da Ponte Shadow. A implementação tipa o relatório de storage, as linhas de diagnóstico e os links restritos, preservando a regra de não revelar o setor sem `isShadowUnlocked()`, a abertura do gateway, o estado do Service Worker, a navegação para módulos profundos e o encerramento explícito da sessão com `lockShadow()`.
+
+A nova fronteira `src/utils/shadow-gate.d.ts` declara somente `isShadowUnlocked`, `openShadowGate`, `lockShadow` e `initShadowGate`. O gateway e sua autenticação continuam em JavaScript legado isolado; nenhum segredo foi movido para TypeScript, exposto no frontend ou adicionado ao repositório.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **53 para 52 páginas JavaScript canônicas restantes**.
