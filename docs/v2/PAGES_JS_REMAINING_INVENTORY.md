@@ -1,19 +1,19 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `335376e8ed3b71633dc268500ef761c76cce143a`
-**Gerado em:** 2026-08-15T04:18:04.372Z
+**SHA auditado:** `dc45d89e4677cc00dde454e4a4a74720051832ea`
+**Gerado em:** 2026-08-15T04:27:12.749Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **16 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **12 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
-| Arma 3, 3D e visualização | 7 |
-| IA, Nexus e memória | 6 |
+| Arma 3, 3D e visualização | 6 |
+| IA, Nexus e memória | 3 |
 | Mídia, rádio e DSP | 3 |
 
 ## Matriz completa
@@ -32,10 +32,6 @@ Existem **16 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 10 | `src/pages/musicas.js` | 591 | 25622 | Mídia, rádio e DSP | alto | tipar APIs de mídia, canvas e recursos externos |
 | 11 | `src/pages/mapa.js` | 533 | 21307 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
 | 12 | `src/pages/modelos-3d.js` | 459 | 25379 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
-| 13 | `src/pages/git-nexus.js` | 432 | 21928 | IA, Nexus e memória | alto | tipar motores, transportes e memória antes da superfície |
-| 14 | `src/pages/jarvis-dashboard.js` | 293 | 10279 | IA, Nexus e memória | alto | tipar motores, transportes e memória antes da superfície |
-| 15 | `src/pages/cerebro.js` | 271 | 9749 | IA, Nexus e memória | alto | tipar motores, transportes e memória antes da superfície |
-| 16 | `src/pages/arma3-extracao-painel.js` | 204 | 9225 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
 
 ## Critérios de saída
 

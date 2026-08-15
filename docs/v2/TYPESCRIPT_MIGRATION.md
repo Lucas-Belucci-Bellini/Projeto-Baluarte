@@ -701,3 +701,19 @@ A **Central de Vídeos** recebeu `videos.d.ts` com playlists, sources YouTube/lo
 Nenhuma credencial ou integração externa nova foi adicionada. O inventário determinístico caiu de **25 para 16 páginas JavaScript canônicas restantes**; os nove `.js` desta onda permanecem apenas como wrappers de compatibilidade. Foram adicionadas 13 declarações de fronteira, e o `tsconfig.json` continua em strict sem `any`, `@ts-ignore` ou relaxamento de configuração.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
+
+## 4.43 Arma 3, Segundo Cérebro, Dashboard e Git Nexus
+
+A onda 4.43 converteu quatro páginas canônicas para TypeScript, mantendo os wrappers JavaScript de compatibilidade: `arma3-extracao-painel.ts`, `cerebro.ts`, `jarvis-dashboard.ts` e `git-nexus.ts`.
+
+O **painel de Extração Arma 3** passou a modelar o fluxo nativo em três passos: consultar disponibilidade, selecionar dumps para os parsers e entregar em commit local ou push somente por ação explícita. O contrato de `arma3-extracao` foi refinado em sua implementação e declaração para repositório, Python, `.rpt`, dumps, etapas ausentes e resultados de entrega; a web continua sem guardar token ou executar a capacidade nativa por conta própria.
+
+O **Segundo Cérebro** recebeu tipos de nós, arestas, metadados de tipos, memórias e estado físico do grafo Canvas. A simulação conserva repulsão O(n²), atração, gravidade, hover, arraste, clique para rota, ResizeObserver e limpeza de `requestAnimationFrame`/`mouseup` via `aoSair`. O narrowing do contexto 2D foi capturado em referência definitiva para evitar nullable closure errors.
+
+O **Dashboard JARVIS** passou a validar respostas `unknown` do backend local antes de renderizar status, sessões, eventos, memória e commits. O modo demonstração permanece como fallback offline; o polling de 30 segundos é interrompido quando o root deixa o DOM, e usuários são codificados na URL da memória local.
+
+O **Git Nexus** recebeu contratos para o motor de análise e para a visualização 3D. A migração preservou os modos Arquivos/Funções, drill-down por arquivo, comunidades, centralidade, impacto, dependências, busca, console (`context`, `impact`, `path`, `rename`, `query`), memória ligada, engine nativa opcional e destruição da view 3D ao sair. O motor e o grafo 3D permanecem JavaScript atrás de fronteiras explícitas; a implementação pesada será migrada em onda própria apenas quando seus contratos forem estabilizados.
+
+O inventário determinístico caiu de **16 para 12 páginas JavaScript canônicas restantes**. Foram adicionadas duas declarações de fronteira do Git Nexus e refinadas as interfaces do adaptador Arma 3. Nenhuma credencial foi adicionada, nenhum push nativo foi tornado automático e não houve relaxamento de strict, `any` ou `@ts-ignore`.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.

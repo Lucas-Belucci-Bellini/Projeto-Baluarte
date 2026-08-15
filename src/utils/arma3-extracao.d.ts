@@ -3,9 +3,43 @@ export interface BaluarteNativeBridge {
   invoke(channel: string, payload?: Readonly<Record<string, unknown>>): Promise<unknown>;
 }
 
+export interface Arma3RepositoryStatus {
+  readonly valido?: boolean;
+  readonly caminho?: string;
+  readonly ramo?: string;
+  readonly motivo?: string;
+  readonly pendentesForaDaSaida?: number;
+}
+
+export interface Arma3PythonStatus {
+  readonly versao?: string;
+  readonly cmd?: string;
+}
+
+export interface Arma3RptStatus {
+  readonly caminho?: string;
+}
+
+export interface Arma3DumpStatus {
+  readonly registros?: number;
+  readonly completo?: boolean;
+}
+
+export interface Arma3MissingDump {
+  readonly etapa: string;
+  readonly sqf: string;
+}
+
 export interface Arma3Status {
   readonly disponivel: boolean;
   readonly erro?: string;
+  readonly repo?: Arma3RepositoryStatus;
+  readonly python?: Arma3PythonStatus;
+  readonly rpt?: Arma3RptStatus;
+  readonly disponiveis?: readonly string[];
+  readonly dumps?: Readonly<Record<string, Arma3DumpStatus>>;
+  readonly faltamNoJogo?: readonly Arma3MissingDump[];
+  readonly pronto?: boolean;
   readonly [key: string]: unknown;
 }
 
