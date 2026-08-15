@@ -1,19 +1,19 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `d1e26576a6934fc2bcedb56e28cdd606176417b5`
-**Gerado em:** 2026-08-15T02:05:53.136Z
+**SHA auditado:** `4ce39c79085805d4cff12f17a82329cb4d659bcc`
+**Gerado em:** 2026-08-15T02:10:14.985Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **52 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **51 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
 | Ferramentas interativas | 12 |
-| Páginas utilitárias e conteúdo | 12 |
+| Páginas utilitárias e conteúdo | 11 |
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
 | Arma 3, 3D e visualização | 7 |
@@ -74,7 +74,6 @@ Existem **52 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 49 | `src/pages/batalha-naval.js` | 253 | 10301 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 50 | `src/pages/json-studio.js` | 211 | 7148 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 51 | `src/pages/geopulse.js` | 199 | 8125 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 52 | `src/pages/triangulacao.js` | 173 | 7442 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 

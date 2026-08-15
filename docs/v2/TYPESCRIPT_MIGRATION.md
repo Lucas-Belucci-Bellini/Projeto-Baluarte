@@ -489,3 +489,11 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A nova fronteira `src/utils/shadow-gate.d.ts` declara somente `isShadowUnlocked`, `openShadowGate`, `lockShadow` e `initShadowGate`. O gateway e sua autenticação continuam em JavaScript legado isolado; nenhum segredo foi movido para TypeScript, exposto no frontend ou adicionado ao repositório.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **53 para 52 páginas JavaScript canônicas restantes**.
+
+## 4.22 Triangulação por rumos
+
+`src/pages/triangulacao.ts` substituiu a página interativa de triangulação. A implementação tipa os presets de 3, 4 e 5 estações, pontos 2D, medições com bearing, estatísticas, controles de ruído e o ciclo de renderização em Canvas 2D. O cálculo continua delegado ao motor TypeScript existente em `src/utils/triangulation.ts`, sem duplicar mínimos quadrados, ruído gaussiano ou distância euclidiana.
+
+A página preserva arraste do alvo, escolha do número de estações, slider de ruído, estimativa, erro, resíduo, linhas de rumo e a limpeza do `requestAnimationFrame` por `aoSair`. A declaração de ciclo de vida foi apenas estreitada para expor o callback real, mantendo `ciclo-vida.js` como fronteira legada.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **52 para 51 páginas JavaScript canônicas restantes**.
