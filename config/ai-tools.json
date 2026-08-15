@@ -1,0 +1,35 @@
+{
+  "$comentario": "Ferramentas externas de IA instaladas LOCALMENTE. O repo versiona este manifest; os clones ficam em installRoot, que é ignorado pelo git. Veja docs/local-ai-tools.md.",
+  "installRoot": ".baluarte/tools",
+  "tools": [
+    {
+      "id": "gitnexus",
+      "name": "GitNexus",
+      "repo": "https://github.com/abhigyanpatwari/GitNexus.git",
+      "localPath": ".baluarte/tools/gitnexus",
+      "installedCommit": "dac33d80",
+      "role": "Motor real do grafo de código: CLI, servidor HTTP na 4747 e ponte MCP. É o que a página /git-nexus e o Baluarte Launcher consomem quando rodam no app (#222 M3a-M3c).",
+      "entrypoint": ".baluarte/tools/gitnexus/gitnexus/dist/cli/index.js",
+      "commands": {
+        "sync": "npm run tools:sync -- gitnexus --setup",
+        "analyze": "npm run nexus:analyze",
+        "serve": "npm run nexus:serve",
+        "status": "npm run nexus:local -- status"
+      },
+      "setup": [
+        {
+          "cwd": ".baluarte/tools/gitnexus/gitnexus-shared",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["install"]
+        },
+        {
+          "cwd": ".baluarte/tools/gitnexus/gitnexus",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["install"]
+        }
+      ]
+    }
+  ]
+}

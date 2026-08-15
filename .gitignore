@@ -30,6 +30,16 @@ venv/
 Humanity always first/
 GitNexus-1.6.7/
 
+# Ferramentas externas de IA instaladas localmente (`npm run tools:sync`).
+# O repo versiona `config/ai-tools.json` + os scripts; os clones, node_modules e
+# binários nativos ficam AQUI, fora do git. É a lição do `GitNexus-1.6.7/` logo
+# acima: repositório de terceiro copiado pra dentro do nosso vira 139 MB que o
+# histórico carrega pra sempre e que o build da Vercel tenta empacotar.
+.baluarte/
+# Índice do GitNexus deste repo (grafo + runner). Derivado: `gitnexus analyze`
+# reconstrói. Mesma regra do `.smart-env/` abaixo — índice não se versiona.
+.gitnexus/
+
 # Índice do Smart Connections (#420, item 7). 19 MB, 96 arquivos `.ajson` de
 # embeddings e logs de evento DERIVADOS dos nossos próprios READMEs e docs —
 # nenhum arquivo de src/ ou scripts/ lê ou escreve isto, é cache de ferramenta
