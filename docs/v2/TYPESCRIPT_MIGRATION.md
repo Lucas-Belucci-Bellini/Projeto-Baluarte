@@ -575,3 +575,13 @@ Foram criadas fronteiras mínimas para `user-prefs`, `backup`, `universe-theme` 
 O login Google continua acionado somente pelo botão do usuário; o logout re-renderiza a conta, e a estética sincroniza por `saveProfile` apenas quando há sessão. A página mantém a limpeza do cache Wikipédia legado, o descarte do efeito quando o hero sai do DOM, o contador de visualizações, os links externos e a limpeza total local com confirmação explícita.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **43 para 42 páginas JavaScript canônicas restantes**.
+
+## 4.32 Esteganografia
+
+`src/pages/esteganografia.ts` substituiu a página canônica de Esteganografia. A implementação tipa o pacote LSB com cabeçalho mágico, capacidade da imagem, leitura/escrita de bits RGB, `ImageData`, previews, download PNG e payload extraído, reutilizando `textToBytes`, `bytesToText`, `aesEncrypt` e `aesDecrypt` da fronteira criptográfica existente.
+
+A página preserva os dois painéis independentes: esconder texto com senha opcional e gerar PNG, ou revelar uma mensagem, solicitar senha quando o cabeçalho indica AES, decifrar e copiar o resultado. Arquivos e respostas do Canvas são tratados defensivamente; alpha permanece intacto, URLs temporárias são revogadas e nenhum arquivo de imagem é enviado para rede.
+
+Os avisos da versão JavaScript que usavam `type: 'error'` foram alinhados ao contrato existente de toast (`danger`), sem alterar o significado visual das falhas. Não foram adicionados `any`, supressões ou mudanças na engine AES.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **42 para 41 páginas JavaScript canônicas restantes**.
