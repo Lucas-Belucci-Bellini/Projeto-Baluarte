@@ -1,0 +1,84 @@
+/* ===== /login — Entrar / Criar conta ===== */
+
+.page-login { max-width: 480px; margin: 0 auto; }
+.page-login .page-header { padding-left: 16px; }
+
+.lg-wrap { display: flex; justify-content: center; }
+
+.lg-card {
+  width: 100%;
+  background: linear-gradient(180deg, var(--color-surface-2), var(--color-bg-elevated));
+  border: var(--border-base); border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex; flex-direction: column; gap: var(--space-md);
+}
+
+/* ---- tabs Entrar / Criar conta ---- */
+.lg-tabs {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border: var(--border-base); border-radius: var(--radius-md); overflow: hidden;
+}
+.lg-tab {
+  background: transparent; border: none; color: var(--color-text-muted);
+  padding: 10px; font-size: var(--font-size-sm); font-weight: 600;
+  cursor: pointer; transition: all var(--transition-fast);
+}
+.lg-tab:hover { color: var(--color-text-primary); }
+.lg-tab.is-active {
+  background: var(--color-cyan-soft); color: var(--color-cyan);
+}
+
+.lg-divider {
+  display: flex; align-items: center; gap: var(--space-sm);
+  color: var(--color-text-muted); font-size: 12px;
+}
+.lg-divider::before, .lg-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: color-mix(in srgb, var(--color-cyan) 25%, transparent);
+}
+
+/* ---- formulário ---- */
+.lg-form { display: flex; flex-direction: column; gap: var(--space-sm); }
+.lg-field { display: flex; flex-direction: column; gap: 4px; }
+.lg-field > span {
+  font-size: 11px; letter-spacing: 0.06em; color: var(--color-text-muted); font-weight: 600;
+}
+.lg-submit { width: 100%; justify-content: center; margin-top: 4px; }
+.lg-error-slot:empty { display: none; }
+.lg-error {
+  background: var(--color-danger-soft); color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+  border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px;
+}
+
+/* ---- botão Google (mesmo visual do /perfil) ---- */
+.btn-google {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  background: #fff; color: #1f1f1f; border: 1px solid #dadce0;
+  border-radius: var(--radius-pill); padding: 10px 18px; width: 100%;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+.btn-google:hover { box-shadow: 0 1px 10px rgba(0, 0, 0, 0.4); transform: translateY(-1px); }
+.btn-google__g { display: inline-flex; }
+
+/* ---- conta já logada ---- */
+.lg-account { display: flex; align-items: center; gap: var(--space-md); }
+.lg-account__info { flex: 1; min-width: 0; }
+.lg-account__name { font-weight: 700; color: var(--color-text-primary); }
+.lg-account__email { font-size: 12px; word-break: break-all; }
+.lg-account__avatar {
+  width: 48px; height: 48px; border-radius: 50%; flex: none; object-fit: cover;
+  border: 1px solid var(--color-cyan-edge);
+}
+.lg-account__avatar--ph {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-cyan-soft); color: var(--color-cyan);
+  font-weight: 700; font-size: 20px;
+}
+.lg-account__actions { display: flex; gap: var(--space-sm); }
+
+@media (max-width: 560px) {
+  .lg-account__actions { flex-wrap: wrap; }
+  .lg-account__actions .btn { flex: 1; }
+}
