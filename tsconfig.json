@@ -91,6 +91,7 @@
     "src/pages/batalha-naval.ts",
     "src/pages/ia-proprietaria.ts",
     "src/pages/fft.ts",
+    "src/pages/color-studio.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/data/skills.d.ts",

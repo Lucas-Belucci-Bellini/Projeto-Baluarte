@@ -1,14 +1,14 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `18d42603b8c62368c979453c9e123067b4a987d6`
-**Gerado em:** 2026-08-15T02:33:03.264Z
+**SHA auditado:** `84804f124da9aff53b1c1f2327e319ed974782ac`
+**Gerado em:** 2026-08-15T02:37:36.055Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **46 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **45 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
@@ -16,7 +16,7 @@ Existem **46 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
 | Arma 3, 3D e visualização | 7 |
-| Páginas utilitárias e conteúdo | 6 |
+| Páginas utilitárias e conteúdo | 5 |
 | Hubs e catálogos | 3 |
 
 ## Matriz completa
@@ -68,7 +68,6 @@ Existem **46 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 43 | `src/pages/perfil.js` | 430 | 20547 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 44 | `src/pages/apis.js` | 366 | 14773 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 45 | `src/pages/morse.js` | 337 | 11688 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 46 | `src/pages/color-studio.js` | 320 | 11599 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 

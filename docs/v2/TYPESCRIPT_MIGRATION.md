@@ -539,3 +539,11 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A página preserva a solicitação explícita de captura, as instruções de compartilhamento de aba, carregamento de arquivo, oscilador de teste, seletor de FFT, sliders, seleção de modo, reativação visual, status e encerramento ao sair da rota. Erros desconhecidos são convertidos em mensagens seguras; nenhum segredo, permissão adicional ou envio externo foi criado.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **47 para 46 páginas JavaScript canônicas restantes**.
+
+## 4.28 Color Studio
+
+`src/pages/color-studio.ts` substituiu a página canônica do Color Studio. A implementação tipa o estado RGB, canais, entradas HEX/RGB/HSL, paletas de tons e harmonias, gradientes e verificação WCAG, reutilizando as conversões puras já publicadas em `src/utils/cor.ts`.
+
+A página preserva persistência da cor atual, sincronização entre controles, cópia de valores, preview, gerador de gradiente, saída CSS, razão de contraste e badges AA/AAA. Valores externos são estreitados por `hexToRgb` antes de entrar no cálculo, sem duplicar matemática nem introduzir dependências ou permissões novas.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **46 para 45 páginas JavaScript canônicas restantes**.
