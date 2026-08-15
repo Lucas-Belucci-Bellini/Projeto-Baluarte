@@ -141,6 +141,7 @@ router.register('/memes', lazy(() => import('./pages/memes.js'), 'memesPage'));
 router.register('/filmes', lazy(() => import('./pages/filmes.js'), 'filmesPage'));
 router.register('/shadow', lazy(() => import('./pages/shadow.js'), 'shadowPage'));
 router.register('/perfil', lazy(() => import('./pages/perfil.js'), 'perfilPage'));
+router.register('/login', lazy(() => import('./pages/login.js'), 'loginPage'));
 router.register('/economia', lazy(() => import('./pages/economia.js'), 'economiaPage'));
 router.register('/dolar', lazy(() => import('./pages/dolar.js'), 'dolarPage'));
 router.register('/jarvis', lazyNexus('jarvis'));

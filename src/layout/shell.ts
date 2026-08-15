@@ -220,6 +220,7 @@ function pageTitleForRoute(path: string): string {
     '/jarvis': 'J.A.R.V.I.S.',
     '/ia-proprietaria': 'IA Proprietária Mark 11',
     '/perfil': 'Perfil',
+    '/login': 'Entrar / Criar Conta',
     '/diagnostico': 'Diagnóstico do sistema',
     '/enciclopedia-militar': 'Enciclopédia Militar',
     '/codigo': 'Raio-X do Código',
