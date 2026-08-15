@@ -57,6 +57,12 @@ O monitor também deve falhar de forma honesta: se GitHub, Supabase ou Vercel es
 
 O horário ainda precisa ser confirmado pelo proprietário. A configuração inicial sugerida é uma execução por dia, fora do intervalo de maior atividade, com um relatório completo e alertas imediatos apenas para eventos críticos. A frequência diária é deliberada: polling por minuto ou hora não deve ser implementado como sessões completas; se a necessidade crescer para quase tempo real, será preciso um serviço persistente com limites e custo explicitados.
 
-## 8. Aceite
+## 8. Configuração inicial ativada
+
+A configuração inicial foi ativada em 15 de agosto de 2026: destinatário `lucasbb2007@gmail.com`, Gmail conectado e rotina diária às **09:00 em `America/Sao_Paulo` (GMT-3)**. O agendamento está ativo e vinculado ao conector Gmail. A execução foi instruída a enviar o resumo diário e alertas críticos, mas permanece proibida de comentar, fechar, atribuir, fazer merge, publicar ou executar qualquer ação destrutiva no GitHub.
+
+A rotina continua usando o gerador versionado (`npm run relatorio:diario`) e o monitor (`npm run monitor:issues`). Se uma execução externa exigir confirmação adicional de envio, o relatório não deve ser considerado entregue até que a confirmação apareça; a coleta e o arquivo local continuam sendo a fonte de auditoria.
+
+## 9. Aceite
 
 O sistema estará pronto quando gerar dois relatórios consecutivos com o mesmo esquema, detectar uma issue prioritária sem duplicá-la, diferenciar causa raiz de cascata, registrar o SHA correto, produzir o estado de release e permitir desativar a entrega sem alterar o código. O primeiro relatório real deve ser anexado ao repositório e ao e-mail somente depois que o proprietário confirmar os destinatários e o canal.
