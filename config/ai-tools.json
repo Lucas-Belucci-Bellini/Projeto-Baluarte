@@ -8,8 +8,12 @@
       "repo": "https://github.com/abhigyanpatwari/GitNexus.git",
       "localPath": ".baluarte/tools/gitnexus",
       "installedCommit": "dac33d80",
+      "version": "1.6.9",
       "role": "Motor real do grafo de código: CLI, servidor HTTP na 4747 e ponte MCP. É o que a página /git-nexus e o Baluarte Launcher consomem quando rodam no app (#222 M3a-M3c).",
-      "entrypoint": ".baluarte/tools/gitnexus/gitnexus/dist/cli/index.js",
+      "run": {
+        "kind": "node",
+        "entrypoint": ".baluarte/tools/gitnexus/gitnexus/dist/cli/index.js"
+      },
       "commands": {
         "sync": "npm run tools:sync -- gitnexus --setup",
         "analyze": "npm run nexus:analyze",
@@ -28,6 +32,46 @@
           "command": "npm",
           "windowsCommand": "npm.cmd",
           "args": ["install"]
+        }
+      ]
+    },
+    {
+      "id": "hermes-agent",
+      "name": "Hermes Agent (Nous Research)",
+      "repo": "https://github.com/NousResearch/hermes-agent.git",
+      "localPath": ".baluarte/tools/hermes-agent",
+      "installedCommit": "165c889",
+      "version": "0.20.1",
+      "role": "Agente da Nous Research que criou skills a partir da experiência — a origem do modo `hermes-agente` e do `src/utils/jarvis-skills.js` do JARVIS. Serve de referência viva e de servidor MCP local (`mcp_serve.py`).",
+      "venv": ".baluarte/venvs/hermes-agent",
+      "run": {
+        "kind": "bin",
+        "windows": ".baluarte/venvs/hermes-agent/Scripts/hermes.exe",
+        "posix": ".baluarte/venvs/hermes-agent/bin/hermes"
+      },
+      "commands": {
+        "sync": "npm run tools:sync -- hermes-agent --setup",
+        "cli": "npm run hermes -- --help",
+        "setupWizard": "npm run hermes -- setup",
+        "doctor": "npm run hermes -- doctor"
+      },
+      "notas": [
+        "O venv fica FORA do clone de propósito: o README avisa que um venv dentro da árvore em que o agente opera pode ser apagado por um comando de caminho relativo do próprio agente, matando o runtime em pleno voo.",
+        "Requer Python >=3.11,<3.14. O `python` padrão desta máquina é 3.14, então o venv é criado explicitamente com --python 3.11.",
+        "O instalador oficial (`iex (irm .../install.ps1)`) instala Python, Node, ffmpeg e um Git portátil em %LOCALAPPDATA%. Aqui usamos o caminho manual documentado no README, que não mexe na máquina inteira.",
+        "Instalado só com as dependências base. Os extras `.[all,dev]` (voz, providers nativos) são opcionais: `uv pip install --python <venv> -e \".[all,dev]\"`."
+      ],
+      "setup": [
+        {
+          "cwd": ".",
+          "command": "uv",
+          "args": ["venv", ".baluarte/venvs/hermes-agent", "--python", "3.11"]
+        },
+        {
+          "cwd": ".baluarte/tools/hermes-agent",
+          "command": "uv",
+          "args": ["pip", "install", "--python", "../../venvs/hermes-agent/bin/python", "-e", "."],
+          "windowsArgs": ["pip", "install", "--python", "../../venvs/hermes-agent/Scripts/python.exe", "-e", "."]
         }
       ]
     }

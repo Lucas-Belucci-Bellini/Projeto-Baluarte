@@ -78,6 +78,40 @@ sem o *Visual C++ 2015-2022 Redistributable x64* e o *OpenSSL 3*. O índice e o
 grafo funcionam; só a busca textual fica desligada. Depois de instalar os
 runtimes, rode `npm run nexus:local -- analyze --repair-fts`.
 
+### Hermes Agent (Nous Research)
+
+O agente que inspirou o modo `hermes-agente` do JARVIS e as skills
+auto-criadas de `src/utils/jarvis-skills.js` (ver `docs/JARVIS-SKILLS.md`).
+Fica instalado como referência viva e como servidor MCP local (`mcp_serve.py`).
+
+- Repositório: <https://github.com/NousResearch/hermes-agent.git>
+- Clone: `.baluarte/tools/hermes-agent` · venv: `.baluarte/venvs/hermes-agent`
+- Versão instalada: `0.20.1` (Python 3.11.9)
+
+```bash
+npm run tools:sync -- hermes-agent --setup
+npm run hermes -- --help
+npm run hermes -- doctor
+```
+
+Três decisões que valem registro:
+
+1. **O venv fica fora do clone.** O próprio README avisa: um venv dentro da
+   árvore em que o agente opera pode ser apagado por um comando de caminho
+   relativo do próprio agente, matando o runtime em pleno voo.
+2. **Python 3.11 explícito.** O projeto exige `>=3.11,<3.14` e o `python`
+   padrão desta máquina é 3.14 — sem fixar a versão, o install falha.
+3. **Sem o instalador oficial.** O `iex (irm …/install.ps1)` baixa Python,
+   Node, ffmpeg e um Git portátil para `%LOCALAPPDATA%`. Aqui usamos o caminho
+   manual documentado no README, que não mexe na máquina inteira.
+
+Instalado só com as dependências base. Os extras (voz, provider Anthropic
+nativo) são opcionais:
+
+```bash
+uv pip install --python .baluarte/venvs/hermes-agent/Scripts/python.exe -e ".[all,dev]"
+```
+
 ## Regras
 
 - `.baluarte/` e `.gitnexus/` são ignorados — não force nada pra dentro do git.

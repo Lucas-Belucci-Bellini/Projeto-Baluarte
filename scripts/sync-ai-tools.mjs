@@ -36,6 +36,16 @@ function comandoDe(passo) {
   return process.platform === 'win32' && passo.windowsCommand ? passo.windowsCommand : passo.command;
 }
 
+/**
+ * Mesma história dos args: um venv Python guarda o interpretador em
+ * `Scripts/python.exe` no Windows e `bin/python` no resto, e esse caminho entra
+ * na linha de comando do instalador. O manifest declara as duas formas.
+ */
+function argsDe(passo) {
+  const escolhido = process.platform === 'win32' && passo.windowsArgs ? passo.windowsArgs : passo.args;
+  return Array.isArray(escolhido) ? escolhido : [];
+}
+
 function rodar(comando, argumentos, cwd) {
   const linha = [comando, ...argumentos].join(' ');
   console.log(`[tools] ${linha}`);
@@ -66,7 +76,7 @@ function sincronizar(manifest, tool) {
   }
   for (const passo of tool.setup || []) {
     const cwd = path.resolve(principal, passo.cwd || tool.localPath || raizDasFerramentas(manifest));
-    rodar(comandoDe(passo), Array.isArray(passo.args) ? passo.args : [], cwd);
+    rodar(comandoDe(passo), argsDe(passo), cwd);
   }
 }
 
