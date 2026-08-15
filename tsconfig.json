@@ -82,6 +82,8 @@
     "src/pages/baixar.ts",
     "src/pages/portas.ts",
     "src/pages/diagnostico.ts",
+    "src/pages/economia.ts",
+    "src/utils/economia-api.d.ts",
     "src/core/politica.d.ts",
     "src/data/logic-circuits.d.ts",
     "src/core/comms.d.ts",

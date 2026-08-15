@@ -464,3 +464,12 @@ Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run bu
 `src/pages/diagnostico.ts` substituiu o painel de Diagnóstico. Foi criada a fronteira `politica.d.ts` para a fotografia completa de permissões, esquemas, flags, níveis e ambiente. A página preserva as sondas de capacidades do navegador, o estado de estabilidade, concessão/revogação de permissões, liga/desliga de flags, reset para padrão, divergência de esquemas e últimas decisões, sem `innerHTML`.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **56 para 55 páginas JavaScript canônicas restantes**.
+
+
+## 4.19 Economia e cotações externas
+
+`src/pages/economia.ts` substituiu o painel de Economia. `economia-api.d.ts` declara pares de moeda, cotações, criptoativos, funções de busca e formatadores. A implementação preserva atualizações concorrentes com `Promise.allSettled`, conversor BRL, cache local, status online/offline e mensagens de erro, normalizando respostas externas sem introduzir tipos frouxos.
+
+Durante a validação foi encontrado e corrigido um erro local de build: a implementação nova havia importado `styles/economia.css`, arquivo que não existia e também não era importado pela página original. A correção removeu somente essa importação indevida; depois disso todos os gates voltaram a passar.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **55 para 54 páginas JavaScript canônicas restantes**.
