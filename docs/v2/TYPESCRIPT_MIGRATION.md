@@ -395,3 +395,14 @@ Também foram convertidos `conversores.ts` e `saude.ts`. Conversores agora tem c
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **71 para 68 páginas JavaScript canônicas restantes**.
 
 A próxima frente de baixo risco passa para utilitárias e conteúdo estático menores, mantendo as páginas médias e os módulos de alto acoplamento reservados para contratos próprios.
+
+
+## 4.10 Onda utilitária e conteúdo estruturado
+
+Foram convertidas quatro páginas de baixo acoplamento: `arsenal-expandido.ts`, `_placeholder.ts`, `guia-pc.ts` e `tabela-periodica.ts`. Os wrappers `.js` permanecem para compatibilidade.
+
+`arsenal-expandido.ts` deriva categorias e itens do JSON real, tipa a busca e a troca de abas e não duplica o catálogo. `_placeholder.ts` fecha o contrato de rota, 404 e falha de carregamento com navegação pelo Router existente. `guia-pc.ts` adiciona o contrato de `PC_PRESETS` à fronteira Modpack, preserva storage, seleção de builds e o tutorial de sete passos. `tabela-periodica.ts` adiciona `periodic.d.ts`, tipa os 118 elementos, categorias, posições do grid, filtros e configuração eletrônica.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **68 para 64 páginas JavaScript canônicas restantes**.
+
+A fronteira de dados periódicos é declarativa e read-only; nenhuma camada Supabase, Router ou Runtime foi duplicada ou alterada.

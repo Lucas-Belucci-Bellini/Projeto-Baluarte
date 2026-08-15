@@ -1,0 +1,12 @@
+import { h } from '../utils/helpers.js';
+import { router } from '../core/router.js';
+
+interface RouteInfo { readonly title: string; readonly icon: string; readonly phase: string; readonly blurb: string; }
+const ROUTE_INFO: Readonly<Record<string, RouteInfo>> = {};
+
+export function placeholderPage(path: string): HTMLElement {
+  const info: RouteInfo = ROUTE_INFO[path] ?? { title: 'Página desconhecida', icon: '∅', phase: '?', blurb: 'Esta rota não está mapeada no roteiro.' };
+  return h('section', { className: 'empty-state anim-fade-in' }, h('div', { className: 'empty-state__icon' }, info.icon), h('h1', { className: 'empty-state__title' }, info.title), h('p', { className: 'empty-state__subtitle' }, info.blurb), h('div', { className: 'empty-state__phase' }, `Em desenvolvimento · Fase ${info.phase}`), h('div', { style: { display: 'flex', gap: '12px', marginTop: '24px' } }, h('button', { className: 'btn btn--primary', onclick: (): void => router.navigate('/home') }, '⬅ Voltar à Ponte de Comando'), h('button', { className: 'btn', onclick: (): void => router.navigate('/ferramentas') }, '⚙ Ir ao Hub de Ferramentas')));
+}
+export function notFoundPage(path: string): HTMLElement { return h('section', { className: 'empty-state anim-fade-in' }, h('div', { className: 'empty-state__icon' }, '⚠'), h('h1', { className: 'empty-state__title' }, 'Rota não encontrada'), h('p', { className: 'empty-state__subtitle' }, `O caminho "${path}" não existe no Baluarte.`), h('div', { className: 'empty-state__phase' }, '404 · NAVEGAÇÃO PERDIDA'), h('button', { className: 'btn btn--primary', style: { marginTop: '24px' }, onclick: (): void => router.navigate('/home') }, '⬅ Voltar ao início')); }
+export function loadErrorPage(path: string): HTMLElement { return h('section', { className: 'empty-state anim-fade-in' }, h('div', { className: 'empty-state__icon' }, '⟳'), h('h1', { className: 'empty-state__title' }, 'Falha ao carregar'), h('p', { className: 'empty-state__subtitle' }, `Não consegui carregar "${path}" agora — provavelmente uma versão nova do site ou a conexão. A página existe; foi o carregamento que falhou.`), h('div', { className: 'empty-state__phase' }, 'ERRO DE CARREGAMENTO'), h('div', { style: { display: 'flex', gap: '12px', marginTop: '24px' } }, h('button', { className: 'btn btn--primary', onclick: (): void => location.reload() }, '⟳ Recarregar'), h('button', { className: 'btn', onclick: (): void => router.navigate('/home') }, '⬅ Início'))); }
