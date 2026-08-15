@@ -97,6 +97,7 @@
     "src/pages/perfil.ts",
     "src/pages/esteganografia.ts",
     "src/pages/utilidades.ts",
+    "src/pages/mural.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/data/skills.d.ts",

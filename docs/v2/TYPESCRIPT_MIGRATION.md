@@ -595,3 +595,13 @@ Os dados dinâmicos foram estreitados sem `any`: registros JSON passam por guard
 Durante o typecheck, os callbacks de timestamp e px/rem foram extraídos para funções nomeadas. Isso mantém o mesmo comportamento, mas evita invocar diretamente propriedades DOM anuláveis como `oninput`, em conformidade com o modo estrito. O arquivo JavaScript continua como wrapper de compatibilidade.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **41 para 40 páginas JavaScript canônicas restantes**.
+
+## 4.34 Mural do Baluarte
+
+`src/pages/mural.ts` substituiu a página canônica do Mural. A implementação tipa o registro local de posts, a resposta do endpoint `/api/social`, a fila de sincronização best-effort, a leitura do repositório e os registros retornados pelo Supabase.
+
+O modo local continua salvando até 500 posts no storage, preserva o nome do autor, publica por botão ou Ctrl/Cmd+Enter, atualiza o feed imediatamente e tenta sincronizar sem bloquear a experiência. Falhas de rede permanecem não fatais; a resposta externa é tratada como `unknown`, e o estado de token só é desativado quando a mensagem do backend realmente contém `GITHUB_TOKEN`.
+
+No modo banco, a publicação permanece bloqueada conforme a implementação original e a leitura pública usa apenas os campos necessários. Registros remotos passam por guardas antes de converter `created_at` em timestamp. O wrapper JavaScript mantém a compatibilidade dos imports V1, sem alterar autenticação, RLS ou permissões.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **40 para 39 páginas JavaScript canônicas restantes**.
