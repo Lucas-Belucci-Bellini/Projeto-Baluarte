@@ -665,3 +665,21 @@ O grafo codemap é estreitado por interfaces locais e os nós e links passam por
 O loop force-directed continua sendo iniciado após o layout, mantém rotação automática e arraste, e é cancelado na saída da rota. O botão de leitura do repositório continua sendo uma ação explícita do operador; nenhuma nova operação de escrita ou credencial foi adicionada. O wrapper JavaScript preserva a compatibilidade das rotas V1.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **34 para 33 páginas JavaScript canônicas restantes**.
+
+## 4.41 Onda média de ferramentas e IDE
+
+A onda 4.41 converteu oito páginas canônicas para TypeScript mantendo os wrappers JavaScript: `regex.ts`, `tabela-verdade.ts`, `calc-cientifica.ts`, `jogos.ts`, `qr-studio.ts`, `calc-numerica.ts`, `logic-sim.ts` e `editor.ts`.
+
+O **Lab de Regex** recebeu estado persistido validado a partir de `unknown`, matches globais e simples, highlight escapado, grupos numerados e nomeados, replace preview, cheatsheet e exemplos. A **Tabela-Verdade** passou a usar tipos para AST, ambientes, linhas, SOP/POS, Quine-McCluskey e Gray code por meio de `logic-parser.d.ts`, preservando o K-map e o limite de oito variáveis.
+
+As duas calculadoras foram convertidas com a fronteira `calc-engine.d.ts`. A Calculadora Científica mantém memória, histórico limitado a 30 entradas, modos DEG/RAD, painéis de funções e teclado global. A Calculadora Numérica mantém displays DEC/BIN/HEX/OCT, grade de bits, operações aritméticas/bitwise, largura de 8/16/32 bits, IEEE 754, tabs e teclado.
+
+O **Arcade Baluarte** foi tipado contra `players-engine.d.ts`, `jogos.d.ts` e `code-quest.d.ts`, cobrindo autenticação local, ranking, prêmio, progresso de campanha, múltipla escolha, saída JavaScript e Flexbox. O **QR Studio** recebeu contratos para o encoder próprio, modos Gerar/Ler, templates Wi-Fi/vCard/e-mail, Canvas, download PNG, `BarcodeDetector` opcional e limpeza de `MediaStream` ao trocar de rota.
+
+O **Logic Sim** recebeu `logic-sim-engine.d.ts` com gates, componentes, fios, circuitos, serialização e simulação. A implementação tipa geometria, hit testing, Canvas, arraste, fios temporários, exemplos AND/half-adder/SR latch/D flip-flop, clock, autosave e o teardown do loop e do listener global via `aoSair`.
+
+O **Editor de Código** foi convertido mantendo tabs, runners, syntax highlight, autocomplete, find/replace, edição estilo VS Code, atalhos, preview sandboxed e integração com o VFS. As fronteiras `editor-engine.d.ts`, `editor-autocomplete.d.ts` e `vfs.d.ts` isolam as engines JavaScript sem usar `any`, e os handlers de teclado e eventos DOM fazem narrowing explícito.
+
+Nenhuma credencial, operação de escrita externa ou relaxamento do strict mode foi adicionado. O inventário determinístico caiu de **33 para 25 páginas JavaScript canônicas restantes**; os oito arquivos `.js` desta onda continuam apenas como wrappers de compatibilidade.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
