@@ -523,3 +523,11 @@ Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm 
 A conversão mantém o comportamento visual e os callbacks de jogo sem introduzir armazenamento, rede ou novos efeitos externos. O erro de definite assignment encontrado no primeiro typecheck foi corrigido inicializando as coordenadas potenciais da IA como opcionais e estreitando-as antes do acesso ao tabuleiro; nenhum diagnóstico foi silenciado.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **49 para 48 páginas JavaScript canônicas restantes**.
+
+## 4.26 IA Proprietária Mark 11
+
+`src/pages/ia-proprietaria.ts` substituiu a página canônica da IA Proprietária Mark 11. A implementação tipa `Skill`, categorias, estado selecionado/filtro, catálogo built-in e skills customizadas persistidas, além dos controles de criação, remoção, seleção, cópia de `SKILL.md` e renderização do detalhe.
+
+A nova fronteira `src/data/skills.d.ts` declara somente o catálogo real consumido pela página. O carregamento de storage passa por guards de `unknown`, a categoria do formulário é estreitada para a união válida e o renderizador Markdown mantém escaping antes de inserir a visualização controlada. Não foram adicionados serviços externos, execução de código ou permissões novas.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **48 para 47 páginas JavaScript canônicas restantes**.
