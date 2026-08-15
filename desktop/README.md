@@ -87,6 +87,11 @@ rodar `gitnexus serve` à parte. No boot, `nexus.maybeStart()`:
    | 3 | `global` | `gitnexus serve …` (depois de `npm i -g gitnexus`) |
    | 4 | `npx` | `npx -y gitnexus@latest serve …` (cold-start mais lento; `GITNEXUS_SKIP_OPTIONAL_GRAMMARS=1`) |
 
+- **Onde o contrato mora:** a porta, a rota de health, os args do `serve` e a janela
+  de readiness são **declarados** no bloco `service` do `gitnexus` em
+  [`config/ai-tools.json`](../config/ai-tools.json) — o `nexus.js` só lê de lá. Sem o
+  manifest (app empacotado sem `config/`), cai nos mesmos valores de antes. A janela
+  maior do `npx` é da *estratégia*, não do serviço, e segue no código.
 - **Desligar o autostart:** `BALUARTE_NEXUS_DISABLE=1` (a UI ainda detecta um motor
   externo, só não tenta subir um).
 - O `stderr` do motor é encaminhado pro console do main (prefixo `[nexus]`) — útil

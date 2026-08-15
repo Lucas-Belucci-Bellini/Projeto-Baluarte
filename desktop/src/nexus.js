@@ -1,6 +1,7 @@
 // Motor real do GitNexus (M3a detecção · M3b grafo · M3c spawn por padrão).
 //
-// O motor é o servidor HTTP do pacote `gitnexus` (rotas /api/*) na porta 4747:
+// O motor é o servidor HTTP do pacote `gitnexus` (rotas /api/*), na porta que o
+// manifest declara (4747 hoje):
 //   GET /api/health → { status: 'ok' }
 //   GET /api/info   → { version, launchContext, nodeVersion }
 //   GET /api/repos  → [{ name, path, … }]
@@ -13,13 +14,17 @@
 //
 // Desligar o autostart: env `BALUARTE_NEXUS_DISABLE=1` (a UI ainda detecta um
 // motor externo, só não tenta subir um).
+//
+// O **contrato de processo** — porta, rota de health, args do `serve` e a janela
+// de readiness — não mora mais aqui: é declarado no bloco `service` do
+// `gitnexus` em `config/ai-tools.json`, e este arquivo só o lê. Se o manifest
+// sumir ou vier ilegível (app empacotado sem o `config/`), caímos exatamente nos
+// valores que estavam hardcoded antes — o comportamento não muda.
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const HOST = '127.0.0.1';
-const PORT = 4747;
-const BASE = `http://${HOST}:${PORT}`;
 const WIN = process.platform === 'win32';
 
 let child = null; // processo do motor que NÓS subimos (null se externo/ausente)
@@ -31,6 +36,79 @@ const log = (...a) => {
   // eslint-disable-next-line no-console
   console.log('[nexus]', ...a);
 };
+
+// Fallback = exatamente o que estava hardcoded aqui antes da refatoração.
+const SERVICO_PADRAO = {
+  porta: 4747,
+  health: '/api/health',
+  serveArgs: ['serve', '--port', '4747'],
+  readyMs: 20000,
+  dependeDe: []
+};
+
+// O npx baixa o pacote na 1ª vez, então a janela dele é maior. Isso é
+// propriedade da *estratégia*, não do serviço — por isso fica no código, e não
+// no contrato do manifest.
+const READY_NPX_MS = 90000;
+
+/** Acha o `config/ai-tools.json` (raiz do repo em dev; resources no empacotado). */
+function manifestoPath() {
+  const roots = [
+    path.join(__dirname, '..', '..'), // repo root em dev (desktop/src → repo)
+    process.resourcesPath || null,
+    process.cwd()
+  ].filter(Boolean);
+  for (const root of roots) {
+    const p = path.join(root, 'config', 'ai-tools.json');
+    try {
+      if (fs.existsSync(p)) return p;
+    } catch {
+      /* ignore */
+    }
+  }
+  return null;
+}
+
+/**
+ * Lê o bloco `service` do `gitnexus` no manifest. Nunca lança: campo ausente ou
+ * inválido cai no padrão **campo a campo**, então um manifest pela metade
+ * degrada pro comportamento antigo em vez de quebrar o boot.
+ */
+function lerServico() {
+  const p = manifestoPath();
+  if (!p) return { ...SERVICO_PADRAO };
+  try {
+    const manifest = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const tool = (manifest.tools || []).find((t) => t && t.id === 'gitnexus');
+    const s = (tool && tool.service) || null;
+    if (!s) return { ...SERVICO_PADRAO };
+    const porta = Number(s.porta);
+    const readyMs = Number(s.readyMs);
+    return {
+      porta: Number.isInteger(porta) && porta > 0 ? porta : SERVICO_PADRAO.porta,
+      health: typeof s.health === 'string' && s.health ? s.health : SERVICO_PADRAO.health,
+      serveArgs:
+        Array.isArray(s.serveArgs) && s.serveArgs.length
+          ? s.serveArgs.map(String)
+          : SERVICO_PADRAO.serveArgs,
+      readyMs: Number.isFinite(readyMs) && readyMs > 0 ? readyMs : SERVICO_PADRAO.readyMs,
+      dependeDe: Array.isArray(s.dependeDe) ? s.dependeDe.map(String) : []
+    };
+  } catch (err) {
+    log('manifest ilegível — usando o contrato padrão:', String((err && err.message) || err));
+    return { ...SERVICO_PADRAO };
+  }
+}
+
+const SERVICO = lerServico();
+const PORT = SERVICO.porta;
+const BASE = `http://${HOST}:${PORT}`;
+
+// O contrato declara a porta em dois lugares (`porta` e dentro de `serveArgs`).
+// Não "consertamos" em silêncio — quem edita o manifest precisa saber.
+if (!SERVICO.serveArgs.includes(String(SERVICO.porta))) {
+  log(`aviso: service.serveArgs não cita a porta ${SERVICO.porta} — confira config/ai-tools.json`);
+}
 
 /** GET com timeout curto; devolve o JSON ou null se falhar/expirar. */
 async function getJSON(pathname, timeoutMs = 1500) {
@@ -47,15 +125,15 @@ async function getJSON(pathname, timeoutMs = 1500) {
   }
 }
 
-/** True se há um motor respondendo /api/health agora. */
+/** True se há um motor respondendo a rota de health agora. */
 async function isAvailable(timeoutMs = 1200) {
-  const h = await getJSON('/api/health', timeoutMs);
+  const h = await getJSON(SERVICO.health, timeoutMs);
   return !!(h && h.status === 'ok');
 }
 
 /** Estado do motor: { available, url, version?, nodeVersion?, spawned, via? }. */
 async function status() {
-  const health = await getJSON('/api/health');
+  const health = await getJSON(SERVICO.health);
   if (!health || health.status !== 'ok') return { available: false, url: BASE };
   const info = await getJSON('/api/info');
   return {
@@ -132,7 +210,7 @@ function vendoredEntry() {
  * preferência. Cada uma é `{ cmd, args, env?, via }` — args fixos, sem shell.
  */
 function candidates() {
-  const args = ['serve', '--port', String(PORT)];
+  const args = SERVICO.serveArgs.slice();
   const list = [];
 
   // 1) override explícito do operador (caminho do executável gitnexus).
@@ -257,8 +335,8 @@ async function maybeStart() {
     }
     const list = candidates();
     for (const c of list) {
-      // npx baixa na 1ª vez → janela de readiness maior; resto é rápido.
-      const readyMs = c.via === 'npx' ? 90000 : 20000;
+      // npx baixa na 1ª vez → janela de readiness maior; resto usa o contrato.
+      const readyMs = c.via === 'npx' ? READY_NPX_MS : SERVICO.readyMs;
       log(`tentando subir o motor via "${c.via}"…`);
       // eslint-disable-next-line no-await-in-loop
       if (await trySpawn(c, readyMs)) return;

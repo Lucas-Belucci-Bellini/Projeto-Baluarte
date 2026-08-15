@@ -8,6 +8,18 @@
       "localPath": ".baluarte/tools/gitnexus",
       "installedCommit": "dac33d80",
       "role": "Grafo real de codigo, MCP e CLI local para o Nucleo de IA.",
+      "$service": "Contrato de processo lido por desktop/src/nexus.js: em que porta o motor escuta, qual rota prova que subiu, com que args se sobe e quanto se espera pela readiness. Mudou aqui, muda no app.",
+      "service": {
+        "porta": 4747,
+        "health": "/api/health",
+        "serveArgs": [
+          "serve",
+          "--port",
+          "4747"
+        ],
+        "readyMs": 20000,
+        "dependeDe": []
+      },
       "commands": {
         "sync": "npm run tools:sync -- gitnexus",
         "setup": "npm run tools:sync -- gitnexus --with-setup",
