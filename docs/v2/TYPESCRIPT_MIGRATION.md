@@ -717,3 +717,15 @@ O **Git Nexus** recebeu contratos para o motor de análise e para a visualizaç�
 O inventário determinístico caiu de **16 para 12 páginas JavaScript canônicas restantes**. Foram adicionadas duas declarações de fronteira do Git Nexus e refinadas as interfaces do adaptador Arma 3. Nenhuma credencial foi adicionada, nenhum push nativo foi tornado automático e não houve relaxamento de strict, `any` ou `@ts-ignore`.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
+
+## 4.44 Modelos 3D e visualizador universal
+
+A onda 4.44 converteu `src/pages/modelos-3d.js` para `modelos-3d.ts`, mantendo o wrapper JavaScript de compatibilidade. A página preserva a galeria local de modelos livres, os créditos de autor/licença/fonte, a curadoria Sketchfab, filtros por grupo/coleção, busca, paginação da API pública e deep-links por modelo ou URL.
+
+Foram criadas fronteiras para `modelos-3d.json`, `galeria-3d.js`, `diag-3d.js`, `visor-3d.js` e `nexus.js`. O visualizador universal continua carregado sob demanda e aceita arquivos locais ou URLs legítimas `http(s)`, `blob`, `data` e caminhos same-origin; valores externos passam por sanitização antes de aparecerem na interface. O controlador mantém animação, giro, recentralização, amostra de luminância, estatísticas de triângulos e descarte de recursos GPU.
+
+O diagnóstico 3D permanece acionado pelo operador, reportando etapas de WebGL, download, service worker e montagem real do visor. Telemetria de interação continua lazy e best-effort, sem bloquear a abertura do modelo. A migração não adicionou dependências externas nem removeu a regra de crédito dos criadores.
+
+O inventário determinístico caiu de **12 para 11 páginas JavaScript canônicas restantes**. Foram adicionadas cinco declarações de fronteira e o `tsconfig.json` segue strict, sem `any`, `@ts-ignore` ou relaxamento.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
