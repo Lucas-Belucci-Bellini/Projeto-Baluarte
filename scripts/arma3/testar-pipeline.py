@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pipeline_arma3 import (                                     # noqa: E402
     AQUI, BASES, ETAPAS, POR_NOME, Base, Etapa,
     fonte_de, indexar_rpts, precisa_base, precisa_parse)
+from imagens_catalogo import CATEGORIAS                          # noqa: E402
 
 falhas = []
 
@@ -256,10 +257,14 @@ def teste_grafo():
 
     # entrada de base que ninguém produz = base que nunca vai rodar. Foi
     # exatamente assim que o extrator de ícones ficou parado no arma3-catalogo.
-    produzidos = {e.saida for e in ETAPAS}
-    de_imagem = {'armas-imagens.json'}
-    orfas = {e for b in BASES for e in b.entradas
-             if e not in produzidos and e not in de_imagem}
+    #
+    # Os mapas de imagem não saem de uma ETAPA (que é dump no jogo + parse):
+    # saem do `extrair-imagens.py`, e quem declara qual arquivo cada leva
+    # escreve é o catálogo. Ler o catálogo em vez de listar os nomes aqui faz
+    # a categoria nova ser reconhecida sozinha — e um mapa que base nenhuma
+    # produz continua caindo como órfão.
+    produzidos = {e.saida for e in ETAPAS} | {c.mapa for c in CATEGORIAS}
+    orfas = {e for b in BASES for e in b.entradas if e not in produzidos}
     checar(not orfas, 'toda entrada de base é produzida por alguma etapa',
            f'órfãs: {sorted(orfas)}')
 

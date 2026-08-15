@@ -1,0 +1,64 @@
+# Quais arquivos deste repositório são GERADOS por script.
+#
+# ## Por que isto existe
+#
+# O GitHub mede linguagem com o Linguist, que decide pela EXTENSÃO. Sem esta
+# declaração, `src/data/arma3-veiculos.js` — 484 KB de tabela despejada do jogo
+# pelo `gerar-base-veiculos.py` — conta como "JavaScript escrito à mão", igual
+# a um módulo de 3 KB. Medido: **45,7% do JavaScript de `src/` é dado gerado.**
+#
+# O efeito é que a barra de linguagens do repositório, e qualquer análise que
+# beba dela (o bot do README do perfil), dizem que aqui há o dobro de código
+# JavaScript do que existe. Número plausível e errado — o defeito que este
+# repositório mais paga caro.
+#
+# `linguist-generated=true` faz DUAS coisas, e as duas são desejadas:
+#   1. o arquivo sai da contagem de linguagens;
+#   2. o diff dele vem colapsado por padrão na revisão — e o diff de
+#      `arma3-soldados.js` são 1.880 linhas de ruído que escondem, no meio,
+#      as poucas que um humano precisa ler.
+#
+# ⚠️ Nada disto muda `git diff`, CI ou build: é como o GitHub EXIBE e CONTA.
+#
+# ## Como esta lista foi montada, e como mantê-la
+#
+# Não por padrão de nome — `src/data/arma3-*.js` pegaria `arma3-classes.js`,
+# `arma3-vanilla.js` e `arma3-comandos.js`, que são escritos à mão. A lista sai
+# do cruzamento de DOIS sinais independentes: o que os geradores declaram
+# escrever (`pipeline_arma3.BASES` e os `scripts/gen-*.mjs`) e o que o próprio
+# arquivo declara no cabeçalho. Onde os dois discordam, alguém confere — foi
+# assim que `src/main.js` e `src/pages/codigo.js` ficaram de fora: os dois só
+# MENCIONAM geração, e marcá-los esconderia trabalho de verdade.
+#
+# `npm run verificar-gerados` cobra que a lista não fique para trás.
+
+# ── bases do Arma 3 (scripts/arma3/gerar-base-*.py) ────────────────────────
+src/data/arma3-acessorios.js   linguist-generated=true
+src/data/arma3-armas.js        linguist-generated=true
+src/data/arma3-colecao.js      linguist-generated=true
+src/data/arma3-deps.js         linguist-generated=true
+src/data/arma3-equipamento.js  linguist-generated=true
+src/data/arma3-extracao.js     linguist-generated=true
+src/data/arma3-municao.js      linguist-generated=true
+src/data/arma3-presets.js      linguist-generated=true
+src/data/arma3-soldados.js     linguist-generated=true
+src/data/arma3-terrenos.js     linguist-generated=true
+src/data/arma3-totais.js       linguist-generated=true
+src/data/arma3-veiculos.js     linguist-generated=true
+
+# ── outros datasets gerados ────────────────────────────────────────────────
+src/data/elites-rosters.js     linguist-generated=true
+src/data/musicas-yt.js         linguist-generated=true
+src/data/arsenal-expandido.json linguist-generated=true
+src/data/cambio-historico.json linguist-generated=true
+src/data/codemap.json          linguist-generated=true
+src/data/codemap-symbols.json  linguist-generated=true
+src/data/fanfic.json           linguist-generated=true
+
+# ── acervo servido sob demanda (public/) ───────────────────────────────────
+public/arma3/acessorios-db.json  linguist-generated=true
+public/arma3/armas-db.json       linguist-generated=true
+public/arma3/equipamento-db.json linguist-generated=true
+public/arma3/soldados-db.json    linguist-generated=true
+public/arma3/terrenos-db.json    linguist-generated=true
+public/arma3/veiculos-db.json    linguist-generated=true

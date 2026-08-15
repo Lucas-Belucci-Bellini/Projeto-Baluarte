@@ -121,16 +121,21 @@ BASES = [
          ['arma3-mapas.json'],
          ['src/data/arma3-terrenos.js', 'public/arma3/terrenos-db.json'],
          'terrenos e grade'),
+    # Os mapas de imagem são ENTRADA destas três bases desde que os ícones
+    # foram ligados à wiki. Omiti-los faria o pipeline dizer "tudo em dia"
+    # depois de uma extração de imagens nova, e a wiki seguiria mostrando
+    # lugar vazio — que é exatamente o modo de falha que este módulo existe
+    # para impedir: PULAR o que mudou, calado.
     Base('veiculos', 'gerar-base-veiculos.py',
-         ['arma3-veiculos.json'],
+         ['arma3-veiculos.json', 'imagens-veiculos.json', 'imagens-nomeadas.json'],
          ['src/data/arma3-veiculos.js', 'public/arma3/veiculos-db.json'],
          'veículos'),
     Base('equipamento', 'gerar-base-equipamento.py',
-         ['arma3-itens.json'],
+         ['arma3-itens.json', 'imagens-itens.json'],
          ['src/data/arma3-equipamento.js', 'public/arma3/equipamento-db.json'],
          'coletes, uniformes, mochilas'),
     Base('soldados', 'gerar-base-soldados.py',
-         ['arma3-veiculos.json'],
+         ['arma3-veiculos.json', 'imagens-mapa.json', 'imagens-nomeadas.json'],
          ['src/data/arma3-soldados.js', 'public/arma3/soldados-db.json'],
          'funções de soldado'),
     Base('extracao', 'gerar-base-extracao.py',

@@ -31,6 +31,14 @@ import sys
 
 MARCA = '<<A3DUMP>>'
 LIMITE_LOG = 1012          # onde o .rpt corta; serve de alarme de truncamento
+
+# Linhas que este parser ignora DE PROPÓSITO. `ARREMESSO|Throw|N` conta os
+# carregadores que Throw e Put puxam; é diagnóstico para quem abre o `.rpt` à
+# mão — os carregadores em si chegam pelas linhas `M|`, então lê-la de novo
+# duplicaria dado. Declarado em vez de omitido porque `testar-parsers.py` cobra
+# que todo tipo emitido pelo `.sqf` tenha destino: sem esta linha, "ninguém lê"
+# seria indistinguível de "alguém esqueceu".
+IGNORADOS = {'ARREMESSO'}
 RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SAIDA = os.path.join(RAIZ, 'scripts', 'arma3', 'out', 'arma3-config.json')
 

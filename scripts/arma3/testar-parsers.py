@@ -18,6 +18,7 @@ a divergência aparece na hora, em vez de virar dado faltando em silêncio.
 Rodar:  python scripts/arma3/testar-parsers.py
 """
 
+import glob
 import json
 import os
 import re
@@ -107,7 +108,7 @@ DUMPS = {
     ]),
 
     'icones': ('<<A3ICO>>', 'parse-icones.py', 'arma3-icones.json', [
-        'INICIO|v1',
+        'INICIO|v2',
         'I|0|a3/weapons_f/data/ui/gear_mx_ca.paa',
         'R|arifle_MX_F|picture|0',
         'R|arifle_MX_Black_F|picture|0',                  # duas classes, uma imagem
@@ -115,8 +116,13 @@ DUMPS = {
         'R|b_inf|icon|1',
         'I|2|fir_f14/icon.paa',
         'R|FIR_F14D|editorPreview|2',
+        # a tabela CfgVehicleIcons: a chave NÃO é classe, é o nome que o
+        # soldado declara em `icon = "iconMan"`
+        'I|3|a3/ui_f/data/map/vehicleicons/iconman_ca.paa',
+        'N|iconMan|3',
+        'N|iconManLeader|3',                              # dois nomes, uma imagem
         'ANDAMENTO|20000|2|4.1',                          # ruído: não vira dado
-        'PLACAR|248000|3|4',
+        'PLACAR|248000|4|4|2',
         'FIM|12.30',
     ]),
 }
@@ -244,8 +250,25 @@ def conferir(nome, d):
     elif nome == 'icones':
         if d['imagens'] != ['a3/weapons_f/data/ui/gear_mx_ca.paa',
                             'a3/ui_f/data/map/markers/nato/b_inf_ca.paa',
-                            'fir_f14/icon.paa']:
+                            'fir_f14/icon.paa',
+                            'a3/ui_f/data/map/vehicleicons/iconman_ca.paa']:
             p.append('o inventário não saiu na ordem dos ids')
+
+        # A tabela de indireção: sem ela 44.534 soldados ficam sem símbolo de
+        # carta por falta de UMA linha no dump, não por falta de imagem.
+        pn = d.get('porNome') or {}
+        alvo = 'a3/ui_f/data/map/vehicleicons/iconman_ca.paa'
+        if (pn.get('iconman') or {}).get('icone') != alvo:
+            p.append(f'a CfgVehicleIcons não montou: {pn}')
+        if (pn.get('iconmanleader') or {}).get('icone') != alvo:
+            p.append('dois nomes deveriam poder apontar para a MESMA imagem')
+        if 'iconMan' in pn:
+            p.append('a chave tem de vir em minúscula — o config e o soldado '
+                     'escrevem em caixas diferentes')
+        # O nome da tabela NÃO é classe: vazar para `retratos` faria a wiki
+        # procurar uma classe chamada "iconMan" e não achar nada.
+        if 'iconMan' in d['retratos'] or 'iconman' in d['retratos']:
+            p.append('nome da CfgVehicleIcons vazou para os retratos por classe')
         # o id existe para o caminho não se repetir: duas classes, uma imagem
         r = d['retratos']
         if r.get('arifle_MX_F', {}).get('picture') != '0':
@@ -329,6 +352,66 @@ def conferir_sqf_sem_array_no_lim():
     return True
 
 
+def conferir_tipos_sqf_x_parser():
+    """Todo tipo de registro que o `.sqf` EMITE tem de ter um ramo no parser.
+
+    Este é o terceiro guarda da mesma família, e todos nasceram do mesmo
+    defeito: o teste do parser fica VERDE enquanto o `.sqf` manda outra coisa.
+    O teste alimenta o parser com linhas escritas à mão aqui; o jogo alimenta
+    com linhas escritas no `.sqf`. As duas listas podem divergir em silêncio, e
+    o sintoma é uma seção inteira do dump chegando vazia sem erro nenhum — foi
+    assim que o catálogo cobriu 9% do jogo achando que cobria tudo.
+
+    Aqui a comparação é entre os DOIS ARQUIVOS DE VERDADE: os literais
+    `<<MARCA>>TIPO|` do `.sqf` contra os `tipo == 'TIPO'` do parser.
+
+    `INICIO`, `FIM` e `ANDAMENTO` ficam de fora: são controle de todo dump, e o
+    parser ignorá-los é a escolha certa, não um buraco.
+
+    Um dump pode ter OUTRA linha que ninguém deve ler — o `dump-config` emite
+    `ARREMESSO|Throw|N`, diagnóstico para quem abre o `.rpt` à mão. Nesse caso
+    o parser declara `IGNORADOS = {...}`. É de propósito que a saída seja essa,
+    e não um nome na lista aqui: "ninguém lê isto, de propósito" tem de estar
+    ESCRITO no parser, senão é indistinguível de esquecimento — a mesma regra
+    que faz `imgAusente` carregar motivo em vez de ser um booleano.
+    """
+    controle = {'INICIO', 'FIM', 'ANDAMENTO'}
+    problemas = []
+    for caminho in sorted(glob.glob(os.path.join(AQUI, 'dump-*.sqf'))):
+        nome = os.path.basename(caminho)[len('dump-'):-len('.sqf')]
+        with open(caminho, encoding='utf-8') as f:
+            src = f.read()
+        marcas = set(re.findall(r'<<(A3[A-Z0-9]+)>>', src))
+        tipos = set(re.findall(r'<<A3[A-Z0-9]+>>([A-Z][A-Z0-9_]*)\|', src)) - controle
+        if not tipos:
+            continue
+
+        # O parser normalmente se chama parse-<nome>.py; quando não (o
+        # dump-config vai no parse-dump), acha-se pela MARCA, que é única.
+        par = os.path.join(AQUI, f'parse-{nome}.py')
+        if not os.path.isfile(par):
+            par = next((p for p in sorted(glob.glob(os.path.join(AQUI, 'parse-*.py')))
+                        if any(m in open(p, encoding='utf-8').read() for m in marcas)), None)
+        if not par:
+            problemas.append(f'{nome}: emite {sorted(tipos)} e nenhum parser lê '
+                             f'a marca {sorted(marcas)}')
+            continue
+
+        with open(par, encoding='utf-8') as f:
+            psrc = f.read()
+        lidos = set(re.findall(r"tipo\s*==\s*'([A-Z][A-Z0-9_]*)'", psrc))
+        decl = re.search(r'^IGNORADOS\s*=\s*\{([^}]*)\}', psrc, re.M)
+        if decl:
+            lidos |= set(re.findall(r"'([A-Z][A-Z0-9_]*)'", decl.group(1)))
+        falta = tipos - lidos
+        if falta:
+            problemas.append(
+                f'{nome}: o .sqf emite {sorted(falta)} e '
+                f'{os.path.basename(par)} não tem ramo para esse tipo — '
+                f'essa parte do dump chegaria vazia, sem erro')
+    return problemas
+
+
 def conferir_sqf_ascii():
     """Todo .sqf tem de ser ASCII PURO.
 
@@ -391,6 +474,13 @@ def main():
         ruins = ruins or [('_fnc_lim', 'recebeu array')]
     if not conferir_desembrulho():
         ruins = ruins or [('desembrulhar', 'não desfaz o embrulho')]
+    vazios = conferir_tipos_sqf_x_parser()
+    if vazios:
+        for v in vazios:
+            print(f'  ✗ {v}')
+        ruins = ruins or [('tipos', 'sqf emite tipo que o parser não lê')]
+    else:
+        print('  ✓ todo tipo de registro que os .sqf emitem tem ramo no parser')
     print()
     falhas = 0
     for nome, (marca, script, saida, linhas) in DUMPS.items():

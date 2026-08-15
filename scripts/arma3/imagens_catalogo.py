@@ -91,6 +91,16 @@ CATEGORIAS = [
         'public/arma3/icones/mundos', 'web', 'imagens-mundos.json',
         'ícone de cada mundo'),
 
+    # A tabela `CfgVehicleIcons`. A chave aqui NÃO é classe — é o NOME que o
+    # soldado declara (`icon = "iconMan"`), e é o único jeito de os 44.534
+    # soldados que declaram nome em vez de caminho terem símbolo de carta.
+    # Pasta própria porque `nomear()` só garante unicidade DENTRO de uma
+    # categoria: dividir destino com `mapa` deixaria um sobrescrever o outro.
+    Categoria(
+        'nomeados', 'arma3-icones.json', [('porNome', 'icone')],
+        'public/arma3/icones/nomeados', 'web', 'imagens-nomeadas.json',
+        'tabela CfgVehicleIcons: nome declarado -> símbolo de carta'),
+
     Categoria(
         'simbologia', 'arma3-simbologia.json',
         [('marcadores', 'icone'), ('patentes', 'textura'), ('insignias', 'textura')],

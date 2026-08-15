@@ -48,9 +48,20 @@ python scripts/arma3/parse-acessorios.py
 #   no jogo: scripts/arma3/dump-animacoes.sqf
 python scripts/arma3/parse-animacoes.py
 
-# ícones das armas (o extrator de imagem, por enquanto só armas)
+# inventário de imagens do config inteiro + a tabela CfgVehicleIcons
+#   no jogo: scripts/arma3/dump-icones.sqf   (v2 — ver DUMPS.md)
+python scripts/arma3/parse-icones.py
+
+# os pixels: casa cada caminho virtual com o PBO e converte com o Pal2PacE
 python scripts/arma3/extrair-imagens.py
 ```
+
+⚠️ A ordem entre os dois últimos importa. `parse-icones.py` produz a seção
+`porNome` (a `CfgVehicleIcons`), e é dela que sai `imagens-nomeadas.json` — o
+mapa que dá símbolo de carta a 42.801 soldados e a 25.572 veículos que declaram
+NOME de ícone em vez de caminho. Sem ela essas classes ficam com
+`imgAusente: "icone-por-nome"` na base: ausência com endereço, e o endereço é
+este dump.
 
 Ou tudo de uma vez, com placar no fim e código de saída 1 se algo falhar:
 
