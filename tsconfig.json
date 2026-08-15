@@ -77,6 +77,7 @@
     "src/pages/seguranca.ts",
     "src/pages/banco.ts",
     "src/pages/militar.ts",
+    "src/pages/poder-militar.ts",
     "src/utils/wikipedia.d.ts",
     "src/utils/jarvis-guard.d.ts",
     "src/data/periodic.d.ts",

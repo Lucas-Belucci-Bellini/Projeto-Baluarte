@@ -429,3 +429,10 @@ Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run bu
 `src/pages/militar.ts` substituiu o hub Centro Militar com tópicos imutáveis, índice de conteúdo, observers de viewport, links internos pelo Router, extratos da Wikipédia e curadoria best-effort do Supabase. Foram adicionados os tipos de `WikiSummary`; a curadoria existente em `mil-curation.ts` foi reutilizada sem duplicação.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **62 para 60 páginas JavaScript canônicas restantes**.
+
+
+## 4.14 Poder Militar
+
+`src/pages/poder-militar.ts` substituiu o ranking JavaScript local. O catálogo de 15 países, as cinco métricas, ordenação por GFP/efetivos/equipamentos, barras proporcionais, tags, resumo nuclear e hero imersivo agora usam contratos TypeScript explícitos. O wrapper `.js` permanece para a rota legada.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **60 para 59 páginas JavaScript canônicas restantes**.
