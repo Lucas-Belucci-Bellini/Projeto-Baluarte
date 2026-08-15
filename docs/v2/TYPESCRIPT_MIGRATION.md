@@ -741,3 +741,17 @@ A página mantém os controles táticos, popup de aeronaves/navios, atualizaçã
 O inventário determinístico caiu de **11 para 10 páginas JavaScript canônicas restantes**. Foi adicionada uma declaração de fronteira para o catálogo de camadas, sem alterar a implementação compartilhada nem o loader MapLibre existente. Strict permaneceu ativo, sem `any`, `@ts-ignore` ou segredos.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
+
+## 4.46 Radar Tático e processamento multi-sensor
+
+A onda 4.46 converteu `src/pages/radar.js` para `radar.ts`, mantendo o wrapper JavaScript de compatibilidade. O console preserva os modos MOCK, ACÚSTICO, PASSIVO, REPLAY, BRIDGE e SATÉLITE, o mapa Range-Doppler, waterfall, CFAR-CA, rastreio multi-alvo, congelamento de frame, MTI e DC notch.
+
+Foram criadas fronteiras explícitas para `radar-source.js`, `radar-dsp.js` e `radar-tracker.js`. `RadarFrame`, `RadarSource`, `RadarDetection` e `RadarTrack` eliminam tipos implícitos no caminho entre fontes, DSP e Canvas. A página mantém o WebSocket local opcional do Bridge e o modo acústico com microfone/alto-falante sem transformar hardware em pré-condição da rota.
+
+O modo Satélite continua carregando `satellite.js` e TLEs do CelesTrak apenas quando selecionado, desenhando azimute/elevação no Canvas e mostrando a lista de satélites acima do horizonte. Falhas individuais de TLE, rede, WebSocket ou geolocalização são isoladas e comunicadas por status/toast.
+
+A limpeza usa `aoSair`: para a fonte atual, fecha o modo satélite, reseta o tracker, solta o frame anterior e evita que o radar continue consumindo microfone, WebSocket ou timers depois da navegação. Nenhum segredo ou chave de API foi introduzido.
+
+O inventário determinístico caiu de **10 para 9 páginas JavaScript canônicas restantes**. Foram adicionadas três declarações de fronteira. Strict permaneceu ativo, sem `any`, `@ts-ignore` ou relaxamento.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**.
