@@ -1,18 +1,18 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `06c0afefcc0df63d10df60885712ec8ec8d672f8`
-**Gerado em:** 2026-08-15T00:44:23.807Z
+**SHA auditado:** `34719b3508a7697c872cffa6ded16e59db24e5b1`
+**Gerado em:** 2026-08-15T00:52:09.170Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **80 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **74 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
-| Páginas utilitárias e conteúdo | 37 |
+| Páginas utilitárias e conteúdo | 31 |
 | Ferramentas interativas | 12 |
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
@@ -90,20 +90,14 @@ Existem **80 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 64 | `src/pages/orcamentos-militares.js` | 166 | 7834 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
 | 65 | `src/pages/guia-pc.js` | 163 | 6032 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 66 | `src/pages/tabela-periodica.js` | 162 | 5848 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 67 | `src/pages/cripto/otp.js` | 161 | 5307 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 68 | `src/pages/comms.js` | 147 | 5521 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 69 | `src/pages/militar.js` | 145 | 8540 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
-| 70 | `src/pages/cripto/index.js` | 123 | 3807 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 71 | `src/pages/cripto/aes.js` | 122 | 4128 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 72 | `src/pages/seguranca.js` | 120 | 4757 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 73 | `src/pages/git-nexus-gate.js` | 117 | 5572 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 74 | `src/pages/calculadoras/index.js` | 116 | 3430 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 75 | `src/pages/banco.js` | 115 | 4932 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 76 | `src/pages/cripto/base.js` | 101 | 3334 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 77 | `src/pages/_placeholder.js` | 93 | 3129 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 78 | `src/pages/cripto/morse.js` | 88 | 3272 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 79 | `src/pages/arsenal-expandido.js` | 84 | 2933 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 80 | `src/pages/cripto/caesar.js` | 80 | 2610 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 67 | `src/pages/comms.js` | 147 | 5521 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 68 | `src/pages/militar.js` | 145 | 8540 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
+| 69 | `src/pages/seguranca.js` | 120 | 4757 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 70 | `src/pages/git-nexus-gate.js` | 117 | 5572 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 71 | `src/pages/calculadoras/index.js` | 116 | 3430 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 72 | `src/pages/banco.js` | 115 | 4932 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 73 | `src/pages/_placeholder.js` | 93 | 3129 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 74 | `src/pages/arsenal-expandido.js` | 84 | 2933 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 

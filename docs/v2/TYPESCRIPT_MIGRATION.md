@@ -362,3 +362,14 @@ A continuação da migração converteu três painéis pequenos para implementa�
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **83 para 80 páginas JavaScript canônicas restantes**. `tipos:v2` permanece acompanhado separadamente na dívida histórica de 61 diagnósticos, sem usar supressões ou relaxamento de strict.
 
 A próxima sub-onda segura é `cripto/caesar.ts`, `cripto/base.ts` e, depois, os painéis de maior estado como OTP, AES e Morse. O hub cripto só deve ser convertido quando o ciclo de áudio e a troca de abas tiverem fronteiras próprias.
+
+
+## 4.7 Onda do laboratório cripto completo
+
+A sub-onda seguinte concluiu a conversão do laboratório `/cripto`: `caesar.ts`, `base.ts`, `otp.ts`, `aes.ts`, `morse.ts` e `cripto/index.ts` agora são as implementações canônicas TypeScript; os seis arquivos `.js` correspondentes permanecem como wrappers. O motor `src/utils/cripto-engine.js` continua JavaScript, mas sua fronteira foi ampliada de forma mínima e explícita para Caesar, Base64/Base32/Hex, OTP, AES-GCM, Morse, hashes e Vigenère/Atbash.
+
+`caesar.ts` preserva encode/decode, ranking de brute force e seleção por clique. `base.ts` fecha o mapa de formatos, resultados nulos de decode e cópia para clipboard. `otp.ts` valida base64, tamanhos de mensagem/chave, geração de chave e ciclo encrypt/decrypt. `aes.ts` mantém os fluxos assíncronos de PBKDF2/AES-GCM, geração de senha e estados de erro. `morse.ts` tipa WPM, frequência e lifecycle do `AudioContext`; `cripto/index.ts` fecha os oito IDs de tab, persiste a aba ativa e sempre chama `stopMorse()` na troca.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **80 para 74 páginas JavaScript canônicas restantes**. Nenhuma API externa, segredo ou ação de alto impacto foi adicionada.
+
+O próximo passo permanece incremental: finalizar páginas cripto já isoladas, depois calculadoras e páginas utilitárias pequenas. O hub só foi convertido depois que todos os painéis que ele monta estavam protegidos por contratos TypeScript.
