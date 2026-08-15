@@ -44,6 +44,14 @@ A V2 é guiada por três planos complementares: [#420 — Fundação, Hardening 
 
 O contexto das sessões de reconstrução e dos merges também está preservado em [`docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md). Esse índice reconcilia o relatório histórico com o estado atual da `main` e aponta para a [transcrição completa da sessão](docs/v2/history/2026-08-13_CHATGPT_SESSION_TRANSCRIPT.txt) e o [relatório original dos merges](docs/v2/history/2026-08-13_MERGE_AUDIT_SOURCE.md).
 
+### Estado atual, identidade e releases
+
+A branch [`feature/login-cadastro`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/tree/feature/login-cadastro) adiciona a aba dedicada de login/cadastro por e-mail, senha e Google. O fluxo está documentado em [`docs/v2/LOGIN_CADASTRO_FEATURE.md`](docs/v2/LOGIN_CADASTRO_FEATURE.md); antes do merge, a nova página `login.js` deve ser convertida para TypeScript e passar os gates de autenticação, RLS, smoke e regressão.
+
+Os marcos de promoção do projeto estão em [`docs/v2/RELEASE_PLAN.md`](docs/v2/RELEASE_PLAN.md). Eles separam o congelamento V1, a Identidade Preview `1.1.0`, a migração completa do frontend, o fechamento dos contratos V2, o beta vertical, o protótipo de app, a V2 estável e os testes mensais posteriores. Nenhum marco é considerado publicado apenas por estar mergeable: o SHA e os checks precisam estar identificados.
+
+A análise dos checks exibidos no painel e a estratégia para que os próximos bots produzam menos erros estão em [`docs/v2/CI_BOT_RELIABILITY_AUDIT_2026-08-15.md`](docs/v2/CI_BOT_RELIABILITY_AUDIT_2026-08-15.md). O relatório separa as 61 mensagens de `tipos:v2` em uma causa raiz compartilhada, efeitos cascata e incidentes externos como rate limit da Vercel. O sistema de relatórios diários e alertas de issues está especificado em [`docs/v2/DAILY_PROGRESS_AUTOMATION.md`](docs/v2/DAILY_PROGRESS_AUTOMATION.md).
+
 > **A V2 é uma reconstrução arquitetural, não uma V1.5.** A V1 continua sendo a superfície estável para uso normal; a V2 pode permanecer instável, incompleta ou indisponível durante a reconstrução.
 
 | Fase | Objetivo | Entregáveis principais |
