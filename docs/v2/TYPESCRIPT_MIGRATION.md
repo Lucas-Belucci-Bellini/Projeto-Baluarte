@@ -443,3 +443,10 @@ Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run bu
 `src/pages/comms.ts` substituiu a página de comunicações. Foram criados contratos para mensagens globais, status da ponte e handle de transporte em `core/comms.d.ts`, além da fronteira de sessão em `core/supabase-auth.d.ts`. A página preserva leitura pública, CTA de login Google, envio autenticado, histórico com teto visual, deduplicação delegada ao transporte, status Realtime e fechamento do socket ao deixar a rota.
 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **59 para 58 páginas JavaScript canônicas restantes**.
+
+
+## 4.16 Baixar e releases do Launcher
+
+`src/pages/baixar.ts` substituiu a página de download. A implementação tipa sistemas operacionais, assets e releases do GitHub, mantém detecção de SO, fallback para a página de releases, download do instalador correto, links de plataformas alternativas e busca do APK Android. Respostas externas são tratadas como `unknown` e normalizadas por guards locais; nenhum segredo ou token é introduzido.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **58 para 57 páginas JavaScript canônicas restantes**.

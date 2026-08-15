@@ -79,6 +79,7 @@
     "src/pages/militar.ts",
     "src/pages/poder-militar.ts",
     "src/pages/comms.ts",
+    "src/pages/baixar.ts",
     "src/core/comms.d.ts",
     "src/core/supabase-auth.d.ts",
     "src/utils/wikipedia.d.ts",
