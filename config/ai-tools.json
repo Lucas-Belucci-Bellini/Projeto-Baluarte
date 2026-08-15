@@ -177,6 +177,21 @@
         "`examples/` tem referências de hooks, settings, gateway e MDM — útil pro `.claude/` deste repo.",
         "Sem passos de setup: não há o que compilar."
       ]
+    },
+    {
+      "id": "codex",
+      "name": "OpenAI Codex (fonte)",
+      "repo": "https://github.com/openai/codex.git",
+      "localPath": ".baluarte/tools/codex",
+      "installedCommit": "a95a6fe",
+      "role": "Fonte do Codex: workspace Rust (`codex-rs`) + wrapper npm (`codex-cli`). Referência de arquitetura para o Core de Runtime em Rust da V2 (ADR-004).",
+      "referenciaApenas": true,
+      "notas": [
+        "A CLI já está instalada nesta máquina (codex-cli 0.125.0) e é o que o operador usa — este clone é o FONTE, não a instalação.",
+        "Compilar exige toolchain Rust e `cargo` não existe nesta máquina. Instalar Rust é mudança de máquina, não de repositório: fica como decisão do operador.",
+        "Se um dia for compilar: `cargo build --release` em `codex-rs/`. O mesmo `cargo` destrava o `npm run v2:runtime` deste repo, que hoje também não roda.",
+        "`docs/config.md` e `docs/agents_md.md` são a referência do formato de configuração que o Baluarte já usa em ~/.codex."
+      ]
     }
   ]
 }

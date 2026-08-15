@@ -196,6 +196,27 @@ O que vale olhar de lá:
 | `examples/` | referências de `hooks`, `settings`, `gateway` e `mdm` — aplicáveis ao `.claude/` deste repo |
 | `CHANGELOG.md` | o que muda a cada versão da CLI |
 
+### OpenAI Codex (fonte)
+
+**Fonte, não instalação.** A CLI já está nesta máquina (`codex --version` →
+`codex-cli 0.125.0`) e é o que o operador usa; o clone traz o código —
+workspace Rust (`codex-rs/`) e wrapper npm (`codex-cli/`).
+
+- Repositório: <https://github.com/openai/codex.git>
+- Clone: `.baluarte/tools/codex` · sem build
+
+**Não foi compilado, de propósito:** `cargo` não existe nesta máquina, e
+instalar toolchain Rust é mudança de máquina, não de repositório — decisão do
+operador. Se for compilar: `cargo build --release` em `codex-rs/`. O mesmo
+`cargo` destrava o `npm run v2:runtime` deste repo, que hoje também não roda
+por falta dele.
+
+Por que manter o fonte por perto: o [ADR-004](architecture/decisions/ADR-004-stack-poliglota-por-responsabilidade.md)
+define **Rust** para o Core de Runtime da V2, e o `codex-rs` é uma
+implementação madura exatamente desse tipo de processo local. `docs/config.md`
+e `docs/agents_md.md` documentam o formato de configuração que já existe em
+`~/.codex` nesta máquina.
+
 ## Regras
 
 - `.baluarte/` e `.gitnexus/` são ignorados — não force nada pra dentro do git.
