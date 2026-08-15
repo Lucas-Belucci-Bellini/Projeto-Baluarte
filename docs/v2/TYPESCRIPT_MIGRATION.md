@@ -406,3 +406,10 @@ Foram convertidas quatro páginas de baixo acoplamento: `arsenal-expandido.ts`, 
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **68 para 64 páginas JavaScript canônicas restantes**.
 
 A fronteira de dados periódicos é declarativa e read-only; nenhuma camada Supabase, Router ou Runtime foi duplicada ou alterada.
+
+
+## 4.11 Git Nexus Gate e fronteira de chunks nativos
+
+`src/pages/git-nexus-gate.ts` substituiu o gate JavaScript da rota `/git-nexus`. A implementação mantém a regra web leve: no navegador, mostra apenas o teaser e não baixa o grafo 3D; no Launcher nativo, carrega sob demanda o Núcleo ou o cockpit legado. Foram criadas declarações separadas para `git-nexus-nucleo.js` e `git-nexus-cockpit.js`, evitando `any` implícito na fronteira dinâmica e sem migrar prematuramente os módulos pesados.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **64 para 63 páginas JavaScript canônicas restantes**.

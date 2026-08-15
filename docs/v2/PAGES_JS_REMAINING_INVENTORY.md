@@ -1,18 +1,18 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `cde5f6cb4f8388ada5f9df6ae799ee1b24cd9711`
-**Gerado em:** 2026-08-15T01:10:41.497Z
+**SHA auditado:** `ef5ed0df26a8448ef844b1c9cce93a2a9989cc90`
+**Gerado em:** 2026-08-15T01:15:39.881Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **64 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **63 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
-| Páginas utilitárias e conteúdo | 21 |
+| Páginas utilitárias e conteúdo | 20 |
 | Ferramentas interativas | 12 |
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
@@ -86,8 +86,7 @@ Existem **64 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 60 | `src/pages/comms.js` | 147 | 5521 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 61 | `src/pages/militar.js` | 145 | 8540 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
 | 62 | `src/pages/seguranca.js` | 120 | 4757 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 63 | `src/pages/git-nexus-gate.js` | 117 | 5572 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 64 | `src/pages/banco.js` | 115 | 4932 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 63 | `src/pages/banco.js` | 115 | 4932 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 
