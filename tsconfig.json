@@ -99,6 +99,7 @@
     "src/pages/utilidades.ts",
     "src/pages/mural.ts",
     "src/pages/terminal-ia.ts",
+    "src/pages/ocr.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/data/skills.d.ts",

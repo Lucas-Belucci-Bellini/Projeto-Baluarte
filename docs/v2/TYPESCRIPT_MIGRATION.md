@@ -615,3 +615,13 @@ A fronteira de `jarvis-engine` passou a declarar `processLocal`, `getBaluarteBri
 Blocos Markdown com ```chart``` são tratados como JSON desconhecido antes de gerar o payload; respostas de erro são convertidas para texto sem assumir uma instância de `Error`. O fallback local continua navegando apenas quando a ação é explicitamente `navigate`, e nenhum novo envio automático foi introduzido: a chamada ao servidor continua dependente da entrada do operador no terminal.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **39 para 38 páginas JavaScript canônicas restantes**.
+
+## 4.36 Leitor OCR
+
+`src/pages/ocr.ts` substituiu o leitor OCR canônico. A implementação tipa o carregamento sob demanda do Tesseract.js, o callback de progresso, o resultado de confiança, seleção de idioma, upload, arrastar-soltar, colagem de imagem, captura de câmera, exportação `.txt` e cópia do texto reconhecido.
+
+O objeto global `window.Tesseract` foi declarado apenas com a operação `recognize` realmente usada. A câmera usa `MediaStream` e guarda o contexto Canvas antes de desenhar; URLs blob são revogadas na troca de imagem e na saída da rota, enquanto `aoSair` remove o listener global de colagem e encerra as trilhas da câmera.
+
+A página continua carregando o OCR somente quando o operador aciona a leitura. Falhas de CDN, câmera, Clipboard e Canvas permanecem tratadas como estados visíveis sem quebrar o shell V1. O wrapper JavaScript preserva o contrato de importação legado e nenhuma credencial foi adicionada ao frontend.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **38 para 37 páginas JavaScript canônicas restantes**.
