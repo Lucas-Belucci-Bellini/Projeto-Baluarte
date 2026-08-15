@@ -507,3 +507,11 @@ A página continua usando a implementação TypeScript existente em `src/utils/g
 Durante o typecheck foi corrigida uma referência de tipo local: a projeção do trajeto precisava importar explicitamente `Point2D` do motor de triangulação. Depois dessa correção, todos os gates passaram.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **51 para 50 páginas JavaScript canônicas restantes**.
+
+## 4.24 JSON Studio
+
+`src/pages/json-studio.ts` substituiu o editor JSON canônico. A implementação define a união recursiva `JsonValue`, estreita o resultado de `JSON.parse`, tipa estatísticas de chaves/valores/profundidade, árvore navegável, status de validação, cálculo de linha/coluna e as transformações de formatação e minificação.
+
+A página preserva o exemplo Baluarte, persistência em `storage`, cópia para clipboard, limpeza, árvore expandida, relatório de erro e publicação read-only de caracteres para o status global. Os erros externos e os valores desconhecidos são tratados defensivamente; não foram usados `any`, supressões ou alteração do contrato V1.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **50 para 49 páginas JavaScript canônicas restantes**.
