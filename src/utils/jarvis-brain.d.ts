@@ -17,11 +17,20 @@ export interface JarvisMemory {
 }
 
 export function codeContext(): string;
+export function syncRepoMemories(): Promise<number>;
 export function addMemory(input: MemoryInput): JarvisMemory | null;
 export function searchMemories(query: string, limit?: number): readonly JarvisMemory[];
 export function getMemories(): readonly JarvisMemory[];
 export function clearMemories(): void;
 export function memoryContext(query: string, limit?: number): string;
+export interface MemoryStats {
+  readonly total: number;
+  readonly byConcept: Readonly<Record<string, number>>;
+}
+
+export function memoryStats(): MemoryStats;
+export function codeMemoryCounts(): Readonly<Record<string, number>>;
 export function conceptLabel(id: string): string;
+export function conceptRoute(id: string): string | null;
 export function captureConversation(text: string): JarvisMemory | null;
 export function captureReply(text: string): JarvisMemory | null;

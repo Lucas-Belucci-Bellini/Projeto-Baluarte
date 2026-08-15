@@ -635,3 +635,13 @@ A fronteira de `chart-engine` foi ampliada para declarar `ChartPoint`, `ChartDat
 A página mantém o comportamento local-first: o estado é salvo pelo adaptador de storage, não há chamadas de rede, e o re-render inicial continua adiado até o Canvas possuir dimensões. O wrapper JavaScript conserva a compatibilidade das rotas e imports V1.
 
 Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **37 para 36 páginas JavaScript canônicas restantes**.
+
+## 4.38 Aprendizado — Machine Learning da Memória
+
+`src/pages/aprendizado.ts` substituiu o painel canônico de Machine Learning da Memória. A implementação tipa o corpus, crescimento de vocabulário, ranking TF-IDF, agrupamento k-means, distribuição por origem, conexões do Segundo Cérebro/Git Nexus e o treino ao vivo do `NeuralBigram`.
+
+Foram criadas fronteiras para `memory-ml` e `llm-mini`, enquanto `jarvis-brain.d.ts` passou a declarar `syncRepoMemories`, estatísticas, contagens por arquivo, rotas de conceito e o modelo de memória usado pelo corpus. O painel continua somente leitura sobre as memórias; o único efeito de escrita é a sincronização explícita do banco versionado pelo botão já existente.
+
+O corpus demonstrativo permanece disponível quando há menos de oito memórias, o slider mantém o estado de k-means, e o treino mantém a curva de loss, a geração de texto e os limites do corpus. Dados de codemap são estreitados por interfaces locais, sem `any` ou supressões.
+
+Validação final local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **36 para 35 páginas JavaScript canônicas restantes**.
