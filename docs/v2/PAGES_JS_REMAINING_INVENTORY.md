@@ -1,18 +1,18 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `4b840c0d7c4fe605b65cddc6690caa3b713a356d`
-**Gerado em:** 2026-08-15T00:58:40.995Z
+**SHA auditado:** `83e31142aa458ab3cbe1e2639977923be842f9e2`
+**Gerado em:** 2026-08-15T01:03:46.525Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **71 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **68 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
 | Grupo | Páginas restantes |
 | --- | ---: |
-| Páginas utilitárias e conteúdo | 28 |
+| Páginas utilitárias e conteúdo | 25 |
 | Ferramentas interativas | 12 |
 | IA, Nexus e memória | 10 |
 | Mídia, rádio e DSP | 8 |
@@ -72,29 +72,26 @@ Existem **71 páginas JavaScript canônicas restantes**. A onda de biblioteca, a
 | 46 | `src/pages/color-studio.js` | 320 | 11599 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 47 | `src/pages/fft.js` | 303 | 9939 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 | 48 | `src/pages/ia-proprietaria.js` | 289 | 10459 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 49 | `src/pages/calculadoras/conversores.js` | 270 | 9883 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 50 | `src/pages/calculadoras/saude.js` | 269 | 10312 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 51 | `src/pages/batalha-naval.js` | 253 | 10301 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 52 | `src/pages/economia.js` | 248 | 8251 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 53 | `src/pages/diagnostico.js` | 220 | 9304 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 54 | `src/pages/portas.js` | 213 | 8409 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 55 | `src/pages/json-studio.js` | 211 | 7148 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 56 | `src/pages/poder-militar.js` | 205 | 7752 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
-| 57 | `src/pages/baixar.js` | 201 | 9296 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 58 | `src/pages/geopulse.js` | 199 | 8125 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 59 | `src/pages/triangulacao.js` | 173 | 7442 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 60 | `src/pages/shadow.js` | 170 | 6837 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 61 | `src/pages/orcamentos-militares.js` | 166 | 7834 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
-| 62 | `src/pages/guia-pc.js` | 163 | 6032 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 63 | `src/pages/tabela-periodica.js` | 162 | 5848 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 64 | `src/pages/comms.js` | 147 | 5521 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 65 | `src/pages/militar.js` | 145 | 8540 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
-| 66 | `src/pages/seguranca.js` | 120 | 4757 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 67 | `src/pages/git-nexus-gate.js` | 117 | 5572 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 68 | `src/pages/calculadoras/index.js` | 116 | 3430 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 69 | `src/pages/banco.js` | 115 | 4932 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 70 | `src/pages/_placeholder.js` | 93 | 3129 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
-| 71 | `src/pages/arsenal-expandido.js` | 84 | 2933 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 49 | `src/pages/batalha-naval.js` | 253 | 10301 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 50 | `src/pages/economia.js` | 248 | 8251 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 51 | `src/pages/diagnostico.js` | 220 | 9304 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 52 | `src/pages/portas.js` | 213 | 8409 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 53 | `src/pages/json-studio.js` | 211 | 7148 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 54 | `src/pages/poder-militar.js` | 205 | 7752 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
+| 55 | `src/pages/baixar.js` | 201 | 9296 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 56 | `src/pages/geopulse.js` | 199 | 8125 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 57 | `src/pages/triangulacao.js` | 173 | 7442 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 58 | `src/pages/shadow.js` | 170 | 6837 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 59 | `src/pages/orcamentos-militares.js` | 166 | 7834 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
+| 60 | `src/pages/guia-pc.js` | 163 | 6032 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 61 | `src/pages/tabela-periodica.js` | 162 | 5848 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 62 | `src/pages/comms.js` | 147 | 5521 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 63 | `src/pages/militar.js` | 145 | 8540 | Conteúdo militar | baixo | tipar dados estáticos e preservar rota |
+| 64 | `src/pages/seguranca.js` | 120 | 4757 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 65 | `src/pages/git-nexus-gate.js` | 117 | 5572 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 66 | `src/pages/banco.js` | 115 | 4932 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 67 | `src/pages/_placeholder.js` | 93 | 3129 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
+| 68 | `src/pages/arsenal-expandido.js` | 84 | 2933 | Páginas utilitárias e conteúdo | baixo | tipar estado local, DOM e dependências diretas |
 
 ## Critérios de saída
 

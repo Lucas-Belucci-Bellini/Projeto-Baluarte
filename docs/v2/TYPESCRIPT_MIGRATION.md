@@ -384,3 +384,14 @@ A calculadora financeira mantém juros simples e compostos, Price, VPL/TIR por N
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **74 para 71 páginas JavaScript canônicas restantes**.
 
 A próxima etapa do catálogo é converter o hub de calculadoras somente depois de fechar os cinco painéis. Os painéis restantes — conversores e saúde — serão convertidos antes do hub para manter a fronteira de montagem completamente tipada.
+
+
+## 4.9 Hub de Calculadoras concluído
+
+Com os cinco painéis fechados, `src/pages/calculadoras/index.ts` substituiu o hub JavaScript canônico. O hub tipa os cinco IDs de tab, valida o valor persistido em storage, mantém a montagem de cada painel e preserva a superfície da rota `/calculadoras`; `index.js` continua como wrapper.
+
+Também foram convertidos `conversores.ts` e `saude.ts`. Conversores agora tem categorias e unidades explícitas, conversão especial de temperatura, seleção de fonte e renderização de resultados tipadas. Saúde preserva IMC, Mifflin-St Jeor, macros, zonas de Karvonen e hidratação, com tipos para cada conjunto de entradas.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **71 para 68 páginas JavaScript canônicas restantes**.
+
+A próxima frente de baixo risco passa para utilitárias e conteúdo estático menores, mantendo as páginas médias e os módulos de alto acoplamento reservados para contratos próprios.
