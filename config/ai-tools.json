@@ -162,6 +162,21 @@
           "args": ["scripts/install-obsidian-plugin.mjs", "claude-code-terminal"]
         }
       ]
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code (repositório público)",
+      "repo": "https://github.com/anthropics/claude-code.git",
+      "localPath": ".baluarte/tools/claude-code",
+      "installedCommit": "0fa8c19",
+      "role": "Referência oficial: plugins, exemplos de hooks/settings/gateway/MDM e o CHANGELOG. NÃO é o pacote da CLI — este repositório não tem package.json.",
+      "referenciaApenas": true,
+      "notas": [
+        "A CLI do Claude Code é distribuída à parte e já está nesta máquina (v2.1.177) — o clone não a instala nem a atualiza.",
+        "`plugins/` traz os plugins oficiais (code-review, feature-dev, hookify, plugin-dev, agent-sdk-dev, frontend-design…).",
+        "`examples/` tem referências de hooks, settings, gateway e MDM — útil pro `.claude/` deste repo.",
+        "Sem passos de setup: não há o que compilar."
+      ]
     }
   ]
 }

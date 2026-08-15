@@ -178,6 +178,24 @@ Detalhe do npm 11: install-scripts vêm bloqueados por padrão, e o esbuild
 precisa do dele para baixar o binário da plataforma — daí o
 `npm approve-scripts esbuild` nos passos de setup.
 
+### Claude Code (repositório público)
+
+**Referência, não instalação.** `anthropics/claude-code` não tem `package.json`:
+é o repositório público de plugins, exemplos e CHANGELOG. A CLI é distribuída à
+parte e já está nesta máquina (`claude --version` → 2.1.177) — clonar isto não
+a instala nem a atualiza.
+
+- Repositório: <https://github.com/anthropics/claude-code.git>
+- Clone: `.baluarte/tools/claude-code` · sem build
+
+O que vale olhar de lá:
+
+| pasta | conteúdo |
+|---|---|
+| `plugins/` | plugins oficiais: `code-review`, `feature-dev`, `hookify`, `plugin-dev`, `agent-sdk-dev`, `frontend-design`… |
+| `examples/` | referências de `hooks`, `settings`, `gateway` e `mdm` — aplicáveis ao `.claude/` deste repo |
+| `CHANGELOG.md` | o que muda a cada versão da CLI |
+
 ## Regras
 
 - `.baluarte/` e `.gitnexus/` são ignorados — não force nada pra dentro do git.
