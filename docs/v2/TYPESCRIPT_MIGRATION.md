@@ -766,3 +766,14 @@ A fronteira `src/utils/radio-api.d.ts` descreve somente `RadioStation`, os filtr
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **9 para 8 páginas JavaScript canônicas restantes**. Os relatórios temporários do smoke foram restaurados após a execução para não versionar timestamps de teste. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante esta onda.
 
 A próxima página recomendada é `src/pages/musicas.js`, por compartilhar o domínio de mídia e permitir reaproveitar o padrão de lifecycle de áudio sem misturar ainda os contratos pesados de JARVIS, Arma 3 e WebGL.
+
+
+## 4.48 Central de Música e Acervo offline
+
+A onda 4.48 converteu `src/pages/musicas.js` para `src/pages/musicas.ts`, mantendo o wrapper JavaScript no caminho legado. A página preserva a Central de Música completa: embed destacado e playlist Spotify com loop pelo IFrame API, faixas SoundCloud com Widget API e loop, links customizados de Spotify/SoundCloud persistidos no navegador, álbuns com faixas selecionáveis, músicas próprias do Suno com player lazy, faixas locais e o Acervo offline.
+
+O Acervo continua usando IndexedDB por meio de `offline-audio.js`: aceita apenas arquivos de áudio, lista metadados, cria/revoga object URLs, toca sem internet, permite anterior/próxima, repetição, remoção individual e limpeza total. O ponto salvo é integrado ao `media-sync.js` com persistência local-first e retomada defensiva quando a posição não está no início ou no fim da faixa. A migração também tipou as fronteiras declarativas de `albuns.js`, `soundcloud-tracks.js`, `musicas-proprias.js`, `offline-audio.js`, `media-sync.js` e das APIs globais lazy de Spotify/SoundCloud. Dados gerados ou externos entram por contratos estreitos; não foram usados `any`, `@ts-ignore`, `@ts-nocheck` ou relaxamento de `strict`.
+
+Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **8 para 7 páginas JavaScript canônicas restantes**. Os relatórios temporários do smoke foram restaurados após a execução. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante a conversão.
+
+Com a camada de mídia de páginas concluída, o próximo grupo recomendado é `git-nexus-nucleo.js`, seguido de `jarvis-vision.js` e `wiki-arma3.js`, sempre fechando contratos de socket/cena, câmera e dados antes da troca de cada wrapper.
