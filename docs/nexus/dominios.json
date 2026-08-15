@@ -614,14 +614,17 @@
    "responsabilidade": "Identidade do operador: dossiê pessoal, estatísticas, preferências e autenticação.",
    "estado": "desenvolvimento",
    "rotas": [
-    "/perfil"
+    "/perfil",
+    "/login"
    ],
    "origem": [
     "src/pages/perfil.js",
+    "src/pages/login.js",
     "src/core/user-prefs.js",
     "src/data/perfis.js",
     "src/data/skills.js",
-    "src/styles/perfil.css"
+    "src/styles/perfil.css",
+    "src/styles/login.css"
    ],
    "precisa": [
     "baluarte-core",
