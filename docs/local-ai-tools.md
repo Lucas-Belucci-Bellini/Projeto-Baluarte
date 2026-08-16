@@ -264,6 +264,35 @@ Duas pegadinhas registradas:
    ambiente, o resultado é `ModuleNotFoundError: No module named 'graphify'`.
    Daí o venv isolado e fora do clone, igual ao hermes-agent.
 
+## Quatro estão atrás do upstream, e é de propósito
+
+Aferido em **2026-08-16** com `npm run tools:status -- --remoto`:
+
+| ferramenta | disco = manifest? | origin |
+| --- | --- | --- |
+| `gitnexus` | ok | atual |
+| `claude-code` | ok | atual |
+| `claude-code-terminal` | sujo (build no lugar) | atual |
+| `hermes-agent` | ok | **atrás** |
+| `openclaw` | ok | **atrás** |
+| `codex` | ok | **atrás** |
+| `graphify` | ok | **atrás** |
+
+As quatro **não** foram atualizadas, e a omissão é deliberada. Atualizar não é
+`git pull`: é re-rodar o `setup` de cada uma (venv Python, `pnpm build`,
+compilação nativa), re-testar o que depende delas e reancorar o
+`installedCommit`. Isso é trabalho de integração, e a fase atual é hardening
+até a 1.0.0 — [ADR-001](architecture/decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md).
+
+O que **não** vale é deixar isso implícito: sem registro, daqui a três meses
+ninguém sabe se está velho por decisão ou por esquecimento. Está por decisão.
+
+O `gitnexus` é o único que precisa acompanhar o upstream de perto, porque é o
+único que o app embute — ver
+[ADR-005](architecture/decisions/ADR-005-so-o-gitnexus-empacotado-na-1.0.0.md).
+Para as outras, atualize **quando houver motivo**, uma de cada vez, com o setup
+re-rodado e o manifest reancorado no mesmo commit.
+
 ## Regras
 
 - `.baluarte/` e `.gitnexus/` são ignorados — não force nada pra dentro do git.
@@ -272,3 +301,4 @@ Duas pegadinhas registradas:
 - Chave/token vai pro `.env` (ignorado). O `.env.tools.example` só lista nomes.
 - Instalou ou atualizou uma ferramenta? Commit pequeno, com o `installedCommit`
   do manifest batendo com o disco.
+- Ficar atrás do upstream é aceitável; ficar atrás **sem registro** não é.
