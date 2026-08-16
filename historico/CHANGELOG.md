@@ -6,6 +6,31 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-16 — o portão da V2 nunca tinha rodado no Windows
+
+`npm run v2:integracao` está em **14/14**. A correção não foi no módulo: foi no
+portão, e em dois lugares.
+
+`spawn('npx', …)` morria em `ENOENT` antes da primeira asserção — o Node 24
+recusa spawnar `.cmd` (CVE-2024-27980) e `npx` é `npx.cmd`. Ou seja, aqui o
+portão não dava 13/14: dava **0/14**, e ninguém tinha visto porque ele nunca
+havia rodado nesta plataforma. Passa a chamar o bin do vite com o próprio Node.
+
+O `13/14` relatado era do **relógio**. As três navegações dormiam tempo fixo
+(900/900/1800 ms) antes de ler a tela. A view do `briefing` é a única importada
+sob demanda com orçamento de 900 ms: onde a primeira transformação do Vite passa
+disso, o portão reprova um módulo correto — e imprime a tela *anterior*
+("Lab de Criptografia"), o que parece defeito de render. Sleep fixo mede a
+máquina, não o sistema.
+
+A hipótese herdada era *"view devolve o ELEMENTO"*
+([`V2_MODULE_RULES.md`](../docs/v2/V2_MODULE_RULES.md)). Está descartada: o
+`loadView` do briefing devolve o elemento desde o commit que o criou. A asserção
+também estava certa e **não foi afrouxada** — os predicados seguem inalterados
+byte a byte. Medido, com a view atrasada 2 s de propósito: relógio → 13/14;
+condição → 14/14. E com `view` devolvendo o módulo, a condição ainda reprova
+(`view não é um nó: object`). Saiu o falso vermelho, ficou o verdadeiro.
+
 ## 2026-08-10 — três bloqueadores achados às vésperas do congelamento
 
 A varredura final da 1.0.0 não era para achar nada. Achou três, e o pior deles

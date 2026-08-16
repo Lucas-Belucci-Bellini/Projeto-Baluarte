@@ -22,6 +22,33 @@ Decision Log. Serve para uma sessão nova descobrir rapidamente o que já existe
 - [x] Per-module lifecycle status
 - [x] Operational platform facade
 
+## Portão de integração (`npm run v2:integracao`) — 14/14
+
+- [x] roda no Windows
+- [x] espera por condição, não por relógio
+
+Duas correções, ambas no `scripts/v2-integracao.mjs`; nenhuma no módulo.
+
+**Nunca tinha rodado no Windows.** `spawn('npx', …)` morre em `ENOENT` — o Node
+24 recusa spawnar `.cmd` (CVE-2024-27980), e `npx` é `npx.cmd`. Morria antes da
+primeira asserção: 0/14, não 13/14. Chamamos o bin do vite com o próprio Node.
+
+**O `13/14` era do relógio, não do briefing.** O portão dormia um tempo fixo
+(900 ms) antes de ler a tela. A view do `briefing` é a única importada sob
+demanda com esse orçamento — onde a primeira transformação do Vite passa disso,
+o portão reprova um módulo correto, e a mensagem mostra a tela *anterior*
+(`Lab de Criptografia`), que parece defeito de render. Sleep fixo mede a
+máquina, não o sistema.
+
+Medido, com a view atrasada 2 s de propósito: relógio → `13/14`, condição →
+`14/14`. E com `view` devolvendo o **módulo** (o defeito de
+[`V2_MODULE_RULES.md`](./V2_MODULE_RULES.md)), a condição ainda reprova —
+`view não é um nó: object`. Só o falso vermelho saiu; o verdadeiro ficou.
+
+> A hipótese herdada era "view devolve o ELEMENTO". Ela está descartada: o
+> `loadView` do `briefing` devolve o elemento desde o commit que o criou
+> (`446a272e`), e a asserção do portão está certa — não foi afrouxada.
+
 ## Próximo bloco
 
 - [ ] integrar a fachada ao entrypoint oficial da V2
