@@ -9,10 +9,16 @@
 import { spawn } from 'node:child_process';
 import { createInterface } from 'node:readline';
 
+/** @typedef {import('./runtime-bridge.js').RuntimeEnvelope} RuntimeEnvelope */
+/** @typedef {Record<string, unknown>} RespostaRuntime */
+/** @typedef {{resolve: (value: RespostaRuntime) => void, reject: (error: unknown) => void}} RequisicaoEmVoo */
+
+/** @param {string} message */
 function respostaError(message) {
   return { status: 'error', message };
 }
 
+/** @param {string} line @returns {RespostaRuntime} */
 function parseResposta(line) {
   try {
     const value = JSON.parse(line);
@@ -21,7 +27,8 @@ function parseResposta(line) {
     }
     return value;
   } catch (error) {
-    throw new TypeError(`resposta do Runtime inválida: ${error.message}`);
+    const message = error instanceof Error ? error.message : String(error);
+    throw new TypeError(`resposta do Runtime inválida: ${message}`);
   }
 }
 
@@ -33,19 +40,31 @@ export function criarRuntimeStdio(options) {
   if (!options?.root) throw new TypeError('root é obrigatório');
 
   const spawnProcess = options.spawnFn ?? spawn;
+  /** @type {import('node:child_process').ChildProcess|null} */
   let child = null;
+  /** @type {import('node:readline').Interface|null} */
   let lines = null;
+  /** @type {RequisicaoEmVoo|null} */
   let pending = null;
 
   function iniciar() {
     if (child) return;
-    child = spawnProcess(options.executable, options.args ?? [], {
+    /* O processo fica numa const antes de ir para `child`: dentro dos callbacks
+     * abaixo `child` volta a ser anulável (o `exit` zera), e é este apelido que
+     * mantém o tipo estreito onde ele é de fato usado. */
+    const processo = spawnProcess(options.executable, options.args ?? [], {
       cwd: options.cwd,
       env: { ...process.env, BALUARTE_RUNTIME_ROOT: options.root },
       stdio: ['pipe', 'pipe', 'pipe']
     });
+    child = processo;
 
-    lines = createInterface({ input: child.stdout });
+    /* `stdio: pipe` garante os três canais; a guarda existe porque o tipo de
+     * `spawn` não sabe disso, e falhar com a causa dita é melhor que estourar
+     * um TypeError sem nome três linhas adiante. */
+    if (!processo.stdout) throw new TypeError('Runtime subiu sem stdout');
+
+    lines = createInterface({ input: processo.stdout });
     lines.on('line', (line) => {
       if (!pending) return;
       const current = pending;
@@ -53,7 +72,7 @@ export function criarRuntimeStdio(options) {
       current.resolve(parseResposta(line));
     });
 
-    child.on('error', (error) => {
+    processo.on('error', (error) => {
       if (pending) {
         const current = pending;
         pending = null;
@@ -61,7 +80,7 @@ export function criarRuntimeStdio(options) {
       }
     });
 
-    child.on('exit', (code, signal) => {
+    processo.on('exit', (code, signal) => {
       const reason = new Error(`Runtime encerrou (code=${code}, signal=${signal ?? 'none'})`);
       if (pending) {
         const current = pending;
@@ -73,12 +92,15 @@ export function criarRuntimeStdio(options) {
     });
   }
 
+  /** @param {Record<string, unknown>} request @returns {Promise<RespostaRuntime>} */
   function enviar(request) {
     iniciar();
     if (pending) return Promise.reject(new Error('Runtime Stdio já possui uma requisição em voo'));
+    const entrada = child?.stdin;
+    if (!entrada) return Promise.reject(new Error('Runtime Stdio sem stdin: o processo não está no ar'));
     return new Promise((resolve, reject) => {
       pending = { resolve, reject };
-      child.stdin.write(`${JSON.stringify(request)}\n`, (error) => {
+      entrada.write(`${JSON.stringify(request)}\n`, (error) => {
         if (!error) return;
         if (!pending) return;
         pending = null;
@@ -87,21 +109,23 @@ export function criarRuntimeStdio(options) {
     });
   }
 
+  /** @param {RuntimeEnvelope} envelope */
   async function autorizar(envelope) {
     return enviar({ op: 'authorize', envelope });
   }
 
+  /** @param {RuntimeEnvelope} envelope @param {string} modulo @param {string} path */
   async function lerArquivo(envelope, modulo, path) {
     return enviar({ op: 'read_file', envelope, modulo, path });
   }
 
   async function fechar() {
-    if (!child) return;
     const atual = child;
+    if (!atual) return;
     child = null;
     lines?.close();
     lines = null;
-    if (!atual.stdin.destroyed) atual.stdin.end();
+    if (atual.stdin && !atual.stdin.destroyed) atual.stdin.end();
   }
 
   return { iniciar, autorizar, lerArquivo, fechar, respostaError };

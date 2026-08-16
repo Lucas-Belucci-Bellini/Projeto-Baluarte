@@ -6,6 +6,35 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-16 — o portão de tipos da V2 estava vermelho, e ninguém via
+
+`npm run tipos:v2` saiu de **61 erros para zero**. Estava assim havia pelo menos
+um dia, em três branches — e o `main` não acusava porque os últimos commits eram
+do bot de câmbio, e o GitHub **não dispara workflow em push feito com o
+`GITHUB_TOKEN` padrão**. O primeiro push humano acendeu a luz.
+
+O que isso custava: no `v2-validation.yml` os passos são sequenciais, então com o
+`Typecheck V2` falhando o `V2 integration` ficava `skipped`. O portão de
+integração da V2 — o mesmo que a entrada abaixo deixou em 14/14 — **não estava
+sendo exercitado no CI**.
+
+Nenhuma regra foi afrouxada: `strict`, `checkJs` e `noImplicitAny` seguem
+ligados, sem `@ts-ignore`, sem tirar arquivo do `include`.
+
+Os 61 eram quatro causas repetidas: `@types/node` que não chegava ao `jsconfig`
+(e `types: ["node"]` sozinho *piorava* para 131, arrastando um `.js` de dentro
+do `node_modules` — `maxNodeModuleJsDepth: 0` corta); `options = {}` com typedef
+de campos obrigatórios, um default que mentia; estreitamento de guarda que não
+atravessa função declarada; e `map(Object.freeze)` passado como referência, que
+resolve para a sobrecarga genérica errada.
+
+Duas discrepâncias eram reais, e foram corrigidas **no contrato, não no código**:
+`RuntimeStateOf` dizia `() => unknown` embora `stateOf` sempre tenha recebido o
+id do módulo; e `RuntimeManager.restart` prometia os campos de status planos
+enquanto o código sempre devolveu o status aninhado em `status`. Nenhum
+consumidor lia os campos planos — mudar o retorno para casar com um contrato que
+nunca valeu seria trocar mentira de documentação por quebra de comportamento.
+
 ## 2026-08-16 — o portão da V2 nunca tinha rodado no Windows
 
 `npm run v2:integracao` está em **14/14**. A correção não foi no módulo: foi no

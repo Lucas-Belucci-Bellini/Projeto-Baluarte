@@ -20,6 +20,7 @@ export function criarRuntimeSession(client, envelope) {
 
   let aberta = false;
 
+  /** @returns {Promise<RuntimeSessionSuccessResponse>} */
   async function abrir() {
     if (aberta) return { status: 'authorized' };
     const resposta = await client.request({ op: 'authorize', envelope });
@@ -34,6 +35,7 @@ export function criarRuntimeSession(client, envelope) {
     return /** @type {RuntimeSessionSuccessResponse} */ (resultado);
   }
 
+  /** @param {string} modulo @param {string} path @returns {Promise<RuntimeSessionSuccessResponse>} */
   async function lerArquivo(modulo, path) {
     if (!aberta) throw new Error('Runtime Session não está aberta');
     const resposta = await client.request({ op: 'read_file', envelope, modulo, path });

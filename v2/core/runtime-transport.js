@@ -13,7 +13,13 @@ import { envelopeRuntime, validarEnvelopeRuntime } from './runtime-bridge.js';
 
 /** @param {unknown} grants @returns {string} */
 export function serializarCargaRuntime(grants) {
-  const envelope = envelopeRuntime(grants);
+  /* A guarda diz o que já era exigido na prática: sem ela o `grants.map` lá
+   * dentro estourava "map is not a function", que culpa o lugar errado. O cast
+   * declara apenas o que foi verificado — que é array —; o conteúdo continua
+   * sendo validado grant a grant pelo `envelopeRuntime`, que lança no primeiro
+   * inválido. */
+  if (!Array.isArray(grants)) throw new TypeError('grants de Runtime devem ser um array');
+  const envelope = envelopeRuntime(/** @type {ReadonlyArray<import('./runtime-bridge.js').RuntimeGrant>} */ (grants));
   const validacao = validarEnvelopeRuntime(envelope);
   if (!validacao.ok) throw new Error(`carga inválida: ${validacao.erros.join('; ')}`);
   return JSON.stringify(validacao.envelope);

@@ -4,10 +4,22 @@
  */
 import { criarLifecycleRuntime } from './module-runtime-lifecycle.js';
 
+/** @typedef {import('./module-runtime-lifecycle.js').RuntimeRegistry} RuntimeRegistry */
+/** @typedef {import('./module-runtime-lifecycle.js').RuntimeSessions} RuntimeSessions */
+/** @typedef {import('./module-runtime-supervisor.js').RuntimeHooks} RuntimeHooks */
+/** @typedef {'starting'|'running'|'stopping'|'stopped'|'failed'} EstadoSlice */
+
+/**
+ * @param {RuntimeRegistry} registry
+ * @param {unknown} permissoes
+ * @param {RuntimeSessions} runtimeSession
+ */
 export function criarVerticalSlice(registry, permissoes, runtimeSession) {
   const runtimeLifecycle = criarLifecycleRuntime(registry, runtimeSession, permissoes);
+  /** @type {Map<string, EstadoSlice>} */
   const estados = new Map();
 
+  /** @param {string} id @param {RuntimeHooks} [hooks] */
   async function iniciar(id, hooks = {}) {
     if (estados.get(id) === 'running') return;
     estados.set(id, 'starting');
@@ -23,6 +35,7 @@ export function criarVerticalSlice(registry, permissoes, runtimeSession) {
     }
   }
 
+  /** @param {string} id @param {RuntimeHooks} [hooks] */
   async function parar(id, hooks = {}) {
     if (!estados.has(id) || estados.get(id) === 'stopped') return;
     estados.set(id, 'stopping');
@@ -40,6 +53,7 @@ export function criarVerticalSlice(registry, permissoes, runtimeSession) {
   return {
     iniciar,
     parar,
+    /** @param {string} id */
     estado: (id) => estados.get(id) ?? 'registered',
     runtimeAbertos: () => runtimeLifecycle.abertas()
   };
