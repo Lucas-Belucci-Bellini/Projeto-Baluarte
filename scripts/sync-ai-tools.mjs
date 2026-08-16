@@ -24,7 +24,8 @@ import {
   selecionar,
   caminhoDaFerramenta,
   raizDasFerramentas,
-  raizDoRepoPrincipal
+  raizDoRepoPrincipal,
+  paraSpawnWindows
 } from './lib/ai-tools.mjs';
 
 const args = process.argv.slice(2);
@@ -49,7 +50,16 @@ function argsDe(passo) {
 function rodar(comando, argumentos, cwd) {
   const linha = [comando, ...argumentos].join(' ');
   console.log(`[tools] ${linha}`);
-  const r = spawnSync(comando, argumentos, { cwd, stdio: 'inherit', shell: false, windowsHide: true });
+  // `npm.cmd`/`corepack.cmd` precisam passar pelo interpretador no Windows (ver
+  // o comentário de `paraSpawnWindows`); fora dele isto é identidade.
+  const alvo = paraSpawnWindows(comando, argumentos);
+  const r = spawnSync(alvo.comando, alvo.argumentos, {
+    cwd,
+    stdio: 'inherit',
+    shell: false,
+    windowsHide: true,
+    windowsVerbatimArguments: alvo.verbatim
+  });
   if (r.error) throw r.error;
   if (r.status !== 0) throw new Error(`falhou (${r.status}): ${linha}`);
 }

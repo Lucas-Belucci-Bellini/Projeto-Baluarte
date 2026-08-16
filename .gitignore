@@ -62,4 +62,12 @@ Cargo.lock
 # Motores encenados para o instalador por `npm run motores:empacotar`.
 # Sao ARTEFATO DE BUILD (so o gitnexus da ~460 MB): entram no instalador via
 # extraResources, nunca no git. Reconstroi com o comando acima.
-desktop/engine/
+#
+# O `.gitkeep` fica DE FORA do ignore de propósito: o electron-builder aponta
+# `extraResources` para esta pasta, e num clone limpo (CI, outra máquina) ela
+# não existiria — o `npm run dist` quebraria por caminho inexistente antes de
+# empacotar nada. Com o marcador versionado a pasta existe sempre, e um release
+# feito sem rodar `motores:empacotar` sai apenas sem o motor embutido, em vez de
+# falhar: o app cai nas outras estratégias do `nexus.js`.
+desktop/engine/*
+!desktop/engine/.gitkeep

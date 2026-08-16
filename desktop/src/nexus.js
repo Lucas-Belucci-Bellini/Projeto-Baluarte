@@ -54,6 +54,31 @@ const SERVICO_PADRAO = {
 // no contrato do manifest.
 const READY_NPX_MS = 90000;
 
+/**
+ * Prepara um comando para o `spawn` no Windows.
+ *
+ * O Node 24 recusa executar `.cmd`/`.bat` direto e devolve **EINVAL** (correção
+ * do CVE-2024-27980). `gitnexus.cmd` e `npx.cmd` são exatamente isso, então as
+ * vias `global` e `npx` desta cadeia morriam antes mesmo de tentar: o launcher
+ * caía no codemap dizendo "sem gitnexus alcançável" com o motor instalado do
+ * lado. No macOS e no Linux não há wrapper e nunca houve problema — por isso a
+ * correção é condicional, em vez de remover as estratégias e regredir lá.
+ *
+ * Gêmeo de `paraSpawnWindows` em `scripts/lib/ai-tools.mjs`. Duplicados de
+ * propósito: aquele é ESM em `scripts/`, este é CommonJS no processo main do
+ * Electron, e atravessar essa fronteira por 15 linhas não se paga.
+ */
+function paraSpawnWindows(cmd, args) {
+  if (!WIN || !/\.(cmd|bat)$/i.test(cmd)) return { cmd, args, verbatim: false };
+  const cita = (a) => (/[\s"]/.test(String(a)) ? `"${String(a).replace(/"/g, '\\"')}"` : String(a));
+  const linha = [cmd, ...args].map(cita).join(' ');
+  return {
+    cmd: process.env.ComSpec || 'cmd.exe',
+    args: ['/d', '/s', '/c', `"${linha}"`],
+    verbatim: true
+  };
+}
+
 /** Acha o `config/ai-tools.json` (raiz do repo em dev; resources no empacotado). */
 function manifestoPath() {
   const roots = [
@@ -275,10 +300,12 @@ function trySpawn(c, readyMs) {
   return new Promise((resolve) => {
     let proc;
     try {
-      proc = spawn(c.cmd, c.args, {
+      const alvo = paraSpawnWindows(c.cmd, c.args);
+      proc = spawn(alvo.cmd, alvo.args, {
         stdio: ['ignore', 'pipe', 'pipe'],
         env: c.env || process.env,
-        windowsHide: true
+        windowsHide: true,
+        windowsVerbatimArguments: alvo.verbatim
       });
     } catch (err) {
       log(`falha ao spawnar (${c.via}):`, String((err && err.message) || err));

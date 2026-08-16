@@ -74,6 +74,38 @@ export function caminhoDaFerramenta(manifest, tool) {
     : path.join(raizDasFerramentas(manifest), tool.id);
 }
 
+/**
+ * Prepara um comando para o `spawn` no Windows.
+ *
+ * O Node 24 recusa executar `.cmd`/`.bat` diretamente e devolve **EINVAL** — é a
+ * correção do CVE-2024-27980 (injeção de argumento pelo interpretador do
+ * Windows). Como `npm`, `npx`, `corepack` e o `gitnexus` global são todos
+ * wrappers `.cmd`, spawnar "o comando certo" simplesmente parou de funcionar
+ * nesta plataforma: `npm run tools:sync -- <id> --setup` morria em EINVAL.
+ *
+ * O caminho suportado é passar pelo interpretador, que é o que `shell: true`
+ * faz por baixo. Aqui é explícito de propósito: montamos a linha, citamos só o
+ * que tem espaço e ligamos `windowsVerbatimArguments`, para o Node não aplicar
+ * uma segunda rodada de citação sobre a nossa. Com `shell: true` o Node junta
+ * os argumentos sem citar nenhum, e aí qualquer caminho com espaço quebra —
+ * e os passos de `setup` do manifest passam caminho de venv como argumento.
+ *
+ * Fora do Windows, ou quando o comando não é wrapper, devolve tudo intacto.
+ */
+export function paraSpawnWindows(comando, argumentos = []) {
+  const ehWrapper = /\.(cmd|bat)$/i.test(comando);
+  if (process.platform !== 'win32' || !ehWrapper) {
+    return { comando, argumentos, verbatim: false };
+  }
+  const cita = (a) => (/[\s"]/.test(String(a)) ? `"${String(a).replace(/"/g, '\\"')}"` : String(a));
+  const linha = [comando, ...argumentos].map(cita).join(' ');
+  return {
+    comando: process.env.ComSpec || 'cmd.exe',
+    argumentos: ['/d', '/s', '/c', `"${linha}"`],
+    verbatim: true
+  };
+}
+
 /** Roda git e devolve stdout limpo; string vazia se falhar (nunca lança). */
 export function git(args, cwd) {
   const r = spawnSync('git', args, { cwd, encoding: 'utf8', shell: false, windowsHide: true });

@@ -1,0 +1,10 @@
+Marcador de pasta — não remover.
+
+O electron-builder aponta `extraResources` para `desktop/engine/`. Num clone
+limpo essa pasta não existiria, e o `npm run dist` falharia por caminho
+inexistente antes de empacotar qualquer coisa. Com este arquivo versionado a
+pasta existe sempre.
+
+O conteúdo real (os motores compilados) é ignorado pelo git e reconstruído por
+`npm run motores:empacotar`. Um release feito sem rodar esse comando sai só sem
+o motor embutido — o app cai nas outras estratégias do `desktop/src/nexus.js`.
