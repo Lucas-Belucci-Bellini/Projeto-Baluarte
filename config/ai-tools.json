@@ -16,6 +16,22 @@
       "installedCommit": "dac33d80",
       "version": "1.6.9",
       "role": "Motor real do grafo de código: CLI, servidor HTTP na 4747 e ponte MCP. É o que a página /git-nexus e o Baluarte Launcher consomem quando rodam no app (#222 M3a-M3c).",
+      "$service": "Contrato de processo lido por desktop/src/nexus.js: onde o motor escuta, qual rota prova que subiu, com que args se sobe e quanto se espera pela readiness. Mudou aqui, muda no app. O --host precisa ser EXPLÍCITO: sem ele o gitnexus 1.6.9 escuta em ::1 (loopback IPv6) apesar de documentar 127.0.0.1 como default, e o fetch do app em IPv4 nunca alcança o /api/health. Medido nesta máquina em 2026-08-15.",
+      "service": {
+        "host": "127.0.0.1",
+        "porta": 4747,
+        "health": "/api/health",
+        "serveArgs": ["serve", "--port", "4747", "--host", "127.0.0.1"],
+        "readyMs": 20000,
+        "dependeDe": []
+      },
+      "$empacotar": "O que o INSTALADOR do app leva (npm run motores:empacotar → desktop/engine/gitnexus, e daí para extraResources). O clone tem ~1,5 GB; o pacote dá ~460 MB. Copiamos a árvore de node_modules JÁ instalada em vez de reinstalar, porque @ladybugdb/core não tem prebuilt para esta plataforma e cairia em build nativo, que exige MSVC (ausente). Os optional pesados (~396 MB) são podados.",
+      "empacotar": {
+        "subdir": "gitnexus",
+        "incluir": ["dist", "package.json"],
+        "copiarModulos": true,
+        "excluirModulos": ["onnxruntime-node", "onnxruntime-web", "@huggingface"]
+      },
       "run": {
         "kind": "node",
         "entrypoint": ".baluarte/tools/gitnexus/gitnexus/dist/cli/index.js"

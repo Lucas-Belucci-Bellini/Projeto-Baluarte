@@ -1,150 +1,145 @@
 #!/usr/bin/env node
-
 /**
- * Estado das ferramentas de IA instaladas localmente.
+ * Auditoria das ferramentas externas de IA: o que está instalado, em que commit
+ * e se o clone local foi mexido.
  *
- * Responde três perguntas diferentes, que é fácil confundir:
+ *   npm run tools:status
+ *   npm run tools:status -- --remoto     # + consulta o origin de cada uma (rede)
+ *   npm run tools:status -- --estrito    # sai != 0 também em `movido`/`atrás`
  *
- *   state   — a árvore de trabalho do clone está limpa ou tem edição solta?
- *   pin     — o commit instalado bate com o `installedCommit` do manifest?
- *             `divergiu` quer dizer que a máquina não está no que o repo declara.
- *   remoto  — existe commit novo lá em cima? (só com `--remoto`, precisa de rede)
+ * Existe porque o manifest versionado declara uma INTENÇÃO (`installedCommit`) e
+ * o disco guarda o FATO. Quando os dois divergem — clone sujo, branch trocada,
+ * ferramenta nunca instalada — o operador precisa ver isso antes de culpar o
+ * Baluarte por um motor que não sobe.
  *
- * O `pin` é o que responde "isto aqui está atualizado?" sem rede: o manifest é
- * a versão que o Baluarte diz suportar. O `remoto` responde "saiu coisa nova?".
+ * São duas perguntas diferentes, e é fácil confundir:
  *
- * Uso:
- *   npm run tools:status                  # local, rápido, sem rede
- *   npm run tools:status -- --remoto      # consulta cada origin (rede)
- *   npm run tools:status -- --estrito     # sai != 0 se algo divergiu/atrasou
+ *   estado  — o disco bate com o manifest? (`sujo`, `movido`, `FALTA`)
+ *   remoto  — saiu commit novo lá em cima? (só com `--remoto`, precisa de rede)
  *
- * Onde estão os clones: `BALUARTE_AI_TOOLS_DIR` ou o `installRoot` do manifest
- * (mesma regra do `sync-ai-tools.mjs` e do `empacotar-motores.mjs`).
+ * Sai com código 1 se alguma ferramenta estiver faltando, pra poder virar gate
+ * de CI algum dia. Clone sujo ou commit diferente do manifest é só aviso: mexer
+ * no fonte de uma ferramenta local é uma coisa legítima de se fazer. Quem quiser
+ * o rigor de CI também nesses casos usa `--estrito`.
  */
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { spawnSync } from 'node:child_process';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(__dirname, '..');
-const manifest = JSON.parse(readFileSync(path.join(repoRoot, 'config', 'ai-tools.json'), 'utf8'));
+import { lerManifest, caminhoDaFerramenta, raizDoRepoPrincipal, git } from './lib/ai-tools.mjs';
 
 const args = process.argv.slice(2);
 const verRemoto = args.includes('--remoto');
 const estrito = args.includes('--estrito');
 
-const installRoot = path.resolve(
-  repoRoot,
-  process.env.BALUARTE_AI_TOOLS_DIR || manifest.installRoot || '.baluarte/tools',
-);
+const manifest = lerManifest();
+const principal = raizDoRepoPrincipal();
 
-function git(args, cwd) {
-  const result = spawnSync('git', args, {
-    cwd,
-    encoding: 'utf8',
-    shell: false,
-    windowsHide: true,
-  });
-  if (result.status !== 0) return '';
-  return result.stdout.trim();
-}
-
-function localPathFor(tool) {
-  const declarado = tool.localPath ? path.resolve(repoRoot, tool.localPath) : null;
-  if (declarado && existsSync(declarado)) return declarado;
-  // Sem o clone no caminho declarado (ex.: rodando de um worktree), cai no
-  // installRoot — que o BALUARTE_AI_TOOLS_DIR pode redirecionar.
-  return path.resolve(installRoot, tool.id);
-}
-
-function pad(value, length) {
-  return String(value).padEnd(length, ' ');
-}
-
-/** O commit da máquina bate com o que o manifest declara suportar? */
-function pinDe(tool, head) {
-  const pin = tool.installedCommit;
-  if (!pin) return '-';
-  if (!head) return '?';
-  return head.startsWith(pin) ? 'ok' : 'divergiu';
-}
-
-/** Existe commit novo no origin? Só com --remoto; '' quando não consultamos. */
-function remotoDe(tool, head) {
+/**
+ * O origin tem commit que o disco não tem? Compara o HEAD remoto (sem fetch,
+ * via `ls-remote`) com o HEAD local. '' quando não perguntamos.
+ */
+function estadoRemoto(tool, alvo, branch) {
   if (!verRemoto) return '';
   if (!tool.repo) return '-';
-  const saida = git(['ls-remote', tool.repo, 'HEAD'], repoRoot);
+  // Comparar contra a MESMA branch, não contra o HEAD remoto. O graphify, por
+  // exemplo, fica na `v8`: medir a `v8` local contra a default do origin dá
+  // "atrás" eternamente, e um alarme que sempre toca ninguém escuta.
+  const alvoRef = branch && branch !== '(detached)' ? `refs/heads/${branch}` : 'HEAD';
+  let saida = git(['ls-remote', tool.repo, alvoRef], principal);
+  if (!saida && alvoRef !== 'HEAD') saida = git(['ls-remote', tool.repo, 'HEAD'], principal);
   if (!saida) return '?';
   const shaRemoto = saida.split(/\s+/)[0];
-  if (!shaRemoto || !head) return '?';
-  return shaRemoto === head ? 'atualizado' : 'desatualizado';
+  const shaLocal = git(['rev-parse', 'HEAD'], alvo);
+  if (!shaRemoto || !shaLocal) return '?';
+  return shaRemoto === shaLocal ? 'atual' : 'atrás';
 }
 
-const rows = manifest.tools.map((tool) => {
-  const target = localPathFor(tool);
-  const instalado = existsSync(path.join(target, '.git'));
-  if (!instalado) {
+const linhas = manifest.tools.map((tool) => {
+  const alvo = caminhoDaFerramenta(manifest, tool);
+  const curto = path.relative(principal, alvo) || alvo;
+  if (!existsSync(path.join(alvo, '.git'))) {
     return {
       id: tool.id,
-      state: 'missing',
+      estado: 'FALTA',
       branch: '-',
-      commit: tool.installedCommit || '-',
-      pin: '-',
+      commit: '-',
       remoto: verRemoto ? '-' : '',
-      path: path.relative(repoRoot, target),
+      caminho: curto
     };
   }
-  const head = git(['rev-parse', 'HEAD'], target);
+  const commit = git(['rev-parse', '--short', 'HEAD'], alvo) || '?';
+  const esperado = tool.installedCommit;
+  const sujo = git(['status', '--short'], alvo) !== '';
+  let estado = 'ok';
+  if (sujo) estado = 'sujo';
+  else if (esperado && esperado !== commit) estado = 'movido';
+  const branch = git(['branch', '--show-current'], alvo) || '(detached)';
   return {
     id: tool.id,
-    state: git(['status', '--short'], target) ? 'dirty' : 'clean',
-    branch: git(['branch', '--show-current'], target) || '-',
-    commit: head ? head.slice(0, 8) : '-',
-    pin: pinDe(tool, head),
-    remoto: remotoDe(tool, head),
-    path: path.relative(repoRoot, target),
+    estado,
+    branch,
+    commit,
+    remoto: estadoRemoto(tool, alvo, branch),
+    caminho: curto
   };
 });
 
-const colRemoto = verRemoto ? `${pad('remoto', 14)} ` : '';
-const sepRemoto = verRemoto ? `${'-'.repeat(14)} ` : '';
+const larg = (campo, min) => Math.max(min, ...linhas.map((l) => String(l[campo]).length));
+const w = {
+  id: larg('id', 4),
+  estado: larg('estado', 6),
+  branch: larg('branch', 6),
+  commit: larg('commit', 6),
+  remoto: verRemoto ? larg('remoto', 6) : 0
+};
+const linha = (l) =>
+  `${String(l.id).padEnd(w.id)}  ${String(l.estado).padEnd(w.estado)}  ${String(l.branch).padEnd(w.branch)}  ${String(
+    l.commit
+  ).padEnd(w.commit)}  ${verRemoto ? String(l.remoto).padEnd(w.remoto) + '  ' : ''}${l.caminho}`;
+
 console.log(
-  `${pad('tool', 24)} ${pad('state', 8)} ${pad('branch', 18)} ${pad('commit', 10)} ${pad('pin', 9)} ${colRemoto}path`,
+  linha({ id: 'tool', estado: 'estado', branch: 'branch', commit: 'commit', remoto: 'remoto', caminho: 'caminho' })
 );
 console.log(
-  `${'-'.repeat(24)} ${'-'.repeat(8)} ${'-'.repeat(18)} ${'-'.repeat(10)} ${'-'.repeat(9)} ${sepRemoto}${'-'.repeat(24)}`,
+  linha({
+    id: '-'.repeat(w.id),
+    estado: '-'.repeat(w.estado),
+    branch: '-'.repeat(w.branch),
+    commit: '-'.repeat(w.commit),
+    remoto: '-'.repeat(w.remoto),
+    caminho: '-'.repeat(24)
+  })
 );
-for (const row of rows) {
-  const base = `${pad(row.id, 24)} ${pad(row.state, 8)} ${pad(row.branch, 18)} ${pad(row.commit, 10)} ${pad(row.pin, 9)}`;
-  console.log(`${base} ${verRemoto ? pad(row.remoto, 14) + ' ' : ''}${row.path}`);
-}
+for (const l of linhas) console.log(linha(l));
 
 if (!verRemoto) {
-  console.log('\n(sem consulta de rede — use `--remoto` para saber se saiu commit novo)');
+  console.log('\n(sem rede — use `--remoto` para saber se saiu commit novo no origin)');
 }
 
-const divergiram = rows.filter((r) => r.pin === 'divergiu');
-const atrasados = rows.filter((r) => r.remoto === 'desatualizado');
-const ausentes = rows.filter((r) => r.state === 'missing');
+const faltando = linhas.filter((l) => l.estado === 'FALTA');
+const movido = linhas.filter((l) => l.estado === 'movido');
+const atrasados = linhas.filter((l) => l.remoto === 'atrás');
 
-if (ausentes.length) {
-  console.log(`\nnão instalados: ${ausentes.map((r) => r.id).join(', ')}  ->  npm run tools:sync -- <id>`);
-}
-if (divergiram.length) {
+if (movido.length > 0) {
   console.log(
-    `\ndivergiram do manifest: ${divergiram.map((r) => r.id).join(', ')}` +
-      '\n  a máquina não está no commit que o config/ai-tools.json declara.' +
-      '\n  atualize o `installedCommit` do manifest OU volte o clone para ele.',
+    `\naviso: ${movido.map((l) => l.id).join(', ')} — commit no disco difere do manifest (atualize \`installedCommit\` se foi de propósito).`
   );
 }
-if (atrasados.length) {
+if (atrasados.length > 0) {
   console.log(
-    `\ncom commit novo no origin: ${atrasados.map((r) => r.id).join(', ')}  ->  npm run tools:sync -- <id>`,
+    `\ncom commit novo no origin: ${atrasados.map((l) => l.id).join(', ')} — rode \`npm run tools:sync -- ${atrasados
+      .map((l) => l.id)
+      .join(' ')}\`.`
   );
 }
-
-if (estrito && (divergiram.length || atrasados.length || ausentes.length)) {
+if (faltando.length > 0) {
+  console.log(
+    `\nfaltando: ${faltando.map((l) => l.id).join(', ')} — rode \`npm run tools:sync -- ${faltando
+      .map((l) => l.id)
+      .join(' ')} --setup\`.`
+  );
+  process.exit(1);
+}
+if (estrito && (movido.length > 0 || atrasados.length > 0)) {
   process.exit(1);
 }

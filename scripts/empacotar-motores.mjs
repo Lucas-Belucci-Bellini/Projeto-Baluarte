@@ -37,21 +37,20 @@ import {
   readdirSync
 } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { lerManifest, caminhoDaFerramenta, raizDasFerramentas, raizDoCheckout } from './lib/ai-tools.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(__dirname, '..');
-const manifest = JSON.parse(readFileSync(path.join(repoRoot, 'config', 'ai-tools.json'), 'utf8'));
+const manifest = lerManifest();
 
 const args = process.argv.slice(2);
 const listar = args.includes('--listar');
 const pedidos = args.filter((a) => !a.startsWith('--'));
 
-const toolsRoot = path.resolve(
-  repoRoot,
-  process.env.BALUARTE_AI_TOOLS_DIR || manifest.installRoot || '.baluarte/tools'
-);
+// Os clones moram no repo PRINCIPAL (a lib resolve isso, inclusive de dentro de
+// um worktree); já o `desktop/engine/` encenado fica NESTE checkout, que é de
+// onde o electron-builder vai rodar.
+const toolsRoot = raizDasFerramentas(manifest);
+const repoRoot = raizDoCheckout;
 const destinoRaiz = path.join(repoRoot, 'desktop', 'engine');
 
 const log = (...a) => console.log('[motores]', ...a);
@@ -76,10 +75,7 @@ function tamanhoMB(alvo) {
 }
 
 function origemDe(tool) {
-  // Quando os clones vêm de BALUARTE_AI_TOOLS_DIR, o `localPath` do manifest
-  // (relativo ao repo) não vale — cai no toolsRoot.
-  const base = tool.localPath ? path.resolve(repoRoot, tool.localPath) : path.join(toolsRoot, tool.id);
-  const raiz = existsSync(base) ? base : path.join(toolsRoot, tool.id);
+  const raiz = caminhoDaFerramenta(manifest, tool);
   return tool.empacotar && tool.empacotar.subdir ? path.join(raiz, tool.empacotar.subdir) : raiz;
 }
 

@@ -27,6 +27,7 @@
     "mobile:sync": "vite build && cap sync android",
     "mobile:open": "cap open android",
     "verificar-nexus": "node scripts/verificar-nexus.mjs",
+    "motores:empacotar": "node scripts/empacotar-motores.mjs",
     "relatorio:diario": "node scripts/v2-daily-report.mjs",
     "monitor:issues": "node scripts/v2-issue-monitor.mjs",
     "gen-arma3-totais": "node scripts/gerar-arma3-totais.mjs",

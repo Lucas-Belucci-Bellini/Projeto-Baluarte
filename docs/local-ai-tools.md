@@ -13,10 +13,13 @@ manifest, os scripts e os pontos de integração; os clones ficam em
 ## Comandos
 
 ```bash
-npm run tools:status                      # o que está instalado, em que commit
-npm run tools:sync                        # clona/atualiza todas
-npm run tools:sync -- gitnexus            # só uma
-npm run tools:sync -- gitnexus --setup    # + passos locais (npm install, build…)
+npm run tools:status                        # o que está instalado, em que commit
+npm run tools:status -- --remoto            # + saiu commit novo no origin? (rede)
+npm run tools:status -- --remoto --estrito  # idem, saindo != 0 (gate de CI)
+npm run tools:sync                          # clona/atualiza todas
+npm run tools:sync -- gitnexus              # só uma
+npm run tools:sync -- gitnexus --setup      # + passos locais (npm install, build…)
+npm run motores:empacotar                   # encena o motor pro instalador do app
 ```
 
 `tools:sync` clona quando não existe e roda `git pull --ff-only` quando existe —
@@ -32,6 +35,23 @@ e gigabytes; clonar não.
 | `sujo` | há alteração local não commitada no clone |
 | `movido` | commit no disco ≠ manifest (atualize o manifest se foi de propósito) |
 | `FALTA` | nunca instalado — o comando sai com código 1 |
+
+Com `--remoto` entra a coluna `remoto`, que responde outra pergunta: `atual` ou
+`atrás` do origin. A comparação é contra a **mesma branch** do clone (o graphify
+fica na `v8`, não na default) — medir contra o HEAD remoto daria "atrás" para
+sempre, e alarme que sempre toca ninguém escuta. `--estrito` faz `movido` e
+`atrás` também derrubarem o código de saída, para virar gate de CI.
+
+## Empacotar o motor no instalador
+
+`motores:empacotar` encena o motor compilado em `desktop/engine/<id>/`, que o
+electron-builder leva em `extraResources`. **Não vai para o git** (só o gitnexus
+dá ~460 MB): é artefato de build, reconstruído pelo comando.
+
+Ele **copia** a árvore de `node_modules` já instalada em vez de reinstalar,
+porque `@ladybugdb/core` não tem prebuilt para esta plataforma e cairia em build
+nativo, que exige MSVC. Os `optionalDependencies` pesados (~396 MB) são podados.
+O que entra é declarado no bloco `empacotar` de cada ferramenta no manifest.
 
 ## Onde os clones ficam
 
