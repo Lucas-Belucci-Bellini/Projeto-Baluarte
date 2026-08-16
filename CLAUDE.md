@@ -39,7 +39,7 @@ que exerce, com benchmark em [`v2/bench/`](v2/bench/) — dá para rodar de novo
 | --- | --- | --- |
 | interface web e 3D | **TypeScript** | hoje JSDoc+`checkJs` (etapa 1) |
 | Core de **Orquestração** (navegador) | **TypeScript** | WASM mediu **4,7× mais lento** no despacho real |
-| Core de **Runtime** (processo local) | **Rust** | ⚠️ **ainda não existe** — é o próximo grande passo |
+| Core de **Runtime** (processo local) | **Rust** | ✅ **existe** em [`v2/runtime/`](v2/runtime/), com teste — falta **integrar**, não construir |
 | IA, coleta, automação | **Python** | ecossistema é a razão inteira |
 | parsers binários (`.p3d`/`.pbo`) | **Rust** | Python é 140× mais lento em laço de byte |
 | dados e fila entre processos | **PostgreSQL** | `SKIP LOCKED`, sem broker |
@@ -65,6 +65,12 @@ que se vê primeiro. Se você está numa sessão nova, é por aqui que se começ
   [`V2_RULES.md`](docs/v2/V2_RULES.md) (as 40 regras) e
   [`V2_DECISION_LOG.md`](docs/v2/V2_DECISION_LOG.md) (**as 9 decisões que não
   estão no corpo do plano** — nasceram nos comentários e se perderiam).
+  👉 **Antes de construir qualquer coisa da V2, abra
+  [`V2_PROGRESS.md`](docs/v2/V2_PROGRESS.md)**: é o retrato do que já existe, e
+  a regra dele é dura — caixa só vira `[x]` com código *e* teste. A fundação
+  (Registry, permissões, lifecycle, Runtime Rust, supervisor, fachada) já está
+  fechada; o que falta é **integração e contrato**, não construção nova. Plano
+  diz o que fazer; este diz o que já foi feito.
   Em resumo: ordem de construção (arquitetura → Core → Module System → contratos
   → migração → só então módulos grandes), **"preparar ≠ implementar"**, regra
   contra feature creep, branches (`main` · `release/v1.x` · `v2-development`) e o
