@@ -93,6 +93,17 @@ skills locais (`freshtechbro/claudedesignskills` p/ design/3D, `gitnexus` p/ o
 motor real) e da máquina (app desktop M3c/M4). São preparadas pelas sessões
 **remotas** (que não têm as skills) pra uma sessão **local** executar.
 
+## ⚠️ Sessão REMOTA? Leia primeiro
+
+👉 **[`docs/HANDOFF-REMOTO.md`](docs/HANDOFF-REMOTO.md)** — o caminho contrário:
+o que **só o remoto** consegue verificar, porque a máquina do operador é Windows
+e quatro verificações não rodam lá (`v2:runtime` sem `cargo`, os verificadores
+do Arma 3 em cp1252, `npm test`, e o `Supabase Preview`). Traz também o estado
+do CI, a fila com o que trava cada item, e as armadilhas já pagas — a família
+"Windows", espera por relógio, gerador que não enxerga TypeScript, e o fato de
+que **push de bot não dispara workflow** (por isso o `main` fica vermelho sem
+ninguém ver).
+
 ## Mapa rápido
 
 - `src/pages/` — uma página por rota · `src/styles/` — CSS (1 por página + tokens em `variables.css`)

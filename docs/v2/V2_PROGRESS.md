@@ -49,6 +49,20 @@ Medido, com a view atrasada 2 s de propósito: relógio → `13/14`, condição 
 > `loadView` do `briefing` devolve o elemento desde o commit que o criou
 > (`446a272e`), e a asserção do portão está certa — não foi afrouxada.
 
+## Portão de tipos (`npm run tipos:v2`) — 0 erros
+
+- [x] 61 → 0, sem afrouxar `strict`, `checkJs` ou `noImplicitAny`
+- [x] o `V2 integration` do CI saiu do `skipped` e **passa**
+
+Estava vermelho havia dias em três branches sem ninguém ver: os últimos commits
+do `main` eram do bot de câmbio, e push de bot não dispara workflow. E como no
+`v2-validation.yml` os passos são sequenciais, o typecheck vermelho deixava o
+`V2 integration` `skipped` — o portão acima existia, mas **não era exercitado**.
+
+Consertá-lo revelou mais duas camadas atrás dele: os dois geradores de catálogo
+não enxergavam TypeScript (varriam só `.js` e liam o shim de re-export), e o
+workflow nunca instalava o Chromium do Playwright.
+
 ## Próximo bloco
 
 - [ ] integrar a fachada ao entrypoint oficial da V2
