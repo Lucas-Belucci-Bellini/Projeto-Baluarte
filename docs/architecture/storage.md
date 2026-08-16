@@ -29,7 +29,7 @@ Pode aparecer em qualquer lugar — inclusive no bundle. Classificar assim é um
 
 | Chave | Versão | Tocada por |
 | --- | --- | --- |
-| `baluarte:color-studio:color` | 1 | `src/pages/color-studio.js` · `src/utils/jarvis-tools.js` |
+| `baluarte:color-studio:color` | 1 | `src/pages/color-studio.ts` · `src/utils/jarvis-tools.js` |
 | `baluarte:nexus:key` | 1 | `src/utils/nexus.js` |
 
 **Por que esta classificação:**
@@ -42,52 +42,52 @@ Preferência da máquina. Não sai do navegador e não vale nada fora dele.
 
 | Chave | Versão | Tocada por |
 | --- | --- | --- |
-| `baluarte:editor:state` | 1 | `src/pages/academia.js` · `src/pages/gerar-codigo.js` · `src/utils/editor-engine.js` · `src/utils/jarvis-tools.js` |
-| `baluarte:biblioteca:state` | 1 | `src/pages/biblioteca.js` · `src/pages/elites.js` · `src/pages/universo.js` |
-| `baluarte:ui:sidebarCollapsed` | 1 | `src/layout/sidebar.js` |
-| `baluarte:musicas:acervoLoop` | 1 | `src/pages/musicas.js` |
+| `baluarte:editor:state` | 1 | `src/pages/academia.ts` · `src/pages/gerar-codigo.ts` · `src/utils/editor-engine.js` · `src/utils/jarvis-tools.js` |
+| `baluarte:biblioteca:state` | 1 | `src/pages/biblioteca.ts` · `src/pages/elites.ts` · `src/pages/universo.ts` |
+| `baluarte:ui:sidebarCollapsed` | 1 | `src/layout/sidebar.ts` |
+| `baluarte:musicas:acervoLoop` | 1 | `src/pages/musicas.ts` |
 | `baluarte:nucleo:glbUrl` | 1 | `src/utils/nucleo-scene.js` |
-| `baluarte:perfil:config` | 1 | `src/pages/perfil.js` |
+| `baluarte:perfil:config` | 1 | `src/pages/perfil.ts` |
 | `baluarte:permissoes` | 1 | — *(nenhum arquivo de `src/` toca)* |
-| `baluarte:flags` | 1 | `src/core/flags.js` |
-| `baluarte:ui:theme` | 1 | `src/utils/theme.js` |
+| `baluarte:flags` | 1 | `src/core/flags.ts` |
+| `baluarte:ui:theme` | 1 | `src/utils/theme.ts` |
 | `baluarte:ui:universe` | 1 | `src/utils/universe-theme.js` |
 | `baluarte:aviso:v2` | 1 | `src/layout/aviso-v2.js` |
-| `baluarte:mark11:state` | 1 | `src/pages/ia-proprietaria.js` |
-| `baluarte:academia:state` | 1 | `src/pages/academia.js` |
+| `baluarte:mark11:state` | 1 | `src/pages/ia-proprietaria.ts` |
+| `baluarte:academia:state` | 1 | `src/pages/academia.ts` |
 | `baluarte:arcade:current` | 1 | `src/utils/players-engine.js` |
 | `baluarte:arcade:players` | 1 | `src/utils/players-engine.js` |
-| `baluarte:arsenal:state` | 1 | `src/pages/arsenal.js` |
-| `baluarte:calc:cientifica` | 1 | `src/pages/calc-cientifica.js` |
-| `baluarte:calc:numerica` | 1 | `src/pages/calc-numerica.js` |
-| `baluarte:calculadoras:active` | 1 | `src/pages/calculadoras/index.js` |
-| `baluarte:ciberseg:state` | 1 | `src/pages/ciberseg.js` |
-| `baluarte:cripto:active` | 1 | `src/pages/cripto/index.js` |
-| `baluarte:dolar:state` | 1 | `src/pages/dolar.js` |
-| `baluarte:dossie:state` | 1 | `src/pages/dossie.js` |
-| `baluarte:economia:cache` | 1 | `src/pages/economia.js` |
-| `baluarte:elites:state` | 1 | `src/pages/elites.js` |
-| `baluarte:graficos:state` | 1 | `src/pages/graficos.js` |
-| `baluarte:guia-pc:state` | 1 | `src/pages/guia-pc.js` |
-| `baluarte:json-studio:input` | 1 | `src/pages/json-studio.js` |
-| `baluarte:logic-sim:circuit` | 1 | `src/pages/logic-sim.js` |
-| `baluarte:logic-sim:saved` | 1 | `src/pages/logic-sim.js` |
-| `baluarte:militar-enc:cat` | 1 | `src/pages/enciclopedia-militar.js` |
-| `baluarte:modpack:state` | 1 | `src/pages/modpack.js` |
-| `baluarte:morse:state` | 1 | `src/pages/morse.js` |
-| `baluarte:musicas:custom` | 1 | `src/pages/musicas.js` |
-| `baluarte:nexus:lastTab` | 1 | `src/pages/git-nexus-cockpit.js` |
+| `baluarte:arsenal:state` | 1 | `src/pages/arsenal.ts` |
+| `baluarte:calc:cientifica` | 1 | `src/pages/calc-cientifica.ts` |
+| `baluarte:calc:numerica` | 1 | `src/pages/calc-numerica.ts` |
+| `baluarte:calculadoras:active` | 1 | `src/pages/calculadoras/index.ts` |
+| `baluarte:ciberseg:state` | 1 | `src/pages/ciberseg.ts` |
+| `baluarte:cripto:active` | 1 | `src/pages/cripto/index.ts` |
+| `baluarte:dolar:state` | 1 | `src/pages/dolar.ts` |
+| `baluarte:dossie:state` | 1 | `src/pages/dossie.ts` |
+| `baluarte:economia:cache` | 1 | `src/pages/economia.ts` |
+| `baluarte:elites:state` | 1 | `src/pages/elites.ts` |
+| `baluarte:graficos:state` | 1 | `src/pages/graficos.ts` |
+| `baluarte:guia-pc:state` | 1 | `src/pages/guia-pc.ts` |
+| `baluarte:json-studio:input` | 1 | `src/pages/json-studio.ts` |
+| `baluarte:logic-sim:circuit` | 1 | `src/pages/logic-sim.ts` |
+| `baluarte:logic-sim:saved` | 1 | `src/pages/logic-sim.ts` |
+| `baluarte:militar-enc:cat` | 1 | `src/pages/enciclopedia-militar.ts` |
+| `baluarte:modpack:state` | 1 | `src/pages/modpack.ts` |
+| `baluarte:morse:state` | 1 | `src/pages/morse.ts` |
+| `baluarte:musicas:custom` | 1 | `src/pages/musicas.ts` |
+| `baluarte:nexus:lastTab` | 1 | `src/pages/git-nexus-cockpit.ts` |
 | `baluarte:paleta:recentes` | 1 | `src/utils/paleta.js` |
-| `baluarte:periodic:state` | 1 | `src/pages/tabela-periodica.js` |
-| `baluarte:qr-studio:mode` | 1 | `src/pages/qr-studio.js` |
-| `baluarte:qr-studio:text` | 1 | `src/pages/qr-studio.js` |
-| `baluarte:radio:state` | 1 | `src/pages/radio.js` |
-| `baluarte:regex:state` | 1 | `src/pages/regex.js` |
-| `baluarte:robotica:state` | 1 | `src/pages/robotica.js` |
-| `baluarte:simbolos:state` | 1 | `src/pages/simbolos.js` |
-| `baluarte:tabela-verdade:state` | 1 | `src/pages/tabela-verdade.js` |
-| `baluarte:universo:state` | 1 | `src/pages/universo.js` |
-| `baluarte:videos:state` | 1 | `src/pages/videos.js` |
+| `baluarte:periodic:state` | 1 | `src/pages/tabela-periodica.ts` |
+| `baluarte:qr-studio:mode` | 1 | `src/pages/qr-studio.ts` |
+| `baluarte:qr-studio:text` | 1 | `src/pages/qr-studio.ts` |
+| `baluarte:radio:state` | 1 | `src/pages/radio.ts` |
+| `baluarte:regex:state` | 1 | `src/pages/regex.ts` |
+| `baluarte:robotica:state` | 1 | `src/pages/robotica.ts` |
+| `baluarte:simbolos:state` | 1 | `src/pages/simbolos.ts` |
+| `baluarte:tabela-verdade:state` | 1 | `src/pages/tabela-verdade.ts` |
+| `baluarte:universo:state` | 1 | `src/pages/universo.ts` |
+| `baluarte:videos:state` | 1 | `src/pages/videos.ts` |
 | `baluarte:voice:lang` | 1 | `src/utils/jarvis-voice.js` |
 | `baluarte:voice:on` | 1 | `src/utils/jarvis-voice.js` |
 | `baluarte:webllm:semF16` | 1 | `src/utils/jarvis-webllm.js` |
@@ -106,7 +106,7 @@ Diz respeito ao operador. Fica no navegador porque precisa, e nunca é enviada a
 | --- | --- | --- |
 | `baluarte:terminal:history` | 1 | `src/utils/terminal-engine.js` |
 | `baluarte:auth:session` | 1 | `src/core/backup.js` · `src/core/supabase-auth.js` |
-| `baluarte:apis:vault` | 1 | `src/pages/apis.js` |
+| `baluarte:apis:vault` | 1 | `src/pages/apis.ts` |
 | `baluarte:voice:elevenKey` | 1 | `src/utils/jarvis-voice.js` |
 | `baluarte:jarvis:config` | 1 | `src/utils/jarvis-engine.js` |
 | `baluarte:jarvis:history` | 1 | `src/utils/jarvis-engine.js` |
@@ -114,16 +114,16 @@ Diz respeito ao operador. Fica no navegador porque precisa, e nunca é enviada a
 | `baluarte:jarvis:skills` | 1 | `src/utils/jarvis-skills.js` |
 | `baluarte:jarvis:guard` | 1 | `src/utils/jarvis-guard.js` |
 | `baluarte:jarvis:guardlog` | 1 | `src/utils/jarvis-guard.js` |
-| `baluarte:mark11:custom-skills` | 1 | `src/pages/ia-proprietaria.js` |
+| `baluarte:mark11:custom-skills` | 1 | `src/pages/ia-proprietaria.ts` |
 | `baluarte:shadow:auth` | 1 | `src/utils/auth-engine.js` |
 | `baluarte:shadow:session` | 1 | `src/utils/auth-engine.js` |
 | `baluarte:nucleo:wsToken` | 1 | `src/utils/nucleo-socket.js` |
 | `baluarte:nucleo:wsUrl` | 1 | `src/utils/nucleo-socket.js` |
-| `baluarte:geo:track` | 1 | `src/utils/geo-tracker.js` |
-| `baluarte:find:db` | 1 | `src/utils/fingerprint-engine.js` |
+| `baluarte:geo:track` | 1 | `src/utils/geo-tracker.ts` |
+| `baluarte:find:db` | 1 | `src/utils/fingerprint-engine.ts` |
 | `baluarte:media:bookmarks` | 1 | `src/core/media-sync.js` |
-| `baluarte:mural:author` | 1 | `src/pages/mural.js` |
-| `baluarte:mural:posts` | 1 | `src/pages/mural.js` |
+| `baluarte:mural:author` | 1 | `src/pages/mural.ts` |
+| `baluarte:mural:posts` | 1 | `src/pages/mural.ts` |
 | `baluarte:vfs:tree` | 1 | `src/utils/vfs.js` |
 
 **Por que esta classificação:**

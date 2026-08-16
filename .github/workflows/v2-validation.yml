@@ -36,6 +36,13 @@ jobs:
       - name: Typecheck V2
         run: npm run tipos:v2
 
+      # O portão abre um Chromium de verdade. O `npm ci` traz a biblioteca do
+      # Playwright, não o navegador — sem este passo o `v2:integracao` morre
+      # antes da primeira asserção. Ficou invisível porque o `Typecheck V2`
+      # falhava antes e deixava este passo `skipped`.
+      - name: Chromium do Playwright
+        run: npx playwright install --with-deps chromium
+
       - name: V2 integration
         run: npm run v2:integracao
 

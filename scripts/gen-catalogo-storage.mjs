@@ -30,7 +30,7 @@
 
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, sep } from 'node:path';
 
 import { semComentarios } from './lib/sem-comentarios.mjs';
 import { ESQUEMAS } from '../src/core/politica.js';
@@ -44,12 +44,16 @@ const DESTINO = join(raiz, 'docs/architecture/storage.md');
  * COMO ELA APARECE no localStorage, que é o que o operador vê no DevTools. */
 const PREFIXO = 'baluarte:';
 
-function arquivosJS(dir) {
+/* Varre `.js` E `.ts` — mesma lição do catálogo de eventos: quem migra para
+ * TypeScript deixa um `.js` que só re-exporta, e um scanner que lê apenas o
+ * shim conclui que ninguém toca a chave. `.d.ts` fica de fora: declaração não
+ * acessa storage. */
+function arquivosFonte(dir) {
   const out = [];
   for (const nome of readdirSync(dir)) {
     const p = join(dir, nome);
-    if (statSync(p).isDirectory()) out.push(...arquivosJS(p));
-    else if (nome.endsWith('.js')) out.push(p);
+    if (statSync(p).isDirectory()) out.push(...arquivosFonte(p));
+    else if (nome.endsWith('.js') || (nome.endsWith('.ts') && !nome.endsWith('.d.ts'))) out.push(p);
   }
   return out.sort();
 }
@@ -64,8 +68,12 @@ const literaisSoltos = new Map();   // chave usada em src/ e NÃO declarada
 const CHAVE_LITERAL = /(['"])([a-zA-Z][a-zA-Z0-9_-]*:[a-zA-Z][a-zA-Z0-9:_-]*)\1/g;
 const declaradas = new Set(ESQUEMAS.map((e) => e.chave));
 
-for (const arquivo of arquivosJS(SRC)) {
-  const rel = relative(raiz, arquivo);
+for (const arquivo of arquivosFonte(SRC)) {
+  /* Barra normal sempre: no Windows o `relative` devolve `src\core\politica.js`
+   * e a exclusão logo abaixo — comparação literal com `'src/core/politica.js'` —
+   * nunca casaria, fazendo a política aparecer como quem toca todas as chaves
+   * que ela apenas declara. */
+  const rel = relative(raiz, arquivo).split(sep).join('/');
   const codigo = semComentarios(readFileSync(arquivo, 'utf8'));
 
   /* Declaradas: basta o literal aparecer. */
