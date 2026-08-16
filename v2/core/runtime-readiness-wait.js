@@ -15,7 +15,10 @@
  */
 /** @typedef {{id: string, elapsedMs: number}} RuntimeReadinessResult */
 
-/** @param {RuntimeReadinessWaitOptions} [options] @returns {Promise<RuntimeReadinessResult>} */
+/* `Partial<>` porque o default é `{}`: quem chama sem nada é recusado pelas
+ * guardas abaixo, não pelo tipo — o tipo só precisa parar de mentir que o
+ * objeto vazio satisfaz os campos obrigatórios. */
+/** @param {Partial<RuntimeReadinessWaitOptions>} [options] @returns {Promise<RuntimeReadinessResult>} */
 export async function esperarRuntimeReady(options = {}) {
   const {
     readiness,
