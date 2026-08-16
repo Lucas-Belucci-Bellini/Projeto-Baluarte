@@ -1,5 +1,12 @@
 {
+  "$comentario": "Ferramentas externas de IA instaladas LOCALMENTE. O repo versiona este manifest; os clones ficam em installRoot, que é ignorado pelo git. Veja docs/local-ai-tools.md.",
   "installRoot": ".baluarte/tools",
+  "$skillTargets": "Onde `npm run skills:distribuir` instala as skills do Baluarte. Caminhos relativos à pasta do usuário — ficam FORA do repositório, por isso o script só escreve com --sim.",
+  "skillTargets": [
+    { "id": "claude-code", "dir": ".claude/skills", "descricao": "Claude Code (CLI já instalada na máquina)" },
+    { "id": "hermes", "dir": ".hermes/skills", "descricao": "Hermes Agent — mesmo formato SKILL.md" },
+    { "id": "openclaw", "dir": ".openclaw/skills", "descricao": "OpenClaw — mesmo formato SKILL.md" }
+  ],
   "tools": [
     {
       "id": "gitnexus",
@@ -7,59 +14,226 @@
       "repo": "https://github.com/abhigyanpatwari/GitNexus.git",
       "localPath": ".baluarte/tools/gitnexus",
       "installedCommit": "dac33d80",
-      "role": "Grafo real de codigo, MCP e CLI local para o Nucleo de IA.",
-      "$service": "Contrato de processo lido por desktop/src/nexus.js: em que porta o motor escuta, qual rota prova que subiu, com que args se sobe e quanto se espera pela readiness. Mudou aqui, muda no app.",
-      "$serviceHost": "O --host precisa ser EXPLICITO: sem ele o gitnexus 1.6.9 escuta em ::1 (loopback IPv6) apesar de documentar 127.0.0.1 como default, e o fetch do app em IPv4 nunca alcanca o /api/health. Medido nesta maquina em 2026-08-15.",
-      "service": {
-        "host": "127.0.0.1",
-        "porta": 4747,
-        "health": "/api/health",
-        "serveArgs": [
-          "serve",
-          "--port",
-          "4747",
-          "--host",
-          "127.0.0.1"
-        ],
-        "readyMs": 20000,
-        "dependeDe": []
-      },
-      "$empacotar": "O que o INSTALADOR do app leva. O clone inteiro tem ~1,5 GB; aqui vai o compilado + a arvore de modulos JA instalada. Copiamos em vez de reinstalar porque @ladybugdb/core nao tem prebuilt para esta plataforma e cairia em build nativo (exige MSVC, ausente). Os optional pesados (~396 MB) sao podados.",
-      "empacotar": {
-        "subdir": "gitnexus",
-        "incluir": [
-          "dist",
-          "package.json"
-        ],
-        "copiarModulos": true,
-        "excluirModulos": [
-          "onnxruntime-node",
-          "onnxruntime-web",
-          "@huggingface"
-        ]
+      "version": "1.6.9",
+      "role": "Motor real do grafo de código: CLI, servidor HTTP na 4747 e ponte MCP. É o que a página /git-nexus e o Baluarte Launcher consomem quando rodam no app (#222 M3a-M3c).",
+      "run": {
+        "kind": "node",
+        "entrypoint": ".baluarte/tools/gitnexus/gitnexus/dist/cli/index.js"
       },
       "commands": {
-        "sync": "npm run tools:sync -- gitnexus",
-        "setup": "npm run tools:sync -- gitnexus --with-setup",
+        "sync": "npm run tools:sync -- gitnexus --setup",
         "analyze": "npm run nexus:analyze",
-        "serve": "npm run nexus:serve"
+        "serve": "npm run nexus:serve",
+        "status": "npm run nexus:local -- status"
       },
       "setup": [
         {
           "cwd": ".baluarte/tools/gitnexus/gitnexus-shared",
           "command": "npm",
           "windowsCommand": "npm.cmd",
-          "args": [
-            "install"
-          ]
+          "args": ["install"]
         },
         {
           "cwd": ".baluarte/tools/gitnexus/gitnexus",
           "command": "npm",
           "windowsCommand": "npm.cmd",
-          "args": [
-            "install"
-          ]
+          "args": ["install"]
+        }
+      ]
+    },
+    {
+      "id": "hermes-agent",
+      "name": "Hermes Agent (Nous Research)",
+      "repo": "https://github.com/NousResearch/hermes-agent.git",
+      "localPath": ".baluarte/tools/hermes-agent",
+      "installedCommit": "165c889",
+      "version": "0.20.1",
+      "role": "Agente da Nous Research que criou skills a partir da experiência — a origem do modo `hermes-agente` e do `src/utils/jarvis-skills.js` do JARVIS. Serve de referência viva e de servidor MCP local (`mcp_serve.py`).",
+      "venv": ".baluarte/venvs/hermes-agent",
+      "run": {
+        "kind": "bin",
+        "windows": ".baluarte/venvs/hermes-agent/Scripts/hermes.exe",
+        "posix": ".baluarte/venvs/hermes-agent/bin/hermes"
+      },
+      "commands": {
+        "sync": "npm run tools:sync -- hermes-agent --setup",
+        "cli": "npm run hermes -- --help",
+        "setupWizard": "npm run hermes -- setup",
+        "doctor": "npm run hermes -- doctor"
+      },
+      "notas": [
+        "O venv fica FORA do clone de propósito: o README avisa que um venv dentro da árvore em que o agente opera pode ser apagado por um comando de caminho relativo do próprio agente, matando o runtime em pleno voo.",
+        "Requer Python >=3.11,<3.14. O `python` padrão desta máquina é 3.14, então o venv é criado explicitamente com --python 3.11.",
+        "O instalador oficial (`iex (irm .../install.ps1)`) instala Python, Node, ffmpeg e um Git portátil em %LOCALAPPDATA%. Aqui usamos o caminho manual documentado no README, que não mexe na máquina inteira.",
+        "Instalado só com as dependências base. Os extras `.[all,dev]` (voz, providers nativos) são opcionais: `uv pip install --python <venv> -e \".[all,dev]\"`."
+      ],
+      "setup": [
+        {
+          "cwd": ".",
+          "command": "uv",
+          "args": ["venv", ".baluarte/venvs/hermes-agent", "--python", "3.11"]
+        },
+        {
+          "cwd": ".baluarte/tools/hermes-agent",
+          "command": "uv",
+          "args": ["pip", "install", "--python", "../../venvs/hermes-agent/bin/python", "-e", "."],
+          "windowsArgs": ["pip", "install", "--python", "../../venvs/hermes-agent/Scripts/python.exe", "-e", "."]
+        }
+      ]
+    },
+    {
+      "id": "openclaw",
+      "name": "OpenClaw",
+      "repo": "https://github.com/openclaw/openclaw.git",
+      "localPath": ".baluarte/tools/openclaw",
+      "installedCommit": "10a98702",
+      "version": "2026.8.1",
+      "role": "Assistente self-hosted. O Baluarte já tem o modo `openclaw` no JARVIS e a ponte `scripts/openclaw-bridge.mjs`; o que faltava era o gateway de verdade na 18789.",
+      "run": {
+        "kind": "node",
+        "entrypoint": ".baluarte/tools/openclaw/openclaw.mjs"
+      },
+      "commands": {
+        "sync": "npm run tools:sync -- openclaw --setup",
+        "cli": "npm run openclaw -- --help",
+        "gateway": "npm run openclaw:gateway",
+        "bridge": "npm run openclaw:bridge"
+      },
+      "notas": [
+        "`pnpm build` é obrigatório: sem `dist/entry.mjs` o CLI só responde `--version` e morre com 'missing dist/entry.(m)js' em qualquer subcomando.",
+        "pnpm não está instalado globalmente nesta máquina; os passos usam `corepack`, que baixa a versão exata fixada em `packageManager` sem mexer em shim global.",
+        "O gateway escuta em 127.0.0.1:18789 — exatamente o default de `scripts/openclaw-bridge.mjs` (OPENCLAW_GATEWAY_URL) e do modo `openclaw` do JARVIS.",
+        "Token do gateway fica no processo local (OPENCLAW_GATEWAY_TOKEN lido pela ponte), nunca no navegador."
+      ],
+      "setup": [
+        {
+          "cwd": ".baluarte/tools/openclaw",
+          "command": "corepack",
+          "windowsCommand": "corepack.cmd",
+          "args": ["pnpm", "install", "--prod=false"]
+        },
+        {
+          "cwd": ".baluarte/tools/openclaw",
+          "command": "corepack",
+          "windowsCommand": "corepack.cmd",
+          "args": ["pnpm", "build"]
+        }
+      ]
+    },
+    {
+      "id": "claude-code-terminal",
+      "name": "Claude Code Terminal (plugin do Obsidian)",
+      "repo": "https://github.com/dternyak/claude-code-terminal.git",
+      "localPath": ".baluarte/tools/claude-code-terminal",
+      "installedCommit": "48bed64",
+      "version": "1.0.1",
+      "role": "Terminal embutido com Claude Code dentro do Obsidian. A raiz deste repositório É um vault, e o plugin entra ao lado dos outros (claude-code-ide, claude-sessions, …).",
+      "obsidian": {
+        "pluginId": "claude-code-terminal",
+        "files": ["main.js", "manifest.json", "styles.css"],
+        "modules": ["node-pty"]
+      },
+      "commands": {
+        "sync": "npm run tools:sync -- claude-code-terminal --setup",
+        "install": "npm run obsidian:plugin -- claude-code-terminal"
+      },
+      "notas": [
+        "Desktop-only (`isDesktopOnly: true`) e exige o CLI do Claude Code instalado.",
+        "`node-pty` é `external` no esbuild e o plugin o resolve em `<pasta do plugin>/node_modules/node-pty` (src/main.ts:165) — por isso o instalador copia o módulo junto.",
+        "Sem toolchain MSVC nesta máquina, mas o node-pty traz prebuilds (inclusive win32-x64), então não precisa compilar nativo.",
+        "O npm 11 bloqueia install-scripts por padrão; o esbuild precisa do dele pra baixar o binário da plataforma (`npm approve-scripts esbuild` no clone)."
+      ],
+      "setup": [
+        {
+          "cwd": ".baluarte/tools/claude-code-terminal",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["install"]
+        },
+        {
+          "cwd": ".baluarte/tools/claude-code-terminal",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["approve-scripts", "esbuild"]
+        },
+        {
+          "cwd": ".baluarte/tools/claude-code-terminal",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": ["run", "build"]
+        },
+        {
+          "cwd": ".",
+          "command": "node",
+          "args": ["scripts/install-obsidian-plugin.mjs", "claude-code-terminal"]
+        }
+      ]
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code (repositório público)",
+      "repo": "https://github.com/anthropics/claude-code.git",
+      "localPath": ".baluarte/tools/claude-code",
+      "installedCommit": "0fa8c19",
+      "role": "Referência oficial: plugins, exemplos de hooks/settings/gateway/MDM e o CHANGELOG. NÃO é o pacote da CLI — este repositório não tem package.json.",
+      "referenciaApenas": true,
+      "notas": [
+        "A CLI do Claude Code é distribuída à parte e já está nesta máquina (v2.1.177) — o clone não a instala nem a atualiza.",
+        "`plugins/` traz os plugins oficiais (code-review, feature-dev, hookify, plugin-dev, agent-sdk-dev, frontend-design…).",
+        "`examples/` tem referências de hooks, settings, gateway e MDM — útil pro `.claude/` deste repo.",
+        "Sem passos de setup: não há o que compilar."
+      ]
+    },
+    {
+      "id": "codex",
+      "name": "OpenAI Codex (fonte)",
+      "repo": "https://github.com/openai/codex.git",
+      "localPath": ".baluarte/tools/codex",
+      "installedCommit": "a95a6fe",
+      "role": "Fonte do Codex: workspace Rust (`codex-rs`) + wrapper npm (`codex-cli`). Referência de arquitetura para o Core de Runtime em Rust da V2 (ADR-004).",
+      "referenciaApenas": true,
+      "notas": [
+        "A CLI já está instalada nesta máquina (codex-cli 0.125.0) e é o que o operador usa — este clone é o FONTE, não a instalação.",
+        "Compilar exige toolchain Rust e `cargo` não existe nesta máquina. Instalar Rust é mudança de máquina, não de repositório: fica como decisão do operador.",
+        "Se um dia for compilar: `cargo build --release` em `codex-rs/`. O mesmo `cargo` destrava o `npm run v2:runtime` deste repo, que hoje também não roda.",
+        "`docs/config.md` e `docs/agents_md.md` são a referência do formato de configuração que o Baluarte já usa em ~/.codex."
+      ]
+    },
+    {
+      "id": "graphify",
+      "name": "Graphify",
+      "repo": "https://github.com/Graphify-Labs/graphify.git",
+      "localPath": ".baluarte/tools/graphify",
+      "installedCommit": "7281f27",
+      "version": "0.9.43",
+      "role": "Transforma pasta de código, docs, papers, imagens e vídeos num grafo de conhecimento consultável, com servidor MCP próprio. Complementa o GitNexus: aquele indexa código, este indexa o acervo (Crônicas, docs, relatórios).",
+      "venv": ".baluarte/venvs/graphify",
+      "run": {
+        "kind": "bin",
+        "windows": ".baluarte/venvs/graphify/Scripts/graphify.exe",
+        "posix": ".baluarte/venvs/graphify/bin/graphify"
+      },
+      "mcp": {
+        "windows": ".baluarte/venvs/graphify/Scripts/graphify-mcp.exe",
+        "posix": ".baluarte/venvs/graphify/bin/graphify-mcp"
+      },
+      "notas": [
+        "O pacote PyPI chama-se `graphifyy` (com dois y); o comando é `graphify`.",
+        "Instalado com o extra `[mcp]`, então o entry point `graphify-mcp` existe.",
+        "O README desaconselha `pip install` no Windows: o runtime resolve o Python a partir de `graphify-out/.graphify_python` e, se apontar pra outro ambiente, dá `ModuleNotFoundError`. Por isso venv isolado, fora do clone, igual ao hermes-agent.",
+        "Requer Python >=3.10; o venv é criado com 3.11 (o `python` padrão desta máquina é 3.14)."
+      ],
+      "setup": [
+        {
+          "cwd": ".",
+          "command": "uv",
+          "args": ["venv", ".baluarte/venvs/graphify", "--python", "3.11"]
+        },
+        {
+          "cwd": ".baluarte/tools/graphify",
+          "command": "uv",
+          "args": ["pip", "install", "--python", "../../venvs/graphify/bin/python", "-e", ".[mcp]"],
+          "windowsArgs": ["pip", "install", "--python", "../../venvs/graphify/Scripts/python.exe", "-e", ".[mcp]"]
         }
       ]
     }

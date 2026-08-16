@@ -4,6 +4,7 @@ import { EQUIPES, TOTAL_EQUIPES } from '../data/elites.js';
 import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
+import { SKILLS, skillsBriefing } from '../data/skills-catalogo.js';
 import { codeContext } from './jarvis-brain.js';
 export interface JarvisRouteCapability {
   readonly path: string;
@@ -39,7 +40,7 @@ interface BriefingCache {
 const briefingCache = new Map<string, BriefingCache>();
 
 function briefingKey(): string {
-  return [VERSION, TOTAL, TOTAL_EQUIPES, ARCS_TOTAL, UNIVERSOS.length].join(':');
+  return [VERSION, TOTAL, TOTAL_EQUIPES, ARCS_TOTAL, UNIVERSOS.length, SKILLS.length].join(':');
 }
 
 function messageText(message: JarvisMessage): string {
@@ -60,7 +61,7 @@ export function getBaluarteBriefing(options: BriefingOptions = {}): string {
     `Crônicas "Onde os Deuses Sangram" — universos: ${universos}.`,
     `Equipes (alfabeto OTAN): ${equipes}.`,
     'Para o universo Baluarte, baseie-se neste dossiê e no estado do site. Para fatos recentes do mundo real, use a busca na internet quando disponível.',
-    ...(options.compact ? [] : ['', capabilitiesText(), '', codeContext(), '']),
+    ...(options.compact ? [] : ['', capabilitiesText(), '', skillsBriefing(), '', codeContext(), '']),
     '## GRÁFICOS: para MOSTRAR um gráfico ao operador, inclua no fim da resposta um bloco cercado ```chart``` contendo JSON {"type":"bar|line|pie|donut|area|hbar|radar","title":"...","labels":[...],"values":[...]}. A interface desenha a imagem automaticamente — não descreva o JSON, apenas inclua o bloco.'
   ].join('\n');
 

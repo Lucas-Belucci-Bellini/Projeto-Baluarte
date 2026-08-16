@@ -178,7 +178,9 @@ async function graph() {
  * então não exige Node de sistema.
  */
 function vendoredEntry() {
-  // Raízes prováveis: ao lado do app empacotado e na raiz do repo (dev).
+  // Raízes prováveis: override do operador, ao lado do app empacotado e na raiz
+  // do repo (dev). `BALUARTE_GITNEXUS_DIR` aponta direto pro pacote instalado
+  // por `npm run tools:sync -- gitnexus --setup` (ver docs/local-ai-tools.md).
   const roots = [
     process.env.BALUARTE_GITNEXUS_DIR,
     path.join(__dirname, '..', '..'), // repo root em dev (desktop/src → repo)
@@ -189,13 +191,13 @@ function vendoredEntry() {
   // pacote em `…/gitnexus`). Só serve se o `dist/` estiver compilado — a cópia
   // do repo tem só `src/` (TS), então isto é um best-effort pós-build.
   const subdirs = [
-    '.',
+    '.', // `BALUARTE_GITNEXUS_DIR` já apontando pro pacote
     // Motor empacotado por `npm run motores:empacotar`. No app instalado o root
     // é `resourcesPath/engine` e a subpasta é `gitnexus`; em dev o root é a raiz
     // do repo, então o caminho completo entra aqui.
     'desktop/engine/gitnexus',
     'gitnexus',
-    '.baluarte/tools/gitnexus/gitnexus',
+    '.baluarte/tools/gitnexus/gitnexus', // instalação padrão (tools:sync)
     '.baluarte/tools/gitnexus',
     'GitNexus-1.6.7/GitNexus-1.6.7/gitnexus',
     'GitNexus-1.6.7/gitnexus',

@@ -1,90 +1,91 @@
 #!/usr/bin/env node
+/**
+ * Instala/atualiza as ferramentas externas de IA declaradas em
+ * `config/ai-tools.json`.
+ *
+ *   npm run tools:sync                      # todas
+ *   npm run tools:sync -- gitnexus          # uma
+ *   npm run tools:sync -- gitnexus --setup  # + passos locais (npm install, build…)
+ *
+ * Clona quando não existe, `git pull --ff-only` quando existe. **Nunca** faz
+ * merge nem rebase: se o clone local divergiu, o script para e diz — decidir o
+ * que fazer com o trabalho local do operador não é papel de um instalador.
+ *
+ * Os passos de `setup` só rodam com `--setup` porque alguns custam minutos e
+ * gigabytes (o build do GitNexus baixa tree-sitter e LadybugDB nativos). Clonar
+ * é barato e idempotente; compilar não é.
+ */
 
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import {
+  lerManifest,
+  selecionar,
+  caminhoDaFerramenta,
+  raizDasFerramentas,
+  raizDoRepoPrincipal
+} from './lib/ai-tools.mjs';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(__dirname, '..');
-const manifestPath = path.join(repoRoot, 'config', 'ai-tools.json');
-const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-const rawArgs = process.argv.slice(2);
-const withSetup = rawArgs.includes('--with-setup');
-const requested = rawArgs.filter((arg) => arg !== '--with-setup' && arg !== '--all');
-const installRoot = path.resolve(
-  repoRoot,
-  process.env.BALUARTE_AI_TOOLS_DIR || manifest.installRoot || '.baluarte/tools',
-);
+const args = process.argv.slice(2);
+const comSetup = args.includes('--setup') || args.includes('--with-setup');
+const ids = args.filter((a) => !a.startsWith('--'));
 
-function commandFor(step) {
-  if (process.platform === 'win32' && step.windowsCommand) return step.windowsCommand;
-  return step.command;
+/** No Windows os wrappers são `.cmd`; o manifest declara os dois. */
+function comandoDe(passo) {
+  return process.platform === 'win32' && passo.windowsCommand ? passo.windowsCommand : passo.command;
 }
 
-function run(command, args, cwd) {
-  const rendered = [command, ...args].join(' ');
-  console.log(`[tools] ${rendered}`);
-  const result = spawnSync(command, args, {
-    cwd,
-    stdio: 'inherit',
-    shell: false,
-    windowsHide: true,
-  });
-  if (result.error) {
-    throw result.error;
-  }
-  if (result.status !== 0) {
-    process.exitCode = result.status || 1;
-    throw new Error(`Command failed (${result.status}): ${rendered}`);
-  }
+/**
+ * Mesma história dos args: um venv Python guarda o interpretador em
+ * `Scripts/python.exe` no Windows e `bin/python` no resto, e esse caminho entra
+ * na linha de comando do instalador. O manifest declara as duas formas.
+ */
+function argsDe(passo) {
+  const escolhido = process.platform === 'win32' && passo.windowsArgs ? passo.windowsArgs : passo.args;
+  return Array.isArray(escolhido) ? escolhido : [];
 }
 
-function selectTools() {
-  if (requested.length === 0) return manifest.tools;
-  const wanted = new Set(requested.map((item) => item.toLowerCase()));
-  const selected = manifest.tools.filter((tool) => wanted.has(tool.id.toLowerCase()));
-  const found = new Set(selected.map((tool) => tool.id.toLowerCase()));
-  const missing = [...wanted].filter((id) => !found.has(id));
-  if (missing.length > 0) {
-    throw new Error(`Unknown tool(s): ${missing.join(', ')}`);
-  }
-  return selected;
+function rodar(comando, argumentos, cwd) {
+  const linha = [comando, ...argumentos].join(' ');
+  console.log(`[tools] ${linha}`);
+  const r = spawnSync(comando, argumentos, { cwd, stdio: 'inherit', shell: false, windowsHide: true });
+  if (r.error) throw r.error;
+  if (r.status !== 0) throw new Error(`falhou (${r.status}): ${linha}`);
 }
 
-function localPathFor(tool) {
-  if (tool.localPath) return path.resolve(repoRoot, tool.localPath);
-  return path.join(installRoot, tool.id);
-}
+function sincronizar(manifest, tool) {
+  const alvo = caminhoDaFerramenta(manifest, tool);
+  const principal = raizDoRepoPrincipal();
+  const curto = path.relative(principal, alvo) || alvo;
+  mkdirSync(path.dirname(alvo), { recursive: true });
 
-function syncTool(tool) {
-  const target = localPathFor(tool);
-  mkdirSync(path.dirname(target), { recursive: true });
-
-  if (existsSync(path.join(target, '.git'))) {
-    console.log(`[tools] updating ${tool.id} in ${path.relative(repoRoot, target)}`);
-    run('git', ['-C', target, 'pull', '--ff-only'], repoRoot);
+  if (existsSync(path.join(alvo, '.git'))) {
+    console.log(`[tools] atualizando ${tool.id} em ${curto}`);
+    rodar('git', ['-C', alvo, 'pull', '--ff-only'], principal);
   } else {
-    console.log(`[tools] cloning ${tool.id} into ${path.relative(repoRoot, target)}`);
-    run('git', ['clone', tool.repo, target], repoRoot);
+    console.log(`[tools] clonando ${tool.id} em ${curto}`);
+    const profundidade = tool.fullClone ? [] : ['--depth', '1'];
+    rodar('git', ['clone', ...profundidade, tool.repo, alvo], principal);
   }
 
-  if (!withSetup || !Array.isArray(tool.setup)) return;
-
-  for (const step of tool.setup) {
-    const cwd = path.resolve(repoRoot, step.cwd || tool.localPath || installRoot);
-    const command = commandFor(step);
-    const args = Array.isArray(step.args) ? step.args : [];
-    run(command, args, cwd);
+  if (!comSetup) {
+    const passos = Array.isArray(tool.setup) ? tool.setup.length : 0;
+    if (passos > 0) console.log(`[tools] ${tool.id}: ${passos} passo(s) de setup pendente(s) — rode com --setup`);
+    return;
+  }
+  for (const passo of tool.setup || []) {
+    const cwd = path.resolve(principal, passo.cwd || tool.localPath || raizDasFerramentas(manifest));
+    rodar(comandoDe(passo), argsDe(passo), cwd);
   }
 }
 
 try {
-  mkdirSync(installRoot, { recursive: true });
-  for (const tool of selectTools()) {
-    syncTool(tool);
-  }
-} catch (error) {
-  console.error(`[tools] ${error instanceof Error ? error.message : String(error)}`);
-  process.exit(process.exitCode || 1);
+  const manifest = lerManifest();
+  mkdirSync(raizDasFerramentas(manifest), { recursive: true });
+  for (const tool of selecionar(manifest, ids)) sincronizar(manifest, tool);
+  console.log('[tools] ok');
+} catch (erro) {
+  console.error(`[tools] ${erro instanceof Error ? erro.message : String(erro)}`);
+  process.exit(1);
 }
