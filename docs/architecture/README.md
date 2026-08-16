@@ -35,3 +35,5 @@ anterior, nunca edição silenciosa do existente.
 - [ADR-001](./decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md) — A 1.0.0 é um ponto de congelamento, não a versão final
 - [ADR-002](./decisions/ADR-002-permissoes-deny-by-default.md) — Acesso é negado por omissão e permissão precisa ser declarada
 - [ADR-003](./decisions/ADR-003-congelamento-e-manutencao-da-v1.md) — O que "congelar a V1" significa na prática (numeração, o que o `main` aceita, o app travado na 1.x)
+- [ADR-004](./decisions/ADR-004-stack-poliglota-por-responsabilidade.md) — A V2 escolhe a linguagem por responsabilidade da camada, com benchmark; onde ficam as fronteiras
+- [ADR-005](./decisions/ADR-005-so-o-gitnexus-empacotado-na-1.0.0.md) — Só o GitNexus vai empacotado no instalador da 1.0.0; as outras seis se instalam
