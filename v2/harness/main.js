@@ -10,6 +10,13 @@
 
 import { criarRegistry } from '../core/registry.js';
 import { criarBoot } from '../core/boot.js';
+/* A fachada operacional. O banco de prova dirigia o `boot` na mão — subia e
+ * pronto, sem supervisor, sem saúde, sem status de lifecycle. As três peças
+ * existiam e eram testadas em isolamento, mas nada as compunha em execução
+ * real, então "a fundação está de pé" era verdade em teste e hipótese em campo.
+ * Passar por aqui é o que torna o entrypoint oficial equivalente ao que a V2
+ * promete entregar. */
+import { criarPlataforma } from '../core/plataforma.js';
 import { criarBus } from '../core/bus.js';
 import { criarLog, definirDestino } from '../core/log.js';
 /* O módulo nativo usa métricas, escalonador e contratos. Sem injetá-los aqui, o
@@ -79,7 +86,18 @@ async function principal() {
     }
   });
 
-  const r = await boot.subir();
+  /* Quem sobe agora é a Plataforma, não o boot. O supervisor decide `ready` ou
+   * `degraded` a partir das falhas, e a saúde/lifecycle passam a existir em
+   * runtime — não só em teste unitário. */
+  const plataforma = criarPlataforma(registry, boot);
+  const partida = await plataforma.iniciar();
+  /* `iniciar()` devolve `{ estado, duracaoMs, resultado, diagnostico }`; o
+   * `resultado` é o que `boot.subir()` devolvia. Na chamada idempotente ele vem
+   * ausente — não acontece aqui (partida única), mas o banco de prova é onde se
+   * descobre o caso raro, então falhamos alto em vez de dar `undefined` seis
+   * linhas adiante. */
+  const r = partida.resultado;
+  if (!r) throw new Error(`plataforma não subiu: estado "${partida.estado}"`);
 
   document.getElementById('resumo').textContent =
     `${r.vivos.length} módulos · ${r.rotas} rotas · ${r.nav.length} na navegação` +
@@ -118,7 +136,19 @@ async function principal() {
      * retrato do boot, servido como se fosse o estado atual. Bastou existir algo
      * que muda em runtime (concessão de permissão) para o defeito reaparecer no
      * campo vizinho. Regra 5 dos testes, segunda vez. */
+    /* Continua sendo o diagnóstico do BOOT, de propósito: o
+     * `scripts/v2-integracao.mjs` lê `.modulos` daqui. A fachada entra ao lado,
+     * em campo próprio — integrar não é motivo para quebrar quem já afirma. */
     diagnostico: () => boot.diagnostico(),
+    /* A fachada composta: supervisor + saúde + lifecycle + boot num retrato só.
+     * Função, não valor, pela mesma razão das métricas logo abaixo — estado que
+     * muda em runtime servido como instantâneo mente sobre o sistema vivo. */
+    plataforma: () => plataforma.diagnostico(),
+    /* Como a partida terminou: `ready` ou `degraded`, e quanto demorou. Antes
+     * isso não existia em lugar nenhum — o harness sabia quantos módulos
+     * subiram, mas não se o sistema se considerava saudável. */
+    partida: { estado: partida.estado, duracaoMs: partida.duracaoMs },
+    parar: () => plataforma.parar(),
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
     registros,
