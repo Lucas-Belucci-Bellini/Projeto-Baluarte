@@ -14,11 +14,36 @@
 
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 
 const PORTA = Number(process.env.PORTA_V2 ?? 4193);
 const BASE = `http://127.0.0.1:${PORTA}`;
 
-const servidor = spawn('npx', ['vite', '--port', String(PORTA), '--host', '127.0.0.1'],
+/* O vite é dependência DESTE repo, então chamamos o bin dele com o próprio
+ * Node, em vez de passar por `npx`.
+ *
+ * Não é preferência de estilo: no Windows o `npx` é `npx.cmd`, e o Node 24
+ * recusa spawnar `.cmd` (correção do CVE-2024-27980). Isto morria em
+ * `spawn npx ENOENT` antes de abrir o navegador — ou seja, o portão de
+ * integração da V2 nunca rodou nesta plataforma. Chamar o bin direto elimina o
+ * wrapper de vez, é mais rápido (sem a resolução do npx) e usa a versão fixada
+ * no lockfile em vez do que o npx resolver na hora.
+ */
+const require = createRequire(import.meta.url);
+/* O `bin/vite.js` não está no mapa `exports` do pacote, então resolvê-lo direto
+ * dá ERR_PACKAGE_PATH_NOT_EXPORTED. Ancoramos no `package.json` (que o vite
+ * exporta) e caminhamos a partir da raiz — assim o hoisting do npm continua
+ * sendo respeitado, em vez de presumir `./node_modules/vite`. */
+const viteBin = (() => {
+  try {
+    return path.join(path.dirname(require.resolve('vite/package.json')), 'bin', 'vite.js');
+  } catch {
+    return path.join(process.cwd(), 'node_modules', 'vite', 'bin', 'vite.js');
+  }
+})();
+
+const servidor = spawn(process.execPath, [viteBin, '--port', String(PORTA), '--host', '127.0.0.1'],
   { cwd: process.cwd(), stdio: 'ignore' });
 
 const esperarServidor = async () => {
