@@ -93,6 +93,33 @@ achar outro atrás dele** — e não confunda isso com regressão.
 `main` passou dias vermelho sem ninguém ver: ele só é medido quando um humano
 empurra. Não leia "último CI verde" como "`main` verde" sem olhar o SHA.
 
+## O que você NÃO consegue fazer — saiba antes de tentar
+
+**GitNexus está indisponível nos dois lados.** É local-only (pacote npm com
+tree-sitter/LadybugDB nativos, porta 4747) *e* está quebrado na máquina do
+operador: índice corrompido, `Database file version: 43` contra build `41`. O
+`CLAUDE.md` manda rodar `impact()` antes de editar qualquer símbolo — **não vai
+dar**. A sessão de 16/08 substituiu por busca textual dos importadores de cada
+arquivo tocado, e disse isso a cada edição. Faça o mesmo; não gaste turnos
+tentando ressuscitar o índice.
+
+**O `Supabase Preview` pode travar por credencial, não por técnica.** O erro é
+*"Remote migration versions not found in local migrations directory"*: o banco
+remoto tem migrations ausentes de `supabase/migrations/` (que existe e está
+versionado). Diagnosticar exige ver a lista de migrations do projeto remoto, o
+que pede token de acesso; reconciliar pode exigir ação no dashboard. Isso é do
+operador, em qualquer ambiente. Se o segredo não estiver configurado, **diga
+isso e pare** — não invente conserto.
+
+**Por isso: faça a fachada (item 1) ANTES do Supabase.** A fachada não depende de
+credencial nenhuma e destrava o item 2; o Supabase pode empacar por motivo que
+não é técnico.
+
+**Local-only de verdade** (nada disso está na fila atual, mas não tente):
+skills de design/animação (`freshtechbro/claudedesignskills`), o motor real do
+GitNexus, e build/release do app desktop — incluindo o congelamento da 1.0.0,
+que já está no `main` mas **só vale quando sair uma release empacotada**.
+
 ## Política de entrega combinada com o operador
 
 Incremental. Cada peça verde vai para o `main` assim que verifica, com branch de
