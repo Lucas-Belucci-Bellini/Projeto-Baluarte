@@ -24,12 +24,25 @@ Decision Log. Serve para uma sessão nova descobrir rapidamente o que já existe
 
 ## Próximo bloco
 
-- [ ] integrar a fachada ao entrypoint oficial da V2
+- [x] integrar a fachada ao entrypoint oficial da V2 — `v2/harness/main.js` sobe
+  por `criarPlataforma`, não mais pelo `boot` cru. Coberto por
+  `npm run v2:integracao` (navegador real), que voltou a rodar no Windows.
 - [ ] contract test completo Manifest → Registry → Permission → Runtime
 - [ ] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
 - [ ] observabilidade de transições `starting/running/stopping`
 - [ ] transporte concreto depois do contrato estabilizado
 - [ ] primeiro vertical slice de módulo nativo
+
+## Defeito conhecido no portão
+
+`npm run v2:integracao` dá **13/14**. Falha `a superfície de briefing V2
+renderiza`, e o próprio script aponta a causa provável:
+[`V2_MODULE_RULES.md`](V2_MODULE_RULES.md) — *"view devolve o ELEMENTO"*.
+
+É **anterior** à integração da fachada, medido: com o `harness/main.js` revertido
+ao original, dá 13/14 igual, mesma asserção. Ficou invisível porque o portão não
+rodava no Windows — o script morria em `spawn npx ENOENT` antes de abrir o
+navegador. Exige `npx playwright install chromium` (114 MB) na máquina.
 
 ## Regra de manutenção
 
