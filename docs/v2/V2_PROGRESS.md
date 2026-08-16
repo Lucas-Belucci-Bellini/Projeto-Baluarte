@@ -63,10 +63,41 @@ Consertá-lo revelou mais duas camadas atrás dele: os dois geradores de catálo
 não enxergavam TypeScript (varriam só `.js` e liam o shim de re-export), e o
 workflow nunca instalava o Chromium do Playwright.
 
+## A fachada dirige o entrypoint, e a cadeia inteira tem contrato
+
+- [x] a Plataforma sobe o sistema — supervisor, saúde e lifecycle em runtime
+- [x] `Manifest → Registry → Permission → Runtime` testado com as peças **reais**
+
+O `criarPlataforma` existia, tinha teste e não era usado por ninguém: o único
+consumidor era o próprio teste. O `v2/harness/main.js` dirigia o `boot` na mão.
+As três peças estavam prontas *em isolamento*; nada as compunha em execução
+real, então "a fundação está de pé" era verdade em teste e hipótese em campo.
+
+Medido depois de integrar: `partida.estado` = `ready`, supervisor em `ready`,
+lifecycle com 4/4 `running` e 0 `failed`, e o portão em **14/14** — não 13/14,
+porque a falha do briefing que a sessão anterior reportou como pré-existente era
+justamente o falso vermelho que o `navegarAte` já tinha corrigido.
+
+> A metade daquele commit que mexia no `scripts/v2-integracao.mjs` foi
+> **descartada**: o `main` já tinha a correção do `npx` *e* estava à frente.
+> Trazer o commit inteiro teria reintroduzido os sleeps fixos. Commit antigo é
+> matéria-prima, não pacote — confira contra o `main` antes de aplicar inteiro.
+
+O contract test cobre a costura que nenhum teste de unidade alcança, com as
+quatro peças reais — o `contract-slice.test.js` faz o mesmo percurso com registro
+e decisor falsos, e mock prova o mock (Regra 7).
+
+**Um mutante sobreviveu na primeira rodada.** Removida a poda do
+`conhecerModulos`, o teste seguia verde: o `avaliar()` barra por
+"não-declarada" mesmo com a concessão ainda guardada. Duas defesas, a primeira
+cobrindo a segunda — Regra 1 outra vez. Quem enxerga a poda sozinha é o estado
+persistido: sem ela, `exportar()` mantém a permissão e o `importar()` do próximo
+arranque a ressuscita sob um manifesto que não a declara mais.
+
 ## Próximo bloco
 
-- [ ] integrar a fachada ao entrypoint oficial da V2
-- [ ] contract test completo Manifest → Registry → Permission → Runtime
+- [x] integrar a fachada ao entrypoint oficial da V2
+- [x] contract test completo Manifest → Registry → Permission → Runtime
 - [ ] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
 - [ ] observabilidade de transições `starting/running/stopping`
 - [ ] transporte concreto depois do contrato estabilizado
