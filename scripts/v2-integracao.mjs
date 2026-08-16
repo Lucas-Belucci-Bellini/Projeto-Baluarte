@@ -14,11 +14,36 @@
 
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 
 const PORTA = Number(process.env.PORTA_V2 ?? 4193);
 const BASE = `http://127.0.0.1:${PORTA}`;
 
-const servidor = spawn('npx', ['vite', '--port', String(PORTA), '--host', '127.0.0.1'],
+/* O vite é dependência DESTE repo, então chamamos o bin dele com o próprio
+ * Node, em vez de passar por `npx`.
+ *
+ * Não é preferência de estilo: no Windows o `npx` é `npx.cmd`, e o Node 24
+ * recusa spawnar `.cmd` (correção do CVE-2024-27980). Isto morria em
+ * `spawn npx ENOENT` antes de abrir o navegador — ou seja, o portão de
+ * integração da V2 nunca rodou nesta plataforma. Chamar o bin direto elimina o
+ * wrapper de vez, é mais rápido (sem a resolução do npx) e usa a versão fixada
+ * no lockfile em vez do que o npx resolver na hora.
+ */
+const require = createRequire(import.meta.url);
+/* O `bin/vite.js` não está no mapa `exports` do pacote, então resolvê-lo direto
+ * dá ERR_PACKAGE_PATH_NOT_EXPORTED. Ancoramos no `package.json` (que o vite
+ * exporta) e caminhamos a partir da raiz — assim o hoisting do npm continua
+ * sendo respeitado, em vez de presumir `./node_modules/vite`. */
+const viteBin = (() => {
+  try {
+    return path.join(path.dirname(require.resolve('vite/package.json')), 'bin', 'vite.js');
+  } catch {
+    return path.join(process.cwd(), 'node_modules', 'vite', 'bin', 'vite.js');
+  }
+})();
+
+const servidor = spawn(process.execPath, [viteBin, '--port', String(PORTA), '--host', '127.0.0.1'],
   { cwd: process.cwd(), stdio: 'ignore' });
 
 const esperarServidor = async () => {
@@ -33,6 +58,25 @@ const passos = [];
 const conferir = (descricao, condicao, detalhe = '') => {
   passos.push({ descricao, ok: !!condicao });
   console.log(`  ${condicao ? '✓' : '✗'} ${descricao}${!condicao && detalhe ? ` — ${detalhe}` : ''}`);
+};
+
+/* Navega e espera a CONDIÇÃO, não o relógio.
+ *
+ * As três navegações abaixo dormiam um tempo fixo (900ms, 900ms, 1800ms) e só
+ * então liam `#saida`. Isso mede a máquina, não o sistema: a view do briefing é
+ * a única importada sob demanda com orçamento de 900ms, e numa máquina onde a
+ * primeira transformação do Vite passa disso o portão reprova um módulo que
+ * está correto — falso vermelho, indistinguível de defeito de verdade.
+ *
+ * O predicado é o MESMO que o `conferir` avalia depois; em caso de estouro
+ * devolvemos o texto real da tela, para a mensagem de falha continuar sendo o
+ * conteúdo encontrado e não um "timeout" genérico. Espera por condição só
+ * remove falso vermelho: se a tela nunca ficar certa, reprova igual.
+ */
+const navegarAte = async (pagina, hash, pronto, arg = null, limite = 15000) => {
+  await pagina.evaluate((h) => { window.location.hash = h; }, hash);
+  await pagina.waitForFunction(pronto, arg, { timeout: limite, polling: 100 }).catch(() => {});
+  return pagina.locator('#saida').innerText().catch(() => '');
 };
 
 let navegador;
@@ -75,21 +119,22 @@ try {
   conferir('o nome vem do manifesto, não da sidebar da V1',
     /Lab de Criptografia/.test(textoNav), textoNav.slice(0, 80));
 
-  await pagina.evaluate(() => { window.location.hash = '#/briefing'; });
-  await pagina.waitForTimeout(900);
-  const briefingNaTela = await pagina.locator('#saida').innerText().catch(() => '');
+  const briefingNaTela = await navegarAte(pagina, '#/briefing', () => {
+    const t = document.getElementById('saida')?.innerText ?? '';
+    return /Briefing de Notícias/.test(t) && /módulo experimental V2/i.test(t);
+  });
   conferir('a superfície de briefing V2 renderiza',
     /Briefing de Notícias/.test(briefingNaTela) && /módulo experimental V2/i.test(briefingNaTela), briefingNaTela.slice(0, 90));
-
-  await pagina.evaluate(() => { window.location.hash = '#/cripto'; });
-  await pagina.waitForTimeout(900);
 
   /* O DEFEITO 1: se `view` devolver o módulo em vez do elemento, isto fica
    * vazio. A asserção é de IDENTIDADE, não de tamanho — a versão anterior media
    * `length > 100` e reprovou quando a view nativa (mais enxuta que a página da
    * V1) passou a renderizar. Limiar de tamanho é asserção fraca: aprova
    * qualquer coisa grande e reprova o certo quando ele encolhe. */
-  const conteudo = await pagina.locator('#saida').innerText().catch(() => '');
+  const conteudo = await navegarAte(pagina, '#/cripto', () => {
+    const t = document.getElementById('saida')?.innerText ?? '';
+    return /Lab de Criptografia/.test(t) && /AES-GCM/.test(t);
+  });
   conferir('a view NATIVA da V2 renderiza',
     /Lab de Criptografia/.test(conteudo) && /AES-GCM/.test(conteudo)
       && !/falhou|não é um nó/.test(conteudo),
@@ -141,9 +186,10 @@ try {
 
   /* Um módulo ADAPTADOR (militar → páginas da V1) continua funcionando: a V2
    * serve os dois mundos enquanto a migração acontece. */
-  await pagina.evaluate(() => { window.location.hash = '#/arsenal'; });
-  await pagina.waitForTimeout(1800);
-  const conteudo2 = await pagina.locator('#saida').innerText().catch(() => '');
+  const conteudo2 = await navegarAte(pagina, '#/arsenal', (anterior) => {
+    const t = document.getElementById('saida')?.innerText ?? '';
+    return t.length > 100 && t !== anterior;
+  }, conteudo);
   conferir('módulo adaptador ainda serve a página da V1',
     conteudo2.length > 100 && conteudo2 !== conteudo, conteudo2.slice(0, 70));
 
