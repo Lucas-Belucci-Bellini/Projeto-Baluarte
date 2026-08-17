@@ -35,6 +35,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] classificação inicial de famílias de branches
 - [x] mapa inicial branch → subsistema
 - [x] primeira matriz de evidências para V2
+- [x] matriz enumerando as famílias atuais `v2/*` e protocolo de verificação
 - [ ] inventário completo branch → subsistema → documentação → implementação → testes
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -76,11 +77,11 @@ Ainda pendente:
 
 ## Último trabalho concluído
 
-Foi adicionada a primeira matriz de evidências V2 em `docs/BALUARTE-V2-BRANCH-EVIDENCE.md`, na branch `docs/baluarte-subsystem-map`.
+Foi criada a branch `docs/v2-branch-evidence-matrix` com `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`.
 
-Commit: `b564d40c46aed45c471e4202bd81e2af810bcbf2`
+Commit: `4786446201838f76f8e4957fc78cf3f0535405e9`
 
-A matriz liga evidências de commits/arquitetura a Runtime/Platform, Core Contracts, CI/Type Safety, Data/Contract Tooling e Module Context/Storage Boundary. As associações são marcadas por confiança e não tratam nomes de branches como autoridade.
+A matriz enumera as 7 branches atualmente encontradas em `v2/*`, registra hipóteses iniciais sem tratá-las como fatos e define o protocolo para verificar head, linhagem, caminhos alterados, testes, CI e documentação.
 
 ## TaxForge — estado anterior
 
@@ -98,7 +99,7 @@ O inventário confirmou que o schema atual é MySQL/Drizzle e mistura o domínio
 
 ## Próximo passo exato
 
-**Continuar a matriz de evidências das famílias `v2/*`: enumerar as branches V2, inspecionar commits e caminhos alterados, agrupar por diretório/módulo real e anexar testes/documentação. Depois repetir o método para `claude/*`.**
+**Verificar branch por branch as 7 branches `v2/*`: resolver head/linhagem, comparar caminhos alterados, identificar testes/CI/documentação e elevar cada associação de `candidate` para `high`, `medium` ou `low`. Depois repetir o método para `claude/*`.**
 
 Após fechar o mapa arquitetural do Baluarte:
 
@@ -118,11 +119,12 @@ Ao iniciar uma nova conversa:
 2. abrir `docs/ARCHITECTURE-INDEX.md`;
 3. abrir `docs/BALUARTE-BRANCH-INVENTORY.md`;
 4. abrir `docs/BALUARTE-SUBSYSTEM-MAP.md`;
-5. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-6. verificar o estado real dos seis repositórios;
-7. localizar **Próximo passo exato**;
-8. continuar dali;
-9. atualizar este arquivo ao terminar.
+5. abrir `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`;
+6. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+7. verificar o estado real dos seis repositórios;
+8. localizar **Próximo passo exato**;
+9. continuar dali;
+10. atualizar este arquivo ao terminar.
 
 ## Segurança e confidencialidade arquitetural
 
