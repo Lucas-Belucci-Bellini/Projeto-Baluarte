@@ -19,6 +19,18 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`
 
+## Novo alvo arquitetural
+
+`docs/ECOSYSTEM-INTELLIGENCE-MESH.md`
+
+Objetivo: evoluir de integrações ponto-a-ponto para uma rede de descoberta de capacidades e conhecimento. Um projeto pode solicitar uma capacidade que outro projeto já possui; o mesh encontra um provedor autorizado, valida o contrato e devolve resultado/proveniência. Se um provedor não atender, a descoberta pode continuar entre outros provedores autorizados.
+
+Regra fundamental: **interoperabilidade não significa acesso direto aos bancos internos uns dos outros**. Cada projeto continua dono de seu domínio. O mesh usa contratos, APIs/eventos, referências externas, autorização e mínimo privilégio.
+
+Alvo de longo prazo: aproximadamente 100 projetos sem exigir 100 × 99 integrações diretas.
+
+Primeiro par de prova recomendado: `TaxForge ↔ Veritas`, depois expandir para ARK/AEGIS/DailyPlanner.
+
 ## Estado atual
 
 ### Fase A — documentação e arquitetura
@@ -41,6 +53,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] reconciliação inicial código vivo TaxForge ↔ schema Supabase
 - [x] auditoria inicial de SECURITY DEFINER e privilégios do Supabase
 - [x] primeiro mapa de consumidores/classificação das SECURITY DEFINER
+- [x] especificação inicial da rede de inteligência/capability mesh
 - [ ] inventário completo branch → subsistema → documentação → implementação → testes
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -50,11 +63,14 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [ ] dicionário de dados Baluarte
 - [ ] contrato de identidade compartilhada
 - [ ] contrato de organização/tenant
+- [ ] contrato de capacidade
 - [ ] contrato de referência externa
 - [ ] contrato de eventos
 - [ ] catálogo versionado de eventos
+- [ ] contrato de proveniência/evidência
 - [ ] matriz de permissões entre projetos
 - [ ] topologia Supabase final
+- [ ] primeiro fluxo TaxForge ↔ Veritas
 
 ### Fase B — bancos por domínio
 
@@ -130,38 +146,40 @@ O Supabase possui 23 tabelas `taxforge_*` mais ricas para o domínio tributário
 
 ## Próximo passo exato
 
-**Completar o mapa de consumidores do TaxForge e validar as policies/RLS das 23 tabelas `taxforge_*`.**
+**Começar a especificação dos contratos do mesh, sem implementar ainda o roteador universal.**
 
-1. Localizar no TaxForge `server/db.ts`, `server/routers.ts`, `server/storage.ts` e workspace-permissions.
-2. Enumerar cada operação de leitura/escrita e classificá-la como `LIVE_MYSQL_WORKSPACE`, `LEGACY_OR_PARALLEL_MYSQL_STOCK` ou `UNRESOLVED`.
-3. Localizar callers reais das funções Supabase relevantes, especialmente `buscar_juris`, `current_tenant_role` e os RPCs de ingestão.
-4. Para cada tabela `taxforge_*`, levantar policies, foreign keys e relação com `tenants`/`tenant_members`.
-5. Comparar identidade `users`/workspace do MySQL com `tenants`/`tenant_members` do Supabase.
-6. Identificar gaps de segurança antes de qualquer migração.
-7. Só então decidir o modelo PostgreSQL canônico e escrever a primeira migration não destrutiva.
+1. Definir `capability_contract` e sua versão.
+2. Definir `knowledge_request` mínimo.
+3. Definir `knowledge_result` com provenance/evidence.
+4. Definir autorização por projeto + tenant + capability.
+5. Mapear quais dados podem atravessar cada boundary.
+6. Escolher TaxForge e Veritas como primeiro par de prova.
+7. Em paralelo, completar o mapa de consumidores do TaxForge e validar as policies/RLS das 23 tabelas `taxforge_*`.
+8. Só depois desenhar a primeira migration não destrutiva do registry/contratos.
 
 Depois disso:
 
-`canonical TaxForge PostgreSQL → RLS tests → ecosystem identity contract → external references/events → ARK data dictionary`
+`identity contract → tenant contract → capability contract → external references → event contract → provenance → TaxForge ↔ Veritas proof → ARK data dictionary`
 
 ## Regra de retomada
 
 Ao iniciar uma nova conversa:
 
 1. abrir este arquivo;
-2. abrir `docs/ARCHITECTURE-INDEX.md`;
-3. abrir `docs/BALUARTE-BRANCH-INVENTORY.md`;
-4. abrir `docs/BALUARTE-SUBSYSTEM-MAP.md`;
-5. abrir `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`;
-6. abrir `docs/SUPABASE-CURRENT-STATE.md`;
-7. abrir `docs/SUPABASE-SECURITY-FUNCTION-AUDIT.md`;
-8. abrir `docs/SUPABASE-SECURITY-FUNCTION-CONSUMER-MAP.md`;
-9. abrir `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`;
-10. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-11. verificar o estado real dos seis repositórios e do projeto Supabase;
-12. localizar **Próximo passo exato**;
-13. continuar dali;
-14. atualizar este arquivo ao terminar.
+2. abrir `docs/ECOSYSTEM-INTELLIGENCE-MESH.md`;
+3. abrir `docs/ARCHITECTURE-INDEX.md`;
+4. abrir `docs/BALUARTE-BRANCH-INVENTORY.md`;
+5. abrir `docs/BALUARTE-SUBSYSTEM-MAP.md`;
+6. abrir `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`;
+7. abrir `docs/SUPABASE-CURRENT-STATE.md`;
+8. abrir `docs/SUPABASE-SECURITY-FUNCTION-AUDIT.md`;
+9. abrir `docs/SUPABASE-SECURITY-FUNCTION-CONSUMER-MAP.md`;
+10. abrir `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`;
+11. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+12. verificar o estado real dos seis repositórios e do projeto Supabase;
+13. localizar **Próximo passo exato**;
+14. continuar dali;
+15. atualizar este arquivo ao terminar.
 
 ## Segurança e confidencialidade arquitetural
 
@@ -172,6 +190,12 @@ A topologia interna do ecossistema é documentação de engenharia privada e nã
 ## Regra de projeto
 
 Projetos podem possuir funcionalidades parecidas sem possuir o mesmo modelo ou a mesma obrigatoriedade. O Baluarte coordena capacidades; cada projeto decide quais capacidades fazem sentido para seu domínio.
+
+## Regra da rede de inteligência
+
+**O projeto que precisa de uma capacidade não deve reconstruí-la automaticamente se existir um provedor autorizado no ecossistema.** Primeiro deve consultar o catálogo de capacidades. Se o provedor não conseguir atender, a descoberta pode continuar entre outros provedores autorizados.
+
+O objetivo é maximizar reutilização de conhecimento/capacidade sem transformar os projetos em um monólito e sem conceder acesso irrestrito aos dados internos.
 
 ## Última atualização
 
