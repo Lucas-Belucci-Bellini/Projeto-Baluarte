@@ -52,6 +52,28 @@ Junto veio o `--strictPort` no `scripts/v2-integracao.mjs`: sem ele o Vite troca
 de porta em silêncio quando a escolhida está ocupada, e o portão passa a medir um
 servidor zumbi de outra execução.
 
+### E os verificadores de catálogo pararam de dar vermelho falso no Windows
+
+Os três geradores comparavam a string gerada (`join('\n')`) com o que o
+`readFileSync` traz do disco. Em qualquer checkout Windows o disco tem CRLF — não
+há `.gitattributes`, então o `core.autocrlf` converte no checkout — e a
+comparação falhava por `\r`, e por mais nada.
+
+O sintoma era traiçoeiro porque a mensagem mandava fazer a coisa errada: *"rode o
+gerador e commite o resultado"*. Regenerar não muda linha nenhuma, o `git diff`
+sai vazio, e o operador ficava olhando um vermelho sem conteúdo com um conserto
+que não conserta. No Linux não há conversão, então o CI é verde e o defeito é
+invisível de um lado só.
+
+**Medido, não deduzido:** o sintoma foi reproduzido no Linux convertendo os três
+destinos para CRLF de verdade no disco. Com o conserto os três passam; com ele
+removido, os três ficam vermelhos sobre o mesmo disco. O caminho de escrita não
+mudou — os geradores seguem emitindo `\n`, e rodá-los deixa `git diff` vazio.
+
+Das duas saídas possíveis, o operador escolheu as duas em ordem: a cirúrgica
+(esta) agora, e o `.gitattributes` com `*.md text eol=lf` depois — ela
+renormaliza todo `.md` versionado e merece branch e diff próprios.
+
 ## 2026-08-16 — a fachada da V2 saiu do teste e foi para o ar
 
 O `criarPlataforma` existia, tinha teste e **não era usado por ninguém**: busca

@@ -1,5 +1,82 @@
 # 🤝 Handoff — trabalho pra uma sessão LOCAL (com skills)
 
+## ⏭️ Comece por aqui — retomada de 17/08/2026
+
+> O operador migrou para o **local** porque os plugins que ele precisa só
+> funcionam lá. O prompt pronto para colar está em
+> **[`PROMPT-CONTINUACAO-LOCAL.md`](./PROMPT-CONTINUACAO-LOCAL.md)**.
+
+**O que entrou no `main` nesta rodada** (PR #435, CI verde no Linux nos 15 checks
+— `Supabase Preview` sai como `skipped`, não vermelho):
+
+| | |
+| --- | --- |
+| lifecycle + Runtime Host | módulo só fica `running` com autorização aberta |
+| portão `v2:integracao` | 14 → **15/15**, e `--strictPort` |
+| suíte | 893 → **905** |
+| verificadores de catálogo | passam em disco CRLF (o vermelho falso do Windows) |
+
+Com isso o **"próximo bloco" do [`v2/V2_PROGRESS.md`](./v2/V2_PROGRESS.md) está
+com os três primeiros itens fechados.** A fila continua em:
+
+- [ ] observabilidade de transições `starting`/`running`/`stopping`
+- [ ] transporte concreto depois do contrato estabilizado
+- [ ] primeiro vertical slice de módulo nativo
+
+### As duas coisas que SÓ o local resolve agora
+
+1. **Confirmar o conserto do CRLF na máquina real.** Ele foi medido no Linux
+   convertendo os três destinos para CRLF de verdade no disco: com o conserto os
+   três passam, com ele removido os três ficam vermelhos. Isso reproduz o
+   sintoma, **não substitui** rodar num checkout Windows de verdade:
+
+   ```
+   npm run gen-tabela-estabilidade -- --verificar
+   npm run gen-catalogo-eventos    -- --verificar
+   npm run gen-catalogo-storage    -- --verificar
+   ```
+
+   Se ainda houver vermelho, **é outro defeito** — não é este; olhe o conteúdo
+   antes de regenerar (regeneração que *remove* linha merece desconfiança).
+
+2. **O `.gitattributes` com `*.md text eol=lf`.** Decisão do operador: cirúrgico
+   agora (feito), renormalização depois. Ela mexe em **todo** `.md` versionado,
+   então é uma branch própria, com o diff conferido antes.
+
+### Decisões já tomadas — não re-litigar
+
+- **"Baixa junto com o app" são DOIS assuntos, não um.** O operador confirmou:
+  viram duas tarefas separadas. (a) **GitNexus** — vai empacotado no instalador
+  da 1.0.0, é local-only pelos binários nativos, e hoje está com o índice
+  corrompido nos dois lados. (b) **Chromium do Playwright** — 114 MB, exigido
+  pelo `v2:integracao`. O segundo tem sintoma vivo: o Chromium pré-instalado do
+  contêiner remoto é build **1194** e o Playwright do repo quer **1234**, então
+  lá só roda com `CHROME_PATH` apontando à mão.
+- **`Supabase Preview` não é defeito técnico e não é credencial.** Já
+  diagnosticado: o projeto `hcwzsxdcvmswebunznak` é **compartilhado** com outras
+  aplicações do operador (`veritas_circuit_*`, `room_001_*`, `knowledge_layer_*`,
+  `skill_*`, `billing_entitlements`), que aplicaram migrations direto no banco.
+  As 15 migrations do repo estão todas no remoto, na mesma ordem, sem
+  divergência; as outras 69 não são schema do Baluarte. As três saídas — projeto
+  dedicado / importar as 69 / desconectar a integração — são **decisão de
+  produto**. Não consertar por conta própria.
+
+### Armadilhas que já custaram caro
+
+A família **"Windows"** agora tem seis instâncias: `spawn` de `.cmd`,
+`path.relative`, `npm test`, os verificadores Python em cp1252, o console, e o
+CRLF. **Script novo que monta caminho, compara texto de arquivo ou spawna
+processo tem que ser pensado nos dois sistemas** — o CI só cobre Linux.
+
+E as três desta rodada: **peça pronta e desligada** dá o mesmo retrato verde que
+peça ligada (três vezes seguidas: fachada, contract test, Runtime Host — sempre
+ache os importadores antes de acreditar que algo está em uso); **defesa em
+profundidade esconde mutante** (plante o defeito, Regra 1); e **espera por
+relógio** — use `--strictPort` em qualquer script que suba servidor, senão você
+mede um servidor zumbi.
+
+---
+
 > **Por que este doc existe.** Parte do desenvolvimento do Baluarte roda numa
 > sessão **remota** (container na nuvem). Algumas capacidades vivem **só na
 > máquina do operador** e não chegam ao remoto:
