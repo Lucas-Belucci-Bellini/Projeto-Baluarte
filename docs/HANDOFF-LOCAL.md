@@ -47,11 +47,62 @@ com os três primeiros itens fechados.** A fila continua em:
 
 - **"Baixa junto com o app" são DOIS assuntos, não um.** O operador confirmou:
   viram duas tarefas separadas. (a) **GitNexus** — vai empacotado no instalador
-  da 1.0.0, é local-only pelos binários nativos, e hoje está com o índice
-  corrompido nos dois lados. (b) **Chromium do Playwright** — 114 MB, exigido
-  pelo `v2:integracao`. O segundo tem sintoma vivo: o Chromium pré-instalado do
-  contêiner remoto é build **1194** e o Playwright do repo quer **1234**, então
-  lá só roda com `CHROME_PATH` apontando à mão.
+  da 1.0.0, é local-only pelos binários nativos. (b) **Chromium do Playwright** —
+  114 MB, exigido pelo `v2:integracao`. Os dois foram **medidos na máquina** em
+  17/08 e a seção abaixo corrige o diagnóstico dos dois.
+
+### 📏 O que a medição de 17/08 mudou nessas duas tarefas
+
+**(a) O índice do GitNexus não estava corrompido.** O erro real, com todas as
+letras: `Database file version: 43, Current build storage version: 41`. O banco
+está íntegro — quem não consegue lê-lo é o motor, que é **mais velho** que o
+arquivo. "Corrompido" mandava reconstruir; o problema era versão.
+
+Reindexar com o motor atual (`node .gitnexus/run.cjs analyze --index-only`, 56 s)
+faz o `impact()` **voltar a responder**. Só que responde errado, e é preciso saber
+disso antes de confiar:
+
+| | antes (motor novo, ilegível) | depois (motor atual, legível) |
+| --- | --- | --- |
+| nós | 19.619 | **12.971** |
+| arestas | 51.448 | **26.100** |
+| fluxos | 818 | **300** |
+
+E o teste decisivo, contra verdade conhecida: `impact("criarStatusLifecycle")`
+devolve **só os dois arquivos de teste** e omite `v2/core/plataforma.ts:9,54` —
+o **único consumidor de produção** — com `risk: "LOW"`. É a armadilha do
+**gerador que não enxerga TypeScript**, a mesma que já mordeu os dois geradores
+de catálogo, agora confirmada no GitNexus. No `v2/core` são 4 arquivos `.ts`
+contra 47 `.js`, então o buraco é pequeno em contagem e enorme em consequência:
+a resposta parece completa e verde.
+
+> **Conclusão prática, que não muda:** continue substituindo `impact()` por busca
+> textual dos importadores, e declare isso a cada edição — como o `CLAUDE.md`
+> manda. O que muda é o motivo: não é mais "o índice está quebrado", é "o índice
+> responde e mente sobre TypeScript". A segunda é pior, porque tem cara de
+> resposta. E `risk: UNKNOWN` com `impactedCount: 0` segue sendo "não respondeu",
+> nunca "nada afetado".
+>
+> O conserto de verdade é alinhar o motor do MCP com o `gitnexus@1.6.7` que já
+> está global (storage ≥ 43), e **só então** reindexar. Enquanto isso não
+> acontecer, reindexar troca ilegível por incompleto.
+
+Detalhe que atrapalha quem vier: o `.gitnexus/` mora **no repositório pai**, não
+nos worktrees. De dentro de um worktree o comando do `CLAUDE.md` não existe, e há
+**dois repositórios registrados com o mesmo nome** (`Projeto-Baluarte`) — o de
+verdade em `Desktop/`, e uma cópia de junho em
+`.gemini/antigravity/scratch/` com 4.452 nós. Passe o caminho explícito em `repo:`.
+
+**(b) O Chromium do Playwright: a causa é o caret, não o contêiner.** O repo
+declara `playwright ^1.49.0`; o que está instalado é **1.62.1**, e é ele que
+exige o build **1234**. O `^` deixa a versão andar a cada `npm install`, então
+qualquer Chromium pré-instalado descasa sozinho com o tempo — o build **1194** do
+contêiner remoto é o sintoma, não a doença. Pinar a versão do Playwright é o que
+faz o browser pré-instalado continuar valendo.
+
+Nesta máquina o par está certo (`chromium-1234` em `%LOCALAPPDATA%\ms-playwright`),
+e por isso **o portão roda aqui sem `CHROME_PATH`**: `npm run v2:integracao` deu
+**15/15** no Windows em 17/08.
 - **`Supabase Preview` não é defeito técnico e não é credencial.** Já
   diagnosticado: o projeto `hcwzsxdcvmswebunznak` é **compartilhado** com outras
   aplicações do operador (`veritas_circuit_*`, `room_001_*`, `knowledge_layer_*`,
