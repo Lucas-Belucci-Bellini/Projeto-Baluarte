@@ -29,8 +29,9 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] regra de capacidades opcionais (incluindo Plano opcional no ARK)
 - [x] princípio Project Knowledge Mesh
 - [x] princípios de segurança e menor privilégio
-- [~] dicionário de dados detalhado por projeto — TaxForge iniciado em `docs/domains/TAXFORGE-DOMAIN-SPEC.md` (PR #437)
-- [ ] inventário final do schema/consumidores do TaxForge
+- [x] especificação inicial do domínio TaxForge
+- [x] inventário inicial do schema TaxForge
+- [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
 - [ ] dicionário de dados DailyPlanner
 - [ ] dicionário de dados AEGIS
@@ -70,39 +71,37 @@ Ainda pendente:
 
 ## Último trabalho concluído nesta retomada
 
-Foi reaberto o estado central e verificado o schema real do TaxForge em `drizzle/schema.ts`, além de `server/db.ts`.
+Foi concluído o primeiro inventário do schema real do TaxForge em `drizzle/schema.ts` e dos principais consumidores em `server/db.ts` e `server/routers.ts`.
 
-O schema atual usa Drizzle/MySQL e mistura dois domínios:
+Documento de inventário:
 
-1. **TaxForge atual:** `users`, `taxScenarioWorkspaces`, `taxWorkspaceEvents`, `taxWorkspaceMembers`.
-2. **Legado de stock-analysis:** `stocks`, `watchlist`, `stockAnalysis`, `priceHistory`, `alerts`, `notifications`, `chatHistory`, `analysisHistory`.
+`docs/domains/TAXFORGE-SCHEMA-INVENTORY.md`
 
-O código de `server/db.ts` consome diretamente ambos os grupos. Portanto, não devemos migrar `drizzle/schema.ts` cegamente para Supabase.
+Commit no Baluarte:
 
-A especificação arquitetural do domínio já foi criada em:
+`8294fb0dda8c91bcc1fbc2f2d7836b418ec09553`
 
-`docs/domains/TAXFORGE-DOMAIN-SPEC.md`
+O inventário confirmou que o schema atual é MySQL/Drizzle e mistura o domínio tributário com o legado de stock-analysis. O `server/routers.ts` ainda expõe ambos os conjuntos de funcionalidades. Portanto, a migração para Supabase deve ser uma remodelagem controlada, não uma cópia do schema atual.
 
-Branch:
+Achados adicionais registrados:
 
-`docs/taxforge-domain-spec`
-
-PR:
-
-`#437 — docs: define TaxForge ecosystem domain`
+- workspace tributário usa `userId + companyKey` como eixo atual de acesso;
+- o modelo futuro deve alinhar identidade/tenant ao Baluarte;
+- `scenarioIds` em JSON é apenas um slice remoto inicial, não o modelo final de cenários;
+- `taxWorkspaceEvents` é uma trilha mínima e não substitui o catálogo de eventos do Knowledge Mesh;
+- operações do legado devem receber revisão de ownership/RLS antes de qualquer migração.
 
 ## Próximo passo exato
 
-**Completar o inventário do TaxForge: mapear cada tabela atual para seus consumidores no código e classificá-la como `manter`, `migrar`, `substituir`, `legado` ou `remover após migração`.**
+**Completar o mapa de consumidores do legado de stock-analysis e, em paralelo, definir o contrato de identidade/tenant que o TaxForge deverá consumir do Baluarte.**
 
-Prioridade imediata:
+Depois disso:
 
-- mapear `taxScenarioWorkspaces`, `taxWorkspaceEvents`, `taxWorkspaceMembers` e `users`;
-- localizar todos os consumidores das tabelas de stock-analysis;
-- separar definitivamente o domínio tributário do legado;
-- somente depois desenhar as tabelas Supabase definitivas do TaxForge.
-
-Depois disso, seguir para o dicionário de dados do ARK.
+1. fechar a classificação das tabelas TaxForge;
+2. fechar o dicionário Postgres do TaxForge;
+3. especificar RLS e testes de isolamento;
+4. só então escrever migrations Supabase;
+5. depois iniciar o dicionário de dados do ARK.
 
 ## Regra de retomada
 
@@ -119,6 +118,10 @@ Ao iniciar uma nova conversa sobre este ecossistema:
 ## Regra de segurança arquitetural
 
 Nenhum banco deve ser ligado diretamente ao banco interno de outro projeto apenas para acelerar a implementação. A integração deve passar por contratos, referências, APIs/eventos e autorização explícita.
+
+## Regra de confidencialidade arquitetural
+
+A existência e o comportamento público de cada produto não exigem exposição da topologia interna completa do ecossistema. Documentação interna de arquitetura deve permanecer separada de documentação pública. Nunca armazenar segredos, tokens, senhas ou chaves no repositório.
 
 ## Regra de projeto
 
