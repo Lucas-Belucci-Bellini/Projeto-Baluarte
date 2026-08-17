@@ -6,6 +6,45 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-16 — a fachada da V2 saiu do teste e foi para o ar
+
+O `criarPlataforma` existia, tinha teste e **não era usado por ninguém**: busca
+textual pelos importadores mostrou que o único consumidor era o próprio teste. O
+`v2/harness/main.js` — o entrypoint oficial da V2 na prática — dirigia o `boot`
+na mão, sem supervisor, sem saúde, sem status de lifecycle. As três peças
+estavam marcadas como prontas, e estavam, *em isolamento*. Em execução real nada
+as compunha.
+
+Agora quem sobe é a Plataforma. Medido no navegador: `partida.estado` = `ready`,
+supervisor em `ready`, lifecycle com 4/4 `running` e 0 `failed`. A superfície
+`window.__v2` cresceu sem mudar — `diagnostico()` continua sendo o do boot,
+porque o portão de integração lê `.modulos` dali.
+
+O portão foi a **14/14**, não 13/14. A falha `a superfície de briefing V2
+renderiza`, que a sessão anterior reportou como pré-existente, era o falso
+vermelho que o `navegarAte` (espera por condição, não por relógio) já tinha
+corrigido no `main`.
+
+**O que não veio junto.** A implementação vinha de uma branch onde a fachada
+estava misturada com 8 scripts sem relação, e o commit dela também mexia no
+`scripts/v2-integracao.mjs`. Essa metade foi descartada de propósito: o `main`
+já tinha aquela correção *e* estava à frente. Aplicar o commit inteiro teria
+reintroduzido os sleeps de 900/1800 ms — regredido o `main` para consertar algo
+que já estava consertado melhor.
+
+Junto veio o contract test completo `Manifest → Registry → Permission → Runtime`,
+com as quatro peças **reais** — o `contract-slice.test.js` percorre o mesmo
+caminho com registro e decisor falsos, e mock prova o mock. São 9 casos novos
+(suíte 884 → 893).
+
+Dos seis mutantes plantados, **um sobreviveu**: removida a poda do
+`conhecerModulos`, o teste seguia verde, porque o `avaliar()` já barra por
+"não-declarada". Duas defesas, a primeira cobrindo a segunda. Quem enxerga a
+poda sozinha é o estado persistido — sem ela o `exportar()` mantém a permissão e
+o `importar()` do próximo arranque a ressuscita sob um manifesto que não a
+declara mais. Com as asserções sobre `exportar()` e sobre o rastro `podar`, o
+sexto mutante morre.
+
 ## 2026-08-16 — o portão de tipos da V2 estava vermelho, e ninguém via
 
 `npm run tipos:v2` saiu de **61 erros para zero**. Estava assim havia pelo menos
