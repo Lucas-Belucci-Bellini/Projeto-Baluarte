@@ -50,6 +50,10 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] confirmação de que capabilities internas não devem ser automaticamente tratadas como capabilities Mesh
 - [x] Round 016: decisão de reorientar AEGIS para Ocean/Seafloor Intelligence
 - [x] Round 017: criado `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md` como plano vivo
+- [x] Round 018: inventário/transição do AEGIS e classificação do legado em PRESERVE / ADAPT / REPLACE / ARCHIVE
+- [x] Round 018: preservação de investigação, evidência, proveniência, auditoria e validação como metodologia do novo AEGIS
+- [x] Round 019–031: roadmap preliminar definido até Alpha 1.0
+- [x] AEGIS Alpha Masterplan criado em `AEGIS/docs/AEGIS-ALPHA-MASTERPLAN.md`
 
 ## AEGIS — novo estado
 
@@ -59,9 +63,10 @@ O AEGIS está sendo reorientado de IA autônoma de engenharia para:
 
 Foco inicial: inteligência geoespacial/oceanográfica e mapeamento do fundo do mar.
 
-O plano vivo está em `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md`.
+O plano vivo principal está em `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md` e o plano até Alpha está em `AEGIS/docs/AEGIS-ALPHA-MASTERPLAN.md`.
 
-Princípios já registrados:
+### Princípios
+
 - evidência e proveniência como dados de primeira classe;
 - distinção entre observação, processamento, inferência, hipótese e conclusão;
 - cobertura e incerteza explícitas;
@@ -69,9 +74,69 @@ Princípios já registrados:
 - Object Storage para artefatos grandes quando apropriado;
 - IA como suporte à interpretação, não substituto automático da observação física;
 - Survey Intelligence para priorizar novas observações;
-- integração futura com Baluarte por capabilities, não SQL direto.
+- integração futura com Baluarte por capabilities, não SQL direto;
+- plano deliberadamente vivo e expansível durante o design.
 
-O plano deve continuar sendo ampliado durante a conversa conforme novas decisões forem tomadas. Novas ideias conflitantes não devem ser apagadas silenciosamente: registrar como decisão, alternativa descartada ou questão aberta.
+### Roadmap até Alpha
+
+**Round 019 — Minimum Domain Model**
+- sources, datasets, surveys, platforms, instruments, observations, processing runs, derived products, features, evidence, uncertainty, reviews.
+
+**Round 020 — Storage/PostGIS Boundary**
+- decidir o que fica em PostgreSQL/PostGIS, o que vai para Object Storage e como referências são mantidas.
+
+**Round 021 — Dataset Ingestion Prototype**
+- primeiro fluxo real de ingestão, validação de metadados e registro de proveniência.
+
+**Round 022 — Bathymetry Processing Pipeline**
+- normalização, processamento e geração do primeiro produto batimétrico/terrain.
+
+**Round 023 — Evidence/Provenance Implementation**
+- lineage completo de source -> observation -> processing -> product -> claim.
+
+**Round 024 — Uncertainty Model**
+- semântica de incerteza horizontal/vertical, qualidade, cobertura e confiança.
+
+**Round 025 — Viewer Prototype**
+- exploração 2D e primeira visualização 3D quando viável.
+
+**Round 026 — Candidate Feature Detection**
+- detecção assistiva de estruturas/anomalias e hipóteses com evidência.
+
+**Round 027 — Human Review**
+- revisão, decisão, justificativa e estado de publicação.
+
+**Round 028 — Processing Orchestration**
+- jobs, reprocessamento, idempotência, falhas e observabilidade.
+
+**Round 029 — Knowledge Mesh Contract**
+- interfaces mínimas para outros projetos solicitarem conhecimento oceanográfico sem acesso direto ao banco AEGIS.
+
+**Round 030 — Alpha Integration Test**
+- fluxo completo source -> ingestion -> processing -> product -> feature -> evidence -> uncertainty -> review -> knowledge product.
+
+**Round 031 — Alpha 0.1**
+- primeiro pacote Alpha funcional, limitado a uma área de estudo e datasets suportados.
+
+### Release ladder pós-Alpha 0.1
+
+- Alpha 0.2: múltiplos datasets, comparação de qualidade, incerteza e lineage.
+- Alpha 0.3: feature detection, evidence graph e revisão humana.
+- Alpha 0.4: 2D/3D, temporalidade e data-gap analysis.
+- Alpha 0.5: API estável, Auth/RLS, workspace/project model e primeira integração Mesh.
+- Alpha 0.6: processamento escalável, filas, recuperação e observabilidade.
+- Alpha 0.7: pacote científico de validação, golden datasets e testes de regressão.
+- Alpha 0.8: piloto externo controlado.
+- Alpha 0.9: release candidate, congelamento dos contratos principais.
+- Alpha 1.0: workflow operacional e repetível de dataset até knowledge product revisado.
+
+### Critério de saída da Alpha 1.0
+
+Um dataset real e delimitado deve conseguir percorrer:
+
+`source -> ingestion -> normalized geospatial data -> processing -> bathymetry/terrain -> candidate feature -> evidence -> uncertainty -> human review -> reproducible knowledge product`
+
+e outro sistema autorizado deve conseguir consumir um resultado documentado sem receber acesso direto às tabelas internas do AEGIS.
 
 ## Estado dos demais projetos
 
@@ -90,24 +155,19 @@ Principal consumidor candidato por seu domínio fiscal/empresarial. Possui MCP o
 ### Baluarte
 É o control plane/gateway arquitetural do Mesh, mas não é dono dos domínios internos. Nexus, Event Bus e Global Comms são primitivas internas distintas do Knowledge Mesh.
 
-## Próximo passo EXATO — Round 018
+## Próximo passo EXATO
 
-**AEGIS Repository Transition Audit**:
+**Round 019 — AEGIS Ocean Minimum Domain Model.**
 
-1. mapear o estado real do AEGIS antes da mudança de missão;
-2. identificar arquivos/código reutilizáveis;
-3. separar legado de nova arquitetura;
-4. identificar o que deve ser preservado, adaptado ou substituído;
-5. definir a primeira arquitetura de diretórios do AEGIS Ocean;
-6. transformar o Masterplan Vivo em backlog técnico priorizado;
-7. somente depois definir o schema mínimo do PostGIS/Supabase;
-8. registrar o resultado novamente no Baluarte.
+Antes de criar tabelas Supabase/PostGIS, fechar as entidades, relações, invariantes, ownership, proveniência e limites entre metadados relacionais e artefatos científicos.
 
-Não implementar ainda a plataforma oceanográfica completa.
+Depois seguir os Rounds 020–031 na ordem, expandindo o plano quando novas ideias forem adicionadas.
 
 ## Regra permanente de evolução
 
 **Toda nova decisão relevante durante uma conversa deve aumentar este plano.** O plano do AEGIS é deliberadamente vivo: requisitos, ideias, hipóteses, riscos e decisões devem ser incorporados ao documento no AEGIS e o checkpoint do Baluarte deve apontar para a próxima ação exata.
+
+Novas ideias não devem ser apagadas silenciosamente. Se uma ideia for rejeitada por escopo, ciência, segurança ou arquitetura, registrar a decisão e o motivo quando for relevante.
 
 ## Regras permanentes do Mesh
 
@@ -128,10 +188,11 @@ Não implementar ainda a plataforma oceanográfica completa.
 
 1. Abrir este arquivo.
 2. Abrir `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md`.
-3. Consultar as `ECOSYSTEM-DISCOVERY-ROUND-*` relevantes.
-4. Verificar o estado real dos seis repositórios e do Supabase.
-5. Continuar pelo **Round 018 — AEGIS Repository Transition Audit**.
+3. Abrir `AEGIS/docs/AEGIS-ALPHA-MASTERPLAN.md`.
+4. Consultar as `ECOSYSTEM-DISCOVERY-ROUND-*` relevantes.
+5. Verificar o estado real dos seis repositórios e do Supabase.
+6. Continuar pelo **Round 019 — AEGIS Ocean Minimum Domain Model**.
 
 ## Última atualização
 
-2026-08-17 — Round 017: AEGIS Ocean Masterplan Vivo criado; próxima ação é Round 018 — Repository Transition Audit.
+2026-08-17 — Round 018 concluído e roadmap até Alpha 1.0 registrado. Próxima ação: Round 019 — Minimum Domain Model.
