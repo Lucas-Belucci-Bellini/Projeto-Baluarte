@@ -1,5 +1,75 @@
 # 🤝 Handoff — trabalho pra uma sessão LOCAL (com skills)
 
+## ⏭️ Retomada de 17/08/2026 (fim do dia) — comece por aqui
+
+**O `main` recebeu 20 commits e está em `3998e8ff`.** Backup do estado anterior:
+`backup/2026-08-17-antes-merge-v2` → `91b01188`, já no `origin`. Desfazer é
+`git push -f origin backup/2026-08-17-antes-merge-v2:main`.
+
+### ⚠️ A primeira coisa a fazer
+
+**Conferir o CI do `3998e8ff`.** O merge foi verificado localmente e nada nele
+passou pelo CI antes de entrar — push em branch de feature não dispara workflow,
+só push no `main` dispara. Então a validação no Linux aconteceu *depois*. Olhe o
+**SHA**, não a cor da última execução.
+
+Verificado local antes do push: tipos 0 · suíte 952/952 · `v2:integracao` 17/17 ·
+`cargo test` 12+3 · smoke do Runtime OK · smoke das rotas todo verde · build 0 ·
+3 verificadores de catálogo + nexus.
+
+### O que mudou de capacidade nesta máquina
+
+**O Rust roda aqui agora** — três verificações saíram da coluna "só o remoto".
+As Build Tools do Visual Studio **não** instalam em sessão não-interativa (o
+instalador precisa de elevação e sai com `1602`); o caminho que funcionou foi o
+toolchain **GNU** com MinGW portátil, sem admin:
+
+```
+cargo +stable-x86_64-pc-windows-gnu test --manifest-path v2/runtime/Cargo.toml
+```
+
+Com o `mingw64\bin` do pacote `BrechtSanders.WinLibs.POSIX.UCRT` no `PATH` — sem
+ele o build morre em `dlltool.exe not found`. **O binário produzido é GNU, não
+MSVC**; uma release Windows deveria usar MSVC, e isso precisa de um clique no UAC.
+
+### Fila da V2 — os três do "próximo bloco" fecharam
+
+Transições observáveis, transporte concreto e vertical slice nativo estão `[x]`
+no [`v2/V2_PROGRESS.md`](./v2/V2_PROGRESS.md). O que ficou **aberto**, e é o
+próximo passo natural:
+
+- **glTF + raycasting no `visor3d`** (§12 do Master Plan) — é onde o visualizador
+  começa a valer o nome. Peso de app, não de web.
+- **O app empacotado com o Runtime dentro.** O ramo `process.resourcesPath` é o
+  único que continua sem exercício: nenhum instalador foi produzido com as
+  mudanças. Exige rodar o `desktop-release.yml`.
+- **`feat/v2-ambiente-aplicado`** está empurrada e **não** mesclada — muda
+  `LifecycleStartResult` (contrato). Nela, `ambiente` deixou de ser palavra e
+  virou regra aplicada pelo ciclo. Efeito prático hoje é zero (os 5 módulos
+  declaram `ambos`); marcar o `visor3d` como `app` é **decisão de produto**, não
+  tomada.
+
+### Migração `.js → .ts`: faltam 5 páginas, e a ordem importa
+
+Medição em [`v2/TYPESCRIPT_REMAINING.md §0`](./v2/TYPESCRIPT_REMAINING.md).
+`visao.js` é a **única sem bloqueio** (1 import, 0 sem tipo); as outras quatro
+exigem `.d.ts` das fontes de dados primeiro. O padrão a manter: das 102 páginas
+já migradas, **nenhuma usa `any`**.
+
+### Armadilhas novas desta rodada
+
+A família "Windows" chegou a **nove**: o `npm run smoke` morria em `spawn npx`
+(consertado), e o `import()` dinâmico de caminho absoluto falha sem
+`pathToFileURL`. Duas mais, de outra natureza:
+
+- **`extraResources` com `filter` não falha quando a origem falta** — só não
+  copia. Declarar empacotamento sem gerar o artefato produz release silenciosa
+  sem o recurso.
+- **Asserção fixada em número mágico envelhece.** Três asserções do
+  `v2:integracao` ficaram vermelhas ao entrar um módulo, sem defeito algum. A do
+  Runtime passou a comparar com `vivos`; as de rota e nav seguem exatas de
+  propósito, porque só o número fixo pega sumiço.
+
 ## ⏭️ Comece por aqui — retomada de 17/08/2026
 
 > O operador migrou para o **local** porque os plugins que ele precisa só

@@ -109,6 +109,18 @@ async function principal() {
    * nada — o Rust nega a leitura de quem não recebeu a permissão. */
   const runtimeApp = criarRuntimeApp(registry, permissoes, globalThis.baluarte);
 
+  /* O ambiente, deduzido da MESMA detecção que o adaptador do Runtime usa.
+   *
+   * Sem esta linha a regra de `ambiente` existia no ciclo e ninguém a chamava —
+   * peça pronta e desligada, criada na mesma rodada em que outra foi consertada.
+   * O manifesto declara, o `manifest.js` valida, o ciclo aplica, e é AQUI que
+   * alguém finalmente informa onde estamos.
+   *
+   * Uma fonte só para as duas perguntas ("tenho Runtime?" e "sou app?") não é
+   * economia: duas detecções divergiriam no dia em que uma mudasse, e o sistema
+   * passaria a se achar app para um lado e web para o outro. */
+  const ambiente = globalThis.baluarte?.native === true ? 'app' : 'web';
+
   const boot = criarBoot(
     registry,
     { storage, bus, metricas, trabalho, apis, permissoes, ...(runtimeApp ? { runtime: runtimeApp } : {}) },
@@ -126,7 +138,7 @@ async function principal() {
         nav.appendChild(a);
       }
     }
-  }, { runtime });
+  }, { runtime, ambiente });
 
   /* Quem sobe agora é a Plataforma, não o boot. O supervisor decide `ready` ou
    * `degraded` a partir das falhas, e a saúde/lifecycle passam a existir em
@@ -195,6 +207,14 @@ async function principal() {
      * responderia sobre o passado (Regra 5). É o que deixa o portão perguntar
      * "a autorização foi realmente pedida?" em vez de supor que foi. */
     runtimeAbertos: () => runtime.abertas(),
+    /* O ambiente que o entrypoint deduziu. Exposto para o portão poder cobrar
+     * que a regra é de fato INFORMADA — declarar `ambiente` no manifesto e
+     * aplicá-lo no ciclo não vale nada se ninguém disser onde estamos, e esse é
+     * exatamente o tipo de elo que passa despercebido por ser trivial. */
+    /* O que o CICLO recebeu, não o que este arquivo calculou. A diferença é o
+     * ponto: a variável local sobrevive à remoção do repasse, e uma asserção
+     * sobre ela aprovaria um entrypoint que parou de informar o ambiente. */
+    ambiente: boot.ciclo.ambiente,
     parar: () => plataforma.parar(),
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
