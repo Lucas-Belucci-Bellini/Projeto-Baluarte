@@ -6,6 +6,44 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-17 — `.gitattributes` fixa `*.md` em LF (e a renormalização não existiu)
+
+A outra metade da decisão do fim de linha. O conserto cirúrgico
+(`scripts/lib/eol.mjs`) normaliza os dois lados da **comparação**; este arquivo
+tira a variável do jogo antes: `.md` é LF no disco em qualquer sistema, em vez de
+depender do `core.autocrlf` de cada máquina.
+
+**Confirmado antes num Windows de verdade**, que é o que faltava — o remoto só
+tinha reproduzido o sintoma no Linux convertendo os destinos à mão. Nesta máquina
+o `core.autocrlf` é `true` e os três destinos estão em CRLF puro no disco; os três
+verificadores passam. E o verde é do conserto, não de acaso: neutralizado o
+`comLF`, os três ficam vermelhos sobre o mesmo disco, com a mesma mensagem
+enganosa de sempre.
+
+**A renormalização esperada não aconteceu, porque não havia o que renormalizar.**
+A previsão registrada era um diff grande, tocando todo `.md` versionado. Medido:
+os **167** `.md` já estão LF no índice (`git ls-files --eol`) — o `core.autocrlf`
+converte na escrita, então nunca houve blob CRLF de `.md` para desfazer. O diff é
+**um arquivo novo**, e mais nada.
+
+Consequência que vale saber, porque é contra-intuitiva: nesta árvore de trabalho
+os 160 `.md` **continuam CRLF no disco** mesmo com o atributo valendo. O git não
+os vê como modificados — o filtro `clean` converte CRLF→LF e o resultado bate com
+o blob — então não tem por que reescrevê-los. O atributo passa a valer em checkout
+novo.
+
+Por isso os dois consertos **se somam de propósito**, e não é defesa em
+profundidade por acaso: o `eol.mjs` é o que protege toda árvore que já existe,
+inclusive esta. Um efeito colateral disso é que, em árvore já renormalizada, o
+mutante do `eol.mjs` deixa de ficar vermelho — a proteção continua correta, mas
+some o sintoma que a testava.
+
+Sem regra `* text=auto`: existem blobs CRLF versionados de propósito
+(`android/gradlew.bat`, os presets `.html` do Arma 3, um transcript `.txt`), e uma
+regra geral os reescreveria. O escopo é `.md`, que é onde a classe do problema
+vive — os únicos verificadores que comparam texto de arquivo inteiro são os três,
+e os três leem `.md`. O `verificar-nexus` usa `JSON.parse`, imune a fim de linha.
+
 ## 2026-08-17 — `running` passa a exigir autorização de Runtime
 
 Pela terceira vez seguida o defeito foi o mesmo: **peça pronta, testada e
