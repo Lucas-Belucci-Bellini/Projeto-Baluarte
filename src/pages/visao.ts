@@ -24,6 +24,7 @@
 
 import '../styles/visao.css';
 import { h } from '../utils/helpers.js';
+import type { VisionHands, VisionHandsResults, VisionPoint } from './jarvis-vision-api.js';
 
 /* ══════════════════════════════════════
    MEDIAPIPE — só a superfície que esta página consome
@@ -49,21 +50,27 @@ interface FaceMeshInstancia {
   send(entrada: { image: HTMLVideoElement }): Promise<void>;
 }
 
-interface HandsInstancia {
-  setOptions(o: Record<string, number | boolean>): void;
-  onResults(cb: (r: HandsResults) => void): void;
-  send(entrada: { image: HTMLVideoElement }): Promise<void>;
-  initialize(): Promise<void>;
-  close(): void;
-}
+/**
+ * `Hands` NÃO é redeclarado aqui.
+ *
+ * `src/pages/jarvis-vision-api.d.ts` já declara `window.Hands` e a interface
+ * `VisionHands` — a página do JARVIS Vision usa o mesmo MediaPipe. Declarar de
+ * novo criava duas verdades sobre o mesmo global, e o compilador reprovava com
+ * "subsequent property declarations must have the same type". Reusar é a regra:
+ * não inventar tipo que a base já sabe.
+ *
+ * Consequência a respeitar: naquela declaração, `send()` devolve `void`. O JS
+ * original encadeava `.catch()` nele, o que só funciona porque em runtime o
+ * MediaPipe devolve promessa. `Promise.resolve(...)` cobre os dois casos sem
+ * mentir sobre o tipo declarado.
+ */
+type HandsInstancia = VisionHands;
 
 type FaceMeshCtor = new (o: MediaPipeOpcoes) => FaceMeshInstancia;
-type HandsCtor = new (o: MediaPipeOpcoes) => HandsInstancia;
 
 declare global {
   interface Window {
     FaceMesh?: FaceMeshCtor;
-    Hands?: HandsCtor;
   }
 }
 
@@ -423,7 +430,7 @@ class HandTracker {
   private video: HTMLVideoElement | null = null;
   private raf: number | null = null;
   private running = false;
-  private lastResults: HandsResults | null = null;
+  private lastResults: VisionHandsResults | null = null;
   private frameCount = 0;
 
   constructor(statusEl: HTMLElement | null) {
@@ -483,7 +490,7 @@ class HandTracker {
     if (!this.video || this.video.readyState < 2) return;
     this.frameCount++;
     if (this.frameCount % 2 === 0 && this.hands) {
-      this.hands.send({ image: this.video }).catch(() => {});
+      void Promise.resolve(this.hands.send({ image: this.video })).catch(() => {});
     }
     this._draw();
   }
@@ -497,7 +504,7 @@ class HandTracker {
     const list = this.lastResults?.multiHandLandmarks;
     if (!list) return;
     /* Rótulos por posição (sem o rótulo instável do MediaPipe), únicos p/ 2 mãos */
-    const labels = rotularMaos(list.map((lm) => ({ wristX: lm[0].x })));
+    const labels = rotularMaos(list.map((lm: readonly VisionPoint[]) => ({ wristX: lm[0].x })));
     for (let hi = 0; hi < list.length; hi++) {
       this._drawHand(ctx, list[hi], W, H, labels[hi]);
     }
