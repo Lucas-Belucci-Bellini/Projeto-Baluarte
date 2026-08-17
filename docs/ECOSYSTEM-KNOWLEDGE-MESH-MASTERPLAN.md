@@ -17,7 +17,7 @@ O Baluarte funciona como camada de plataforma e coordenação. Cada projeto mant
 | TaxForge | Simulação econômica/tributária e decisão empresarial | fiscal, financeiro, cenários, evidências e decisões | alta |
 | Ark-Initiative | Resiliência climática e ambiental | geografia, sensores, observações, riscos, incidentes e resposta | alta |
 | DailyPlanner | Planejamento pessoal e tarefas | tarefas, agenda, lembretes e preferências | baixa até haver necessidade de sincronização |
-| AEGIS | Investigação e engenharia autônoma | investigações, hipóteses, evidências, correções e validações | alta |
+| AEGIS | Investigação e engenharia autônoma / oceanografia | investigações, hipóteses, evidências, correções, observações acústicas e reconstruções | alta |
 | Projeto-Baluarte | Plataforma/hub e orquestração | identidade, projetos, permissões, integrações, eventos e coordenação | alta |
 | Veritas | Lógica, circuitos e colaboração | projetos, circuitos, versões, simulações e análises | média/alta |
 
@@ -55,7 +55,7 @@ O Baluarte deve concentrar somente capacidades realmente compartilháveis:
 - auditoria de plataforma;
 - preferências e capacidades comuns.
 
-Não colocar no núcleo compartilhado os dados fiscais do TaxForge, os sensores do ARK, os circuitos do Veritas ou as investigações do AEGIS.
+Não colocar no núcleo compartilhado os dados fiscais do TaxForge, os sensores do ARK, os circuitos do Veritas ou as investigações/observações do AEGIS.
 
 ## 5. TaxForge — domínio previsto
 
@@ -164,31 +164,55 @@ test runs
 incidents
 reports
 audit events
+surveys
+survey platforms
+sensors
+sensor configurations
+observations
+acoustic observations
+spatial features
+reconstructions
+processing runs
+uncertainty models
+scientific derivatives
+data classifications
 ```
 
-Fluxo:
+AEGIS está evoluindo para um segundo eixo de pesquisa oceanográfica: percepção acústica espacial, reconstrução 3D e análise científica de observações submarinas. O plano detalhado vive em `AEGIS/docs/AEGIS-OCEAN-ALPHA-MASTERPLAN.md`.
+
+Fluxo científico:
 
 ```text
-problema
+sensor
  ↓
-investigação
+observação
  ↓
-hipóteses
+processamento
  ↓
-evidências
+reconstrução espacial
  ↓
-causa raiz
+incerteza + proveniência
  ↓
-correção
- ↓
-testes
+produto científico 2D/3D
  ↓
 validação
- ↓
-relatório
 ```
 
-AEGIS pode investigar outros projetos, mas deve receber autorização e contexto delimitados. Não conceder acesso geral a todos os bancos.
+O AEGIS deve suportar pesquisa em baixa visibilidade e ambientes sob gelo, inclusive quando a plataforma de pesquisa for de uso dual. O projeto deve registrar se a aquisição foi passiva, ativa ou híbrida e registrar contexto/impacto acústico relevante, sem transformar isso em mecanismo de evasão ou ocultação militar.
+
+### Governança dual-use do AEGIS
+
+- finalidade da campanha vinculada aos dados;
+- classificação dos datasets;
+- menor privilégio;
+- RLS/ACL;
+- autorização explícita para dados restritos;
+- auditoria de acesso/exportação;
+- revisão humana para capacidades de maior risco;
+- separação entre produtos científicos e workflows operacionais;
+- derivados científicos redigidos/generalizados quando necessário.
+
+O AEGIS não deve implementar capacidades cujo objetivo primário seja targeting, interceptação, vigilância militar operacional ou vantagem operacional de combate.
 
 ## 9. Veritas — domínio previsto
 
@@ -325,7 +349,11 @@ Não iniciar a integração completa apenas porque uma tabela já existe.
 - [ ] contratos de integração;
 - [ ] catálogo de eventos;
 - [ ] matriz de permissões;
-- [ ] política de referências externas.
+- [ ] política de referências externas;
+- [ ] AEGIS Ocean Alpha Masterplan;
+- [ ] AEGIS sensor/observation vocabulary;
+- [ ] AEGIS provenance + uncertainty contracts;
+- [ ] AEGIS data-classification and survey-purpose model.
 
 ### Fase B — bancos por domínio
 
@@ -415,10 +443,33 @@ DailyPlanner
  = domínio de planejamento pessoal
 
 AEGIS
- = domínio de investigação/engenharia
+ = domínio de investigação + oceanografia/acústica científica
 
 Veritas
  = domínio de lógica/circuitos
 ```
 
 **Não copiar a implementação de um projeto para outro apenas para obter uniformidade. A uniformidade deve estar nos contratos, segurança e interoperabilidade — não necessariamente nas tecnologias ou nos modelos internos.**
+
+## 18. CONTINUATION CHECKPOINT — 2026-08-17
+
+### Estado atual
+
+- AEGIS Ocean Alpha Masterplan foi criado em `AEGIS/docs/AEGIS-OCEAN-ALPHA-MASTERPLAN.md`.
+- PR do AEGIS: `#24` (`docs/ocean-acoustic-alpha-masterplan`), atualmente aberto como draft.
+- O plano incorporou: percepção acústica espacial, reconstrução 3D, sensor fusion, baixa visibilidade/ambiente sob gelo, modos passivo/ativo/híbrido, acoustic-impact management, proveniência, incerteza, scientific derivatives e dual-use governance.
+
+### Próximo ponto exato para continuar
+
+1. Revisar o PR AEGIS #24.
+2. No AEGIS, criar o **Sensor & Observation Vocabulary**.
+3. Criar os contratos **Provenance + Uncertainty**.
+4. Criar o modelo **Survey Purpose + Data Classification**.
+5. Depois propor o **logical PostGIS/Supabase schema**.
+6. Só após a revisão desses contratos começar a implementação de banco.
+
+### Regra para próximas conversas
+
+Se uma nova conversa começar apenas com "vamos continuar" e os seis repositórios forem citados, este checkpoint deve ser consultado primeiro. Não reiniciar o planejamento do zero.
+
+**Próxima ação recomendada: AEGIS — Sensor & Observation Vocabulary.**
