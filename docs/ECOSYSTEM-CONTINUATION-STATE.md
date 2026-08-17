@@ -32,6 +32,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] especificação inicial do domínio TaxForge
 - [x] inventário inicial do schema TaxForge
 - [x] inventário inicial da complexidade de branches do Baluarte
+- [x] primeira camada de classificação de branches criada em `docs/BALUARTE-BRANCH-INVENTORY.md`
 - [ ] mapa de branch -> subsistema -> documentação -> implementação
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -73,13 +74,13 @@ Ainda pendente:
 
 ## Último trabalho concluído nesta retomada
 
-Foi criado `docs/ARCHITECTURE-INDEX.md` depois de verificar o inventário de branches do Baluarte. A busca paginada retornou **293 branches** no estado atual do repositório.
+Foi criada a branch `docs/baluarte-branch-inventory` e o PR draft **#438** para adicionar `docs/BALUARTE-BRANCH-INVENTORY.md`. O documento estabelece a primeira camada de classificação das branches em canônicas, desenvolvimento ativo, experimentais, históricas/backup, conteúdo/domínio e infraestrutura/integração. Não foi feita nenhuma exclusão de branches.
 
-O índice estabelece uma hierarquia de autoridade e classifica branches em `main`, V2, docs, feature/fix/chore, `claude/*`, `backup/*`, `vendor/*` e fases históricas. Também define que agentes não devem inferir a arquitetura de uma branch aleatória.
+PR: #438 — `docs: establish branch inventory navigation layer`
 
-Commit do índice:
+Commit da documentação: `38574ccfd765c269d511141414f146bd73bcab55`
 
-`73ee1a33eb23d6e743edfdfa0834d24ee400b02c`
+A busca atual do repositório mostrou centenas de branches e uma grande família `backup/*`. A contagem anterior registrada foi 293 branches; novas buscas devem ser tratadas como estado atual e não como número permanente.
 
 ## TaxForge — estado anterior
 
@@ -97,7 +98,7 @@ O inventário confirmou que o schema atual é MySQL/Drizzle e mistura o domínio
 
 ## Próximo passo exato
 
-**Construir o branch-to-subsystem inventory do Baluarte e usá-lo para identificar quais branches representam código ativo, histórico, infraestrutura, V2, integrações e experimentos.**
+**Completar o branch-to-subsystem inventory do Baluarte.** O próximo artefato deve transformar a classificação inicial em um registro navegável por branch/família, apontando para subsistema, documentação, implementação, testes, PR/linhagem e autoridade arquitetural. Priorizar as famílias não-`backup/*` e depois resumir as famílias históricas sem apagar nada.
 
 Depois disso:
 
@@ -115,12 +116,13 @@ Ao iniciar uma nova conversa sobre este ecossistema:
 
 1. abrir este arquivo;
 2. abrir `docs/ARCHITECTURE-INDEX.md`;
-3. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-4. verificar o estado da Fase A/B/C;
-5. localizar o **Próximo passo exato**;
-6. verificar o estado real dos seis repositórios antes de modificar qualquer coisa;
-7. continuar a partir desse ponto;
-8. atualizar este arquivo com o novo ponto de retomada.
+3. abrir `docs/BALUARTE-BRANCH-INVENTORY.md`;
+4. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+5. verificar o estado da Fase A/B/C;
+6. localizar o **Próximo passo exato**;
+7. verificar o estado real dos seis repositórios antes de modificar qualquer coisa;
+8. continuar a partir desse ponto;
+9. atualizar este arquivo com o novo ponto de retomada.
 
 ## Regra de segurança arquitetural
 
