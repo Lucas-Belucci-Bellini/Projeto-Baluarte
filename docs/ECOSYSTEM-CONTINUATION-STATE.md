@@ -37,6 +37,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] primeira matriz de evidências para V2
 - [x] matriz enumerando as famílias atuais `v2/*` e protocolo de verificação
 - [x] snapshot do estado atual do Supabase
+- [x] primeiro checkpoint de reconciliação TaxForge ↔ Supabase
 - [ ] inventário completo branch → subsistema → documentação → implementação → testes
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -71,10 +72,6 @@ Documento de referência:
 
 `docs/SUPABASE-CURRENT-STATE.md`
 
-Commit do inventário:
-
-`73d67902ff928985ce7f6f4e1cea67e4024ba91d`
-
 Projeto Supabase inspecionado:
 
 `hcwzsxdcvmswebunznak`
@@ -91,6 +88,20 @@ Pontos importantes:
 - não foram identificadas tabelas `ark_*`, `aegis_*` ou `dailyplanner_*` no inventário `public` atual;
 - nenhuma migração destrutiva foi executada nesta etapa.
 
+## TaxForge — reconciliação atual
+
+Documento canônico de trabalho:
+
+`docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`
+
+Commit do checkpoint:
+
+`cf7d0b2ad841ced5ec8544844cf6daeb03cdf2dc`
+
+O código atual de `drizzle/schema.ts` usa `drizzle-orm/mysql-core` e contém tanto estruturas de workspace tributário quanto um domínio legado/parallel de stock-analysis. O Supabase, por outro lado, já possui 23 tabelas `taxforge_*` voltadas ao domínio tributário.
+
+**Conclusão:** ainda não declarar nenhum dos dois modelos como canônico. A próxima etapa é comparar o uso real no código (`server/db.ts`, `server/routers.ts`, migrations e queries) com as tabelas PostgreSQL existentes.
+
 ## TaxForge — estado anterior
 
 Foi concluído o primeiro inventário do schema real do TaxForge em `drizzle/schema.ts` e dos principais consumidores em `server/db.ts` e `server/routers.ts`.
@@ -98,12 +109,6 @@ Foi concluído o primeiro inventário do schema real do TaxForge em `drizzle/sch
 Documento de inventário:
 
 `docs/domains/TAXFORGE-SCHEMA-INVENTORY.md`
-
-Commit no Baluarte:
-
-`8294fb0dda8c91bcc1fbc2f2d7836b4186b418eb?`
-
-> Nota: o commit acima é mantido como referência histórica; o arquivo continua sendo a fonte do inventário do repositório. Não substituir o estado atual do Supabase pelo schema antigo.
 
 O inventário confirmou que o schema antigo do TaxForge é MySQL/Drizzle e mistura o domínio tributário com o legado de stock-analysis. A migração para Supabase deve ser uma remodelagem controlada, não uma cópia do schema antigo.
 
@@ -117,15 +122,17 @@ A matriz enumera as 7 branches atualmente encontradas em `v2/*`, registra hipót
 
 ## Próximo passo exato
 
-**Reconciliar as 23 tabelas `taxforge_*` existentes no Supabase com o código atual do TaxForge. Em paralelo, auditar as RLS policies e privilégios das funções antes de ampliar o banco. Depois fechar identidade/tenant e o dicionário PostgreSQL do TaxForge.**
+**Reconciliar o código vivo do TaxForge com as 23 tabelas `taxforge_*` do Supabase. Começar por `server/db.ts`, `server/routers.ts`, migrations e queries para classificar cada tabela do Drizzle como ativa, legado ou paralela. Em paralelo, auditar RLS policies e privilégios das funções antes de ampliar o banco.**
 
 Após isso:
 
-1. especificar RLS e testes de isolamento;
-2. definir contratos de referência/eventos;
-3. escrever migrations somente quando o modelo estiver fechado;
-4. iniciar o dicionário ARK;
-5. repetir para AEGIS, Veritas, Baluarte e DailyPlanner.
+1. fechar identidade/tenant;
+2. fechar o dicionário PostgreSQL canônico do TaxForge;
+3. especificar RLS e testes de isolamento;
+4. definir contratos de referência/eventos;
+5. escrever migrations somente quando o modelo estiver fechado;
+6. iniciar o dicionário ARK;
+7. repetir para AEGIS, Veritas, Baluarte e DailyPlanner.
 
 ## Regra de retomada
 
@@ -137,11 +144,12 @@ Ao iniciar uma nova conversa:
 4. abrir `docs/BALUARTE-SUBSYSTEM-MAP.md`;
 5. abrir `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`;
 6. abrir `docs/SUPABASE-CURRENT-STATE.md`;
-7. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-8. verificar o estado real dos seis repositórios e do projeto Supabase;
-9. localizar **Próximo passo exato**;
-10. continuar dali;
-11. atualizar este arquivo ao terminar.
+7. abrir `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`;
+8. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+9. verificar o estado real dos seis repositórios e do projeto Supabase;
+10. localizar **Próximo passo exato**;
+11. continuar dali;
+12. atualizar este arquivo ao terminar.
 
 ## Segurança e confidencialidade arquitetural
 
