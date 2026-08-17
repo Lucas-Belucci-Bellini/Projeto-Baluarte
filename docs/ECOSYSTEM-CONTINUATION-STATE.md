@@ -40,6 +40,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] primeiro checkpoint de reconciliação TaxForge ↔ Supabase
 - [x] reconciliação inicial código vivo TaxForge ↔ schema Supabase
 - [x] auditoria inicial de SECURITY DEFINER e privilégios do Supabase
+- [x] primeiro mapa de consumidores/classificação das SECURITY DEFINER
 - [ ] inventário completo branch → subsistema → documentação → implementação → testes
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -70,17 +71,13 @@ Ordem inicial prevista:
 
 ## Supabase — estado atual
 
-Documento de referência:
+Documentos de referência:
 
-`docs/SUPABASE-CURRENT-STATE.md`
+- `docs/SUPABASE-CURRENT-STATE.md`
+- `docs/SUPABASE-SECURITY-FUNCTION-AUDIT.md`
+- `docs/SUPABASE-SECURITY-FUNCTION-CONSUMER-MAP.md`
 
-Segurança:
-
-`docs/SUPABASE-SECURITY-FUNCTION-AUDIT.md`
-
-Projeto Supabase inspecionado:
-
-`hcwzsxdcvmswebunznak`
+Projeto Supabase inspecionado: `hcwzsxdcvmswebunznak`
 
 A inspeção encontrou um banco já populado com múltiplos domínios no schema `public`, incluindo tenant/identidade, conhecimento/IA, legal, Veritas e TaxForge.
 
@@ -93,9 +90,26 @@ Pontos importantes:
 - Veritas usa atualmente `user_id`-based ownership;
 - não foram identificadas tabelas `ark_*`, `aegis_*` ou `dailyplanner_*` no inventário `public` atual;
 - nenhuma migração destrutiva foi executada nesta etapa;
-- o advisor de segurança sinaliza `subscription_events` com RLS sem policy;
-- há funções `SECURITY DEFINER` publicamente ou autenticadamente executáveis que precisam ser mapeadas aos consumidores antes de alterar privilégios;
-- leaked-password protection do Auth está desativado e precisa ser tratado como tarefa de segurança separada.
+- `subscription_events` foi identificado anteriormente como RLS sem policy e permanece pendente de correção/decisão;
+- existem funções `SECURITY DEFINER` e agora há um mapa inicial de classificação/consumidores para elas;
+- leaked-password protection do Auth continua como tarefa de segurança separada.
+
+### SECURITY DEFINER — resultado desta etapa
+
+A inspeção direta do catálogo PostgreSQL encontrou, entre outras:
+
+- `nexus.resolve_tenant` — credencial/tenant resolution; service-only;
+- `nexus.is_member` — helper interno de tenancy;
+- `ingest_event`, `ingest_memory`, `ingest_stat` — ingestão service-only;
+- `buscar_juris` — authenticated RPC com verificação de membership;
+- `current_tenant_role` — authenticated role helper;
+- `veritas_*` collaboration/ownership functions — authenticated RPCs com checks internos;
+- `bump_view` e `bump_visits` — únicos application RPCs encontrados com execução anônima;
+- funções de trigger/event trigger e funções internas de PgBouncer/Vault — não são application RPCs.
+
+Documento detalhado: `docs/SUPABASE-SECURITY-FUNCTION-CONSUMER-MAP.md`.
+
+Nenhuma alteração de privilégio foi feita nesta etapa.
 
 ## TaxForge — reconciliação atual
 
@@ -116,14 +130,14 @@ O Supabase possui 23 tabelas `taxforge_*` mais ricas para o domínio tributário
 
 ## Próximo passo exato
 
-**Mapear os consumidores das funções de segurança do Supabase e completar o mapa de consumidores do TaxForge.**
+**Completar o mapa de consumidores do TaxForge e validar as policies/RLS das 23 tabelas `taxforge_*`.**
 
-1. Para cada `SECURITY DEFINER`, localizar o corpo SQL, consumidor e motivo de exposição.
-2. Classificar cada função como `KEEP_PUBLIC_RPC`, `AUTHENTICATED_RPC`, `INTERNAL_ONLY` ou `REPLACE`.
-3. Enumerar as funções de `server/db.ts`, `server/routers.ts`, `server/storage.ts` e workspace-permissions.
-4. Marcar cada operação como `LIVE_MYSQL_WORKSPACE`, `LEGACY_OR_PARALLEL_MYSQL_STOCK` ou `UNRESOLVED`.
-5. Consultar policies, foreign keys e privilégios das funções nas 23 tabelas `taxforge_*`.
-6. Comparar identidade `users`/workspace do MySQL com `tenants`/`tenant_members` do Supabase.
+1. Localizar no TaxForge `server/db.ts`, `server/routers.ts`, `server/storage.ts` e workspace-permissions.
+2. Enumerar cada operação de leitura/escrita e classificá-la como `LIVE_MYSQL_WORKSPACE`, `LEGACY_OR_PARALLEL_MYSQL_STOCK` ou `UNRESOLVED`.
+3. Localizar callers reais das funções Supabase relevantes, especialmente `buscar_juris`, `current_tenant_role` e os RPCs de ingestão.
+4. Para cada tabela `taxforge_*`, levantar policies, foreign keys e relação com `tenants`/`tenant_members`.
+5. Comparar identidade `users`/workspace do MySQL com `tenants`/`tenant_members` do Supabase.
+6. Identificar gaps de segurança antes de qualquer migração.
 7. Só então decidir o modelo PostgreSQL canônico e escrever a primeira migration não destrutiva.
 
 Depois disso:
@@ -141,12 +155,13 @@ Ao iniciar uma nova conversa:
 5. abrir `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`;
 6. abrir `docs/SUPABASE-CURRENT-STATE.md`;
 7. abrir `docs/SUPABASE-SECURITY-FUNCTION-AUDIT.md`;
-8. abrir `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`;
-9. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-10. verificar o estado real dos seis repositórios e do projeto Supabase;
-11. localizar **Próximo passo exato**;
-12. continuar dali;
-13. atualizar este arquivo ao terminar.
+8. abrir `docs/SUPABASE-SECURITY-FUNCTION-CONSUMER-MAP.md`;
+9. abrir `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`;
+10. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+11. verificar o estado real dos seis repositórios e do projeto Supabase;
+12. localizar **Próximo passo exato**;
+13. continuar dali;
+14. atualizar este arquivo ao terminar.
 
 ## Segurança e confidencialidade arquitetural
 
