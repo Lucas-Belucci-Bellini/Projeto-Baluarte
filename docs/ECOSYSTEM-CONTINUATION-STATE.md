@@ -17,7 +17,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 ## Estado atual — mesh
 
-A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept continua sendo `TaxForge -> Baluarte -> Veritas`, mas a validação de consumidor ainda não foi comprovada.
+A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept ainda não foi escolhido: a validação de `TaxForge -> Baluarte -> Veritas` não encontrou consumidor concreto para as capabilities de lógica atualmente verificadas no Veritas.
 
 ### Trabalho concluído
 
@@ -35,6 +35,7 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] decisão de manter autorização de domínio separada de capability do mesh
 - [x] Veritas provider inventory: MCP capabilities verificadas
 - [x] validação negativa inicial no TaxForge: nenhuma evidência encontrada de consumo de Boolean evaluation/truth tables/simplification
+- [x] discovery inicial nos seis projetos: não criar capability artificial apenas para demonstrar o mesh
 
 ## Veritas provider status
 
@@ -46,31 +47,40 @@ Veritas possui capabilities verificadas no MCP, incluindo:
 - `veritas.logic.karnaugh`
 - `veritas.circuit.simulate`
 
-Porém, a inspeção do TaxForge não encontrou uma necessidade concreta para essas operações. Portanto, nenhuma capability Veritas deve entrar no registry de produção ainda.
+A inspeção atual do TaxForge não encontrou necessidade concreta para essas operações. O AEGIS também se apresenta como agente de investigação/reparo de software, mas o repositório não estabelece ainda uma interface de capability pronta para consumo externo. Portanto, nenhum desses dois deve ser colocado no registry de produção ainda.
 
-Documento de referência:
+## DailyPlanner status
 
-`docs/ECOSYSTEM-VERITAS-PROVIDER-CONTRACT-V1.md`
+O DailyPlanner continua deliberadamente client-side, com `localStorage`, sem login, backend ou sincronização entre dispositivos. O README recomenda backend/PostgreSQL somente quando houver necessidade multiusuário, sincronização ou lembretes confiáveis. Portanto, não criar Supabase apenas para o mesh agora.
 
 ## ARK status
 
 O ARK possui um domínio de hazards/evidências públicas e uma camada privada ARCA. A fronteira pública/privada deve ser preservada. O mapeamento para Supabase e o capability contract ainda precisam ser reconciliados com o estado real da branch/main antes de qualquer migration.
 
+## AEGIS status
+
+AEGIS define um fluxo forte de investigação: observe → entenda → investigue → prove → corrija → teste → verifique → documente. Isso é uma capability arquitetural promissora para o ecossistema, mas o repositório atual é essencialmente a especificação/prompt do agente e não comprova ainda um provider API/MCP estável para outros projetos.
+
+## TaxForge status
+
+TaxForge é o principal consumidor candidato por seu domínio de cenários, evidências, fornecedores, contratos e decisões. A investigação deve procurar uma necessidade que já exista no produto antes de introduzir uma integração externa.
+
 ## Próximo passo EXATO
 
-**Não fabricar o primeiro consumer Veritas. Fazer capability discovery orientado por necessidade real nos seis repositórios.**
+**Continuar capability discovery orientado por necessidade real, mas agora procurar interfaces já existentes e fluxos que possam virar provider/consumer sem inventar dependências.**
 
 Ordem:
 
-1. procurar no TaxForge, ARK, DailyPlanner, AEGIS e Baluarte workflows que possam consumir uma capability Veritas já verificada;
-2. se nenhum consumidor real aparecer, classificar Veritas como provider disponível e continuar discovery em outros pares projeto→provider;
-3. escolher o primeiro par que tenha necessidade concreta;
-4. identificar exatamente as tabelas/queries/serviços que implementam a capability;
-5. auditar RLS, ownership e autorização;
-6. definir o menor payload que atravessa o mesh;
-7. definir provenance/evidence e confiança;
-8. somente então desenhar tabelas de registry/requests/results para o caso concreto;
-9. só depois propor migration não destrutiva no Supabase.
+1. mapear no TaxForge módulos/serviços que pedem conhecimento ou processamento externo;
+2. mapear no ARK capacidades que naturalmente poderiam ser consumidas por outro projeto (sem atravessar a fronteira pública/privada);
+3. mapear no AEGIS pontos que poderiam ser expostos como investigação sob contrato, caso exista implementação real além do prompt;
+4. mapear no Baluarte serviços já existentes que possam virar primitivas de plataforma;
+5. manter DailyPlanner sem banco enquanto o requisito continuar client-side;
+6. escolher o primeiro par somente quando houver consumidor + provider + interface real;
+7. identificar exatamente os dados e autorização necessários;
+8. definir o menor payload e provenance;
+9. só então desenhar registry/requests/results para o caso concreto;
+10. só depois propor migration não destrutiva no Supabase.
 
 ## Regras permanentes
 
@@ -100,4 +110,4 @@ Depois verificar o estado real dos seis repositórios e do Supabase e continuar 
 
 ## Última atualização
 
-2026-08-16
+2026-08-17
