@@ -43,7 +43,6 @@ Sem regra `* text=auto`: existem blobs CRLF versionados de propósito
 regra geral os reescreveria. O escopo é `.md`, que é onde a classe do problema
 vive — os únicos verificadores que comparam texto de arquivo inteiro são os três,
 e os três leem `.md`. O `verificar-nexus` usa `JSON.parse`, imune a fim de linha.
-||||||| d141d600
 ## 2026-08-17 — `starting` e `stopping` deixam de ser palavra e viram estado
 
 `starting` estava em `ESTADOS_MODULO` desde o começo e **nada o produzia**. O
@@ -98,6 +97,203 @@ que a ordem nova sustenta a garantia do Runtime Host, e não só a nova. Suíte
 Muda contrato e formato de dado (`ESTADOS_MODULO`, `ModuleLifecycleState`,
 `LifecycleSummary` com `starting`/`stopping`, e `ModuleCycle.emTransicao`), então
 **para para revisão** em vez de ir direto ao `main`.
+## 2026-08-17 — o transporte por stdio ganha consumidor, e o protocolo para de ser dois
+
+**Quarta peça pronta e desligada.** O `criarRuntimeStdio` existia, tinha
+documento próprio (`docs/v2/V2_RUNTIME_STDIO.md`) descrevendo o protocolo linha a
+linha, e a busca textual pelos importadores achou **zero** — nem produção, nem
+teste. Depois da fachada, do contract test e do Runtime Host, o padrão já não
+surpreende; o que muda é que agora se procura por ele antes.
+
+Os testes novos falam com **processo real**, não com duplo de `spawn`. A opção
+`spawnFn` existe e teria sido mais fácil, mas duplo prova o formato das mensagens
+e para aí. O que só um processo de verdade expõe é I/O — e era exatamente ali que
+estava o defeito.
+
+**O defeito:** resposta inválida fazia o `parseResposta` lançar **dentro do
+handler de `line`**, com o `pending` já zerado uma linha antes. O erro subia como
+exceção não capturada **e a promessa do chamador nunca assentava**. Um Runtime
+que respondesse lixo penduraria o Core em silêncio — mesma família do "init que
+trava não pendura o Baluarte", agora na fronteira do processo.
+
+Medido nos dois sentidos, e a medida é o argumento: sem o conserto os dois testes
+de resposta inválida **não falham, eles travam** — a suíte do arquivo leva
+**71,8 s** (dois testes queimando o teto do runner) contra **639 ms** com ele.
+Nove mutantes plantados, nove mortos; dois deles matam por travamento, que é o
+defeito reaparecendo.
+
+**Um sobreviveu na primeira rodada, e o motivo vale mais que o conserto.**
+Remover o `clearTimeout` do assentamento passava por todos os testes de
+comportamento: o timer órfão dispara, o `retirarDeVoo` é seguro contra nulo, e
+ele não acha ninguém. O estrago só existe se o órfão pegar a requisição
+**seguinte** em voo — e os dois timers ficam separados apenas pela duração da
+requisição anterior, uma janela de milissegundos. Pegá-la por tempo pediria
+margens apertadas, e portão instável troca um defeito estreito por um vermelho
+aleatório. A saída foi observar o recurso em vez do comportamento:
+`process.getActiveResourcesInfo()` conta os `Timeout` vivos, e o delta entre uma
+requisição e a seguinte só cresce se um teto tiver ficado armado. Determinístico,
+sem relógio.
+
+O `pending = null` continua **antes** do parse de propósito: a requisição sai de
+voo quando a linha dela chega, tenha a linha sentido ou não. Zerar depois faria a
+próxima resposta cair sobre uma requisição já respondida.
+
+### E aí apareceu por que a peça nunca tinha sido ligada
+
+O `scripts/v2-runtime-smoke.mjs` — o portão E2E que o CI roda — **reimplementava
+o protocolo à mão**: `spawn` próprio, serialização própria, buffer de linhas
+próprio, teto próprio. Existiam **duas implementações do mesmo protocolo**, e a
+única que falava com o binário passava por fora do transporte.
+
+Isso não era duplicação estética, era a explicação inteira. O transporte não
+tinha consumidor porque quem fazia I/O concreto o contornava; e o E2E ficava
+verde provando o protocolo *do script*, não o do transporte. O transporte podia
+estar quebrado sem que nada acusasse — **e estava**, com o pendura acima.
+
+Agora o smoke usa o `criarRuntimeStdio`. O portão passa a exercitar a peça que o
+resto do sistema usaria, e some a segunda implementação.
+
+### O teto virou requisito, não escopo extra
+
+`enviar()` não tinha teto; o smoke tinha um de 5 s. Fazer o smoke usar o
+transporte sem teto teria **removido uma proteção existente** — então
+`TETO_RUNTIME_MS` entrou junto, com `tetoMs` para sobrescrever.
+
+O `clearTimeout` mora num lugar só (`retirarDeVoo`) porque são **quatro** os
+caminhos que assentam uma requisição: resposta, erro do processo, saída do
+processo, falha de escrita. Esquecê-lo em qualquer um faz o teto disparar sobre
+requisição já respondida, e o estrago aparece na requisição **seguinte** — o pior
+lugar para procurar. Há mutante para os dois lados.
+
+### O Rust rodou nesta máquina pela primeira vez
+
+`cargo` não existia aqui; agora existe, e com ele caiu a fronteira que separava
+"do remoto" de "do local". Instalado o Rust 1.97.1. As Build Tools do Visual
+Studio **não** deram: o instalador precisa de elevação e sai com `1602`
+(cancelado) numa sessão não-interativa. O caminho que funcionou foi o toolchain
+**GNU** com um MinGW portátil por winget, sem admin.
+
+Com isso, três verificações que o handoff listava como exclusivas do remoto
+passaram a rodar aqui:
+
+| | |
+| --- | --- |
+| `npm run v2:runtime` | **12 + 3 testes, 0 falhas** |
+| smoke E2E contra o `.exe` real | **OK** |
+| testes do transporte | **12/12**, com 9/9 mutantes mortos |
+| suíte | 905 → **917** |
+
+E os três testes de processo que a `MAIN_ERROR_AUDIT` listava como quebrados
+(`process_rejects_invalid_json_and_continues` e irmãos) passam — o que confirma
+**por execução** o que a anotação de ROOT-RUNTIME-001 só tinha confirmado por
+leitura.
+
+### E a cadeia do vertical slice rodou com o Runtime de verdade
+
+`test/v2/slice-nativo.test.js` percorre o desenho do `V2_VERTICAL_SLICE.md` —
+Registry → autorização → sessão → init → start → running → stop → dispose →
+close — com **todas** as peças reais, inclusive o binário.
+
+A diferença não é de grau. O `abrir` do Host, no entrypoint, chama
+`criarGrantRuntime`: autorização **sem transporte**, porque no navegador não há
+processo com quem falar. Todo teste anterior usou espião ou duplo. Então a
+propriedade central — "um módulo só entra em `running` depois de abrir seu
+Runtime" — era verdadeira sobre um Runtime que **nunca tinha existido**. Agora
+quem decide se o módulo sobe é o processo Rust.
+
+Três propriedades cobradas, e a terceira é a que garante que o teste não passa à
+toa: **declarar não é receber.** Sem concessão, o módulo sobe (grant vazio é
+autorização disponível — tratá-lo como negação transformaria deny-by-default em
+deny-tudo) e a leitura é **negada pelo Rust**. Mesma rota, permissão diferente,
+resultado diferente: a discriminação vem do outro lado da fronteira, não do
+JavaScript. Remover o Host do `criarCiclo` derruba o primeiro teste.
+
+### E o módulo passou a USAR o Runtime, não só a ser autorizado por ele
+
+`criarContexto` ganhou a dependência opcional `runtime`, e o `ModuleContext`
+ganhou `ctx.runtime.lerArquivo(caminho)`. Com isso o `init` de um módulo lê um
+arquivo pelo Runtime nativo — a cadeia de **uso**, que faltava.
+
+**A propriedade está na aridade.** A alça entregue ao módulo recebe *caminho, e
+só*: o id fica fechado por closure, preenchido pelo contexto. Se aceitasse o
+módulo como argumento, `alpha` poderia nomear a raiz de `beta`, e o confinamento
+por módulo seria convenção em vez de garantia. O mutante que troca a alça por uma
+que aceita o módulo derruba dois testes; o que remove o runtime do contexto
+derruba os mesmos dois.
+
+**A permissão não é rechecada no contexto** — quem cobra é o Rust, do outro lado.
+Repetir seria defesa em profundidade escondendo mutante (Regra 1), o mesmo motivo
+pelo qual o status de lifecycle não recheca autorização.
+
+O portão de tipos pegou o que a suíte não pegaria: `Deps` não declarava
+`runtime`, e depois `deps.runtime` ficou "possivelmente undefined" dentro da
+closure — a checagem no spread não estreita lá dentro. Resolvido capturando antes
+do `return`, e não com `!`: `deps` é objeto de quem chama, e calar o compilador
+esconderia o caso real.
+
+### E a injeção em produção fechou o circuito
+
+`v2/core/runtime-app.js` adapta `window.baluarte.invoke('runtime:ler', …)` à forma
+que o contexto espera, e o entrypoint o injeta em `deps.runtime`. Renderer → IPC →
+main → Runtime, com a alça chegando ao módulo pelo `ctx`.
+
+**Fora do app devolve `null`**, e `null` deixa o contexto exatamente como era. Um
+adaptador que fingisse existir na web daria aos módulos uma alça que sempre falha
+— pior do que não ter alça. Gate do #238: web leve, app completo. O portão
+`v2:integracao` segue **15/15** no navegador, que é a prova de que o caminho web
+não mudou.
+
+Três decisões, cada uma com mutante:
+
+- **Ambiente meio montado é ausência.** `native` sem `invoke` é ponte quebrada;
+  tratá-la como pronta empurraria o erro para dentro do `init` de um módulo, longe
+  da causa. E `native` tem de ser `true`, não apenas verdadeiro — o mutante que
+  troca por `!ponte.native` morre.
+- **O envelope é remontado a cada chamada.** Congelá-lo no boot faria a leitura
+  responder sobre o passado: conceder depois do arranque não alcançaria o módulo,
+  revogar tampouco. Mesma razão de `declarado.concedidas` ser função. O teste cobre
+  os três instantes — antes, depois de conceder, depois de revogar.
+- **O Host continua autorizando localmente, mesmo no app.** Trocar
+  `criarGrantRuntime` pela autorização nativa faria um binário ausente derrubar
+  módulos que hoje sobem. E não afrouxa nada: quem nega a leitura de quem não
+  recebeu `READ_FILES` é o Rust, na hora do uso.
+
+**Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro. A cadeia
+está provada em Node com as peças reais e o adaptador contra ponte falsa; o ramo
+`process.resourcesPath` continua sem exercício.
+
+### E a ponte do app desktop entrou junto
+
+O `desktop/` era uma ilha CommonJS **sem um único teste**, e nada nele importava
+de `v2/`. Agora há `desktop/src/runtime.js`, com os canais `runtime:status`,
+`runtime:autorizar` e `runtime:ler` na allowlist do `ipc.js`.
+
+Escrito sem `require('electron')` de propósito — a raiz confiável entra injetada
+(`app.getPath('userData')/runtime-root`, seguindo o M4/RFC #232), calculada no
+`buildHandlers` e não no topo do módulo, porque `app.getPath` depende do app
+pronto. É o que permitiu testar a ponte em Node puro, e é o primeiro teste que o
+`desktop/` já teve: **8/8**, incluindo o ponta a ponta que atravessa ponte →
+transporte ESM → processo Rust, no Windows.
+
+Duas armadilhas pagas no caminho:
+
+- **`pathToFileURL` no `import()` dinâmico.** O transporte é ESM e o `main` é
+  CommonJS. Em Windows, `import()` de caminho absoluto (`C:\...`) falha sem URL
+  `file://` — família "Windows", oitava instância.
+- **`extraResources` com `filter` não falha quando a origem falta**, só não
+  copia. Declarar o empacotamento sem compilar o Rust antes teria produzido uma
+  release sem o Runtime, degradando educadamente, sem ninguém notar. Por isso o
+  `desktop-release.yml` ganhou o build do Rust **antes** de empacotar, por SO da
+  matriz.
+
+**Ausência não é erro:** sem binário, `status()` devolve
+`{ disponivel: false, motivo }`, mesmo contrato do `hermes:status`. Hoje é o
+estado normal de qualquer máquina que não rodou `cargo build`.
+
+**O que isto não prova:** o app empacotado. O ponta a ponta prova a ponte, não o
+instalador — o caminho `process.resourcesPath` só existe em app empacotado e
+segue sendo o único ramo não exercitado. E nada sobre o alvo **MSVC**: o binário
+aqui é GNU.
 
 ## 2026-08-17 — `running` passa a exigir autorização de Runtime
 

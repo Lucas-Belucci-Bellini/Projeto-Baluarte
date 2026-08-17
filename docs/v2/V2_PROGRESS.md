@@ -136,8 +136,38 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
 - [x] contract test completo Manifest → Registry → Permission → Runtime
 - [x] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
 - [x] observabilidade de transições `starting/running/stopping`
-- [ ] transporte concreto depois do contrato estabilizado
-- [ ] primeiro vertical slice de módulo nativo
+- [x] transporte concreto depois do contrato estabilizado
+      — o portão E2E (`scripts/v2-runtime-smoke.mjs`) **usa** o
+      `criarRuntimeStdio` em vez de reimplementar o protocolo, e fala com o
+      binário Rust de verdade. Antes havia duas implementações do mesmo
+      protocolo, e a única que tocava o binário passava por fora do transporte —
+      por isso ele não tinha consumidor, e por isso o E2E ficava verde sem provar
+      nada sobre ele. Medido no Windows: `cargo test` 12+3, smoke OK pelo
+      transporte, 12/12 no transporte, 9/9 mutantes.
+      A ponte do app desktop entrou junto (`desktop/src/runtime.js` + canais
+      `runtime:*` no `ipc.js` + empacotamento por `extraResources` + build do
+      Rust no `desktop-release.yml`): **8/8**, com ponta a ponta atravessando
+      ponte → transporte ESM → processo Rust. **Aberto:** o caminho
+      `process.resourcesPath`, que só existe em app empacotado — nenhum
+      instalador foi produzido com isto dentro.
+      Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
+- [x] primeiro vertical slice de módulo nativo
+      — a cadeia do [`V2_VERTICAL_SLICE.md`](./V2_VERTICAL_SLICE.md) percorrida
+      com o Runtime **real** (`test/v2/slice-nativo.test.js`, 5/5): Registry →
+      autorização pelo **processo Rust** → sessão → init → start → running → stop
+      → dispose → close, com Registry, Permission System, ciclo, transporte e
+      binário reais. Antes o Runtime era sempre espião ou duplo, e "só fica
+      `running` com sessão aberta" valia sobre um Runtime que nunca existira.
+      O `ModuleContext` ganhou `ctx.runtime.lerArquivo(caminho)` — a alça recebe
+      *caminho, e só*, com o id do módulo fechado por closure; é isso que impede
+      um módulo de nomear a raiz de outro. O `init` de `alpha` lê o próprio
+      arquivo e o **Rust** recusa o `../`.
+      A injeção em produção entrou junto: `v2/core/runtime-app.js` adapta
+      `window.baluarte.invoke` à forma do contexto, e o entrypoint o injeta em
+      `deps.runtime`. Fora do app devolve `null`, então o contexto na web fica
+      idêntico ao de antes — `v2:integracao` segue **15/15**.
+      **Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro; o
+      ramo `process.resourcesPath` continua sem exercício.
 
 ## Regra de manutenção
 

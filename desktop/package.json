@@ -50,6 +50,21 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "../v2/core",
+        "to": "v2core",
+        "filter": [
+          "runtime-stdio.js"
+        ]
+      },
+      {
+        "from": "../v2/runtime/target/release",
+        "to": "runtime",
+        "filter": [
+          "baluarte-runtime",
+          "baluarte-runtime.exe"
+        ]
       }
     ],
     "directories": {
