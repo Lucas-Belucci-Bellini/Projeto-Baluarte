@@ -39,6 +39,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] snapshot do estado atual do Supabase
 - [x] primeiro checkpoint de reconciliação TaxForge ↔ Supabase
 - [x] reconciliação inicial código vivo TaxForge ↔ schema Supabase
+- [x] auditoria inicial de SECURITY DEFINER e privilégios do Supabase
 - [ ] inventário completo branch → subsistema → documentação → implementação → testes
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -73,6 +74,10 @@ Documento de referência:
 
 `docs/SUPABASE-CURRENT-STATE.md`
 
+Segurança:
+
+`docs/SUPABASE-SECURITY-FUNCTION-AUDIT.md`
+
 Projeto Supabase inspecionado:
 
 `hcwzsxdcvmswebunznak`
@@ -87,17 +92,16 @@ Pontos importantes:
 - `tenants` + `tenant_members` já formam uma base de tenancy usada por várias tabelas TaxForge;
 - Veritas usa atualmente `user_id`-based ownership;
 - não foram identificadas tabelas `ark_*`, `aegis_*` ou `dailyplanner_*` no inventário `public` atual;
-- nenhuma migração destrutiva foi executada nesta etapa.
+- nenhuma migração destrutiva foi executada nesta etapa;
+- o advisor de segurança sinaliza `subscription_events` com RLS sem policy;
+- há funções `SECURITY DEFINER` publicamente ou autenticadamente executáveis que precisam ser mapeadas aos consumidores antes de alterar privilégios;
+- leaked-password protection do Auth está desativado e precisa ser tratado como tarefa de segurança separada.
 
 ## TaxForge — reconciliação atual
 
 Documento canônico de trabalho:
 
 `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`
-
-Última atualização do documento:
-
-`a5e3321c792df0285ff74aee083ace908886232c`
 
 O código atual do TaxForge continua usando MySQL/Drizzle: `drizzle/schema.ts` importa `mysql-core`, `drizzle.config.ts` define `dialect: "mysql"`, e `server/db.ts` usa `drizzle-orm/mysql2`. O servidor realmente usa as tabelas `users`, `tax_scenario_workspaces`, `tax_workspace_events` e `tax_workspace_members` para o fluxo atual de workspace/permissões. O mesmo schema contém um domínio separado de stock-analysis.
 
@@ -112,13 +116,15 @@ O Supabase possui 23 tabelas `taxforge_*` mais ricas para o domínio tributário
 
 ## Próximo passo exato
 
-**Completar o mapa de consumidores do TaxForge e, em seguida, auditar o Supabase.**
+**Mapear os consumidores das funções de segurança do Supabase e completar o mapa de consumidores do TaxForge.**
 
-1. Enumerar todas as funções de `server/db.ts`, `server/routers.ts`, `server/storage.ts` e workspace-permissions.
-2. Marcar cada operação como `LIVE_MYSQL_WORKSPACE`, `LEGACY_OR_PARALLEL_MYSQL_STOCK` ou `UNRESOLVED`.
-3. Consultar policies, foreign keys e privilégios das funções nas 23 tabelas `taxforge_*`.
-4. Comparar identidade `users`/workspace do MySQL com `tenants`/`tenant_members` do Supabase.
-5. Só então decidir o modelo PostgreSQL canônico e escrever a primeira migration não destrutiva.
+1. Para cada `SECURITY DEFINER`, localizar o corpo SQL, consumidor e motivo de exposição.
+2. Classificar cada função como `KEEP_PUBLIC_RPC`, `AUTHENTICATED_RPC`, `INTERNAL_ONLY` ou `REPLACE`.
+3. Enumerar as funções de `server/db.ts`, `server/routers.ts`, `server/storage.ts` e workspace-permissions.
+4. Marcar cada operação como `LIVE_MYSQL_WORKSPACE`, `LEGACY_OR_PARALLEL_MYSQL_STOCK` ou `UNRESOLVED`.
+5. Consultar policies, foreign keys e privilégios das funções nas 23 tabelas `taxforge_*`.
+6. Comparar identidade `users`/workspace do MySQL com `tenants`/`tenant_members` do Supabase.
+7. Só então decidir o modelo PostgreSQL canônico e escrever a primeira migration não destrutiva.
 
 Depois disso:
 
@@ -134,12 +140,13 @@ Ao iniciar uma nova conversa:
 4. abrir `docs/BALUARTE-SUBSYSTEM-MAP.md`;
 5. abrir `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`;
 6. abrir `docs/SUPABASE-CURRENT-STATE.md`;
-7. abrir `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`;
-8. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-9. verificar o estado real dos seis repositórios e do projeto Supabase;
-10. localizar **Próximo passo exato**;
-11. continuar dali;
-12. atualizar este arquivo ao terminar.
+7. abrir `docs/SUPABASE-SECURITY-FUNCTION-AUDIT.md`;
+8. abrir `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`;
+9. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+10. verificar o estado real dos seis repositórios e do projeto Supabase;
+11. localizar **Próximo passo exato**;
+12. continuar dali;
+13. atualizar este arquivo ao terminar.
 
 ## Segurança e confidencialidade arquitetural
 
