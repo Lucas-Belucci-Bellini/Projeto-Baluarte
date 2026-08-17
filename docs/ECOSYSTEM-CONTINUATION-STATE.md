@@ -38,6 +38,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] matriz enumerando as famílias atuais `v2/*` e protocolo de verificação
 - [x] snapshot do estado atual do Supabase
 - [x] primeiro checkpoint de reconciliação TaxForge ↔ Supabase
+- [x] reconciliação inicial código vivo TaxForge ↔ schema Supabase
 - [ ] inventário completo branch → subsistema → documentação → implementação → testes
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -80,11 +81,11 @@ A inspeção encontrou um banco já populado com múltiplos domínios no schema 
 
 Pontos importantes:
 
+- existem 23 tabelas `taxforge_*` no Supabase atual;
 - todas as tabelas retornadas pela inspeção estavam com RLS habilitado;
 - RLS habilitado ainda precisa ser validado contra as policies reais;
 - `tenants` + `tenant_members` já formam uma base de tenancy usada por várias tabelas TaxForge;
 - Veritas usa atualmente `user_id`-based ownership;
-- existem 23 tabelas `taxforge_*` no Supabase atual;
 - não foram identificadas tabelas `ark_*`, `aegis_*` ou `dailyplanner_*` no inventário `public` atual;
 - nenhuma migração destrutiva foi executada nesta etapa.
 
@@ -94,45 +95,34 @@ Documento canônico de trabalho:
 
 `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`
 
-Commit do checkpoint:
+Última atualização do documento:
 
-`cf7d0b2ad841ced5ec8544844cf6daeb03cdf2dc`
+`a5e3321c792df0285ff74aee083ace908886232c`
 
-O código atual de `drizzle/schema.ts` usa `drizzle-orm/mysql-core` e contém tanto estruturas de workspace tributário quanto um domínio legado/parallel de stock-analysis. O Supabase, por outro lado, já possui 23 tabelas `taxforge_*` voltadas ao domínio tributário.
+O código atual do TaxForge continua usando MySQL/Drizzle: `drizzle/schema.ts` importa `mysql-core`, `drizzle.config.ts` define `dialect: "mysql"`, e `server/db.ts` usa `drizzle-orm/mysql2`. O servidor realmente usa as tabelas `users`, `tax_scenario_workspaces`, `tax_workspace_events` e `tax_workspace_members` para o fluxo atual de workspace/permissões. O mesmo schema contém um domínio separado de stock-analysis.
 
-**Conclusão:** ainda não declarar nenhum dos dois modelos como canônico. A próxima etapa é comparar o uso real no código (`server/db.ts`, `server/routers.ts`, migrations e queries) com as tabelas PostgreSQL existentes.
+O Supabase possui 23 tabelas `taxforge_*` mais ricas para o domínio tributário. Portanto, a decisão correta neste momento é **convergência de banco**, não criação de novas tabelas.
 
-## TaxForge — estado anterior
+### Classificação atual
 
-Foi concluído o primeiro inventário do schema real do TaxForge em `drizzle/schema.ts` e dos principais consumidores em `server/db.ts` e `server/routers.ts`.
-
-Documento de inventário:
-
-`docs/domains/TAXFORGE-SCHEMA-INVENTORY.md`
-
-O inventário confirmou que o schema antigo do TaxForge é MySQL/Drizzle e mistura o domínio tributário com o legado de stock-analysis. A migração para Supabase deve ser uma remodelagem controlada, não uma cópia do schema antigo.
-
-## Último trabalho de arquitetura do Baluarte
-
-Foi criada a branch `docs/v2-branch-evidence-matrix` com `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`.
-
-Commit: `4786446201838f76f8e4957fc78cf3f0535405e9`
-
-A matriz enumera as 7 branches atualmente encontradas em `v2/*`, registra hipóteses iniciais sem tratá-las como fatos e define o protocolo para verificar head, linhagem, caminhos alterados, testes, CI e documentação.
+- `LIVE_MYSQL_WORKSPACE`: users, tax_scenario_workspaces, tax_workspace_events, tax_workspace_members
+- `LEGACY_OR_PARALLEL_MYSQL_STOCK`: stocks, watchlist, stock_analysis, price_history, alerts, notifications, chat_history, analysis_history
+- `SUPABASE_CANDIDATE`: companies, products, suppliers, contracts, scenarios/versions/runs, evidence/sources, analyses/versions, reviews, decisions/actions, tax_rules/versions, imports
+- `UNRESOLVED`: equivalência exata entre os dois modelos, migração de identidade/tenant e uso real das 23 tabelas Supabase pelo aplicativo
 
 ## Próximo passo exato
 
-**Reconciliar o código vivo do TaxForge com as 23 tabelas `taxforge_*` do Supabase. Começar por `server/db.ts`, `server/routers.ts`, migrations e queries para classificar cada tabela do Drizzle como ativa, legado ou paralela. Em paralelo, auditar RLS policies e privilégios das funções antes de ampliar o banco.**
+**Completar o mapa de consumidores do TaxForge e, em seguida, auditar o Supabase.**
 
-Após isso:
+1. Enumerar todas as funções de `server/db.ts`, `server/routers.ts`, `server/storage.ts` e workspace-permissions.
+2. Marcar cada operação como `LIVE_MYSQL_WORKSPACE`, `LEGACY_OR_PARALLEL_MYSQL_STOCK` ou `UNRESOLVED`.
+3. Consultar policies, foreign keys e privilégios das funções nas 23 tabelas `taxforge_*`.
+4. Comparar identidade `users`/workspace do MySQL com `tenants`/`tenant_members` do Supabase.
+5. Só então decidir o modelo PostgreSQL canônico e escrever a primeira migration não destrutiva.
 
-1. fechar identidade/tenant;
-2. fechar o dicionário PostgreSQL canônico do TaxForge;
-3. especificar RLS e testes de isolamento;
-4. definir contratos de referência/eventos;
-5. escrever migrations somente quando o modelo estiver fechado;
-6. iniciar o dicionário ARK;
-7. repetir para AEGIS, Veritas, Baluarte e DailyPlanner.
+Depois disso:
+
+`canonical TaxForge PostgreSQL → RLS tests → ecosystem identity contract → external references/events → ARK data dictionary`
 
 ## Regra de retomada
 
