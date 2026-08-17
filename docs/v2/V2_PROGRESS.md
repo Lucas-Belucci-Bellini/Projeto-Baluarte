@@ -22,7 +22,7 @@ Decision Log. Serve para uma sessão nova descobrir rapidamente o que já existe
 - [x] Per-module lifecycle status
 - [x] Operational platform facade
 
-## Portão de integração (`npm run v2:integracao`) — 14/14
+## Portão de integração (`npm run v2:integracao`) — 15/15
 
 - [x] roda no Windows
 - [x] espera por condição, não por relógio
@@ -94,11 +94,47 @@ cobrindo a segunda — Regra 1 outra vez. Quem enxerga a poda sozinha é o estad
 persistido: sem ela, `exportar()` mantém a permissão e o `importar()` do próximo
 arranque a ressuscita sob um manifesto que não a declara mais.
 
+## O ciclo passa pelo Runtime Host antes do `init`
+
+- [x] `running` exige autorização aberta — quem não abre não chega ao `init`
+- [x] a ordem do contrato (`open → init → start`, `stop → close → dispose`) é executada
+- [x] o entrypoint injeta um Host real; o portão cobra que ele foi consultado
+
+Terceira vez o mesmo padrão, e vale nomear: **peça pronta, testada e desligada.**
+Primeiro o `criarPlataforma`, depois o contract test, agora o
+`criarLifecycleRuntime` — o Host por módulo. Ele existia, tinha teste próprio, e
+a busca textual pelos importadores achou **um** consumidor de produção
+(`vertical-slice.js`), que não é o caminho por onde os módulos sobem. O
+`ciclo.ts` ia direto ao `init`.
+
+O efeito era um módulo declarado `running` cuja autorização nunca tinha sido
+pedida uma única vez. O `V2_LIFECYCLE_RUNTIME_CONTRACT.md` descrevia a ordem
+certa desde sempre; ninguém a executava. **Contrato sem executor é intenção** — e
+o retrato mentia com todas as luzes verdes, porque peça correta e desligada dá
+exatamente o mesmo diagnóstico que peça ligada.
+
+O teto do `init` foi extraído (`comTeto`) e passou a valer para a abertura: um
+Runtime que não responde pendura a subida do mesmo jeito que um `init` que trava,
+e esse caminho novo não passava por teto nenhum.
+
+**Oito mutantes plantados, oito mortos** — incluindo o mutante que É a doença
+original (remover a chamada ao Host: 8 dos 12 testes caem). O portão foi de
+14 para **15/15**, e a asserção nova é a única que enxerga o defeito: plantando-o
+no entrypoint, as outras 14 seguem verdes e ela devolve `[]`.
+
+> **Grant vazio é autorização disponível.** `militar` declara `NETWORK`, não
+> recebe nada e continua subindo — como antes. Tratar "sem permissão concedida"
+> como "sem autorização" derrubaria um módulo correto e transformaria
+> deny-by-default em deny-tudo. A distinção quase virou defeito ao desenhar isto.
+
+O `--strictPort` entrou no portão junto: sem ele o Vite troca de porta em
+silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
+
 ## Próximo bloco
 
 - [x] integrar a fachada ao entrypoint oficial da V2
 - [x] contract test completo Manifest → Registry → Permission → Runtime
-- [ ] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
+- [x] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
 - [ ] observabilidade de transições `starting/running/stopping`
 - [ ] transporte concreto depois do contrato estabilizado
 - [ ] primeiro vertical slice de módulo nativo

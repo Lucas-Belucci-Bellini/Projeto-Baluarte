@@ -16,6 +16,7 @@
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
+import { mesmoConteudo } from './lib/eol.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -87,7 +88,11 @@ if (i === -1 || j === -1) {
 const novo = atual.slice(0, i) + tabela() + atual.slice(j + FIM.length);
 
 if (process.argv.includes('--verificar')) {
-  if (novo !== atual) {
+  /* Ignorando o fim de linha. Aqui o `novo` nasce do próprio `atual` (só a
+   * região entre os marcadores é trocada), então em Windows os dois diferem
+   * exatamente no trecho regenerado, que sai com `\n` contra o CRLF do resto.
+   * Ver `lib/eol.mjs`. */
+  if (!mesmoConteudo(novo, atual)) {
     console.error(
       'gen-tabela-estabilidade: a tabela do README não bate com src/core/politica.js.\n' +
       'Rode `npm run gen-tabela-estabilidade` e commite o resultado.'

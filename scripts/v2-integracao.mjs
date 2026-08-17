@@ -43,7 +43,12 @@ const viteBin = (() => {
   }
 })();
 
-const servidor = spawn(process.execPath, [viteBin, '--port', String(PORTA), '--host', '127.0.0.1'],
+/* `--strictPort` não é detalhe: sem ele o Vite troca de porta EM SILÊNCIO quando
+ * a escolhida está ocupada. O `esperarServidor` abaixo então encontra outra
+ * coisa viva no 4193 — um servidor zumbi de uma execução anterior, por exemplo —
+ * e o portão passa a medir o que não é o alvo. Falhar alto ("vite não subiu") é
+ * o comportamento certo: porta ocupada é problema do ambiente, não resultado. */
+const servidor = spawn(process.execPath, [viteBin, '--port', String(PORTA), '--strictPort', '--host', '127.0.0.1'],
   { cwd: process.cwd(), stdio: 'ignore' });
 
 const esperarServidor = async () => {
@@ -107,6 +112,18 @@ try {
   conferir('os 4 módulos sobem sem falha',
     v2?.resultado?.vivos?.length === 4 && v2?.resultado?.falhas?.length === 0,
     JSON.stringify(v2?.resultado?.falhas ?? []));
+  /* A autorização foi de fato PEDIDA, e antes do `init`. Esta é a asserção que
+   * o estado anterior não tinha: o ciclo ia direto ao `init`, os 4 módulos
+   * subiam, e tudo acima ficava verde com o Runtime nunca consultado. Uma peça
+   * correta e desligada dá exatamente o mesmo retrato que uma peça ligada — até
+   * alguém perguntar por ela. */
+  const runtimeAbertos = await pagina.evaluate(() => window.__v2?.runtimeAbertos?.());
+  conferir('todo módulo no ar teve sessão de Runtime aberta',
+    Array.isArray(runtimeAbertos)
+      && runtimeAbertos.length === 4
+      && (v2?.resultado?.vivos ?? []).every((id) => runtimeAbertos.includes(id)),
+    JSON.stringify(runtimeAbertos ?? null));
+
   conferir('as 18 rotas chegam ao router REAL da V1',
     v2?.resultado?.rotas === 18 && v2?.totalRotas === 18,
     `boot=${v2?.resultado?.rotas} router=${v2?.totalRotas}`);

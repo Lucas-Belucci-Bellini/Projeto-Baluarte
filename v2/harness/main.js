@@ -29,6 +29,12 @@ import { criarResolvedorApi } from '../core/api.js';
  * propósito: um Core que serve módulo com permissão declarada e não tem a quem
  * perguntar está mal montado, e o lugar de descobrir isso é aqui. */
 import { criarPermissoes } from '../core/permissoes.js';
+/* O Runtime Host por módulo. Existia, era testado, e tinha um único consumidor
+ * de produção — o `vertical-slice.js`, que não é o caminho por onde os módulos
+ * sobem. Ligá-lo aqui é o que faz `running` significar "autorização disponível"
+ * em campo, e não só na definição. */
+import { criarLifecycleRuntime } from '../core/module-runtime-lifecycle.js';
+import { criarGrantRuntime } from '../core/runtime-bootstrap.js';
 
 /* O router da V1, sem alteração nenhuma. É o ponto: adaptar, não reescrever. */
 import { router } from '../../src/core/router.js';
@@ -68,6 +74,22 @@ async function principal() {
    * uma escolha do banco de prova — e é o que faz `militar` subir com NETWORK
    * declarada e negada, que é exatamente o que se quer ver funcionando. */
   const permissoes = criarPermissoes({ bus });
+
+  /* O Host real, com a AUTORIZAÇÃO como sessão e sem transporte — o transporte
+   * concreto é item posterior da fila, e inventá-lo aqui seria construir a
+   * fronteira antes de o contrato dela estar fechado.
+   *
+   * O que isto prova: o ciclo pede autorização a cada módulo antes do `init`, e
+   * `criarGrantRuntime` levanta se o registry não estiver selado ou o módulo não
+   * estiver ativo. O que NÃO prova: nada sobre o Runtime Rust, que não existe no
+   * navegador. Grant vazio é autorização disponível — `militar` sobe com NETWORK
+   * declarada e negada, como antes; "sem permissão concedida" não é "sem
+   * autorização", e confundir os dois derrubaria um módulo correto. */
+  const runtime = criarLifecycleRuntime(registry, {
+    abrir: async (reg, perm, id) => { criarGrantRuntime(reg, perm, id); },
+    fechar: async () => {}
+  }, permissoes);
+
   const saida = document.getElementById('saida');
 
   const boot = criarBoot(registry, { storage, bus, metricas, trabalho, apis, permissoes }, {
@@ -84,7 +106,7 @@ async function principal() {
         nav.appendChild(a);
       }
     }
-  });
+  }, { runtime });
 
   /* Quem sobe agora é a Plataforma, não o boot. O supervisor decide `ready` ou
    * `degraded` a partir das falhas, e a saúde/lifecycle passam a existir em
@@ -148,6 +170,11 @@ async function principal() {
      * isso não existia em lugar nenhum — o harness sabia quantos módulos
      * subiram, mas não se o sistema se considerava saudável. */
     partida: { estado: partida.estado, duracaoMs: partida.duracaoMs },
+    /* Quais módulos têm sessão de Runtime aberta. FUNÇÃO pela mesma razão dos
+     * vizinhos: o conjunto muda na descida, e um valor congelado no boot
+     * responderia sobre o passado (Regra 5). É o que deixa o portão perguntar
+     * "a autorização foi realmente pedida?" em vez de supor que foi. */
+    runtimeAbertos: () => runtime.abertas(),
     parar: () => plataforma.parar(),
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
