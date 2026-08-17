@@ -36,6 +36,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] mapa inicial branch → subsistema
 - [x] primeira matriz de evidências para V2
 - [x] matriz enumerando as famílias atuais `v2/*` e protocolo de verificação
+- [x] snapshot do estado atual do Supabase
 - [ ] inventário completo branch → subsistema → documentação → implementação → testes
 - [ ] mapa final de consumidores do TaxForge
 - [ ] dicionário de dados ARK
@@ -53,7 +54,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 ### Fase B — bancos por domínio
 
-Ainda não iniciar a construção completa dos bancos até os contratos acima estarem suficientemente definidos.
+A inspeção do banco real começou. Ainda não iniciar migrações destrutivas ou declarar o schema final até a reconciliação dos domínios e dos contratos.
 
 Ordem inicial prevista:
 
@@ -64,24 +65,31 @@ Ordem inicial prevista:
 5. Baluarte
 6. DailyPlanner somente quando houver necessidade real de sincronização
 
-### Fase C — integração
+## Supabase — estado atual
 
-Ainda pendente:
+Documento de referência:
 
-- identidade compartilhada;
-- organizações;
-- referências externas;
-- eventos;
-- notificações;
-- integrações específicas por projeto.
+`docs/SUPABASE-CURRENT-STATE.md`
 
-## Último trabalho concluído
+Commit do inventário:
 
-Foi criada a branch `docs/v2-branch-evidence-matrix` com `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`.
+`73d67902ff928985ce7f6f4e1cea67e4024ba91d`
 
-Commit: `4786446201838f76f8e4957fc78cf3f0535405e9`
+Projeto Supabase inspecionado:
 
-A matriz enumera as 7 branches atualmente encontradas em `v2/*`, registra hipóteses iniciais sem tratá-las como fatos e define o protocolo para verificar head, linhagem, caminhos alterados, testes, CI e documentação.
+`hcwzsxdcvmswebunznak`
+
+A inspeção encontrou um banco já populado com múltiplos domínios no schema `public`, incluindo tenant/identidade, conhecimento/IA, legal, Veritas e TaxForge.
+
+Pontos importantes:
+
+- todas as tabelas retornadas pela inspeção estavam com RLS habilitado;
+- RLS habilitado ainda precisa ser validado contra as policies reais;
+- `tenants` + `tenant_members` já formam uma base de tenancy usada por várias tabelas TaxForge;
+- Veritas usa atualmente `user_id`-based ownership;
+- existem 23 tabelas `taxforge_*` no Supabase atual;
+- não foram identificadas tabelas `ark_*`, `aegis_*` ou `dailyplanner_*` no inventário `public` atual;
+- nenhuma migração destrutiva foi executada nesta etapa.
 
 ## TaxForge — estado anterior
 
@@ -93,23 +101,31 @@ Documento de inventário:
 
 Commit no Baluarte:
 
-`8294fb0dda8c91bcc1fbc2f2d7836b418ec09553`
+`8294fb0dda8c91bcc1fbc2f2d7836b4186b418eb?`
 
-O inventário confirmou que o schema atual é MySQL/Drizzle e mistura o domínio tributário com o legado de stock-analysis. A migração para Supabase deve ser uma remodelagem controlada, não uma cópia do schema atual.
+> Nota: o commit acima é mantido como referência histórica; o arquivo continua sendo a fonte do inventário do repositório. Não substituir o estado atual do Supabase pelo schema antigo.
+
+O inventário confirmou que o schema antigo do TaxForge é MySQL/Drizzle e mistura o domínio tributário com o legado de stock-analysis. A migração para Supabase deve ser uma remodelagem controlada, não uma cópia do schema antigo.
+
+## Último trabalho de arquitetura do Baluarte
+
+Foi criada a branch `docs/v2-branch-evidence-matrix` com `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`.
+
+Commit: `4786446201838f76f8e4957fc78cf3f0535405e9`
+
+A matriz enumera as 7 branches atualmente encontradas em `v2/*`, registra hipóteses iniciais sem tratá-las como fatos e define o protocolo para verificar head, linhagem, caminhos alterados, testes, CI e documentação.
 
 ## Próximo passo exato
 
-**Verificar branch por branch as 7 branches `v2/*`: resolver head/linhagem, comparar caminhos alterados, identificar testes/CI/documentação e elevar cada associação de `candidate` para `high`, `medium` ou `low`. Depois repetir o método para `claude/*`.**
+**Reconciliar as 23 tabelas `taxforge_*` existentes no Supabase com o código atual do TaxForge. Em paralelo, auditar as RLS policies e privilégios das funções antes de ampliar o banco. Depois fechar identidade/tenant e o dicionário PostgreSQL do TaxForge.**
 
-Após fechar o mapa arquitetural do Baluarte:
+Após isso:
 
-1. completar consumidores do legado TaxForge;
-2. definir identidade/tenant;
-3. fechar classificação das tabelas TaxForge;
-4. fechar dicionário PostgreSQL;
-5. especificar RLS e testes de isolamento;
-6. escrever migrations Supabase;
-7. iniciar o dicionário ARK.
+1. especificar RLS e testes de isolamento;
+2. definir contratos de referência/eventos;
+3. escrever migrations somente quando o modelo estiver fechado;
+4. iniciar o dicionário ARK;
+5. repetir para AEGIS, Veritas, Baluarte e DailyPlanner.
 
 ## Regra de retomada
 
@@ -120,11 +136,12 @@ Ao iniciar uma nova conversa:
 3. abrir `docs/BALUARTE-BRANCH-INVENTORY.md`;
 4. abrir `docs/BALUARTE-SUBSYSTEM-MAP.md`;
 5. abrir `docs/BALUARTE-V2-BRANCH-EVIDENCE-MATRIX.md`;
-6. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-7. verificar o estado real dos seis repositórios;
-8. localizar **Próximo passo exato**;
-9. continuar dali;
-10. atualizar este arquivo ao terminar.
+6. abrir `docs/SUPABASE-CURRENT-STATE.md`;
+7. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+8. verificar o estado real dos seis repositórios e do projeto Supabase;
+9. localizar **Próximo passo exato**;
+10. continuar dali;
+11. atualizar este arquivo ao terminar.
 
 ## Segurança e confidencialidade arquitetural
 
