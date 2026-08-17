@@ -30,6 +30,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 - [x] princípio Project Knowledge Mesh
 - [x] princípios de segurança e menor privilégio
 - [~] dicionário de dados detalhado por projeto — TaxForge iniciado em `docs/domains/TAXFORGE-DOMAIN-SPEC.md` (PR #437)
+- [ ] inventário final do schema/consumidores do TaxForge
 - [ ] dicionário de dados ARK
 - [ ] dicionário de dados DailyPlanner
 - [ ] dicionário de dados AEGIS
@@ -69,9 +70,16 @@ Ainda pendente:
 
 ## Último trabalho concluído nesta retomada
 
-Foi analisado o README e o schema Drizzle atual do TaxForge. O schema atual é MySQL e mistura a camada tributária recente com legado de stock-analysis. Por isso a próxima etapa NÃO é copiar as tabelas para Supabase: é fazer o inventário de todas as tabelas e de seus consumidores no código.
+Foi reaberto o estado central e verificado o schema real do TaxForge em `drizzle/schema.ts`, além de `server/db.ts`.
 
-Foi criada a especificação:
+O schema atual usa Drizzle/MySQL e mistura dois domínios:
+
+1. **TaxForge atual:** `users`, `taxScenarioWorkspaces`, `taxWorkspaceEvents`, `taxWorkspaceMembers`.
+2. **Legado de stock-analysis:** `stocks`, `watchlist`, `stockAnalysis`, `priceHistory`, `alerts`, `notifications`, `chatHistory`, `analysisHistory`.
+
+O código de `server/db.ts` consome diretamente ambos os grupos. Portanto, não devemos migrar `drizzle/schema.ts` cegamente para Supabase.
+
+A especificação arquitetural do domínio já foi criada em:
 
 `docs/domains/TAXFORGE-DOMAIN-SPEC.md`
 
@@ -83,13 +91,16 @@ PR:
 
 `#437 — docs: define TaxForge ecosystem domain`
 
-Commit da branch:
-
-`ebef29f6577c7d13bb204f47bc0470879bb18005`
-
 ## Próximo passo exato
 
-**Inventariar o schema atual do TaxForge e o código que o consome, classificando cada tabela como `manter`, `migrar`, `substituir`, `legado` ou `remover após migração`.**
+**Completar o inventário do TaxForge: mapear cada tabela atual para seus consumidores no código e classificá-la como `manter`, `migrar`, `substituir`, `legado` ou `remover após migração`.**
+
+Prioridade imediata:
+
+- mapear `taxScenarioWorkspaces`, `taxWorkspaceEvents`, `taxWorkspaceMembers` e `users`;
+- localizar todos os consumidores das tabelas de stock-analysis;
+- separar definitivamente o domínio tributário do legado;
+- somente depois desenhar as tabelas Supabase definitivas do TaxForge.
 
 Depois disso, seguir para o dicionário de dados do ARK.
 
