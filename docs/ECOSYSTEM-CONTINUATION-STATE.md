@@ -19,8 +19,6 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`
 
-Esse documento define a arquitetura conceitual, propriedade dos dados, capacidades opcionais, segurança e ordem geral de construção.
-
 ## Estado atual
 
 ### Fase A — documentação
@@ -31,7 +29,12 @@ Esse documento define a arquitetura conceitual, propriedade dos dados, capacidad
 - [x] regra de capacidades opcionais (incluindo Plano opcional no ARK)
 - [x] princípio Project Knowledge Mesh
 - [x] princípios de segurança e menor privilégio
-- [ ] dicionário de dados detalhado por projeto
+- [~] dicionário de dados detalhado por projeto — TaxForge iniciado em `docs/domains/TAXFORGE-DOMAIN-SPEC.md` (PR #437)
+- [ ] dicionário de dados ARK
+- [ ] dicionário de dados DailyPlanner
+- [ ] dicionário de dados AEGIS
+- [ ] dicionário de dados Veritas
+- [ ] dicionário de dados Baluarte
 - [ ] contrato de identidade compartilhada
 - [ ] contrato de organização/tenant
 - [ ] contrato de referência externa
@@ -64,24 +67,31 @@ Ainda pendente:
 - notificações;
 - integrações específicas por projeto.
 
-## Próximo passo recomendado
+## Último trabalho concluído nesta retomada
 
-**Construir o dicionário de dados detalhado dos seis projetos dentro do Baluarte, começando pelo TaxForge e avançando projeto por projeto.**
+Foi analisado o README e o schema Drizzle atual do TaxForge. O schema atual é MySQL e mistura a camada tributária recente com legado de stock-analysis. Por isso a próxima etapa NÃO é copiar as tabelas para Supabase: é fazer o inventário de todas as tabelas e de seus consumidores no código.
 
-Para cada projeto registrar:
+Foi criada a especificação:
 
-1. tabelas/entidades existentes;
-2. entidades que precisam ser criadas;
-3. campos e tipos relevantes;
-4. relacionamentos;
-5. dados sensíveis;
-6. proprietário do dado;
-7. retenção;
-8. RLS/permissões;
-9. eventos publicados;
-10. referências externas aceitas;
-11. dependências com outros projetos;
-12. o que explicitamente NÃO deve ser compartilhado.
+`docs/domains/TAXFORGE-DOMAIN-SPEC.md`
+
+Branch:
+
+`docs/taxforge-domain-spec`
+
+PR:
+
+`#437 — docs: define TaxForge ecosystem domain`
+
+Commit da branch:
+
+`ebef29f6577c7d13bb204f47bc0470879bb18005`
+
+## Próximo passo exato
+
+**Inventariar o schema atual do TaxForge e o código que o consome, classificando cada tabela como `manter`, `migrar`, `substituir`, `legado` ou `remover após migração`.**
+
+Depois disso, seguir para o dicionário de dados do ARK.
 
 ## Regra de retomada
 
@@ -90,10 +100,10 @@ Ao iniciar uma nova conversa sobre este ecossistema:
 1. abrir este arquivo;
 2. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
 3. verificar o estado da Fase A/B/C;
-4. identificar o primeiro item `[ ]` da ordem atual;
+4. localizar o **Próximo passo exato**;
 5. verificar o estado real dos seis repositórios antes de modificar qualquer coisa;
 6. continuar a partir desse ponto;
-7. atualizar este arquivo com o próximo ponto de retomada.
+7. atualizar este arquivo com o novo ponto de retomada.
 
 ## Regra de segurança arquitetural
 
@@ -102,10 +112,6 @@ Nenhum banco deve ser ligado diretamente ao banco interno de outro projeto apena
 ## Regra de projeto
 
 Projetos podem possuir funcionalidades parecidas sem possuírem o mesmo modelo ou a mesma obrigatoriedade. O Baluarte coordena capacidades; cada projeto decide quais capacidades fazem sentido para seu domínio.
-
-## Última instrução de trabalho
-
-**Continuar a análise real dos seis repositórios e transformar o desenho conceitual em contratos concretos dentro do Baluarte antes de construir a topologia final dos Supabase.**
 
 ## Última atualização
 
