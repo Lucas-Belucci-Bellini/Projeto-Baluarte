@@ -6,6 +6,52 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-17 — `running` passa a exigir autorização de Runtime
+
+Pela terceira vez seguida o defeito foi o mesmo: **peça pronta, testada e
+desligada.** O `criarLifecycleRuntime` — o Runtime Host por módulo — existia,
+tinha teste próprio, e a busca textual pelos importadores achou **um** consumidor
+de produção (`vertical-slice.js`), que não é o caminho por onde os módulos sobem.
+O `ciclo.ts` ia direto ao `init`.
+
+O `docs/v2/V2_LIFECYCLE_RUNTIME_CONTRACT.md` descrevia desde sempre a ordem certa
+— `Runtime.open → init → start`, e `stop → Runtime.close → dispose`. Ninguém a
+executava. O resultado era um módulo declarado `running` cuja autorização nunca
+tinha sido pedida uma única vez: o retrato afirmava sobre o Runtime uma coisa que
+o Runtime não sabia, com todas as luzes verdes. Peça correta e desligada dá
+exatamente o mesmo diagnóstico que peça ligada — até alguém perguntar por ela.
+
+Agora o ciclo abre o Host antes do `init`. Quem não abre não executa fase nenhuma,
+não entra em `vivos()` e portanto não pode ser `running`; a falha é reportada na
+fase **`runtime`**, e não em `init`, porque `init` não rodou e o rótulo errado
+manda quem lê o diagnóstico para o arquivo errado. O teto do `init` foi extraído
+(`comTeto`) e passou a valer para a abertura — Runtime que não responde pendura a
+subida igual a um `init` que trava, e o caminho novo não passava por teto nenhum.
+
+O Host é opcional no ciclo (sem ele o comportamento é o de antes, o que mantém
+honestos os testes de unidade das outras peças), **mas o entrypoint passa um
+real**: opcional que ninguém injeta era justamente a doença anterior.
+
+**Oito mutantes plantados, oito mortos** — incluindo o que É a doença original:
+removida a chamada ao Host, 8 dos 12 testes novos caem. Suíte 893 → 905.
+
+O portão de integração foi de 14 para **15/15**. A asserção nova é a única que
+enxerga o defeito: plantando-o no entrypoint, as outras 14 seguem verdes e ela
+devolve `[]` — o estado exato de antes desta mudança.
+
+> **Grant vazio é autorização disponível.** `militar` declara `NETWORK`, não
+> recebe nada e continua subindo. Tratar "sem permissão concedida" como "sem
+> autorização" derrubaria um módulo correto e transformaria deny-by-default em
+> deny-tudo. A distinção quase virou defeito ao desenhar isto.
+
+O que isto **não** prova: nada sobre o Runtime Rust, que não existe no navegador.
+A sessão injetada no entrypoint é a autorização sem transporte
+(`criarGrantRuntime`); o transporte concreto é item posterior da fila.
+
+Junto veio o `--strictPort` no `scripts/v2-integracao.mjs`: sem ele o Vite troca
+de porta em silêncio quando a escolhida está ocupada, e o portão passa a medir um
+servidor zumbi de outra execução.
+
 ## 2026-08-16 — a fachada da V2 saiu do teste e foi para o ar
 
 O `criarPlataforma` existia, tinha teste e **não era usado por ninguém**: busca
