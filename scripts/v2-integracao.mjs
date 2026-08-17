@@ -109,8 +109,11 @@ try {
   const v2 = await pagina.evaluate(() => window.__v2);
 
   conferir('o boot da V2 roda no navegador', v2 && !v2.erro, v2?.erro);
-  conferir('os 4 módulos sobem sem falha',
-    v2?.resultado?.vivos?.length === 4 && v2?.resultado?.falhas?.length === 0,
+  /* Contagem EXATA, não `>= 5`: um módulo que some do registro é defeito tão
+   * real quanto um que falha, e `>=` deixaria o sumiço passar calado. Foi para
+   * 5 com o `visor3d`, o consumidor do engine 3D. */
+  conferir('os 5 módulos sobem sem falha',
+    v2?.resultado?.vivos?.length === 5 && v2?.resultado?.falhas?.length === 0,
     JSON.stringify(v2?.resultado?.falhas ?? []));
   /* A autorização foi de fato PEDIDA, e antes do `init`. Esta é a asserção que
    * o estado anterior não tinha: o ciclo ia direto ao `init`, os 4 módulos
@@ -118,17 +121,26 @@ try {
    * correta e desligada dá exatamente o mesmo retrato que uma peça ligada — até
    * alguém perguntar por ela. */
   const runtimeAbertos = await pagina.evaluate(() => window.__v2?.runtimeAbertos?.());
+  /* Compara com `vivos`, e não com um literal: as duas listas terem o mesmo
+   * tamanho E todo vivo estar entre os abertos é dizer que os CONJUNTOS são
+   * iguais — que é a propriedade real. O literal `4` dizia a mesma coisa por
+   * acidente e envelhecia a cada módulo novo, transformando "acrescentei um
+   * módulo" em "o portão ficou vermelho". */
+  const vivos = v2?.resultado?.vivos ?? [];
   conferir('todo módulo no ar teve sessão de Runtime aberta',
     Array.isArray(runtimeAbertos)
-      && runtimeAbertos.length === 4
-      && (v2?.resultado?.vivos ?? []).every((id) => runtimeAbertos.includes(id)),
+      && runtimeAbertos.length === vivos.length
+      && vivos.every((id) => runtimeAbertos.includes(id)),
     JSON.stringify(runtimeAbertos ?? null));
 
-  conferir('as 18 rotas chegam ao router REAL da V1',
-    v2?.resultado?.rotas === 18 && v2?.totalRotas === 18,
+  /* Estas duas seguem exatas de propósito: rota ou item de navegação que SOME é
+   * defeito tão real quanto um que falha, e só o número fixo pega o sumiço.
+   * Foram de 18→19 e 4→5 com a rota `/visor3d`. */
+  conferir('as 19 rotas chegam ao router REAL da V1',
+    v2?.resultado?.rotas === 19 && v2?.totalRotas === 19,
     `boot=${v2?.resultado?.rotas} router=${v2?.totalRotas}`);
   conferir('a navegação vem do manifesto',
-    v2?.resultado?.nav?.length === 4, String(v2?.resultado?.nav?.length));
+    v2?.resultado?.nav?.length === 5, String(v2?.resultado?.nav?.length));
 
   /* O nome longo prova a fonte: a sidebar da V1 diz "Lab de Cripto"; o manifesto
    * diz "Lab de Criptografia". Se aparecer o curto, alguém voltou a ler da V1. */
@@ -156,6 +168,46 @@ try {
     /Lab de Criptografia/.test(conteudo) && /AES-GCM/.test(conteudo)
       && !/falhou|não é um nó/.test(conteudo),
     conteudo.slice(0, 90));
+
+  /* O engine 3D só é provável AQUI. Node não tem GPU, então a suíte cobre a
+   * fronteira (degradação sem WebGL) e o grafo de cena — nunca o render. Se esta
+   * asserção sair, o `cena.js` volta a ser preparação testada que nada executa.
+   *
+   * `estado === 'ativo'` é o que a vista escreve quando `criarCena` NÃO devolveu
+   * `null`: significa que o contexto WebGL foi criado de verdade. E o canvas
+   * ainda ter contexto prova que ele não foi perdido logo em seguida. */
+  const visor = await navegarAte(pagina, '#/visor3d', () => {
+    const raiz = document.querySelector('.v2-visor3d');
+    return raiz?.dataset?.estado === 'ativo' || raiz?.dataset?.estado === 'sem-webgl';
+  });
+  const cena3d = await pagina.evaluate(() => {
+    const raiz = document.querySelector('.v2-visor3d');
+    const canvas = raiz?.querySelector('canvas');
+    return {
+      estado: raiz?.dataset?.estado ?? null,
+      temCanvas: !!canvas,
+      temContexto: !!(canvas && (canvas.getContext('webgl2') || canvas.getContext('webgl'))),
+      descartavel: typeof (/** @type {any} */ (raiz)?.destruir) === 'function'
+    };
+  });
+  conferir('o engine 3D monta uma cena com WebGL de verdade',
+    cena3d.estado === 'ativo' && cena3d.temCanvas && cena3d.temContexto,
+    JSON.stringify(cena3d));
+  /* Sem `destruir`, o `requestAnimationFrame` sobrevive à saída da rota e a GPU
+   * segue desenhando uma cena que ninguém vê. */
+  conferir('a vista 3D expõe o descarte que para o laço',
+    cena3d.descartavel === true, JSON.stringify(cena3d));
+  void visor;
+
+  /* Volta para `/cripto`: o bloco abaixo interage com a view do cripto e assumia
+   * estar nela. Restaurar a precondição EXPLICITAMENTE é melhor que reordenar as
+   * asserções — a ordem aqui conta uma história (boot → rotas → render → uso), e
+   * mexer nela para acomodar uma navegação esconde a dependência em vez de
+   * declará-la. */
+  await navegarAte(pagina, '#/cripto', () => {
+    const t = document.getElementById('saida')?.innerText ?? '';
+    return /Lab de Criptografia/.test(t);
+  });
 
   /* O módulo nativo usa ctx.trabalho e ctx.metricas — que só existem se o boot
    * os injetou. Clicar é o que prova; renderizar não prova nada disso. */
