@@ -4,6 +4,39 @@
 >
 > **Regra:** este documento é a fonte central do planejamento do ecossistema. Os projetos continuam donos de seus próprios domínios. A integração completa só começa quando os contratos e domínios estiverem suficientemente definidos.
 
+## 0. Repositórios oficiais — navegação para agentes locais
+
+Estes links devem permanecer neste documento para que Claude, Codex e outros agentes trabalhando localmente consigam localizar os repositórios e preparar atualizações. O usuário faz o clone/pull e a publicação final conforme seu fluxo local.
+
+| Projeto | Repositório | Pull local |
+|---|---|---|
+| TaxForge | https://github.com/Lucas-Belucci-Bellini/taxforge.git | `git pull https://github.com/Lucas-Belucci-Bellini/taxforge.git` |
+| Ark-Initiative | https://github.com/Lucas-Belucci-Bellini/Ark-Initiative.git | `git pull https://github.com/Lucas-Belucci-Bellini/Ark-Initiative.git` |
+| DailyPlanner | https://github.com/Lucas-Belucci-Bellini/DailyPlanner.git | `git pull https://github.com/Lucas-Belucci-Bellini/DailyPlanner.git` |
+| AEGIS | https://github.com/Lucas-Belucci-Bellini/AEGIS.git | `git pull https://github.com/Lucas-Belucci-Bellini/AEGIS.git` |
+| Projeto-Baluarte | https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte.git | `git pull https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte.git` |
+| Veritas | https://github.com/Lucas-Belucci-Bellini/Veritas.git | `git pull https://github.com/Lucas-Belucci-Bellini/Veritas.git` |
+
+### Fluxo local do usuário
+
+```text
+GitHub
+  ↓
+git clone / git pull
+  ↓
+repositório local
+  ↓
+Claude / Codex / desenvolvimento local
+  ↓
+commit + push / PR conforme o fluxo escolhido
+  ↓
+GitHub
+  ↓
+git pull no ambiente local quando necessário
+```
+
+**Importante:** os links acima são referências de navegação e sincronização. Não significam que um projeto deve acessar diretamente o banco interno de outro projeto. A integração continua obedecendo aos contratos descritos neste documento.
+
 ## 1. Objetivo
 
 Construir um ecossistema de aplicações interoperáveis sem transformar os seis projetos em um único sistema monolítico e sem obrigar todos os projetos a possuir as mesmas funcionalidades.
@@ -471,5 +504,9 @@ Veritas
 ### Regra para próximas conversas
 
 Se uma nova conversa começar apenas com "vamos continuar" e os seis repositórios forem citados, este checkpoint deve ser consultado primeiro. Não reiniciar o planejamento do zero.
+
+### Regra de sincronização local
+
+O usuário mantém os repositórios localmente e executa `git pull` para sincronizar as alterações publicadas no GitHub. Agentes locais devem usar os links da seção 0 para identificar o repositório correto e preparar alterações no projeto correspondente, sem presumir acesso ao diretório local do usuário.
 
 **Próxima ação recomendada: AEGIS — Sensor & Observation Vocabulary.**
