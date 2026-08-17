@@ -38,23 +38,34 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] discovery inicial nos seis projetos: não criar capability artificial apenas para demonstrar o mesh
 - [x] ARK provider discovery inicial: hazards/evidências públicas são candidatos, mas consumidor/interface ainda não confirmados
 - [x] AEGIS provider discovery inicial: o repositório atual comprova a especificação/prompt do agente, mas não uma API/MCP provider estável
-- [x] Baluarte V2 platform primitive discovery: Event Bus, Module System/Registry, Permission System, Storage/Data Layer e External API aparecem como fundamentos arquiteturais no V2 Master Plan
-- [x] Baluarte Nexus implementation discovery: `src/nexus/orquestrador.js` implementa composição de manifestos, validação de contrato, dependências, ciclos, colisões de rotas e inicialização
-- [x] Baluarte Nexus contract audit: `docs/NEXUS-CONTRATO.md` confirma isolamento entre domínios e contrato único de entrada (`baluarte.module.js`)
-- [x] Rounds 005–010 de discovery registradas no repositório
-- [x] checkpoint mestre reconciliado nesta rodada
+- [x] Nexus implementation discovery: `src/nexus/orquestrador.js` implementa composição de manifestos, validação de contrato, dependências, ciclos, colisões de rotas e inicialização
+- [x] Nexus contract audit: `docs/NEXUS-CONTRATO.md` confirma isolamento entre domínios e contrato único de entrada (`baluarte.module.js`)
+- [x] Event Bus implementation audit: `src/core/events.ts` é a implementação canônica com `on`, `once`, `off`, `emit`, curingas e isolamento de handlers
+- [x] Event catalogue generator audit: `scripts/gen-catalogo-eventos.mjs` deriva eventos do código e pode ser verificado no CI
+- [x] Local Storage/Data policy audit: `src/core/politica.js` + `scripts/gen-catalogo-storage.mjs` impõem declaração, versão e migração das chaves
+- [x] Page lifecycle audit: `src/core/ciclo-vida.js` implementa registro e encerramento de recursos de página
+- [x] Supabase-backed Global Comms audit: `src/core/comms.js` usa REST + Realtime + autenticação/RLS existentes, mas não é o Mesh
+- [x] Rounds 005–012 de discovery registradas no repositório
+- [x] checkpoint mestre atualizado para Round 013
 
-## Baluarte platform primitives — estado
+## Baluarte platform primitives — estado real
 
-O Nexus é uma primitiva interna de composição de módulos, não o Mesh. O contrato atual separa claramente:
+### Implementadas e verificadas
 
-`Nexus interno -> composição de módulos Baluarte`
+- **Event Bus:** `src/core/events.ts`; wrapper JS preserva compatibilidade.
+- **Local Storage/Data policy:** política de chaves, versões e migração; catálogo gerado.
+- **Page lifecycle:** `aoSair`, `encerrar`, `pendentes`.
+- **Nexus:** composição/validação de módulos internos.
+- **Supabase-backed Global Comms:** comunicação remota de usuários via `global_comms` + Realtime.
 
-`Knowledge Mesh -> descoberta/autorização/consumo de capacidades entre projetos`
+### Ainda não devem ser tratadas como Mesh implementado
 
-O Nexus atual valida major do contrato, módulos duplicados, dependências ausentes, ciclos de dependência, colisões de rotas, destaques que apontam para outro domínio e ordem de inicialização.
-
-A documentação do V2 descreve Event Bus, Module Registry, Permission System, Storage/Data Layer e External API como fundamentos arquiteturais, mas esta etapa ainda precisa localizar as implementações e testes concretos antes de reutilizá-los para o Mesh.
+- capability registry cross-project;
+- request/result transport cross-project;
+- provider routing cross-project;
+- evidence/provenance runtime dedicado ao Mesh;
+- external API/MCP boundary para chamadas de capability;
+- enforcement específico do Mesh além das fronteiras de autenticação/RLS já existentes.
 
 ## Veritas provider status
 
@@ -84,24 +95,20 @@ AEGIS define um fluxo forte de investigação: observe → entenda → investigu
 
 TaxForge é o principal consumidor candidato por seu domínio de cenários, evidências, fornecedores, contratos e decisões. O MCP operacional atual é principalmente voltado a auditoria, qualidade, E2E, diagnóstico Vercel e checkpoint; ele não constitui, por si só, uma capability de domínio compartilhável.
 
-## Próximo passo EXATO — Round 011
+## Próximo passo EXATO — Round 013
 
-**Localizar e validar as implementações concretas das primitivas V2 do Baluarte e, em paralelo, mapear necessidades externas reais do TaxForge.**
+**Auditar as fronteiras reais de autorização e API do Baluarte e, em paralelo, encontrar o primeiro caso de uso cross-project que seja real e mínimo.**
 
 Ordem:
 
-1. localizar implementação + testes do Event Bus;
-2. localizar Module Registry/contract e lifecycle;
-3. localizar enforcement do Permission System;
-4. localizar Storage/Data Layer e Evidence Layer;
-5. localizar a fronteira External API/MCP;
-6. mapear no TaxForge módulos/serviços que pedem conhecimento ou processamento externo;
-7. comparar essas necessidades com ARK, AEGIS e Veritas;
-8. escolher o primeiro par somente quando houver consumidor + provider + interface real;
-9. identificar exatamente os dados e autorização necessários;
-10. definir o menor payload e provenance;
-11. só então desenhar registry/requests/results para o caso concreto;
-12. só depois propor migration não destrutiva no Supabase.
+1. localizar autenticação, autorização e RLS usados pelo caminho remoto existente;
+2. localizar e classificar a fronteira External API/MCP existente;
+3. mapear necessidades concretas do TaxForge;
+4. comparar essas necessidades com capacidades implementadas em Veritas, ARK e AEGIS;
+5. escolher o primeiro par somente quando houver consumidor + provider + interface real;
+6. definir o menor payload, provenance e escopo de autorização;
+7. somente então desenhar qualquer registry/request/result persistido;
+8. só depois propor migration não destrutiva no Supabase.
 
 ## Regras permanentes
 
@@ -116,13 +123,14 @@ Ordem:
 - Não criar dependências artificiais entre projetos apenas para demonstrar o Mesh.
 - Não criar uma segunda implementação de Event Bus, Storage ou Permission Manager no Baluarte sem justificar arquiteturalmente.
 - O Nexus interno e o Knowledge Mesh são contratos distintos.
+- Não transformar `global_comms` em transporte do Knowledge Mesh.
 
 ## Como retomar
 
-Abrir primeiro este arquivo. Em seguida, consultar os documentos `ECOSYSTEM-DISCOVERY-ROUND-*`, os contratos do Mesh, os documentos de discovery de Veritas/ARK/AEGIS, `ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md`, os audits do Supabase e `docs/NEXUS-CONTRATO.md`.
+Abrir primeiro este arquivo. Em seguida, consultar `docs/ECOSYSTEM-DISCOVERY-ROUND-012.md`, os documentos `ECOSYSTEM-DISCOVERY-ROUND-*`, os contratos do Mesh, os documentos de discovery de Veritas/ARK/AEGIS, `ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md`, os audits do Supabase e `docs/NEXUS-CONTRATO.md`.
 
-Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO — Round 011**.
+Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO — Round 013**.
 
 ## Última atualização
 
-2026-08-17 — Round 011 checkpoint reconciliation
+2026-08-17 — Round 012 implementation inventory; next step is Round 013
