@@ -50,6 +50,11 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] confirmação de que capabilities internas não devem ser automaticamente tratadas como capabilities Mesh
 - [x] Round 016: decisão de reorientar AEGIS para Ocean/Seafloor Intelligence
 - [x] Round 017: criado `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md` como plano vivo
+- [x] Round 018: inventário estrutural inicial do AEGIS confirmado no GitHub
+- [x] Round 018: confirmado que `main` do AEGIS continua minimalista e que a implementação histórica está distribuída em branches
+- [x] Round 018: classificação inicial do legado em PRESERVE / ADAPT / REPLACE / ARCHIVE
+- [x] Round 018: registrado que metodologia de investigação, evidência, proveniência, auditoria e validação são ativos reutilizáveis
+- [x] Round 018: registrado que o antigo domínio de engenharia de software não deve ser carregado como domínio central do Ocean
 
 ## AEGIS — novo estado
 
@@ -59,7 +64,15 @@ O AEGIS está sendo reorientado de IA autônoma de engenharia para:
 
 Foco inicial: inteligência geoespacial/oceanográfica e mapeamento do fundo do mar.
 
-O plano vivo está em `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md`.
+Plano vivo:
+`AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md`
+
+Inventário da transição:
+`AEGIS/docs/AEGIS-REPOSITORY-INVENTORY-ROUND-018.md`
+
+PRs de documentação atuais:
+- AEGIS #19 — evolução do masterplan e Round 018;
+- AEGIS #20 — inventário estrutural da transição.
 
 Princípios já registrados:
 - evidência e proveniência como dados de primeira classe;
@@ -90,18 +103,19 @@ Principal consumidor candidato por seu domínio fiscal/empresarial. Possui MCP o
 ### Baluarte
 É o control plane/gateway arquitetural do Mesh, mas não é dono dos domínios internos. Nexus, Event Bus e Global Comms são primitivas internas distintas do Knowledge Mesh.
 
-## Próximo passo EXATO — Round 018
+## Próximo passo EXATO — Round 019
 
-**AEGIS Repository Transition Audit**:
+**AEGIS Ocean Minimum Domain Model**:
 
-1. mapear o estado real do AEGIS antes da mudança de missão;
-2. identificar arquivos/código reutilizáveis;
-3. separar legado de nova arquitetura;
-4. identificar o que deve ser preservado, adaptado ou substituído;
-5. definir a primeira arquitetura de diretórios do AEGIS Ocean;
-6. transformar o Masterplan Vivo em backlog técnico priorizado;
-7. somente depois definir o schema mínimo do PostGIS/Supabase;
-8. registrar o resultado novamente no Baluarte.
+1. fechar o inventário mínimo das branches históricas relevantes;
+2. definir quais capacidades antigas serão portadas/adaptadas;
+3. definir arquitetura de diretórios da nova versão;
+4. definir workflows oceanográficos mínimos;
+5. definir entidades canônicas do domínio;
+6. definir fronteira PostGIS/Object Storage;
+7. desenhar o schema mínimo de protótipo;
+8. validar o modelo com um pequeno dataset real;
+9. somente depois planejar integração com Supabase e Baluarte.
 
 Não implementar ainda a plataforma oceanográfica completa.
 
@@ -128,10 +142,11 @@ Não implementar ainda a plataforma oceanográfica completa.
 
 1. Abrir este arquivo.
 2. Abrir `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md`.
-3. Consultar as `ECOSYSTEM-DISCOVERY-ROUND-*` relevantes.
-4. Verificar o estado real dos seis repositórios e do Supabase.
-5. Continuar pelo **Round 018 — AEGIS Repository Transition Audit**.
+3. Abrir `AEGIS/docs/AEGIS-REPOSITORY-INVENTORY-ROUND-018.md`.
+4. Consultar as `ECOSYSTEM-DISCOVERY-ROUND-*` relevantes.
+5. Verificar o estado real dos seis repositórios e do Supabase.
+6. Continuar pelo **Round 019 — AEGIS Ocean Minimum Domain Model**.
 
 ## Última atualização
 
-2026-08-17 — Round 017: AEGIS Ocean Masterplan Vivo criado; próxima ação é Round 018 — Repository Transition Audit.
+2026-08-17 — Round 018: inventário estrutural do AEGIS confirmado; implementação histórica está em branches anteriores; próximo passo é Round 019 — Minimum Domain Model.
