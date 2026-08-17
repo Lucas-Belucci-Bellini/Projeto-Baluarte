@@ -26,6 +26,7 @@ import { A3CMD_SECOES, A3CMD_TOTAL } from '../data/arma3-comandos.js';
 import { A3CAMP_SECOES, A3CAMP_TOTAL } from '../data/arma3-campanhas.js';
 import { A3DRV_PASTAS, A3DRV_SECOES, A3DRV_TOTAL } from '../data/arma3-drive.js';
 import { resumirClasse } from '../data/arma3-classes.js';
+import { motivoSemImagem } from '../data/arma3-imagens.js';
 import { resolverTiro, dadosBalisticos } from '../utils/arma3-balistica.js';
 
 const PRESET_ID = 'projeto-baluarte-vercel-app';
@@ -425,11 +426,10 @@ export async function arma3TutorialPage(args = {}) {
 
   /* Miniatura do ícone extraído do jogo. Arma sem ícone NÃO ganha desenho
    * genérico: ganha um selo com o motivo (`imgAusente`). Um placeholder que
-   * parecesse arma faria o leitor achar que está vendo aquela arma. */
-  const MOTIVO_SEM_IMG = {
-    'sem-picture-no-config': 'o config desta arma não aponta nenhum ícone',
-    'paa-nao-extraido': 'ícone dentro de .ebo cifrado (DLC) — nem o Arma 3 Tools abre',
-  };
+   * parecesse arma faria o leitor achar que está vendo aquela arma.
+   *
+   * O texto do motivo vem de `data/arma3-imagens.js` — a wiki mostra os mesmos
+   * ícones e precisa dizer a mesma coisa sobre a falta deles. */
   function thumb(a, tam = 'sm') {
     if (a.img) {
       return h('img', {
@@ -439,7 +439,7 @@ export async function arma3TutorialPage(args = {}) {
     }
     return h('span', {
       className: `a3arm-thumb a3arm-thumb--${tam} a3arm-thumb--vazio`,
-      title: MOTIVO_SEM_IMG[a.imgAusente] || 'sem ícone',
+      title: motivoSemImagem(a.imgAusente),
     }, '⃠');
   }
 

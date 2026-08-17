@@ -230,13 +230,43 @@ propriedade de texto cujo valor aponta para `.paa`/`.pac`.
 ```
 I |id|caminho              imagem distinta, numerada na ordem de aparição
 R |classe|propriedade|id   a classe DECLARA este retrato
+N |nome|id                 entrada da CfgVehicleIcons          (v2)
 ANDAMENTO|classes|imagens|segundos
-PLACAR|classes|imagens|retratos
+PLACAR|classes|imagens|retratos|nomes
 ```
 
 O `id` existe para a linha `R` não repetir o caminho: o mesmo `.paa` é declarado
 por milhares de classes, e repetir o texto multiplicaria o `.rpt` por uma ordem
 de grandeza sem acrescentar nada.
+
+### v2 — a linha `N`, e por que ela vale 61 mil registros
+
+⚠️ **Um `.rpt` gravado com a v1 não tem a linha `N`.** O parser avisa e segue; os
+soldados e três quartos dos veículos saem com `imgAusente: "icone-por-nome"`.
+Rodar o extrator de novo **não resolve** — falta a tabela, não a imagem. É uma
+colagem no console do jogo, e ela fecha o buraco de uma vez.
+
+A v1 tinha um ponto cego que só apareceu quando os ícones foram ligados à wiki:
+
+| declara | quantos | v1 | v2 |
+|---|---|---|---|
+| soldado, `icon = "iconMan"` | 42.801 | sem ícone | resolve |
+| veículo, `picture = "pictureStaticObject"` | 15.720 | sem ícone | resolve |
+| veículo, `icon = "iconObject_1x1"` | 9.852 | sem ícone | resolve |
+
+Nenhum deles declara **caminho**: declara **nome**. Quem traduz nome em `.paa` é
+a classe `CfgVehicleIcons`, e as propriedades dela se chamam `iconMan`,
+`pictureStaticObject`, `iconObject_3x2` — nomes arbitrários, que por isso nunca
+caem na lista fixa `_RETRATO` que a linha `R` usa. As imagens entravam no
+inventário (a linha `I` só olha a extensão) e nada as ligava a nada.
+
+De `iconMan_ca.paa` até `iconMan` há uma convenção de nome, e seguir convenção
+seria adivinhar: vale no vanilla e não vale em mod nenhum que resolva nomear
+diferente. A tabela é dado — o dump passa a lê-la.
+
+A linha `N` usa o mesmo `id` das imagens, então custa quase nada no `.rpt`. A
+chave chega em minúscula porque o config escreve `iconMan` e o soldado pode
+escrever `iconman`; no engine as duas casam.
 
 ⚠️ **Um `.sqf` não extrai imagem.** Ele roda dentro do motor e a única saída é
 texto no `.rpt` — não existe API para despejar os bytes de um `.paa`. Este dump

@@ -65,11 +65,22 @@ from gerar_base_armas_comum import (  # noqa: E402
     DIR_CDLC, DIR_DLC, cam, js_valor, slug,
 )
 
+import gerar_imagens_comum as gic
+
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))
 ENTRADA = os.path.join(AQUI, 'out', 'arma3-veiculos.json')
 SAIDA_JS = os.path.join(RAIZ, 'src', 'data', 'arma3-soldados.js')
 SAIDA_JSON = os.path.join(RAIZ, 'public', 'arma3', 'soldados-db.json')
+
+# Símbolo de carta do soldado. Mapa ausente = extração não rodou: cada entrada
+# sai com o motivo em vez de a base não sair.
+#
+# O segundo mapa não é redundância: 42.801 soldados declaram `icon = "iconMan"`
+# — um NOME, não um caminho — e quem traduz nome em .paa é a `CfgVehicleIcons`.
+# Sem ela, 99,5% da base sairia sem ícone por falta de UMA tabela.
+_MAPA_IMG = gic.carregar_mapa('imagens-mapa.json')
+_MAPA_NOMES = gic.carregar_mapa('imagens-nomeadas.json')
 
 # `side` do engine → lado. O 7 é sideUnknown e NÃO entra: é ausência.
 SIDE_LADO = {0: 'OPFOR', 1: 'BLUFOR', 2: 'Independente', 3: 'Civil'}
@@ -127,9 +138,14 @@ def montar(dump):
         pseudo = [a for a in (s.get('armas') or [])
                   if a and a.lower() in NAO_SAO_ARMA]
 
+        img, imgAusente = gic.resolver(
+            classe, _MAPA_IMG, (s.get('icon') or ''), nomeados=_MAPA_NOMES)
+
         entradas.append({
             'id': slug(classe),
             'classe': classe,
+            'img': img,
+            'imgAusente': imgAusente,
             'nome': s.get('nome') or classe,
             'faccao': fac.get('nome') or s.get('faccao') or None,
             'faccaoClasse': s.get('faccao') or None,
@@ -176,7 +192,7 @@ def colapsar(entradas):
 
 
 def verificar(entradas):
-    erros = []
+    erros = list(gic.conferir(entradas, 'soldado'))
     vistos = set()
     for e in entradas:
         if e['id'] in vistos:
@@ -255,8 +271,8 @@ def escrever(todas, faccoes):
     # que já está no bundle — na lista completa ninguém os lê.
     # Mesmo raciocínio que enxugou veiculos-db e equipamento-db.
     SO_NO_NUCLEO = {'preview', 'faccaoClasse', 'sideCru', 'ladoFonte'}
-    pubTodos = [{k: v for k, v in e.items()
-                 if not k.startswith('_') and k not in SO_NO_NUCLEO}
+    pubTodos = [gic.enxugar({k: v for k, v in e.items()
+                             if not k.startswith('_') and k not in SO_NO_NUCLEO})
                 for e in entradas]
     os.makedirs(os.path.dirname(SAIDA_JSON), exist_ok=True)
     with open(SAIDA_JSON, 'w', encoding='utf-8') as f:
@@ -287,6 +303,7 @@ def main():
     print(f'com lado declarado ... {comLado}  '
           f'({100 * comLado / max(len(colapsadas), 1):.0f}%)')
     print(f'facções .............. {len(faccoes)}')
+    gic.imprimir_placar(entradas)
     print(f'\nescrito: {SAIDA_JS}\n         {SAIDA_JSON}')
 
 

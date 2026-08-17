@@ -335,6 +335,13 @@
   padding: 0; overflow: hidden;
 }
 .wk-info__capa { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+/* O lugar da capa quando ela não existe: o MOTIVO, não uma moldura vazia. */
+.wk-info__semcapa {
+  margin: 0; padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface-2); border-bottom: var(--border-base);
+  color: var(--color-text-muted); font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
 .wk-info__head {
   padding: var(--space-sm) var(--space-md);
   background: var(--color-surface-2); border-bottom: var(--border-base);

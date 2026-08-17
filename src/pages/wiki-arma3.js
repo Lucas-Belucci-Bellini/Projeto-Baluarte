@@ -17,6 +17,7 @@ import { h, debounce } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { A3EXT_BLOCOS, A3EXT_FILA } from '../data/arma3-extracao.js';
 import { explicarClasse } from '../data/arma3-classes.js';
+import { motivoSemImagem } from '../data/arma3-imagens.js';
 import {
   WIKI_ARTIGOS, WIKI_POR_ID, WIKI_TOTAL, WIKI_PORTAIS, WIKI_NIVEIS,
   WIKI_CONTAGEM, A3COL_INFO, buscar, relacionados, catsDoPortal
@@ -41,14 +42,25 @@ const ir = (estado) => router.navigate(url(estado));
  *  Peças reutilizadas
  * ============================================================== */
 
-/* Miniatura com fallback: item sem capa mostra o ícone da categoria. */
+/* Miniatura com fallback: item sem capa mostra o ícone da CATEGORIA.
+ *
+ * O emoji de categoria é honesto de propósito — ele diz "veículo", não
+ * "ESTE veículo". Um desenho genérico de tanque no lugar de um tanque
+ * específico faria o leitor achar que está vendo o modelo daquela classe.
+ *
+ * E o `title` carrega o motivo (`imgAusente`): "sem imagem" e "imagem existe
+ * mas o .paa está num DLC cifrado" mandam o operador para lugares diferentes,
+ * e um placeholder mudo apagaria essa diferença. */
 function capa(art, classe) {
   if (art.img) {
     return h('img', {
       className: classe, src: art.img, alt: art.titulo, loading: 'lazy', decoding: 'async'
     });
   }
-  return h('div', { className: classe + ' wk-capa--vazia' }, h('span', null, art.icon || '📄'));
+  return h('div', {
+    className: classe + ' wk-capa--vazia',
+    title: art.imgAusente ? motivoSemImagem(art.imgAusente) : '',
+  }, h('span', null, art.icon || '📄'));
 }
 
 const selo = (art) => h('span', { className: `wk-selo wk-selo--n${art.nivel}` },
@@ -570,7 +582,14 @@ function infobox(art) {
     : null;
 
   return h('aside', { className: 'card wk-info' },
-    art.img ? h('img', { className: 'wk-info__capa', src: art.img, alt: art.titulo, loading: 'lazy' }) : null,
+    art.img
+      ? h('img', { className: 'wk-info__capa', src: art.img, alt: art.titulo, loading: 'lazy' })
+      /* No artigo aberto o motivo vira TEXTO, não `title`: aqui há espaço, e
+       * quem chegou até o artigo é justamente quem quer saber por que a
+       * imagem falta. */
+      : (art.imgAusente
+        ? h('p', { className: 'wk-info__semcapa' }, '⃠ ', motivoSemImagem(art.imgAusente))
+        : null),
     h('div', { className: 'wk-info__head' }, art.titulo),
     linha('Tipo', ROTULO_TIPO[art.tipo] || art.tipo),
     linha('Categoria', art.catNome),

@@ -15,18 +15,20 @@ private _RETRATO = ["picture", "icon", "texture", "editorpreview", "pictureprevi
     "uipicture", "logo", "image", "overviewpicture", "previewpicture", "portrait",
     "pictureshot", "picturemap", "picturelogo", "texturenoalpha"];
 
-diag_log text "<<A3ICO>>INICIO|v1";
+diag_log text "<<A3ICO>>INICIO|v2";
 
 private _mapa = createHashMap;
 private _prox = 0;
 private _nClasses = 0;
 private _nVinculos = 0;
+private _nNomes = 0;
 
 private _pilha = [configFile];
 
 while { count _pilha > 0 } do {
     private _c = _pilha deleteAt (count _pilha - 1);
     _nClasses = _nClasses + 1;
+    private _tabela = (toLower (configName _c) == "cfgvehicleicons");
 
     {
         private _p = _x;
@@ -43,11 +45,16 @@ while { count _pilha > 0 } do {
                     _mapa set [_chave, _id];
                     diag_log text (format ["<<A3ICO>>I|%1|%2", _id, _limpo]);
                 };
-                private _nome = toLower (configName _p);
+                private _bruto = configName _p;
+                private _nome = toLower _bruto;
                 if (_nome in _RETRATO) then {
                     diag_log text (format ["<<A3ICO>>R|%1|%2|%3",
                         (configName _c) call _fnc_lim, _nome, _id]);
                     _nVinculos = _nVinculos + 1;
+                };
+                if (_tabela) then {
+                    diag_log text (format ["<<A3ICO>>N|%1|%2", _bruto, _id]);
+                    _nNomes = _nNomes + 1;
                 };
             };
         };
@@ -63,8 +70,8 @@ while { count _pilha > 0 } do {
     };
 };
 
-diag_log text (format ["<<A3ICO>>PLACAR|%1|%2|%3", _nClasses, _prox, _nVinculos]);
+diag_log text (format ["<<A3ICO>>PLACAR|%1|%2|%3|%4", _nClasses, _prox, _nVinculos, _nNomes]);
 diag_log text (format ["<<A3ICO>>FIM|%1", (diag_tickTime - _t0) toFixed 2]);
 
-hint format ["Dump de icones pronto.\n%1 classes varridas\n%2 imagens distintas . %3 retratos\n%4 s\n\nRode: python scripts/arma3/parse-icones.py",
-    _nClasses, _prox, _nVinculos, (diag_tickTime - _t0) toFixed 1];
+hint format ["Dump de icones pronto.\n%1 classes varridas\n%2 imagens distintas . %3 retratos\n%5 nomes de CfgVehicleIcons\n%4 s\n\nRode: python scripts/arma3/parse-icones.py",
+    _nClasses, _prox, _nVinculos, (diag_tickTime - _t0) toFixed 1, _nNomes];

@@ -126,6 +126,13 @@ jobs:
       - name: Catalogo de imagens do Arma 3 (nome sem colisao)
         run: npm run testar-imagens-arma3
 
+      # Ausencia de icone carrega MOTIVO, e o motivo aponta a solucao: sem
+      # imagem no config (nada a fazer), .paa nao extraido (rode o extrator) ou
+      # icone por nome (falta dumpar a CfgVehicleIcons). Um estado so faria a
+      # wiki mostrar lugar vazio sem dizer de quem e a falta.
+      - name: Ligacao classe -> icone (a ausencia tem motivo)
+        run: npm run testar-imagens-comum-arma3
+
       # O atualizador decide sozinho o que refazer. O modo de falha que
       # importa e PULAR o que mudou: o operador roda o dump novo, o pipeline
       # acha que esta tudo em dia, e o site segue com dado velho sem aviso.
