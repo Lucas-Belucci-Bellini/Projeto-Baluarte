@@ -152,6 +152,19 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       instalador foi produzido com isto dentro.
       Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
 - [ ] primeiro vertical slice de módulo nativo
+      — **metade feita.** A cadeia do
+      [`V2_VERTICAL_SLICE.md`](./V2_VERTICAL_SLICE.md) foi percorrida com o
+      Runtime **real** pela primeira vez (`test/v2/slice-nativo.test.js`, 3/3):
+      Registry → autorização pelo **processo Rust** → sessão → init → start →
+      running → stop → dispose → close, com Registry, Permission System, ciclo,
+      transporte e binário reais. Antes disso o Runtime era sempre espião ou
+      duplo, e a propriedade "só fica `running` com sessão aberta" valia sobre um
+      Runtime que nunca existira.
+      **A caixa segue desmarcada:** `criarContexto` não entrega alça de Runtime,
+      então o módulo não *usa* o Runtime — quem lê arquivo no teste é o teste. A
+      cadeia de autorização está nativa; a de uso não. Fechar exige acrescentar o
+      Runtime ao `ModuleContext`, gateado por permissão — mudança de contrato, e
+      item próprio.
 
 ## Regra de manutenção
 

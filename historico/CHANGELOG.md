@@ -97,6 +97,33 @@ E os três testes de processo que a `MAIN_ERROR_AUDIT` listava como quebrados
 **por execução** o que a anotação de ROOT-RUNTIME-001 só tinha confirmado por
 leitura.
 
+### E a cadeia do vertical slice rodou com o Runtime de verdade
+
+`test/v2/slice-nativo.test.js` percorre o desenho do `V2_VERTICAL_SLICE.md` —
+Registry → autorização → sessão → init → start → running → stop → dispose →
+close — com **todas** as peças reais, inclusive o binário.
+
+A diferença não é de grau. O `abrir` do Host, no entrypoint, chama
+`criarGrantRuntime`: autorização **sem transporte**, porque no navegador não há
+processo com quem falar. Todo teste anterior usou espião ou duplo. Então a
+propriedade central — "um módulo só entra em `running` depois de abrir seu
+Runtime" — era verdadeira sobre um Runtime que **nunca tinha existido**. Agora
+quem decide se o módulo sobe é o processo Rust.
+
+Três propriedades cobradas, e a terceira é a que garante que o teste não passa à
+toa: **declarar não é receber.** Sem concessão, o módulo sobe (grant vazio é
+autorização disponível — tratá-lo como negação transformaria deny-by-default em
+deny-tudo) e a leitura é **negada pelo Rust**. Mesma rota, permissão diferente,
+resultado diferente: a discriminação vem do outro lado da fronteira, não do
+JavaScript. Remover o Host do `criarCiclo` derruba o primeiro teste.
+
+**A caixa `primeiro vertical slice de módulo nativo` NÃO foi marcada.**
+`criarContexto` entrega `storage`, `bus`, `metricas`, `trabalho`, `apis` e
+`permissoes` — não há alça de Runtime no `ModuleContext`. No teste, quem lê
+arquivo é o teste, não o `init` do módulo. A cadeia de **autorização** está
+nativa; a de **uso** não. Meia cadeia marcada como inteira seria o retrato verde
+de sempre.
+
 ### E a ponte do app desktop entrou junto
 
 O `desktop/` era uma ilha CommonJS **sem um único teste**, e nada nele importava
