@@ -119,6 +119,19 @@ Este é um **contrato arquitetural**, não seis defeitos locais. O supervisor is
 
 ### ROOT-RUNTIME-001 — Binário Rust não conecta o protocolo ao processo
 
+> ✅ **RESOLVIDO — verificado por leitura em 2026-08-17.** Anotação posterior à
+> auditoria; o registro abaixo fica intacto porque descreve o commit auditado
+> (`1fe33468`), não o estado de hoje. O `v2/runtime/src/main.rs` atual implementa
+> o loop exatamente como a "Correção sugerida" pedia: lê linhas de `stdin`, pula
+> linha vazia, responde `INVALID_JSON` em parse falho, `REQUEST_TOO_LARGE` acima
+> de 1 MiB, despacha para `protocol::handle` e escreve uma linha JSON por
+> resposta — honrando `BALUARTE_RUNTIME_ROOT`.
+>
+> **O que esta anotação NÃO prova:** que os testes passam. `cargo` não existe na
+> máquina do operador, então `npm run v2:runtime` e `cargo test` continuam sendo
+> do remoto. Isto é leitura de código, não execução — e a distinção importa
+> justamente num achado sobre "a peça está ligada?".
+
 | Campo | Registro |
 | --- | --- |
 | Workflow/comando | `V2 Runtime`, `V2 Runtime E2E`, `npm run v2:runtime` com Rust 1.97.1 |

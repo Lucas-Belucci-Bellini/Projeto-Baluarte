@@ -93,6 +93,41 @@ Por isso a caixa `transporte concreto` do [`V2_PROGRESS.md`](./V2_PROGRESS.md)
 **segue desmarcada**. Marcá-la com a peça testada e desligada seria repetir
 exatamente o erro que este repositório já pagou quatro vezes.
 
+### Ligar no app desktop — o que já está medido (17/08/2026)
+
+O caminho foi mapeado; o que falta não é desenho, são duas pontas de
+empacotamento que **não se verificam numa máquina sem `cargo`**.
+
+O que já existe e serve de molde:
+
+- `desktop/src/preload.js` expõe `window.baluarte` com `invoke(channel, payload)`
+  sobre `ipcRenderer.invoke('baluarte:invoke', …)`, e `desktop/src/ipc.js` tem
+  **allowlist explícita** por canal (`buildHandlers`). Um namespace `runtime:*`
+  entra ali, do mesmo jeito que `arma3:*`, `arquivos:*` e `hermes:*`.
+- `desktop/src/nexus.js` e `desktop/src/hermes.js` já fazem spawn **lazy e
+  guardado** — é o padrão a seguir, não um a inventar.
+- O M4 (RFC #232) já decidiu **onde** runtimes moram:
+  `app.getPath('userData')/runtimes/…`, com preflight que detecta e baixa. O
+  `baluarte-runtime` segue a mesma forma.
+
+Os dois bloqueios reais, medidos:
+
+1. **`v2/` não vai no instalador.** O `files` do electron-builder é
+   `["src/**/*","package.json","node_modules/**/*"]` — só o `desktop/`. O único
+   `extraResources` é `../dist → web`. Como `desktop/` é **CommonJS** e o
+   transporte é **ESM**, a costura precisa de `await import(...)` dinâmico *e* de
+   o arquivo existir no pacote. Hoje não existe.
+2. **O binário nunca foi compilado.** Não há `v2/runtime/target/`, e produzi-lo
+   exige `cargo` — ausente na máquina do operador. Empacotá-lo por SO é build de
+   CI, não de estação de trabalho.
+
+> Consequência prática: dá para escrever a costura e testá-la (inclusive o
+> caminho "binário ausente", que é o estado de hoje e precisa degradar com
+> honestidade em vez de estourar). O que **não** dá é chamar isso de ligado antes
+> de existir um instalador com as duas pontas dentro. Ligar o transporte a um
+> binário que não é empacotado seria a quinta peça pronta e desligada — desta vez
+> com o agravante de parecer resolvida.
+
 ### Buraco conhecido, deliberadamente não consertado aqui
 
 `enviar()` não tem teto próprio. Pelo caminho do lifecycle há o `comTeto` do
