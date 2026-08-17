@@ -1,0 +1,30 @@
+# Fim de linha, declarado no repositório em vez de por máquina.
+#
+# ── Por que este arquivo existe ──────────────────────────────────────────────
+# Sem `.gitattributes`, quem decide o fim de linha no disco é o `core.autocrlf`
+# de cada máquina. No Windows ele vem `true`, então todo `.md` chega em CRLF no
+# checkout; no Linux não há conversão e chega em LF. Os três verificadores de
+# catálogo (`gen-tabela-estabilidade`, `gen-catalogo-eventos`,
+# `gen-catalogo-storage`) comparam o documento gerado com o que está no disco,
+# e essa assimetria fazia os três ficarem vermelhos só no Windows — com uma
+# mensagem que mandava fazer a coisa errada ("rode o gerador e commite"), porque
+# regenerar não produzia diff nenhum.
+#
+# O conserto cirúrgico já entrou: `scripts/lib/eol.mjs` normaliza os dois lados
+# da COMPARAÇÃO. Este arquivo é a outra metade — em vez de consertar cada
+# comparação, tira a variável do jogo: `.md` é LF no disco em qualquer sistema.
+# Os dois se somam de propósito. O `eol.mjs` continua valendo para árvores de
+# trabalho que já existem (o git não reescreve arquivo que ele considera
+# inalterado) e para qualquer comparação de `.md` que venha a ser escrita.
+#
+# ── Alcance real ────────────────────────────────────────────────────────────
+# Nenhum `.md` versionado tem blob CRLF — os 167 já estão LF no índice, porque o
+# `core.autocrlf` converte na escrita. Então esta declaração NÃO reescreve
+# conteúdo: ela muda o que sai no checkout, não o que está guardado.
+#
+# ── O que deliberadamente NÃO está aqui ─────────────────────────────────────
+# Não há regra `* text=auto`. Existem blobs CRLF versionados de propósito
+# (`android/gradlew.bat`, os presets `.html` do Arma 3, um transcript `.txt`), e
+# uma regra geral os reescreveria. O escopo aqui é `.md`, que é onde a classe do
+# problema vive.
+*.md text eol=lf
