@@ -162,9 +162,12 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       *caminho, e só*, com o id do módulo fechado por closure; é isso que impede
       um módulo de nomear a raiz de outro. O `init` de `alpha` lê o próprio
       arquivo e o **Rust** recusa o `../`.
-      **Aberto:** nada preenche `deps.runtime` em produção — o boot da V2 roda no
-      renderer e o Runtime vive no main. A ponte existe (`runtime:*` no
-      `ipc.js`); ligar renderer → IPC → main é o próximo passo.
+      A injeção em produção entrou junto: `v2/core/runtime-app.js` adapta
+      `window.baluarte.invoke` à forma do contexto, e o entrypoint o injeta em
+      `deps.runtime`. Fora do app devolve `null`, então o contexto na web fica
+      idêntico ao de antes — `v2:integracao` segue **15/15**.
+      **Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro; o
+      ramo `process.resourcesPath` continua sem exercício.
 
 ## Regra de manutenção
 

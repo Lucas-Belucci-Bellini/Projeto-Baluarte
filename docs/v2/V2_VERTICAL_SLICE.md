@@ -83,13 +83,38 @@ Medido em `test/v2/slice-nativo.test.js` (5/5, com o binário real): o `init` de
 `alpha` lê `hello.txt` e recebe `BALUARTE-V2`; o mesmo `init` tenta
 `../secret.txt` e o **Rust** recusa.
 
+## A injeção em produção — renderer → IPC → main
+
+`v2/core/runtime-app.js` é o adaptador do renderer: transforma
+`window.baluarte.invoke('runtime:ler', …)` na forma que o `ModuleContext` espera.
+O entrypoint (`v2/harness/main.js`) o injeta em `deps.runtime`.
+
+**Fora do app ele devolve `null`**, e `null` faz `deps.runtime` ficar indefinido —
+o contexto volta a ser exatamente o de antes. Um adaptador que fingisse existir na
+web daria aos módulos uma alça que sempre falha, o que é pior do que não ter alça.
+É o gate do #238: web leve, app completo. Medido: o portão `v2:integracao`
+continua **15/15** no navegador.
+
+**Ambiente meio montado conta como ausente.** `native` sem `invoke` (ou o
+contrário) é ponte quebrada; tratá-la como pronta empurraria o erro para dentro do
+`init` de um módulo, longe da causa. E `native` tem de ser `true`, não apenas
+verdadeiro.
+
+**O envelope é remontado a cada chamada.** Congelá-lo no boot faria a leitura
+responder sobre o passado: conceder depois do arranque não alcançaria o módulo, e
+revogar tampouco. Mesma razão pela qual `declarado.concedidas` é função, e não
+valor. Há teste para os três casos — antes, depois de conceder, depois de revogar.
+
+> **O Host continua autorizando localmente, mesmo no app.** Trocar
+> `criarGrantRuntime` pela autorização nativa faria um binário ausente derrubar
+> módulos que hoje sobem. E não afrouxa nada: quem nega a leitura de quem não
+> recebeu `READ_FILES` é o Rust, na hora do uso — provado pelo teste "declarar não
+> é receber". Autorização local + uso nativo é a divisão certa enquanto o binário
+> for opcional.
+
 ## O que ainda falta
 
-**A injeção em produção.** Nada preenche `deps.runtime` no app: o boot da V2 roda
-no *renderer*, e o Runtime vive no processo *main*. A ponte existe
-(`runtime:status` / `runtime:autorizar` / `runtime:ler` no `ipc.js`), mas ligar
-uma à outra — renderer → `window.baluarte.invoke` → main → Runtime — é o próximo
-passo, e não existe ainda.
-
-Ou seja: a cadeia está provada de ponta a ponta **em Node, com as peças reais**;
-o que não está provado é o app rodando com ela.
+**O app rodando com isso.** A cadeia está provada em Node com as peças reais, e o
+adaptador está provado contra uma ponte falsa — mas ninguém abriu um Baluarte
+empacotado com o Runtime dentro. É o mesmo ramo `process.resourcesPath` que o
+[`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md) já lista como não exercitado.

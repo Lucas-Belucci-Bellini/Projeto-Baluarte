@@ -35,6 +35,8 @@ import { criarPermissoes } from '../core/permissoes.js';
  * em campo, e não só na definição. */
 import { criarLifecycleRuntime } from '../core/module-runtime-lifecycle.js';
 import { criarGrantRuntime } from '../core/runtime-bootstrap.js';
+/* O Runtime do renderer: IPC, não stdio. Devolve `null` fora do app. */
+import { criarRuntimeApp } from '../core/runtime-app.js';
 
 /* O router da V1, sem alteração nenhuma. É o ponto: adaptar, não reescrever. */
 import { router } from '../../src/core/router.js';
@@ -92,7 +94,22 @@ async function principal() {
 
   const saida = document.getElementById('saida');
 
-  const boot = criarBoot(registry, { storage, bus, metricas, trabalho, apis, permissoes }, {
+  /* A alça de Runtime que os módulos recebem no contexto. `null` fora do app —
+   * e `null` faz `deps.runtime` ficar indefinido, devolvendo ao contexto a forma
+   * exata que ele tinha antes desta linha. É o gate do mega-plano #238: web
+   * leve, app completo.
+   *
+   * O Host acima continua autorizando LOCALMENTE (`criarGrantRuntime`), mesmo no
+   * app. É de propósito: quem cobra `READ_FILES` de verdade é o Runtime, na hora
+   * da leitura, e trocar a autorização local pela nativa faria um binário ausente
+   * derrubar módulos que hoje sobem. Autorização local + uso nativo não afrouxa
+   * nada — o Rust nega a leitura de quem não recebeu a permissão. */
+  const runtimeApp = criarRuntimeApp(registry, permissoes, globalThis.baluarte);
+
+  const boot = criarBoot(
+    registry,
+    { storage, bus, metricas, trabalho, apis, permissoes, ...(runtimeApp ? { runtime: runtimeApp } : {}) },
+    {
     router,
     renderNav: (itens) => {
       const nav = document.getElementById('nav');

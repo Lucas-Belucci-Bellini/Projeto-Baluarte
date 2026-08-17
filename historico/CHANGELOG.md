@@ -140,10 +140,36 @@ closure — a checagem no spread não estreita lá dentro. Resolvido capturando 
 do `return`, e não com `!`: `deps` é objeto de quem chama, e calar o compilador
 esconderia o caso real.
 
-**Aberto:** nada preenche `deps.runtime` em produção. O boot da V2 roda no
-renderer e o Runtime vive no main; a ponte existe (`runtime:*` no `ipc.js`), mas
-ligar renderer → IPC → main é o próximo passo. A cadeia está provada de ponta a
-ponta **em Node, com as peças reais** — não com o app rodando.
+### E a injeção em produção fechou o circuito
+
+`v2/core/runtime-app.js` adapta `window.baluarte.invoke('runtime:ler', …)` à forma
+que o contexto espera, e o entrypoint o injeta em `deps.runtime`. Renderer → IPC →
+main → Runtime, com a alça chegando ao módulo pelo `ctx`.
+
+**Fora do app devolve `null`**, e `null` deixa o contexto exatamente como era. Um
+adaptador que fingisse existir na web daria aos módulos uma alça que sempre falha
+— pior do que não ter alça. Gate do #238: web leve, app completo. O portão
+`v2:integracao` segue **15/15** no navegador, que é a prova de que o caminho web
+não mudou.
+
+Três decisões, cada uma com mutante:
+
+- **Ambiente meio montado é ausência.** `native` sem `invoke` é ponte quebrada;
+  tratá-la como pronta empurraria o erro para dentro do `init` de um módulo, longe
+  da causa. E `native` tem de ser `true`, não apenas verdadeiro — o mutante que
+  troca por `!ponte.native` morre.
+- **O envelope é remontado a cada chamada.** Congelá-lo no boot faria a leitura
+  responder sobre o passado: conceder depois do arranque não alcançaria o módulo,
+  revogar tampouco. Mesma razão de `declarado.concedidas` ser função. O teste cobre
+  os três instantes — antes, depois de conceder, depois de revogar.
+- **O Host continua autorizando localmente, mesmo no app.** Trocar
+  `criarGrantRuntime` pela autorização nativa faria um binário ausente derrubar
+  módulos que hoje sobem. E não afrouxa nada: quem nega a leitura de quem não
+  recebeu `READ_FILES` é o Rust, na hora do uso.
+
+**Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro. A cadeia
+está provada em Node com as peças reais e o adaptador contra ponte falsa; o ramo
+`process.resourcesPath` continua sem exercício.
 
 ### E a ponte do app desktop entrou junto
 
