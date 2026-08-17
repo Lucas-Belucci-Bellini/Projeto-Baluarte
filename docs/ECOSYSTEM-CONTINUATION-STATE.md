@@ -38,6 +38,22 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] discovery inicial nos seis projetos: não criar capability artificial apenas para demonstrar o mesh
 - [x] ARK provider discovery inicial: hazards/evidências públicas são candidatos, mas consumidor/interface ainda não confirmados
 - [x] AEGIS provider discovery inicial: o repositório atual comprova a especificação/prompt do agente, mas não uma API/MCP provider estável
+- [x] Baluarte V2 platform primitive discovery: Event Bus, Module System/Registry, Permission System, Storage/Data Layer e External API aparecem como fundamentos arquiteturais no V2 Master Plan
+
+## Baluarte platform primitives — novo estado
+
+`docs/ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md` registra o resultado da rodada. O `docs/v2/V2_MASTER_PLAN.md` confirma que o Baluarte V2 foi desenhado para módulos externos e contratos/API, com isolamento, permissões separadas da funcionalidade e sem acesso de módulos aos detalhes internos de outros módulos.
+
+Primitivas candidatas:
+
+- Module contract / registry
+- Event Bus
+- Permission System
+- Storage / Data Layer
+- External API boundary
+- Audit / diagnostics / observability
+
+Essas são **primitivas arquiteturais candidatas**, não devem ser tratadas como serviços externos prontos sem verificar implementação e testes concretos.
 
 ## Veritas provider status
 
@@ -69,18 +85,22 @@ TaxForge é o principal consumidor candidato por seu domínio de cenários, evid
 
 ## Próximo passo EXATO
 
-**Continuar capability discovery orientado por necessidade real, agora cruzando as interfaces reais do Baluarte com as necessidades do TaxForge e os candidatos de ARK/AEGIS/Veritas.**
+**Verificar as implementações concretas das primitivas V2 do Baluarte e, em paralelo, mapear necessidades externas reais do TaxForge.**
 
 Ordem:
 
-1. mapear no Baluarte serviços V2 realmente implementados que possam ser primitivas de plataforma;
-2. mapear no TaxForge módulos/serviços que pedem conhecimento ou processamento externo;
-3. comparar essas necessidades com ARK, AEGIS e Veritas;
-4. escolher o primeiro par somente quando houver consumidor + provider + interface real;
-5. identificar exatamente os dados e autorização necessários;
-6. definir o menor payload e provenance;
-7. só então desenhar registry/requests/results para o caso concreto;
-8. só depois propor migration não destrutiva no Supabase.
+1. localizar implementação + testes do Event Bus;
+2. localizar Module Registry/contract e lifecycle;
+3. localizar enforcement do Permission System;
+4. localizar Storage/Data Layer e Evidence Layer;
+5. localizar a fronteira External API/MCP;
+6. mapear no TaxForge módulos/serviços que pedem conhecimento ou processamento externo;
+7. comparar essas necessidades com ARK, AEGIS e Veritas;
+8. escolher o primeiro par somente quando houver consumidor + provider + interface real;
+9. identificar exatamente os dados e autorização necessários;
+10. definir o menor payload e provenance;
+11. só então desenhar registry/requests/results para o caso concreto;
+12. só depois propor migration não destrutiva no Supabase.
 
 ## Regras permanentes
 
@@ -93,6 +113,7 @@ Ordem:
 - Funcionalidades semelhantes não precisam ser idênticas; Plan é opcional onde não fizer sentido.
 - A topologia interna é documentação de engenharia privada; segurança real depende de autenticação, autorização, RLS, mínimo privilégio e auditoria.
 - Não criar dependências artificiais entre projetos apenas para demonstrar o Mesh.
+- Não criar uma segunda implementação de Event Bus, Storage ou Permission Manager no Baluarte sem justificar arquiteturalmente.
 
 ## Como retomar
 
@@ -104,6 +125,7 @@ Abrir primeiro este arquivo e depois:
 - `docs/ECOSYSTEM-VERITAS-PROVIDER-CONTRACT-V1.md`
 - `docs/ECOSYSTEM-ARK-PROVIDER-DISCOVERY-V1.md`
 - `docs/ECOSYSTEM-AEGIS-PROVIDER-DISCOVERY-V1.md`
+- `docs/ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md`
 - `docs/SUPABASE-IDENTITY-TENANT-AUDIT.md`
 - `docs/SUPABASE-RPC-BODY-AUDIT-V1.md`
 - `docs/SUPABASE-RLS-GRANTS-AUDIT-V1.md`
