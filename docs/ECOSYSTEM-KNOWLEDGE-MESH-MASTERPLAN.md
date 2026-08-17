@@ -1,0 +1,424 @@
+# Baluarte — Ecosystem Knowledge Mesh Masterplan
+
+> Documento central do Projeto-Baluarte para registrar o que deve ser construído, preservado e integrado entre TaxForge, Ark-Initiative, DailyPlanner, AEGIS, Projeto-Baluarte e Veritas.
+>
+> **Regra:** este documento é a fonte central do planejamento do ecossistema. Os projetos continuam donos de seus próprios domínios. A integração completa só começa quando os contratos e domínios estiverem suficientemente definidos.
+
+## 1. Objetivo
+
+Construir um ecossistema de aplicações interoperáveis sem transformar os seis projetos em um único sistema monolítico e sem obrigar todos os projetos a possuir as mesmas funcionalidades.
+
+O Baluarte funciona como camada de plataforma e coordenação. Cada projeto mantém seu domínio, seu banco lógico e suas regras de negócio.
+
+## 2. Projetos acompanhados
+
+| Projeto | Papel principal | Domínio de dados | Prioridade de banco |
+|---|---|---|---|
+| TaxForge | Simulação econômica/tributária e decisão empresarial | fiscal, financeiro, cenários, evidências e decisões | alta |
+| Ark-Initiative | Resiliência climática e ambiental | geografia, sensores, observações, riscos, incidentes e resposta | alta |
+| DailyPlanner | Planejamento pessoal e tarefas | tarefas, agenda, lembretes e preferências | baixa até haver necessidade de sincronização |
+| AEGIS | Investigação e engenharia autônoma | investigações, hipóteses, evidências, correções e validações | alta |
+| Projeto-Baluarte | Plataforma/hub e orquestração | identidade, projetos, permissões, integrações, eventos e coordenação | alta |
+| Veritas | Lógica, circuitos e colaboração | projetos, circuitos, versões, simulações e análises | média/alta |
+
+## 3. Regra de propriedade dos dados
+
+Nenhum projeto deve depender de acesso direto irrestrito às tabelas internas de outro projeto.
+
+Preferir:
+
+```text
+Projeto A
+  ↓
+contrato de integração
+  ↓
+evento / API / referência
+  ↓
+Projeto B
+```
+
+O projeto de origem continua responsável pela semântica e integridade do dado que publica.
+
+## 4. Camada compartilhada do Baluarte
+
+O Baluarte deve concentrar somente capacidades realmente compartilháveis:
+
+- identidade;
+- organizações;
+- memberships;
+- projetos;
+- papéis e permissões;
+- integrações;
+- eventos;
+- notificações;
+- referências externas;
+- auditoria de plataforma;
+- preferências e capacidades comuns.
+
+Não colocar no núcleo compartilhado os dados fiscais do TaxForge, os sensores do ARK, os circuitos do Veritas ou as investigações do AEGIS.
+
+## 5. TaxForge — domínio previsto
+
+Domínio próprio:
+
+```text
+empresa
+produtos
+fornecedores
+contratos
+compras
+custos
+importações
+cenários
+versões
+premissas
+execuções D1/D2/D3
+análises
+evidências
+fontes
+revisões
+decisões
+ações
+regras tributárias
+versões de regras
+auditoria
+```
+
+Integrações candidatas:
+
+- decisão → tarefa no DailyPlanner;
+- projeto/organização → identidade do Baluarte;
+- evidência/resultado → AEGIS somente quando houver investigação autorizada;
+- referências externas → Knowledge Mesh.
+
+## 6. Ark-Initiative — domínio previsto
+
+Domínio próprio:
+
+```text
+regiões
+feições geográficas
+sensores
+leituras
+observações meteorológicas
+infraestrutura
+dependências de infraestrutura
+riscos
+ameaças
+aferições/simulações
+incidentes
+alertas
+abrigos
+rotas
+ações de resposta
+fontes
+```
+
+### Plano é opcional
+
+O ARK não deve exigir um sistema de planos para toda atividade. Uma análise ou alerta pode existir sozinho. Quando uma pessoa ou organização quiser transformar uma descoberta em ação coordenada, poderá criar um plano/projeto de contribuição.
+
+## 7. DailyPlanner — domínio previsto
+
+O DailyPlanner deve permanecer simples.
+
+Domínio futuro:
+
+```text
+tasks
+schedules
+reminders
+categories
+preferences
+```
+
+Não criar uma infraestrutura de banco complexa antes de existir necessidade real de sincronização multiusuário/multidispositivo.
+
+Integração candidata:
+
+```text
+TaxForge decision
+  ↓
+external reference
+  ↓
+DailyPlanner task
+```
+
+A tarefa recebe contexto suficiente para ser executada, mas não precisa copiar o domínio tributário inteiro.
+
+## 8. AEGIS — domínio previsto
+
+Domínio próprio:
+
+```text
+agents
+repositories
+investigations
+hypotheses
+evidence
+findings
+root causes
+fixes
+validations
+test runs
+incidents
+reports
+audit events
+```
+
+Fluxo:
+
+```text
+problema
+ ↓
+investigação
+ ↓
+hipóteses
+ ↓
+evidências
+ ↓
+causa raiz
+ ↓
+correção
+ ↓
+testes
+ ↓
+validação
+ ↓
+relatório
+```
+
+AEGIS pode investigar outros projetos, mas deve receber autorização e contexto delimitados. Não conceder acesso geral a todos os bancos.
+
+## 9. Veritas — domínio previsto
+
+Preservar a arquitetura local-first já existente e evoluir o domínio Supabase sem destruir a experiência offline.
+
+Domínio:
+
+```text
+projects
+circuits
+circuit_versions
+components
+simulations
+truth_tables
+analyses
+ai_runs
+collaborations
+exports
+chip_catalog
+```
+
+Integrações devem compartilhar referências e resultados quando necessário, não circuitos completos por padrão.
+
+## 10. Capacidades opcionais
+
+Funcionalidades semelhantes não precisam ter a mesma obrigatoriedade em todos os projetos.
+
+Exemplo:
+
+```text
+Plano
+ ├─ TaxForge: natural após decisão
+ ├─ ARK: opcional
+ ├─ DailyPlanner: núcleo de tarefas
+ ├─ AEGIS: não obrigatório
+ ├─ Baluarte: capacidade de plataforma
+ └─ Veritas: não é núcleo
+```
+
+O Baluarte fornece capacidades reutilizáveis; cada aplicação decide se as habilita.
+
+## 11. Project Knowledge Mesh
+
+A interoperabilidade deve ser baseada em contratos.
+
+Conceito:
+
+```text
+                  Baluarte Platform
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+    TaxForge            ARK           Veritas
+        │                │                │
+        └──────────── AEGIS ──────────────┘
+                         │
+                   DailyPlanner
+```
+
+Uma referência compartilhada deve poder identificar:
+
+- projeto de origem;
+- tipo do objeto;
+- ID do objeto;
+- projeto de destino, quando aplicável;
+- tipo de relação;
+- permissões;
+- timestamps;
+- versão do contrato.
+
+## 12. Eventos compartilhados
+
+Eventos devem ser pequenos e estáveis.
+
+Exemplos:
+
+```text
+project.created
+project.updated
+analysis.completed
+decision.created
+action.created
+task.created
+investigation.opened
+investigation.completed
+alert.created
+integration.requested
+integration.approved
+```
+
+O evento não deve carregar o banco inteiro do projeto de origem.
+
+## 13. Segurança
+
+Regras mínimas:
+
+1. RLS por tenant/organização onde houver dados multiusuário.
+2. Menor privilégio entre projetos.
+3. Nenhum projeto recebe credenciais administrativas do banco de outro projeto.
+4. Referências cruzadas não concedem acesso automaticamente.
+5. Dados sensíveis permanecem no domínio de origem.
+6. Integrações devem ser auditáveis.
+7. Acesso de AEGIS a repositórios e dados deve ser delimitado ao escopo autorizado.
+
+## 14. Estratégia de construção
+
+Enquanto o desenho estiver sendo fechado:
+
+```text
+documentar
+  ↓
+definir contrato
+  ↓
+revisar
+  ↓
+branch
+  ↓
+PR
+  ↓
+testes/revisão
+  ↓
+merge
+```
+
+Não iniciar a integração completa apenas porque uma tabela já existe.
+
+## 15. Ordem planejada
+
+### Fase A — documentação
+
+- [ ] mapa do ecossistema;
+- [ ] dicionário de dados por projeto;
+- [ ] contratos Supabase;
+- [ ] contratos de integração;
+- [ ] catálogo de eventos;
+- [ ] matriz de permissões;
+- [ ] política de referências externas.
+
+### Fase B — bancos por domínio
+
+- [ ] TaxForge;
+- [ ] ARK;
+- [ ] AEGIS;
+- [ ] Veritas;
+- [ ] Baluarte;
+- [ ] DailyPlanner somente quando necessário.
+
+### Fase C — integração
+
+- [ ] identidade compartilhada;
+- [ ] organizações;
+- [ ] referências externas;
+- [ ] eventos;
+- [ ] notificações;
+- [ ] integrações específicas por projeto.
+
+### Fase D — ligação completa
+
+Somente depois de os contratos estarem estáveis:
+
+```text
+frontend
+  ↓
+API
+  ↓
+autorização
+  ↓
+domínio
+  ↓
+Supabase/Postgres
+  ↓
+eventos
+  ↓
+Knowledge Mesh
+```
+
+## 16. Branch strategy
+
+Para mudanças de arquitetura/documentação:
+
+```text
+docs/<escopo>
+```
+
+Para domínio:
+
+```text
+feat/<projeto>-<dominio>
+```
+
+Para integração:
+
+```text
+feat/ecosystem-<capacidade>
+```
+
+Para correções:
+
+```text
+fix/<escopo>
+```
+
+Cada mudança relevante deve passar por PR antes do merge na branch de destino.
+
+## 17. Fonte central de planejamento
+
+Este arquivo pertence ao Projeto-Baluarte porque o Baluarte é o ponto de coordenação do ecossistema.
+
+Os repositórios individuais continuam sendo a fonte de verdade de suas próprias implementações.
+
+Portanto:
+
+```text
+Baluarte
+ = mapa + contratos + coordenação
+
+TaxForge
+ = domínio fiscal
+
+ARK
+ = domínio de resiliência
+
+DailyPlanner
+ = domínio de planejamento pessoal
+
+AEGIS
+ = domínio de investigação/engenharia
+
+Veritas
+ = domínio de lógica/circuitos
+```
+
+**Não copiar a implementação de um projeto para outro apenas para obter uniformidade. A uniformidade deve estar nos contratos, segurança e interoperabilidade — não necessariamente nas tecnologias ou nos modelos internos.**

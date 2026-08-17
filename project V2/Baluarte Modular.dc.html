@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Spectral:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>if(!window.THREE&&!window.__threeLoading){window.__threeLoading=1;var s=document.createElement('script');s.src='https://unpkg.com/three@0.160.0/build/three.min.js';document.head.appendChild(s);}</script>
+<style>
+  *{box-sizing:border-box}
+  @media (max-width:1180px){ [data-hide-narrow]{display:none !important} }
+  @media (max-width:1080px){ [data-grid]{grid-template-columns:repeat(2,1fr) !important} [data-block]{grid-column:span 2 !important} }
+  html,body{margin:0;padding:0;background:#0e0c16;overflow:hidden;font-family:'Spectral',serif}
+  a{color:#d4a24e;text-decoration:none}
+  a:hover{color:#e8c07a}
+  @keyframes sheen{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+  @keyframes pulseDot{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  ::-webkit-scrollbar{width:9px}
+  ::-webkit-scrollbar-thumb{background:rgba(212,178,112,0.16);border-radius:5px}
+  ::-webkit-scrollbar-thumb:hover{background:#d4a24e}
+  ::-webkit-scrollbar-track{background:transparent}
+  [data-block]{animation:fadeUp .45s ease both}
+  [data-block][data-dragging="1"]{opacity:.4}
+  [data-block][data-over="1"]{outline:1px dashed #d4a24e;outline-offset:5px}
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="--bg:#0e0c16;--panel:rgba(32,26,44,0.5);--panel2:rgba(42,34,58,0.66);--line:rgba(212,178,112,0.16);--txt:#f4ecdd;--dim:#a89a80;--accent:#d4a24e;--accent2:#e8c07a;--glow:rgba(212,162,78,0.45);--pad:32px;--gap:22px; position:fixed;inset:0;display:flex;background:var(--bg);color:var(--txt);font-family:'Spectral',serif;-webkit-font-smoothing:antialiased;">
+
+  <!-- ══ BARRA LATERAL ══ -->
+  <aside ref="{{ sideRef }}" style="width:252px;flex:0 0 252px;height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(20,15,28,0.96),rgba(13,10,20,0.99));border-right:1px solid var(--line);z-index:30;">
+    <div style="padding:20px 18px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;">
+      <svg width="26" height="29" viewBox="0 0 26 29" fill="none" style="filter:drop-shadow(0 0 6px var(--glow));flex:0 0 auto;">
+        <path d="M13 1L24.26 7.5V20.5L13 27L1.74 20.5V7.5L13 1Z" stroke="var(--accent)" stroke-width="1.4"></path>
+        <path d="M13 6.5L19.5 10.25V17.75L13 21.5L6.5 17.75V10.25L13 6.5Z" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="1"></path>
+      </svg>
+      <div data-sidetext style="line-height:1.1;">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:15px;letter-spacing:3px;">MARK XIII</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:2px;color:var(--dim);margin-top:3px;">SISTEMA · ONLINE</div>
+      </div>
+      <button onClick="{{ toggleSide }}" style="margin-left:auto;width:24px;height:24px;border:1px solid var(--line);background:transparent;color:var(--dim);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;">‹</button>
+    </div>
+
+    <nav style="flex:1;overflow-y:auto;padding:12px 10px 26px;">
+      <sc-for list="{{ navGroups }}" as="grp" hint-placeholder-count="7">
+        <div style="margin-top:16px;">
+          <div data-sidetext style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:2.5px;color:var(--dim);padding:0 10px 7px;opacity:.7;">{{ grp.label }}</div>
+          <sc-for list="{{ grp.items }}" as="it" hint-placeholder-count="4">
+            <div data-screen="{{ it.screen }}" onClick="{{ navClick }}" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;cursor:pointer;color:var(--dim);font-size:12.5px;font-weight:500;transition:background .15s,color .15s;" style-hover="background:var(--panel);color:var(--txt);">
+              <span style="width:5px;height:5px;border-radius:1px;background:var(--accent);opacity:.5;flex:0 0 auto;transform:rotate(45deg);"></span>
+              <span data-sidetext style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.name }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </nav>
+
+    <div data-sidetext style="padding:14px 16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:1.5px;color:var(--dim);line-height:1.9;">
+      <div style="color:var(--txt);opacity:.85;">@Spartan_Gamer_BR</div>
+      <div>LLBR INNOVATIONS</div>
+      <div style="opacity:.6;">V3.0.0 · LAYOUT MODULAR</div>
+    </div>
+  </aside>
+
+  <!-- ══ PRINCIPAL ══ -->
+  <main style="flex:1;height:100%;position:relative;overflow:hidden;">
+
+    <header style="position:absolute;top:0;left:0;right:0;z-index:20;height:58px;display:flex;align-items:center;gap:18px;padding:0 26px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(16,12,24,0.9),rgba(16,12,24,0.45));backdrop-filter:blur(10px);">
+      <div onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:0 0 auto;">
+        <svg width="20" height="22" viewBox="0 0 26 29" fill="none"><path d="M13 1L24.26 7.5V20.5L13 27L1.74 20.5V7.5L13 1Z" fill="var(--accent)" fill-opacity="0.15" stroke="var(--accent)" stroke-width="1.4"></path></svg>
+        <span style="font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:4px;font-size:15px;">BALUARTE</span>
+      </div>
+      <span style="color:var(--dim);opacity:.5;">/</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:2.5px;color:var(--accent);">{{ screenTitle }}</span>
+
+      <div style="margin-left:auto;display:flex;align-items:center;gap:14px;flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--dim);">
+        <button onClick="{{ openPalette }}" style="display:flex;align-items:center;gap:9px;padding:7px 13px;border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--dim);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;cursor:pointer;transition:border-color .16s,color .16s;" style-hover="border-color:var(--accent);color:var(--txt)">
+          <span style="color:var(--accent);font-size:11px;">⌕</span>BUSCAR MÓDULO
+          <span style="border:1px solid var(--line);border-radius:4px;padding:2px 5px;font-size:8px;">⌘K</span>
+        </button>
+        <button ref="{{ editBtnRef }}" onClick="{{ toggleEdit }}" style="display:flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid var(--line);border-radius:20px;background:transparent;color:var(--dim);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;cursor:pointer;" style-hover="border-color:var(--accent);color:var(--txt)">⠿ ORGANIZAR</button>
+        <span data-clock="date">—</span>
+        <span data-clock="time" style="color:var(--txt);font-weight:700;font-size:13px;letter-spacing:2px;">00:00:00</span>
+      </div>
+    </header>
+
+    <!-- barra do modo organizar -->
+    <div ref="{{ editBarRef }}" style="display:none;position:absolute;top:58px;left:0;right:0;z-index:19;padding:10px 26px;border-bottom:1px solid var(--line);background:rgba(212,162,78,0.08);backdrop-filter:blur(8px);align-items:center;gap:18px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);">
+      <span>MODO ORGANIZAR · ARRASTE PELO ⠿ · REDIMENSIONE PELO CANTO ◢</span>
+      <button onClick="{{ resetLayout }}" style="margin-left:auto;padding:6px 12px;border:1px solid var(--accent);border-radius:16px;background:transparent;color:var(--accent2);font-family:inherit;font-size:9px;letter-spacing:2px;cursor:pointer;">RESTAURAR PADRÃO</button>
+      <button onClick="{{ toggleEdit }}" style="padding:6px 12px;border:none;border-radius:16px;background:linear-gradient(100deg,var(--accent),var(--accent2));color:#241706;font-family:inherit;font-size:9px;letter-spacing:2px;font-weight:600;cursor:pointer;">CONCLUIR</button>
+    </div>
+
+    <!-- ══ GRADE DE BLOCOS ══ -->
+    <div ref="{{ scrollRef }}" style="position:absolute;inset:58px 0 0 0;z-index:10;overflow-y:auto;overflow-x:hidden;">
+      <div ref="{{ gridRef }}" data-grid="1" style="max-width:1320px;margin:0 auto;padding:var(--pad) 40px 80px;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);align-items:stretch;">
+
+        <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="9">
+          <section data-block="1" data-id="{{ b.id }}" draggable="false" onDragStart="{{ onDragStart }}" onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" onDragEnd="{{ onDragEnd }}" style="position:relative;grid-column:span 1;border:1px solid var(--line);border-radius:18px;background:var(--panel);backdrop-filter:blur(8px);padding:30px 32px;display:flex;flex-direction:column;overflow:hidden;">
+
+            <!-- cabeçalho do bloco -->
+            <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:18px;">
+              <div style="flex:1;min-width:0;">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2.8px;color:var(--accent);">{{ b.tag }}</div>
+                <h3 style="margin:9px 0 0;font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;line-height:1.15;text-wrap:pretty;">{{ b.title }}</h3>
+              </div>
+              <span data-handle="drag" style="display:none;flex:0 0 auto;cursor:grab;color:var(--dim);font-size:15px;padding:2px 6px;border:1px solid var(--line);border-radius:7px;">⠿</span>
+            </div>
+
+            <!-- ═ bloco: hero ═ -->
+            <sc-if value="{{ b.isHero }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0 6px;">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:6px;color:var(--accent);margin-bottom:14px;">NÚCLEO INFINITY DREADNOUGHT · ONLINE</div>
+                <h1 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(56px,9vw,132px);line-height:.92;background:linear-gradient(100deg,#ffffff,var(--accent) 45%,var(--accent2) 70%,#ffffff);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 30px var(--glow));animation:sheen 7s linear infinite;">BALUARTE</h1>
+                <div style="font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:16px;font-size:clamp(13px,2vw,22px);color:var(--dim);margin:10px 0 0 14px;font-style:italic;">MARK XIII</div>
+                <p style="max-width:640px;margin:22px auto 0;font-size:15.5px;line-height:1.75;color:var(--txt);opacity:.85;text-wrap:pretty;">Bem-vindo, operador <span style="color:var(--accent);font-weight:600;">Lucas Belucci Bellini</span>. Cada painel abaixo é um bloco — arraste, redimensione e componha a sua ponte de comando.</p>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: núcleo 3D ═ -->
+            <sc-if value="{{ b.isCore }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;flex:1;min-height:220px;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(212,162,78,0.12),transparent 70%);">
+                <canvas ref="{{ canvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
+                <div style="position:absolute;left:14px;bottom:12px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:2px;color:var(--dim);">WEBGL · TURBULÊNCIA NA GPU</div>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: telemetria ═ -->
+            <sc-if value="{{ b.isTelemetry }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
+                <sc-for list="{{ telemetry }}" as="t" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px dashed rgba(212,162,78,.14);">
+                    <span style="display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--dim);">
+                      <span style="width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 8px #3ddc84;animation:pulseDot 2s infinite;"></span>{{ t.k }}
+                    </span>
+                    <span data-live="{{ t.id }}" style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--accent2);text-shadow:0 0 10px var(--glow);">{{ t.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: números ═ -->
+            <sc-if value="{{ b.isStats }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:26px 18px;align-content:center;">
+                <sc-for list="{{ stats }}" as="s" hint-placeholder-count="6">
+                  <div>
+                    <div data-count="{{ s.n }}" style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:52px;color:var(--accent);line-height:1;text-shadow:0 0 20px var(--glow);">{{ s.n }}</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--dim);margin-top:8px;">{{ s.k }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: atalhos ═ -->
+            <sc-if value="{{ b.isShortcuts }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-content:start;">
+                <sc-for list="{{ shortcuts }}" as="s" hint-placeholder-count="8">
+                  <div data-screen="{{ s.screen }}" onClick="{{ navClick }}" style="border:1px solid var(--line);border-radius:12px;padding:16px 14px;background:var(--panel2);cursor:pointer;transition:border-color .16s,transform .16s;display:flex;flex-direction:column;gap:8px;min-height:96px;" style-hover="border-color:var(--accent);transform:translateY(-2px)">
+                    <span style="font-size:17px;color:var(--accent);">{{ s.icon }}</span>
+                    <span style="font-size:13px;line-height:1.3;color:var(--txt);">{{ s.name }}</span>
+                    <span style="margin-top:auto;font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:1.5px;color:var(--dim);">{{ s.tag }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: crônica ═ -->
+            <sc-if value="{{ b.isChronicle }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.8;text-wrap:pretty;"><span style="float:left;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:52px;line-height:.72;padding:8px 12px 0 0;color:var(--accent);text-shadow:0 0 14px var(--glow);">O</span> dia em que o Infinity Dreadnought ficou online pela primeira vez. Lucas Belucci Bellini assume o comando e o núcleo Mark XIII entra em regime estável.</p>
+                <div style="margin-top:auto;padding-top:20px;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px;color:var(--accent);letter-spacing:1px;">ler a crônica →</div>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: atualizações ═ -->
+            <sc-if value="{{ b.isUpdates }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;gap:0;">
+                <sc-for list="{{ updates }}" as="u" hint-placeholder-count="4">
+                  <div style="display:flex;gap:16px;padding:14px 0;border-bottom:1px dashed rgba(212,162,78,.14);">
+                    <span style="flex:0 0 84px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--accent);padding-top:3px;">{{ u.v }}</span>
+                    <span style="flex:1;font-size:13.5px;line-height:1.6;color:var(--dim);">{{ u.txt }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: download ═ -->
+            <sc-if value="{{ b.isDownload }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <p style="margin:0;color:var(--dim);font-size:13.5px;line-height:1.75;">A experiência completa: 3D pesado, IA e motor real, sem as travas do navegador.</p>
+                <div style="display:flex;gap:10px;margin-top:20px;">
+                  <span style="width:38px;height:38px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--panel2);">⊞</span>
+                  <span style="width:38px;height:38px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--panel2);"></span>
+                  <span style="width:38px;height:38px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--panel2);">⊕</span>
+                </div>
+                <button style="margin-top:auto;padding:13px 22px;border:none;border-radius:26px;background:linear-gradient(100deg,var(--accent),var(--accent2));color:#241706;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 26px var(--glow);">↓ Baixar o app</button>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: JARVIS ═ -->
+            <sc-if value="{{ b.isJarvis }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;flex:1;display:flex;flex-direction:column;">
+                <div style="position:absolute;right:-40px;bottom:-40px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 70%);opacity:.5;"></div>
+                <p style="margin:0;position:relative;color:var(--dim);font-size:13.5px;line-height:1.75;">Git Nexus + J.A.R.V.I.S + Segundo Cérebro + ML, unificados num cockpit só. O cérebro do Baluarte.</p>
+                <div style="margin-top:auto;position:relative;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:17px;color:var(--accent);letter-spacing:1px;">abrir o Núcleo →</div>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: documento (Centro Militar) ═ -->
+            <sc-if value="{{ b.isDoc }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <p style="margin:0;color:var(--dim);font-size:14px;line-height:1.8;text-wrap:pretty;">{{ b.body }}</p>
+                <sc-if value="{{ b.source }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:auto;padding-top:20px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;"><span style="color:var(--accent);">{{ b.sourceCta }}</span> <span style="color:var(--dim);opacity:.7;margin-left:10px;">{{ b.source }}</span></div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <!-- ═ bloco: índice ═ -->
+            <sc-if value="{{ b.isToc }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;gap:1px;overflow-y:auto;">
+                <sc-for list="{{ milToc }}" as="t" hint-placeholder-count="10">
+                  <div style="display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer;color:var(--dim);font-size:13px;transition:background .15s,color .15s;" style-hover="background:var(--panel2);color:var(--txt)">
+                    <span style="width:5px;height:5px;border-radius:1px;background:var(--accent);transform:rotate(45deg);opacity:.6;flex:0 0 auto;"></span>{{ t }}
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- alça de redimensionar -->
+            <span data-handle="resize" onPointerDown="{{ onResizeStart }}" style="display:none;position:absolute;right:8px;bottom:8px;width:22px;height:22px;align-items:center;justify-content:center;color:var(--accent);font-size:11px;cursor:nwse-resize;opacity:.8;">◢</span>
+          </section>
+        </sc-for>
+
+      </div>
+    </div>
+
+    <!-- ══ PALETA ⌘K ══ -->
+    <sc-if value="{{ paletteOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closePalette }}" style="position:absolute;inset:0;z-index:60;background:rgba(6,4,10,0.72);backdrop-filter:blur(7px);display:flex;align-items:flex-start;justify-content:center;padding-top:13vh;">
+        <div onClick="{{ stopProp }}" style="width:min(620px,88%);border:1px solid var(--line);border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(26,20,36,0.97),rgba(14,11,22,0.99));box-shadow:0 34px 90px -32px #000;">
+          <div style="display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line);">
+            <span style="color:var(--accent);font-size:14px;">⌕</span>
+            <input ref="{{ searchRef }}" onInput="{{ onQuery }}" onKeyDown="{{ onPaletteKey }}" placeholder="Buscar módulo do Baluarte…" style="flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-family:'Spectral',serif;font-size:16px;caret-color:var(--accent);"></input>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:1.5px;color:var(--dim);border:1px solid var(--line);border-radius:5px;padding:4px 7px;">ESC</span>
+          </div>
+          <div style="max-height:46vh;overflow-y:auto;padding:8px;">
+            <sc-for list="{{ paletteItems }}" as="p" hint-placeholder-count="6">
+              <div data-screen="{{ p.screen }}" onClick="{{ paletteGo }}" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;cursor:pointer;transition:background .14s;" style-hover="background:var(--panel2)">
+                <span style="width:6px;height:6px;border-radius:1px;background:var(--accent);transform:rotate(45deg);flex:0 0 auto;opacity:.7;"></span>
+                <span style="font-size:14px;color:var(--txt);">{{ p.name }}</span>
+                <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--dim);">{{ p.tag }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:11px 18px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:1.5px;color:var(--dim);display:flex;gap:18px;">
+            <span>↵ ABRIR</span><span>ESC FECHAR</span><span style="margin-left:auto;">{{ paletteCount }} MÓDULOS</span>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- seletor de tema -->
+    <div style="position:absolute;right:22px;bottom:20px;z-index:25;display:flex;align-items:center;gap:10px;padding:9px 14px;border:1px solid var(--line);border-radius:30px;background:rgba(16,12,24,0.82);backdrop-filter:blur(10px);">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:1.5px;color:var(--dim);">TEMA</span>
+      <button data-theme="ouro" onClick="{{ setTheme }}" title="Ouro de Fábula" style="width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;background:linear-gradient(135deg,#d4a24e,#e8c07a);box-shadow:0 0 10px rgba(212,162,78,.6);"></button>
+      <button data-theme="rubi" onClick="{{ setTheme }}" title="Rubi Encantado" style="width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;background:linear-gradient(135deg,#c8556d,#e0a06d);box-shadow:0 0 10px rgba(200,85,109,.6);"></button>
+      <button data-theme="esmeralda" onClick="{{ setTheme }}" title="Esmeralda Ancestral" style="width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;background:linear-gradient(135deg,#2fbf8f,#8fd4b4);box-shadow:0 0 10px rgba(47,191,143,.6);"></button>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ouro&quot;,&quot;rubi&quot;,&quot;esmeralda&quot;],&quot;default&quot;:&quot;ouro&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Estética&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;compacto&quot;,&quot;equilibrado&quot;,&quot;arejado&quot;],&quot;default&quot;:&quot;arejado&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Estética&quot;},&quot;intensity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.4,&quot;max&quot;:1.6,&quot;step&quot;:0.1,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;3D&quot;,&quot;unit&quot;:&quot;x&quot;}}">
+const THEMES = {
+  ouro: {
+    vars: {'--bg':'#0e0c16','--panel':'rgba(32,26,44,0.5)','--panel2':'rgba(42,34,58,0.66)','--line':'rgba(212,178,112,0.16)','--txt':'#f4ecdd','--dim':'#a89a80','--accent':'#d4a24e','--accent2':'#e8c07a','--glow':'rgba(212,162,78,0.45)'},
+    three: {core:0xd4a24e, particle:0xf0dcae, wire:0x9a7436}
+  },
+  rubi: {
+    vars: {'--bg':'#140a0f','--panel':'rgba(44,22,30,0.5)','--panel2':'rgba(56,28,38,0.66)','--line':'rgba(224,138,150,0.16)','--txt':'#f7ecec','--dim':'#af8d92','--accent':'#c8556d','--accent2':'#e0a06d','--glow':'rgba(200,85,109,0.45)'},
+    three: {core:0xc8556d, particle:0xf0c4cc, wire:0x8a3648}
+  },
+  esmeralda: {
+    vars: {'--bg':'#0a1210','--panel':'rgba(20,40,34,0.5)','--panel2':'rgba(26,50,42,0.66)','--line':'rgba(110,200,160,0.16)','--txt':'#e9f5ee','--dim':'#8aa896','--accent':'#2fbf8f','--accent2':'#8fd4b4','--glow':'rgba(47,191,143,0.45)'},
+    three: {core:0x2fbf8f, particle:0xbfe8d4, wire:0x1e7a5c}
+  }
+};
+
+const DENSITY = {
+  compacto:   {pad:'20px', gap:'14px'},
+  equilibrado:{pad:'28px', gap:'18px'},
+  arejado:    {pad:'40px', gap:'24px'}
+};
+
+const NAV = [
+  {label:'FERRAMENTAS TÉCNICAS', items:[{name:'Lab de Cripto'},{name:'Esteganografia'},{name:'CiberSeg'},{name:'Código Morse'}]},
+  {label:'ESTÚDIOS', items:[{name:'Color Studio'},{name:'QR Code Studio'},{name:'Símbolos'}]},
+  {label:'CONHECIMENTO', items:[{name:'Biblioteca'},{name:'Academia'},{name:'Robótica'},{name:'Guia para Montar PC'},{name:'Modpack Minecraft'},{name:'Economia'},{name:'Radar do Câmbio'}]},
+  {label:'MÍDIA', items:[{name:'Rádio'},{name:'Música'},{name:'Visualizador FFT'},{name:'Media Hub'},{name:'Central de Vídeos'},{name:'TV'},{name:'Cinema'},{name:'Arquivo de Memes'},{name:'Arcade Baluarte'},{name:'Batalha Naval'}]},
+  {label:'MILITAR', items:[{name:'Elites'},{name:'Dossiê de Forças'},{name:'Arsenal'},{name:'Radar Tático'},{name:'GeoPulse'},{name:'Onde Estou?'},{name:'Triangulação'},{name:'Mapa Mundial'},{name:'Centro Militar',screen:'militar'}]},
+  {label:'VISÃO', items:[{name:'Visão & Câmera'},{name:'Leitor OCR'},{name:'JARVIS · Corpo Total',screen:'jarvis'}]},
+  {label:'SISTEMA', items:[{name:'Ponte de Comando',screen:'home'},{name:'Painel do Banco'}]}
+];
+
+/* ── GRAMÁTICA DE BLOCOS ────────────────────────────────────────────────
+   Cada tela é só uma lista de blocos. Para uma tela nova, declare os
+   blocos aqui: o mesmo cabeçalho, a mesma grade, o mesmo arrastar. */
+const BLOCKS = {
+  hero:      {tag:'PONTE DE COMANDO', title:'', isHero:1, span:3, h:400},
+  core3d:    {tag:'NÚCLEO MARK XIII', title:'O núcleo, ao vivo', isCore:1, span:2, h:440},
+  telemetry: {tag:'TELEMETRIA', title:'Sinais do sistema', isTelemetry:1, span:1, h:440},
+  stats:     {tag:'STATUS OPERACIONAL', title:'O Baluarte em números', isStats:1, span:2, h:340},
+  jarvis:    {tag:'NÚCLEO DE IA', title:'JARVIS, grafo & memória', isJarvis:1, span:1, h:340},
+  shortcuts: {tag:'ACESSO RÁPIDO', title:'Módulos em destaque', isShortcuts:1, span:2, h:360},
+  chronicle: {tag:'CRÔNICA EM DESTAQUE', title:'Despertar do Núcleo', isChronicle:1, span:1, h:360},
+  updates:   {tag:'REGISTRO', title:'Últimas atualizações', isUpdates:1, span:2, h:320},
+  download:  {tag:'BALUARTE LAUNCHER', title:'Baixe o app desktop', isDownload:1, span:1, h:320},
+
+  milHero:   {tag:'BALUARTE · CENTRO MILITAR', title:'14 frentes militares, num lugar só', isDoc:1, span:3, h:280,
+    body:'Cada frente traz um extrato vivo da Wikipédia e o link para a página completa — a enciclopédia militar do Baluarte, sempre atualizada na fonte.'},
+  milToc:    {tag:'CONTEÚDO', title:'Índice das frentes', isToc:1, span:1, h:520},
+  milDocA:   {tag:'FRENTE 01', title:'Enciclopédia Militar', isDoc:1, span:2, h:250,
+    sourceCta:'LER NA WIKIPÉDIA →', source:'FONTE: WIKIPÉDIA · CC BY-SA',
+    body:'O termo militar se refere aos membros, instituições, instalações, equipamentos e veículos de uma organização autorizada a usar a força na defesa do seu país.'},
+  milDocB:   {tag:'FRENTE 02', title:'Forças Armadas do Mundo', isDoc:1, span:2, h:250,
+    sourceCta:'LER NA WIKIPÉDIA →', source:'FONTE: WIKIPÉDIA · CC BY-SA',
+    body:'As forças armadas de uma nação constituem o conjunto das suas organizações de combate e de defesa — designadas, conforme o país, como forças de autodefesa, forças militares ou exércitos.'},
+
+  jvHero:    {tag:'BALUARTE · NÚCLEO DE IA', title:'J.A.R.V.I.S · corpo total', isDoc:1, span:3, h:250,
+    body:'Três cérebros no mesmo cockpit: o modelo local para o que é privado, o servidor para o que é pesado, e Claude para o que exige raciocínio. O grafo do Nexus dá contexto a todos os três.'},
+  jvSignals: {tag:'TELEMETRIA', title:'Sinais do núcleo', isTelemetry:1, span:1, h:430},
+  jvAgents:  {tag:'AGENTES ATIVOS', title:'Quem está de plantão', isShortcuts:1, span:2, h:430},
+  jvStats:   {tag:'MEMÓRIA', title:'Segundo cérebro em números', isStats:1, span:2, h:320},
+  jvLog:     {tag:'REGISTRO', title:'Últimos ciclos', isUpdates:1, span:1, h:320}
+};
+
+const SCREENS = {
+  home:    {title:'PONTE DE COMANDO', blocks:['hero','core3d','telemetry','stats','jarvis','shortcuts','chronicle','updates','download']},
+  militar: {title:'CENTRO MILITAR',   blocks:['milHero','milToc','milDocA','milDocB']},
+  jarvis:  {title:'NÚCLEO J.A.R.V.I.S', blocks:['jvHero','jvAgents','jvSignals','jvStats','jvLog']}
+};
+
+const STORE = 'baluarte.layout.v3';
+
+class Component extends DCLogic {
+  els = {};
+  rootRef = (el)=>{ if(el) this.els.root=el; };
+  sideRef = (el)=>{ if(el) this.els.side=el; };
+  gridRef = (el)=>{ if(el) this.els.grid=el; };
+  scrollRef = (el)=>{ if(el) this.els.scroll=el; };
+  canvasRef = (el)=>{ if(el && el!==this.els.canvas){ this.els.canvas=el; this.mountThree(); } };
+  searchRef = (el)=>{ if(el) this.els.search=el; };
+  editBarRef = (el)=>{ if(el) this.els.editBar=el; };
+  editBtnRef = (el)=>{ if(el) this.els.editBtn=el; };
+
+  state = { screen:'home', themeKey:'ouro', editMode:false, paletteOpen:false, query:'', layout:null };
+
+  componentDidMount(){
+    const tk = (this.props.theme && THEMES[this.props.theme]) ? this.props.theme : 'ouro';
+    this.setState({ themeKey: tk, layout: this.loadLayout() });
+    this.applyTheme(tk);
+    this.applyDensity();
+    this.startClock();
+    this.initKeys();
+    setTimeout(()=>{ this.applyLayout(); this.countUp(); this.syncNav(); }, 60);
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    prevProps=prevProps||{}; prevState=prevState||{};
+    if(prevState.themeKey !== this.state.themeKey) this.applyTheme(this.state.themeKey);
+    if(prevProps.theme !== this.props.theme && this.props.theme && THEMES[this.props.theme])
+      this.setState({themeKey:this.props.theme});
+    if(prevProps.density !== this.props.density) this.applyDensity();
+    if(prevState.screen !== this.state.screen){
+      setTimeout(()=>{ this.applyLayout(); this.countUp(); this.syncNav(); }, 40);
+    } else {
+      setTimeout(()=>this.applyLayout(), 20);
+    }
+    if(prevState.editMode !== this.state.editMode) this.applyEditChrome();
+    if(!prevState.paletteOpen && this.state.paletteOpen)
+      setTimeout(()=>{ if(this.els.search) this.els.search.focus(); }, 40);
+  }
+
+  componentWillUnmount(){
+    clearInterval(this._clock); clearInterval(this._live);
+    cancelAnimationFrame(this._raf);
+    window.removeEventListener('keydown', this._kd);
+    window.removeEventListener('resize', this._rz);
+    if(this._ro) this._ro.disconnect();
+  }
+
+  /* ── TEMA E DENSIDADE ───────────────────────────────────────────── */
+  applyTheme(key){
+    const t = THEMES[key]; if(!t) return;
+    const r = this.els.root; if(!r) return;
+    for(const k in t.vars) r.style.setProperty(k, t.vars[k]);
+    r.querySelectorAll('[data-theme]').forEach(b=>{
+      b.style.borderColor = (b.dataset.theme===key) ? '#ffffff' : 'transparent';
+      b.style.transform = (b.dataset.theme===key) ? 'scale(1.15)' : 'scale(1)';
+    });
+    if(this.three) this.setThreeColors(t.three);
+  }
+  applyDensity(){
+    const d = DENSITY[this.props.density] || DENSITY.arejado;
+    const r = this.els.root; if(!r) return;
+    r.style.setProperty('--pad', d.pad);
+    r.style.setProperty('--gap', d.gap);
+  }
+  setTheme(e){ this.setState({themeKey:e.currentTarget.dataset.theme}); }
+
+  /* ── LAYOUT PERSISTENTE ─────────────────────────────────────────── */
+  defaultLayout(){
+    const out={};
+    for(const s in SCREENS){
+      out[s] = SCREENS[s].blocks.map(id=>({id, span:BLOCKS[id].span, h:BLOCKS[id].h}));
+    }
+    return out;
+  }
+  loadLayout(){
+    try{
+      const raw = localStorage.getItem(STORE);
+      if(raw){
+        const saved = JSON.parse(raw);
+        const def = this.defaultLayout();
+        for(const s in def){                     // tela nova entra sem quebrar o salvo
+          if(!saved[s]) saved[s]=def[s];
+          const known = def[s].map(b=>b.id);
+          saved[s] = saved[s].filter(b=>known.includes(b.id));
+          def[s].forEach(b=>{ if(!saved[s].some(x=>x.id===b.id)) saved[s].push(b); });
+        }
+        return saved;
+      }
+    }catch(e){}
+    return this.defaultLayout();
+  }
+  saveLayout(){
+    try{ localStorage.setItem(STORE, JSON.stringify(this.state.layout)); }catch(e){}
+  }
+  currentLayout(){
+    const l = this.state.layout || this.defaultLayout();
+    return l[this.state.screen] || [];
+  }
+  applyLayout(){
+    const g = this.els.grid; if(!g) return;
+    const map = {};
+    this.currentLayout().forEach(b=>{ map[b.id]=b; });
+    g.querySelectorAll('[data-block]').forEach(el=>{
+      const b = map[el.dataset.id]; if(!b) return;
+      el.style.gridColumn = 'span ' + b.span;
+      el.style.minHeight = b.h + 'px';
+    });
+    this.applyEditChrome();
+    if(this.three) this.resizeThree();
+  }
+  applyEditChrome(){
+    const g = this.els.grid; if(!g) return;
+    const on = this.state.editMode;
+    g.querySelectorAll('[data-block]').forEach(el=>{
+      el.setAttribute('draggable', on ? 'true' : 'false');
+      el.style.borderColor = on ? 'rgba(212,162,78,0.4)' : '';
+      const dh = el.querySelector('[data-handle="drag"]');
+      const rh = el.querySelector('[data-handle="resize"]');
+      if(dh) dh.style.display = on ? 'inline-flex' : 'none';
+      if(rh) rh.style.display = on ? 'flex' : 'none';
+    });
+    if(this.els.editBar) this.els.editBar.style.display = on ? 'flex' : 'none';
+    if(this.els.scroll) this.els.scroll.style.top = on ? '104px' : '58px';
+    if(this.els.editBtn){
+      this.els.editBtn.style.borderColor = on ? 'var(--accent)' : 'var(--line)';
+      this.els.editBtn.style.color = on ? 'var(--txt)' : 'var(--dim)';
+    }
+  }
+  toggleEdit(){ this.setState({editMode:!this.state.editMode}); }
+  resetLayout(){
+    const l = this.defaultLayout();
+    this.setState({layout:l});
+    try{ localStorage.removeItem(STORE); }catch(e){}
+    setTimeout(()=>this.applyLayout(), 30);
+  }
+
+  /* ── ARRASTAR / REDIMENSIONAR ───────────────────────────────────── */
+  onDragStart(e){
+    if(!this.state.editMode){ e.preventDefault(); return; }
+    this._dragId = e.currentTarget.dataset.id;
+    e.currentTarget.setAttribute('data-dragging','1');
+    if(e.dataTransfer){ e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', this._dragId); }catch(x){} }
+  }
+  onDragOver(e){
+    if(!this._dragId) return;
+    e.preventDefault();
+    e.currentTarget.setAttribute('data-over','1');
+  }
+  onDragLeave(e){ e.currentTarget.removeAttribute('data-over'); }
+  onDragEnd(e){
+    e.currentTarget.removeAttribute('data-dragging');
+    const g=this.els.grid; if(g) g.querySelectorAll('[data-over]').forEach(el=>el.removeAttribute('data-over'));
+    this._dragId=null;
+  }
+  onDrop(e){
+    e.preventDefault();
+    e.currentTarget.removeAttribute('data-over');
+    const from = this._dragId, to = e.currentTarget.dataset.id;
+    this._dragId = null;
+    if(!from || !to || from===to) return;
+    const layout = JSON.parse(JSON.stringify(this.state.layout));
+    const list = layout[this.state.screen];
+    const i = list.findIndex(b=>b.id===from), j = list.findIndex(b=>b.id===to);
+    if(i<0||j<0) return;
+    list.splice(j, 0, list.splice(i,1)[0]);
+    this.setState({layout});
+    setTimeout(()=>{ this.applyLayout(); this.saveLayout(); }, 20);
+  }
+  onResizeStart(e){
+    if(!this.state.editMode) return;
+    e.preventDefault(); e.stopPropagation();
+    const el = e.currentTarget.closest('[data-block]');
+    const id = el.dataset.id;
+    const list = this.state.layout[this.state.screen];
+    const blk = list.find(b=>b.id===id); if(!blk) return;
+    const colW = (this.els.grid.clientWidth) / 3;
+    const x0 = e.clientX, y0 = e.clientY, span0 = blk.span, h0 = blk.h;
+    const move = (ev)=>{
+      const span = Math.max(1, Math.min(3, Math.round(span0 + (ev.clientX-x0)/colW)));
+      const h = Math.max(220, Math.min(900, h0 + (ev.clientY-y0)));
+      blk.span = span; blk.h = h;
+      el.style.gridColumn = 'span ' + span;
+      el.style.minHeight = h + 'px';
+      if(this.three) this.resizeThree();
+    };
+    const up = ()=>{
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      this.saveLayout();
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  }
+
+  /* ── NAVEGAÇÃO E PALETA ─────────────────────────────────────────── */
+  navClick(e){
+    const s = e.currentTarget.dataset.screen;
+    if(s && SCREENS[s]) this.setState({screen:s});
+  }
+  goHome(){ this.setState({screen:'home'}); }
+  syncNav(){
+    const r = this.els.root; if(!r) return;
+    r.querySelectorAll('nav [data-screen]').forEach(el=>{
+      const on = el.dataset.screen === this.state.screen;
+      el.style.background = on ? 'var(--panel2)' : '';
+      el.style.color = on ? 'var(--txt)' : 'var(--dim)';
+      el.style.boxShadow = on ? 'inset 2px 0 0 var(--accent)' : '';
+    });
+  }
+  toggleSide(){
+    const s = this.els.side; if(!s) return;
+    this._col = !this._col;
+    s.style.width = this._col ? '76px' : '252px';
+    s.style.flexBasis = this._col ? '76px' : '252px';
+    s.querySelectorAll('[data-sidetext]').forEach(e=>{ e.style.display = this._col ? 'none' : ''; });
+  }
+  initKeys(){
+    this._kd = (e)=>{
+      const k = (e.key||'').toLowerCase();
+      if((e.metaKey||e.ctrlKey) && k==='k'){ e.preventDefault(); this.setState({paletteOpen:!this.state.paletteOpen, query:''}); }
+      else if(k==='escape' && this.state.paletteOpen) this.setState({paletteOpen:false});
+    };
+    window.addEventListener('keydown', this._kd);
+  }
+  flatNav(){
+    const out=[];
+    NAV.forEach(g=>g.items.forEach(it=>out.push({
+      name:it.name, screen:it.screen||'', tag: it.screen ? g.label : 'EM BREVE'
+    })));
+    return out;
+  }
+  paletteList(){
+    const q=(this.state.query||'').toLowerCase().trim();
+    const all=this.flatNav();
+    return (q ? all.filter(i=>i.name.toLowerCase().includes(q)||i.tag.toLowerCase().includes(q)) : all).slice(0,9);
+  }
+  paletteGo(e){
+    const s=e.currentTarget.dataset.screen;
+    this.setState({paletteOpen:false});
+    if(s && SCREENS[s]) this.setState({screen:s});
+  }
+  onQuery(e){ this.setState({query:e.target.value}); }
+  onPaletteKey(e){
+    if(e.key!=='Enter') return;
+    const f=this.paletteList()[0];
+    this.setState({paletteOpen:false});
+    if(f && f.screen && SCREENS[f.screen]) this.setState({screen:f.screen});
+  }
+
+  /* ── RELÓGIO, CONTADORES, TELEMETRIA ────────────────────────────── */
+  startClock(){
+    const days=['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+    const mon=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+    const tick=()=>{
+      const r=this.els.root; if(!r) return;
+      const d=new Date(), p=n=>String(n).padStart(2,'0');
+      r.querySelectorAll('[data-clock="time"]').forEach(e=>e.textContent=`${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`);
+      r.querySelectorAll('[data-clock="date"]').forEach(e=>e.textContent=`${days[d.getDay()]}, ${d.getDate()} DE ${mon[d.getMonth()]}.`);
+    };
+    tick(); this._clock=setInterval(tick,1000);
+    this._live=setInterval(()=>{
+      const r=this.els.root; if(!r) return;
+      const set=(id,v)=>{ const el=r.querySelector('[data-live="'+id+'"]'); if(el) el.textContent=v; };
+      set('energia', (95+Math.floor(Math.random()*5))+'%');
+      set('latencia', String(2+Math.floor(Math.random()*6)).padStart(2,'0')+' ms');
+      set('carga', (0.6+Math.random()*0.5).toFixed(2));
+    }, 1800);
+  }
+  countUp(){
+    const r=this.els.root; if(!r) return;
+    r.querySelectorAll('[data-count]').forEach(el=>{
+      const target=+el.dataset.count; if(!target) return;
+      const t0=performance.now();
+      const step=(now)=>{
+        const p=Math.min(1,(now-t0)/1100), e=1-Math.pow(1-p,3);
+        el.textContent=Math.round(target*e);
+        if(p<1) requestAnimationFrame(step); else el.textContent=target;
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* ── NÚCLEO 3D DENTRO DO BLOCO ──────────────────────────────────── */
+  mountThree(){
+    if(this.three) return;
+    if(!window.THREE){
+      this._threeTries=(this._threeTries||0)+1;
+      if(this._threeTries<60) setTimeout(()=>this.mountThree(), 120);
+      return;
+    }
+    const THREE=window.THREE, canvas=this.els.canvas; if(!canvas) return;
+    const box=canvas.parentElement;
+    const w=box.clientWidth||600, h=box.clientHeight||400;
+    const sc=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(52,w/h,0.1,100); cam.position.set(0,0,6.4);
+    const rend=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+    rend.setPixelRatio(Math.min(devicePixelRatio,2)); rend.setSize(w,h);
+    const t=THEMES[this.state.themeKey].three;
+    const inten=(this.props.intensity!=null)?this.props.intensity:1;
+    const grp=new THREE.Group(); sc.add(grp);
+
+    // plasma: turbulência calculada no vertex shader (GPU, sem custo de CPU)
+    const plasmaMat=new THREE.ShaderMaterial({
+      uniforms:{ uTime:{value:0}, uPulse:{value:1}, uAmp:{value:0.40}, uFreq:{value:1.5},
+        uSize:{value:2.5}, uPixel:{value:Math.min(devicePixelRatio,2)},
+        uDeep:{value:new THREE.Color(t.wire)}, uHigh:{value:new THREE.Color(t.particle)} },
+      transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+      vertexShader:`
+        uniform float uTime,uPulse,uAmp,uFreq,uSize,uPixel; varying float vD;
+        float hs(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453); }
+        float vn(vec3 p){ vec3 i=floor(p),f=fract(p); f=f*f*(3.0-2.0*f);
+          return mix(mix(mix(hs(i),hs(i+vec3(1,0,0)),f.x),mix(hs(i+vec3(0,1,0)),hs(i+vec3(1,1,0)),f.x),f.y),
+                     mix(mix(hs(i+vec3(0,0,1)),hs(i+vec3(1,0,1)),f.x),mix(hs(i+vec3(0,1,1)),hs(i+vec3(1,1,1)),f.x),f.y),f.z); }
+        void main(){
+          float n = vn(position*uFreq + vec3(uTime*0.25,0.0,-uTime*0.25))*0.65
+                  + vn(position*uFreq*2.3 + vec3(0.0,uTime*0.2,0.0))*0.35;
+          vD=n;
+          vec3 dp=(position + normal*(n*uAmp))*uPulse;
+          vec4 mv=modelViewMatrix*vec4(dp,1.0);
+          gl_PointSize=min(uSize*uPixel*(60.0/-mv.z), 5.5*uPixel);
+          gl_Position=projectionMatrix*mv;
+        }`,
+      fragmentShader:`
+        uniform vec3 uDeep,uHigh; varying float vD;
+        void main(){
+          vec2 c=gl_PointCoord-0.5; float d=length(c); if(d>0.5) discard;
+          float s=smoothstep(0.5,0.05,d);
+          gl_FragColor=vec4(mix(uDeep,uHigh,clamp(vD*1.3,0.0,1.0)), s*(0.18+vD*0.36));
+        }`
+    });
+    grp.add(new THREE.Points(new THREE.IcosahedronGeometry(1.62,4), plasmaMat));
+
+    const occ=new THREE.Mesh(new THREE.SphereGeometry(1.46,40,28),
+      new THREE.MeshBasicMaterial({color:0x0a0810}));
+    grp.add(occ);
+
+    const rimMat=new THREE.ShaderMaterial({
+      uniforms:{ uColor:{value:new THREE.Color(t.core)}, uInt:{value:0.45} },
+      transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.BackSide,
+      vertexShader:`varying vec3 vN; varying vec3 vV;
+        void main(){ vN=normalize(normalMatrix*normal);
+          vec4 mv=modelViewMatrix*vec4(position,1.0); vV=normalize(-mv.xyz);
+          gl_Position=projectionMatrix*mv; }`,
+      fragmentShader:`uniform vec3 uColor; uniform float uInt; varying vec3 vN; varying vec3 vV;
+        void main(){ float f=pow(1.0-abs(dot(normalize(vN),normalize(vV))),3.0);
+          gl_FragColor=vec4(uColor,f*uInt); }`
+    });
+    grp.add(new THREE.Mesh(new THREE.SphereGeometry(1.86,40,28), rimMat));
+
+    const wireMat=new THREE.MeshBasicMaterial({color:t.wire,wireframe:true,transparent:true,opacity:0.24});
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.18,2), wireMat); grp.add(wire);
+
+    const rings=[];
+    for(let i=0;i<3;i++){
+      const rg=new THREE.Mesh(new THREE.TorusGeometry(2.55+i*0.42,0.010,8,120),
+        new THREE.MeshBasicMaterial({color:i%2?t.wire:t.core,transparent:true,opacity:0.38-i*0.08}));
+      rg.rotation.x=Math.PI/2.4+i*0.5; rg.rotation.y=i*0.7; grp.add(rg); rings.push(rg);
+    }
+
+    const cnt=Math.round(900*inten), pos=new Float32Array(cnt*3);
+    for(let i=0;i<cnt;i++){
+      const r=3.4+Math.random()*7, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+      pos[i*3]=r*Math.sin(ph)*Math.cos(th); pos[i*3+1]=r*Math.sin(ph)*Math.sin(th)*0.8; pos[i*3+2]=r*Math.cos(ph);
+    }
+    const pGeo=new THREE.BufferGeometry(); pGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    const pMat=new THREE.PointsMaterial({color:t.particle,size:0.05,transparent:true,opacity:0.55,
+      blending:THREE.AdditiveBlending,depthWrite:false});
+    const pts=new THREE.Points(pGeo,pMat); sc.add(pts);
+
+    this.three={sc,cam,rend,grp,box};
+    this.threeMats={plasmaMat,rimMat,wireMat,pMat,rings};
+
+    this._rz=()=>this.resizeThree();
+    window.addEventListener('resize', this._rz);
+    if(window.ResizeObserver){ this._ro=new ResizeObserver(()=>this.resizeThree()); this._ro.observe(box); }
+
+    const clock=new THREE.Clock();
+    const loop=()=>{
+      const dt=clock.getDelta(), et=clock.getElapsedTime();
+      grp.rotation.y+=dt*0.10; grp.rotation.x=Math.sin(et*0.16)*0.16;
+      wire.rotation.y-=dt*0.16; wire.rotation.x+=dt*0.05;
+      rings.forEach((r,i)=>{ r.rotation.z+=dt*(0.18+i*0.1); });
+      pts.rotation.y+=dt*0.016;
+      plasmaMat.uniforms.uTime.value=et;
+      plasmaMat.uniforms.uPulse.value=1+Math.sin(et*1.2)*0.05;
+      rimMat.uniforms.uInt.value=0.40+0.14*Math.sin(et*1.2);
+      cam.lookAt(0,0,0);
+      rend.render(sc,cam);
+      this._raf=requestAnimationFrame(loop);
+    };
+    loop();
+  }
+  resizeThree(){
+    if(!this.three) return;
+    const {cam,rend,box}=this.three;
+    const w=box.clientWidth||1, h=box.clientHeight||1;
+    cam.aspect=w/h; cam.updateProjectionMatrix(); rend.setSize(w,h);
+  }
+  setThreeColors(t){
+    const m=this.threeMats; if(!m) return;
+    m.plasmaMat.uniforms.uDeep.value.setHex(t.wire);
+    m.plasmaMat.uniforms.uHigh.value.setHex(t.particle);
+    m.rimMat.uniforms.uColor.value.setHex(t.core);
+    m.wireMat.color.setHex(t.wire);
+    m.pMat.color.setHex(t.particle);
+    m.rings.forEach((r,i)=>r.material.color.setHex(i%2?t.wire:t.core));
+  }
+
+  /* ── BLOCOS DA TELA ATUAL ───────────────────────────────────────── */
+  blocksForScreen(){
+    return this.currentLayout().map(b=>Object.assign({id:b.id}, BLOCKS[b.id]));
+  }
+
+  renderVals(){
+    const jv = this.state.screen==='jarvis';
+    return {
+      rootRef:this.rootRef, sideRef:this.sideRef, gridRef:this.gridRef, scrollRef:this.scrollRef,
+      canvasRef:this.canvasRef, searchRef:this.searchRef,
+      editBarRef:this.editBarRef, editBtnRef:this.editBtnRef,
+      navGroups:NAV,
+      blocks:this.blocksForScreen(),
+      screenTitle:(SCREENS[this.state.screen]||{}).title||'',
+      navClick:(e)=>this.navClick(e), goHome:()=>this.goHome(),
+      setTheme:(e)=>this.setTheme(e), toggleSide:()=>this.toggleSide(),
+      toggleEdit:()=>this.toggleEdit(), resetLayout:()=>this.resetLayout(),
+      onDragStart:(e)=>this.onDragStart(e), onDragOver:(e)=>this.onDragOver(e),
+      onDragLeave:(e)=>this.onDragLeave(e), onDrop:(e)=>this.onDrop(e),
+      onDragEnd:(e)=>this.onDragEnd(e), onResizeStart:(e)=>this.onResizeStart(e),
+      paletteOpen:this.state.paletteOpen,
+      paletteItems:this.paletteList(),
+      paletteCount:this.flatNav().length,
+      openPalette:()=>this.setState({paletteOpen:true, query:''}),
+      closePalette:()=>this.setState({paletteOpen:false}),
+      stopProp:(e)=>e.stopPropagation(),
+      onQuery:(e)=>this.onQuery(e), onPaletteKey:(e)=>this.onPaletteKey(e),
+      paletteGo:(e)=>this.paletteGo(e),
+      telemetry: jv ? [
+        {id:'modelo', k:'MODELO LOCAL', v:'ativo · 7B'},
+        {id:'energia', k:'GPU', v:'62%'},
+        {id:'ctx', k:'CONTEXTO', v:'18k tokens'},
+        {id:'latencia', k:'LATÊNCIA', v:'04 ms'},
+        {id:'carga', k:'FILA', v:'0.31'},
+        {id:'grafo', k:'GRAFO', v:'sincronizado'}
+      ] : [
+        {id:'nucleo', k:'NÚCLEO', v:'Mark XIII · estável'},
+        {id:'energia', k:'ENERGIA', v:'98%'},
+        {id:'jarvis', k:'JARVIS', v:'local · servidor · Claude'},
+        {id:'nexus', k:'NEXUS', v:'grafo + ML'},
+        {id:'latencia', k:'LATÊNCIA', v:'04 ms'},
+        {id:'carga', k:'CARGA', v:'0.82'}
+      ],
+      stats: jv ? [
+        {n:'8412', k:'NOTAS INDEXADAS'}, {n:'196', k:'REPOSITÓRIOS'}, {n:'34', k:'FERRAMENTAS'},
+        {n:'12', k:'ROTINAS'}, {n:'3', k:'CÉREBROS'}, {n:'99', k:'UPTIME %'}
+      ] : [
+        {n:'251', k:'ARSENAL'}, {n:'26', k:'EQUIPES'}, {n:'24', k:'ARCOS'},
+        {n:'33', k:'CAPÍTULOS'}, {n:'21', k:'UNIVERSOS'}, {n:'187', k:'MÓDULOS'}
+      ],
+      shortcuts: jv ? [
+        {name:'Modelo local', tag:'PRIVADO · 7B', icon:'◆', screen:''},
+        {name:'Servidor de inferência', tag:'PESADO', icon:'▣', screen:''},
+        {name:'Claude', tag:'RACIOCÍNIO', icon:'✦', screen:''},
+        {name:'Git Nexus', tag:'GRAFO DE CÓDIGO', icon:'⌬', screen:''},
+        {name:'Segundo Cérebro', tag:'MEMÓRIA', icon:'▤', screen:''},
+        {name:'Visão & Câmera', tag:'PERCEPÇÃO', icon:'◉', screen:''},
+        {name:'Leitor OCR', tag:'PERCEPÇÃO', icon:'⌸', screen:''},
+        {name:'Ponte de Comando', tag:'SISTEMA', icon:'⌂', screen:'home'}
+      ] : [
+        {name:'Centro Militar', tag:'MILITAR', icon:'⚑', screen:'militar'},
+        {name:'JARVIS · Corpo Total', tag:'VISÃO', icon:'⌬', screen:''},
+        {name:'Radar Tático', tag:'MILITAR', icon:'◎', screen:''},
+        {name:'Biblioteca', tag:'CONHECIMENTO', icon:'▤', screen:''},
+        {name:'Color Studio', tag:'ESTÚDIOS', icon:'◑', screen:''},
+        {name:'Lab de Cripto', tag:'TÉCNICAS', icon:'✧', screen:''},
+        {name:'Arcade Baluarte', tag:'MÍDIA', icon:'⌸', screen:''},
+        {name:'Mapa Mundial', tag:'MILITAR', icon:'◍', screen:''}
+      ],
+      updates: jv ? [
+        {v:'CICLO 09', txt:'Reindexação do grafo concluída'},
+        {v:'CICLO 08', txt:'Rotina de resumo diário executada'},
+        {v:'CICLO 07', txt:'Modelo local recarregado após atualização'},
+        {v:'CICLO 06', txt:'Cache de contexto podado — 1,2 GB liberados'}
+      ] : [
+        {v:'V2.0.0', txt:'Núcleo Mark XIII em regime estável · WebGL na GPU'},
+        {v:'JARVIS', txt:'Corpo total online — local, servidor e Claude no mesmo cockpit'},
+        {v:'NEXUS', txt:'Grafo de código + ML indexando o repositório'},
+        {v:'MILITAR', txt:'Centro Militar publicado com 14 frentes'}
+      ],
+      milToc:['Enciclopédia Militar','Forças Armadas do Mundo','Orçamentos Militares','Rankings de Poder','Arsenal Expandido','Forças Especiais','Organização Militar','Tecnologia Militar','Táticas & Estratégias','História Militar','Armas por País','Guerras & Conflitos','Batalhas Históricas','Arsenal']
+    };
+  }
+}
+</script>
+</body>
+</html>
