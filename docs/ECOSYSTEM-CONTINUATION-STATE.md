@@ -17,7 +17,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 ## Estado atual — mesh
 
-A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept continua sendo `TaxForge -> Baluarte -> Veritas`, mas a validação de consumidor ainda não foi comprovada.
+A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. A descoberta de capabilities continua em andamento; ainda não existe um primeiro consumer cross-project comprovado para colocar em produção.
 
 ### Trabalho concluído
 
@@ -35,42 +35,54 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] decisão de manter autorização de domínio separada de capability do mesh
 - [x] Veritas provider inventory: MCP capabilities verificadas
 - [x] validação negativa inicial no TaxForge: nenhuma evidência encontrada de consumo de Boolean evaluation/truth tables/simplification
+- [x] discovery round 2 dos seis repositórios
 
-## Veritas provider status
+## Estado por projeto
 
-Veritas possui capabilities verificadas no MCP, incluindo:
+### Veritas
+Provider real via MCP, com `veritas.logic.evaluate`, `veritas.logic.truth_table`, `veritas.logic.simplify`, `veritas.logic.karnaugh` e `veritas.circuit.simulate`. Nenhum consumer cross-project foi comprovado.
 
-- `veritas.logic.evaluate`
-- `veritas.logic.truth_table`
-- `veritas.logic.simplify`
-- `veritas.logic.karnaugh`
-- `veritas.circuit.simulate`
+### ARK
+Possui domínio de resiliência/hazards e camada ARCA privada. Pode fornecer dados públicos no futuro, mas qualquer integração deve preservar a separação público/privado.
 
-Porém, a inspeção do TaxForge não encontrou uma necessidade concreta para essas operações. Portanto, nenhuma capability Veritas deve entrar no registry de produção ainda.
+### TaxForge
+Possui workflows empresariais reais, incluindo supplier risk, mas o modelo atual não fornece contexto geográfico suficiente para justificar a hipótese TaxForge→ARK sem alteração de domínio.
 
-Documento de referência:
+### DailyPlanner
+É deliberadamente client-side hoje: `localStorage`, import/export JSON, sem login, backend ou sincronização. Não adicionar Supabase apenas para o Mesh.
 
-`docs/ECOSYSTEM-VERITAS-PROVIDER-CONTRACT-V1.md`
+### AEGIS
+A `main` atual contém apenas a especificação/prompt da IA. Não existe adapter executável de Mesh nesta branch.
 
-## ARK status
+### Baluarte
+É o control plane/gateway arquitetural e a fonte de verdade do planejamento do ecossistema.
 
-O ARK possui um domínio de hazards/evidências públicas e uma camada privada ARCA. A fronteira pública/privada deve ser preservada. O mapeamento para Supabase e o capability contract ainda precisam ser reconciliados com o estado real da branch/main antes de qualquer migration.
+## Resultado da discovery round 2
+
+Nenhum par cross-project atende ainda simultaneamente a:
+
+1. consumer workflow existente;
+2. provider capability implementada;
+3. boundary de dados clara;
+4. autorização identificável;
+5. payload mínimo definível;
+6. provenance preservável;
+7. failure behavior especificável.
+
+Portanto: **não criar registry/requests/results no Supabase ainda.**
+
+Documento desta rodada:
+
+`docs/ECOSYSTEM-DISCOVERY-ROUND-2.md`
 
 ## Próximo passo EXATO
 
-**Não fabricar o primeiro consumer Veritas. Fazer capability discovery orientado por necessidade real nos seis repositórios.**
-
-Ordem:
-
-1. procurar no TaxForge, ARK, DailyPlanner, AEGIS e Baluarte workflows que possam consumir uma capability Veritas já verificada;
-2. se nenhum consumidor real aparecer, classificar Veritas como provider disponível e continuar discovery em outros pares projeto→provider;
-3. escolher o primeiro par que tenha necessidade concreta;
-4. identificar exatamente as tabelas/queries/serviços que implementam a capability;
-5. auditar RLS, ownership e autorização;
-6. definir o menor payload que atravessa o mesh;
-7. definir provenance/evidence e confiança;
-8. somente então desenhar tabelas de registry/requests/results para o caso concreto;
-9. só depois propor migration não destrutiva no Supabase.
+1. Inspecionar as capabilities concretas já existentes no Baluarte, especialmente runtime, Task Manager, Event Bus e MCP/adapters.
+2. Inspecionar as APIs/serviços reais do ARK para separar providers públicos concretos de material apenas documental.
+3. Comparar essas capabilities com workflows concretos de TaxForge e Baluarte.
+4. Procurar consumidores reais das capabilities do Veritas além do TaxForge.
+5. Só aprovar o primeiro contrato cross-project quando houver evidência dos dois lados.
+6. Quando houver um par provado, auditar RLS/ownership, definir payload mínimo e então desenhar o primeiro slice de registry no Supabase.
 
 ## Regras permanentes
 
@@ -88,6 +100,7 @@ Ordem:
 
 Abrir primeiro este arquivo e depois:
 
+- `docs/ECOSYSTEM-DISCOVERY-ROUND-2.md`
 - `docs/ECOSYSTEM-INTELLIGENCE-MESH.md`
 - `docs/ECOSYSTEM-MESH-SCHEMA-NEXT.md`
 - `docs/ECOSYSTEM-MESH-CONTRACTS-V1.md` na branch `docs/ecosystem-mesh-contracts-v1`
@@ -100,4 +113,4 @@ Depois verificar o estado real dos seis repositórios e do Supabase e continuar 
 
 ## Última atualização
 
-2026-08-16
+2026-08-17
