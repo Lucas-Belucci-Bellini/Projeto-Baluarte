@@ -6,6 +6,39 @@
 
 > **Conclusão executiva:** ainda há muito JavaScript no repositório, mas ele não representa um único bloco de trabalho. O próximo passo não deve ser converter todos os arquivos de uma vez. O caminho correto é continuar por contratos: páginas pequenas e de baixo risco, depois dados com declarações estruturais, depois Core/integrations e, em paralelo controlado, os contratos V2 que concentram os 61 erros atuais.
 
+## 0. As 5 últimas páginas — medição de 17/08/2026
+
+O operador decidiu levar **todas** as páginas a TypeScript. Faltam 5, e elas não
+são equivalentes: o que separa uma da outra é quantas fontes de dados ainda estão
+sem declaração. Medido contando, para cada import, se existe `.d.ts` ou `.ts`:
+
+| Página | Linhas | Imports | **Sem tipo** | Ordem sugerida |
+| --- | ---: | ---: | ---: | --- |
+| `visao.js` | 832 | 1 | **0** | **1º — desbloqueada** |
+| `wiki-arma3.js` | 756 | 5 | 3 | 2º |
+| `vanguard.js` | 822 | 8 | 5 | 3º |
+| `jarvis.js` | 999 | 17 | 5 | 4º |
+| `arma3-tutorial.js` | 1376 | 11 | 9 | 5º |
+
+**`visao.js` é a única que dá para migrar sem escrever nenhuma declaração antes** —
+importa só `helpers.js`, que já tem `.d.ts`. As outras quatro exigem primeiro os
+`.d.ts` das fontes que consomem (`wiki-arma3`, `arma3-extracao`, `arma3-classes`,
+`arma3-armas`, `arma3-terrenos`, `arma3-balistica`, os `jarvis-*`…), o que
+confirma a ordem que este documento já recomendava: **páginas de baixo risco,
+depois dados com declarações estruturais**.
+
+> **O padrão a manter, medido e não suposto:** das 102 páginas já em TypeScript,
+> **79 declaram tipos locais** e **nenhuma usa `any`** — zero ocorrências de
+> `: any` ou `as any` em `src/pages/*.ts`. Migrar uma página enchendo-a de `any`
+> passaria no `tipos:v2` e não arrumaria defeito nenhum: seria tipo decorativo,
+> que é justamente o que a migração existe para não produzir. Uma página bem
+> tipada por vez vale mais que cinco anotadas.
+
+`visao.js` tem particularidade própria: **6 classes** e globais de CDN
+(`window.FaceMesh`, `window.Hands`, `window.Camera` do MediaPipe). Tipá-la sem
+`any` exige `declare global` para esses três, no mesmo formato que `radio.ts` já
+usa para `webkitAudioContext`.
+
 ## 1. Fotografia atual
 
 A contagem foi feita diretamente no workspace após a onda 4.50 e a migração das páginas anteriores. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **203 módulos JavaScript canônicos restantes** depois de retirar 149 wrappers; `vite.config.js` continua sendo uma configuração opcional fora do domínio da aplicação.
