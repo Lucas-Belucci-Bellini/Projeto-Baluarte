@@ -17,7 +17,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 ## Estado atual — mesh
 
-A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept ainda não foi escolhido: a validação de `TaxForge -> Baluarte -> Veritas` não encontrou consumidor concreto para as capabilities de lógica atualmente verificadas no Veritas.
+A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept ainda não foi escolhido: a validação de `TaxForge -> Baluarte -> Veritas` não encontrou consumidor concreto para as capabilities de lógica verificadas no Veritas.
 
 ### Trabalho concluído
 
@@ -41,7 +41,8 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] Baluarte V2 platform primitive discovery: Event Bus, Module System/Registry, Permission System, Storage/Data Layer e External API aparecem como fundamentos arquiteturais no V2 Master Plan
 - [x] Baluarte Nexus implementation discovery: `src/nexus/orquestrador.js` implementa composição de manifestos, validação de contrato, dependências, ciclos, colisões de rotas e inicialização
 - [x] Baluarte Nexus contract audit: `docs/NEXUS-CONTRATO.md` confirma isolamento entre domínios e contrato único de entrada (`baluarte.module.js`)
-- [x] Round 004 registrado em `docs/ECOSYSTEM-DISCOVERY-ROUND-004.md`
+- [x] Rounds 005–010 de discovery registradas no repositório
+- [x] checkpoint mestre reconciliado nesta rodada
 
 ## Baluarte platform primitives — estado
 
@@ -51,17 +52,9 @@ O Nexus é uma primitiva interna de composição de módulos, não o Mesh. O con
 
 `Knowledge Mesh -> descoberta/autorização/consumo de capacidades entre projetos`
 
-O Nexus atual valida:
+O Nexus atual valida major do contrato, módulos duplicados, dependências ausentes, ciclos de dependência, colisões de rotas, destaques que apontam para outro domínio e ordem de inicialização.
 
-- major do contrato;
-- módulos duplicados;
-- dependências ausentes;
-- ciclos de dependência;
-- colisões de rotas;
-- destaques que apontam para outro domínio;
-- ordem de inicialização.
-
-Isso é uma base reutilizável para a disciplina de contratos, mas não deve ser ampliado para cross-project antes de haver um caso real.
+A documentação do V2 descreve Event Bus, Module Registry, Permission System, Storage/Data Layer e External API como fundamentos arquiteturais, mas esta etapa ainda precisa localizar as implementações e testes concretos antes de reutilizá-los para o Mesh.
 
 ## Veritas provider status
 
@@ -77,7 +70,7 @@ A inspeção atual do TaxForge não encontrou necessidade concreta para essas op
 
 ## DailyPlanner status
 
-O DailyPlanner continua deliberadamente client-side, com `localStorage`, sem login, backend ou sincronização entre dispositivos. Não criar Supabase apenas para o mesh enquanto o requisito continuar client-side.
+O DailyPlanner continua deliberadamente client-side, com `localStorage`, sem login, backend ou sincronização entre dispositivos. Não criar Supabase apenas para o Mesh enquanto o requisito continuar client-side.
 
 ## ARK status
 
@@ -85,15 +78,15 @@ O ARK possui um domínio de hazards/evidências públicas e uma camada privada A
 
 ## AEGIS status
 
-AEGIS define um fluxo forte de investigação: observe → entenda → investigue → prove → corrija → teste → verifique → documente. O README atual é uma especificação detalhada do agente. O novo registro está em `docs/ECOSYSTEM-AEGIS-PROVIDER-DISCOVERY-V1.md`. Não registrar AEGIS como provider de produção até existir implementação executável e interface estável (API/MCP/etc.).
+AEGIS define um fluxo forte de investigação: observe → entenda → investigue → prove → corrija → teste → verifique → documente. O README atual é uma especificação detalhada do agente. Não registrar AEGIS como provider de produção até existir implementação executável e interface estável (API/MCP/etc.).
 
 ## TaxForge status
 
-TaxForge é o principal consumidor candidato por seu domínio de cenários, evidências, fornecedores, contratos e decisões. A investigação deve procurar uma necessidade que já exista no produto antes de introduzir uma integração externa.
+TaxForge é o principal consumidor candidato por seu domínio de cenários, evidências, fornecedores, contratos e decisões. O MCP operacional atual é principalmente voltado a auditoria, qualidade, E2E, diagnóstico Vercel e checkpoint; ele não constitui, por si só, uma capability de domínio compartilhável.
 
-## Próximo passo EXATO
+## Próximo passo EXATO — Round 011
 
-**Verificar as implementações concretas das primitivas V2 do Baluarte e, em paralelo, mapear necessidades externas reais do TaxForge.**
+**Localizar e validar as implementações concretas das primitivas V2 do Baluarte e, em paralelo, mapear necessidades externas reais do TaxForge.**
 
 Ordem:
 
@@ -112,7 +105,7 @@ Ordem:
 
 ## Regras permanentes
 
-- O Baluarte é o control plane/gateway arquitetural do mesh, mas não é dono dos domínios internos dos projetos.
+- O Baluarte é o control plane/gateway arquitetural do Mesh, mas não é dono dos domínios internos dos projetos.
 - Nenhum projeto recebe SQL irrestrito no banco interno de outro projeto.
 - Uma capability é publicada como contrato; sua implementação permanece privada.
 - Identidade e tenant são avaliados antes da execução de uma capability.
@@ -126,24 +119,10 @@ Ordem:
 
 ## Como retomar
 
-Abrir primeiro este arquivo e depois:
+Abrir primeiro este arquivo. Em seguida, consultar os documentos `ECOSYSTEM-DISCOVERY-ROUND-*`, os contratos do Mesh, os documentos de discovery de Veritas/ARK/AEGIS, `ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md`, os audits do Supabase e `docs/NEXUS-CONTRATO.md`.
 
-- `docs/ECOSYSTEM-DISCOVERY-ROUND-004.md`
-- `docs/ECOSYSTEM-INTELLIGENCE-MESH.md`
-- `docs/ECOSYSTEM-MESH-SCHEMA-NEXT.md`
-- `docs/ECOSYSTEM-MESH-CONTRACTS-V1.md` na branch `docs/ecosystem-mesh-contracts-v1`
-- `docs/ECOSYSTEM-VERITAS-PROVIDER-CONTRACT-V1.md`
-- `docs/ECOSYSTEM-ARK-PROVIDER-DISCOVERY-V1.md`
-- `docs/ECOSYSTEM-AEGIS-PROVIDER-DISCOVERY-V1.md`
-- `docs/ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md`
-- `docs/SUPABASE-IDENTITY-TENANT-AUDIT.md`
-- `docs/SUPABASE-RPC-BODY-AUDIT-V1.md`
-- `docs/SUPABASE-RLS-GRANTS-AUDIT-V1.md`
-- `docs/NEXUS-CONTRATO.md`
-- `src/nexus/orquestrador.js`
-
-Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO**.
+Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO — Round 011**.
 
 ## Última atualização
 
-2026-08-17 — Round 004
+2026-08-17 — Round 011 checkpoint reconciliation
