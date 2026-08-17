@@ -50,6 +50,7 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] confirmação de que capabilities internas não devem ser automaticamente tratadas como capabilities Mesh
 - [x] Round 016: decisão de reorientar AEGIS para Ocean/Seafloor Intelligence
 - [x] Round 017: criado `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md` como plano vivo
+- [x] Round 018 iniciada: Repository Transition Audit do AEGIS definido como próxima etapa técnica
 
 ## AEGIS — novo estado
 
@@ -90,20 +91,43 @@ Principal consumidor candidato por seu domínio fiscal/empresarial. Possui MCP o
 ### Baluarte
 É o control plane/gateway arquitetural do Mesh, mas não é dono dos domínios internos. Nexus, Event Bus e Global Comms são primitivas internas distintas do Knowledge Mesh.
 
-## Próximo passo EXATO — Round 018
+## Round 018 — AEGIS Repository Transition Audit
 
-**AEGIS Repository Transition Audit**:
+**Estado: EM ANDAMENTO.**
 
-1. mapear o estado real do AEGIS antes da mudança de missão;
-2. identificar arquivos/código reutilizáveis;
-3. separar legado de nova arquitetura;
-4. identificar o que deve ser preservado, adaptado ou substituído;
-5. definir a primeira arquitetura de diretórios do AEGIS Ocean;
-6. transformar o Masterplan Vivo em backlog técnico priorizado;
-7. somente depois definir o schema mínimo do PostGIS/Supabase;
-8. registrar o resultado novamente no Baluarte.
+### Objetivo
 
-Não implementar ainda a plataforma oceanográfica completa.
+Mapear o AEGIS antigo antes de implementar a nova plataforma Ocean.
+
+### Primeira evidência encontrada
+
+O `README.md` atual é uma especificação/prompt extensa do AEGIS original, focada em investigação e resolução autônoma de problemas de software. Ela contém uma metodologia potencialmente reutilizável:
+
+`Observe → Understand → Investigate → Prove → Correct → Test → Verify → Document`
+
+Essa metodologia será preservada conceitualmente como disciplina de investigação científica do novo AEGIS, mas seu domínio será substituído de software para observações geoespaciais/oceanográficas.
+
+### Classificação provisória
+
+| Artefato | Estado | Decisão |
+|---|---|---|
+| README/prompt de engenharia | ADAPT + ARCHIVE | preservar a metodologia de investigação; manter a missão antiga como referência histórica |
+| domínio de engenharia de software | REPLACE | substituir pelo domínio Ocean/Seafloor |
+| investigação baseada em evidência | PRESERVE/ADAPT | transformar em Evidence + Provenance Layer |
+| validação/testes | ADAPT | transformar em QC científico, validação de produtos e revisão |
+| auditoria | ADAPT | transformar em data/product/scientific audit |
+
+Essa matriz é provisória e deve ser corrigida conforme o inventário real do repositório avançar.
+
+### Próxima ação técnica
+
+1. inventariar todo o conteúdo do AEGIS;
+2. revisar branches relevantes;
+3. procurar código executável além da especificação;
+4. identificar dependências e infraestrutura existentes;
+5. completar a matriz PRESERVE / ADAPT / REPLACE / ARCHIVE;
+6. definir a arquitetura de diretórios Ocean;
+7. só depois definir o schema inicial PostGIS/Supabase.
 
 ## Regra permanente de evolução
 
@@ -130,8 +154,14 @@ Não implementar ainda a plataforma oceanográfica completa.
 2. Abrir `AEGIS/docs/AEGIS-OCEAN-MASTERPLAN.md`.
 3. Consultar as `ECOSYSTEM-DISCOVERY-ROUND-*` relevantes.
 4. Verificar o estado real dos seis repositórios e do Supabase.
-5. Continuar pelo **Round 018 — AEGIS Repository Transition Audit**.
+5. Continuar pelo **Round 018 — AEGIS Repository Transition Audit**, começando pelo inventário completo do AEGIS.
+
+## Próximo checkpoint planejado
+
+**Round 019 — AEGIS Ocean Minimum Domain Model**
+
+Só iniciar após concluir o inventário/triagem do Round 018.
 
 ## Última atualização
 
-2026-08-17 — Round 017: AEGIS Ocean Masterplan Vivo criado; próxima ação é Round 018 — Repository Transition Audit.
+2026-08-17 — Round 018 em andamento: primeira auditoria confirmou que o README atual é uma especificação de agente de engenharia; sua disciplina investigativa será reaproveitada, enquanto o domínio será reorientado para Ocean/Seafloor Intelligence.
