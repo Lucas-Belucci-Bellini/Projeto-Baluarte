@@ -134,6 +134,15 @@ export interface ModuleCycle {
   falhas(): LifecycleFailure[];
   emTransicao(): LifecycleTransition | null;
   readonly fase: LifecycleState;
+  /**
+   * O ambiente que este ciclo recebeu.
+   *
+   * Existe para ser **cobrável**: sem ele, a única prova de que alguém informou
+   * o ambiente seria a variável do entrypoint — que continua lá mesmo quando o
+   * repasse some. Foi um mutante sobrevivente que mostrou isso: a asserção lia
+   * o que o harness calculava, não o que o ciclo recebia.
+   */
+  readonly ambiente: Ambiente;
 }
 
 interface RunningModule {
@@ -391,6 +400,9 @@ export function criarCiclo(
     emTransicao: (): LifecycleTransition | null => (transicao ? { ...transicao } : null),
     get fase(): LifecycleState {
       return fase;
+    },
+    get ambiente(): Ambiente {
+      return ambiente;
     },
   };
 }

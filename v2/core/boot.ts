@@ -73,6 +73,15 @@ export interface BootResult {
   ok: boolean;
   vivos: string[];
   falhas: LifecycleFailure[];
+  /**
+   * Módulos que não pertencem a este ambiente — vêm do ciclo e passam direto.
+   *
+   * Já eram devolvidos em runtime pelo espalhamento de `resultado`; faltava
+   * declarar. Tipo que não conta o que a função entrega é meia verdade: quem lê
+   * o contrato não descobre que o campo existe, e quem depende dele fica sem
+   * checagem.
+   */
+  ignorados: string[];
   rotas: number;
   nav: RegistryNavigationEntry[];
 }

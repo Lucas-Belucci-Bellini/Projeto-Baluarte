@@ -142,6 +142,19 @@ try {
   conferir('a navegação vem do manifesto',
     v2?.resultado?.nav?.length === 5, String(v2?.resultado?.nav?.length));
 
+  /* O elo que faz a regra de `ambiente` existir de verdade. O manifesto declara,
+   * o `manifest.js` valida, o ciclo aplica — e nada disso vale se ninguém
+   * INFORMAR onde estamos. Aqui, num navegador sem `window.baluarte`, tem de ser
+   * `web`; no app seria `app`. Sem esta asserção, alguém remove a dedução do
+   * entrypoint e a regra volta a ser decorativa sem nenhum vermelho. */
+  conferir('o entrypoint informa o ambiente ao ciclo',
+    v2?.ambiente === 'web', String(v2?.ambiente));
+  /* E nada foi ignorado: os 5 módulos declaram `ambos`. Se um passar a declarar
+   * `app`, esta linha acusa a mudança em vez de deixá-la silenciosa. */
+  conferir('nenhum módulo foi ignorado por ambiente',
+    Array.isArray(v2?.resultado?.ignorados) && v2.resultado.ignorados.length === 0,
+    JSON.stringify(v2?.resultado?.ignorados ?? null));
+
   /* O nome longo prova a fonte: a sidebar da V1 diz "Lab de Cripto"; o manifesto
    * diz "Lab de Criptografia". Se aparecer o curto, alguém voltou a ler da V1. */
   const textoNav = await pagina.locator('#nav').innerText().catch(() => '');
