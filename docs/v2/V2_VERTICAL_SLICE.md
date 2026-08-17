@@ -59,14 +59,37 @@ A terceira é a que prova que o teste não passa à toa: mesma rota, permissão
 diferente, resultado diferente — a discriminação vem do outro lado da fronteira,
 não do JavaScript. E remover o Host do `criarCiclo` derruba o primeiro teste.
 
-## O que ainda falta para "módulo nativo"
+## O módulo passou a usar o Runtime, não só a ser autorizado por ele
 
-**O módulo não alcança o Runtime.** `criarContexto` entrega `storage`, `bus`,
-`metricas`, `trabalho`, `apis` e `permissoes` — não há alça de Runtime no
-`ModuleContext`. No teste acima, quem lê arquivo é o *teste*, não o `init` do
-módulo.
+`criarContexto` ganhou uma dependência **opcional** `runtime`, e o `ModuleContext`
+ganhou `ctx.runtime.lerArquivo(caminho)`.
 
-Ou seja: a cadeia de **autorização** está nativa; a de **uso** não. Fechar isso é
-acrescentar o Runtime ao contexto do módulo, gateado pelas permissões declaradas —
-mudança de contrato do `ModuleContext`, e por isso um item próprio, não um
-detalhe deste.
+A propriedade que importa está na **aridade**: a alça entregue ao módulo recebe
+*caminho, e só*. O id do módulo fica fechado por closure, preenchido pelo
+contexto. Se `lerArquivo` aceitasse um módulo, `alpha` poderia nomear a raiz de
+`beta` e o confinamento por módulo viraria convenção em vez de garantia. Há
+mutante para isso: trocar a alça por uma que aceita o módulo derruba dois testes.
+
+Opcional de propósito — sem `deps.runtime`, o contexto é o de sempre. É o caso do
+navegador, onde não existe processo com quem falar.
+
+**A permissão não é rechecada no contexto.** Quem cobra `READ_FILES` é o Runtime,
+do outro lado da fronteira. Repetir a checagem seria defesa em profundidade
+escondendo mutante (Regra 1) — o mesmo motivo pelo qual o
+[`V2_MODULE_LIFECYCLE_STATUS.md`](./V2_MODULE_LIFECYCLE_STATUS.md) não recheca
+autorização.
+
+Medido em `test/v2/slice-nativo.test.js` (5/5, com o binário real): o `init` de
+`alpha` lê `hello.txt` e recebe `BALUARTE-V2`; o mesmo `init` tenta
+`../secret.txt` e o **Rust** recusa.
+
+## O que ainda falta
+
+**A injeção em produção.** Nada preenche `deps.runtime` no app: o boot da V2 roda
+no *renderer*, e o Runtime vive no processo *main*. A ponte existe
+(`runtime:status` / `runtime:autorizar` / `runtime:ler` no `ipc.js`), mas ligar
+uma à outra — renderer → `window.baluarte.invoke` → main → Runtime — é o próximo
+passo, e não existe ainda.
+
+Ou seja: a cadeia está provada de ponta a ponta **em Node, com as peças reais**;
+o que não está provado é o app rodando com ela.

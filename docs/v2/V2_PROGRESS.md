@@ -151,20 +151,20 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       `process.resourcesPath`, que só existe em app empacotado — nenhum
       instalador foi produzido com isto dentro.
       Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
-- [ ] primeiro vertical slice de módulo nativo
-      — **metade feita.** A cadeia do
-      [`V2_VERTICAL_SLICE.md`](./V2_VERTICAL_SLICE.md) foi percorrida com o
-      Runtime **real** pela primeira vez (`test/v2/slice-nativo.test.js`, 3/3):
-      Registry → autorização pelo **processo Rust** → sessão → init → start →
-      running → stop → dispose → close, com Registry, Permission System, ciclo,
-      transporte e binário reais. Antes disso o Runtime era sempre espião ou
-      duplo, e a propriedade "só fica `running` com sessão aberta" valia sobre um
-      Runtime que nunca existira.
-      **A caixa segue desmarcada:** `criarContexto` não entrega alça de Runtime,
-      então o módulo não *usa* o Runtime — quem lê arquivo no teste é o teste. A
-      cadeia de autorização está nativa; a de uso não. Fechar exige acrescentar o
-      Runtime ao `ModuleContext`, gateado por permissão — mudança de contrato, e
-      item próprio.
+- [x] primeiro vertical slice de módulo nativo
+      — a cadeia do [`V2_VERTICAL_SLICE.md`](./V2_VERTICAL_SLICE.md) percorrida
+      com o Runtime **real** (`test/v2/slice-nativo.test.js`, 5/5): Registry →
+      autorização pelo **processo Rust** → sessão → init → start → running → stop
+      → dispose → close, com Registry, Permission System, ciclo, transporte e
+      binário reais. Antes o Runtime era sempre espião ou duplo, e "só fica
+      `running` com sessão aberta" valia sobre um Runtime que nunca existira.
+      O `ModuleContext` ganhou `ctx.runtime.lerArquivo(caminho)` — a alça recebe
+      *caminho, e só*, com o id do módulo fechado por closure; é isso que impede
+      um módulo de nomear a raiz de outro. O `init` de `alpha` lê o próprio
+      arquivo e o **Rust** recusa o `../`.
+      **Aberto:** nada preenche `deps.runtime` em produção — o boot da V2 roda no
+      renderer e o Runtime vive no main. A ponte existe (`runtime:*` no
+      `ipc.js`); ligar renderer → IPC → main é o próximo passo.
 
 ## Regra de manutenção
 

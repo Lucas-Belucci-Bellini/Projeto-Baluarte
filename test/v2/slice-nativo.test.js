@@ -87,7 +87,11 @@ async function montarSlice({ modulos, concedidos = [] }) {
 
   const deps = {
     storage: { get: () => undefined, set: () => true },
-    permissoes
+    permissoes,
+    /* A alça que o módulo recebe. Repare que ela leva `modulo` como parâmetro —
+     * é o CONTEXTO que o preenche com o id do próprio módulo, e é por isso que
+     * o módulo não consegue nomear outro. */
+    runtime: { lerArquivo: (modulo, caminho) => transporte.lerArquivo(criarCargaRuntime(registry, permissoes), modulo, caminho) }
   };
   const ciclo = criarCiclo(registry, deps, { runtime: host });
 
@@ -144,6 +148,59 @@ test('o Runtime nativo confina o módulo à raiz dele', { skip: SEM_BINARIO }, a
     const fora = await s.transporte.lerArquivo(env, 'alpha', '../secret.txt');
     assert.equal(fora.status, 'error', 'escape de caminho tem de ser recusado pelo Runtime');
 
+    await s.ciclo.descer();
+  } finally {
+    await s.limpar();
+  }
+});
+
+test('o MÓDULO lê pelo próprio init, e só dentro da raiz dele', { skip: SEM_BINARIO }, async () => {
+  /* Este é o teste que fecha "módulo nativo". Nos anteriores quem lia arquivo
+   * era o teste; aqui quem lê é o `init` do módulo, pela alça que o contexto
+   * entrega — a cadeia de USO, não só a de autorização. */
+  let lido = null;
+  let fuga = null;
+
+  const s = await montarSlice({
+    modulos: [mod('alpha', {
+      init: async (ctx) => {
+        const r = await ctx.runtime.lerArquivo('hello.txt');
+        lido = Buffer.from(r.bytes ?? []).toString('utf8');
+        /* O módulo TENTA escapar da própria raiz. Quem recusa é o Rust. */
+        fuga = await ctx.runtime.lerArquivo('../secret.txt');
+      }
+    }, ['READ_FILES'])],
+    concedidos: [['alpha', 'READ_FILES']]
+  });
+  try {
+    await mkdir(join(s.raiz, 'alpha'), { recursive: true });
+    await writeFile(join(s.raiz, 'alpha', 'hello.txt'), 'BALUARTE-V2');
+    await writeFile(join(s.raiz, 'secret.txt'), 'NAO-PODE');
+
+    const r = await s.ciclo.subir();
+    assert.equal(r.ok, true, `subida falhou: ${JSON.stringify(r.falhas)}`);
+    assert.equal(lido, 'BALUARTE-V2', 'o init do módulo precisa ter lido pelo Runtime');
+    assert.equal(fuga?.status, 'error', 'o módulo não pode escapar da própria raiz');
+
+    await s.ciclo.descer();
+  } finally {
+    await s.limpar();
+  }
+});
+
+test('a alça do módulo não aceita nomear outro módulo', { skip: SEM_BINARIO }, async () => {
+  /* A propriedade que o `id` fechado por closure garante. Se `lerArquivo`
+   * aceitasse um módulo, `alpha` leria a raiz de `beta` — e o confinamento por
+   * módulo seria convenção, não garantia. A asserção é sobre a ARIDADE: a alça
+   * do contexto recebe caminho, e só. */
+  let aridade = null;
+  const s = await montarSlice({
+    modulos: [mod('alpha', { init: async (ctx) => { aridade = ctx.runtime.lerArquivo.length; } }, ['READ_FILES'])],
+    concedidos: [['alpha', 'READ_FILES']]
+  });
+  try {
+    await s.ciclo.subir();
+    assert.equal(aridade, 1, 'a alça do módulo tem de receber só o caminho');
     await s.ciclo.descer();
   } finally {
     await s.limpar();

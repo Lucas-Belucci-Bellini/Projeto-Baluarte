@@ -117,12 +117,33 @@ deny-tudo) e a leitura é **negada pelo Rust**. Mesma rota, permissão diferente
 resultado diferente: a discriminação vem do outro lado da fronteira, não do
 JavaScript. Remover o Host do `criarCiclo` derruba o primeiro teste.
 
-**A caixa `primeiro vertical slice de módulo nativo` NÃO foi marcada.**
-`criarContexto` entrega `storage`, `bus`, `metricas`, `trabalho`, `apis` e
-`permissoes` — não há alça de Runtime no `ModuleContext`. No teste, quem lê
-arquivo é o teste, não o `init` do módulo. A cadeia de **autorização** está
-nativa; a de **uso** não. Meia cadeia marcada como inteira seria o retrato verde
-de sempre.
+### E o módulo passou a USAR o Runtime, não só a ser autorizado por ele
+
+`criarContexto` ganhou a dependência opcional `runtime`, e o `ModuleContext`
+ganhou `ctx.runtime.lerArquivo(caminho)`. Com isso o `init` de um módulo lê um
+arquivo pelo Runtime nativo — a cadeia de **uso**, que faltava.
+
+**A propriedade está na aridade.** A alça entregue ao módulo recebe *caminho, e
+só*: o id fica fechado por closure, preenchido pelo contexto. Se aceitasse o
+módulo como argumento, `alpha` poderia nomear a raiz de `beta`, e o confinamento
+por módulo seria convenção em vez de garantia. O mutante que troca a alça por uma
+que aceita o módulo derruba dois testes; o que remove o runtime do contexto
+derruba os mesmos dois.
+
+**A permissão não é rechecada no contexto** — quem cobra é o Rust, do outro lado.
+Repetir seria defesa em profundidade escondendo mutante (Regra 1), o mesmo motivo
+pelo qual o status de lifecycle não recheca autorização.
+
+O portão de tipos pegou o que a suíte não pegaria: `Deps` não declarava
+`runtime`, e depois `deps.runtime` ficou "possivelmente undefined" dentro da
+closure — a checagem no spread não estreita lá dentro. Resolvido capturando antes
+do `return`, e não com `!`: `deps` é objeto de quem chama, e calar o compilador
+esconderia o caso real.
+
+**Aberto:** nada preenche `deps.runtime` em produção. O boot da V2 roda no
+renderer e o Runtime vive no main; a ponte existe (`runtime:*` no `ipc.js`), mas
+ligar renderer → IPC → main é o próximo passo. A cadeia está provada de ponta a
+ponta **em Node, com as peças reais** — não com o app rodando.
 
 ### E a ponte do app desktop entrou junto
 
