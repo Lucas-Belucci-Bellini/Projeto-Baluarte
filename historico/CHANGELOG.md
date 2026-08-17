@@ -6,7 +6,7 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-17 — o transporte por stdio sai do papel (e a caixa segue desmarcada)
+## 2026-08-17 — o transporte por stdio ganha consumidor, e o protocolo para de ser dois
 
 **Quarta peça pronta e desligada.** O `criarRuntimeStdio` existia, tinha
 documento próprio (`docs/v2/V2_RUNTIME_STDIO.md`) descrevendo o protocolo linha a
@@ -28,31 +28,78 @@ trava não pendura o Baluarte", agora na fronteira do processo.
 Medido nos dois sentidos, e a medida é o argumento: sem o conserto os dois testes
 de resposta inválida **não falham, eles travam** — a suíte do arquivo leva
 **71,8 s** (dois testes queimando o teto do runner) contra **639 ms** com ele.
-Sete mutantes plantados, sete mortos; dois deles matam por travamento, que é o
+Nove mutantes plantados, nove mortos; dois deles matam por travamento, que é o
 defeito reaparecendo.
+
+**Um sobreviveu na primeira rodada, e o motivo vale mais que o conserto.**
+Remover o `clearTimeout` do assentamento passava por todos os testes de
+comportamento: o timer órfão dispara, o `retirarDeVoo` é seguro contra nulo, e
+ele não acha ninguém. O estrago só existe se o órfão pegar a requisição
+**seguinte** em voo — e os dois timers ficam separados apenas pela duração da
+requisição anterior, uma janela de milissegundos. Pegá-la por tempo pediria
+margens apertadas, e portão instável troca um defeito estreito por um vermelho
+aleatório. A saída foi observar o recurso em vez do comportamento:
+`process.getActiveResourcesInfo()` conta os `Timeout` vivos, e o delta entre uma
+requisição e a seguinte só cresce se um teto tiver ficado armado. Determinístico,
+sem relógio.
 
 O `pending = null` continua **antes** do parse de propósito: a requisição sai de
 voo quando a linha dela chega, tenha a linha sentido ou não. Zerar depois faria a
 próxima resposta cair sobre uma requisição já respondida.
 
-### A caixa `transporte concreto` **não** foi marcada
+### E aí apareceu por que a peça nunca tinha sido ligada
 
-Código existe e teste existe — mas a regra de manutenção do `V2_PROGRESS.md` não
-é a única em jogo. Nada em produção importa esta peça, e o entrypoint web não
-pode importar: navegador não spawna processo. Ligar de verdade é no app desktop,
-atrás de `window.baluarte.native` (#238). Marcar `[x]` aqui produziria o retrato
-verde de sempre sobre um transporte que ninguém usa — o erro que este repositório
-já pagou quatro vezes, cometido de novo no mesmo dia em que foi nomeado.
+O `scripts/v2-runtime-smoke.mjs` — o portão E2E que o CI roda — **reimplementava
+o protocolo à mão**: `spawn` próprio, serialização própria, buffer de linhas
+próprio, teto próprio. Existiam **duas implementações do mesmo protocolo**, e a
+única que falava com o binário passava por fora do transporte.
 
-**O que isto não prova:** nada sobre o binário Rust. O par nos testes é um `node`
-falando o protocolo; quem mede o outro lado é `npm run v2:runtime`, que exige
-`cargo` — ausente na máquina do operador. Essa metade continua sendo do remoto.
+Isso não era duplicação estética, era a explicação inteira. O transporte não
+tinha consumidor porque quem fazia I/O concreto o contornava; e o E2E ficava
+verde provando o protocolo *do script*, não o do transporte. O transporte podia
+estar quebrado sem que nada acusasse — **e estava**, com o pendura acima.
 
-> **Buraco conhecido, deixado de propósito:** `enviar()` não tem teto próprio.
-> Pelo lifecycle há o `comTeto` do `ciclo.ts`; `lerArquivo` não passa por ele.
-> Runtime que aceita a linha e nunca responde pendura esse caminho. Ficou fora
-> para não alargar o item, mas está escrito para ser o próximo passo em vez de uma
-> descoberta futura.
+Agora o smoke usa o `criarRuntimeStdio`. O portão passa a exercitar a peça que o
+resto do sistema usaria, e some a segunda implementação.
+
+### O teto virou requisito, não escopo extra
+
+`enviar()` não tinha teto; o smoke tinha um de 5 s. Fazer o smoke usar o
+transporte sem teto teria **removido uma proteção existente** — então
+`TETO_RUNTIME_MS` entrou junto, com `tetoMs` para sobrescrever.
+
+O `clearTimeout` mora num lugar só (`retirarDeVoo`) porque são **quatro** os
+caminhos que assentam uma requisição: resposta, erro do processo, saída do
+processo, falha de escrita. Esquecê-lo em qualquer um faz o teto disparar sobre
+requisição já respondida, e o estrago aparece na requisição **seguinte** — o pior
+lugar para procurar. Há mutante para os dois lados.
+
+### O Rust rodou nesta máquina pela primeira vez
+
+`cargo` não existia aqui; agora existe, e com ele caiu a fronteira que separava
+"do remoto" de "do local". Instalado o Rust 1.97.1. As Build Tools do Visual
+Studio **não** deram: o instalador precisa de elevação e sai com `1602`
+(cancelado) numa sessão não-interativa. O caminho que funcionou foi o toolchain
+**GNU** com um MinGW portátil por winget, sem admin.
+
+Com isso, três verificações que o handoff listava como exclusivas do remoto
+passaram a rodar aqui:
+
+| | |
+| --- | --- |
+| `npm run v2:runtime` | **12 + 3 testes, 0 falhas** |
+| smoke E2E contra o `.exe` real | **OK** |
+| testes do transporte | **12/12**, com 9/9 mutantes mortos |
+| suíte | 905 → **917** |
+
+E os três testes de processo que a `MAIN_ERROR_AUDIT` listava como quebrados
+(`process_rejects_invalid_json_and_continues` e irmãos) passam — o que confirma
+**por execução** o que a anotação de ROOT-RUNTIME-001 só tinha confirmado por
+leitura.
+
+**O que isto não prova:** nada sobre o app. O consumidor do transporte é o portão
+E2E, não o Baluarte em execução — levar isto ao produto é no app desktop (#238) e
+segue aberto. E nada sobre o alvo **MSVC**: o binário aqui é GNU.
 
 ## 2026-08-17 — `running` passa a exigir autorização de Runtime
 

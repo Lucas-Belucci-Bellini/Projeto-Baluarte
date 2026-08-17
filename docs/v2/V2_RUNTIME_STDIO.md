@@ -58,7 +58,27 @@ A resposta de sucesso contém os bytes como array JSON. Falhas retornam `status:
 - o transporte ainda é uma implementação experimental, não um contrato final de concorrência;
 - Tauri continua fora desta etapa.
 
-## Estado real: testado, **ainda não ligado**
+## Estado real: **ligado**, e medido contra o binário de verdade
+
+O portão E2E do CI (`v2-runtime-e2e.yml` → `scripts/v2-runtime-smoke.mjs`) passou
+a **usar** o `criarRuntimeStdio` em vez de reimplementar o protocolo.
+
+Isso conserta um defeito de arquitetura que estava escondido à vista: o smoke
+tinha `spawn`, serialização, buffer de linhas e teto **próprios**. Havia duas
+implementações do mesmo protocolo, e a única que falava com o binário passava por
+fora do transporte. Por isso o transporte tinha zero consumidores — e por isso o
+E2E ficava verde provando o protocolo *do script*, não o do transporte. O
+transporte podia estar quebrado sem que nada acusasse. E estava.
+
+Medido nesta máquina (Windows, Rust 1.97.1 com toolchain GNU):
+
+| | |
+| --- | --- |
+| `cargo test` (`npm run v2:runtime`) | **12 + 3 testes, 0 falhas** |
+| smoke E2E pelo transporte, contra o `.exe` real | **OK** |
+| testes do transporte | **12/12**, com 9/9 mutantes mortos |
+
+## Histórico: como a peça estava antes
 
 Até 17/08/2026 o `criarRuntimeStdio` era a **quarta peça** encontrada pronta,
 documentada por este arquivo e sem um único importador — nem de produção, nem de
@@ -81,17 +101,16 @@ comportamento de I/O — e foi ali que estava o defeito abaixo.
 
 ### O que isto NÃO prova
 
-- **Nada sobre o binário Rust.** O par nos testes é um `node`; quem mede o outro
-  lado é `npm run v2:runtime`, que exige `cargo` — ausente na máquina do
-  operador, então essa metade é do remoto.
-- **Nada sobre produção.** O transporte continua **sem consumidor**: o entrypoint
-  web (`v2/harness/main.js`) injeta autorização sem transporte, e não poderia
-  fazer diferente — navegador não spawna processo. Ligar isto de verdade é no
-  **app desktop**, atrás de `window.baluarte.native`, conforme o mega-plano #238.
-
-Por isso a caixa `transporte concreto` do [`V2_PROGRESS.md`](./V2_PROGRESS.md)
-**segue desmarcada**. Marcá-la com a peça testada e desligada seria repetir
-exatamente o erro que este repositório já pagou quatro vezes.
+- **Nada sobre o app.** O consumidor do transporte é o portão E2E, não o
+  Baluarte em execução. O entrypoint web (`v2/harness/main.js`) injeta
+  autorização sem transporte, e não poderia fazer diferente — navegador não
+  spawna processo. Levar isto ao produto é no **app desktop**, atrás de
+  `window.baluarte.native` (#238), e continua item aberto.
+- **Nada sobre o alvo MSVC.** O binário aqui foi compilado com o toolchain
+  **GNU**, porque instalar as Build Tools do Visual Studio exige elevação que
+  uma sessão não-interativa não consegue dar (o instalador sai com `1602`,
+  "cancelado pelo usuário"). Uma release Windows deveria usar MSVC; para provar
+  o protocolo, GNU serve.
 
 ### Ligar no app desktop — o que já está medido (17/08/2026)
 
@@ -128,10 +147,19 @@ Os dois bloqueios reais, medidos:
 > binário que não é empacotado seria a quinta peça pronta e desligada — desta vez
 > com o agravante de parecer resolvida.
 
-### Buraco conhecido, deliberadamente não consertado aqui
+### Teto por requisição — `TETO_RUNTIME_MS`
 
-`enviar()` não tem teto próprio. Pelo caminho do lifecycle há o `comTeto` do
-`ciclo.ts`, que cobre a abertura do Host; `lerArquivo` não passa por ele. Runtime
-que aceita a linha e nunca responde pendura esse caminho. Não foi consertado
-nesta rodada para manter o escopo no item da fila — mas é a mesma família do
-defeito acima e merece ser o próximo passo, não uma descoberta futura.
+`enviar()` não tinha teto. Runtime que **aceita** a linha e nunca responde
+pendura o chamador; pelo lifecycle havia o `comTeto` do `ciclo.ts`, mas
+`lerArquivo` não passava por ele.
+
+O conserto veio junto porque virou requisito: o smoke tinha teto próprio de 5 s,
+e fazê-lo usar o transporte sem teto teria **removido uma proteção existente**.
+O padrão é `TETO_RUNTIME_MS = 5000`, e `tetoMs` sobrescreve.
+
+O `clearTimeout` mora num lugar só (`retirarDeVoo`), porque são **quatro** os
+caminhos que assentam uma requisição — resposta, erro do processo, saída do
+processo, falha de escrita. Esquecê-lo em qualquer um faz o teto disparar depois,
+sobre uma requisição já respondida, e o estrago aparece na requisição
+**seguinte** — o pior lugar possível para procurar. Há mutante para os dois
+lados: remover o teto, e remover o `clearTimeout`.

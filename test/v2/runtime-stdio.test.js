@@ -176,6 +176,83 @@ test('o processo é reaproveitado entre requisições sequenciais', async () => 
   }
 });
 
+test('Runtime que aceita a linha e nunca responde bate no teto', async () => {
+  /* O caso que o teto existe para pegar: a escrita completa com sucesso, o
+   * processo está vivo, e a resposta nunca vem. Sem teto isto pendura para
+   * sempre — mesma família do "init que trava não pendura o Baluarte".
+   *
+   * `tetoMs` curto porque aqui o relógio É o objeto do teste, não um jeito de
+   * sincronizar com o sistema. */
+  const t = criarRuntimeStdio({
+    executable: process.execPath,
+    args: ['-e', `
+      const readline = require('node:readline');
+      readline.createInterface({ input: process.stdin }).on('line', () => {});
+    `],
+    root: '/raiz-de-teste',
+    tetoMs: 150
+  });
+  try {
+    await assert.rejects(
+      () => t.autorizar({ versao: 1, modulos: [] }),
+      /não respondeu em 150ms/
+    );
+  } finally {
+    await t.fechar();
+  }
+});
+
+test('o teto não dispara sobre requisição já respondida', async () => {
+  /* O erro que a `retirarDeVoo` existe para impedir: esquecer o `clearTimeout`
+   * num dos quatro caminhos de assentamento faz o teto disparar DEPOIS, sobre
+   * uma requisição que já respondeu — e o estrago aparece na requisição
+   * seguinte, que é o pior lugar para procurar.
+   *
+   * Duas idas e voltas com teto curto: a segunda só pode terminar bem se o teto
+   * da primeira tiver morrido junto com ela. */
+  const t = criarRuntimeStdio({
+    executable: process.execPath,
+    args: ['-e', ECO(`JSON.stringify({ status: 'ok', eco: pedido.op })`)],
+    root: '/raiz-de-teste',
+    tetoMs: 120
+  });
+  try {
+    assert.equal((await t.autorizar({ versao: 1, modulos: [] })).eco, 'authorize');
+    await new Promise((r) => setTimeout(r, 200));
+    /* Se o teto da primeira tivesse ficado vivo, ele já teria disparado aqui e
+     * envenenado o estado. */
+    assert.equal((await t.lerArquivo({ versao: 1, modulos: [] }, 'a', 'b')).eco, 'read_file');
+  } finally {
+    await t.fechar();
+  }
+});
+
+test('o teto da requisição respondida é desarmado, não fica órfão', async () => {
+  /* Este teste existe por causa de um mutante que SOBREVIVEU à primeira rodada:
+   * remover o `clearTimeout` do `retirarDeVoo`.
+   *
+   * Ele escapa de teste de comportamento porque o timer órfão dispara e não acha
+   * ninguém — `retirarDeVoo` é seguro contra nulo. O estrago só existe se o
+   * órfão pegar a requisição SEGUINTE em voo, e os dois timers ficam separados
+   * apenas pela duração da requisição anterior: uma janela de milissegundos.
+   * Pegá-la por tempo exigiria margens apertadas, e portão instável é dano
+   * próprio — troca um defeito estreito por um vermelho aleatório.
+   *
+   * Então observa-se o recurso direto. O delta é imune à linha de base (readline
+   * e o processo filho também têm handles): entre uma requisição e a seguinte,
+   * o número de `Timeout` vivos só cresce se um teto tiver ficado armado. */
+  const t = runtimeFalso(ECO(`JSON.stringify({ status: 'ok' })`));
+  try {
+    const timers = () => process.getActiveResourcesInfo().filter((r) => r === 'Timeout').length;
+    await t.autorizar({ versao: 1, modulos: [] });
+    const base = timers();
+    await t.autorizar({ versao: 1, modulos: [] });
+    assert.equal(timers(), base, 'o teto de uma requisição já respondida continuou armado');
+  } finally {
+    await t.fechar();
+  }
+});
+
 test('executable e root são obrigatórios', () => {
   /* `root` é a raiz confiável. Deixá-la implícita é como o confinamento de
    * caminho começa a vazar — por isso ela é exigida na construção, não no uso. */
