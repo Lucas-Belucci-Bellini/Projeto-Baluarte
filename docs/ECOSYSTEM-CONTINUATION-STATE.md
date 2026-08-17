@@ -17,7 +17,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 ## Estado atual — mesh
 
-A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept continua sendo `TaxForge -> Baluarte -> Veritas`, mas a validação de consumidor ainda não foi comprovada.
+A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. Ainda não existe um primeiro par cross-project comprovado. O próximo par em investigação é `TaxForge -> ARK`, mas permanece candidato até existir um consumer real no código do TaxForge.
 
 ### Trabalho concluído
 
@@ -35,6 +35,9 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] decisão de manter autorização de domínio separada de capability do mesh
 - [x] Veritas provider inventory: MCP capabilities verificadas
 - [x] validação negativa inicial no TaxForge: nenhuma evidência encontrada de consumo de Boolean evaluation/truth tables/simplification
+- [x] TaxForge MCP implementation audit
+- [x] ARK public hazard implementation audit
+- [x] TaxForge ↔ ARK discovery v1 documentado como hipótese não comprovada
 
 ## Veritas provider status
 
@@ -46,31 +49,42 @@ Veritas possui capabilities verificadas no MCP, incluindo:
 - `veritas.logic.karnaugh`
 - `veritas.circuit.simulate`
 
-Porém, a inspeção do TaxForge não encontrou uma necessidade concreta para essas operações. Portanto, nenhuma capability Veritas deve entrar no registry de produção ainda.
+Porém, a inspeção dos consumidores atuais não encontrou uma necessidade concreta para essas operações. Nenhuma capability Veritas deve entrar no registry de produção ainda.
 
 Documento de referência:
 
 `docs/ECOSYSTEM-VERITAS-PROVIDER-CONTRACT-V1.md`
 
-## ARK status
+## TaxForge ↔ ARK status
 
-O ARK possui um domínio de hazards/evidências públicas e uma camada privada ARCA. A fronteira pública/privada deve ser preservada. O mapeamento para Supabase e o capability contract ainda precisam ser reconciliados com o estado real da branch/main antes de qualquer migration.
+TaxForge possui MCP, mas a implementação observada é principalmente uma camada de auditoria/qualidade do próprio repositório. Ela não é ainda um gateway de consumo de capabilities externas.
+
+ARK possui uma capability candidata de dados públicos de hazards (`ark.hazards.public_snapshot`) baseada em GDACS/USGS, com provenance e cache. A camada privada ARCA permanece fora do Mesh.
+
+Documento de referência:
+
+`docs/ECOSYSTEM-TAXFORGE-ARK-DISCOVERY-V1.md`
+
+Status: `CANDIDATE — NOT PROVEN`.
 
 ## Próximo passo EXATO
 
-**Não fabricar o primeiro consumer Veritas. Fazer capability discovery orientado por necessidade real nos seis repositórios.**
+**Validar se existe no TaxForge um workflow real que consuma inteligência pública de hazards do ARK.**
 
-Ordem:
+Se existir:
 
-1. procurar no TaxForge, ARK, DailyPlanner, AEGIS e Baluarte workflows que possam consumir uma capability Veritas já verificada;
-2. se nenhum consumidor real aparecer, classificar Veritas como provider disponível e continuar discovery em outros pares projeto→provider;
-3. escolher o primeiro par que tenha necessidade concreta;
-4. identificar exatamente as tabelas/queries/serviços que implementam a capability;
-5. auditar RLS, ownership e autorização;
-6. definir o menor payload que atravessa o mesh;
-7. definir provenance/evidence e confiança;
-8. somente então desenhar tabelas de registry/requests/results para o caso concreto;
-9. só depois propor migration não destrutiva no Supabase.
+1. identificar o ponto exato do produto que precisa do dado;
+2. definir o menor payload de entrada;
+3. definir o resultado e provenance;
+4. auditar autorização/RLS/ownership;
+5. desenhar o contrato cross-project;
+6. só então estudar registry/request/result no Supabase.
+
+Se não existir:
+
+1. rejeitar TaxForge → ARK como integração artificial;
+2. manter ARK como provider disponível;
+3. continuar discovery de outros pares entre os seis repositórios.
 
 ## Regras permanentes
 
@@ -92,6 +106,7 @@ Abrir primeiro este arquivo e depois:
 - `docs/ECOSYSTEM-MESH-SCHEMA-NEXT.md`
 - `docs/ECOSYSTEM-MESH-CONTRACTS-V1.md` na branch `docs/ecosystem-mesh-contracts-v1`
 - `docs/ECOSYSTEM-VERITAS-PROVIDER-CONTRACT-V1.md`
+- `docs/ECOSYSTEM-TAXFORGE-ARK-DISCOVERY-V1.md`
 - `docs/SUPABASE-IDENTITY-TENANT-AUDIT.md`
 - `docs/SUPABASE-RPC-BODY-AUDIT-V1.md`
 - `docs/SUPABASE-RLS-GRANTS-AUDIT-V1.md`
@@ -100,4 +115,4 @@ Depois verificar o estado real dos seis repositórios e do Supabase e continuar 
 
 ## Última atualização
 
-2026-08-16
+2026-08-17
