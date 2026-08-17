@@ -39,21 +39,29 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] ARK provider discovery inicial: hazards/evidências públicas são candidatos, mas consumidor/interface ainda não confirmados
 - [x] AEGIS provider discovery inicial: o repositório atual comprova a especificação/prompt do agente, mas não uma API/MCP provider estável
 - [x] Baluarte V2 platform primitive discovery: Event Bus, Module System/Registry, Permission System, Storage/Data Layer e External API aparecem como fundamentos arquiteturais no V2 Master Plan
+- [x] Baluarte Nexus implementation discovery: `src/nexus/orquestrador.js` implementa composição de manifestos, validação de contrato, dependências, ciclos, colisões de rotas e inicialização
+- [x] Baluarte Nexus contract audit: `docs/NEXUS-CONTRATO.md` confirma isolamento entre domínios e contrato único de entrada (`baluarte.module.js`)
+- [x] Round 004 registrado em `docs/ECOSYSTEM-DISCOVERY-ROUND-004.md`
 
-## Baluarte platform primitives — novo estado
+## Baluarte platform primitives — estado
 
-`docs/ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md` registra o resultado da rodada. O `docs/v2/V2_MASTER_PLAN.md` confirma que o Baluarte V2 foi desenhado para módulos externos e contratos/API, com isolamento, permissões separadas da funcionalidade e sem acesso de módulos aos detalhes internos de outros módulos.
+O Nexus é uma primitiva interna de composição de módulos, não o Mesh. O contrato atual separa claramente:
 
-Primitivas candidatas:
+`Nexus interno -> composição de módulos Baluarte`
 
-- Module contract / registry
-- Event Bus
-- Permission System
-- Storage / Data Layer
-- External API boundary
-- Audit / diagnostics / observability
+`Knowledge Mesh -> descoberta/autorização/consumo de capacidades entre projetos`
 
-Essas são **primitivas arquiteturais candidatas**, não devem ser tratadas como serviços externos prontos sem verificar implementação e testes concretos.
+O Nexus atual valida:
+
+- major do contrato;
+- módulos duplicados;
+- dependências ausentes;
+- ciclos de dependência;
+- colisões de rotas;
+- destaques que apontam para outro domínio;
+- ordem de inicialização.
+
+Isso é uma base reutilizável para a disciplina de contratos, mas não deve ser ampliado para cross-project antes de haver um caso real.
 
 ## Veritas provider status
 
@@ -114,11 +122,13 @@ Ordem:
 - A topologia interna é documentação de engenharia privada; segurança real depende de autenticação, autorização, RLS, mínimo privilégio e auditoria.
 - Não criar dependências artificiais entre projetos apenas para demonstrar o Mesh.
 - Não criar uma segunda implementação de Event Bus, Storage ou Permission Manager no Baluarte sem justificar arquiteturalmente.
+- O Nexus interno e o Knowledge Mesh são contratos distintos.
 
 ## Como retomar
 
 Abrir primeiro este arquivo e depois:
 
+- `docs/ECOSYSTEM-DISCOVERY-ROUND-004.md`
 - `docs/ECOSYSTEM-INTELLIGENCE-MESH.md`
 - `docs/ECOSYSTEM-MESH-SCHEMA-NEXT.md`
 - `docs/ECOSYSTEM-MESH-CONTRACTS-V1.md` na branch `docs/ecosystem-mesh-contracts-v1`
@@ -129,9 +139,11 @@ Abrir primeiro este arquivo e depois:
 - `docs/SUPABASE-IDENTITY-TENANT-AUDIT.md`
 - `docs/SUPABASE-RPC-BODY-AUDIT-V1.md`
 - `docs/SUPABASE-RLS-GRANTS-AUDIT-V1.md`
+- `docs/NEXUS-CONTRATO.md`
+- `src/nexus/orquestrador.js`
 
 Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO**.
 
 ## Última atualização
 
-2026-08-17
+2026-08-17 — Round 004
