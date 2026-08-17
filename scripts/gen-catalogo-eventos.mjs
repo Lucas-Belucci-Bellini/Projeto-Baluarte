@@ -33,6 +33,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, relative, sep } from 'node:path';
 
 import { semComentarios } from './lib/sem-comentarios.mjs';
+import { mesmoConteudo } from './lib/eol.mjs';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(raiz, 'src');
@@ -182,7 +183,11 @@ const conteudo = L.join('\n');
 if (process.argv.includes('--verificar')) {
   let atual = '';
   try { atual = readFileSync(DESTINO, 'utf8'); } catch { /* não existe */ }
-  if (atual !== conteudo) {
+  /* Ignorando o fim de linha: em checkout Windows o disco tem CRLF e o gerador
+   * emite `\n`, então a comparação crua reprova por `\r` e por mais nada — com
+   * uma mensagem que manda regenerar, o que não muda linha alguma. Ver
+   * `lib/eol.mjs`. */
+  if (!mesmoConteudo(atual, conteudo)) {
     console.error('🔴 docs/architecture/events.md está fora de sincronia com o código.');
     console.error('   Rode `npm run gen-catalogo-eventos` e commite o resultado.');
     process.exit(1);

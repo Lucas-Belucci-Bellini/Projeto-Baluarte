@@ -33,6 +33,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, relative, sep } from 'node:path';
 
 import { semComentarios } from './lib/sem-comentarios.mjs';
+import { mesmoConteudo } from './lib/eol.mjs';
 import { ESQUEMAS } from '../src/core/politica.js';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -237,7 +238,8 @@ const conteudo = L.join('\n');
 if (process.argv.includes('--verificar')) {
   let atual = '';
   try { atual = readFileSync(DESTINO, 'utf8'); } catch { /* não existe */ }
-  if (atual !== conteudo) {
+  /* Ignorando o fim de linha — ver `lib/eol.mjs`. */
+  if (!mesmoConteudo(atual, conteudo)) {
     console.error('🔴 docs/architecture/storage.md está fora de sincronia.');
     console.error('   Rode `npm run gen-catalogo-storage` e commite o resultado.');
     process.exit(1);
