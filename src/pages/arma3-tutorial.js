@@ -520,10 +520,23 @@ export async function arma3TutorialPage(args = {}) {
           `${a.nome}${a.calibre ? ' — ' + a.calibre : ''}`)));
       if (grp.children.length) selArma.appendChild(grp);
     });
-    const num = (val, min, max, step, set) => h('input', {
-      className: 'input a3arm-num', type: 'number', value: String(val), min: String(min), max: String(max), step: String(step),
-      oninput: (e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) { set(Math.max(min, Math.min(max, v))); recalc(); } }
-    });
+    /* Campo numérico: enquanto DIGITA, não brigamos com o usuário (só limitamos
+     * o valor usado na conta); ao SAIR do campo, o valor exibido é corrigido pro
+     * intervalo válido — senão a pessoa vê "99999 m" na tela e o resultado de
+     * 2000 m, que não bate. */
+    const num = (val, min, max, step, set) => {
+      const limitar = (v) => Math.max(min, Math.min(max, v));
+      return h('input', {
+        className: 'input a3arm-num', type: 'number', value: String(val), min: String(min), max: String(max), step: String(step),
+        oninput: (e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) { set(limitar(v)); recalc(); } },
+        onchange: (e) => {
+          const v = parseFloat(e.target.value);
+          const corrigido = isNaN(v) ? val : limitar(v);
+          if (String(corrigido) !== e.target.value) e.target.value = String(corrigido);
+          set(corrigido); recalc();
+        }
+      });
+    };
     box.append(
       h('div', { className: 'a3tut-card__head' },
         h('b', { className: 'a3tut-card__nome' }, '🧮 Calculadora de trajetória (modelo real do engine)')),
