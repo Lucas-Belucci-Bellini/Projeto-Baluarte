@@ -17,7 +17,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 ## Estado atual — mesh
 
-A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept ainda não foi escolhido: a validação de `TaxForge -> Baluarte -> Veritas` não encontrou consumidor concreto para as capabilities de lógica verificadas no Veritas.
+A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. Até a Round 014 ainda não existe um primeiro proof-of-concept cross-project que justifique produção.
 
 ### Trabalho concluído
 
@@ -45,8 +45,8 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] Local Storage/Data policy audit: `src/core/politica.js` + `scripts/gen-catalogo-storage.mjs` impõem declaração, versão e migração das chaves
 - [x] Page lifecycle audit: `src/core/ciclo-vida.js` implementa registro e encerramento de recursos de página
 - [x] Supabase-backed Global Comms audit: `src/core/comms.js` usa REST + Realtime + autenticação/RLS existentes, mas não é o Mesh
-- [x] Rounds 005–012 de discovery registradas no repositório
-- [x] checkpoint mestre atualizado para Round 013
+- [x] Rounds 005–014 de discovery registradas no repositório
+- [x] checkpoint mestre atualizado para Round 015
 
 ## Baluarte platform primitives — estado real
 
@@ -69,13 +69,7 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 
 ## Veritas provider status
 
-Veritas possui capabilities verificadas no MCP, incluindo:
-
-- `veritas.logic.evaluate`
-- `veritas.logic.truth_table`
-- `veritas.logic.simplify`
-- `veritas.logic.karnaugh`
-- `veritas.circuit.simulate`
+Veritas possui capabilities MCP concretas documentadas, incluindo avaliação lógica, geração de tabela verdade, simplificação, Karnaugh e simulação de circuitos. O servidor atual usa stdio; transporte HTTP autenticado remoto é descrito como camada futura.
 
 A inspeção atual do TaxForge não encontrou necessidade concreta para essas operações. Portanto, não colocar essas capabilities no registry de produção ainda.
 
@@ -93,22 +87,24 @@ AEGIS define um fluxo forte de investigação: observe → entenda → investigu
 
 ## TaxForge status
 
-TaxForge é o principal consumidor candidato por seu domínio de cenários, evidências, fornecedores, contratos e decisões. O MCP operacional atual é principalmente voltado a auditoria, qualidade, E2E, diagnóstico Vercel e checkpoint; ele não constitui, por si só, uma capability de domínio compartilhável.
+TaxForge é o principal consumidor candidato por seu domínio de cenários, evidências, fornecedores, contratos e decisões. O MCP operacional atual possui integração própria, mas não deve ser confundido automaticamente com capability de domínio compartilhável.
 
-## Próximo passo EXATO — Round 013
+## Round 014 — decisão
 
-**Auditar as fronteiras reais de autorização e API do Baluarte e, em paralelo, encontrar o primeiro caso de uso cross-project que seja real e mínimo.**
+A busca por um primeiro par Consumer → Provider foi encerrada sem inventar dependência. Veritas possui um provider MCP real, mas nenhum consumidor concreto entre os projetos atuais foi encontrado para suas capabilities. TaxForge permanece o principal consumidor candidato, mas ainda não há provider externo comprovado que resolva uma necessidade real sua.
 
-Ordem:
+## Próximo passo EXATO — Round 015
 
-1. localizar autenticação, autorização e RLS usados pelo caminho remoto existente;
-2. localizar e classificar a fronteira External API/MCP existente;
-3. mapear necessidades concretas do TaxForge;
-4. comparar essas necessidades com capacidades implementadas em Veritas, ARK e AEGIS;
-5. escolher o primeiro par somente quando houver consumidor + provider + interface real;
-6. definir o menor payload, provenance e escopo de autorização;
-7. somente então desenhar qualquer registry/request/result persistido;
-8. só depois propor migration não destrutiva no Supabase.
+Fazer um **Capability Boundary Inventory** dos seis projetos usando suas fronteiras públicas reais:
+
+1. catalogar APIs/MCP/endpoints/funções exportadas já existentes;
+2. catalogar capacidades de domínio, separando-as de tooling/devops;
+3. registrar entradas, saídas e requisitos de autorização;
+4. registrar quais resultados podem carregar provenance/evidence;
+5. procurar consumidores já implícitos pelo produto, sem criar casos artificiais;
+6. classificar cada candidato como `provider-candidate`, `consumer-candidate`, `internal-only` ou `not-ready`;
+7. escolher um primeiro contrato somente se consumidor + provider + interface forem comprovados;
+8. se nenhum par existir, registrar a busca como negativa e manter o Mesh sem migrations especulativas.
 
 ## Regras permanentes
 
@@ -127,10 +123,10 @@ Ordem:
 
 ## Como retomar
 
-Abrir primeiro este arquivo. Em seguida, consultar `docs/ECOSYSTEM-DISCOVERY-ROUND-012.md`, os documentos `ECOSYSTEM-DISCOVERY-ROUND-*`, os contratos do Mesh, os documentos de discovery de Veritas/ARK/AEGIS, `ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md`, os audits do Supabase e `docs/NEXUS-CONTRATO.md`.
+Abrir primeiro este arquivo. Em seguida, consultar `docs/ECOSYSTEM-DISCOVERY-ROUND-014.md`, os documentos `ECOSYSTEM-DISCOVERY-ROUND-*`, os contratos do Mesh, os documentos de discovery de Veritas/ARK/AEGIS, `ECOSYSTEM-BALUARTE-PLATFORM-PRIMITIVES-V1.md`, os audits do Supabase e `docs/NEXUS-CONTRATO.md`.
 
-Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO — Round 013**.
+Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO — Round 015**.
 
 ## Última atualização
 
-2026-08-17 — Round 012 implementation inventory; next step is Round 013
+2026-08-17 — Round 014 capability-contract discovery; next step is Round 015
