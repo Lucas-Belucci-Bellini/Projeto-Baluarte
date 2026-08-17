@@ -19,7 +19,7 @@ Manter no Projeto-Baluarte o estado mínimo necessário para retomar o trabalho 
 
 A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um banco SQL compartilhado. O primeiro proof-of-concept continua sendo `TaxForge -> Baluarte -> Veritas`.
 
-### Trabalho concluído nesta etapa
+### Trabalho concluído
 
 - [x] Capability / Knowledge Request / Result contracts
 - [x] provider discovery, fallback e authorization boundary
@@ -29,38 +29,44 @@ A arquitetura alvo é uma rede de capacidades coordenada pelo Baluarte, não um 
 - [x] auditoria do modelo real de identidade/tenant no Supabase
 - [x] confirmação de que `auth.users`, `tenants` e `tenant_members` devem ser reutilizados
 - [x] confirmação de que não devemos criar `mesh_users` ou `mesh_tenants`
-- [x] definição do próximo domínio aditivo: projects, capabilities, grants, external references e requests/results
+- [x] RPC body audit
+- [x] EXECUTE grants audit das RPCs selecionadas
+- [x] RLS audit inicial de `tenants`, `tenant_members`, `juris_doutrina` e Veritas collaborators
+- [x] decisão de manter autorização de domínio separada de capability do mesh
 
-Novo documento desta etapa:
+Documento mais recente:
 
-`docs/SUPABASE-IDENTITY-TENANT-AUDIT.md` na branch `docs/supabase-identity-tenant-audit`.
+`docs/SUPABASE-RLS-GRANTS-AUDIT-V1.md` na branch `docs/rpc-rls-classification-v1`.
 
-Documento de continuação/schema:
+Commit:
 
-`docs/ECOSYSTEM-MESH-SCHEMA-NEXT.md` na branch `docs/supabase-identity-tenant-audit`.
+`206c014768c5fb9cdddee7454b171bddfb5c6d67`
 
-Commit da auditoria:
+## Descobertas de segurança relevantes
 
-`fde3aba83b4dbb32a4abe7195fe3e4da73e40513`
-
-Commit do schema-next:
-
-`af74e1552efcd701105efde7881dc0b732438b25`
+- `current_tenant_role` é `SECURITY DEFINER`, mas está restrita a `authenticated`, `postgres` e `service_role` e consulta a associação do próprio `auth.uid()` ao tenant solicitado.
+- `buscar_juris` é `SECURITY DEFINER`, está restrita a `authenticated`, `postgres` e `service_role`, filtra pelo tenant e exige membership.
+- RPCs de colaboração do Veritas são autenticadas e derivam autorização do usuário/projeto.
+- `bump_view` e `bump_visits` possuem `EXECUTE` para `anon`; continuam classificadas como telemetria, não capabilities do mesh. Não alterar sem decisão de produto.
+- `tenants` possui SELECT autenticado condicionado a membership.
+- `tenant_members` restringe leitura ao próprio membro ou admin/owner e mutações a admin/owner.
+- `juris_doutrina` possui RLS por `tenant_id` e papel.
+- `veritas_circuit_collaborators` possui SELECT condicionado a autorização de colaboração.
 
 ## Próximo passo EXATO
 
-**Validar as RLS policies e funções de autorização das tabelas de identidade/tenant, TaxForge e Veritas antes de qualquer migration do mesh.**
+**Completar a matriz de segurança do primeiro provider antes de qualquer migration do mesh.**
 
 Ordem:
 
-1. revisar policies de `tenants` e `tenant_members`;
-2. revisar policies das tabelas `taxforge_*` e confirmar isolamento por `tenant_id`;
-3. revisar onde Veritas usa `user_id` diretamente e separar ownership de autorização de mesh;
-4. classificar funções/RPCs de autorização como public/authenticated/service-only;
-5. então desenhar o `ecosystem_projects` e `ecosystem_capabilities` lógicos;
-6. depois `capability_grants` e `external_references`;
-7. depois preparar o proof `TaxForge -> Baluarte -> Veritas`;
-8. somente então propor migration não destrutiva.
+1. escolher a primeira capability real que TaxForge solicitará ao Veritas;
+2. identificar exatamente as tabelas/queries que implementam essa capability;
+3. auditar todas as RLS policies e ownership checks dessas tabelas;
+4. definir o menor resultado que pode atravessar o mesh;
+5. definir provenance/evidence e confiança do resultado;
+6. então desenhar `ecosystem_projects`, `ecosystem_capabilities` e `ecosystem_capability_grants` para esse caso concreto;
+7. depois preparar `ecosystem_requests`, `ecosystem_results` e `external_references`;
+8. somente então propor uma migration não destrutiva.
 
 ## Regras permanentes
 
@@ -78,12 +84,12 @@ Ordem:
 Abrir primeiro este arquivo e depois:
 
 - `docs/ECOSYSTEM-INTELLIGENCE-MESH.md`
-- `docs/ECOSYSTEM-MESH-SCHEMA-NEXT.md` na branch `docs/supabase-identity-tenant-audit`
-- `docs/ECOSYSTEM-MESH-CONTRACTS-V1.md` na branch `docs/ecosystem-mesh-contracts-v1`
-- `docs/ECOSYSTEM-IDENTITY-TENANT-CONTRACT-V1.md` na branch `docs/ecosystem-mesh-contracts-v1`
-- `docs/SUPABASE-IDENTITY-TENANT-AUDIT.md` na branch `docs/supabase-identity-tenant-audit`
-- `docs/SUPABASE-SECURITY-FUNCTION-CONSUMER-MAP.md`
-- `docs/TAXFORGE-SUPABASE-SCHEMA-RECONCILIATION.md`
+- `docs/ECOSYSTEM-MESH-SCHEMA-NEXT.md`
+- `docs/ECOSYSTEM-MESH-CONTRACTS-V1.md`
+- `docs/ECOSYSTEM-IDENTITY-TENANT-CONTRACT-V1.md`
+- `docs/SUPABASE-IDENTITY-TENANT-AUDIT.md`
+- `docs/SUPABASE-RPC-BODY-AUDIT-V1.md`
+- `docs/SUPABASE-RLS-GRANTS-AUDIT-V1.md`
 
 Depois verificar o estado real dos seis repositórios e do Supabase e continuar pelo **Próximo passo EXATO**.
 
