@@ -39,6 +39,31 @@ O `ciclo.js` continua sendo o único dono da execução do lifecycle. Este contr
 - Todo estado desta tabela tem contador em `resumo()`, e a soma dos contadores
   fecha com `total`. Contador que falta faz um módulo sumir da soma.
 
+## ⚠️ Lacuna conhecida: módulo ignorado por ambiente aparece como `stopped`
+
+Desde que o ciclo passou a aplicar `ambiente`, existe um quarto jeito de um
+módulo não estar no ar: **ele não pertence a este ambiente**. O ciclo o devolve
+em `ignorados`, separado de `falhas`, porque não é defeito.
+
+Este contrato ainda não sabe disso. Um módulo ignorado não está em `vivos()`, não
+está em `falhas()`, e com o ciclo em `no-ar` cai em `stopped` — que afirma "saiu
+do ar" sobre um módulo que **nunca foi ao ar aqui, por regra**. É a mesma classe
+de mentira que o `registered` corrigiu para a subida em andamento, e vale
+registrá-la em vez de deixá-la descoberta.
+
+Duas saídas, e a escolha não é óbvia:
+
+| saída | a favor | contra |
+| --- | --- | --- |
+| estado novo (`ignored`) | diz a verdade sem ambiguidade | acrescenta ao enum público; todo consumidor de `resumo()` precisa contá-lo |
+| reusar `registered` | sem mudança de contrato; "está no Registry e não foi ao ar" é literalmente verdade | apaga a distinção entre "ainda não chegou nele" e "decidiu que não é daqui" |
+
+Enquanto não se decide, o `resumo()` continua fechando com `total` — o módulo é
+contado, só que sob um rótulo que conta menos do que sabe. **Não é urgente porque
+hoje nenhum módulo declara ambiente restrito**, e é exatamente por isso que
+merece estar escrito: quando o primeiro declarar, o retrato vai mentir em
+silêncio.
+
 ## Transições
 
 `ciclo.emTransicao()` devolve `{ modulo, direcao, etapa }` ou `null`:
