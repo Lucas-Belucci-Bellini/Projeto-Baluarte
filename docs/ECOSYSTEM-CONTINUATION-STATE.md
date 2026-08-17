@@ -74,13 +74,13 @@ Ainda pendente:
 
 ## Último trabalho concluído nesta retomada
 
-Foi criada a branch `docs/baluarte-branch-inventory` e o PR draft **#438** para adicionar `docs/BALUARTE-BRANCH-INVENTORY.md`. O documento estabelece a primeira camada de classificação das branches em canônicas, desenvolvimento ativo, experimentais, históricas/backup, conteúdo/domínio e infraestrutura/integração. Não foi feita nenhuma exclusão de branches.
+Foi criado o PR draft **#439** a partir da branch `docs/baluarte-subsystem-map`, adicionando `docs/BALUARTE-SUBSYSTEM-MAP.md`. O documento transforma a classificação inicial de branches em um mapa de famílias para subsistemas candidatos, com nível de confiança e regra explícita de que nomes de branches não são autoridade arquitetural sem inspeção de conteúdo, linhagem, documentação e testes.
 
-PR: #438 — `docs: establish branch inventory navigation layer`
+PR: #439 — `docs: map Baluarte branches to subsystems`
 
-Commit da documentação: `38574ccfd765c269d511141414f146bd73bcab55`
+Commit: `b20a459f480e984129c278d5529fd242c2692b50`
 
-A busca atual do repositório mostrou centenas de branches e uma grande família `backup/*`. A contagem anterior registrada foi 293 branches; novas buscas devem ser tratadas como estado atual e não como número permanente.
+Famílias verificadas nesta etapa: `v2/*`, `claude/*`, `feature/*` e `fix/*`. Exemplos relevantes incluem o trabalho V2 de CI/runtime/contratos, GitNexus, ARMA 3, integrações, UI e correções. Nenhuma branch foi excluída ou marcada como obsoleta apenas pelo nome.
 
 ## TaxForge — estado anterior
 
@@ -98,7 +98,7 @@ O inventário confirmou que o schema atual é MySQL/Drizzle e mistura o domínio
 
 ## Próximo passo exato
 
-**Completar o branch-to-subsystem inventory do Baluarte.** O próximo artefato deve transformar a classificação inicial em um registro navegável por branch/família, apontando para subsistema, documentação, implementação, testes, PR/linhagem e autoridade arquitetural. Priorizar as famílias não-`backup/*` e depois resumir as famílias históricas sem apagar nada.
+**Continuar o branch-to-subsystem inventory do Baluarte.** O próximo artefato deve inspecionar a linhagem/commits e os diretórios reais das famílias não-`backup/*`, começando por `v2/*` e depois `claude/*`, para transformar candidatos em mapeamentos verificáveis de branch → subsistema → documentação → implementação → testes.
 
 Depois disso:
 
@@ -117,12 +117,13 @@ Ao iniciar uma nova conversa sobre este ecossistema:
 1. abrir este arquivo;
 2. abrir `docs/ARCHITECTURE-INDEX.md`;
 3. abrir `docs/BALUARTE-BRANCH-INVENTORY.md`;
-4. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-5. verificar o estado da Fase A/B/C;
-6. localizar o **Próximo passo exato**;
-7. verificar o estado real dos seis repositórios antes de modificar qualquer coisa;
-8. continuar a partir desse ponto;
-9. atualizar este arquivo com o novo ponto de retomada.
+4. abrir `docs/BALUARTE-SUBSYSTEM-MAP.md`;
+5. abrir `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+6. verificar o estado da Fase A/B/C;
+7. localizar o **Próximo passo exato**;
+8. verificar o estado real dos seis repositórios antes de modificar qualquer coisa;
+9. continuar a partir desse ponto;
+10. atualizar este arquivo com o novo ponto de retomada.
 
 ## Regra de segurança arquitetural
 
