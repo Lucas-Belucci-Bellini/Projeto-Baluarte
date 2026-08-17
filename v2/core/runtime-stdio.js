@@ -69,7 +69,22 @@ export function criarRuntimeStdio(options) {
       if (!pending) return;
       const current = pending;
       pending = null;
-      current.resolve(parseResposta(line));
+      /* `parseResposta` lança em linha inválida, e este é um handler de evento:
+       * sem o `try`, o erro sobe como exceção NÃO CAPTURADA — e, pior, `pending`
+       * já foi zerado acima, então a promessa do chamador nunca assenta. Um
+       * Runtime que respondesse lixo penduraria o Core em silêncio. Medido: sem
+       * este `try` os dois testes de resposta inválida não falham, eles TRAVAM
+       * até o teto do runner.
+       *
+       * O `pending = null` continua ANTES do parse de propósito: a requisição
+       * saiu de voo assim que a linha dela chegou, tenha a linha sentido ou não.
+       * Zerar depois deixaria a próxima resposta cair sobre uma requisição já
+       * respondida. */
+      try {
+        current.resolve(parseResposta(line));
+      } catch (error) {
+        current.reject(error);
+      }
     });
 
     processo.on('error', (error) => {

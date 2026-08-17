@@ -137,6 +137,11 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
 - [x] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
 - [ ] observabilidade de transições `starting/running/stopping`
 - [ ] transporte concreto depois do contrato estabilizado
+      — o `criarRuntimeStdio` **existe e agora é testado** contra processo real
+      (`test/v2/runtime-stdio.test.js`, 9 testes, 7/7 mutantes mortos, e um
+      pendura real consertado). A caixa segue **desmarcada de propósito**: nada em
+      produção o importa. Ligar exige o app desktop — navegador não spawna
+      processo. Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
 - [ ] primeiro vertical slice de módulo nativo
 
 ## Regra de manutenção

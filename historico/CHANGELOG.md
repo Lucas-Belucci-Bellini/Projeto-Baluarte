@@ -6,6 +6,54 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-17 — o transporte por stdio sai do papel (e a caixa segue desmarcada)
+
+**Quarta peça pronta e desligada.** O `criarRuntimeStdio` existia, tinha
+documento próprio (`docs/v2/V2_RUNTIME_STDIO.md`) descrevendo o protocolo linha a
+linha, e a busca textual pelos importadores achou **zero** — nem produção, nem
+teste. Depois da fachada, do contract test e do Runtime Host, o padrão já não
+surpreende; o que muda é que agora se procura por ele antes.
+
+Os testes novos falam com **processo real**, não com duplo de `spawn`. A opção
+`spawnFn` existe e teria sido mais fácil, mas duplo prova o formato das mensagens
+e para aí. O que só um processo de verdade expõe é I/O — e era exatamente ali que
+estava o defeito.
+
+**O defeito:** resposta inválida fazia o `parseResposta` lançar **dentro do
+handler de `line`**, com o `pending` já zerado uma linha antes. O erro subia como
+exceção não capturada **e a promessa do chamador nunca assentava**. Um Runtime
+que respondesse lixo penduraria o Core em silêncio — mesma família do "init que
+trava não pendura o Baluarte", agora na fronteira do processo.
+
+Medido nos dois sentidos, e a medida é o argumento: sem o conserto os dois testes
+de resposta inválida **não falham, eles travam** — a suíte do arquivo leva
+**71,8 s** (dois testes queimando o teto do runner) contra **639 ms** com ele.
+Sete mutantes plantados, sete mortos; dois deles matam por travamento, que é o
+defeito reaparecendo.
+
+O `pending = null` continua **antes** do parse de propósito: a requisição sai de
+voo quando a linha dela chega, tenha a linha sentido ou não. Zerar depois faria a
+próxima resposta cair sobre uma requisição já respondida.
+
+### A caixa `transporte concreto` **não** foi marcada
+
+Código existe e teste existe — mas a regra de manutenção do `V2_PROGRESS.md` não
+é a única em jogo. Nada em produção importa esta peça, e o entrypoint web não
+pode importar: navegador não spawna processo. Ligar de verdade é no app desktop,
+atrás de `window.baluarte.native` (#238). Marcar `[x]` aqui produziria o retrato
+verde de sempre sobre um transporte que ninguém usa — o erro que este repositório
+já pagou quatro vezes, cometido de novo no mesmo dia em que foi nomeado.
+
+**O que isto não prova:** nada sobre o binário Rust. O par nos testes é um `node`
+falando o protocolo; quem mede o outro lado é `npm run v2:runtime`, que exige
+`cargo` — ausente na máquina do operador. Essa metade continua sendo do remoto.
+
+> **Buraco conhecido, deixado de propósito:** `enviar()` não tem teto próprio.
+> Pelo lifecycle há o `comTeto` do `ciclo.ts`; `lerArquivo` não passa por ele.
+> Runtime que aceita a linha e nunca responde pendura esse caminho. Ficou fora
+> para não alargar o item, mas está escrito para ser o próximo passo em vez de uma
+> descoberta futura.
+
 ## 2026-08-17 — `running` passa a exigir autorização de Runtime
 
 Pela terceira vez seguida o defeito foi o mesmo: **peça pronta, testada e
