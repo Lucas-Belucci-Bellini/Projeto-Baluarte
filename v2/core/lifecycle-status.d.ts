@@ -5,6 +5,7 @@ export type ModuleLifecycleState =
   | 'registered'
   | 'starting'
   | 'running'
+  | 'stopping'
   | 'failed'
   | 'stopped';
 
@@ -19,6 +20,8 @@ export interface LifecycleModuleStatus {
 export interface LifecycleSummary {
   total: number;
   running: number;
+  starting: number;
+  stopping: number;
   failed: number;
   stopped: number;
   registered: number;
@@ -32,5 +35,5 @@ export interface LifecycleStatus {
 
 export function criarStatusLifecycle(
   registry: ModuleRegistry,
-  cycle: Pick<ModuleCycle, 'vivos' | 'falhas' | 'fase'>,
+  cycle: Pick<ModuleCycle, 'vivos' | 'falhas' | 'emTransicao' | 'fase'>,
 ): LifecycleStatus;

@@ -56,6 +56,22 @@ export interface LifecycleFailure {
   motivo: string;
 }
 
+/**
+ * O módulo que está passando por uma fase **neste instante**.
+ *
+ * Existe porque `vivos()` e `falhas()` só descrevem estados assentados: entre o
+ * começo e o fim de uma fase o módulo não está em nenhum dos dois, e quem
+ * observava o ciclo no meio do voo recebia um retrato que dizia `stopped` sobre
+ * um módulo que estava subindo. `etapa` reusa o vocabulário de
+ * `LifecycleFailure.fase` de propósito — é a mesma pergunta ("em que fase?"),
+ * respondida antes de haver falha em vez de depois.
+ */
+export interface LifecycleTransition {
+  modulo: string;
+  direcao: 'subindo' | 'descendo';
+  etapa: LifecycleStage;
+}
+
 export interface LifecycleStartResult {
   ok: boolean;
   vivos: string[];
@@ -78,6 +94,7 @@ export interface ModuleCycle {
   contexto(id: string): ModuleContext | null;
   vivos(): string[];
   falhas(): LifecycleFailure[];
+  emTransicao(): LifecycleTransition | null;
   readonly fase: LifecycleState;
 }
 
@@ -101,6 +118,10 @@ export function criarCiclo(
   const vivos = new Map<string, RunningModule>();
   let falhas: LifecycleFailure[] = [];
   let fase: LifecycleState = 'parado';
+  /* Nulo fora de fase. Só há um módulo em voo por vez porque o ciclo percorre o
+   * Registry em série — se algum dia subir em paralelo, isto vira uma lista, e o
+   * contrato de status muda junto. */
+  let transicao: LifecycleTransition | null = null;
 
   /* O teto saiu de dentro do `executar` porque a abertura do Host precisa do
    * mesmo limite: um Runtime que não responde pendura a subida exatamente como
@@ -175,12 +196,27 @@ export function criarCiclo(
       const ctx = criarContexto(manifesto, deps);
       /* A fase começa em `runtime` e só avança quando o Host abriu. Sem esta
        * variável a falha do Host seria reportada como `init` — o mesmo rótulo
-       * de um defeito do módulo, para uma causa que é do sistema. */
+       * de um defeito do módulo, para uma causa que é do sistema.
+       *
+       * `etapa` e `transicao` são o MESMO fato lido por dois consumidores: a
+       * falha (depois) e o observador (durante). Por isso avançam num lugar só —
+       * dois lugares é como um deles começa a mentir sem ninguém notar. */
       let etapa: LifecycleStage = 'runtime';
+      const entrarEm = (proxima: LifecycleStage): void => {
+        etapa = proxima;
+        transicao = { modulo: id, direcao: 'subindo', etapa: proxima };
+      };
+
+      entrarEm('runtime');
       try {
         await abrirRuntime(id);
-        etapa = 'init';
+        entrarEm('init');
         await executar(id, manifesto.lifecycle.init, ctx, 'init');
+        /* `start` marcava a etapa como `init`, então falha de `start` era
+         * reportada como falha de `init`: o mesmo defeito de vocabulário que o
+         * `starting` tinha — a palavra existia em `LifecycleStage` e nada a
+         * produzia. Quem lesse o diagnóstico procuraria no handler errado. */
+        entrarEm('start');
         await executar(id, manifesto.lifecycle.start, ctx, 'start');
         vivos.set(id, { ctx, manifesto });
         log.debug('módulo no ar', { modulo: id });
@@ -213,6 +249,11 @@ export function criarCiclo(
             });
           }
         }
+      } finally {
+        /* O módulo assentou — está em `vivos` ou em `falhas`. Transição que fica
+         * pendurada faz o retrato dizer `starting` sobre um ciclo que já
+         * terminou de subir: o mesmo tipo de mentira que este item veio tirar. */
+        transicao = null;
       }
     }
 
@@ -238,6 +279,7 @@ export function criarCiclo(
       /* A ordem é do contrato: `stop` → `Runtime.close` → `dispose`. O Runtime
        * fecha ANTES do descarte para que os recursos de execução acabem
        * enquanto a instância que os pediu ainda existe. */
+      transicao = { modulo: id, direcao: 'descendo', etapa: 'stop' };
       try {
         await executar(id, modulo.manifesto.lifecycle.stop, modulo.ctx, 'stop');
       } catch (error) {
@@ -248,6 +290,7 @@ export function criarCiclo(
       /* Cada passo tem `try` próprio, e não um `for` sobre as fases: `stop` que
        * falha não pode impedir o Runtime de fechar nem o módulo de ser
        * descartado — desligamento que desiste no primeiro erro vaza o resto. */
+      transicao = { modulo: id, direcao: 'descendo', etapa: 'runtime' };
       try {
         await fecharRuntime(id);
       } catch (error) {
@@ -255,12 +298,21 @@ export function criarCiclo(
         log.erro('falha ao fechar o Runtime', error, { modulo: id });
       }
 
+      transicao = { modulo: id, direcao: 'descendo', etapa: 'dispose' };
       try {
         await executar(id, modulo.manifesto.lifecycle.dispose, modulo.ctx, 'dispose');
       } catch (error) {
         problemas.push({ modulo: id, fase: 'dispose', motivo: errorMessage(error) });
         log.erro('falha no dispose', error, { modulo: id });
       }
+
+      /* Sai de `vivos` assim que termina de descer, e não todos de uma vez no
+       * fim. Com a limpeza só no final, um módulo já descartado seguia sendo
+       * `running` no retrato e ainda aparecia com rotas e permissões no
+       * `boot.diagnostico()` — durante toda a descida, o retrato dizia que o
+       * sistema inteiro estava no ar enquanto ele era desmontado. */
+      vivos.delete(id);
+      transicao = null;
     }
 
     vivos.clear();
@@ -274,6 +326,9 @@ export function criarCiclo(
     contexto: (id: string): ModuleContext | null => vivos.get(id)?.ctx ?? null,
     vivos: (): string[] => [...vivos.keys()],
     falhas: (): LifecycleFailure[] => [...falhas],
+    /* Cópia, como `vivos` e `falhas`: quem observa não pode escrever no estado
+     * de quem executa. */
+    emTransicao: (): LifecycleTransition | null => (transicao ? { ...transicao } : null),
     get fase(): LifecycleState {
       return fase;
     },
