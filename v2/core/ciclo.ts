@@ -76,6 +76,14 @@ export interface LifecycleStartResult {
   ok: boolean;
   vivos: string[];
   falhas: LifecycleFailure[];
+  /**
+   * Módulos que não pertencem a este ambiente.
+   *
+   * Lista PRÓPRIA, e não `falhas`: um módulo de app pedido na web não falhou —
+   * ele não era para estar ali. Somar os dois faria `ok` virar `false` num boot
+   * perfeitamente correto, e o operador procuraria defeito onde há regra.
+   */
+  ignorados: string[];
 }
 
 export interface LifecycleStopResult {
@@ -83,9 +91,39 @@ export interface LifecycleStopResult {
   problemas: LifecycleFailure[];
 }
 
+/** Os mesmos literais que `manifest.js` já valida em `AMBIENTES`. */
+export type Ambiente = 'web' | 'app' | 'ambos';
+
 export interface LifecycleOptions {
   tetoInitMs?: number;
   runtime?: RuntimeHost;
+  /**
+   * Onde este ciclo está rodando.
+   *
+   * Ausente (ou `'ambos'`) significa que nada é filtrado — o comportamento de
+   * sempre.
+   * É de propósito: o ciclo não adivinha o ambiente, quem sabe é quem o monta.
+   */
+  ambiente?: Ambiente;
+}
+
+/**
+ * O módulo pertence a este ambiente?
+ *
+ * A regra é a MESMA que `src/core/flags.ts` já cobra na V1 — e é essa a questão:
+ * o manifesto da V2 declara `ambiente` desde sempre, `manifest.js` valida o
+ * valor, e **ninguém nunca perguntou**. Regra declarada que ninguém aplica é a
+ * mesma doença do `starting`: vocabulário sem produtor. O mega-plano #238 diz
+ * "web leve, app completo", e até aqui isso era honra, não mecanismo.
+ *
+ * Exportada para poder ser testada sozinha e reusada por quem monta rotas.
+ */
+export function pertenceAoAmbiente(
+  doModulo: string | undefined,
+  atual: Ambiente,
+): boolean {
+  const declarado = doModulo ?? 'ambos';
+  return declarado === 'ambos' || atual === 'ambos' || declarado === atual;
 }
 
 export interface ModuleCycle {
@@ -114,6 +152,10 @@ export function criarCiclo(
 ): ModuleCycle {
   const teto = opcoes.tetoInitMs ?? TETO_INIT_MS;
   const runtime = opcoes.runtime;
+  /* `ambos` como padrão mantém o comportamento anterior byte a byte para quem
+   * não passa nada — que é todo consumidor existente. Filtro novo que muda o
+   * padrão é filtro que quebra quem não pediu por ele. */
+  const ambiente: Ambiente = opcoes.ambiente ?? 'ambos';
   const log = criarLog('core:ciclo');
   const vivos = new Map<string, RunningModule>();
   let falhas: LifecycleFailure[] = [];
@@ -169,11 +211,26 @@ export function criarCiclo(
     fase = 'subindo';
     falhas = [];
     const mortos = new Set<string>();
+    const ignorados: string[] = [];
 
     for (const id of registry.listar()) {
       const manifesto = registry.modulo(id);
       if (!manifesto) {
         throw new Error(`ciclo: módulo "${id}" está na ordem e não no registro`);
+      }
+
+      /* Antes de qualquer fase, e antes até da cascata: um módulo que não é
+       * deste ambiente não é candidato a nada. Ele NÃO entra em `mortos` — quem
+       * depende dele não deve cair em cascata por uma ausência que é regra, e
+       * não defeito. Se a dependência for de fato necessária aqui, o erro certo
+       * aparece adiante, no módulo que depende, e não como efeito colateral
+       * silencioso desta linha. */
+      if (!pertenceAoAmbiente(manifesto.ambiente, ambiente)) {
+        ignorados.push(id);
+        log.debug('módulo ignorado: não é deste ambiente', {
+          modulo: id, declarado: manifesto.ambiente, atual: ambiente,
+        });
+        continue;
       }
 
       const quebradas = manifesto.dependencies.filter((dependency) =>
@@ -259,9 +316,12 @@ export function criarCiclo(
 
     fase = 'no-ar';
     return {
+      /* `ignorados` NÃO entra em `ok`: não pertencer ao ambiente é regra
+       * cumprida, não defeito. */
       ok: falhas.length === 0,
       vivos: [...vivos.keys()],
       falhas: [...falhas],
+      ignorados,
     };
   }
 
