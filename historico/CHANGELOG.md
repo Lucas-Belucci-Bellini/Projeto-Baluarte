@@ -6,6 +6,61 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-17 — `starting` e `stopping` deixam de ser palavra e viram estado
+
+`starting` estava em `ESTADOS_MODULO` desde o começo e **nada o produzia**. O
+retrato só via estados assentados, então quem observasse o ciclo no meio do voo
+recebia uma resposta errada com todas as luzes verdes — a assinatura do defeito
+que este repositório já pagou três vezes.
+
+**`stopping` não existia.** A fila dizia "o vocabulário já existe"; existia para
+`starting`, não para `stopping`. Então este item **acrescenta um estado ao
+contrato**, e não apenas liga um que estava lá.
+
+O ciclo passou a ser a fonte: `emTransicao()` devolve `{ modulo, direcao, etapa }`
+enquanto uma fase executa, e `null` quando nada está em voo. `etapa` reusa o
+vocabulário de `LifecycleFailure.fase` de propósito — é a mesma pergunta ("em que
+fase?"), respondida antes de haver falha em vez de depois. O status apenas
+traduz, e **exige** a peça: ciclo sem `emTransicao` é recusado na construção,
+porque retrato que nunca acusa transição é indistinguível de sistema que nunca
+transiciona.
+
+**A transição é decidida antes de `vivos()`, e isso é necessidade, não estilo.**
+Na descida o módulo continua vivo enquanto desce; perguntar a `vivos()` primeiro
+devolveria `running` justamente para quem está parando. Invertida a ordem, três
+testes caem.
+
+Duas mentiras vizinhas caíram junto, ambas do mesmo formato:
+
+- **Módulo ainda não alcançado na subida saía como `stopped`** — "saiu do ar"
+  sobre quem nunca entrou. Agora é `registered`, que é a definição escrita no
+  contrato.
+- **Quem já desceu continuava em `vivos()` até o fim da descida**, então durante
+  todo o desligamento o `boot.diagnostico()` listava o sistema inteiro com rotas
+  e permissões, dizendo que estava no ar enquanto era desmontado. A saída passou
+  a ser progressiva.
+
+E um terceiro achado, do mesmo formato e fora do enunciado: **falha em `start`
+era reportada como falha em `init`**. `'start'` estava em `LifecycleStage` e nada
+o emitia — a etapa não avançava antes da chamada. Rótulo errado manda quem lê o
+diagnóstico para o handler errado, que é exatamente o motivo de a fase `runtime`
+ter sido criada na rodada anterior. Nenhum teste fixava o comportamento antigo.
+
+**Sete mutantes plantados, sete mortos.** O da transição pendurada também derruba
+um teste pré-existente (`sem autorização o módulo NÃO vira running`), o que mostra
+que a ordem nova sustenta a garantia do Runtime Host, e não só a nova. Suíte
+905 → **916**.
+
+> O harness de mutação tropeçou primeiro na família "Windows", **sétima
+> instância**: trecho multilinha nunca casava, porque o disco é CRLF e os
+> literais do script eram LF. Mesma lição do `scripts/lib/eol.mjs` — normalize
+> antes de comparar. Dois mutantes "sobreviveram" por isso antes do conserto:
+> ferramenta de medição quebrada dá exatamente o mesmo verde que peça correta.
+
+Muda contrato e formato de dado (`ESTADOS_MODULO`, `ModuleLifecycleState`,
+`LifecycleSummary` com `starting`/`stopping`, e `ModuleCycle.emTransicao`), então
+**para para revisão** em vez de ir direto ao `main`.
+
 ## 2026-08-17 — `running` passa a exigir autorização de Runtime
 
 Pela terceira vez seguida o defeito foi o mesmo: **peça pronta, testada e

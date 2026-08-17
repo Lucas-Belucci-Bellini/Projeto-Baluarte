@@ -135,7 +135,7 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
 - [x] integrar a fachada ao entrypoint oficial da V2
 - [x] contract test completo Manifest → Registry → Permission → Runtime
 - [x] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
-- [ ] observabilidade de transições `starting/running/stopping`
+- [x] observabilidade de transições `starting/running/stopping`
 - [ ] transporte concreto depois do contrato estabilizado
 - [ ] primeiro vertical slice de módulo nativo
 

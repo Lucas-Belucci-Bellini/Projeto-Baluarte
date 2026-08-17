@@ -11,6 +11,11 @@ function montar({ falhas = [], vivos = ['core'] } = {}) {
   const ciclo = {
     vivos: () => vivos,
     falhas: () => falhas,
+    /* Nada em voo: estes testes olham a fachada com o ciclo assentado. O duplo
+     * precisa expor a peça mesmo assim — o status recusa ciclo sem ela, e é de
+     * propósito: ciclo que não relata transição produziria um retrato que nunca
+     * acusa nada. */
+    emTransicao: () => null,
     get fase() { return fase; }
   };
   const boot = {
