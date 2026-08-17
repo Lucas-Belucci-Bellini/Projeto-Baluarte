@@ -97,9 +97,38 @@ E os três testes de processo que a `MAIN_ERROR_AUDIT` listava como quebrados
 **por execução** o que a anotação de ROOT-RUNTIME-001 só tinha confirmado por
 leitura.
 
-**O que isto não prova:** nada sobre o app. O consumidor do transporte é o portão
-E2E, não o Baluarte em execução — levar isto ao produto é no app desktop (#238) e
-segue aberto. E nada sobre o alvo **MSVC**: o binário aqui é GNU.
+### E a ponte do app desktop entrou junto
+
+O `desktop/` era uma ilha CommonJS **sem um único teste**, e nada nele importava
+de `v2/`. Agora há `desktop/src/runtime.js`, com os canais `runtime:status`,
+`runtime:autorizar` e `runtime:ler` na allowlist do `ipc.js`.
+
+Escrito sem `require('electron')` de propósito — a raiz confiável entra injetada
+(`app.getPath('userData')/runtime-root`, seguindo o M4/RFC #232), calculada no
+`buildHandlers` e não no topo do módulo, porque `app.getPath` depende do app
+pronto. É o que permitiu testar a ponte em Node puro, e é o primeiro teste que o
+`desktop/` já teve: **8/8**, incluindo o ponta a ponta que atravessa ponte →
+transporte ESM → processo Rust, no Windows.
+
+Duas armadilhas pagas no caminho:
+
+- **`pathToFileURL` no `import()` dinâmico.** O transporte é ESM e o `main` é
+  CommonJS. Em Windows, `import()` de caminho absoluto (`C:\...`) falha sem URL
+  `file://` — família "Windows", oitava instância.
+- **`extraResources` com `filter` não falha quando a origem falta**, só não
+  copia. Declarar o empacotamento sem compilar o Rust antes teria produzido uma
+  release sem o Runtime, degradando educadamente, sem ninguém notar. Por isso o
+  `desktop-release.yml` ganhou o build do Rust **antes** de empacotar, por SO da
+  matriz.
+
+**Ausência não é erro:** sem binário, `status()` devolve
+`{ disponivel: false, motivo }`, mesmo contrato do `hermes:status`. Hoje é o
+estado normal de qualquer máquina que não rodou `cargo build`.
+
+**O que isto não prova:** o app empacotado. O ponta a ponta prova a ponte, não o
+instalador — o caminho `process.resourcesPath` só existe em app empacotado e
+segue sendo o único ramo não exercitado. E nada sobre o alvo **MSVC**: o binário
+aqui é GNU.
 
 ## 2026-08-17 — `running` passa a exigir autorização de Runtime
 

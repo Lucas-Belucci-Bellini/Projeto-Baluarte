@@ -129,23 +129,43 @@ O que já existe e serve de molde:
   `app.getPath('userData')/runtimes/…`, com preflight que detecta e baixa. O
   `baluarte-runtime` segue a mesma forma.
 
-Os dois bloqueios reais, medidos:
+Os dois bloqueios que existiam **foram resolvidos**:
 
-1. **`v2/` não vai no instalador.** O `files` do electron-builder é
-   `["src/**/*","package.json","node_modules/**/*"]` — só o `desktop/`. O único
-   `extraResources` é `../dist → web`. Como `desktop/` é **CommonJS** e o
-   transporte é **ESM**, a costura precisa de `await import(...)` dinâmico *e* de
-   o arquivo existir no pacote. Hoje não existe.
-2. **O binário nunca foi compilado.** Não há `v2/runtime/target/`, e produzi-lo
-   exige `cargo` — ausente na máquina do operador. Empacotá-lo por SO é build de
-   CI, não de estação de trabalho.
+1. **`v2/` não ia no instalador.** O `files` do electron-builder cobre só o
+   `desktop/`. Agora há dois `extraResources`: `../v2/core → v2core` (filtrando
+   `runtime-stdio.js`) e `../v2/runtime/target/release → runtime`. O
+   `desktop/src/runtime.js` procura exatamente nesses destinos.
+2. **O binário nunca tinha sido compilado.** Agora o `desktop-release.yml`
+   compila o Runtime **antes** de empacotar, em cada SO da matriz. Isso importa
+   porque `extraResources` com `filter` **não falha** quando a origem falta —
+   apenas não copia. Sem o passo de build, a release sairia sem o Runtime, o app
+   degradaria educadamente, e ninguém notaria.
 
-> Consequência prática: dá para escrever a costura e testá-la (inclusive o
-> caminho "binário ausente", que é o estado de hoje e precisa degradar com
-> honestidade em vez de estourar). O que **não** dá é chamar isso de ligado antes
-> de existir um instalador com as duas pontas dentro. Ligar o transporte a um
-> binário que não é empacotado seria a quinta peça pronta e desligada — desta vez
-> com o agravante de parecer resolvida.
+A ponte é o `desktop/src/runtime.js`, registrado na allowlist do `ipc.js` como
+`runtime:status`, `runtime:autorizar` e `runtime:ler`. Três decisões:
+
+- **Não requer `electron`.** A raiz confiável entra injetada
+  (`app.getPath('userData')/runtime-root`, seguindo o M4/RFC #232), calculada no
+  `buildHandlers` — não no topo do módulo, porque `app.getPath` depende do app
+  pronto. Isso é o que torna a ponte testável em Node puro, e é a razão de
+  `test/v2/desktop-runtime.test.js` existir: o `desktop/` não tinha **nenhum**
+  teste até aqui.
+- **Ausência não é erro.** Sem binário, `status()` devolve
+  `{ disponivel: false, motivo }` — mesmo contrato do `hermes:status`. Recurso
+  ausente não pode virar app quebrado.
+- **`pathToFileURL` no `import()`.** O transporte é ESM e o `main` é CommonJS. Em
+  Windows, `import()` de caminho absoluto (`C:\...`) falha sem URL `file://` —
+  família "Windows" outra vez.
+
+Medido: **8/8** em `desktop-runtime.test.js`, incluindo o ponta a ponta que
+atravessa ponte → transporte ESM → processo Rust, no Windows.
+
+### O que continua aberto
+
+O ponta a ponta prova a ponte, **não o app empacotado**. Nenhum instalador foi
+produzido com estas mudanças dentro, então o caminho `process.resourcesPath`
+segue sendo o único ramo não exercitado — ele só existe em app empacotado.
+Provar isso exige rodar o `desktop-release.yml` e abrir o instalador.
 
 ### Teto por requisição — `TETO_RUNTIME_MS`
 

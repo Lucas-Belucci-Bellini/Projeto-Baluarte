@@ -144,8 +144,13 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       por isso ele não tinha consumidor, e por isso o E2E ficava verde sem provar
       nada sobre ele. Medido no Windows: `cargo test` 12+3, smoke OK pelo
       transporte, 12/12 no transporte, 9/9 mutantes.
-      **Ainda aberto:** levar isto ao app desktop (`window.baluarte.native`, #238)
-      — navegador não spawna processo. Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
+      A ponte do app desktop entrou junto (`desktop/src/runtime.js` + canais
+      `runtime:*` no `ipc.js` + empacotamento por `extraResources` + build do
+      Rust no `desktop-release.yml`): **8/8**, com ponta a ponta atravessando
+      ponte → transporte ESM → processo Rust. **Aberto:** o caminho
+      `process.resourcesPath`, que só existe em app empacotado — nenhum
+      instalador foi produzido com isto dentro.
+      Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
 - [ ] primeiro vertical slice de módulo nativo
 
 ## Regra de manutenção

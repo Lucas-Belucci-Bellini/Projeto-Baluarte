@@ -43,6 +43,21 @@ jobs:
         working-directory: desktop
         run: npm ci
 
+      # O binário do Runtime entra no instalador por `extraResources`
+      # (desktop/package.json → ../v2/runtime/target/release). Sem este passo a
+      # ORIGEM não existe — e `extraResources` com `filter` não falha quando a
+      # origem falta, apenas não copia. A release sairia sem o Runtime, o app
+      # degradaria educadamente (`runtime:status` → indisponível), e ninguém
+      # notaria até alguém procurar o recurso.
+      #
+      # Cada SO da matriz compila o binário nativo dele; é por isso que o passo
+      # mora aqui, e não num job único.
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Runtime nativo (release)
+        run: cargo build --release --manifest-path v2/runtime/Cargo.toml
+
       - name: Build & publish installer
         working-directory: desktop
         env:
