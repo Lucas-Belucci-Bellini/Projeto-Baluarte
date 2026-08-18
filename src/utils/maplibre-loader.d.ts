@@ -28,8 +28,24 @@ export interface MapLibreMap {
   on(type: string, listener: (event: MapLibreEvent) => void): this;
 }
 
+/** O que `setLngLat` aceita: o `lngLat` do evento de clique, ou o par [lon, lat]. */
+export type MapLibreLngLatLike = MapLibreLngLat | readonly [number, number];
+
+/**
+ * Um marcador no mapa. Encadeável, como a API do MapLibre: o `/vanguard` faz
+ * `new ml.Marker({…}).setLngLat(p).addTo(mapa)` para pôr a peça e o alvo.
+ */
+export interface MapLibreMarker {
+  setLngLat(lngLat: MapLibreLngLatLike): this;
+  addTo(map: MapLibreMap): this;
+  remove(): this;
+}
+
 export interface MapLibreNamespace {
   readonly Map: new (options: MapLibreMapOptions) => MapLibreMap;
+  readonly Marker: new (
+    options?: Readonly<Record<string, unknown>>,
+  ) => MapLibreMarker;
   readonly NavigationControl: new (
     options?: Readonly<Record<string, unknown>>,
   ) => MapLibreControl;
