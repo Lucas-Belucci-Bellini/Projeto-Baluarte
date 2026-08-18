@@ -1,0 +1,62 @@
+/**
+ * Jarvis Recall — memória entre conversas.
+ *
+ * `summarizeSession()` resume uma conversa em uma linha; `recall()` acha os
+ * resumos mais relevantes para a pergunta atual (TF-IDF + cosseno). Tudo
+ * determinístico, JS puro, sem modelo nem dependências.
+ *
+ * "Disclosure progressivo": injeta resumos curtos em vez do histórico inteiro,
+ * o que gasta menos tokens — é o motivo de o módulo existir.
+ *
+ * ── O que o tipo preserva ───────────────────────────────────────────────────
+ * `recall()` filtra por `score > 0.04` antes de cortar em `k`, então devolver
+ * **menos** que `k` — inclusive zero — é o caso normal, não falha. E o cache de
+ * memória é estado de módulo, preenchido pela página do JARVIS: `getMemoryCache`
+ * devolve `[]` até alguém chamar `setMemoryCache`.
+ */
+
+/** Um candidato do corpus: o resumo de uma sessão anterior. */
+export interface RecallDoc {
+  readonly text: string;
+  readonly sessionId?: string;
+}
+
+/** Um resultado de recall, com a relevância que o classificou. */
+export interface RecallHit {
+  readonly text: string;
+  readonly sessionId: string | undefined;
+  readonly score: number;
+}
+
+/** Uma mensagem de conversa, como `jarvis-memory` a guarda. */
+export interface RecallMensagem {
+  readonly role: string;
+  readonly text?: string;
+  readonly ts?: number;
+}
+
+/** Tokeniza: minúsculas, sem acento/pontuação, sem stopwords, >2 letras. */
+export function tokenize(s: string | null | undefined): string[];
+
+/**
+ * Recall por relevância, ordenado do mais relevante para o menos.
+ *
+ * Corta em `score > 0.04` e depois em `k`, então pode devolver menos que `k`
+ * (ou nada) — é resposta, não falha.
+ */
+export function recall(
+  query: string,
+  docs: readonly RecallDoc[] | null | undefined,
+  k?: number,
+): RecallHit[];
+
+/** Preenche o cache do corpus (a página do JARVIS chama isto). */
+export function setMemoryCache(docs: readonly RecallDoc[] | null | undefined): void;
+
+/** O corpus em cache. `[]` até alguém chamar `setMemoryCache`. */
+export function getMemoryCache(): RecallDoc[];
+
+/** Resume uma sessão em uma linha. `''` quando não há o que resumir. */
+export function summarizeSession(
+  messages: readonly RecallMensagem[] | null | undefined,
+): string;

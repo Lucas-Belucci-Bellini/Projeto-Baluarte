@@ -12,6 +12,9 @@ export interface HermesLocalHealth {
   readonly models: readonly string[];
 }
 
+/** Endpoint padrão — a porta do LM Studio. Vale quando o operador não configura. */
+export declare const HERMES_LOCAL_DEFAULT_URL: string;
+
 export declare const HERMES_LOCAL_PRESETS: readonly HermesLocalPreset[];
 export declare function listHermesLocalModels(config: JarvisConfig): Promise<string[]>;
 export declare function healthHermesLocal(config: JarvisConfig): Promise<HermesLocalHealth>;

@@ -37,11 +37,57 @@ export interface JarvisConfig {
   [key: string]: unknown;
 }
 
+/**
+ * O que o `/health` do backend responde.
+ *
+ * `hasKey` é o que a tela do modo Servidor usa para dizer "online · chave
+ * Gemini OK" contra "online · falta GEMINI_API_KEY" — as duas coisas são
+ * "online", e confundi-las manda o operador procurar defeito no lugar errado.
+ * O índice aberto existe porque o backend pode acrescentar campos sem que este
+ * arquivo saiba.
+ */
+export interface ServerHealth {
+  readonly ok?: boolean;
+  readonly model?: string;
+  readonly hasKey?: boolean;
+  readonly [chave: string]: unknown;
+}
+
 export function loadConfig(): JarvisConfig;
 export function saveConfig(config: JarvisConfig): void;
 export function resolveServerBase(serverUrl?: string): string;
+
+/**
+ * Bate no `/health` do backend.
+ *
+ * **Rejeita** quando o servidor está fora ou responde não-2xx — é assim que a
+ * tela distingue "offline" de "online sem chave", que não são o mesmo aviso.
+ */
+export function healthCheckServer(serverUrl?: string): Promise<ServerHealth>;
+
+/** O histórico salvo. `[]` quando o storage não tem nada utilizável. */
+export function loadHistory(): JarvisMessage[];
+/** Guarda o histórico, cortado nas últimas 100 mensagens. */
+export function saveHistory(history: readonly JarvisMessage[]): void;
+export function clearHistory(): void;
+
 export function processLocal(message: string): JarvisLocalResult;
-export function getBaluarteBriefing(): string;
+
+/**
+ * Resumo do universo Baluarte para injetar como contexto da IA.
+ *
+ * `compact` encurta o briefing — a página o usa em todos os modos **menos** os
+ * de agente, que precisam do texto inteiro para escolher ferramenta.
+ */
+export function getBaluarteBriefing(options?: { readonly compact?: boolean }): string;
+
+/**
+ * Briefing de notícias com busca web. Recebe a **pergunta**, não a conversa.
+ *
+ * Somente leitura: não envia nem publica nada.
+ */
+export function processNewsBriefing(question: string, config?: JarvisConfig): Promise<string>;
+
 export function processServer(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
 export function processClaude(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;
 export function processOllama(messages: readonly JarvisMessage[], config?: JarvisConfig): Promise<string>;

@@ -140,6 +140,8 @@
     "src/utils/vanguard/gridref.d.ts","src/utils/vanguard/arma3-grid.d.ts",
     "src/utils/vanguard/ballistics.d.ts","src/utils/vanguard/charges.d.ts",
     "src/utils/vanguard/fire-mission.d.ts",
+    "src/pages/jarvis.ts","src/utils/jarvis-memory.d.ts","src/utils/jarvis-recall.d.ts",
+    "src/utils/jarvis-skills.d.ts","src/utils/jarvis-style.d.ts","src/utils/jarvis-tools.d.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/data/skills.d.ts",

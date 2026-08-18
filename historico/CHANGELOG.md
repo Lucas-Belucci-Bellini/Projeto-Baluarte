@@ -6,6 +6,53 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-18 — `/jarvis` em TypeScript, e quatro exportações que o TypeScript não enxergava
+
+Quarta das cinco últimas páginas. Implementação em `src/pages/jarvis.ts`; o `.js`
+virou re-export e o `src/main.js` não mudou.
+
+**O padrão do dia se repetiu: o defeito estava nas declarações, não na página.**
+Cinco fontes não tinham `.d.ts` (`jarvis-memory`, `jarvis-recall`,
+`jarvis-skills`, `jarvis-style`, `jarvis-tools` — 1.091 linhas), e as que
+existiam estavam **incompletas de um jeito que só aparece quando alguém tenta
+usá-las**:
+
+- `processNewsBriefing` e `healthCheckServer` são exportadas pelo
+  `jarvis-engine.js` e **não estavam declaradas** — para o TypeScript elas não
+  existiam, embora a página importe as duas desde sempre. Mesma coisa com
+  `isWebGPUAvailable` e `preloadWebLLM` (`jarvis-webllm`),
+  `HERMES_AGENT_DEFAULT` (`jarvis-hermes-agent`) e `HERMES_LOCAL_DEFAULT_URL`
+  (`hermes-local`). Seis exportações invisíveis, todas em uso.
+- `getBaluarteBriefing()` estava declarada **sem argumento**, mas a implementação
+  real (`jarvis-context.ts`) recebe `{ compact }` — e a página passa. O
+  `compact` é o que encurta o briefing em todos os modos **menos** os de agente,
+  que precisam do texto inteiro para escolher ferramenta.
+- `WebLLMCallbacks.onProgress` estava declarada com **um** parâmetro; a
+  implementação chama com **dois** (`texto, fração 0..1`). A barra de progresso
+  do download usa a fração — declarar só o texto tornaria o segundo parâmetro um
+  erro de tipo justamente em quem já o consome.
+
+O `role` das mensagens virou união fechada (`'user' | 'jarvis' | 'tool'`), o que
+alinha a memória com o `jarvis-engine` e deixa a conversa ir direto para os
+motores sem conversão nem asserção.
+
+**Na página, o TypeScript pegou uma bolha que ele achava que nunca existia:** no
+modo Navegador a bolha de streaming é criada dentro do callback `onToken`, e o
+compilador não enxerga atribuição feita em closure — concluía que ela seguia
+`null` depois do `await` e estreitava para `never`. A bolha passou a morar num
+objeto, que é o que a análise de fluxo consegue acompanhar.
+
+As peças que só existem depois do boot (`messagesEl`, `inputEl`, `config`) ganharam
+um acessor `exigir()` que **lança** se forem usadas antes — o mesmo desfecho que
+a versão JavaScript já tinha (`TypeError`), de propósito: `return` mudo ali daria
+exatamente o retrato verde de peça desligada.
+
+Zero `any`: as 105 páginas em TypeScript seguem sem nenhuma ocorrência.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · build limpo. Portão
+confirmado vendo o arquivo: defeito plantado em `jarvis.ts` deixa o `tipos:ts`
+vermelho.
+
 ## 2026-08-18 — `/vanguard` em TypeScript: o motor de tiro inteiro ganha declaração, e um `"null"` que ia parar na tela
 
 Terceira das cinco últimas páginas. A implementação foi para
