@@ -6,6 +6,148 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-18 — `/arma3-tutorial` fecha a migração: **nenhuma página canônica em JavaScript**
+
+A última das cinco. Com ela, o comando de verificação do
+`docs/PROMPT-MIGRACAO-TS.md` imprime `nenhuma pagina canonica em JS` — todo
+`.js` em `src/pages/` é wrapper de uma linha, e são **114 implementações `.ts`**
+(contadas com `globSync('src/pages/**/*.ts')`, subpastas incluídas).
+
+**A página mais bloqueada era a mais bloqueada por um motivo:** 13 fontes sem
+declaração, somando ~6.500 linhas de catálogo gerado. Todas ganharam `.d.ts` com
+as formas **medidas** sobre o dado real, não supostas.
+
+**O que o tipo achou, e não era pouco:**
+
+- **Quatro `carregar*()` devolvem o ENVELOPE, não o array.** `carregarAcessorios`,
+  `carregarVeiculos`, `carregarEquipamento` e `carregarSoldados` chamam
+  `buscarDataset` **sem** `campo`, então entregam `{ acessorios: […] }`,
+  `{ veiculos: […], faccoes: … }` e assim por diante. Só `carregarArsenal` passa
+  `campo: 'armas'` e devolve a lista. Declarar array nos quatro teria posto um
+  `.filter is not a function` esperando a primeira pessoa que os usasse.
+- **`Arma3Preset` não declarava `id`** — e a página inteira depende de
+  `ARMA3_PRESETS.find((p) => p.id === PRESET_ID)`. O campo existe no dado desde
+  sempre; para o TypeScript, não existia.
+- **O `find` do preset podia devolver `undefined`** e a página seguia montando
+  `preset.mods` e `preset.arquivo`. Agora, se o preset oficial sumir do catálogo,
+  a tela diz isso em uma linha em vez de estourar no meio da montagem.
+- **Um termo de busca morto na aba Soldados.** O filtro concatenava
+  `${(s.classes || []).join(' ')}`, e **soldado não tem campo `classes`** —
+  medido: 0 de 940 (quem tem é o equipamento, 241 de 241). O termo sempre somou
+  string vazia. Saiu; a busca faz exatamente o que já fazia.
+
+**O depósito `D` é a peça que mais ganhou com o tipo.** Ele recebe módulos por
+`import()` dinâmico conforme a aba abre, e antes era `{}` — qualquer acesso
+passava. Agora é a interseção dos nove namespaces, cada um `Partial`, porque
+"ainda não chegou" é o estado normal. Ler dele exige `exigirBase()`, que **falha
+alto** dizendo qual base faltou, em vez de deixar um `undefined.filter` estourar
+cinco quadros depois, longe da causa.
+
+Zero `any`: as **114** páginas em TypeScript seguem sem nenhuma ocorrência de
+`: any` ou `as any`.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 rotas verdes**
+· build limpo. Portão confirmado vendo o arquivo: defeito plantado em
+`arma3-tutorial.ts` deixa o `tipos:ts` vermelho.
+
+`/arma3-tutorial` rendeu **29.101 caracteres e 957 nós** — o **mesmo** número da
+medição anterior à migração. As quatro páginas desta rodada bateram exatamente o
+tamanho de antes (`/wiki-arma3` 3.658/263, `/vanguard` 12.141/659, `/jarvis`
+913/47), que é a evidência de que o comportamento não mudou — não só de que a
+rota abre.
+
+## 2026-08-18 — `/jarvis` em TypeScript, e quatro exportações que o TypeScript não enxergava
+
+Quarta das cinco últimas páginas. Implementação em `src/pages/jarvis.ts`; o `.js`
+virou re-export e o `src/main.js` não mudou.
+
+**O padrão do dia se repetiu: o defeito estava nas declarações, não na página.**
+Cinco fontes não tinham `.d.ts` (`jarvis-memory`, `jarvis-recall`,
+`jarvis-skills`, `jarvis-style`, `jarvis-tools` — 1.091 linhas), e as que
+existiam estavam **incompletas de um jeito que só aparece quando alguém tenta
+usá-las**:
+
+- `processNewsBriefing` e `healthCheckServer` são exportadas pelo
+  `jarvis-engine.js` e **não estavam declaradas** — para o TypeScript elas não
+  existiam, embora a página importe as duas desde sempre. Mesma coisa com
+  `isWebGPUAvailable` e `preloadWebLLM` (`jarvis-webllm`),
+  `HERMES_AGENT_DEFAULT` (`jarvis-hermes-agent`) e `HERMES_LOCAL_DEFAULT_URL`
+  (`hermes-local`). Seis exportações invisíveis, todas em uso.
+- `getBaluarteBriefing()` estava declarada **sem argumento**, mas a implementação
+  real (`jarvis-context.ts`) recebe `{ compact }` — e a página passa. O
+  `compact` é o que encurta o briefing em todos os modos **menos** os de agente,
+  que precisam do texto inteiro para escolher ferramenta.
+- `WebLLMCallbacks.onProgress` estava declarada com **um** parâmetro; a
+  implementação chama com **dois** (`texto, fração 0..1`). A barra de progresso
+  do download usa a fração — declarar só o texto tornaria o segundo parâmetro um
+  erro de tipo justamente em quem já o consome.
+
+O `role` das mensagens virou união fechada (`'user' | 'jarvis' | 'tool'`), o que
+alinha a memória com o `jarvis-engine` e deixa a conversa ir direto para os
+motores sem conversão nem asserção.
+
+**Na página, o TypeScript pegou uma bolha que ele achava que nunca existia:** no
+modo Navegador a bolha de streaming é criada dentro do callback `onToken`, e o
+compilador não enxerga atribuição feita em closure — concluía que ela seguia
+`null` depois do `await` e estreitava para `never`. A bolha passou a morar num
+objeto, que é o que a análise de fluxo consegue acompanhar.
+
+As peças que só existem depois do boot (`messagesEl`, `inputEl`, `config`) ganharam
+um acessor `exigir()` que **lança** se forem usadas antes — o mesmo desfecho que
+a versão JavaScript já tinha (`TypeError`), de propósito: `return` mudo ali daria
+exatamente o retrato verde de peça desligada.
+
+Zero `any`: nenhuma página em TypeScript tem uma ocorrência sequer.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · build limpo. Portão
+confirmado vendo o arquivo: defeito plantado em `jarvis.ts` deixa o `tipos:ts`
+vermelho.
+
+## 2026-08-18 — `/vanguard` em TypeScript: o motor de tiro inteiro ganha declaração, e um `"null"` que ia parar na tela
+
+Terceira das cinco últimas páginas. A implementação foi para
+`src/pages/vanguard.ts`; o `.js` virou re-export e o `src/main.js` não mudou.
+
+**O trabalho não foi a página, foram as fontes.** A `/vanguard` consome 5 módulos
+que não tinham tipo, e um deles é o motor do Project Vanguard inteiro —
+`src/utils/vanguard/`, ~2.000 linhas de matemática pura reexportadas por um
+`index.js` de `export *`. Declarar só os 7 símbolos que a página usa teria
+deixado os outros ~50 invisíveis, e **`export *` que não resolve não vira erro
+sob `skipLibCheck`: vira `any` em silêncio**, que é exatamente o defeito
+consertado ontem no `A3ColInfo`. Então foram os 9 arquivos, um `.d.ts` cada:
+`angles`, `geo`, `mgrs`, `gridref`, `arma3-grid`, `ballistics`, `charges`,
+`fire-mission` e o `index`. Mais `arma3-armas`, `arma3-terrenos`,
+`arma3-balistica` e `arma3-grade`.
+
+As declarações não são decorativas — foram testadas com o defeito plantado, e
+**recusam as seis coisas erradas** que interessam: sistema de mil inventado
+(`radToMil(1, 'inventado')`), ler `elevacaoRad` de uma solução que não resolveu,
+misturar `lat` com `x/y` numa posição, tratar `A3ARM[0].v0` como `number` (é
+`number | null`), tratar `tamanhoM` como `number` (4 dos 31 mundos não declaram),
+e ignorar o `null` de `gradeParaMetros`.
+
+**O que o tipo achou na página.** `saida.replaceChildren(…, preferida ? … : null,
+avisos.length ? … : null)`. Diferente do `h()`, que descarta filho nulo,
+`replaceChildren` converte o que não é `Node` em **texto** — medido no Chromium:
+`d.replaceChildren(p, null, null)` → `"<p>ALGO</p>nullnull"`. A palavra "null"
+ia para a tela. Agora a lista é montada e filtrada antes de entrar.
+
+Achou também que **`MapLibreNamespace` não declarava `Marker`**, embora a página
+faça `new ml.Marker(...).setLngLat(...).addTo(mapa)` desde que o mapa tático
+existe — a única consumidora de `Marker` no repo. Entrou no `maplibre-loader.ts`
+e no `.d.ts` que anda com ele.
+
+E `a.ehMod - b.ehMod` no `sort` dos terrenos: subtração de `boolean`, que o
+JavaScript aceita coagindo. Virou `Number(a.ehMod) - Number(b.ehMod)`.
+
+Zero `any`: nenhuma página em TypeScript tem uma ocorrência sequer.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 verdes**.
+`/vanguard` rendeu **12.141 caracteres e 659 nós** — o **mesmo** número da
+medição anterior à migração, que é a evidência de que o comportamento não mudou.
+Portão confirmado vendo o arquivo: defeito plantado em `vanguard.ts` deixa o
+`tipos:ts` vermelho.
+
 ## 2026-08-18 — `/wiki-arma3` em TypeScript, e um `any` que estava escondido atrás do `skipLibCheck`
 
 Segunda das cinco últimas páginas (`docs/v2/TYPESCRIPT_REMAINING.md §0`). A

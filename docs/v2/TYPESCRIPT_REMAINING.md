@@ -1,43 +1,80 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
 **Base de trabalho:** `49466a54a3958381b7d22dad28b5678f64d53a71` (último `main` publicado antes da onda 4.50)
-**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas, Núcleo Mark XIII e JARVIS Vision foram implementados; **5 páginas canônicas** continuam no mapa abaixo.
+**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas, Núcleo Mark XIII e JARVIS Vision foram implementados; **as páginas acabaram** — nenhuma continua canônica em JavaScript (ver §0).
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
+
+> ⚠️ **As seções 1 e 2 abaixo são a fotografia de 17/08/2026 e estão
+> desatualizadas quanto a `src/pages`.** Elas dizem "5 páginas canônicas"; hoje
+> são **zero**. O resto do inventário (`src/data`, `src/utils`, `v2/core`)
+> continua valendo — é lá que o JavaScript canônico ainda mora.
 
 > **Conclusão executiva:** ainda há muito JavaScript no repositório, mas ele não representa um único bloco de trabalho. O próximo passo não deve ser converter todos os arquivos de uma vez. O caminho correto é continuar por contratos: páginas pequenas e de baixo risco, depois dados com declarações estruturais, depois Core/integrations e, em paralelo controlado, os contratos V2 que concentram os 61 erros atuais.
 
-## 0. As 5 últimas páginas — medição de 17/08/2026
+## 0. As 5 últimas páginas — ✅ CONCLUÍDO em 18/08/2026
 
-O operador decidiu levar **todas** as páginas a TypeScript. Faltam 5, e elas não
-são equivalentes: o que separa uma da outra é quantas fontes de dados ainda estão
-sem declaração. Medido contando, para cada import, se existe `.d.ts` ou `.ts`:
+**Não há mais página canônica em JavaScript.** O comando de verificação do
+[`docs/PROMPT-MIGRACAO-TS.md`](../PROMPT-MIGRACAO-TS.md) imprime
+`nenhuma pagina canonica em JS`: todo `.js` em `src/pages/` é wrapper de uma
+linha, e são **114 implementações `.ts`** (contadas com
+`globSync('src/pages/**/*.ts')`, subpastas incluídas).
 
-| Página | Linhas | Imports | **Sem tipo** | Ordem sugerida |
-| --- | ---: | ---: | ---: | --- |
-| `visao.js` | 832 | 1 | **0** | **1º — desbloqueada** |
-| `wiki-arma3.js` | 756 | 5 | 3 | 2º |
-| `vanguard.js` | 822 | 8 | 5 | 3º |
-| `jarvis.js` | 999 | 17 | 5 | 4º |
-| `arma3-tutorial.js` | 1376 | 11 | 9 | 5º |
+| Página | Linhas | Sem tipo (antes) | Situação |
+| --- | ---: | ---: | --- |
+| `visao.js` | 832 | 0 | ✅ migrada (PR #455) |
+| `wiki-arma3.js` | 756 | 3 | ✅ migrada (PR #456) |
+| `vanguard.js` | 822 | 5 | ✅ migrada (PR #457) |
+| `jarvis.js` | 999 | 5 | ✅ migrada (PR #457) |
+| `arma3-tutorial.js` | 1376 | 9 | ✅ migrada (PR #457) |
 
-**`visao.js` é a única que dá para migrar sem escrever nenhuma declaração antes** —
-importa só `helpers.js`, que já tem `.d.ts`. As outras quatro exigem primeiro os
-`.d.ts` das fontes que consomem (`wiki-arma3`, `arma3-extracao`, `arma3-classes`,
-`arma3-armas`, `arma3-terrenos`, `arma3-balistica`, os `jarvis-*`…), o que
-confirma a ordem que este documento já recomendava: **páginas de baixo risco,
-depois dados com declarações estruturais**.
+### O que a migração custou de verdade: **declarações, não páginas**
 
-> **O padrão a manter, medido e não suposto:** das 102 páginas já em TypeScript,
-> **79 declaram tipos locais** e **nenhuma usa `any`** — zero ocorrências de
-> `: any` ou `as any` em `src/pages/*.ts`. Migrar uma página enchendo-a de `any`
-> passaria no `tipos:v2` e não arrumaria defeito nenhum: seria tipo decorativo,
-> que é justamente o que a migração existe para não produzir. Uma página bem
-> tipada por vez vale mais que cinco anotadas.
+A previsão deste documento estava certa — o bloqueio nunca foi a página, foram as
+fontes. Ao todo, **41 arquivos de declaração** — 35 novos e 6 corrigidos
+(`git diff --name-status 3998e8ff..HEAD -- '*.d.ts'`) —, e o trabalho neles foi
+maior que o das cinco páginas somadas.
 
-`visao.js` tem particularidade própria: **6 classes** e globais de CDN
-(`window.FaceMesh`, `window.Hands`, `window.Camera` do MediaPipe). Tipá-la sem
-`any` exige `declare global` para esses três, no mesmo formato que `radio.ts` já
-usa para `webkitAudioContext`.
+### O que os tipos acharam (o motivo de a migração existir)
+
+Nenhum destes é erro de anotação: são defeitos que estavam no ar.
+
+- **`A3ColInfo` era `any` em silêncio.** `wiki-arma3.d.ts` importava o tipo de
+  `arma3-colecao.js`, que **não tinha `.d.ts`**. Sob `skipLibCheck`, import
+  quebrado não vira erro — vira `any`. `const x: number = A3COL_INFO.nome`
+  passava.
+- **`replaceChildren(…, null)` renderiza a palavra `"null"` na tela.** Medido no
+  Chromium: `d.replaceChildren(p, null, null)` → `"<p>ALGO</p>nullnull"`.
+  Diferente do `h()`, que descarta filho nulo.
+- **Quatro `carregar*()` devolvem o envelope, não o array** — declarar array teria
+  posto um `.filter is not a function` esperando quem os usasse.
+- **Seis exportações invisíveis**: `processNewsBriefing`, `healthCheckServer`,
+  `isWebGPUAvailable`, `preloadWebLLM`, `HERMES_AGENT_DEFAULT` e
+  `HERMES_LOCAL_DEFAULT_URL` existiam no `.js` e faltavam no `.d.ts`. Mais
+  `Arma3Preset.id`, do qual a `/arma3-tutorial` inteira depende.
+- **Duas assinaturas mentindo**: `getBaluarteBriefing()` declarada sem o
+  `{ compact }` que recebe, e `WebLLMCallbacks.onProgress` com um parâmetro
+  quando a implementação chama com dois (texto **e** fração — a barra de
+  progresso usa a fração).
+- **`MapLibreNamespace` não declarava `Marker`**, usado pelo mapa tático do
+  `/vanguard` desde que ele existe.
+- Comparações sobre campo opcional (`variantes > 1`, `fov.modos > 1`) que em
+  JavaScript devolvem `false` calado, e subtração de `boolean` (`a.ehMod - b.ehMod`).
+
+> **O padrão foi mantido, e é medido:** das **114** páginas em TypeScript,
+> **nenhuma usa `any`** — zero ocorrências de `: any` ou `as any` em
+> `src/pages/*.ts`. Página migrada com `any` passa no portão e não conserta
+> defeito nenhum; é tipo decorativo, o oposto do motivo de a migração existir.
+
+### Como cada página foi verificada
+
+`tipos:ts` 0 · `tipos:v2` 0 · suíte 954/954 · `smoke` 98/98 rotas verdes · build
+limpo. E o portão foi confirmado **vendo** cada arquivo novo: com um defeito
+plantado no `.ts`, o `tipos:ts` fica vermelho e volta a verde quando ele sai —
+peça pronta e desligada daria o mesmo retrato verde que peça ligada.
+
+Onde dava para comparar, o smoke mostrou o **mesmo** tamanho de render antes e
+depois (`/vanguard` 12.141 caracteres e 659 nós; `/jarvis` 913 e 47), que é a
+evidência de que o comportamento não mudou — não só de que a rota abre.
 
 ## 1. Fotografia atual
 
