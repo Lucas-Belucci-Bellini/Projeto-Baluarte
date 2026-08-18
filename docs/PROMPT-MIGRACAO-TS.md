@@ -105,4 +105,4 @@ node -e "const{globSync}=require('node:fs'),fs=require('fs');const f=globSync('s
 ```
 
 Quando isso imprimir `nenhuma pagina canonica em JS`, o objetivo do prompt foi
-cumprido.
+cumprido. e cada vez qye terminar uma pagina jogue no github
