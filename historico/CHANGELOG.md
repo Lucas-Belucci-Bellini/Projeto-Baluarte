@@ -6,6 +6,55 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-18 — `/arma3-tutorial` fecha a migração: **nenhuma página canônica em JavaScript**
+
+A última das cinco. Com ela, o comando de verificação do
+`docs/PROMPT-MIGRACAO-TS.md` imprime `nenhuma pagina canonica em JS` — todo
+`.js` em `src/pages/` é wrapper de uma linha, e são **106 páginas em TypeScript**.
+
+**A página mais bloqueada era a mais bloqueada por um motivo:** 13 fontes sem
+declaração, somando ~6.500 linhas de catálogo gerado. Todas ganharam `.d.ts` com
+as formas **medidas** sobre o dado real, não supostas.
+
+**O que o tipo achou, e não era pouco:**
+
+- **Quatro `carregar*()` devolvem o ENVELOPE, não o array.** `carregarAcessorios`,
+  `carregarVeiculos`, `carregarEquipamento` e `carregarSoldados` chamam
+  `buscarDataset` **sem** `campo`, então entregam `{ acessorios: […] }`,
+  `{ veiculos: […], faccoes: … }` e assim por diante. Só `carregarArsenal` passa
+  `campo: 'armas'` e devolve a lista. Declarar array nos quatro teria posto um
+  `.filter is not a function` esperando a primeira pessoa que os usasse.
+- **`Arma3Preset` não declarava `id`** — e a página inteira depende de
+  `ARMA3_PRESETS.find((p) => p.id === PRESET_ID)`. O campo existe no dado desde
+  sempre; para o TypeScript, não existia.
+- **O `find` do preset podia devolver `undefined`** e a página seguia montando
+  `preset.mods` e `preset.arquivo`. Agora, se o preset oficial sumir do catálogo,
+  a tela diz isso em uma linha em vez de estourar no meio da montagem.
+- **Um termo de busca morto na aba Soldados.** O filtro concatenava
+  `${(s.classes || []).join(' ')}`, e **soldado não tem campo `classes`** —
+  medido: 0 de 940 (quem tem é o equipamento, 241 de 241). O termo sempre somou
+  string vazia. Saiu; a busca faz exatamente o que já fazia.
+
+**O depósito `D` é a peça que mais ganhou com o tipo.** Ele recebe módulos por
+`import()` dinâmico conforme a aba abre, e antes era `{}` — qualquer acesso
+passava. Agora é a interseção dos nove namespaces, cada um `Partial`, porque
+"ainda não chegou" é o estado normal. Ler dele exige `exigirBase()`, que **falha
+alto** dizendo qual base faltou, em vez de deixar um `undefined.filter` estourar
+cinco quadros depois, longe da causa.
+
+Zero `any`: as **106** páginas em TypeScript seguem sem nenhuma ocorrência de
+`: any` ou `as any`.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 rotas verdes**
+· build limpo. Portão confirmado vendo o arquivo: defeito plantado em
+`arma3-tutorial.ts` deixa o `tipos:ts` vermelho.
+
+`/arma3-tutorial` rendeu **29.101 caracteres e 957 nós** — o **mesmo** número da
+medição anterior à migração. As quatro páginas desta rodada bateram exatamente o
+tamanho de antes (`/wiki-arma3` 3.658/263, `/vanguard` 12.141/659, `/jarvis`
+913/47), que é a evidência de que o comportamento não mudou — não só de que a
+rota abre.
+
 ## 2026-08-18 — `/jarvis` em TypeScript, e quatro exportações que o TypeScript não enxergava
 
 Quarta das cinco últimas páginas. Implementação em `src/pages/jarvis.ts`; o `.js`
