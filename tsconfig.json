@@ -132,6 +132,7 @@
     "src/pages/radar.ts",
     "src/pages/radio.ts",
     "src/pages/musicas.ts","src/pages/visao.ts","src/data/wiki-arma3.d.ts","src/data/arma3-extracao.d.ts","src/data/arma3-classes.d.ts",
+    "src/pages/wiki-arma3.ts","src/data/arma3-colecao.d.ts",
     "src/utils/economia-api.d.ts",
     "src/utils/shadow-gate.d.ts",
     "src/data/skills.d.ts",
