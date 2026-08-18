@@ -10,7 +10,8 @@ aqui o que mudou.
 
 A última das cinco. Com ela, o comando de verificação do
 `docs/PROMPT-MIGRACAO-TS.md` imprime `nenhuma pagina canonica em JS` — todo
-`.js` em `src/pages/` é wrapper de uma linha, e são **106 páginas em TypeScript**.
+`.js` em `src/pages/` é wrapper de uma linha, e são **114 implementações `.ts`**
+(contadas com `globSync('src/pages/**/*.ts')`, subpastas incluídas).
 
 **A página mais bloqueada era a mais bloqueada por um motivo:** 13 fontes sem
 declaração, somando ~6.500 linhas de catálogo gerado. Todas ganharam `.d.ts` com
@@ -42,7 +43,7 @@ passava. Agora é a interseção dos nove namespaces, cada um `Partial`, porque
 alto** dizendo qual base faltou, em vez de deixar um `undefined.filter` estourar
 cinco quadros depois, longe da causa.
 
-Zero `any`: as **106** páginas em TypeScript seguem sem nenhuma ocorrência de
+Zero `any`: as **114** páginas em TypeScript seguem sem nenhuma ocorrência de
 `: any` ou `as any`.
 
 ✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 rotas verdes**
@@ -96,7 +97,7 @@ um acessor `exigir()` que **lança** se forem usadas antes — o mesmo desfecho 
 a versão JavaScript já tinha (`TypeError`), de propósito: `return` mudo ali daria
 exatamente o retrato verde de peça desligada.
 
-Zero `any`: as 105 páginas em TypeScript seguem sem nenhuma ocorrência.
+Zero `any`: nenhuma página em TypeScript tem uma ocorrência sequer.
 
 ✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · build limpo. Portão
 confirmado vendo o arquivo: defeito plantado em `jarvis.ts` deixa o `tipos:ts`
@@ -139,7 +140,7 @@ e no `.d.ts` que anda com ele.
 E `a.ehMod - b.ehMod` no `sort` dos terrenos: subtração de `boolean`, que o
 JavaScript aceita coagindo. Virou `Number(a.ehMod) - Number(b.ehMod)`.
 
-Zero `any`: as 104 páginas em TypeScript seguem sem nenhuma ocorrência.
+Zero `any`: nenhuma página em TypeScript tem uma ocorrência sequer.
 
 ✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 verdes**.
 `/vanguard` rendeu **12.141 caracteres e 659 nós** — o **mesmo** número da

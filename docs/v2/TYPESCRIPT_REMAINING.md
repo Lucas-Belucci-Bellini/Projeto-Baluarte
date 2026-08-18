@@ -16,7 +16,8 @@
 **Não há mais página canônica em JavaScript.** O comando de verificação do
 [`docs/PROMPT-MIGRACAO-TS.md`](../PROMPT-MIGRACAO-TS.md) imprime
 `nenhuma pagina canonica em JS`: todo `.js` em `src/pages/` é wrapper de uma
-linha, e são **106 páginas em TypeScript**.
+linha, e são **114 implementações `.ts`** (contadas com
+`globSync('src/pages/**/*.ts')`, subpastas incluídas).
 
 | Página | Linhas | Sem tipo (antes) | Situação |
 | --- | ---: | ---: | --- |
@@ -29,8 +30,9 @@ linha, e são **106 páginas em TypeScript**.
 ### O que a migração custou de verdade: **declarações, não páginas**
 
 A previsão deste documento estava certa — o bloqueio nunca foi a página, foram as
-fontes. Ao todo entraram **31 arquivos de declaração novos ou corrigidos**, e o
-trabalho neles foi maior que o das cinco páginas somadas.
+fontes. Ao todo, **41 arquivos de declaração** — 35 novos e 6 corrigidos
+(`git diff --name-status 3998e8ff..HEAD -- '*.d.ts'`) —, e o trabalho neles foi
+maior que o das cinco páginas somadas.
 
 ### O que os tipos acharam (o motivo de a migração existir)
 
@@ -58,7 +60,7 @@ Nenhum destes é erro de anotação: são defeitos que estavam no ar.
 - Comparações sobre campo opcional (`variantes > 1`, `fov.modos > 1`) que em
   JavaScript devolvem `false` calado, e subtração de `boolean` (`a.ehMod - b.ehMod`).
 
-> **O padrão foi mantido, e é medido:** das **106** páginas em TypeScript,
+> **O padrão foi mantido, e é medido:** das **114** páginas em TypeScript,
 > **nenhuma usa `any`** — zero ocorrências de `: any` ou `as any` em
 > `src/pages/*.ts`. Página migrada com `any` passa no portão e não conserta
 > defeito nenhum; é tipo decorativo, o oposto do motivo de a migração existir.
