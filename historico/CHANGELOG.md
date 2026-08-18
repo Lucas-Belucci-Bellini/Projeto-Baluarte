@@ -6,6 +6,45 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-18 — `/wiki-arma3` em TypeScript, e um `any` que estava escondido atrás do `skipLibCheck`
+
+Segunda das cinco últimas páginas (`docs/v2/TYPESCRIPT_REMAINING.md §0`). A
+implementação foi para `src/pages/wiki-arma3.ts`; o `.js` virou o re-export de
+uma linha, e o `src/main.js` **não mudou** — continua importando o `.js`, como
+nas 103 páginas anteriores.
+
+**O achado não estava na página, estava na declaração.** `src/data/wiki-arma3.d.ts`
+importava `A3ColInfo` de `./arma3-colecao.js` — e esse arquivo de declaração
+**não existia**. Como o portão roda com `skipLibCheck`, o import quebrado nunca
+virou erro: virou `any` em silêncio. Medido antes de consertar, com o tipo mais
+errado que se consegue escrever:
+
+```ts
+const x: number = A3COL_INFO.nome;   // passava
+```
+
+Um tipo que não recusa nada é tipo decorativo, que é exatamente o que esta
+migração existe para não produzir. Daí `src/data/arma3-colecao.d.ts` (novo), com
+as formas **medidas** sobre os 237 itens do catálogo, não supostas: `guia`
+aparece em 95 deles e `dlcs` em 12 — os dois opcionais; o resto está nos 237. A
+mesma linha agora é vermelha, e a declaração já serve a `/arma3-tutorial`, que é
+a outra consumidora do catálogo.
+
+**O que o tipo achou na própria página:** quatro comparações `variantes > 1` sobre
+campo opcional (`number | undefined`), que em JavaScript devolvem `false` calado
+quando o config não declarou o número — em armas, acessórios, equipamentos e
+soldados. Agora são `(variantes ?? 0) > 1`. Também saiu dali a duplicação de
+`n()`, que era a mesma função copiada em cinco fichas: virou uma `num()` só.
+
+Zero `any`: as 103 páginas em TypeScript seguem sem nenhuma ocorrência de
+`: any` ou `as any`.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 rotas verdes**,
+com `/wiki-arma3` em 3.658 caracteres e 263 nós (título "Wiki de Arma 3", zero
+erros de JavaScript). O portão foi confirmado **vendo** o arquivo novo: com um
+defeito plantado em `wiki-arma3.ts` o `tipos:ts` fica vermelho, e volta a verde
+quando ele sai — peça pronta e desligada daria o mesmo retrato verde.
+
 ## 2026-08-17 — `.gitattributes` fixa `*.md` em LF (e a renormalização não existiu)
 
 A outra metade da decisão do fim de linha. O conserto cirúrgico
