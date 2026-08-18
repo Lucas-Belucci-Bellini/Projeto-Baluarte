@@ -18,19 +18,22 @@ Terminar a migração das páginas de JavaScript para TypeScript. Só pare quand
 `src/pages/*.js` não tiver mais nenhum módulo canônico — isto é, quando todo
 `.js` em src/pages for um wrapper de uma linha.
 
-Faltam 5. A medição está em docs/v2/TYPESCRIPT_REMAINING.md §0, e a ordem
-importa porque o que separa uma página da outra é quantas fontes de dados ainda
-estão sem declaração:
+Faltam 4 (a visao.js JÁ FOI migrada). A ordem importa porque o que separa uma
+página da outra é quantas fontes de dados ainda estão sem declaração:
 
-  1. visao.js          832 linhas ·  1 import ·  0 sem tipo  <- comece por esta
-  2. wiki-arma3.js     756        ·  5        ·  3
-  3. vanguard.js       822        ·  8        ·  5
-  4. jarvis.js         999        · 17        ·  5
-  5. arma3-tutorial.js 1376       · 11        ·  9
+  1. wiki-arma3.js     756 linhas ·  5 imports ·  0 sem tipo  <- comece por esta
+  2. vanguard.js       822        ·  8        ·  5
+  3. jarvis.js         999        · 17        ·  5
+  4. arma3-tutorial.js 1376       · 11        ·  9
 
-Só a visao.js dá para migrar sem escrever nenhum .d.ts antes. As outras quatro
-exigem tipar as fontes primeiro (wiki-arma3, arma3-extracao, arma3-classes,
-arma3-armas, arma3-terrenos, arma3-balistica, os jarvis-*).
+A wiki-arma3 está DESTRAVADA: as três fontes que ela consome já têm declaração
+(wiki-arma3.d.ts, arma3-extracao.d.ts, arma3-classes.d.ts). As outras três ainda
+exigem tipar as fontes antes (arma3-armas, arma3-terrenos, arma3-balistica, os
+jarvis-*).
+
+⚠️ Os .d.ts da wiki-arma3 foram escritos e NUNCA exercitados — por skipLibCheck,
+nada os checou. Espere encontrar divergências ao consumi-los, e conserte a
+DECLARAÇÃO contra o fonte, não a página contra a declaração.
 
 O PADRÃO, que já vale para as 102 páginas migradas
 - A implementação vai para `src/pages/X.ts`.
@@ -50,12 +53,32 @@ que arsenal.ts faz (`import type { ArsenalCategory } from '../data/arsenal.js'`)
 Não invente tipos locais duplicando o que a fonte já sabe.
 
 PARTICULARIDADE DA PRIMEIRA
-visao.js tem 6 classes e usa globais de CDN do MediaPipe (window.FaceMesh,
-window.Hands, window.Camera). Tipá-la sem `any` exige `declare global` para
-esses três — veja como radio.ts faz com `webkitAudioContext`.
+wiki-arma3.js tem TRÊS vistas na mesma rota (capa, índice, artigo), escolhidas
+pela query. O tipo central é `WikiArtigo`, e quase todo campo dele é opcional de
+propósito: no máximo UMA das seis fichas técnicas está presente por artigo.
+
+ANTES DE VERIFICAR: PONHA A PÁGINA NO PORTÃO
+O `include` do tsconfig.json é uma LISTA EXPLÍCITA de arquivos, não um glob.
+Página migrada que não for acrescentada ali passa no `tipos:ts` sem ser medida —
+verde vazio. Foi o erro mais caro da sessão que escreveu este prompt: relatei
+"0 erros" sobre um arquivo que o compilador nunca abriu. Acrescente o `.ts` da
+página E cada `.d.ts` novo ao `include`, e só então confie no resultado.
+
+Saiba também que `skipLibCheck: true` faz o compilador NÃO verificar o interior
+dos `.d.ts`. Uma declaração só é exercitada de verdade quando alguma página a
+consome — até lá, "0 erros" não diz nada sobre ela.
+
+REUSE TIPO QUE JÁ EXISTE
+Antes de declarar um global (`window.X`), procure:
+  grep -rn "window.X" src/**/*.d.ts
+A base já declara `window.Hands` em src/pages/jarvis-vision-api.d.ts. Criar uma
+declaração concorrente faz o compilador reprovar com "subsequent property
+declarations must have the same type" — e a correção é reusar, não renomear.
+Aconteceu nesta migração.
 
 COMO VERIFICAR CADA PÁGINA (nesta ordem)
-  npm run tipos:v2          -> tem de sair 0 erros
+  npm run tipos:ts          -> o portão das PÁGINAS; tem de sair 0 erros
+  npm run tipos:v2          -> o portão da V2 (só se mexer em v2/)
   npx tsx --test <testes>   -> `npm test` NÃO roda no Windows (usa o find do DOS);
                                enumere os arquivos com globSync do Node
   npm run smoke             -> abre todas as rotas num Chromium real
