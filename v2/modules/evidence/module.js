@@ -7,6 +7,7 @@
  */
 
 import { EvidenceStore } from '../../data/evidence.js';
+import { evidenceFromCatalog } from '../../data/catalog-evidence.ts';
 
 /** @typedef {import('../../data/evidence.ts').EvidenceInput} EvidenceInput */
 /** @typedef {import('../../data/evidence.ts').EvidenceRecord} EvidenceRecord */
@@ -19,6 +20,11 @@ let store = null;
 function append(input) {
   if (!store) throw new Error('evidence ainda não foi inicializado');
   return store.append(input);
+}
+
+/** @param {import('../../data/catalog-evidence.ts').CatalogEvidenceInput} input */
+function appendCatalog(input) {
+  return append(evidenceFromCatalog(input));
 }
 
 export default {
@@ -39,6 +45,7 @@ export default {
   },
   api: {
     append,
+    appendCatalog,
     /** @param {string} id */
     get: (id) => store?.get(id) ?? null,
     list: () => store?.list() ?? [],

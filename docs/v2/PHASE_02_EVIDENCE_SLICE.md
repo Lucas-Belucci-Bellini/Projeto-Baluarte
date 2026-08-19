@@ -12,7 +12,7 @@ A primeira entrega da Data Layer não tenta migrar os catálogos existentes, nã
 
 ## Contrato entregue
 
-`v2/data/evidence.ts` fornece `validateEvidence`, `normalizeEvidence` e `EvidenceStore`. A normalização rejeita confidence fora de `[0, 1]`, datas inválidas, fontes sem URI, campos obrigatórios vazios e estados desconhecidos. O registro normalizado é congelado e a inserção é append-only por `id`; a mudança permitida nesta fase é apenas de ciclo de verificação (`pending`, `verified`, `rejected`, `superseded`).
+`v2/data/evidence.ts` fornece `validateEvidence`, `normalizeEvidence` e `EvidenceStore`. O adapter `v2/data/catalog-evidence.ts` transforma campos de catálogos em claims determinísticas, e o módulo expõe isso como `appendCatalog`. A normalização rejeita confidence fora de `[0, 1]`, datas inválidas, fontes sem URI, campos obrigatórios vazios e estados desconhecidos. O registro normalizado é congelado e a inserção é append-only por `id`; a mudança permitida nesta fase é apenas de ciclo de verificação (`pending`, `verified`, `rejected`, `superseded`).
 
 O módulo `v2/modules/evidence/module.js` expõe o mesmo contrato ao Module Registry, sem rotas, sem permissões, sem rede e sem storage implícito. Seu `dispose()` libera a instância do store. Isso demonstra isolamento: o módulo pode falhar ou ser desligado sem derrubar a superfície V1.
 
@@ -38,4 +38,4 @@ Este slice ainda não faz ingestão, deduplicação semântica, busca full-text,
 
 ## Próximo passo recomendado
 
-O próximo slice deve conectar Evidence ao fluxo de catálogo/Wiki por um adapter de leitura controlado, começando com fixtures locais e schemas verificáveis. Só depois de medir a necessidade real deve entrar fila de ingestão, worker Python ou pgvector.
+O adapter local de catálogo já foi conectado ao módulo e validado com fixtures. O próximo slice deve conectá-lo a um fluxo de leitura controlado da Wiki, começando com fixtures locais e schemas verificáveis. Só depois de medir a necessidade real deve entrar fila de ingestão, worker Python ou pgvector.

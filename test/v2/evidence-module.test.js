@@ -30,6 +30,16 @@ test('Evidence API funciona após init e libera o store em dispose', () => {
   const record = evidence.api.append(input);
   assert.equal(record.id, input.id);
   assert.equal(evidence.api.listByClaim(input.claimKey).length, 1);
+  const catalogRecord = evidence.api.appendCatalog({
+    moduleId: 'wiki',
+    entityId: 'fixture-1',
+    field: 'title',
+    value: 'Fixture catalog fact',
+    source: { uri: 'https://example.test/catalog', revision: 'r1' },
+    retrievedAt: '2026-08-19T00:00:00.000Z',
+    confidence: 0.8,
+  });
+  assert.equal(catalogRecord.claimKey, 'wiki:fixture-1:title');
   assert.ok(logs.length >= 1);
   evidence.lifecycle.dispose();
   assert.deepEqual(evidence.api.list(), []);
