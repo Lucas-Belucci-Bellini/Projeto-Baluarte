@@ -10,7 +10,7 @@
  * porque a promessa acima já foi quebrada duas vezes, e a segunda deixou todo
  * mundo preso em cache velho (ver o cabeçalho do `sw.js`).
  *
- * A linha pública 1.0.0 foi pulada; a primeira release de produto desta fase é 1.1.0.
+ * A linha pública 1.0.0 foi pulada; esta release continua a linha de produto 1.1.x.
  */
-export const VERSION = '1.1.0';
+export const VERSION = '1.1.5';
 export const CODENAME = 'Mark XIII';

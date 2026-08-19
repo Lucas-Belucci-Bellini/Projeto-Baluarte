@@ -17,10 +17,11 @@
  *           novo no ar).
  *   1.0.0-rc — ficou em v0.9.1 enquanto o site já dizia 2.0.0.
  *   1.1.0 — primeira release pública após o salto deliberado da 1.0.0.
+ *   1.1.5 — fundação V2 incremental e dashboard JARVIS atualizado.
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.1.0';
+const VERSION = 'baluarte-v1.1.5';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
