@@ -35,6 +35,7 @@ import { handleAuthRedirect } from './core/supabase-auth.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
 import { startJarvisMusicPresence } from './utils/jarvis-music-presence.js';
+import { resumeSpotifyAuthorization } from './utils/jarvis-spotify-session.js';
 
 /* ==============================================================
  *  Helper de carregamento sob demanda (code-splitting via Vite).
@@ -243,6 +244,9 @@ function boot() {
   /* Presença musical passiva: observa apenas media elements deste app e sinais
    * explícitos dos embeds; não usa microfone, scraping cross-origin ou turnos de IA. */
   startJarvisMusicPresence();
+  void resumeSpotifyAuthorization().then((result) => {
+    if (result === 'rejected') console.warn('[spotify] autorização rejeitada ou state inválido');
+  }).catch(() => undefined);
   /* Perf mobile/low-end (v0.4.0): detecta aparelho fraco → classe `is-lowfx` no
    * <html> (CSS alivia o grão) + `window.__baluarteLowFx` (o herói WebGL corta
    * partículas). Reduced-motion também entra como low-fx. */

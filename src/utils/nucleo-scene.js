@@ -253,12 +253,20 @@ export async function mountNucleoScene(container) {
 
   /* ---- loop ---- */
   const clock = new THREE.Clock();
-  let raf = 0, dead = false;
+  let raf = 0, dead = false, musicEnergy = 0;
+  function readMusicEnergy() {
+    const music = typeof window !== 'undefined' ? window.BaluarteStatus?.jarvisMusic : null;
+    if (!music || music.playback !== 'playing') return 0;
+    const titleSignal = music.title || music.artist ? 0.12 : 0.06;
+    return Math.min(1, 0.28 + titleSignal);
+  }
   function frame() {
     if (dead) return;
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.getElapsedTime();
     const pos = corePoints.geometry.attributes.position.array;
-    const pl = 1 + Math.sin(t * CFG.pulseSpeed) * CFG.pulseAmt;
+    const musicTarget = readMusicEnergy();
+    musicEnergy += (musicTarget - musicEnergy) * Math.min(1, dt * (musicTarget > musicEnergy ? 4.5 : 2.2));
+    const pl = 1 + Math.sin(t * CFG.pulseSpeed) * CFG.pulseAmt + musicEnergy * 0.018;
     for (let i = 0; i < pos.length; i += 3) {
       const bx = coreBase[i], by = coreBase[i + 1], bz = coreBase[i + 2];
       const nx = coreNormals[i], ny = coreNormals[i + 1], nz = coreNormals[i + 2];
@@ -268,7 +276,8 @@ export async function mountNucleoScene(container) {
     }
     corePoints.geometry.attributes.position.needsUpdate = true;
     heart.scale.setScalar(pl * 1.05); heart.material.opacity = 0.1 + 0.06 * Math.sin(t * CFG.pulseSpeed);
-    coreGroup.rotation.y += dt * CFG.spinCore; coreGroup.rotation.x = Math.sin(t * 0.18) * 0.12;
+    coreGroup.rotation.y += dt * CFG.spinCore * (1 + musicEnergy * 0.08); coreGroup.rotation.x = Math.sin(t * 0.18) * 0.12;
+    container.dataset.musicActive = musicEnergy > 0.08 ? 'true' : 'false';
     rings.forEach((r) => { const s = r.userData.spin; r.rotation.x += dt * s.x; r.rotation.y += dt * s.y; r.rotation.z += dt * s.z; });
     const cp = constel.geometry.attributes.position.array;
     for (let i = 0; i < n; i++) {
@@ -279,12 +288,14 @@ export async function mountNucleoScene(container) {
       constelVel[ix] *= 0.9; constelVel[ix + 1] *= 0.9; constelVel[ix + 2] *= 0.9;
       cp[ix] += constelVel[ix]; cp[ix + 1] += constelVel[ix + 1]; cp[ix + 2] += constelVel[ix + 2];
     }
-    constel.geometry.attributes.position.needsUpdate = true; constel.rotation.y += dt * 0.05;
+    constel.geometry.attributes.position.needsUpdate = true; constel.rotation.y += dt * (0.05 + musicEnergy * 0.008);
     updateLinks(t);
     dust.rotation.y += dt * CFG.spinDust; dust.rotation.x += dt * CFG.spinDust * 0.4;
     camCur.x += (target.x - camCur.x) * 0.045; camCur.y += (target.y - camCur.y) * 0.045;
     camera.position.x = camCur.x * 7 * CFG.parallax; camera.position.y = -camCur.y * 5 * CFG.parallax; camera.lookAt(0, 0, 0);
     if (glitch.enabled && performance.now() > glitchUntil) glitch.enabled = false;
+    bloom.strength = CFG.bloomStrength + musicEnergy * 0.10;
+    heart.material.opacity = 0.1 + 0.06 * Math.sin(t * CFG.pulseSpeed) + musicEnergy * 0.025;
     composer.render();
     if (REDUCED) return;            // 1 quadro e para
     raf = requestAnimationFrame(frame);

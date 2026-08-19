@@ -11,7 +11,7 @@ import { toast } from '../utils/toast.js';
 import {
   loadConfig, saveConfig,
   processLocal, processClaude, processOllama, processServer, processNewsBriefing, processHermes, processClaudeServer, processOpenClaw, processAgent,
-  healthCheckServer, getBaluarteBriefing
+  healthCheckServer
 } from '../utils/jarvis-engine.js';
 import type { JarvisConfig } from '../utils/jarvis-engine.js';
 import {
@@ -25,7 +25,8 @@ import type { ChartData } from '../utils/chart-engine.js';
 import { memoryContext, captureConversation, captureReply } from '../utils/jarvis-brain.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import type { LanguageDefinition } from '../data/editor-langs.js';
-import { getStatusText } from '../utils/baluarte-status.js';
+import { getJarvisRuntimeContext } from '../utils/jarvis-context.js';
+import { beginSpotifyAuthorization, disconnectSpotify, isSpotifyConnected } from '../utils/jarvis-spotify-session.js';
 import { humanize } from '../utils/jarvis-style.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
@@ -488,7 +489,7 @@ async function handleSend(): Promise<void> {
      * leitura). Cópia por chamada — não persiste no systemPrompt salvo. */
     const callConfig: JarvisConfig = conf.mode === 'local'
       ? conf
-      : { ...conf, systemPrompt: `${conf.systemPrompt}\n\n${getBaluarteBriefing({ compact: !['agente', 'hermes-agente'].includes(conf.mode ?? '') })}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}` };
+      : { ...conf, systemPrompt: `${conf.systemPrompt}\n\n${getJarvisRuntimeContext({ compact: !['agente', 'hermes-agente'].includes(conf.mode ?? '') })}` };
 
     /* Memória entre conversas (claude-mem): injeta resumos relevantes de
      * sessões anteriores. Best-effort, só nos modos de IA. */
@@ -1078,6 +1079,19 @@ export function jarvisPage(): HTMLDivElement {
   }, '⚙ Modos & Config');
 
   const skillCount = listSkillSummaries().length;
+  const spotifyClientInput = h('input', { className: 'input input--sm', type: 'text', autocomplete: 'off', spellcheck: 'false', placeholder: 'Spotify Client ID (público)', style: { width: '220px' } });
+  const spotifyStatus = h('span', { className: 'badge badge--cyan' }, isSpotifyConnected() ? 'SPOTIFY · ONLINE' : 'SPOTIFY · OFF');
+  const spotifyButton = h('button', {
+    className: 'btn btn--ghost btn--sm',
+    onclick: () => {
+      if (isSpotifyConnected()) { disconnectSpotify(); spotifyStatus.textContent = 'SPOTIFY · OFF'; spotifyButton.textContent = '♫ Conectar Spotify'; return; }
+      const clientId = spotifyClientInput.value.trim();
+      if (!clientId) { toast('Cole o Client ID público criado no Spotify for Developers.'); return; }
+      const redirectUri = `${location.origin}${location.pathname}`;
+      void beginSpotifyAuthorization({ clientId, redirectUri, scope: 'user-read-playback-state' }).then((url) => { location.assign(url); }).catch((error: unknown) => { toast(error instanceof Error ? error.message : 'Não foi possível iniciar o Spotify.'); });
+    }
+  }, isSpotifyConnected() ? '♫ Desconectar Spotify' : '♫ Conectar Spotify');
+  const spotifyControls = h('div', { style: { display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' } }, spotifyStatus, spotifyClientInput, spotifyButton);
   fullPage.appendChild(
     h('div', { className: 'jarvis-toolbar' },
       modeBadgeEl,
@@ -1088,6 +1102,11 @@ export function jarvisPage(): HTMLDivElement {
     )
   );
   fullPage.appendChild(configWrap);
+  fullPage.appendChild(h('div', { className: 'card', style: { marginBottom: '10px' } },
+    h('b', null, '♫ Presença musical externa'),
+    h('span', { className: 'u-text-muted', style: { marginLeft: '8px' } }, 'somente metadados de playback; sem áudio e sem comandos de reprodução'),
+    spotifyControls,
+  ));
 
   sessionsEl = h('div', { className: 'jv-sessions__list' });
   const sessionsPanel = h('div', { className: 'jv-sessions' },

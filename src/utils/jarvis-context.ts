@@ -5,6 +5,7 @@ import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
 import { codeContext } from './jarvis-brain.js';
+import { getStatusText } from './baluarte-status.js';
 export interface JarvisRouteCapability {
   readonly path: string;
   readonly label: string;
@@ -70,6 +71,10 @@ export function getBaluarteBriefing(options: BriefingOptions = {}): string {
 
 export function invalidateBaluarteBriefing(): void {
   briefingCache.clear();
+}
+
+export function getJarvisRuntimeContext(options: BriefingOptions = {}): string {
+  return `${getBaluarteBriefing(options)}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}`;
 }
 
 export function selectContextMessages(

@@ -4,6 +4,7 @@
  */
 export {
   getBaluarteBriefing,
+  getJarvisRuntimeContext,
   invalidateBaluarteBriefing,
   selectContextMessages,
   findJarvisCapability,

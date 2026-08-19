@@ -263,6 +263,8 @@
     "src/utils/jarvis-permissoes.ts",
     "src/utils/jarvis-context.ts",
     "src/utils/jarvis-music-presence.ts",
+    "src/utils/jarvis-spotify.ts",
+    "src/utils/jarvis-spotify-session.ts",
     "src/utils/jarvis-contracts.ts",
     "src/utils/jarvis-contracts-fakes.ts",
     "src/utils/jarvis-brain.d.ts",
