@@ -1,13 +1,10 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Base de trabalho:** `49466a54a3958381b7d22dad28b5678f64d53a71` (último `main` publicado antes da onda 4.50)
-**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas, Núcleo Mark XIII e JARVIS Vision foram implementados; **as páginas acabaram** — nenhuma continua canônica em JavaScript (ver §0).
+**Base de trabalho:** `b2dbb1fd2c8445128baab3acbda8845c2042a25e` (main publicado após as ondas finais de páginas e a correção do visor3d)
+**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas, Núcleo Mark XIII e JARVIS Vision, Arma 3 Tutorial, JARVIS, Vanguard, Visão e Wiki Arma 3 foram implementados; **as páginas acabaram** — nenhuma continua canônica em JavaScript (ver §0). O gate `tipos:v2` também está verde após a fronteira Three.js do visor3d.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
-> ⚠️ **As seções 1 e 2 abaixo são a fotografia de 17/08/2026 e estão
-> desatualizadas quanto a `src/pages`.** Elas dizem "5 páginas canônicas"; hoje
-> são **zero**. O resto do inventário (`src/data`, `src/utils`, `v2/core`)
-> continua valendo — é lá que o JavaScript canônico ainda mora.
+> **As seções históricas abaixo preservam a fotografia anterior à conclusão das páginas.** A verificação atual do filesystem confirma **zero páginas canônicas JavaScript** em `src/pages`; o JavaScript restante está concentrado em dados, utilitários, Core V1/V2 e arquivos de configuração, que seguem um roadmap separado.
 
 > **Conclusão executiva:** ainda há muito JavaScript no repositório, mas ele não representa um único bloco de trabalho. O próximo passo não deve ser converter todos os arquivos de uma vez. O caminho correto é continuar por contratos: páginas pequenas e de baixo risco, depois dados com declarações estruturais, depois Core/integrations e, em paralelo controlado, os contratos V2 que concentram os 61 erros atuais.
 
@@ -67,8 +64,7 @@ Nenhum destes é erro de anotação: são defeitos que estavam no ar.
 
 ### Como cada página foi verificada
 
-`tipos:ts` 0 · `tipos:v2` 0 · suíte 954/954 · `smoke` 98/98 rotas verdes · build
-limpo. E o portão foi confirmado **vendo** cada arquivo novo: com um defeito
+`tipos:ts` 0 · `tipos:v2` 0 · suíte **960/960** · `smoke` 98/98 rotas verdes · `v2:integracao` **19/19** · `caminho-critico` **15/15** · build verde com o aviso histórico de chunks grandes. E o portão foi confirmado **vendo** cada arquivo novo: com um defeito
 plantado no `.ts`, o `tipos:ts` fica vermelho e volta a verde quando ele sai —
 peça pronta e desligada daria o mesmo retrato verde que peça ligada.
 
@@ -78,29 +74,29 @@ evidência de que o comportamento não mudou — não só de que a rota abre.
 
 ## 1. Fotografia atual
 
-A contagem foi feita diretamente no workspace após a onda 4.50 e a migração das páginas anteriores. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **203 módulos JavaScript canônicos restantes** depois de retirar 149 wrappers; `vite.config.js` continua sendo uma configuração opcional fora do domínio da aplicação.
+A contagem foi feita diretamente no workspace após a conclusão das cinco últimas páginas e a correção do visor3d. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **213 módulos JavaScript canônicos restantes** depois de retirar 142 wrappers; `vite.config.js` continua sendo uma configuração opcional fora do domínio da aplicação.
 
 | Área | JavaScript total | JavaScript canônico restante | TypeScript de implementação | `.d.ts` de fronteira |
 | --- | ---: | ---: | ---: | ---: |
-| `src/core` | 17 | 11 | 6 | 8 |
-| `src/layout` | 5 | 1 | 4 | 1 |
-| `src/pages` | 114 | 5 | 109 | 7 |
-| `src/data` | 59 | 59 | 0 | 38 |
-| `src/utils` | 98 | 71 | 28 | 72 |
-| `v2/core` | 47 | 43 | 4 | 6 |
-| `v2/modules` | 8 | 8 | 0 | 0 |
+| `src/core` | 17 | 14 | 6 | 8 |
+| `src/layout` | 5 | 3 | 4 | 1 |
+| `src/pages` | 114 | 0 | 114 | 8 |
+| `src/data` | 59 | 59 | 0 | 57 |
+| `src/utils` | 98 | 79 | 28 | 88 |
+| `v2/core` | 48 | 44 | 4 | 6 |
+| `v2/modules` | 11 | 11 | 0 | 1 |
 | `v2/harness` | 1 | 1 | 0 | 0 |
 | `src/nexus` | 1 | 1 | 0 | 0 |
 | `src/main.js` | 1 | 1 | 0 | 0 |
 | `src/styles.d.ts` | 0 | 0 | 0 | 1 |
 | `vite.config.js` | 1 | Opcional | 0 | 0 |
-| **Total** | **352** | **203** | **151** | **134** |
+| **Total** | **355** | **213** | **156** | **171** |
 
-A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **295 arquivos JS em `src`**, **56 em `v2`**, **149 wrappers de compatibilidade** e **151 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, **109 páginas**, adaptadores visuais/integrações, os contratos J1, a Central de Música, os painéis de mídia/IDE e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
+A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **299 arquivos JS em `src`**, **56 em `v2`**, **142 wrappers de compatibilidade** e **156 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, **114 páginas**, adaptadores visuais/integrações, os contratos J1, a Central de Música, os painéis de mídia/IDE e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
 
 ## 2. O que já não precisa ser convertido agora
 
-Cento e quarenta e nove arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
+Cento e quarenta e dois arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
 
 | Wrapper | Implementação canônica |
 | --- | --- |
@@ -130,7 +126,7 @@ Esses wrappers **não são dívida de conversão funcional**. Removê-los agora 
 
 ### 3.1 Páginas — maior volume, mas não todo o maior risco
 
-Ainda existem **5 módulos de páginas em JavaScript canônico**. A migração deve ser feita por risco, não apenas por tamanho; Dossiê, Simbolos, Gerar Código, Git Helper, Dólar, Biblioteca, Academia, CiberSeg, Robotica, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Filmes, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Núcleo Mark XIII, JARVIS Vision, Modelos 3D, Mapa Tático, Radar, Rádio e Musicas já saíram desta contagem.
+Não existem mais módulos de páginas em JavaScript canônico: o inventário operacional registra **0**. A migração deve ser feita por risco, não apenas por tamanho; Dossiê, Simbolos, Gerar Código, Git Helper, Dólar, Biblioteca, Academia, CiberSeg, Robotica, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Filmes, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Núcleo Mark XIII, JARVIS Vision, Modelos 3D, Mapa Tático, Radar, Rádio e Musicas já saíram desta contagem.
 
 | Grupo | Exemplos | Estado | Risco |
 | --- | --- | --- | --- |

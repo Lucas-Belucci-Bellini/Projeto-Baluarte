@@ -803,3 +803,16 @@ O lifecycle continua reversível: o botão nunca fica travado em erro, a câmera
 Validação local: `npm run tipos:ts` verde; `npm test` **884/884**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **14/14**; `npm run caminho-critico` **15/15**. O inventário determinístico caiu de **6 para 5 páginas JavaScript canônicas restantes**. A dívida separada do `npm run tipos:v2` permanece em 61 diagnósticos históricos e não foi mascarada durante a conversão.
 
 A próxima página recomendada é `wiki-arma3.js`, aproveitando os assets de ícones já presentes em `public/arma3/`; depois vêm Vanguard, Visão e Arma 3 Tutorial, enquanto `jarvis.js` permanece para o fechamento dos contratos J2–J6.
+
+
+## 4.51–4.55 Fechamento das páginas canônicas e gate V2
+
+As ondas finais converteram as cinco últimas páginas canônicas da aplicação: `wiki-arma3.js`, `visao.js`, `vanguard.js`, `jarvis.js` e `arma3-tutorial.js`. Cada arquivo `.js` permanece como wrapper de compatibilidade e cada implementação canônica está em `.ts`. O inventário físico foi reexecutado no `main` e confirmou **zero páginas canônicas JavaScript** em `src/pages`, com 114 implementações TypeScript de páginas.
+
+A Wiki preserva índice, filtros, artigos, ícones e deep-links; Visão preserva câmera, detecção local e teardown; Vanguard preserva o motor de tiro e seus contratos balísticos; JARVIS preserva os modos local/WebLLM/nativo, memória, voz e confirmação explícita para ações; Arma 3 Tutorial preserva aulas, dados, modelos e lifecycle visual. Os contratos `.d.ts` foram ampliados onde o typecheck encontrou exportações ou estruturas reais ausentes, sem usar `any`, `@ts-ignore`, `@ts-nocheck` ou relaxar `strict`.
+
+Durante a validação do `main` final, `npm run tipos:v2` encontrou uma causa raiz isolada em `v2/modules/visor3d`: o módulo nativo importava `three` sem declaração local e o callback de `Scene.traverse()` perdia o tipo do objeto. A correção `v2/modules/visor3d/three.d.ts` declara somente a API Three.js usada pelo engine e `v2/jsconfig.json` passa a incluir essa fronteira; o gate voltou a zero diagnósticos. Nenhum erro foi silenciado e nenhum módulo legado foi arrastado para o portão.
+
+Validação do estado publicado: `npm run tipos:ts` verde; `npm run tipos:v2` verde; `npm test` **960/960**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **19/19**; `npm run caminho-critico` **15/15**. O SHA publicado após a correção do visor3d é `b2dbb1fd2c8445128baab3acbda8845c2042a25e`. O inventário operacional foi atualizado nesse SHA e registra zero páginas canônicas restantes.
+
+A conclusão desta etapa não significa remover wrappers nem parar a evolução do projeto: dados, utilitários, Core V1/V2 e integrações JavaScript continuam no roadmap por contratos próprios. A partir daqui, o foco muda de páginas para estabilização de módulos, revisão da dívida V2, identidade/login-cadastro, layout modular e testes mensais.
