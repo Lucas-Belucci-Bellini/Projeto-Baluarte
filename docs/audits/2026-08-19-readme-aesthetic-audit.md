@@ -43,3 +43,9 @@ O README publicado foi aberto no GitHub e conferido visualmente. O conteúdo ren
 No SHA `f6434b70ada1236d00114e5d91b65d472f1597bc`, `Arma 3 Data CI`, `V2 Runtime`, `Core CI` e `V2 Validation` concluíram com sucesso. O workflow `CI` terminou com `failure`; `Vigia das rotas` e `CodeQL` ainda estavam em execução no momento desta captura. A investigação do CI deve ser concluída antes de declarar todos os gates verdes.
 
 Fonte pública dos estados: [GitHub Actions do Projeto-Baluarte](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions).
+
+## Correção do gate de estabilidade e resultado final
+
+O primeiro CI do redesign falhou porque a tabela entre `ESTABILIDADE:INICIO` e `ESTABILIDADE:FIM` tinha sido resumida manualmente e não correspondia à política canônica. O comando oficial `npm run gen-tabela-estabilidade` restaurou as descrições exatas; `npm run gen-tabela-estabilidade -- --verificar` passou.
+
+A correção foi publicada no SHA `174a713fd251ec4febe01a7228815316b0a4946b`. Nesse SHA, todos os sete workflows aplicáveis concluíram com sucesso: `CI`, `V2 Validation`, `Core CI`, `CodeQL`, `V2 Runtime`, `Arma 3 Data CI` e `Vigia das rotas`. O checkout local e `origin/main` estão sincronizados.
