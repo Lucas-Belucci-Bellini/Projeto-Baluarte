@@ -99,3 +99,99 @@ test('registry health: active remove override somente com autorização', () => 
   assert.equal(health.modo('alpha'), 'disabled');
   assert.equal(health.definirModo('alpha', 'active', 'retorno aprovado'), 'registered');
 });
+
+test('registry health: modo auditado exige identidade, papel, aprovador e requestId', () => {
+  const auditoria = [];
+  const health = criarModuleRegistryHealth(
+    registryFake(['alpha']),
+    criarRuntimeHealth(),
+    {
+      requireAudit: true,
+      clock: () => 1234,
+      audit: (entry) => auditoria.push(entry),
+      authorize: (request) => ({
+        allowed: true,
+        requestId: request.requestId,
+        actorId: 'operator-1',
+        actorRole: 'owner',
+        approvedBy: 'approver-1',
+      }),
+    },
+  );
+
+  assert.throws(
+    () => health.definirModo('alpha', 'maintenance', 'janela', {}),
+    /requestId obrigatório/i,
+  );
+  assert.equal(
+    health.definirModo('alpha', 'maintenance', 'janela', { requestId: 'req-1' }),
+    'maintenance',
+  );
+  assert.deepEqual(auditoria, [{
+    type: 'registry.mode.changed',
+    id: 'alpha',
+    mode: 'maintenance',
+    reason: 'janela',
+    requestId: 'req-1',
+    actorId: 'operator-1',
+    actorRole: 'owner',
+    approvedBy: 'approver-1',
+    timestamp: 1234,
+  }]);
+  assert.deepEqual(health.auditoria(), auditoria);
+  assert.equal(health.definirModo('alpha', 'maintenance', 'janela', { requestId: 'req-1' }), 'maintenance');
+  assert.equal(auditoria.length, 1, 'repetir requestId idempotente não duplica auditoria');
+  assert.throws(
+    () => health.definirModo('alpha', 'disabled', 'outra janela', { requestId: 'req-1' }),
+    /requestId já usado/i,
+  );
+});
+
+test('registry health: requireAudit sem sink falha fechado', () => {
+  assert.throws(
+    () => criarModuleRegistryHealth(registryFake(['alpha']), criarRuntimeHealth(), { requireAudit: true }),
+    /auditoria server-side obrigatória/i,
+  );
+});
+
+test('registry health: decisão allow sem metadados não satisfaz auditoria', () => {
+  const health = criarModuleRegistryHealth(
+    registryFake(['alpha']),
+    criarRuntimeHealth(),
+    {
+      requireAudit: true,
+      audit: () => {},
+      authorize: () => true,
+    },
+  );
+
+  assert.throws(
+    () => health.definirModo('alpha', 'disabled', 'incidente', { requestId: 'req-2' }),
+    /requestId da decisão|actorId/i,
+  );
+  assert.equal(health.modo('alpha'), 'registered');
+});
+
+test('registry health: ledger de auditoria também tem retenção limitada', () => {
+  const health = criarModuleRegistryHealth(
+    registryFake(['alpha']),
+    criarRuntimeHealth(),
+    {
+      requireAudit: true,
+      maxAuditEntries: 1,
+      audit: () => {},
+      authorize: (request) => ({
+        allowed: true,
+        requestId: request.requestId,
+        actorId: 'operator-1',
+        actorRole: 'admin',
+        approvedBy: 'owner-1',
+      }),
+    },
+  );
+
+  health.definirModo('alpha', 'maintenance', 'janela 1', { requestId: 'req-1' });
+  health.definirModo('alpha', 'active', 'retorno 1', { requestId: 'req-2' });
+
+  assert.deepEqual(health.auditoria().map(({ requestId }) => requestId), ['req-2']);
+});

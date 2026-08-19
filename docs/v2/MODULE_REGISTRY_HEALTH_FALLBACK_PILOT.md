@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED LOCALLY — PENDING PUBLICATION`
+`PUBLISHED ON MAIN — AUDIT CONTRACT IN PROGRESS`
 
 ## Objetivo
 
@@ -28,7 +28,7 @@ Um módulo em `degraded` ou `quarantined` não derruba Core, Router, Home ou out
 
 Este piloto não transforma health em autorização. O módulo continua sujeito ao Registry selado, ao Runtime e ao Permission Manager. Autorização administrativa, desligamento remoto de página e papel de proprietário/desenvolvedor continuam dependentes de backend/RLS e não podem ser derivados de metadata client-side.
 
-O adaptador agora expõe `definirModo(id, mode, reason)`, mas a operação é deny-by-default: `maintenance`, `disabled` e o retorno a `active` só são aceitos quando o callback `authorize` server-side aprova a solicitação. O motivo é obrigatório e deve ser mantido na auditoria do backend. Um callback ausente ou falso nunca concede acesso.
+O adaptador agora expõe `definirModo(id, mode, reason, context?)`, mas a operação é deny-by-default: `maintenance`, `disabled` e o retorno a `active` só são aceitos quando o callback `authorize` server-side aprova a solicitação. O motivo é obrigatório e deve ser mantido na auditoria do backend. O contrato auditado opcional também exige `requestId`, `actorId`, `actorRole`, `approvedBy` e sink de auditoria; repetição do mesmo `requestId` é idempotente, e conflito de conteúdo é recusado. Um callback ausente ou falso nunca concede acesso.
 
 ## Fallback
 
@@ -36,4 +36,4 @@ O fallback é deliberadamente conservador: `registered` pode ser ativado; `degra
 
 ## Rollback e próximo passo
 
-O rollback é o revert do adaptador, testes e documentação. O próximo passo do piloto é conectar `resumo()` à superfície de diagnóstico do Runtime e substituir o callback local por uma integração server-side/RLS aprovada, com auditoria e idempotência. Nenhuma ação remota ou alteração de dados foi executada nesta onda.
+O rollback é o revert do adaptador, testes e documentação. O callback local continua sendo apenas um contrato de fronteira; a integração server-side/RLS real exige aprovação explícita, staging separado, quatro identidades de teste, auditoria persistente e cleanup idempotente. Nenhuma ação remota ou alteração de dados foi executada nesta onda. O detalhamento da Wave 1 está em `docs/v2/REGISTRY_MODE_AUTH_AUDIT_WAVE_1.md`.
