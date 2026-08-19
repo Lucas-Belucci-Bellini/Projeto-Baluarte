@@ -61,3 +61,11 @@ O Vite passou a tratar `jarvis-nucleo-v7.html` como entrada multipágina. O buil
 - `dist/assets/jarvisNucleoV7-DS30hhbo.js`
 
 A simulação HTTP retornou `200` para a página e para o bundle. A rota foi aberta no navegador com o caminho codificado e renderizou o núcleo 3D completo, com canvas e controles. O console ficou sem registros.
+
+## Publicação final
+
+- Commit publicado no Projeto-Baluarte: `08f2be27c882de59fe05535e1521881f6871c68d`.
+- Commit publicado no perfil Lucas-Belucci-Bellini: `f2d61e695a658ce1e36c1476e43ad0b4b0162ae0`.
+- Workflows remotos do SHA do Projeto-Baluarte: CI, Core CI, V2 Validation, V2 Runtime, CodeQL, Arma 3 Data CI e Vigia das rotas — todos `success`.
+- URL pública validada: `https://projeto-baluarte.vercel.app/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html` — HTTP 200.
+- Bundle público validado: `/assets/jarvisNucleoV7-DS30hhbo.js` — HTTP 200.
