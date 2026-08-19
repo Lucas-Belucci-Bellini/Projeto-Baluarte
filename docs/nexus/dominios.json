@@ -58,7 +58,7 @@
    ],
    "origem": [
     "src/pages/projetos.js",
-    "src/pages/sobre.js",
+    "src/pages/sobre.ts",
     "src/pages/roadmap.js",
     "src/pages/home.js",
     "src/layout/shell.js",
@@ -387,9 +387,9 @@
     "/modelos-3d"
    ],
    "origem": [
-    "src/pages/media.js",
-    "src/pages/videos.js",
-    "src/pages/tv.js",
+    "src/pages/media.ts",
+    "src/pages/videos.ts",
+    "src/pages/tv.ts",
     "src/pages/modelos-3d.js",
     "src/utils/players-engine.js",
     "src/utils/visor-3d.js",
@@ -714,11 +714,11 @@
     "/vanguard"
    ],
    "origem": [
-    "src/pages/mapa.js",
-    "src/pages/radar.js",
+    "src/pages/mapa.ts",
+    "src/pages/radar.ts",
     "src/pages/geopulse.js",
-    "src/pages/find.js",
-    "src/pages/triangulacao.js",
+    "src/pages/find.ts",
+    "src/pages/triangulacao.ts",
     "src/pages/vanguard.js",
     "src/utils/maplibre-loader.js",
     "src/utils/geo-tracker.js",

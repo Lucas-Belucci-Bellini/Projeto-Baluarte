@@ -121,9 +121,9 @@ router.register('/robotica', lazy(() => import('./pages/robotica.ts'), 'robotica
 router.register('/fft', lazy(() => import('./pages/fft.js'), 'fftPage'));
 router.register('/radio', lazy(() => import('./pages/radio.js'), 'radioPage'));
 router.register('/musicas', lazy(() => import('./pages/musicas.js'), 'musicasPage'));
-router.register('/media', lazy(() => import('./pages/media.js'), 'mediaPage'));
-router.register('/videos', lazy(() => import('./pages/videos.js'), 'videosPage'));
-router.register('/tv', lazy(() => import('./pages/tv.js'), 'tvPage'));
+router.register('/media', lazy(() => import('./pages/media.ts'), 'mediaPage'));
+router.register('/videos', lazy(() => import('./pages/videos.ts'), 'videosPage'));
+router.register('/tv', lazy(() => import('./pages/tv.ts'), 'tvPage'));
 router.register('/utilidades', lazy(() => import('./pages/utilidades.js'), 'utilidadesPage'));
 router.register('/jogos', lazy(() => import('./pages/jogos.js'), 'jogosPage'));
 router.register('/batalha-naval', lazy(() => import('./pages/batalha-naval.js'), 'batalhaNavalPage'));
@@ -148,17 +148,17 @@ router.register('/economia', lazy(() => import('./pages/economia.js'), 'economia
 router.register('/dolar', lazy(() => import('./pages/dolar.ts'), 'dolarPage'));
 router.register('/jarvis', lazyNexus('jarvis'));
 router.register('/ia-proprietaria', lazyNexus('ia'));
-router.register('/radar', lazy(() => import('./pages/radar.js'), 'radarPage'));
+router.register('/radar', lazy(() => import('./pages/radar.ts'), 'radarPage'));
 router.register('/geo', lazy(() => import('./pages/geopulse.js'), 'geopulsePage'));
-router.register('/find', lazy(() => import('./pages/find.js'), 'findPage'));
-router.register('/triangulacao', lazy(() => import('./pages/triangulacao.js'), 'triangulacaoPage'));
+router.register('/find', lazy(() => import('./pages/find.ts'), 'findPage'));
+router.register('/triangulacao', lazy(() => import('./pages/triangulacao.ts'), 'triangulacaoPage'));
 router.register('/llm-lab', lazyNexus('llm'));
 
-router.register('/sobre', lazy(() => import('./pages/sobre.js'), 'sobrePage'));
+router.register('/sobre', lazy(() => import('./pages/sobre.ts'), 'sobrePage'));
 router.register('/roadmap', lazy(() => import('./pages/roadmap.js'), 'roadmapPage'));
 router.register('/diagnostico', lazy(() => import('./pages/diagnostico.js'), 'diagnosticoPage'));
 router.register('/jarvis-dashboard', lazyNexus('dashboard'));
-router.register('/mapa', lazy(() => import('./pages/mapa.js'), 'mapaPage'));
+router.register('/mapa', lazy(() => import('./pages/mapa.ts'), 'mapaPage'));
 router.register('/visao', lazy(() => import('./pages/visao.js'), 'visaoPage'));
 router.register('/jarvis-vision', lazyLeve('vision', () => import('./pages/jarvis-vision.js'), 'jarvisVisionPage'));   // app → aba do Núcleo (#316)
 router.register('/forcas-armadas', lazy(() => import('./pages/forcas-armadas.js'), 'forcasArmadasPage'));
