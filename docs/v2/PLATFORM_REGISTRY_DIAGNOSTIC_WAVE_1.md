@@ -1,4 +1,4 @@
-# Platform → Module Registry Diagnostic — Waves 1–3
+# Platform → Module Registry Diagnostic — Waves 1–4
 
 ## Status
 
