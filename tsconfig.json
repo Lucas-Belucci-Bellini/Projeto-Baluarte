@@ -35,6 +35,7 @@
     "v2/data/billing-staging-harness.ts",
     "v2/data/billing-observability.ts",
     "v2/data/billing-config.ts",
+    "v2/data/billing-activation.ts",
     "src/pages/sobre.ts",
     "src/styles.d.ts",
     "src/pages/arsenal.ts",
