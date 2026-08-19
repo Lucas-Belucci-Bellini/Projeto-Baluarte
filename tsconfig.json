@@ -33,6 +33,7 @@
     "v2/data/billing-driver.ts",
     "v2/data/billing-http-read-driver.ts",
     "v2/data/billing-staging-harness.ts",
+    "v2/data/billing-observability.ts",
     "src/pages/sobre.ts",
     "src/styles.d.ts",
     "src/pages/arsenal.ts",

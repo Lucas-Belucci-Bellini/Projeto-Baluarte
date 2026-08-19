@@ -10,6 +10,11 @@ import type {
   UsageEvent,
 } from './billing.js';
 import type { WorkspaceRecord } from './billing-persistence.js';
+import {
+  NOOP_BILLING_READ_OBSERVER,
+  type BillingReadObserver,
+  type BillingReadOperation,
+} from './billing-observability.js';
 
 interface HttpResponseLike {
   readonly status: number;
@@ -34,6 +39,7 @@ export interface BillingHttpReadDriverOptions {
   readonly principalUserId: string;
   readonly timeoutMs?: number;
   readonly transport: BillingHttpTransport;
+  readonly observer?: BillingReadObserver;
 }
 
 type JsonRecord = Readonly<Record<string, unknown>>;
@@ -157,6 +163,7 @@ export class BillingHttpReadDriver implements BillingReadDriver {
   private readonly principalUserId: string;
   private readonly timeoutMs: number;
   private readonly transport: BillingHttpTransport;
+  private readonly observer: BillingReadObserver;
 
   constructor(options: BillingHttpReadDriverOptions) {
     if (typeof window !== 'undefined') throw new Error('BillingHttpReadDriver deve executar somente no backend');
@@ -175,34 +182,55 @@ export class BillingHttpReadDriver implements BillingReadDriver {
       'Accept-Profile': 'billing',
     });
     this.transport = options.transport;
+    this.observer = options.observer ?? NOOP_BILLING_READ_OBSERVER;
   }
 
   async getWorkspace(workspaceId: string, actorUserId: string): Promise<WorkspaceRecord> {
-    this.assertPrincipal(actorUserId);
-    const rows = await this.getRows(`/rest/v1/workspaces?id=eq.${encodeURIComponent(required(workspaceId, 'workspaceId'))}&select=id,account_id,slug,display_name`);
-    if (rows.length === 0) throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', 'workspace não encontrado');
-    return parseWorkspace(rows[0]);
+    return this.read('getWorkspace', async () => {
+      this.assertPrincipal(actorUserId);
+      const rows = await this.getRows(`/rest/v1/workspaces?id=eq.${encodeURIComponent(required(workspaceId, 'workspaceId'))}&select=id,account_id,slug,display_name`);
+      if (rows.length === 0) throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', 'workspace não encontrado');
+      return parseWorkspace(rows[0]);
+    });
   }
 
   async resolvePlan(accountId: string, workspaceId: string, actorUserId: string, at?: string): Promise<PlanResolution> {
-    this.assertPrincipal(actorUserId);
-    const account = required(accountId, 'accountId');
-    const workspace = required(workspaceId, 'workspaceId');
-    const instant = at ? new Date(at).toISOString() : new Date().toISOString();
-    const assignments = await this.getRows(`/rest/v1/plan_assignments?account_id=eq.${encodeURIComponent(account)}&workspace_id=eq.${encodeURIComponent(workspace)}&status=eq.active&effective_from=lte.${encodeURIComponent(instant)}&order=effective_from.desc`);
-    const assignment = assignments
-      .map(parseAssignment)
-      .find((candidate) => !candidate.effectiveTo || Date.parse(candidate.effectiveTo) > Date.parse(instant)) ?? null;
-    if (!assignment) return { accountId: account, workspaceId: workspace, plan: null, assignment: null, reason: 'no-assignment' };
-    const plans = await this.getRows(`/rest/v1/plans?plan_id=eq.${encodeURIComponent(assignment.planId)}&version=eq.${assignment.planVersion}&status=eq.active&limit=1`);
-    if (plans.length === 0) return { accountId: account, workspaceId: workspace, plan: null, assignment, reason: 'plan-unavailable' };
-    return { accountId: account, workspaceId: workspace, plan: parsePlan(plans[0]), assignment, reason: 'resolved' };
+    return this.read('resolvePlan', async () => {
+      this.assertPrincipal(actorUserId);
+      const account = required(accountId, 'accountId');
+      const workspace = required(workspaceId, 'workspaceId');
+      const instant = at ? new Date(at).toISOString() : new Date().toISOString();
+      const assignments = await this.getRows(`/rest/v1/plan_assignments?account_id=eq.${encodeURIComponent(account)}&workspace_id=eq.${encodeURIComponent(workspace)}&status=eq.active&effective_from=lte.${encodeURIComponent(instant)}&order=effective_from.desc`);
+      const assignment = assignments
+        .map(parseAssignment)
+        .find((candidate) => !candidate.effectiveTo || Date.parse(candidate.effectiveTo) > Date.parse(instant)) ?? null;
+      if (!assignment) return { accountId: account, workspaceId: workspace, plan: null, assignment: null, reason: 'no-assignment' };
+      const plans = await this.getRows(`/rest/v1/plans?plan_id=eq.${encodeURIComponent(assignment.planId)}&version=eq.${assignment.planVersion}&status=eq.active&limit=1`);
+      if (plans.length === 0) return { accountId: account, workspaceId: workspace, plan: null, assignment, reason: 'plan-unavailable' };
+      return { accountId: account, workspaceId: workspace, plan: parsePlan(plans[0]), assignment, reason: 'resolved' };
+    });
   }
 
   async listUsage(workspaceId: string, actorUserId: string): Promise<readonly UsageEvent[]> {
-    this.assertPrincipal(actorUserId);
-    const rows = await this.getRows(`/rest/v1/usage_events?workspace_id=eq.${encodeURIComponent(required(workspaceId, 'workspaceId'))}&order=occurred_at.asc`);
-    return Object.freeze(rows.map(parseUsage));
+    return this.read('listUsage', async () => {
+      this.assertPrincipal(actorUserId);
+      const rows = await this.getRows(`/rest/v1/usage_events?workspace_id=eq.${encodeURIComponent(required(workspaceId, 'workspaceId'))}&order=occurred_at.asc`);
+      return Object.freeze(rows.map(parseUsage));
+    });
+  }
+
+  private async read<T>(operation: BillingReadOperation, action: () => Promise<T>): Promise<T> {
+    const startedAt = Date.now();
+    try {
+      const result = await action();
+      this.observer.observe({ operation, outcome: 'success', durationMs: Date.now() - startedAt });
+      return result;
+    } catch (error) {
+      if (error instanceof BillingPersistenceError) {
+        this.observer.observe({ operation, outcome: 'error', durationMs: Date.now() - startedAt, errorCode: error.code });
+      }
+      throw error;
+    }
   }
 
   private assertPrincipal(actorUserId: string): void {
