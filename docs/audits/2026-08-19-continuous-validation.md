@@ -33,3 +33,7 @@ O teste do bundle deve usar o asset hash servido pelo Vite (`/assets/jarvisNucle
 ## Gates remotos
 
 O main recebeu commits automáticos de documentação V2 durante a rodada. No SHA `1e500e3f8be3bea4a4fefaad23f3f7660f9dbe82`, os sete gates (`Vigia das rotas`, `V2 Runtime`, `Core CI`, `Arma 3 Data CI`, `V2 Validation`, `CI` e `CodeQL`) terminaram com sucesso. O SHA seguinte `e61a786f9393ea71547f7be54272654eabc93285`, também com alterações automáticas de V2, repetiu os sete gates com sucesso.
+
+## Terceira rodada
+
+A terceira rodada repetiu `tipos:ts`, testes, build, estabilidade, `tipos:v2`, integração V2, smoke, caminho crítico e Runtime sem falhas. O JARVIS público abriu novamente com canvas 3D e os controles de música, ficheiro, microfone, pulso, varrimento, dissecação, retrato, rotação, captura e temas. O console ficou sem saída ou erro.
