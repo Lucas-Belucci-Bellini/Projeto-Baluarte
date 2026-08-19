@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NÚCLEO BALUARTE · MARK XIII</title>
+
+<!-- Three.js via CDN (build único, sem módulos) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+<style>
+  /* ======================================================================
+     CSS INTEGRADO — tema holográfico dourado sobre fundo noturno
+     ====================================================================== */
+  :root{
+    --gold:#f0b64a;      /* dourado principal (HUD) */
+    --gold-soft:#f7d489; /* dourado claro */
+    --dim:#8a7a52;       /* texto secundário */
+    --bg:#05060c;        /* fundo quase preto azulado */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
+    font-family:'Courier New',ui-monospace,monospace;cursor:crosshair;}
+
+  /* brilho ambiente por trás do núcleo (reforça o efeito "glow") */
+  #glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 46% 46% at 50% 50%,
+      rgba(240,182,74,0.18), rgba(240,120,30,0.05) 42%, transparent 68%);
+    mix-blend-mode:screen;animation:breathe 5.5s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{opacity:.7}50%{opacity:1}}
+
+  /* vinheta escura nas bordas */
+  #vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 55%,rgba(2,3,8,0.85) 100%);}
+
+  /* grade sutil de fundo */
+  #grid{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.10;
+    background-image:linear-gradient(rgba(240,182,74,.5) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(240,182,74,.5) 1px,transparent 1px);
+    background-size:52px 52px;
+    -webkit-mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000,transparent 80%);
+            mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,#000,transparent 80%);}
+
+  canvas{position:fixed;inset:0;z-index:1;display:block}
+
+  /* ---------- HUD (moldura estilo J.A.R.V.I.S.) ---------- */
+  .hud{position:fixed;z-index:5;color:var(--gold);pointer-events:none;
+    text-transform:uppercase;letter-spacing:3px;text-shadow:0 0 12px rgba(240,182,74,.6);}
+  #title{top:34px;left:0;right:0;text-align:center;font-size:13px;letter-spacing:14px;}
+  #title b{font-size:26px;letter-spacing:16px;display:block;margin-top:6px;color:var(--gold-soft);}
+  #subtitle{color:var(--dim);font-size:10px;letter-spacing:6px;margin-top:8px;}
+
+  .corner{position:fixed;z-index:5;width:64px;height:64px;pointer-events:none;
+    border-color:var(--gold);opacity:.65;}
+  .tl{top:24px;left:24px;border-top:2px solid;border-left:2px solid;}
+  .tr{top:24px;right:24px;border-top:2px solid;border-right:2px solid;}
+  .bl{bottom:24px;left:24px;border-bottom:2px solid;border-left:2px solid;}
+  .br{bottom:24px;right:24px;border-bottom:2px solid;border-right:2px solid;}
+
+  #readout{bottom:44px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:5px;
+    display:flex;gap:34px;justify-content:center;flex-wrap:wrap;}
+  #readout .k{color:var(--dim);}
+  #readout .v{color:var(--gold-soft);}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5cf08a;
+    box-shadow:0 0 10px #5cf08a;margin-right:8px;vertical-align:middle;animation:blink 2s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+  #hint{position:fixed;z-index:5;bottom:18px;left:0;right:0;text-align:center;
+    color:var(--dim);font-size:9px;letter-spacing:4px;pointer-events:none;opacity:.6;}
+</style>
+</head>
+<body>
+
+  <div id="glow"></div>
+  <div id="grid"></div>
+  <canvas id="scene"></canvas>
+  <div id="vignette"></div>
+
+  <!-- HUD -->
+  <div class="corner tl"></div><div class="corner tr"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+
+  <div id="title" class="hud">
+    núcleo online
+    <b>J·A·R·V·I·S</b>
+    <div id="subtitle">Mark XIII · Infinity Dreadnought · v2.0.0</div>
+  </div>
+
+  <div id="readout" class="hud">
+    <span><span class="dot"></span><span class="v">SISTEMA</span> <span class="k">estável</span></span>
+    <span><span class="k">energia</span> <span class="v" id="pwr">98%</span></span>
+    <span><span class="k">nós de dados</span> <span class="v" id="nodes">—</span></span>
+    <span><span class="k">latência</span> <span class="v" id="lat">04ms</span></span>
+  </div>
+
+  <div id="hint">mova o rato para inclinar o núcleo</div>
+
+<script>
+/* ======================================================================
+   J.A.R.V.I.S. — NÚCLEO HOLOGRÁFICO 3D
+   ----------------------------------------------------------------------
+   ► PARA AFINAR O DESIGN, MEXA APENAS NO OBJETO "CONFIG" ABAIXO. ◄
+   ====================================================================== */
+const CONFIG = {
+  // ---- CORES (formato hexadecimal 0x......) ----
+  colorCore:     0xffcf7a, // esfera/wireframe central (dourado claro)
+  colorRings:    0xf0a83c, // anéis concêntricos (âmbar)
+  colorParticles:0xffe4ad, // nuvem de pontos (dourado pálido)
+  colorNodes:    0xffb347, // nós de dados brilhantes (laranja)
+  colorAccent:   0xff8c1a, // acento quente (partículas externas)
+
+  // ---- ROTAÇÃO (radianos por segundo — maior = mais rápido) ----
+  spinCore:   0.10,  // velocidade base do grupo central
+  spinRings:  0.55,  // velocidade dos anéis (cada anel varia à volta deste valor)
+  spinCloud:  0.04,  // velocidade da nuvem de pontos
+
+  // ---- PARTÍCULAS (contagens — reduza se o desempenho cair) ----
+  cloudCount: 4200,  // pontos da casca esférica (o "mapa de dados")
+  dustCount:  1400,  // poeira exterior para profundidade
+  nodeCount:  90,    // nós de dados brilhantes
+
+  // ---- ESTRUTURA ----
+  ringCount:  6,     // nº de anéis concêntricos
+  pulseSpeed: 1.4,   // velocidade da pulsação do brilho
+  pulseAmount:0.18,  // intensidade da pulsação (0 = sem pulso)
+  parallax:   0.35,  // reação da câmara ao rato (0 = fixo, 1 = muito sensível)
+};
+
+const THREE = window.THREE;
+const canvas = document.getElementById('scene');
+
+/* ---------------------------------------------------------------------- */
+/* CENA, CÂMARA, RENDERIZADOR                                             */
+/* ---------------------------------------------------------------------- */
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x05060c, 0.045); // névoa: escurece objetos distantes
+
+const camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 200);
+camera.position.set(0, 0, 13);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+
+// grupo raiz — tudo o que roda com o núcleo entra aqui
+const core = new THREE.Group();
+scene.add(core);
+
+/* ---------------------------------------------------------------------- */
+/* TEXTURA DE BRILHO (sprite radial gerado em canvas) — simula "bloom"    */
+/* ---------------------------------------------------------------------- */
+function glowTexture(){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(64,64,0, 64,64,64);
+  grad.addColorStop(0,   'rgba(255,255,255,1)');
+  grad.addColorStop(0.2, 'rgba(255,224,170,0.9)');
+  grad.addColorStop(0.5, 'rgba(255,170,60,0.35)');
+  grad.addColorStop(1,   'rgba(255,140,20,0)');
+  g.fillStyle = grad; g.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const GLOW = glowTexture();
+
+/* ---------------------------------------------------------------------- */
+/* 1. NÚCLEO CENTRAL — icosaedro wireframe + arestas + halo emissivo       */
+/* ---------------------------------------------------------------------- */
+const icoGeo = new THREE.IcosahedronGeometry(1.7, 1);
+
+// wireframe interior
+const wireCore = new THREE.Mesh(icoGeo,
+  new THREE.MeshBasicMaterial({ color:CONFIG.colorCore, wireframe:true,
+    transparent:true, opacity:0.55 }));
+core.add(wireCore);
+
+// arestas nítidas por cima (dá definição ao poliedro)
+const edges = new THREE.LineSegments(new THREE.EdgesGeometry(icoGeo),
+  new THREE.LineBasicMaterial({ color:CONFIG.colorCore, transparent:true, opacity:0.9 }));
+core.add(edges);
+
+// halo suave (esfera translúcida em blending aditivo)
+const halo = new THREE.Mesh(new THREE.SphereGeometry(1.35, 32, 32),
+  new THREE.MeshBasicMaterial({ color:CONFIG.colorNodes, transparent:true,
+    opacity:0.14, blending:THREE.AdditiveBlending, depthWrite:false }));
+core.add(halo);
+
+// sprite de brilho central (o "coração" do reator)
+const heart = new THREE.Sprite(new THREE.SpriteMaterial({ map:GLOW,
+  color:CONFIG.colorNodes, transparent:true, opacity:0.9,
+  blending:THREE.AdditiveBlending, depthWrite:false }));
+heart.scale.setScalar(4.5);
+core.add(heart);
+
+/* ---------------------------------------------------------------------- */
+/* 2. ANÉIS CONCÊNTRICOS — cada um roda num eixo/velocidade própria        */
+/* ---------------------------------------------------------------------- */
+const rings = [];
+for(let i=0; i<CONFIG.ringCount; i++){
+  const radius = 2.6 + i*0.55;
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(radius, 0.012 + (i%2)*0.006, 8, 160),
+    new THREE.MeshBasicMaterial({ color:i%2 ? CONFIG.colorRings : CONFIG.colorNodes,
+      transparent:true, opacity:0.5 - i*0.04, blending:THREE.AdditiveBlending }));
+  // orientação inicial variada nos três eixos
+  ring.rotation.x = Math.PI * (0.15 + i*0.17);
+  ring.rotation.y = Math.PI * (i*0.23);
+  // guarda velocidades independentes por eixo
+  ring.userData.spin = {
+    x: (Math.random()-0.5) * CONFIG.spinRings,
+    y: (Math.random()-0.5) * CONFIG.spinRings,
+    z: (0.3 + Math.random()*0.7) * CONFIG.spinRings * (i%2?1:-1),
+  };
+  core.add(ring); rings.push(ring);
+}
+
+// anel-astrolábio com marcas (segmentos radiais tipo mostrador)
+(function ticksRing(){
+  const R = 5.2, n = 90, verts = [];
+  for(let i=0;i<n;i++){
+    const a = (i/n)*Math.PI*2;
+    const inner = (i%5===0) ? R-0.16 : R-0.07; // marcas maiores a cada 5
+    verts.push(Math.cos(a)*inner, Math.sin(a)*inner, 0,
+               Math.cos(a)*R,     Math.sin(a)*R,     0);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(verts,3));
+  const seg = new THREE.LineSegments(g,
+    new THREE.LineBasicMaterial({ color:CONFIG.colorRings, transparent:true, opacity:0.4 }));
+  seg.rotation.x = Math.PI*0.5;
+  seg.userData.spin = { x:0, y:0, z:0.12 };
+  core.add(seg); rings.push(seg);
+})();
+
+/* ---------------------------------------------------------------------- */
+/* 3. NUVEM DE PONTOS — casca esférica (o "mapa de dados tridimensional")  */
+/*    BufferGeometry para desempenho fluído.                               */
+/* ---------------------------------------------------------------------- */
+function makeCloud(count, rMin, rMax, size, color, opacity, flatten=1){
+  const pos = new Float32Array(count*3);
+  for(let i=0;i<count;i++){
+    const r  = rMin + Math.random()*(rMax-rMin);
+    const th = Math.random()*Math.PI*2;
+    const ph = Math.acos(2*Math.random()-1);
+    pos[i*3]   = r*Math.sin(ph)*Math.cos(th);
+    pos[i*3+1] = r*Math.sin(ph)*Math.sin(th)*flatten;
+    pos[i*3+2] = r*Math.cos(ph);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const mat = new THREE.PointsMaterial({ color, size, transparent:true, opacity,
+    blending:THREE.AdditiveBlending, depthWrite:false, map:GLOW });
+  return new THREE.Points(geo, mat);
+}
+
+const cloud = makeCloud(CONFIG.cloudCount, 3.2, 7.5, 0.07, CONFIG.colorParticles, 0.75);
+core.add(cloud);
+
+const dust  = makeCloud(CONFIG.dustCount, 8, 22, 0.10, CONFIG.colorAccent, 0.45);
+scene.add(dust); // poeira exterior fica fora do grupo (roda mais devagar)
+
+// nós de dados brilhantes (pontos maiores que pulsam)
+const nodes = makeCloud(CONFIG.nodeCount, 2.8, 6.8, 0.28, CONFIG.colorNodes, 0.9);
+core.add(nodes);
+document.getElementById('nodes').textContent = String(CONFIG.nodeCount).padStart(3,'0');
+
+/* ---------------------------------------------------------------------- */
+/* INTERATIVIDADE — parallax suave da câmara ao movimento do rato          */
+/* ---------------------------------------------------------------------- */
+let mx=0, my=0, tx=0, ty=0;
+addEventListener('mousemove', e=>{
+  tx = (e.clientX/innerWidth  - 0.5);
+  ty = (e.clientY/innerHeight - 0.5);
+});
+// suporte a toque (arrastar no telemóvel)
+addEventListener('touchmove', e=>{
+  const t=e.touches[0];
+  tx = (t.clientX/innerWidth  - 0.5);
+  ty = (t.clientY/innerHeight - 0.5);
+}, {passive:true});
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+/* ---------------------------------------------------------------------- */
+/* LOOP DE ANIMAÇÃO                                                        */
+/* ---------------------------------------------------------------------- */
+const clock = new THREE.Clock();
+function animate(){
+  const dt = clock.getDelta();
+  const t  = clock.getElapsedTime();
+
+  // rotação global do núcleo (independente em cada eixo)
+  core.rotation.y += dt * CONFIG.spinCore;
+  core.rotation.x  = Math.sin(t*0.2) * 0.15;
+
+  // anéis: rotação própria por eixo
+  rings.forEach(r=>{
+    const s = r.userData.spin;
+    r.rotation.x += dt * s.x;
+    r.rotation.y += dt * s.y;
+    r.rotation.z += dt * s.z;
+  });
+
+  // nuvens de pontos
+  cloud.rotation.y += dt * CONFIG.spinCloud;
+  nodes.rotation.y -= dt * CONFIG.spinCloud * 1.6;
+  dust.rotation.y  += dt * CONFIG.spinCloud * 0.4;
+  dust.rotation.x  += dt * CONFIG.spinCloud * 0.2;
+
+  // PULSAÇÃO do brilho (respiração de energia)
+  const pulse = 1 + Math.sin(t*CONFIG.pulseSpeed) * CONFIG.pulseAmount;
+  heart.scale.setScalar(4.5 * pulse);
+  heart.material.opacity = 0.7 + 0.25*Math.sin(t*CONFIG.pulseSpeed);
+  halo.scale.setScalar(pulse);
+  wireCore.scale.setScalar(1 + (pulse-1)*0.4);
+  nodes.material.opacity = 0.65 + 0.3*Math.abs(Math.sin(t*CONFIG.pulseSpeed*0.8));
+
+  // PARALLAX — câmara desliza suavemente em direção ao rato
+  mx += (tx - mx) * 0.04;
+  my += (ty - my) * 0.04;
+  camera.position.x = mx * 6 * CONFIG.parallax;
+  camera.position.y = -my * 4 * CONFIG.parallax;
+  camera.lookAt(0,0,0);
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ---------------------------------------------------------------------- */
+/* HUD dinâmico (energia/latência a oscilar para dar vida)                 */
+/* ---------------------------------------------------------------------- */
+setInterval(()=>{
+  document.getElementById('pwr').textContent = (94 + Math.floor(Math.random()*6)) + '%';
+  document.getElementById('lat').textContent = String(2 + Math.floor(Math.random()*7)).padStart(2,'0') + 'ms';
+}, 1400);
+</script>
+</body>
+</html>

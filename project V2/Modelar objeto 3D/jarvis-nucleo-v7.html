@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NÚCLEO J.A.R.V.I.S. v7 · Astrolábio Sonoro · Projeto Baluarte</title>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{--bg:#0b0910;--accent:#d4a24e;--accent2:#eec886;--txt:#f4ecdd;--dim:#9d9078;
+    --line:rgba(212,162,78,0.24);--glow:rgba(212,162,78,0.40)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
+    font-family:'IBM Plex Mono',ui-monospace,monospace;cursor:crosshair;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none} a:hover{color:var(--accent2)}
+  #stage{position:fixed;inset:0;z-index:1}
+  #stage.drag{cursor:grabbing}
+  canvas{display:block}
+  .layer{position:fixed;inset:0;pointer-events:none}
+  #scan{z-index:3;opacity:.2;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,.02) 0 1px,transparent 1px 3px)}
+  #vig{z-index:4;background:radial-gradient(ellipse 118% 100% at 50% 50%,transparent 46%,rgba(4,3,8,.9) 100%)}
+
+  /* interface mínima: sai de cena sozinha */
+  #hud{position:fixed;inset:0;z-index:6;pointer-events:none;transition:opacity .5s}
+  #hud.off{opacity:0}
+  #hud.idle #actions{opacity:.12}
+  #hud button{pointer-events:auto}
+
+  #title{position:absolute;top:38px;left:0;right:0;text-align:center;text-transform:uppercase;
+    transition:opacity 1.6s;text-shadow:0 0 18px var(--glow),0 2px 14px rgba(6,4,10,.95)}
+  #title.faded{opacity:.16}
+  #title b{display:block;font-family:'Cormorant Garamond',serif;font-weight:700;
+    font-size:clamp(20px,2.8vw,34px);letter-spacing:16px;color:var(--txt)}
+  #title .s{margin-top:9px;font-size:8.5px;letter-spacing:5px;color:var(--accent);opacity:.8}
+
+  #actions{position:absolute;top:26px;right:26px;display:flex;flex-direction:column;
+    align-items:stretch;gap:5px;width:158px;transition:opacity .6s}
+  #actions:hover{opacity:1 !important}
+  #themes{display:flex;gap:5px;margin-top:3px}
+  #themes button{flex:1;padding:6px 0;text-align:center}
+  .sep{height:1px;background:var(--line);margin:5px 2px;opacity:.7}
+  button{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+    color:var(--accent2);background:rgba(212,162,78,.06);border:1px solid var(--line);
+    border-radius:3px;padding:7px 10px;cursor:crosshair;text-align:left;
+    transition:background .18s,box-shadow .18s,color .18s}
+  button:hover{background:rgba(212,162,78,.18);box-shadow:0 0 14px rgba(212,162,78,.22)}
+  button:focus-visible{outline:1px solid var(--accent2);outline-offset:2px}
+  button[aria-pressed=true]{background:rgba(212,162,78,.26);border-color:var(--accent2);color:var(--txt)}
+  kbd{font:inherit;color:var(--dim);opacity:.7;float:right;letter-spacing:1px}
+
+  #toast{position:absolute;bottom:34px;left:0;right:0;text-align:center;color:var(--accent2);
+    font-size:9px;letter-spacing:4px;text-transform:uppercase;opacity:0;transition:opacity .5s;
+    text-shadow:0 0 14px var(--glow)}
+  #toast.on{opacity:.9}
+
+  body.dropping::after{content:'largue a música aqui';position:fixed;inset:18px;z-index:9;
+    display:flex;align-items:center;justify-content:center;
+    border:1px dashed var(--accent);border-radius:6px;color:var(--accent2);
+    font-size:10px;letter-spacing:6px;text-transform:uppercase;
+    background:rgba(11,9,16,.55);pointer-events:none}
+
+  #loading{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;gap:16px;
+    align-items:center;justify-content:center;background:var(--bg);color:var(--accent);
+    font-size:10px;letter-spacing:6px;text-transform:uppercase;transition:opacity .7s}
+  #loading i{display:block;width:180px;height:1px;background:var(--line);position:relative;overflow:hidden}
+  #loading i::after{content:'';position:absolute;inset:0;width:40%;background:var(--accent);
+    animation:sweep 1.1s infinite ease-in-out}
+  @keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+  #err{position:fixed;z-index:8;left:0;right:0;bottom:70px;text-align:center;color:#e07a6a;
+    font-size:9px;letter-spacing:2px;display:none}
+  #file{display:none}
+  @media (max-width:860px){ #actions{width:130px} }
+  @media (prefers-reduced-motion:reduce){ #loading i::after{animation:none} }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div class="layer" id="scan"></div>
+<div class="layer" id="vig"></div>
+
+<div id="hud">
+  <div id="title">
+    <b>J·A·R·V·I·S</b>
+    <div class="s">Mark XV · astrolábio sonoro · Projeto Baluarte</div>
+  </div>
+
+  <div id="actions">
+    <button id="bMusic" aria-pressed="false">♪ música<kbd>m</kbd></button>
+    <button id="bFile" aria-pressed="false">▲ ficheiro<kbd>o</kbd></button>
+    <button id="bMic" aria-pressed="false">◉ microfone<kbd>i</kbd></button>
+    <div class="sep"></div>
+    <button id="bPulse">⚡ pulso<kbd>espaço</kbd></button>
+    <button id="bScan">▤ varrimento<kbd>s</kbd></button>
+    <button id="bOpen" aria-pressed="false">◈ dissecar<kbd>x</kbd></button>
+    <button id="bView">◱ <span id="viewName">retrato</span><kbd>v</kbd></button>
+    <button id="bSpin" aria-pressed="true">↻ rotação<kbd>r</kbd></button>
+    <button id="bShot">◎ captura<kbd>p</kbd></button>
+    <div id="themes">
+      <button data-th="0" aria-pressed="true">ouro</button>
+      <button data-th="1" aria-pressed="false">rubi</button>
+      <button data-th="2" aria-pressed="false">jade</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<input id="file" type="file" accept="audio/*">
+<div id="loading">alinhando astrolábio<i></i></div>
+<div id="err"></div>
+
+<!-- O núcleo é escrito em TypeScript; o navegador transpila em tempo real,
+     sem passo de compilação a manter. Fonte única: jarvis-nucleo-v7.ts -->
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.24.7/babel.min.js"></script>
+<script type="text/babel" data-presets="typescript" data-plugins="transform-class-properties" src="jarvis-nucleo-v7.ts"></script>
+</body>
+</html>
