@@ -106,6 +106,7 @@ async function jornada(pag) {
   /* ── 3. Estado que precisa sobreviver à navegação ───────────────────────── */
   console.log('\n3. estado entre rotas');
   await navegarNaSPA('/editor');
+  await pag.waitForSelector('textarea.editor-textarea', { state: 'attached', timeout: 30000 });
   const marca = `baluarte-caminho-critico-${Date.now()}`;
   const escreveu = await pag.evaluate((txt) => {
     const ta = document.querySelector('textarea');
@@ -122,6 +123,7 @@ async function jornada(pag) {
   afirmar('o terminal abre depois do editor', terminalAbriu);
 
   await navegarNaSPA('/editor');
+  await pag.waitForSelector('textarea.editor-textarea', { state: 'attached', timeout: 30000 });
   const sobreviveu = await pag.evaluate((txt) => {
     const gravado = localStorage.getItem('baluarte:editor:state') || '';
     const naTela = [...document.querySelectorAll('textarea')].some((t) => t.value.includes(txt));
