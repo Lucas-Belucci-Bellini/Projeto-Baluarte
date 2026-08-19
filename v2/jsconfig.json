@@ -39,6 +39,7 @@
     "core/**/*.js",
     "modules/cripto/**/*.js",
     "modules/briefing/**/*.js",
-    "modules/visor3d/**/*.js"
+    "modules/visor3d/**/*.js",
+    "modules/visor3d/**/*.d.ts"
   ]
 }
