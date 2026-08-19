@@ -28,10 +28,12 @@ Um módulo em `degraded` ou `quarantined` não derruba Core, Router, Home ou out
 
 Este piloto não transforma health em autorização. O módulo continua sujeito ao Registry selado, ao Runtime e ao Permission Manager. Autorização administrativa, desligamento remoto de página e papel de proprietário/desenvolvedor continuam dependentes de backend/RLS e não podem ser derivados de metadata client-side.
 
+O adaptador agora expõe `definirModo(id, mode, reason)`, mas a operação é deny-by-default: `maintenance`, `disabled` e o retorno a `active` só são aceitos quando o callback `authorize` server-side aprova a solicitação. O motivo é obrigatório e deve ser mantido na auditoria do backend. Um callback ausente ou falso nunca concede acesso.
+
 ## Fallback
 
 O fallback é deliberadamente conservador: `registered` pode ser ativado; `degraded` pode tentar reinício limitado; `quarantined` e `unregistered` não podem ser ativados. Não existe fallback silencioso para um módulo desconhecido, porque isso poderia abrir uma rota não registrada.
 
 ## Rollback e próximo passo
 
-O rollback é o revert do adaptador, teste e documentação. O próximo passo do piloto é conectar `resumo()` à superfície de diagnóstico do Runtime e, somente após autorização server-side, permitir que um operador admin/desenvolvedor coloque um módulo em `maintenance` ou `disabled` com auditoria. Nenhuma ação remota ou alteração de dados foi executada nesta onda.
+O rollback é o revert do adaptador, testes e documentação. O próximo passo do piloto é conectar `resumo()` à superfície de diagnóstico do Runtime e substituir o callback local por uma integração server-side/RLS aprovada, com auditoria e idempotência. Nenhuma ação remota ou alteração de dados foi executada nesta onda.

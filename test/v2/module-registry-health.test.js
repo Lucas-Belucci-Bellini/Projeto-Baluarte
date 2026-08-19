@@ -55,3 +55,47 @@ test('registry health: limite de falhas coloca módulo em quarentena sem derruba
   assert.equal(health.modo('beta'), 'registered');
   assert.deepEqual(health.resumo().map(({ id }) => id), ['alpha', 'beta']);
 });
+
+test('registry health: maintenance exige autorização server-side e motivo', () => {
+  const pedidos = [];
+  const health = criarModuleRegistryHealth(
+    registryFake(['alpha', 'beta']),
+    criarRuntimeHealth(),
+    { authorize: (request) => { pedidos.push(request); return request.id === 'alpha'; } },
+  );
+
+  assert.throws(
+    () => health.definirModo('alpha', 'maintenance', ''),
+    /exige motivo/i,
+  );
+  assert.equal(health.definirModo('alpha', 'maintenance', 'janela aprovada'), 'maintenance');
+  assert.equal(health.podeAtivar('alpha'), false);
+  assert.equal(health.modo('beta'), 'registered');
+  assert.deepEqual(pedidos, [{ id: 'alpha', mode: 'maintenance', reason: 'janela aprovada' }]);
+});
+
+test('registry health: autorização negada não altera disabled', () => {
+  const health = criarModuleRegistryHealth(
+    registryFake(['alpha']),
+    criarRuntimeHealth(),
+    { authorize: () => false },
+  );
+
+  assert.throws(
+    () => health.definirModo('alpha', 'disabled', 'incidente'),
+    /autorização server-side necessária/i,
+  );
+  assert.equal(health.modo('alpha'), 'registered');
+});
+
+test('registry health: active remove override somente com autorização', () => {
+  const health = criarModuleRegistryHealth(
+    registryFake(['alpha']),
+    criarRuntimeHealth(),
+    { authorize: () => true },
+  );
+
+  health.definirModo('alpha', 'disabled', 'teste');
+  assert.equal(health.modo('alpha'), 'disabled');
+  assert.equal(health.definirModo('alpha', 'active', 'retorno aprovado'), 'registered');
+});

@@ -6,7 +6,7 @@
  */
 
 /**
- * @typedef {'registered'|'healthy'|'degraded'|'quarantined'|'unregistered'} RegistryModuleMode
+ * @typedef {'registered'|'healthy'|'degraded'|'quarantined'|'maintenance'|'disabled'|'unregistered'} RegistryModuleMode
  */
 
 /**
@@ -23,11 +23,16 @@
 /**
  * @param {{listar: () => string[], modulo: (id: string) => unknown}} registry
  * @param {{estado: (id: string) => {status: 'unknown'|'healthy'|'failed'|'exhausted', restarts?: number[], lastError?: unknown}, podeReiniciar: (id: string) => boolean}} runtimeHealth
+ * @param {{authorize?: (request: {id: string, mode: 'active'|'maintenance'|'disabled', reason: string}) => boolean}} [options]
  */
-export function criarModuleRegistryHealth(registry, runtimeHealth) {
+export function criarModuleRegistryHealth(registry, runtimeHealth, options = {}) {
+  const overrides = new Map();
+  const authorize = options.authorize ?? (() => false);
   /** @param {string} id @returns {RegistryModuleMode} */
   function modo(id) {
     if (!registry?.modulo(id)) return 'unregistered';
+    const override = overrides.get(id);
+    if (override) return override;
     const estado = runtimeHealth.estado(id);
     if (estado.status === 'healthy') return 'healthy';
     if (estado.status === 'failed') return 'degraded';
@@ -38,7 +43,30 @@ export function criarModuleRegistryHealth(registry, runtimeHealth) {
   /** @param {string} id */
   function podeAtivar(id) {
     if (!registry?.modulo(id)) return false;
+    const mode = modo(id);
+    if (mode === 'maintenance' || mode === 'disabled' || mode === 'quarantined') return false;
     return runtimeHealth.podeReiniciar(id);
+  }
+
+  /**
+   * @param {string} id
+   * @param {'active'|'maintenance'|'disabled'} mode
+   * @param {string} reason
+   */
+  function definirModo(id, mode, reason) {
+    if (!registry?.modulo(id)) throw new Error(`módulo não registrado: "${id}"`);
+    if (!['active', 'maintenance', 'disabled'].includes(mode)) {
+      throw new Error(`modo operacional inválido: "${mode}"`);
+    }
+    if (typeof reason !== 'string' || reason.trim() === '') {
+      throw new Error('maintenance/disabled exige motivo');
+    }
+    if (!authorize({ id, mode, reason })) {
+      throw new Error('autorização server-side necessária para mudar modo');
+    }
+    if (mode === 'active') overrides.delete(id);
+    else overrides.set(id, mode);
+    return modo(id);
   }
 
   /** @param {string} id @returns {RegistryHealthEntry} */
@@ -72,5 +100,5 @@ export function criarModuleRegistryHealth(registry, runtimeHealth) {
     return registry.listar().sort().map(entrada);
   }
 
-  return { modo, podeAtivar, resumo };
+  return { modo, podeAtivar, definirModo, resumo };
 }
