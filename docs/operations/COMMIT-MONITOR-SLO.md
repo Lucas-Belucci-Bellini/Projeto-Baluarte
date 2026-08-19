@@ -39,3 +39,11 @@ O monitor deve preservar o último snapshot válido. Falha do gráfico não deve
 O benchmark `scripts/benchmark_commit_monitor.py` cria um Git temporário com 5.000 commits distribuídos em sete dias e executa a agregação real do backend. A execução validada apresentou 5.000 commits agregados, 14 dias, `activityTruncated=False`, aproximadamente 254 ms na primeira agregação, cerca de 73% de CPU do processo durante a agregação e pico de RSS do processo de aproximadamente 80,5 MiB. O cache apresentou p95 abaixo de 0,003 ms no ambiente de teste.
 
 Esses números são baseline do sandbox, não promessa de produção. Em produção, medir a mesma série sob o runtime, CPU, disco e limites de memória reais.
+
+## Estresse futuro — 1.000.000 de commits em 100 repositórios
+
+O benchmark `scripts/benchmark_commit_monitor_scale.py` foi executado com 100 repositórios temporários e 10.000 commits por repositório. O cenário máximo agregou 1.000.000 de commits em 65,46 s, consumiu aproximadamente 79,1% de CPU do processo e atingiu 81,38 MiB de pico de RSS. Nenhum repositório foi truncado.
+
+A injeção de um 101º repositório inválido foi isolada: o resultado preservou os 1.000.000 commits válidos, registrou exatamente uma falha parcial e terminou com `stress_resilience=PASS` em 66,01 s.
+
+Esse resultado confirma a correção e a resiliência do algoritmo, mas também define um limite de arquitetura: 65 segundos de processamento sequencial é aceitável como job assíncrono ou reconciliação de baixa frequência, não como resposta síncrona de uma requisição de usuário. Para uma escala futura maior, executar a agregação em worker, particionar por repositório e armazenar buckets diários incrementais, mantendo o dashboard lendo apenas o snapshot/cache.
