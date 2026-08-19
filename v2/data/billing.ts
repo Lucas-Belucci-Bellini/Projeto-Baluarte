@@ -200,6 +200,11 @@ export class UsageLedger {
     return normalized;
   }
 
+  findByIdempotencyKey(idempotencyKey: string): UsageEvent | null {
+    const normalized = required(idempotencyKey, 'usage.idempotencyKey');
+    return this.byIdempotency.get(normalized) ?? null;
+  }
+
   list(): readonly UsageEvent[] {
     return Object.freeze([...this.events]);
   }

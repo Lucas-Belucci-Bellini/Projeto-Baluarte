@@ -36,6 +36,27 @@ test('concurrent retries with the same idempotency key append once', async () =>
   assert.equal(adapter.ledger.total('account-1', 'workspace-1', 'JARVIS_MESSAGES_PER_MONTH'), 1);
 });
 
+test('same idempotency key with a compatible payload is a safe replay', async () => {
+  const adapter = adapterFixture();
+  const first = await adapter.appendUsage(usageRequest({ metadata: { source: 'api', region: 'br' } }));
+  const replay = await adapter.appendUsage(usageRequest({
+    id: 'usage-retry',
+    metadata: { region: 'br', source: 'api' },
+  }));
+  assert.equal(replay.id, first.id);
+  assert.equal(adapter.ledger.list().length, 1);
+});
+
+test('same idempotency key with a different payload is rejected', async () => {
+  const adapter = adapterFixture();
+  await adapter.appendUsage(usageRequest());
+  await assert.rejects(
+    () => adapter.appendUsage(usageRequest({ quantity: 2, id: 'usage-conflict' })),
+    (error) => error instanceof BillingPersistenceError && error.code === 'IDEMPOTENCY_CONFLICT',
+  );
+  assert.equal(adapter.ledger.list().length, 1);
+});
+
 test('different idempotency keys are preserved under concurrent writes', async () => {
   const adapter = adapterFixture();
   await Promise.all(Array.from({ length: 12 }, (_, index) => adapter.appendUsage(

@@ -35,6 +35,16 @@ function required(value: string, field: string): string {
   return normalized;
 }
 
+function sameUsagePayload(left: UsageEvent, right: UsageEvent): boolean {
+  return left.accountId === right.accountId
+    && left.workspaceId === right.workspaceId
+    && left.feature === right.feature
+    && left.quantity === right.quantity
+    && left.timestamp === right.timestamp
+    && left.source === right.source
+    && JSON.stringify(Object.entries(left.metadata).sort()) === JSON.stringify(Object.entries(right.metadata).sort());
+}
+
 class AsyncMutex {
   private tail: Promise<void> = Promise.resolve();
 
@@ -149,6 +159,13 @@ export class BillingPersistenceAdapter implements BillingDriver {
       }
       if (!this.isMember(request.workspaceId, request.actorUserId)) {
         throw new BillingPersistenceError('MEMBERSHIP_REQUIRED', 'ator não é membro do workspace');
+      }
+      const existing = this.ledger.findByIdempotencyKey(request.idempotencyKey);
+      if (existing && !sameUsagePayload(existing, request)) {
+        throw new BillingPersistenceError(
+          'IDEMPOTENCY_CONFLICT',
+          'idempotencyKey já foi usada com um payload diferente',
+        );
       }
       return this.ledger.append(request);
     });
