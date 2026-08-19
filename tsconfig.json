@@ -26,6 +26,7 @@
     "v2/core/plataforma.ts",
     "v2/data/evidence.ts",
     "v2/data/catalog-evidence.ts",
+    "v2/data/billing.ts",
     "src/pages/sobre.ts",
     "src/styles.d.ts",
     "src/pages/arsenal.ts",

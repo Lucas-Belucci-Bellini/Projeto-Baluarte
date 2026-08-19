@@ -12,9 +12,9 @@ A V1 continua sendo a linha de referência enquanto a V2 é construída. A migra
 
 | Marco | Objetivo | Critérios de entrada | Critérios de saída |
 | --- | --- | --- | --- |
-| `1.0.0` — congelamento V1 | Preservar a superfície estável atual | V1 documentada e gates básicos conhecidos | Build, rotas, testes de recursos e regressão do router verdes; nenhuma alteração experimental ligada por padrão |
-| `1.1.0` — Identidade Preview | Entregar login/cadastro por e-mail, senha e Google | `feature/login-cadastro` convertida para TS; RLS e redirects configurados | Testes de signup/login/logout/refresh/OAuth; smoke `/login`; nenhum segredo; V1 sem regressão |
-| `2.0.0-alpha.1` — Frontend TypeScript | Zerar páginas canônicas JS e preservar wrappers | Inventário com zero páginas canônicas JS em `src/pages` | `tipos:ts` verde, inventário atualizado, páginas comportamentais e 98/98 smoke |
+| `1.0.0` — linha histórica pulada | Marco de congelamento planejado, não publicado como release pública | ADRs históricos preservados para rastreabilidade | Não promover uma tag pública `v1.0.0`; o próximo marco público é `1.1.0` |
+| `1.1.0` — Identidade + fundação V2 | Entregar a primeira release pública posterior ao salto, com identidade estabilizada e contratos V2 iniciais | `feature/login-cadastro` convertida para TS; gates V1 verdes; Evidence e Billing Foundation cobertos por testes | Testes de auth, versão, Service Worker, build, smoke, integração V2 e documentação de atualização; nenhum segredo; V1 sem regressão |
+| `2.0.0-alpha.1` — Frontend TypeScript | Consolidar a migração para TypeScript e preservar wrappers | Inventário com zero páginas canônicas JS em `src/pages` | `tipos:ts` verde, inventário atualizado, páginas comportamentais e smoke completo |
 | `2.0.0-alpha.2` — Contratos V2 | Fechar o gate JSDoc/checkJs e runtime de contratos | `ROOT-TYPES-001` resolvido por famílias, sem `any` ou exclusões | `tipos:v2` verde no mesmo SHA; CI, V2 Core e V2 Validation verdes; testes V2 sem cascata |
 | `2.0.0-beta.1` — Primeiro vertical slice | Conectar Runtime, Core, Data, módulo e superfície | Core e Runtime verdes, RLS revisado, integração definida | E2E, integração, health/restart, session/transport/bridge e Supabase verdes |
 | `2.0.0-beta.2` — Plataforma modular | Entregar módulos isoláveis, quarentena e papéis | Flags, permissões e diagnóstico server-side | Falha de um módulo não derruba página; developer/admin/owner veem diagnóstico autorizado; user recebe fallback neutro |
@@ -48,4 +48,4 @@ Se um gate raiz falha, os gates dependentes devem ser marcados como “bloqueado
 
 ## 6. Próximo release recomendado
 
-O próximo marco recomendado é **`1.1.0 — Identidade Preview`**, mas somente depois de converter e testar `login.js`, validar a sessão com Supabase e confirmar a segurança das políticas RLS. Em paralelo, a migração das nove páginas canônicas restantes do `main` continua; ela não deve ficar bloqueada pelo trabalho de identidade.
+O marco público atual é **`1.1.0 — Identidade + fundação V2`**. A promoção só deve ser declarada concluída quando a versão, o Service Worker, o build do launcher e os gates comportamentais estiverem alinhados. A fundação de Billing permanece sem cobrança real até que tenancy, RLS, provider adapter e testes de concorrência estejam definidos.
