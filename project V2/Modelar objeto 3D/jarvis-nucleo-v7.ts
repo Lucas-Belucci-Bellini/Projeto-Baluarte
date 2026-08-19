@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    NÚCLEO J.A.R.V.I.S. v7 — ASTROLÁBIO SONORO · Projeto Baluarte
-   Fonte em TypeScript. O navegador transpila este ficheiro em tempo real
-   (Babel · preset typescript) — não há passo de compilação a manter.
+   Fonte em TypeScript. O artefato `jarvis-nucleo-v7.js` é gerado para
+   produção com o compilador TypeScript, sem transpile no navegador.
 
    Mudanças face ao v6:
    · SEM TELEMETRIA. Foram-se os painéis holográficos, o terminal de bordo,
@@ -282,7 +282,7 @@ class AudioEngine {
       return;
     }
     const raw = this.raw!;
-    this.analyser.getByteFrequencyData(raw);
+    this.analyser.getByteFrequencyData(raw as Uint8Array<ArrayBuffer>);
     const band = (a: number, b: number): number => {
       let s = 0;
       for (let i = a; i < b; i++) s += raw[i];
@@ -407,7 +407,7 @@ const waves: Obj[] = [];
 const themed: Array<{ mat: Obj; key: keyof Theme; uni?: string }> = [];
 
 let spinning = true, frame = 0, booted = false, hudOn = true;
-let viewIdx = 0, openTarget = 0, open = 0;
+let viewIdx = 0, openTarget = 0, openAmt = 0;
 let scanT = -1, scanY = -9, scanInt = 0, lastInput = 0, cinema = false;
 let pulseUntil = 0, energy = 0, sparkClock = 0, hudTouch = 0;
 const target = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
@@ -1315,11 +1315,11 @@ function animate(): void {
   const pulseS = (1 + Math.sin(t * CFG.pulseSpeed) * CFG.pulseAmt + boost * 0.04 + A.bass * 0.10)
     * (0.4 + 0.6 * boot);
   const near = Math.max(0.32, Math.min(1, (orb.dist - 6.5) / 8.0));
-  open += (openTarget - open) * Math.min(1, dt * 3.2);
+  openAmt += (openTarget - openAmt) * Math.min(1, dt * 3.2);
 
   const cu = crystal.material.uniforms;
   cu.uTime.value = t; cu.uPulse.value = pulseS; cu.uInt.value = boot;
-  cu.uOpen.value = open * 0.34 + energy * 0.20 + A.mid * 0.26;
+  cu.uOpen.value = openAmt * 0.34 + energy * 0.20 + A.mid * 0.26;
   cu.uScan.value = scanY; cu.uScanInt.value = scanInt; cu.uNear.value = near;
   cu.uAud.value = A.level * 0.9; cu.uBass.value = A.bass;
 
@@ -1347,7 +1347,7 @@ function animate(): void {
 
   bladeMeshes.forEach(m => {
     const u = m.material.uniforms;
-    u.uTime.value = t; u.uOpen.value = open * 1.15;
+    u.uTime.value = t; u.uOpen.value = openAmt * 1.15;
     u.uScan.value = scanY; u.uScanInt.value = scanInt;
     u.uPulse.value = energy; u.uTre.value = A.treble * 0.8;
   });

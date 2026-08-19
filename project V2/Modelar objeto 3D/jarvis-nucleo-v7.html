@@ -121,9 +121,8 @@
 <div id="loading">alinhando astrolábio<i></i></div>
 <div id="err"></div>
 
-<!-- O núcleo é escrito em TypeScript; o navegador transpila em tempo real,
-     sem passo de compilação a manter. Fonte única: jarvis-nucleo-v7.ts -->
-<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.24.7/babel.min.js"></script>
-<script type="text/babel" data-presets="typescript" data-plugins="transform-class-properties" src="jarvis-nucleo-v7.ts"></script>
+<!-- Fonte de desenvolvimento: jarvis-nucleo-v7.ts
+     Artefato de produção: jarvis-nucleo-v7.js, compilado sem bundler. -->
+<script type="module" src="./jarvis-nucleo-v7.js"></script>
 </body>
 </html>
