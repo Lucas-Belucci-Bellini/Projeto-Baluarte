@@ -1,6 +1,6 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Base de trabalho:** `main` local em `7e50207b`, integração de identidade validada; o SHA final publicado será registrado após o commit documental
+**Base de trabalho:** `main` publicada em `07d815b83f308605a1f7baf0371088f7a5a4ab09`, com Identidade Preview integrada
 **Status:** INVENTÁRIO ATUALIZADO — as páginas canônicas, incluindo `login.ts` da Identidade Preview, foram implementadas; **nenhuma continua canônica em JavaScript** (ver §0). O gate `tipos:v2` está verde após a fronteira Three.js do visor3d e a validação de Auth foi adicionada à suíte.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
@@ -280,4 +280,4 @@ A integração da branch `v2/identity-login` foi reaplicada sobre a main atual. 
 
 A diferença entre os arquivos físicos e o relatório agregado é intencional: o inventário operacional conta unidades canônicas, wrappers e fronteiras por escopo; a contagem física também inclui arquivos auxiliares e submódulos. `login.js` permanece como compatibilidade e `login.ts` é a implementação canônica.
 
-O próximo bloqueador de release é validar a configuração real de Supabase Auth/RLS e redirects permitidos em ambiente remoto. A UI não autoriza `developer`, `admin` ou `owner`; essas decisões devem continuar server-side. A conversão do login não autoriza, por si só, a declaração de `1.1.0`.
+O próximo bloqueador de release é validar a configuração real de Supabase Auth/RLS e redirects permitidos em ambiente remoto; essa evidência ainda não está disponível neste ciclo. A UI não autoriza `developer`, `admin` ou `owner`; essas decisões devem continuar server-side. A conversão do login não autoriza, por si só, a declaração de `1.1.0`.

@@ -1,12 +1,12 @@
 # Feature `login-cadastro`
 
-**Estado:** integrada localmente na `main` atual; publicação pendente do ciclo final deste marco. Checks remotos de Auth/RLS ainda precisam ser observados.
+**Estado:** integrada e publicada na `main` em `07d815b83f308605a1f7baf0371088f7a5a4ab09`. Checks remotos de Auth/RLS ainda precisam ser observados para promoção do release.
 
 **Branch de origem:** `feature/login-cadastro`
 
 **Commit de origem:** `9ffbe39ed4213610c07b549df8a002ea03fdb0a8`
-**Conversão TypeScript:** `login.ts` no commit local `7e50207b`
-**Base de integração:** `main` após `04575d5a`; SHA final será registrado após o push.
+**Conversão TypeScript:** `login.ts` no commit `7e50207b`
+**Base publicada:** `main` em `07d815b83f308605a1f7baf0371088f7a5a4ab09`.
 
 ## 1. O que há de novo
 

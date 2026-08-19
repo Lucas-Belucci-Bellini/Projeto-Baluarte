@@ -819,7 +819,7 @@ A conclusão desta etapa não significa remover wrappers nem parar a evolução 
 
 ## Onda 4.52 — Identidade Preview: login-cadastro
 
-A branch `feature/login-cadastro` foi reaplicada sobre a main atual na branch de trabalho `v2/identity-login`. A nova página `src/pages/login.js` foi convertida para a implementação canônica `src/pages/login.ts`, mantendo `login.js` como wrapper de compatibilidade. O contrato `src/core/supabase-auth.d.ts` foi ampliado somente com `SignUpResult`, `signUpWithPassword` e `signInWithPassword`, que já eram exportações reais da implementação JavaScript.
+A branch `feature/login-cadastro` foi reaplicada sobre a main atual na branch de trabalho `v2/identity-login` e integrada na `main` pelos commits `7e50207b` e `07d815b8`. A nova página `src/pages/login.js` foi convertida para a implementação canônica `src/pages/login.ts`, mantendo `login.js` como wrapper de compatibilidade. O contrato `src/core/supabase-auth.d.ts` foi ampliado somente com `SignUpResult`, `signUpWithPassword` e `signInWithPassword`, que já eram exportações reais da implementação JavaScript.
 
 A UI preserva as abas Entrar/Criar conta, login Google, validação de confirmação de senha, cadastro confirmado ou aguardando e-mail, login por senha, cartão de conta logada, logout com limpeza local, atalho para Perfil e fallback quando Supabase não está configurado. A implementação não grava senha nem decide autorização; os tokens continuam tratados pela sessão existente e a autoridade de dados permanece no Supabase/RLS.
 
@@ -837,4 +837,4 @@ Foi adicionado `test/security/login-contract.test.js`, cobrindo registro da rota
 | `npm run prova-offline` | **9/9** |
 | `npm run sonda-memoria` | Verde |
 
-A conversão da página está pronta para integração na main, mas a promoção do release `1.1.0 — Identidade Preview` ainda exige revisão dos checks remotos de Auth/RLS, redirects permitidos e configuração real do Supabase. Nenhuma role elevada é decidida pelo cliente.
+A conversão da página está publicada na main. A promoção do release `1.1.0 — Identidade Preview` ainda exige revisão dos checks remotos de Auth/RLS, redirects permitidos e configuração real do Supabase. Nenhuma role elevada é decidida pelo cliente.
