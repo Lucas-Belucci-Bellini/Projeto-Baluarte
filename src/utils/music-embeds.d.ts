@@ -1,6 +1,7 @@
 export interface SpotifyPlaybackData {
   duration?: number;
   position?: number;
+  isPaused?: boolean;
 }
 
 export interface SpotifyPlaybackEvent {
