@@ -2,11 +2,11 @@
 
 ## Status
 
-`IMPLEMENTED LOCALLY — PENDING PUBLICATION`
+`PUBLISHED — REMOTE CI GREEN`
 
 ## Base
 
-A sétima onda foi construída sobre o SHA publicado `9b2423ab7405b4d75cd78608de5c6f71a7f04ef7`.
+A sétima onda foi construída sobre o SHA publicado `9b2423ab7405b4d75cd78608de5c6f71a7f04ef7` e publicada no SHA `fabef305` (`refactor(ops): route seventh wave directly to TypeScript`).
 
 ## Objetivo
 
@@ -35,11 +35,11 @@ O diretório `src/pages` mantém **108 implementações TypeScript** e **100 wra
 
 ## Validação direcionada
 
-`npm run verificar-nexus` passou com 99 rotas, 0 lacunas e 0 divergências. `npm run tipos:ts` passou. `npm run tipos:v2` passou. Os contratos de segurança direcionados passaram em `16/16`. `npm run v2:integracao` passou em `21/21` após limpar um Vite órfão da porta 4193. A bateria completa será executada antes da publicação.
+`npm run verificar-nexus` passou com 99 rotas, 0 lacunas e 0 divergências. `npm run tipos:ts` passou. `npm run tipos:v2` passou. Os contratos de segurança direcionados passaram em `16/16`. `npm run v2:integracao` passou em `21/21` após limpar um Vite órfão da porta 4193. A bateria completa local passou: 1085/1085 testes, build, smoke `99/99`, caminho crítico `15/15` e contratos de segurança `39/39`.
 
 ## Causa ambiental separada
 
-A primeira integração encontrou novamente um processo Vite órfão na porta 4193 e falhou esperando `.cripto-entrada`. O processo foi removido sem tocar nos previews 4174, e a repetição limpa passou em `21/21`. Nenhuma página migrada causou o timeout.
+A primeira integração encontrou novamente um processo Vite órfão na porta 4193 e falhou esperando `.cripto-entrada`. O processo foi removido sem tocar nos previews 4174, e a repetição limpa passou em `21/21`. Nenhuma página migrada causou o timeout. O gate local `npm run v2:runtime` permanece limitado pelo Cargo 1.75.0 ao metadado `edition2024`; o workflow remoto V2 Runtime passou.
 
 ## Riscos e rollback
 
