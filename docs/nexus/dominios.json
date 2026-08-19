@@ -128,7 +128,7 @@
     "/zomboid-admin"
    ],
    "origem": [
-    "src/pages/biblioteca.js",
+    "src/pages/biblioteca.ts",
     "src/pages/universo.js",
     "src/pages/filmes.js",
     "src/pages/memes.js",
@@ -192,14 +192,14 @@
     "src/pages/editor.js",
     "src/pages/json-studio.js",
     "src/pages/qr-studio.js",
-    "src/pages/git-helper.js",
+    "src/pages/git-helper.ts",
     "src/pages/terminal.js",
     "src/pages/calc-cientifica.js",
     "src/pages/calc-numerica.js",
     "src/pages/calculadoras/",
     "src/pages/tabela-verdade.js",
     "src/pages/graficos.js",
-    "src/pages/simbolos.js",
+    "src/pages/simbolos.ts",
     "src/pages/color-studio.js",
     "src/utils/cor.js",
     "src/pages/regex.js",
@@ -348,7 +348,7 @@
     "/academia"
    ],
    "origem": [
-    "src/pages/academia.js",
+    "src/pages/academia.ts",
     "src/data/academia.js",
     "src/styles/academia.css"
    ],
@@ -366,7 +366,7 @@
     "/robotica"
    ],
    "origem": [
-    "src/pages/robotica.js",
+    "src/pages/robotica.ts",
     "src/data/robotica.js",
     "src/styles/robotica.css"
    ],
@@ -452,7 +452,7 @@
     "/shadow"
    ],
    "origem": [
-    "src/pages/ciberseg.js",
+    "src/pages/ciberseg.ts",
     "src/pages/cripto/",
     "src/pages/esteganografia.js",
     "src/pages/seguranca.js",
@@ -481,7 +481,7 @@
    ],
    "origem": [
     "src/pages/economia.js",
-    "src/pages/dolar.js",
+    "src/pages/dolar.ts",
     "src/pages/banco.js",
     "src/utils/economia-api.js",
     "src/data/cambio-historico.json",
@@ -560,7 +560,7 @@
     "src/pages/git-nexus-gate.js",
     "src/pages/git-nexus-cockpit.js",
     "src/pages/git-nexus-nucleo.js",
-    "src/pages/gerar-codigo.js",
+    "src/pages/gerar-codigo.ts",
     "src/pages/jarvis-vision.js",
     "src/pages/visao.js",
     "src/pages/apis.js",

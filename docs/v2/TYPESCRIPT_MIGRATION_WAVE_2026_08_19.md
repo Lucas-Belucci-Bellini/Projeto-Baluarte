@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED LOCALLY — PENDING PUBLICATION`
+`ROUTE WAVE IMPLEMENTED — NEXUS MAP CORRECTED`
 
 ## Base
 
@@ -35,11 +35,11 @@ A contagem de wrappers deve ser acompanhada separadamente da contagem de impleme
 
 ## Validação
 
-`npm run tipos:ts` passou. `npm run tipos:v2` passou. `npm run v2:integracao` passou em `21/21`, incluindo boot real V2, 19 rotas no router V1, renderização nativa, WebGL, permissões e ausência de erros JavaScript. A bateria completa de testes, build, smoke, caminho crítico e o workflow Rust será executada antes da publicação.
+`npm run tipos:ts` passou. `npm run tipos:v2` passou. `npm run v2:integracao` passou em `21/21`, incluindo boot real V2, 19 rotas no router V1, renderização nativa, WebGL, permissões e ausência de erros JavaScript. A primeira execução remota de CI/Core CI encontrou uma divergência real no `docs/nexus/dominios.json`: o verificador ainda tratava os oito arquivos `.js` como origem, enquanto `src/main.js` já carregava os `.ts`. A correção atualizou as oito origens para `.ts`; `npm run verificar-nexus` voltou a passar com `99` rotas, `0` lacunas e `0` divergências. A integração local foi repetida em ambiente limpo e passou em `21/21`. A bateria completa de testes, build, smoke, caminho crítico e o workflow Rust será executada novamente antes da publicação da correção.
 
 ## Riscos e rollback
 
-O principal risco é um consumidor importar diretamente o wrapper `.js` e depender de uma diferença de resolução ou de um export não declarado. Por isso, os wrappers permanecem no lugar. O rollback é reverter as oito substituições no `src/main.js` e este documento; nenhuma implementação TypeScript precisa ser apagada.
+O principal risco é um consumidor importar diretamente o wrapper `.js` e depender de uma diferença de resolução ou de um export não declarado. Por isso, os wrappers permanecem no lugar. O mapa Nexus também precisa acompanhar a extensão canônica; deixar `.js` no mapa enquanto a rota carrega `.ts` é uma divergência arquitetural detectada pelo CI. O rollback é reverter as oito substituições no `src/main.js`, as oito origens no `docs/nexus/dominios.json` e este documento; nenhuma implementação TypeScript precisa ser apagada.
 
 ## Próximo passo
 
