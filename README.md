@@ -118,19 +118,19 @@ A `1.0.0` é um ponto de congelamento: tudo marcado como estável precisa ser pr
 | `cripto` — Criptografia e esteganografia | 🟢 **Estável** | web e app |
 | `pwa` — PWA e Service Worker | 🟢 **Estável** | web e app |
 | `editor` — Editor de código | 🟡 Beta | web e app |
-| `gitNexus` — Git Nexus com o motor real | 🟡 Beta | somente app |
-| `jarvis` — JARVIS, chat e provedores | 🟡 Beta | web e app |
+| `gitNexus` — Git Nexus com o motor real (só no Launcher) | 🟡 Beta | só no app |
+| `jarvis` — JARVIS (chat e provedores) | 🟡 Beta | web e app |
 | `media` — Media, FFT e áudio | 🟡 Beta | web e app |
-| `terminal` — Terminal web | 🟡 Beta | web e app |
-| `jarvisAgente` — JARVIS escolhendo ferramentas | 🔴 Experimental | web e app |
-| `mcp` — Baluarte como servidor MCP | 🔴 Experimental | web e app |
+| `terminal` — Terminal web (filesystem virtual) | 🟡 Beta | web e app |
+| `jarvisAgente` — JARVIS escolhendo ferramentas sozinho | 🔴 Experimental | web e app |
+| `mcp` — Baluarte como servidor MCP (V2 — ver docs/architecture/v2-vision.md) | 🔴 Experimental | web e app |
 | `nexusSync` — Sincronização distribuída do Nexus | 🔴 Experimental | web e app |
 
-- 🟢 **Estável** — previsível, testado, recuperável e seguro.
-- 🟡 **Beta** — funciona e é usável, mas ainda possui critérios pendentes.
-- 🔴 **Experimental** — em construção e desligado por padrão.
+- 🟢 **Estável** — previsível, testado, recuperável e seguro — é o que a 1.0.0 promete
+- 🟡 Beta — funciona e é usável, mas ainda não cumpre todos os critérios acima
+- 🔴 Experimental — em construção; **não vem ligado** — precisa ser ativado à mão
 
-> Gerado de [`src/core/politica.js`](src/core/politica.js) por `npm run gen-tabela-estabilidade`. O CI regenera a tabela e falha se ela divergir.
+> Gerado de [`src/core/politica.js`](src/core/politica.js) por `npm run gen-tabela-estabilidade`. O CI regera e falha se divergir — promessa que mora em dois lugares diverge.
 
 <!-- ESTABILIDADE:FIM -->
 
