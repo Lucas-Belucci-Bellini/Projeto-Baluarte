@@ -58,6 +58,31 @@ test('membership and account boundaries reject unauthorized usage with typed cod
   assert.equal(adapter.ledger.list().length, 0);
 });
 
+test('read-only workspace access requires membership and returns the workspace', () => {
+  const adapter = adapterFixture();
+  assert.equal(adapter.getWorkspace('workspace-1', 'user-1').slug, 'main');
+  assert.throws(
+    () => adapter.getWorkspace('workspace-1', 'outsider'),
+    (error) => error instanceof BillingPersistenceError && error.code === 'MEMBERSHIP_REQUIRED',
+  );
+});
+
+test('read-only plan resolution enforces account and membership boundaries', () => {
+  const adapter = adapterFixture();
+  assert.throws(
+    () => adapter.resolvePlan('account-1', 'workspace-1', 'outsider'),
+    (error) => error instanceof BillingPersistenceError && error.code === 'MEMBERSHIP_REQUIRED',
+  );
+  assert.throws(
+    () => adapter.resolvePlan('account-2', 'workspace-1', 'user-1'),
+    (error) => error instanceof BillingPersistenceError && error.code === 'ACCOUNT_MISMATCH',
+  );
+  assert.throws(
+    () => adapter.getWorkspace('missing', 'user-1'),
+    (error) => error instanceof BillingPersistenceError && error.code === 'WORKSPACE_NOT_FOUND',
+  );
+});
+
 test('driver errors expose stable public codes instead of SQL details', () => {
   const adapter = new BillingPersistenceAdapter();
   assert.throws(

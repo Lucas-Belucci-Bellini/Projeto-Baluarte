@@ -1,6 +1,7 @@
 import type {
   Plan,
   PlanAssignment,
+  PlanResolution,
   UsageEvent,
 } from './billing.js';
 import type {
@@ -34,12 +35,17 @@ export class BillingPersistenceError extends Error {
   }
 }
 
-export interface BillingDriver {
+export interface BillingReadDriver {
+  getWorkspace(workspaceId: string, actorUserId: string): DriverResult<WorkspaceRecord>;
+  resolvePlan(accountId: string, workspaceId: string, actorUserId: string, at?: string): DriverResult<PlanResolution>;
+  listUsage(workspaceId: string, actorUserId: string): DriverResult<readonly UsageEvent[]>;
+}
+
+export interface BillingDriver extends BillingReadDriver {
   createWorkspace(workspace: WorkspaceRecord): DriverResult<WorkspaceRecord>;
   addMember(member: WorkspaceMember): DriverResult<WorkspaceMember>;
   isMember(workspaceId: string, userId: string): DriverResult<boolean>;
   registerPlan(plan: Plan): DriverResult<Plan>;
   assignPlan(assignment: PlanAssignment): DriverResult<PlanAssignment>;
   appendUsage(request: UsageWriteRequest): DriverResult<UsageEvent>;
-  listUsage(workspaceId: string, actorUserId: string): DriverResult<readonly UsageEvent[]>;
 }

@@ -102,6 +102,27 @@ export class BillingPersistenceAdapter implements BillingDriver {
     return this.members.has(`${required(workspaceId, 'workspaceId')}:${required(userId, 'userId')}`);
   }
 
+  getWorkspace(workspaceId: string, actorUserId: string): WorkspaceRecord {
+    const id = required(workspaceId, 'workspaceId');
+    const workspace = this.workspaces.get(id);
+    if (!workspace) {
+      throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', `workspace não encontrado: ${id}`);
+    }
+    if (!this.isMember(id, actorUserId)) {
+      throw new BillingPersistenceError('MEMBERSHIP_REQUIRED', 'ator não é membro do workspace');
+    }
+    return workspace;
+  }
+
+  resolvePlan(accountId: string, workspaceId: string, actorUserId: string, at?: string) {
+    const workspace = this.getWorkspace(workspaceId, actorUserId);
+    const account = required(accountId, 'accountId');
+    if (workspace.accountId !== account) {
+      throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'accountId não corresponde ao workspace');
+    }
+    return this.catalog.resolve(account, workspace.id, at);
+  }
+
   registerPlan(plan: Plan): Plan {
     return this.catalog.registerPlan(plan);
   }
