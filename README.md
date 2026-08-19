@@ -46,7 +46,7 @@ O contexto das sessões de reconstrução e dos merges também está preservado 
 
 ### Estado atual, identidade e releases
 
-A branch [`feature/login-cadastro`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/tree/feature/login-cadastro) adiciona a aba dedicada de login/cadastro por e-mail, senha e Google. O fluxo está documentado em [`docs/v2/LOGIN_CADASTRO_FEATURE.md`](docs/v2/LOGIN_CADASTRO_FEATURE.md); antes do merge, a nova página `login.js` deve ser convertida para TypeScript e passar os gates de autenticação, RLS, smoke e regressão.
+A branch [`feature/login-cadastro`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/tree/feature/login-cadastro) é mantida como referência histórica da aba dedicada de login/cadastro por e-mail, senha e Google. A implementação canônica já está no `main` em `src/pages/login.ts`, com wrapper `login.js`; a branch está desatualizada e não deve ser mergeada diretamente. A reavaliação está em [`docs/v2/LOGIN_CADASTRO_MAIN_REEVALUATION.md`](docs/v2/LOGIN_CADASTRO_MAIN_REEVALUATION.md). Auth/RLS remoto, redirects e autorização server-side continuam exigindo validação própria antes do release de identidade.
 
 Os marcos de promoção do projeto estão em [`docs/v2/RELEASE_PLAN.md`](docs/v2/RELEASE_PLAN.md). A linha pública atual é `1.1.0+`; a referência `1.0.0` permanece histórica como congelamento da arquitetura anterior e não é o próximo lançamento. O plano separa a Identidade Preview, a migração completa do frontend, o fechamento dos contratos V2, o beta vertical, o protótipo de app, a V2 estável e os testes mensais posteriores. Nenhum marco é considerado publicado apenas por estar mergeable: o SHA e os checks precisam estar identificados.
 
