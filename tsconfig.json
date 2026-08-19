@@ -36,6 +36,7 @@
     "v2/data/billing-observability.ts",
     "v2/data/billing-config.ts",
     "v2/data/billing-activation.ts",
+    "v2/data/billing-staging-preflight.ts",
     "src/pages/sobre.ts",
     "src/styles.d.ts",
     "src/pages/arsenal.ts",
