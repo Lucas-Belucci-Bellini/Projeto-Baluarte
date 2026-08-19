@@ -47,6 +47,7 @@ export interface PlanAssignment {
   readonly accountId: string;
   readonly workspaceId: string;
   readonly planId: string;
+  readonly planVersion: number;
   readonly status: PlanAssignmentStatus;
   readonly effectiveFrom: string;
   readonly effectiveTo?: string;
@@ -112,6 +113,9 @@ export function normalizePlanAssignment(assignment: PlanAssignment): PlanAssignm
     accountId: required(assignment.accountId, 'assignment.accountId'),
     workspaceId: required(assignment.workspaceId, 'assignment.workspaceId'),
     planId: required(assignment.planId, 'assignment.planId'),
+    planVersion: Number.isInteger(assignment.planVersion) && assignment.planVersion > 0
+      ? assignment.planVersion
+      : (() => { throw new RangeError('assignment.planVersion deve ser inteiro positivo'); })(),
     effectiveFrom,
     ...(effectiveTo ? { effectiveTo } : {}),
     assignedAt: isoDate(assignment.assignedAt, 'assignment.assignedAt'),

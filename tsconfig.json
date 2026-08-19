@@ -31,6 +31,7 @@
     "v2/data/billing-evidence.ts",
     "v2/data/billing-persistence.ts",
     "v2/data/billing-driver.ts",
+    "v2/data/billing-http-read-driver.ts",
     "src/pages/sobre.ts",
     "src/styles.d.ts",
     "src/pages/arsenal.ts",

@@ -19,7 +19,10 @@ export type BillingPersistenceErrorCode =
   | 'IDEMPOTENCY_CONFLICT'
   | 'DUPLICATE_RESOURCE'
   | 'PLAN_NOT_FOUND'
-  | 'INVALID_STATE';
+  | 'INVALID_STATE'
+  | 'UPSTREAM_TIMEOUT'
+  | 'UPSTREAM_UNAVAILABLE'
+  | 'INVALID_RESPONSE';
 
 export class BillingPersistenceError extends Error {
   readonly code: BillingPersistenceErrorCode;

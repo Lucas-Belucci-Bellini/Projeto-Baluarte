@@ -10,6 +10,7 @@ const base = {
     accountId: 'account-1',
     workspaceId: 'workspace-1',
     planId: 'pro',
+    planVersion: 2,
     status: 'active',
     effectiveFrom: '2026-08-01T00:00:00.000Z',
     assignedAt: '2026-08-01T00:00:00.000Z',
