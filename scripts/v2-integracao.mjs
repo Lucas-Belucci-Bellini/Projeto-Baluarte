@@ -140,6 +140,13 @@ try {
       && registryModulos.every((modulo) => modulo.mode === 'healthy' && modulo.status === 'healthy'),
     JSON.stringify(registryModulos ?? null));
 
+  const registryIncidentes = await pagina.evaluate(() => window.__v2?.plataforma?.().registry?.incidentes);
+  conferir('Platform expõe incidentes de health sem stack trace',
+    Array.isArray(registryIncidentes)
+      && registryIncidentes.length === vivos.length
+      && registryIncidentes.every((incidente) => incidente.type === 'healthy' && !('stack' in incidente)),
+    JSON.stringify(registryIncidentes ?? null));
+
   /* Estas duas seguem exatas de propósito: rota ou item de navegação que SOME é
    * defeito tão real quanto um que falha, e só o número fixo pega o sumiço.
    * Foram de 18→19 e 4→5 com a rota `/visor3d`. */

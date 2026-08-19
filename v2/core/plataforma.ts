@@ -27,9 +27,19 @@ export interface RegistryDiagnosticEntry {
   ultimoErro?: string;
 }
 
+export interface RegistryDiagnosticIncident {
+  type: string;
+  id: string;
+  timestamp: number;
+  status: string;
+  restarts: number;
+  error?: string;
+}
+
 export interface PlatformOptions {
   registryHealth?: {
     resumo(): RegistryDiagnosticEntry[];
+    incidentes?(): RegistryDiagnosticIncident[];
   };
 }
 
@@ -38,6 +48,7 @@ export interface PlatformDiagnostic {
   saude: ReturnType<HealthMonitor['verificar']>;
   registry: {
     modulos: RegistryDiagnosticEntry[];
+    incidentes: RegistryDiagnosticIncident[];
   };
   lifecycle: {
     modulos: LifecycleModuleStatus[];
@@ -88,7 +99,10 @@ export function criarPlataforma(
     return {
       supervisor: supervisor.status(),
       saude: saude.verificar(),
-      registry: { modulos: registryEntries },
+      registry: {
+        modulos: registryEntries,
+        incidentes: options.registryHealth?.incidentes?.() ?? [],
+      },
       lifecycle: {
         modulos: lifecycle.retrato(),
         resumo: lifecycle.resumo(),

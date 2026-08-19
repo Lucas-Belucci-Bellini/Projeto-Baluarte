@@ -22,7 +22,7 @@
 
 /**
  * @param {{listar: () => string[], modulo: (id: string) => unknown}} registry
- * @param {{estado: (id: string) => {status: 'unknown'|'healthy'|'failed'|'exhausted', restarts?: number[], lastError?: unknown}, podeReiniciar: (id: string) => boolean}} runtimeHealth
+ * @param {{estado: (id: string) => {status: 'unknown'|'healthy'|'failed'|'exhausted', restarts?: number[], lastError?: unknown}, podeReiniciar: (id: string) => boolean, incidentes?: () => unknown[]}} runtimeHealth
  * @param {{authorize?: (request: {id: string, mode: 'active'|'maintenance'|'disabled', reason: string}) => boolean}} [options]
  */
 export function criarModuleRegistryHealth(registry, runtimeHealth, options = {}) {
@@ -100,5 +100,11 @@ export function criarModuleRegistryHealth(registry, runtimeHealth, options = {})
     return registry.listar().sort().map(entrada);
   }
 
-  return { modo, podeAtivar, definirModo, resumo };
+  function incidentes() {
+    return typeof runtimeHealth.incidentes === 'function'
+      ? runtimeHealth.incidentes()
+      : [];
+  }
+
+  return { modo, podeAtivar, definirModo, resumo, incidentes };
 }

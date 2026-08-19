@@ -2,7 +2,7 @@
 
 ## Status
 
-`WAVE 2 PUBLISHED — WAVE 3 IMPLEMENTED LOCALLY`
+`WAVE 3 PUBLISHED — WAVE 4 IMPLEMENTED LOCALLY`
 
 ## Objetivo
 
@@ -88,6 +88,36 @@ A execução local de `npm run v2:runtime` continua bloqueada pelo Rust/Cargo `1
 
 A Wave 3 foi construída sobre o SHA publicado `3526082364e5d2fe59c397f72b5fec18d9a32968`. O SHA final desta onda será registrado no relatório de entrega e no histórico Git após a publicação direta no `main`.
 
+## Wave 4 — Histórico limitado de incidentes
+
+### Objetivo
+
+Expor no diagnóstico da Platform os incidentes produzidos pelo mesmo `RuntimeHealth` que decide `healthy`, `failed`, `exhausted` e a possibilidade de restart. A retenção é limitada e em memória: esta onda melhora observabilidade local e de harness, mas não finge ser auditoria persistente de produção.
+
+### Contrato
+
+`criarRuntimeHealth()` passa a aceitar `maxIncidents` e `clock` opcionais. Cada transição para saudável ou falha gera um registro sanitizado com `type`, `id`, `timestamp`, `status`, `restarts` e, quando necessário, `error` sem stack trace. `incidentes()` devolve cópias defensivas e descarta os eventos mais antigos acima do limite. O Registry Health apenas adapta essa leitura; ele não mantém um segundo journal.
+
+`Platform.diagnostico().registry` agora mantém `modulos` e acrescenta `incidentes`. Consumidores legados que não fornecem o método recebem `[]`, e a assinatura anterior da Platform permanece válida. O harness verifica cinco incidentes saudáveis após o boot e confirma que nenhum possui stack trace.
+
+### Implementação e segurança
+
+Foram atualizados `v2/core/module-runtime-health.js`, `v2/core/module-registry-health.js` e `v2/core/plataforma.ts`, além dos testes de health, Platform e integração. O histórico não concede acesso, não altera manutenção/disabled, não consulta claims client-side, não contém service role e não substitui auditoria server-side/RLS. O limite evita crescimento ilimitado no processo do navegador; persistência, retenção operacional e autorização de consulta continuam pendentes para uma camada protegida.
+
+### Testes e correção encontrada
+
+A primeira checagem `tipos:v2` encontrou uma inferência JSDoc que alargava o literal `healthy` para `string`. A correção foi uma anotação explícita `RuntimeHealthState`, sem `any`, sem relaxar `checkJs` e sem alterar configuração. Depois dela, os testes direcionados passaram em `19/19`, `npm test` passou em `1076/1076`, `npm run tipos:ts`, `npm run tipos:v2`, build, smoke (`99/99`), caminho crítico (`15/15`), integração (`21/21`), contratos de segurança (`34/34`) e `git diff --check` passaram.
+
+O gate local `npm run v2:runtime` permanece bloqueado pelo Cargo `1.75.0` ao resolver metadata `edition2024`; o workflow remoto com Rust stable continua sendo a autoridade para esse gate. Nenhum lockfile ignorado ou configuração foi alterado para ocultar o bloqueio.
+
+### Riscos e rollback
+
+O risco principal é a retenção ser confundida com auditoria de produção. A documentação e o contrato deixam explícito que é um diagnóstico bounded/in-memory. O rollback reverte `v2/core/module-runtime-health.js`, `v2/core/module-registry-health.js`, `v2/core/plataforma.ts`, `scripts/v2-integracao.mjs`, os testes e este documento; sem `incidentes`, a Platform volta ao fallback `[]`.
+
+### Base e publicação
+
+A Wave 4 foi construída sobre o SHA publicado `5856689abfb6434b27cf044c32d79ab3374acbc9`. O SHA final desta onda será registrado após o commit e a validação remota no `main`.
+
 ## Próximo passo
 
-A próxima onda deve integrar eventos de restart e incidentes a uma superfície de diagnóstico persistente, mantendo o isolamento por módulo. Em paralelo, a autorização server-side/RLS deverá registrar quem colocou um módulo em manutenção, por qual motivo, quando e qual operador aprovou a mudança; essa parte não será simulada no frontend.
+A próxima onda deve tratar a auditoria server-side/RLS de mudanças `maintenance`/`disabled`, com identidade, motivo, timestamp, aprovador e cleanup idempotente em um projeto Supabase staging separado. Nenhuma conexão externa será feita sem aprovação explícita do operador. A superfície de incidentes em memória deve permanecer apenas como diagnóstico local até essa fundação protegida existir.

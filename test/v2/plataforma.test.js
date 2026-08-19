@@ -42,6 +42,7 @@ test('fachada expõe saúde e lifecycle no diagnóstico', () => {
     restarts: 0,
     podeReiniciar: true,
   }]);
+  assert.deepEqual(d.registry.incidentes, []);
 });
 
 test('fachada expõe overrides de maintenance no diagnóstico do Registry', () => {
@@ -55,6 +56,26 @@ test('fachada expõe overrides de maintenance no diagnóstico do Registry', () =
   const plataforma = montar({ registryHealth });
   assert.equal(plataforma.diagnostico().registry.modulos[0].mode, 'maintenance');
   assert.equal(plataforma.diagnostico().registry.modulos[0].podeReiniciar, false);
+  assert.deepEqual(plataforma.diagnostico().registry.incidentes, []);
+});
+
+test('fachada expõe incidentes do Runtime Health compartilhado', () => {
+  const runtimeHealth = criarRuntimeHealth({ clock: () => 987 });
+  runtimeHealth.marcarFalha('core', new Error('falha observada'));
+  const registryHealth = criarModuleRegistryHealth(
+    { listar: () => ['core'], modulo: () => ({ id: 'core' }) },
+    runtimeHealth,
+  );
+
+  const plataforma = montar({ registryHealth });
+  assert.deepEqual(plataforma.diagnostico().registry.incidentes, [{
+    type: 'failed',
+    id: 'core',
+    timestamp: 987,
+    status: 'failed',
+    restarts: 1,
+    error: 'falha observada',
+  }]);
 });
 
 test('iniciar delega ao Supervisor e preserva falhas como degraded', async () => {
