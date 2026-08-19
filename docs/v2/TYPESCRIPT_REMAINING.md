@@ -1,7 +1,7 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Base de trabalho:** `b2dbb1fd2c8445128baab3acbda8845c2042a25e` (main publicado após as ondas finais de páginas e a correção do visor3d)
-**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas, Núcleo Mark XIII e JARVIS Vision, Arma 3 Tutorial, JARVIS, Vanguard, Visão e Wiki Arma 3 foram implementados; **as páginas acabaram** — nenhuma continua canônica em JavaScript (ver §0). O gate `tipos:v2` também está verde após a fronteira Three.js do visor3d.
+**Base de trabalho:** branch `v2/identity-login`, validada sobre `origin/main` em `e66fba18d366952584da6b3ab62443588c4499df`; integração na main pendente deste marco
+**Status:** INVENTÁRIO ATUALIZADO — as páginas canônicas, incluindo `login.ts` da Identidade Preview, foram implementadas; **nenhuma continua canônica em JavaScript** (ver §0). O gate `tipos:v2` está verde após a fronteira Three.js do visor3d e a validação de Auth foi adicionada à suíte.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
 > **As seções históricas abaixo preservam a fotografia anterior à conclusão das páginas.** A verificação atual do filesystem confirma **zero páginas canônicas JavaScript** em `src/pages`; o JavaScript restante está concentrado em dados, utilitários, Core V1/V2 e arquivos de configuração, que seguem um roadmap separado.
@@ -260,3 +260,24 @@ Cada página ou módulo migrado deve manter o seguinte ciclo: implementação ca
 [3]: ../../src/main.js "Registro de rotas, boot e divisão eager/lazy"
 [4]: ../../relatorios/smoke-rotas.md "Smoke atual das 98 rotas"
 [5]: ./MAIN_ERROR_AUDIT.md "Auditoria anterior de causas raiz e efeitos cascata"
+
+## Fotografia corrente — Onda 4.52 de Identidade Preview
+
+A branch `v2/identity-login` foi validada sobre a main atual. O inventário determinístico confirmou **0 páginas canônicas JavaScript** e a nova rota elevou o smoke para **99 rotas verdes**. Os números abaixo distinguem arquivos físicos de unidades agregadas do relatório:
+
+| Indicador | Estado corrente |
+|---|---:|
+| Páginas canônicas JS restantes | **0** |
+| Arquivos físicos `.js` em `src/pages/` | 100, incluindo wrappers |
+| Arquivos físicos `.ts` em `src/pages/` | 108 |
+| Implementações `.ts` em `src/` | 153 |
+| Contratos `.d.ts` em `src/` | 164 |
+| Testes | **965/965** |
+| Smoke | **99/99** |
+| Integração V2 | **19/19** |
+| Caminho crítico | **15/15** |
+| Offline | **9/9** |
+
+A diferença entre os arquivos físicos e o relatório agregado é intencional: o inventário operacional conta unidades canônicas, wrappers e fronteiras por escopo; a contagem física também inclui arquivos auxiliares e submódulos. `login.js` permanece como compatibilidade e `login.ts` é a implementação canônica.
+
+O próximo bloqueador de release é validar a configuração real de Supabase Auth/RLS e redirects permitidos em ambiente remoto. A UI não autoriza `developer`, `admin` ou `owner`; essas decisões devem continuar server-side. A conversão do login não autoriza, por si só, a declaração de `1.1.0`.

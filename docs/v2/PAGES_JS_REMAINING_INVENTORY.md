@@ -1,7 +1,7 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `b2dbb1fd2c8445128baab3acbda8845c2042a25e`
-**Gerado em:** 2026-08-19T02:02:54.271Z
+**SHA auditado:** `e66fba18d366952584da6b3ab62443588c4499df`
+**Gerado em:** 2026-08-19T02:31:40.412Z
 **Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
