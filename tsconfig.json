@@ -32,6 +32,7 @@
     "v2/data/billing-persistence.ts",
     "v2/data/billing-driver.ts",
     "v2/data/billing-http-read-driver.ts",
+    "v2/data/billing-http-write-driver.ts",
     "v2/data/billing-staging-harness.ts",
     "v2/data/billing-observability.ts",
     "v2/data/billing-config.ts",
