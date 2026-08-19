@@ -4,7 +4,7 @@ import {
   type RlsOperation,
   type StagingPrincipal,
   type StagingRlsScenario,
-} from './staging-rls-matrix.js';
+} from './staging-rls-matrix.ts';
 
 /**
  * Executor local somente para contrato e testes.
