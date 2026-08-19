@@ -18,9 +18,27 @@ import type {
 import type { ModuleRegistry } from './registry.js';
 import type { Supervisor, SupervisorStatus } from './supervisor.js';
 
+export interface RegistryDiagnosticEntry {
+  id: string;
+  mode: string;
+  status: string;
+  restarts: number;
+  podeReiniciar: boolean;
+  ultimoErro?: string;
+}
+
+export interface PlatformOptions {
+  registryHealth?: {
+    resumo(): RegistryDiagnosticEntry[];
+  };
+}
+
 export interface PlatformDiagnostic {
   supervisor: SupervisorStatus;
   saude: ReturnType<HealthMonitor['verificar']>;
+  registry: {
+    modulos: RegistryDiagnosticEntry[];
+  };
   lifecycle: {
     modulos: LifecycleModuleStatus[];
     resumo: LifecycleSummary;
@@ -37,7 +55,11 @@ export interface Platform {
   lifecycle: LifecycleStatus;
 }
 
-export function criarPlataforma(registry: ModuleRegistry, boot: Boot): Platform {
+export function criarPlataforma(
+  registry: ModuleRegistry,
+  boot: Boot,
+  options: PlatformOptions = {},
+): Platform {
   if (typeof registry?.listar !== 'function' || typeof registry.modulo !== 'function') {
     throw new TypeError('registry inválido');
   }
@@ -54,9 +76,19 @@ export function criarPlataforma(registry: ModuleRegistry, boot: Boot): Platform 
   const lifecycle = criarStatusLifecycle(registry, boot.ciclo);
 
   function diagnostico(): PlatformDiagnostic {
+    const registryEntries = options.registryHealth?.resumo()
+      ?? registry.listar().sort().map((id) => ({
+        id,
+        mode: 'registered',
+        status: 'unknown',
+        restarts: 0,
+        podeReiniciar: true,
+      }));
+
     return {
       supervisor: supervisor.status(),
       saude: saude.verificar(),
+      registry: { modulos: registryEntries },
       lifecycle: {
         modulos: lifecycle.retrato(),
         resumo: lifecycle.resumo(),
