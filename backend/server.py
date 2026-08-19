@@ -23,7 +23,7 @@ import os
 import json
 import glob
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -109,6 +109,74 @@ def chat(req: ChatRequest):
 # ══════════════════════════════════════════════════════════════════
 
 JARVIS_DB = Path(os.environ.get("JARVIS_DB_PATH", Path.home() / ".jarvis-db"))
+COMMIT_LIMIT_MAX = 100  # janela textual; não limita a capacidade agregada do gráfico
+ACTIVITY_DAYS = 14
+# Requisito: 5.000 commits/semana. Duas semanas + margem de 2x.
+ACTIVITY_MAX_COMMITS = 20_000
+_activity_cache: tuple[str, list[dict], bool] | None = None
+
+
+def _bounded_limit(value: int, default: int = 30) -> int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        parsed = default
+    return max(1, min(parsed, COMMIT_LIMIT_MAX))
+
+
+def _tail_lines(path: Path, limit: int) -> list[str]:
+    """Lê somente as últimas linhas de um JSONL, sem materializar o arquivo inteiro."""
+    if limit <= 0:
+        return []
+    chunks: list[bytes] = []
+    newline_count = 0
+    with path.open("rb") as stream:
+        position = stream.seek(0, 2)
+        while position > 0 and newline_count <= limit:
+            size = min(64 * 1024, position)
+            position -= size
+            stream.seek(position)
+            chunk = stream.read(size)
+            chunks.append(chunk)
+            newline_count += chunk.count(b"\\n")
+    data = b"".join(reversed(chunks))
+    lines = data.splitlines()[-limit:]
+    return [line.decode("utf-8", errors="replace") for line in lines]
+
+
+def _commit_payload(commit) -> dict:
+    return {
+        "sha": commit.hexsha,
+        "hash": commit.hexsha[:8],
+        "message": commit.message.strip()[:80],
+        "date": datetime.fromtimestamp(commit.committed_date).strftime("%d/%m %H:%M"),
+        "author": commit.author.name,
+    }
+
+
+def _commit_activity(repo, days: int = ACTIVITY_DAYS) -> tuple[list[dict], bool]:
+    """Agrupa commits recentes por dia com teto explícito de leitura."""
+    today = datetime.now(timezone.utc).date()
+    first_day = today - timedelta(days=days - 1)
+    buckets = {first_day + timedelta(days=index): 0 for index in range(days)}
+    start = datetime.combine(first_day, datetime.min.time(), tzinfo=timezone.utc)
+    sampled = 0
+    for commit in repo.iter_commits(max_count=ACTIVITY_MAX_COMMITS, since=start):
+        committed_day = datetime.fromtimestamp(commit.committed_date, timezone.utc).date()
+        if committed_day in buckets:
+            buckets[committed_day] += 1
+        sampled += 1
+    truncated = sampled >= ACTIVITY_MAX_COMMITS
+    return ([{"date": day.isoformat(), "count": count} for day, count in buckets.items()], truncated)
+
+
+def _cached_commit_activity(repo, head: str) -> tuple[list[dict], bool]:
+    global _activity_cache
+    if _activity_cache is not None and _activity_cache[0] == head:
+        return _activity_cache[1], _activity_cache[2]
+    activity, truncated = _commit_activity(repo)
+    _activity_cache = (head, activity, truncated)
+    return activity, truncated
 
 
 def _db_exists():
@@ -121,12 +189,13 @@ def jarvis_db_status():
     if not _db_exists():
         return {"online": False, "path": str(JARVIS_DB)}
 
-    sessions_count = len(list(JARVIS_DB.glob("sessions/**/*.json")))
+    sessions_count = sum(1 for _ in JARVIS_DB.glob("sessions/**/*.json"))
     users = [p.stem for p in (JARVIS_DB / "memory").glob("*.json")] if (JARVIS_DB / "memory").exists() else []
     events_today = 0
     today_log = JARVIS_DB / "events" / f"{datetime.now().strftime('%Y-%m-%d')}.jsonl"
     if today_log.exists():
-        events_today = sum(1 for _ in open(today_log))
+        with today_log.open("rb") as stream:
+            events_today = sum(1 for _ in stream)
 
     # último commit via git log
     last_commit = "—"
@@ -214,35 +283,52 @@ def jarvis_events(date: str = None, limit: int = 50):
         return {"date": target, "events": []}
 
     events = []
-    for line in log_file.read_text(encoding="utf-8").splitlines():
+    for line in _tail_lines(log_file, _bounded_limit(limit, default=50)):
         try:
             events.append(json.loads(line))
         except Exception:
             continue
 
-    return {"date": target, "events": events[-limit:]}
+    return {"date": target, "events": events}
 
 
 @app.get("/jarvis-db/commits")
-def jarvis_commits(limit: int = 30):
-    """Últimos commits do Git DB."""
+def jarvis_commits(limit: int = 30, after: str | None = None):
+    """Últimos commits do Git DB, com cursor incremental e atividade agregada."""
     if not _db_exists():
         raise HTTPException(404, "Jarvis DB não encontrado")
     try:
         from git import Repo
+
         repo = Repo(JARVIS_DB)
-        commits = [
-            {
-                "hash":    c.hexsha[:8],
-                "message": c.message.strip()[:80],
-                "date":    datetime.fromtimestamp(c.committed_date).strftime("%d/%m %H:%M"),
-                "author":  c.author.name,
-            }
-            for c in list(repo.iter_commits())[:limit]
-        ]
-        return {"commits": commits}
-    except Exception as e:
-        raise HTTPException(500, str(e))
+        bounded_limit = _bounded_limit(limit)
+        head = repo.head.commit.hexsha
+        if after:
+            try:
+                repo.commit(after)
+            except Exception as error:
+                raise HTTPException(400, "Cursor de commit inválido") from error
+            revisions = repo.git.rev_list(
+                "HEAD", f"^{after}", f"--max-count={bounded_limit + 1}"
+            ).splitlines()
+            commits = [repo.commit(revision) for revision in revisions if revision]
+        else:
+            commits = list(repo.iter_commits(max_count=bounded_limit + 1))
+
+        has_more = len(commits) > bounded_limit
+        commits = commits[:bounded_limit]
+        activity, activity_truncated = _cached_commit_activity(repo, head)
+        return {
+            "head": head,
+            "hasMore": has_more,
+            "commits": [_commit_payload(commit) for commit in commits],
+            "activity": activity,
+            "activityTruncated": activity_truncated,
+        }
+    except HTTPException:
+        raise
+    except Exception as error:
+        raise HTTPException(500, str(error)) from error
 
 
 if __name__ == "__main__":
