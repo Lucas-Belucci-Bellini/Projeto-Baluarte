@@ -77,7 +77,21 @@ test('204 vira unknown, não pausa inventada, e não deixa faixa antiga', async 
   assert.equal(getJarvisMusicSnapshot().title, null);
 });
 
-test('401 encerra a sessão lógica e 429 respeita Retry-After', async () => {
+test('401 tenta uma renovação em memória antes de encerrar a sessão e 429 respeita Retry-After', async () => {
+  let calls = 0;
+  const refreshed = createSpotifyPlaybackMonitor({
+    accessToken: 'expired-token',
+    refreshAccessToken: async () => 'fresh-token',
+    fetchFn: async (_url, init) => {
+      calls += 1;
+      return init.headers.Authorization === 'Bearer expired-token'
+        ? response(401, {})
+        : response(204, null);
+    },
+  });
+  assert.equal((await refreshed.poll()).kind, 'unknown');
+  assert.equal(calls, 2);
+  assert.doesNotMatch(JSON.stringify(getJarvisMusicSnapshot()), /fresh-token/);
   const unauthorized = createSpotifyPlaybackMonitor({ accessToken: 'token', fetchFn: async () => response(401, {}) });
   assert.equal((await unauthorized.poll()).kind, 'unauthorized');
   const limited = createSpotifyPlaybackMonitor({ accessToken: 'token', fetchFn: async () => response(429, {}, { 'Retry-After': '17' }) });

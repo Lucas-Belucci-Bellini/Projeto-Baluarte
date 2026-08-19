@@ -1,14 +1,15 @@
 import {
   createSpotifyPkceChallenge,
   exchangeSpotifyAuthorizationCode,
+  refreshSpotifyAccessToken,
   createSpotifyPlaybackMonitor,
-  type SpotifyPkceConfig,
-  type SpotifyPlaybackMonitor,
 } from './jarvis-spotify.js';
+import type { SpotifyPkceConfig, SpotifyPlaybackMonitor, SpotifyTokens } from './jarvis-spotify.ts';
 
 const SESSION_KEY = 'baluarte:spotify:pkce';
 const DEFAULT_SCOPE = 'user-read-playback-state';
 let monitor: SpotifyPlaybackMonitor | null = null;
+let tokens: SpotifyTokens | null = null;
 let connected = false;
 
 interface PendingAuthorization {
@@ -49,16 +50,22 @@ export async function resumeSpotifyAuthorization(search = typeof location === 'u
   const pending = readPending();
   clearPending();
   if (query.get('error') || !pending || !returnedState || returnedState !== pending.state || !code) return 'rejected';
-  const tokens = await exchangeSpotifyAuthorizationCode(pending, code, pending.codeVerifier);
+  tokens = await exchangeSpotifyAuthorizationCode(pending, code, pending.codeVerifier);
   monitor?.stop();
-  monitor = createSpotifyPlaybackMonitor({ accessToken: tokens.accessToken });
+  monitor = createSpotifyPlaybackMonitor({
+    getAccessToken: () => tokens?.accessToken ?? null,
+    refreshAccessToken: async () => {
+      if (!tokens?.refreshToken) return null;
+      try { tokens = await refreshSpotifyAccessToken(pending, tokens.refreshToken); return tokens.accessToken; } catch { tokens = null; return null; }
+    },
+  });
   monitor.start();
   connected = true;
   return 'connected';
 }
 
 export function disconnectSpotify(): void {
-  monitor?.stop(); monitor = null; connected = false; clearPending();
+  monitor?.stop(); monitor = null; tokens = null; connected = false; clearPending();
 }
 
 export function isSpotifyConnected(): boolean { return connected; }

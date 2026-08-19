@@ -38,7 +38,9 @@ export type SpotifyPlaybackPollResult =
   | { readonly kind: 'unauthorized' | 'rate-limited' | 'error'; readonly retryAfterMs?: number };
 
 export interface SpotifyPlaybackMonitorOptions {
-  readonly accessToken: string;
+  readonly accessToken?: string;
+  readonly getAccessToken?: () => Promise<string | null> | string | null;
+  readonly refreshAccessToken?: () => Promise<string | null>;
   readonly fetchFn?: typeof fetch;
   readonly onResult?: (result: SpotifyPlaybackPollResult) => void;
   readonly intervalMs?: number;
@@ -165,6 +167,7 @@ function retryAfterMs(response: Response): number {
 export function createSpotifyPlaybackMonitor(options: SpotifyPlaybackMonitorOptions): SpotifyPlaybackMonitor {
   const fetchFn = options.fetchFn ?? fetch;
   const documentLike = options.documentLike ?? (typeof document === 'undefined' ? undefined : document);
+  const token = async (): Promise<string | null> => options.getAccessToken ? await options.getAccessToken() : options.accessToken ?? null;
   const intervalMs = Math.max(MIN_POLL_MS, options.intervalMs ?? MIN_POLL_MS);
   let timer: number | null = null;
   let stopped = true;
@@ -174,8 +177,15 @@ export function createSpotifyPlaybackMonitor(options: SpotifyPlaybackMonitorOpti
     if (stopped || typeof window === 'undefined') return;
     timer = window.setTimeout(() => { timer = null; void pollAndSchedule(); }, delay);
   };
+  const fetchPlayback = async (accessToken: string): Promise<Response> => fetchFn(PLAYBACK_ENDPOINT, { headers: { Authorization: `Bearer ${accessToken}` } });
   const poll = async (): Promise<SpotifyPlaybackPollResult> => {
-    const response = await fetchFn(PLAYBACK_ENDPOINT, { headers: { Authorization: `Bearer ${options.accessToken}` } });
+    const accessToken = await token();
+    if (!accessToken) return { kind: 'unauthorized' };
+    let response = await fetchPlayback(accessToken);
+    if (response.status === 401 && options.refreshAccessToken) {
+      const refreshed = await options.refreshAccessToken();
+      if (refreshed) response = await fetchPlayback(refreshed);
+    }
     if (response.status === 401) return { kind: 'unauthorized' };
     if (response.status === 429) return { kind: 'rate-limited', retryAfterMs: retryAfterMs(response) };
     if (response.status === 204) return { kind: 'unknown', metadata: { title: null, artist: null, positionMs: null, durationMs: null } };
