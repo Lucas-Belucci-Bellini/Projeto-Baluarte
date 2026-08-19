@@ -420,9 +420,9 @@
     "/musicas"
    ],
    "origem": [
-    "src/pages/fft.js",
-    "src/pages/radio.js",
-    "src/pages/musicas.js",
+    "src/pages/fft.ts",
+    "src/pages/radio.ts",
+    "src/pages/musicas.ts",
     "src/utils/fft-engine.js",
     "src/utils/offline-audio.js",
     "src/utils/radio-api.js",
