@@ -36,6 +36,7 @@ const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PORTA = Number(process.env.PORTA || 4173);
 const BASE = process.env.BASE || `http://127.0.0.1:${PORTA}`;
 const ESPERA = Number(process.env.ESPERA_MS || 900);
+const NAVEGACAO_TIMEOUT = Number(process.env.NAVEGACAO_TIMEOUT_MS || 15000);
 const TEXTO_MINIMO = 60;
 
 /* No CI o Playwright resolve o Chromium sozinho. `CHROME_PATH` existe pra
@@ -116,7 +117,7 @@ async function auditar(rotas) {
 
     const t0 = Date.now();
     try {
-      await pag.goto(`${BASE}/#${rota}`, { waitUntil: 'load', timeout: 30000 });
+      await pag.goto(`${BASE}/#${rota}`, { waitUntil: 'domcontentloaded', timeout: NAVEGACAO_TIMEOUT });
       await pag.waitForTimeout(ESPERA);
       const info = await pag.evaluate(() => {
         const alvo = document.querySelector('main') || document.body;
