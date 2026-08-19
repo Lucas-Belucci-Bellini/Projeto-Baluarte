@@ -5,6 +5,10 @@ import {
   type UsageEvent,
   UsageLedger,
 } from './billing.js';
+import {
+  BillingPersistenceError,
+  type BillingDriver,
+} from './billing-driver.js';
 
 export type WorkspaceRole = 'owner' | 'admin' | 'dev' | 'user';
 
@@ -47,7 +51,7 @@ class AsyncMutex {
   }
 }
 
-export class BillingPersistenceAdapter {
+export class BillingPersistenceAdapter implements BillingDriver {
   readonly catalog: BillingCatalog;
   readonly ledger: UsageLedger;
   private readonly workspaces = new Map<string, WorkspaceRecord>();
@@ -66,9 +70,11 @@ export class BillingPersistenceAdapter {
       slug: required(workspace.slug, 'workspace.slug').toLowerCase(),
       displayName: required(workspace.displayName, 'workspace.displayName'),
     });
-    if (this.workspaces.has(normalized.id)) throw new Error(`workspace.id duplicado: ${normalized.id}`);
+    if (this.workspaces.has(normalized.id)) {
+      throw new BillingPersistenceError('DUPLICATE_RESOURCE', `workspace.id duplicado: ${normalized.id}`);
+    }
     if ([...this.workspaces.values()].some((item) => item.accountId === normalized.accountId && item.slug === normalized.slug)) {
-      throw new Error(`workspace.slug duplicado: ${normalized.slug}`);
+      throw new BillingPersistenceError('DUPLICATE_RESOURCE', `workspace.slug duplicado: ${normalized.slug}`);
     }
     this.workspaces.set(normalized.id, normalized);
     this.addMember({ workspaceId: normalized.id, userId: normalized.accountId, role: 'owner' });
@@ -81,9 +87,13 @@ export class BillingPersistenceAdapter {
       userId: required(member.userId, 'member.userId'),
       role: member.role,
     });
-    if (!this.workspaces.has(normalized.workspaceId)) throw new Error(`workspace não encontrado: ${normalized.workspaceId}`);
+    if (!this.workspaces.has(normalized.workspaceId)) {
+      throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', `workspace não encontrado: ${normalized.workspaceId}`);
+    }
     const key = `${normalized.workspaceId}:${normalized.userId}`;
-    if (this.members.has(key)) throw new Error(`membership duplicado: ${key}`);
+    if (this.members.has(key)) {
+      throw new BillingPersistenceError('DUPLICATE_RESOURCE', `membership duplicado: ${key}`);
+    }
     this.members.set(key, normalized);
     return normalized;
   }
@@ -98,9 +108,11 @@ export class BillingPersistenceAdapter {
 
   assignPlan(assignment: PlanAssignment): PlanAssignment {
     const workspace = this.workspaces.get(required(assignment.workspaceId, 'assignment.workspaceId'));
-    if (!workspace) throw new Error(`workspace não encontrado: ${assignment.workspaceId}`);
+    if (!workspace) {
+      throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', `workspace não encontrado: ${assignment.workspaceId}`);
+    }
     if (workspace.accountId !== required(assignment.accountId, 'assignment.accountId')) {
-      throw new Error('assignment.accountId não corresponde ao workspace');
+      throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'assignment.accountId não corresponde ao workspace');
     }
     return this.catalog.assignPlan(assignment);
   }
@@ -108,19 +120,23 @@ export class BillingPersistenceAdapter {
   async appendUsage(request: UsageWriteRequest): Promise<UsageEvent> {
     return this.usageMutex.run(() => {
       const workspace = this.workspaces.get(required(request.workspaceId, 'usage.workspaceId'));
-      if (!workspace) throw new Error(`workspace não encontrado: ${request.workspaceId}`);
+      if (!workspace) {
+        throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', `workspace não encontrado: ${request.workspaceId}`);
+      }
       if (workspace.accountId !== required(request.accountId, 'usage.accountId')) {
-        throw new Error('usage.accountId não corresponde ao workspace');
+        throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'usage.accountId não corresponde ao workspace');
       }
       if (!this.isMember(request.workspaceId, request.actorUserId)) {
-        throw new Error('ator não é membro do workspace');
+        throw new BillingPersistenceError('MEMBERSHIP_REQUIRED', 'ator não é membro do workspace');
       }
       return this.ledger.append(request);
     });
   }
 
   listUsage(workspaceId: string, actorUserId: string): readonly UsageEvent[] {
-    if (!this.isMember(workspaceId, actorUserId)) throw new Error('ator não é membro do workspace');
+    if (!this.isMember(workspaceId, actorUserId)) {
+      throw new BillingPersistenceError('MEMBERSHIP_REQUIRED', 'ator não é membro do workspace');
+    }
     return this.ledger.list().filter((event) => event.workspaceId === workspaceId);
   }
 }

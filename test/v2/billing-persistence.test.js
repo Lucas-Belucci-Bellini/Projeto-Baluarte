@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { BillingPersistenceError } from '../../v2/data/billing-driver.ts';
 import { BillingPersistenceAdapter } from '../../v2/data/billing-persistence.ts';
 
 function adapterFixture() {
@@ -44,11 +45,25 @@ test('different idempotency keys are preserved under concurrent writes', async (
   assert.equal(adapter.ledger.total('account-1', 'workspace-1', 'JARVIS_MESSAGES_PER_MONTH'), 12);
 });
 
-test('membership and account boundaries reject unauthorized usage', async () => {
+test('membership and account boundaries reject unauthorized usage with typed codes', async () => {
   const adapter = adapterFixture();
-  await assert.rejects(() => adapter.appendUsage(usageRequest({ actorUserId: 'outsider' })), /não é membro/);
-  await assert.rejects(() => adapter.appendUsage(usageRequest({ accountId: 'account-2' })), /não corresponde/);
+  await assert.rejects(
+    () => adapter.appendUsage(usageRequest({ actorUserId: 'outsider' })),
+    (error) => error instanceof BillingPersistenceError && error.code === 'MEMBERSHIP_REQUIRED',
+  );
+  await assert.rejects(
+    () => adapter.appendUsage(usageRequest({ accountId: 'account-2' })),
+    (error) => error instanceof BillingPersistenceError && error.code === 'ACCOUNT_MISMATCH',
+  );
   assert.equal(adapter.ledger.list().length, 0);
+});
+
+test('driver errors expose stable public codes instead of SQL details', () => {
+  const adapter = new BillingPersistenceAdapter();
+  assert.throws(
+    () => adapter.addMember({ workspaceId: 'missing', userId: 'user-1', role: 'user' }),
+    (error) => error instanceof BillingPersistenceError && error.code === 'WORKSPACE_NOT_FOUND' && error.retryable === false,
+  );
 });
 
 test('workspace slug is unique within an account but reusable by another account', () => {
