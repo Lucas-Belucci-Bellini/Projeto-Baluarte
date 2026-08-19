@@ -92,22 +92,22 @@ const lazyLeve = (tab, loader, fn) => (args) =>
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */
 router.register('/home', (args) => homePage(args));   // eager: 1º paint (args → ?spline=)
-router.register('/baixar', lazy(() => import('./pages/baixar.js'), 'baixarPage'));
-router.register('/ferramentas', lazy(() => import('./pages/ferramentas.js'), 'ferramentasPage'));
+router.register('/baixar', lazy(() => import('./pages/baixar.ts'), 'baixarPage'));
+router.register('/ferramentas', lazy(() => import('./pages/ferramentas.ts'), 'ferramentasPage'));
 router.register('/editor', lazy(() => import('./pages/editor.js'), 'editorPage'));
-router.register('/json-studio', lazy(() => import('./pages/json-studio.js'), 'jsonStudioPage'));
-router.register('/qr-studio', lazy(() => import('./pages/qr-studio.js'), 'qrStudioPage'));
+router.register('/json-studio', lazy(() => import('./pages/json-studio.ts'), 'jsonStudioPage'));
+router.register('/qr-studio', lazy(() => import('./pages/qr-studio.ts'), 'qrStudioPage'));
 router.register('/git-helper', lazy(() => import('./pages/git-helper.ts'), 'gitHelperPage'));
 router.register('/terminal', lazy(() => import('./pages/terminal.js'), 'terminalPage'));
-router.register('/calc-cientifica', lazy(() => import('./pages/calc-cientifica.js'), 'calcCientificaPage'));
-router.register('/calc-numerica', lazy(() => import('./pages/calc-numerica.js'), 'calcNumericaPage'));
+router.register('/calc-cientifica', lazy(() => import('./pages/calc-cientifica.ts'), 'calcCientificaPage'));
+router.register('/calc-numerica', lazy(() => import('./pages/calc-numerica.ts'), 'calcNumericaPage'));
 router.register('/calculadoras', lazy(() => import('./pages/calculadoras/index.js'), 'calculadorasPage'));
-router.register('/tabela-verdade', lazy(() => import('./pages/tabela-verdade.js'), 'tabelaVerdadePage'));
+router.register('/tabela-verdade', lazy(() => import('./pages/tabela-verdade.ts'), 'tabelaVerdadePage'));
 router.register('/cripto', lazy(() => import('./pages/cripto/index.js'), 'criptoPage'));
 router.register('/esteganografia', lazy(() => import('./pages/esteganografia.js'), 'esteganografiaPage'));
 router.register('/graficos', lazy(() => import('./pages/graficos.js'), 'graficosPage'));
 router.register('/simbolos', lazy(() => import('./pages/simbolos.ts'), 'simbolosPage'));
-router.register('/color-studio', lazy(() => import('./pages/color-studio.js'), 'colorStudioPage'));
+router.register('/color-studio', lazy(() => import('./pages/color-studio.ts'), 'colorStudioPage'));
 router.register('/regex', lazy(() => import('./pages/regex.js'), 'regexPage'));
 router.register('/arsenal', lazy(() => import('./pages/arsenal.js'), 'arsenalPage'));
 router.register('/militar', lazy(() => import('./pages/militar.js'), 'militarPage'));   // hub consolidado das frentes militares
