@@ -7,7 +7,7 @@
  */
 
 import { EvidenceStore } from '../../data/evidence.js';
-import { evidenceFromCatalog } from '../../data/catalog-evidence.ts';
+import { evidenceFromCatalog } from '../../data/catalog-evidence.js';
 
 /** @typedef {import('../../data/evidence.ts').EvidenceInput} EvidenceInput */
 /** @typedef {import('../../data/evidence.ts').EvidenceRecord} EvidenceRecord */
