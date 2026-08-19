@@ -53,3 +53,9 @@ O teste interativo do modo HTML + TS também passou: o botão **Pulso** responde
 ## Build e produção estática
 
 Após remover o import dinâmico variável, o build voltou a gerar o bundle completo `jarvisNucleoV7-BLLSuDmJ.js` com 41,94 kB. O HTML em `dist` apontou para esse bundle, que respondeu HTTP 200. A versão estática abriu no navegador com canvas 3D, controles completos e console limpo. O import dinâmico de 0,25 kB foi rejeitado como solução porque não empacotava a fonte; a entrada TypeScript direta do Vite é a implementação final.
+
+## Deploy público após a integração
+
+O commit `ca803a40148b7f585530569180dc8962990e6bc0` recebeu deploy Vercel com sucesso. A página pública passou a referenciar `jarvisNucleoV7-BLLSuDmJ.js` — o bundle de 41,94 kB gerado a partir do `jarvis-nucleo-v7.ts` — e tanto a página quanto o bundle responderam HTTP 200. A cena 3D apareceu no navegador público e o console não apresentou erros.
+
+O check `Supabase Preview` continua reportando a divergência pré-existente `Remote migration versions not found in local migrations directory`; o mesmo erro já estava presente no commit anterior e não é causado pela integração do JARVIS. Os gates do Projeto-Baluarte e o deploy Vercel terminaram com sucesso.
