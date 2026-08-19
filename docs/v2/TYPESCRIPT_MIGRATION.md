@@ -816,3 +816,25 @@ Durante a validação do `main` final, `npm run tipos:v2` encontrou uma causa ra
 Validação do estado publicado: `npm run tipos:ts` verde; `npm run tipos:v2` verde; `npm test` **960/960**; `npm run build` verde com o aviso histórico de chunks grandes; `npm run smoke` **98/98**; `npm run v2:integracao` **19/19**; `npm run caminho-critico` **15/15**. O SHA publicado após a correção do visor3d é `b2dbb1fd2c8445128baab3acbda8845c2042a25e`. O inventário operacional foi atualizado nesse SHA e registra zero páginas canônicas restantes.
 
 A conclusão desta etapa não significa remover wrappers nem parar a evolução do projeto: dados, utilitários, Core V1/V2 e integrações JavaScript continuam no roadmap por contratos próprios. A partir daqui, o foco muda de páginas para estabilização de módulos, revisão da dívida V2, identidade/login-cadastro, layout modular e testes mensais.
+
+## Onda 4.52 — Identidade Preview: login-cadastro
+
+A branch `feature/login-cadastro` foi reaplicada sobre a main atual na branch de trabalho `v2/identity-login`. A nova página `src/pages/login.js` foi convertida para a implementação canônica `src/pages/login.ts`, mantendo `login.js` como wrapper de compatibilidade. O contrato `src/core/supabase-auth.d.ts` foi ampliado somente com `SignUpResult`, `signUpWithPassword` e `signInWithPassword`, que já eram exportações reais da implementação JavaScript.
+
+A UI preserva as abas Entrar/Criar conta, login Google, validação de confirmação de senha, cadastro confirmado ou aguardando e-mail, login por senha, cartão de conta logada, logout com limpeza local, atalho para Perfil e fallback quando Supabase não está configurado. A implementação não grava senha nem decide autorização; os tokens continuam tratados pela sessão existente e a autoridade de dados permanece no Supabase/RLS.
+
+Foi adicionado `test/security/login-contract.test.js`, cobrindo registro da rota, página canônica TypeScript, validação de senha, confirmação pendente, timeouts de Auth, limpeza de sessão no logout, remoção de tokens OAuth da URL e vínculo de perfil a `auth.uid()` nas migrations. O inventário determinístico confirma **zero páginas canônicas JavaScript**.
+
+| Gate | Resultado |
+|---|---:|
+| `npm run tipos:ts` | Verde |
+| `npm run tipos:v2` | Verde |
+| `npm test` | **965/965** |
+| `npm run build` | Verde; warning conhecido de chunks grandes |
+| `npm run smoke` | **99/99** |
+| `npm run v2:integracao` | **19/19** |
+| `npm run caminho-critico` | **15/15** |
+| `npm run prova-offline` | **9/9** |
+| `npm run sonda-memoria` | Verde |
+
+A conversão da página está pronta para integração na main, mas a promoção do release `1.1.0 — Identidade Preview` ainda exige revisão dos checks remotos de Auth/RLS, redirects permitidos e configuração real do Supabase. Nenhuma role elevada é decidida pelo cliente.

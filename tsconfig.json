@@ -95,6 +95,7 @@
     "src/pages/morse.ts",
     "src/pages/apis.ts",
     "src/pages/perfil.ts",
+    "src/pages/login.ts",
     "src/pages/esteganografia.ts",
     "src/pages/utilidades.ts",
     "src/pages/mural.ts",
