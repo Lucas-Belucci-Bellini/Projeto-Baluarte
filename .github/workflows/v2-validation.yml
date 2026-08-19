@@ -42,8 +42,13 @@ jobs:
       # Playwright, não o navegador — sem este passo o `v2:integracao` morre
       # antes da primeira asserção. Ficou invisível porque o `Typecheck V2`
       # falhava antes e deixava este passo `skipped`.
+      - name: Cache do Chromium do Playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Chromium do Playwright
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: V2 integration
         run: npm run v2:integracao
