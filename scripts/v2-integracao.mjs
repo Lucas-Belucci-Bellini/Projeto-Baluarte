@@ -133,6 +133,13 @@ try {
       && vivos.every((id) => runtimeAbertos.includes(id)),
     JSON.stringify(runtimeAbertos ?? null));
 
+  const registryModulos = await pagina.evaluate(() => window.__v2?.plataforma?.().registry?.modulos);
+  conferir('Platform reflete a saúde real do Registry após o boot',
+    Array.isArray(registryModulos)
+      && registryModulos.length === vivos.length
+      && registryModulos.every((modulo) => modulo.mode === 'healthy' && modulo.status === 'healthy'),
+    JSON.stringify(registryModulos ?? null));
+
   /* Estas duas seguem exatas de propósito: rota ou item de navegação que SOME é
    * defeito tão real quanto um que falha, e só o número fixo pega o sumiço.
    * Foram de 18→19 e 4→5 com a rota `/visor3d`. */

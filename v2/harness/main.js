@@ -37,6 +37,8 @@ import { criarLifecycleRuntime } from '../core/module-runtime-lifecycle.js';
 import { criarGrantRuntime } from '../core/runtime-bootstrap.js';
 /* O Runtime do renderer: IPC, não stdio. Devolve `null` fora do app. */
 import { criarRuntimeApp } from '../core/runtime-app.js';
+import { criarRuntimeHealth } from '../core/module-runtime-health.js';
+import { criarModuleRegistryHealth } from '../core/module-registry-health.js';
 
 /* O router da V1, sem alteração nenhuma. É o ponto: adaptar, não reescrever. */
 import { router } from '../../src/core/router.js';
@@ -70,6 +72,11 @@ async function principal() {
   const registry = criarRegistry();
   [cripto, editor, militar, briefing, visor3d].forEach((m) => registry.registrar(m));
   const selo = registry.selar();
+  /* O diagnóstico do Registry agora observa a saúde do boot real. Ele continua
+   * sendo um adaptador de observabilidade: não concede permissões, não inicia
+   * módulos e não substitui a autorização server-side. */
+  const runtimeHealth = criarRuntimeHealth();
+  const registryHealth = criarModuleRegistryHealth(registry, runtimeHealth);
 
   const bus = criarBus({ log });
   const metricas = criarMetricas();
@@ -143,7 +150,7 @@ async function principal() {
   /* Quem sobe agora é a Plataforma, não o boot. O supervisor decide `ready` ou
    * `degraded` a partir das falhas, e a saúde/lifecycle passam a existir em
    * runtime — não só em teste unitário. */
-  const plataforma = criarPlataforma(registry, boot);
+  const plataforma = criarPlataforma(registry, boot, { registryHealth });
   const partida = await plataforma.iniciar();
   /* `iniciar()` devolve `{ estado, duracaoMs, resultado, diagnostico }`; o
    * `resultado` é o que `boot.subir()` devolvia. Na chamada idempotente ele vem
@@ -152,6 +159,14 @@ async function principal() {
    * linhas adiante. */
   const r = partida.resultado;
   if (!r) throw new Error(`plataforma não subiu: estado "${partida.estado}"`);
+
+  /* O resultado da Plataforma é a evidência do Runtime de bootstrap: módulos
+   * vivos alcançaram o estado saudável; falhas entram no mesmo monitor que o
+   * adaptador usa para decidir degraded/quarantined. O ponto é após a partida,
+   * para que o diagnóstico exposto ao navegador não seja um retrato anterior
+   * ao boot. */
+  for (const id of r.vivos) runtimeHealth.marcarSaudavel(id);
+  for (const falha of r.falhas) runtimeHealth.marcarFalha(falha.modulo, falha.motivo);
 
   document.getElementById('resumo').textContent =
     `${r.vivos.length} módulos · ${r.rotas} rotas · ${r.nav.length} na navegação` +
