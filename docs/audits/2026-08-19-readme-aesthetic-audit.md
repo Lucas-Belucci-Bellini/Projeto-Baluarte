@@ -37,3 +37,9 @@ O repositório público já mostra o commit `docs(readme): renovar apresentacao 
 ## Verificação visual no GitHub
 
 O README publicado foi aberto no GitHub e conferido visualmente. O conteúdo renderizou em um painel limpo com headings, tabelas, listas, links e blocos recolhíveis legíveis. A área final de regras, contribuição e contato mostrou boa hierarquia e baixa densidade visual. O hero e os badges foram confirmados na extração do conteúdo do GitHub, enquanto a rolagem confirmou que a documentação longa permanece navegável até o final.
+
+## Estado dos gates após o último commit
+
+No SHA `f6434b70ada1236d00114e5d91b65d472f1597bc`, `Arma 3 Data CI`, `V2 Runtime`, `Core CI` e `V2 Validation` concluíram com sucesso. O workflow `CI` terminou com `failure`; `Vigia das rotas` e `CodeQL` ainda estavam em execução no momento desta captura. A investigação do CI deve ser concluída antes de declarar todos os gates verdes.
+
+Fonte pública dos estados: [GitHub Actions do Projeto-Baluarte](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions).
