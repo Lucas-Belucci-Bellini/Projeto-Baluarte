@@ -37,3 +37,19 @@ O main recebeu commits automáticos de documentação V2 durante a rodada. No SH
 ## Terceira rodada
 
 A terceira rodada repetiu `tipos:ts`, testes, build, estabilidade, `tipos:v2`, integração V2, smoke, caminho crítico e Runtime sem falhas. O JARVIS público abriu novamente com canvas 3D e os controles de música, ficheiro, microfone, pulso, varrimento, dissecação, retrato, rotação, captura e temas. O console ficou sem saída ou erro.
+
+## Auditoria do vínculo HTML + TypeScript
+
+O `jarvis-nucleo-v7.html` contém a interface, estilos e elementos de controle, mas carregava `./jarvis-nucleo-v7.js`. O `jarvis-nucleo-v7.ts` é a fonte canônica e possui o boot completo `init() → setView() → animate()`, porém antes desta mudança só participava da geração prévia do artefato JavaScript.
+
+Para que o HTML e o TypeScript funcionem juntos no desenvolvimento, a entrada multipágina do Vite deve carregar `./jarvis-nucleo-v7.ts` diretamente. O Vite transpila e empacota essa fonte no build; o artefato `.js` permanece rastreado como fallback standalone e referência de produção compilada, mas deixa de ser a fonte carregada pelo HTML dentro do pipeline Vite.
+
+## HTML + TypeScript no Vite
+
+O servidor Vite de desenvolvimento entregou o `jarvis-nucleo-v7.html` com `@vite/client`, respondeu o `jarvis-nucleo-v7.ts` transformado em JavaScript com HTTP 200 e abriu a cena 3D no navegador. O canvas e os 12 controles do HTML apareceram, e o console do navegador não apresentou erros. Isso confirma a integração direta HTML → TypeScript no modo de desenvolvimento.
+
+O teste interativo do modo HTML + TS também passou: o botão **Pulso** respondeu e o tema **Rubi** mudou a cena e exibiu `espectro rubi`, sem erro de console.
+
+## Build e produção estática
+
+Após remover o import dinâmico variável, o build voltou a gerar o bundle completo `jarvisNucleoV7-BLLSuDmJ.js` com 41,94 kB. O HTML em `dist` apontou para esse bundle, que respondeu HTTP 200. A versão estática abriu no navegador com canvas 3D, controles completos e console limpo. O import dinâmico de 0,25 kB foi rejeitado como solução porque não empacotava a fonte; a entrada TypeScript direta do Vite é a implementação final.
