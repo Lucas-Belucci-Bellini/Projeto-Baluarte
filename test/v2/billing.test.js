@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { decideUsage, hasEntitlement, normalizePlan, UsageLedger } from '../../v2/data/billing.ts';
+import { BillingCatalog, decideUsage, hasEntitlement, normalizePlan, UsageLedger } from '../../v2/data/billing.ts';
 
 const plan = normalizePlan({
   id: 'pro',
@@ -37,6 +37,42 @@ test('usage decision enforces finite and unlimited limits', () => {
   assert.equal(decideUsage(plan, 'JARVIS_MESSAGES_PER_MONTH', 500, 1).reason, 'limit-exceeded');
   assert.equal(decideUsage(plan, 'API_REQUESTS_PER_MONTH', 100000, 1).reason, 'unlimited');
   assert.equal(decideUsage(plan, 'UNKNOWN', 0, 1).reason, 'missing-limit');
+});
+
+test('billing catalog resolves the active plan by account and workspace', () => {
+  const catalog = new BillingCatalog();
+  catalog.registerPlan(plan);
+  catalog.assignPlan({
+    id: 'assignment-1',
+    accountId: 'account-1',
+    workspaceId: 'workspace-1',
+    planId: 'pro',
+    status: 'active',
+    effectiveFrom: '2026-08-01T00:00:00.000Z',
+    assignedAt: '2026-08-01T00:00:00.000Z',
+    source: 'test-fixture',
+  });
+  const resolved = catalog.resolve('account-1', 'workspace-1', '2026-08-19T00:00:00.000Z');
+  assert.equal(resolved.reason, 'resolved');
+  assert.equal(resolved.plan?.id, 'pro');
+  assert.equal(catalog.resolve('account-1', 'workspace-2').reason, 'no-assignment');
+});
+
+test('billing catalog rejects stale plan versions and invalid assignment windows', () => {
+  const catalog = new BillingCatalog();
+  catalog.registerPlan(plan);
+  assert.throws(() => catalog.registerPlan(plan), /plan.version deve avançar/);
+  assert.throws(() => catalog.assignPlan({
+    id: 'assignment-invalid',
+    accountId: 'account-1',
+    workspaceId: 'workspace-1',
+    planId: 'pro',
+    status: 'active',
+    effectiveFrom: '2026-08-20T00:00:00.000Z',
+    effectiveTo: '2026-08-19T00:00:00.000Z',
+    assignedAt: '2026-08-01T00:00:00.000Z',
+    source: 'test-fixture',
+  }), /effectiveTo/);
 });
 
 test('usage ledger is append-only and idempotent', () => {

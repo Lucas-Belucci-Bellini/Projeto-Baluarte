@@ -40,6 +40,28 @@ export interface UsageDecision {
   readonly limit: LimitValue | null;
 }
 
+export type PlanAssignmentStatus = 'active' | 'scheduled' | 'revoked';
+
+export interface PlanAssignment {
+  readonly id: string;
+  readonly accountId: string;
+  readonly workspaceId: string;
+  readonly planId: string;
+  readonly status: PlanAssignmentStatus;
+  readonly effectiveFrom: string;
+  readonly effectiveTo?: string;
+  readonly assignedAt: string;
+  readonly source: string;
+}
+
+export interface PlanResolution {
+  readonly accountId: string;
+  readonly workspaceId: string;
+  readonly plan: Plan | null;
+  readonly assignment: PlanAssignment | null;
+  readonly reason: 'resolved' | 'no-assignment' | 'plan-unavailable';
+}
+
 function required(value: string, field: string): string {
   const normalized = value.trim();
   if (!normalized) throw new TypeError(`${field} é obrigatório`);
@@ -49,6 +71,13 @@ function required(value: string, field: string): string {
 function nonNegative(value: number, field: string): number {
   if (!Number.isFinite(value) || value < 0) throw new RangeError(`${field} deve ser finito e não negativo`);
   return value;
+}
+
+function isoDate(value: string, field: string): string {
+  const normalized = required(value, field);
+  const timestamp = Date.parse(normalized);
+  if (!Number.isFinite(timestamp)) throw new TypeError(`${field} deve ser uma data ISO válida`);
+  return new Date(timestamp).toISOString();
 }
 
 export function normalizePlan(plan: Plan): Plan {
@@ -69,6 +98,66 @@ export function normalizePlan(plan: Plan): Plan {
 
 export function hasEntitlement(plan: Plan, entitlement: string): boolean {
   return plan.entitlements.includes(required(entitlement, 'entitlement'));
+}
+
+export function normalizePlanAssignment(assignment: PlanAssignment): PlanAssignment {
+  const effectiveFrom = isoDate(assignment.effectiveFrom, 'assignment.effectiveFrom');
+  const effectiveTo = assignment.effectiveTo ? isoDate(assignment.effectiveTo, 'assignment.effectiveTo') : undefined;
+  if (effectiveTo && Date.parse(effectiveTo) <= Date.parse(effectiveFrom)) {
+    throw new RangeError('assignment.effectiveTo deve ser posterior a effectiveFrom');
+  }
+  return Object.freeze({
+    ...assignment,
+    id: required(assignment.id, 'assignment.id'),
+    accountId: required(assignment.accountId, 'assignment.accountId'),
+    workspaceId: required(assignment.workspaceId, 'assignment.workspaceId'),
+    planId: required(assignment.planId, 'assignment.planId'),
+    effectiveFrom,
+    ...(effectiveTo ? { effectiveTo } : {}),
+    assignedAt: isoDate(assignment.assignedAt, 'assignment.assignedAt'),
+    source: required(assignment.source, 'assignment.source'),
+  });
+}
+
+export class BillingCatalog {
+  private readonly plans = new Map<string, Plan>();
+  private readonly assignments = new Map<string, PlanAssignment>();
+
+  registerPlan(plan: Plan): Plan {
+    const normalized = normalizePlan(plan);
+    const existing = this.plans.get(normalized.id);
+    if (existing && normalized.version <= existing.version) {
+      throw new Error(`plan.version deve avançar para ${normalized.id}`);
+    }
+    this.plans.set(normalized.id, normalized);
+    return normalized;
+  }
+
+  assignPlan(assignment: PlanAssignment): PlanAssignment {
+    const normalized = normalizePlanAssignment(assignment);
+    if (this.assignments.has(normalized.id)) throw new Error(`assignment.id duplicado: ${normalized.id}`);
+    this.assignments.set(normalized.id, normalized);
+    return normalized;
+  }
+
+  resolve(accountId: string, workspaceId: string, at = new Date().toISOString()): PlanResolution {
+    const account = required(accountId, 'accountId');
+    const workspace = required(workspaceId, 'workspaceId');
+    const instant = Date.parse(isoDate(at, 'at'));
+    const candidates = [...this.assignments.values()]
+      .filter((assignment) => assignment.accountId === account && assignment.workspaceId === workspace)
+      .filter((assignment) => assignment.status === 'active')
+      .filter((assignment) => Date.parse(assignment.effectiveFrom) <= instant)
+      .filter((assignment) => !assignment.effectiveTo || Date.parse(assignment.effectiveTo) > instant)
+      .sort((left, right) => Date.parse(right.effectiveFrom) - Date.parse(left.effectiveFrom));
+    const assignment = candidates[0] ?? null;
+    if (!assignment) return { accountId: account, workspaceId: workspace, plan: null, assignment: null, reason: 'no-assignment' };
+    const plan = this.plans.get(assignment.planId) ?? null;
+    if (!plan || plan.status !== 'active') {
+      return { accountId: account, workspaceId: workspace, plan: null, assignment, reason: 'plan-unavailable' };
+    }
+    return { accountId: account, workspaceId: workspace, plan, assignment, reason: 'resolved' };
+  }
 }
 
 export function decideUsage(plan: Plan, feature: string, consumed: number, requested: number): UsageDecision {

@@ -42,13 +42,27 @@ O preço é representado em unidade monetária menor (`priceMinor`) e a moeda é
 
 Ainda não existe persistência Postgres/Supabase, provider de pagamento, checkout, assinatura, invoice, webhook, refund, overage, marketplace, payout, cupom ou tela de preços. Isso é intencional: primeiro o contrato local precisa ser estabilizado e conectado ao sistema existente de identidade, permissões, workspace e Evidence.
 
+## Resolução por conta e workspace
+
+A segunda fatia da fase adicionou `BillingCatalog`, `PlanAssignment` e `PlanResolution`. A resolução exige `accountId` e `workspaceId`, considera a janela temporal de vigência e escolhe a assignment ativa mais recente. Um workspace diferente não herda silenciosamente o plano de outro workspace. Plano inexistente, inativo ou sem assignment retorna uma razão explícita, sem fallback comercial implícito.
+
+## Fronteira com permissões
+
+`v2/core/billing-permissions.ts` transforma entitlements em candidatos de permissão. Ele não importa o Permission Manager, não chama `conceder` e não cria autorização automática. O Permission Controller continua sendo a autoridade técnica; o adapter apenas informa quais permissões poderiam ser avaliadas depois, evitando que um plano pago seja confundido com uma elevação de privilégio.
+
+Mappings conflitantes são rejeitados e entitlements sem mapping são devolvidos como `unmappedEntitlements`. Isso torna incompleta uma configuração comercial visível em vez de conceder mais acesso do que foi declarado.
+
+## Evidence interno
+
+`v2/data/billing-evidence.ts` transforma uma resolução em uma claim interna com URI `baluarte://billing/assignments/...`, `moduleId` `v2.billing`, confiança explícita e status `verified`. Essa Evidence descreve o estado observado pelo catálogo local; ela não é uma fonte externa e não deve ser apresentada como prova de pagamento até que a persistência e a reconciliação financeira existam.
+
 ## Ordem seguinte
 
-A próxima fase deve definir a resolução de plano por conta/workspace e o mapeamento entre entitlement comercial e permissão arquitetural. Depois devem entrar persistência, RLS/tenancy e testes de concorrência. Provider financeiro deve ficar atrás de um adapter server-side e permanecer em sandbox até haver configuração e autorização explícitas.
+A próxima fase deve persistir assignments e eventos em Postgres/Supabase, definir RLS/tenancy e executar testes de concorrência. O Permission Controller deverá receber uma API de avaliação que considere identidade, papel, workspace, entitlement e flag do módulo, nessa ordem, sem permitir que billing contorne `owner`, `admin`, `dev` ou usuário normal. Provider financeiro deve ficar atrás de um adapter server-side e permanecer em sandbox até haver configuração e autorização explícitas.
 
 ## Testes
 
-`test/v2/billing.test.js` cobre normalização de entitlements, limites finitos, limites ilimitados, limite ausente, append-only, totalização e idempotência.
+Os testes cobrem normalização de entitlements, limites finitos, limites ilimitados, limite ausente, append-only, totalização, idempotência, resolução temporal por account/workspace, mappings conflitantes, isolamento de permissões e serialização de Evidence interna. Os arquivos são `test/v2/billing.test.js`, `test/v2/billing-permissions.test.js` e `test/v2/billing-evidence.test.js`.
 
 ## Riscos
 
