@@ -1,6 +1,6 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Base de trabalho:** branch `v2/identity-login`, validada sobre `origin/main` em `e66fba18d366952584da6b3ab62443588c4499df`; integração na main pendente deste marco
+**Base de trabalho:** `main` local em `7e50207b`, integração de identidade validada; o SHA final publicado será registrado após o commit documental
 **Status:** INVENTÁRIO ATUALIZADO — as páginas canônicas, incluindo `login.ts` da Identidade Preview, foram implementadas; **nenhuma continua canônica em JavaScript** (ver §0). O gate `tipos:v2` está verde após a fronteira Three.js do visor3d e a validação de Auth foi adicionada à suíte.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
@@ -263,7 +263,7 @@ Cada página ou módulo migrado deve manter o seguinte ciclo: implementação ca
 
 ## Fotografia corrente — Onda 4.52 de Identidade Preview
 
-A branch `v2/identity-login` foi validada sobre a main atual. O inventário determinístico confirmou **0 páginas canônicas JavaScript** e a nova rota elevou o smoke para **99 rotas verdes**. Os números abaixo distinguem arquivos físicos de unidades agregadas do relatório:
+A integração da branch `v2/identity-login` foi reaplicada sobre a main atual. O inventário determinístico confirmou **0 páginas canônicas JavaScript** e a nova rota elevou o smoke para **99 rotas verdes**. Os números abaixo distinguem arquivos físicos de unidades agregadas do relatório:
 
 | Indicador | Estado corrente |
 |---|---:|
