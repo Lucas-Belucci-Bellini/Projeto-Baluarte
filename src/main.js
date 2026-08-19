@@ -144,7 +144,7 @@ router.register('/filmes', lazy(() => import('./pages/filmes.ts'), 'filmesPage')
 router.register('/shadow', lazy(() => import('./pages/shadow.ts'), 'shadowPage'));
 router.register('/perfil', lazy(() => import('./pages/perfil.js'), 'perfilPage'));
 router.register('/login', lazy(() => import('./pages/login.js'), 'loginPage'));
-router.register('/economia', lazy(() => import('./pages/economia.js'), 'economiaPage'));
+router.register('/economia', lazy(() => import('./pages/economia.ts'), 'economiaPage'));
 router.register('/dolar', lazy(() => import('./pages/dolar.ts'), 'dolarPage'));
 router.register('/jarvis', lazyNexus('jarvis'));
 router.register('/ia-proprietaria', lazyNexus('ia'));
@@ -155,8 +155,8 @@ router.register('/triangulacao', lazy(() => import('./pages/triangulacao.ts'), '
 router.register('/llm-lab', lazyNexus('llm'));
 
 router.register('/sobre', lazy(() => import('./pages/sobre.ts'), 'sobrePage'));
-router.register('/roadmap', lazy(() => import('./pages/roadmap.js'), 'roadmapPage'));
-router.register('/diagnostico', lazy(() => import('./pages/diagnostico.js'), 'diagnosticoPage'));
+router.register('/roadmap', lazy(() => import('./pages/roadmap.ts'), 'roadmapPage'));
+router.register('/diagnostico', lazy(() => import('./pages/diagnostico.ts'), 'diagnosticoPage'));
 router.register('/jarvis-dashboard', lazyNexus('dashboard'));
 router.register('/mapa', lazy(() => import('./pages/mapa.ts'), 'mapaPage'));
 router.register('/visao', lazy(() => import('./pages/visao.js'), 'visaoPage'));

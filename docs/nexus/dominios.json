@@ -38,7 +38,7 @@
     "src/core/permissions.js",
     "src/core/flags.js",
     "src/core/politica.js",
-    "src/pages/diagnostico.js",
+    "src/pages/diagnostico.ts",
     "src/styles/diagnostico.css",
     "src/core/dados-remotos.js"
    ],
@@ -59,7 +59,7 @@
    "origem": [
     "src/pages/projetos.js",
     "src/pages/sobre.ts",
-    "src/pages/roadmap.js",
+    "src/pages/roadmap.ts",
     "src/pages/home.js",
     "src/layout/shell.js",
     "src/layout/header.js",
@@ -480,7 +480,7 @@
     "/banco"
    ],
    "origem": [
-    "src/pages/economia.js",
+    "src/pages/economia.ts",
     "src/pages/dolar.ts",
     "src/pages/banco.js",
     "src/utils/economia-api.js",
