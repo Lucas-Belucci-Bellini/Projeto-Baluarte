@@ -2,11 +2,11 @@
 
 ## Status
 
-`IMPLEMENTED LOCALLY — PENDING PUBLICATION`
+`PUBLISHED — REMOTE CI GREEN`
 
 ## Base auditada
 
-A Wave 8 foi preparada sobre o SHA `6576f4f1c8d567cabb393f653aac7a768f68abf4`, que já continha a Wave 7 publicada e o merge concorrente de documentação do main.
+A Wave 8 foi preparada sobre o SHA `6576f4f1c8d567cabb393f653aac7a768f68abf4`, que já continha a Wave 7 publicada e o merge concorrente de documentação do main. Foi publicada no SHA `4d12c5fb` (`refactor(core): route economy roadmap and diagnostics to TypeScript`).
 
 ## Objetivo
 
@@ -53,4 +53,4 @@ O risco principal é regressão de um consumidor que ainda importe o wrapper Jav
 
 ## Próximo passo
 
-Publicar após inspeção de divergência com `origin/main`, monitorar os workflows remotos e então iniciar a auditoria específica de `/perfil` e `/login`.
+A publicação foi concluída após inspeção de divergência com `origin/main`. CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL passaram sobre `4d12c5fb`. O próximo passo é iniciar a auditoria específica de `/perfil` e `/login`.
