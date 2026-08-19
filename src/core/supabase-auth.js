@@ -105,6 +105,9 @@ export async function signInWithPassword(email, password) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error_description || data.msg || 'E-mail ou senha inválidos.');
+  if (!data.access_token || !data.refresh_token) {
+    throw new Error('Resposta de autenticação inválida.');
+  }
   storeSession({
     access_token: data.access_token,
     refresh_token: data.refresh_token,
@@ -147,6 +150,7 @@ export async function getAccessToken() {
     });
     if (!res.ok) { storeSession(null); return null; }
     const data = await res.json();
+    if (!data.access_token) { storeSession(null); return null; }
     storeSession({
       access_token: data.access_token,
       refresh_token: data.refresh_token || s.refresh_token,
