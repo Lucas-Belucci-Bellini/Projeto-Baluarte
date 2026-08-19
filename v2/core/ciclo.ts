@@ -50,6 +50,15 @@ export interface RuntimeHost {
   fechar(id: string): Promise<void>;
 }
 
+/**
+ * Observador opcional da saúde do Runtime. O ciclo informa transições assentadas;
+ * ele não decide restart, não concede permissões e não substitui o supervisor.
+ */
+export interface RuntimeHealth {
+  marcarSaudavel(id: string): void;
+  marcarFalha(id: string, error: unknown): boolean;
+}
+
 export interface LifecycleFailure {
   modulo: string;
   fase: LifecycleStage;
@@ -97,6 +106,7 @@ export type Ambiente = 'web' | 'app' | 'ambos';
 export interface LifecycleOptions {
   tetoInitMs?: number;
   runtime?: RuntimeHost;
+  health?: RuntimeHealth;
   /**
    * Onde este ciclo está rodando.
    *
@@ -161,6 +171,7 @@ export function criarCiclo(
 ): ModuleCycle {
   const teto = opcoes.tetoInitMs ?? TETO_INIT_MS;
   const runtime = opcoes.runtime;
+  const health = opcoes.health;
   /* `ambos` como padrão mantém o comportamento anterior byte a byte para quem
    * não passa nada — que é todo consumidor existente. Filtro novo que muda o
    * padrão é filtro que quebra quem não pediu por ele. */
@@ -215,6 +226,28 @@ export function criarCiclo(
     await comTeto(() => runtime.fechar(id), 'runtime');
   }
 
+  function marcarSaudavel(id: string): void {
+    try {
+      health?.marcarSaudavel(id);
+    } catch (error) {
+      log.aviso('atualizar saúde após sucesso falhou', {
+        modulo: id,
+        erro: errorMessage(error),
+      });
+    }
+  }
+
+  function marcarFalha(id: string, error: unknown): void {
+    try {
+      health?.marcarFalha(id, error);
+    } catch (healthError) {
+      log.aviso('atualizar saúde após falha falhou', {
+        modulo: id,
+        erro: errorMessage(healthError),
+      });
+    }
+  }
+
   async function subir(): Promise<LifecycleStartResult> {
     if (fase !== 'parado') throw new Error(`ciclo já está "${fase}"`);
     fase = 'subindo';
@@ -247,11 +280,13 @@ export function criarCiclo(
       );
       if (quebradas.length > 0) {
         mortos.add(id);
+        const motivo = `dependência falhou: ${quebradas.join(', ')}`;
         falhas.push({
           modulo: id,
           fase: 'init',
-          motivo: `dependência falhou: ${quebradas.join(', ')}`,
+          motivo,
         });
+        marcarFalha(id, motivo);
         log.aviso('módulo desativado em cascata', {
           modulo: id,
           por: quebradas,
@@ -284,15 +319,18 @@ export function criarCiclo(
          * produzia. Quem lesse o diagnóstico procuraria no handler errado. */
         entrarEm('start');
         await executar(id, manifesto.lifecycle.start, ctx, 'start');
+        marcarSaudavel(id);
         vivos.set(id, { ctx, manifesto });
         log.debug('módulo no ar', { modulo: id });
       } catch (error) {
         mortos.add(id);
+        const motivo = errorMessage(error);
         falhas.push({
           modulo: id,
           fase: etapa,
-          motivo: errorMessage(error),
+          motivo,
         });
+        marcarFalha(id, error);
         log.erro('módulo falhou ao iniciar', error, { modulo: id });
 
         try {
@@ -353,6 +391,7 @@ export function criarCiclo(
         await executar(id, modulo.manifesto.lifecycle.stop, modulo.ctx, 'stop');
       } catch (error) {
         problemas.push({ modulo: id, fase: 'stop', motivo: errorMessage(error) });
+        marcarFalha(id, error);
         log.erro('falha no stop', error, { modulo: id });
       }
 
@@ -364,6 +403,7 @@ export function criarCiclo(
         await fecharRuntime(id);
       } catch (error) {
         problemas.push({ modulo: id, fase: 'runtime', motivo: errorMessage(error) });
+        marcarFalha(id, error);
         log.erro('falha ao fechar o Runtime', error, { modulo: id });
       }
 
@@ -372,6 +412,7 @@ export function criarCiclo(
         await executar(id, modulo.manifesto.lifecycle.dispose, modulo.ctx, 'dispose');
       } catch (error) {
         problemas.push({ modulo: id, fase: 'dispose', motivo: errorMessage(error) });
+        marcarFalha(id, error);
         log.erro('falha no dispose', error, { modulo: id });
       }
 

@@ -28,6 +28,7 @@ import { criarCiclo } from '../../v2/core/ciclo.js';
 import { criarPermissoes } from '../../v2/core/permissoes.js';
 import { criarStatusLifecycle } from '../../v2/core/lifecycle-status.js';
 import { criarLifecycleRuntime } from '../../v2/core/module-runtime-lifecycle.js';
+import { criarRuntimeHealth } from '../../v2/core/module-runtime-health.js';
 import { criarGrantRuntime } from '../../v2/core/runtime-bootstrap.js';
 import { definirDestino, coletor } from '../../v2/core/log.js';
 
@@ -314,4 +315,83 @@ test('stop que falha não impede o Runtime de fechar', async () => {
   assert.deepEqual(r.problemas.map((p) => [p.modulo, p.fase]), [['a', 'stop']]);
   assert.deepEqual(host.passos, ['fechar:a'],
     'o Runtime fecha mesmo com o stop do módulo quebrado — senão o processo vaza');
+});
+
+test('o ciclo marca saudável somente depois de runtime, init e start', async () => {
+  const registry = montar(mod('a'));
+  const health = criarRuntimeHealth();
+  const ciclo = criarCiclo(registry, deps, { runtime: hostEspiao(), health });
+
+  assert.equal(health.estado('a').status, 'unknown');
+  const r = await ciclo.subir();
+
+  assert.deepEqual(r.vivos, ['a']);
+  assert.equal(health.estado('a').status, 'healthy');
+  assert.deepEqual(health.estado('a').restarts, []);
+});
+
+test('falha de um módulo marca somente ele e preserva a saúde do vizinho', async () => {
+  const registry = montar(
+    mod('falha', { init: () => { throw new Error('init explodiu'); } }),
+    mod('saudavel'),
+  );
+  const health = criarRuntimeHealth();
+  const ciclo = criarCiclo(registry, deps, { runtime: hostEspiao(), health });
+
+  const r = await ciclo.subir();
+
+  assert.deepEqual(r.vivos, ['saudavel']);
+  assert.equal(health.estado('falha').status, 'failed');
+  assert.equal(health.estado('saudavel').status, 'healthy');
+  assert.equal(health.estado('falha').restarts.length, 1);
+});
+
+test('falha de dependência também entra no health sem duplicar a causa raiz', async () => {
+  const registry = montar(
+    mod('base', { init: () => { throw new Error('base caiu'); } }),
+    mod('dependente', {}, { dependencies: ['base'] }),
+  );
+  const health = criarRuntimeHealth();
+  const ciclo = criarCiclo(registry, deps, { runtime: hostEspiao(), health });
+
+  const r = await ciclo.subir();
+
+  assert.deepEqual(r.falhas.map((f) => [f.modulo, f.fase]), [
+    ['base', 'init'],
+    ['dependente', 'init'],
+  ]);
+  assert.equal(health.estado('base').status, 'failed');
+  assert.equal(health.estado('dependente').status, 'failed');
+  assert.equal(health.estado('base').restarts.length, 1);
+  assert.equal(health.estado('dependente').restarts.length, 1);
+});
+
+test('falha durante a descida atualiza health e não impede o restante do cleanup', async () => {
+  const registry = montar(mod('a', { stop: () => { throw new Error('stop caiu'); } }));
+  const health = criarRuntimeHealth();
+  const ciclo = criarCiclo(registry, deps, { runtime: hostEspiao(), health });
+
+  await ciclo.subir();
+  const r = await ciclo.descer();
+
+  assert.equal(r.ok, false);
+  assert.equal(health.estado('a').status, 'failed');
+  assert.equal(ciclo.fase, 'parado');
+});
+
+test('erro do observador de health não derruba o lifecycle', async () => {
+  const registry = montar(
+    mod('a'),
+    mod('falha', { init: () => { throw new Error('módulo caiu'); } }),
+  );
+  const health = {
+    marcarSaudavel: () => { throw new Error('health indisponível'); },
+    marcarFalha: () => { throw new Error('health indisponível'); },
+  };
+  const ciclo = criarCiclo(registry, deps, { health });
+
+  const r = await ciclo.subir();
+
+  assert.deepEqual(r.vivos, ['a']);
+  assert.deepEqual(r.falhas.map((f) => f.modulo), ['falha']);
 });

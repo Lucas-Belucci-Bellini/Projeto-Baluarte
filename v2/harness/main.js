@@ -145,7 +145,7 @@ async function principal() {
         nav.appendChild(a);
       }
     }
-  }, { runtime, ambiente });
+  }, { runtime, health: runtimeHealth, ambiente });
 
   /* Quem sobe agora é a Plataforma, não o boot. O supervisor decide `ready` ou
    * `degraded` a partir das falhas, e a saúde/lifecycle passam a existir em
@@ -160,14 +160,9 @@ async function principal() {
   const r = partida.resultado;
   if (!r) throw new Error(`plataforma não subiu: estado "${partida.estado}"`);
 
-  /* O resultado da Plataforma é a evidência do Runtime de bootstrap: módulos
-   * vivos alcançaram o estado saudável; falhas entram no mesmo monitor que o
-   * adaptador usa para decidir degraded/quarantined. O ponto é após a partida,
-   * para que o diagnóstico exposto ao navegador não seja um retrato anterior
-   * ao boot. */
-  for (const id of r.vivos) runtimeHealth.marcarSaudavel(id);
-  for (const falha of r.falhas) runtimeHealth.marcarFalha(falha.modulo, falha.motivo);
-
+  /* O ciclo já atualizou o mesmo RuntimeHealth durante as transições reais de
+   * runtime → init → start. Não repetimos as marcações aqui: uma falha repetida
+   * artificialmente consumiria orçamento de restart e mentiria sobre a saúde. */
   document.getElementById('resumo').textContent =
     `${r.vivos.length} módulos · ${r.rotas} rotas · ${r.nav.length} na navegação` +
     (r.falhas.length ? ` · ${r.falhas.length} falhas` : ' · sem falhas');

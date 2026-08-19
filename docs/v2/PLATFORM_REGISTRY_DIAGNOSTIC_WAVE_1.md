@@ -1,8 +1,8 @@
-# Platform → Module Registry Diagnostic — Wave 1
+# Platform → Module Registry Diagnostic — Waves 1–3
 
 ## Status
 
-`WAVE 1 PUBLISHED — WAVE 2 IMPLEMENTED LOCALLY`
+`WAVE 2 PUBLISHED — WAVE 3 IMPLEMENTED LOCALLY`
 
 ## Objetivo
 
@@ -58,6 +58,36 @@ Reverter `v2/harness/main.js`, `scripts/v2-integracao.mjs` e esta documentação
 
 A Wave 2 foi construída sobre o SHA `3e6b79334d398cc6fc4f46cf2cb74e159167f310`. O SHA final de publicação será registrado no relatório de entrega e no histórico Git após a bateria completa de gates.
 
+## Wave 3 — Health no ciclo canônico
+
+### Objetivo
+
+Levar a atualização de saúde para o ciclo real `Runtime → init → start → stop → dispose`, em vez de depender de uma marcação posterior no harness. O mesmo `RuntimeHealth` continua sendo compartilhado pela Platform e pelo Registry Health, sem criar outro supervisor ou outra fonte de verdade.
+
+### Contrato
+
+`criarCiclo(registry, deps, { health })` aceita um observador opcional. Depois que `runtime`, `init` e `start` terminam, o módulo recebe `marcarSaudavel`. Falhas diretas de runtime, init ou start, falhas de dependência em cascata e problemas de stop, fechamento do Runtime ou dispose recebem `marcarFalha`. O ciclo captura erro do observador e apenas registra aviso: telemetria não pode derrubar o lifecycle nem impedir o cleanup.
+
+O restart continua sob responsabilidade de `module-runtime-restart.js`, que já aplica `marcarFalha`, orçamento, backoff e `marcarSaudavel` após reinício. Esta onda não cria um caminho concorrente de restart; apenas garante que o ciclo canônico alimenta a mesma política de saúde.
+
+### Implementação
+
+`v2/core/ciclo.ts` ganhou `RuntimeHealth` e `LifecycleOptions.health`. `v2/core/boot.ts` já propaga `BootOptions` para `criarCiclo`; `v2/harness/main.js` agora injeta o mesmo `runtimeHealth` no Boot e não repete marcações após a partida. A remoção da duplicação é importante: marcar a mesma falha duas vezes consumiria orçamento de restart e produziria um diagnóstico falso.
+
+### Testes
+
+Foram adicionados contratos no `test/v2/ciclo-runtime-host.test.js` para sucesso somente após `start`, falha isolada com vizinho saudável, falha de dependência sem esconder a cascata, falha durante descida e observador de health indisponível. A seleção direcionada passou em `26/26`; `npm test` passou em `1073/1073`; `npm run tipos:ts` e `npm run tipos:v2` passaram; `npm run v2:integracao` passou em `20/20`; smoke passou com `99/99` rotas verdes; caminho crítico passou em `15/15`; os contratos de segurança passaram em `34/34`; build e `git diff --check` passaram.
+
+### Segurança, riscos e rollback
+
+O health monitor é observabilidade e decisão de restart; ele não concede permissões, não altera RLS e não autoriza módulos em manutenção ou disabled. O risco principal é a disponibilidade temporária do monitor, tratado por callbacks opcionais e isolamento de exceções. O rollback consiste em reverter `v2/core/ciclo.ts`, `v2/harness/main.js`, os testes e este documento; consumidores sem `health` preservam o comportamento anterior.
+
+A execução local de `npm run v2:runtime` continua bloqueada pelo Rust/Cargo `1.75.0` do sandbox ao resolver `edition2024`; o workflow remoto com Rust stable deve ser a autoridade para esse gate. Nenhum lockfile ignorado ou configuração de CI foi alterado para esconder a limitação.
+
+### Base e publicação
+
+A Wave 3 foi construída sobre o SHA publicado `3526082364e5d2fe59c397f72b5fec18d9a32968`. O SHA final desta onda será registrado no relatório de entrega e no histórico Git após a publicação direta no `main`.
+
 ## Próximo passo
 
-A próxima onda deve ligar eventos de falha/restart do lifecycle ao mesmo `RuntimeHealth`, mantendo o isolamento por módulo e sem criar um segundo supervisor. Em paralelo, a autorização server-side/RLS deverá registrar quem colocou um módulo em manutenção, por qual motivo, quando e qual operador aprovou a mudança.
+A próxima onda deve integrar eventos de restart e incidentes a uma superfície de diagnóstico persistente, mantendo o isolamento por módulo. Em paralelo, a autorização server-side/RLS deverá registrar quem colocou um módulo em manutenção, por qual motivo, quando e qual operador aprovou a mudança; essa parte não será simulada no frontend.
