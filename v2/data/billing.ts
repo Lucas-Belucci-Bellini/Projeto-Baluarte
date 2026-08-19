@@ -123,6 +123,21 @@ export function normalizePlanAssignment(assignment: PlanAssignment): PlanAssignm
   });
 }
 
+export function normalizeUsageEvent(event: UsageEvent): UsageEvent {
+  return Object.freeze({
+    ...event,
+    id: required(event.id, 'usage.id'),
+    idempotencyKey: required(event.idempotencyKey, 'usage.idempotencyKey'),
+    accountId: required(event.accountId, 'usage.accountId'),
+    workspaceId: required(event.workspaceId, 'usage.workspaceId'),
+    feature: required(event.feature, 'usage.feature'),
+    quantity: nonNegative(event.quantity, 'usage.quantity'),
+    timestamp: isoDate(event.timestamp, 'usage.timestamp'),
+    source: required(event.source, 'usage.source'),
+    metadata: Object.freeze({ ...event.metadata }),
+  });
+}
+
 export class BillingCatalog {
   private readonly plans = new Map<string, Plan>();
   private readonly assignments = new Map<string, PlanAssignment>();
@@ -135,6 +150,14 @@ export class BillingCatalog {
     }
     this.plans.set(normalized.id, normalized);
     return normalized;
+  }
+
+  hasPlanVersion(planId: string, version: number): boolean {
+    return this.plans.get(required(planId, 'plan.id'))?.version === version;
+  }
+
+  hasAssignment(id: string): boolean {
+    return this.assignments.has(required(id, 'assignment.id'));
   }
 
   assignPlan(assignment: PlanAssignment): PlanAssignment {
@@ -179,21 +202,15 @@ export class UsageLedger {
   private readonly events: UsageEvent[] = [];
   private readonly byIdempotency = new Map<string, UsageEvent>();
 
+  hasEventId(id: string): boolean {
+    return this.events.some((event) => event.id === required(id, 'usage.id'));
+  }
+
   append(event: UsageEvent): UsageEvent {
-    const idempotencyKey = required(event.idempotencyKey, 'usage.idempotencyKey');
+    const normalized = normalizeUsageEvent(event);
+    const idempotencyKey = normalized.idempotencyKey;
     const existing = this.byIdempotency.get(idempotencyKey);
     if (existing) return existing;
-    const normalized: UsageEvent = Object.freeze({
-      ...event,
-      id: required(event.id, 'usage.id'),
-      accountId: required(event.accountId, 'usage.accountId'),
-      workspaceId: required(event.workspaceId, 'usage.workspaceId'),
-      feature: required(event.feature, 'usage.feature'),
-      source: required(event.source, 'usage.source'),
-      quantity: nonNegative(event.quantity, 'usage.quantity'),
-      timestamp: required(event.timestamp, 'usage.timestamp'),
-      metadata: Object.freeze({ ...event.metadata }),
-    });
     if (this.events.some((item) => item.id === normalized.id)) throw new Error(`usage.id duplicado: ${normalized.id}`);
     this.events.push(normalized);
     this.byIdempotency.set(idempotencyKey, normalized);

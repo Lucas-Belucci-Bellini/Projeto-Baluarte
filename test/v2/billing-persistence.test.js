@@ -10,6 +10,40 @@ function adapterFixture() {
   return adapter;
 }
 
+function planFixture(overrides = {}) {
+  return {
+    id: 'pro',
+    name: 'Pro',
+    description: 'Plano de teste',
+    status: 'active',
+    currency: 'BRL',
+    billingPeriod: 'monthly',
+    priceMinor: 0,
+    trialDays: 7,
+    entitlements: ['CAN_USE_JARVIS'],
+    limits: { JARVIS_MESSAGES_PER_MONTH: { kind: 'finite', value: 500 } },
+    features: ['jarvis'],
+    metadata: { environment: 'test' },
+    version: 1,
+    ...overrides,
+  };
+}
+
+function assignmentRequest(overrides = {}) {
+  return {
+    id: 'assignment-1',
+    accountId: 'account-1',
+    workspaceId: 'workspace-1',
+    planId: 'pro',
+    planVersion: 1,
+    status: 'active',
+    effectiveFrom: '2026-08-01T00:00:00.000Z',
+    assignedAt: '2026-08-19T00:00:00.000Z',
+    source: 'test-fixture',
+    ...overrides,
+  };
+}
+
 function usageRequest(overrides = {}) {
   return {
     id: 'usage-1',
@@ -55,6 +89,67 @@ test('same idempotency key with a different payload is rejected', async () => {
     (error) => error instanceof BillingPersistenceError && error.code === 'IDEMPOTENCY_CONFLICT',
   );
   assert.equal(adapter.ledger.list().length, 1);
+});
+
+test('assignment and usage are committed together and replay safely under concurrency', async () => {
+  const adapter = adapterFixture();
+  adapter.registerPlan(planFixture());
+  const assignment = assignmentRequest();
+  const usage = usageRequest();
+  const results = await Promise.all(Array.from({ length: 16 }, () => adapter.assignPlanAndAppendUsage(assignment, usage)));
+  assert.equal(new Set(results.map((result) => result.assignment.id)).size, 1);
+  assert.equal(new Set(results.map((result) => result.usage.id)).size, 1);
+  assert.equal(adapter.catalog.resolve('account-1', 'workspace-1', '2026-08-19T12:00:00.000Z').reason, 'resolved');
+  assert.equal(adapter.ledger.list().length, 1);
+});
+
+test('transaction rejects an unregistered plan before mutating usage or assignment', async () => {
+  const adapter = adapterFixture();
+  await assert.rejects(
+    () => adapter.assignPlanAndAppendUsage(assignmentRequest(), usageRequest()),
+    (error) => error instanceof BillingPersistenceError && error.code === 'PLAN_NOT_FOUND',
+  );
+  assert.equal(adapter.ledger.list().length, 0);
+  assert.equal(adapter.catalog.resolve('account-1', 'workspace-1').reason, 'no-assignment');
+});
+
+test('transaction rejects invalid assignment before mutating usage or assignment', async () => {
+  const adapter = adapterFixture();
+  adapter.registerPlan(planFixture());
+  await assert.rejects(
+    () => adapter.assignPlanAndAppendUsage(
+      assignmentRequest({ effectiveTo: '2026-07-01T00:00:00.000Z' }),
+      usageRequest(),
+    ),
+    /effectiveTo/,
+  );
+  assert.equal(adapter.ledger.list().length, 0);
+  assert.equal(adapter.catalog.resolve('account-1', 'workspace-1').reason, 'no-assignment');
+});
+
+test('transaction enforces membership and account/workspace isolation before mutation', async () => {
+  const adapter = adapterFixture();
+  adapter.registerPlan(planFixture());
+  await assert.rejects(
+    () => adapter.assignPlanAndAppendUsage(assignmentRequest(), usageRequest({ actorUserId: 'outsider' })),
+    (error) => error instanceof BillingPersistenceError && error.code === 'MEMBERSHIP_REQUIRED',
+  );
+  await assert.rejects(
+    () => adapter.assignPlanAndAppendUsage(
+      assignmentRequest({ accountId: 'account-2' }),
+      usageRequest({ accountId: 'account-2' }),
+    ),
+    (error) => error instanceof BillingPersistenceError && error.code === 'ACCOUNT_MISMATCH',
+  );
+  await assert.rejects(
+    () => adapter.assignPlanAndAppendUsage(
+      assignmentRequest({ workspaceId: 'workspace-2' }),
+      usageRequest(),
+    ),
+    (error) => error instanceof BillingPersistenceError && error.code === 'ACCOUNT_MISMATCH',
+  );
+  assert.equal(adapter.ledger.list().length, 0);
+  assert.equal(adapter.catalog.resolve('account-1', 'workspace-1').reason, 'no-assignment');
 });
 
 test('different idempotency keys are preserved under concurrent writes', async () => {

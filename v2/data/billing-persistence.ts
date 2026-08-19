@@ -1,5 +1,7 @@
 import {
   BillingCatalog,
+  normalizePlanAssignment,
+  normalizeUsageEvent,
   type Plan,
   type PlanAssignment,
   type UsageEvent,
@@ -27,6 +29,16 @@ export interface WorkspaceMember {
 
 export interface UsageWriteRequest extends UsageEvent {
   readonly actorUserId: string;
+}
+
+export interface BillingAssignmentUsageTransaction {
+  readonly assignment: PlanAssignment;
+  readonly usage: UsageWriteRequest;
+}
+
+export interface BillingAssignmentUsageResult {
+  readonly assignment: PlanAssignment;
+  readonly usage: UsageEvent;
 }
 
 function required(value: string, field: string): string {
@@ -146,6 +158,51 @@ export class BillingPersistenceAdapter implements BillingDriver {
       throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'assignment.accountId não corresponde ao workspace');
     }
     return this.catalog.assignPlan(assignment);
+  }
+
+  async assignPlanAndAppendUsage(
+    assignment: PlanAssignment,
+    request: UsageWriteRequest,
+  ): Promise<BillingAssignmentUsageResult> {
+    return this.usageMutex.run(() => {
+      const workspace = this.workspaces.get(required(request.workspaceId, 'usage.workspaceId'));
+      if (!workspace) {
+        throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', `workspace não encontrado: ${request.workspaceId}`);
+      }
+      if (workspace.accountId !== required(request.accountId, 'usage.accountId')) {
+        throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'usage.accountId não corresponde ao workspace');
+      }
+      if (workspace.id !== required(assignment.workspaceId, 'assignment.workspaceId')) {
+        throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'assignment.workspaceId não corresponde ao usage.workspaceId');
+      }
+      if (workspace.accountId !== required(assignment.accountId, 'assignment.accountId')) {
+        throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'assignment.accountId não corresponde ao workspace');
+      }
+      if (!this.isMember(workspace.id, request.actorUserId)) {
+        throw new BillingPersistenceError('MEMBERSHIP_REQUIRED', 'ator não é membro do workspace');
+      }
+      const normalizedAssignment = normalizePlanAssignment(assignment);
+      if (!this.catalog.hasPlanVersion(normalizedAssignment.planId, normalizedAssignment.planVersion)) {
+        throw new BillingPersistenceError('PLAN_NOT_FOUND', 'plano e versão não estão registrados');
+      }
+      const normalizedUsage = normalizeUsageEvent(request);
+      const existingUsage = this.ledger.findByIdempotencyKey(normalizedUsage.idempotencyKey);
+      if (existingUsage && !sameUsagePayload(existingUsage, normalizedUsage)) {
+        throw new BillingPersistenceError('IDEMPOTENCY_CONFLICT', 'idempotencyKey já foi usada com um payload diferente');
+      }
+      if (existingUsage) {
+        if (this.catalog.hasAssignment(normalizedAssignment.id)) {
+          return { assignment: normalizedAssignment, usage: existingUsage };
+        }
+        throw new BillingPersistenceError('INVALID_STATE', 'replay exige assignment já persistida');
+      }
+      if (this.catalog.hasAssignment(normalizedAssignment.id) || this.ledger.hasEventId(normalizedUsage.id)) {
+        throw new BillingPersistenceError('DUPLICATE_RESOURCE', 'assignment ou usage.id já existe');
+      }
+      const persistedAssignment = this.catalog.assignPlan(normalizedAssignment);
+      const persistedUsage = this.ledger.append(normalizedUsage);
+      return { assignment: persistedAssignment, usage: persistedUsage };
+    });
   }
 
   async appendUsage(request: UsageWriteRequest): Promise<UsageEvent> {
