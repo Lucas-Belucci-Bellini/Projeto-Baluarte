@@ -97,7 +97,7 @@ router.register('/ferramentas', lazy(() => import('./pages/ferramentas.js'), 'fe
 router.register('/editor', lazy(() => import('./pages/editor.js'), 'editorPage'));
 router.register('/json-studio', lazy(() => import('./pages/json-studio.js'), 'jsonStudioPage'));
 router.register('/qr-studio', lazy(() => import('./pages/qr-studio.js'), 'qrStudioPage'));
-router.register('/git-helper', lazy(() => import('./pages/git-helper.js'), 'gitHelperPage'));
+router.register('/git-helper', lazy(() => import('./pages/git-helper.ts'), 'gitHelperPage'));
 router.register('/terminal', lazy(() => import('./pages/terminal.js'), 'terminalPage'));
 router.register('/calc-cientifica', lazy(() => import('./pages/calc-cientifica.js'), 'calcCientificaPage'));
 router.register('/calc-numerica', lazy(() => import('./pages/calc-numerica.js'), 'calcNumericaPage'));
@@ -106,18 +106,18 @@ router.register('/tabela-verdade', lazy(() => import('./pages/tabela-verdade.js'
 router.register('/cripto', lazy(() => import('./pages/cripto/index.js'), 'criptoPage'));
 router.register('/esteganografia', lazy(() => import('./pages/esteganografia.js'), 'esteganografiaPage'));
 router.register('/graficos', lazy(() => import('./pages/graficos.js'), 'graficosPage'));
-router.register('/simbolos', lazy(() => import('./pages/simbolos.js'), 'simbolosPage'));
+router.register('/simbolos', lazy(() => import('./pages/simbolos.ts'), 'simbolosPage'));
 router.register('/color-studio', lazy(() => import('./pages/color-studio.js'), 'colorStudioPage'));
 router.register('/regex', lazy(() => import('./pages/regex.js'), 'regexPage'));
 router.register('/arsenal', lazy(() => import('./pages/arsenal.js'), 'arsenalPage'));
 router.register('/militar', lazy(() => import('./pages/militar.js'), 'militarPage'));   // hub consolidado das frentes militares
 router.register('/modelos-3d', lazy(() => import('./pages/modelos-3d.js'), 'modelos3dPage'));   // visualizador 3D militar (#310)
-router.register('/biblioteca', lazy(() => import('./pages/biblioteca.js'), 'bibliotecaPage'));
+router.register('/biblioteca', lazy(() => import('./pages/biblioteca.ts'), 'bibliotecaPage'));
 router.register('/elites', lazy(() => import('./pages/elites.js'), 'elitesPage'));
 router.register('/dossie', lazy(() => import('./pages/dossie.js'), 'dossiePage'));
-router.register('/ciberseg', lazy(() => import('./pages/ciberseg.js'), 'cibersegPage'));
-router.register('/academia', lazy(() => import('./pages/academia.js'), 'academiaPage'));
-router.register('/robotica', lazy(() => import('./pages/robotica.js'), 'roboticaPage'));
+router.register('/ciberseg', lazy(() => import('./pages/ciberseg.ts'), 'cibersegPage'));
+router.register('/academia', lazy(() => import('./pages/academia.ts'), 'academiaPage'));
+router.register('/robotica', lazy(() => import('./pages/robotica.ts'), 'roboticaPage'));
 router.register('/fft', lazy(() => import('./pages/fft.js'), 'fftPage'));
 router.register('/radio', lazy(() => import('./pages/radio.js'), 'radioPage'));
 router.register('/musicas', lazy(() => import('./pages/musicas.js'), 'musicasPage'));
@@ -145,7 +145,7 @@ router.register('/shadow', lazy(() => import('./pages/shadow.js'), 'shadowPage')
 router.register('/perfil', lazy(() => import('./pages/perfil.js'), 'perfilPage'));
 router.register('/login', lazy(() => import('./pages/login.js'), 'loginPage'));
 router.register('/economia', lazy(() => import('./pages/economia.js'), 'economiaPage'));
-router.register('/dolar', lazy(() => import('./pages/dolar.js'), 'dolarPage'));
+router.register('/dolar', lazy(() => import('./pages/dolar.ts'), 'dolarPage'));
 router.register('/jarvis', lazyNexus('jarvis'));
 router.register('/ia-proprietaria', lazyNexus('ia'));
 router.register('/radar', lazy(() => import('./pages/radar.js'), 'radarPage'));
@@ -188,7 +188,7 @@ router.register('/ocr', lazy(() => import('./pages/ocr.js'), 'ocrPage'));
 router.register('/memoria', lazyLeve('memoria', () => import('./pages/memoria.js'), 'memoriaPage'));
 router.register('/terminal-ia', lazyNexus('terminal'));
 router.register('/seguranca', lazyNexus('seguranca'));
-router.register('/gerar-codigo', lazyLeve('gerar', () => import('./pages/gerar-codigo.js'), 'gerarCodigoPage'));   // app → aba do Núcleo (#316)
+router.register('/gerar-codigo', lazyLeve('gerar', () => import('./pages/gerar-codigo.ts'), 'gerarCodigoPage'));   // app → aba do Núcleo (#316)
 router.register('/conselho', lazyNexus('conselho'));
 router.register('/apis', lazyNexus('apis'));
 /* /git-nexus passa pelo GATE leve (#238 Fase 2): web → teaser; app → carrega a
