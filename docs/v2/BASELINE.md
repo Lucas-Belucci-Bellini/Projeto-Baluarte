@@ -68,3 +68,35 @@ As seis vulnerabilidades de desenvolvimento não devem ser corrigidas com `npm a
 ## 5. Baseline de promoção
 
 O SHA `f6402276` é a referência para a próxima fase. A main está funcional nos gates JavaScript, TypeScript, V2, smoke e caminho crítico. A próxima mudança deve ser pequena, ter teste próprio, atualizar documentação e repetir os gates relevantes. Nenhuma release V2 estável deve ser declarada somente com base nesta baseline, porque identidade/login-cadastro, vertical slice completo, autorização server-side, evidência de dados e validação remota do Runtime continuam dependências do roadmap.
+
+
+## 6. Current refresh — SHA 2f660dc6
+
+Esta seção atualiza o estado observado no `main` após os marcos de Billing e JARVIS/Spotify. As seções anteriores permanecem históricas e não devem ser lidas como snapshot corrente.
+
+**Data/hora da atualização:** 2026-08-19
+**SHA corrente:** `2f660dc6fe0b9676cab2b0fa4dfe8bf5400b181f`
+**Branch:** `main`
+**Origin:** sincronizado
+**Working tree:** limpo no início da atualização
+
+| Gate | Resultado observado |
+|---|---:|
+| `npm run tipos:ts` | Verde |
+| `npm run tipos:v2` | Verde |
+| `npm test` | **1042/1042** |
+| `npm run build` | Verde; warning conhecido de chunks grandes |
+| `npm run v2:integracao` | **19/19** |
+| `npm run smoke` | **99/99 rotas** |
+| `npm run caminho-critico` | **15/15** |
+| CI remoto | Oito workflows verdes no SHA corrente |
+
+### Mudanças posteriores à baseline histórica
+
+O estado corrente inclui o Billing Foundation read-only/local com idempotência, transação in-memory, driver HTTP server-side e preflight de staging; presença musical passiva do JARVIS; integração Spotify PKCE com escopo mínimo; refresh de token somente em memória; reação visual 3D; e hardening de redirect URI HTTPS/localhost.
+
+Essas implementações não significam que Supabase staging, RLS remoto, provider financeiro ou playback Spotify real estejam ativados. O runtime Rust continua dependente de toolchain compatível no ambiente local, e os geradores Node/TypeScript continuam sendo uma lacuna separada até sua correção formal.
+
+### Estado de promoção
+
+A baseline corrente confirma uma main publicável dentro dos gates observados, mas não autoriza declarar a V2 completa. Permanecem dependências de identidade/login-cadastro, autorização server-side/RLS, Module Registry operacional, persistência remota Billing, backup/restore, matriz completa de performance/acessibilidade e validação das superfícies desktop/mobile.
