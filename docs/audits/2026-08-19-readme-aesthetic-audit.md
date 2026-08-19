@@ -29,3 +29,11 @@ A primeira prévia revelou que texto dentro do SVG aparecia como caracteres vazi
 A versão final do README tem 322 linhas e 20.716 bytes. O `git diff --check` passou. Os marcadores técnicos essenciais foram preservados, incluindo estabilidade, como rodar, arquitetura, regras de ouro, Projeto Nexus, roadmap, J.A.R.V.I.S., contagens do catálogo e inventário de módulos.
 
 Os links relativos para documentação local foram verificados contra o filesystem. Os links externos principais para o deploy, a página pública do JARVIS Núcleo V7 e o workflow de CI retornaram HTTP 200. Os três links de arquivos do JARVIS usam URLs absolutas do GitHub para evitar ambiguidades do caminho com espaços.
+
+## Verificação pública inicial
+
+O repositório público já mostra o commit `docs(readme): renovar apresentacao visual do baluarte`. A extração do GitHub confirmou a presença do asset `docs/assets/readme-hero.svg`, do título principal, dos badges e da seção `Acesso rápido`. A página ainda estava posicionada na listagem de arquivos; a seção visual do README será conferida após rolar até o conteúdo renderizado.
+
+## Verificação visual no GitHub
+
+O README publicado foi aberto no GitHub e conferido visualmente. O conteúdo renderizou em um painel limpo com headings, tabelas, listas, links e blocos recolhíveis legíveis. A área final de regras, contribuição e contato mostrou boa hierarquia e baixa densidade visual. O hero e os badges foram confirmados na extração do conteúdo do GitHub, enquanto a rolagem confirmou que a documentação longa permanece navegável até o final.
