@@ -22,6 +22,13 @@ function response(status, body, headers = {}) {
   };
 }
 
+test('redirect URI de produção exige HTTPS e rejeita credenciais, hash e HTTP externo', async () => {
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://baluarte.example/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'https://user:pass@baluarte.example/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'https://baluarte.example/callback#oauth' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.doesNotReject(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://localhost:4173/callback' }));
+});
+
 test('PKCE usa S256, state e somente o escopo mínimo de playback', async () => {
   const challenge = await createSpotifyPkceChallenge(config);
   const url = new URL(challenge.authorizationUrl);
