@@ -61,7 +61,7 @@ O horário ainda precisa ser confirmado pelo proprietário. A configuração ini
 
 A configuração inicial foi ativada em 15 de agosto de 2026: destinatário `lucasbb2007@gmail.com`, Gmail conectado e rotina diária às **09:00 em `America/Sao_Paulo` (GMT-3)**. O agendamento está ativo e vinculado ao conector Gmail. A execução foi instruída a enviar o resumo diário e alertas críticos, mas permanece proibida de comentar, fechar, atribuir, fazer merge, publicar ou executar qualquer ação destrutiva no GitHub.
 
-A rotina continua usando o gerador versionado (`npm run relatorio:diario`) e o monitor (`npm run monitor:issues`). Se uma execução externa exigir confirmação adicional de envio, o relatório não deve ser considerado entregue até que a confirmação apareça; a coleta e o arquivo local continuam sendo a fonte de auditoria.
+Antes de gerar ou enviar cada resumo, a execução deve inspecionar o estado atual do `origin/main`: SHA, commits novos, inventário físico de páginas canônicas, documentação recente, gates disponíveis e alterações relevantes em `feature/login-cadastro` e no plano de releases. A rotina continua usando o gerador versionado (`npm run relatorio:diario`) e o monitor (`npm run monitor:issues`); o resumo não pode ser montado a partir de snapshot histórico quando houver mudanças novas no projeto. Se uma execução externa exigir confirmação adicional de envio, o relatório não deve ser considerado entregue até que a confirmação apareça; a coleta e o arquivo local continuam sendo a fonte de auditoria.
 
 ## 9. Aceite
 
