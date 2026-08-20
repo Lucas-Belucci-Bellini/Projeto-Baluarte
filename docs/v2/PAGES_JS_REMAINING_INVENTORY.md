@@ -1,8 +1,8 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `dc8517954644272b3aa594a0e7eabce545fbaa41`
-**Gerado em:** 2026-08-19T02:39:10.956Z
-**Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
+**SHA auditado:** `ca5b259e4dce5ac649262b9279e8c4a2d20270ef`
+**Gerado em:** 2026-08-20T13:44:00-03:00
+**Status:** INVENTÁRIO OPERACIONAL — zero páginas `.js` canônicas; os arquivos `.js` físicos restantes são wrappers de compatibilidade que reexportam `.ts`.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
@@ -10,8 +10,14 @@
 
 Existem **0 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
-| Grupo | Páginas restantes |
+| Indicador | Quantidade / resultado |
 | --- | ---: |
+| Páginas canônicas JavaScript restantes | **0** |
+| Wrappers físicos `.js` em `src/pages/` (incluindo subpastas) | **115** |
+| Implementações TypeScript em `src/pages/` (incluindo subpastas) | **123** |
+| Consumers TypeScript ainda carregando wrapper de página `.js` | **0** após a Wave 43 |
+| Rotas no smoke | **99/99** verdes |
+| Mapa Nexus | **21/21** domínios, 0 lacunas |
 
 ## Matriz completa
 

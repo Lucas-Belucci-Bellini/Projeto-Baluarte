@@ -1,7 +1,7 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Base de trabalho:** `main` publicada em `07d815b83f308605a1f7baf0371088f7a5a4ab09`, com Identidade Preview integrada
-**Status:** INVENTÁRIO ATUALIZADO — as páginas canônicas, incluindo `login.ts` da Identidade Preview, foram implementadas; **nenhuma continua canônica em JavaScript** (ver §0). O gate `tipos:v2` está verde após a fronteira Three.js do visor3d e a validação de Auth foi adicionada à suíte.
+**Base de trabalho:** `main` publicada em `ca5b259e4dce5ac649262b9279e8c4a2d20270ef`, após as Waves 39–43
+**Status:** INVENTÁRIO ATUALIZADO — todas as páginas canônicas estão em TypeScript; os 115 arquivos `.js` físicos de página são wrappers de compatibilidade; **nenhuma página continua canônica em JavaScript** (ver §0). Os gates locais e os 7 workflows remotos da Wave 43 estão verdes.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
 
 > **As seções históricas abaixo preservam a fotografia anterior à conclusão das páginas.** A verificação atual do filesystem confirma **zero páginas canônicas JavaScript** em `src/pages`; o JavaScript restante está concentrado em dados, utilitários, Core V1/V2 e arquivos de configuração, que seguem um roadmap separado.
@@ -258,26 +258,28 @@ Cada página ou módulo migrado deve manter o seguinte ciclo: implementação ca
 [1]: ./TYPESCRIPT_MIGRATION.md "Histórico das ondas TypeScript, gates e contratos publicados"
 [2]: ../../v2/jsconfig.json "Portão de checkJs estrito da V2"
 [3]: ../../src/main.js "Registro de rotas, boot e divisão eager/lazy"
-[4]: ../../relatorios/smoke-rotas.md "Smoke atual das 98 rotas"
+[4]: ../../relatorios/smoke-rotas.md "Smoke atual das 99 rotas"
 [5]: ./MAIN_ERROR_AUDIT.md "Auditoria anterior de causas raiz e efeitos cascata"
 
-## Fotografia corrente — Onda 4.52 de Identidade Preview
+## Fotografia corrente — Waves 39–43 / Wave 43 publicada
 
-A integração da branch `v2/identity-login` foi reaplicada sobre a main atual. O inventário determinístico confirmou **0 páginas canônicas JavaScript** e a nova rota elevou o smoke para **99 rotas verdes**. Os números abaixo distinguem arquivos físicos de unidades agregadas do relatório:
+A fotografia corrente foi atualizada após as Waves 39–43 no commit documental `ca5b259e4dce5ac649262b9279e8c4a2d20270ef`. O inventário determinístico confirma **0 páginas canônicas JavaScript**. Os números abaixo distinguem arquivos físicos de implementações canônicas:
 
 | Indicador | Estado corrente |
 |---|---:|
 | Páginas canônicas JS restantes | **0** |
-| Arquivos físicos `.js` em `src/pages/` | 100, incluindo wrappers |
-| Arquivos físicos `.ts` em `src/pages/` | 108 |
-| Implementações `.ts` em `src/` | 153 |
-| Contratos `.d.ts` em `src/` | 164 |
-| Testes | **965/965** |
+| Arquivos físicos `.js` em `src/pages/` (incluindo subpastas) | **115**, todos wrappers |
+| Arquivos físicos `.ts` em `src/pages/` (incluindo subpastas) | **123** |
+| Implementações `.ts` em `src/` | **320** |
+| Contratos `.d.ts` em `src/` | **164** |
+| Consumers TypeScript ainda carregando wrapper de página `.js` | **0** |
 | Smoke | **99/99** |
-| Integração V2 | **19/19** |
+| Integração V2 local | **21/21** |
 | Caminho crítico | **15/15** |
-| Offline | **9/9** |
+| CI remoto da Wave 43 | **7/7 workflows verdes** |
 
-A diferença entre os arquivos físicos e o relatório agregado é intencional: o inventário operacional conta unidades canônicas, wrappers e fronteiras por escopo; a contagem física também inclui arquivos auxiliares e submódulos. `login.js` permanece como compatibilidade e `login.ts` é a implementação canônica.
+A diferença entre arquivos físicos e dívida funcional é intencional: os 115 arquivos `.js` de página são wrappers de compatibilidade que reexportam implementações `.ts`. Eles não devem ser removidos em lote enquanto houver consumidores legados, testes ou contratos de compatibilidade. O inventário operacional registra páginas canônicas, não apenas extensões físicas.
+
+`login.js` permanece como compatibilidade e `login.ts` é a implementação canônica. As Waves 39–43 também promoveram os consumers TypeScript restantes do Nexus, do gate nativo e do painel de extração Arma 3, mantendo os wrappers para JavaScript.
 
 O próximo bloqueador de release é validar a configuração real de Supabase Auth/RLS e redirects permitidos em ambiente remoto; essa evidência ainda não está disponível neste ciclo. A UI não autoriza `developer`, `admin` ou `owner`; essas decisões devem continuar server-side. A conversão do login não autoriza, por si só, a declaração de `1.1.0`.
