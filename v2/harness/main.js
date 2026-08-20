@@ -268,6 +268,76 @@ async function principal() {
     });
   };
 
+  const renderCommandCenterVisualPilot = () => {
+    const root = document.getElementById('command-center-pilot');
+    const categoriesElement = document.getElementById('command-center-categories');
+    const empty = document.getElementById('command-center-empty');
+    const searchInput = document.getElementById('command-center-search');
+    const status = document.getElementById('command-center-status');
+    if (!root || !categoriesElement || !empty || !searchInput || !status) return;
+
+    const pilot = commandCenterPilot();
+    const query = searchInput.value;
+    const matches = new Set(searchCommandCenter(pilot.projection, query).map((command) => command.id));
+    const hasQuery = query.trim() !== '';
+    let visibleCommands = 0;
+    let visibleCategories = 0;
+    categoriesElement.replaceChildren();
+
+    for (const category of pilot.projection.categories) {
+      const commands = category.commands.filter((command) => !hasQuery || matches.has(command.id));
+      if (commands.length === 0) continue;
+      visibleCategories += 1;
+      visibleCommands += commands.length;
+
+      const section = document.createElement('section');
+      section.className = 'pilot-category';
+      section.dataset.categoryId = category.id;
+      section.setAttribute('aria-labelledby', `pilot-category-${category.id}`);
+
+      const heading = document.createElement('h2');
+      heading.id = `pilot-category-${category.id}`;
+      heading.textContent = `${category.icon} ${category.label}`;
+      const count = document.createElement('span');
+      count.className = 'pilot-category__count';
+      count.textContent = `${commands.length}`;
+      heading.appendChild(count);
+      section.appendChild(heading);
+
+      for (const command of commands) {
+        const link = document.createElement('a');
+        link.className = 'pilot-command';
+        link.href = `#${command.path}`;
+        link.dataset.commandId = command.id;
+        link.textContent = `${command.icon} ${command.label}`;
+        const meta = document.createElement('span');
+        meta.className = 'pilot-command__meta';
+        meta.textContent = `${command.title} · ${command.availability} · ${command.source}`;
+        link.appendChild(meta);
+        section.appendChild(link);
+      }
+      categoriesElement.appendChild(section);
+    }
+
+    empty.hidden = visibleCommands !== 0;
+    status.textContent = `${visibleCommands} comandos · ${visibleCategories} categorias · somente harness`;
+    root.dataset.commandCount = String(visibleCommands);
+    root.dataset.categoryCount = String(visibleCategories);
+  };
+
+  const commandCenterSearchInput = document.getElementById('command-center-search');
+  commandCenterSearchInput?.addEventListener('input', renderCommandCenterVisualPilot);
+  const commandCenterToggle = document.getElementById('command-center-toggle');
+  commandCenterToggle?.addEventListener('click', () => {
+    const root = document.getElementById('command-center-pilot');
+    if (!root || !commandCenterToggle) return;
+    const collapsed = root.dataset.collapsed !== 'true';
+    root.dataset.collapsed = String(collapsed);
+    commandCenterToggle.setAttribute('aria-expanded', String(!collapsed));
+    commandCenterToggle.textContent = collapsed ? 'Expandir' : 'Recolher';
+  });
+  renderCommandCenterVisualPilot();
+
   /* Ponte para o teste: estado, não pixel. */
   // @ts-ignore — superfície de teste, só no banco de prova
   window.__v2 = {
@@ -308,6 +378,12 @@ async function principal() {
     totalRotas: router.count ? router.count() : null,
     navigationObservation: () => navigationObserver.latest(),
     commandCenterPilot,
+    commandCenterVisualPilot: () => ({
+      visibility: document.getElementById('command-center-pilot')?.dataset.visibility ?? 'missing',
+      commandCount: document.getElementById('command-center-pilot')?.dataset.commandCount ?? '0',
+      categoryCount: document.getElementById('command-center-pilot')?.dataset.categoryCount ?? '0',
+      publicSidebarUntouched: true,
+    }),
     moduleAlignmentPilot,
     promotionGatePilot,
     registros,

@@ -21,12 +21,48 @@
   <link rel="stylesheet" href="/src/styles/variables.css" />
   <link rel="stylesheet" href="/src/styles/base.css" />
   <style>
+    :root {
+      --pilot-bg: #11151d;
+      --pilot-panel: #171d28;
+      --pilot-panel-strong: #202a38;
+      --pilot-line: rgba(155, 177, 204, .24);
+      --pilot-text: #ecf2f8;
+      --pilot-muted: #9eacbc;
+      --pilot-accent: #8bd5ff;
+      --pilot-focus: #ffe49a;
+    }
     body { padding: 16px; font-family: system-ui, sans-serif; }
     .hud { border: 1px solid var(--color-warning, #fa0); padding: 10px 14px;
            margin-bottom: 14px; border-radius: 6px; font-size: 13px; }
     .hud b { color: var(--color-warning, #fa0); }
     #saida { min-height: 200px; border: 1px dashed #666; padding: 12px; border-radius: 6px; }
     nav a { margin-right: 12px; }
+
+    /* Protótipo isolado: não é o shell público nem a sidebar V1. */
+    .visual-pilot { max-width: 1080px; margin: 0 auto 18px; padding: 18px;
+      color: var(--pilot-text); background: radial-gradient(circle at 80% 0%, #233b50 0, transparent 35%), var(--pilot-bg);
+      border: 1px solid var(--pilot-line); border-radius: 12px; }
+    .visual-pilot__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+    .visual-pilot__eyebrow { margin: 0 0 6px; color: var(--pilot-accent); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .visual-pilot h1 { margin: 0; font-size: clamp(20px, 3vw, 32px); letter-spacing: -.02em; }
+    .visual-pilot__subtitle { margin: 7px 0 0; color: var(--pilot-muted); font-size: 13px; }
+    .visual-pilot__badge { padding: 7px 10px; border: 1px solid var(--pilot-line); color: var(--pilot-muted); font-size: 11px; white-space: nowrap; }
+    .visual-pilot__toolbar { display: flex; gap: 10px; align-items: center; margin-top: 18px; }
+    .visual-pilot__search { flex: 1; min-width: 0; padding: 11px 13px; color: var(--pilot-text); background: #0d1118; border: 1px solid var(--pilot-line); border-radius: 7px; font: inherit; }
+    .visual-pilot__search:focus-visible, .visual-pilot button:focus-visible, .visual-pilot a:focus-visible { outline: 2px solid var(--pilot-focus); outline-offset: 2px; }
+    .visual-pilot button { padding: 10px 13px; color: var(--pilot-text); background: var(--pilot-panel-strong); border: 1px solid var(--pilot-line); border-radius: 7px; font: inherit; cursor: pointer; }
+    .visual-pilot button:hover { border-color: var(--pilot-accent); }
+    .visual-pilot__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+    .pilot-category { min-height: 110px; padding: 13px; background: rgba(23, 29, 40, .84); border: 1px solid var(--pilot-line); border-radius: 8px; }
+    .pilot-category h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 14px; }
+    .pilot-category__count { color: var(--pilot-muted); font-size: 11px; font-weight: normal; }
+    .pilot-command { display: block; padding: 7px 0; color: var(--pilot-text); text-decoration: none; border-top: 1px solid rgba(155, 177, 204, .12); font-size: 12px; }
+    .pilot-command:first-of-type { border-top: 0; }
+    .pilot-command__meta { display: block; margin-top: 3px; color: var(--pilot-muted); font-size: 10px; }
+    .pilot-empty { margin: 16px 0 0; color: var(--pilot-muted); font-size: 13px; }
+    .visual-pilot[data-collapsed="true"] #command-center-body { display: none; }
+    @media (max-width: 640px) { .visual-pilot__header, .visual-pilot__toolbar { flex-direction: column; align-items: stretch; } .visual-pilot__badge { align-self: flex-start; } }
+    @media (prefers-reduced-motion: reduce) { .visual-pilot *, .visual-pilot *::before, .visual-pilot *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
   </style>
 </head>
 <body>
@@ -35,6 +71,27 @@
     Nenhum <code>router.register()</code> escrito à mão — tudo vem do Registry.
     <div id="resumo"></div>
   </div>
+  <section id="command-center-pilot" class="visual-pilot" data-visibility="harness-only" data-collapsed="false" aria-labelledby="command-center-title">
+    <div class="visual-pilot__header">
+      <div>
+        <p class="visual-pilot__eyebrow">V2 · protótipo isolado</p>
+        <h1 id="command-center-title">Command Center</h1>
+        <p class="visual-pilot__subtitle">Categorias derivadas do Registry. A sidebar V1 continua sendo a superfície pública.</p>
+      </div>
+      <span class="visual-pilot__badge" id="command-center-status" role="status">observando Registry…</span>
+    </div>
+    <div class="visual-pilot__body">
+      <div class="visual-pilot__toolbar">
+        <label for="command-center-search" class="sr-only">Buscar comando</label>
+        <input id="command-center-search" class="visual-pilot__search" type="search" autocomplete="off" placeholder="Buscar ou executar comando…" />
+        <button id="command-center-toggle" type="button" aria-expanded="true" aria-controls="command-center-body">Recolher</button>
+      </div>
+      <div id="command-center-body">
+        <div id="command-center-categories" class="visual-pilot__grid" aria-live="polite"></div>
+        <p id="command-center-empty" class="pilot-empty" hidden>Nenhum comando corresponde à busca.</p>
+      </div>
+    </div>
+  </section>
   <nav id="nav"></nav>
   <div id="saida">carregando…</div>
   <script type="module" src="./main.js"></script>

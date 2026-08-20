@@ -164,6 +164,41 @@ try {
       && commandCenter?.search?.length === 1
       && commandCenter?.search?.[0]?.path === '/editor',
     JSON.stringify(commandCenter ?? null));
+
+  const visualPilot = await pagina.evaluate(() => window.__v2?.commandCenterVisualPilot?.());
+  const navBeforePilot = await pagina.locator('#nav').innerText();
+  conferir('protótipo visual Command Center fica restrito ao harness',
+    visualPilot?.visibility === 'harness-only'
+      && visualPilot?.publicSidebarUntouched === true
+      && Number(visualPilot?.commandCount) === 5
+      && Number(visualPilot?.categoryCount) > 0,
+    JSON.stringify(visualPilot ?? null));
+
+  await pagina.fill('#command-center-search', 'editor');
+  const searchPilot = await pagina.evaluate(() => ({
+    commandCount: document.querySelectorAll('#command-center-categories .pilot-command').length,
+    categoryCount: document.querySelectorAll('#command-center-categories .pilot-category').length,
+    status: document.getElementById('command-center-status')?.textContent ?? '',
+  }));
+  const navAfterSearch = await pagina.locator('#nav').innerText();
+  conferir('busca visual filtra o Command Center sem alterar a sidebar V1',
+    searchPilot.commandCount === 1
+      && searchPilot.categoryCount === 1
+      && /1 comandos/.test(searchPilot.status)
+      && navAfterSearch === navBeforePilot,
+    JSON.stringify({ searchPilot, navBeforePilot, navAfterSearch }));
+
+  await pagina.getByRole('button', { name: 'Recolher' }).click();
+  const collapsedPilot = await pagina.evaluate(() => ({
+    collapsed: document.getElementById('command-center-pilot')?.dataset.collapsed,
+    expanded: document.getElementById('command-center-toggle')?.getAttribute('aria-expanded'),
+  }));
+  conferir('protótipo visual oferece recolhimento acessível',
+    collapsedPilot.collapsed === 'true' && collapsedPilot.expanded === 'false',
+    JSON.stringify(collapsedPilot));
+  await pagina.getByRole('button', { name: 'Expandir' }).click();
+  await pagina.fill('#command-center-search', '');
+
   conferir('UI-03 observa o Registry sem trocar a sidebar V1',
     navigationObservation?.source === 'registry-observer'
       && navigationObservation?.projection?.entries?.length === 5
