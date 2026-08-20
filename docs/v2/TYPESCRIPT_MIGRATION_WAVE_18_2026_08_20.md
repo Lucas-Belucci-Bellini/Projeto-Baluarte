@@ -1,6 +1,6 @@
 # Migração TypeScript — Wave 18
 
-**Status:** implementação local concluída; publicação preparada após gates verdes.
+**Status:** publicada diretamente no `main`; implementação e CI remota concluídas com sucesso.
 
 **Objetivo:** promover `/cerebro`, `/memoria` e `/modelos-3d` para as implementações TypeScript canônicas, preservando os contratos internos do JARVIS, a sincronização best-effort de Memória e o carregamento lazy do visualizador 3D.
 
@@ -63,8 +63,19 @@ Rollback: restaurar no router e no Nexus as três extensões para `.js`, mantend
 
 ## Critério de conclusão
 
-A Wave 18 será concluída após o commit e a confirmação da CI remota no SHA final. Os critérios locais já foram satisfeitos: as três rotas carregam diretamente `.ts`, os contratos JARVIS/Auth/WebGL permaneceram inalterados e todos os gates comportamentais passaram.
+A Wave 18 foi concluída: as três rotas carregam diretamente `.ts`, os contratos JARVIS/Auth/WebGL permaneceram inalterados, todos os gates comportamentais passaram e a CI remota terminou verde no SHA de implementação.
+
+| Workflow remoto | Resultado |
+|---|---:|
+| CI | success |
+| Core CI | success |
+| V2 Core | success |
+| V2 Runtime | success |
+| V2 Validation | success |
+| Vigia das rotas | success |
+| Arma 3 Data CI | success |
+| CodeQL | success |
 
 **Autor:** Manus AI
-**SHA:** será preenchido após publicação.
-**Data dos gates:** 2026-08-20T03:22Z–03:24Z.
+**SHA de implementação e publicação:** `fe1b998d98de1d31a6e5985998bb0bda8d0e57d8`.
+**Data dos gates:** 2026-08-20T03:22Z–03:29Z.
