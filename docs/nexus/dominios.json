@@ -596,6 +596,7 @@
     "src/utils/jarvis-arquivos.js",
     "src/utils/jarvis-hermes-agent.js",
     "src/utils/jarvis-hermes-native.js",
+    "src/utils/jarvis-hermes-native.ts",
     "src/utils/nexus.js",
     "src/utils/nucleo-scene.js",
     "src/utils/nucleo-socket.js",

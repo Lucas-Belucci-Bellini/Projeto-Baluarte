@@ -6,8 +6,8 @@ import type { JarvisConfig, JarvisMessage, JarvisToolCallback } from '../utils/j
 import { getStatusText } from '../utils/baluarte-status';
 import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
 import { processHermesLocal, healthHermesLocal, listHermesLocalModels, HERMES_LOCAL_PRESETS } from '../utils/hermes-local.js';
-import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
-import type { NativeHermesStatus } from '../utils/jarvis-hermes-native.js';
+import { nativeHermesStatus } from '../utils/jarvis-hermes-native';
+import type { NativeHermesStatus } from '../utils/jarvis-hermes-native';
 import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
 import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoiceLang, setElevenKey, hasElevenKey, VOICE_LANGS } from '../utils/jarvis-voice.js';
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, setNucleoToken, simulateNucleoEvent } from '../utils/nucleo-socket.js';
