@@ -142,7 +142,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   prefersReducedMotion?.addEventListener?.('change', mediaListener);
   mediaListener();
 
-  const particleCount = (): number => performanceQuality === 'reduced' ? 56 : 96;
+  const particleCount = (): number => performanceQuality === 'reduced' ? 40 : 72;
   const updateTelemetry = (): void => {
     const state = performanceQuality === 'reduced' ? 'REDUZIDO' : 'ATIVO';
     setText(telemetryValue, measuredFps > 0 ? `${state} · ${Math.round(measuredFps)} FPS` : state);
@@ -151,6 +151,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   };
   const rebuildParticles = (): void => {
     particles = Array.from({ length: particleCount() }, (_, index) => createParticle(width, height, index));
+    root.dataset.particles = String(particles.length);
   };
   const setPerformanceQuality = (quality: 'full' | 'reduced'): void => {
     if (performanceQuality === quality) return;
@@ -239,7 +240,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
 
     context.strokeStyle = `${palette.line}`;
     context.lineWidth = 0.55;
-    const connectionStride = performanceQuality === 'reduced' ? 3 : 1;
+    const connectionStride = performanceQuality === 'reduced' ? 4 : 2;
     for (let i = 0; i < particles.length; i += 1) {
       for (let j = i + 1; j < particles.length; j += connectionStride) {
         const a = particles[i];

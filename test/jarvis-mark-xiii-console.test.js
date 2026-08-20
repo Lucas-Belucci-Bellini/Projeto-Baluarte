@@ -47,6 +47,9 @@ test('o console possui orçamento adaptativo e benchmark reproduzível', () => {
   assert.match(consoleSource, /performanceQuality/);
   assert.match(consoleSource, /measuredFps/);
   assert.match(consoleSource, /particleCount/);
+  assert.match(consoleSource, /performanceQuality === 'reduced' \? 40 : 72/);
+  assert.match(consoleSource, /dataset\.particles/);
+  assert.match(consoleSource, /connectionStride = performanceQuality === 'reduced' \? 4 : 2/);
   assert.match(consoleSource, /dataset\.performance/);
   assert.match(performanceScript, /REDUCED_MOTION/);
   assert.match(performanceScript, /jv-mark-xiii/);
