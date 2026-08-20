@@ -9,8 +9,8 @@
 import '../styles/mapa.css';
 import { h } from '../utils/helpers.js';
 import { estiloMapLibre, CAMADAS_BASE } from '../data/camadas-mapa.js';
-import { loadMapLibre } from '../utils/maplibre-loader.js';
-import type { MapLibreNamespace } from '../utils/maplibre-loader.js';
+import { loadMapLibre } from '../utils/maplibre-loader';
+import type { MapLibreNamespace } from '../utils/maplibre-loader';
 
 const OPENSKY = 'https://opensky-network.org/api/states/all';
 const RAINVIEWER = 'https://api.rainviewer.com/public/weather-maps.json';

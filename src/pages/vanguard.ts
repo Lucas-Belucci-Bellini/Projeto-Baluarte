@@ -28,10 +28,10 @@ import {
 import type { MissaoRespostaResolvida, SolucaoCarga } from '../utils/vanguard/index.js';
 /* O mapa tático usa as MESMAS peças do /mapa: loader único do MapLibre e o
  * catálogo de camadas compartilhado com o repo do Vanguard. */
-import { loadMapLibre } from '../utils/maplibre-loader.js';
+import { loadMapLibre } from '../utils/maplibre-loader';
 import type {
   MapLibreNamespace, MapLibreMap, MapLibreMarker, MapLibreLngLat,
-} from '../utils/maplibre-loader.js';
+} from '../utils/maplibre-loader';
 import { estiloMapLibre } from '../data/camadas-mapa.js';
 /* A ponte entre os dois projetos: dado medido do Baluarte + modelo de tiro
  * tenso, no formato de cartão que o Vanguard usa. */
