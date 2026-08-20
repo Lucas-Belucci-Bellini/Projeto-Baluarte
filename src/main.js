@@ -94,7 +94,7 @@ const lazyLeve = (tab, loader, fn) => (args) =>
 router.register('/home', (args) => homePage(args));   // eager: 1º paint (args → ?spline=)
 router.register('/baixar', lazy(() => import('./pages/baixar.ts'), 'baixarPage'));
 router.register('/ferramentas', lazy(() => import('./pages/ferramentas.ts'), 'ferramentasPage'));
-router.register('/editor', lazy(() => import('./pages/editor.js'), 'editorPage'));
+router.register('/editor', lazy(() => import('./pages/editor.ts'), 'editorPage'));
 router.register('/json-studio', lazy(() => import('./pages/json-studio.ts'), 'jsonStudioPage'));
 router.register('/qr-studio', lazy(() => import('./pages/qr-studio.ts'), 'qrStudioPage'));
 router.register('/git-helper', lazy(() => import('./pages/git-helper.ts'), 'gitHelperPage'));

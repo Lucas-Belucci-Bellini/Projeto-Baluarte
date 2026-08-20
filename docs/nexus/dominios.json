@@ -189,7 +189,7 @@
    ],
    "origem": [
     "src/pages/ferramentas.ts",
-    "src/pages/editor.js",
+    "src/pages/editor.ts",
     "src/pages/json-studio.ts",
     "src/pages/qr-studio.ts",
     "src/pages/git-helper.ts",
