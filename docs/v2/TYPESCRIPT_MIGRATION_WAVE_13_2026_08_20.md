@@ -50,4 +50,4 @@ Nenhum wrapper foi removido, nenhum dado externo foi alterado e nenhum contrato 
 
 ## Próximo passo
 
-A Wave 13 foi sincronizada com `origin/main`, publicada diretamente no `main` no SHA `12886090eacc967f035185eeaf67bf3a58e8f0b6` e os oito workflows remotos passaram: CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL. Depois, iniciar a auditoria contratual de `/arsenal` e `/wiki-arma3`.
+A Wave 13 foi sincronizada com `origin/main`, publicada diretamente no `main` no SHA `12886090eacc967f035185eeaf67bf3a58e8f0b6` e os oito workflows remotos passaram: CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL. O registro documental foi confirmado no SHA `262d45767f5eb395c48fe277517322e7d70d12c8`, também com os oito workflows remotos verdes. Depois, iniciar a auditoria contratual de `/arsenal` e `/wiki-arma3`.
