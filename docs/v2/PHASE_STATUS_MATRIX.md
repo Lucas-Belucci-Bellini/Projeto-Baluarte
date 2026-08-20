@@ -1,7 +1,7 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA de referência:** `d45c5a15ac6436e3aabbb4bbd840b2d62e31c75b`
-**Último marco:** `JARVIS Mark XIII Lightweight Optimization` — publicado no main
+**SHA de referência:** `f8614de2474258fd09ddd845da68c54b450226e4`
+**Último marco:** `platform-observation/v1` — transporte redigido publicado no main
 **Data:** 2026-08-20
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 

@@ -103,5 +103,5 @@ O rollback consiste em remover `platform-observation-transport.ts`, o import/exp
 - Repositório: `Lucas-Belucci-Bellini/Projeto-Baluarte`.
 - Branch de entrega: `main`.
 - Base: `8e0d654fbac8cb580e245d88da312f32ead1b63c`.
-- Commit de publicação: será registrado após o commit e a CI.
+- Commit de publicação: `f8614de2474258fd09ddd845da68c54b450226e4`.
 - Autor padrão: Manus AI.
