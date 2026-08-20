@@ -2,11 +2,11 @@
 
 ## Status
 
-`VALIDATED LOCALLY — PUBLICATION BLOCKED BY GITHUB AUTHENTICATION`
+`PUBLISHED — REMOTE CI GREEN`
 
 ## Base
 
-A onda foi construída localmente sobre o SHA `52b476d3`, que contém a Wave 10 documentada e publicada no repositório antes da perda de autenticação do cliente GitHub.
+A onda foi construída localmente sobre o SHA `52b476d3`, que contém a Wave 10 documentada e publicada no repositório. A entrega final foi publicada no SHA `f2474569d1b5e667591f20f42042d79bf76e881c`.
 
 ## Objetivo
 
@@ -33,14 +33,14 @@ A auditoria deixou fora `/tecnologia-militar` e `/guerras-conflitos` por referê
 
 `npm run verificar-nexus` passou com 99 rotas, 0 lacunas e 0 divergências. `npm run tipos:ts` passou. `npm run tipos:v2` passou. `npm test` passou com 1085/1085. `npm run build` passou com os avisos conhecidos de chunks grandes. `npm run v2:integracao` passou em 21/21 depois de remover os previews Vite órfãos em 4193/4194. `npm run smoke` passou em 99/99. `npm run caminho-critico` passou em 15/15. Os contratos direcionados passaram em 22/22. `git diff --check` passou. O gate local `npm run v2:runtime` permanece limitado pelo Cargo 1.75.0 e `edition2024`.
 
-## Bloqueio de publicação
+## Publicação
 
-Após os workflows da Wave 10, o cliente GitHub retornou `HTTP 401: Bad credentials`. `gh auth status -h github.com` confirmou que o token em `GH_TOKEN` e o token salvo para `Lucas-Belucci-Bellini` estão inválidos. Não tentei substituir, imprimir ou criar credenciais. A onda está no branch local `main`, mas ainda não foi commitada/publicada para não declarar uma entrega remota que não ocorreu.
+A tentativa inicial de monitoramento encontrou uma falha transitória de autenticação no cliente GitHub, mas a autenticação de transporte Git permaneceu funcional. A Wave 11 foi publicada diretamente no `main` no SHA `f2474569d1b5e667591f20f42042d79bf76e881c`, sem force push. Os oito workflows remotos passaram: CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL.
 
 ## Riscos e rollback
 
-Nenhuma página JavaScript foi removida e nenhum dado externo foi alterado. Para rollback local, reverter as seis extensões no router, as seis origens no Nexus e este documento. Quando a autenticação for restaurada, repetir `git status`, `git fetch origin main`, integrar qualquer avanço remoto, executar os gates aplicáveis e publicar sem force push.
+Nenhuma página JavaScript foi removida e nenhum dado externo foi alterado. Para rollback local, reverter as seis extensões no router, as seis origens no Nexus e este documento. O próximo changeset documental deve repetir `git status`, `git fetch origin main`, integrar qualquer avanço remoto, executar os gates aplicáveis e publicar sem force push.
 
 ## Próximo passo
 
-Restaurar a autenticação do GitHub e publicar esta onda. Em seguida, continuar com `/tecnologia-militar`, `/guerras-conflitos`, `/arsenal` e `/wiki-arma3` somente após auditorias específicas de seus contratos.
+Continuar com `/tecnologia-militar`, `/guerras-conflitos`, `/arsenal` e `/wiki-arma3` somente após auditorias específicas de seus contratos.
