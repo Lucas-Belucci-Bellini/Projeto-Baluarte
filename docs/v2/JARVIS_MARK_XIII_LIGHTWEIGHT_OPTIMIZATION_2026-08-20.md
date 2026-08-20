@@ -61,5 +61,5 @@ A próxima otimização não deve alterar simultaneamente o histórico do chat, 
 - Repositório: `Lucas-Belucci-Bellini/Projeto-Baluarte`.
 - Branch de entrega: `main`.
 - Base: `8cbe77444ef00d62e907b251cee75f661f131ce7`.
-- Publicação da otimização: será registrada após o commit e a CI do marco.
+- Publicação da otimização: `e78b39466465b11562dd25e7773f399af7b0fe5a`.
 - Autor padrão: Manus AI.
