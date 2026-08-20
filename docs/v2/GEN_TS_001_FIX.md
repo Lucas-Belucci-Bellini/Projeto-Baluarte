@@ -2,7 +2,7 @@
 
 ## Status
 
-`RESOLVED LOCALLY — PENDING MAIN PUBLICATION`
+`RESOLVED AND PUBLISHED ON MAIN`
 
 ## Causa raiz
 
@@ -51,7 +51,7 @@ Após a mudança, passaram:
 | `npm run tipos:v2` | Verde |
 | `git diff --check` | Verde |
 
-Os gates comportamentais completos serão repetidos antes do commit de publicação.
+Os gates comportamentais completos foram repetidos após a publicação. A baseline corrente registra `npm test` 1085/1085, build verde, integração V2 21/21, smoke 99/99, caminho crítico 15/15 e CI remoto verde. A limitação local do Rust permanece ambiental e separada deste contrato.
 
 ## Segurança e rollback
 
@@ -61,4 +61,4 @@ O rollback é o revert do commit desta mudança. Como os arquivos `.ts` preserva
 
 ## Limitação residual
 
-Outros wrappers `.js → .ts` da migração ainda exigem uma fronteira com loader quando executados fora do Vite/tsx. Este fix resolve os geradores que são gates de documentação. A auditoria da fronteira Node dos demais scripts permanece no backlog `GEN-TS-002`, sem ampliar o escopo desta onda.
+Outros wrappers `.js → .ts` da migração ainda exigem uma fronteira com loader quando executados fora do Vite/tsx. Esta auditoria `GEN-TS-002` verificou a superfície de scripts executáveis e não encontrou outra correção imediata necessária. O relatório `docs/v2/GEN_TS_002_AUDIT_2026-08-20.md` registra a evidência e os limites da auditoria.
