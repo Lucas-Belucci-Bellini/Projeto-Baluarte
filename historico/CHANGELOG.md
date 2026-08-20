@@ -6,6 +6,22 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-20 — Release `1.2.5`: artefatos baixáveis do Baluarte Launcher
+
+A release `1.2.5` alinha a versão do site e do `Baluarte Launcher`, atualizando `package.json`, `package-lock.json`, `desktop/package.json`, `desktop/package-lock.json`, `src/data/version.js` e `public/sw.js`. O Service Worker passa a usar `baluarte-v1.2.5`, garantindo a invalidação dos caches da linha anterior.
+
+O pipeline Desktop Release foi endurecido para conferir a versão do `desktop/package.json` contra o tag `desktop-v1.2.5` quando acionado por tag e contra a versão solicitada quando acionado manualmente. A release deve anexar instaladores Windows `.exe`, Linux `.AppImage` e macOS `.dmg`, além dos manifests `latest.yml`, `latest-linux.yml` e `latest-mac.yml` usados pelo `electron-updater`.
+
+O Launcher deixa de anunciar a linha textual `1.1.5` na mensagem de atualização e passa a descrever a linha `1.2.5`. A publicação dos artefatos depende do workflow `Desktop Release` com Rust nativo compilado em cada sistema operacional da matriz; nenhum binário é inventado ou anexado manualmente.
+
+A causa da inconsistência anterior foi documentada: o site estava em `1.2.0`, o `desktop/package.json` estava em `1.1.5`, e a cadeia de release desktop era independente da tag web. A página `/baixar` consome `/releases/latest`, portanto a disponibilidade real dos instaladores depende de uma release GitHub pública com assets correspondentes.
+
+**Artefatos esperados:** `Baluarte-Launcher-Setup-1.2.5.exe`, `Baluarte-Launcher-1.2.5.AppImage`, `Baluarte-Launcher-1.2.5-arm64.dmg` ou o `.dmg` produzido pela matriz macOS, mais os manifests de atualização. A existência e os nomes finais serão verificados após a execução remota do workflow.
+
+**Status:** código e metadados preparados; publicação da tag e dos assets ainda depende dos gates e da execução do Desktop Release.
+
+---
+
 ## 2026-08-20 — Release `1.2.0`: frontend TypeScript incremental e fundação V2
 
 A release `1.2.0` consolida as Waves 23–35 da construção incremental do Projeto-Baluarte. A V1 permanece funcional e compatível, enquanto as fronteiras canônicas do frontend e da camada de utilitários avançam para TypeScript com wrappers `.js` preservados onde consumidores legados ainda existem.

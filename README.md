@@ -34,6 +34,7 @@
 | **Ler o roadmap completo** | [`docs/ROADMAP_COMPLETO.md`](docs/ROADMAP_COMPLETO.md) |
 | **Entrar na V2** | [`ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md) |
 | **Rodar localmente** | [`Como rodar`](#como-rodar) |
+| **Baixar o Launcher** | [`/baixar`](https://projeto-baluarte.vercel.app/#/baixar) e [releases do GitHub](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases) |
 | **Propor uma mudança** | [Issues e discussões](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues) |
 
 ## Visão geral
@@ -50,7 +51,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados. |
-| **Web/Desktop** | `1.2.0` publicada | Release incremental com migração TypeScript, contratos V2 e compatibilidade V1 preservada. |
+| **Web/Desktop** | `1.2.5` em preparação de publicação | Release de distribuição do Launcher com instaladores verificáveis, mantendo a V1 e a construção incremental da V2. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
@@ -84,6 +85,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Projeto Nexus Baluarte | [`docs/PROJETO-NEXUS-BALUARTE.md`](docs/PROJETO-NEXUS-BALUARTE.md) |
 | Histórico de merges | [`2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md) |
 | Plano de releases | [`RELEASE_PLAN.md`](docs/v2/RELEASE_PLAN.md) |
+| Release 1.2.5 e artefatos baixáveis | [`v1.2.5.md`](docs/releases/v1.2.5.md) |
 | Auditoria Supabase e drift de migrations | [`SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md`](docs/v2/SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md) |
 | Plano de recuperação Supabase | [`SUPABASE_STAGING_RECOVERY_PLAN.md`](docs/v2/SUPABASE_STAGING_RECOVERY_PLAN.md) |
 

@@ -279,7 +279,7 @@ function deepLinkFromArgv(argv) {
 
 /* ============================ auto-update ============================ */
 
-/* A linha pública 1.0.0 foi pulada; 1.1.5 continua a linha de release pós-salto.
+/* A linha pública 1.0.0 foi pulada; 1.2.5 continua a linha de release pós-salto.
  *
  * O operador continua decidindo quando baixar e instalar. O motivo é segurança
  * operacional: a release traz bundles TypeScript compilados, contratos V2 e um
@@ -303,7 +303,7 @@ function setupUpdates() {
       title: 'Existe uma versão nova',
       message: `Baluarte ${info && info.version ? info.version : 'novo'} está disponível.`,
       detail:
-        'A 1.1.5 continua a linha pública após o salto planejado. Ela inclui ' +
+        'A 1.2.5 continua a linha pública após o salto planejado. Ela inclui ' +
         'bundles TypeScript compilados, contratos Auth/RLS, observabilidade V2, ' +
         'melhorias do JARVIS e atualização do fallback offline. ' +
         'Baixar é uma decisão do operador.\n\n' +

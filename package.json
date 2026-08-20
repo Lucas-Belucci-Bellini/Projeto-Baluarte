@@ -1,7 +1,7 @@
 {
   "name": "projeto-baluarte",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.5",
   "type": "module",
   "description": "Projeto Baluarte Mark XIII — plataforma narrativa/militar com núcleo V1 compatível e infraestrutura V2 incremental",
   "scripts": {

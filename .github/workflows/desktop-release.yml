@@ -13,7 +13,7 @@ on:
       version:
         description: 'Versão (informativo; a versão real vem de desktop/package.json)'
         required: false
-        default: '1.1.0'
+        default: '1.2.5'
 
 permissions:
   contents: write
@@ -57,6 +57,21 @@ jobs:
 
       - name: Build Runtime nativo (release)
         run: cargo build --release --manifest-path v2/runtime/Cargo.toml
+
+      - name: Verify release version
+        working-directory: desktop
+        shell: bash
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#desktop-v}"
+          EXPECTED="${REQUESTED_VERSION:-$VERSION}"
+          if [[ "$GITHUB_REF_NAME" == desktop-v* ]]; then EXPECTED="$TAG_VERSION"; fi
+          test "$VERSION" = "$EXPECTED"
+          test "$TAG_VERSION" = "$VERSION" || [[ "$GITHUB_REF_NAME" != desktop-v* ]]
+          echo "Release version verified: $VERSION"
 
       - name: Build & publish installer
         working-directory: desktop
