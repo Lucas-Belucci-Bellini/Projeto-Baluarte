@@ -8,6 +8,7 @@
 import { h, cx, empty } from '../utils/helpers.js';
 import { VERSION } from '../data/version.js';
 import { router } from '../core/router.js';
+import { bus } from '../core/events.js';
 import { toast } from '../utils/toast';
 import {
   loadConfig, saveConfig,
@@ -38,7 +39,7 @@ import { recall, summarizeSession, setMemoryCache } from '../utils/jarvis-recall
 import type { RecallDoc } from '../utils/jarvis-recall.js';
 import { initSkills, removeSkill } from '../utils/jarvis-tools.js';
 import { listSkillSummaries } from '../utils/jarvis-skills.js';
-import { createMarkXiiiConsole, type MarkXiiiConsole } from '../utils/jarvis-mark-xiii';
+import { createMarkXiiiConsole, type MarkXiiiConsole, type MarkXiiiRuntimeObservation } from '../utils/jarvis-mark-xiii';
 
 /** Um modo de operação do JARVIS, como aparece na grade de seleção. */
 interface ModoJarvis {
@@ -75,6 +76,21 @@ let inputEl: HTMLTextAreaElement | null = null;
 let sessionsEl: HTMLDivElement | null = null;
 let modeBadgeEl: HTMLSpanElement | null = null;
 let markXiiiConsole: MarkXiiiConsole | null = null;
+let markXiiiRuntimeOff: (() => void) | null = null;
+let markXiiiRouteOff: (() => void) | null = null;
+
+function applyRuntimeObservation(observation: MarkXiiiRuntimeObservation): void {
+  markXiiiConsole?.setRuntimeObservation(observation);
+}
+
+function disposeMarkXiiiConsole(): void {
+  markXiiiRuntimeOff?.();
+  markXiiiRuntimeOff = null;
+  markXiiiRouteOff?.();
+  markXiiiRouteOff = null;
+  markXiiiConsole?.dispose();
+  markXiiiConsole = null;
+}
 
 /**
  * Acesso às peças montadas em `jarvisPage()`.
@@ -870,9 +886,21 @@ function renderConfigPanel(): HTMLDivElement {
           testStatus.className = 'u-text-muted';
           try {
             const info = await healthCheckServer(conf.serverUrl);
+            applyRuntimeObservation({
+              source: 'runtime-observed',
+              connection: 'connected',
+              health: info.hasKey ? 'healthy' : 'degraded',
+              detail: info.hasKey ? 'health endpoint + Gemini key observados' : 'health endpoint observado; chave Gemini ausente',
+            });
             testStatus.textContent = info.hasKey ? '✓ online · chave Gemini OK' : '✓ online · falta GEMINI_API_KEY';
             testStatus.className = info.hasKey ? 'u-text-cyan' : 'u-text-warning';
           } catch {
+            applyRuntimeObservation({
+              source: 'runtime-observed',
+              connection: 'disconnected',
+              health: 'failed',
+              detail: 'health endpoint não respondeu',
+            });
             testStatus.textContent = '✗ offline — rode backend/server.py';
             testStatus.className = 'u-text-muted';
           }
@@ -1044,8 +1072,7 @@ function renderConfigPanel(): HTMLDivElement {
 /* ===== Page builder ===== */
 
 export function jarvisPage(): HTMLDivElement {
-  markXiiiConsole?.dispose();
-  markXiiiConsole = null;
+  disposeMarkXiiiConsole();
   const conf = loadConfig();
   config = conf;
   if (conf.humanizeOn === undefined) conf.humanizeOn = true;
@@ -1064,6 +1091,17 @@ export function jarvisPage(): HTMLDivElement {
     version: `V${VERSION}`,
     musicConnected: spotifyConnected,
     onMusic: () => spotifyButton.click(),
+  });
+  markXiiiRuntimeOff = bus.on<{ connected?: boolean; detail?: string }>('nucleo:status', (status) => {
+    applyRuntimeObservation({
+      source: 'v1-nucleo-event',
+      connection: status.connected === true ? 'connected' : 'disconnected',
+      health: 'unknown',
+      ...(status.detail ? { detail: status.detail } : {}),
+    });
+  });
+  markXiiiRouteOff = bus.on<{ path?: string }>('route:change', ({ path }) => {
+    if (path !== '/jarvis') disposeMarkXiiiConsole();
   });
   fullPage.appendChild(markXiiiConsole.root);
 

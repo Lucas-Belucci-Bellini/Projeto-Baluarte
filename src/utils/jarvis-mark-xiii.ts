@@ -1,5 +1,15 @@
 import { h } from './helpers.js';
 
+export type RuntimeConnectionStatus = 'unknown' | 'connected' | 'disconnected';
+export type RuntimeHealthStatus = 'unknown' | 'healthy' | 'degraded' | 'failed' | 'exhausted';
+
+export interface MarkXiiiRuntimeObservation {
+  readonly source: 'visual-only' | 'v1-nucleo-event' | 'runtime-observed';
+  readonly connection: RuntimeConnectionStatus;
+  readonly health: RuntimeHealthStatus;
+  readonly detail?: string;
+}
+
 export interface MarkXiiiConsoleOptions {
   readonly version: string;
   readonly musicConnected: boolean;
@@ -10,6 +20,7 @@ export interface MarkXiiiConsole {
   readonly root: HTMLDivElement;
   setMode(label: string): void;
   setMusic(connected: boolean): void;
+  setRuntimeObservation(observation: MarkXiiiRuntimeObservation): void;
   dispose(): void;
 }
 
@@ -58,10 +69,17 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   const modeValue = h('span', { className: 'jv-mark-xiii__value' }, 'Local');
   const musicValue = h('span', { className: 'jv-mark-xiii__value' }, options.musicConnected ? 'ONLINE' : 'OFF');
   const telemetryValue = h('span', { className: 'jv-mark-xiii__value' }, 'ATIVO');
+  const runtimeHealthValue = h('span', { className: 'jv-mark-xiii__value' }, 'UNKNOWN');
+  const authorityValue = h('span', { className: 'jv-mark-xiii__value' }, 'NÃO AUTORIZADA');
+  const nucleusIndicator = h('span', { className: 'jv-mark-xiii__indicator' }, 'NÚCLEO VISUAL');
+  const networkIndicator = h('span', { className: 'jv-mark-xiii__indicator' }, 'REDE PENDENTE');
+  const nucleusValue = h('span', { className: 'jv-mark-xiii__value' }, 'VISUAL');
+  const networkValue = h('span', { className: 'jv-mark-xiii__value' }, 'UNKNOWN');
+  const captionValue = h('div', { className: 'jv-mark-xiii__caption', 'aria-live': 'polite' }, 'Núcleo visual ativo. Observação do Runtime pendente.');
   const clockValue = h('time', { className: 'jv-mark-xiii__clock', dateTime: new Date().toISOString() }, '--:--:--');
   const root = h('section', {
     className: 'jv-mark-xiii',
-    dataset: { visibility: 'integrated-v1', theme: 'gold', music: String(options.musicConnected) },
+    dataset: { visibility: 'integrated-v1', theme: 'gold', music: String(options.musicConnected), runtimeConnection: 'unknown', runtimeHealth: 'unknown', runtimeAuthority: 'not-authorized' },
     'aria-labelledby': 'jv-mark-xiii-title',
   },
     h('div', { className: 'jv-mark-xiii__topline' },
@@ -69,8 +87,8 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
         h('span', { className: 'jv-mark-xiii__sigil', 'aria-hidden': 'true' }, '◈'),
         h('span', { id: 'jv-mark-xiii-title' }, 'MARK XIII')),
       h('div', { className: 'jv-mark-xiii__indicators', 'aria-label': 'Status do núcleo' },
-        h('span', { className: 'jv-mark-xiii__indicator is-online' }, 'NÚCLEO ONLINE'),
-        h('span', { className: 'jv-mark-xiii__indicator is-online' }, 'REDE OK'),
+        nucleusIndicator,
+        networkIndicator,
         h('span', { className: 'jv-mark-xiii__indicator' }, `VERSÃO ${options.version}`)),
       h('div', { className: 'jv-mark-xiii__time' },
         h('span', { className: 'jv-mark-xiii__date' }, 'OPERAÇÃO Baluarte'), clockValue)),
@@ -82,15 +100,17 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
         h('small', null, 'NÚCLEO DE IA · ASTROLÁBIO SONORO')),
       h('div', { className: 'jv-mark-xiii__telemetry' },
         h('div', { className: 'jv-mark-xiii__telemetry-title' }, '◉ MARK XIII'),
-        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'NÚCLEO'), h('span', { className: 'jv-mark-xiii__value' }, 'ONLINE')),
-        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'REDE'), h('span', { className: 'jv-mark-xiii__value' }, 'ONLINE')),
+        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'NÚCLEO'), nucleusValue),
+        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'REDE'), networkValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'EVENTOS'), h('span', { className: 'jv-mark-xiii__value' }, '0')),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'ENERGIA'), h('span', { className: 'jv-mark-xiii__value' }, '100% ⚡')),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'TELEMETRIA'), telemetryValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'PERFIL'), modeValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'MÚSICA'), musicValue),
+        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'SAÚDE OBS.'), runtimeHealthValue),
+        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'AUTORIDADE'), authorityValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'MOTOR'), h('span', { className: 'jv-mark-xiii__value' }, 'NATIVO (GUGF)'))),
-      h('div', { className: 'jv-mark-xiii__caption', 'aria-live': 'polite' }, 'Núcleo Mark XIII operacional. As ordens, senhor.')),
+      captionValue),
     h('div', { className: 'jv-mark-xiii__bottom' },
       h('div', { className: 'jv-mark-xiii__presence' },
         h('span', { className: 'jv-mark-xiii__presence-dot', 'aria-hidden': 'true' }),
@@ -261,6 +281,27 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   globalThis.addEventListener('resize', resize);
   resize();
   root.dataset.performance = performanceQuality;
+  const setRuntimeObservation = (observation: MarkXiiiRuntimeObservation): void => {
+    const connected = observation.connection === 'connected';
+    const healthLabel = observation.health.toUpperCase();
+    root.dataset.runtimeConnection = observation.connection;
+    root.dataset.runtimeHealth = observation.health;
+    root.dataset.runtimeAuthority = 'not-authorized';
+    root.dataset.runtimeSource = observation.source;
+    if (observation.detail) root.dataset.runtimeDetail = observation.detail.slice(0, 120);
+    setText(nucleusIndicator, connected ? 'NÚCLEO OBSERVADO' : 'NÚCLEO VISUAL');
+    setText(networkIndicator, connected ? 'REDE OBSERVADA' : observation.connection === 'disconnected' ? 'REDE DESCONECTADA' : 'REDE PENDENTE');
+    setText(nucleusValue, connected ? 'OBSERVADO' : 'VISUAL');
+    setText(networkValue, connected ? 'CONNECTED' : observation.connection.toUpperCase());
+    setText(runtimeHealthValue, healthLabel);
+    setText(authorityValue, 'NÃO AUTORIZADA');
+    nucleusIndicator.classList.toggle('is-online', connected);
+    networkIndicator.classList.toggle('is-online', connected);
+    setText(captionValue, connected
+      ? `Runtime observado · saúde ${healthLabel.toLowerCase()} · autoridade server-side não conectada.`
+      : 'Núcleo visual ativo. Observação do Runtime pendente.');
+  };
+  setRuntimeObservation({ source: 'visual-only', connection: 'unknown', health: 'unknown' });
   raf = requestAnimationFrame(draw);
 
   return {
@@ -273,6 +314,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
       setText(musicValue, connected ? 'ONLINE' : 'OFF');
       setText(root.querySelector('.jv-mark-xiii__presence-state') as HTMLElement, connected ? 'SPOTIFY ONLINE' : 'SPOTIFY OFF');
     },
+    setRuntimeObservation,
     dispose(): void {
       disposed = true;
       cancelAnimationFrame(raf);

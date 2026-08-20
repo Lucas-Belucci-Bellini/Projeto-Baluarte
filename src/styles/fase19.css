@@ -583,6 +583,11 @@
 .jv-mark-xiii__indicator { white-space: nowrap; }
 .jv-mark-xiii__indicator::before { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #4b5563; content: ''; }
 .jv-mark-xiii__indicator.is-online::before { background: #52d496; box-shadow: 0 0 10px rgba(82, 212, 150, .8); }
+.jv-mark-xiii[data-runtime-connection="unknown"] .jv-mark-xiii__indicator::before { background: #d5a84f; box-shadow: 0 0 8px rgba(213, 168, 79, .45); }
+.jv-mark-xiii[data-runtime-connection="disconnected"] .jv-mark-xiii__indicator::before { background: #c87878; box-shadow: 0 0 8px rgba(200, 120, 120, .38); }
+.jv-mark-xiii[data-runtime-health="failed"] .jv-mark-xiii__value { color: #dc8b8b; }
+.jv-mark-xiii[data-runtime-health="degraded"] .jv-mark-xiii__value { color: #e0bd72; }
+.jv-mark-xiii[data-runtime-authority="not-authorized"] .jv-mark-xiii__telemetry::after { display: block; margin-top: 8px; color: var(--jv-mark-muted); content: 'SINAL OBSERVADO · SEM CLAIM'; font-size: 8px; letter-spacing: 1px; }
 .jv-mark-xiii__time { display: flex; align-items: end; gap: 12px; min-width: 180px; justify-content: flex-end; color: var(--jv-mark-muted); font-size: 9px; letter-spacing: 1px; text-align: right; }
 .jv-mark-xiii__date { color: var(--jv-mark-accent); font-size: 8px; letter-spacing: 1.6px; text-transform: uppercase; }
 .jv-mark-xiii__clock { color: var(--jv-mark-text); font-size: 16px; letter-spacing: 1px; }

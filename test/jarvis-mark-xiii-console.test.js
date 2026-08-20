@@ -13,12 +13,16 @@ const consoleSource = readFileSync(join(raiz, 'src', 'utils', 'jarvis-mark-xiii.
 const styles = readFileSync(join(raiz, 'src', 'styles', 'fase19.css'), 'utf8');
 const performanceScript = readFileSync(join(raiz, 'scripts', 'jarvis-performance.mjs'), 'utf8');
 const packageJson = readFileSync(join(raiz, 'package.json'), 'utf8');
+const nucleoSocket = readFileSync(join(raiz, 'src', 'utils', 'nucleo-socket.js'), 'utf8');
 
 test('a página real do JARVIS monta o console Mark XIII integrado ao shell', () => {
   assert.match(page, /createMarkXiiiConsole/);
   assert.match(page, /markXiiiConsole\.root/);
+  assert.match(page, /disposeMarkXiiiConsole\(\)/);
   assert.match(page, /markXiiiConsole\?\.dispose\(\)/);
   assert.match(consoleSource, /dataset: \{ visibility: 'integrated-v1'/);
+  assert.match(consoleSource, /runtimeAuthority: 'not-authorized'/);
+  assert.match(consoleSource, /Núcleo visual ativo\. Observação do Runtime pendente\./);
   assert.match(consoleSource, /NÚCLEO DE IA · ASTROLÁBIO SONORO/);
   assert.match(consoleSource, /aria-label.*Visualização reativa do Núcleo Mark XIII/);
 });
@@ -46,5 +50,21 @@ test('o console possui orçamento adaptativo e benchmark reproduzível', () => {
   assert.match(consoleSource, /dataset\.performance/);
   assert.match(performanceScript, /REDUCED_MOTION/);
   assert.match(performanceScript, /jv-mark-xiii/);
+  assert.match(performanceScript, /serviceWorkers: 'block'/);
   assert.match(packageJson, /jarvis:performance/);
+});
+
+test('o estado do Runtime chega por observação compartilhada e não vira claim client-side', () => {
+  assert.match(page, /import \{ bus \} from '\.\.\/core\/events\.js'/);
+  assert.match(page, /bus\.on<\{ connected\?: boolean; detail\?: string \}>\('nucleo:status'/);
+  assert.match(page, /source: 'v1-nucleo-event'/);
+  assert.match(page, /source: 'runtime-observed'/);
+  assert.match(page, /bus\.on<\{ path\?: string \}>\('route:change'/);
+  assert.match(page, /if \(path !== '\/jarvis'\) disposeMarkXiiiConsole\(\)/);
+  assert.match(consoleSource, /setRuntimeObservation\(observation/);
+  assert.match(consoleSource, /runtimeAuthority: 'not-authorized'/);
+  assert.match(consoleSource, /AUTORIDADE/);
+  assert.match(consoleSource, /NÃO AUTORIZADA/);
+  assert.match(nucleoSocket, /bus\.emit\('nucleo:status'/);
+  assert.match(styles, /data-runtime-authority="not-authorized"/);
 });
