@@ -1,6 +1,6 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — RELEASE 1.2.5 / UI-01 IMPLEMENTED / UI-02 NEXT`
+**Status:** `CURRENT — RELEASE 1.2.5 / UI-02 IMPLEMENTED / UI-03 NEXT`
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
@@ -49,14 +49,14 @@
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `1032437c` | UI-00 inventory and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
-| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — UI-01 IMPLEMENTED` | Module Manifest, layout, router, permissions, health, accessibility | Creating a second shell/sidebar or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; `UI_01_NAVIGATION_CONTRACT_2026-08-20.md`; 5/5 contract tests | Server-side authority; disabled/hidden/blocked states; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI, UI-00 inventory and UI-01 contract | `de393407` base / next commit | UI-02 availability pilot |
+| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — UI-02 IMPLEMENTED` | Module Manifest, Registry, layout, router, permissions, health, accessibility | Creating a second shell/sidebar, inferring health from stability or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; `UI_01_NAVIGATION_CONTRACT_2026-08-20.md`; `UI_02_AVAILABILITY_PILOT_2026-08-20.md`; 6/6 UI tests | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI, UI-00/UI-01/UI-02 docs | `7da3ca5f` base / next commit | UI-03 Registry adapter in shell |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 
 ## 3. Próxima fase válida
 
-A auditoria **PHASE UI / UI-00** foi concluída em modo somente leitura. O **UI-01 — contrato de navegação projetada** foi implementado como projeção passiva em `UI_01_NAVIGATION_CONTRACT_2026-08-20.md`, com 5/5 testes específicos, sem substituir shell, router ou sidebar. O próximo marco é **UI-02 — paridade automatizada e piloto de disponibilidade**.
+A auditoria **PHASE UI / UI-00** foi concluída em modo somente leitura. `UI-01` criou a projeção legada e `UI-02` adicionou o adaptador de navegação do Registry com 6/6 testes específicos, sem substituir shell, router ou sidebar. O próximo marco é **UI-03 — adaptador de leitura do Registry no shell**, inicialmente em observação ou flag de desenvolvimento.
 
-UI-02 deve reutilizar o Module Manifest, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e obter health/availability de uma autoridade existente antes de alterar a visibilidade da navegação.
+UI-03 deve reutilizar o Module Manifest, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e somente aplicar disponibilidade visual quando existir uma fonte real de health e tratamento consistente de deep links.
 
 ## 4. Definition of Done aplicada
 

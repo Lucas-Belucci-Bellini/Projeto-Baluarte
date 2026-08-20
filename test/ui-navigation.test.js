@@ -5,6 +5,7 @@ import { NAV_GROUPS } from '../src/layout/sidebar.ts';
 import {
   findNavigationEntry,
   projectLegacyNavigation,
+  projectRegistryNavigation,
 } from '../src/layout/navigation.ts';
 
 const projection = projectLegacyNavigation(NAV_GROUPS, {
@@ -54,6 +55,44 @@ test('UI-01 normaliza consulta e permite título projetado', () => {
   assert.equal(findNavigationEntry(projection, 'home')?.title, 'Ponte de Comando');
   assert.equal(findNavigationEntry(projection, '/home/')?.path, '/home');
   assert.equal(findNavigationEntry(projection, '/rota-inexistente'), null);
+});
+
+test('UI-02 projeta a navegação selada do Registry sem confundir estabilidade com health', () => {
+  const registryProjection = projectRegistryNavigation([
+    {
+      modulo: 'wiki-arma3',
+      nome: 'Wiki de Arma 3',
+      icone: '📖',
+      secao: 'Conhecimento',
+      ordem: 10,
+      path: '/wiki-arma3',
+      estabilidade: 'beta',
+    },
+    {
+      modulo: 'baixar',
+      nome: 'Baixar o App',
+      icone: '⬇',
+      secao: null,
+      ordem: 1,
+      path: '/baixar',
+      estabilidade: 'estavel',
+    },
+  ], {
+    availabilityForModule: (moduleId) =>
+      moduleId === 'wiki-arma3' ? 'degraded' : 'enabled',
+  });
+
+  const wiki = findNavigationEntry(registryProjection, '/wiki-arma3');
+  const baixar = findNavigationEntry(registryProjection, '/baixar');
+
+  assert.equal(wiki?.source, 'registry');
+  assert.equal(wiki?.moduleId, 'wiki-arma3');
+  assert.equal(wiki?.stability, 'beta');
+  assert.equal(wiki?.maturity, 'planned');
+  assert.equal(wiki?.availability, 'degraded');
+  assert.equal(baixar?.stability, 'estavel');
+  assert.equal(baixar?.maturity, 'stable');
+  assert.equal(baixar?.availability, 'enabled');
 });
 
 test('UI-01 rejeita paths duplicados em vez de mascarar divergência', () => {

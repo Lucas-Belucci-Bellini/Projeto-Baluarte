@@ -6,6 +6,8 @@
  * consumir progressivamente. O shell atual continua sendo o runtime oficial.
  */
 
+import type { RegistryNavigationEntry } from '../../v2/core/registry';
+import type { Stability } from '../../v2/core/manifest';
 import type { NavGroup, NavItem } from './sidebar';
 
 export const AVAILABILITY_STATES = [
@@ -21,17 +23,22 @@ export type AvailabilityState = (typeof AVAILABILITY_STATES)[number];
 
 export type NavigationMaturity = 'stable' | 'planned';
 
+export type NavigationSource = 'legacy-sidebar' | 'registry';
+
 export interface NavigationEntry {
   readonly id: string;
   readonly path: string;
   readonly label: string;
   readonly title: string;
   readonly icon: string;
-  readonly phase: number;
+  readonly phase: number | null;
   readonly maturity: NavigationMaturity;
   readonly availability: AvailabilityState;
   readonly domainId: string;
-  readonly source: 'legacy-sidebar';
+  readonly moduleId: string | null;
+  readonly order: number | null;
+  readonly stability: Stability | null;
+  readonly source: NavigationSource;
 }
 
 export interface NavigationDomain {
@@ -98,6 +105,9 @@ function createEntry(
     maturity: item.phase <= options.currentPhase ? 'stable' : 'planned',
     availability,
     domainId,
+    moduleId: null,
+    order: null,
+    stability: null,
     source: 'legacy-sidebar',
   };
 }
@@ -139,6 +149,72 @@ export function projectLegacyNavigation(
   }
 
   return { domains, entries };
+}
+
+function maturityFromStability(stability: Stability): NavigationMaturity {
+  return stability === 'estavel' ? 'stable' : 'planned';
+}
+
+/**
+ * Projeta a navegação já validada e selada pelo Registry V2.
+ *
+ * A disponibilidade continua explícita e conservadora: estabilidade do módulo
+ * não é health. Sem um callback autorizado, o item permanece `enabled`.
+ */
+export function projectRegistryNavigation(
+  entries: readonly RegistryNavigationEntry[],
+  options: {
+    readonly availabilityForModule?: (
+      moduleId: string,
+      entry: RegistryNavigationEntry,
+    ) => AvailabilityState;
+  } = {},
+): NavigationProjection {
+  const domains = new Map<string, NavigationDomain>();
+  const projected: NavigationEntry[] = [];
+  const paths = new Set<string>();
+
+  for (const entry of entries) {
+    const path = normalizePath(entry.path);
+    if (paths.has(path)) {
+      throw new Error(`Rota duplicada na navegação do Registry: ${path}`);
+    }
+    paths.add(path);
+
+    const domainLabel = entry.secao?.trim() || 'Sem seção';
+    const domainId = slugify(domainLabel);
+    const availability =
+      options.availabilityForModule?.(entry.modulo, entry) ?? 'enabled';
+    const projectedEntry: NavigationEntry = {
+      id: `${entry.modulo}:${path.replace(/^\//, '').replace(/\//g, ':')}`,
+      path,
+      label: entry.nome,
+      title: entry.nome,
+      icon: entry.icone,
+      phase: null,
+      maturity: maturityFromStability(entry.estabilidade),
+      availability,
+      domainId,
+      moduleId: entry.modulo,
+      order: entry.ordem,
+      stability: entry.estabilidade,
+      source: 'registry',
+    };
+
+    projected.push(projectedEntry);
+    const domain = domains.get(domainId);
+    if (domain) {
+      domain.entries = [...domain.entries, projectedEntry];
+    } else {
+      domains.set(domainId, {
+        id: domainId,
+        label: domainLabel,
+        entries: [projectedEntry],
+      });
+    }
+  }
+
+  return { domains: [...domains.values()], entries: projected };
 }
 
 export function findNavigationEntry(
