@@ -299,6 +299,7 @@
     "src/pages/arma3-extracao-painel.js",
     "src/pages/modpack.ts",
     "src/utils/mil-curation.js",
+    "src/utils/mil-curation.ts",
     "src/utils/wikipedia.js",
     "src/utils/arma3-balistica.js",
     "src/utils/arma3-grade.js",
