@@ -73,3 +73,7 @@ O estado dos dois repositórios foi confirmado sincronizado com seus respectivos
 ## Rodada contínua adicional
 
 Os gates locais foram repetidos novamente sem falhas. O JARVIS local abriu com canvas 3D e controles; o botão Pulso foi acionado e a cena respondeu visualmente. A validação pública e os gates remotos ainda serão conferidos nesta rodada.
+
+## Rodada com reinício do servidor local
+
+O checkout local foi sincronizado por fast-forward com o main remoto após um avanço documental da onda TypeScript. O servidor Vite local foi reiniciado na porta 4197, respondeu HTTP 200 e o botão de rotação do JARVIS respondeu visualmente no navegador.
