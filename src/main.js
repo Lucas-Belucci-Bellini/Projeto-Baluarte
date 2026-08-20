@@ -146,7 +146,7 @@ router.register('/perfil', lazy(() => import('./pages/perfil.ts'), 'perfilPage')
 router.register('/login', lazy(() => import('./pages/login.ts'), 'loginPage'));
 router.register('/economia', lazy(() => import('./pages/economia.ts'), 'economiaPage'));
 router.register('/dolar', lazy(() => import('./pages/dolar.ts'), 'dolarPage'));
-router.register('/jarvis', lazyNexus('jarvis'));
+router.register('/jarvis', lazy(() => import('./pages/jarvis.ts'), 'jarvisPage'));
 router.register('/ia-proprietaria', lazyNexus('ia'));
 router.register('/radar', lazy(() => import('./pages/radar.ts'), 'radarPage'));
 router.register('/geo', lazy(() => import('./pages/geopulse.ts'), 'geopulsePage'));

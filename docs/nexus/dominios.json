@@ -517,8 +517,8 @@
    "peso": "leve"
   },
   "baluarte-jarvis-core": {
-   "responsabilidade": "Motor do J.A.R.V.I.S.: cérebro, conselho, laboratório de LLM e o cockpit da IA.",
-   "estado": "vazio",
+   "responsabilidade": "Motor do J.A.R.V.I.S.: cérebro, conselho, laboratório de LLM e o console visual integrado Mark XIII da rota /jarvis.",
+   "estado": "desenvolvimento",
    "rotas": [
     "/jarvis",
     "/jarvis-dashboard",
@@ -552,6 +552,7 @@
     "src/utils/jarvis-voice.js",
     "src/utils/jarvis-webllm.js",
     "src/utils/jarvis-context.ts",
+    "src/utils/jarvis-mark-xiii.ts",
     "src/utils/jarvis-music-presence.ts",
     "src/utils/jarvis-spotify-session.ts",
     "src/utils/jarvis-spotify.ts",

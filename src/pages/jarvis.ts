@@ -6,6 +6,7 @@
  */
 
 import { h, cx, empty } from '../utils/helpers.js';
+import { VERSION } from '../data/version.js';
 import { router } from '../core/router.js';
 import { toast } from '../utils/toast';
 import {
@@ -37,6 +38,7 @@ import { recall, summarizeSession, setMemoryCache } from '../utils/jarvis-recall
 import type { RecallDoc } from '../utils/jarvis-recall.js';
 import { initSkills, removeSkill } from '../utils/jarvis-tools.js';
 import { listSkillSummaries } from '../utils/jarvis-skills.js';
+import { createMarkXiiiConsole, type MarkXiiiConsole } from '../utils/jarvis-mark-xiii';
 
 /** Um modo de operação do JARVIS, como aparece na grade de seleção. */
 interface ModoJarvis {
@@ -72,6 +74,7 @@ let messagesEl: HTMLDivElement | null = null;
 let inputEl: HTMLTextAreaElement | null = null;
 let sessionsEl: HTMLDivElement | null = null;
 let modeBadgeEl: HTMLSpanElement | null = null;
+let markXiiiConsole: MarkXiiiConsole | null = null;
 
 /**
  * Acesso às peças montadas em `jarvisPage()`.
@@ -729,6 +732,7 @@ function updateModeBadge(): void {
   if (modeBadgeEl && m) {
     modeBadgeEl.textContent = `${m.icon} ${m.label.toUpperCase()}`;
     modeBadgeEl.className = `badge badge--${m.badge}`;
+    markXiiiConsole?.setMode(m.label);
   }
 }
 
@@ -1040,6 +1044,8 @@ function renderConfigPanel(): HTMLDivElement {
 /* ===== Page builder ===== */
 
 export function jarvisPage(): HTMLDivElement {
+  markXiiiConsole?.dispose();
+  markXiiiConsole = null;
   const conf = loadConfig();
   config = conf;
   if (conf.humanizeOn === undefined) conf.humanizeOn = true;
@@ -1053,19 +1059,13 @@ export function jarvisPage(): HTMLDivElement {
   const fullPage = h('div', { className: 'page-jarvis' });
 
   modeBadgeEl = h('span', { className: 'badge badge--cyan' }, '');
-
-  fullPage.appendChild(
-    h('div', { className: 'page-header anim-fade-in', style: { marginBottom: '12px' } },
-      h('div', { className: 'page-header__crumbs' },
-        h('span', null, 'BALUARTE'), h('span', null, '›'),
-        h('span', null, 'J.A.R.V.I.S.')),
-      h('h1', { className: 'page-header__title' }, '◉ J.A.R.V.I.S.'),
-      h('p', { className: 'page-header__description' },
-        'Assistente de IA do Baluarte — ',
-        h('span', { className: 'u-text-cyan' }, '6 modos'),
-        ': Local, Navegador (WebLLM), Claude API, Ollama, Servidor (Gemini + web) e Agente. Sessões em IndexedDB.')
-    )
-  );
+  const spotifyConnected = isSpotifyConnected();
+  markXiiiConsole = createMarkXiiiConsole({
+    version: `V${VERSION}`,
+    musicConnected: spotifyConnected,
+    onMusic: () => spotifyButton.click(),
+  });
+  fullPage.appendChild(markXiiiConsole.root);
 
   let configOpen = false;
   const configWrap = h('div', { className: 'jarvis-config-wrap', style: { display: 'none' } });
@@ -1080,17 +1080,17 @@ export function jarvisPage(): HTMLDivElement {
 
   const skillCount = listSkillSummaries().length;
   const spotifyClientInput = h('input', { className: 'input input--sm', type: 'text', autocomplete: 'off', spellcheck: 'false', placeholder: 'Spotify Client ID (público)', style: { width: '220px' } });
-  const spotifyStatus = h('span', { className: 'badge badge--cyan' }, isSpotifyConnected() ? 'SPOTIFY · ONLINE' : 'SPOTIFY · OFF');
+  const spotifyStatus = h('span', { className: 'badge badge--cyan' }, spotifyConnected ? 'SPOTIFY · ONLINE' : 'SPOTIFY · OFF');
   const spotifyButton = h('button', {
     className: 'btn btn--ghost btn--sm',
     onclick: () => {
-      if (isSpotifyConnected()) { disconnectSpotify(); spotifyStatus.textContent = 'SPOTIFY · OFF'; spotifyButton.textContent = '♫ Conectar Spotify'; return; }
+      if (isSpotifyConnected()) { disconnectSpotify(); spotifyStatus.textContent = 'SPOTIFY · OFF'; spotifyButton.textContent = '♫ Conectar Spotify'; markXiiiConsole?.setMusic(false); return; }
       const clientId = spotifyClientInput.value.trim();
       if (!clientId) { toast('Cole o Client ID público criado no Spotify for Developers.'); return; }
       const redirectUri = `${location.origin}${location.pathname}`;
       void beginSpotifyAuthorization({ clientId, redirectUri, scope: 'user-read-playback-state' }).then((url) => { location.assign(url); }).catch((error: unknown) => { toast(error instanceof Error ? error.message : 'Não foi possível iniciar o Spotify.'); });
     }
-  }, isSpotifyConnected() ? '♫ Desconectar Spotify' : '♫ Conectar Spotify');
+  }, spotifyConnected ? '♫ Desconectar Spotify' : '♫ Conectar Spotify');
   const spotifyControls = h('div', { style: { display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' } }, spotifyStatus, spotifyClientInput, spotifyButton);
   fullPage.appendChild(
     h('div', { className: 'jarvis-toolbar' },

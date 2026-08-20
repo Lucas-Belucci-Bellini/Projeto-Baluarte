@@ -51,7 +51,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'IA & Jarvis',
     items: [
-      { path: '/git-nexus', label: 'Núcleo de IA', icon: '🔗', phase: 1 },
+      { path: '/jarvis', label: 'Núcleo de IA', icon: '🔗', phase: 1 },
     ],
   },
   {
