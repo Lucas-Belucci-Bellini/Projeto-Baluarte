@@ -1525,7 +1525,7 @@ export async function arma3TutorialPage(args: Arma3TutorialArgs = {}): Promise<H
       /* Painel operacional, não conteúdo: sai do fluxo de busca/contador e é
        * carregado sob demanda — o resto da tela não paga por ele. */
       corpo.appendChild(h('p', { className: 'u-text-muted' }, 'Abrindo o painel de extração…'));
-      import('./arma3-extracao-painel.js')
+      import('./arma3-extracao-painel')
         .then((m) => { if (aba === 'extrair') { corpo.replaceChildren(); return m.montarPainelExtracao(corpo); } return undefined; })
         .catch((e: unknown) => {
           const msg = e instanceof Error ? e.message : String(e);
