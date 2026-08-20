@@ -110,7 +110,7 @@ router.register('/simbolos', lazy(() => import('./pages/simbolos.ts'), 'simbolos
 router.register('/color-studio', lazy(() => import('./pages/color-studio.ts'), 'colorStudioPage'));
 router.register('/regex', lazy(() => import('./pages/regex.ts'), 'regexPage'));
 router.register('/arsenal', lazy(() => import('./pages/arsenal.js'), 'arsenalPage'));
-router.register('/militar', lazy(() => import('./pages/militar.js'), 'militarPage'));   // hub consolidado das frentes militares
+router.register('/militar', lazy(() => import('./pages/militar.ts'), 'militarPage'));   // hub consolidado das frentes militares
 router.register('/modelos-3d', lazy(() => import('./pages/modelos-3d.js'), 'modelos3dPage'));   // visualizador 3D militar (#310)
 router.register('/biblioteca', lazy(() => import('./pages/biblioteca.ts'), 'bibliotecaPage'));
 router.register('/elites', lazy(() => import('./pages/elites.ts'), 'elitesPage'));
@@ -162,18 +162,18 @@ router.register('/mapa', lazy(() => import('./pages/mapa.ts'), 'mapaPage'));
 router.register('/visao', lazy(() => import('./pages/visao.js'), 'visaoPage'));
 router.register('/jarvis-vision', lazyLeve('vision', () => import('./pages/jarvis-vision.js'), 'jarvisVisionPage'));   // app → aba do Núcleo (#316)
 router.register('/forcas-armadas', lazy(() => import('./pages/forcas-armadas.ts'), 'forcasArmadasPage'));
-router.register('/orcamentos-militares', lazy(() => import('./pages/orcamentos-militares.js'), 'orcamentosMilitaresPage'));
+router.register('/orcamentos-militares', lazy(() => import('./pages/orcamentos-militares.ts'), 'orcamentosMilitaresPage'));
 router.register('/poder-militar', lazy(() => import('./pages/poder-militar.ts'), 'poderMilitarPage'));
-router.register('/arsenal-expandido', lazy(() => import('./pages/arsenal-expandido.js'), 'arsenalExpandidoPage'));
+router.register('/arsenal-expandido', lazy(() => import('./pages/arsenal-expandido.ts'), 'arsenalExpandidoPage'));
 router.register('/forcas-especiais', lazy(() => import('./pages/forcas-especiais.ts'), 'forcasEspeciaisPage'));
 router.register('/organizacao-militar', lazy(() => import('./pages/organizacao-militar.ts'), 'organizacaoMilitarPage'));
 router.register('/tecnologia-militar', lazy(() => import('./pages/tecnologia-militar.js'), 'tecnologiaMilitarPage'));
 router.register('/taticas-estrategias', lazy(() => import('./pages/taticas-estrategias.ts'), 'taticasEstrategiasPage'));
 router.register('/historia-militar', lazy(() => import('./pages/historia-militar.ts'), 'historiaMilitarPage'));
-router.register('/armas-por-pais', lazy(() => import('./pages/armas-por-pais.js'), 'armasPorPaisPage'));
+router.register('/armas-por-pais', lazy(() => import('./pages/armas-por-pais.ts'), 'armasPorPaisPage'));
 router.register('/guerras-conflitos', lazy(() => import('./pages/guerras-conflitos.js'), 'guerrasConflitosPage'));
-router.register('/batalhas-historicas', lazy(() => import('./pages/batalhas-historicas.js'), 'batalhasHistoricasPage'));
-router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia-militar.js'), 'enciclopediaMilitarPage'));
+router.register('/batalhas-historicas', lazy(() => import('./pages/batalhas-historicas.ts'), 'batalhasHistoricasPage'));
+router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia-militar.ts'), 'enciclopediaMilitarPage'));
 
 /* ==============================================================
  *  Dev & Projetos — auto-análise do próprio site
