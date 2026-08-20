@@ -4,7 +4,7 @@
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado:** `3a0becee9355613ba7c9dc253f746e525833ce44`
+**SHA observado:** `5e9dfddf85a926acf28e403b5782dbce8cc61295`
 **Tag de release base:** `v1.2.0`
 **Autor:** Manus AI
 
@@ -49,7 +49,7 @@
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `1032437c` | UI-00 inventory and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
-| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — UI-04 IMPLEMENTED` | Module Manifest, Registry, layout, router, permissions, health, accessibility | Creating a second shell/sidebar, inferring health from stability or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; `UI_01_NAVIGATION_CONTRACT_2026-08-20.md`; `UI_02_AVAILABILITY_PILOT_2026-08-20.md`; `UI_03_REGISTRY_OBSERVATION_2026-08-20.md`; `UI_04_CATALOG_RECONCILIATION_2026-08-20.md`; 10/10 UI tests; 22/22 V2 integration baseline | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI, UI-00 through UI-04 docs | `aa5af2bd` base / pending UI-04 commit | Module alignment pilot |
+| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — UI-04 IMPLEMENTED` | Module Manifest, Registry, layout, router, permissions, health, accessibility | Creating a second shell/sidebar, inferring health from stability or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; `UI_01_NAVIGATION_CONTRACT_2026-08-20.md`; `UI_02_AVAILABILITY_PILOT_2026-08-20.md`; `UI_03_REGISTRY_OBSERVATION_2026-08-20.md`; `UI_04_CATALOG_RECONCILIATION_2026-08-20.md`; 10/10 UI tests; 22/22 V2 integration baseline | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI, UI-00 through UI-04 docs | `5e9dfddf` publicado | Module alignment pilot |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 
 ## 3. Próxima fase válida
