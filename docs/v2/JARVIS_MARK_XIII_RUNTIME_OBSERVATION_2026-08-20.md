@@ -1,7 +1,8 @@
 # JARVIS Mark XIII — Matriz de Observação do Runtime
 
 **Data:** 20 de agosto de 2026  
-**Status:** `IMPLEMENTAÇÃO LOCAL VALIDADA — PUBLICAÇÃO PENDENTE`  
+**Status:** `PUBLICADO NO MAIN — GATES LOCAIS VERDES`
+**SHA do marco funcional:** `c0e6607c69e4975af97a4628f1e7ba3633488748`
 **Escopo:** console integrado da rota `/jarvis`, Event Bus V1 existente e health check manual; sem Auth/RLS, Supabase ou Billing remoto
 
 ## Objetivo
