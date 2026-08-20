@@ -97,7 +97,7 @@ Após o revert, repetir `git diff --check`, `npm run verificar-nexus`, `npm run 
 
 A publicação deve ocorrer diretamente no branch `main`. Antes do commit, fazer `fetch origin main`; se houver avanço remoto, integrar com `git merge --no-edit origin/main`. Não usar PR e não usar force push.
 
-**SHA da Wave 40:** será preenchido após o commit.
+**SHA da Wave 40:** `edad1b8f2679f5d6809d7ab1ddaa27b6014f2c59`
 
 ## Próximo passo recomendado
 
