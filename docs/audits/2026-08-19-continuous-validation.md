@@ -65,3 +65,7 @@ A instância local também foi exposta temporariamente por um proxy HTTP para va
 ## Rodada contínua posterior
 
 Os gates locais foram repetidos sem falhas: validador do JARVIS, TypeScript, 1.085 testes, build, estabilidade, tipos V2, integração V2 21/21, smoke 99/99, caminho crítico 15/15 e Runtime. O JARVIS local abriu novamente com canvas e controles; o console permaneceu sem erros.
+
+## Nova rodada contínua de validação
+
+O estado dos dois repositórios foi confirmado sincronizado com seus respectivos `origin/main` e sem alterações locais. Os gates locais repetidos passaram: validador JARVIS, TypeScript, 1.085 testes, build, tabela de estabilidade, tipos V2, integração V2 21/21, smoke, caminho crítico 15/15 e Runtime V2. O JARVIS local abriu com canvas 3D e controles; o botão de rotação foi acionado e a cena respondeu visualmente.
