@@ -716,7 +716,7 @@
    "origem": [
     "src/pages/mapa.ts",
     "src/pages/radar.ts",
-    "src/pages/geopulse.js",
+    "src/pages/geopulse.ts",
     "src/pages/find.ts",
     "src/pages/triangulacao.ts",
     "src/pages/vanguard.js",

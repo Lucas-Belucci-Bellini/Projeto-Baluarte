@@ -149,7 +149,7 @@ router.register('/dolar', lazy(() => import('./pages/dolar.ts'), 'dolarPage'));
 router.register('/jarvis', lazyNexus('jarvis'));
 router.register('/ia-proprietaria', lazyNexus('ia'));
 router.register('/radar', lazy(() => import('./pages/radar.ts'), 'radarPage'));
-router.register('/geo', lazy(() => import('./pages/geopulse.js'), 'geopulsePage'));
+router.register('/geo', lazy(() => import('./pages/geopulse.ts'), 'geopulsePage'));
 router.register('/find', lazy(() => import('./pages/find.ts'), 'findPage'));
 router.register('/triangulacao', lazy(() => import('./pages/triangulacao.ts'), 'triangulacaoPage'));
 router.register('/llm-lab', lazyNexus('llm'));
