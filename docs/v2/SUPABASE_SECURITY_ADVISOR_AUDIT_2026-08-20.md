@@ -146,3 +146,6 @@ A auditoria, a migration versionada e os testes de contrato foram publicados dir
 Os gates locais passaram: Nexus `99 rotas / 0 lacunas / 21/21 domínios`, TypeScript V1/V2, testes de contrato Supabase `8/8`, suíte principal, build, integração V2 `21/21`, smoke `99/99` e caminho crítico `15/15`. O runtime Rust local continua com exit 101 por Cargo 1.75.0 e `edition2024`, enquanto o workflow remoto V2 Runtime passou.
 
 A migration `20260820090000_security_definer_search_path_hardening.sql` está agora no repositório, mas **não foi aplicada ao banco remoto**. A única branch Supabase disponível está com `MIGRATIONS_FAILED`; aplicar DDL diretamente na produção sem staging saudável violaria o contrato de rollback. Portanto, o próximo passo operacional é recuperar/criar um ambiente de staging Supabase saudável, aplicar a migration ali, executar testes de autorização e só então avaliar aplicação no projeto principal.
+
+
+O histórico remoto também diverge do checkout local. A reconciliação está documentada em [`SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md`](SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md); enquanto o status `MIGRATIONS_FAILED` persistir, nenhum DDL novo deve ser aplicado diretamente ao projeto principal.
