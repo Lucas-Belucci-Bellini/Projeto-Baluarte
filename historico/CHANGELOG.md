@@ -6,6 +6,22 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-20 — Release `1.2.0`: frontend TypeScript incremental e fundação V2
+
+A release `1.2.0` consolida as Waves 23–35 da construção incremental do Projeto-Baluarte. A V1 permanece funcional e compatível, enquanto as fronteiras canônicas do frontend e da camada de utilitários avançam para TypeScript com wrappers `.js` preservados onde consumidores legados ainda existem.
+
+Entre as entregas estão a promoção dos contratos de boot e contexto do JARVIS, presença musical e sessão Spotify, `baluarte-status`, Markdown, briefing de notícias, cor e triangulação, curadoria militar, toast, efeitos imersivos, atmosfera, progresso de scroll, scroll reveal, PWA, contador de visitas, page views, carregadores MapLibre/WebGL, fingerprint engine e card spotlight. O mapa Nexus foi mantido sincronizado com cada promoção arquitetural.
+
+A release também registra a continuidade da fundação V2: Runtime, Registry, Platform, saúde, permissões deny-by-default, integração com o router V1, Data Layer em evolução e contratos de observabilidade. O JARVIS continua tratado como módulo isolável, sem tornar OpenClaw, Spotify ou notícias dependências obrigatórias do boot da V1.
+
+**Validação do SHA da Wave 35 (`561aff89f90fac275d892ba0764cfdddd6c9a7bc`):** `verificar-nexus`, `tipos:ts`, `tipos:v2`, testes, build, integração V2 `21/21`, smoke `99/99` e caminho crítico `15/15` verdes. Os oito workflows remotos — CI, V2 Runtime, V2 Core, Core CI, V2 Validation, CodeQL, Arma 3 Data CI e Vigia das rotas — terminaram com sucesso. O runtime Rust local continua com a limitação conhecida do Cargo 1.75.0 diante de dependência `edition2024`; o workflow remoto correspondente passou.
+
+A versão foi alinhada em `package.json`, `package-lock.json`, `src/data/version.js`, `public/sw.js` e README. A alteração do Service Worker usa `baluarte-v1.2.0`, invalidando caches das releases anteriores conforme o contrato de atualização offline.
+
+Relatório técnico da onda: [`docs/v2/TYPESCRIPT_MIGRATION_WAVE_35_2026_08_20.md`](../docs/v2/TYPESCRIPT_MIGRATION_WAVE_35_2026_08_20.md).
+
+---
+
 ## 2026-08-18 — `/arma3-tutorial` fecha a migração: **nenhuma página canônica em JavaScript**
 
 A última das cinco. Com ela, o comando de verificação do

@@ -50,7 +50,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados. |
-| **Web/Desktop** | `1.1.5` em preparação | A release pública `1.1.0` permanece no histórico. |
+| **Web/Desktop** | `1.2.0` publicada | Release incremental com migração TypeScript, contratos V2 e compatibilidade V1 preservada. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
