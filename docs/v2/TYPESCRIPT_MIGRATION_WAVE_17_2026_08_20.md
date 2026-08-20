@@ -1,6 +1,6 @@
 # Migração TypeScript — Wave 17
 
-**Status:** implementação local concluída; publicação preparada após gates verdes.
+**Status:** publicada diretamente no `main`; implementação e CI remota concluídas com sucesso.
 
 **Objetivo:** promover `/codigo`, `/comms` e `/banco` para as implementações TypeScript canônicas, preservando as fronteiras externas existentes e sem alterar contratos de Supabase, Auth, RLS ou Realtime.
 
@@ -63,8 +63,19 @@ Rollback: restaurar no router e no Nexus as três extensões para `.js`, mantend
 
 ## Critério de conclusão
 
-A Wave 17 será concluída após o commit e a confirmação da CI remota no SHA final. Os critérios locais já foram satisfeitos: as três rotas carregam diretamente `.ts`, os contratos externos permaneceram inalterados e todos os gates comportamentais passaram.
+A Wave 17 foi concluída: as três rotas carregam diretamente `.ts`, os contratos externos permaneceram inalterados, todos os gates comportamentais passaram e a CI remota terminou verde no SHA de implementação.
+
+| Workflow remoto | Resultado |
+|---|---:|
+| CI | success |
+| Core CI | success |
+| V2 Core | success |
+| V2 Runtime | success |
+| V2 Validation | success |
+| Vigia das rotas | success |
+| Arma 3 Data CI | success |
+| CodeQL | success |
 
 **Autor:** Manus AI
-**SHA:** será preenchido após publicação.
-**Data dos gates:** 2026-08-20T03:05Z–03:06Z.
+**SHA de implementação e publicação:** `16fc595ff6f5cd2b0943bb7f4a272f4b7f886af6`.
+**Data dos gates:** 2026-08-20T03:05Z–03:12Z.
