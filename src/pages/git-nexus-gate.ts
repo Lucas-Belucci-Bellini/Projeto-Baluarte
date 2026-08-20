@@ -1,7 +1,7 @@
 import '../styles/git-nexus.css';
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 
 interface GitNexusArgs { readonly query?: Readonly<Record<string, string | undefined>>; readonly tab?: string; }
 interface GitNexusModule { readonly gitNexusCockpit?: (args: GitNexusArgs) => HTMLElement; readonly gitNexusNucleo?: (args: GitNexusArgs) => HTMLElement; }

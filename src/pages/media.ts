@@ -7,7 +7,7 @@
 
 import '../styles/media.css';
 import { h, cx, empty } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { toast } from '../utils/toast';
 import { router } from '../core/router.js';
 import { aoSair } from '../core/ciclo-vida.js';

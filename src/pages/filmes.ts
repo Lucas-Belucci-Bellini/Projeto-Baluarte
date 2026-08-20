@@ -7,7 +7,7 @@
 
 import '../styles/filmes.css';
 import { h, cx, normalize, debounce, empty } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { FILMES, FILMES_TOTAL, filmeEmbedUrl } from '../data/filmes.js';
 import type { Filme } from '../data/filmes.js';
 

@@ -12,7 +12,7 @@
 import '../styles/biblioteca.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast';
 import {

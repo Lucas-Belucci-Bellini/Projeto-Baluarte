@@ -1,6 +1,6 @@
 import '../styles/radio.css';
 import { h, empty } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast';
 import { searchStations, COUNTRY_OPTIONS, GENRE_OPTIONS } from '../utils/radio-api.js';

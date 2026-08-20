@@ -7,7 +7,7 @@ import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import type { RouteArgs } from '../core/router.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { UNIVERSOS, TOTAL_UNIVERSOS, findUniverso } from '../data/universos.js';
 import { findArc } from '../data/cronicas.js';
 import type { Universo } from '../data/universos.js';

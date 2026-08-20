@@ -1,7 +1,7 @@
 import '../styles/sobre.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 
 interface PageArgs {
   query?: Readonly<Record<string, string>> | null;

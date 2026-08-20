@@ -1,7 +1,7 @@
 import '../styles/zomboid.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { ZOMBOID_COLLECTION as collection, ZOMBOID_CATEGORIES } from '../data/zomboid-mods.js';
 
 export function zomboidPage(): HTMLDivElement {

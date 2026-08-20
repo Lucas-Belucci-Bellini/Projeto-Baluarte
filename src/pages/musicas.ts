@@ -1,6 +1,6 @@
 import '../styles/musicas.css';
 import { h, empty, cx } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast';
 import { saveBookmark, loadBookmark } from '../core/media-sync.js';
