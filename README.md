@@ -84,6 +84,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Histórico de merges | [`2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md) |
 | Plano de releases | [`RELEASE_PLAN.md`](docs/v2/RELEASE_PLAN.md) |
 | Auditoria Supabase e drift de migrations | [`SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md`](docs/v2/SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md) |
+| Plano de recuperação Supabase | [`SUPABASE_STAGING_RECOVERY_PLAN.md`](docs/v2/SUPABASE_STAGING_RECOVERY_PLAN.md) |
 
 ### Fases de evolução
 

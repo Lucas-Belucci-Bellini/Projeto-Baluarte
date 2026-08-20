@@ -86,3 +86,13 @@ A consulta read-only aos `postgres_logs` das últimas 24 horas retornou 100 regi
 A interpretação mais provável é **efeito esperado do hardening remoto**: o histórico remoto inclui `lock_down_ingestion_rpc_execution`, e as funções `ingest_*` foram classificadas como service-only. O log demonstra que algum caller HTTP ainda tenta chamar `ingest_stat` pela API pública, mas não demonstra que a função deva voltar a ser pública. O contrato seguro continua sendo rejeitar a chamada e mover o caller autorizado para uma fronteira server-side/controlada.
 
 Esse finding deve ser tratado separadamente do `MIGRATIONS_FAILED`: ele é um evento de autorização em runtime, não a causa comprovada do drift de migrations. Não foi feita nenhuma alteração de grant para silenciar os registros.
+
+
+## 6.2 Capacidade e custo de staging
+
+O projeto está na organização `Lucas-Belucci-Bellini's Org`, atualmente no plano `free`. O Supabase informou custo estimado de **US$ 0,01344 por hora** para uma branch de desenvolvimento. Nenhuma branch foi criada, pois isso pode gerar cobrança e exige confirmação explícita do operador após revisar o custo.
+
+Enquanto não houver confirmação e uma branch saudável, o trabalho seguro continua sendo reconciliação documental, recuperação do inventário e testes de contrato no repositório. O projeto principal remoto permanece `ACTIVE_HEALTHY`, mas isso não invalida o status separado de `MIGRATIONS_FAILED` observado na única branch registrada.
+
+
+O procedimento operacional e o gate de custo estão detalhados em [`SUPABASE_STAGING_RECOVERY_PLAN.md`](SUPABASE_STAGING_RECOVERY_PLAN.md). A criação de branch permanece pendente de confirmação explícita do operador.
