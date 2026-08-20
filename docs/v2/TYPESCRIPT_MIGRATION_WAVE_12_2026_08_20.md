@@ -49,4 +49,4 @@ O risco é uma divergência futura entre o wrapper JavaScript e o TypeScript can
 
 ## Próximo passo
 
-A Wave 12 foi sincronizada com `origin/main`, publicada diretamente no `main` no SHA `7c29d1c04913b53191419bb7434b04973092be16` e os oito workflows remotos passaram: CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL. Depois, auditar as páginas com papéis (`/tecnologia-militar` e `/guerras-conflitos`) antes de promovê-las.
+A Wave 12 foi sincronizada com `origin/main`, publicada diretamente no `main` no SHA `7c29d1c04913b53191419bb7434b04973092be16` e os oito workflows remotos passaram: CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL. O registro documental foi publicado no SHA `a0235885719b2bd6c22cf6cdc66708d214086c2a`, também com os oito workflows remotos verdes. Depois, auditar as páginas com papéis (`/tecnologia-militar` e `/guerras-conflitos`) antes de promovê-las.
