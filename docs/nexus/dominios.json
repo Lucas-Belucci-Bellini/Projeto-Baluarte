@@ -719,7 +719,7 @@
     "src/pages/geopulse.ts",
     "src/pages/find.ts",
     "src/pages/triangulacao.ts",
-    "src/pages/vanguard.js",
+    "src/pages/vanguard.ts",
     "src/utils/maplibre-loader.js",
     "src/utils/geo-tracker.js",
     "src/utils/radar-dsp.js",

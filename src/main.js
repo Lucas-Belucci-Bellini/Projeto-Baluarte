@@ -132,7 +132,7 @@ router.register('/tabela-periodica', lazy(() => import('./pages/tabela-periodica
 router.register('/modpack', lazy(() => import('./pages/modpack.ts'), 'modpackPage'));
 router.register('/wiki-arma3', lazy(() => import('./pages/wiki-arma3.ts'), 'wikiArma3Page'));   // wiki de Arma 3 (capa/índice/artigo via ?p= ?a=)
 router.register('/arma3-tutorial', lazy(() => import('./pages/arma3-tutorial.ts'), 'arma3TutorialPage'));   // tutorial dos 105 mods do preset
-router.register('/vanguard', lazy(() => import('./pages/vanguard.js'), 'vanguardPage'));                     // Project Vanguard: computador de tiro + coordenadas
+router.register('/vanguard', lazy(() => import('./pages/vanguard.ts'), 'vanguardPage'));                     // Project Vanguard: computador de tiro + coordenadas
 router.register('/zomboid', lazy(() => import('./pages/zomboid.ts'), 'zomboidPage'));   // coleção Project Zomboid (Spartan Gamer BR)
 router.register('/zomboid-admin', lazy(() => import('./pages/zomboid-admin.ts'), 'zomboidAdminPage'));   // admin de servidor PZ
 router.register('/guia-pc', lazy(() => import('./pages/guia-pc.ts'), 'guiaPcPage'));
