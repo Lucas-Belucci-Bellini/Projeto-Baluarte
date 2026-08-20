@@ -57,7 +57,7 @@
     "/projetos"
    ],
    "origem": [
-    "src/pages/projetos.js",
+    "src/pages/projetos.ts",
     "src/pages/sobre.ts",
     "src/pages/roadmap.ts",
     "src/pages/home.js",
@@ -196,7 +196,7 @@
     "src/pages/terminal.ts",
     "src/pages/calc-cientifica.ts",
     "src/pages/calc-numerica.ts",
-    "src/pages/calculadoras/",
+    "src/pages/calculadoras/index.ts",
     "src/pages/tabela-verdade.ts",
     "src/pages/graficos.ts",
     "src/pages/simbolos.ts",
@@ -453,7 +453,7 @@
    ],
    "origem": [
     "src/pages/ciberseg.ts",
-    "src/pages/cripto/",
+    "src/pages/cripto/index.ts",
     "src/pages/esteganografia.ts",
     "src/pages/seguranca.js",
     "src/pages/shadow.ts",

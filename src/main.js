@@ -101,9 +101,9 @@ router.register('/git-helper', lazy(() => import('./pages/git-helper.ts'), 'gitH
 router.register('/terminal', lazy(() => import('./pages/terminal.ts'), 'terminalPage'));
 router.register('/calc-cientifica', lazy(() => import('./pages/calc-cientifica.ts'), 'calcCientificaPage'));
 router.register('/calc-numerica', lazy(() => import('./pages/calc-numerica.ts'), 'calcNumericaPage'));
-router.register('/calculadoras', lazy(() => import('./pages/calculadoras/index.js'), 'calculadorasPage'));
+router.register('/calculadoras', lazy(() => import('./pages/calculadoras/index.ts'), 'calculadorasPage'));
 router.register('/tabela-verdade', lazy(() => import('./pages/tabela-verdade.ts'), 'tabelaVerdadePage'));
-router.register('/cripto', lazy(() => import('./pages/cripto/index.js'), 'criptoPage'));
+router.register('/cripto', lazy(() => import('./pages/cripto/index.ts'), 'criptoPage'));
 router.register('/esteganografia', lazy(() => import('./pages/esteganografia.ts'), 'esteganografiaPage'));
 router.register('/graficos', lazy(() => import('./pages/graficos.ts'), 'graficosPage'));
 router.register('/simbolos', lazy(() => import('./pages/simbolos.ts'), 'simbolosPage'));
@@ -179,7 +179,7 @@ router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia
  *  Dev & Projetos — auto-análise do próprio site
  * ============================================================== */
 router.register('/codigo', lazy(() => import('./pages/codigo.js'), 'codigoPage'));
-router.register('/projetos', lazy(() => import('./pages/projetos.js'), 'projetosPage'));
+router.register('/projetos', lazy(() => import('./pages/projetos.ts'), 'projetosPage'));
 router.register('/mural', lazy(() => import('./pages/mural.js'), 'muralPage'));
 router.register('/comms', lazy(() => import('./pages/comms.js'), 'commsPage'));   // Rede Neural — chat global em tempo real (0008)
 router.register('/banco', lazy(() => import('./pages/banco.js'), 'bancoPage'));
