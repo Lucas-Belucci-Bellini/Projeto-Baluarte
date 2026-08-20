@@ -162,6 +162,7 @@ try {
   const platformRuntimeObservationEnvelope = await pagina.evaluate(() => window.__v2?.platformRuntimeObservationEnvelope?.());
   conferir('envelope V2 transporta somente observação redigida',
     platformRuntimeObservationEnvelope?.contractVersion === 'platform-observation/v1'
+      && platformRuntimeObservationEnvelope?.origin === 'v2-harness'
       && platformRuntimeObservationEnvelope?.source === 'v2-platform-diagnostic'
       && platformRuntimeObservationEnvelope?.authority === 'not-authorized'
       && platformRuntimeObservationEnvelope?.redaction?.applied === true
@@ -169,9 +170,18 @@ try {
       && platformRuntimeObservationEnvelope.redaction.fields.includes('registry.incidentes[].error')
       && platformRuntimeObservationEnvelope?.summary?.moduleCount === vivos.length
       && platformRuntimeObservationEnvelope?.summary?.incidentCount === 0
+      && /^[A-Za-z0-9._~-]{16,128}$/.test(platformRuntimeObservationEnvelope?.nonce ?? '')
       && !('boot' in platformRuntimeObservationEnvelope)
       && !('registry' in platformRuntimeObservationEnvelope),
     JSON.stringify(platformRuntimeObservationEnvelope ?? null));
+
+  conferir('envelope V2 possui integridade verificável e origem declarada',
+    platformRuntimeObservationEnvelope?.integrity?.algorithm === 'SHA-256'
+      && platformRuntimeObservationEnvelope?.integrity?.status === 'sealed'
+      && /^[a-f0-9]{64}$/.test(platformRuntimeObservationEnvelope?.integrity?.digest ?? '')
+      && platformRuntimeObservationEnvelope?.origin === 'v2-harness'
+      && platformRuntimeObservationEnvelope?.authority === 'not-authorized',
+    JSON.stringify(platformRuntimeObservationEnvelope?.integrity ?? null));
 
   conferir('envelope V2 possui TTL verificável e não autoriza ações',
     Number.isInteger(platformRuntimeObservationEnvelope?.capturedAt)

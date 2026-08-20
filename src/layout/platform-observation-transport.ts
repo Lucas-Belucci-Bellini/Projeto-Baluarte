@@ -3,6 +3,7 @@ import type { RuntimeObservation } from './runtime-observation';
 import type { PlatformDiagnostic } from '../../v2/core/plataforma';
 
 export const PLATFORM_OBSERVATION_CONTRACT_VERSION = 'platform-observation/v1' as const;
+export const PLATFORM_OBSERVATION_ORIGIN = 'v2-harness' as const;
 export const DEFAULT_PLATFORM_OBSERVATION_TTL_MS = 5_000;
 export const MAX_PLATFORM_OBSERVATION_TTL_MS = 60_000;
 
@@ -26,9 +27,17 @@ export interface PlatformObservationSummary {
   readonly incidentCount: number;
 }
 
+export interface PlatformObservationIntegrity {
+  readonly algorithm: 'SHA-256';
+  readonly status: 'unsealed' | 'sealed';
+  readonly digest?: string;
+}
+
 export interface PlatformObservationEnvelope {
   readonly contractVersion: typeof PLATFORM_OBSERVATION_CONTRACT_VERSION;
+  readonly origin: typeof PLATFORM_OBSERVATION_ORIGIN;
   readonly source: 'v2-platform-diagnostic';
+  readonly nonce: string;
   readonly capturedAt: number;
   readonly expiresAt: number;
   readonly ttlMs: number;
@@ -38,12 +47,23 @@ export interface PlatformObservationEnvelope {
     readonly applied: true;
     readonly fields: readonly PlatformObservationRedactedField[];
   };
+  readonly integrity: PlatformObservationIntegrity;
   readonly authority: 'not-authorized';
+}
+
+export interface SealedPlatformObservationEnvelope
+  extends Omit<PlatformObservationEnvelope, 'integrity'> {
+  readonly integrity: {
+    readonly algorithm: 'SHA-256';
+    readonly status: 'sealed';
+    readonly digest: string;
+  };
 }
 
 export interface PlatformObservationTransportOptions {
   readonly capturedAtMs?: number;
   readonly ttlMs?: number;
+  readonly nonce?: string;
 }
 
 function finiteInteger(value: number, name: string): number {
@@ -61,6 +81,24 @@ function resolveTtl(ttlMs: number | undefined): number {
     );
   }
   return ttl;
+}
+
+function resolveNonce(nonce: string | undefined): string {
+  if (nonce !== undefined) {
+    if (!/^[A-Za-z0-9._~-]{16,128}$/.test(nonce)) {
+      throw new RangeError('platform observation: nonce deve ter 16–128 caracteres seguros');
+    }
+    return nonce;
+  }
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+  if (globalThis.crypto?.getRandomValues) {
+    const bytes = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(bytes);
+    return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+  throw new Error('platform observation: Web Crypto indisponível para nonce seguro');
 }
 
 function projectSummary(diagnostic: PlatformDiagnostic): PlatformObservationSummary {
@@ -86,15 +124,68 @@ export function projectPlatformDiagnosticEnvelope(
 
   return Object.freeze({
     contractVersion: PLATFORM_OBSERVATION_CONTRACT_VERSION,
+    origin: PLATFORM_OBSERVATION_ORIGIN,
     source: 'v2-platform-diagnostic',
+    nonce: resolveNonce(options.nonce),
     capturedAt,
     expiresAt: capturedAt + ttlMs,
     ttlMs,
     observation: Object.freeze({ ...observation }),
     summary: Object.freeze(summary),
     redaction: Object.freeze({ applied: true as const, fields: REDACTED_FIELDS }),
+    integrity: Object.freeze({ algorithm: 'SHA-256' as const, status: 'unsealed' as const }),
     authority: 'not-authorized' as const,
   });
+}
+
+function canonicalPayload(envelope: PlatformObservationEnvelope): string {
+  return JSON.stringify({
+    contractVersion: envelope.contractVersion,
+    origin: envelope.origin,
+    source: envelope.source,
+    nonce: envelope.nonce,
+    capturedAt: envelope.capturedAt,
+    expiresAt: envelope.expiresAt,
+    ttlMs: envelope.ttlMs,
+    observation: envelope.observation,
+    summary: envelope.summary,
+    redaction: envelope.redaction,
+    authority: envelope.authority,
+  });
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  if (!globalThis.crypto?.subtle) {
+    throw new Error('platform observation: Web Crypto SubtleCrypto indisponível');
+  }
+  const bytes = new TextEncoder().encode(value);
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+export async function sealPlatformObservationEnvelope(
+  envelope: PlatformObservationEnvelope,
+): Promise<SealedPlatformObservationEnvelope> {
+  const digest = await sha256Hex(canonicalPayload(envelope));
+  return Object.freeze({
+    ...envelope,
+    integrity: Object.freeze({ algorithm: 'SHA-256' as const, status: 'sealed' as const, digest }),
+  });
+}
+
+export async function verifyPlatformObservationEnvelope(
+  envelope: PlatformObservationEnvelope,
+  nowMs = Date.now(),
+): Promise<boolean> {
+  if (!isPlatformObservationEnvelopeFresh(envelope, nowMs)
+    || envelope.origin !== PLATFORM_OBSERVATION_ORIGIN
+    || envelope.authority !== 'not-authorized'
+    || envelope.integrity.status !== 'sealed'
+    || !/^[a-f0-9]{64}$/.test(envelope.integrity.digest ?? '')) {
+    return false;
+  }
+  const expected = await sha256Hex(canonicalPayload(envelope));
+  return expected === envelope.integrity.digest;
 }
 
 export function isPlatformObservationEnvelopeFresh(

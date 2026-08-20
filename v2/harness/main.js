@@ -56,7 +56,7 @@ import { reconcileNavigationCatalogs } from '../../src/layout/catalog-reconcilia
 import { decideModuleAlignment } from '../../src/layout/module-alignment.ts';
 import { evaluatePromotionGate } from '../../src/layout/promotion-gate.ts';
 import { projectPlatformDiagnostic } from '../../src/layout/runtime-observation.ts';
-import { projectPlatformDiagnosticEnvelope } from '../../src/layout/platform-observation-transport.ts';
+import { projectPlatformDiagnosticEnvelope, sealPlatformObservationEnvelope } from '../../src/layout/platform-observation-transport.ts';
 
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
@@ -384,7 +384,9 @@ async function principal() {
      * muda em runtime servido como instantâneo mente sobre o sistema vivo. */
     plataforma: () => plataforma.diagnostico(),
     platformRuntimeObservation: () => projectPlatformDiagnostic(plataforma.diagnostico()),
-    platformRuntimeObservationEnvelope: () => projectPlatformDiagnosticEnvelope(plataforma.diagnostico()),
+    platformRuntimeObservationEnvelope: async () => sealPlatformObservationEnvelope(
+      projectPlatformDiagnosticEnvelope(plataforma.diagnostico()),
+    ),
     /* Como a partida terminou: `ready` ou `degraded`, e quanto demorou. Antes
      * isso não existia em lugar nenhum — o harness sabia quantos módulos
      * subiram, mas não se o sistema se considerava saudável. */
