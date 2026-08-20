@@ -91,5 +91,5 @@ O próximo marco não deve criar um endpoint que aceite comandos. Ele deve avali
 - Repositório: `Lucas-Belucci-Bellini/Projeto-Baluarte`.
 - Branch: `main`.
 - Commit de base: `ba8c2c6fcd0e1751a79690fcf98b347f8658a58a`.
-- Commit de publicação: será preenchido após a publicação direta no `main`.
+- Commit de publicação: `ba4bd2417528f5d37ba0feb5053593b093d1a29c`.
 - Autor padrão: Manus AI.
