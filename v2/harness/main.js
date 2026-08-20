@@ -50,6 +50,8 @@ import { bus as busV1 } from '../../src/core/events.js';
 import { storage } from '../../src/core/storage.js';
 import { aplicarPolitica } from '../../src/core/politica.js';
 import { createRegistryNavigationObserver } from '../../src/layout/registry-observer.ts';
+import { reconcileNavigationCatalogs } from '../../src/layout/catalog-reconciliation.ts';
+import { decideModuleAlignment } from '../../src/layout/module-alignment.ts';
 
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
@@ -199,6 +201,34 @@ async function principal() {
 
   router.start('/cripto');
 
+  const moduleAlignmentPilot = () => {
+    const reconciliation = reconcileNavigationCatalogs(r.nav, { currentPhase: 21 });
+    const healthByModule = new Map(
+      registryHealth.resumo().map((entry) => [entry.id, entry]),
+    );
+    const knownRoutes = typeof router.list === 'function' ? router.list() : [];
+
+    return reconciliation.rows
+      .filter((row) => row.registryModuleId !== null)
+      .map((row) => {
+        const health = row.registryModuleId
+          ? healthByModule.get(row.registryModuleId)
+          : undefined;
+        const fallback = row.disposition === 'registry-only'
+          ? 'registry-observation'
+          : 'v1-preserved';
+        return decideModuleAlignment(row, {
+          health: {
+            mode: health?.mode ?? 'unregistered',
+            status: health?.status ?? 'unregistered',
+            source: health ? 'runtime-registry' : 'unknown',
+          },
+          deepLink: knownRoutes.includes(row.path) ? 'verified' : 'broken',
+          fallback,
+        });
+      });
+  };
+
   /* Ponte para o teste: estado, não pixel. */
   // @ts-ignore — superfície de teste, só no banco de prova
   window.__v2 = {
@@ -238,6 +268,7 @@ async function principal() {
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
     navigationObservation: () => navigationObserver.latest(),
+    moduleAlignmentPilot,
     registros,
     eventos: bus.contagem(),
     /* FUNÇÃO, não valor: a primeira versão tirava o retrato uma vez, no boot, e

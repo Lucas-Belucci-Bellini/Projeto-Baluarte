@@ -165,6 +165,15 @@ try {
       && navigationObservation?.parity?.legacyOnly?.length > 0
       && navigationObservation?.parity?.registryOnly?.length > 0,
     JSON.stringify(navigationObservation?.parity ?? null));
+  const moduleAlignment = await pagina.evaluate(() => window.__v2?.moduleAlignmentPilot?.());
+  conferir('piloto por módulo exige health e deep link antes da promoção',
+    Array.isArray(moduleAlignment)
+      && moduleAlignment.length === 5
+      && moduleAlignment.every((decision) => decision.evidence.health.source === 'runtime-registry')
+      && moduleAlignment.every((decision) => decision.evidence.deepLink === 'verified')
+      && moduleAlignment.every((decision) => decision.normalUserAction === 'preserve-current-surface')
+      && moduleAlignment.every((decision) => decision.allowPublicPromotion === false),
+    JSON.stringify(moduleAlignment ?? null));
 
   /* O elo que faz a regra de `ambiente` existir de verdade. O manifesto declara,
    * o `manifest.js` valida, o ciclo aplica — e nada disso vale se ninguém

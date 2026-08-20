@@ -1,6 +1,6 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — RELEASE 1.2.5 / UI-04 IMPLEMENTED / MODULE ALIGNMENT PILOT NEXT`
+**Status:** `CURRENT — RELEASE 1.2.5 / MODULE ALIGNMENT PILOT IMPLEMENTED / SINGLE SURFACE NEXT`
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
@@ -49,14 +49,14 @@
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `1032437c` | UI-00 inventory and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
-| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — UI-04 IMPLEMENTED` | Module Manifest, Registry, layout, router, permissions, health, accessibility | Creating a second shell/sidebar, inferring health from stability or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; `UI_01_NAVIGATION_CONTRACT_2026-08-20.md`; `UI_02_AVAILABILITY_PILOT_2026-08-20.md`; `UI_03_REGISTRY_OBSERVATION_2026-08-20.md`; `UI_04_CATALOG_RECONCILIATION_2026-08-20.md`; 10/10 UI tests; 22/22 V2 integration baseline | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI, UI-00 through UI-04 docs | `5e9dfddf` publicado | Module alignment pilot |
+| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — MODULE ALIGNMENT PILOT IMPLEMENTED` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback | Creating a second shell/sidebar, inferring health from stability or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; 12/12 UI tests; 23/23 V2 integration | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI and pilot docs | `48f28baf` base / pending pilot commit | Single-surface alignment pilot |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 
 ## 3. Próxima fase válida
 
-A auditoria **PHASE UI / UI-00** foi concluída em modo somente leitura. `UI-01` a `UI-04` adicionaram projeções, observação read-only e uma matriz de reconciliação, com 10/10 testes UI e 22/22 no harness V2 baseline, sem substituir shell, router ou sidebar. O próximo marco é um **piloto de alinhamento por módulo**, começando por health, deep link, fallback e decisão de produto.
+A auditoria **PHASE UI / UI-00** foi concluída em modo somente leitura. `UI-01` a `UI-04` e o piloto por módulo adicionaram projeções, observação read-only, matriz de reconciliação e decisão auditável por health/deep link/fallback, com 12/12 testes UI e 23/23 no harness V2, sem substituir shell, router ou sidebar. O próximo marco é alinhar uma única superfície com rollback documentado.
 
-O piloto de alinhamento deve reutilizar o Module Manifest, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e não ocultar rotas até que a matriz por módulo, a fonte real de health e o tratamento de deep links estejam validados.
+O alinhamento de uma única superfície deve reutilizar o Module Manifest, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e não ocultar rotas até que health, claims, deep link, fallback, observabilidade e rollback estejam validados em conjunto.
 
 ## 4. Definition of Done aplicada
 

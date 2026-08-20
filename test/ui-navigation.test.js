@@ -9,6 +9,7 @@ import {
 } from '../src/layout/navigation.ts';
 import { createRegistryNavigationObserver } from '../src/layout/registry-observer.ts';
 import { reconcileNavigationCatalogs } from '../src/layout/catalog-reconciliation.ts';
+import { decideModuleAlignment } from '../src/layout/module-alignment.ts';
 
 const projection = projectLegacyNavigation(NAV_GROUPS, {
   currentPhase: 21,
@@ -196,6 +197,73 @@ test('UI-04 bloqueia promoção de divergências sem apagar o fallback V1', () =
   assert.equal(legacyOnly?.action, 'preserve-v1-fallback');
   assert.equal(legacyOnly?.promotionAllowed, false);
   assert.equal(reconciliation.summary.promotionCandidates, 0);
+});
+
+test('piloto por módulo só candidata promoção com health, deep link e fallback válidos', () => {
+  const reconciliation = reconcileNavigationCatalogs([
+    {
+      modulo: 'home',
+      nome: 'Ponte de Comando',
+      icone: '⬡',
+      secao: 'Início',
+      ordem: 1,
+      path: '/home',
+      estabilidade: 'estavel',
+    },
+  ], { legacyGroups: [NAV_GROUPS[0]], currentPhase: 21 });
+  const row = reconciliation.rows.find((candidate) => candidate.path === '/home');
+  assert.ok(row);
+
+  const candidate = decideModuleAlignment(row, {
+    health: { mode: 'healthy', status: 'healthy', source: 'runtime-registry' },
+    deepLink: 'verified',
+    fallback: 'v1-preserved',
+  });
+  const unknownHealth = decideModuleAlignment(row, {
+    health: { mode: 'healthy', status: 'healthy', source: 'unknown' },
+    deepLink: 'verified',
+    fallback: 'v1-preserved',
+  });
+
+  assert.equal(candidate.outcome, 'promotion-candidate');
+  assert.equal(candidate.allowPublicPromotion, true);
+  assert.equal(candidate.normalUserAction, 'preserve-current-surface');
+  assert.equal(unknownHealth.outcome, 'blocked');
+  assert.equal(unknownHealth.allowPublicPromotion, false);
+  assert.ok(unknownHealth.reasons.some((reason) => /desconhecida/.test(reason)));
+});
+
+test('piloto por módulo mantém observação ou bloqueio quando a V1 precisa ser preservada', () => {
+  const reconciliation = reconcileNavigationCatalogs([
+    {
+      modulo: 'wiki-arma3',
+      nome: 'Wiki de Arma 3',
+      icone: '📖',
+      secao: 'Conhecimento',
+      ordem: 1,
+      path: '/wiki-arma3',
+      estabilidade: 'beta',
+    },
+  ], { legacyGroups: [NAV_GROUPS[5]], currentPhase: 21 });
+  const row = reconciliation.rows.find((candidate) => candidate.path === '/wiki-arma3');
+  assert.ok(row);
+
+  const observation = decideModuleAlignment(row, {
+    health: { mode: 'degraded', status: 'failed', source: 'runtime-registry' },
+    deepLink: 'verified',
+    fallback: 'registry-observation',
+  });
+  const brokenDeepLink = decideModuleAlignment(row, {
+    health: { mode: 'healthy', status: 'healthy', source: 'runtime-registry' },
+    deepLink: 'broken',
+    fallback: 'v1-preserved',
+  });
+
+  assert.equal(observation.outcome, 'blocked');
+  assert.equal(observation.allowPublicPromotion, false);
+  assert.equal(brokenDeepLink.outcome, 'blocked');
+  assert.equal(brokenDeepLink.allowPublicPromotion, false);
+  assert.equal(observation.normalUserAction, 'preserve-current-surface');
 });
 
 test('UI-01 rejeita paths duplicados em vez de mascarar divergência', () => {

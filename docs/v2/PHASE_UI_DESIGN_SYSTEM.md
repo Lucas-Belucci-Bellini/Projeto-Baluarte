@@ -175,7 +175,7 @@ A validação deverá incluir foco visível, navegação por teclado, nomes aces
 | UI-07 | Responsive/accessibility audit | Matriz de breakpoints, teclado, contraste e reduced motion |
 | UI-08 | Stabilization | Regressão de rotas, performance, rollback e documentação |
 
-A auditoria **UI-00** foi concluída em `docs/v2/UI_00_INVENTORY_2026-08-20.md`. Os contratos **UI-01**, **UI-02**, **UI-03 — observação do Registry** e **UI-04 — reconciliação controlada** foram implementados em `docs/v2/UI_01_NAVIGATION_CONTRACT_2026-08-20.md`, `docs/v2/UI_02_AVAILABILITY_PILOT_2026-08-20.md`, `docs/v2/UI_03_REGISTRY_OBSERVATION_2026-08-20.md` e `docs/v2/UI_04_CATALOG_RECONCILIATION_2026-08-20.md`. A próxima subfase recomendada é um **piloto de alinhamento por módulo**, sem iniciar uma reescrita ampla da sidebar.
+A auditoria **UI-00** foi concluída em `docs/v2/UI_00_INVENTORY_2026-08-20.md`. Os contratos **UI-01**, **UI-02**, **UI-03 — observação do Registry**, **UI-04 — reconciliação controlada** e o **piloto de alinhamento por módulo** foram implementados em `docs/v2/UI_01_NAVIGATION_CONTRACT_2026-08-20.md`, `docs/v2/UI_02_AVAILABILITY_PILOT_2026-08-20.md`, `docs/v2/UI_03_REGISTRY_OBSERVATION_2026-08-20.md`, `docs/v2/UI_04_CATALOG_RECONCILIATION_2026-08-20.md` e `docs/v2/MODULE_ALIGNMENT_PILOT_2026-08-20.md`. A próxima subfase recomendada é alinhar uma única superfície com health, deep link, fallback e rollback documentados, sem iniciar uma reescrita ampla da sidebar.
 
 ## 10. O que está fora da primeira implementação
 
