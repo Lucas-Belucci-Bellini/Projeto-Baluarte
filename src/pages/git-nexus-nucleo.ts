@@ -34,11 +34,11 @@ function isModo(value: string): value is Modo { return (MODOS as readonly string
 
 const FUNCOES: readonly PanelFunction[] = [
   { id: 'grafo', nome: 'Grafo de Código', match: /\bgrafo\b|c[óo]digo (3d|em 3d)/, load: () => import('./git-nexus.js').then((module) => module.gitNexusPage()) },
-  { id: 'vision', nome: 'Corpo Total', match: /corpo (total|inteiro)|ativa\w* (a )?vis[ãa]o|\bvis[ãa]o\b/, load: () => import('./jarvis-vision.js').then((module) => module.jarvisVisionPage()) },
+  { id: 'vision', nome: 'Corpo Total', match: /corpo (total|inteiro)|ativa\w* (a )?vis[ãa]o|\bvis[ãa]o\b/, load: () => import('./jarvis-vision').then((module) => module.jarvisVisionPage()) },
   { id: 'gerar', nome: 'Gerar Código', match: /gerar c[óo]digo|gera c[óo]digo/, load: () => import('./gerar-codigo.js').then((module) => module.gerarCodigoPage()) },
   { id: 'conselho', nome: 'Conselho de IAs', match: /conselho/, load: () => import('./conselho.js').then((module) => module.conselhoPage()) },
   { id: 'apis', nome: 'Central de APIs', match: /\bapis?\b|central de apis|chaves/, load: () => import('./apis.js').then((module) => module.apisPage()) },
-  { id: 'dashboard', nome: 'Dashboard', match: /dashboard|painel de (m[ée]tricas|status)/, load: () => import('./jarvis-dashboard.js').then((module) => module.jarvisDashboardPage()) },
+  { id: 'dashboard', nome: 'Dashboard', match: /dashboard|painel de (m[ée]tricas|status)/, load: () => import('./jarvis-dashboard').then((module) => module.jarvisDashboardPage()) },
   { id: 'ml', nome: 'ML da Memória', match: /\bml\b|aprendizado|machine learning/, load: () => import('./aprendizado.js').then((module) => module.aprendizadoPage()) },
   { id: 'llm', nome: 'Mini-LLM', match: /mini[- ]?llm|\bllm\b/, load: () => import('./llm-lab.js').then((module) => module.llmLabPage()) },
   { id: 'cerebro', nome: 'Segundo Cérebro', match: /c[ée]rebro/, load: () => import('./cerebro.js').then((module) => module.cerebroPage()) },
@@ -46,7 +46,7 @@ const FUNCOES: readonly PanelFunction[] = [
   { id: 'terminal', nome: 'Terminal-IA', match: /terminal/, load: () => import('./terminal-ia.js').then((module) => module.terminalIaPage()) },
   { id: 'seguranca', nome: 'Segurança', match: /seguran[çc]a/, load: () => import('./seguranca.js').then((module) => module.segurancaPage()) },
   { id: 'ia', nome: 'IA Proprietária', match: /ia propriet[áa]ria|propriet[áa]ria/, load: () => import('./ia-proprietaria.js').then((module) => module.iaProprietariaPage()) },
-  { id: 'jarvis', nome: 'J.A.R.V.I.S. completo', match: /jarvis completo|chat completo|sess[õo]es/, load: () => import('./jarvis.js').then((module) => module.jarvisPage()) },
+  { id: 'jarvis', nome: 'J.A.R.V.I.S. completo', match: /jarvis completo|chat completo|sess[õo]es/, load: () => import('./jarvis').then((module) => module.jarvisPage()) },
 ];
 
 function payloadRecord(value: unknown): Record<string, unknown> { return isRecord(value) ? value : {}; }

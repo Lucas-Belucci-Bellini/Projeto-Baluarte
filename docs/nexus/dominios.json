@@ -510,8 +510,8 @@
     "/aprendizado"
    ],
    "origem": [
-    "src/pages/jarvis.js",
-    "src/pages/jarvis-dashboard.js",
+    "src/pages/jarvis.ts",
+    "src/pages/jarvis-dashboard.ts",
     "src/pages/ia-proprietaria.js",
     "src/pages/llm-lab.js",
     "src/pages/terminal-ia.js",

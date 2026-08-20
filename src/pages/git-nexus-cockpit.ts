@@ -50,12 +50,12 @@ interface CockpitTab {
 
 const TABS: readonly CockpitTab[] = [
   { id: 'grafo', label: '🔗 Grafo de Código', load: () => import('./git-nexus.js').then((module) => module.gitNexusPage()) },
-  { id: 'jarvis', label: '◉ J.A.R.V.I.S.', load: () => import('./jarvis.js').then((module) => module.jarvisPage()) },
-  { id: 'vision', label: '🤖 Corpo Total', load: () => import('./jarvis-vision.js').then((module) => module.jarvisVisionPage()) },
+  { id: 'jarvis', label: '◉ J.A.R.V.I.S.', load: () => import('./jarvis').then((module) => module.jarvisPage()) },
+  { id: 'vision', label: '🤖 Corpo Total', load: () => import('./jarvis-vision').then((module) => module.jarvisVisionPage()) },
   { id: 'gerar', label: '🧬 Gerar Código', load: () => import('./gerar-codigo.js').then((module) => module.gerarCodigoPage()) },
   { id: 'conselho', label: '⚖ Conselho de IAs', load: () => import('./conselho.js').then((module) => module.conselhoPage()) },
   { id: 'apis', label: '🔑 Central de APIs', load: () => import('./apis.js').then((module) => module.apisPage()) },
-  { id: 'dashboard', label: '📊 Dashboard', load: () => import('./jarvis-dashboard.js').then((module) => module.jarvisDashboardPage()) },
+  { id: 'dashboard', label: '📊 Dashboard', load: () => import('./jarvis-dashboard').then((module) => module.jarvisDashboardPage()) },
   { id: 'ml', label: '📈 ML da Memória', load: () => import('./aprendizado.js').then((module) => module.aprendizadoPage()) },
   { id: 'llm', label: '⚛ Mini-LLM', load: () => import('./llm-lab.js').then((module) => module.llmLabPage()) },
   { id: 'cerebro', label: '🕸️ Segundo Cérebro', load: () => import('./cerebro.js').then((module) => module.cerebroPage()) },
