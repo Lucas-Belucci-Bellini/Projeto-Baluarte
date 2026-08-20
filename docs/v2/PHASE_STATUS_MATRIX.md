@@ -1,6 +1,6 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA de referência:** `ee4d2538a71ec5aa91f4a0870b0e530056a37837`
+**SHA de referência:** `1032437c93b686e7ec574ebf489c236cacd892ea`
 **Data:** 2026-08-20
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 

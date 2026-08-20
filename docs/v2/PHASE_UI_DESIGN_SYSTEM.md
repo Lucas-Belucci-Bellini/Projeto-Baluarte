@@ -1,8 +1,10 @@
 # PHASE UI — Baluarte Design System & Information Architecture
 
-**Status:** `PLANNED`
+**Status:** `PLANNED — SPECIFICATION PUBLISHED`
 
 **Data de incorporação:** 20 de agosto de 2026
+
+**SHA de publicação da especificação:** `1032437c93b686e7ec574ebf489c236cacd892ea`
 
 **Origem:** proposta de arquitetura visual recebida nos anexos `pasted_content_4.txt` e `pasted_content_5.txt`
 
