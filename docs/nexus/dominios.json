@@ -84,6 +84,7 @@
     "src/utils/atmosphere.js",
     "src/utils/atmosphere.ts",
     "src/utils/card-spotlight.js",
+    "src/utils/card-spotlight.ts",
     "src/utils/universe-theme.js",
     "src/utils/hero-webgl.js",
     "src/utils/hero-rays.js",
