@@ -1,7 +1,7 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA de referência:** `6b6218965ae0448cd2b1d89ac498bdaa5da414e9`
-**Último marco UI:** `Command Center Accessibility Matrix` — implementação local validada; publicação no main pendente
+**SHA de referência:** `0755028b60c5afb34ebb283bf0a51d4a00c932b1`
+**Último marco UI:** `Command Center Accessibility Matrix` — publicado no main
 **Data:** 2026-08-20
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 
