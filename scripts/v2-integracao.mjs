@@ -179,6 +179,13 @@ try {
       && promotionCandidates[0]?.path === '/editor'
       && promotionCandidates[0]?.outcome === 'promotion-candidate',
     JSON.stringify(moduleAlignment ?? null));
+  const promotionGate = await pagina.evaluate(() => window.__v2?.promotionGatePilot?.());
+  conferir('gate de promoção bloqueia editor sem claims server-side',
+    promotionGate?.status === 'blocked'
+      && promotionGate?.eligibleForControlledRollout === false
+      && promotionGate?.publicPromotionAllowed === false
+      && promotionGate?.reasons?.some((reason) => /claims server-side/.test(reason)),
+    JSON.stringify(promotionGate ?? null));
 
   /* O elo que faz a regra de `ambiente` existir de verdade. O manifesto declara,
    * o `manifest.js` valida, o ciclo aplica — e nada disso vale se ninguém

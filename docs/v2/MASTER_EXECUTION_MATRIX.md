@@ -1,10 +1,10 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — RELEASE 1.2.5 / EDITOR SINGLE-SURFACE CANDIDATE / NO PUBLIC PROMOTION`
+**Status:** `CURRENT — RELEASE 1.2.5 / EDITOR PROMOTION GATE BLOCKED / SERVER OBSERVABILITY NEXT`
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado:** `9b31d0944de51b7fc53806902566ab61b976346f`
+**SHA observado:** `7902d2fe7d127ac4c29dd11035464bc6093329f7`
 **Tag de release base:** `v1.2.0`
 **Autor:** Manus AI
 
@@ -49,14 +49,14 @@
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `1032437c` | UI-00 inventory and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
-| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — EDITOR CANDIDATE ONLY` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback, rollback | Promoting a candidate without server-side authority or creating a second shell/sidebar | UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md`; `UI_PROGRESS_REPORT_2026-08-20.md`; 12/12 UI tests; 23/23 V2 integration | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI and pilot docs | `24685606` publicado / pending report commit | Observability, claims and rollback gate |
+| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — PROMOTION GATE BLOCKED` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback, rollback, claims | Public promotion without server-side authority or a second shell/sidebar | UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md`; `PROMOTION_GATE_EDITOR_2026-08-20.md`; `UI_PROGRESS_REPORT_2026-08-20.md`; 14/14 UI tests; 24/24 V2 integration | Server-side claims and audit required; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI and promotion gate docs | `7902d2fe` publicado / pending gate commit | Server observability and rollback contract |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 
 ## 3. Próxima fase válida
 
-A auditoria **PHASE UI / UI-00** foi concluída em modo somente leitura. `UI-01` a `UI-04`, o piloto por módulo e o piloto individual do editor adicionaram projeções, observação read-only e decisão auditável por health/deep link/fallback, com 12/12 testes UI e 23/23 no harness V2, sem substituir shell, router ou sidebar. O editor é apenas candidato; o próximo marco é validar observabilidade server-side, claims e rollback.
+A auditoria **PHASE UI / UI-00** foi concluída em modo somente leitura. `UI-01` a `UI-04`, o piloto por módulo, o piloto individual do editor e o gate de promoção adicionaram projeções, observação read-only e decisão auditável por health/deep link/fallback/claims/rollback, com 14/14 testes UI e 24/24 no harness V2, sem substituir shell, router ou sidebar. O editor permanece bloqueado; o próximo marco é implementar observabilidade server-side auditável.
 
-O piloto do editor deve reutilizar o Module Manifest, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e não alterar a sidebar até que health, claims, deep link, observabilidade e rollback estejam validados em conjunto.
+O gate do editor deve reutilizar o Module Manifest, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e não alterar a sidebar até que health, claims, deep link, observabilidade, auditoria e rollback estejam validados em conjunto.
 
 ## 4. Definition of Done aplicada
 

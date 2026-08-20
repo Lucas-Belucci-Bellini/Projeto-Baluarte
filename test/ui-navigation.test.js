@@ -10,6 +10,7 @@ import {
 import { createRegistryNavigationObserver } from '../src/layout/registry-observer.ts';
 import { reconcileNavigationCatalogs } from '../src/layout/catalog-reconciliation.ts';
 import { decideModuleAlignment } from '../src/layout/module-alignment.ts';
+import { evaluatePromotionGate } from '../src/layout/promotion-gate.ts';
 
 const projection = projectLegacyNavigation(NAV_GROUPS, {
   currentPhase: 21,
@@ -264,6 +265,94 @@ test('piloto por módulo mantém observação ou bloqueio quando a V1 precisa se
   assert.equal(brokenDeepLink.outcome, 'blocked');
   assert.equal(brokenDeepLink.allowPublicPromotion, false);
   assert.equal(observation.normalUserAction, 'preserve-current-surface');
+});
+
+test('gate de promoção bloqueia editor sem claims server-side válidas', () => {
+  const alignment = {
+    moduleId: 'editor',
+    path: '/editor',
+    outcome: 'promotion-candidate',
+    allowPublicPromotion: true,
+    normalUserAction: 'preserve-current-surface',
+    reasons: [],
+    evidence: {
+      health: { mode: 'healthy', status: 'healthy', source: 'runtime-registry' },
+      deepLink: 'verified',
+      fallback: 'v1-preserved',
+    },
+  };
+  const blocked = evaluatePromotionGate({
+    alignment,
+    authority: {
+      source: 'unknown',
+      permitted: false,
+      actorRole: 'unknown',
+      requestId: null,
+      auditId: null,
+    },
+    rollback: {
+      reversible: true,
+      fallbackPath: '/editor',
+      rollbackReference: 'commit:24685606',
+    },
+  });
+  const eligible = evaluatePromotionGate({
+    alignment,
+    authority: {
+      source: 'server-claims',
+      permitted: true,
+      actorRole: 'developer',
+      requestId: 'req-editor-1',
+      auditId: 'audit-editor-1',
+    },
+    rollback: {
+      reversible: true,
+      fallbackPath: '/editor',
+      rollbackReference: 'commit:24685606',
+    },
+  });
+
+  assert.equal(blocked.status, 'blocked');
+  assert.equal(blocked.eligibleForControlledRollout, false);
+  assert.equal(blocked.publicPromotionAllowed, false);
+  assert.ok(blocked.reasons.some((reason) => /claims server-side/.test(reason)));
+  assert.equal(eligible.status, 'eligible');
+  assert.equal(eligible.eligibleForControlledRollout, true);
+  assert.equal(eligible.publicPromotionAllowed, false);
+});
+
+test('gate de promoção bloqueia rollback ausente mesmo com autoridade server-side', () => {
+  const decision = evaluatePromotionGate({
+    alignment: {
+      moduleId: 'editor',
+      path: '/editor',
+      outcome: 'promotion-candidate',
+      allowPublicPromotion: true,
+      normalUserAction: 'preserve-current-surface',
+      reasons: [],
+      evidence: {
+        health: { mode: 'healthy', status: 'healthy', source: 'server-authority' },
+        deepLink: 'verified',
+        fallback: 'v1-preserved',
+      },
+    },
+    authority: {
+      source: 'server-claims',
+      permitted: true,
+      actorRole: 'owner',
+      requestId: 'req-editor-2',
+      auditId: 'audit-editor-2',
+    },
+    rollback: {
+      reversible: false,
+      fallbackPath: '',
+      rollbackReference: '',
+    },
+  });
+
+  assert.equal(decision.status, 'blocked');
+  assert.equal(decision.eligibleForControlledRollout, false);
+  assert.ok(decision.reasons.some((reason) => /rollback/.test(reason)));
 });
 
 test('UI-01 rejeita paths duplicados em vez de mascarar divergência', () => {

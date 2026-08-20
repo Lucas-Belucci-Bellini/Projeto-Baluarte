@@ -52,6 +52,7 @@ import { aplicarPolitica } from '../../src/core/politica.js';
 import { createRegistryNavigationObserver } from '../../src/layout/registry-observer.ts';
 import { reconcileNavigationCatalogs } from '../../src/layout/catalog-reconciliation.ts';
 import { decideModuleAlignment } from '../../src/layout/module-alignment.ts';
+import { evaluatePromotionGate } from '../../src/layout/promotion-gate.ts';
 
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
@@ -229,6 +230,26 @@ async function principal() {
       });
   };
 
+  const promotionGatePilot = () => {
+    const editor = moduleAlignmentPilot().find((decision) => decision.path === '/editor');
+    if (!editor) return null;
+    return evaluatePromotionGate({
+      alignment: editor,
+      authority: {
+        source: 'unknown',
+        permitted: false,
+        actorRole: 'unknown',
+        requestId: null,
+        auditId: null,
+      },
+      rollback: {
+        reversible: true,
+        fallbackPath: '/editor',
+        rollbackReference: 'commit:24685606',
+      },
+    });
+  };
+
   /* Ponte para o teste: estado, não pixel. */
   // @ts-ignore — superfície de teste, só no banco de prova
   window.__v2 = {
@@ -269,6 +290,7 @@ async function principal() {
     totalRotas: router.count ? router.count() : null,
     navigationObservation: () => navigationObserver.latest(),
     moduleAlignmentPilot,
+    promotionGatePilot,
     registros,
     eventos: bus.contagem(),
     /* FUNÇÃO, não valor: a primeira versão tirava o retrato uma vez, no boot, e
