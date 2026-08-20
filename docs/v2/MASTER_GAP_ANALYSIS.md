@@ -1,140 +1,131 @@
-# Baluarte V2 — Master Gap Analysis
+# MASTER GAP ANALYSIS
 
-**Status:** `IN PROGRESS`
-**Data da observação:** 2026-08-19
+**Status:** `CURRENT — RELEASE 1.2.0`
+**Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch:** `main`
-**SHA observado:** `2f660dc6fe0b9676cab2b0fa4dfe8bf5400b181f`
-**Working tree:** limpo
+**SHA observado:** `b865fcc6d4621e0437fca8f484dfbdbf974bfd66`
+**Tag:** `v1.2.0`
+**Working tree:** limpo no fechamento da release
 
-> Este documento responde ao primeiro checkpoint do Master Super-Prompt. Ele descreve o que foi observado no código e nos gates; não transforma intenção de roadmap em implementação nem inventa validação externa.
+> Este documento é o mapa corrente de lacunas após a reconciliação do Master Super-Prompt Ω. Ele não declara a V2 completa e não transforma a lista de fases futuras em implementação automática.
 
 ## 1. Resumo executivo
 
-O Projeto-Baluarte está em uma condição de **fundação V2 ativa e verificável**, não de V2 completa. A V1 continua funcional e os gates principais estão verdes no SHA observado. A migração das páginas canônicas para TypeScript está concluída no inventário atual, mantendo wrappers JavaScript por compatibilidade. O Core, Event Bus, Runtime Session, Evidence Layer, Billing Foundation local/read-only e a presença musical do JARVIS possuem contratos e testes relevantes.
+O Baluarte está em uma condição de **V1 publicável, migração TypeScript incremental ativa e fundação V2 verificável**, não em uma condição de V2 concluída. A release `1.2.0` foi publicada depois da Wave 35, com o frontend e utilitários promovidos gradualmente para TypeScript, wrappers JavaScript preservados para compatibilidade e o Nexus sincronizado. Os gates locais relevantes e os oito workflows remotos da release terminaram verdes.
 
-Os maiores gaps não são uma ausência geral de código; são fronteiras ainda não comprovadas em ambiente real. Os principais bloqueadores são autorização server-side/RLS ainda não validada em staging, Auth/login-cadastro fora do fluxo de promoção, Runtime Rust localmente bloqueado por Cargo incompatível, geradores Node/TypeScript com contrato de execução quebrado e ausência de evidência de persistência remota transacional.
+O prompt anexado é compatível com a direção arquitetural de #423, mas é muito mais amplo que o próximo escopo executável. Ele deve funcionar como uma camada de governança acima do roadmap, não como uma ordem para construir Core, marketplace, plugins, desktop, mobile, billing real, IA autônoma e centenas de integrações em sequência imediata. As regras canônicas continuam exigindo pequenos passos, ausência de sistemas duplicados, segurança por padrão, observabilidade, documentação e verificação no `main` [1] [2].
 
-A regra operacional é manter a próxima entrega pequena. A primeira ordem recomendada após este mapa é corrigir `GEN-TS-001`, depois reavaliar a feature de identidade, e somente então promover o piloto operacional do Module Registry e a validação remota do Billing.
+Os principais gaps atuais são **provas de produção e fronteiras de segurança**, não ausência geral de telas. Permanecem sem validação suficiente: Auth/login-cadastro na main corrente, autorização server-side/RLS para papéis e módulos, persistência remota Billing transacional, backup/restore, aceite físico de desktop/mobile, benchmarks de performance e o registro formal dos projetos externos. O runtime Rust local é uma limitação de ambiente; não foi evidenciada falha do protocolo remoto.
 
-## 2. What exists?
+## 2. Evidência do estado atual
 
-| Área | Evidência atual | Estado |
+| Área | Evidência no SHA `b865fcc6` | Estado |
 |---|---|---|
-| V1 | SPA, rotas, wrappers e fallback de erro/chunk | Funcional nos gates observados |
-| TypeScript | Implementações `.ts`, strict gate, wrappers `.js`, contratos `.d.ts` | Migração de páginas canônicas concluída; migração sistêmica continua |
-| Core V2 | Boot, ciclo, registry, plataforma, permissões, health, runtime/session | Vertical slice funcional; cobertura total ainda não provada |
-| Event Bus | Eventos versionados e catálogo gerado | 19 eventos / 8 namespaces observados |
-| Storage | Persistência local, política e testes de reload/offline | Funcional localmente; backup/restore e geradores precisam hardening |
-| Evidence | Contrato de fonte, timestamp, revision, confidence, provenance | Fundação implementada; lineage/grafo ainda incompletos |
-| Billing | Catálogo, ledger, idempotência, transação local, drivers HTTP read/write e preflight | Read-only/local; staging real desativado |
-| JARVIS | Contexto, presença musical, Spotify PKCE, refresh em memória e reação 3D | Fatias implementadas; tool registry/memória completa ainda não |
-| CI | Oito workflows verdes no SHA `2f660dc6` | Saudável neste ciclo |
-| Automação | Relatório diário e monitor de issues | Configurados; ações externas continuam sob confirmação |
-| Desktop/mobile/3D | Superfícies e contratos parciais | Não equivalem a validação completa de distribuição |
+| V1/router | Smoke de 99/99 rotas e caminho crítico 15/15 | `EXISTS` |
+| TypeScript | Páginas canônicas migradas; wrappers JS permanecem por compatibilidade | `PARTIAL` sistêmico / página canônica `EXISTS` |
+| Nexus | 99 rotas, 0 lacunas, 21/21 domínios | `EXISTS` |
+| Core V2 | Boot, Registry, Platform, Runtime Session, health e permissões locais | `PARTIAL` |
+| Event Bus | Eventos versionados, catálogo e integração V2 | `PARTIAL` |
+| Module System | Manifest, lifecycle, health e pilotos funcionais | `PARTIAL` |
+| Data Layer | Storage local, schemas e harnesses | `PARTIAL` |
+| Evidence Layer | Provenance, revision, confidence e contratos iniciais | `PARTIAL` |
+| Supabase/RLS | Contratos e SQL/harnesses existem; staging server-side não está aprovado como autoridade | `BLOCKED` |
+| Auth/Tenancy | Superfícies e contratos existem; fluxo completo na main corrente não foi aceito | `BLOCKED` |
+| Billing | Catálogo, ledger e transação local/read-only | `PARTIAL` / remoto `BLOCKED` |
+| JARVIS | Contexto, ferramentas e presença musical/Spotify com fakes e permissões | `PARTIAL` |
+| Desktop | Launcher e contratos parciais | `PARTIAL` / aceite de distribuição `BLOCKED` |
+| Mobile | PWA/Capacitor e contratos parciais | `PARTIAL` / aceite físico `BLOCKED` |
+| Arma 3/Zomboid | Dados, páginas e fixtures parciais; módulos ainda precisam de governança por schema/evidence | `PARTIAL` |
+| AEGIS Ocean | Governança de dados dual-use documentada | `EXISTS` como regra; produto científico ainda `PLANNED` |
+| CI | Oito workflows verdes no SHA da release | `EXISTS` |
+| Backup/restore | Rollback de código documentado; drill de dados e RPO/RTO não comprovados | `MISSING` |
+| Performance/accessibility | Gates comportamentais existem; matriz completa e budgets não fechados | `PARTIAL` |
 
-## 3. What is incomplete?
+## 3. Causas-raiz, bloqueios e efeitos cascata
 
-A arquitetura de módulos ainda não governa uniformemente todas as páginas e superfícies. O Module Registry possui contratos e pilotos, mas a autoridade server-side para disponibilidade, health, quarentena e papéis ainda depende de Auth, Tenancy e RLS.
+Nenhuma falha funcional nova foi reproduzida nos gates da release `1.2.0`. A tabela abaixo distingue bloqueios honestos de efeitos derivados; não conta cada consequência como um defeito independente.
 
-A autenticação `feature/login-cadastro` não deve ser considerada integrada ao `main` apenas porque existe em branch ou documentação. É necessário reavaliar a branch sobre a main atual e executar testes de cadastro, confirmação de e-mail, login válido/inválido, refresh expirado, logout offline, redirect OAuth e Supabase ausente.
-
-A persistência Billing ainda é local/read-only de forma segura. A atomicidade de assignment + usage foi modelada no adapter in-memory, mas duas chamadas PostgREST independentes não substituem uma RPC ou transação PostgreSQL revisada. Não há provider financeiro ou cobrança real ativado.
-
-A matriz completa de testes do Master Prompt ainda não existe como execução única. Há testes unitários, integração, smoke, caminho crítico e CodeQL, mas performance, acessibilidade, mobile, desktop, carga, restore e RLS remoto precisam de evidência específica.
-
-## 4. What is duplicated?
-
-Não foi encontrada evidência atual que justifique criar um segundo Event Bus, segundo Storage, segundo Permission Manager ou segundo sistema de autenticação. O risco é de consumidores legados acessarem caminhos diretos enquanto a V2 tenta consolidar contratos; isso requer análise de consumidores, não uma nova implementação paralela.
-
-Os relatórios diário e de monitoramento de issues são automações distintas por responsabilidade e não devem ser fundidos sem necessidade. A integração Spotify e a presença musical local também não devem criar um segundo registro global de status; o contrato existente deve continuar sendo a fronteira única.
-
-Documentações históricas com SHA antigo não são duplicação de estado: devem permanecer como evidência histórica, mas precisam declarar claramente que não representam o estado corrente.
-
-## 5. What is broken?
-
-| ID | Causa raiz | Evidência | Efeitos cascata | Classificação |
+| ID | Causa ou gap raiz | Evidência | Efeitos cascata não independentes | Classificação |
 |---|---|---|---|---|
-| `GEN-TS-001` | Scripts executados por Node importam `.ts` sem loader compatível | Geradores de catálogo de storage/estabilidade falham antes de executar | Verificadores desses catálogos ficam indisponíveis | Erro de contrato de automação |
-| `ENV-RUST-001` | Cargo local `1.75.0` não lê `Cargo.lock` v4 | `npm run v2:runtime` pode parar antes da compilação local | Runtime local fica `unknown/local-blocked` | Limitação de ambiente, não causa de produto comprovada |
-| `AUTH-IDENTITY-001` | Superfície login-cadastro ainda não está validada/promovida na main atual | Feature e documentação não equivalem a Auth/RLS testados | Release de identidade e RBAC de produção ficam bloqueados | Gap arquitetural |
-| `MODULE-RBAC-001` | Estado/role no cliente não é autoridade server-side | Registry e permissões locais não provam RLS | Quarentena, admin/dev/owner e diagnóstico protegido não podem ser promovidos | Gap de segurança |
-| `BILLING-REMOTE-001` | Não existe ainda uma transação remota comprovada para assignment + usage | Driver real permanece desligado por preflight | Billing write e provider financeiro ficam bloqueados | Bloqueio deliberado de segurança |
+| `ENV-RUST-001` | Cargo local 1.75.0 não interpreta metadata `edition2024` da dependência/lockfile | `npm run v2:runtime` local retorna exit 101; workflow V2 Runtime remoto passou | Runtime local fica `unknown/local-blocked` | Limitação ambiental |
+| `AUTH-IDENTITY-001` | Auth/login-cadastro ainda não foi aceito na main corrente com todos os fluxos e RLS | Feature, redirects, refresh, recuperação e isolamento server-side ainda não têm aceite completo | Release de identidade e RBAC de produção adiados | Gap arquitetural/security |
+| `MODULE-RBAC-001` | Papéis e disponibilidade de módulos ainda não têm autoridade server-side comprovada | Estado local e pilotos não substituem claims/RLS | Quarentena protegida, admin/dev/owner e diagnóstico server-side não podem ser declarados completos | Gap de segurança |
+| `BILLING-REMOTE-001` | Assignment + usage remoto ainda não estão comprovados em RPC/transação PostgreSQL revisada | Driver remoto permanece desligado por preflight | Checkout, webhook, subscription, invoice e provider financeiro ficam adiados | Bloqueio deliberado |
+| `RECOVERY-001` | Não há drill reproduzível de backup/restore de dados com RPO/RTO aprovados | Rollback de código existe; recuperação de dados não foi demonstrada | Disaster recovery e declaração de produção ficam adiados | Gap operacional |
+| `DESKTOP-MOBILE-ACCEPT-001` | Aceite físico/distribuição de desktop e mobile não pode ser inferido de build web | CI web e smoke não validam macOS, Android/iOS físicos ou instaladores finais | Release de app e auto-update completo ficam adiados | Gap de validação |
+| `EXTERNAL-REGISTRY-001` | Projetos externos ainda não têm ficha uniforme de licença, manutenção, sobreposição, risco e custo | O prompt fornece uma lista; não existe ainda decisão por repositório baseada em auditoria completa | Vendorização, plugins e integrações Level 3 ficam adiados | Gap de governança |
 
-Os testes completos e os gates remotos verdes não eliminam esses gaps: eles provam o escopo que executaram. Não devem ser contados como falhas independentes os efeitos derivados de uma mesma causa raiz.
+### Causas já resolvidas
 
-## 6. What is risky?
+`GEN-TS-001` não deve mais ser contado como gap atual. O commit `b8e1db7a` está ancestral ao SHA da release e os dois geradores Node-safe passaram diretamente no checkout corrente. A dívida residual é uma auditoria mais ampla das fronteiras Node/TypeScript (`GEN-TS-002`), não a falha original dos geradores [3].
 
-O maior risco de governança é declarar a V2 completa pela quantidade de código ou páginas migradas. O segundo é confiar em autorização local, `localStorage`, query string ou metadata do cliente para decidir acesso administrativo. O terceiro é conectar Supabase staging sem confirmar projeto, RLS, rollback, secrets server-side e observabilidade.
+## 4. Reconciliação do roadmap e das issues
 
-Também são riscos reais: usar `npm audit fix --force` sem revisão, editar artefatos gerados para satisfazer verificadores, alterar `Cargo.lock` para contornar o toolchain local, adicionar grandes features sem checkpoint, introduzir novos providers diretamente no Core e chamar automações externas sem approval/kill switch/audit.
+| Fonte | Interpretação corrente | Estado no mapa |
+|---|---|---|
+| #420 | Fundação, hardening e transição V1 → V2; orienta governança e gates | `ACTIVE / PARTIAL` |
+| #422 | Wiki Project Zomboid; schema, fixtures e testes antes de conteúdo amplo | `PLANNED / PARTIAL` |
+| #423 | Ordem mestre: Core → Data/Evidence → especialistas → vertical slice → módulos | `ACTIVE SOURCE OF ORDER` |
+| #430 | Especialistas por domínio e integrador de contratos | `PARTIAL`; tipos e workflows existem, integrador único ainda não |
+| #454 | Governança AEGIS Ocean para dados científicos dual-use | `ACTIVE CONSTRAINT`; sem targeting, interceptação ou vigilância operacional |
+| #240 | Roadmap guarda-chuva de continuação | `LIVE REFERENCE`; não fechar automaticamente |
+| #248 | Manual operacional e continuidade | `LIVE REFERENCE`; manter como entrada de onboarding |
+| #291 | Supabase, RLS, banco, rádio/música e regras do operador | `ACTIVE BACKLOG / BLOCKED` nas partes remotas não aprovadas |
+| #316 | Backend do Núcleo, persistência, deploy e WebSocket | `PARTIAL / PLANNED` |
+| #338 | Aceite e release do launcher desktop | `BLOCKED` por validação de distribuição |
+| #369 | Arquivista/filesystem | `PLANNED`; primeira etapa deve ser read-only, search, inventory e report |
+| #386 / #398 | Modpacks e Wiki Arma 3 | `PARTIAL`; exige schema, source, license, evidence e versionamento |
+| #406 | Mapa Nexus e donos de domínio | `EXISTS`; gate atual verde |
 
-O warning de chunks grandes do Vite é um risco de performance, não falha de build. O uso de wrappers JavaScript é dívida de compatibilidade controlada, não evidência de páginas canônicas JS restantes.
+Issues abertas são matéria-prima e referências vivas, não uma fila que precisa ser implementada literalmente. Quando uma issue antiga divergir do código ou do SHA atual, prevalece a evidência corrente e a divergência deve ser registrada, não apagada [4] [5] [6].
 
-## 7. What is missing?
+## 5. Repositórios externos: decisão preliminar
 
-Ainda faltam ou precisam de formalização: `DEFINITION_OF_DONE.md`, `CONTRACT_POLICY.md`, `RELEASE_GATES.md` como artefatos consolidados; baseline corrente no SHA `2f660dc6`; RPC/transação remota Billing; RLS formal em staging; Auth/login-cadastro validado; piloto completo do Module Registry com quarentena; backup/restore drill; inventário de dados/LGPD; matriz de performance/acessibilidade/mobile/desktop; `verify:v2`; `doctor`; catálogo completo de APIs/módulos/health; e relatórios de fase no formato uniforme do Master Prompt.
+A lista externa do prompt ainda não foi promovida a dependências. Nenhum projeto será copiado ou instalado automaticamente. Antes de uma decisão, cada repositório deverá receber uma ficha com propósito, licença, arquitetura, segurança, manutenção, valor, sobreposição, custo de integração e risco.
 
-A ausência de um artefato não autoriza construir uma plataforma inteira antecipadamente. Cada item deve ser puxado pela próxima fase válida, com escopo pequeno e consumidor identificado.
+| Tipo de capacidade | Decisão preliminar | Regra de integração |
+|---|---|---|
+| `awesome-*`, cookbooks e quickstarts | `INSPIRE` | Conhecimento e padrões; não runtime nem dependência |
+| Memory providers | `ADAPT` ou `ISOLATE` | Avaliar lifecycle/retrieval; usar `MemoryProvider`; não criar segundo banco de memória |
+| Code retrieval/context | `ADAPT` ou `INSPIRE` | Reforçar retrieval/context assembly sem duplicar Git Nexus |
+| Routers/model fallback | `ADAPT` | Integrar na abstração `AIProvider`; sem provider automático no Core |
+| GitNexus e grafos | `USE` apenas após auditoria de fronteira | Usar capacidade através do contrato Git Nexus existente; não copiar internals |
+| MCP, n8n e plugins | `DEFER` | Só depois de manifest, permissions, sandbox, version, health e audit |
+| Sandboxes/containers | `ISOLATE` | Somente como infraestrutura isolada; nunca executar código arbitrário na superfície principal |
+| Repositório sem licença compatível, abandonado ou vulnerável | `REJECT` ou `ISOLATE` | Não vendorizar; registrar a razão |
 
-## 8. What is blocked?
+A decisão preliminar não é aprovação de integração. O próximo artefato específico deverá ser um **Project Registry** com fichas individuais, começando pelos candidatos que resolvam uma lacuna já priorizada.
 
-| Blocker | Why | What is needed | Impact | Fallback |
-|---|---|---|---|---|
-| Runtime Rust local | Cargo não suporta lockfile v4 | Toolchain compatível no ambiente ou evidência CI | Não declarar runtime local verde | Usar CI remoto e registrar `unknown` local |
-| Billing staging | Projeto, RLS, secrets e rollback não confirmados | Aprovação explícita, projeto staging e checklist | Sem writes/provider reais | Harness local + driver desligado |
-| Auth preview | Login/RLS/redirects não validados na main corrente | Revisão da feature e testes completos | Release de identidade adiada | Manter V1 compatível |
-| Role server-side | Perfil/claims/RLS ainda não comprovados | Contrato de Auth/Tenancy/RLS | Admin/dev/owner não podem ser autoridade de produção | Permissões locais apenas como UX/gate |
-| Spotify externo real | Client ID e consentimento do usuário não fornecidos | Client ID público, redirect URI cadastrada e opt-in | Sem playback real fora do site | Fixtures e monitor mockado |
+## 6. Local-only, protótipo e produção
 
-## 9. What is local-only?
+O ledger Billing in-memory, o harness de RLS/PostgREST, os transportes fake de Spotify, fixtures de Wiki e fallback sem Supabase são úteis para testes, mas são `LOCAL_ONLY`. O JARVIS com OpenClaw, notícias, Spotify externo, WhatsApp e automações de impacto continua sujeito a permissões, opt-in, kill switch, auditoria e confirmação humana; não há autorização para envio ou publicação automática.
 
-São locais ou simulados: o harness de PostgREST/RLS do Billing, o ledger transacional in-memory, o driver HTTP sem ativação, os testes Spotify com transport fake, o estado musical local, os fixtures Wiki/Data e o fallback de ambiente sem Supabase.
+A presença de interfaces, tipos ou contratos não significa que a capacidade esteja estável. Cada item deve ser marcado como `prototype`, `stub`, `mock`, `planned`, `experimental`, `beta` ou `stable` conforme evidência real.
 
-Esses componentes são úteis e testáveis, mas não devem ser descritos como validação de produção, RLS remoto ou integração financeira real.
+## 7. Ordem recomendada depois da 1.2.0
 
-## 10. What belongs to V2?
+1. Atualizar e publicar este mapa e a matriz no SHA da release, preservando os relatórios históricos.
+2. Auditar `GEN-TS-002` e demais scripts Node/TypeScript sem ampliar o escopo para grandes refactors.
+3. Reavaliar `feature/login-cadastro` na main atual, com testes de cadastro, login, logout, recuperação, refresh, OAuth, Supabase ausente, autorização e RLS.
+4. Fechar um piloto de Module Registry com health, fallback, quarentena e papel server-side claramente separados da UX local.
+5. Definir o staging Supabase e executar uma revisão de migration, RPC, RLS, rollback e observabilidade antes de qualquer write remoto Billing.
+6. Criar o Project Registry e auditar os repositórios externos por capacidade, licença e sobreposição; nenhuma integração automática.
+7. Só depois selecionar um vertical slice completo e pequeno conectando Core, Data/Evidence, módulo, superfície, testes e observabilidade.
+8. Preparar benchmarks de boot, rotas, eventos, JARVIS, busca, banco e memória antes de afirmar performance.
 
-Pertencem ao escopo atual: Core pequeno e modular, Module Registry, Event Bus, Data/Evidence, Auth/Tenancy/Permissions server-side, Billing Foundation desacoplada de providers, JARVIS com ferramentas autorizadas, observabilidade, segurança, documentação, testes, surfaces web/desktop/mobile conforme dependências e Wikis como módulos com provenance.
+## 8. O que não deve ser alterado nesta fase
 
-Também pertencem à V2 os contratos de integração com projetos externos, mas não a importação direta dos internals desses projetos. Cada integração deve ter adapter, API, eventos, versão, permissões e health.
+Não devem ser criados um segundo Core, Event Bus, Storage, Permission Manager, memória global ou autenticação paralela. Não devem ser ativados service role, provider financeiro, cobrança real, WhatsApp, venda, publicação automática, filesystem com escrita, targeting operacional, interceptação submarina, vigilância encoberta ou qualquer integração externa sem contrato, segurança, auditoria e aprovação adequados.
 
-## 11. What belongs to future versions?
-
-Não deve ser implementado agora apenas por aparecer no Master Prompt: Baluarte OS completo, hardware control, vigilância arbitrária, agente autônomo irrestrito, ecossistema massivo de plugins, rede social completa, marketplace de terceiros sem sandbox, automação de vendas/publicação sem confirmação e infraestrutura de escala de produção sem benchmark/necessidade.
-
-Essas áreas podem receber interfaces ou contratos quando desbloquearem uma fase real. A V2 deve preparar extensibilidade sem construir todo o futuro antecipadamente.
-
-## 12. Root causes versus cascade effects
-
-A matriz abaixo evita contar efeitos cascata como problemas independentes:
-
-| Root cause | Effects not counted as independent root causes |
-|---|---|
-| `GEN-TS-001` | Falha do catálogo de storage e falha da tabela de estabilidade |
-| `ENV-RUST-001` | Runtime local não executado; não é falha confirmada do protocolo Rust |
-| `AUTH-IDENTITY-001` | Release de identidade, testes de login e RBAC de produção adiados |
-| `MODULE-RBAC-001` | Quarentena/admin/diagnóstico server-side não promovidos |
-| `BILLING-REMOTE-001` | Writes, checkout, subscription, invoice, webhook e provider financeiro adiados |
-
-## 13. Ordem recomendada de correção
-
-1. Atualizar a baseline corrente e manter a auditoria antiga identificada como histórica.
-2. Corrigir `GEN-TS-001` com uma fronteira suportada entre scripts Node e TypeScript e adicionar testes dos geradores.
-3. Reavaliar `feature/login-cadastro` sobre a main atual, sem promover sem Auth/RLS/redirect tests.
-4. Fechar um piloto de Module Registry com health, fallback, quarentena e autorização server-side.
-5. Validar Billing staging via RPC/transação e RLS formal.
-6. Medir e endurecer JARVIS, ferramentas, memória e integrações externas.
-7. Consolidar `verify:v2`, `doctor`, matriz de testes, performance e documentação.
-8. Só depois considerar RC, estabilização e V2 complete.
-
-## 14. Critério de conclusão desta análise
-
-Esta análise é um artefato de planejamento, não uma declaração de V2 completa. A próxima fase deve atualizar a baseline no SHA corrente e só então implementar o primeiro item de correção priorizado, com contrato, testes, segurança, performance considerada, documentação, publicação no `main` e verificação pós-publicação.
+A V1, o router, os wrappers de compatibilidade, o mapa Nexus, o Service Worker versionado e os gates verdes da release não devem ser reescritos por estética. A existência de dezenas de fases no prompt não justifica uma alteração grande no `main`.
 
 ## Referências
 
-[1]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte "Repositório oficial"
+[1]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420 "Issue #420 — Plano 01"
 [2]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423 "Issue #423 — Plano Mestre V2"
-[3]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420 "Issue #420 — Fundação e transição V1 → V2"
-[4]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422 "Issue #422 — Issue de Wiki / roadmap"
+[3]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/docs/v2/GEN_TS_001_FIX.md "GEN-TS-001 — Fronteira Node/TypeScript"
+[4]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422 "Issue #422 — Wiki Project Zomboid"
+[5]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/430 "Issue #430 — Verificação especializada e integrador"
+[6]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/454 "Issue #454 — AEGIS Ocean dual-use governance"
+[7]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.0 "Release v1.2.0"

@@ -76,6 +76,8 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Onboarding V2 | [`ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md) |
 | Issues 420, 422 e 423 | [`ISSUES_420_422_423_COMPLETE.md`](docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md) |
 | Plano mestre | [`V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md) |
+| Gap analysis corrente | [`MASTER_GAP_ANALYSIS.md`](docs/v2/MASTER_GAP_ANALYSIS.md) |
+| Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |
 | Migração para TypeScript | [`TYPESCRIPT_MIGRATION.md`](docs/v2/TYPESCRIPT_MIGRATION.md) |
 | Projeto Nexus Baluarte | [`docs/PROJETO-NEXUS-BALUARTE.md`](docs/PROJETO-NEXUS-BALUARTE.md) |

@@ -1,11 +1,11 @@
 # PHASE 0 — Baseline do Projeto-Baluarte V2
 
-**Status:** BASELINE OBSERVADA — sem correções de código nesta etapa  
-**Data/hora da coleta:** 2026-08-19T02:11–02:16 UTC  
-**Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
-**Branch:** `main`  
-**SHA observado:** `f64022766b477a311de0da55c23c19a2d1fedf84`  
-**Working tree na descoberta:** limpo  
+**Status:** BASELINE OBSERVADA — sem correções de código nesta etapa
+**Data/hora da coleta:** 2026-08-19T02:11–02:16 UTC
+**Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
+**Branch:** `main`
+**SHA observado:** `f64022766b477a311de0da55c23c19a2d1fedf84`
+**Working tree na descoberta:** limpo
 
 ## 1. Ferramentas
 
@@ -100,3 +100,32 @@ Essas implementações não significam que Supabase staging, RLS remoto, provide
 ### Estado de promoção
 
 A baseline corrente confirma uma main publicável dentro dos gates observados, mas não autoriza declarar a V2 completa. Permanecem dependências de identidade/login-cadastro, autorização server-side/RLS, Module Registry operacional, persistência remota Billing, backup/restore, matriz completa de performance/acessibilidade e validação das superfícies desktop/mobile.
+
+
+## 7. Current refresh — release 1.2.0 / SHA b865fcc6
+
+Esta seção é a referência corrente após a Wave 35 e a publicação da release `v1.2.0`. As seções anteriores permanecem históricas.
+
+**Data/hora do refresh:** 2026-08-20
+**SHA corrente:** `b865fcc6d4621e0437fca8f484dfbdbf974bfd66`
+**Tag:** `v1.2.0`
+**Branch:** `main`
+**Origin:** alinhado
+**Working tree:** limpo no fechamento
+
+| Gate | Resultado observado |
+|---|---|
+| `npm run verificar-nexus` | Verde: 99 rotas, 0 lacunas, 21/21 domínios |
+| `npm run tipos:ts` | Verde |
+| `npm run tipos:v2` | Verde |
+| `npm test` | **1085/1085** |
+| `npm run build` | Verde; warnings conhecidos de chunks grandes |
+| `npm run v2:integracao` | **21/21** |
+| `npm run smoke` | **99/99 rotas verdes** |
+| `npm run caminho-critico` | **15/15** |
+| `npm run v2:runtime` local | Exit 101 por Cargo 1.75.0/`edition2024`; limitação ambiental conhecida |
+| CI remota da release | **8/8 workflows verdes** |
+
+A release inclui a promoção de `card-spotlight` para TypeScript, o relatório da Wave 35, a atualização do changelog, README, release plan, package metadata, Service Worker e a tag `v1.2.0`. O commit `b8e1db7a` de GEN-TS-001 é ancestral ao SHA corrente e os dois geradores Node-safe passaram diretamente no checkout.
+
+O refresh não transforma a V2 em produto completo. Auth/login-cadastro na main, RLS server-side, Module Registry com quarentena autorizada, Billing remoto, backup/restore, aceite físico desktop/mobile, performance budgets e Project Registry externo continuam parciais, bloqueados ou adiados conforme `MASTER_GAP_ANALYSIS.md` e `MASTER_EXECUTION_MATRIX.md`.
