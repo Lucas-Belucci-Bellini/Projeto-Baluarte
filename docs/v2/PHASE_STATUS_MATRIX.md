@@ -1,7 +1,7 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA de referência:** `d3d23651f23d0ad3164ad6bc1881e7085c31a8a7`
-**Último marco UI:** `JARVIS Mark XIII Integrated Visual` — implementação local validada; publicação no main pendente
+**SHA de referência:** `ecfa6b34e4ad949bc82072183ae8a50ada9bf585`
+**Último marco UI:** `JARVIS Mark XIII Integrated Visual` — publicado no main
 **Data:** 2026-08-20
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 

@@ -1,10 +1,10 @@
 # JARVIS — Visual Integrado Mark XIII
 
 **Data:** 20 de agosto de 2026  
-**Status:** `IMPLEMENTADO LOCALMENTE — PUBLICAÇÃO NO MAIN PENDENTE`  
+**Status:** `PUBLICADO NO MAIN — GATES LOCAIS VERDES`
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Branch de entrega:** `main`  
-**SHA de origem:** `5b791448cf5a4b930c1923e965c7ce173a20889f`  
+**SHA do marco publicado:** `ecfa6b34e4ad949bc82072183ae8a50ada9bf585`
 **Escopo:** rota real `/jarvis`, preservação do chat V1, Spotify, memória, modos de IA e artefato MPA V7
 
 ## Correção do diagnóstico
