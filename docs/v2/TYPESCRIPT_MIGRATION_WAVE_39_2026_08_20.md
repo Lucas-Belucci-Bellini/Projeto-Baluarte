@@ -108,7 +108,7 @@ Antes de aceitar o rollback, repetir `git diff --check`, `npm run verificar-nexu
 
 O SHA publicado deve ser preenchido após a integração final com `origin/main` e o push. A publicação deve ocorrer diretamente no branch `main`, com `fetch` e merge sem force push caso outro processo tenha enviado mudanças concorrentes.
 
-**SHA da Wave 39:** será preenchido após o commit.
+**SHA da Wave 39:** `ae658b8a06dc99e3be1b80abae0b4f5112ee8108`
 
 ## Próximo passo recomendado
 
