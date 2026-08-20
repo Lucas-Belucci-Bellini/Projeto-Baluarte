@@ -1,6 +1,6 @@
 # Migração TypeScript — Wave 21
 
-**Status:** implementação local concluída; publicação preparada após gates verdes.
+**Status:** publicada diretamente no `main`; implementação e CI remota concluídas com sucesso.
 
 **Objetivo:** promover `/editor` para a implementação TypeScript canônica após revisar VFS, tabs, runners, persistência, atalhos globais e teardown, sem alterar o contrato pesado do JARVIS.
 
@@ -59,8 +59,19 @@ Rollback: restaurar no router e no Nexus a origem `.js`, mantendo `editor.ts` e 
 
 ## Critério de conclusão
 
-A Wave 21 será concluída após o commit e a confirmação da CI remota no SHA final. Os critérios locais já foram satisfeitos: `/editor` carrega diretamente `.ts`, o caminho crítico permanece verde e todos os gates comportamentais passaram.
+A Wave 21 foi concluída: `/editor` carrega diretamente `.ts`, o caminho crítico permanece verde, todos os gates comportamentais passaram e a CI remota terminou verde no SHA de implementação.
+
+| Workflow remoto | Resultado |
+|---|---:|
+| CI | success |
+| Core CI | success |
+| V2 Core | success |
+| V2 Runtime | success |
+| V2 Validation | success |
+| Vigia das rotas | success |
+| Arma 3 Data CI | success |
+| CodeQL | success |
 
 **Autor:** Manus AI
-**SHA:** será preenchido após publicação.
-**Data dos gates:** 2026-08-20T04:16Z–04:18Z.
+**SHA de implementação e publicação:** `8a0de9b57096cfc4d3748089f98acfafa10bde70`.
+**Data dos gates:** 2026-08-20T04:16Z–04:22Z.
