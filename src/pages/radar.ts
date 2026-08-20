@@ -6,7 +6,7 @@ import type { RadarFrame, RadarMode, RadarSource } from '../utils/radar-source.j
 import { cfar2d, rangeMeters, velocityMs } from '../utils/radar-dsp.js';
 import type { RadarTrack } from '../utils/radar-tracker.js';
 import { createTracker } from '../utils/radar-tracker.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 
 type ConsoleMode = RadarMode | 'satellite';
 interface RadarConfig { cfarK: number; mtiOn: boolean; dcNotchOn: boolean; frozen: boolean }

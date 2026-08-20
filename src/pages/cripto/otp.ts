@@ -1,5 +1,5 @@
 import { h, debounce } from '../../utils/helpers.js';
-import { toast } from '../../utils/toast.js';
+import { toast } from '../../utils/toast';
 import { randomBytes, otpEncode, bytesToBase64, base64ToBytes, textToBytes, bytesToText } from '../../utils/cripto-engine.js';
 
 function errorMessage(error: unknown): string { return error instanceof Error ? error.message : 'erro desconhecido'; }

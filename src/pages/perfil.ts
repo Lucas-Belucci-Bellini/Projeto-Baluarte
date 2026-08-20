@@ -13,7 +13,7 @@ import type { HeroEffect } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
 import type { HeroFieldEffect } from '../utils/hero3d.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { router } from '../core/router.js';
 import { VERSION } from '../data/version.js';
 import { readPageViews } from '../utils/page-views.js';

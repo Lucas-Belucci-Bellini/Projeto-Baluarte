@@ -27,6 +27,7 @@
     "src/utils/helpers.js",
     "src/utils/icons.js",
     "src/utils/toast.js",
+    "src/utils/toast.ts",
     "src/utils/theme.js",
     "src/utils/pwa.js",
     "src/utils/page-views.js",

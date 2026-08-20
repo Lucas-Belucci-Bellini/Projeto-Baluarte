@@ -5,7 +5,7 @@
 
 import '../styles/find.css';
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { createFingerprintDB } from '../utils/fingerprint-engine.js';
 
 const BANDS = 48;

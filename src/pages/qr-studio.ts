@@ -8,7 +8,7 @@
 import '../styles/qr-studio.css';
 import { h, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { encodeQR } from '../utils/qr-encoder.js';
 import { setStatus as setPageStatus } from '../utils/baluarte-status';
 

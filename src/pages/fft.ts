@@ -7,7 +7,7 @@
 
 import '../styles/fft.css';
 import { h, cx } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import {
   RENDER_MODES,
   connectMicrophone,

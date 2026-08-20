@@ -8,7 +8,7 @@
 import '../styles/calc.css';
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { toBase, fromBase, bitOps, ieee754 } from '../utils/calc-engine.js';
 import type { Ieee754Result } from '../utils/calc-engine.js';
 import { setStatus } from '../utils/baluarte-status';

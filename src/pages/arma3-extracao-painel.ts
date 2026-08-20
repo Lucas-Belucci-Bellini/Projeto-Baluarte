@@ -7,7 +7,7 @@
  */
 
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { statusExtracao, extrairArma3, entregarArma3 } from '../utils/arma3-extracao.js';
 import type { Arma3DeliveryResult, Arma3Status } from '../utils/arma3-extracao.js';
 

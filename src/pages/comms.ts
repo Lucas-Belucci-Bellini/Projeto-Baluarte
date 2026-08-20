@@ -1,6 +1,6 @@
 import '../styles/comms.css';
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { buildImmersiveHero } from '../utils/immersive.js';
 import { openComms } from '../core/comms.js';
 import { supabaseConfigured } from '../core/supabase.js';

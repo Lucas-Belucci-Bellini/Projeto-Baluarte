@@ -7,7 +7,7 @@ import { h, debounce, normalize, mount, cx } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import type { RouteArgs } from '../core/router.js';
 import { buildImmersiveHero } from '../utils/immersive.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 
 type ToolCategory =
   | 'desenvolvimento'

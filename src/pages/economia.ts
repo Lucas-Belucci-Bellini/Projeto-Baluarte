@@ -1,6 +1,6 @@
 import { h, cx, empty, debounce } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { fetchCurrencies, fetchCrypto, fmtBRL, fmtUSD, fmtPct, CURRENCY_PAIRS } from '../utils/economia-api.js';
 import type { CurrencyQuote, CryptoQuote } from '../utils/economia-api.js';
 

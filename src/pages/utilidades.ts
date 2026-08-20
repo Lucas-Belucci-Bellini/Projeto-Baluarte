@@ -7,7 +7,7 @@
 
 import '../styles/utilidades.css';
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { mdToHtml } from '../utils/markdown';
 
 function copy(text: string): void {

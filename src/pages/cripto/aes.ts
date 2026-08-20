@@ -1,5 +1,5 @@
 import { h } from '../../utils/helpers.js';
-import { toast } from '../../utils/toast.js';
+import { toast } from '../../utils/toast';
 import { aesEncrypt, aesDecrypt, randomBytes, bytesToBase64 } from '../../utils/cripto-engine.js';
 
 export function aesPanel(): HTMLDivElement {

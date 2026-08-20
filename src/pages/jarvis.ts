@@ -7,7 +7,7 @@
 
 import { h, cx, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import {
   loadConfig, saveConfig,
   processLocal, processClaude, processOllama, processServer, processNewsBriefing, processHermes, processClaudeServer, processOpenClaw, processAgent,

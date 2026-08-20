@@ -8,7 +8,7 @@
 import '../styles/login.css';
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { supabaseConfigured } from '../core/supabase.js';
 import {
   isLoggedIn,

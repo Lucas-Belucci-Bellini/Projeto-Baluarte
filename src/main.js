@@ -24,7 +24,7 @@ import { homePage } from './pages/home.js';
 import { notFoundPage, loadErrorPage } from './pages/_placeholder.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
-import { initToast } from './utils/toast.js';
+import { initToast } from './utils/toast.ts';
 import { initPaleta } from './utils/paleta.js';
 import './styles/paleta.css';
 import { initTheme } from './utils/theme.js';

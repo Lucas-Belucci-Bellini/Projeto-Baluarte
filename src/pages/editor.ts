@@ -8,7 +8,7 @@
 import '../styles/editor.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { aoSair } from '../core/ciclo-vida.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { highlight } from '../utils/syntax-highlight.js';
 import { createAutocomplete } from '../utils/editor-autocomplete.js';
 import type { AutocompleteController } from '../utils/editor-autocomplete.js';
