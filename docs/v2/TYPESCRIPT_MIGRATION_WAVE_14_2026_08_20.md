@@ -91,5 +91,7 @@ A Wave 14 será considerada concluída quando os gates locais aplicáveis estive
 Depois da publicação e da confirmação da CI, revisar o inventário restante. A próxima candidata de menor risco deve ser escolhida por contrato, não por tamanho. `jarvis.ts` e `editor.ts` continuam bloqueados para promoção até a análise de seus contratos pesados; páginas grandes como `visao`, `jogos` e `batalha-naval` não devem ser promovidas sem auditoria equivalente.
 
 **Autor:** Manus AI
-**SHA de implementação:** será preenchido após o commit e a sincronização com `origin/main`.
+**SHA de implementação:** `590ad2d8346e3c66515fd23c12267f5dbaba2a4c`.
+**Integração concorrente:** `4b2070bca6814defabfd2c097dd3830f1467681f`, commit de auditoria do JARVIS integrado por fast-forward antes do fechamento documental.
+**CI remota da implementação:** CI, Core CI, V2 Core, V2 Runtime, V2 Validation e CodeQL passaram no SHA `590ad2d8`. Os workflows de rotas e Arma 3 não foram disparados por este diff documental/arquitetural; já estavam verdes na Wave 13 e permanecem cobertos pelo gate local de 99/99 rotas e pelo validador Arma 3.
 **Data/hora dos gates:** 2026-08-20T02:09Z–02:10Z, conforme os logs locais da Wave 14.
