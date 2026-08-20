@@ -96,3 +96,10 @@ Enquanto não houver confirmação e uma branch saudável, o trabalho seguro con
 
 
 O procedimento operacional e o gate de custo estão detalhados em [`SUPABASE_STAGING_RECOVERY_PLAN.md`](SUPABASE_STAGING_RECOVERY_PLAN.md). A criação de branch permanece pendente de confirmação explícita do operador.
+
+
+## 6.3 Manifesto e contrato automatizado
+
+O inventário completo das 89 migrations remotas foi preservado em [`SUPABASE_REMOTE_MIGRATION_MANIFEST_2026-08-20.tsv`](SUPABASE_REMOTE_MIGRATION_MANIFEST_2026-08-20.tsv). O teste `test/security/supabase-migration-drift-contract.test.js` exige que esse snapshot continue contendo as migrations remotas de lock-down de ingestão, hardening de `SECURITY DEFINER` e Billing, além de manter explícita a migration local de hardening ainda não aplicada remotamente.
+
+Os três contratos Supabase executados em conjunto agora totalizam **11 testes verdes**: contratos históricos do Nexus, hardening de `search_path` e contrato do drift/service-only.
