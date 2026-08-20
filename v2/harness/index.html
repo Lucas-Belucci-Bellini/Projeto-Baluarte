@@ -60,6 +60,9 @@
     .pilot-command:first-of-type { border-top: 0; }
     .pilot-command__meta { display: block; margin-top: 3px; color: var(--pilot-muted); font-size: 10px; }
     .pilot-empty { margin: 16px 0 0; color: var(--pilot-muted); font-size: 13px; }
+    .pilot-help { margin: 9px 0 0; color: var(--pilot-muted); font-size: 11px; }
+    .pilot-help kbd { padding: 2px 5px; color: var(--pilot-text); background: #0d1118; border: 1px solid var(--pilot-line); border-radius: 4px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     .visual-pilot[data-collapsed="true"] #command-center-body { display: none; }
     @media (max-width: 640px) { .visual-pilot__header, .visual-pilot__toolbar { flex-direction: column; align-items: stretch; } .visual-pilot__badge { align-self: flex-start; } }
     @media (prefers-reduced-motion: reduce) { .visual-pilot *, .visual-pilot *::before, .visual-pilot *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
@@ -81,11 +84,12 @@
       <span class="visual-pilot__badge" id="command-center-status" role="status">observando Registry…</span>
     </div>
     <div class="visual-pilot__body">
-      <div class="visual-pilot__toolbar">
+      <div class="visual-pilot__toolbar" role="search">
         <label for="command-center-search" class="sr-only">Buscar comando</label>
-        <input id="command-center-search" class="visual-pilot__search" type="search" autocomplete="off" placeholder="Buscar ou executar comando…" />
+        <input id="command-center-search" class="visual-pilot__search" type="search" autocomplete="off" aria-keyshortcuts="/" aria-controls="command-center-categories" placeholder="Buscar ou executar comando…" />
         <button id="command-center-toggle" type="button" aria-expanded="true" aria-controls="command-center-body">Recolher</button>
       </div>
+      <p id="command-center-help" class="pilot-help">Atalhos do protótipo: <kbd>/</kbd> focar busca · <kbd>↓</kbd> primeiro comando · <kbd>Esc</kbd> limpar busca</p>
       <div id="command-center-body">
         <div id="command-center-categories" class="visual-pilot__grid" aria-live="polite"></div>
         <p id="command-center-empty" class="pilot-empty" hidden>Nenhum comando corresponde à busca.</p>

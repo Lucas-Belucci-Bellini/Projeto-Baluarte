@@ -198,6 +198,34 @@ try {
     JSON.stringify(collapsedPilot));
   await pagina.getByRole('button', { name: 'Expandir' }).click();
   await pagina.fill('#command-center-search', '');
+  const a11yPilot = await pagina.evaluate(() => window.__v2?.commandCenterAccessibilityPilot?.());
+  const commandCenterA11y = await pagina.evaluate(() => ({
+    searchRole: document.querySelector('[role="search"]')?.getAttribute('role'),
+    searchControls: document.getElementById('command-center-search')?.getAttribute('aria-controls'),
+    helpText: document.getElementById('command-center-help')?.textContent ?? '',
+  }));
+  conferir('protótipo visual expõe atributos de acessibilidade corretos',
+    a11yPilot?.searchLabel?.includes('Buscar')
+      && a11yPilot?.searchShortcut === '/'
+      && a11yPilot?.toggleExpanded === 'true'
+      && commandCenterA11y.searchRole === 'search'
+      && commandCenterA11y.searchControls === 'command-center-categories'
+      && commandCenterA11y.helpText.includes('Esc'),
+    JSON.stringify({ a11yPilot, commandCenterA11y }));
+  await pagina.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+  await pagina.keyboard.press('/');
+  const searchFocused = await pagina.evaluate(() => document.activeElement?.id === 'command-center-search');
+  conferir('atalho / foca o campo de busca do Command Center',
+    searchFocused === true, String(searchFocused));
+  await pagina.fill('#command-center-search', 'editor');
+  await pagina.keyboard.press('Escape');
+  const searchCleared = await pagina.evaluate(() => document.getElementById('command-center-search')?.value === '');
+  conferir('Escape limpa a busca do Command Center',
+    searchCleared === true, String(searchCleared));
+  await pagina.keyboard.press('ArrowDown');
+  const firstCommandFocused = await pagina.evaluate(() => document.activeElement?.classList.contains('pilot-command'));
+  conferir('ArrowDown move o foco para o primeiro comando',
+    firstCommandFocused === true, String(firstCommandFocused));
 
   conferir('UI-03 observa o Registry sem trocar a sidebar V1',
     navigationObservation?.source === 'registry-observer'

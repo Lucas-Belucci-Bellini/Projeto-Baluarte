@@ -336,6 +336,31 @@ async function principal() {
     commandCenterToggle.setAttribute('aria-expanded', String(!collapsed));
     commandCenterToggle.textContent = collapsed ? 'Expandir' : 'Recolher';
   });
+
+  document.addEventListener('keydown', (event) => {
+    const target = event.target;
+    const isEditable = target instanceof HTMLInputElement
+      || target instanceof HTMLTextAreaElement
+      || target instanceof HTMLSelectElement
+      || target instanceof HTMLElement && target.isContentEditable;
+    if (event.key === '/' && !isEditable) {
+      event.preventDefault();
+      commandCenterSearchInput?.focus();
+      return;
+    }
+    if (event.key === 'Escape' && target === commandCenterSearchInput && commandCenterSearchInput?.value) {
+      commandCenterSearchInput.value = '';
+      renderCommandCenterVisualPilot();
+      return;
+    }
+    if (event.key === 'ArrowDown' && target === commandCenterSearchInput) {
+      const firstCommand = document.querySelector('#command-center-categories .pilot-command');
+      if (firstCommand instanceof HTMLElement) {
+        event.preventDefault();
+        firstCommand.focus();
+      }
+    }
+  });
   renderCommandCenterVisualPilot();
 
   /* Ponte para o teste: estado, não pixel. */
@@ -383,6 +408,12 @@ async function principal() {
       commandCount: document.getElementById('command-center-pilot')?.dataset.commandCount ?? '0',
       categoryCount: document.getElementById('command-center-pilot')?.dataset.categoryCount ?? '0',
       publicSidebarUntouched: true,
+    }),
+    commandCenterAccessibilityPilot: () => ({
+      searchLabel: document.querySelector('label[for="command-center-search"]')?.textContent ?? '',
+      searchShortcut: document.getElementById('command-center-search')?.getAttribute('aria-keyshortcuts') ?? '',
+      toggleExpanded: document.getElementById('command-center-toggle')?.getAttribute('aria-expanded') ?? '',
+      reducedMotion: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true,
     }),
     moduleAlignmentPilot,
     promotionGatePilot,
