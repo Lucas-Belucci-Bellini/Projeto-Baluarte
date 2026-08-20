@@ -5,7 +5,7 @@
 **Projeto:** `Lucas-Belucci-Bellini's Project`
 **Project ref:** `hcwzsxdcvmswebunznak`
 **Branch do código:** `main`
-**SHA do código:** `b4530bdc624ca0df2b202e63eddf956466bbfeab`
+**SHA do código:** `b4371a349d59786b9dbdf9da807521e8c58bfd96`
 
 > O projeto remoto e o checkout local não possuem o mesmo inventário de migrations. Esta divergência precisa ser resolvida antes de aplicar `20260820090000_security_definer_search_path_hardening.sql` ou qualquer DDL nova no banco principal.
 
@@ -77,3 +77,12 @@ Até esse gate passar, manter:
 [2]: https://supabase.com/docs/guides/database/postgres/row-level-security "Supabase — Row Level Security"
 [3]: https://supabase.com/docs/guides/database/functions "Supabase — Database Functions"
 [4]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/docs/v2/SUPABASE_SECURITY_ADVISOR_AUDIT_2026-08-20.md "Baluarte — Supabase Security Advisor Audit"
+
+
+## 6.1 Evidência de logs recentes
+
+A consulta read-only aos `postgres_logs` das últimas 24 horas retornou 100 registros, todos com `permission denied for function ingest_stat` e SQLSTATE `42501`, originados pelo PostgREST/role `authenticator`. Não apareceu nessa janela uma mensagem explícita de falha de migration, statement DDL inválido, conflito de objeto ou erro de schema.
+
+A interpretação mais provável é **efeito esperado do hardening remoto**: o histórico remoto inclui `lock_down_ingestion_rpc_execution`, e as funções `ingest_*` foram classificadas como service-only. O log demonstra que algum caller HTTP ainda tenta chamar `ingest_stat` pela API pública, mas não demonstra que a função deva voltar a ser pública. O contrato seguro continua sendo rejeitar a chamada e mover o caller autorizado para uma fronteira server-side/controlada.
+
+Esse finding deve ser tratado separadamente do `MIGRATIONS_FAILED`: ele é um evento de autorização em runtime, não a causa comprovada do drift de migrations. Não foi feita nenhuma alteração de grant para silenciar os registros.
