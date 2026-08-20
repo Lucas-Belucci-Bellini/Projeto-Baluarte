@@ -204,7 +204,7 @@
     "src/utils/cor.js",
     "src/pages/regex.ts",
     "src/pages/utilidades.ts",
-    "src/pages/codigo.js",
+    "src/pages/codigo.ts",
     "src/pages/logic-sim.ts",
     "src/pages/portas.ts",
     "src/pages/morse.ts",
@@ -482,7 +482,7 @@
    "origem": [
     "src/pages/economia.ts",
     "src/pages/dolar.ts",
-    "src/pages/banco.js",
+    "src/pages/banco.ts",
     "src/utils/economia-api.js",
     "src/data/cambio-historico.json",
     "reports/cambio/",
@@ -771,7 +771,7 @@
    ],
    "origem": [
     "src/pages/mural.js",
-    "src/pages/comms.js",
+    "src/pages/comms.ts",
     "src/core/comms.js",
     "src/core/realtime.js",
     "src/styles/comms.css",
