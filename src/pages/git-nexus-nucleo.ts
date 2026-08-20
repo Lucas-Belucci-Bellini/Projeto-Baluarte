@@ -33,9 +33,9 @@ function errorText(error: unknown): string { return error instanceof Error ? err
 function isModo(value: string): value is Modo { return (MODOS as readonly string[]).includes(value); }
 
 const FUNCOES: readonly PanelFunction[] = [
-  { id: 'grafo', nome: 'Grafo de Código', match: /\bgrafo\b|c[óo]digo (3d|em 3d)/, load: () => import('./git-nexus.js').then((module) => module.gitNexusPage()) },
+  { id: 'grafo', nome: 'Grafo de Código', match: /\bgrafo\b|c[óo]digo (3d|em 3d)/, load: () => import('./git-nexus').then((module) => module.gitNexusPage()) },
   { id: 'vision', nome: 'Corpo Total', match: /corpo (total|inteiro)|ativa\w* (a )?vis[ãa]o|\bvis[ãa]o\b/, load: () => import('./jarvis-vision').then((module) => module.jarvisVisionPage()) },
-  { id: 'gerar', nome: 'Gerar Código', match: /gerar c[óo]digo|gera c[óo]digo/, load: () => import('./gerar-codigo.js').then((module) => module.gerarCodigoPage()) },
+  { id: 'gerar', nome: 'Gerar Código', match: /gerar c[óo]digo|gera c[óo]digo/, load: () => import('./gerar-codigo').then((module) => module.gerarCodigoPage()) },
   { id: 'conselho', nome: 'Conselho de IAs', match: /conselho/, load: () => import('./conselho').then((module) => module.conselhoPage()) },
   { id: 'apis', nome: 'Central de APIs', match: /\bapis?\b|central de apis|chaves/, load: () => import('./apis').then((module) => module.apisPage()) },
   { id: 'dashboard', nome: 'Dashboard', match: /dashboard|painel de (m[ée]tricas|status)/, load: () => import('./jarvis-dashboard').then((module) => module.jarvisDashboardPage()) },
@@ -44,8 +44,8 @@ const FUNCOES: readonly PanelFunction[] = [
   { id: 'cerebro', nome: 'Segundo Cérebro', match: /c[ée]rebro/, load: () => import('./cerebro').then((module) => module.cerebroPage()) },
   { id: 'memoria', nome: 'Memória', match: /mem[óo]ria/, load: () => import('./memoria').then((module) => module.memoriaPage()) },
   { id: 'terminal', nome: 'Terminal-IA', match: /terminal/, load: () => import('./terminal-ia').then((module) => module.terminalIaPage()) },
-  { id: 'seguranca', nome: 'Segurança', match: /seguran[çc]a/, load: () => import('./seguranca.js').then((module) => module.segurancaPage()) },
-  { id: 'ia', nome: 'IA Proprietária', match: /ia propriet[áa]ria|propriet[áa]ria/, load: () => import('./ia-proprietaria.js').then((module) => module.iaProprietariaPage()) },
+  { id: 'seguranca', nome: 'Segurança', match: /seguran[çc]a/, load: () => import('./seguranca').then((module) => module.segurancaPage()) },
+  { id: 'ia', nome: 'IA Proprietária', match: /ia propriet[áa]ria|propriet[áa]ria/, load: () => import('./ia-proprietaria').then((module) => module.iaProprietariaPage()) },
   { id: 'jarvis', nome: 'J.A.R.V.I.S. completo', match: /jarvis completo|chat completo|sess[õo]es/, load: () => import('./jarvis').then((module) => module.jarvisPage()) },
 ];
 

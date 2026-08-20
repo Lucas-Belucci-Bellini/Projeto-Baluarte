@@ -473,6 +473,7 @@
     "src/pages/cripto/index.ts",
     "src/pages/esteganografia.ts",
     "src/pages/seguranca.js",
+    "src/pages/seguranca.ts",
     "src/pages/shadow.ts",
     "src/utils/cripto-engine.js",
     "src/data/ciberseg.js",
@@ -530,6 +531,7 @@
     "src/pages/jarvis.ts",
     "src/pages/jarvis-dashboard.ts",
     "src/pages/ia-proprietaria.js",
+    "src/pages/ia-proprietaria.ts",
     "src/pages/llm-lab.js",
     "src/pages/llm-lab.ts",
     "src/pages/terminal-ia.js",
@@ -583,6 +585,7 @@
    ],
    "origem": [
     "src/pages/git-nexus.js",
+    "src/pages/git-nexus.ts",
     "src/pages/git-nexus-gate.ts",
     "src/pages/git-nexus-cockpit.js",
     "src/pages/git-nexus-nucleo.js",
