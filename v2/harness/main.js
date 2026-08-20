@@ -50,6 +50,8 @@ import { bus as busV1 } from '../../src/core/events.js';
 import { storage } from '../../src/core/storage.js';
 import { aplicarPolitica } from '../../src/core/politica.js';
 import { createRegistryNavigationObserver } from '../../src/layout/registry-observer.ts';
+import { projectRegistryNavigation } from '../../src/layout/navigation.ts';
+import { projectCommandCenter, searchCommandCenter } from '../../src/layout/command-center.ts';
 import { reconcileNavigationCatalogs } from '../../src/layout/catalog-reconciliation.ts';
 import { decideModuleAlignment } from '../../src/layout/module-alignment.ts';
 import { evaluatePromotionGate } from '../../src/layout/promotion-gate.ts';
@@ -202,6 +204,22 @@ async function principal() {
 
   router.start('/cripto');
 
+  const commandCenterPilot = () => {
+    const registryNavigation = projectRegistryNavigation(r.nav);
+    const center = projectCommandCenter(registryNavigation, [
+      { id: 'global', label: 'Global', icon: '⌂', domainIds: ['inicio'], order: 1 },
+      { id: 'ia', label: 'IA', icon: '◉', domainIds: ['ia-jarvis'], order: 2 },
+      { id: 'development', label: 'Desenvolvimento', icon: '</>', domainIds: ['codigo-dev', 'caixa-de-ferramentas'], order: 3 },
+      { id: 'knowledge', label: 'Conhecimento', icon: '◇', domainIds: ['conhecimento'], order: 4 },
+      { id: 'creative', label: 'Criativo', icon: '✦', domainIds: ['criativo', 'midia'], order: 5 },
+      { id: 'ecosystem', label: 'Ecossistema', icon: '⬡', domainIds: ['ecossistema'], order: 6 },
+    ]);
+    return {
+      projection: center,
+      search: searchCommandCenter(center, 'editor'),
+    };
+  };
+
   const moduleAlignmentPilot = () => {
     const reconciliation = reconcileNavigationCatalogs(r.nav, { currentPhase: 21 });
     const healthByModule = new Map(
@@ -289,6 +307,7 @@ async function principal() {
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
     navigationObservation: () => navigationObserver.latest(),
+    commandCenterPilot,
     moduleAlignmentPilot,
     promotionGatePilot,
     registros,

@@ -156,6 +156,14 @@ try {
   conferir('a navegação vem do manifesto',
     v2?.resultado?.nav?.length === 5, String(v2?.resultado?.nav?.length));
   const navigationObservation = await pagina.evaluate(() => window.__v2?.navigationObservation?.());
+  const commandCenter = await pagina.evaluate(() => window.__v2?.commandCenterPilot?.());
+  conferir('Command Center deriva categorias e busca sem trocar a sidebar V1',
+    commandCenter?.projection?.queryPlaceholder === 'Buscar ou executar comando…'
+      && commandCenter?.projection?.commands?.length === 5
+      && commandCenter?.projection?.categories?.length > 0
+      && commandCenter?.search?.length === 1
+      && commandCenter?.search?.[0]?.path === '/editor',
+    JSON.stringify(commandCenter ?? null));
   conferir('UI-03 observa o Registry sem trocar a sidebar V1',
     navigationObservation?.source === 'registry-observer'
       && navigationObservation?.projection?.entries?.length === 5

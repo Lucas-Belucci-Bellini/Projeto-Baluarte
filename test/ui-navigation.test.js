@@ -11,6 +11,7 @@ import { createRegistryNavigationObserver } from '../src/layout/registry-observe
 import { reconcileNavigationCatalogs } from '../src/layout/catalog-reconciliation.ts';
 import { decideModuleAlignment } from '../src/layout/module-alignment.ts';
 import { evaluatePromotionGate } from '../src/layout/promotion-gate.ts';
+import { projectCommandCenter, searchCommandCenter } from '../src/layout/command-center.ts';
 
 const projection = projectLegacyNavigation(NAV_GROUPS, {
   currentPhase: 21,
@@ -353,6 +354,38 @@ test('gate de promoção bloqueia rollback ausente mesmo com autoridade server-s
   assert.equal(decision.status, 'blocked');
   assert.equal(decision.eligibleForControlledRollout, false);
   assert.ok(decision.reasons.some((reason) => /rollback/.test(reason)));
+});
+
+test('Command Center deriva categorias e preserva domínios sem mapeamento', () => {
+  const navigation = projectLegacyNavigation(NAV_GROUPS, {
+    currentPhase: 21,
+    titleForPath: (path, fallback) => fallback,
+  });
+  const center = projectCommandCenter(navigation, [
+    { id: 'global', label: 'Global', icon: '⌂', domainIds: ['inicio'], order: 1 },
+    { id: 'ia', label: 'IA', icon: '◉', domainIds: ['ia-jarvis'], order: 2 },
+    { id: 'development', label: 'Desenvolvimento', icon: '</>', domainIds: ['codigo-dev', 'caixa-de-ferramentas'], order: 3 },
+    { id: 'logic', label: 'Ciência & Lógica', icon: '∑', domainIds: ['ciencia-logica'], order: 4 },
+  ]);
+  const results = searchCommandCenter(center, 'editor');
+
+  assert.equal(center.queryPlaceholder, 'Buscar ou executar comando…');
+  assert.ok(center.categories.some((category) => category.id === 'unassigned' && category.fallback));
+  assert.ok(center.commands.some((command) => command.path === '/editor'));
+  assert.equal(results.length, 1);
+  assert.equal(results[0].path, '/editor');
+  assert.equal(results[0].categoryId, 'development');
+});
+
+test('Command Center rejeita domínio atribuído a duas categorias', () => {
+  const navigation = projectLegacyNavigation(NAV_GROUPS, { currentPhase: 21 });
+  assert.throws(
+    () => projectCommandCenter(navigation, [
+      { id: 'one', label: 'Um', icon: '1', domainIds: ['inicio'], order: 1 },
+      { id: 'two', label: 'Dois', icon: '2', domainIds: ['inicio'], order: 2 },
+    ]),
+    /mais de uma categoria/,
+  );
 });
 
 test('UI-01 rejeita paths duplicados em vez de mascarar divergência', () => {
