@@ -557,11 +557,11 @@
    ],
    "origem": [
     "src/pages/git-nexus.js",
-    "src/pages/git-nexus-gate.js",
+    "src/pages/git-nexus-gate.ts",
     "src/pages/git-nexus-cockpit.js",
     "src/pages/git-nexus-nucleo.js",
     "src/pages/gerar-codigo.ts",
-    "src/pages/jarvis-vision.js",
+    "src/pages/jarvis-vision.ts",
     "src/pages/visao.ts",
     "src/pages/apis.js",
     "src/utils/git-nexus-engine.js",
@@ -770,7 +770,7 @@
     "/comms"
    ],
    "origem": [
-    "src/pages/mural.js",
+    "src/pages/mural.ts",
     "src/pages/comms.ts",
     "src/core/comms.js",
     "src/core/realtime.js",

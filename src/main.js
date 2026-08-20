@@ -75,7 +75,7 @@ const isNative = () => typeof window !== 'undefined' && !!window.baluarte && win
  * Git Nexus na aba certa. No app abre a aba; na web o gate mostra o teaser
  * (a seção IA é app-only). Deep-link também via #/git-nexus?tab=<id>. */
 const lazyNexus = (tab) => (args) =>
-  import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab })).catch(recoverChunk);
+  import('./pages/git-nexus-gate.ts').then((m) => m.gitNexusGate({ ...args, tab })).catch(recoverChunk);
 
 /* Rotas LEVES do Núcleo (L1 Conhecimento + L2 Memória, do `docs/OMEGA-PRISM.md`):
  * são leves e por-usuário (Supabase), então a regra #238 as coloca na WEB (a
@@ -84,7 +84,7 @@ const lazyNexus = (tab) => (args) =>
  * No APP seguem caindo no cockpit unificado do Núcleo, na aba certa (sem regressão). */
 const lazyLeve = (tab, loader, fn) => (args) =>
   (isNative()
-    ? import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab }))
+    ? import('./pages/git-nexus-gate.ts').then((m) => m.gitNexusGate({ ...args, tab }))
     : loader().then((m) => m[fn](args))
   ).catch(recoverChunk);
 
@@ -160,7 +160,7 @@ router.register('/diagnostico', lazy(() => import('./pages/diagnostico.ts'), 'di
 router.register('/jarvis-dashboard', lazyNexus('dashboard'));
 router.register('/mapa', lazy(() => import('./pages/mapa.ts'), 'mapaPage'));
 router.register('/visao', lazy(() => import('./pages/visao.ts'), 'visaoPage'));
-router.register('/jarvis-vision', lazyLeve('vision', () => import('./pages/jarvis-vision.js'), 'jarvisVisionPage'));   // app → aba do Núcleo (#316)
+router.register('/jarvis-vision', lazyLeve('vision', () => import('./pages/jarvis-vision.ts'), 'jarvisVisionPage'));   // app → aba do Núcleo (#316)
 router.register('/forcas-armadas', lazy(() => import('./pages/forcas-armadas.ts'), 'forcasArmadasPage'));
 router.register('/orcamentos-militares', lazy(() => import('./pages/orcamentos-militares.ts'), 'orcamentosMilitaresPage'));
 router.register('/poder-militar', lazy(() => import('./pages/poder-militar.ts'), 'poderMilitarPage'));
@@ -180,7 +180,7 @@ router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia
  * ============================================================== */
 router.register('/codigo', lazy(() => import('./pages/codigo.ts'), 'codigoPage'));
 router.register('/projetos', lazy(() => import('./pages/projetos.ts'), 'projetosPage'));
-router.register('/mural', lazy(() => import('./pages/mural.js'), 'muralPage'));
+router.register('/mural', lazy(() => import('./pages/mural.ts'), 'muralPage'));
 router.register('/comms', lazy(() => import('./pages/comms.ts'), 'commsPage'));   // Rede Neural — chat global em tempo real (0008)
 router.register('/banco', lazy(() => import('./pages/banco.ts'), 'bancoPage'));
 router.register('/cerebro', lazyLeve('cerebro', () => import('./pages/cerebro.ts'), 'cerebroPage'));
@@ -193,7 +193,7 @@ router.register('/conselho', lazyNexus('conselho'));
 router.register('/apis', lazyNexus('apis'));
 /* /git-nexus passa pelo GATE leve (#238 Fase 2): web → teaser; app → carrega a
  * experiência completa (git-nexus.js) sob demanda. Mantém o chunk pesado fora da web. */
-router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.js'), 'gitNexusGate'));
+router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.ts'), 'gitNexusGate'));
 router.register('/aprendizado', lazyNexus('ml'));
 /* /home-3d e /home2 — aliases pra home oficial (links antigos / preview). */
 router.register('/home-3d', (args) => homePage(args));
