@@ -1,6 +1,6 @@
 # Migração TypeScript — Wave 15
 
-**Status:** implementação concluída localmente; publicação aguardando commit após gates verdes.
+**Status:** publicada diretamente no `main`; implementação e CI remota concluídas com sucesso.
 
 **Objetivo:** promover `/visao`, `/jogos` e `/batalha-naval` para importação direta das implementações TypeScript, mantendo os wrappers `.js` como compatibilidade temporária e preservando a V1.
 
@@ -68,8 +68,19 @@ Rollback: restaurar as três extensões no router e as três origens Nexus para 
 
 ## Critério de conclusão
 
-A Wave 15 será concluída quando as três rotas carregarem diretamente os módulos `.ts`, Nexus e router permanecerem sincronizados, todos os gates comportamentais passarem, a CI remota verde for associada ao SHA correto e o relatório for fechado com SHA e limitações reais.
+A Wave 15 foi concluída: as três rotas carregam diretamente os módulos `.ts`, Nexus e router permanecem sincronizados, todos os gates comportamentais passaram e a CI remota terminou verde no SHA correto.
+
+| Workflow remoto | Resultado |
+|---|---:|
+| CI | success |
+| Core CI | success |
+| V2 Core | success |
+| V2 Runtime | success |
+| V2 Validation | success |
+| Vigia das rotas | success |
+| Arma 3 Data CI | success |
+| CodeQL | success |
 
 **Autor:** Manus AI
-**SHA de implementação:** será preenchido após publicação.
-**Data dos gates:** 2026-08-20T02:27Z–02:28Z.
+**SHA de implementação e publicação:** `2c64f2b45d066f98f1fccb7f0696a5d656a7d1dc`.
+**Data dos gates:** 2026-08-20T02:27Z–02:35Z.
