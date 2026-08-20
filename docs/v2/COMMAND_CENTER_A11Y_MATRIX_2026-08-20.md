@@ -5,7 +5,7 @@
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Branch:** `main`  
 **SHA de origem:** `6b6218965ae0448cd2b1d89ac498bdaa5da414e9`  
-**SHA de publicação:** `1154d60d0dbc4ed2a5c65e7fda393a71fcf74c2d`
+**SHA de publicação:** `d3d23651f23d0ad3164ad6bc1881e7085c31a8a7`
 **Escopo:** `v2/harness/index.html`, `v2/harness/main.js` e `scripts/v2-integracao.mjs`
 
 ## Objetivo
