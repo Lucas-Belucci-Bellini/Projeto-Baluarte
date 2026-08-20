@@ -6,7 +6,7 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-20 — Release `1.2.6`: preparação do JARVIS Núcleo V7
+## 2026-08-20 — Release `1.2.6`: JARVIS Núcleo V7 publicada
 
 A linha `1.2.6` promove o visual **JARVIS Núcleo V7 — Astrolábio Sonoro** como entrypoint 3D canônico do Vite. A experiência usa TypeScript como fonte, artefato JavaScript standalone, Three.js, Web Audio reativo, deteção de batida, FFT, temas ouro/rubi/jade, vistas, pulso, varrimento e captura.
 
@@ -14,7 +14,17 @@ O bump de versão foi sincronizado em `package.json`, `package-lock.json`, `desk
 
 O contrato `test/jarvis-v7-release.test.js` comprova a existência do HTML, TypeScript e artefato compilado e verifica que `vite.config.js` empacota a variante da pasta `project V2/Modelar objeto 3D`. Os gates locais executados antes da publicação foram: Nexus verde, TypeScript V1/V2 verde, testes verdes, build verde, integração V2 `25/25`, smoke `99/99` e caminho crítico `15/15`.
 
-**Status:** em preparação no `main`; tag, assets, checksums e URLs públicas serão registrados após a execução e verificação do workflow `desktop-v1.2.6`.
+O workflow `32405066321` terminou com sucesso em Windows, macOS ARM64 e Ubuntu. A tag `v1.2.6` está pública, não é draft e não é prerelease; a API de releases passou a retornar `v1.2.6` como Latest.
+
+**Main SHA auditado:** `e3dcf5b8f8bf751da8dfafc9d332d8adf19cc652`.
+
+**Tags:** `v1.2.6` e `desktop-v1.2.6`, ambas apontando para o SHA auditado.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.2.6.exe` (644,007,179 bytes), `Baluarte-Launcher-1.2.6.AppImage` (773,760,467 bytes), `Baluarte-Launcher-1.2.6-arm64.dmg` (406,503,539 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`. Os manifestos declaram `version: 1.2.6` e os SHA-512 dos instaladores.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.6
+
+**Documentação:** [`docs/releases/v1.2.6.md`](../docs/releases/v1.2.6.md).
 
 ---
 

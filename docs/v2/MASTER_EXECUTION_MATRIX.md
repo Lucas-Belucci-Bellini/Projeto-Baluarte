@@ -1,11 +1,11 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — RELEASE 1.2.5 / COMMAND CENTER READ-ONLY / VISUAL HARNESS PILOT NEXT`
+**Status:** `CURRENT — RELEASE 1.2.6 PUBLISHED / JARVIS V7 / COMMAND CENTER READ-ONLY`
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado:** `3ccac1d0640e2a9f93c54d6d5ed45a1e9a8306b5`
-**Tag de release base:** `v1.2.0`
+**SHA observado:** `e3dcf5b8f8bf751da8dfafc9d332d8adf19cc652`
+**Tag de release base:** `v1.2.6`
 **Autor:** Manus AI
 
 > Esta matriz reconcilia o Master Super-Prompt Ω com #420, #422, #423, #430, #454 e o código observado. `COMPLETE` significa concluído dentro do escopo declarado; nunca significa que o domínio inteiro da V2 está pronto para produção.
@@ -47,7 +47,7 @@
 | 19 | Analytics / privacy / export / deletion | `NOT STARTED` ou parcial | Auth, data classification, consent | Coleta excessiva/admin client-side | Sem matriz completa de dados | LGPD mechanisms incomplete | Telemetry budget absent | Privacy docs | — | Data inventory first |
 | 20 | Marketplace / plugins / third-party registry | `DEFERRED` | Module system, sandbox, licenses, billing | Supply-chain and permission risk | No production marketplace evidence | Manifest, sandbox, audit required | Scale/cost unknown | Future roadmap | — | Only after Module System |
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `1032437c` | UI-00 inventory and measured matrix |
-| 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
+| 22 | Release / environments / rollback | `COMPLETE` for 1.2.6 scope | CI, changelog, SW, tags, desktop artifacts | Release without recovery evidence | v1.2.6 tag, notes, 8/8 assets HTTP 200, workflow 32405066321 | No secrets; rollback to v1.2.5 documented | Artifact/bundle warnings known | Changelog and release plan | `e3dcf5b8` | Asset checksums in v1.2.6 report |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
 | UI | Baluarte Design System & Information Architecture | `IN PROGRESS — COMMAND CENTER READ-ONLY` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback, rollback, claims, command descriptors | Public promotion without server-side authority, a second shell/sidebar or a parallel command system | UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md`; `PROMOTION_GATE_EDITOR_2026-08-20.md`; `COMMAND_CENTER_NAVIGATION_CONTRACT_2026-08-20.md`; 16/16 UI tests; 25/25 V2 integration | Server-side claims and audit required; stability is not health; no client-only roles | Responsive, keyboard, bundle, boot, DB and route budgets pending | PHASE UI and Command Center docs | `3ccac1d0` publicado | Isolated visual harness pilot |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
@@ -56,7 +56,7 @@
 
 A auditoria **PHASE UI / UI-00** foi concluída em modo somente leitura. `UI-01` a `UI-04`, o piloto por módulo, o piloto individual do editor, o gate de promoção e o contrato Command Center adicionaram projeções, observação read-only, busca derivada e decisão auditável por health/deep link/fallback/claims/rollback, com 16/16 testes UI e 25/25 no harness V2, sem substituir shell, router ou sidebar. O próximo marco é um protótipo visual isolado no harness.
 
-O Command Center deve reutilizar o Module Manifest, o router e o Event Bus existentes, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e não criar um catálogo paralelo de comandos. O editor permanece bloqueado até que health, claims, deep link, observabilidade, auditoria e rollback estejam validados em conjunto.
+A release `1.2.6` foi publicada com o visual JARVIS Núcleo V7 e oito assets desktop verificados. O Command Center continua read-only e deve reutilizar o Module Manifest, o router e o Event Bus existentes, manter `ShellRefs` e o fallback V1, não ativar Auth/RLS ou Billing remoto por inferência e não criar um catálogo paralelo de comandos. O editor permanece bloqueado até que health, claims, deep link, observabilidade, auditoria e rollback estejam validados em conjunto.
 
 ## 4. Definition of Done aplicada
 
