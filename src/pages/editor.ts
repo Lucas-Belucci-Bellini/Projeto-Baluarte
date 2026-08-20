@@ -27,7 +27,7 @@ import {
 import type { EditorRunResult, EditorState, EditorTab } from '../utils/editor-engine.js';
 import { getLang, langForExt } from '../data/editor-langs.js';
 import * as vfs from '../utils/vfs.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 
 type FindMode = 'find' | 'replace';
 

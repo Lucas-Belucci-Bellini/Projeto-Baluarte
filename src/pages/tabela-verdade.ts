@@ -8,7 +8,7 @@
 import '../styles/tabela-verdade.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 import {
   compile,
   buildTruthTable,

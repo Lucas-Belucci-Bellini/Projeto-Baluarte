@@ -1,7 +1,7 @@
 import '../../styles/cripto.css';
 import { h, cx, empty } from '../../utils/helpers.js';
 import { storage } from '../../core/storage.js';
-import { setStatus } from '../../utils/baluarte-status.js';
+import { setStatus } from '../../utils/baluarte-status';
 import { caesarPanel } from './caesar.js';
 import { basePanel } from './base.js';
 import { hashPanel } from './hash.js';

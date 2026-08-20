@@ -15,7 +15,7 @@ import { mountAtmosphere } from '../utils/atmosphere.js';
 import { mountCardSpotlight } from '../utils/card-spotlight.js';
 import { mountScrollProgress } from '../utils/scroll-progress.js';
 import { getThemeId, setTheme, THEMES } from '../utils/theme.js';
-import { setCurrentFunction } from '../utils/baluarte-status.js';
+import { setCurrentFunction } from '../utils/baluarte-status';
 import { mountAvisoV2 } from './aviso-v2.js';
 import { renderHeader } from './header.js';
 import { pinElement } from './overlay.js';

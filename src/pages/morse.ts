@@ -10,7 +10,7 @@ import { h, cx } from '../utils/helpers.js';
 import { aoSair } from '../core/ciclo-vida.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 import {
   MORSE_TABLE,
   textToMorse,

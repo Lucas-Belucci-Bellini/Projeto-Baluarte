@@ -5,7 +5,7 @@ import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { SYMBOL_CATEGORIES, describe, getAllSymbols, countTotal } from '../data/symbols.js';
 import type { SymbolEntry } from '../data/symbols.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 
 const STORAGE_KEY = 'simbolos:state';
 

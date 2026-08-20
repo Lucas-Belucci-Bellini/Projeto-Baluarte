@@ -10,7 +10,7 @@ import { h, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast.js';
 import { encodeQR } from '../utils/qr-encoder.js';
-import { setStatus as setPageStatus } from '../utils/baluarte-status.js';
+import { setStatus as setPageStatus } from '../utils/baluarte-status';
 
 const STORAGE_KEY = 'qr-studio:text';
 const MODE_KEY = 'qr-studio:mode';
