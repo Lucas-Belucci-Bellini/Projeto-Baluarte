@@ -1,18 +1,18 @@
 # MASTER GAP ANALYSIS
 
-**Status:** `CURRENT — RELEASE 1.2.0`
+**Status:** `CURRENT — WAVE 36 / RELEASE 1.2.0`
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch:** `main`
-**SHA observado:** `b865fcc6d4621e0437fca8f484dfbdbf974bfd66`
-**Tag:** `v1.2.0`
+**SHA observado:** `32b59ad5e521ea521758b1e9d52c5f50f959f078`
+**Tag de release base:** `v1.2.0`
 **Working tree:** limpo no fechamento da release
 
 > Este documento é o mapa corrente de lacunas após a reconciliação do Master Super-Prompt Ω. Ele não declara a V2 completa e não transforma a lista de fases futuras em implementação automática.
 
 ## 1. Resumo executivo
 
-O Baluarte está em uma condição de **V1 publicável, migração TypeScript incremental ativa e fundação V2 verificável**, não em uma condição de V2 concluída. A release `1.2.0` foi publicada depois da Wave 35, com o frontend e utilitários promovidos gradualmente para TypeScript, wrappers JavaScript preservados para compatibilidade e o Nexus sincronizado. Os gates locais relevantes e os oito workflows remotos da release terminaram verdes.
+O Baluarte está em uma condição de **V1 publicável, migração TypeScript incremental ativa e fundação V2 verificável**, não em uma condição de V2 concluída. A Wave 36 promoveu os consumers TypeScript de `theme.ts` em `shell.ts` e `perfil.ts`, mantendo o wrapper JavaScript para os consumers legados. A release `1.2.0` foi publicada depois da Wave 35, com o frontend e utilitários promovidos gradualmente para TypeScript, wrappers JavaScript preservados para compatibilidade e o Nexus sincronizado. Os gates locais relevantes e os oito workflows remotos da release terminaram verdes.
 
 O prompt anexado é compatível com a direção arquitetural de #423, mas é muito mais amplo que o próximo escopo executável. Ele deve funcionar como uma camada de governança acima do roadmap, não como uma ordem para construir Core, marketplace, plugins, desktop, mobile, billing real, IA autônoma e centenas de integrações em sequência imediata. As regras canônicas continuam exigindo pequenos passos, ausência de sistemas duplicados, segurança por padrão, observabilidade, documentação e verificação no `main` [1] [2].
 

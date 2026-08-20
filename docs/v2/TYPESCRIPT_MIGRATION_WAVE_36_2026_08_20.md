@@ -1,7 +1,9 @@
 # Wave 36 — promoção de `theme` para TypeScript
 
-**Data:** 2026-08-20  
-**Status:** validação local concluída; publicação pendente  
+**Data:** 2026-08-20
+**Status:** publicada no `main`; CI remota verde
+**SHA publicado:** `32b59ad5e521ea521758b1e9d52c5f50f959f078`
+**Commit:** `refactor(theme): promote typed theme consumers`
 **Base:** `d78cc0a159827fd3ca72f78892ac851c4669975d`
 
 ## Resumo executivo
@@ -48,8 +50,12 @@ O runtime Rust local permanece bloqueado pelo Cargo 1.75.0 ao interpretar metada
 
 O principal risco era promover somente parte dos consumers TypeScript e criar divergência de resolução. A implementação canônica, o wrapper e os consumers JavaScript foram mantidos, e o Nexus foi atualizado no mesmo changeset. O rollback é o revert do commit desta onda ou a restauração dos dois imports `.js`; não há migração de dados.
 
+## CI remota
+
+Os oito workflows disparados para `32b59ad5e521ea521758b1e9d52c5f50f959f078` terminaram com sucesso: `CI`, `Core CI`, `V2 Core`, `Arma 3 Data CI`, `Vigia das rotas`, `CodeQL`, `V2 Runtime` e `V2 Validation`. O Vigia confirmou build, abertura das rotas, continuidade do router V1, jornada crítica, descarte de recursos e comportamento offline. Houve apenas o aviso operacional conhecido sobre actions legadas direcionadas a Node 20 sendo executadas em Node 24.
+
 ## Próximos passos
 
-Após a publicação, monitorar a CI no SHA da onda. A auditoria GEN-TS-002 continua separada: wrappers V2 e type-only imports `.ts` executados por `tsx`/Vite precisam de uma política de loader própria, sem transformar esta Wave 36 em refactor de runtime.
+Após a publicação e a CI verde, a auditoria GEN-TS-002 continua separada: wrappers V2 e type-only imports `.ts` executados por `tsx`/Vite precisam de uma política de loader própria, sem transformar esta Wave 36 em refactor de runtime.
 
 **Autor:** Manus AI

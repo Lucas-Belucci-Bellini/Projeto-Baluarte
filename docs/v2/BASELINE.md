@@ -129,3 +129,30 @@ Esta seção é a referência corrente após a Wave 35 e a publicação da relea
 A release inclui a promoção de `card-spotlight` para TypeScript, o relatório da Wave 35, a atualização do changelog, README, release plan, package metadata, Service Worker e a tag `v1.2.0`. O commit `b8e1db7a` de GEN-TS-001 é ancestral ao SHA corrente e os dois geradores Node-safe passaram diretamente no checkout.
 
 O refresh não transforma a V2 em produto completo. Auth/login-cadastro na main, RLS server-side, Module Registry com quarentena autorizada, Billing remoto, backup/restore, aceite físico desktop/mobile, performance budgets e Project Registry externo continuam parciais, bloqueados ou adiados conforme `MASTER_GAP_ANALYSIS.md` e `MASTER_EXECUTION_MATRIX.md`.
+
+
+## 8. Current refresh — Wave 36 / SHA 32b59ad5
+
+Esta seção passa a ser a referência mais recente após a promoção dos consumers TypeScript de `theme`.
+
+**Data/hora:** 2026-08-20
+**SHA corrente:** `32b59ad5e521ea521758b1e9d52c5f50f959f078`
+**Base:** `d78cc0a159827fd3ca72f78892ac851c4669975d`
+**Branch:** `main`
+**Origin:** alinhado no fechamento
+**Working tree:** limpo no fechamento
+
+| Gate | Resultado |
+|---|---|
+| `verificar-nexus` | Verde: 99 rotas, 0 lacunas, 21/21 domínios |
+| `tipos:ts` | Verde |
+| `tipos:v2` | Verde |
+| `npm test` | Verde |
+| `build` | Verde; avisos conhecidos de chunks grandes |
+| `v2:integracao` | `21/21` |
+| `smoke` | `99/99` |
+| `caminho-critico` | `15/15` |
+| `v2:runtime` local | Exit 101 por Cargo 1.75.0/`edition2024`; limitação ambiental conhecida |
+| CI remota | `8/8` workflows verdes |
+
+A Wave 36 alterou apenas dois consumers TypeScript (`shell.ts` e `perfil.ts`) e o mapa Nexus, preservando `theme.js` para consumers JavaScript. O próximo foco é a auditoria GEN-TS-002; não há autorização para transformar essa auditoria em refactor amplo de runtime.
