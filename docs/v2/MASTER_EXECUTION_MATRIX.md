@@ -4,7 +4,7 @@
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado:** `2650130117f3c012980d9adb19713f7244712d08`
+**SHA observado:** `3ccac1d0640e2a9f93c54d6d5ed45a1e9a8306b5`
 **Tag de release base:** `v1.2.0`
 **Autor:** Manus AI
 
@@ -49,7 +49,7 @@
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `1032437c` | UI-00 inventory and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
-| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — COMMAND CENTER READ-ONLY` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback, rollback, claims, command descriptors | Public promotion without server-side authority, a second shell/sidebar or a parallel command system | UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md`; `PROMOTION_GATE_EDITOR_2026-08-20.md`; `COMMAND_CENTER_NAVIGATION_CONTRACT_2026-08-20.md`; 16/16 UI tests; 25/25 V2 integration | Server-side claims and audit required; stability is not health; no client-only roles | Responsive, keyboard, bundle, boot, DB and route budgets pending | PHASE UI and Command Center docs | `26501301` base / pending Command Center commit | Isolated visual harness pilot |
+| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — COMMAND CENTER READ-ONLY` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback, rollback, claims, command descriptors | Public promotion without server-side authority, a second shell/sidebar or a parallel command system | UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md`; `PROMOTION_GATE_EDITOR_2026-08-20.md`; `COMMAND_CENTER_NAVIGATION_CONTRACT_2026-08-20.md`; 16/16 UI tests; 25/25 V2 integration | Server-side claims and audit required; stability is not health; no client-only roles | Responsive, keyboard, bundle, boot, DB and route budgets pending | PHASE UI and Command Center docs | `3ccac1d0` publicado | Isolated visual harness pilot |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 
 ## 3. Próxima fase válida

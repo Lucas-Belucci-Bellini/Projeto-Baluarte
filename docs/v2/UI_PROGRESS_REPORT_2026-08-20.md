@@ -1,6 +1,6 @@
 # Relatório Consolidado — PHASE UI e Pilotos de Alinhamento
 
-**Audited/published main:** `2650130117f3c012980d9adb19713f7244712d08`
+**Audited/published main:** `3ccac1d0640e2a9f93c54d6d5ed45a1e9a8306b5`
 
 **Status:** `IMPLEMENTED — MAIN GREEN — EDITOR CANDIDATE ONLY`
 
@@ -25,6 +25,7 @@ O resultado mais importante é uma separação operacional clara: **candidatura 
 | Piloto por módulo | `9b31d0944de51b7fc53806902566ab61b976346f` | Decisão auditável com health, deep link e fallback, 23/23 V2 |
 | Editor single-surface pilot | `246856068e68960f6e1a428ad8ad719bf04a363e` | Domínio do editor alinhado; um candidato, sem promoção pública |
 | Promotion gate | `2650130117f3c012980d9adb19713f7244712d08` | Claims server-side ausentes bloqueiam promoção; 14/14 testes UI e 24/24 V2 |
+| Command Center contract | `3ccac1d0640e2a9f93c54d6d5ed45a1e9a8306b5` | Categorias derivadas e busca read-only; 16/16 testes UI e 25/25 V2 |
 
 Cada marco teve backup branch antes da publicação. Os backups são `backup/2026-08-20-ui-02`, `backup/2026-08-20-ui-03`, `backup/2026-08-20-ui-04`, `backup/2026-08-20-module-alignment-pilot` e `backup/2026-08-20-editor-single-surface-pilot`.
 
@@ -81,7 +82,7 @@ O trabalho não alterou `src/main.js`, `src/layout/shell.ts`, `src/layout/sideba
 
 O editor é um **candidato auditável**, não um módulo promovido. Seu path, label, ícone e domínio agora coincidem com o item V1. No harness, o health é `healthy` com fonte `runtime-registry`, o deep link é `verified` e o fallback é `v1-preserved`. Ainda assim, a ação para usuário normal permanece `preserve-current-surface`.
 
-O gate de promoção agora bloqueia explicitamente sem claims server-side, request/audit IDs e rollback verificável. Ainda faltam observabilidade server-side de produção, claims/RLS aplicáveis, tratamento de deep link no ambiente de produção, instrumentação de rollback e aprovação explícita do contrato de disponibilidade. O próximo passo seguro é validar essa superfície operacional sem trocar a sidebar.
+O gate de promoção agora bloqueia explicitamente sem claims server-side, request/audit IDs e rollback verificável. O contrato Command Center adiciona categorias derivadas e busca universal read-only, mas não monta uma nova sidebar. Ainda faltam observabilidade server-side de produção, claims/RLS aplicáveis, tratamento de deep link no ambiente de produção, instrumentação de rollback e aprovação explícita do contrato de disponibilidade. O próximo passo seguro é um protótipo visual isolado no harness.
 
 ## Documentos principais
 
@@ -95,6 +96,7 @@ O gate de promoção agora bloqueia explicitamente sem claims server-side, reque
 | `MODULE_ALIGNMENT_PILOT_2026-08-20.md` | Health/deep link/fallback por módulo |
 | `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md` | Candidato individual do editor |
 | `PROMOTION_GATE_EDITOR_2026-08-20.md` | Gate de claims, auditoria e rollback |
+| `COMMAND_CENTER_NAVIGATION_CONTRACT_2026-08-20.md` | Categorias e busca universal read-only |
 | `MASTER_EXECUTION_MATRIX.md` | Estado mestre e próximos gates |
 
 ## Próxima ordem recomendada
