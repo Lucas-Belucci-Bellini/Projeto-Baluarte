@@ -72,6 +72,7 @@
     "src/layout/header.js",
     "src/layout/sidebar.js",
     "src/layout/overlay.js",
+    "src/layout/navigation.ts",
     "src/styles/variables.css",
     "src/styles/effects.css",
     "src/utils/effects.js",

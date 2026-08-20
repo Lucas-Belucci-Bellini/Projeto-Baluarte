@@ -175,7 +175,7 @@ A validação deverá incluir foco visível, navegação por teclado, nomes aces
 | UI-07 | Responsive/accessibility audit | Matriz de breakpoints, teclado, contraste e reduced motion |
 | UI-08 | Stabilization | Regressão de rotas, performance, rollback e documentação |
 
-A auditoria **UI-00** foi concluída em `docs/v2/UI_00_INVENTORY_2026-08-20.md`. A próxima subfase recomendada é **UI-01 — contrato de navegação projetada**, sem iniciar uma reescrita da sidebar ou de todas as páginas.
+A auditoria **UI-00** foi concluída em `docs/v2/UI_00_INVENTORY_2026-08-20.md`. O contrato **UI-01 — navegação projetada** foi implementado como projeção passiva em `docs/v2/UI_01_NAVIGATION_CONTRACT_2026-08-20.md`. A próxima subfase recomendada é **UI-02 — paridade automatizada e piloto de disponibilidade**, sem iniciar uma reescrita da sidebar ou de todas as páginas.
 
 ## 10. O que está fora da primeira implementação
 
