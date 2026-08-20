@@ -306,6 +306,7 @@
     "src/pages/wiki-arma3.ts",
     "src/pages/arma3-tutorial.ts",
     "src/utils/arma3-extracao.js",
+    "src/utils/arma3-extracao.ts",
     "src/pages/arma3-extracao-painel.js",
     "src/pages/modpack.ts",
     "src/utils/mil-curation.js",
