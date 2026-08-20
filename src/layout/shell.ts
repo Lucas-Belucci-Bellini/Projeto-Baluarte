@@ -14,7 +14,7 @@ import { revealScan } from '../utils/scroll-reveal';
 import { mountAtmosphere } from '../utils/atmosphere';
 import { mountCardSpotlight } from '../utils/card-spotlight';
 import { mountScrollProgress } from '../utils/scroll-progress';
-import { getThemeId, setTheme, THEMES } from '../utils/theme.js';
+import { getThemeId, setTheme, THEMES } from '../utils/theme';
 import { setCurrentFunction } from '../utils/baluarte-status';
 import { mountAvisoV2 } from './aviso-v2.js';
 import { renderHeader } from './header.js';

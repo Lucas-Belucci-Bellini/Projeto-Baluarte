@@ -29,6 +29,7 @@
     "src/utils/toast.js",
     "src/utils/toast.ts",
     "src/utils/theme.js",
+    "src/utils/theme.ts",
     "src/utils/pwa.js",
     "src/utils/pwa.ts",
     "src/utils/page-views.js",
