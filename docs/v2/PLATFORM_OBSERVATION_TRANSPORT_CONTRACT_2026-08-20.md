@@ -111,5 +111,5 @@ O rollback consiste em remover `platform-observation-transport.ts`, o import/exp
 - Branch de entrega: `main`.
 - Base: `8e0d654fbac8cb580e245d88da312f32ead1b63c`.
 - Commit de implementação: `f8614de2474258fd09ddd845da68c54b450226e4`.
-- Commit de integridade: será registrado após a publicação e a CI.
+- Commit de integridade: `ffb12f811b14164fa335b7d215f2a64b4dd414ad`.
 - Autor padrão: Manus AI.
