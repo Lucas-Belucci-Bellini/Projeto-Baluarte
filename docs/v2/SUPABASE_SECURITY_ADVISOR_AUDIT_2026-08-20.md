@@ -133,3 +133,16 @@ Nenhuma função remota foi revogada, nenhuma `SECURITY DEFINER` foi trocada por
 A consulta de branches encontrou somente a branch padrão `main`, com `preview_project_status: ACTIVE_HEALTHY`, porém `status: MIGRATIONS_FAILED` e sem dados. Não existe uma branch de staging saudável disponível para testar esta migration. Por isso, aplicar DDL diretamente no projeto principal seria uma alteração de produção sem rollback experimental e foi deliberadamente evitado.
 
 A migration permanece versionada e testada por contrato no repositório. A aplicação remota deverá ocorrer somente depois de corrigir ou disponibilizar um ambiente de staging Supabase saudável, executar os testes de autorização e comparar o advisor antes/depois.
+
+
+## 9. Publicação no main e validação
+
+A auditoria, a migration versionada e os testes de contrato foram publicados diretamente no `main`.
+
+**Commit publicado:** `a8e5a42c1a32dde352f51186ec049a73aa048e62`
+**Estado final:** `HEAD == origin/main`; working tree limpo
+**CI remota:** 8/8 workflows verdes — `Core CI`, `V2 Validation`, `CodeQL`, `Vigia das rotas`, `V2 Runtime`, `Security Contracts`, `CI` e `Arma 3 Data CI`.
+
+Os gates locais passaram: Nexus `99 rotas / 0 lacunas / 21/21 domínios`, TypeScript V1/V2, testes de contrato Supabase `8/8`, suíte principal, build, integração V2 `21/21`, smoke `99/99` e caminho crítico `15/15`. O runtime Rust local continua com exit 101 por Cargo 1.75.0 e `edition2024`, enquanto o workflow remoto V2 Runtime passou.
+
+A migration `20260820090000_security_definer_search_path_hardening.sql` está agora no repositório, mas **não foi aplicada ao banco remoto**. A única branch Supabase disponível está com `MIGRATIONS_FAILED`; aplicar DDL diretamente na produção sem staging saudável violaria o contrato de rollback. Portanto, o próximo passo operacional é recuperar/criar um ambiente de staging Supabase saudável, aplicar a migration ali, executar testes de autorização e só então avaliar aplicação no projeto principal.
