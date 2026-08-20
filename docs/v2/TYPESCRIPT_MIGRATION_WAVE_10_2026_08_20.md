@@ -2,11 +2,11 @@
 
 ## Status
 
-`IMPLEMENTED LOCALLY — PENDING PUBLICATION`
+`PUBLISHED — REMOTE CI GREEN`
 
 ## Base auditada
 
-A Wave 10 foi preparada sobre o SHA `b9fb13dc`, que contém a Wave 9 de identidade publicada e os oito workflows remotos verdes.
+A Wave 10 foi preparada sobre o SHA `b9fb13dc`, que contém a Wave 9 de identidade publicada e os oito workflows remotos verdes. Foi publicada no SHA `934752f4` (`refactor(military): route content wave directly to TypeScript`).
 
 ## Objetivo
 
@@ -56,4 +56,4 @@ O risco é um wrapper legado conter comportamento diferente do TypeScript canôn
 
 ## Próximo passo
 
-Inspecionar `origin/main`, integrar pushes concorrentes se necessário, publicar a Wave 10 diretamente e monitorar CI. Depois, avançar para páginas militares com contratos de dados mais pesados ou iniciar `/geo` e `/visao` com auditorias específicas.
+A divergência de `origin/main` foi inspecionada, a Wave 10 foi publicada no SHA `934752f4` e CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL passaram. Depois, avançar para páginas militares com contratos de dados mais pesados ou iniciar `/geo` e `/visao` com auditorias específicas.
