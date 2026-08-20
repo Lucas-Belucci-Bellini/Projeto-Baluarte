@@ -31,6 +31,8 @@ from pydantic import BaseModel
 from google import genai
 from google.genai import types
 
+from health_contract import project_server_health
+
 app = FastAPI(title="Núcleo Baluarte — IA Backend")
 
 # CORS liberado: o site (localhost:5173 / vercel.app) precisa chamar este servidor.
@@ -71,11 +73,11 @@ class ChatRequest(BaseModel):
 
 @app.get("/health")
 def health():
-    return {
-        "ok": True,
-        "model": MODEL,
-        "hasKey": bool(os.environ.get("GEMINI_API_KEY")),
-    }
+    """Liveness + prontidão observada, sem claims server-side."""
+    return project_server_health(
+        model=MODEL,
+        has_key=bool(os.environ.get("GEMINI_API_KEY")),
+    )
 
 
 @app.post("/chat")

@@ -73,6 +73,10 @@ O contrato foi extraído para [`src/layout/runtime-observation.ts`](../../src/la
 
 O harness V2 expõe `platformRuntimeObservation()` somente para testes de integração. Ele observa o diagnóstico da Plataforma, classifica registros `healthy` do Registry como estado normal — não como incidentes adversos — e mantém `authority: not-authorized`. O gate V2 confirma essa projeção junto com o boot, Runtime, Registry, router V1 e os demais contratos, totalizando `33/33` afirmações. Nenhum controle operacional foi delegado ao adaptador. Os testes unitários cobrem `healthy`, `degraded`, `failed`, `exhausted`, fallback e serialização da projeção.
 
+## Ponte server-side inicial
+
+O backend opcional agora possui um envelope separado, documentado em [`JARVIS_SERVER_HEALTH_CONTRACT_2026-08-20.md`](./JARVIS_SERVER_HEALTH_CONTRACT_2026-08-20.md). Ele cobre somente liveness e prontidão observada do backend Python/Vercel, preserva `hasKey` como booleano e mantém `authority: not-authorized`. Ele ainda não transporta `PlatformDiagnostic` da V2 e não pode decidir disponibilidade de módulos.
+
 ## O que este marco não implementa
 
 Este marco não implementa claims server-side, Auth/RLS, health persistente, ingestão do diagnóstico `PlatformDiagnostic` no shell público, promoção automática de módulos, disable/quarantine por cliente, telemetria remota, auditoria de atores ou autorização de ações. Ele projeta sinais já existentes no Event Bus V1, em um health check manual e no harness read-only da Plataforma V2.

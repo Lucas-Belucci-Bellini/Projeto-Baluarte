@@ -49,7 +49,26 @@ export GEMINI_API_KEY="sua-chave"      # Windows: set GEMINI_API_KEY=sua-chave
 python server.py                        # sobe em http://127.0.0.1:8000
 ```
 
-Confira: abra <http://127.0.0.1:8000/health> — deve responder `{"ok": true, "hasKey": true}`.
+Confira: abra <http://127.0.0.1:8000/health>. O endpoint responde o contrato `server-health/v1`, mantendo `ok`, `model` e `hasKey` para compatibilidade:
+
+```json
+{
+  "contractVersion": "server-health/v1",
+  "source": "runtime-observed",
+  "connection": "connected",
+  "health": "healthy",
+  "severity": "none",
+  "fallback": "available",
+  "authority": "not-authorized",
+  "ok": true,
+  "service": "jarvis-backend",
+  "model": "gemini-2.5-flash",
+  "hasKey": true,
+  "detail": "health endpoint + Gemini key observados"
+}
+```
+
+`ok` indica que o processo respondeu; não significa que o Gemini esteja pronto. Sem `GEMINI_API_KEY`, o endpoint permanece conectado, mas projeta `health: degraded`, `severity: warning` e `fallback: degraded`. A projeção é somente leitura: não executa fallback, não desabilita módulos e não concede autoridade.
 
 ## Usar no site
 
@@ -61,7 +80,7 @@ o servidor pesquisa no Google e responde.
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `GET` | `/health` | Status + se a `GEMINI_API_KEY` está configurada |
+| `GET` | `/health` | Contrato `server-health/v1`: liveness, health observado, severidade, fallback read-only e presença booleana da `GEMINI_API_KEY` |
 | `POST` | `/chat` | `{ messages: [{role, content}], system }` → `{ resposta }` |
 
 O servidor é **stateless**: o site envia a conversa inteira a cada chamada (o
@@ -105,5 +124,6 @@ docker run -p 8000:8000 -e GEMINI_API_KEY="sua-chave" baluarte-ia
 ### Regras
 
 - A `GEMINI_API_KEY` fica **só** no ambiente do servidor — nunca no front.
-- CORS já está liberado (`*`), então o site (qualquer origem) consegue chamar.
+- CORS já está liberado (`*`), então o site (qualquer origem) consegue chamar. Isso permanece uma dívida de hardening; a chave nunca é enviada.
+- O envelope server-side é uma observação do backend e ainda não é o `PlatformDiagnostic` da V2. A integração futura deverá transportar o diagnóstico V2 por uma fronteira autorizada, sem criar um segundo Registry ou Event Bus.
 - A URL pública precisa ser **HTTPS** para o site publicado conseguir usá-la.

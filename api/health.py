@@ -23,6 +23,24 @@ from http.server import BaseHTTPRequestHandler
 _NAO_CHAVE = ("MODEL", "ENDPOINT", "VERSION")
 
 
+def project_health(model, has_key):
+    """Projeta liveness e prontidão sem expor segredos ou claims."""
+    return {
+        "contractVersion": "server-health/v1",
+        "source": "runtime-observed",
+        "connection": "connected",
+        "health": "healthy" if has_key else "degraded",
+        "severity": "none" if has_key else "warning",
+        "fallback": "available" if has_key else "degraded",
+        "authority": "not-authorized",
+        "ok": True,
+        "service": "jarvis-backend",
+        "model": model,
+        "hasKey": has_key,
+        "detail": "health endpoint + Gemini key observados" if has_key else "health endpoint observado; chave Gemini ausente",
+    }
+
+
 def find_claude_key():
     for name in ("ANTHROPIC_API_KEY", "CLAUDE_API_KEY"):
         if os.environ.get(name):
@@ -40,10 +58,10 @@ def find_claude_key():
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         claude_key, claude_env = find_claude_key()
+        model = os.environ.get("BALUARTE_MODEL", "gemini-2.5-flash")
+        has_key = bool(os.environ.get("GEMINI_API_KEY"))
         body = json.dumps({
-            "ok": True,
-            "model": os.environ.get("BALUARTE_MODEL", "gemini-2.5-flash"),
-            "hasKey": bool(os.environ.get("GEMINI_API_KEY")),
+            **project_health(model, has_key),
             "keys": {
                 "gemini": bool(os.environ.get("GEMINI_API_KEY")),
                 "hermes": bool(os.environ.get("OPENROUTER_API_KEY") or os.environ.get("HERMES_API_KEY")),
@@ -51,7 +69,7 @@ class handler(BaseHTTPRequestHandler):
                 "claudeEnv": claude_env,
             },
             "models": {
-                "gemini": os.environ.get("BALUARTE_MODEL", "gemini-2.5-flash"),
+                "gemini": model,
                 "hermes": os.environ.get("HERMES_MODEL", "nousresearch/hermes-3-llama-3.1-70b"),
                 "claude": os.environ.get("CLAUDE_MODEL") or os.environ.get("ANTHROPIC_MODEL") or "claude-sonnet-4-6",
             },
