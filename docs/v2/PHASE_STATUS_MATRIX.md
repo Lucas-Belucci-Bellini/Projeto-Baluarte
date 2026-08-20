@@ -37,8 +37,8 @@ Isso ainda não equivale à V2 completa do prompt mestre. Permanecem pendentes o
 | PHASE 20 — Hardening | **Parcial** | Auditorias, flags, permissões e gates existentes | XSS/DOM/URL/upload/iframe/worker, secrets, dependências dev e Runtime CI |
 | PHASE 21 — Performance | **Parcial inicial** | Sonda de memória sem acúmulo; warning de chunks conhecido | Benchmarks de JARVIS, carregamento, módulos pesados, CPU/memória e comparação |
 | PHASE 22 — Security | **Parcial inicial** | Produção sem vulnerabilidades no audit; CodeQL histórico verde | RLS/RBAC atual, threat model, dependências dev, integração externa e revisão de sinks |
-| PHASE 23 — UX / UI Integration | **Planejada** | Shell/layout atual e proposta Command Shell Modular documentada | Implementar layout modular depois do slice fundacional estável |
-| PHASE 24 — Documentation | **Parcial avançada** | README, roadmaps, onboarding, audits, releases, migration, inventários e daily report | ADRs dos próximos slices, contratos Data/Evidence, runbooks e changelog |
+| PHASE 23 — UX / UI Integration | **Planejada — PHASE UI criada** | Shell/layout atual, proposta Command Shell Modular e [`PHASE_UI_DESIGN_SYSTEM.md`](./PHASE_UI_DESIGN_SYSTEM.md) | UI-00: inventário de shell, sidebar, header, estilos, rotas, templates, tokens, acessibilidade e estados de disponibilidade |
+| PHASE 24 — Documentation | **Parcial avançada** | README, roadmaps, onboarding, audits, releases, migration, inventários, PHASE UI e daily report | ADRs dos próximos slices, contratos Data/Evidence, runbooks e changelog |
 | PHASE 25 — V2 Stabilization | **Não iniciada** | Gates locais principais verdes | Incidentes, quarentena, rollback, módulos críticos e testes periódicos |
 | PHASE 26 — V2 Release Candidate | **Não iniciada** | Release plan define critérios | Beta, app preview, auth, Data/Evidence, Runtime e checks externos verdes |
 | PHASE 27 — V2 COMPLETE | **Não iniciada** | Nenhuma declaração válida ainda | Todos os critérios de `2.0.0`, documentação completa e testes mensais ativados |
@@ -47,9 +47,9 @@ Isso ainda não equivale à V2 completa do prompt mestre. Permanecem pendentes o
 
 O marco `GEN-TS-001` está resolvido e publicado. A auditoria `GEN-TS-002` confirmou que os geradores Node-safe passam diretamente e que não há outra importação direta de `.ts` em scripts executáveis que justifique uma correção imediata.
 
-O próximo marco é `AUTH-IDENTITY-001` / `L0 — Identidade Preview`: reavaliar a implementação `login.ts` na main corrente e aceitar ou bloquear formalmente cadastro, login, logout, recuperação, refresh, OAuth, ausência de Supabase, autorização e RLS. Esta etapa deve ser inicialmente audit-only/read-only para não ativar DDL, Auth ou RLS remoto sem staging saudável e confirmação explícita.
+O próximo marco é `PHASE UI / UI-00`: inventariar shell, sidebar, header, estilos, rotas, templates, tokens, acessibilidade e estados de disponibilidade, reutilizando o Module Manifest como fonte única. A implementação visual deve permanecer audit-only inicialmente e não deve ativar DDL, Auth ou RLS remoto por inferência.
 
-A escolha de reavaliar identidade antes de iniciar layout, OpenClaw ou PokeDesk é deliberada: o prompt exige que a fundação, os verificadores e as autoridades server-side sejam estabilizados antes de ampliar o número de módulos. O layout, app, JARVIS pesado, OpenClaw, notícias e PokeDesk permanecem no roadmap, mas não devem ser implementados como atalhos antes do primeiro vertical slice completo.
+A escolha de iniciar com o inventário UI-00 antes de reavaliar Auth/RLS, OpenClaw ou PokeDesk é deliberada: a proposta visual precisa ser reconciliada com o Module Manifest, o Registry, as permissões e os estados de health antes de qualquer refactor amplo. A UI será auditada primeiro, mas a implementação do App Shell, do app preview, do JARVIS pesado, do OpenClaw, das notícias e do PokeDesk continua posterior ao primeiro vertical slice completo e às autoridades server-side.
 
 ## Regras de transição
 

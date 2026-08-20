@@ -78,6 +78,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Plano mestre | [`V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md) |
 | Gap analysis corrente | [`MASTER_GAP_ANALYSIS.md`](docs/v2/MASTER_GAP_ANALYSIS.md) |
 | Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
+| Design System e Information Architecture | [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md) |
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |
 | Migração para TypeScript | [`TYPESCRIPT_MIGRATION.md`](docs/v2/TYPESCRIPT_MIGRATION.md) |
 | Projeto Nexus Baluarte | [`docs/PROJETO-NEXUS-BALUARTE.md`](docs/PROJETO-NEXUS-BALUARTE.md) |
@@ -97,6 +98,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | **4 — Vertical slice** | Conectar Core, dados, módulo e superfície mínima | Integração, E2E e primeiro marco publicável. |
 | **5 — Módulos** | Adicionar Wiki, Arsenal, JARVIS, IDE, Social e outros | Contratos e invariantes por módulo. |
 | **6 — Evolução** | Observar uso real e receber contribuições | Incrementos testáveis e regressão controlada. |
+| **UI — Design System** | App Shell, domínios, Command Palette e templates de superfície | Inventário UI, tokens, navegação derivada do manifesto, acessibilidade e responsividade; implementação incremental. |
 
 <details>
 <summary><strong>Contexto histórico da reconstrução</strong></summary>
@@ -267,7 +269,7 @@ A especificação completa dos estados `enabled`, `degraded`, `disabled`, `maint
 <details>
 <summary><strong>Proposta visual: Command Shell Modular</strong></summary>
 
-A proposta preserva a identidade militar, técnica e narrativa, mas torna visíveis os conceitos de módulo, maturidade, saúde e acesso por função. O shell público deve orientar visitantes, usuários autenticados e colaboradores sem misturar diagnóstico interno com a navegação normal.
+A proposta preserva a identidade militar, técnica e narrativa, mas torna visíveis os conceitos de módulo, maturidade, saúde e acesso por função. A especificação governada da fase está em [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md); ela deve ser lida antes de qualquer refactor visual amplo. O shell público deve orientar visitantes, usuários autenticados e colaboradores sem misturar diagnóstico interno com a navegação normal.
 
 | Região | Conteúdo | Regra |
 |---|---|---|

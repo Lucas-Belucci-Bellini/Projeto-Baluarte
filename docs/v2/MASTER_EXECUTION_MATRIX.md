@@ -1,10 +1,10 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — WAVE 36 / RELEASE 1.2.0`
+**Status:** `CURRENT — GEN-TS-002 AUDIT / PHASE UI PLANNED`
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado:** `32b59ad5e521ea521758b1e9d52c5f50f959f078`
+**SHA observado:** `ec7a758a1c061231344a55af152330e8aa2d672e`
 **Tag de release base:** `v1.2.0`
 **Autor:** Manus AI
 
@@ -46,16 +46,17 @@
 | 18 | Security supply chain / CI specialists | `IN PROGRESS` | JS, Rust, Python, SQL, YAML specialists | Verde por omissão ou ambiente | CI 8/8, types, CodeQL; runtime local known-blocked | SBOM/license/dependency matrix incompleta | CI/build budgets pendentes | CI audit docs | `32b59ad5` | GEN-TS-002 and verify:v2 |
 | 19 | Analytics / privacy / export / deletion | `NOT STARTED` ou parcial | Auth, data classification, consent | Coleta excessiva/admin client-side | Sem matriz completa de dados | LGPD mechanisms incomplete | Telemetry budget absent | Privacy docs | — | Data inventory first |
 | 20 | Marketplace / plugins / third-party registry | `DEFERRED` | Module system, sandbox, licenses, billing | Supply-chain and permission risk | No production marketplace evidence | Manifest, sandbox, audit required | Scale/cost unknown | Future roadmap | — | Only after Module System |
-| 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `32b59ad5` | Measured matrix |
+| 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `ec7a758a` | UI-00 inventory and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
+| UI | Baluarte Design System & Information Architecture | `PLANNED` | Module Manifest, layout, router, permissions, health, accessibility | Creating a second shell/sidebar or exposing protected actions | PHASE_UI_DESIGN_SYSTEM.md; UI-00 audit not started | Server-side authority; disabled/hidden/blocked states; no client-only roles | Breakpoint, bundle, boot and route budgets pending | UI phase document and ADRs | — | UI-00 inventory |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 
 ## 3. Próxima fase válida
 
-A próxima fase recomendada é uma **auditoria GEN-TS-002 e de scripts Node/TypeScript**, pequena e reversível, seguida da reavaliação de `feature/login-cadastro`. Ela deve preservar os geradores já corrigidos, não alterar o Core por conveniência e publicar evidência própria.
+A próxima fase recomendada é **PHASE UI / UI-00 — inventário de shell, sidebar, header, estilos, rotas e templates**. Ela deve ser audit-only inicialmente, reutilizar o Module Manifest como fonte única e não iniciar uma reescrita visual ampla.
 
-Se a auditoria de identidade encontrar dependências não resolvidas, o fallback é documentar o bloqueio e continuar com o piloto de contratos do Module Registry; não ativar Auth/RLS ou Billing remoto por inferência.
+A auditoria deve mapear componentes existentes, duplicações, tokens, estados de módulo, deep links, permissões, acessibilidade e superfícies app-only. Se o inventário encontrar dependências não resolvidas, o fallback é documentar o bloqueio e continuar com o piloto de contratos do Module Registry; não ativar Auth/RLS ou Billing remoto por inferência.
 
 ## 4. Definition of Done aplicada
 
