@@ -69,3 +69,7 @@ Os gates locais foram repetidos sem falhas: validador do JARVIS, TypeScript, 1.0
 ## Nova rodada contínua de validação
 
 O estado dos dois repositórios foi confirmado sincronizado com seus respectivos `origin/main` e sem alterações locais. Os gates locais repetidos passaram: validador JARVIS, TypeScript, 1.085 testes, build, tabela de estabilidade, tipos V2, integração V2 21/21, smoke, caminho crítico 15/15 e Runtime V2. O JARVIS local abriu com canvas 3D e controles; o botão de rotação foi acionado e a cena respondeu visualmente.
+
+## Rodada contínua adicional
+
+Os gates locais foram repetidos novamente sem falhas. O JARVIS local abriu com canvas 3D e controles; o botão Pulso foi acionado e a cena respondeu visualmente. A validação pública e os gates remotos ainda serão conferidos nesta rodada.
