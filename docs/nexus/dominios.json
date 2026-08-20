@@ -274,7 +274,7 @@
     "/modpack"
    ],
    "origem": [
-    "src/pages/arsenal.js",
+    "src/pages/arsenal.ts",
     "src/pages/militar.ts",
     "src/pages/arsenal-expandido.ts",
     "src/pages/enciclopedia-militar.ts",
@@ -289,8 +289,8 @@
     "src/pages/historia-militar.ts",
     "src/pages/guerras-conflitos.ts",
     "src/pages/batalhas-historicas.ts",
-    "src/pages/wiki-arma3.js",
-    "src/pages/arma3-tutorial.js",
+    "src/pages/wiki-arma3.ts",
+    "src/pages/arma3-tutorial.ts",
     "src/utils/arma3-extracao.js",
     "src/pages/arma3-extracao-painel.js",
     "src/pages/modpack.ts",

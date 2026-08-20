@@ -109,7 +109,7 @@ router.register('/graficos', lazy(() => import('./pages/graficos.ts'), 'graficos
 router.register('/simbolos', lazy(() => import('./pages/simbolos.ts'), 'simbolosPage'));
 router.register('/color-studio', lazy(() => import('./pages/color-studio.ts'), 'colorStudioPage'));
 router.register('/regex', lazy(() => import('./pages/regex.ts'), 'regexPage'));
-router.register('/arsenal', lazy(() => import('./pages/arsenal.js'), 'arsenalPage'));
+router.register('/arsenal', lazy(() => import('./pages/arsenal.ts'), 'arsenalPage'));
 router.register('/militar', lazy(() => import('./pages/militar.ts'), 'militarPage'));   // hub consolidado das frentes militares
 router.register('/modelos-3d', lazy(() => import('./pages/modelos-3d.js'), 'modelos3dPage'));   // visualizador 3D militar (#310)
 router.register('/biblioteca', lazy(() => import('./pages/biblioteca.ts'), 'bibliotecaPage'));
@@ -130,8 +130,8 @@ router.register('/batalha-naval', lazy(() => import('./pages/batalha-naval.js'),
 router.register('/universo', lazy(() => import('./pages/universo.ts'), 'universoPage'));
 router.register('/tabela-periodica', lazy(() => import('./pages/tabela-periodica.ts'), 'tabelaPeriodicaPage'));
 router.register('/modpack', lazy(() => import('./pages/modpack.ts'), 'modpackPage'));
-router.register('/wiki-arma3', lazy(() => import('./pages/wiki-arma3.js'), 'wikiArma3Page'));   // wiki de Arma 3 (capa/índice/artigo via ?p= ?a=)
-router.register('/arma3-tutorial', lazy(() => import('./pages/arma3-tutorial.js'), 'arma3TutorialPage'));   // tutorial dos 105 mods do preset
+router.register('/wiki-arma3', lazy(() => import('./pages/wiki-arma3.ts'), 'wikiArma3Page'));   // wiki de Arma 3 (capa/índice/artigo via ?p= ?a=)
+router.register('/arma3-tutorial', lazy(() => import('./pages/arma3-tutorial.ts'), 'arma3TutorialPage'));   // tutorial dos 105 mods do preset
 router.register('/vanguard', lazy(() => import('./pages/vanguard.js'), 'vanguardPage'));                     // Project Vanguard: computador de tiro + coordenadas
 router.register('/zomboid', lazy(() => import('./pages/zomboid.ts'), 'zomboidPage'));   // coleção Project Zomboid (Spartan Gamer BR)
 router.register('/zomboid-admin', lazy(() => import('./pages/zomboid-admin.ts'), 'zomboidAdminPage'));   // admin de servidor PZ
