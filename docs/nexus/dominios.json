@@ -749,6 +749,7 @@
     "src/utils/triangulation.js",
     "src/utils/triangulation.ts",
     "src/utils/fingerprint-engine.js",
+    "src/utils/fingerprint-engine.ts",
     "src/utils/vanguard/ (motor vendorizado — passa a vir do Project-Vanguard)",
     "src/data/camadas-mapa.js",
     "src/styles/find.css",
