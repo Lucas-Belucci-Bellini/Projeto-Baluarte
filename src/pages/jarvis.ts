@@ -891,6 +891,8 @@ function renderConfigPanel(): HTMLDivElement {
               connection: 'connected',
               authority: 'not-authorized',
               health: info.hasKey ? 'healthy' : 'degraded',
+              severity: info.hasKey ? 'none' : 'warning',
+              fallback: info.hasKey ? 'available' : 'degraded',
               detail: info.hasKey ? 'health endpoint + Gemini key observados' : 'health endpoint observado; chave Gemini ausente',
             });
             testStatus.textContent = info.hasKey ? '✓ online · chave Gemini OK' : '✓ online · falta GEMINI_API_KEY';
@@ -901,6 +903,8 @@ function renderConfigPanel(): HTMLDivElement {
               connection: 'disconnected',
               authority: 'not-authorized',
               health: 'failed',
+              severity: 'critical',
+              fallback: 'blocked',
               detail: 'health endpoint não respondeu',
             });
             testStatus.textContent = '✗ offline — rode backend/server.py';
@@ -1100,6 +1104,8 @@ export function jarvisPage(): HTMLDivElement {
       connection: status.connected === true ? 'connected' : 'disconnected',
       authority: 'not-authorized',
       health: 'unknown',
+      severity: 'info',
+      fallback: status.connected === true ? 'unknown' : 'blocked',
       ...(status.detail ? { detail: status.detail } : {}),
     });
   });

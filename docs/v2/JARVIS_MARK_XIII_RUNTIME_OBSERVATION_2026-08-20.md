@@ -29,6 +29,20 @@ A projeção é definida por `MarkXiiiRuntimeObservation` em [`src/utils/jarvis-
 | `health` | `failed` | O health check não respondeu. |
 | `runtimeAuthority` | `not-authorized` | A superfície visual não possui claims nem autoridade para controlar o Registry. |
 
+## Severidade e fallback
+
+A matriz agora também expõe `severity` e `fallback` como sinais de leitura. Esses campos ajudam a superfície a explicar o estado observado, mas não executam fallback operacional, não desabilitam botão e não mudam o modo do Registry.
+
+| Condição observada | `severity` | `fallback` | Interpretação |
+|---|---|---|---|
+| Diagnóstico ausente ou estado ainda não medido | `info` | `available` para o visual local ou `unknown` para o Runtime | O console pode continuar desenhando, mas não deve afirmar health. |
+| Runtime conectado, readiness healthy, sem falhas adversas | `none` | `available` | Estado observado saudável; autoridade permanece não autorizada. |
+| Falha isolada, incidentes adversos ou readiness degradada | `warning` | `degraded` | A superfície pode informar degradação; promoção e disable continuam bloqueados. |
+| Supervisor failed ou módulo exhausted/quarantined | `critical` | `blocked` | O sinal é grave, mas somente autoridade server-side pode decidir isolamento operacional. |
+| Conexão desconectada sem health classificado | `info` | `blocked` | Desconexão observada não é automaticamente uma causa-raiz de health. |
+
+Registros `healthy` gerados pelo `RuntimeHealth` são eventos normais do ciclo e não entram na contagem de incidentes adversos. Incidentes `failed` ou `exhausted` entram na matriz e alteram a projeção read-only.
+
 ## Fonte V1 compartilhada
 
 A página importa o `bus` de [`src/core/events.js`](../../src/core/events.js), cuja implementação canônica está em TypeScript. Ela se inscreve em `nucleo:status`, sem criar um segundo Event Bus. O emissor existente em [`src/utils/nucleo-socket.js`](../../src/utils/nucleo-socket.js) publica `{ connected, url, detail }` quando o WebSocket do núcleo abre ou fecha.
@@ -57,7 +71,7 @@ Foram executados os cinco contratos direcionados do JARVIS, `npm run tipos:ts`, 
 
 O contrato foi extraído para [`src/layout/runtime-observation.ts`](../../src/layout/runtime-observation.ts). A função `projectPlatformDiagnostic()` recebe o `PlatformDiagnostic` canônico da V2 e retorna a mesma projeção read-only usada pelo console: `source`, `connection`, `health`, `authority`, `detail`, `moduleCount` e `incidentCount`.
 
-O harness V2 expõe `platformRuntimeObservation()` somente para testes de integração. Ele observa o diagnóstico da Plataforma, classifica registros `healthy` do Registry como estado normal — não como incidentes adversos — e mantém `authority: not-authorized`. O gate V2 confirma essa projeção junto com o boot, Runtime, Registry, router V1 e os demais contratos, totalizando `33/33` afirmações. Nenhum controle operacional foi delegado ao adaptador.
+O harness V2 expõe `platformRuntimeObservation()` somente para testes de integração. Ele observa o diagnóstico da Plataforma, classifica registros `healthy` do Registry como estado normal — não como incidentes adversos — e mantém `authority: not-authorized`. O gate V2 confirma essa projeção junto com o boot, Runtime, Registry, router V1 e os demais contratos, totalizando `33/33` afirmações. Nenhum controle operacional foi delegado ao adaptador. Os testes unitários cobrem `healthy`, `degraded`, `failed`, `exhausted`, fallback e serialização da projeção.
 
 ## O que este marco não implementa
 

@@ -8,11 +8,15 @@ export type RuntimeObservationSource =
 
 export type RuntimeConnectionStatus = 'unknown' | 'connected' | 'disconnected';
 export type RuntimeHealthStatus = 'unknown' | 'healthy' | 'degraded' | 'failed' | 'exhausted';
+export type RuntimeObservationSeverity = 'none' | 'info' | 'warning' | 'critical';
+export type RuntimeFallbackState = 'unknown' | 'available' | 'degraded' | 'blocked';
 
 export interface RuntimeObservation {
   readonly source: RuntimeObservationSource;
   readonly connection: RuntimeConnectionStatus;
   readonly health: RuntimeHealthStatus;
+  readonly severity: RuntimeObservationSeverity;
+  readonly fallback: RuntimeFallbackState;
   readonly authority: 'not-authorized';
   readonly detail?: string;
   readonly moduleCount?: number;
@@ -23,6 +27,8 @@ export const VISUAL_ONLY_RUNTIME_OBSERVATION: RuntimeObservation = Object.freeze
   source: 'visual-only',
   connection: 'unknown',
   health: 'unknown',
+  severity: 'info',
+  fallback: 'available',
   authority: 'not-authorized',
 });
 
@@ -32,9 +38,14 @@ function normalizeHealth(
 ): RuntimeHealthStatus {
   const readiness = diagnostic.saude.readiness;
   const failedModules = diagnostic.saude.contagem.falhas;
-  if (readiness === 'healthy' && failedModules === 0 && incidentCount === 0) return 'healthy';
-  if (readiness === 'healthy' || failedModules > 0 || incidentCount > 0) return 'degraded';
+  const exhaustedIncident = diagnostic.registry.incidentes.some((incident) => incident.status === 'exhausted');
+  const exhaustedModule = diagnostic.registry.modulos.some((module) => module.status === 'exhausted');
   if (diagnostic.supervisor.estado === 'failed') return 'failed';
+  if (exhaustedIncident || exhaustedModule) return 'exhausted';
+  if (readiness === 'healthy' && failedModules === 0 && incidentCount === 0) return 'healthy';
+  if (readiness === 'healthy' || failedModules > 0 || incidentCount > 0 || diagnostic.supervisor.estado === 'ready') {
+    return 'degraded';
+  }
   return 'unknown';
 }
 
@@ -43,6 +54,26 @@ function normalizeConnection(diagnostic: PlatformDiagnostic): RuntimeConnectionS
   if (diagnostic.supervisor.estado === 'failed' || diagnostic.supervisor.estado === 'stopped') {
     return 'disconnected';
   }
+  return 'unknown';
+}
+
+function severityFor(
+  health: RuntimeHealthStatus,
+  connection: RuntimeConnectionStatus,
+): RuntimeObservationSeverity {
+  if (health === 'failed' || health === 'exhausted') return 'critical';
+  if (health === 'degraded') return 'warning';
+  if (health === 'healthy' && connection === 'connected') return 'none';
+  return 'info';
+}
+
+function fallbackFor(
+  health: RuntimeHealthStatus,
+  connection: RuntimeConnectionStatus,
+): RuntimeFallbackState {
+  if (health === 'healthy') return 'available';
+  if (health === 'degraded') return 'degraded';
+  if (health === 'failed' || health === 'exhausted' || connection === 'disconnected') return 'blocked';
   return 'unknown';
 }
 
@@ -66,6 +97,8 @@ export function projectPlatformDiagnostic(
     source: 'v2-platform-diagnostic',
     connection,
     health,
+    severity: severityFor(health, connection),
+    fallback: fallbackFor(health, connection),
     authority: 'not-authorized',
     detail,
     moduleCount,

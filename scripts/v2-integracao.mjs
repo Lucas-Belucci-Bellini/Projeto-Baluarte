@@ -152,6 +152,8 @@ try {
     platformRuntimeObservation?.source === 'v2-platform-diagnostic'
       && platformRuntimeObservation?.connection === 'connected'
       && platformRuntimeObservation?.health === 'healthy'
+      && platformRuntimeObservation?.severity === 'none'
+      && platformRuntimeObservation?.fallback === 'available'
       && platformRuntimeObservation?.authority === 'not-authorized'
       && platformRuntimeObservation?.moduleCount === vivos.length
       && platformRuntimeObservation?.incidentCount === 0,

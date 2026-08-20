@@ -588,6 +588,10 @@
 .jv-mark-xiii[data-runtime-health="failed"] .jv-mark-xiii__value { color: #dc8b8b; }
 .jv-mark-xiii[data-runtime-health="degraded"] .jv-mark-xiii__value { color: #e0bd72; }
 .jv-mark-xiii[data-runtime-authority="not-authorized"] .jv-mark-xiii__telemetry::after { display: block; margin-top: 8px; color: var(--jv-mark-muted); content: 'SINAL OBSERVADO · SEM CLAIM'; font-size: 8px; letter-spacing: 1px; }
+.jv-mark-xiii[data-runtime-severity="warning"] .jv-mark-xiii__indicator::before { background: #e0bd72; box-shadow: 0 0 8px rgba(224, 189, 114, .42); }
+.jv-mark-xiii[data-runtime-severity="critical"] .jv-mark-xiii__indicator::before { background: #dc8b8b; box-shadow: 0 0 8px rgba(220, 139, 139, .42); }
+.jv-mark-xiii[data-runtime-fallback="blocked"] .jv-mark-xiii__value { color: #dc8b8b; }
+.jv-mark-xiii[data-runtime-fallback="degraded"] .jv-mark-xiii__value { color: #e0bd72; }
 .jv-mark-xiii__time { display: flex; align-items: end; gap: 12px; min-width: 180px; justify-content: flex-end; color: var(--jv-mark-muted); font-size: 9px; letter-spacing: 1px; text-align: right; }
 .jv-mark-xiii__date { color: var(--jv-mark-accent); font-size: 8px; letter-spacing: 1.6px; text-transform: uppercase; }
 .jv-mark-xiii__clock { color: var(--jv-mark-text); font-size: 16px; letter-spacing: 1px; }

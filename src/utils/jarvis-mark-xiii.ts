@@ -279,6 +279,8 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
     const healthLabel = observation.health.toUpperCase();
     root.dataset.runtimeConnection = observation.connection;
     root.dataset.runtimeHealth = observation.health;
+    root.dataset.runtimeSeverity = observation.severity;
+    root.dataset.runtimeFallback = observation.fallback;
     root.dataset.runtimeAuthority = 'not-authorized';
     root.dataset.runtimeSource = observation.source;
     if (observation.detail) root.dataset.runtimeDetail = observation.detail.slice(0, 120);
@@ -291,10 +293,10 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
     nucleusIndicator.classList.toggle('is-online', connected);
     networkIndicator.classList.toggle('is-online', connected);
     setText(captionValue, connected
-      ? `Runtime observado · saúde ${healthLabel.toLowerCase()} · autoridade server-side não conectada.`
-      : 'Núcleo visual ativo. Observação do Runtime pendente.');
+      ? `Runtime observado · saúde ${healthLabel.toLowerCase()} · severidade ${observation.severity} · fallback ${observation.fallback}.`
+      : `Núcleo visual ativo · fallback ${observation.fallback}. Observação do Runtime pendente.`);
   };
-  setRuntimeObservation({ source: 'visual-only', connection: 'unknown', health: 'unknown', authority: 'not-authorized' });
+  setRuntimeObservation({ source: 'visual-only', connection: 'unknown', health: 'unknown', severity: 'info', fallback: 'available', authority: 'not-authorized' });
   raf = requestAnimationFrame(draw);
 
   return {

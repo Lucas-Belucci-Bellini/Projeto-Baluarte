@@ -49,6 +49,8 @@ test('Plataforma pronta e sem incidentes projeta conexão e health saudáveis', 
     source: 'v2-platform-diagnostic',
     connection: 'connected',
     health: 'healthy',
+    severity: 'none',
+    fallback: 'available',
     authority: 'not-authorized',
     detail: 'supervisor=ready · readiness=healthy · módulos=2 · incidentes=0',
     moduleCount: 2,
@@ -69,6 +71,8 @@ test('incidente ou falha de módulo degrada o health sem desconectar a plataform
   }));
   assert.equal(result.connection, 'connected');
   assert.equal(result.health, 'degraded');
+  assert.equal(result.severity, 'warning');
+  assert.equal(result.fallback, 'degraded');
   assert.equal(result.authority, 'not-authorized');
   assert.equal(result.incidentCount, 1);
 });
@@ -80,5 +84,23 @@ test('supervisor failed projeta desconexão e falha observada', () => {
   }));
   assert.equal(result.connection, 'disconnected');
   assert.equal(result.health, 'failed');
+  assert.equal(result.severity, 'critical');
+  assert.equal(result.fallback, 'blocked');
   assert.equal(result.authority, 'not-authorized');
+});
+
+test('exhausted mantém fallback bloqueado e severidade crítica', () => {
+  const base = diagnostic();
+  const result = projectPlatformDiagnostic({
+    ...base,
+    saude: { ...base.saude, readiness: 'unhealthy', contagem: { ...base.saude.contagem, falhas: 1 } },
+    registry: {
+      ...base.registry,
+      modulos: [{ ...base.registry.modulos[0], status: 'exhausted', mode: 'quarantined' }, base.registry.modulos[1]],
+      incidentes: [{ type: 'failed', id: 'core', timestamp: 4, status: 'exhausted', restarts: 4, error: 'limite' }],
+    },
+  });
+  assert.equal(result.health, 'exhausted');
+  assert.equal(result.severity, 'critical');
+  assert.equal(result.fallback, 'blocked');
 });
