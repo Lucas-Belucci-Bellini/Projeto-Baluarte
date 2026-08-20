@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-20 — Release `1.2.6`: preparação do JARVIS Núcleo V7
+
+A linha `1.2.6` promove o visual **JARVIS Núcleo V7 — Astrolábio Sonoro** como entrypoint 3D canônico do Vite. A experiência usa TypeScript como fonte, artefato JavaScript standalone, Three.js, Web Audio reativo, deteção de batida, FFT, temas ouro/rubi/jade, vistas, pulso, varrimento e captura.
+
+O bump de versão foi sincronizado em `package.json`, `package-lock.json`, `desktop/package.json`, `desktop/package-lock.json`, `src/data/version.js`, `public/sw.js` e no default do workflow Desktop Release. O Service Worker usa `baluarte-v1.2.6` para invalidar os caches anteriores.
+
+O contrato `test/jarvis-v7-release.test.js` comprova a existência do HTML, TypeScript e artefato compilado e verifica que `vite.config.js` empacota a variante da pasta `project V2/Modelar objeto 3D`. Os gates locais executados antes da publicação foram: Nexus verde, TypeScript V1/V2 verde, testes verdes, build verde, integração V2 `25/25`, smoke `99/99` e caminho crítico `15/15`.
+
+**Status:** em preparação no `main`; tag, assets, checksums e URLs públicas serão registrados após a execução e verificação do workflow `desktop-v1.2.6`.
+
+---
+
 ## 2026-08-20 — Release `1.2.5`: artefatos baixáveis do Baluarte Launcher
 
 A release `1.2.5` alinha a versão do site e do `Baluarte Launcher`, atualizando `package.json`, `package-lock.json`, `desktop/package.json`, `desktop/package-lock.json`, `src/data/version.js` e `public/sw.js`. O Service Worker usa `baluarte-v1.2.5`, invalidando os caches da linha anterior.

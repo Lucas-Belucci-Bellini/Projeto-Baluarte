@@ -51,7 +51,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados. |
-| **Web/Desktop** | `1.2.5` publicada | Release de distribuição do Launcher com instaladores Windows, Linux e macOS verificados; V1 preservada e V2 em construção incremental. |
+| **Web/Desktop** | `1.2.6` em preparação | Release de distribuição do Launcher com o visual JARVIS Núcleo V7; instaladores Windows, Linux e macOS serão publicados após os gates remotos. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
@@ -62,7 +62,7 @@ O J.A.R.V.I.S. é a camada de assistente, memória, ferramentas e experiência i
 
 | Entrada | Descrição |
 |---|---|
-| [Abrir o Núcleo V7](https://projeto-baluarte.vercel.app/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) | Experiência 3D executável no deploy público. |
+| [Abrir o Núcleo V7](https://projeto-baluarte.vercel.app/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) | Visual 3D promovido na linha 1.2.6: astrolábio sonoro, reação a áudio, temas ouro/rubi/jade e controles de captura. |
 | [`jarvis-nucleo-v7.html`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) | Página visual e controles de interação. |
 | [`jarvis-nucleo-v7.ts`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.ts) | Fonte TypeScript canônica. |
 | [`jarvis-nucleo-v7.js`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.js) | Artefato compilado carregado em produção. |
@@ -85,6 +85,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Projeto Nexus Baluarte | [`docs/PROJETO-NEXUS-BALUARTE.md`](docs/PROJETO-NEXUS-BALUARTE.md) |
 | Histórico de merges | [`2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md) |
 | Plano de releases | [`RELEASE_PLAN.md`](docs/v2/RELEASE_PLAN.md) |
+| Release 1.2.6 — JARVIS Núcleo V7 | [`v1.2.6.md`](docs/releases/v1.2.6.md) |
 | Release 1.2.5 e artefatos baixáveis | [`v1.2.5.md`](docs/releases/v1.2.5.md) |
 | Auditoria Supabase e drift de migrations | [`SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md`](docs/v2/SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md) |
 | Plano de recuperação Supabase | [`SUPABASE_STAGING_RECOVERY_PLAN.md`](docs/v2/SUPABASE_STAGING_RECOVERY_PLAN.md) |
