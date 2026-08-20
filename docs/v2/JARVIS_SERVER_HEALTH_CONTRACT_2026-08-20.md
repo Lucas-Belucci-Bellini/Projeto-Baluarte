@@ -94,5 +94,5 @@ O próximo marco não deve criar um endpoint que aceite comandos. Ele deve avali
 - Branch: `main`.
 - Commit de base: `ba8c2c6fcd0e1751a79690fcf98b347f8658a58a`.
 - Commit de publicação do backend: `ba4bd2417528f5d37ba0feb5053593b093d1a29c`.
-- Integração do consumidor: será registrada no commit da próxima publicação.
+- Integração do consumidor: `d45c5a15ac6436e3aabbb4bbd840b2d62e31c75b`.
 - Autor padrão: Manus AI.
