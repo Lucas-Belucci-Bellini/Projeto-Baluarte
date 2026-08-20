@@ -14,7 +14,7 @@ A mudança cobre somente o backend opcional já existente e a função `api/heal
 |---|---|---|---|
 | `backend/server.py` | Processo FastAPI + presença booleana de `GEMINI_API_KEY` | `server-health/v1` | Health remoto do backend Python. |
 | `api/health.py` | Função Vercel + presença booleana de chaves | `server-health/v1` + campos de APIs | Health remoto do backend serverless. |
-| `src/pages/jarvis.ts` | `healthCheckServer()` | Consumidor compatível | Projeta o resultado como `runtime-observed`, sempre com `authority: not-authorized`. |
+| `src/pages/jarvis.ts` | `healthCheckServer()` | Consumidor compatível | Consome `health`, `connection`, `severity`, `fallback` e `detail` quando presentes; usa `hasKey` como fallback legado e sempre projeta `authority: not-authorized`. |
 | `v2/core/plataforma.ts` | Boot, Supervisor, Health, Registry e Lifecycle | `PlatformDiagnostic` | Diagnóstico canônico local da V2; ainda não é transportado por este marco. |
 
 ## Envelope `server-health/v1`
@@ -55,6 +55,8 @@ A última linha não é produzida pelo backend: é a decisão read-only já exis
 | `api/health.py` | Projeção equivalente para a função serverless Vercel, preservando `keys` e `models`. |
 | `backend/test_health_contract.py` | Quatro verificações: healthy, degraded, ausência de segredo, paridade FastAPI/Vercel. |
 | `backend/README.md` | Instruções, exemplo do envelope e limites de segurança. |
+| `src/utils/jarvis-engine.d.ts` | Tipos TypeScript opcionais para `server-health/v1` e respostas legadas. |
+| `test/jarvis-mark-xiii-console.test.js` | Contrato estático do consumidor JARVIS e da declaração do health. |
 
 ## Segurança e governança
 
@@ -69,8 +71,8 @@ Os testes locais deste marco são:
 ```text
 (cd backend && python3 test_health_contract.py)  → backend health contract: 4/4
 python3 -m py_compile backend/server.py backend/health_contract.py api/health.py → passou
-npm run tipos:ts → passou no baseline anterior e deve ser repetido antes do push
-npm run tipos:v2 → passou no baseline anterior e deve ser repetido antes do push
+npm run tipos:ts → passou após a integração do consumidor
+npm run tipos:v2 → passou após a integração do consumidor
 npm test → passou no baseline anterior e deve ser repetido antes do push
 npm run build → passou no baseline anterior e deve ser repetido antes do push
 npm run v2:integracao → 33/33 no baseline anterior e deve ser repetido antes do push
@@ -91,5 +93,6 @@ O próximo marco não deve criar um endpoint que aceite comandos. Ele deve avali
 - Repositório: `Lucas-Belucci-Bellini/Projeto-Baluarte`.
 - Branch: `main`.
 - Commit de base: `ba8c2c6fcd0e1751a79690fcf98b347f8658a58a`.
-- Commit de publicação: `ba4bd2417528f5d37ba0feb5053593b093d1a29c`.
+- Commit de publicação do backend: `ba4bd2417528f5d37ba0feb5053593b093d1a29c`.
+- Integração do consumidor: será registrada no commit da próxima publicação.
 - Autor padrão: Manus AI.

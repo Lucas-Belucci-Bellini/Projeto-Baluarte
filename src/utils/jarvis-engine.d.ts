@@ -46,7 +46,21 @@ export interface JarvisConfig {
  * O índice aberto existe porque o backend pode acrescentar campos sem que este
  * arquivo saiba.
  */
+export type ServerHealthConnection = 'unknown' | 'connected' | 'disconnected';
+export type ServerHealthState = 'unknown' | 'healthy' | 'degraded' | 'failed' | 'exhausted';
+export type ServerHealthSeverity = 'none' | 'info' | 'warning' | 'critical';
+export type ServerHealthFallback = 'available' | 'degraded' | 'blocked' | 'unknown';
+
 export interface ServerHealth {
+  readonly contractVersion?: 'server-health/v1' | string;
+  readonly source?: 'runtime-observed' | string;
+  readonly connection?: ServerHealthConnection;
+  readonly health?: ServerHealthState;
+  readonly severity?: ServerHealthSeverity;
+  readonly fallback?: ServerHealthFallback;
+  readonly authority?: 'not-authorized' | string;
+  readonly service?: string;
+  readonly detail?: string;
   readonly ok?: boolean;
   readonly model?: string;
   readonly hasKey?: boolean;

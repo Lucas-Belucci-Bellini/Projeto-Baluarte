@@ -886,17 +886,26 @@ function renderConfigPanel(): HTMLDivElement {
           testStatus.className = 'u-text-muted';
           try {
             const info = await healthCheckServer(conf.serverUrl);
+            const observedHealth = info.health === 'healthy' || info.health === 'degraded'
+              ? info.health
+              : info.hasKey ? 'healthy' : 'degraded';
+            const observedSeverity = info.severity === 'none' || info.severity === 'info' || info.severity === 'warning' || info.severity === 'critical'
+              ? info.severity
+              : info.hasKey ? 'none' : 'warning';
+            const observedFallback = info.fallback === 'available' || info.fallback === 'degraded' || info.fallback === 'blocked' || info.fallback === 'unknown'
+              ? info.fallback
+              : info.hasKey ? 'available' : 'degraded';
             applyRuntimeObservation({
               source: 'runtime-observed',
-              connection: 'connected',
+              connection: info.connection === 'disconnected' ? 'disconnected' : 'connected',
               authority: 'not-authorized',
-              health: info.hasKey ? 'healthy' : 'degraded',
-              severity: info.hasKey ? 'none' : 'warning',
-              fallback: info.hasKey ? 'available' : 'degraded',
-              detail: info.hasKey ? 'health endpoint + Gemini key observados' : 'health endpoint observado; chave Gemini ausente',
+              health: observedHealth,
+              severity: observedSeverity,
+              fallback: observedFallback,
+              detail: info.detail ?? (info.hasKey ? 'health endpoint + Gemini key observados' : 'health endpoint observado; chave Gemini ausente'),
             });
-            testStatus.textContent = info.hasKey ? '✓ online · chave Gemini OK' : '✓ online · falta GEMINI_API_KEY';
-            testStatus.className = info.hasKey ? 'u-text-cyan' : 'u-text-warning';
+            testStatus.textContent = observedHealth === 'healthy' ? '✓ online · chave Gemini OK' : '✓ online · backend degradado';
+            testStatus.className = observedHealth === 'healthy' ? 'u-text-cyan' : 'u-text-warning';
           } catch {
             applyRuntimeObservation({
               source: 'runtime-observed',
