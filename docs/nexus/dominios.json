@@ -32,6 +32,7 @@
     "src/utils/pwa.js",
     "src/utils/pwa.ts",
     "src/utils/page-views.js",
+    "src/utils/page-views.ts",
     "src/utils/visit-counter.js",
     "src/utils/visit-counter.ts",
     "src/utils/hx-beacon.js",

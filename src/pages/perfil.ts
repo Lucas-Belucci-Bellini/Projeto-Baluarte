@@ -16,7 +16,7 @@ import { storage } from '../core/storage.js';
 import { toast } from '../utils/toast';
 import { router } from '../core/router.js';
 import { VERSION } from '../data/version.js';
-import { readPageViews } from '../utils/page-views.js';
+import { readPageViews } from '../utils/page-views';
 import { THEMES, getThemeId, setTheme } from '../utils/theme.js';
 import { UNIVERSE_SKINS, getUniverseId, setUniverse } from '../utils/universe-theme.js';
 import { supabaseConfigured } from '../core/supabase.js';
