@@ -59,3 +59,5 @@ Após remover o import dinâmico variável, o build voltou a gerar o bundle comp
 O commit `ca803a40148b7f585530569180dc8962990e6bc0` recebeu deploy Vercel com sucesso. A página pública passou a referenciar `jarvisNucleoV7-BLLSuDmJ.js` — o bundle de 41,94 kB gerado a partir do `jarvis-nucleo-v7.ts` — e tanto a página quanto o bundle responderam HTTP 200. A cena 3D apareceu no navegador público e o console não apresentou erros.
 
 O check `Supabase Preview` continua reportando a divergência pré-existente `Remote migration versions not found in local migrations directory`; o mesmo erro já estava presente no commit anterior e não é causado pela integração do JARVIS. Os gates do Projeto-Baluarte e o deploy Vercel terminaram com sucesso.
+
+A instância local também foi exposta temporariamente por um proxy HTTP para validação externa. O proxy retornou HTTP 200, a cena 3D e os controles apareceram no navegador e o console compartilhado ficou sem erros; o endereço temporário não é tratado como URL permanente.
