@@ -12,7 +12,7 @@ import { storage } from '../core/storage.js';
 import { CODENAME, VERSION } from '../data/version.js';
 import { cx, h } from '../utils/helpers.js';
 import { iconByPath, iconForPath, lineIcon } from '../utils/icons.js';
-import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
+import { canInstall, onInstallChange, promptInstall } from '../utils/pwa';
 
 export interface NavItem {
   path: string;

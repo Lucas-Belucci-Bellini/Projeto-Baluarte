@@ -10,7 +10,7 @@ import { bus } from '../core/events.js';
 import { appState } from '../core/state.js';
 import { decryptTitles } from '../utils/effects.js';
 import { h, empty, mount } from '../utils/helpers.js';
-import { revealScan } from '../utils/scroll-reveal.js';
+import { revealScan } from '../utils/scroll-reveal';
 import { mountAtmosphere } from '../utils/atmosphere';
 import { mountCardSpotlight } from '../utils/card-spotlight.js';
 import { mountScrollProgress } from '../utils/scroll-progress';

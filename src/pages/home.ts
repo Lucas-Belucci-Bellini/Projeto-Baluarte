@@ -17,7 +17,7 @@ import { createHeroWebGL, heroSkinColors } from '../utils/hero-webgl.js';
 import type { HeroEffect } from '../utils/hero-webgl.js';
 import { createHeroField } from '../utils/hero3d.js';
 import type { HeroFieldEffect } from '../utils/hero3d.js';
-import { countVisit } from '../utils/visit-counter.js';
+import { countVisit } from '../utils/visit-counter';
 import { readPageViews } from '../utils/page-views.js';
 import { mountSpline } from '../utils/spline-embed.js';
 import { sceneFor } from '../data/spline-scenes.js';
