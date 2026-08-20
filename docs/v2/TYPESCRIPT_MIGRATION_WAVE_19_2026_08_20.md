@@ -1,6 +1,6 @@
 # Migração TypeScript — Wave 19
 
-**Status:** implementação local concluída; publicação preparada após gates verdes.
+**Status:** publicada diretamente no `main`; implementação e CI remota concluídas com sucesso.
 
 **Objetivo:** promover `/git-nexus`, `/jarvis-vision` e `/mural` para as implementações TypeScript canônicas, preservando o gate app-only do Git Nexus, a ativação explícita da câmera e os modos Supabase/repositório/local do Mural.
 
@@ -63,8 +63,19 @@ Rollback: restaurar no router e no Nexus as três extensões para `.js`, mantend
 
 ## Critério de conclusão
 
-A Wave 19 será concluída após o commit e a confirmação da CI remota no SHA final. Os critérios locais já foram satisfeitos: as três rotas carregam diretamente `.ts`, os contratos V2/câmera/Supabase permaneceram inalterados e todos os gates comportamentais passaram.
+A Wave 19 foi concluída: as três rotas carregam diretamente `.ts`, os contratos V2/câmera/Supabase permaneceram inalterados, todos os gates comportamentais passaram e a CI remota terminou verde no SHA de implementação.
+
+| Workflow remoto | Resultado |
+|---|---:|
+| CI | success |
+| Core CI | success |
+| V2 Core | success |
+| V2 Runtime | success |
+| V2 Validation | success |
+| Vigia das rotas | success |
+| Arma 3 Data CI | success |
+| CodeQL | success |
 
 **Autor:** Manus AI
-**SHA:** será preenchido após publicação.
-**Data dos gates:** 2026-08-20T03:40Z–03:42Z.
+**SHA de implementação e publicação:** `8260fba3d546bfd2c881a70e792373fe77cbd3ee`.
+**Data dos gates:** 2026-08-20T03:40Z–03:48Z.
