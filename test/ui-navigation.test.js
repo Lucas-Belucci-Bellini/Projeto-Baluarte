@@ -7,6 +7,7 @@ import {
   projectLegacyNavigation,
   projectRegistryNavigation,
 } from '../src/layout/navigation.ts';
+import { createRegistryNavigationObserver } from '../src/layout/registry-observer.ts';
 
 const projection = projectLegacyNavigation(NAV_GROUPS, {
   currentPhase: 21,
@@ -93,6 +94,50 @@ test('UI-02 projeta a navegação selada do Registry sem confundir estabilidade 
   assert.equal(baixar?.stability, 'estavel');
   assert.equal(baixar?.maturity, 'stable');
   assert.equal(baixar?.availability, 'enabled');
+});
+
+test('UI-03 observa paridade exata entre Registry e catálogo legado no ambiente de teste', () => {
+  let order = 0;
+  const registryEntries = NAV_GROUPS.flatMap((group) =>
+    group.items.map((item) => ({
+      modulo: `fixture-${item.path.slice(1).replaceAll('/', '-')}`,
+      nome: item.label,
+      icone: item.icon,
+      secao: group.label,
+      ordem: order++,
+      path: item.path,
+      estabilidade: 'estavel',
+    })),
+  );
+  const observer = createRegistryNavigationObserver({ currentPhase: 21 });
+  const observation = observer.observe(registryEntries);
+
+  assert.equal(observation.source, 'registry-observer');
+  assert.equal(observation.parity.exact, true);
+  assert.equal(observation.parity.registryOnly.length, 0);
+  assert.equal(observation.parity.legacyOnly.length, 0);
+  assert.equal(observation.parity.mismatches.length, 0);
+  assert.equal(observer.latest(), observation);
+});
+
+test('UI-03 conserva divergência explícita e não a transforma em mudança de DOM', () => {
+  const observer = createRegistryNavigationObserver({ currentPhase: 21 });
+  const observation = observer.observe([
+    {
+      modulo: 'wiki-arma3',
+      nome: 'Wiki de Arma 3',
+      icone: '📖',
+      secao: 'Conhecimento',
+      ordem: 1,
+      path: '/wiki-arma3',
+      estabilidade: 'beta',
+    },
+  ]);
+
+  assert.equal(observation.parity.registryOnly.length, 0);
+  assert.equal(observation.parity.legacyOnly.length > 0, true);
+  assert.equal(observation.parity.mismatches.length, 0);
+  assert.equal(findNavigationEntry(observation.projection, '/wiki-arma3')?.availability, 'enabled');
 });
 
 test('UI-01 rejeita paths duplicados em vez de mascarar divergência', () => {

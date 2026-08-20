@@ -155,6 +155,16 @@ try {
     `boot=${v2?.resultado?.rotas} router=${v2?.totalRotas}`);
   conferir('a navegação vem do manifesto',
     v2?.resultado?.nav?.length === 5, String(v2?.resultado?.nav?.length));
+  const navigationObservation = await pagina.evaluate(() => window.__v2?.navigationObservation?.());
+  conferir('UI-03 observa o Registry sem trocar a sidebar V1',
+    navigationObservation?.source === 'registry-observer'
+      && navigationObservation?.projection?.entries?.length === 5
+      && navigationObservation?.parity?.sharedPaths?.includes('/editor')
+      && navigationObservation?.parity?.sharedPaths?.includes('/cripto')
+      && navigationObservation?.parity?.sharedPaths?.includes('/militar')
+      && navigationObservation?.parity?.legacyOnly?.length > 0
+      && navigationObservation?.parity?.registryOnly?.length > 0,
+    JSON.stringify(navigationObservation?.parity ?? null));
 
   /* O elo que faz a regra de `ambiente` existir de verdade. O manifesto declara,
    * o `manifest.js` valida, o ciclo aplica — e nada disso vale se ninguém

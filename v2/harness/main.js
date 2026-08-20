@@ -49,6 +49,7 @@ import { router } from '../../src/core/router.js';
 import { bus as busV1 } from '../../src/core/events.js';
 import { storage } from '../../src/core/storage.js';
 import { aplicarPolitica } from '../../src/core/politica.js';
+import { createRegistryNavigationObserver } from '../../src/layout/registry-observer.ts';
 
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
@@ -128,12 +129,20 @@ async function principal() {
    * passaria a se achar app para um lado e web para o outro. */
   const ambiente = globalThis.baluarte?.native === true ? 'app' : 'web';
 
+  const navigationObserver = createRegistryNavigationObserver({
+    currentPhase: 21,
+  });
+
   const boot = criarBoot(
     registry,
     { storage, bus, metricas, trabalho, apis, permissoes, ...(runtimeApp ? { runtime: runtimeApp } : {}) },
     {
     router,
     renderNav: (itens) => {
+      /* UI-03 observa e compara; não substitui renderSidebar() nem publica
+       * disponibilidade no shell V1. A superfície #nav pertence somente ao
+       * harness, que é um banco de prova da V2. */
+      navigationObserver.observe(itens);
       const nav = document.getElementById('nav');
       nav.innerHTML = '';
       for (const item of itens) {
@@ -228,6 +237,7 @@ async function principal() {
     parar: () => plataforma.parar(),
     rotasNoRouter: router.list ? router.list() : null,
     totalRotas: router.count ? router.count() : null,
+    navigationObservation: () => navigationObserver.latest(),
     registros,
     eventos: bus.contagem(),
     /* FUNÇÃO, não valor: a primeira versão tirava o retrato uma vez, no boot, e
