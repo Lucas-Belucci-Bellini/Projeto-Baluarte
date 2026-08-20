@@ -194,6 +194,55 @@ try {
       && !('grant' in platformRuntimeObservationEnvelope),
     JSON.stringify(platformRuntimeObservationEnvelope ?? null));
 
+  const missingClaimsObservation = await pagina.evaluate(() => window.__v2?.serverClaimsObservation?.(null));
+  conferir('claims ausentes permanecem negadas por padrão',
+    missingClaimsObservation?.identity?.authenticated === false
+      && missingClaimsObservation?.identity?.subjectPresent === false
+      && missingClaimsObservation?.scopes?.accepted?.length === 0
+      && missingClaimsObservation?.decision === 'not-authorized'
+      && missingClaimsObservation?.authority === 'not-authorized',
+    JSON.stringify(missingClaimsObservation ?? null));
+
+  const validClaimsObservation = await pagina.evaluate(() => window.__v2?.serverClaimsObservation?.({
+    issuer: 'baluarte-auth',
+    subject: 'operator-test',
+    audience: 'baluarte-platform',
+    scopes: ['platform:observe', 'module:read', 'module:execute'],
+    issuedAt: Date.now() - 1_000,
+    expiresAt: Date.now() + 10_000,
+    requestId: 'claims-gate-test',
+    source: 'server-validated',
+    authenticated: true,
+  }));
+  conferir('claims válidas são observadas com escopo limitado e sem autorização operacional',
+    validClaimsObservation?.identity?.authenticated === true
+      && validClaimsObservation?.identity?.trustedSource === true
+      && validClaimsObservation?.identity?.audienceMatched === true
+      && validClaimsObservation?.validity?.fresh === true
+      && validClaimsObservation?.scopes?.accepted?.includes('platform:observe')
+      && validClaimsObservation?.scopes?.accepted?.includes('module:read')
+      && validClaimsObservation?.scopes?.rejected?.includes('module:execute')
+      && validClaimsObservation?.decision === 'not-authorized'
+      && validClaimsObservation?.authority === 'not-authorized',
+    JSON.stringify(validClaimsObservation ?? null));
+
+  const invalidClaimsObservation = await pagina.evaluate(() => window.__v2?.serverClaimsObservation?.({
+    issuer: 'attacker',
+    subject: 'operator-test',
+    audience: 'baluarte-platform',
+    scopes: ['platform:observe'],
+    issuedAt: Date.now() + 10_000,
+    expiresAt: Date.now() + 20_000,
+    source: 'client-input',
+    authenticated: true,
+  }));
+  conferir('claims com origem ou frescor inválidos não recebem escopo',
+    invalidClaimsObservation?.identity?.trustedSource === false
+      && invalidClaimsObservation?.validity?.fresh === false
+      && invalidClaimsObservation?.scopes?.accepted?.length === 0
+      && invalidClaimsObservation?.decision === 'not-authorized',
+    JSON.stringify(invalidClaimsObservation ?? null));
+
   /* Estas duas seguem exatas de propósito: rota ou item de navegação que SOME é
    * defeito tão real quanto um que falha, e só o número fixo pega o sumiço.
    * Foram de 18→19 e 4→5 com a rota `/visor3d`. */

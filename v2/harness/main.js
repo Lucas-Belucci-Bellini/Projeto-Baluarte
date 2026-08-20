@@ -57,6 +57,7 @@ import { decideModuleAlignment } from '../../src/layout/module-alignment.ts';
 import { evaluatePromotionGate } from '../../src/layout/promotion-gate.ts';
 import { projectPlatformDiagnostic } from '../../src/layout/runtime-observation.ts';
 import { projectPlatformDiagnosticEnvelope, sealPlatformObservationEnvelope } from '../../src/layout/platform-observation-transport.ts';
+import { observeServerClaims } from '../../src/layout/server-claims-observation.ts';
 
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
@@ -387,6 +388,10 @@ async function principal() {
     platformRuntimeObservationEnvelope: async () => sealPlatformObservationEnvelope(
       projectPlatformDiagnosticEnvelope(plataforma.diagnostico()),
     ),
+    serverClaimsObservation: (input) => observeServerClaims(input, {
+      expectedIssuer: 'baluarte-auth',
+      expectedAudience: 'baluarte-platform',
+    }),
     /* Como a partida terminou: `ready` ou `degraded`, e quanto demorou. Antes
      * isso não existia em lugar nenhum — o harness sabia quantos módulos
      * subiram, mas não se o sistema se considerava saudável. */
