@@ -61,3 +61,7 @@ O commit `ca803a40148b7f585530569180dc8962990e6bc0` recebeu deploy Vercel com su
 O check `Supabase Preview` continua reportando a divergência pré-existente `Remote migration versions not found in local migrations directory`; o mesmo erro já estava presente no commit anterior e não é causado pela integração do JARVIS. Os gates do Projeto-Baluarte e o deploy Vercel terminaram com sucesso.
 
 A instância local também foi exposta temporariamente por um proxy HTTP para validação externa. O proxy retornou HTTP 200, a cena 3D e os controles apareceram no navegador e o console compartilhado ficou sem erros; o endereço temporário não é tratado como URL permanente.
+
+## Rodada contínua posterior
+
+Os gates locais foram repetidos sem falhas: validador do JARVIS, TypeScript, 1.085 testes, build, estabilidade, tipos V2, integração V2 21/21, smoke 99/99, caminho crítico 15/15 e Runtime. O JARVIS local abriu novamente com canvas e controles; o console permaneceu sem erros.
