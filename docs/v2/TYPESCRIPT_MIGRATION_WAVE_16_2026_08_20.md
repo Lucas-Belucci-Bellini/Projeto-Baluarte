@@ -1,6 +1,6 @@
 # Migração TypeScript — Wave 16
 
-**Status:** implementação local concluída; publicação preparada após gates verdes.
+**Status:** publicada diretamente no `main`; implementação e CI remota concluídas com sucesso.
 
 **Objetivo:** reduzir o inventário de wrappers JavaScript promovendo `/projetos`, `/calculadoras` e `/cripto` para seus módulos TypeScript canônicos, sem tocar em JARVIS, editor ou páginas com fronteiras externas ainda não auditadas.
 
@@ -61,8 +61,20 @@ O risco é baixo e limitado à resolução dos módulos e aos imports relativos 
 
 ## Critério de conclusão
 
-A Wave 16 será concluída após o commit e a confirmação da CI remota no SHA final. Os critérios locais já foram satisfeitos: os três índices carregam diretamente os módulos `.ts`, Nexus e router estão sincronizados e todos os gates comportamentais passaram.
+A Wave 16 foi concluída: os três índices carregam diretamente os módulos `.ts`, Nexus e router estão sincronizados, todos os gates comportamentais passaram e a CI remota terminou verde no SHA de implementação.
+
+| Workflow remoto | Resultado |
+|---|---:|
+| CI | success |
+| Core CI | success |
+| V2 Core | success |
+| V2 Runtime | success |
+| V2 Validation | success |
+| Vigia das rotas | success |
+| Arma 3 Data CI | success |
+| CodeQL | success |
 
 **Autor:** Manus AI
-**SHA:** será preenchido após publicação.
-**Data dos gates:** 2026-08-20T02:47Z–02:48Z.
+**SHA de implementação e publicação:** `8ef1b153d30a9a38e975e0ba10bc5bac3f44a998`.
+**Integração concorrente:** `2d283465ab6044fe31d4d850424019356df4229f`, auditoria contínua integrada por fast-forward antes do fechamento documental.
+**Data dos gates:** 2026-08-20T02:47Z–02:54Z.
