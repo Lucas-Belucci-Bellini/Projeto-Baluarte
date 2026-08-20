@@ -13,7 +13,7 @@ import type { MusicaLocal, MusicaPropria } from '../data/musicas-proprias.js';
 import { addFiles, listTracks, getBlob, removeTrack, clearAll, formatSize, offlineAudioSupported } from '../utils/offline-audio.js';
 import type { OfflineTrack } from '../utils/offline-audio.js';
 import type { SoundCloudWidget, SpotifyController, SpotifyEmbedAPI } from '../utils/music-embeds.d.ts';
-import { startJarvisMusicPresence, observeJarvisSpotifyPlayback } from '../utils/jarvis-music-presence.js';
+import { startJarvisMusicPresence, observeJarvisSpotifyPlayback } from '../utils/jarvis-music-presence';
 
 type SpotifyEmbedType = 'track' | 'album' | 'playlist' | 'artist' | 'episode' | 'show';
 type CustomMusic = SpotifyCustomMusic | SoundCloudCustomMusic;

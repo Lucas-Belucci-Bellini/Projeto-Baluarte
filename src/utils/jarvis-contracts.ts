@@ -1,4 +1,4 @@
-import type { PermissionId } from './jarvis-permissoes.js';
+import type { PermissionId } from './jarvis-permissoes.ts';
 
 export const SESSION_MODES = [
   'local',

@@ -1,4 +1,4 @@
-import { observeJarvisSpotifyApiPlayback } from './jarvis-music-presence.js';
+import { observeJarvisSpotifyApiPlayback } from './jarvis-music-presence';
 
 const AUTH_ENDPOINT = 'https://accounts.spotify.com/authorize';
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';

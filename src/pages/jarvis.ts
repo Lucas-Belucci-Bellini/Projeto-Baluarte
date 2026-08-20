@@ -25,8 +25,8 @@ import type { ChartData } from '../utils/chart-engine.js';
 import { memoryContext, captureConversation, captureReply } from '../utils/jarvis-brain.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import type { LanguageDefinition } from '../data/editor-langs.js';
-import { getJarvisRuntimeContext } from '../utils/jarvis-context.js';
-import { beginSpotifyAuthorization, disconnectSpotify, isSpotifyConnected } from '../utils/jarvis-spotify-session.js';
+import { getJarvisRuntimeContext } from '../utils/jarvis-context';
+import { beginSpotifyAuthorization, disconnectSpotify, isSpotifyConnected } from '../utils/jarvis-spotify-session';
 import { humanize } from '../utils/jarvis-style.js';
 import {
   createSession, listSessions, updateSession, deleteSession,

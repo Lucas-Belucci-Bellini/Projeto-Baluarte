@@ -11,7 +11,7 @@
  * "esse comando é perigoso?" sobre uma ação que nem devia estar disponível é
  * responder tarde.
  *
- * Ferramenta sem mapa em `jarvis-permissoes.js` cai no padrão **fechado**
+ * Ferramenta sem mapa em `jarvis-permissoes.ts` cai no padrão **fechado**
  * (`jarvis.skills.executar`) — nasce negada, de propósito.
  *
  * ── Por que o resultado tem índice `unknown` ────────────────────────────────

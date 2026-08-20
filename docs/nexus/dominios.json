@@ -40,7 +40,8 @@
     "src/core/politica.js",
     "src/pages/diagnostico.ts",
     "src/styles/diagnostico.css",
-    "src/core/dados-remotos.js"
+    "src/core/dados-remotos.js",
+    "src/main.js"
    ],
    "precisa": [],
    "peso": "leve"
@@ -526,6 +527,10 @@
     "src/utils/jarvis-style.js",
     "src/utils/jarvis-voice.js",
     "src/utils/jarvis-webllm.js",
+    "src/utils/jarvis-context.ts",
+    "src/utils/jarvis-music-presence.ts",
+    "src/utils/jarvis-spotify-session.ts",
+    "src/utils/jarvis-spotify.ts",
     "src/utils/hermes-local.js",
     "src/utils/llm-mini.js",
     "src/utils/memory-ml.js",
@@ -568,6 +573,7 @@
     "src/utils/git-nexus-graph.js",
     "src/utils/git-nexus-graph3d.js",
     "src/utils/jarvis-tools.js",
+    "src/utils/jarvis-permissoes.ts",
     "src/utils/jarvis-skills.js",
     "src/utils/jarvis-nexus-tools.js",
     "src/utils/jarvis-arquivos.js",

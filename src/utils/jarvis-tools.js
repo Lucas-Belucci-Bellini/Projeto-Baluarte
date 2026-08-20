@@ -23,7 +23,7 @@ import { guardEnabled, evaluateToolCall, logDecision } from './jarvis-guard.js';
 import { exigir, PermissionError } from '../core/permissions.js';
 /* O mapa tool→permissão mora à parte para poder ser testado sem navegador
  * (este arquivo importa JSON via bundler e não abre em Node puro). */
-import { permissaoDe } from './jarvis-permissoes.js';
+import { permissaoDe } from './jarvis-permissoes.ts';
 
 /* ===== Schema das ferramentas (formato Claude API) ===== */
 

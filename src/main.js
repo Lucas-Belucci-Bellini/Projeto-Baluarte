@@ -34,8 +34,8 @@ import { countPageView } from './utils/page-views.js';
 import { handleAuthRedirect } from './core/supabase-auth.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
-import { startJarvisMusicPresence } from './utils/jarvis-music-presence.js';
-import { resumeSpotifyAuthorization } from './utils/jarvis-spotify-session.js';
+import { startJarvisMusicPresence } from './utils/jarvis-music-presence.ts';
+import { resumeSpotifyAuthorization } from './utils/jarvis-spotify-session.ts';
 
 /* ==============================================================
  *  Helper de carregamento sob demanda (code-splitting via Vite).

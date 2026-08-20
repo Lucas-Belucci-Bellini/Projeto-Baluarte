@@ -3,8 +3,8 @@ import {
   exchangeSpotifyAuthorizationCode,
   refreshSpotifyAccessToken,
   createSpotifyPlaybackMonitor,
-} from './jarvis-spotify.js';
-import type { SpotifyPkceConfig, SpotifyPlaybackMonitor, SpotifyTokens } from './jarvis-spotify.ts';
+} from './jarvis-spotify';
+import type { SpotifyPkceConfig, SpotifyPlaybackMonitor, SpotifyTokens } from './jarvis-spotify';
 
 const SESSION_KEY = 'baluarte:spotify:pkce';
 const DEFAULT_SCOPE = 'user-read-playback-state';
