@@ -6,7 +6,7 @@
 
 ## Base auditada
 
-A Wave 9 foi construída sobre o SHA `6ef6c4423e7eac31da4f2799bbe28a2603d402c8`, que contém a Wave 8 publicada e todos os workflows remotos verdes. Durante a sincronização, o commit remoto `ca803a40` (`fix(jarvis): integrar html com fonte typescript no vite`) foi integrado sem conflito antes da publicação da onda.
+A Wave 9 foi construída sobre o SHA `6ef6c4423e7eac31da4f2799bbe28a2603d402c8`, que contém a Wave 8 publicada e todos os workflows remotos verdes. Durante a sincronização, o commit remoto `ca803a40` (`fix(jarvis): integrar html com fonte typescript no vite`) foi integrado sem conflito antes da publicação da onda. A publicação final resultou no SHA `cb4c460a42e46761e162a5ca939aa75446dd7168`.
 
 ## Objetivo
 
@@ -54,4 +54,4 @@ O risco é regressão de uma fronteira legada que dependa do wrapper JavaScript 
 
 ## Próximo passo
 
-A divergência foi inspecionada, o commit remoto `ca803a40` foi integrado e a Wave 9 foi publicada no SHA que será registrado após o push desta documentação. Depois, selecionar uma onda de páginas militares leves ou iniciar a análise contratual de `/geo` e `/visao`, mantendo `jarvis.ts` e `editor.ts` bloqueados até seus contratos pesados serem tratados.
+A divergência foi inspecionada, o commit remoto `ca803a40` foi integrado e a Wave 9 foi publicada no SHA `cb4c460a42e46761e162a5ca939aa75446dd7168`. CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL passaram nesse SHA. Depois, selecionar uma onda de páginas militares leves ou iniciar a análise contratual de `/geo` e `/visao`, mantendo `jarvis.ts` e `editor.ts` bloqueados até seus contratos pesados serem tratados.
