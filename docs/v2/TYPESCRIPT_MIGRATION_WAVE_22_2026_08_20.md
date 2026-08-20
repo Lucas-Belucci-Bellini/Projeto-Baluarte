@@ -1,6 +1,6 @@
 # Migração TypeScript — Wave 22
 
-**Status:** implementação local concluída; publicação preparada após gates verdes.
+**Status:** publicada diretamente no `main`; implementação e CI remota concluídas com sucesso.
 
 **Objetivo:** remover os carregamentos internos restantes de wrappers JavaScript para JARVIS, Dashboard e JARVIS Vision, promovendo os módulos TypeScript canônicos sem alterar engines, bridges, permissões, sessões ou integração OpenClaw.
 
@@ -67,8 +67,19 @@ O risco principal é um caminho lazy permanecer apontando para wrapper ou um exp
 
 ## Critério de conclusão
 
-A Wave 22 será concluída após o commit e a confirmação da CI remota no SHA final. Os critérios locais já foram satisfeitos: os carregadores internos usam os três módulos TypeScript, o Nexus está sincronizado e todos os gates comportamentais passaram.
+A Wave 22 foi concluída: os carregadores internos usam os três módulos TypeScript, o Nexus está sincronizado, todos os gates comportamentais passaram e a CI remota terminou verde no SHA de implementação.
+
+| Workflow remoto | Resultado |
+|---|---:|
+| CI | success |
+| Core CI | success |
+| V2 Core | success |
+| V2 Runtime | success |
+| V2 Validation | success |
+| Vigia das rotas | success |
+| Arma 3 Data CI | success |
+| CodeQL | success |
 
 **Autor:** Manus AI
-**SHA:** será preenchido após publicação.
-**Data dos gates:** 2026-08-20T04:35Z–04:38Z.
+**SHA de implementação e publicação:** `62839fe7ff50603fc81b18179515a92a4d785566`.
+**Data dos gates:** 2026-08-20T04:35Z–04:42Z.
