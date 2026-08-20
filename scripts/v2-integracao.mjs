@@ -159,6 +159,31 @@ try {
       && platformRuntimeObservation?.incidentCount === 0,
     JSON.stringify(platformRuntimeObservation ?? null));
 
+  const platformRuntimeObservationEnvelope = await pagina.evaluate(() => window.__v2?.platformRuntimeObservationEnvelope?.());
+  conferir('envelope V2 transporta somente observação redigida',
+    platformRuntimeObservationEnvelope?.contractVersion === 'platform-observation/v1'
+      && platformRuntimeObservationEnvelope?.source === 'v2-platform-diagnostic'
+      && platformRuntimeObservationEnvelope?.authority === 'not-authorized'
+      && platformRuntimeObservationEnvelope?.redaction?.applied === true
+      && Array.isArray(platformRuntimeObservationEnvelope?.redaction?.fields)
+      && platformRuntimeObservationEnvelope.redaction.fields.includes('registry.incidentes[].error')
+      && platformRuntimeObservationEnvelope?.summary?.moduleCount === vivos.length
+      && platformRuntimeObservationEnvelope?.summary?.incidentCount === 0
+      && !('boot' in platformRuntimeObservationEnvelope)
+      && !('registry' in platformRuntimeObservationEnvelope),
+    JSON.stringify(platformRuntimeObservationEnvelope ?? null));
+
+  conferir('envelope V2 possui TTL verificável e não autoriza ações',
+    Number.isInteger(platformRuntimeObservationEnvelope?.capturedAt)
+      && Number.isInteger(platformRuntimeObservationEnvelope?.expiresAt)
+      && platformRuntimeObservationEnvelope.expiresAt > platformRuntimeObservationEnvelope.capturedAt
+      && platformRuntimeObservationEnvelope.expiresAt - platformRuntimeObservationEnvelope.capturedAt === platformRuntimeObservationEnvelope.ttlMs
+      && platformRuntimeObservationEnvelope.ttlMs > 0
+      && platformRuntimeObservationEnvelope.ttlMs <= 60_000
+      && !('execute' in platformRuntimeObservationEnvelope)
+      && !('grant' in platformRuntimeObservationEnvelope),
+    JSON.stringify(platformRuntimeObservationEnvelope ?? null));
+
   /* Estas duas seguem exatas de propósito: rota ou item de navegação que SOME é
    * defeito tão real quanto um que falha, e só o número fixo pega o sumiço.
    * Foram de 18→19 e 4→5 com a rota `/visor3d`. */

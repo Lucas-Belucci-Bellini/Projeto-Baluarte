@@ -77,6 +77,8 @@ O harness V2 expõe `platformRuntimeObservation()` somente para testes de integr
 
 O backend opcional agora possui um envelope separado, documentado em [`JARVIS_SERVER_HEALTH_CONTRACT_2026-08-20.md`](./JARVIS_SERVER_HEALTH_CONTRACT_2026-08-20.md). Ele cobre somente liveness e prontidão observada do backend Python/Vercel, preserva `hasKey` como booleano e mantém `authority: not-authorized`. Ele ainda não transporta `PlatformDiagnostic` da V2 e não pode decidir disponibilidade de módulos.
 
+O novo contrato `platform-observation/v1`, documentado em [`PLATFORM_OBSERVATION_TRANSPORT_CONTRACT_2026-08-20.md`](./PLATFORM_OBSERVATION_TRANSPORT_CONTRACT_2026-08-20.md), é uma fronteira redigida de prova no harness: publica resumo mínimo, TTL e campos omitidos, mas não é endpoint de produção, não autentica consumidores e não concede autoridade.
+
 ## O que este marco não implementa
 
 Este marco não implementa claims server-side, Auth/RLS, health persistente, ingestão do diagnóstico `PlatformDiagnostic` no shell público, promoção automática de módulos, disable/quarantine por cliente, telemetria remota, auditoria de atores ou autorização de ações. Ele projeta sinais já existentes no Event Bus V1, em um health check manual e no harness read-only da Plataforma V2.
