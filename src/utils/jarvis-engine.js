@@ -21,7 +21,7 @@ import './jarvis-nexus-tools.js'; // registra o Git Nexus como skills do JARVIS 
 import { findCapability } from '../data/site-capabilities.js';
 import { addMemory, searchMemories, conceptLabel } from './jarvis-brain.js';
 import { getBaluarteBriefing } from './jarvis-context.ts';
-import { buildNewsBriefingPrompt } from './news-briefing.js';
+import { buildNewsBriefingPrompt } from './news-briefing.ts';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
