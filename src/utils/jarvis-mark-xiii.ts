@@ -1,14 +1,7 @@
 import { h } from './helpers.js';
+import type { RuntimeObservation } from '../layout/runtime-observation';
 
-export type RuntimeConnectionStatus = 'unknown' | 'connected' | 'disconnected';
-export type RuntimeHealthStatus = 'unknown' | 'healthy' | 'degraded' | 'failed' | 'exhausted';
-
-export interface MarkXiiiRuntimeObservation {
-  readonly source: 'visual-only' | 'v1-nucleo-event' | 'runtime-observed';
-  readonly connection: RuntimeConnectionStatus;
-  readonly health: RuntimeHealthStatus;
-  readonly detail?: string;
-}
+export type { RuntimeObservation as MarkXiiiRuntimeObservation } from '../layout/runtime-observation';
 
 export interface MarkXiiiConsoleOptions {
   readonly version: string;
@@ -20,7 +13,7 @@ export interface MarkXiiiConsole {
   readonly root: HTMLDivElement;
   setMode(label: string): void;
   setMusic(connected: boolean): void;
-  setRuntimeObservation(observation: MarkXiiiRuntimeObservation): void;
+  setRuntimeObservation(observation: RuntimeObservation): void;
   dispose(): void;
 }
 
@@ -281,7 +274,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   globalThis.addEventListener('resize', resize);
   resize();
   root.dataset.performance = performanceQuality;
-  const setRuntimeObservation = (observation: MarkXiiiRuntimeObservation): void => {
+  const setRuntimeObservation = (observation: RuntimeObservation): void => {
     const connected = observation.connection === 'connected';
     const healthLabel = observation.health.toUpperCase();
     root.dataset.runtimeConnection = observation.connection;
@@ -301,7 +294,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
       ? `Runtime observado · saúde ${healthLabel.toLowerCase()} · autoridade server-side não conectada.`
       : 'Núcleo visual ativo. Observação do Runtime pendente.');
   };
-  setRuntimeObservation({ source: 'visual-only', connection: 'unknown', health: 'unknown' });
+  setRuntimeObservation({ source: 'visual-only', connection: 'unknown', health: 'unknown', authority: 'not-authorized' });
   raf = requestAnimationFrame(draw);
 
   return {

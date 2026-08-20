@@ -53,9 +53,15 @@ O contrato estático está em [`test/jarvis-mark-xiii-console.test.js`](../../te
 
 Foram executados os cinco contratos direcionados do JARVIS, `npm run tipos:ts`, `npm run tipos:v2` e o benchmark isolado. A validação completa antes da publicação deverá repetir Nexus, tipos, testes, build, integração V2, smoke e caminho crítico.
 
+## Adaptador compartilhado da V2
+
+O contrato foi extraído para [`src/layout/runtime-observation.ts`](../../src/layout/runtime-observation.ts). A função `projectPlatformDiagnostic()` recebe o `PlatformDiagnostic` canônico da V2 e retorna a mesma projeção read-only usada pelo console: `source`, `connection`, `health`, `authority`, `detail`, `moduleCount` e `incidentCount`.
+
+O harness V2 expõe `platformRuntimeObservation()` somente para testes de integração. Ele observa o diagnóstico da Plataforma, classifica registros `healthy` do Registry como estado normal — não como incidentes adversos — e mantém `authority: not-authorized`. O gate V2 confirma essa projeção junto com o boot, Runtime, Registry, router V1 e os demais contratos, totalizando `33/33` afirmações. Nenhum controle operacional foi delegado ao adaptador.
+
 ## O que este marco não implementa
 
-Este marco não implementa claims server-side, Auth/RLS, health persistente, ingestão do diagnóstico `PlatformDiagnostic` no navegador, promoção automática de módulos, disable/quarantine por cliente, telemetria remota, auditoria de atores ou autorização de ações. Ele apenas projeta sinais já existentes no Event Bus V1 e em um health check manual.
+Este marco não implementa claims server-side, Auth/RLS, health persistente, ingestão do diagnóstico `PlatformDiagnostic` no shell público, promoção automática de módulos, disable/quarantine por cliente, telemetria remota, auditoria de atores ou autorização de ações. Ele projeta sinais já existentes no Event Bus V1, em um health check manual e no harness read-only da Plataforma V2.
 
 ## Rollback
 

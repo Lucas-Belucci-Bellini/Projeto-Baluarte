@@ -889,6 +889,7 @@ function renderConfigPanel(): HTMLDivElement {
             applyRuntimeObservation({
               source: 'runtime-observed',
               connection: 'connected',
+              authority: 'not-authorized',
               health: info.hasKey ? 'healthy' : 'degraded',
               detail: info.hasKey ? 'health endpoint + Gemini key observados' : 'health endpoint observado; chave Gemini ausente',
             });
@@ -898,6 +899,7 @@ function renderConfigPanel(): HTMLDivElement {
             applyRuntimeObservation({
               source: 'runtime-observed',
               connection: 'disconnected',
+              authority: 'not-authorized',
               health: 'failed',
               detail: 'health endpoint não respondeu',
             });
@@ -1096,6 +1098,7 @@ export function jarvisPage(): HTMLDivElement {
     applyRuntimeObservation({
       source: 'v1-nucleo-event',
       connection: status.connected === true ? 'connected' : 'disconnected',
+      authority: 'not-authorized',
       health: 'unknown',
       ...(status.detail ? { detail: status.detail } : {}),
     });
