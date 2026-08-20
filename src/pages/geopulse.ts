@@ -9,8 +9,8 @@ import '../styles/geopulse.css';
 import { h, empty } from '../utils/helpers.js';
 import { aoSair } from '../core/ciclo-vida.js';
 import { toast } from '../utils/toast';
-import { createGeoTracker } from '../utils/geo-tracker.js';
-import type { GeoPoint, GeoTracker } from '../utils/geo-tracker.js';
+import { createGeoTracker } from '../utils/geo-tracker';
+import type { GeoPoint, GeoTracker } from '../utils/geo-tracker';
 import type { Point2D } from '../utils/triangulation';
 
 type StatKey = 'count' | 'dist' | 'dur' | 'avg' | 'max' | 'cur';

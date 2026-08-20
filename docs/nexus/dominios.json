@@ -746,6 +746,7 @@
     "src/utils/maplibre-loader.js",
     "src/utils/maplibre-loader.ts",
     "src/utils/geo-tracker.js",
+    "src/utils/geo-tracker.ts",
     "src/utils/radar-dsp.js",
     "src/utils/radar-source.js",
     "src/utils/radar-tracker.js",
