@@ -1,4 +1,4 @@
-import { clearStatus, setStatus, type StatusValue } from './baluarte-status.js';
+import { clearStatus, setStatus, type StatusValue } from './baluarte-status';
 
 export type JarvisMusicSource = 'html-media' | 'spotify-embed' | 'spotify-api';
 export type JarvisMusicPlayback = 'playing' | 'paused' | 'unknown' | 'idle';

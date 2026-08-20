@@ -3,7 +3,7 @@ import { h, empty } from '../utils/helpers.js';
 import { bus } from '../core/events.js';
 import { loadConfig, saveConfig, processLocal, processClaude, processOllama, processServer, processHermes, processClaudeServer, processOpenClaw, processAgent, getBaluarteBriefing } from '../utils/jarvis-engine.js';
 import type { JarvisConfig, JarvisMessage, JarvisToolCallback } from '../utils/jarvis-engine.js';
-import { getStatusText } from '../utils/baluarte-status.js';
+import { getStatusText } from '../utils/baluarte-status';
 import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
 import { processHermesLocal, healthHermesLocal, listHermesLocalModels, HERMES_LOCAL_PRESETS } from '../utils/hermes-local.js';
 import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';

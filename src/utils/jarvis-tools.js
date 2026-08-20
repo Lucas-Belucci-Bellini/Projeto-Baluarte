@@ -13,7 +13,7 @@ import { ARCS, findArc, ARCS_TOTAL } from '../data/cronicas.js';
 import { storage } from '../core/storage.js';
 import { randHex } from './helpers.js';
 import { evaluate } from './calc-engine.js';
-import { getStatusSnapshot } from './baluarte-status.js';
+import { getStatusSnapshot } from './baluarte-status.ts';
 import { VERSION } from '../data/version.js';
 import { recall, getMemoryCache } from './jarvis-recall.js';
 import {

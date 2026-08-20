@@ -5,7 +5,7 @@ import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
 import { codeContext } from './jarvis-brain.js';
-import { getStatusText } from './baluarte-status.js';
+import { getStatusText } from './baluarte-status';
 export interface JarvisRouteCapability {
   readonly path: string;
   readonly label: string;
