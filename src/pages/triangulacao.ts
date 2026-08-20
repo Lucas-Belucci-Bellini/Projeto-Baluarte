@@ -13,8 +13,8 @@ import {
   bearingTo,
   gaussianNoise,
   dist,
-} from '../utils/triangulation.js';
-import type { BearingStation, Point2D } from '../utils/triangulation.js';
+} from '../utils/triangulation';
+import type { BearingStation, Point2D } from '../utils/triangulation';
 
 type StationCount = 3 | 4 | 5;
 type StatKey = 'est' | 'real' | 'err' | 'res';

@@ -11,7 +11,7 @@ import { aoSair } from '../core/ciclo-vida.js';
 import { toast } from '../utils/toast.js';
 import { createGeoTracker } from '../utils/geo-tracker.js';
 import type { GeoPoint, GeoTracker } from '../utils/geo-tracker.js';
-import type { Point2D } from '../utils/triangulation.js';
+import type { Point2D } from '../utils/triangulation';
 
 type StatKey = 'count' | 'dist' | 'dur' | 'avg' | 'max' | 'cur';
 

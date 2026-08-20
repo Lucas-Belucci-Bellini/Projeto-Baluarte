@@ -18,8 +18,8 @@ import {
   hslToRgb,
   rgbToOklch,
   contrastRatio,
-} from '../utils/cor.js';
-import type { HslColor, RgbColor } from '../utils/cor.js';
+} from '../utils/cor';
+import type { HslColor, RgbColor } from '../utils/cor';
 
 const STORAGE_KEY = 'color-studio:color';
 type Channel = 'r' | 'g' | 'b';
