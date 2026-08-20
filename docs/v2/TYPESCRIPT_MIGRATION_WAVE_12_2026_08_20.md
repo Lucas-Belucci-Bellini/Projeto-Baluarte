@@ -2,11 +2,11 @@
 
 ## Status
 
-`VALIDATED LOCALLY — PENDING PUBLICATION`
+`PUBLISHED — REMOTE CI GREEN`
 
 ## Base auditada
 
-A Wave 12 foi preparada sobre o SHA `20bd600e`, que contém a Wave 11 publicada diretamente no `main` e seu registro documental.
+A Wave 12 foi preparada sobre o SHA `20bd600e`, que contém a Wave 11 publicada diretamente no `main` e seu registro documental. A entrega final foi publicada no SHA `7c29d1c04913b53191419bb7434b04973092be16`.
 
 ## Objetivo
 
@@ -49,4 +49,4 @@ O risco é uma divergência futura entre o wrapper JavaScript e o TypeScript can
 
 ## Próximo passo
 
-Sincronizar `origin/main`, integrar qualquer avanço concorrente, publicar diretamente no `main` e monitorar os workflows. Depois, auditar as páginas com papéis (`/tecnologia-militar` e `/guerras-conflitos`) antes de promovê-las.
+A Wave 12 foi sincronizada com `origin/main`, publicada diretamente no `main` no SHA `7c29d1c04913b53191419bb7434b04973092be16` e os oito workflows remotos passaram: CI, Core CI, V2 Core, V2 Runtime, V2 Validation, Vigia das rotas, Arma 3 Data CI e CodeQL. Depois, auditar as páginas com papéis (`/tecnologia-militar` e `/guerras-conflitos`) antes de promovê-las.
