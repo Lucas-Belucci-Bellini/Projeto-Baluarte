@@ -118,10 +118,46 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   let width = 0;
   let height = 0;
   let lastFrame = 0;
+  let frameWindowStarted = 0;
+  let framesInWindow = 0;
+  let measuredFps = 0;
+  const device = globalThis.navigator as Navigator & { deviceMemory?: number };
+  const lowMemoryDevice = typeof device.deviceMemory === 'number' && device.deviceMemory < 4;
+  let performanceQuality: 'full' | 'reduced' = lowMemoryDevice ? 'reduced' : 'full';
   const prefersReducedMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
   const mediaListener = () => { root.dataset.reducedMotion = String(prefersReducedMotion?.matches === true); };
   prefersReducedMotion?.addEventListener?.('change', mediaListener);
   mediaListener();
+
+  const particleCount = (): number => performanceQuality === 'reduced' ? 56 : 96;
+  const updateTelemetry = (): void => {
+    const state = performanceQuality === 'reduced' ? 'REDUZIDO' : 'ATIVO';
+    setText(telemetryValue, measuredFps > 0 ? `${state} · ${Math.round(measuredFps)} FPS` : state);
+    root.dataset.performance = performanceQuality;
+    if (measuredFps > 0) root.dataset.fps = String(Math.round(measuredFps));
+  };
+  const rebuildParticles = (): void => {
+    particles = Array.from({ length: particleCount() }, (_, index) => createParticle(width, height, index));
+  };
+  const setPerformanceQuality = (quality: 'full' | 'reduced'): void => {
+    if (performanceQuality === quality) return;
+    performanceQuality = quality;
+    rebuildParticles();
+    updateTelemetry();
+  };
+  const samplePerformance = (time: number): void => {
+    if (frameWindowStarted === 0) frameWindowStarted = time;
+    framesInWindow += 1;
+    const windowMs = time - frameWindowStarted;
+    if (windowMs < 1000) return;
+    measuredFps = (framesInWindow / windowMs) * 1000;
+    if (measuredFps < 24 && performanceQuality === 'full') setPerformanceQuality('reduced');
+    else if (measuredFps > 48 && performanceQuality === 'reduced' && !lowMemoryDevice) setPerformanceQuality('full');
+    framesInWindow = 0;
+    frameWindowStarted = time;
+    updateTelemetry();
+  };
+  updateTelemetry();
 
   const resize = (): void => {
     const box = canvas.getBoundingClientRect();
@@ -131,14 +167,20 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
     canvas.width = Math.floor(width * dpr);
     canvas.height = Math.floor(height * dpr);
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
-    particles = Array.from({ length: 148 }, (_, index) => createParticle(width, height, index));
+    rebuildParticles();
   };
 
   const draw = (time: number): void => {
     if (disposed) return;
     const reduced = prefersReducedMotion?.matches === true;
+    const frameBudget = performanceQuality === 'reduced' ? 50 : 33;
+    if (lastFrame !== 0 && time - lastFrame < frameBudget) {
+      raf = requestAnimationFrame(draw);
+      return;
+    }
     const dt = Math.min(50, time - lastFrame || 16);
     lastFrame = time;
+    samplePerformance(time);
     const palette = THEMES[currentTheme];
     const beat = reduced ? 0.08 : Math.sin(time * 0.002) * 0.12 + Math.sin(time * 0.006) * 0.04;
     context.clearRect(0, 0, width, height);
@@ -173,7 +215,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
       }
       const distance = Math.hypot(particle.x - centerX, particle.y - centerY);
       if (distance > Math.min(width, height) * 0.34 || particle.x < 0 || particle.x > width || particle.y < 0 || particle.y > height) {
-        Object.assign(particle, createParticle(width, height, Math.floor(Math.random() * 148)));
+        Object.assign(particle, createParticle(width, height, Math.floor(Math.random() * particleCount())));
       }
       const flicker = 0.78 + Math.sin(time * 0.003 + particle.phase) * 0.22;
       context.fillStyle = `${palette.node}${Math.max(0.12, particle.alpha * flicker).toFixed(2).slice(2)}`;
@@ -184,8 +226,9 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
 
     context.strokeStyle = `${palette.line}`;
     context.lineWidth = 0.55;
+    const connectionStride = performanceQuality === 'reduced' ? 3 : 1;
     for (let i = 0; i < particles.length; i += 1) {
-      for (let j = i + 1; j < particles.length; j += 1) {
+      for (let j = i + 1; j < particles.length; j += connectionStride) {
         const a = particles[i];
         const b = particles[j];
         const distance = Math.hypot(a.x - b.x, a.y - b.y);
@@ -217,6 +260,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   resizeObserver?.observe(canvas);
   globalThis.addEventListener('resize', resize);
   resize();
+  root.dataset.performance = performanceQuality;
   raf = requestAnimationFrame(draw);
 
   return {

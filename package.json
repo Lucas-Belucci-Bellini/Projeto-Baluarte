@@ -32,6 +32,7 @@
     "atualizar-arma3": "python3 scripts/arma3/atualizar-arma3.py",
     "verificar-arma3": "python3 scripts/arma3/gerar-base-armas.py && python3 scripts/arma3/gerar-base-acessorios.py && python3 scripts/arma3/gerar-base-terrenos.py && python3 scripts/arma3/gerar-base-veiculos.py && python3 scripts/arma3/gerar-base-equipamento.py && python3 scripts/arma3/gerar-base-soldados.py && python3 scripts/arma3/gerar-base-extracao.py && node scripts/verificar-wiki-arsenal.mjs && node scripts/verificar-grade.mjs",
     "smoke": "node scripts/smoke-rotas.mjs",
+    "jarvis:performance": "node scripts/jarvis-performance.mjs",
     "auditar": "node scripts/auditar-grupo.mjs",
     "caminho-critico": "node scripts/caminho-critico.mjs",
     "sonda-memoria": "node scripts/sonda-memoria.mjs",

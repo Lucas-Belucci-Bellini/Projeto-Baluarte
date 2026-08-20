@@ -11,6 +11,8 @@ const sidebar = readFileSync(join(raiz, 'src', 'layout', 'sidebar.ts'), 'utf8');
 const nexus = readFileSync(join(raiz, 'docs', 'nexus', 'dominios.json'), 'utf8');
 const consoleSource = readFileSync(join(raiz, 'src', 'utils', 'jarvis-mark-xiii.ts'), 'utf8');
 const styles = readFileSync(join(raiz, 'src', 'styles', 'fase19.css'), 'utf8');
+const performanceScript = readFileSync(join(raiz, 'scripts', 'jarvis-performance.mjs'), 'utf8');
+const packageJson = readFileSync(join(raiz, 'package.json'), 'utf8');
 
 test('a página real do JARVIS monta o console Mark XIII integrado ao shell', () => {
   assert.match(page, /createMarkXiiiConsole/);
@@ -34,4 +36,15 @@ test('o console Mark XIII possui animação, telemetria, presença musical e fal
   assert.match(consoleSource, /onMusic/);
   assert.match(styles, /\.jv-mark-xiii/);
   assert.match(styles, /\.jv-mark-xiii\[data-music="true"\]/);
+});
+
+test('o console possui orçamento adaptativo e benchmark reproduzível', () => {
+  assert.match(consoleSource, /lowMemoryDevice/);
+  assert.match(consoleSource, /performanceQuality/);
+  assert.match(consoleSource, /measuredFps/);
+  assert.match(consoleSource, /particleCount/);
+  assert.match(consoleSource, /dataset\.performance/);
+  assert.match(performanceScript, /REDUCED_MOTION/);
+  assert.match(performanceScript, /jv-mark-xiii/);
+  assert.match(packageJson, /jarvis:performance/);
 });
