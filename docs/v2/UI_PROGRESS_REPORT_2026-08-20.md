@@ -1,6 +1,6 @@
 # Relatório Consolidado — PHASE UI e Pilotos de Alinhamento
 
-**Audited/published main:** `246856068e68960f6e1a428ad8ad719bf04a363e`
+**Audited/published main:** `2650130117f3c012980d9adb19713f7244712d08`
 
 **Status:** `IMPLEMENTED — MAIN GREEN — EDITOR CANDIDATE ONLY`
 
@@ -12,7 +12,7 @@
 
 A construção avançou da projeção passiva de navegação para uma cadeia de contratos que observa o Registry, mede divergências com a navegação V1, combina a matriz com health/deep link/fallback e produz uma candidatura individual para o editor. O trabalho foi publicado diretamente no `main`, sem PR e sem force push.
 
-O resultado mais importante é uma separação operacional clara: **candidatura de promoção não é promoção visual, estabilidade não é health e health não é autorização**. O editor agora tem metadados de domínio alinhados com o catálogo V1 e é o único candidato auditável no harness V2, mas o shell público continua usando `renderSidebar()` da V1.
+O resultado mais importante é uma separação operacional clara: **candidatura de promoção não é promoção visual, estabilidade não é health, health não é autorização e claims de teste não são claims de produção**. O editor agora tem metadados de domínio alinhados com o catálogo V1 e é o único candidato auditável no harness V2, mas o shell público continua usando `renderSidebar()` da V1.
 
 ## Linha do tempo publicada
 
@@ -24,6 +24,7 @@ O resultado mais importante é uma separação operacional clara: **candidatura 
 | Matriz UI-04 publicada | `48f28baff08ac9794fd5b8fac62351c8fc6b4203` | SHA do UI-04 registrado na documentação |
 | Piloto por módulo | `9b31d0944de51b7fc53806902566ab61b976346f` | Decisão auditável com health, deep link e fallback, 23/23 V2 |
 | Editor single-surface pilot | `246856068e68960f6e1a428ad8ad719bf04a363e` | Domínio do editor alinhado; um candidato, sem promoção pública |
+| Promotion gate | `2650130117f3c012980d9adb19713f7244712d08` | Claims server-side ausentes bloqueiam promoção; 14/14 testes UI e 24/24 V2 |
 
 Cada marco teve backup branch antes da publicação. Os backups são `backup/2026-08-20-ui-02`, `backup/2026-08-20-ui-03`, `backup/2026-08-20-ui-04`, `backup/2026-08-20-module-alignment-pilot` e `backup/2026-08-20-editor-single-surface-pilot`.
 
@@ -47,6 +48,7 @@ O `v2/harness/main.js` expõe as superfícies de observação apenas no banco de
 | `npm run v2:integracao` | 23/23 |
 | `npm run smoke` | 99/99 |
 | `npm run caminho-critico` | 15/15 |
+| Gate de promoção controlada | `blocked` sem claims server-side; `publicPromotionAllowed: false` |
 
 O build continua emitindo warnings conhecidos para `three.js` e chunks pesados de Arma 3; eles não foram mascarados nem tratados como falha neste marco.
 
@@ -79,7 +81,7 @@ O trabalho não alterou `src/main.js`, `src/layout/shell.ts`, `src/layout/sideba
 
 O editor é um **candidato auditável**, não um módulo promovido. Seu path, label, ícone e domínio agora coincidem com o item V1. No harness, o health é `healthy` com fonte `runtime-registry`, o deep link é `verified` e o fallback é `v1-preserved`. Ainda assim, a ação para usuário normal permanece `preserve-current-surface`.
 
-Antes de uma promoção visual, faltam observabilidade server-side, claims/RLS aplicáveis, tratamento de deep link no ambiente de produção, instrumentação de rollback e aprovação explícita do contrato de disponibilidade. O próximo passo seguro é validar essa superfície operacional sem trocar a sidebar.
+O gate de promoção agora bloqueia explicitamente sem claims server-side, request/audit IDs e rollback verificável. Ainda faltam observabilidade server-side de produção, claims/RLS aplicáveis, tratamento de deep link no ambiente de produção, instrumentação de rollback e aprovação explícita do contrato de disponibilidade. O próximo passo seguro é validar essa superfície operacional sem trocar a sidebar.
 
 ## Documentos principais
 
@@ -92,6 +94,7 @@ Antes de uma promoção visual, faltam observabilidade server-side, claims/RLS a
 | `UI_04_CATALOG_RECONCILIATION_2026-08-20.md` | Matriz de divergências e ações |
 | `MODULE_ALIGNMENT_PILOT_2026-08-20.md` | Health/deep link/fallback por módulo |
 | `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md` | Candidato individual do editor |
+| `PROMOTION_GATE_EDITOR_2026-08-20.md` | Gate de claims, auditoria e rollback |
 | `MASTER_EXECUTION_MATRIX.md` | Estado mestre e próximos gates |
 
 ## Próxima ordem recomendada
