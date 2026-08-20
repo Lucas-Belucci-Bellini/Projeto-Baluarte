@@ -4,7 +4,7 @@
 **Data da observação:** 2026-08-20
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado:** `5e9dfddf85a926acf28e403b5782dbce8cc61295`
+**SHA observado:** `9b31d0944de51b7fc53806902566ab61b976346f`
 **Tag de release base:** `v1.2.0`
 **Autor:** Manus AI
 
@@ -49,7 +49,7 @@
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Smoke/path critical; no full audit | Reduced motion partial | Boot, route, DB, JARVIS, mobile budgets missing | Design docs | `1032437c` | UI-00 inventory and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.2.0 scope; recovery `IN PROGRESS` | CI, changelog, SW, tag | Release without recovery evidence | v1.2.0 tag, notes, 8/8 CI | No secrets; rollback documented | Artifact/bundle warnings known | Changelog and release plan | `32b59ad5` | Release artifact checksums |
 | 23 | Full doctor / verify:v2 / setup:v2 | `NOT STARTED` | All real gates and environment contracts | One command hides unknown states | Individual gates exist | Must preserve unknown/blocked | Runtime/remote distinctions required | Roadmap only | — | Design after gate inventory |
-| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — MODULE ALIGNMENT PILOT IMPLEMENTED` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback | Creating a second shell/sidebar, inferring health from stability or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; 12/12 UI tests; 23/23 V2 integration | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI and pilot docs | `48f28baf` base / pending pilot commit | Single-surface alignment pilot |
+| UI | Baluarte Design System & Information Architecture | `IN PROGRESS — MODULE ALIGNMENT PILOT IMPLEMENTED` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback | Creating a second shell/sidebar, inferring health from stability or exposing protected actions | `UI_00_INVENTORY_2026-08-20.md`; UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; 12/12 UI tests; 23/23 V2 integration | Server-side authority; stability is not health; no client-only roles | Breakpoint, bundle, boot, DB and route budgets pending | PHASE UI and pilot docs | `9b31d094` publicado | Single-surface alignment pilot |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 
 ## 3. Próxima fase válida
