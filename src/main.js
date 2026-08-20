@@ -167,11 +167,11 @@ router.register('/poder-militar', lazy(() => import('./pages/poder-militar.ts'),
 router.register('/arsenal-expandido', lazy(() => import('./pages/arsenal-expandido.ts'), 'arsenalExpandidoPage'));
 router.register('/forcas-especiais', lazy(() => import('./pages/forcas-especiais.ts'), 'forcasEspeciaisPage'));
 router.register('/organizacao-militar', lazy(() => import('./pages/organizacao-militar.ts'), 'organizacaoMilitarPage'));
-router.register('/tecnologia-militar', lazy(() => import('./pages/tecnologia-militar.js'), 'tecnologiaMilitarPage'));
+router.register('/tecnologia-militar', lazy(() => import('./pages/tecnologia-militar.ts'), 'tecnologiaMilitarPage'));
 router.register('/taticas-estrategias', lazy(() => import('./pages/taticas-estrategias.ts'), 'taticasEstrategiasPage'));
 router.register('/historia-militar', lazy(() => import('./pages/historia-militar.ts'), 'historiaMilitarPage'));
 router.register('/armas-por-pais', lazy(() => import('./pages/armas-por-pais.ts'), 'armasPorPaisPage'));
-router.register('/guerras-conflitos', lazy(() => import('./pages/guerras-conflitos.js'), 'guerrasConflitosPage'));
+router.register('/guerras-conflitos', lazy(() => import('./pages/guerras-conflitos.ts'), 'guerrasConflitosPage'));
 router.register('/batalhas-historicas', lazy(() => import('./pages/batalhas-historicas.ts'), 'batalhasHistoricasPage'));
 router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia-militar.ts'), 'enciclopediaMilitarPage'));
 
