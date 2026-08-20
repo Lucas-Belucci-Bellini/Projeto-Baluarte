@@ -111,7 +111,7 @@ router.register('/color-studio', lazy(() => import('./pages/color-studio.ts'), '
 router.register('/regex', lazy(() => import('./pages/regex.ts'), 'regexPage'));
 router.register('/arsenal', lazy(() => import('./pages/arsenal.ts'), 'arsenalPage'));
 router.register('/militar', lazy(() => import('./pages/militar.ts'), 'militarPage'));   // hub consolidado das frentes militares
-router.register('/modelos-3d', lazy(() => import('./pages/modelos-3d.js'), 'modelos3dPage'));   // visualizador 3D militar (#310)
+router.register('/modelos-3d', lazy(() => import('./pages/modelos-3d.ts'), 'modelos3dPage'));   // visualizador 3D militar (#310)
 router.register('/biblioteca', lazy(() => import('./pages/biblioteca.ts'), 'bibliotecaPage'));
 router.register('/elites', lazy(() => import('./pages/elites.ts'), 'elitesPage'));
 router.register('/dossie', lazy(() => import('./pages/dossie.ts'), 'dossiePage'));
@@ -183,9 +183,9 @@ router.register('/projetos', lazy(() => import('./pages/projetos.ts'), 'projetos
 router.register('/mural', lazy(() => import('./pages/mural.js'), 'muralPage'));
 router.register('/comms', lazy(() => import('./pages/comms.ts'), 'commsPage'));   // Rede Neural — chat global em tempo real (0008)
 router.register('/banco', lazy(() => import('./pages/banco.ts'), 'bancoPage'));
-router.register('/cerebro', lazyLeve('cerebro', () => import('./pages/cerebro.js'), 'cerebroPage'));
+router.register('/cerebro', lazyLeve('cerebro', () => import('./pages/cerebro.ts'), 'cerebroPage'));
 router.register('/ocr', lazy(() => import('./pages/ocr.ts'), 'ocrPage'));
-router.register('/memoria', lazyLeve('memoria', () => import('./pages/memoria.js'), 'memoriaPage'));
+router.register('/memoria', lazyLeve('memoria', () => import('./pages/memoria.ts'), 'memoriaPage'));
 router.register('/terminal-ia', lazyNexus('terminal'));
 router.register('/seguranca', lazyNexus('seguranca'));
 router.register('/gerar-codigo', lazyLeve('gerar', () => import('./pages/gerar-codigo.ts'), 'gerarCodigoPage'));   // app → aba do Núcleo (#316)

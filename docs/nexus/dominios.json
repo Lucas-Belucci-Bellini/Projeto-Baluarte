@@ -390,7 +390,7 @@
     "src/pages/media.ts",
     "src/pages/videos.ts",
     "src/pages/tv.ts",
-    "src/pages/modelos-3d.js",
+    "src/pages/modelos-3d.ts",
     "src/utils/players-engine.js",
     "src/utils/visor-3d.js",
     "src/utils/webgl-probe.js",
@@ -515,7 +515,7 @@
     "src/pages/ia-proprietaria.js",
     "src/pages/llm-lab.js",
     "src/pages/terminal-ia.js",
-    "src/pages/cerebro.js",
+    "src/pages/cerebro.ts",
     "src/pages/conselho.js",
     "src/pages/aprendizado.js",
     "src/utils/jarvis-engine.js",
@@ -597,7 +597,7 @@
     "/memoria"
    ],
    "origem": [
-    "src/pages/memoria.js",
+    "src/pages/memoria.ts",
     "src/utils/jarvis-memory.js",
     "src/utils/jarvis-recall.js",
     "src/utils/jarvis-repo-memory.js",
