@@ -1,7 +1,8 @@
 # JARVIS Mark XIII — Matriz de Performance Visual
 
 **Data:** 20 de agosto de 2026  
-**Status:** `IMPLEMENTAÇÃO LOCAL VALIDADA — PUBLICAÇÃO PENDENTE`  
+**Status:** `PUBLICADO NO MAIN — GATES LOCAIS VERDES`
+**SHA do marco publicado:** `50891ae2f7d0dd8c584e5c122560cb25c33e6f6e`
 **Escopo:** console integrado da rota `/jarvis`, sem alteração de autoridade, Auth/RLS, Supabase ou Billing
 
 ## Objetivo
