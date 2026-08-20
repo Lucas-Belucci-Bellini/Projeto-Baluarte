@@ -56,11 +56,11 @@ const TABS: readonly CockpitTab[] = [
   { id: 'conselho', label: '⚖ Conselho de IAs', load: () => import('./conselho').then((module) => module.conselhoPage()) },
   { id: 'apis', label: '🔑 Central de APIs', load: () => import('./apis').then((module) => module.apisPage()) },
   { id: 'dashboard', label: '📊 Dashboard', load: () => import('./jarvis-dashboard').then((module) => module.jarvisDashboardPage()) },
-  { id: 'ml', label: '📈 ML da Memória', load: () => import('./aprendizado.js').then((module) => module.aprendizadoPage()) },
+  { id: 'ml', label: '📈 ML da Memória', load: () => import('./aprendizado').then((module) => module.aprendizadoPage()) },
   { id: 'llm', label: '⚛ Mini-LLM', load: () => import('./llm-lab').then((module) => module.llmLabPage()) },
   { id: 'cerebro', label: '🕸️ Segundo Cérebro', load: () => import('./cerebro').then((module) => module.cerebroPage()) },
   { id: 'memoria', label: '🧠 Memória', load: () => import('./memoria').then((module) => module.memoriaPage()) },
-  { id: 'terminal', label: '⌨ Terminal-IA', load: () => import('./terminal-ia.js').then((module) => module.terminalIaPage()) },
+  { id: 'terminal', label: '⌨ Terminal-IA', load: () => import('./terminal-ia').then((module) => module.terminalIaPage()) },
   { id: 'seguranca', label: '🛡 Segurança', load: () => import('./seguranca.js').then((module) => module.segurancaPage()) },
   { id: 'ia', label: '🦾 IA Proprietária', load: () => import('./ia-proprietaria.js').then((module) => module.iaProprietariaPage()) },
 ];
