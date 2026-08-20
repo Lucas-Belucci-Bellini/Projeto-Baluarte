@@ -8,6 +8,7 @@ import {
   projectRegistryNavigation,
 } from '../src/layout/navigation.ts';
 import { createRegistryNavigationObserver } from '../src/layout/registry-observer.ts';
+import { reconcileNavigationCatalogs } from '../src/layout/catalog-reconciliation.ts';
 
 const projection = projectLegacyNavigation(NAV_GROUPS, {
   currentPhase: 21,
@@ -138,6 +139,63 @@ test('UI-03 conserva divergência explícita e não a transforma em mudança de 
   assert.equal(observation.parity.legacyOnly.length > 0, true);
   assert.equal(observation.parity.mismatches.length, 0);
   assert.equal(findNavigationEntry(observation.projection, '/wiki-arma3')?.availability, 'enabled');
+});
+
+test('UI-04 classifica catálogo alinhado como candidato sem ação', () => {
+  const reconciliation = reconcileNavigationCatalogs([
+    {
+      modulo: 'home',
+      nome: 'Ponte de Comando',
+      icone: '⬡',
+      secao: 'Início',
+      ordem: 1,
+      path: '/home',
+      estabilidade: 'estavel',
+    },
+  ], { legacyGroups: [NAV_GROUPS[0]], currentPhase: 21 });
+  const home = reconciliation.rows.find((row) => row.path === '/home');
+
+  assert.equal(home?.disposition, 'aligned');
+  assert.equal(home?.action, 'no-action');
+  assert.equal(home?.promotionAllowed, true);
+  assert.equal(reconciliation.summary.promotionCandidates, 1);
+});
+
+test('UI-04 bloqueia promoção de divergências sem apagar o fallback V1', () => {
+  const reconciliation = reconcileNavigationCatalogs([
+    {
+      modulo: 'editor',
+      nome: 'Editor V2',
+      icone: '⌨',
+      secao: 'Developer',
+      ordem: 1,
+      path: '/editor',
+      estabilidade: 'beta',
+    },
+    {
+      modulo: 'novo-modulo',
+      nome: 'Novo módulo',
+      icone: '✦',
+      secao: 'Experimental',
+      ordem: 2,
+      path: '/novo-modulo',
+      estabilidade: 'experimental',
+    },
+  ], { legacyGroups: [NAV_GROUPS[2]], currentPhase: 21 });
+  const editor = reconciliation.rows.find((row) => row.path === '/editor');
+  const novo = reconciliation.rows.find((row) => row.path === '/novo-modulo');
+  const legacyOnly = reconciliation.rows.find((row) => row.path === '/gerar-codigo');
+
+  assert.equal(editor?.disposition, 'metadata-mismatch');
+  assert.equal(editor?.action, 'align-metadata-before-promotion');
+  assert.equal(editor?.promotionAllowed, false);
+  assert.equal(novo?.disposition, 'registry-only');
+  assert.equal(novo?.action, 'defer-registry-promotion');
+  assert.equal(novo?.promotionAllowed, false);
+  assert.equal(legacyOnly?.disposition, 'legacy-only');
+  assert.equal(legacyOnly?.action, 'preserve-v1-fallback');
+  assert.equal(legacyOnly?.promotionAllowed, false);
+  assert.equal(reconciliation.summary.promotionCandidates, 0);
 });
 
 test('UI-01 rejeita paths duplicados em vez de mascarar divergência', () => {
