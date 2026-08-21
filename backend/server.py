@@ -22,26 +22,46 @@ Depois, no site: J.A.R.V.I.S. -> ⚙ -> modo "Servidor" (URL http://127.0.0.1:80
 import os
 import json
 import glob
+import logging
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from google import genai
 from google.genai import types
 
 from claims_adapter import observe_bearer_claims
 from health_contract import project_server_health
+from transport_security import (
+    CORS_EXPOSE_HEADERS,
+    CORS_HEADERS,
+    CORS_METHODS,
+    configured_allowed_origins,
+    configured_claims_rate_limiter,
+    emit_claims_audit,
+    origin_allowed,
+    rate_limit_headers,
+    transport_key,
+)
 
 app = FastAPI(title="Núcleo Baluarte — IA Backend")
 
-# CORS liberado: o site (localhost:5173 / vercel.app) precisa chamar este servidor.
+_ALLOWED_ORIGINS = configured_allowed_origins()
+_CLAIMS_RATE_LIMITER = configured_claims_rate_limiter()
+_CLAIMS_AUDIT_LOGGER = logging.getLogger("baluarte.server_claims")
+
+# CORS explícito: nenhuma origem, credencial, método ou header wildcard.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=list(_ALLOWED_ORIGINS),
+    allow_credentials=False,
+    allow_methods=list(CORS_METHODS),
+    allow_headers=list(CORS_HEADERS),
+    expose_headers=list(CORS_EXPOSE_HEADERS),
+    max_age=600,
 )
 
 MODEL = os.environ.get("BALUARTE_MODEL", "gemini-2.5-flash")
@@ -82,13 +102,51 @@ def health():
 
 
 @app.get("/claims/observe")
-def claims_observe(authorization: str | None = Header(default=None)):
+def claims_observe(
+    request: Request,
+    authorization: str | None = Header(default=None),
+    x_request_id: str | None = Header(default=None),
+):
     """Observa claims por fonte server-side; nunca concede autorização."""
-    return observe_bearer_claims(
+    origin = request.headers.get("origin")
+    origin_is_allowed = origin_allowed(origin, _ALLOWED_ORIGINS)
+    remote_host = request.client.host if request.client is not None else None
+    rate = _CLAIMS_RATE_LIMITER.check(transport_key(remote_host, origin))
+    request_id_present = bool(x_request_id and x_request_id.strip())
+    if not rate.allowed:
+        emit_claims_audit(
+            _CLAIMS_AUDIT_LOGGER,
+            status_code=429,
+            origin_is_allowed=origin_is_allowed,
+            rate_limited=True,
+            decision="not-authorized",
+            request_id_present=request_id_present,
+        )
+        return JSONResponse(
+            status_code=429,
+            content={
+                "contractVersion": "server-claims/v1",
+                "decision": "not-authorized",
+                "authority": "not-authorized",
+                "error": "rate_limited",
+            },
+            headers=rate_limit_headers(rate),
+        )
+
+    snapshot = observe_bearer_claims(
         authorization,
         base_url=os.environ.get("SUPABASE_URL"),
         anon_key=os.environ.get("SUPABASE_ANON_KEY"),
     )
+    emit_claims_audit(
+        _CLAIMS_AUDIT_LOGGER,
+        status_code=200,
+        origin_is_allowed=origin_is_allowed,
+        rate_limited=False,
+        decision=snapshot["decision"],
+        request_id_present=request_id_present,
+    )
+    return JSONResponse(content=snapshot, headers=rate_limit_headers(rate))
 
 
 @app.post("/chat")
