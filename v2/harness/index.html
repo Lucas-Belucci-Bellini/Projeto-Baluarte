@@ -62,6 +62,14 @@
     .pilot-empty { margin: 16px 0 0; color: var(--pilot-muted); font-size: 13px; }
     .pilot-help { margin: 9px 0 0; color: var(--pilot-muted); font-size: 11px; }
     .pilot-help kbd { padding: 2px 5px; color: var(--pilot-text); background: #0d1118; border: 1px solid var(--pilot-line); border-radius: 4px; }
+    .module-observation { max-width: 1080px; margin: 0 auto 18px; padding: 14px 18px; color: var(--pilot-text); background: var(--pilot-panel); border: 1px solid var(--pilot-line); border-radius: 10px; }
+    .module-observation__header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+    .module-observation__header h2 { margin: 0; font-size: 15px; }
+    .module-observation__header span { color: var(--pilot-muted); font-size: 11px; }
+    .module-observation__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-top: 10px; }
+    .module-observation-item { display: grid; gap: 3px; padding: 9px 10px; border: 1px solid var(--pilot-line); background: rgba(13, 17, 24, .6); font-size: 12px; }
+    .module-observation-item span { color: var(--pilot-muted); font-size: 10px; }
+    .module-observation-item[data-availability="degraded"] { border-color: rgba(255, 204, 102, .55); }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     .visual-pilot[data-collapsed="true"] #command-center-body { display: none; }
     @media (max-width: 640px) { .visual-pilot__header, .visual-pilot__toolbar { flex-direction: column; align-items: stretch; } .visual-pilot__badge { align-self: flex-start; } }
@@ -95,6 +103,13 @@
         <p id="command-center-empty" class="pilot-empty" hidden>Nenhum comando corresponde à busca.</p>
       </div>
     </div>
+  </section>
+  <section id="module-observation-pilot" class="module-observation" data-visibility="harness-only" aria-labelledby="module-observation-title">
+    <div class="module-observation__header">
+      <h2 id="module-observation-title">Observação por módulo</h2>
+      <span id="module-observation-status" role="status">aguardando evidência…</span>
+    </div>
+    <div id="module-observation-grid" class="module-observation__grid" aria-live="polite"></div>
   </section>
   <nav id="nav"></nav>
   <div id="saida">carregando…</div>

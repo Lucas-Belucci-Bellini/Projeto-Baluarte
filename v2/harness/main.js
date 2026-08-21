@@ -58,6 +58,11 @@ import { evaluatePromotionGate } from '../../src/layout/promotion-gate.ts';
 import { projectPlatformDiagnostic } from '../../src/layout/runtime-observation.ts';
 import { projectPlatformDiagnosticEnvelope, sealPlatformObservationEnvelope } from '../../src/layout/platform-observation-transport.ts';
 import { observeServerClaims } from '../../src/layout/server-claims-observation.ts';
+import { observeServerObservation } from '../../src/layout/server-observation.ts';
+import {
+  availabilityForObservedModule,
+  projectModuleObservationVisual,
+} from '../../src/layout/module-observation-visual.ts';
 
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
@@ -251,6 +256,53 @@ async function principal() {
       });
   };
 
+  const moduleObservationVisualPilot = (rawObservations = {}) => {
+    const input = rawObservations && typeof rawObservations === 'object'
+      ? rawObservations
+      : {};
+    const observations = Object.fromEntries(
+      r.nav.map((entry) => {
+        const raw = input[entry.modulo];
+        return [entry.modulo, raw == null ? null : observeServerObservation(raw)];
+      }),
+    );
+    const availability = availabilityForObservedModule(observations);
+    const projection = projectRegistryNavigation(r.nav, {
+      availabilityForModule: (moduleId) => availability(moduleId),
+    });
+    return projection.entries.map((entry) => ({
+      ...projectModuleObservationVisual(entry.moduleId ?? entry.id, observations[entry.moduleId ?? entry.id]),
+      path: entry.path,
+      label: entry.label,
+    }));
+  };
+
+  const renderModuleObservationVisualPilot = () => {
+    const root = document.getElementById('module-observation-pilot');
+    const grid = document.getElementById('module-observation-grid');
+    const status = document.getElementById('module-observation-status');
+    if (!root || !grid || !status) return;
+
+    const decisions = moduleObservationVisualPilot();
+    grid.replaceChildren();
+    for (const decision of decisions) {
+      const item = document.createElement('article');
+      item.className = 'module-observation-item';
+      item.dataset.availability = decision.availability;
+      item.dataset.fallback = decision.fallback;
+      const title = document.createElement('strong');
+      title.textContent = decision.label ?? decision.moduleId;
+      const detail = document.createElement('span');
+      detail.textContent = `${decision.availability} · ${decision.fallback} · ${decision.outcome}`;
+      item.append(title, detail);
+      grid.appendChild(item);
+    }
+    const degraded = decisions.filter((decision) => decision.availability === 'degraded').length;
+    status.textContent = `${decisions.length} módulos · ${degraded} sem evidência · fallback V1 preservado`;
+    root.dataset.moduleCount = String(decisions.length);
+    root.dataset.degradedCount = String(degraded);
+  };
+
   const promotionGatePilot = () => {
     const editor = moduleAlignmentPilot().find((decision) => decision.path === '/editor');
     if (!editor) return null;
@@ -365,6 +417,7 @@ async function principal() {
     }
   });
   renderCommandCenterVisualPilot();
+  renderModuleObservationVisualPilot();
 
   /* Ponte para o teste: estado, não pixel. */
   // @ts-ignore — superfície de teste, só no banco de prova
@@ -427,6 +480,13 @@ async function principal() {
       reducedMotion: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true,
     }),
     moduleAlignmentPilot,
+    moduleObservationVisualPilot,
+    moduleObservationVisualPilotSnapshot: () => ({
+      moduleCount: document.querySelectorAll('#module-observation-grid .module-observation-item').length,
+      degradedCount: document.querySelectorAll('#module-observation-grid .module-observation-item[data-availability="degraded"]').length,
+      fallback: document.querySelector('#module-observation-status')?.textContent ?? '',
+      publicSidebarUntouched: true,
+    }),
     promotionGatePilot,
     registros,
     eventos: bus.contagem(),

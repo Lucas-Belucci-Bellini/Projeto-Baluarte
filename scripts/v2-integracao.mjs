@@ -346,6 +346,56 @@ try {
       && promotionCandidates[0]?.path === '/editor'
       && promotionCandidates[0]?.outcome === 'promotion-candidate',
     JSON.stringify(moduleAlignment ?? null));
+  const moduleObservationDefault = await pagina.evaluate(() => ({
+    decisions: window.__v2?.moduleObservationVisualPilot?.(),
+    snapshot: window.__v2?.moduleObservationVisualPilotSnapshot?.(),
+  }));
+  conferir('observação ausente preserva V1 e degrada o retrato visual',
+    Array.isArray(moduleObservationDefault?.decisions)
+      && moduleObservationDefault.decisions.length === 5
+      && moduleObservationDefault.decisions.every((decision) => decision.availability === 'degraded')
+      && moduleObservationDefault.decisions.every((decision) => decision.fallback === 'v1-preserved')
+      && moduleObservationDefault.decisions.every((decision) => decision.publicPromotionAllowed === false)
+      && moduleObservationDefault.snapshot?.publicSidebarUntouched === true
+      && moduleObservationDefault.snapshot?.degradedCount === 5,
+    JSON.stringify(moduleObservationDefault ?? null));
+
+  const healthyServerObservation = {
+    contractVersion: 'server-observation/v1',
+    source: 'server-observed',
+    health: {
+      contractVersion: 'server-health/v1', source: 'runtime-observed', connection: 'connected',
+      health: 'healthy', severity: 'none', fallback: 'available', authority: 'not-authorized',
+      ok: true, service: 'jarvis-backend', model: 'gemini-test', hasKey: true, detail: 'health observado',
+    },
+    claims: {
+      contractVersion: 'server-claims/v1', source: 'server-authority',
+      identity: { issuerPresent: true, subjectPresent: true, audienceMatched: true, authenticated: true, trustedSource: true },
+      scopes: { requested: ['platform:observe'], accepted: ['platform:observe'], rejected: [] },
+      validity: { issuedAt: 10_000, expiresAt: 20_000, ttlMs: 10_000, fresh: true },
+      requestIdPresent: true, decision: 'not-authorized', authority: 'not-authorized',
+    },
+    evidence: {
+      healthObserved: true, claimsObserved: true, claimsFresh: true, severity: 'none',
+      fallback: 'available', reasonCodes: ['observation-ready'],
+    },
+    transport: { originAllowed: true, rateLimited: false }, authority: 'not-authorized',
+  };
+  const moduleObservationReady = await pagina.evaluate((observation) => (
+    window.__v2?.moduleObservationVisualPilot?.({ editor: observation })
+  ), healthyServerObservation);
+  const editorObservation = Array.isArray(moduleObservationReady)
+    ? moduleObservationReady.find((decision) => decision.path === '/editor')
+    : null;
+  conferir('módulo saudável é observado sem autorizar promoção pública',
+    editorObservation?.availability === 'enabled'
+      && editorObservation?.outcome === 'observe-only'
+      && editorObservation?.fallback === 'v1-preserved'
+      && editorObservation?.authority === 'not-authorized'
+      && editorObservation?.publicPromotionAllowed === false
+      && moduleObservationReady.filter((decision) => decision.availability === 'degraded').length === 4,
+    JSON.stringify({ editorObservation, moduleObservationReady }));
+
   const promotionGate = await pagina.evaluate(() => window.__v2?.promotionGatePilot?.());
   conferir('gate de promoção bloqueia editor sem claims server-side',
     promotionGate?.status === 'blocked'
