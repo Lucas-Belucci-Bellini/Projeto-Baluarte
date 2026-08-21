@@ -1,8 +1,9 @@
 # Module Observation Visual Contract — 2026-08-21
 
-**Status:** CONTRACT FIRST — implementation pending in this slice  
+**Status:** IMPLEMENTED AND PUBLISHED
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Base SHA:** `38ae7efc1de24f0361bfab70d7f9ec0e56b83c55`  
+**Published SHA:** `b8e5e7678756fdea1d077dfa03f1ceb7927613cf`
 **Input:** `server-observation/v1`  
 **Surface:** harness/controlled rollout only
 
@@ -52,6 +53,6 @@ Focused tests must prove the mapping for healthy/fresh, degraded, stale, absent,
 
 ## 7. Definition of done
 
-The slice is complete when the adapter, tests and documentation are published on `main`, the Command Center/harness can consume it through an explicit callback, no public shell/router changes occur, the existing promotion gate remains authoritative, and all applicable local and remote gates pass except the documented Rust toolchain blocker.
+The adapter, tests and documentation are published on `main` at merge `b8e5e7678756fdea1d077dfa03f1ceb7927613cf`; the Command Center/harness consumes it through an explicit callback, no public shell/router changes occur, the existing promotion gate remains authoritative, and all applicable local and remote gates pass except the documented Rust toolchain blocker.
 
 — **Manus AI**
