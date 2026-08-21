@@ -64,6 +64,7 @@ import {
   availabilityForObservedModule,
   projectModuleObservationVisual,
 } from '../../src/layout/module-observation-visual.ts';
+import { projectModuleOperationalPolicy } from '../../src/layout/module-operational-policy.ts';
 
 import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
@@ -255,6 +256,27 @@ async function principal() {
           fallback,
         });
       });
+  };
+
+  const moduleOperationalPolicyPilot = (rawClaims = null) => {
+    const claims = rawClaims == null
+      ? null
+      : observeServerClaims(rawClaims, {
+        expectedIssuer: 'baluarte-auth',
+        expectedAudience: 'baluarte-platform',
+      });
+    const healthByModule = new Map(
+      registryHealth.resumo().map((entry) => [entry.id, entry]),
+    );
+    return r.nav.map((entry) => ({
+      ...projectModuleOperationalPolicy({
+        moduleId: entry.modulo,
+        health: healthByModule.get(entry.modulo) ?? null,
+        claims,
+      }),
+      path: entry.path,
+      label: entry.nome,
+    }));
   };
 
   const moduleObservationVisualPilot = (rawObservations = {}) => {
@@ -504,6 +526,7 @@ async function principal() {
       reducedMotion: globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true,
     }),
     moduleAlignmentPilot,
+    moduleOperationalPolicyPilot,
     moduleObservationVisualPilot,
     moduleObservationVisualPilotSnapshot: () => ({
       moduleCount: document.querySelectorAll('#module-observation-grid .module-observation-item').length,

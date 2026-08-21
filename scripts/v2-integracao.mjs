@@ -346,6 +346,40 @@ try {
       && promotionCandidates[0]?.path === '/editor'
       && promotionCandidates[0]?.outcome === 'promotion-candidate',
     JSON.stringify(moduleAlignment ?? null));
+  const moduleOperationalDefault = await pagina.evaluate(() => (
+    window.__v2?.moduleOperationalPolicyPilot?.()
+  ));
+  conferir('política operacional mantém módulo saudável sem claims sem revisão elevada',
+    Array.isArray(moduleOperationalDefault)
+      && moduleOperationalDefault.length === 5
+      && moduleOperationalDefault.every((decision) => decision.button === 'enabled')
+      && moduleOperationalDefault.every((decision) => decision.elevatedReview === 'unavailable')
+      && moduleOperationalDefault.every((decision) => decision.fallback === 'v1-preserved')
+      && moduleOperationalDefault.every((decision) => decision.authority === 'not-authorized')
+      && moduleOperationalDefault.every((decision) => decision.publicPromotionAllowed === false),
+    JSON.stringify(moduleOperationalDefault ?? null));
+  const moduleOperationalClaims = await pagina.evaluate(() => (
+    window.__v2?.moduleOperationalPolicyPilot?.({
+      issuer: 'baluarte-auth',
+      subject: 'operator-test',
+      audience: 'baluarte-platform',
+      scopes: ['platform:observe', 'module:read', 'module:execute'],
+      issuedAt: Date.now() - 1_000,
+      expiresAt: Date.now() + 10_000,
+      requestId: 'module-operational-test',
+      source: 'server-validated',
+      authenticated: true,
+    })
+  ));
+  conferir('scope module:read produz somente revisão elevada observável',
+    Array.isArray(moduleOperationalClaims)
+      && moduleOperationalClaims.length === 5
+      && moduleOperationalClaims.every((decision) => decision.elevatedReview === 'review-only')
+      && moduleOperationalClaims.every((decision) => decision.button === 'enabled')
+      && moduleOperationalClaims.every((decision) => decision.authority === 'not-authorized')
+      && moduleOperationalClaims.every((decision) => decision.publicPromotionAllowed === false),
+    JSON.stringify(moduleOperationalClaims ?? null));
+
   const moduleObservationDefault = await pagina.evaluate(() => ({
     decisions: window.__v2?.moduleObservationVisualPilot?.(),
     snapshot: window.__v2?.moduleObservationVisualPilotSnapshot?.(),
