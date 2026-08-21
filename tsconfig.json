@@ -16,6 +16,7 @@
     "src/core/flags.ts",
     "src/core/permissions.ts",
     "src/core/storage.ts",
+    "src/core/auth-session.ts",
     "src/layout/header.ts",
     "src/layout/sidebar.ts",
     "src/layout/overlay.ts",
