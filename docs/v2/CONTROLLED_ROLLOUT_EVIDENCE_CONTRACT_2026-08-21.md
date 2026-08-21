@@ -1,8 +1,9 @@
 # Controlled Rollout Evidence Contract — 2026-08-21
 
-**Status:** CONTRACT FIRST — implementation pending in this slice  
+**Status:** IMPLEMENTED AND PUBLISHED
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Base SHA:** `f50205b4ac5d5db77b81618f73642afe68dcc53c`  
+**Published SHA:** `ceac89fab95486b084ca413a25eee1411216641c`
 **Surface:** controlled rollout eligibility only; no public promotion
 
 ## 1. Purpose
@@ -43,6 +44,6 @@ The adapter is a pure TypeScript contract used by tests and the V2 harness. It d
 
 ## 6. Definition of done
 
-The slice is complete when the adapter proves all four matrix rows, preserves `publicPromotionAllowed: false`, rejects observation-as-authority confusion, is exposed only as a read-only harness proof, and is published on `main` with all applicable gates green except the documented Rust toolchain blocker.
+The slice is complete: the adapter proves all four matrix rows, preserves `publicPromotionAllowed: false`, rejects observation-as-authority confusion, is exposed only as a read-only harness proof, and is published on `main` at `ceac89fab95486b084ca413a25eee1411216641c`. The eight applicable remote workflows are green; the documented local Rust toolchain blocker remains external to this slice.
 
 — **Manus AI**
