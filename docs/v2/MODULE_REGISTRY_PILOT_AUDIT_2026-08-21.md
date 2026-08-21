@@ -74,3 +74,13 @@ O gate de integração recebeu duas asserções novas: módulo saudável sem cla
 O piloto **não** implementa acesso real de admin/dev/owner. Ele só reconhece o escopo `module:read` como evidência server-validated para uma revisão futura e continua sem autoridade. A integração de Auth/RLS/claims server-side, a aplicação visual do botão no shell e qualquer promoção pública seguem bloqueadas até os gates correspondentes.
 
 — **Manus AI**
+
+## Publicação e CI remoto
+
+**Commit publicado:** `e8da0473f34e7039326e0f1e86a3fd6bf55ff5c0`
+
+O piloto foi integrado diretamente na `main` após `fetch` e `merge --no-edit`, sem force push. O runner oficial local passou todos os gates executáveis: catálogo de eventos, Nexus, tipos, `npm test`, build, integração V2, smoke, caminho crítico, contratos Python, module visual, controlled rollout, RLS local, rate limit distribuído, doctor e Python compile. O Rust continuou em código 101 pelo bloqueio conhecido do Cargo 1.75.0 com metadata `edition2024`; esse estado não foi mascarado.
+
+Os oito workflows remotos concluíram com sucesso para o SHA publicado: `Arma 3 Data CI`, `CI`, `CodeQL`, `Core CI`, `V2 Core`, `V2 Runtime`, `V2 Validation` e `Vigia das rotas`.
+
+— **Manus AI**
