@@ -70,6 +70,8 @@ Confira: abra <http://127.0.0.1:8000/health>. O endpoint responde o contrato `se
 
 `ok` indica que o processo respondeu; não significa que o Gemini esteja pronto. Sem `GEMINI_API_KEY`, o endpoint permanece conectado, mas projeta `health: degraded`, `severity: warning` e `fallback: degraded`. A projeção é somente leitura: não executa fallback, não desabilita módulos e não concede autoridade.
 
+Para habilitar somente a consulta de identidade do endpoint `/claims/observe`, configure `SUPABASE_URL` e `SUPABASE_ANON_KEY` no ambiente do backend. O servidor consulta `/auth/v1/user` com o Bearer recebido e redige o resultado. Essa consulta não cria roles, não aceita `module:execute`, não chama o Permission Manager e não substitui RLS. Sem as duas variáveis, sem Bearer válido ou com erro de rede, a resposta permanece `decision: not-authorized`.
+
 ## Usar no site
 
 No J.A.R.V.I.S. (`/jarvis`): **⚙ Modos & Config → modo "Servidor"** e confirme a
@@ -82,6 +84,7 @@ o servidor pesquisa no Google e responde.
 |---|---|---|
 | `GET` | `/health` | Contrato `server-health/v1`: liveness, health observado, severidade, fallback read-only e presença booleana da `GEMINI_API_KEY` |
 | `POST` | `/chat` | `{ messages: [{role, content}], system }` → `{ resposta }` |
+| `GET` | `/claims/observe` | Observa identidade por Bearer + Supabase Auth; sem configuração/token válido, nega por padrão e nunca retorna token ou metadata |
 
 O servidor é **stateless**: o site envia a conversa inteira a cada chamada (o
 histórico vive no site, em IndexedDB), evitando dessincronização.
@@ -125,5 +128,5 @@ docker run -p 8000:8000 -e GEMINI_API_KEY="sua-chave" baluarte-ia
 
 - A `GEMINI_API_KEY` fica **só** no ambiente do servidor — nunca no front.
 - CORS já está liberado (`*`), então o site (qualquer origem) consegue chamar. Isso permanece uma dívida de hardening; a chave nunca é enviada.
-- O envelope server-side é uma observação do backend e ainda não é o `PlatformDiagnostic` da V2. A integração futura deverá transportar o diagnóstico V2 por uma fronteira autorizada, sem criar um segundo Registry ou Event Bus.
+- O envelope server-side é uma observação do backend e ainda não é o `PlatformDiagnostic` da V2. `server-claims/v1` valida a sessão por uma fonte server-side quando configurada, mas não concede escopos nem roles; a integração futura deverá transportar o diagnóstico V2 por uma fronteira autorizada, sem criar um segundo Registry ou Event Bus.
 - A URL pública precisa ser **HTTPS** para o site publicado conseguir usá-la.

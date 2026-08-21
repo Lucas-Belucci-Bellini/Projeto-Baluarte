@@ -25,12 +25,13 @@ import glob
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from google import genai
 from google.genai import types
 
+from claims_adapter import observe_bearer_claims
 from health_contract import project_server_health
 
 app = FastAPI(title="Núcleo Baluarte — IA Backend")
@@ -77,6 +78,16 @@ def health():
     return project_server_health(
         model=MODEL,
         has_key=bool(os.environ.get("GEMINI_API_KEY")),
+    )
+
+
+@app.get("/claims/observe")
+def claims_observe(authorization: str | None = Header(default=None)):
+    """Observa claims por fonte server-side; nunca concede autorização."""
+    return observe_bearer_claims(
+        authorization,
+        base_url=os.environ.get("SUPABASE_URL"),
+        anon_key=os.environ.get("SUPABASE_ANON_KEY"),
     )
 
 
