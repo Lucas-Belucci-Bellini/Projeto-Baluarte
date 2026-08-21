@@ -1,8 +1,9 @@
 # Server Claims Hardening Contract — 2026-08-21
 
-**Status:** IMPLEMENTED LOCALLY — publication pending in this slice  
+**Status:** IMPLEMENTED AND PUBLISHED
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Base SHA:** `341abbc942c7e43fba7c967a1b98ed1ab26431c1`  
+**Published SHA:** `3553deb0870aee5ba5ba14d4eca4c9599b194e59`
 **Scope:** transport hardening for `GET /claims/observe` and `/api/claims`  
 **Authority:** always `not-authorized`
 
@@ -71,6 +72,6 @@ This milestone does not apply Supabase DDL, create a staging project, change RLS
 
 ## 10. Definition of done
 
-The implementation and focused validation for this slice are complete locally: the FastAPI and Vercel claim handlers no longer emit wildcard CORS, the focused tests and mandatory local gates pass except for the documented Cargo 1.75.0/edition2024 external blocker, the environment contract is documented in the backend README, no secret-bearing logs are possible in the covered path, and rollback is recorded. Final completion remains pending until the resulting commit is published directly to `main` and remote CI is green.
+The FastAPI and Vercel claim handlers no longer emit wildcard CORS, the focused tests and mandatory local gates pass except for the documented Cargo 1.75.0/edition2024 external blocker, the environment contract is documented in the backend README, no secret-bearing logs are possible in the covered path, rollback is recorded, and commit `3553deb0870aee5ba5ba14d4eca4c9599b194e59` is published directly to `main` with the seven applicable remote workflows green.
 
 — **Manus AI**
