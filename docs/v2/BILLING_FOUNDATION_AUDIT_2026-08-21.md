@@ -99,3 +99,11 @@ Nenhum provider de pagamento, webhook, Supabase, DDL, staging, Stripe, Mercado P
 ## Limitações preservadas
 
 A fundação ainda é **local/in-memory**. Ela não é uma autorização server-side real, não substitui RLS, não valida JWT, não escolhe provider, não reconcilia webhook e não persiste ledger em Supabase. Entitlements seguem sendo dados de plano e candidatos de permissão; nunca concedem autoridade diretamente. O próximo passo remoto continua bloqueado por staging, RLS, provider, observabilidade operacional e aprovação explícita.
+
+## Publicação e CI remoto
+
+**Commit publicado:** `93e21960acac904151ee41a0f109286d0919783e`
+
+O commit foi integrado diretamente à `main` após `fetch` e `merge --no-edit`, sem force push. Os workflows remotos aplicáveis concluíram com sucesso para esse SHA: `Arma 3 Data CI`, `CI`, `CodeQL`, `Core CI`, `V2 Core`, `V2 Runtime`, `V2 Validation` e `Vigia das rotas`. O runner local também passou todos os gates executáveis; somente `rust_runtime` retornou código 101 pelo bloqueio já documentado do Cargo 1.75.0 com metadata `edition2024`. O `verify:v2` mantém esse caso como `blocked-known`, sem convertê-lo em verde.
+
+A execução duplicada do workflow `Vigia das rotas` para o mesmo SHA também terminou com sucesso. Não há falha nova atribuível ao Billing Foundation.
