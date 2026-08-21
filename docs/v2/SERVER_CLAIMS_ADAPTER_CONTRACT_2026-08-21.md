@@ -103,5 +103,5 @@ O rollback remove `backend/claims_adapter.py`, o import e endpoint em `backend/s
 - Repositório: `Lucas-Belucci-Bellini/Projeto-Baluarte`.
 - Branch de entrega: `main`.
 - Base: `cfb96dd116027c24926a9bc6565ce2d45d81ed3e`.
-- Commit de publicação: será registrado após os gates e a CI.
+- Commit de publicação: `76ca9e913ed3dc589c16762572930abc7e4fbe42`.
 - Autor padrão: Manus AI.
