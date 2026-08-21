@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildDoctorReport, normalizeDoctorRecord, summarizeDoctor } from '../scripts/v2-doctor.mjs';
+import { DOCTOR_CHECKS, buildDoctorReport, normalizeDoctorRecord, summarizeDoctor } from '../scripts/v2-doctor.mjs';
 
 test('doctor preserves green and known blocked states', () => {
   const report = summarizeDoctor([
@@ -28,7 +28,7 @@ test('doctor normalizes invalid records to unknown without trusting arbitrary st
 test('inventory-only mode lists checks without executing them', () => {
   const report = buildDoctorReport({ inventoryOnly: true });
   assert.equal(report.exitCode, 0);
-  assert.equal(report.counts['not-run'], 5);
+  assert.equal(report.counts['not-run'], DOCTOR_CHECKS.length + 1);
   assert.equal(report.counts.failed, 0);
   assert.equal(report.records.every((record) => record.reasonCode === 'inventory-only'), true);
 });

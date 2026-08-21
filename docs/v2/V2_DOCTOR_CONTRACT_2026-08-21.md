@@ -1,8 +1,8 @@
 # V2 Doctor Contract — 2026-08-21
 
-**Status:** CONTRACT FIRST — local read-only diagnosis  
+**Status:** EXPANDED CATALOG — local read-only diagnosis
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
-**Base SHA:** `e293dc09e67345fb76fbf857922dcfaa50689ed6`  
+**Base SHA:** `e171b7f4dcf86810da5981442d1b65a2684b3fcc`
 **Scope:** classify known gates; never repair, configure, deploy or mask
 
 ## 1. Purpose
@@ -29,9 +29,9 @@ Every check returns a bounded record containing `id`, `category`, `state`, `comm
 
 ## 4. Minimum catalog
 
-The initial catalog covers repository cleanliness, event catalog, Nexus, TypeScript strict, V2 TypeScript, npm tests, build, V2 integration, smoke, critical path, Python contracts, local security contracts and Rust runtime. The doctor may read local metadata for these checks, but it must not reimplement their assertions or claim that a skipped command passed.
+The expanded catalog contains 21 bounded records: 15 safe local commands, 5 gates intentionally marked `not-run` because they write artifacts or start a local harness, and one Rust runtime record classified from the observed Cargo toolchain. It covers event catalog, Nexus, TypeScript strict, V2 TypeScript, npm tests, Python contracts, local security contracts, build, V2 integration, smoke, critical path, Python compilation and Rust runtime. The doctor may read local metadata for these checks, but it must not reimplement their assertions or claim that a skipped command passed.
 
-Remote CI is represented as `unknown` unless a complete, current result is intentionally supplied. Supabase, staging, RLS and distributed provider readiness remain `not-run` or `blocked-known` according to the evidence; the doctor never provisions or writes to them.
+Remote CI is represented as `unknown` unless a complete, current result is intentionally supplied. Build, harness integration, smoke, critical path and Python compilation are `not-run` in the doctor because the official runner already owns their execution and artifact cleanup. Supabase, staging, RLS and distributed provider readiness remain `not-run` or `blocked-known` according to the evidence; the doctor never provisions or writes to them.
 
 ## 5. Rollback and safety
 
