@@ -50,11 +50,33 @@ export function recall(
   k?: number,
 ): RecallHit[];
 
-/** Preenche o cache do corpus (a página do JARVIS chama isto). */
+/** Preenche o cache do corpus usado pela ferramenta síncrona (cópia bounded). */
 export function setMemoryCache(docs: readonly RecallDoc[] | null | undefined): void;
 
 /** O corpus em cache. `[]` até alguém chamar `setMemoryCache`. */
 export function getMemoryCache(): RecallDoc[];
+
+/** Guarda o corpus completo resumido sob uma revisão local. */
+export function setMemoryCorpusCache(revision: number, docs: readonly RecallDoc[] | null | undefined): RecallDoc[];
+
+/** Retorna uma cópia do corpus somente quando a revisão coincide; senão `null`. */
+export function getMemoryCorpusCache(revision: number): RecallDoc[] | null;
+
+/** Invalida o corpus cacheado sem tocar na persistência. */
+export function clearMemoryCorpusCache(): void;
+
+export interface MemoryCorpusObservation {
+  readonly revision: number;
+  readonly documents: number;
+  readonly cacheHit: boolean;
+  readonly buildMs: number;
+}
+
+/** Registra somente métricas bounded, sem conteúdo de conversa ou identificadores. */
+export function recordMemoryCorpusObservation(observation: Partial<MemoryCorpusObservation>): void;
+
+/** Retorna uma cópia da última observação bounded, ou `null`. */
+export function getLastMemoryCorpusObservation(): MemoryCorpusObservation | null;
 
 /** Resume uma sessão em uma linha. `''` quando não há o que resumir. */
 export function summarizeSession(

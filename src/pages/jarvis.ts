@@ -36,10 +36,17 @@ import { beginSpotifyAuthorization, disconnectSpotify, isSpotifyConnected } from
 import { humanize } from '../utils/jarvis-style.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
-  addMessage, getMessages, getAllMessages, isUsingFallback
+  addMessage, getMessages, getAllMessages, getMemoryRevision, isUsingFallback
 } from '../utils/jarvis-memory.js';
 import type { JarvisMessage, JarvisRole, JarvisSession } from '../utils/jarvis-memory.js';
-import { recall, summarizeSession, setMemoryCache } from '../utils/jarvis-recall.js';
+import {
+  recall,
+  summarizeSession,
+  setMemoryCache,
+  getMemoryCorpusCache,
+  setMemoryCorpusCache,
+  recordMemoryCorpusObservation,
+} from '../utils/jarvis-recall.js';
 import type { RecallDoc } from '../utils/jarvis-recall.js';
 import { initSkills, removeSkill } from '../utils/jarvis-tools.js';
 import { listSkillSummaries } from '../utils/jarvis-skills.js';
@@ -456,6 +463,21 @@ function scrollDown(): void { if (messagesEl) messagesEl.scrollTop = messagesEl.
 
 /** Corpus de memória: um resumo por sessão anterior (estilo claude-mem). */
 async function buildMemoryCorpus(excludeSessionId: string | null): Promise<RecallDoc[]> {
+  const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  const revision = getMemoryRevision();
+  if (excludeSessionId === null) {
+    const cached = getMemoryCorpusCache(revision);
+    if (cached !== null) {
+      recordMemoryCorpusObservation({
+        revision,
+        documents: cached.length,
+        cacheHit: true,
+        buildMs: 0,
+      });
+      return cached;
+    }
+  }
+
   const all = await getAllMessages();
   const bySession = new Map<string, JarvisMessage[]>();
   for (const m of all) {
@@ -471,7 +493,17 @@ async function buildMemoryCorpus(excludeSessionId: string | null): Promise<Recal
     const summary = summarizeSession(msgs);
     if (summary) docs.push({ text: summary, sessionId: sid });
   }
-  return docs;
+  const boundedDocs = docs.slice(0, 256);
+  if (excludeSessionId === null) {
+    setMemoryCorpusCache(revision, boundedDocs);
+    recordMemoryCorpusObservation({
+      revision,
+      documents: boundedDocs.length,
+      cacheHit: false,
+      buildMs: (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt,
+    });
+  }
+  return boundedDocs;
 }
 
 async function handleSend(): Promise<void> {

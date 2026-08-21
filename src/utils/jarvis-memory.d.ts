@@ -56,11 +56,14 @@ export function createSession(
   mode?: string | null,
 ): Promise<JarvisSession>;
 
+/** Revisão monotônica local para frescor do cache do recall. */
+export function getMemoryRevision(): number;
+
 /** As conversas, da mais recentemente atualizada para a mais antiga. */
 export function listSessions(): Promise<JarvisSession[]>;
 
 /** Atualiza a conversa e carimba `updatedAt`. Id inexistente é no-op. */
-export function updateSession(id: string, patch: JarvisSessionPatch): Promise<void>;
+export function updateSession(id: string, patch: JarvisSessionPatch, invalidate?: boolean): Promise<void>;
 
 /** Apaga a conversa **e** as mensagens dela. */
 export function deleteSession(id: string): Promise<void>;

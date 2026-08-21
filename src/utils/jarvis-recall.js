@@ -72,9 +72,47 @@ export function recall(query, docs, k = 3) {
 
 /* Cache do corpus de memória (resumos por sessão), para a ferramenta síncrona
  * recall_memory do agente — preenchido pela página do Jarvis. */
+const MAX_MEMORY_CACHE_DOCS = 256;
 let _memCache = [];
-export function setMemoryCache(docs) { _memCache = Array.isArray(docs) ? docs : []; }
-export function getMemoryCache() { return _memCache; }
+let _corpusCache = null;
+let _lastCorpusObservation = null;
+
+export function setMemoryCache(docs) {
+  _memCache = Array.isArray(docs) ? docs.slice(0, MAX_MEMORY_CACHE_DOCS) : [];
+}
+
+export function getMemoryCache() { return _memCache.slice(); }
+
+export function setMemoryCorpusCache(revision, docs) {
+  const safeRevision = Number.isInteger(revision) && revision >= 0 ? revision : 0;
+  const safeDocs = Array.isArray(docs) ? docs.slice(0, MAX_MEMORY_CACHE_DOCS) : [];
+  _corpusCache = { revision: safeRevision, docs: safeDocs };
+  return safeDocs.slice();
+}
+
+export function getMemoryCorpusCache(revision) {
+  if (!_corpusCache || _corpusCache.revision !== revision) {
+    return null;
+  }
+  return _corpusCache.docs.slice();
+}
+
+export function clearMemoryCorpusCache() {
+  _corpusCache = null;
+}
+
+export function recordMemoryCorpusObservation(observation) {
+  _lastCorpusObservation = {
+    revision: Number.isInteger(observation?.revision) && observation.revision >= 0 ? observation.revision : 0,
+    documents: Math.max(0, Math.min(MAX_MEMORY_CACHE_DOCS, Math.floor(Number(observation?.documents) || 0))),
+    cacheHit: observation?.cacheHit === true,
+    buildMs: Math.max(0, Math.min(60_000, Math.floor(Number(observation?.buildMs) || 0))),
+  };
+}
+
+export function getLastMemoryCorpusObservation() {
+  return _lastCorpusObservation ? { ..._lastCorpusObservation } : null;
+}
 
 /** Resume uma sessão (lista de mensagens {role, text, ts}) em uma linha. */
 export function summarizeSession(messages) {
