@@ -1,8 +1,9 @@
 # Server Observation Evidence Contract — 2026-08-21
 
-**Status:** CONTRACT FIRST — implementation pending in this slice  
+**Status:** IMPLEMENTED AND PUBLISHED
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Base SHA:** `d2d4443c786294ac3cad438a22c307d424990894`  
+**Published SHA:** `86e865243719704a186f39d96e395a7f493fc2f6`
 **Contract:** `server-observation/v1`  
 **Authority:** always `not-authorized`
 
@@ -63,6 +64,6 @@ Rollback removes the combined contract, its FastAPI/Vercel adapters, the TypeScr
 
 ## 10. Definition of done
 
-The slice is complete only when the pure projection, FastAPI endpoint, Vercel endpoint and TypeScript consumer agree on the bounded envelope; focused tests and mandatory gates pass except for any already documented external blocker; redaction and `not-authorized` are proven; the contract, README, rollback and SHA are recorded; and the implementation is published directly to `main` with applicable remote workflows green.
+The pure projection, FastAPI endpoint, Vercel endpoint and TypeScript consumer agree on the bounded envelope; focused tests and mandatory gates pass except for the documented Cargo 1.75.0/`edition2024` external blocker; redaction and `not-authorized` are proven; the contract, README, rollback and SHA are recorded; and commit `86e865243719704a186f39d96e395a7f493fc2f6` is published directly to `main` with eight applicable remote workflows green.
 
 — **Manus AI**
