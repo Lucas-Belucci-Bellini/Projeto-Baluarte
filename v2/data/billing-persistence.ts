@@ -10,7 +10,19 @@ import {
 import {
   BillingPersistenceError,
   type BillingDriver,
+  type BillingPersistenceErrorCode,
 } from './billing-driver.js';
+import {
+  buildBillingMutationAudit,
+  evaluateBillingPreflight,
+  NOOP_BILLING_MUTATION_OBSERVER,
+  type BillingMutationAuditReason,
+  type BillingMutationObserver,
+  type BillingMutationOutcome,
+  type BillingMutationStatusClass,
+  type BillingPreflightReason,
+  type BillingPreflightResult,
+} from './billing-foundation.js';
 
 export type WorkspaceRole = 'owner' | 'admin' | 'dev' | 'user';
 
@@ -29,6 +41,12 @@ export interface WorkspaceMember {
 
 export interface UsageWriteRequest extends UsageEvent {
   readonly actorUserId: string;
+}
+
+export interface PreflightUsageResult {
+  readonly usage: UsageEvent;
+  readonly preflight: BillingPreflightResult | null;
+  readonly replayed: boolean;
 }
 
 export interface BillingAssignmentUsageTransaction {
@@ -57,6 +75,25 @@ function sameUsagePayload(left: UsageEvent, right: UsageEvent): boolean {
     && JSON.stringify(Object.entries(left.metadata).sort()) === JSON.stringify(Object.entries(right.metadata).sort());
 }
 
+function preflightErrorCode(reason: BillingPreflightReason): BillingPersistenceErrorCode {
+  switch (reason) {
+    case 'plan-unavailable':
+      return 'PLAN_NOT_FOUND';
+    case 'entitlement-missing':
+      return 'ENTITLEMENT_REQUIRED';
+    case 'limit-missing':
+      return 'LIMIT_NOT_CONFIGURED';
+    case 'limit-exceeded':
+      return 'LIMIT_EXCEEDED';
+    case 'invalid-limit':
+      return 'INVALID_LIMIT';
+    case 'invalid-input':
+      return 'INVALID_STATE';
+    case 'allowed':
+      return 'INVALID_STATE';
+  }
+}
+
 class AsyncMutex {
   private tail: Promise<void> = Promise.resolve();
 
@@ -79,10 +116,33 @@ export class BillingPersistenceAdapter implements BillingDriver {
   private readonly workspaces = new Map<string, WorkspaceRecord>();
   private readonly members = new Map<string, WorkspaceMember>();
   private readonly usageMutex = new AsyncMutex();
+  private readonly mutationObserver: BillingMutationObserver;
 
-  constructor(catalog = new BillingCatalog(), ledger = new UsageLedger()) {
+  constructor(
+    catalog = new BillingCatalog(),
+    ledger = new UsageLedger(),
+    mutationObserver: BillingMutationObserver = NOOP_BILLING_MUTATION_OBSERVER,
+  ) {
     this.catalog = catalog;
     this.ledger = ledger;
+    this.mutationObserver = mutationObserver;
+  }
+
+  private observeMutation(
+    outcome: BillingMutationOutcome,
+    reason: BillingMutationAuditReason,
+    statusClass: BillingMutationStatusClass,
+    requestedQuantity: number,
+    requestIdPresent: boolean,
+  ): void {
+    this.mutationObserver.observe(buildBillingMutationAudit({
+      operation: 'append-usage',
+      outcome,
+      reason,
+      statusClass,
+      requestedQuantity,
+      requestIdPresent,
+    }));
   }
 
   createWorkspace(workspace: WorkspaceRecord): WorkspaceRecord {
@@ -202,6 +262,66 @@ export class BillingPersistenceAdapter implements BillingDriver {
       const persistedAssignment = this.catalog.assignPlan(normalizedAssignment);
       const persistedUsage = this.ledger.append(normalizedUsage);
       return { assignment: persistedAssignment, usage: persistedUsage };
+    });
+  }
+
+  async appendUsageWithPreflight(
+    request: UsageWriteRequest,
+    requiredEntitlement: string | null = null,
+  ): Promise<PreflightUsageResult> {
+    return this.usageMutex.run(() => {
+      const workspace = this.workspaces.get(required(request.workspaceId, 'usage.workspaceId'));
+      if (!workspace) {
+        throw new BillingPersistenceError('WORKSPACE_NOT_FOUND', `workspace não encontrado: ${request.workspaceId}`);
+      }
+      if (workspace.accountId !== required(request.accountId, 'usage.accountId')) {
+        throw new BillingPersistenceError('ACCOUNT_MISMATCH', 'usage.accountId não corresponde ao workspace');
+      }
+      if (!this.isMember(request.workspaceId, request.actorUserId)) {
+        throw new BillingPersistenceError('MEMBERSHIP_REQUIRED', 'ator não é membro do workspace');
+      }
+
+      const normalized = normalizeUsageEvent(request);
+      const existing = this.ledger.findByIdempotencyKey(normalized.idempotencyKey);
+      if (existing && !sameUsagePayload(existing, normalized)) {
+        this.observeMutation('rejected', 'idempotency-conflict', '4xx', normalized.quantity, true);
+        throw new BillingPersistenceError(
+          'IDEMPOTENCY_CONFLICT',
+          'idempotencyKey já foi usada com um payload diferente',
+        );
+      }
+      if (existing) {
+        this.observeMutation('replayed', 'replayed', '2xx', normalized.quantity, true);
+        return { usage: existing, preflight: null, replayed: true };
+      }
+      if (this.ledger.hasEventId(normalized.id)) {
+        this.observeMutation('rejected', 'duplicate-resource', '4xx', normalized.quantity, true);
+        throw new BillingPersistenceError('DUPLICATE_RESOURCE', 'usage.id já existe');
+      }
+
+      const resolution = this.catalog.resolve(
+        normalized.accountId,
+        normalized.workspaceId,
+        normalized.timestamp,
+      );
+      const preflight = evaluateBillingPreflight({
+        plan: resolution.plan,
+        feature: normalized.feature,
+        requiredEntitlement,
+        consumed: this.ledger.total(normalized.accountId, normalized.workspaceId, normalized.feature),
+        requested: normalized.quantity,
+      });
+      if (!preflight.allowed) {
+        this.observeMutation('rejected', preflight.reason, '4xx', normalized.quantity, true);
+        throw new BillingPersistenceError(
+          preflightErrorCode(preflight.reason),
+          `billing preflight rejeitado: ${preflight.reason}`,
+        );
+      }
+
+      const usage = this.ledger.append(normalized);
+      this.observeMutation('committed', 'allowed', '2xx', usage.quantity, true);
+      return { usage, preflight, replayed: false };
     });
   }
 

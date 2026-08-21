@@ -28,6 +28,7 @@
     "v2/data/evidence.ts",
     "v2/data/catalog-evidence.ts",
     "v2/data/billing.ts",
+    "v2/data/billing-foundation.ts",
     "v2/data/billing-evidence.ts",
     "v2/data/billing-persistence.ts",
     "v2/data/billing-driver.ts",
