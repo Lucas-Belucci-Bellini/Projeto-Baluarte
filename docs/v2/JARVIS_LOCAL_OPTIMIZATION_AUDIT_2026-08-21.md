@@ -1,9 +1,11 @@
 # JARVIS — Auditoria de otimização local
 
-**Status:** AUDIT COMPLETE — sem alteração de implementação nesta etapa
+**Status:** IMPLEMENTATION COMPLETE — otimização local publicada; auditoria e limites preservados
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch:** `main`
-**SHA auditado:** `9aae1f4a14217c940895d8837bb129505a663792`
+**SHA auditado (baseline):** `9aae1f4a14217c940895d8837bb129505a663792`
+**SHA de implementação:** `1f47f0c475fec03420334a6f38af670ce4c3b345`
+**SHA documental corrente:** `5e345547738cfb35c7c8dd24d4953affee4eeb69`
 **Data/hora UTC:** `2026-08-21T05:08:05Z`
 **Objetivo:** reduzir custo de contexto e inicialização para que o JARVIS possa conviver com OpenClaw, sem ativar bridge externo, WhatsApp, notícias automáticas ou autoridade adicional.
 
@@ -61,7 +63,7 @@ Rollback é a reversão do commit do wiring de contexto, métricas e testes. Nen
 
 ## Implementação e medição inicial
 
-O slice local foi implementado sem bridge externo. `src/pages/jarvis.ts` agora aplica `selectContextMessages()` antes de qualquer provider: 12.000 caracteres/24 mensagens para modos sem agente e 18.000 caracteres/32 mensagens para agentes. A sessão completa permanece no IndexedDB, e somente o payload de inferência é recortado. A observação local `JarvisContextObservation` registra apenas modo, mensagens, caracteres, truncamento e duração bounded.
+O slice local foi implementado sem bridge externo e publicado diretamente na `main` no SHA `1f47f0c4` (documentação reconciliada no SHA `5e345547`). `src/pages/jarvis.ts` agora aplica `selectContextMessages()` antes de qualquer provider: 12.000 caracteres/24 mensagens para modos sem agente e 18.000 caracteres/32 mensagens para agentes. A sessão completa permanece no IndexedDB, e somente o payload de inferência é recortado. A observação local `JarvisContextObservation` registra apenas modo, mensagens, caracteres, truncamento e duração bounded.
 
 `src/utils/jarvis-tools.js` agora cacheia o catálogo combinado e invalida o cache quando uma ferramenta dinâmica muda. A seleção lazy opcional preserva `navigate`, `system_status`, `read_site_state` e `recall_memory`; adiciona ferramentas por domínio reconhecido; e retorna o catálogo completo quando o foco é desconhecido. `runTool()`, `exigir()` e o guard não foram modificados. Claude Agent e Hermes Agent recebem o foco da pergunta apenas no config transitório.
 
