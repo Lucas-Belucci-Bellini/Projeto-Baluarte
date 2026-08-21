@@ -80,8 +80,13 @@ export const TOOL_SCHEMAS: readonly ToolSchema[];
  */
 export function registerTool(tool: ToolRegistrada | null | undefined): boolean;
 
-/** Schemas de TODAS as ferramentas: built-ins + registradas (inclui skills). */
-export function getToolSchemas(): ToolSchema[];
+/** Foco opcional para reduzir o schema enviado ao modelo; sem foco retorna o catálogo completo. */
+export interface ToolSchemaOptions {
+  readonly query?: string;
+}
+
+/** Schemas das ferramentas built-in + registradas; a seleção nunca altera a execução/guard. */
+export function getToolSchemas(options?: ToolSchemaOptions): ToolSchema[];
 
 /**
  * Executa uma ferramenta pelo nome.

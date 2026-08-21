@@ -164,6 +164,27 @@ export const TOOL_SCHEMAS = [
 
 /** Nomes reservados (ferramentas built-in): não podem virar nome de skill. */
 const BUILTIN_NAMES = TOOL_SCHEMAS.map((t) => t.name);
+const ESSENTIAL_TOOL_NAMES = new Set(['navigate', 'system_status', 'read_site_state', 'recall_memory']);
+const TOOL_FOCUS_GROUPS = [
+  { names: ['search_arsenal'], terms: ['arsenal', 'arma', 'armas', 'rifle', 'pistola', 'tanque', 'veiculo', 'veículo'] },
+  { names: ['get_equipe'], terms: ['equipe', 'equipes', 'elite', 'alfa', 'bravo', 'charlie', 'delta', 'zulu'] },
+  { names: ['get_arco'], terms: ['arco', 'arcos', 'cronica', 'crônica', 'cronicas', 'crônicas', 'biblioteca'] },
+  { names: ['calculate'], terms: ['calcula', 'calcular', 'cálculo', 'calculo', 'equação', 'equacao', 'matemática', 'matematica'] },
+  { names: ['open_editor'], terms: ['editor', 'código', 'codigo', 'snippet', 'typescript', 'javascript', 'python', 'rust'] },
+  { names: ['set_color'], terms: ['cor', 'color', 'hex', 'rgb'] },
+  { names: ['create_skill', 'list_skills', 'delete_skill'], terms: ['skill', 'habilidade', 'habilidades', 'aprenda', 'aprender'] },
+];
+let schemaCache = null;
+
+function normalizeToolQuery(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, ' ')
+    .replace(/[^a-z0-9_\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 /* ===== Implementação ===== */
 
@@ -309,18 +330,50 @@ const dynamicTools = new Map();
 export function registerTool(tool) {
   if (!tool || !tool.name || typeof tool.run !== 'function') return false;
   dynamicTools.set(tool.name, tool);
+  schemaCache = null;
   return true;
 }
 
 /** Schemas (formato Claude) de TODAS as ferramentas: built-ins + registradas. */
-export function getToolSchemas() {
+export function getToolSchemas(options = {}) {
   initSkills();
-  const extra = [...dynamicTools.values()].map((t) => ({
-    name: t.name,
-    description: t.description,
-    input_schema: t.input_schema || { type: 'object', properties: {} }
-  }));
-  return [...TOOL_SCHEMAS, ...extra];
+  if (!schemaCache) {
+    const extra = [...dynamicTools.values()].map((t) => ({
+      name: t.name,
+      description: t.description,
+      input_schema: t.input_schema || { type: 'object', properties: {} }
+    }));
+    schemaCache = [...TOOL_SCHEMAS, ...extra];
+  }
+
+  const query = normalizeToolQuery(options.query);
+  if (!query) return [...schemaCache];
+
+  const selected = new Set(ESSENTIAL_TOOL_NAMES);
+  let matched = false;
+  for (const group of TOOL_FOCUS_GROUPS) {
+    if (group.terms.some((term) => query.includes(normalizeToolQuery(term)))) {
+      matched = true;
+      group.names.forEach((name) => selected.add(name));
+    }
+  }
+
+  const dynamic = schemaCache.filter((schema) => !BUILTIN_NAMES.includes(schema.name));
+  if (/\b(skill|habilidade|aprend)\b/.test(query)) {
+    matched = true;
+    dynamic.forEach((schema) => selected.add(schema.name));
+  } else {
+    dynamic.forEach((schema) => {
+      if (query.includes(normalizeToolQuery(schema.name))) {
+        matched = true;
+        selected.add(schema.name);
+      }
+    });
+  }
+
+  /* Um foco desconhecido não pode reduzir capacidade silenciosamente. */
+  if (!matched) return [...schemaCache];
+  return schemaCache.filter((schema) => selected.has(schema.name));
 }
 
 /**
@@ -374,7 +427,9 @@ export function runTool(name, input) {
 
 /** Remove uma ferramenta dinâmica do catálogo (usado ao apagar skills). */
 export function unregisterTool(name) {
-  return dynamicTools.delete(name);
+  const removed = dynamicTools.delete(name);
+  if (removed) schemaCache = null;
+  return removed;
 }
 
 /** Registra uma skill persistida como ferramenta dinâmica do agente. */

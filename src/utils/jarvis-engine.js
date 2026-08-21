@@ -627,7 +627,7 @@ export async function processAgent(messages, config, onToolCall) {
       system: config.systemPrompt +
         ' Você tem ferramentas para navegar e consultar o Baluarte. Use-as quando fizer sentido.' +
         ' Você também pode APRENDER habilidades novas: se precisar de uma capacidade repetível que ainda não existe, crie-a com create_skill (JS puro, fica salva e disponível nas próximas conversas) e então use-a. Confira o que já aprendeu com list_skills.',
-      tools: getToolSchemas(),
+      tools: getToolSchemas({ query: config.toolFocus }),
       messages: apiMessages
     };
 

@@ -34,6 +34,8 @@ export interface JarvisConfig {
   model?: string;
   serverUrl?: string;
   ollamaUrl?: string;
+  /** Pergunta atual usada apenas para seleção lazy conservadora de schemas. */
+  toolFocus?: string;
   [key: string]: unknown;
 }
 

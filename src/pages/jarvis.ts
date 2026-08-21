@@ -27,7 +27,11 @@ import type { ChartData } from '../utils/chart-engine.js';
 import { memoryContext, captureConversation, captureReply } from '../utils/jarvis-brain.js';
 import { LANGS, langForExt } from '../data/editor-langs.js';
 import type { LanguageDefinition } from '../data/editor-langs.js';
-import { getJarvisRuntimeContext } from '../utils/jarvis-context';
+import {
+  getJarvisRuntimeContext,
+  selectContextMessages,
+  recordJarvisContextObservation,
+} from '../utils/jarvis-context';
 import { beginSpotifyAuthorization, disconnectSpotify, isSpotifyConnected } from '../utils/jarvis-spotify-session';
 import { humanize } from '../utils/jarvis-style.js';
 import {
@@ -503,12 +507,28 @@ async function handleSend(): Promise<void> {
 
   try {
     const convo = messages.filter((m) => m.role === 'user' || m.role === 'jarvis');
+    const preparationStarted = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const agentMode = conf.mode === 'agente' || conf.mode === 'hermes-agente';
+    const contextSelection = selectContextMessages(convo, agentMode
+      ? { maxMessages: 32, maxCharacters: 18_000 }
+      : { maxMessages: 24, maxCharacters: 12_000 });
+    const convoForModel = contextSelection.messages;
+    const preparationNow = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    recordJarvisContextObservation({
+      mode: conf.mode ?? 'unknown',
+      ...contextSelection.metrics,
+      preparationMs: preparationNow - preparationStarted,
+    });
 
     /* doc 07: injeta o estado vivo do site como contexto oculto (somente
      * leitura). Cópia por chamada — não persiste no systemPrompt salvo. */
     const callConfig: JarvisConfig = conf.mode === 'local'
       ? conf
-      : { ...conf, systemPrompt: `${conf.systemPrompt}\n\n${getJarvisRuntimeContext({ compact: !['agente', 'hermes-agente'].includes(conf.mode ?? '') })}` };
+      : {
+        ...conf,
+        systemPrompt: `${conf.systemPrompt}\n\n${getJarvisRuntimeContext({ compact: !agentMode })}`,
+        ...(agentMode ? { toolFocus: text } : {}),
+      };
 
     /* Memória entre conversas (claude-mem): injeta resumos relevantes de
      * sessões anteriores. Best-effort, só nos modos de IA. */
@@ -549,21 +569,21 @@ async function handleSend(): Promise<void> {
         scrollDown();
       }
     } else if (conf.mode === 'claude') {
-      const reply = await processClaude(convo, callConfig);
+      const reply = await processClaude(convoForModel, callConfig);
       removeTyping();
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
       captureReply(reply);
     } else if (conf.mode === 'ollama') {
-      const reply = await processOllama(convo, callConfig);
+      const reply = await processOllama(convoForModel, callConfig);
       removeTyping();
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
       captureReply(reply);
     } else if (conf.mode === 'hermes-local') {
-      const reply = await processHermesLocal(convo, callConfig);
+      const reply = await processHermesLocal(convoForModel, callConfig);
       removeTyping();
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
@@ -577,28 +597,28 @@ async function handleSend(): Promise<void> {
       emitJarvis(reply);
       captureReply(reply);
     } else if (conf.mode === 'servidor') {
-      const reply = await processServer(convo, callConfig);
+      const reply = await processServer(convoForModel, callConfig);
       removeTyping();
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
       captureReply(reply);
     } else if (conf.mode === 'hermes') {
-      const reply = await processHermes(convo, callConfig);
+      const reply = await processHermes(convoForModel, callConfig);
       removeTyping();
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
       captureReply(reply);
     } else if (conf.mode === 'claude-servidor') {
-      const reply = await processClaudeServer(convo, callConfig);
+      const reply = await processClaudeServer(convoForModel, callConfig);
       removeTyping();
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
       emitJarvis(reply);
       captureReply(reply);
     } else if (conf.mode === 'openclaw') {
-      const reply = await processOpenClaw(convo, callConfig);
+      const reply = await processOpenClaw(convoForModel, callConfig);
       removeTyping();
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
@@ -629,7 +649,7 @@ async function handleSend(): Promise<void> {
         );
         return bolha;
       };
-      const reply = await processWebLLM(convo, callConfig, {
+      const reply = await processWebLLM(convoForModel, callConfig, {
         onProgress: (texto) => {
           const tx = document.getElementById('jv-typing')?.querySelector('.jarvis-msg__text');
           if (tx) { tx.classList.remove('jarvis-typing'); tx.textContent = '⬇ Carregando modelo… ' + texto; }
@@ -644,7 +664,7 @@ async function handleSend(): Promise<void> {
       const jMsg = await addMessage(sessao.id, 'jarvis', reply);
       messages.push(jMsg);
     } else if (conf.mode === 'agente') {
-      const reply = await processAgent(convo, callConfig, (toolName, input, result) => {
+      const reply = await processAgent(convoForModel, callConfig, (toolName, input, result) => {
         removeTyping();
         renderToolCall(toolName, input, result);
         const summary = `${toolName} → ${result && result.ok ? 'ok' : 'erro'}`;
@@ -659,7 +679,7 @@ async function handleSend(): Promise<void> {
     } else if (conf.mode === 'hermes-agente') {
       /* Agente Hermes LOCAL (WebLLM): tool-calls visíveis + progresso do
        * download do modelo na 1ª carga. Sem API, sem chave. */
-      const reply = await processHermesAgent(convo, callConfig,
+      const reply = await processHermesAgent(convoForModel, callConfig,
         (toolName, input, result) => {
           removeTyping();
           renderToolCall(toolName, input, result);
