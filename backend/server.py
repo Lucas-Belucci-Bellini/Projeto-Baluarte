@@ -35,6 +35,7 @@ from google.genai import types
 
 from claims_adapter import observe_bearer_claims
 from health_contract import project_server_health
+from observation_contract import project_server_observation
 from transport_security import (
     CORS_EXPOSE_HEADERS,
     CORS_HEADERS,
@@ -51,6 +52,7 @@ app = FastAPI(title="Núcleo Baluarte — IA Backend")
 
 _ALLOWED_ORIGINS = configured_allowed_origins()
 _CLAIMS_RATE_LIMITER = configured_claims_rate_limiter()
+_OBSERVATION_RATE_LIMITER = configured_claims_rate_limiter()
 _CLAIMS_AUDIT_LOGGER = logging.getLogger("baluarte.server_claims")
 
 # CORS explícito: nenhuma origem, credencial, método ou header wildcard.
@@ -147,6 +149,57 @@ def claims_observe(
         request_id_present=request_id_present,
     )
     return JSONResponse(content=snapshot, headers=rate_limit_headers(rate))
+
+
+@app.get("/observability/observe")
+def observability_observe(
+    request: Request,
+    authorization: str | None = Header(default=None),
+    x_request_id: str | None = Header(default=None),
+):
+    """Combina health e claims observados sem conceder autoridade."""
+    route = "/observability/observe"
+    origin = request.headers.get("origin")
+    origin_is_allowed = origin_allowed(origin, _ALLOWED_ORIGINS)
+    remote_host = request.client.host if request.client is not None else None
+    rate = _OBSERVATION_RATE_LIMITER.check(transport_key(remote_host, origin, route))
+    request_id_present = bool(x_request_id and x_request_id.strip())
+    health_snapshot = project_server_health(
+        model=MODEL,
+        has_key=bool(os.environ.get("GEMINI_API_KEY")),
+    )
+    if rate.allowed:
+        claims_snapshot = observe_bearer_claims(
+            authorization,
+            base_url=os.environ.get("SUPABASE_URL"),
+            anon_key=os.environ.get("SUPABASE_ANON_KEY"),
+        )
+    else:
+        claims_snapshot = observe_bearer_claims(
+            None,
+            base_url=None,
+            anon_key=None,
+        )
+    observation = project_server_observation(
+        health_snapshot,
+        claims_snapshot,
+        origin_allowed=origin_is_allowed,
+        rate_limited=not rate.allowed,
+    )
+    emit_claims_audit(
+        _CLAIMS_AUDIT_LOGGER,
+        status_code=200 if rate.allowed else 429,
+        origin_is_allowed=origin_is_allowed,
+        rate_limited=not rate.allowed,
+        decision=observation["authority"],
+        request_id_present=request_id_present,
+        route=route,
+    )
+    return JSONResponse(
+        status_code=200 if rate.allowed else 429,
+        content=observation,
+        headers=rate_limit_headers(rate),
+    )
 
 
 @app.post("/chat")

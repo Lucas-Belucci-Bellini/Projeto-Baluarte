@@ -174,10 +174,14 @@ def rate_limit_headers(decision: RateLimitDecision) -> dict[str, str]:
     return headers
 
 
-def transport_key(remote_host: str | None, origin: str | None) -> str:
+def transport_key(
+    remote_host: str | None,
+    origin: str | None,
+    route: str = "/claims/observe",
+) -> str:
     """Create a non-reversible in-memory bucket key; never log the inputs."""
 
-    material = f"{remote_host or 'anonymous'}\x00{origin or ''}".encode("utf-8")
+    material = f"{route}\x00{remote_host or 'anonymous'}\x00{origin or ''}".encode("utf-8")
     return hashlib.sha256(material).hexdigest()
 
 

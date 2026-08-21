@@ -87,6 +87,7 @@ o servidor pesquisa no Google e responde.
 | `GET` | `/health` | Contrato `server-health/v1`: liveness, health observado, severidade, fallback read-only e presença booleana da `GEMINI_API_KEY` |
 | `POST` | `/chat` | `{ messages: [{role, content}], system }` → `{ resposta }` |
 | `GET` | `/claims/observe` | Observa identidade por Bearer + Supabase Auth; sem configuração/token válido, nega por padrão e nunca retorna token ou metadata. `/user` não fabrica TTL nem escopos. O transporte usa allowlist CORS, rate limit process-local e auditoria redigida. |
+| `GET` | `/observability/observe` | Combina `server-health/v1` e `server-claims/v1` em `server-observation/v1`, com evidência bounded de health/claims/fallback e autoridade sempre `not-authorized`. |
 
 O servidor é **stateless**: o site envia a conversa inteira a cada chamada (o
 histórico vive no site, em IndexedDB), evitando dessincronização.
@@ -101,7 +102,7 @@ BALUARTE_CLAIMS_RATE_LIMIT=30
 BALUARTE_CLAIMS_RATE_WINDOW_SECONDS=60
 ```
 
-A especificação completa, os casos de falha, os riscos e o rollback estão em [`SERVER_CLAIMS_HARDENING_CONTRACT_2026-08-21.md`](../docs/v2/SERVER_CLAIMS_HARDENING_CONTRACT_2026-08-21.md).
+A especificação completa, os casos de falha, os riscos e o rollback estão em [`SERVER_CLAIMS_HARDENING_CONTRACT_2026-08-21.md`](../docs/v2/SERVER_CLAIMS_HARDENING_CONTRACT_2026-08-21.md). O contrato combinado de evidência está em [`SERVER_OBSERVATION_EVIDENCE_CONTRACT_2026-08-21.md`](../docs/v2/SERVER_OBSERVATION_EVIDENCE_CONTRACT_2026-08-21.md).
 
 ## Deploy com HTTPS (para usar no site PUBLICADO)
 
@@ -144,5 +145,5 @@ docker run -p 8000:8000 -e GEMINI_API_KEY="sua-chave" baluarte-ia
 - CORS usa origens exatas configuradas em `BALUARTE_ALLOWED_ORIGINS`, separadas por vírgula. Sem configuração, somente `http://localhost:5173` e `http://127.0.0.1:5173` são aceitas; wildcard, caminhos e origens malformadas são rejeitados.
 - O endpoint `/claims/observe` aplica `BALUARTE_CLAIMS_RATE_LIMIT` por `BALUARTE_CLAIMS_RATE_WINDOW_SECONDS`. O padrão é 30 requisições por 60 segundos por bucket de transporte. É uma contenção process-local, não uma quota distribuída para múltiplas instâncias.
 - A auditoria registra somente método, rota, classe HTTP, origem permitida, rate limit, decisão e presença booleana de request-id. Tokens, Authorization, subject, e-mail, metadata, IP e detalhes de upstream nunca são registrados.
-- O envelope server-side é uma observação do backend e ainda não é o `PlatformDiagnostic` da V2. `server-claims/v1` valida a sessão por uma fonte server-side quando configurada, mas não concede escopos nem roles; a integração futura deverá transportar o diagnóstico V2 por uma fronteira autorizada, sem criar um segundo Registry ou Event Bus.
+- Os envelopes `server-health/v1`, `server-claims/v1` e `server-observation/v1` são observações do backend e ainda não são o `PlatformDiagnostic` da V2. `server-observation/v1` apenas compõe health, claims redigidos e códigos de evidência; não concede escopos, não executa fallback e não substitui RLS, Permission Manager, Registry ou Event Bus.
 - A URL pública precisa ser **HTTPS** para o site publicado conseguir usá-la.
