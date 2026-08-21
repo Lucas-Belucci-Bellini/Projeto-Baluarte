@@ -19,6 +19,12 @@ CONTRACT_VERSION = "server-claims/v1"
 SERVER_VALIDATED_SOURCE = "server-validated"
 MAX_CLAIMS_TTL_MS = 60_000
 DEFAULT_ALLOWED_SCOPES = ("platform:observe", "registry:read", "module:read")
+ROLE_SCOPES = {
+    "user": ("platform:observe",),
+    "admin": DEFAULT_ALLOWED_SCOPES,
+    "dev": DEFAULT_ALLOWED_SCOPES,
+    "owner": DEFAULT_ALLOWED_SCOPES,
+}
 
 
 class ServerClaimsSnapshot(TypedDict):
@@ -71,7 +77,10 @@ def project_server_claims(
     subject = _text(candidate.get("subject"))
     audience = _text(candidate.get("audience"))
     source = _text(candidate.get("source"))
+    role = _text(candidate.get("role"))
     requested = _string_list(candidate.get("scopes"))
+    if not requested and role in ROLE_SCOPES:
+        requested = list(ROLE_SCOPES[role])
     issued_at = _timestamp(candidate.get("issuedAt"))
     expires_at = _timestamp(candidate.get("expiresAt"))
     current = int(time.time() * 1000) if now_ms is None else now_ms
@@ -114,6 +123,8 @@ def project_server_claims(
             "audienceMatched": audience_matches,
             "authenticated": authenticated,
             "trustedSource": trusted_source,
+            "rolePresent": role is not None,
+            "roleRecognized": role in ROLE_SCOPES,
         },
         "scopes": {
             "requested": requested,
@@ -166,9 +177,8 @@ def verify_supabase_access_token(
     """Consulta Supabase Auth `/user` sem expor o token ou metadata ao consumidor.
 
     A resposta de `/user` prova apenas que o token atual foi aceito pela fonte de
-    identidade. Como ela não fornece expiração/escopos server-side neste adapter,
-    o envelope resultante continua sem escopos aceitos até uma autoridade formal
-    fornecer esses campos.
+    identidade. Metadata de role só é projetada para catálogo interno e não é
+    suficiente para criar expiração ou autorização sem uma política formal.
     """
 
     if not token or not _text(base_url) or not _text(anon_key):
@@ -191,11 +201,44 @@ def verify_supabase_access_token(
     subject = _text(payload.get("id"))
     if subject is None:
         return None
+    app_metadata = payload.get("app_metadata")
+    role = _text(app_metadata.get("role")) if isinstance(app_metadata, Mapping) else None
     return {
         "issuer": "supabase-auth",
         "subject": subject,
         "audience": "authenticated",
-        "scopes": [],
+        "role": role,
+        "scopes": list(ROLE_SCOPES.get(role, ())),
+        "source": SERVER_VALIDATED_SOURCE,
+        "authenticated": True,
+    }
+
+
+def project_verified_supabase_payload(
+    payload: Mapping[str, object] | None,
+) -> Claims | None:
+    """Converte somente um payload já verificado por uma biblioteca/JWKS confiável."""
+
+    if not isinstance(payload, Mapping):
+        return None
+    subject = _text(payload.get("sub")) or _text(payload.get("user_id"))
+    issuer = _text(payload.get("iss"))
+    audience = _text(payload.get("aud"))
+    role_value = payload.get("role")
+    app_metadata = payload.get("app_metadata")
+    role = _text(app_metadata.get("role")) if isinstance(app_metadata, Mapping) else _text(role_value)
+    issued_at = _timestamp(payload.get("iat"))
+    expires_at = _timestamp(payload.get("exp"))
+    if subject is None or issuer is None or audience is None or issued_at is None or expires_at is None:
+        return None
+    return {
+        "issuer": "supabase-auth",
+        "subject": subject,
+        "audience": audience,
+        "role": role,
+        "scopes": list(ROLE_SCOPES.get(role, ())),
+        "issuedAt": issued_at * 1000,
+        "expiresAt": expires_at * 1000,
         "source": SERVER_VALIDATED_SOURCE,
         "authenticated": True,
     }

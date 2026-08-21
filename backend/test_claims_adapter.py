@@ -3,6 +3,7 @@ from claims_adapter import (
     extract_bearer_token,
     observe_bearer_claims,
     project_server_claims,
+    project_verified_supabase_payload,
     verify_supabase_access_token,
 )
 
@@ -58,7 +59,7 @@ def test_supabase_user_response_is_redacted_and_has_no_implicit_scopes() -> None
 
     def fake_http_get(url, headers, timeout):
         seen.update({"url": url, "headers": dict(headers), "timeout": timeout})
-        return 200, b'{"id":"user-1","email":"private@example.com","user_metadata":{"role":"admin"}}'
+        return 200, b'{"id":"user-1","email":"private@example.com","app_metadata":{"role":"admin"}}'
 
     claims = verify_supabase_access_token(
         "token-value-that-stays-server-side",
@@ -70,7 +71,8 @@ def test_supabase_user_response_is_redacted_and_has_no_implicit_scopes() -> None
         "issuer": "supabase-auth",
         "subject": "user-1",
         "audience": "authenticated",
-        "scopes": [],
+        "role": "admin",
+        "scopes": ["platform:observe", "registry:read", "module:read"],
         "source": "server-validated",
         "authenticated": True,
     }
@@ -89,6 +91,40 @@ def test_supabase_user_response_is_redacted_and_has_no_implicit_scopes() -> None
     assert snapshot["scopes"]["accepted"] == []
     assert "private@example.com" not in str(snapshot)
     assert "admin" not in str(snapshot)
+
+
+def test_verified_jwt_payload_provides_ttl_and_role_scopes_without_decoding_locally() -> None:
+    claims = project_verified_supabase_payload({
+        "sub": "user-1",
+        "iss": "supabase-auth",
+        "aud": "authenticated",
+        "role": "admin",
+        "iat": 10,
+        "exp": 20,
+    })
+    assert claims is not None
+    snapshot = project_server_claims(claims, now_ms=12_000)
+    assert snapshot["identity"]["roleRecognized"] is True
+    assert snapshot["validity"]["fresh"] is True
+    assert snapshot["scopes"]["accepted"] == ["platform:observe", "registry:read", "module:read"]
+    assert snapshot["decision"] == "not-authorized"
+
+    assert project_verified_supabase_payload({"sub": "user-1", "iss": "supabase-auth"}) is None
+
+
+def test_unknown_role_never_receives_implicit_scopes() -> None:
+    claims = project_verified_supabase_payload({
+        "sub": "user-1",
+        "iss": "supabase-auth",
+        "aud": "authenticated",
+        "role": "billing-admin",
+        "iat": 10,
+        "exp": 20,
+    })
+    assert claims is not None
+    snapshot = project_server_claims(claims, now_ms=12_000)
+    assert snapshot["identity"]["roleRecognized"] is False
+    assert snapshot["scopes"]["accepted"] == []
 
 
 def test_failed_identity_lookup_denies_without_error_details() -> None:
@@ -113,5 +149,7 @@ if __name__ == "__main__":
     test_bearer_parser_rejects_malformed_headers()
     test_validated_claims_accept_only_read_scopes()
     test_supabase_user_response_is_redacted_and_has_no_implicit_scopes()
+    test_verified_jwt_payload_provides_ttl_and_role_scopes_without_decoding_locally()
+    test_unknown_role_never_receives_implicit_scopes()
     test_failed_identity_lookup_denies_without_error_details()
-    print("backend claims adapter: 5/5")
+    print("backend claims adapter: 7/7")

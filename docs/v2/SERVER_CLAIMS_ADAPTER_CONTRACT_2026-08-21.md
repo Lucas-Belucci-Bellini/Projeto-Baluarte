@@ -58,7 +58,7 @@ O token não é devolvido, registrado, incluído em `detail`, encaminhado para o
 }
 ```
 
-A consulta ao endpoint `/user` confirma somente que a fonte de identidade aceitou o token atual. Como este adaptador não recebe assinatura/verificação de expiração/roles do lado do servidor, ele não inventa TTL, roles ou scopes. Os escopos `accepted` permanecem vazios até existir um contrato formal de claims assinado ou uma política server-side que forneça esses campos.
+A consulta ao endpoint `/user` confirma somente que a fonte de identidade aceitou o token atual. Como essa resposta não fornece expiração verificável, o caminho `/user` não fabrica TTL e mantém `accepted` vazio. Existe uma função separada, `project_verified_supabase_payload()`, que só aceita payload já verificado por biblioteca/JWKS confiável; nesse caminho, `iat`/`exp` são convertidos para TTL e a role é mapeada por catálogo fechado.
 
 ## Configuração
 
@@ -87,6 +87,18 @@ python3 backend/test_claims_adapter.py → 5/5
 python3 backend/test_health_contract.py → 4/4
 python3 -m py_compile backend/claims_adapter.py backend/server.py backend/health_contract.py → passou
 ```
+
+## Roles e expiração
+
+| Role server-side reconhecida | Escopos observáveis derivados |
+|---|---|
+| `user` | `platform:observe` |
+| `admin` | `platform:observe`, `registry:read`, `module:read` |
+| `dev` | `platform:observe`, `registry:read`, `module:read` |
+| `owner` | `platform:observe`, `registry:read`, `module:read` |
+| Qualquer outra | Nenhum escopo; `roleRecognized: false`. |
+
+A derivação é de least privilege e continua read-only. Nenhum escopo representa autorização operacional. Roles vêm de `app_metadata` ou de um payload explicitamente marcado como previamente verificado; `user_metadata` não é fonte de autoridade. O TTL máximo permanece 60 segundos, e payloads sem `iat`, `exp`, issuer, audience ou subject são rejeitados pela projeção formal.
 
 ## Segurança e limites
 

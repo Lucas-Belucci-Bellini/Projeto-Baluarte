@@ -72,6 +72,8 @@ Confira: abra <http://127.0.0.1:8000/health>. O endpoint responde o contrato `se
 
 Para habilitar somente a consulta de identidade do endpoint `/claims/observe`, configure `SUPABASE_URL` e `SUPABASE_ANON_KEY` no ambiente do backend. O servidor consulta `/auth/v1/user` com o Bearer recebido e redige o resultado. Essa consulta não cria roles, não aceita `module:execute`, não chama o Permission Manager e não substitui RLS. Sem as duas variáveis, sem Bearer válido ou com erro de rede, a resposta permanece `decision: not-authorized`.
 
+A projeção formal de escopos aceita somente as roles server-side `user`, `admin`, `dev` e `owner`. `user` observa `platform:observe`; as outras três observam, sem autorização operacional, `platform:observe`, `registry:read` e `module:read`. Role desconhecida, `user_metadata` ou payload sem `iat`/`exp` não recebe escopos. A função `project_verified_supabase_payload()` não decodifica JWT: ela recebe apenas dados que uma biblioteca/JWKS confiável já verificou.
+
 ## Usar no site
 
 No J.A.R.V.I.S. (`/jarvis`): **⚙ Modos & Config → modo "Servidor"** e confirme a
@@ -84,7 +86,7 @@ o servidor pesquisa no Google e responde.
 |---|---|---|
 | `GET` | `/health` | Contrato `server-health/v1`: liveness, health observado, severidade, fallback read-only e presença booleana da `GEMINI_API_KEY` |
 | `POST` | `/chat` | `{ messages: [{role, content}], system }` → `{ resposta }` |
-| `GET` | `/claims/observe` | Observa identidade por Bearer + Supabase Auth; sem configuração/token válido, nega por padrão e nunca retorna token ou metadata |
+| `GET` | `/claims/observe` | Observa identidade por Bearer + Supabase Auth; sem configuração/token válido, nega por padrão e nunca retorna token ou metadata. `/user` não fabrica TTL nem escopos. |
 
 O servidor é **stateless**: o site envia a conversa inteira a cada chamada (o
 histórico vive no site, em IndexedDB), evitando dessincronização.
