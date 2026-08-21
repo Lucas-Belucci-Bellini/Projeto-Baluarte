@@ -85,5 +85,5 @@ O próximo marco de segurança deve ligar este contrato a uma fonte server-side 
 - Repositório: `Lucas-Belucci-Bellini/Projeto-Baluarte`.
 - Branch de entrega: `main`.
 - Base: `17aa3f7ee2ebf6c560f52fd66e49a20efe871ad7`.
-- Commit de publicação: será registrado após os gates e a CI.
+- Commit de publicação: `9b5b5d0555610f4468e83b3d2751d8421b779868`.
 - Autor padrão: Manus AI.
