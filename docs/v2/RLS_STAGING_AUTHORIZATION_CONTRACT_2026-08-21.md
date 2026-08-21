@@ -1,8 +1,9 @@
 # RLS Staging Authorization Contract — 2026-08-21
 
-**Status:** CONTRACT FIRST — no staging provisioned and no remote DDL applied  
+**Status:** LOCAL-ONLY CONTRACT PUBLISHED — no staging provisioned and no remote DDL applied
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Base SHA:** `1e3ffd0a9b5bccbc5b04ca7df24246f88c259a9e`  
+**Published SHA:** `f3973ecc37fbf6044e930f385c93de18280c6c2a`
 **Scope:** local design and authorization gates only
 
 ## 1. Purpose
@@ -41,7 +42,7 @@ Any failure stops the sequence. There is no automatic promotion from staging to 
 
 ## 4. Required local fixtures before staging
 
-The local-only implementation must model at least one anonymous request, one authenticated user, one user from another tenant, one admin/developer/owner role, an expired identity, missing tenant ownership and a service-role operation. Every fixture must assert both the positive path and the deny path. Fixtures must not contain real bearer tokens, personal data or production secrets.
+The local-only implementation published at `f3973ecc37fbf6044e930f385c93de18280c6c2a` models an anonymous request, an authenticated user, a cross-tenant user, admin/developer/owner roles, an expired identity, missing tenant ownership and a service-role operation. The seven local tests assert positive and deny paths. Fixtures contain no real bearer tokens, personal data or production secrets.
 
 The first RLS migration should be intentionally narrow. It must not combine billing writes, marketplace state, social content, WhatsApp operations, news ingestion, JARVIS tool execution or app-device permissions. Each domain requires its own transaction, audit and rollback contract.
 

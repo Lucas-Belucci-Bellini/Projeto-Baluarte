@@ -2,7 +2,7 @@
 
 **Status:** AUDIT ONLY — NO REMOTE DDL, NO SUPABASE WRITE
 
-**Audited commit:** `1e3ffd0a9b5bccbc5b04ca7df24246f88c259a9e`  
+**Audited commit:** `f3973ecc37fbf6044e930f385c93de18280c6c2a`
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Branch:** `main`  
 **Author:** Manus AI  
@@ -30,7 +30,7 @@ Nenhum DDL remoto foi aplicado, nenhuma policy foi criada, nenhum branch de stag
 
 ## 3. Root causes of the current blockers
 
-The principal blocker is not a failing unit test. It is **missing authoritative evidence** for the data boundary. The repository currently proves observation contracts, but it does not provide a versioned SQL source of truth that defines entities, tenant ownership, indexes, constraints, audit records, policy predicates or rollback migrations.
+The principal blocker is not a failing unit test. It is **missing authoritative evidence** for the data boundary. The repository at `f3973ecc37fbf6044e930f385c93de18280c6c2a` now proves local RLS decision cases, but it does not provide a versioned SQL source of truth that defines entities, tenant ownership, indexes, constraints, audit records, policy predicates or rollback migrations.
 
 The second blocker is governance. A Supabase staging environment has an operational cost and must not be created implicitly. The current project instructions explicitly prohibit applying remote DDL without staging validation and explicit confirmation. Consequently, the correct state is `BLOCKED / NOT STARTED`, not `GREEN` and not `FAILED`.
 
