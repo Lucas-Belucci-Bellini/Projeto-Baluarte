@@ -74,7 +74,7 @@ Não foram aplicadas migrations, DDL, RLS remoto ou alterações no projeto Supa
 
 | Arquivo | Papel |
 |---|---|
-| `backend/claims_adapter.py` | Parser Bearer, consulta injetável a Supabase Auth, redaction e projeção `server-claims/v1`. |
+| `backend/claims_adapter.py` | Parser Bearer, consulta injetável a Supabase Auth, redaction, catálogo fechado de roles e projeção TTL `server-claims/v1`. |
 | `backend/server.py` | Endpoint FastAPI `GET /claims/observe`, read-only e deny-by-default. |
 | `backend/test_claims_adapter.py` | Cinco testes Python com fake HTTP, ausência de configuração, token inválido, redaction e escopos. |
 | `src/layout/server-claims-observation.ts` | Contrato frontend/harness já existente para a mesma semântica de negação. |
@@ -83,7 +83,7 @@ Não foram aplicadas migrations, DDL, RLS remoto ou alterações no projeto Supa
 Validações direcionadas deste marco:
 
 ```text
-python3 backend/test_claims_adapter.py → 5/5
+python3 backend/test_claims_adapter.py → 7/7
 python3 backend/test_health_contract.py → 4/4
 python3 -m py_compile backend/claims_adapter.py backend/server.py backend/health_contract.py → passou
 ```
@@ -115,5 +115,5 @@ O rollback remove `backend/claims_adapter.py`, o import e endpoint em `backend/s
 - Repositório: `Lucas-Belucci-Bellini/Projeto-Baluarte`.
 - Branch de entrega: `main`.
 - Base: `cfb96dd116027c24926a9bc6565ce2d45d81ed3e`.
-- Commit de publicação: `76ca9e913ed3dc589c16762572930abc7e4fbe42`.
+- Commit de implementação publicado: `e2f39bae91304516db9f5c4e7131d2a53b09673b`.
 - Autor padrão: Manus AI.
