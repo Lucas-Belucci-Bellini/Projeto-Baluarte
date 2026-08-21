@@ -55,6 +55,7 @@ import { projectCommandCenter, searchCommandCenter } from '../../src/layout/comm
 import { reconcileNavigationCatalogs } from '../../src/layout/catalog-reconciliation.ts';
 import { decideModuleAlignment } from '../../src/layout/module-alignment.ts';
 import { evaluatePromotionGate } from '../../src/layout/promotion-gate.ts';
+import { evaluateControlledRolloutEvidence } from '../../src/layout/controlled-rollout-evidence.ts';
 import { projectPlatformDiagnostic } from '../../src/layout/runtime-observation.ts';
 import { projectPlatformDiagnosticEnvelope, sealPlatformObservationEnvelope } from '../../src/layout/platform-observation-transport.ts';
 import { observeServerClaims } from '../../src/layout/server-claims-observation.ts';
@@ -303,6 +304,29 @@ async function principal() {
     root.dataset.degradedCount = String(degraded);
   };
 
+  const controlledRolloutEvidencePilot = (fixture = {}) => {
+    const editor = moduleAlignmentPilot().find((decision) => decision.path === '/editor');
+    if (!editor) return null;
+    const input = fixture && typeof fixture === 'object' ? fixture : {};
+    const observation = input.observation == null ? null : observeServerObservation(input.observation);
+    return evaluateControlledRolloutEvidence({
+      alignment: editor,
+      observation,
+      authority: input.authority ?? {
+        source: 'unknown',
+        permitted: false,
+        actorRole: 'unknown',
+        requestId: null,
+        auditId: null,
+      },
+      rollback: input.rollback ?? {
+        reversible: true,
+        fallbackPath: '/editor',
+        rollbackReference: 'commit:24685606',
+      },
+    });
+  };
+
   const promotionGatePilot = () => {
     const editor = moduleAlignmentPilot().find((decision) => decision.path === '/editor');
     if (!editor) return null;
@@ -487,6 +511,7 @@ async function principal() {
       fallback: document.querySelector('#module-observation-status')?.textContent ?? '',
       publicSidebarUntouched: true,
     }),
+    controlledRolloutEvidencePilot,
     promotionGatePilot,
     registros,
     eventos: bus.contagem(),

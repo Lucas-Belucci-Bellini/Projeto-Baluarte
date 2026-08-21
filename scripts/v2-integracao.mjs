@@ -396,6 +396,37 @@ try {
       && moduleObservationReady.filter((decision) => decision.availability === 'degraded').length === 4,
     JSON.stringify({ editorObservation, moduleObservationReady }));
 
+  const controlledRolloutBlocked = await pagina.evaluate((observation) => (
+    window.__v2?.controlledRolloutEvidencePilot?.({ observation })
+  ), healthyServerObservation);
+  conferir('observação pronta sem autoridade server-claims permanece bloqueada',
+    controlledRolloutBlocked?.observationReady === true
+      && controlledRolloutBlocked?.status === 'blocked'
+      && controlledRolloutBlocked?.eligibleForControlledRollout === false
+      && controlledRolloutBlocked?.publicPromotionAllowed === false
+      && controlledRolloutBlocked?.normalUserAction === 'preserve-current-surface',
+    JSON.stringify(controlledRolloutBlocked ?? null));
+
+  const controlledRolloutEligible = await pagina.evaluate(({ observation, authority, rollback }) => (
+    window.__v2?.controlledRolloutEvidencePilot?.({ observation, authority, rollback })
+  ), {
+    observation: healthyServerObservation,
+    authority: {
+      source: 'server-claims', permitted: true, actorRole: 'developer',
+      requestId: 'req-editor-rollout-1', auditId: 'audit-editor-rollout-1',
+    },
+    rollback: {
+      reversible: true, fallbackPath: '/editor', rollbackReference: 'commit:editor-pilot-1',
+    },
+  });
+  conferir('evidências completas permitem somente rollout controlado',
+    controlledRolloutEligible?.observationReady === true
+      && controlledRolloutEligible?.status === 'eligible'
+      && controlledRolloutEligible?.eligibleForControlledRollout === true
+      && controlledRolloutEligible?.publicPromotionAllowed === false
+      && controlledRolloutEligible?.normalUserAction === 'preserve-current-surface',
+    JSON.stringify(controlledRolloutEligible ?? null));
+
   const promotionGate = await pagina.evaluate(() => window.__v2?.promotionGatePilot?.());
   conferir('gate de promoção bloqueia editor sem claims server-side',
     promotionGate?.status === 'blocked'
