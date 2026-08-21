@@ -41,33 +41,96 @@ function cosine(a, b) {
   return (na && nb) ? dot / (Math.sqrt(na) * Math.sqrt(nb)) : 0;
 }
 
+function buildRecallStats(tokenLists) {
+  const df = new Map();
+  for (const tokens of tokenLists) {
+    for (const word of new Set(tokens)) df.set(word, (df.get(word) || 0) + 1);
+  }
+  const N = tokenLists.length;
+  const idfByToken = new Map();
+  for (const [word, frequency] of df) {
+    idfByToken.set(word, Math.log(1 + N / (frequency + 1)));
+  }
+  const idf = (word) => idfByToken.get(word) ?? Math.log(1 + N);
+  return {
+    idfByToken,
+    vectors: tokenLists.map((tokens) => tfidfVec(tokens, idf)),
+  };
+}
+
+export function buildRecallIndex(docs) {
+  if (!Array.isArray(docs)) return null;
+  const safeDocs = docs.slice(0, MAX_MEMORY_CACHE_DOCS);
+  const tokensByDoc = safeDocs.map((doc) => tokenize(doc.text));
+  const stats = buildRecallStats(tokensByDoc);
+  return {
+    docs: safeDocs,
+    positions: new Map(safeDocs.map((doc, index) => [doc, index])),
+    tokensByDoc,
+    idfByToken: stats.idfByToken,
+    vectors: stats.vectors,
+  };
+}
+
+function indexCoversDocs(index, docs) {
+  return Boolean(
+    index
+      && Array.isArray(index.docs)
+      && Array.isArray(index.tokensByDoc)
+      && docs.length <= index.docs.length
+      && docs.every((doc) => index.positions?.has(doc)),
+  );
+}
+
+function prepareRecallStats(docs, index) {
+  if (!indexCoversDocs(index, docs)) {
+    return buildRecallStats(docs.map((doc) => tokenize(doc.text)));
+  }
+
+  const tokenLists = docs.map((doc) => index.tokensByDoc[index.positions.get(doc)]);
+  const sameCorpus = docs.length === index.docs.length
+    && docs.every((doc, position) => doc === index.docs[position]);
+  return sameCorpus ? index : buildRecallStats(tokenLists);
+}
+
+function scoreRecallWithoutIndex(queryTokens, docs, k) {
+  const stats = buildRecallStats(docs.map((doc) => tokenize(doc.text)));
+  const idf = (word) => stats.idfByToken.get(word) ?? Math.log(1 + docs.length);
+  const queryVector = tfidfVec(queryTokens, idf);
+  const scored = docs.map((doc, index) => ({
+    text: doc.text,
+    sessionId: doc.sessionId,
+    score: cosine(queryVector, stats.vectors[index]),
+  }));
+  scored.sort((a, b) => b.score - a.score);
+  return scored.filter((hit) => hit.score > 0.04).slice(0, k);
+}
+
 /**
  * Recall por relevância.
  * @param {string} query  pergunta atual
  * @param {Array<{text:string, sessionId?:string}>} docs  resumos/candidatos
  * @param {number} k  máximo de resultados
+ * @param {object|null} index índice derivado opcional do mesmo corpus/revisão
  * @returns {Array<{text, sessionId, score}>} ordenados por relevância
  */
-export function recall(query, docs, k = 3) {
+export function recall(query, docs, k = 3, index = null) {
   const q = tokenize(query);
   if (!q.length || !docs || !docs.length) return [];
+  if (docs.length > MAX_MEMORY_CACHE_DOCS && !indexCoversDocs(index, docs)) {
+    return scoreRecallWithoutIndex(q, docs, k);
+  }
 
-  const df = new Map();
-  const docTokens = docs.map((d) => {
-    const t = tokenize(d.text);
-    for (const w of new Set(t)) df.set(w, (df.get(w) || 0) + 1);
-    return t;
-  });
-  const N = docs.length;
-  const idf = (w) => Math.log(1 + N / ((df.get(w) || 0) + 1));
-
-  const qv = tfidfVec(q, idf);
-  const scored = docs.map((d, i) => ({
-    text: d.text, sessionId: d.sessionId,
-    score: cosine(qv, tfidfVec(docTokens[i], idf))
+  const stats = prepareRecallStats(docs, index);
+  const idf = (word) => stats.idfByToken.get(word) ?? Math.log(1 + docs.length);
+  const queryVector = tfidfVec(q, idf);
+  const scored = docs.map((doc, indexInCorpus) => ({
+    text: doc.text,
+    sessionId: doc.sessionId,
+    score: cosine(queryVector, stats.vectors[indexInCorpus]),
   }));
   scored.sort((a, b) => b.score - a.score);
-  return scored.filter((s) => s.score > 0.04).slice(0, k);
+  return scored.filter((hit) => hit.score > 0.04).slice(0, k);
 }
 
 /* Cache do corpus de memória (resumos por sessão), para a ferramenta síncrona
@@ -75,6 +138,7 @@ export function recall(query, docs, k = 3) {
 const MAX_MEMORY_CACHE_DOCS = 256;
 let _memCache = [];
 let _corpusCache = null;
+let _recallIndex = null;
 let _lastCorpusObservation = null;
 
 export function setMemoryCache(docs) {
@@ -87,6 +151,7 @@ export function setMemoryCorpusCache(revision, docs) {
   const safeRevision = Number.isInteger(revision) && revision >= 0 ? revision : 0;
   const safeDocs = Array.isArray(docs) ? docs.slice(0, MAX_MEMORY_CACHE_DOCS) : [];
   _corpusCache = { revision: safeRevision, docs: safeDocs };
+  _recallIndex = buildRecallIndex(safeDocs);
   return safeDocs.slice();
 }
 
@@ -97,8 +162,14 @@ export function getMemoryCorpusCache(revision) {
   return _corpusCache.docs.slice();
 }
 
+export function getMemoryCorpusIndex(revision) {
+  if (!_corpusCache || _corpusCache.revision !== revision) return null;
+  return _recallIndex;
+}
+
 export function clearMemoryCorpusCache() {
   _corpusCache = null;
+  _recallIndex = null;
 }
 
 export function recordMemoryCorpusObservation(observation) {

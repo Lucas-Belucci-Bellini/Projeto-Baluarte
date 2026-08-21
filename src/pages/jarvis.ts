@@ -44,6 +44,7 @@ import {
   summarizeSession,
   setMemoryCache,
   getMemoryCorpusCache,
+  getMemoryCorpusIndex,
   setMemoryCorpusCache,
   recordMemoryCorpusObservation,
 } from '../utils/jarvis-recall.js';
@@ -568,7 +569,13 @@ async function handleSend(): Promise<void> {
       try {
         const fullCorpus = await buildMemoryCorpus(null);
         setMemoryCache(fullCorpus); /* memória disponível p/ a ferramenta do agente */
-        const recalled = recall(text, fullCorpus.filter((d) => d.sessionId !== sessao.id), 3);
+        const recallIndex = getMemoryCorpusIndex(getMemoryRevision());
+        const recalled = recall(
+          text,
+          fullCorpus.filter((d) => d.sessionId !== sessao.id),
+          3,
+          recallIndex,
+        );
         if (recalled.length) {
           callConfig.systemPrompt = `${callConfig.systemPrompt ?? ''}\n\n## MEMÓRIA (resumos de conversas anteriores, relevantes à pergunta)\n`
             + recalled.map((r) => `- ${r.text}`).join('\n');

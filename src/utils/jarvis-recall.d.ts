@@ -28,6 +28,15 @@ export interface RecallHit {
   readonly score: number;
 }
 
+/** Índice derivado local; não contém query nem resultado de modelo. */
+export interface RecallIndex {
+  readonly docs: readonly RecallDoc[];
+  readonly positions: ReadonlyMap<RecallDoc, number>;
+  readonly tokensByDoc: readonly (readonly string[])[];
+  readonly idfByToken: ReadonlyMap<string, number>;
+  readonly vectors: readonly ReadonlyMap<string, number>[];
+}
+
 /** Uma mensagem de conversa, como `jarvis-memory` a guarda. */
 export interface RecallMensagem {
   readonly role: string;
@@ -48,6 +57,7 @@ export function recall(
   query: string,
   docs: readonly RecallDoc[] | null | undefined,
   k?: number,
+  index?: RecallIndex | null,
 ): RecallHit[];
 
 /** Preenche o cache do corpus usado pela ferramenta síncrona (cópia bounded). */
@@ -56,11 +66,17 @@ export function setMemoryCache(docs: readonly RecallDoc[] | null | undefined): v
 /** O corpus em cache. `[]` até alguém chamar `setMemoryCache`. */
 export function getMemoryCache(): RecallDoc[];
 
+/** Constrói um índice derivado bounded para o corpus fornecido. */
+export function buildRecallIndex(docs: readonly RecallDoc[] | null | undefined): RecallIndex | null;
+
 /** Guarda o corpus completo resumido sob uma revisão local. */
 export function setMemoryCorpusCache(revision: number, docs: readonly RecallDoc[] | null | undefined): RecallDoc[];
 
 /** Retorna uma cópia do corpus somente quando a revisão coincide; senão `null`. */
 export function getMemoryCorpusCache(revision: number): RecallDoc[] | null;
+
+/** Retorna o índice somente quando a revisão do corpus coincide; senão `null`. */
+export function getMemoryCorpusIndex(revision: number): RecallIndex | null;
 
 /** Invalida o corpus cacheado sem tocar na persistência. */
 export function clearMemoryCorpusCache(): void;
