@@ -32,9 +32,9 @@ test('redirect URI de produção exige HTTPS e rejeita credenciais, hash e HTTP 
 });
 
 test('chave Soloist spak_ não é aceita como Client ID OAuth', async () => {
-  assert.equal(isSpotifyClientId('spak_fake_soloist_secret_value_12345'), false);
+  assert.equal(isSpotifyClientId('spak_test'), false);
   await assert.rejects(
-    () => createSpotifyPkceChallenge({ ...config, clientId: 'spak_fake_soloist_secret_value_12345' }),
+    () => createSpotifyPkceChallenge({ ...config, clientId: 'spak_test' }),
     /SPOTIFY_SOLOIST_KEY_NOT_CLIENT_ID/,
   );
 });
