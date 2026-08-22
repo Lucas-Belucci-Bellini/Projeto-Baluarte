@@ -135,3 +135,28 @@ O módulo Briefing agora declara `references.modules: ['evidence']` e resolve `c
 [5]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422 "Issue #422 — Wiki Project Zomboid na V2"
 
 [6]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423 "Issue #423 — Plano Mestre V2"
+
+
+## Checkpoint posterior — Wiki Zomboid schema pilot / Release 1.2.8 — 2026-08-22
+
+Desde o checkpoint `978e13e3`, o roadmap avançou com um slice local de Wiki Infrastructure e Vertical Integration. O módulo `wiki-zomboid` foi registrado no harness V2 com contrato TypeScript canônico, wrapper JavaScript preservado, catálogo local curado de 159 entradas e proveniência explícita por Workshop ID. A integração com Evidence permanece governada por referência fraca: `references.modules: ['evidence']` e `ctx.talvez('evidence', { versao: 1 })`.
+
+A nova superfície `/wiki-zomboid` é read-only e bounded. Ela permite observar o resumo local, consultar um registro e anexar uma afirmação local `pending` quando Evidence está disponível; quando Evidence não está presente, o módulo degrada sem derrubar o boot. Não há scraping, fetch automático, banco remoto, roles client-side, claims operacionais ou promoção pública.
+
+| Indicador atualizado | Resultado |
+|---|---:|
+| Páginas canônicas JavaScript restantes | 0; 115 wrappers preservados |
+| Módulos ativos no harness V2 | 7 |
+| Rotas internas no harness V2 | 20 |
+| Itens de navegação internos | 6 |
+| Teste focal Wiki Zomboid | 4/4 |
+| Suíte completa | 1254/1254 |
+| Integração V2 | 48/48 |
+| Smoke de rotas V1 | 99/99 |
+| Caminho crítico | 15/15 |
+| Runner oficial | 21 gates verdes; Rust local 101 `blocked-known` |
+| CI remoto do commit funcional | 8/8 workflows verdes |
+| CI remoto do commit de versão | 8/8 workflows verdes |
+| Release operacional | `v1.2.8` publicada; `desktop-v1.2.8` publicada |
+
+A release 1.2.8 é um release operacional incremental e não declara a V2 estável. Permanecem pendentes o Data/Evidence persistente, Supabase/RLS com staging aprovado, autoridade server-side de produção, health operacional uniforme, aceite físico do app, estabilização, RC e testes mensais. O índice ponderado de 57,3% permanece a medição formal anterior até uma nova recomputação completa da matriz; os números deste checkpoint são evidências de avanço, não uma nova porcentagem inventada.

@@ -152,3 +152,14 @@ O marco aumenta a completude do primeiro vertical slice local, mas não libera B
 ## Checkpoint posterior — Briefing → Evidence pelo Registry — 978e13e3
 
 O Briefing passou a declarar `references.modules: ['evidence']` e resolve `ctx.talvez('evidence', { versao: 1 })` no lifecycle. O harness registra seis módulos ativos, enquanto Evidence permanece sem rota e a navegação mantém cinco entradas. A superfície do Briefing observa a conexão local sem expor conteúdo de Evidence. Focal 10/10; `npm test` 1250/1250; `v2:integracao` 46/46; smoke 99/99; caminho crítico 15/15; runner com 21 gates verdes e Rust local `blocked-known` código 101. Os oito workflows remotos aplicáveis terminaram verdes. Nenhum Supabase, DDL, migration, RLS, Auth de produção ou canal externo foi alterado.
+
+
+## Checkpoint final — Wiki Zomboid schema pilot / Release 1.2.8 — 77dbfff1
+
+A Phase 06 avançou com o módulo V2 `wiki-zomboid`, o contrato TypeScript `v2/data/wiki-zomboid.ts`, o wrapper JavaScript preservado e a integração opcional com Evidence por `ctx.talvez('evidence', { versao: 1 })`. O piloto usa o catálogo local curado de Project Zomboid, valida Workshop ID e proveniência, mantém campos ausentes vazios e não faz scraping, fetch automático ou persistência remota.
+
+O harness V2 registra sete módulos, 20 rotas internas e seis itens de navegação. As superfícies V1 `/zomboid` e `/zomboid-admin`, o router V1, os 115 wrappers e as 99 rotas do smoke permanecem preservados. A view `/wiki-zomboid` é local/read-only e expõe somente resumo bounded e estado de conexão da Evidence.
+
+**Validação:** teste focal 4/4; `npm test` 1254/1254; `tipos:ts` e `tipos:v2` verdes; build verde; `v2:integracao` 48/48; smoke 99/99; caminho crítico 15/15; runner oficial com 21 gates verdes e Rust local código 101 `blocked-known`; oito workflows remotos verdes; release `v1.2.8` e `desktop-v1.2.8` publicadas após assets Windows, Linux e macOS responderem HTTP 200.
+
+Este checkpoint melhora a Phase 13 — Wiki Infrastructure e a Phase 11 — Vertical Integration, mas não altera os critérios de Alpha/Beta/RC. Persistência Supabase/RLS, autoridade server-side de produção, aceite físico do app, estabilização e testes mensais continuam pendentes e não foram simulados.

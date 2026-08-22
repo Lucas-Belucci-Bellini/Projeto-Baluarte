@@ -172,3 +172,24 @@ Evidência observada no SHA anterior: `npm test` 1250/1250; `tipos:ts` e `tipos:
 ## Checkpoint mais recente — Briefing → Evidence pelo Registry — 978e13e3
 
 O manifesto do Briefing declara `references.modules: ['evidence']` e o lifecycle resolve `ctx.talvez('evidence', { versao: 1 })`, usando o resolvedor governado do Core. O harness registra seis módulos ativos; Evidence não possui rota, por isso a navegação continua com cinco entradas e as 19 rotas V1 permanecem intactas. A view do Briefing mostra o estado `Evidence local conectada` quando o vínculo está disponível. O teste focal passou 10/10, o runner oficial passou 21 gates e manteve apenas Rust local como `blocked-known` código 101. Os workflows remotos deste SHA terminaram verdes: CI, Core CI, V2 Core, V2 Validation, V2 Runtime, CodeQL, Arma 3 Data CI e Vigia das rotas. Nenhuma alteração Supabase, DDL, migration, RLS, Auth de produção, OpenClaw, WhatsApp ou ação externa de alto impacto foi executada.
+
+
+## Checkpoint publicado — Wiki Zomboid schema pilot / Release 1.2.8 — 77dbfff1
+
+O módulo `wiki-zomboid` foi adicionado ao Registry V2 como piloto local de schema e catálogo. A implementação canônica está em TypeScript (`v2/data/wiki-zomboid.ts`), com wrapper JavaScript preservado. O módulo usa o dataset curado local do Project Zomboid, valida Workshop ID e proveniência, não inventa `modId`/`spawnId` ausentes e resolve a Evidence Layer somente por `ctx.talvez('evidence', { versao: 1 })`.
+
+O harness real passou a sete módulos, 20 rotas internas e seis itens de navegação. A V1 permanece intacta, com rotas públicas e wrappers preservados. O piloto é read-only, local e bounded; não ativa scraping, rede automática, persistência, Supabase, Auth, RLS, OpenClaw ou WhatsApp.
+
+| Evidência | Resultado |
+|---|---:|
+| Teste focal Wiki Zomboid | 4/4 |
+| `npm test` | 1254/1254 |
+| `npm run tipos:ts` / `npm run tipos:v2` | Passaram |
+| `npm run build` | Passou; warnings conhecidos de chunks grandes |
+| `npm run v2:integracao` | 48/48 |
+| `npm run smoke` / `npm run caminho-critico` | 99/99 / 15/15 |
+| Runner oficial | 21 gates verdes; Rust local 101 `blocked-known` |
+| CI remoto do commit | 8/8 workflows verdes |
+| Release do app | `v1.2.8` publicada com assets Windows, Linux e macOS verificados |
+
+O próximo passo continua condicionado a um segundo vertical slice que acrescente evidência de integração Data/Evidence sem inventar persistência remota. O drift de migrations do Supabase Preview, a autoridade server-side de produção, o aceite físico do app, a estabilização e os testes mensais continuam bloqueios documentados; nenhum foi mascarado por esta release.
