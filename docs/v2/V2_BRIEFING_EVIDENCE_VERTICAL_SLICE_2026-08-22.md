@@ -74,3 +74,9 @@ O rollback é retornar ao commit anterior ao marco. Isso remove a ligação Brie
 [4]: ../../v2/data/catalog-evidence.ts "Adaptador catalog-evidence"
 
 [5]: ../../docs/v2/V2_PROGRESS_REPORT_2026-08-22.md "Medição atual da construção V2"
+
+## Checkpoint de publicação — 9c4a2bae
+
+O contrato foi implementado e publicado diretamente na `main` no SHA `9c4a2bae189107aee3a6eafc596b87021b1e745e`. A validação final observou `npm test` em `1250/1250`, `tipos:ts` e `tipos:v2` aprovados, `v2:integracao` em `45/45`, smoke em `99/99`, caminho crítico em `15/15` e runner local com `21` gates verdes, Rust local `blocked-known` código 101 e nenhuma falha nova. Os workflows remotos aplicáveis terminaram verdes no SHA; o Supabase Preview permaneceu `unknown/external` por divergência de versões de migrations, sem alteração remota.
+
+A primeira execução direta de `v2:integracao` foi contaminada por um preview Vite antigo ocupando a porta de teste e servindo a página pública no lugar do harness. Isso foi classificado como causa ambiental, o processo stale foi encerrado, o gate foi repetido em porta limpa com `45/45`, e o script recebeu cleanup bounded para evitar recorrência. Nenhum código do produto foi alterado para mascarar o incidente.

@@ -162,3 +162,9 @@ Uma fase só pode ser marcada `COMPLETE` quando houver contrato, implementação
 [4]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/430 "Issue #430 — Especialistas e integrador"
 [5]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/454 "Issue #454 — AEGIS Ocean"
 [6]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.0 "Release v1.2.0"
+
+## Checkpoint mais recente — Briefing → Evidence local — 9c4a2bae
+
+O primeiro vertical slice local foi ampliado com a ligação opcional do módulo Briefing à Evidence Layer compartilhada. A ingestão normaliza e deduplica candidatos, anexa evidência com fonte/URL/captura/confiança explícitas quando a capacidade está disponível, emite eventos bounded e preserva o funcionamento read-only quando Evidence não está configurado. O cleanup do `v2:integracao` agora aguarda o Vite terminar e aplica encerramento bounded, evitando que um processo stale contamine a execução seguinte.
+
+Evidência observada no SHA: `npm test` 1250/1250; `tipos:ts` e `tipos:v2` aprovados; `v2:integracao` 45/45; smoke 99/99; caminho crítico 15/15; runner local com 21 gates verdes, Rust 101 `blocked-known` e 0 falhas novas; CI remoto aplicável com 10 workflows verdes. Supabase Preview continua `unknown/external` por divergência de versões de migrations, sem DDL, staging ou alteração remota. O marco é local/read-only e não muda `runtimeAuthority`, `publicPromotionAllowed`, Auth, RLS, Billing ou a V1.

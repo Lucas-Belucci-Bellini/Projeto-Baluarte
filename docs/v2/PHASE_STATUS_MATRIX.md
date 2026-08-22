@@ -128,3 +128,23 @@ Nenhum módulo externo poderá enviar WhatsApp, publicar conteúdo, executar ven
 [2]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422 "Plano 02 — Wiki Project Zomboid na V2"
 
 [3]: https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423 "Plano Mestre V2 — Construção, Integração e Evolução Contínua"
+
+## Checkpoint publicado — Briefing → Evidence local — 9c4a2bae
+
+O vertical slice `briefing-evidence-local/v1` foi publicado diretamente na `main` no SHA `9c4a2bae189107aee3a6eafc596b87021b1e745e`. Candidatos de notícias normalizados pelo Briefing agora podem ser projetados na `EvidenceStore` compartilhada através de uma capacidade opcional de contexto. A integração é deduplicada por item, mantém a evidência em `pending`, emite somente eventos categóricos bounded e continua funcionando com fallback `not-configured` quando Evidence não está ativo.
+
+O módulo Evidence passou a emitir `evidence:appended` e `evidence:status-changed` sem incluir statement, fonte completa, URI, token, subject ou metadata externa. O gate `v2:integracao` também recebeu cleanup bounded do servidor Vite para não deixar um processo órfão contaminar a medição seguinte. A primeira falha observada no gate foi classificada como efeito de um preview Vite stale na porta de teste; após limpar o processo externo, a integração passou em `45/45`.
+
+| Evidência | Resultado |
+|---|---:|
+| `npm run tipos:ts` / `npm run tipos:v2` | Passou |
+| Testes focais Briefing + Evidence | 10/10 |
+| `npm test` | 1250/1250 |
+| `npm run build` | Passou; warnings conhecidos de chunks grandes |
+| `npm run v2:integracao` | 45/45 |
+| `npm run smoke` / `npm run caminho-critico` | 99/99 / 15/15 |
+| Runner local | 21 gates verdes; Rust `blocked-known`, código 101 |
+| CI remoto do SHA | 10 checks de workflow verdes |
+| Supabase Preview | `unknown/external`: falha de versões de migrations remotas; nenhum DDL ou staging alterado |
+
+O marco aumenta a completude do primeiro vertical slice local, mas não libera Beta: persistência Supabase/RLS, autoridade server-side, health operacional uniforme, aceite físico do app e estabilização mensal continuam pendentes. Rollback: retornar ao commit imediatamente anterior, removendo somente a ligação Briefing→Evidence e o cleanup adicional do harness.
