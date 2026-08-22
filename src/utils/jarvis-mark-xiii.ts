@@ -3,6 +3,13 @@ import type { RuntimeObservation } from '../layout/runtime-observation';
 
 export type { RuntimeObservation as MarkXiiiRuntimeObservation } from '../layout/runtime-observation';
 
+export type MarkXiiiPlaybackState = 'playing' | 'paused' | 'unknown';
+
+export function markXiiiPlaybackPulse(playback: MarkXiiiPlaybackState, time: number): number {
+  if (playback === 'playing') return Math.sin(time * 0.012) * 0.10 + 0.10;
+  return playback === 'paused' ? 0.025 : 0;
+}
+
 export interface MarkXiiiConsoleOptions {
   readonly version: string;
   readonly musicConnected: boolean;
@@ -13,6 +20,7 @@ export interface MarkXiiiConsole {
   readonly root: HTMLDivElement;
   setMode(label: string): void;
   setMusic(connected: boolean): void;
+  setPlayback(playback: MarkXiiiPlaybackState): void;
   setRuntimeObservation(observation: RuntimeObservation): void;
   dispose(): void;
 }
@@ -60,7 +68,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
     'aria-label': 'Visualização reativa do Núcleo Mark XIII do JARVIS',
   }) as HTMLCanvasElement;
   const modeValue = h('span', { className: 'jv-mark-xiii__value' }, 'Local');
-  const musicValue = h('span', { className: 'jv-mark-xiii__value' }, options.musicConnected ? 'ONLINE' : 'OFF');
+  const musicPlaybackValue = h('span', { className: 'jv-mark-xiii__value' }, options.musicConnected ? 'ONLINE' : 'OFF');
   const telemetryValue = h('span', { className: 'jv-mark-xiii__value' }, 'ATIVO');
   const runtimeHealthValue = h('span', { className: 'jv-mark-xiii__value' }, 'UNKNOWN');
   const authorityValue = h('span', { className: 'jv-mark-xiii__value' }, 'NÃO AUTORIZADA');
@@ -72,7 +80,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
   const clockValue = h('time', { className: 'jv-mark-xiii__clock', dateTime: new Date().toISOString() }, '--:--:--');
   const root = h('section', {
     className: 'jv-mark-xiii',
-    dataset: { visibility: 'integrated-v1', theme: 'gold', music: String(options.musicConnected), runtimeConnection: 'unknown', runtimeHealth: 'unknown', runtimeAuthority: 'not-authorized' },
+    dataset: { visibility: 'integrated-v1', theme: 'gold', music: String(options.musicConnected), musicPlayback: options.musicConnected ? 'unknown' : 'idle', runtimeConnection: 'unknown', runtimeHealth: 'unknown', runtimeAuthority: 'not-authorized' },
     'aria-labelledby': 'jv-mark-xiii-title',
   },
     h('div', { className: 'jv-mark-xiii__topline' },
@@ -99,7 +107,7 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'ENERGIA'), h('span', { className: 'jv-mark-xiii__value' }, '100% ⚡')),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'TELEMETRIA'), telemetryValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'PERFIL'), modeValue),
-        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'MÚSICA'), musicValue),
+        h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'MÚSICA'), musicPlaybackValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'SAÚDE OBS.'), runtimeHealthValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'AUTORIDADE'), authorityValue),
         h('div', { className: 'jv-mark-xiii__telemetry-row' }, h('span', null, 'MOTOR'), h('span', { className: 'jv-mark-xiii__value' }, 'NATIVO (GUGF)'))),
@@ -196,7 +204,8 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
     lastFrame = time;
     samplePerformance(time);
     const palette = THEMES[currentTheme];
-    const beat = reduced ? 0.08 : Math.sin(time * 0.002) * 0.12 + Math.sin(time * 0.006) * 0.04;
+    const playbackPulse = markXiiiPlaybackPulse((root.dataset.musicPlayback as MarkXiiiPlaybackState | undefined) ?? 'unknown', time);
+    const beat = reduced ? 0.08 + playbackPulse * 0.35 : Math.sin(time * 0.002) * 0.12 + Math.sin(time * 0.006) * 0.04 + playbackPulse;
     context.clearRect(0, 0, width, height);
     context.fillStyle = '#06070b';
     context.fillRect(0, 0, width, height);
@@ -307,8 +316,17 @@ export function createMarkXiiiConsole(options: MarkXiiiConsoleOptions): MarkXiii
     },
     setMusic(connected: boolean): void {
       root.dataset.music = String(connected);
-      setText(musicValue, connected ? 'ONLINE' : 'OFF');
+      root.dataset.musicPlayback = connected ? 'unknown' : 'idle';
+      setText(musicPlaybackValue, connected ? 'ONLINE' : 'OFF');
       setText(root.querySelector('.jv-mark-xiii__presence-state') as HTMLElement, connected ? 'SPOTIFY ONLINE' : 'SPOTIFY OFF');
+    },
+    setPlayback(playback: MarkXiiiPlaybackState): void {
+      root.dataset.musicPlayback = playback;
+      const label = playback === 'playing' ? 'TOCANDO' : playback === 'paused' ? 'PAUSADA' : 'ONLINE';
+      setText(musicPlaybackValue, root.dataset.music === 'true' ? label : 'OFF');
+      setText(root.querySelector('.jv-mark-xiii__presence-state') as HTMLElement, root.dataset.music === 'true'
+        ? `SPOTIFY ${label}`
+        : 'SPOTIFY OFF');
     },
     setRuntimeObservation,
     dispose(): void {

@@ -6,6 +6,8 @@ export {
   beginSpotifyAuthorization,
   resumeSpotifyAuthorization,
   disconnectSpotify,
+  getSpotifyClientId,
   isSpotifyConnected,
+  rememberSpotifyClientId,
   spotifyDefaultScope,
 } from './jarvis-spotify-session.ts';

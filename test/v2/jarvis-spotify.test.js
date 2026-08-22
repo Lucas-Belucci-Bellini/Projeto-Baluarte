@@ -26,7 +26,8 @@ test('redirect URI de produção exige HTTPS e rejeita credenciais, hash e HTTP 
   await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://baluarte.example/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
   await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'https://user:pass@baluarte.example/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
   await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'https://baluarte.example/callback#oauth' }), /SPOTIFY_REDIRECT_URI_INVALID/);
-  await assert.doesNotReject(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://localhost:4173/callback' }));
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://localhost:4173/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.doesNotReject(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://127.0.0.1:4173/callback' }));
 });
 
 test('PKCE usa S256, state e somente o escopo mínimo de playback', async () => {

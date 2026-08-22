@@ -11,6 +11,7 @@ export interface SpotifyPkceConfig {
   readonly clientId: string;
   readonly redirectUri: string;
   readonly scope?: string;
+  readonly returnTo?: string;
 }
 
 export interface SpotifyPkceChallenge {
@@ -54,10 +55,10 @@ export interface SpotifyPlaybackMonitor {
 }
 
 function assertConfig(config: SpotifyPkceConfig): void {
-  if (!/^[A-Za-z0-9]{20,}$/.test(config.clientId)) throw new Error('SPOTIFY_CLIENT_ID_INVALID');
+  if (!/^[A-Za-z0-9_-]{20,128}$/.test(config.clientId)) throw new Error('SPOTIFY_CLIENT_ID_INVALID');
   let redirect: URL;
   try { redirect = new URL(config.redirectUri); } catch { throw new Error('SPOTIFY_REDIRECT_URI_INVALID'); }
-  const local = redirect.hostname === 'localhost' || redirect.hostname === '127.0.0.1' || redirect.hostname === '[::1]';
+  const local = redirect.hostname === '127.0.0.1' || redirect.hostname === '[::1]';
   if (redirect.protocol !== 'https:' && !(local && redirect.protocol === 'http:')) throw new Error('SPOTIFY_REDIRECT_URI_INVALID');
   if (redirect.username || redirect.password || redirect.hash) throw new Error('SPOTIFY_REDIRECT_URI_INVALID');
 }

@@ -32,7 +32,14 @@ import {
   selectContextMessages,
   recordJarvisContextObservation,
 } from '../utils/jarvis-context';
-import { beginSpotifyAuthorization, disconnectSpotify, isSpotifyConnected } from '../utils/jarvis-spotify-session';
+import {
+  beginSpotifyAuthorization,
+  disconnectSpotify,
+  getSpotifyClientId,
+  isSpotifyConnected,
+  rememberSpotifyClientId,
+} from '../utils/jarvis-spotify-session';
+import type { SpotifySessionEventDetail } from '../utils/jarvis-spotify-session';
 import { humanize } from '../utils/jarvis-style.js';
 import {
   createSession, listSessions, updateSession, deleteSession,
@@ -90,6 +97,7 @@ let modeBadgeEl: HTMLSpanElement | null = null;
 let markXiiiConsole: MarkXiiiConsole | null = null;
 let markXiiiRuntimeOff: (() => void) | null = null;
 let markXiiiRouteOff: (() => void) | null = null;
+let markXiiiSpotifyOff: (() => void) | null = null;
 
 function applyRuntimeObservation(observation: MarkXiiiRuntimeObservation): void {
   markXiiiConsole?.setRuntimeObservation(observation);
@@ -100,6 +108,8 @@ function disposeMarkXiiiConsole(): void {
   markXiiiRuntimeOff = null;
   markXiiiRouteOff?.();
   markXiiiRouteOff = null;
+  markXiiiSpotifyOff?.();
+  markXiiiSpotifyOff = null;
   markXiiiConsole?.dispose();
   markXiiiConsole = null;
 }
@@ -1194,19 +1204,35 @@ export function jarvisPage(): HTMLDivElement {
   }, '⚙ Modos & Config');
 
   const skillCount = listSkillSummaries().length;
-  const spotifyClientInput = h('input', { className: 'input input--sm', type: 'text', autocomplete: 'off', spellcheck: 'false', placeholder: 'Spotify Client ID (público)', style: { width: '220px' } });
+  const spotifyClientInput = h('input', { className: 'input input--sm', type: 'text', autocomplete: 'off', spellcheck: 'false', value: getSpotifyClientId(), placeholder: 'Spotify Client ID (público)', style: { width: '220px' } });
   const spotifyStatus = h('span', { className: 'badge badge--cyan' }, spotifyConnected ? 'SPOTIFY · ONLINE' : 'SPOTIFY · OFF');
   const spotifyButton = h('button', {
     className: 'btn btn--ghost btn--sm',
     onclick: () => {
       if (isSpotifyConnected()) { disconnectSpotify(); spotifyStatus.textContent = 'SPOTIFY · OFF'; spotifyButton.textContent = '♫ Conectar Spotify'; markXiiiConsole?.setMusic(false); return; }
       const clientId = spotifyClientInput.value.trim();
-      if (!clientId) { toast('Cole o Client ID público criado no Spotify for Developers.'); return; }
+      if (!clientId) { toast('Informe o Client ID público criado no Spotify for Developers.'); return; }
+      rememberSpotifyClientId(clientId);
       const redirectUri = `${location.origin}${location.pathname}`;
-      void beginSpotifyAuthorization({ clientId, redirectUri, scope: 'user-read-playback-state' }).then((url) => { location.assign(url); }).catch((error: unknown) => { toast(error instanceof Error ? error.message : 'Não foi possível iniciar o Spotify.'); });
+      const returnTo = `${location.pathname}${location.search}${location.hash}`;
+      void beginSpotifyAuthorization({ clientId, redirectUri, returnTo, scope: 'user-read-playback-state' }).then((url) => { location.assign(url); }).catch((error: unknown) => { toast(error instanceof Error ? error.message : 'Não foi possível iniciar o Spotify.'); });
     }
   }, spotifyConnected ? '♫ Desconectar Spotify' : '♫ Conectar Spotify');
+  const onSpotifySession = (event: Event): void => {
+    const detail = (event as CustomEvent<SpotifySessionEventDetail>).detail;
+    if (!detail || typeof detail.connected !== 'boolean') return;
+    markXiiiConsole?.setMusic(detail.connected);
+    if (detail.playback === 'playing' || detail.playback === 'paused' || detail.playback === 'unknown') {
+      markXiiiConsole?.setPlayback(detail.playback);
+    }
+    spotifyStatus.textContent = detail.connected ? 'SPOTIFY · ONLINE' : 'SPOTIFY · OFF';
+    spotifyButton.textContent = detail.connected ? '♫ Desconectar Spotify' : '♫ Conectar Spotify';
+  };
+  globalThis.addEventListener('baluarte:spotify-session', onSpotifySession);
+  markXiiiSpotifyOff = () => globalThis.removeEventListener('baluarte:spotify-session', onSpotifySession);
   const spotifyControls = h('div', { style: { display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' } }, spotifyStatus, spotifyClientInput, spotifyButton);
+  const spotifyHint = h('p', { className: 'jarvis-config__warn u-text-muted', style: { margin: '6px 0 0' } },
+    `Client ID público salvo neste navegador. Redirect URI: ${location.origin}${location.pathname}. Cadastre essa URI exatamente no Spotify. O fluxo usa PKCE/S256, não usa Client Secret e pede somente user-read-playback-state.`);
   fullPage.appendChild(
     h('div', { className: 'jarvis-toolbar' },
       modeBadgeEl,
@@ -1221,6 +1247,7 @@ export function jarvisPage(): HTMLDivElement {
     h('b', null, '♫ Presença musical externa'),
     h('span', { className: 'u-text-muted', style: { marginLeft: '8px' } }, 'somente metadados de playback; sem áudio e sem comandos de reprodução'),
     spotifyControls,
+    spotifyHint,
   ));
 
   sessionsEl = h('div', { className: 'jv-sessions__list' });

@@ -67,6 +67,19 @@ function recoverChunk(err) {
 const lazy = (loader, fn) => (args) =>
   loader().then((m) => m[fn](args)).catch(recoverChunk);
 
+function restoreSpotifyReturn(event) {
+  const detail = event instanceof CustomEvent ? event.detail : null;
+  if (!detail || detail.connected !== true || typeof detail.returnTo !== 'string') return;
+  const hashIndex = detail.returnTo.indexOf('#');
+  const route = hashIndex >= 0 ? detail.returnTo.slice(hashIndex + 1) : '';
+  if (!/^\/[A-Za-z0-9_./?=&-]{0,240}$/.test(route)) return;
+  setTimeout(() => {
+    window.history.replaceState(null, '', window.location.pathname);
+    router.navigate(route, { replace: true });
+  }, 0);
+}
+
+
 /* Roda DENTRO do Baluarte Launcher? A ponte (`window.baluarte`) só existe no app;
  * usado pra gatear trabalho pesado pro nativo e manter o boot da web leve (#238). */
 const isNative = () => typeof window !== 'undefined' && !!window.baluarte && window.baluarte.native === true;
@@ -244,6 +257,7 @@ function boot() {
   /* Presença musical passiva: observa apenas media elements deste app e sinais
    * explícitos dos embeds; não usa microfone, scraping cross-origin ou turnos de IA. */
   startJarvisMusicPresence();
+  window.addEventListener('baluarte:spotify-session', restoreSpotifyReturn);
   void resumeSpotifyAuthorization().then((result) => {
     if (result === 'rejected') console.warn('[spotify] autorização rejeitada ou state inválido');
   }).catch(() => undefined);
