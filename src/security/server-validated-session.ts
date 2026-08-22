@@ -1,11 +1,11 @@
 import {
   KNOWN_SERVER_CLAIM_SCOPES,
   type KnownServerClaimScope,
-} from '../layout/server-claims-observation';
+} from '../layout/server-claims-observation.js';
 import {
   observeServerObservation,
   type ServerObservationEnvelope,
-} from '../layout/server-observation';
+} from '../layout/server-observation.js';
 
 export const SERVER_VALIDATED_SESSION_CONTRACT_VERSION = 'server-validated-session/v1' as const;
 

@@ -44,3 +44,11 @@ O risco principal é confundir a presença de uma sessão local com validação 
 ## Testes previstos
 
 Serão cobertos envelope válido, claims anônimos, claims stale, health degraded, fallback blocked, rate limit, payload arbitrário, campos sensíveis, resposta ausente e invariantes de não-autorização. Depois, a suíte completa e o runner oficial serão executados antes de qualquer publicação na `main`.
+
+## Resultado da validação inicial
+
+A primeira execução remota revelou uma falha local de integração, não de lógica de autorização: o workflow `Security Contracts` usa Node nativo e não resolveu imports TypeScript sem extensão a partir de `server-validated-session.ts` (`ERR_MODULE_NOT_FOUND` para `server-claims-observation`). O strict TypeScript e os testes via `tsx` já passavam.
+
+A correção mantém uma única implementação canônica e adiciona somente os wrappers `src/layout/server-claims-observation.js` e `src/layout/server-observation.js`, seguindo o padrão existente de compatibilidade. A nova projeção importa essas fronteiras `.js`, que reexportam os `.ts` com extensão explícita para o Node do CI. No sandbox, `node --test` em Node 22 ainda não carrega diretamente `.ts`; essa limitação de runtime local é distinta do workflow remoto Node 24, que possui suporte de type stripping. O runner oficial do projeto continua usando `tsx`/Vite conforme seus scripts e não recebeu relaxamento de configuração.
+
+Após a correção, `npm run tipos:ts`, os testes focais e `npm test` passaram. O workflow Security Contracts será revalidado no SHA que publicar os wrappers e o projetor.

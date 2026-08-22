@@ -60,3 +60,7 @@ Rate limit, CORS negado, servidor ausente, timeout e resposta malformada são da
 ## Testes e rollback
 
 Os testes devem cobrir envelope válido, anônimo, stale, degradado, bloqueado, ausente, malformado, autoridade divergente, listas duplicadas, campos sensíveis e imutabilidade. Rollback: remover o projetor e seus testes; os contratos backend, Auth local, claims e observability publicados permanecem intactos.
+
+## Fronteira de execução
+
+Para compatibilidade com o workflow `Security Contracts`, os contratos de observação possuem wrappers `.js` que reexportam as implementações canônicas `.ts` com extensão explícita. A projeção importa esses wrappers; isso resolve a resolução ESM do Node do CI sem habilitar `allowJs`, sem alterar `moduleResolution` e sem criar uma segunda implementação. O Node 22 do sandbox continua exigindo `tsx` para executar testes que importam `.ts` diretamente; essa limitação é registrada como ambiente local, não como autorização para relaxar o strict gate.
