@@ -37,6 +37,7 @@
   },
   "include": [
     "core/**/*.js",
+    "core/**/*.ts",
     "modules/cripto/**/*.js",
     "modules/briefing/**/*.js",
     "modules/visor3d/**/*.js",
