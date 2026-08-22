@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Release `1.2.9`: observabilidade de status da Evidence — candidata
+
+A candidata `1.2.9` continua o piloto V2 Wiki Zomboid/Evidence com contagens bounded por status (`pending`, `verified`, `rejected` e `superseded`). A view informa somente a quantidade de registros vinculados e pendentes; não há ação de aprovação, alteração de status, exposição de statements ou autoridade client-side.
+
+O módulo continua local/read-only, sem permissões novas, rede, scraping, persistência, Supabase, Auth, RLS, OpenClaw ou WhatsApp. O teste focal, a integração browser e o runner devem ser repetidos no commit de versionamento antes da criação das tags.
+
+**Status:** candidata, aguardando gates locais e remotos, Desktop Release e verificação dos assets reais. Nenhuma tag `v1.2.9` ou `desktop-v1.2.9` foi criada neste ponto.
+
+**Documentação:** [`docs/releases/v1.2.9.md`](../docs/releases/v1.2.9.md) e [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md).
+
+---
+
 ## 2026-08-22 — Release `1.2.8`: piloto Wiki Zomboid e Evidence publicada
 
 A release `1.2.8` adiciona o piloto V2 Wiki Zomboid com schema TypeScript, catálogo local bounded e proveniência explícita. O módulo declara `references.modules: ['evidence']`, resolve Evidence por `ctx.talvez('evidence', { versao: 1 })` e mantém fallback funcional quando Evidence não está disponível.

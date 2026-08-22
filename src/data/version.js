@@ -12,5 +12,5 @@
  *
  * A linha pública 1.0.0 foi pulada; a linha de produto segue com releases semânticas.
  */
-export const VERSION = '1.2.8';
+export const VERSION = '1.2.9';
 export const CODENAME = 'Mark XIII';
