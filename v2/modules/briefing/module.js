@@ -11,8 +11,8 @@ import { buildPrompt, deduplicate, normalizeItem } from './data.js';
 /** @typedef {{get: (key:string, fallback?:unknown) => unknown, set: (key:string, value:unknown) => void}} BriefingStorage */
 /** @typedef {{info: (message:string, fields?:Record<string, unknown>) => void, aviso: (message:string, fields?:Record<string, unknown>) => void, erro: (message:string, error?:unknown, fields?:Record<string, unknown>) => void}} BriefingLog */
 /** @typedef {{appendCatalog: (input: import('../../data/catalog-evidence.ts').CatalogEvidenceInput) => import('../../data/evidence.ts').EvidenceRecord, get?: (id:string) => import('../../data/evidence.ts').EvidenceRecord|null}} BriefingEvidence */
-/** @typedef {{storage:BriefingStorage, log:BriefingLog, metricas?:{contar:(name:string, fields?:Record<string, unknown>) => void}, bus?:{emit:(event:string, payload?:unknown) => void}, evidence?:BriefingEvidence}} BriefingContext */
-/** @typedef {{ctx:BriefingContext, items:import('./data.js').BriefingItem[], evidenceLinked:number, evidenceErrors:number}} BriefingState */
+/** @typedef {{storage:BriefingStorage, log:BriefingLog, metricas?:{contar:(name:string, fields?:Record<string, unknown>) => void}, bus?:{emit:(event:string, payload?:unknown) => void}, talvez?:(alvo:string, exigencia?:{versao?:number}) => BriefingEvidence|null}} BriefingContext */
+/** @typedef {{ctx:BriefingContext, items:import('./data.js').BriefingItem[], evidence:BriefingEvidence|null, evidenceLinked:number, evidenceErrors:number}} BriefingState */
 
 /** @type {BriefingState|null} */
 let state = null;
@@ -28,6 +28,7 @@ const moduleManifest = {
   stability: 'experimental',
   icon: '◈',
   ambiente: 'ambos',
+  references: { modules: ['evidence'] },
   nav: { section: 'nucleo', order: 80 },
   permissions: ['NETWORK'],
   storage: [{ key: 'briefing:items', version: 1, class: 'local' }],
@@ -37,7 +38,7 @@ const moduleManifest = {
       ok: true,
       status: state ? 'ready' : 'stopped',
       items: state?.items.length ?? 0,
-      evidence: state?.ctx.evidence ? 'linked' : 'not-configured',
+      evidence: state?.evidence ? 'linked' : 'not-configured',
       evidenceLinked: state?.evidenceLinked ?? 0,
       evidenceErrors: state?.evidenceErrors ?? 0,
     }),
@@ -58,8 +59,9 @@ const moduleManifest = {
       const items = Array.isArray(stored)
         ? stored.map((item) => normalizeItem(item)).filter((item) => item !== null)
         : [];
-      state = { ctx, items, evidenceLinked: 0, evidenceErrors: 0 };
-      ctx.log.info('briefing preparado', { items: items.length, modo: 'read-only', evidence: ctx.evidence ? 'linked' : 'not-configured' });
+      const evidence = ctx.talvez?.('evidence', { versao: 1 }) ?? null;
+      state = { ctx, items, evidence, evidenceLinked: 0, evidenceErrors: 0 };
+      ctx.log.info('briefing preparado', { items: items.length, modo: 'read-only', evidence: evidence ? 'linked' : 'not-configured' });
     },
     dispose() {
       state = null;
@@ -90,17 +92,17 @@ function evidenceInput(item) {
 
 /** @param {readonly import('./data.js').BriefingItem[]} items @returns {{linked:number, errors:number}} */
 function linkEvidence(items) {
-  if (!state?.ctx.evidence) return { linked: 0, errors: 0 };
+  if (!state?.evidence) return { linked: 0, errors: 0 };
   let linked = 0;
   let errors = 0;
   for (const item of items) {
     const id = `briefing:${item.id}`;
-    if (state.ctx.evidence.get?.(id)) {
+    if (state.evidence.get?.(id)) {
       linked += 1;
       continue;
     }
     try {
-      state.ctx.evidence.appendCatalog(evidenceInput(item));
+      state.evidence.appendCatalog(evidenceInput(item));
       linked += 1;
     } catch {
       errors += 1;

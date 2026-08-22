@@ -70,6 +70,7 @@ import cripto from '../modules/cripto/module.js';
 import editor from '../modules/editor/module.js';
 import militar from '../modules/militar/module.js';
 import briefing from '../modules/briefing/module.js';
+import evidence from '../modules/evidence/module.js';
 /* O consumidor do engine 3D. Sem ele o `cena.js` teria testes e nenhum caminho
  * de execução — preparação que não vira peça viva. */
 import visor3d from '../modules/visor3d/module.js';
@@ -86,7 +87,7 @@ async function principal() {
   aplicarPolitica();
 
   const registry = criarRegistry();
-  [cripto, editor, militar, briefing, visor3d].forEach((m) => registry.registrar(m));
+  [cripto, editor, militar, evidence, briefing, visor3d].forEach((m) => registry.registrar(m));
   const selo = registry.selar();
   /* O diagnóstico do Registry agora observa a saúde do boot real. Ele continua
    * sendo um adaptador de observabilidade: não concede permissões, não inicia

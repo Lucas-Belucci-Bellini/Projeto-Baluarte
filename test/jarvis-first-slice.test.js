@@ -86,6 +86,7 @@ test('bridge OpenClaw encaminha chat para upstream fake e bloqueia origem extern
 
 test('manifesto briefing entra no Registry e vertical slice abre/fecha Runtime', async () => {
   const registry = criarRegistry();
+  assert.deepEqual(briefing.references, { modules: ['evidence'] });
   assert.equal(registry.registrar(briefing), true);
   const selo = registry.selar();
   assert.equal(selo.ok, true);
@@ -110,6 +111,7 @@ test('Briefing liga candidatos novos à Evidence compartilhada sem duplicar o st
   const stored = new Map();
   const events = [];
   const metrics = [];
+  const resolvedReferences = [];
   evidence.lifecycle.init({ log: { debug: () => {} } });
   briefing.lifecycle.init({
     storage: {
@@ -123,7 +125,10 @@ test('Briefing liga candidatos novos à Evidence compartilhada sem duplicar o st
     },
     metricas: { contar: (name, fields) => metrics.push({ name, fields }) },
     bus: { emit: (event, payload) => events.push({ event, payload }) },
-    evidence: evidence.api,
+    talvez: (target, requirement) => {
+      resolvedReferences.push({ target, requirement });
+      return target === 'evidence' ? evidence.api : null;
+    },
   });
 
   const item = {
@@ -139,6 +144,7 @@ test('Briefing liga candidatos novos à Evidence compartilhada sem duplicar o st
   };
   const result = briefing.api.ingest([item, item]);
 
+  assert.deepEqual(resolvedReferences, [{ target: 'evidence', requirement: { versao: 1 } }]);
   assert.equal(result.ok, true);
   assert.equal(result.total, 1);
   assert.equal(result.evidenceLinked, 1);

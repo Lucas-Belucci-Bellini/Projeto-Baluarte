@@ -120,8 +120,8 @@ try {
   /* Contagem EXATA, não `>= 5`: um módulo que some do registro é defeito tão
    * real quanto um que falha, e `>=` deixaria o sumiço passar calado. Foi para
    * 5 com o `visor3d`, o consumidor do engine 3D. */
-  conferir('os 5 módulos sobem sem falha',
-    v2?.resultado?.vivos?.length === 5 && v2?.resultado?.falhas?.length === 0,
+  conferir('os 6 módulos sobem sem falha',
+    v2?.resultado?.vivos?.length === 6 && v2?.resultado?.falhas?.length === 0,
     JSON.stringify(v2?.resultado?.falhas ?? []));
   /* A autorização foi de fato PEDIDA, e antes do `init`. Esta é a asserção que
    * o estado anterior não tinha: o ciclo ia direto ao `init`, os 4 módulos
@@ -484,7 +484,7 @@ try {
    * entrypoint e a regra volta a ser decorativa sem nenhum vermelho. */
   conferir('o entrypoint informa o ambiente ao ciclo',
     v2?.ambiente === 'web', String(v2?.ambiente));
-  /* E nada foi ignorado: os 5 módulos declaram `ambos`. Se um passar a declarar
+  /* E nada foi ignorado: os 6 módulos declaram `ambos`. Se um passar a declarar
    * `app`, esta linha acusa a mudança em vez de deixá-la silenciosa. */
   conferir('nenhum módulo foi ignorado por ambiente',
     Array.isArray(v2?.resultado?.ignorados) && v2.resultado.ignorados.length === 0,
@@ -498,10 +498,12 @@ try {
 
   const briefingNaTela = await navegarAte(pagina, '#/briefing', () => {
     const t = document.getElementById('saida')?.innerText ?? '';
-    return /Briefing de Notícias/.test(t) && /módulo experimental V2/i.test(t);
+    return /Briefing de Notícias/.test(t) && /módulo experimental V2/i.test(t) && /Evidence local conectada/i.test(t);
   });
   conferir('a superfície de briefing V2 renderiza',
     /Briefing de Notícias/.test(briefingNaTela) && /módulo experimental V2/i.test(briefingNaTela), briefingNaTela.slice(0, 90));
+  conferir('a superfície de briefing observa Evidence',
+    /Evidence local conectada/i.test(briefingNaTela), briefingNaTela.slice(0, 140));
 
   /* O DEFEITO 1: se `view` devolver o módulo em vez do elemento, isto fica
    * vazio. A asserção é de IDENTIDADE, não de tamanho — a versão anterior media
