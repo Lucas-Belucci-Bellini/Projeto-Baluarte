@@ -6,13 +6,17 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-22 — Release `1.2.9`: observabilidade de status da Evidence — candidata
+## 2026-08-22 — Release `1.2.9`: observabilidade de status da Evidence publicada
 
-A candidata `1.2.9` continua o piloto V2 Wiki Zomboid/Evidence com contagens bounded por status (`pending`, `verified`, `rejected` e `superseded`). A view informa somente a quantidade de registros vinculados e pendentes; não há ação de aprovação, alteração de status, exposição de statements ou autoridade client-side.
+A release `1.2.9` continua o piloto V2 Wiki Zomboid/Evidence com contagens bounded por status (`pending`, `verified`, `rejected` e `superseded`). A view informa somente a quantidade de registros vinculados e pendentes; não há ação de aprovação, alteração de status, exposição de statements ou autoridade client-side.
 
-O módulo continua local/read-only, sem permissões novas, rede, scraping, persistência, Supabase, Auth, RLS, OpenClaw ou WhatsApp. O teste focal, a integração browser e o runner devem ser repetidos no commit de versionamento antes da criação das tags.
+O módulo continua local/read-only, sem permissões novas, rede, scraping, persistência, Supabase, Auth, RLS, OpenClaw ou WhatsApp. O teste focal passou 4/4, a integração browser passou 48/48 e o runner oficial passou 21 gates, com Rust local 101 mantido como `blocked-known`.
 
-**Status:** candidata, aguardando gates locais e remotos, Desktop Release e verificação dos assets reais. Nenhuma tag `v1.2.9` ou `desktop-v1.2.9` foi criada neste ponto.
+**Status:** publicada no commit `55690622e3d3254da6fd7f5e7c856771d641c1a7`, com as tags `v1.2.9` e `desktop-v1.2.9`. Os oito workflows remotos do commit passaram. O Desktop Release `32586471279` terminou verde em Windows, macOS ARM64 e Ubuntu.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.2.9.exe` (644.015.671 bytes), `Baluarte-Launcher-1.2.9.AppImage` (773.768.702 bytes), `Baluarte-Launcher-1.2.9-arm64.dmg` (406.495.909 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.2.9`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.9
 
 **Documentação:** [`docs/releases/v1.2.9.md`](../docs/releases/v1.2.9.md) e [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md).
 

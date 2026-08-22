@@ -160,3 +160,22 @@ A nova superfície `/wiki-zomboid` é read-only e bounded. Ela permite observar 
 | Release operacional | `v1.2.8` publicada; `desktop-v1.2.8` publicada |
 
 A release 1.2.8 é um release operacional incremental e não declara a V2 estável. Permanecem pendentes o Data/Evidence persistente, Supabase/RLS com staging aprovado, autoridade server-side de produção, health operacional uniforme, aceite físico do app, estabilização, RC e testes mensais. O índice ponderado de 57,3% permanece a medição formal anterior até uma nova recomputação completa da matriz; os números deste checkpoint são evidências de avanço, não uma nova porcentagem inventada.
+
+
+## Checkpoint posterior — Evidence status observability / Release 1.2.9 — 2026-08-22
+
+O slice Wiki Zomboid/Evidence avançou com observabilidade bounded por status. O módulo expõe contagens de `pending`, `verified`, `rejected` e `superseded`; a view V2 mostra quantidade vinculada e pendente, mas não muda status, não mostra claims completas e não decide autoridade. A integração continua governada pelo Registry e por `ctx.talvez`, sem novo barramento, Storage ou permissão.
+
+| Indicador | Resultado |
+|---|---:|
+| Teste focal Wiki Zomboid | 4/4 |
+| Suíte completa | 1254/1254 |
+| Integração V2 | 48/48 |
+| Smoke / caminho crítico | 99/99 / 15/15 |
+| Runner oficial | 21 gates verdes; Rust 101 `blocked-known` |
+| CI remoto do commit funcional | 8/8 verdes |
+| CI remoto do commit de versão | 8/8 verdes |
+| Desktop Release | 3/3 sistemas verdes; instaladores verificáveis |
+| Release operacional | `v1.2.9` publicada |
+
+O índice ponderado formal continua em 57,3% até nova recomputação completa da matriz. O avanço deste checkpoint não fecha a V2: revisão humana, retenção, persistência, Supabase/RLS, autoridade server-side, aceite físico do app, estabilização, RC e testes mensais permanecem pendentes. A release `1.2.9` está documentada em [`docs/releases/v1.2.9.md`](../releases/v1.2.9.md).

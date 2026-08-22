@@ -163,3 +163,12 @@ O harness V2 registra sete módulos, 20 rotas internas e seis itens de navegaç�
 **Validação:** teste focal 4/4; `npm test` 1254/1254; `tipos:ts` e `tipos:v2` verdes; build verde; `v2:integracao` 48/48; smoke 99/99; caminho crítico 15/15; runner oficial com 21 gates verdes e Rust local código 101 `blocked-known`; oito workflows remotos verdes; release `v1.2.8` e `desktop-v1.2.8` publicadas após assets Windows, Linux e macOS responderem HTTP 200.
 
 Este checkpoint melhora a Phase 13 — Wiki Infrastructure e a Phase 11 — Vertical Integration, mas não altera os critérios de Alpha/Beta/RC. Persistência Supabase/RLS, autoridade server-side de produção, aceite físico do app, estabilização e testes mensais continuam pendentes e não foram simulados.
+
+
+## Checkpoint 2026-08-22 — Evidence status observability / Release 1.2.9
+
+O piloto Wiki Zomboid recebeu observabilidade bounded por status da Evidence (`pending`, `verified`, `rejected`, `superseded`). A API continua resolvida pelo Registry e a view V2 mostra somente quantidade vinculada e pendente; não há aprovação, alteração de status ou autoridade client-side. O módulo permanece local/read-only e a V1 segue preservada.
+
+**Evidência:** teste focal 4/4; suíte 1254/1254; `v2:integracao` 48/48; smoke 99/99; caminho crítico 15/15; runner oficial 21 gates verdes com Rust local 101 `blocked-known`; oito workflows remotos verdes no commit funcional e oito no commit de versionamento; Desktop Release verde em Windows, macOS ARM64 e Ubuntu; `v1.2.9` e `desktop-v1.2.9` publicadas com instaladores HTTP 200.
+
+O checkpoint melhora as Phases 06, 11 e 13, mas não fecha Data/Evidence persistente, Auth/RBAC server-side, RLS, aceite físico do app, estabilização, RC ou testes mensais.

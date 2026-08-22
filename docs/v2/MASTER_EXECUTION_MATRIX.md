@@ -193,3 +193,22 @@ O harness real passou a sete módulos, 20 rotas internas e seis itens de navega�
 | Release do app | `v1.2.8` publicada com assets Windows, Linux e macOS verificados |
 
 O próximo passo continua condicionado a um segundo vertical slice que acrescente evidência de integração Data/Evidence sem inventar persistência remota. O drift de migrations do Supabase Preview, a autoridade server-side de produção, o aceite físico do app, a estabilização e os testes mensais continuam bloqueios documentados; nenhum foi mascarado por esta release.
+
+
+## Checkpoint publicado — Evidence status observability / Release 1.2.9 — 55690622
+
+O módulo `wiki-zomboid` passou a expor no resumo apenas contagens bounded por status da Evidence: `pending`, `verified`, `rejected` e `superseded`. A view informa quantidade de registros vinculados e pendentes, sem permitir alteração de status, sem expor conteúdo de claims e sem derivar autoridade client-side. O Registry, o Event Bus, o Storage local e a fronteira `ctx.talvez` existentes foram reutilizados; nenhum segundo barramento ou armazenamento foi criado.
+
+| Evidência | Resultado |
+|---|---:|
+| Teste focal Wiki Zomboid | 4/4 |
+| `npm test` | 1254/1254 |
+| `npm run v2:integracao` | 48/48 |
+| `npm run smoke` / `npm run caminho-critico` | 99/99 / 15/15 |
+| Runner oficial | 21 gates verdes; Rust local 101 `blocked-known` |
+| CI remoto do commit funcional | 8/8 workflows verdes |
+| CI remoto do commit de versão | 8/8 workflows verdes |
+| Desktop Release | Workflow `32586471279` verde em Windows, macOS ARM64 e Ubuntu |
+| Release | `v1.2.9` e `desktop-v1.2.9` publicadas; instaladores HTTP 200 |
+
+O marco não implementa revisão humana, roles administrativas no cliente, persistência remota ou RLS. O próximo passo permanece a política de retenção e revisão Data/Evidence local, seguida apenas de uma decisão separada sobre staging Supabase com aprovação explícita de custo e rollback.
