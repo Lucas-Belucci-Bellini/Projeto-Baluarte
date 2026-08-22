@@ -507,6 +507,11 @@ try {
 
   const wikiSummary = await pagina.evaluate(() => window.__v2?.api?.('wiki-zomboid', 'summary'));
   const wikiReviewQueue = await pagina.evaluate(() => window.__v2?.api?.('wiki-zomboid', 'reviewQueue', 25));
+  const evidenceRetention = await pagina.evaluate(() => window.__v2?.api?.('evidence', 'retentionPreview', {
+    now: '2026-09-01T00:00:00.000Z',
+    maxAgeDays: 30,
+    limit: 25,
+  }));
   conferir('a API Wiki Zomboid é resolvida pelo Registry',
     wikiSummary?.total === 159
       && wikiSummary?.sourceMode === 'local-curated'
@@ -519,6 +524,14 @@ try {
     Array.isArray(wikiReviewQueue)
       && wikiReviewQueue.length === 0,
     JSON.stringify(wikiReviewQueue ?? null));
+  conferir('o preview Evidence expõe retenção bounded e redigida',
+    evidenceRetention?.now === '2026-09-01T00:00:00.000Z'
+      && evidenceRetention?.maxAgeDays === 30
+      && Array.isArray(evidenceRetention?.items)
+      && evidenceRetention.items.length === 0
+      && evidenceRetention?.summary?.total === 0
+      && !Object.hasOwn(evidenceRetention?.summary ?? {}, 'statement'),
+    JSON.stringify(evidenceRetention ?? null));
   const wikiNaTela = await navegarAte(pagina, '#/wiki-zomboid', () => {
     const t = document.getElementById('saida')?.innerText ?? '';
     return /Wiki Zomboid V2/.test(t)

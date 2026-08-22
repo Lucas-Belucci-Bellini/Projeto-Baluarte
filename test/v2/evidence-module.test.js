@@ -46,6 +46,25 @@ test('Evidence API funciona após init e libera o store em dispose', () => {
   assert.throws(() => evidence.api.append(input), /não foi inicializado/);
 });
 
+test('Evidence retentionPreview permanece bounded durante o lifecycle', () => {
+  const options = { now: '2026-09-01T00:00:00.000Z', maxAgeDays: 30 };
+  assert.deepEqual(evidence.api.retentionPreview(options), {
+    now: '2026-09-01T00:00:00.000Z',
+    maxAgeDays: 30,
+    items: [],
+    summary: { total: 0, withinWindow: 0, pastWindow: 0, futureObserved: 0 },
+  });
+  evidence.lifecycle.init({ log: { debug: () => {} } });
+  evidence.api.append({ ...input, id: 'module-retention-old', observedAt: '2026-07-01T00:00:00.000Z' });
+  const preview = evidence.api.retentionPreview(options);
+  assert.equal(preview.summary.pastWindow, 1);
+  assert.equal(preview.items[0]?.id, 'module-retention-old');
+  assert.equal(Object.hasOwn(preview.items[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(preview.items[0] ?? {}, 'source'), false);
+  evidence.lifecycle.dispose();
+  assert.equal(evidence.api.retentionPreview(options).summary.total, 0);
+});
+
 test('Evidence emite eventos bounded sem incluir conteúdo da evidência', () => {
   const events = [];
   evidence.lifecycle.init({

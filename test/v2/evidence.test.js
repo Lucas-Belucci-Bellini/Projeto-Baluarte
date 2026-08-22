@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EvidenceStore, normalizeEvidence, validateEvidence } from '../../v2/data/evidence.ts';
+import {
+  EvidenceStore,
+  normalizeEvidence,
+  projectEvidenceRetention,
+  validateEvidence,
+} from '../../v2/data/evidence.ts';
 
 const base = {
   id: 'ev-001',
@@ -52,4 +57,56 @@ test('evidence status changes preserve the observed fact and record supersession
   const superseded = store.markStatus(base.id, 'superseded', 'ev-002');
   assert.equal(superseded.supersededBy, 'ev-002');
   assert.equal(superseded.statement, base.statement);
+});
+
+test('evidence retention preview is deterministic, bounded and read-only', () => {
+  const store = new EvidenceStore();
+  store.append({ ...base, id: 'ev-recent', observedAt: '2026-08-25T00:00:00.000Z' });
+  store.append({ ...base, id: 'ev-old', observedAt: '2026-07-01T00:00:00.000Z' });
+  store.append({ ...base, id: 'ev-future', observedAt: '2026-09-02T00:00:00.000Z' });
+
+  const preview = projectEvidenceRetention(store.list(), {
+    now: '2026-09-01T00:00:00.000Z',
+    maxAgeDays: 30,
+  });
+  assert.deepEqual(preview.summary, {
+    total: 3,
+    withinWindow: 1,
+    pastWindow: 1,
+    futureObserved: 1,
+  });
+  assert.deepEqual(preview.items.map((item) => [item.id, item.ageDays, item.retention]), [
+    ['ev-recent', 7, 'within-window'],
+    ['ev-old', 62, 'past-window'],
+    ['ev-future', 0, 'future-observed'],
+  ]);
+  assert.equal(Object.isFrozen(preview), true);
+  assert.equal(Object.isFrozen(preview.items), true);
+  assert.equal(Object.isFrozen(preview.items[0]), true);
+  assert.deepEqual(Object.keys(preview.items[0] ?? {}).sort(), [
+    'ageDays',
+    'id',
+    'moduleId',
+    'observedAt',
+    'retention',
+    'status',
+  ]);
+  assert.equal(Object.hasOwn(preview.items[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(preview.items[0] ?? {}, 'source'), false);
+  assert.equal(Object.hasOwn(preview.items[0] ?? {}, 'claimKey'), false);
+  assert.equal(store.list().length, 3);
+  assert.equal(store.get('ev-recent')?.status, 'pending');
+
+  const limited = projectEvidenceRetention(store.list(), {
+    now: '2026-09-01T00:00:00.000Z',
+    limit: 2,
+  });
+  assert.equal(limited.maxAgeDays, 30);
+  assert.equal(limited.items.length, 2);
+  assert.equal(limited.summary.total, 2);
+  assert.throws(() => projectEvidenceRetention(store.list(), { now: 'invalid' }), /now deve ser/);
+  assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', maxAgeDays: 0 }), /maxAgeDays deve ser/);
+  assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', maxAgeDays: 1.5 }), /maxAgeDays deve ser/);
+  assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', limit: 0 }), /limit deve ser/);
+  assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', limit: 1.5 }), /limit deve ser/);
 });

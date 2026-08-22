@@ -48,6 +48,37 @@ export interface EvidenceValidation {
   readonly errors: readonly string[];
 }
 
+export type EvidenceRetentionState = 'within-window' | 'past-window' | 'future-observed';
+
+export interface EvidenceRetentionOptions {
+  readonly now: string;
+  readonly maxAgeDays?: number;
+  readonly limit?: number;
+}
+
+export interface EvidenceRetentionItem {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly status: EvidenceStatus;
+  readonly observedAt: string;
+  readonly ageDays: number;
+  readonly retention: EvidenceRetentionState;
+}
+
+export interface EvidenceRetentionSummary {
+  readonly total: number;
+  readonly withinWindow: number;
+  readonly pastWindow: number;
+  readonly futureObserved: number;
+}
+
+export interface EvidenceRetentionPreview {
+  readonly now: string;
+  readonly maxAgeDays: number;
+  readonly items: readonly EvidenceRetentionItem[];
+  readonly summary: EvidenceRetentionSummary;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -65,6 +96,72 @@ function isEvidenceStatus(value: unknown): value is EvidenceStatus {
     || value === 'verified'
     || value === 'rejected'
     || value === 'superseded';
+}
+
+const RETENTION_DAY_MS = 86_400_000;
+const DEFAULT_RETENTION_DAYS = 30;
+const MAX_RETENTION_DAYS = 3650;
+const DEFAULT_RETENTION_LIMIT = 25;
+const MAX_RETENTION_LIMIT = 100;
+
+function boundedPositive(value: number | undefined, fallback: number, maximum: number, name: string): number {
+  if (value === undefined) return fallback;
+  if (!Number.isInteger(value) || value < 1) throw new TypeError(`${name} deve ser inteiro positivo`);
+  return Math.min(value, maximum);
+}
+
+function retentionOptions(options: EvidenceRetentionOptions): Required<EvidenceRetentionOptions> {
+  if (options === null || typeof options !== 'object') {
+    throw new TypeError('opções de retenção devem ser um objeto');
+  }
+  if (!isIsoDate(options.now)) throw new TypeError('now deve ser uma data ISO válida');
+  return {
+    now: new Date(options.now).toISOString(),
+    maxAgeDays: boundedPositive(options.maxAgeDays, DEFAULT_RETENTION_DAYS, MAX_RETENTION_DAYS, 'maxAgeDays'),
+    limit: boundedPositive(options.limit, DEFAULT_RETENTION_LIMIT, MAX_RETENTION_LIMIT, 'limit'),
+  };
+}
+
+export function projectEvidenceRetention(
+  records: readonly EvidenceRecord[],
+  options: EvidenceRetentionOptions,
+): EvidenceRetentionPreview {
+  const normalized = retentionOptions(options);
+  const nowMs = Date.parse(normalized.now);
+  const maxAgeMs = normalized.maxAgeDays * RETENTION_DAY_MS;
+  let withinWindow = 0;
+  let pastWindow = 0;
+  let futureObserved = 0;
+  const items = records.slice(0, normalized.limit).map((record) => {
+    const deltaMs = nowMs - Date.parse(record.observedAt);
+    const retention: EvidenceRetentionState = deltaMs < 0
+      ? 'future-observed'
+      : deltaMs > maxAgeMs
+        ? 'past-window'
+        : 'within-window';
+    if (retention === 'within-window') withinWindow += 1;
+    if (retention === 'past-window') pastWindow += 1;
+    if (retention === 'future-observed') futureObserved += 1;
+    return Object.freeze({
+      id: record.id,
+      moduleId: record.moduleId,
+      status: record.status,
+      observedAt: record.observedAt,
+      ageDays: deltaMs < 0 ? 0 : Math.floor(deltaMs / RETENTION_DAY_MS),
+      retention,
+    });
+  });
+  return Object.freeze({
+    now: normalized.now,
+    maxAgeDays: normalized.maxAgeDays,
+    items: Object.freeze(items),
+    summary: Object.freeze({
+      total: items.length,
+      withinWindow,
+      pastWindow,
+      futureObserved,
+    }),
+  });
 }
 
 function sourceErrors(value: unknown): string[] {
@@ -162,5 +259,9 @@ export class EvidenceStore {
       ...record,
       source: Object.freeze({ ...record.source }),
     }));
+  }
+
+  retentionPreview(options: EvidenceRetentionOptions): EvidenceRetentionPreview {
+    return projectEvidenceRetention(this.list(), options);
   }
 }
