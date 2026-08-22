@@ -512,6 +512,7 @@ try {
     maxAgeDays: 30,
     limit: 25,
   }));
+  const evidenceAudit = await pagina.evaluate(() => window.__v2?.api?.('evidence', 'auditPreview'));
   conferir('a API Wiki Zomboid é resolvida pelo Registry',
     wikiSummary?.total === 159
       && wikiSummary?.sourceMode === 'local-curated'
@@ -532,6 +533,16 @@ try {
       && evidenceRetention?.summary?.total === 0
       && !Object.hasOwn(evidenceRetention?.summary ?? {}, 'statement'),
     JSON.stringify(evidenceRetention ?? null));
+  conferir('a auditoria Evidence expõe somente estado estrutural bounded',
+    evidenceAudit?.scope === 'all'
+      && evidenceAudit?.limit === 25
+      && Array.isArray(evidenceAudit?.records)
+      && evidenceAudit.records.length === 0
+      && evidenceAudit?.summary?.returned === 0
+      && evidenceAudit?.summary?.truncated === false
+      && !Object.hasOwn(evidenceAudit?.summary ?? {}, 'statement')
+      && !Object.hasOwn(evidenceAudit?.summary ?? {}, 'source'),
+    JSON.stringify(evidenceAudit ?? null));
   const wikiNaTela = await navegarAte(pagina, '#/wiki-zomboid', () => {
     const t = document.getElementById('saida')?.innerText ?? '';
     return /Wiki Zomboid V2/.test(t)

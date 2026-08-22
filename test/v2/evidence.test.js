@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   EvidenceStore,
   normalizeEvidence,
+  projectEvidenceAudit,
   projectEvidenceRetention,
   validateEvidence,
 } from '../../v2/data/evidence.ts';
@@ -109,4 +110,64 @@ test('evidence retention preview is deterministic, bounded and read-only', () =>
   assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', maxAgeDays: 1.5 }), /maxAgeDays deve ser/);
   assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', limit: 0 }), /limit deve ser/);
   assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', limit: 1.5 }), /limit deve ser/);
+});
+
+test('evidence audit preview is structural, bounded and read-only', () => {
+  const store = new EvidenceStore();
+  store.append({ ...base, id: 'audit-pending', moduleId: 'wiki-arma3' });
+  store.append({ ...base, id: 'audit-verified', moduleId: 'evidence', status: 'verified' });
+  store.append({ ...base, id: 'audit-rejected', moduleId: 'wiki-arma3', status: 'rejected' });
+
+  const preview = projectEvidenceAudit(store.list());
+  assert.equal(preview.scope, 'all');
+  assert.equal(preview.limit, 25);
+  assert.deepEqual(preview.records.map((record) => [record.id, record.moduleId, record.status]), [
+    ['audit-pending', 'wiki-arma3', 'pending'],
+    ['audit-verified', 'evidence', 'verified'],
+    ['audit-rejected', 'wiki-arma3', 'rejected'],
+  ]);
+  assert.deepEqual(preview.summary, {
+    returned: 3,
+    pending: 1,
+    verified: 1,
+    rejected: 1,
+    superseded: 0,
+    truncated: false,
+  });
+  assert.equal(Object.isFrozen(preview), true);
+  assert.equal(Object.isFrozen(preview.records), true);
+  assert.equal(Object.isFrozen(preview.records[0]), true);
+  assert.deepEqual(Object.keys(preview.records[0] ?? {}).sort(), [
+    'id',
+    'moduleId',
+    'observedAt',
+    'status',
+  ]);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'source'), false);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'collector'), false);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'claimKey'), false);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'confidence'), false);
+
+  const limited = projectEvidenceAudit(store.list(), { limit: 2 });
+  assert.equal(limited.records.length, 2);
+  assert.deepEqual(limited.summary, {
+    returned: 2,
+    pending: 1,
+    verified: 1,
+    rejected: 0,
+    superseded: 0,
+    truncated: true,
+  });
+
+  const scoped = projectEvidenceAudit(store.list(), { moduleId: 'wiki-arma3', limit: 1 });
+  assert.equal(scoped.scope, 'wiki-arma3');
+  assert.deepEqual(scoped.records.map((record) => record.id), ['audit-pending']);
+  assert.equal(scoped.summary.truncated, true);
+  assert.equal(store.list().length, 3);
+  assert.equal(store.get('audit-verified')?.status, 'verified');
+
+  assert.throws(() => projectEvidenceAudit(store.list(), { moduleId: '' }), /moduleId deve ser/);
+  assert.throws(() => projectEvidenceAudit(store.list(), { limit: 0 }), /limit deve ser/);
+  assert.throws(() => projectEvidenceAudit(store.list(), { limit: 1.5 }), /limit deve ser/);
 });

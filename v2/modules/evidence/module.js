@@ -6,7 +6,7 @@
  * data, versão e confidence explícitos.
  */
 
-import { EvidenceStore, projectEvidenceRetention } from '../../data/evidence.js';
+import { EvidenceStore, projectEvidenceAudit, projectEvidenceRetention } from '../../data/evidence.js';
 import { evidenceFromCatalog } from '../../data/catalog-evidence.js';
 
 /** @typedef {import('../../data/evidence.ts').EvidenceInput} EvidenceInput */
@@ -39,6 +39,13 @@ function retentionPreview(options) {
     : projectEvidenceRetention([], options);
 }
 
+/** @param {import('../../data/evidence.ts').EvidenceAuditOptions} [options] */
+function auditPreview(options) {
+  return store
+    ? store.auditPreview(options)
+    : projectEvidenceAudit([], options);
+}
+
 export default {
   id: 'evidence',
   name: 'Evidence Layer',
@@ -66,6 +73,7 @@ export default {
     /** @param {string} moduleId */
     listByModule: (moduleId) => store?.listByModule(moduleId) ?? [],
     retentionPreview,
+    auditPreview,
     /** @param {string} id @param {import('../../data/evidence.ts').EvidenceStatus} status @param {string} [supersededBy] */
     markStatus: (id, status, supersededBy) => {
       if (!store) throw new Error('evidence ainda não foi inicializado');

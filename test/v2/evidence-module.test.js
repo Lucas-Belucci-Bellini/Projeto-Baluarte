@@ -65,6 +65,40 @@ test('Evidence retentionPreview permanece bounded durante o lifecycle', () => {
   assert.equal(evidence.api.retentionPreview(options).summary.total, 0);
 });
 
+test('Evidence auditPreview permanece redigido durante o lifecycle', () => {
+  const options = { moduleId: 'module-audit', limit: 1 };
+  assert.deepEqual(evidence.api.auditPreview(), {
+    scope: 'all',
+    limit: 25,
+    records: [],
+    summary: {
+      returned: 0,
+      pending: 0,
+      verified: 0,
+      rejected: 0,
+      superseded: 0,
+      truncated: false,
+    },
+  });
+  evidence.lifecycle.init({ log: { debug: () => {} } });
+  const record = evidence.api.append({ ...input, id: 'module-audit-001', moduleId: 'module-audit' });
+  const preview = evidence.api.auditPreview(options);
+  assert.deepEqual(preview.records, [{
+    id: record.id,
+    moduleId: 'module-audit',
+    status: 'pending',
+    observedAt: record.observedAt,
+  }]);
+  assert.equal(preview.summary.truncated, false);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'source'), false);
+  assert.equal(Object.hasOwn(preview.records[0] ?? {}, 'collector'), false);
+  assert.equal(evidence.api.list().length, 1);
+  evidence.lifecycle.dispose();
+  assert.equal(evidence.api.auditPreview().summary.returned, 0);
+  assert.throws(() => evidence.api.auditPreview({ moduleId: '' }), /moduleId deve ser/);
+});
+
 test('Evidence emite eventos bounded sem incluir conteúdo da evidência', () => {
   const events = [];
   evidence.lifecycle.init({

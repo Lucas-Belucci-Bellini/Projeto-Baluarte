@@ -79,6 +79,34 @@ export interface EvidenceRetentionPreview {
   readonly summary: EvidenceRetentionSummary;
 }
 
+export interface EvidenceAuditOptions {
+  readonly moduleId?: string;
+  readonly limit?: number;
+}
+
+export interface EvidenceAuditRecord {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly status: EvidenceStatus;
+  readonly observedAt: string;
+}
+
+export interface EvidenceAuditSummary {
+  readonly returned: number;
+  readonly pending: number;
+  readonly verified: number;
+  readonly rejected: number;
+  readonly superseded: number;
+  readonly truncated: boolean;
+}
+
+export interface EvidenceAuditPreview {
+  readonly scope: string;
+  readonly limit: number;
+  readonly records: readonly EvidenceAuditRecord[];
+  readonly summary: EvidenceAuditSummary;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -103,6 +131,8 @@ const DEFAULT_RETENTION_DAYS = 30;
 const MAX_RETENTION_DAYS = 3650;
 const DEFAULT_RETENTION_LIMIT = 25;
 const MAX_RETENTION_LIMIT = 100;
+const DEFAULT_AUDIT_LIMIT = 25;
+const MAX_AUDIT_LIMIT = 100;
 
 function boundedPositive(value: number | undefined, fallback: number, maximum: number, name: string): number {
   if (value === undefined) return fallback;
@@ -160,6 +190,62 @@ export function projectEvidenceRetention(
       withinWindow,
       pastWindow,
       futureObserved,
+    }),
+  });
+}
+
+function normalizeAuditOptions(options: EvidenceAuditOptions | null | undefined): {
+  readonly moduleId: string | null;
+  readonly limit: number;
+} {
+  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('opções de auditoria devem ser um objeto');
+  }
+  if (options.moduleId !== undefined && !isNonEmptyString(options.moduleId)) {
+    throw new TypeError('moduleId deve ser texto não vazio');
+  }
+  return {
+    moduleId: options.moduleId?.trim() ?? null,
+    limit: boundedPositive(options.limit, DEFAULT_AUDIT_LIMIT, MAX_AUDIT_LIMIT, 'limit'),
+  };
+}
+
+export function projectEvidenceAudit(
+  records: readonly EvidenceRecord[],
+  options: EvidenceAuditOptions = {},
+): EvidenceAuditPreview {
+  const normalized = normalizeAuditOptions(options);
+  const scoped = normalized.moduleId === null
+    ? records
+    : records.filter((record) => record.moduleId === normalized.moduleId);
+  const selected = scoped.slice(0, normalized.limit);
+  let pending = 0;
+  let verified = 0;
+  let rejected = 0;
+  let superseded = 0;
+  const auditRecords = selected.map((record) => {
+    if (record.status === 'pending') pending += 1;
+    if (record.status === 'verified') verified += 1;
+    if (record.status === 'rejected') rejected += 1;
+    if (record.status === 'superseded') superseded += 1;
+    return Object.freeze({
+      id: record.id,
+      moduleId: record.moduleId,
+      status: record.status,
+      observedAt: record.observedAt,
+    });
+  });
+  return Object.freeze({
+    scope: normalized.moduleId ?? 'all',
+    limit: normalized.limit,
+    records: Object.freeze(auditRecords),
+    summary: Object.freeze({
+      returned: auditRecords.length,
+      pending,
+      verified,
+      rejected,
+      superseded,
+      truncated: scoped.length > normalized.limit,
     }),
   });
 }
@@ -263,5 +349,9 @@ export class EvidenceStore {
 
   retentionPreview(options: EvidenceRetentionOptions): EvidenceRetentionPreview {
     return projectEvidenceRetention(this.list(), options);
+  }
+
+  auditPreview(options?: EvidenceAuditOptions): EvidenceAuditPreview {
+    return projectEvidenceAudit(this.list(), options);
   }
 }

@@ -2,6 +2,7 @@
 export {
   EvidenceStore,
   normalizeEvidence,
+  projectEvidenceAudit,
   projectEvidenceRetention,
   validateEvidence,
 } from './evidence.ts';
