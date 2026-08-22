@@ -1195,8 +1195,19 @@ export function jarvisPage(): HTMLDivElement {
   markXiiiRouteOff = bus.on<{ path?: string }>('route:change', ({ path }) => {
     if (path !== '/jarvis') disposeMarkXiiiConsole();
   });
+  const browserReference = h('img', {
+    className: 'jv-visual-switcher__reference',
+    src: '/jarvis/jarvis-nucleo-browser.webp',
+    alt: 'Núcleo dourado J.A.R.V.I.S. do Projeto Baluarte',
+    loading: 'eager',
+    decoding: 'async',
+  });
+  const visualFallback = h('div', {
+    className: 'jv-visual-switcher__reference-fallback',
+    'aria-label': 'Referência visual do núcleo J.A.R.V.I.S.',
+  }, browserReference, markXiiiConsole.root);
   jarvisV7Visual = createJarvisV7Visual({
-    fallback: markXiiiConsole.root,
+    fallback: visualFallback,
     onState: (state) => {
       if (markXiiiConsole) markXiiiConsole.root.dataset.visualV7State = state;
     },
