@@ -17,6 +17,7 @@
     "src/core/permissions.ts",
     "src/core/storage.ts",
     "src/core/auth-session.ts",
+    "src/security/server-observation-http.ts",
     "src/layout/header.ts",
     "src/layout/sidebar.ts",
     "src/layout/overlay.ts",
