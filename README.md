@@ -78,6 +78,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Issues 420, 422 e 423 | [`ISSUES_420_422_423_COMPLETE.md`](docs/v2/roadmap/ISSUES_420_422_423_COMPLETE.md) |
 | Plano mestre | [`V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md) |
 | Gap analysis corrente | [`MASTER_GAP_ANALYSIS.md`](docs/v2/MASTER_GAP_ANALYSIS.md) |
+| Medição atual de progresso V2 | [`V2_PROGRESS_REPORT_2026-08-22.md`](docs/v2/V2_PROGRESS_REPORT_2026-08-22.md) |
 | Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
 | Design System e Information Architecture | [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md) |
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |

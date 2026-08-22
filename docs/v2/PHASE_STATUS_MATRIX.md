@@ -1,15 +1,16 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA funcional de referência:** `bcb246df` (`feat(jarvis): harden spotify pkce presence`)
-**Última reconciliação documental:** `a3a88c04` (`docs(v2): reconcile spotify milestone matrices`)
-**Último marco publicado:** `jarvis-spotify-pkce-presence` — Spotify PKCE read-only e reação visual Mark XIII
+**SHA observado para a medição corrente:** `8ad3fdf220d101384ac41d561951979fe2fa6d46` (`feat(jarvis): guide spotify setup for users`)
+**SHA funcional anterior:** `bcb246df` (`feat(jarvis): harden spotify pkce presence`)
+**Última reconciliação documental anterior:** `a3a88c04` (`docs(v2): reconcile spotify milestone matrices`)
+**Último marco publicado:** `jarvis-spotify-guided-ux` — configuração Spotify guiada para usuários finais
 **Base anterior:** `2093059410bf2aa6c8a0f90795e91625d0be1d53`
 **Data:** 2026-08-22
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 
 ## Resumo
 
-O Projeto-Baluarte já possui uma fundação significativa: governança e documentação V2, Core inicial, Event Bus, Storage, permissões básicas, Runtime/Session/Bridge, integração V2, migração das páginas canônicas para TypeScript, fronteira Node/TypeScript dos geradores e automação diária. A baseline corrente passa `tipos:ts`, `tipos:v2`, testes 1239/1239, build, integração 45/45, smoke 99/99 e caminho crítico 15/15. A nova suíte focal Spotify + Mark XIII passa em 11/11. O `verify:v2` publicado no SHA anterior mantém um catálogo de 21 registros, com 15 checks locais verdes, um bloqueio conhecido de Rust e cinco gates explicitamente não executados por política. O marco de Billing permanece em 67/67, o piloto operacional do Registry foi validado no browser real e o JARVIS possui benchmarks locais de contexto/tool schemas e recall cross-session.
+O Projeto-Baluarte já possui uma fundação significativa: governança e documentação V2, Core inicial, Event Bus, Storage, permissões básicas, Runtime/Session/Bridge, integração V2, migração das páginas canônicas para TypeScript, fronteira Node/TypeScript dos geradores e automação diária. A baseline corrente passa `tipos:ts`, `tipos:v2`, testes 1247/1247, build, integração 45/45, smoke 99/99 e caminho crítico 15/15. A suíte focal Spotify/Soloist + Mark XIII passa em 19/19. O `verify:v2` publicado no SHA anterior mantém um catálogo de 21 registros, com 15 checks locais verdes, um bloqueio conhecido de Rust e cinco gates explicitamente não executados por política. O marco de Billing permanece em 67/67, o piloto operacional do Registry foi validado no browser real e o JARVIS possui benchmarks locais de contexto/tool schemas e recall cross-session.
 
 Isso ainda não equivale à V2 completa do prompt mestre. Permanecem pendentes o vertical slice completo com Data/Evidence e observabilidade de produto, Module Registry operacional uniforme, sessão/login-cadastro server-validated projetada localmente; integração HTTP e RLS, validação Runtime em toolchain compatível, hardening de segurança, layout Command Shell Modular, app preview, JARVIS medido/otimizado, bridge OpenClaw/MCP protegido, notícias com proveniência, testes mensais e critérios de RC/COMPLETE.
 
@@ -25,7 +26,7 @@ Isso ainda não equivale à V2 completa do prompt mestre. Permanecem pendentes o
 | PHASE 5 — Permission System | **Parcial avançada** | Deny-by-default, permissões e concessão/revogação testadas | RBAC server-side, roles protegidos e RLS para operações administrativas |
 | PHASE 6 — Configuration | **Parcial** | Configuração e flags existentes no Core | Fonte única, versionamento, diagnóstico e configuração de módulos |
 | PHASE 7 — Observability | **Avançada parcialmente** | Health, métricas, snapshots, server-observation/v1, retrato visual por módulo, política operacional read-only, observação bounded do contexto e do recall JARVIS, evidência de rollout, projeção server-validated-session/v1, cliente HTTP read-only e presença Spotify read-only | Telemetria consistente por módulo, incidentes, retenção e dashboards operacionais |
-| PHASE 8 — Testing Infrastructure | **Avançada** | 1239/1239, Spotify + Mark XIII 11/11, smoke 99/99, integração 45/45, caminho 15/15, offline 9/9, Billing 67/67, Module Registry pilot, JARVIS context/memory optimization, login + Auth Adapter + server-validated-session + HTTP client TypeScript, doctor 21 registros | Contratos Data/Evidence, auth/RLS, Runtime remoto e testes mensais |
+| PHASE 8 — Testing Infrastructure | **Avançada** | 1247/1247, Spotify/Soloist + Mark XIII 19/19, smoke 99/99, integração 45/45, caminho 15/15, offline 9/9, Billing 67/67, Module Registry pilot, JARVIS context/memory optimization, login + Auth Adapter + server-validated-session + HTTP client TypeScript, doctor 21 registros | Contratos Data/Evidence, auth/RLS, Runtime remoto e testes mensais |
 | PHASE 9 — API Contracts | **Parcial avançada** | `.d.ts`, JSDoc V2, Runtime envelopes, contratos de módulos, `server-validated-session/v1` e `server-observation-http/v1` | Fechar integração de UI, Evidence, auth/RLS, Module Registry e integrações |
 | PHASE 10 — TypeScript Migration | **Concluída para páginas canônicas; Auth boundary avançada** | Inventário com zero páginas canônicas JS; 115 wrappers preservados; consumers TypeScript de páginas promovidos nas Waves 39–43; `src/pages/login.ts`, `supabase-auth.d.ts`, `server-validated-session.ts` e `server-observation-http.ts` usam contratos TypeScript | Integrar observação em superfície read-only de ambiente controlado; avaliar utilitários sensíveis, scripts externos ao Vite e remover wrappers somente quando o grafo legado permitir |
 | PHASE 11 — Vertical Integration | **Parcial** | V2 browser integration 19/19 conecta Core, módulos, Runtime Session e router | Primeiro slice completo com Data + Evidence + permissão + observabilidade + superfície |
@@ -107,6 +108,12 @@ O monitor lê somente metadados de `GET /v1/me/player`, trata `204` como `unknow
 A integração de conta Spotify permanece `VALIDATING`, pois o cadastro da Redirect URI e o Client ID real não puderam ser verificados no dashboard externo. O próximo passo operacional é manual e depende da disponibilidade do provedor: cadastrar exatamente `https://projeto-baluarte.vercel.app/`, usar o Client ID público no JARVIS e concluir o consentimento. O problema Supabase é separado e requer aprovação explícita de staging/custo antes de qualquer investigação mutável.
 
 Documentos: [`JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md`](./JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md), [`JARVIS_SPOTIFY_AUDIT_2026-08-22.md`](./JARVIS_SPOTIFY_AUDIT_2026-08-22.md), [`SPOTIFY_DASHBOARD_UNAVAILABLE_2026-08-22.md`](./SPOTIFY_DASHBOARD_UNAVAILABLE_2026-08-22.md) e [`JARVIS_CHROME_OBSERVATION_2026-08-22.md`](./JARVIS_CHROME_OBSERVATION_2026-08-22.md).
+
+## Medição corrente — 8ad3fdf2
+
+A medição publicada em [`V2_PROGRESS_REPORT_2026-08-22.md`](./V2_PROGRESS_REPORT_2026-08-22.md) registra **57,3% de prontidão ponderada das 28 fases**, 100% da migração de páginas canônicas, 1247/1247 testes, 21 gates locais executáveis verdes, 45/45 de integração V2, 99/99 de smoke e 15/15 do caminho crítico. O CI remoto aplicável ficou verde no SHA observado; o Supabase Preview permaneceu `unknown/external` e o Rust local continua `blocked-known` por incompatibilidade de toolchain.
+
+A medição não altera a classificação das fases 25–27: estabilização, release candidate e V2 completa continuam não iniciadas. A existência de 115 wrappers `.js` não é dívida de páginas; são fronteiras de compatibilidade mantidas enquanto o grafo legado não for encerrado.
 
 ## Regras de transição
 

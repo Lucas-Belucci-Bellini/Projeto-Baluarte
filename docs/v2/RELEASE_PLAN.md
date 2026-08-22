@@ -28,7 +28,7 @@ A V1 continua sendo a linha de referência enquanto a V2 é construída. A migra
 
 ## 3. Dependências críticas
 
-A release de identidade depende da branch `feature/login-cadastro`, mas essa branch ainda contém `src/pages/login.js`; ela precisa entrar no circuito de migração TypeScript antes de ser promovida. A release Alpha do frontend depende do inventário chegar a zero páginas canônicas JS. A Alpha de contratos depende da correção de `ROOT-TYPES-001`, atualmente representada por 61 diagnósticos reproduzidos em `tipos:v2`.
+A release de identidade ainda tem uma branch histórica `feature/login-cadastro` que está 467 commits atrás e 1 à frente da `main`; a implementação canônica de login já está no `main` em `src/pages/login.ts`, enquanto a branch não deve ser promovida diretamente. A release Alpha do frontend já atende ao inventário de zero páginas canônicas JS, com wrappers preservados. A Alpha de contratos agora tem `tipos:v2` aprovado no SHA medido; a dívida restante é fechar contratos, evidência e integração no mesmo SHA, não repetir a antiga contagem histórica de diagnósticos.
 
 A Vercel e o Supabase são gates de entrega, mas falhas de rate limit ou ausência de log devem ser classificadas como incidentes operacionais, não corrigidas com alterações arbitrárias no produto. Nenhum release deve ser declarado verde com um check externo desconhecido.
 
@@ -52,4 +52,4 @@ Se um gate raiz falha, os gates dependentes devem ser marcados como “bloqueado
 
 ## 6. Próximo release recomendado
 
-O marco promovido foi **`1.2.5 — Distribuição do Launcher`**. O próximo lançamento operacional é **`1.2.6 — JARVIS Núcleo V7`**, dedicado a promover o novo visual 3D e manter os instaladores alinhados à web. A tag só deve ser publicada após os gates do main, a conferência de versão no workflow e a validação pública dos assets. Depois disso, o próximo marco de produto continua sendo **`2.0.0-alpha.1 — Frontend TypeScript`**, que depende do inventário atualizado e do plano explícito para wrappers e contratos restantes. A fundação de Billing permanece sem cobrança real, a autorização server-side do Registry ainda depende de staging/RLS aprovado e nenhum provider externo é ativado automaticamente.
+A release operacional atual é **`1.2.6 — JARVIS Núcleo V7`**, já publicada com instaladores verificados. O próximo marco de produto é **`2.0.0-alpha.1 — Frontend TypeScript`**; o inventário canônico já está em zero páginas JS, mas a promoção ainda exige release note específica e evidência no mesmo SHA. Depois, **`2.0.0-alpha.2 — Contratos V2`** depende de fechar contratos restantes e de integrar evidência, não somente de passar o compilador. A fundação de Billing permanece sem cobrança real, a autorização server-side do Registry depende de staging/RLS aprovado e nenhum provider externo é ativado automaticamente.
