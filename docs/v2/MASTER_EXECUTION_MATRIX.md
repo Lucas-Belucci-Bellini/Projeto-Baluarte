@@ -4,7 +4,8 @@
 **Data da observação:** 2026-08-22
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado:** `bcb246df` (`bcb246df` — `feat(jarvis): harden spotify pkce presence`)
+**SHA funcional auditado:** `bcb246df` (`feat(jarvis): harden spotify pkce presence`)
+**Reconciliação documental-base desta onda:** `a3a88c04` (`docs(v2): reconcile spotify milestone matrices`)
 **Tag de release base:** `v1.2.6`
 **Autor:** Manus AI
 
@@ -124,7 +125,7 @@ O cliente não faz retry, cache, storage, refresh, logout, DDL, RLS, chamada dir
 
 ## Checkpoint publicado — JARVIS Spotify PKCE + Mark XIII playback presence — bcb246df
 
-O marco `jarvis-spotify-pkce-presence` foi publicado diretamente na `main` no SHA `bcb246df`. O fluxo usa Authorization Code with PKCE/S256 para uma SPA, aceita apenas Client ID público validado, rejeita `localhost` em HTTP e mantém tokens exclusivamente em memória. O pending PKCE vive em `sessionStorage`, o Client ID público pode ser lembrado em `localStorage`, o callback rejeita `state` divergente e o retorno interno é sanitizado. O wrapper `.js` foi atualizado para preservar os exports públicos da implementação TypeScript e corrigir o bundle de produção.
+O marco `jarvis-spotify-pkce-presence` foi publicado diretamente na `main` no SHA `bcb246df`. A reconciliação documental da matriz principal foi publicada no commit `a3a88c04`. O fluxo usa Authorization Code with PKCE/S256 para uma SPA, aceita apenas Client ID público validado, rejeita `localhost` em HTTP e mantém tokens exclusivamente em memória. O pending PKCE vive em `sessionStorage`, o Client ID público pode ser lembrado em `localStorage`, o callback rejeita `state` divergente e o retorno interno é sanitizado. O wrapper `.js` foi atualizado para preservar os exports públicos da implementação TypeScript e corrigir o bundle de produção.
 
 O monitor consulta somente `GET /v1/me/player`, publica título/artista/posição/duração no registro único de presença musical e trata `204` como `unknown`. O Mark XIII reage com amplitude baixa a `playing`, indicação discreta a `paused` e estado neutro a `unknown`, sem capturar áudio, controlar playback ou alterar `runtimeAuthority`, que permanece `not-authorized`. A página mostra a Redirect URI exata calculada no navegador e explica que nenhum Client Secret é necessário no frontend.
 
@@ -136,7 +137,8 @@ O monitor consulta somente `GET /v1/me/player`, publica título/artista/posiçã
 | `npm run build` | Passou; warnings conhecidos de chunks grandes |
 | `npm run v2:integracao` / `npm run smoke` / `npm run caminho-critico` | Passou |
 | Runner oficial local | Gates aplicáveis verdes; Rust código 101 `blocked-known` |
-| CI remoto do SHA | 10 checks concluídos com sucesso; rotas, build, JS/TS, Python, core, runtime, Arma 3 e Rust verdes |
+| CI remoto do SHA bcb246df | 10 checks concluídos com sucesso; rotas, build, JS/TS, Python, core, runtime, Arma 3 e Rust verdes |
+| CI remoto do SHA a3a88c04 | 9/10 checks com sucesso; 1 falha no Supabase Preview, sem falha em código Spotify/JARVIS |
 | Supabase Preview | Falhou externamente: `Remote migration versions not found in local migrations directory.`; sem DDL/migration remoto executado |
 
 A conexão com a conta Spotify ainda é `VALIDATING`: o dashboard do provedor retornou erro externo em duas tentativas e não permitiu verificar o aplicativo, Client ID ou Redirect URI. Os documentos [`JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md`](./JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md), [`JARVIS_SPOTIFY_AUDIT_2026-08-22.md`](./JARVIS_SPOTIFY_AUDIT_2026-08-22.md) e [`SPOTIFY_DASHBOARD_UNAVAILABLE_2026-08-22.md`](./SPOTIFY_DASHBOARD_UNAVAILABLE_2026-08-22.md) registram os controles, o rollback e o próximo passo manual. O diagnóstico Supabase não pertence ao slice Spotify e exige auditoria/staging explícitos antes de qualquer mudança.

@@ -1,6 +1,7 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA de referência:** `bcb246df` (`feat(jarvis): harden spotify pkce presence`)
+**SHA funcional de referência:** `bcb246df` (`feat(jarvis): harden spotify pkce presence`)
+**Última reconciliação documental:** `a3a88c04` (`docs(v2): reconcile spotify milestone matrices`)
 **Último marco publicado:** `jarvis-spotify-pkce-presence` — Spotify PKCE read-only e reação visual Mark XIII
 **Base anterior:** `2093059410bf2aa6c8a0f90795e91625d0be1d53`
 **Data:** 2026-08-22
