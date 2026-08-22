@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Release `1.2.8`: piloto Wiki Zomboid e Evidence — candidata
+
+A candidata `1.2.8` adiciona o piloto V2 Wiki Zomboid com schema TypeScript, catálogo local bounded e proveniência explícita. O módulo declara `references.modules: ['evidence']`, resolve Evidence por `ctx.talvez('evidence', { versao: 1 })` e mantém fallback funcional quando Evidence não está disponível.
+
+O harness V2 passa a registrar sete módulos, 20 rotas internas e seis itens de navegação. A superfície `/wiki-zomboid` permanece local/read-only e não substitui as rotas públicas V1 `/zomboid` e `/zomboid-admin`. O slice passou teste focal `4/4`, suíte `1254/1254`, integração browser `48/48` e runner oficial com 21 gates verdes; Rust local código 101 permanece `blocked-known`.
+
+**Status:** candidata, aguardando o commit de versionamento, CI remoto, Desktop Release e verificação dos assets reais. Nenhuma tag `v1.2.8` ou `desktop-v1.2.8` foi criada neste ponto.
+
+**Documentação:** [`docs/releases/v1.2.8.md`](../docs/releases/v1.2.8.md) e [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md).
+
+---
+
 ## 2026-08-22 — Release `1.2.7`: Briefing→Evidence pelo Registry publicada
 
 A release `1.2.7` sincroniza a versão web e do Launcher e promove o vínculo do Briefing com a Evidence Layer pelo contrato real de módulos V2: `references.modules: ['evidence']` e `ctx.talvez('evidence', { versao: 1 })`. O harness registra seis módulos ativos, Evidence continua sem rota e a navegação V1 permanece com cinco entradas.
