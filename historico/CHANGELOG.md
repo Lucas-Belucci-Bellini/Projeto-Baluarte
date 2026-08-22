@@ -6,13 +6,17 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-22 — Release `1.2.7`: candidata — Briefing→Evidence pelo Registry
+## 2026-08-22 — Release `1.2.7`: Briefing→Evidence pelo Registry publicada
 
-A candidata `1.2.7` sincroniza a versão web e do Launcher e promove o vínculo do Briefing com a Evidence Layer pelo contrato real de módulos V2: `references.modules: ['evidence']` e `ctx.talvez('evidence', { versao: 1 })`. O harness registra seis módulos ativos, Evidence continua sem rota e a navegação V1 permanece com cinco entradas.
+A release `1.2.7` sincroniza a versão web e do Launcher e promove o vínculo do Briefing com a Evidence Layer pelo contrato real de módulos V2: `references.modules: ['evidence']` e `ctx.talvez('evidence', { versao: 1 })`. O harness registra seis módulos ativos, Evidence continua sem rota e a navegação V1 permanece com cinco entradas.
 
 A superfície do Briefing informa quando a Evidence local está conectada. O marco continua local/read-only: não adiciona Supabase, DDL, migrations, RLS, Auth de produção, OpenClaw, WhatsApp, publicação automática ou ações externas. A suíte anterior passou em `1250/1250`, a integração em `46/46`, smoke em `99/99`, caminho crítico em `15/15` e o runner manteve 21 gates verdes com Rust local `blocked-known` código 101.
 
-**Status:** a tag `v1.2.7` e a tag `desktop-v1.2.7` só serão criadas depois que a validação do commit de versão e o workflow Desktop Release produzirem os instaladores reais nos três sistemas. Se qualquer gate falhar, esta entrada permanecerá candidata e a publicação será interrompida.
+**Status:** publicada no commit `0e200328612c64299f550363fe3440712e491806`, com as tags `v1.2.7` e `desktop-v1.2.7`. Os oito workflows remotos do commit passaram; o Desktop Release `32581796791` terminou verde nos três sistemas. A release pública não é draft nem prerelease e os três instaladores responderam HTTP 200.
+
+**Assets verificados:** `Baluarte-Launcher-Setup-1.2.7.exe` (644,015,362 bytes), `Baluarte-Launcher-1.2.7.AppImage` (773,768,701 bytes), `Baluarte-Launcher-1.2.7-arm64.dmg` (406,313,600 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos publicados na release.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.7
 
 **Documentação:** [`docs/releases/v1.2.7.md`](../docs/releases/v1.2.7.md).
 

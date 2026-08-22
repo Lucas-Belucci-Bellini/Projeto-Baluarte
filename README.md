@@ -51,7 +51,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados. |
-| **Web/Desktop** | `1.2.7` preparada | Release sincronizada com o marco Briefing→Evidence pelo Registry; instaladores serão considerados publicados somente após o workflow Desktop Release concluir com sucesso. V1 preservada e V2 em construção incremental. |
+| **Web/Desktop** | `1.2.7` publicada | Release sincronizada com o marco Briefing→Evidence pelo Registry; instaladores Windows, Linux e macOS verificados. V1 preservada e V2 em construção incremental. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
