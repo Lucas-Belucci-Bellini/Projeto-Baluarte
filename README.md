@@ -50,7 +50,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 | Superfície | Estado | Leitura rápida |
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
-| **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados. |
+| **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados; piloto Wiki Zomboid/Evidence local validado. |
 | **Web/Desktop** | `1.2.7` publicada | Release sincronizada com o marco Briefing→Evidence pelo Registry; instaladores Windows, Linux e macOS verificados. V1 preservada e V2 em construção incremental. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
@@ -79,6 +79,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Plano mestre | [`V2_MASTER_PLAN.md`](docs/v2/V2_MASTER_PLAN.md) |
 | Gap analysis corrente | [`MASTER_GAP_ANALYSIS.md`](docs/v2/MASTER_GAP_ANALYSIS.md) |
 | Medição atual de progresso V2 | [`V2_PROGRESS_REPORT_2026-08-22.md`](docs/v2/V2_PROGRESS_REPORT_2026-08-22.md) |
+| Piloto Wiki Zomboid / Evidence | [`WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md) |
 | Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
 | Design System e Information Architecture | [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md) |
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |

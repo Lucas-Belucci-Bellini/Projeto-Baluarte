@@ -117,11 +117,11 @@ try {
   const v2 = await pagina.evaluate(() => window.__v2);
 
   conferir('o boot da V2 roda no navegador', v2 && !v2.erro, v2?.erro);
-  /* Contagem EXATA, não `>= 5`: um módulo que some do registro é defeito tão
+  /* Contagem EXATA, não `>= 7`: um módulo que some do registro é defeito tão
    * real quanto um que falha, e `>=` deixaria o sumiço passar calado. Foi para
-   * 5 com o `visor3d`, o consumidor do engine 3D. */
-  conferir('os 6 módulos sobem sem falha',
-    v2?.resultado?.vivos?.length === 6 && v2?.resultado?.falhas?.length === 0,
+   * 7 com o `wiki-zomboid`, o piloto local de schema e Evidence. */
+  conferir('os 7 módulos sobem sem falha',
+    v2?.resultado?.vivos?.length === 7 && v2?.resultado?.falhas?.length === 0,
     JSON.stringify(v2?.resultado?.falhas ?? []));
   /* A autorização foi de fato PEDIDA, e antes do `init`. Esta é a asserção que
    * o estado anterior não tinha: o ciclo ia direto ao `init`, os 4 módulos
@@ -254,16 +254,16 @@ try {
   /* Estas duas seguem exatas de propósito: rota ou item de navegação que SOME é
    * defeito tão real quanto um que falha, e só o número fixo pega o sumiço.
    * Foram de 18→19 e 4→5 com a rota `/visor3d`. */
-  conferir('as 19 rotas chegam ao router REAL da V1',
-    v2?.resultado?.rotas === 19 && v2?.totalRotas === 19,
+  conferir('as 20 rotas chegam ao router REAL da V1',
+    v2?.resultado?.rotas === 20 && v2?.totalRotas === 20,
     `boot=${v2?.resultado?.rotas} router=${v2?.totalRotas}`);
   conferir('a navegação vem do manifesto',
-    v2?.resultado?.nav?.length === 5, String(v2?.resultado?.nav?.length));
+    v2?.resultado?.nav?.length === 6, String(v2?.resultado?.nav?.length));
   const navigationObservation = await pagina.evaluate(() => window.__v2?.navigationObservation?.());
   const commandCenter = await pagina.evaluate(() => window.__v2?.commandCenterPilot?.());
   conferir('Command Center deriva categorias e busca sem trocar a sidebar V1',
     commandCenter?.projection?.queryPlaceholder === 'Buscar ou executar comando…'
-      && commandCenter?.projection?.commands?.length === 5
+      && commandCenter?.projection?.commands?.length === 6
       && commandCenter?.projection?.categories?.length > 0
       && commandCenter?.search?.length === 1
       && commandCenter?.search?.[0]?.path === '/editor',
@@ -274,7 +274,7 @@ try {
   conferir('protótipo visual Command Center fica restrito ao harness',
     visualPilot?.visibility === 'harness-only'
       && visualPilot?.publicSidebarUntouched === true
-      && Number(visualPilot?.commandCount) === 5
+      && Number(visualPilot?.commandCount) === 6
       && Number(visualPilot?.categoryCount) > 0,
     JSON.stringify(visualPilot ?? null));
 
@@ -333,7 +333,7 @@ try {
 
   conferir('UI-03 observa o Registry sem trocar a sidebar V1',
     navigationObservation?.source === 'registry-observer'
-      && navigationObservation?.projection?.entries?.length === 5
+      && navigationObservation?.projection?.entries?.length === 6
       && navigationObservation?.parity?.sharedPaths?.includes('/editor')
       && navigationObservation?.parity?.sharedPaths?.includes('/cripto')
       && navigationObservation?.parity?.sharedPaths?.includes('/militar')
@@ -346,7 +346,7 @@ try {
     : [];
   conferir('piloto por módulo exige health e deep link antes da promoção',
     Array.isArray(moduleAlignment)
-      && moduleAlignment.length === 5
+      && moduleAlignment.length === 6
       && moduleAlignment.every((decision) => decision.evidence.health.source === 'runtime-registry')
       && moduleAlignment.every((decision) => decision.evidence.deepLink === 'verified')
       && moduleAlignment.every((decision) => decision.normalUserAction === 'preserve-current-surface')
@@ -359,7 +359,7 @@ try {
   ));
   conferir('política operacional mantém módulo saudável sem claims sem revisão elevada',
     Array.isArray(moduleOperationalDefault)
-      && moduleOperationalDefault.length === 5
+      && moduleOperationalDefault.length === 6
       && moduleOperationalDefault.every((decision) => decision.button === 'enabled')
       && moduleOperationalDefault.every((decision) => decision.elevatedReview === 'unavailable')
       && moduleOperationalDefault.every((decision) => decision.fallback === 'v1-preserved')
@@ -381,7 +381,7 @@ try {
   ));
   conferir('scope module:read produz somente revisão elevada observável',
     Array.isArray(moduleOperationalClaims)
-      && moduleOperationalClaims.length === 5
+      && moduleOperationalClaims.length === 6
       && moduleOperationalClaims.every((decision) => decision.elevatedReview === 'review-only')
       && moduleOperationalClaims.every((decision) => decision.button === 'enabled')
       && moduleOperationalClaims.every((decision) => decision.authority === 'not-authorized')
@@ -394,12 +394,12 @@ try {
   }));
   conferir('observação ausente preserva V1 e degrada o retrato visual',
     Array.isArray(moduleObservationDefault?.decisions)
-      && moduleObservationDefault.decisions.length === 5
+      && moduleObservationDefault.decisions.length === 6
       && moduleObservationDefault.decisions.every((decision) => decision.availability === 'degraded')
       && moduleObservationDefault.decisions.every((decision) => decision.fallback === 'v1-preserved')
       && moduleObservationDefault.decisions.every((decision) => decision.publicPromotionAllowed === false)
       && moduleObservationDefault.snapshot?.publicSidebarUntouched === true
-      && moduleObservationDefault.snapshot?.degradedCount === 5,
+      && moduleObservationDefault.snapshot?.degradedCount === 6,
     JSON.stringify(moduleObservationDefault ?? null));
 
   const healthyServerObservation = {
@@ -435,7 +435,7 @@ try {
       && editorObservation?.fallback === 'v1-preserved'
       && editorObservation?.authority === 'not-authorized'
       && editorObservation?.publicPromotionAllowed === false
-      && moduleObservationReady.filter((decision) => decision.availability === 'degraded').length === 4,
+      && moduleObservationReady.filter((decision) => decision.availability === 'degraded').length === 5,
     JSON.stringify({ editorObservation, moduleObservationReady }));
 
   const controlledRolloutBlocked = await pagina.evaluate((observation) => (
@@ -504,6 +504,23 @@ try {
     /Briefing de Notícias/.test(briefingNaTela) && /módulo experimental V2/i.test(briefingNaTela), briefingNaTela.slice(0, 90));
   conferir('a superfície de briefing observa Evidence',
     /Evidence local conectada/i.test(briefingNaTela), briefingNaTela.slice(0, 140));
+
+  const wikiSummary = await pagina.evaluate(() => window.__v2?.api?.('wiki-zomboid', 'summary'));
+  conferir('a API Wiki Zomboid é resolvida pelo Registry',
+    wikiSummary?.total === 159
+      && wikiSummary?.sourceMode === 'local-curated'
+      && wikiSummary?.evidenceAvailable === true,
+    JSON.stringify(wikiSummary ?? null));
+  const wikiNaTela = await navegarAte(pagina, '#/wiki-zomboid', () => {
+    const t = document.getElementById('saida')?.innerText ?? '';
+    return /Wiki Zomboid V2/.test(t)
+      && /159 entradas locais/.test(t)
+      && /Evidence local conectada/i.test(t);
+  });
+  conferir('a superfície Wiki Zomboid V2 renderiza o schema local',
+    /Wiki Zomboid V2/.test(wikiNaTela)
+      && /159 entradas locais/.test(wikiNaTela)
+      && /Evidence local conectada/i.test(wikiNaTela), wikiNaTela.slice(0, 180));
 
   /* O DEFEITO 1: se `view` devolver o módulo em vez do elemento, isto fica
    * vazio. A asserção é de IDENTIDADE, não de tamanho — a versão anterior media

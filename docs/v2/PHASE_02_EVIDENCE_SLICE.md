@@ -39,3 +39,10 @@ Este slice ainda não faz ingestão, deduplicação semântica, busca full-text,
 ## Próximo passo recomendado
 
 O adapter local de catálogo já foi conectado ao módulo e validado com fixtures. O próximo slice deve conectá-lo a um fluxo de leitura controlado da Wiki, começando com fixtures locais e schemas verificáveis. Só depois de medir a necessidade real deve entrar fila de ingestão, worker Python ou pgvector.
+
+
+## Checkpoint seguinte — Wiki Zomboid schema pilot — 2026-08-22
+
+O próximo slice conectou o contrato de Evidence a uma leitura controlada da Wiki usando o catálogo local curado de Project Zomboid. `v2/data/wiki-zomboid.ts` exige nome, autor, categoria conhecida, Workshop ID numérico, fonte com URL/revisão e `retrievedAt` ISO; `modId` e `spawnId` permanecem opcionais e não são inventados. O módulo `wiki-zomboid` declara `references.modules: ['evidence']`, resolve a API por `ctx.talvez('evidence', { versao: 1 })`, expõe API bounded e continua funcional sem Evidence.
+
+O harness V2 passou a registrar sete módulos, 20 rotas e seis itens de navegação internos. A view local informa `159 entradas locais`, oito categorias e o estado da Evidence sem substituir as superfícies V1 `/zomboid` e `/zomboid-admin`. O teste focal passou 4/4, `npm test` passou 1254/1254 e `npm run v2:integracao` passou 48/48 em porta limpa. O slice continua local/read-only e não ativa rede, persistência, Auth, RLS, Supabase, scraping ou publicação externa. A documentação detalhada está em [`WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](./WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md).
