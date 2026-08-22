@@ -506,6 +506,7 @@ try {
     /Evidence local conectada/i.test(briefingNaTela), briefingNaTela.slice(0, 140));
 
   const wikiSummary = await pagina.evaluate(() => window.__v2?.api?.('wiki-zomboid', 'summary'));
+  const wikiReviewQueue = await pagina.evaluate(() => window.__v2?.api?.('wiki-zomboid', 'reviewQueue', 25));
   conferir('a API Wiki Zomboid é resolvida pelo Registry',
     wikiSummary?.total === 159
       && wikiSummary?.sourceMode === 'local-curated'
@@ -514,6 +515,10 @@ try {
       && wikiSummary?.evidenceByStatus?.pending === 0
       && wikiSummary?.evidenceByStatus?.verified === 0,
     JSON.stringify(wikiSummary ?? null));
+  conferir('a fila Wiki Zomboid expõe somente revisão bounded',
+    Array.isArray(wikiReviewQueue)
+      && wikiReviewQueue.length === 0,
+    JSON.stringify(wikiReviewQueue ?? null));
   const wikiNaTela = await navegarAte(pagina, '#/wiki-zomboid', () => {
     const t = document.getElementById('saida')?.innerText ?? '';
     return /Wiki Zomboid V2/.test(t)

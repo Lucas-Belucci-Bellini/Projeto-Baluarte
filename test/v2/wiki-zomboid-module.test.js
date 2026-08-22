@@ -104,6 +104,12 @@ test('Wiki Zomboid resolve Evidence pelo Registry e anexa somente fato local bou
     rejected: 0,
     superseded: 0,
   });
+  const queue = wikiZomboid.api.reviewQueue(1);
+  assert.equal(queue.length, 1);
+  assert.equal(queue[0]?.status, 'pending');
+  assert.equal(queue[0]?.claimKey, record?.claimKey);
+  assert.equal(Object.hasOwn(queue[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(queue[0] ?? {}, 'uri'), false);
   assert.equal(Object.hasOwn(record ?? {}, 'source'), true);
   assert.equal(Object.hasOwn(record ?? {}, 'statement'), true);
 
@@ -123,4 +129,5 @@ test('Wiki Zomboid mantém fallback quando Evidence não está registrada', () =
   assert.equal(wikiZomboid.api.summary().evidenceAvailable, false);
   assert.equal(wikiZomboid.api.appendEvidence('3736408852'), null);
   wikiZomboid.lifecycle.dispose();
+  assert.deepEqual(wikiZomboid.api.reviewQueue(), []);
 });

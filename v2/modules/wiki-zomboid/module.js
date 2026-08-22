@@ -79,6 +79,23 @@ function summary() {
 }
 
 /** @param {string} workshopId @param {string} [field] */
+function reviewQueue(limit) {
+  const max = boundedLimit(limit);
+  const linkedEvidence = evidenceApi?.listByModule('wiki-zomboid') ?? [];
+  return Object.freeze(linkedEvidence
+    .filter((record) => record.status === 'pending')
+    .slice(0, max)
+    .map((record) => Object.freeze({
+      id: record.id,
+      claimKey: record.claimKey,
+      status: record.status,
+      confidence: record.confidence,
+      observedAt: record.observedAt,
+      sourceRevision: record.source.revision ?? null,
+    })));
+}
+
+/** @param {string} workshopId @param {string} [field] */
 function appendEvidence(workshopId, field = 'name') {
   const entry = findEntry(workshopId);
   if (!entry) return null;
@@ -142,6 +159,7 @@ export default {
     list: (limit) => ENTRIES.slice(0, boundedLimit(limit)),
     get: (workshopId) => findEntry(workshopId),
     summary,
+    reviewQueue,
     appendEvidence,
   },
   apiVersion: 1,
