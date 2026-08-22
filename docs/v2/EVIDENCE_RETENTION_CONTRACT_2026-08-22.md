@@ -1,8 +1,8 @@
 # Evidence Retention Preview — Contrato local V2
 
-**Status:** contrato proposto para implementação incremental na `main`  
-**Data:** 2026-08-22  
-**Autor:** Manus AI  
+**Status:** contrato implementado no commit funcional `752206fb`; candidata `1.3.1` em validação
+**Data:** 2026-08-22
+**Autor:** Manus AI
 **Dependência:** `v2/data/evidence.ts` e módulo `evidence`
 
 ## Objetivo

@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Candidata `1.3.1`: preview local de retenção Evidence
+
+A candidata `1.3.1` adiciona ao módulo V2 Evidence uma projeção `retentionPreview(options)` local, determinística, bounded e somente leitura. Ela classifica registros pela idade relativa a uma data `now` explícita, sem apagar, alterar, verificar ou promover evidências. A saída omite conteúdo de claims, fontes, tokens e permissões.
+
+Os testes focais do contrato passaram `9/9`; a integração browser passou `50/50`; o runner oficial corrigido para a porta padrão passou todos os gates de código, mantendo apenas Rust local como `blocked-known` código 101 por incompatibilidade de toolchain. O commit funcional `752206fb` foi publicado diretamente na `main` e a CI remota aplicável terminou verde.
+
+**Status:** candidata em validação de release; nenhuma tag `v1.3.1` ou `desktop-v1.3.1` foi criada ainda. Os gates de versionamento, Desktop Release e artefatos HTTP ainda precisam ser verificados antes de declarar publicação.
+
+**Documentação:** [`docs/releases/v1.3.1.md`](../docs/releases/v1.3.1.md), [`docs/v2/EVIDENCE_RETENTION_CONTRACT_2026-08-22.md`](../docs/v2/EVIDENCE_RETENTION_CONTRACT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
+
+---
+
 ## 2026-08-22 — Release `1.3.0`: fila local de revisão Evidence publicada
 
 A release `1.3.0` adiciona ao piloto Wiki Zomboid uma `reviewQueue(limit)` local, bounded e somente leitura. A fila considera apenas evidências `pending`, usa limite padrão 25 e máximo 100, congela a saída e retorna somente `id`, `claimKey`, `status`, `confidence`, `observedAt` e `sourceRevision`. Não há `markStatus` no Wiki, conteúdo de claim, fonte, URI, publisher, token, role ou permissão expostos.
