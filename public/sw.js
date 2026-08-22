@@ -27,10 +27,11 @@
  *   1.3.0 — fila local bounded e read-only para revisão de Evidence pendente.
  *   1.3.1 — preview local bounded de retenção Evidence, sem mutação.
  *   1.3.2 — auditoria estrutural local bounded da Evidence, sem mutação.
+ *   1.3.3 — integração visual do Núcleo V7 na rota /jarvis com fallback Mark XIII.
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.3.2';
+const VERSION = 'baluarte-v1.3.3';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 

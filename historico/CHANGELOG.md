@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Release `1.3.3`: integração visual do Núcleo V7 em preparação
+
+O commit funcional `6d62a0ce` integra o artefato local JARVIS Núcleo V7 à rota real `/jarvis` por composição same-origin sandboxed, mantendo o console Mark XIII como fallback. Chat, sessões, memória, modos de IA, observação do Runtime e Spotify read-only permanecem fora do iframe; nenhum segredo, token ou permissão de microfone/autoplay é transferido.
+
+A validação local passou a suíte `1262/1262`, integração browser `56/56`, smoke `99/99`, caminho crítico `15/15`, typechecks, build e o runner oficial com 20 gates de código. A CI remota do commit funcional passou em 8/8 workflows. A versão `1.3.3` está sendo sincronizada nos manifests web/desktop e ainda não foi publicada como release baixável: faltam o commit de versionamento, CI desse SHA, tags, Desktop Release e verificação de oito assets HTTP 200.
+
+**Documentação:** [`docs/releases/v1.3.3.md`](../docs/releases/v1.3.3.md), [`docs/v2/JARVIS_V7_INTEGRATION_CONTRACT_2026-08-22.md`](../docs/v2/JARVIS_V7_INTEGRATION_CONTRACT_2026-08-22.md) e [`docs/v2/JARVIS_V7_BROWSER_OBSERVATION_2026-08-22.md`](../docs/v2/JARVIS_V7_BROWSER_OBSERVATION_2026-08-22.md).
+
+---
+
 ## 2026-08-22 — Release `1.3.2`: auditoria estrutural local Evidence publicada
 
 A release `1.3.2` adiciona ao módulo V2 Evidence uma projeção `auditPreview(options?)` local, estrutural, bounded e somente leitura. Ela permite filtrar por `moduleId`, limitar a saída e observar contagens dos registros devolvidos por status, sem criar um event log operacional, sem apagar dados e sem conceder autoridade.

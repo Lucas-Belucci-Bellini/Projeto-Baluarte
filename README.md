@@ -51,7 +51,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados; piloto Wiki Zomboid/Evidence local validado. |
-| **Web/Desktop** | `1.3.2` publicada | Release com auditoria estrutural local bounded da Evidence, sem mutação; instaladores Windows, Linux e macOS verificados. V1 preservada e V2 em construção incremental. |
+| **Web/Desktop** | `1.3.3` em preparação | Integração do visual Núcleo V7 na rota `/jarvis`, com Mark XIII como fallback; commit funcional publicado na `main` e CI remota verde. A release pública ainda depende do versionamento, tags, Desktop Release e oito assets verificáveis. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
@@ -85,6 +85,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Release 1.3.0 — fila local de revisão Evidence | [`v1.3.0.md`](docs/releases/v1.3.0.md) | Publicada com tags `v1.3.0` e `desktop-v1.3.0`; oito assets, manifests e instaladores verificados. |
 | Release 1.3.1 — preview de retenção Evidence | [`v1.3.1.md`](docs/releases/v1.3.1.md) | Publicada com tags `v1.3.1` e `desktop-v1.3.1`; oito assets, manifests e instaladores verificados. |
 | Release 1.3.2 — auditoria estrutural Evidence | [`v1.3.2.md`](docs/releases/v1.3.2.md) | Publicada com tags `v1.3.2` e `desktop-v1.3.2`; oito assets, manifests e instaladores verificados. |
+| Release 1.3.3 — integração visual Núcleo V7 | [`v1.3.3.md`](docs/releases/v1.3.3.md) | Em preparação; commit de versionamento pendente de CI, tags e Desktop Release. |
 | Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
 | Design System e Information Architecture | [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md) |
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |

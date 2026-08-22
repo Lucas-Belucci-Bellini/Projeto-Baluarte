@@ -1,7 +1,7 @@
 {
   "name": "baluarte-launcher",
   "productName": "Baluarte Launcher",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "private": true,
   "description": "Launcher desktop do Projeto Baluarte — hub nativo com conexão à web e auto-update.",
   "author": "Lucas Belucci Bellini",
