@@ -148,3 +148,7 @@ O módulo Evidence passou a emitir `evidence:appended` e `evidence:status-change
 | Supabase Preview | `unknown/external`: falha de versões de migrations remotas; nenhum DDL ou staging alterado |
 
 O marco aumenta a completude do primeiro vertical slice local, mas não libera Beta: persistência Supabase/RLS, autoridade server-side, health operacional uniforme, aceite físico do app e estabilização mensal continuam pendentes. Rollback: retornar ao commit imediatamente anterior, removendo somente a ligação Briefing→Evidence e o cleanup adicional do harness.
+
+## Checkpoint posterior — Briefing → Evidence pelo Registry — 978e13e3
+
+O Briefing passou a declarar `references.modules: ['evidence']` e resolve `ctx.talvez('evidence', { versao: 1 })` no lifecycle. O harness registra seis módulos ativos, enquanto Evidence permanece sem rota e a navegação mantém cinco entradas. A superfície do Briefing observa a conexão local sem expor conteúdo de Evidence. Focal 10/10; `npm test` 1250/1250; `v2:integracao` 46/46; smoke 99/99; caminho crítico 15/15; runner com 21 gates verdes e Rust local `blocked-known` código 101. Os oito workflows remotos aplicáveis terminaram verdes. Nenhum Supabase, DDL, migration, RLS, Auth de produção ou canal externo foi alterado.

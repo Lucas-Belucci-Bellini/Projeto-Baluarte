@@ -1,6 +1,6 @@
 # Relatório de progresso da V2
 
-**Código auditado:** `8ad3fdf220d101384ac41d561951979fe2fa6d46`
+**Código auditado:** `978e13e3c27628401425828d6edad81f46430958`
 
 **Branch:** `main`
 
@@ -12,26 +12,26 @@
 
 O Projeto-Baluarte está **significativamente mais perto da primeira release Alpha da V2**, mas ainda está distante da conclusão da V2 estável como produto completo. A principal transição já vencida foi a migração de páginas: existem **0 páginas canônicas JavaScript**, **115 implementações canônicas TypeScript** e **115 wrappers JavaScript preservados para compatibilidade**. Esse objetivo específico está em 100% no escopo de páginas, mas os wrappers continuam corretamente no repositório e não devem ser removidos em lote [1].
 
-A construção geral está no fim da fundação e entrando na etapa de primeiro vertical slice completo. Core, Runtime, Event Bus, observabilidade read-only, contratos de sessão, JARVIS Mark XIII, presença Spotify, Registry piloto, Billing local e documentação já possuem implementação e evidência local. O que ainda impede a declaração de uma V2 pronta é a combinação de **Data/Evidence real, Auth/RBAC server-side, Supabase/RLS, isolamento operacional uniforme de módulos, estabilização, aceite físico do app e critérios de RC**.
+A construção geral está no fim da fundação e entrando na etapa de primeiro vertical slice completo. O checkpoint mais recente ligou Briefing→Evidence pelo Registry/API real, sem capacidade ad-hoc, e tornou essa ligação observável na superfície V2. Core, Runtime, Event Bus, observabilidade read-only, contratos de sessão, JARVIS Mark XIII, presença Spotify, Registry piloto, Billing local e documentação já possuem implementação e evidência local. O que ainda impede a declaração de uma V2 pronta é a combinação de **Data/Evidence real, Auth/RBAC server-side, Supabase/RLS, isolamento operacional uniforme de módulos, estabilização, aceite físico do app e critérios de RC**.
 
-Para responder objetivamente à pergunta “quanto falta”, esta medição usa dois indicadores diferentes. O índice ponderado de prontidão das 28 fases do mapa V2 é **57,3%**, calculado a partir dos estados documentados e com pesos explícitos; ele é uma métrica de planejamento, não uma promessa de produto. A migração de páginas está em **100%**, os gates locais executáveis estão em **21/21**, e a suíte comportamental está em **1247/1247**. A V2 está, portanto, **mais da metade construída como fundação**, porém ainda não está na metade final de uma release estável: os marcos Beta, RC, estabilização e COMPLETE continuam abertos.
+Para responder objetivamente à pergunta “quanto falta”, esta medição usa dois indicadores diferentes. O índice ponderado de prontidão das 28 fases do mapa V2 é **57,3%**, calculado a partir dos estados documentados e com pesos explícitos; ele é uma métrica de planejamento, não uma promessa de produto. A migração de páginas está em **100%**, os gates locais executáveis estão em **21/21**, e a suíte comportamental está em **1250/1250**. A V2 está, portanto, **mais da metade construída como fundação**, porém ainda não está na metade final de uma release estável: os marcos Beta, RC, estabilização e COMPLETE continuam abertos.
 
 ## Estado observado
 
 | Indicador | Estado observado |
 |---|---:|
-| `origin/main` auditado | `8ad3fdf2` |
+| `origin/main` auditado | `978e13e3` |
 | Páginas canônicas JS restantes | **0** |
 | Arquivos físicos `.js` em `src/pages/` | **115**, todos wrappers de compatibilidade |
 | Implementações `.ts` em `src/pages/` | **115** |
 | Arquivos `.d.ts` em `src/pages/` | **8** |
-| Suíte completa | **1247/1247** |
-| Integração V2 | **45/45** |
+| Suíte completa | **1250/1250** |
+| Integração V2 | **46/46** |
 | Smoke de rotas | **99/99** |
 | Caminho crítico | **15/15** |
 | Gates do runner oficial | **21 passaram, 1 `blocked-known`, 0 falhas novas** |
 | Focal Spotify/Soloist/Mark XIII | **19/19** |
-| CI remoto aplicável | **10 checks verdes e 1 Supabase Preview externo com falha** |
+| CI remoto aplicável | **8 workflows verdes no SHA; Supabase Preview não foi disparado neste push** |
 | Última release operacional | **`1.2.6` publicada** |
 
 O `blocked-known` é o teste Rust local com código 101 porque o Cargo disponível não interpreta a metadata `edition2024`; esse bloqueio já é conhecido e separado da aplicação. O check remoto de Rust foi observado como verde. O Supabase Preview permaneceu uma dependência externa, com a mensagem de versões de migrations remotas ausentes no diretório local; nenhuma migration, DDL, branch de staging ou escrita remota foi executada.
@@ -42,7 +42,7 @@ O `blocked-known` é o teste Rust local com código 101 porque o Cargo disponív
 |---|---:|---|
 | Migração de páginas canônicas JS → TS | **100%** | O objetivo de converter as páginas foi atingido. Os 115 `.js` restantes são wrappers deliberados. |
 | Gates locais executáveis | **21/21 = 100%** | Todos os gates executáveis passaram; Rust fica separado como bloqueio conhecido de toolchain. |
-| Testes comportamentais | **1247/1247 = 100%** | A suíte não apresenta falha nova neste SHA. |
+| Testes comportamentais | **1250/1250 = 100%** | A suíte não apresenta falha nova neste SHA. |
 | Smoke e jornada crítica | **99/99 e 15/15** | As rotas e a jornada principal continuam preservadas. |
 | Índice ponderado das fases V2 | **57,3%** | Estimativa de prontidão de fases, calculada sobre estados da matriz, não sobre linhas de código. |
 | V2 estável `2.0.0` | **não declarada** | Ainda faltam Beta, RC, estabilização, dados reais, autoridade server-side e testes mensais. |
@@ -66,7 +66,7 @@ A release pública atual é `1.2.6`, com o visual JARVIS Núcleo V7 e os instala
 
 ## O que já está construído
 
-A fundação possui Core, Boot, Runtime, Event Bus, Storage local, permissões deny-by-default, contratos de observabilidade, sessão server-validated read-only, cliente HTTP read-only, doctor V2, pilotos de Module Registry, Billing local e integração de 45 asserções. O JARVIS também possui contexto bounded, recall cacheado, seleção lazy de schemas, visual Mark XIII lightweight, reação de playback e Spotify PKCE read-only. Essas entregas estão comprovadas por testes e gates, mas várias permanecem deliberadamente read-only até existir autoridade server-side [3].
+A fundação possui Core, Boot, Runtime, Event Bus, Storage local, permissões deny-by-default, contratos de observabilidade, sessão server-validated read-only, cliente HTTP read-only, doctor V2, pilotos de Module Registry, Billing local e integração de 46 asserções. O JARVIS também possui contexto bounded, recall cacheado, seleção lazy de schemas, visual Mark XIII lightweight, reação de playback e Spotify PKCE read-only. Essas entregas estão comprovadas por testes e gates, mas várias permanecem deliberadamente read-only até existir autoridade server-side [3].
 
 A linha V1 continua preservada. O router, as 99 rotas do smoke, os wrappers de compatibilidade e a release `1.2.6` não devem ser reescritos apenas para acelerar um percentual. A arquitetura correta é continuar adicionando slices pequenos por cima da superfície estável, com fallback e rollback por módulo.
 
@@ -105,18 +105,22 @@ Não devem ser executados DDL, migrations, alterações de RLS, envio de WhatsAp
 
 | Comando ou evidência | Resultado |
 |---|---|
-| `git fetch origin main` | `origin/main` confirmado em `8ad3fdf2`. |
+| `git fetch origin main` | `origin/main` confirmado em `978e13e3`. |
 | Inventário físico de `src/pages` | 115 `.js` wrappers, 115 `.ts` canônicos e 8 `.d.ts`. |
 | Runner oficial | 21 gates código 0; Rust código 101 conhecido; nenhuma falha nova. |
-| `npm test` dentro do runner | 1247/1247. |
+| `npm test` dentro do runner | 1250/1250. |
 | `npm run tipos:ts` | Passou. |
 | `npm run tipos:v2` | Passou. |
 | `npm run build` | Passou com warnings conhecidos de chunks grandes. |
-| `npm run v2:integracao` | 45/45. |
+| `npm run v2:integracao` | 46/46 |
 | `npm run smoke` | 99/99. |
 | `npm run caminho-critico` | 15/15. |
-| CI remoto no SHA | 10 checks verdes; Supabase Preview externo com falha. |
+| CI remoto no SHA | 8 workflows verdes; Supabase Preview não foi disparado neste push. |
 | Working tree no início da medição | Limpo. |
+
+## Checkpoint mais recente — Briefing → Evidence pelo Registry — 978e13e3
+
+O módulo Briefing agora declara `references.modules: ['evidence']` e resolve `ctx.talvez('evidence', { versao: 1 })` durante o lifecycle. O harness registra seis módulos ativos, Evidence permanece sem rota e a navegação continua com cinco entradas. A view do Briefing informa, em linguagem simples, quando a Evidence local está conectada. O teste focal passou 10/10; o runner oficial passou 21 gates, manteve Rust local como `blocked-known` código 101 e não registrou falha nova. O CI remoto deste SHA terminou com CI, Core CI, V2 Core, V2 Validation, V2 Runtime, CodeQL, Arma 3 Data CI e Vigia das rotas verdes. Nenhuma alteração Supabase, DDL, migration, RLS, Auth de produção, OpenClaw, WhatsApp ou ação externa de alto impacto foi executada.
 
 ## Referências
 
