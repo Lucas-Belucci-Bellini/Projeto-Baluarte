@@ -84,6 +84,12 @@ test('Wiki Zomboid resolve Evidence pelo Registry e anexa somente fato local bou
   assert.equal(summary.sourceMode, 'local-curated');
   assert.equal(summary.evidenceAvailable, true);
   assert.equal(summary.evidenceLinked, 0);
+  assert.deepEqual(summary.evidenceByStatus, {
+    pending: 0,
+    verified: 0,
+    rejected: 0,
+    superseded: 0,
+  });
   assert.equal(wikiZomboid.api.list(1).length, 1);
   assert.equal(wikiZomboid.api.list(101).length, 100);
 
@@ -92,6 +98,12 @@ test('Wiki Zomboid resolve Evidence pelo Registry e anexa somente fato local bou
   assert.equal(record?.status, 'pending');
   assert.equal(record?.source.revision, 'local-zomboid-curated-2026-08-22');
   assert.equal(wikiZomboid.api.summary().evidenceLinked, 1);
+  assert.deepEqual(wikiZomboid.api.summary().evidenceByStatus, {
+    pending: 1,
+    verified: 0,
+    rejected: 0,
+    superseded: 0,
+  });
   assert.equal(Object.hasOwn(record ?? {}, 'source'), true);
   assert.equal(Object.hasOwn(record ?? {}, 'statement'), true);
 

@@ -56,6 +56,16 @@ function valueForField(entry, field) {
 
 function summary() {
   const categories = new Set(ENTRIES.map((entry) => entry.category));
+  const linkedEvidence = evidenceApi?.listByModule('wiki-zomboid') ?? [];
+  const evidenceByStatus = {
+    pending: 0,
+    verified: 0,
+    rejected: 0,
+    superseded: 0,
+  };
+  for (const record of linkedEvidence) {
+    if (Object.hasOwn(evidenceByStatus, record.status)) evidenceByStatus[record.status] += 1;
+  }
   return Object.freeze({
     game: ZOMBOID_COLLECTION.game,
     collection: ZOMBOID_COLLECTION.name,
@@ -63,7 +73,8 @@ function summary() {
     categories: categories.size,
     sourceMode: 'local-curated',
     evidenceAvailable: evidenceApi !== null,
-    evidenceLinked: evidenceApi?.listByModule('wiki-zomboid').length ?? 0,
+    evidenceLinked: linkedEvidence.length,
+    evidenceByStatus: Object.freeze(evidenceByStatus),
   });
 }
 
@@ -99,7 +110,9 @@ function view() {
   const status = document.createElement('p');
   const current = summary();
   status.textContent = `${current.total} entradas locais · ${current.categories} categorias · `
-    + (current.evidenceAvailable ? 'Evidence local conectada' : 'Evidence não configurada');
+    + (current.evidenceAvailable
+      ? `Evidence local conectada · ${current.evidenceLinked} vinculadas · ${current.evidenceByStatus.pending} pendentes`
+      : 'Evidence não configurada');
   status.dataset.evidence = current.evidenceAvailable ? 'connected' : 'unavailable';
   page.appendChild(status);
 

@@ -72,3 +72,12 @@ A persistência Supabase permanece bloqueada até aprovação explícita de stag
 [5]: ../../v2/data/catalog-evidence.ts "Adaptador canônico de catálogo para Evidence"
 
 [6]: ./PHASE_02_EVIDENCE_SLICE.md "Phase 02 — Evidence Layer"
+
+
+## Checkpoint adicional — Evidence status observability
+
+O piloto foi ampliado sem alterar sua fronteira de segurança: o resumo da API agora informa `evidenceByStatus` para `pending`, `verified`, `rejected` e `superseded`. A view local mostra somente a quantidade bounded de registros vinculados e pendentes; ela não oferece ação de verificação, não altera status e não expõe o conteúdo das claims.
+
+O gate browser passou a verificar que o Registry resolve o resumo Wiki Zomboid com zero evidências vinculadas no boot limpo e que a superfície mostra `0 vinculadas · 0 pendentes`. O teste focal continua cobrindo a transição local para um registro `pending`, confirmando que a contagem por status acompanha o store compartilhado.
+
+Esta observabilidade prepara um futuro fluxo de revisão, mas não o implementa. Mudança de status, revisão humana, roles administrativas, auditoria de consumidor e persistência remota continuam fora deste marco e dependem de autoridade server-side, retenção, tenancy, RLS e rollback aprovados.

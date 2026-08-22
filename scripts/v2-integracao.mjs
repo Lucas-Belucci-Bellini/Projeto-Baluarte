@@ -509,18 +509,25 @@ try {
   conferir('a API Wiki Zomboid é resolvida pelo Registry',
     wikiSummary?.total === 159
       && wikiSummary?.sourceMode === 'local-curated'
-      && wikiSummary?.evidenceAvailable === true,
+      && wikiSummary?.evidenceAvailable === true
+      && wikiSummary?.evidenceLinked === 0
+      && wikiSummary?.evidenceByStatus?.pending === 0
+      && wikiSummary?.evidenceByStatus?.verified === 0,
     JSON.stringify(wikiSummary ?? null));
   const wikiNaTela = await navegarAte(pagina, '#/wiki-zomboid', () => {
     const t = document.getElementById('saida')?.innerText ?? '';
     return /Wiki Zomboid V2/.test(t)
       && /159 entradas locais/.test(t)
-      && /Evidence local conectada/i.test(t);
+      && /Evidence local conectada/i.test(t)
+      && /0 vinculadas/.test(t)
+      && /0 pendentes/.test(t);
   });
   conferir('a superfície Wiki Zomboid V2 renderiza o schema local',
     /Wiki Zomboid V2/.test(wikiNaTela)
       && /159 entradas locais/.test(wikiNaTela)
-      && /Evidence local conectada/i.test(wikiNaTela), wikiNaTela.slice(0, 180));
+      && /Evidence local conectada/i.test(wikiNaTela)
+      && /0 vinculadas/.test(wikiNaTela)
+      && /0 pendentes/.test(wikiNaTela), wikiNaTela.slice(0, 220));
 
   /* O DEFEITO 1: se `view` devolver o módulo em vez do elemento, isto fica
    * vazio. A asserção é de IDENTIDADE, não de tamanho — a versão anterior media
