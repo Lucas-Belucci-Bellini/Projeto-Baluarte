@@ -21,10 +21,11 @@
  *   1.2.0 — migração incremental do frontend e fechamento de contratos V2.
  *   1.2.5 — distribuição do Launcher com artefatos desktop verificáveis.
  *   1.2.6 — promoção do visual JARVIS Núcleo V7 e alinhamento web/desktop.
+ *   1.2.7 — marco Briefing→Evidence pelo Registry e release sincronizada.
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.2.6';
+const VERSION = 'baluarte-v1.2.7';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 

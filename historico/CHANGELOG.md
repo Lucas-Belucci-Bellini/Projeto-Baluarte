@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Release `1.2.7`: candidata — Briefing→Evidence pelo Registry
+
+A candidata `1.2.7` sincroniza a versão web e do Launcher e promove o vínculo do Briefing com a Evidence Layer pelo contrato real de módulos V2: `references.modules: ['evidence']` e `ctx.talvez('evidence', { versao: 1 })`. O harness registra seis módulos ativos, Evidence continua sem rota e a navegação V1 permanece com cinco entradas.
+
+A superfície do Briefing informa quando a Evidence local está conectada. O marco continua local/read-only: não adiciona Supabase, DDL, migrations, RLS, Auth de produção, OpenClaw, WhatsApp, publicação automática ou ações externas. A suíte anterior passou em `1250/1250`, a integração em `46/46`, smoke em `99/99`, caminho crítico em `15/15` e o runner manteve 21 gates verdes com Rust local `blocked-known` código 101.
+
+**Status:** a tag `v1.2.7` e a tag `desktop-v1.2.7` só serão criadas depois que a validação do commit de versão e o workflow Desktop Release produzirem os instaladores reais nos três sistemas. Se qualquer gate falhar, esta entrada permanecerá candidata e a publicação será interrompida.
+
+**Documentação:** [`docs/releases/v1.2.7.md`](../docs/releases/v1.2.7.md).
+
+---
+
 ## 2026-08-20 — Release `1.2.6`: JARVIS Núcleo V7 publicada
 
 A linha `1.2.6` promove o visual **JARVIS Núcleo V7 — Astrolábio Sonoro** como entrypoint 3D canônico do Vite. A experiência usa TypeScript como fonte, artefato JavaScript standalone, Three.js, Web Audio reativo, deteção de batida, FFT, temas ouro/rubi/jade, vistas, pulso, varrimento e captura.
