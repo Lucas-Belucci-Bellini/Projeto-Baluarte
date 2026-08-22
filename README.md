@@ -51,14 +51,14 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados; piloto Wiki Zomboid/Evidence local validado. |
-| **Web/Desktop** | `1.3.3` publicada | Integração do visual Núcleo V7 na rota `/jarvis`, com Mark XIII como fallback; CI, tags, Desktop Release em três plataformas e oito assets verificáveis concluídos. |
+| **Web/Desktop** | `1.3.5` em preparação | A `1.3.4` está publicada; a `1.3.5` prepara o layout em que o Núcleo V7 aparece seguido diretamente pela conversa, com Spotify recolhido em Modos & Config. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
 
 ## J.A.R.V.I.S. e o núcleo visual
 
-O J.A.R.V.I.S. é a camada de assistente, memória, ferramentas e experiência inteligente do Baluarte. O **Núcleo Visual V7** agora é a composição visual da rota real `/jarvis`: o HTML standalone é carregado localmente no caminho principal, enquanto o console Mark XIII permanece montado como fallback caso o artefato não carregue. O V7 continua sendo uma superfície visual independente, com Three.js, Web Audio e artefato JavaScript compilado para produção; o chat, as sessões, a memória, o Spotify read-only e os modos de IA permanecem na página principal.
+O J.A.R.V.I.S. é a camada de assistente, memória, ferramentas e experiência inteligente do Baluarte. O **Núcleo Visual V7** é a composição visual da rota real `/jarvis`: o HTML standalone é carregado localmente no caminho principal, o V7 ocupa a superfície principal e a conversa aparece diretamente abaixo. O console Mark XIII permanece montado como fallback caso o artefato não carregue. O V7 continua sendo uma superfície visual independente, com Three.js, Web Audio e artefato JavaScript compilado para produção; sessões, memória e modos de IA permanecem na página principal, enquanto o Spotify read-only fica disponível em `Modos & Config` para não interromper o fluxo visual.
 
 | Entrada | Descrição |
 |---|---|
@@ -86,6 +86,8 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Release 1.3.1 — preview de retenção Evidence | [`v1.3.1.md`](docs/releases/v1.3.1.md) | Publicada com tags `v1.3.1` e `desktop-v1.3.1`; oito assets, manifests e instaladores verificados. |
 | Release 1.3.2 — auditoria estrutural Evidence | [`v1.3.2.md`](docs/releases/v1.3.2.md) | Publicada com tags `v1.3.2` e `desktop-v1.3.2`; oito assets, manifests e instaladores verificados. |
 | Release 1.3.3 — integração visual Núcleo V7 | [`v1.3.3.md`](docs/releases/v1.3.3.md) | Publicada com tags `v1.3.3` e `desktop-v1.3.3`; oito assets, manifests e instaladores verificados. |
+| Release 1.3.4 — verificação live do Núcleo V7 | [`v1.3.4.md`](docs/releases/v1.3.4.md) | Publicada com tags `v1.3.4` e `desktop-v1.3.4`; oito assets, manifests e instaladores verificados. |
+| Release 1.3.5 — V7 + conversa em superfície única | [`v1.3.5.md`](docs/releases/v1.3.5.md) | Em preparação; funcionalidade publicada na main, aguardando bump, CI de versão, Desktop Release e assets públicos. |
 | Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
 | Design System e Information Architecture | [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md) |
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |

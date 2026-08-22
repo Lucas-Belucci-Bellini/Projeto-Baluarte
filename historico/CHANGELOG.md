@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Release `1.3.5`: layout V7 + conversa em preparação
+
+O slice funcional publicado no commit `a1f0a03b` recompõe a rota real `/jarvis`: o Núcleo V7 ocupa a superfície principal, a conversa aparece diretamente abaixo e o painel grande de presença musical deixa de interromper esse fluxo. O Spotify permanece disponível dentro de `Modos & Config`, limitado a metadados read-only e PKCE.
+
+A validação local passou `1264/1264` testes, `58/58` na integração browser com as asserções novas, `99/99` rotas no smoke, `15/15` no caminho crítico, typechecks e build. A CI aplicável do commit funcional terminou verde. A versão `1.3.5` está em preparação; ainda depende do commit de versionamento, CI correspondente, tags, Desktop Release e oito assets verificáveis.
+
+**Documentação:** [`docs/releases/v1.3.5.md`](../docs/releases/v1.3.5.md), [`docs/v2/JARVIS_V7_CHAT_LAYOUT_CONTRACT_2026-08-22.md`](../docs/v2/JARVIS_V7_CHAT_LAYOUT_CONTRACT_2026-08-22.md) e [`docs/v2/JARVIS_V7_CHAT_LAYOUT_OBSERVATION_2026-08-22.md`](../docs/v2/JARVIS_V7_CHAT_LAYOUT_OBSERVATION_2026-08-22.md).
+
+---
+
 ## 2026-08-22 — Release `1.3.3`: integração visual do Núcleo V7 publicada
 
 O commit funcional `6d62a0ce` integra o artefato local JARVIS Núcleo V7 à rota real `/jarvis` por composição same-origin sandboxed, mantendo o console Mark XIII como fallback. Chat, sessões, memória, modos de IA, observação do Runtime e Spotify read-only permanecem fora do iframe; nenhum segredo, token ou permissão de microfone/autoplay é transferido.

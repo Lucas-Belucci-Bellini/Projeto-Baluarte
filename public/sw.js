@@ -28,10 +28,12 @@
  *   1.3.1 — preview local bounded de retenção Evidence, sem mutação.
  *   1.3.2 — auditoria estrutural local bounded da Evidence, sem mutação.
  *   1.3.3 — integração visual do Núcleo V7 na rota /jarvis com fallback Mark XIII.
+ *   1.3.4 — verificação live do V7 na rota publicada e documentação do marco.
+ *   1.3.5 — composição V7 seguida diretamente pela conversa; Spotify recolhido em configuração.
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.3.4';
+const VERSION = 'baluarte-v1.3.5';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
