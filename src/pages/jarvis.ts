@@ -60,6 +60,7 @@ import type { RecallDoc } from '../utils/jarvis-recall.js';
 import { initSkills, removeSkill } from '../utils/jarvis-tools.js';
 import { listSkillSummaries } from '../utils/jarvis-skills.js';
 import { createMarkXiiiConsole, type MarkXiiiConsole, type MarkXiiiRuntimeObservation } from '../utils/jarvis-mark-xiii';
+import { createJarvisV7Visual, type JarvisV7Visual } from '../utils/jarvis-v7-visual';
 
 /** Um modo de operação do JARVIS, como aparece na grade de seleção. */
 interface ModoJarvis {
@@ -96,6 +97,7 @@ let inputEl: HTMLTextAreaElement | null = null;
 let sessionsEl: HTMLDivElement | null = null;
 let modeBadgeEl: HTMLSpanElement | null = null;
 let markXiiiConsole: MarkXiiiConsole | null = null;
+let jarvisV7Visual: JarvisV7Visual | null = null;
 let markXiiiRuntimeOff: (() => void) | null = null;
 let markXiiiRouteOff: (() => void) | null = null;
 let markXiiiSpotifyOff: (() => void) | null = null;
@@ -105,6 +107,8 @@ function applyRuntimeObservation(observation: MarkXiiiRuntimeObservation): void 
 }
 
 function disposeMarkXiiiConsole(): void {
+  jarvisV7Visual?.dispose();
+  jarvisV7Visual = null;
   markXiiiRuntimeOff?.();
   markXiiiRuntimeOff = null;
   markXiiiRouteOff?.();
@@ -1191,7 +1195,13 @@ export function jarvisPage(): HTMLDivElement {
   markXiiiRouteOff = bus.on<{ path?: string }>('route:change', ({ path }) => {
     if (path !== '/jarvis') disposeMarkXiiiConsole();
   });
-  fullPage.appendChild(markXiiiConsole.root);
+  jarvisV7Visual = createJarvisV7Visual({
+    fallback: markXiiiConsole.root,
+    onState: (state) => {
+      if (markXiiiConsole) markXiiiConsole.root.dataset.visualV7State = state;
+    },
+  });
+  fullPage.appendChild(jarvisV7Visual.root);
 
   let configOpen = false;
   const configWrap = h('div', { className: 'jarvis-config-wrap', style: { display: 'none' } });

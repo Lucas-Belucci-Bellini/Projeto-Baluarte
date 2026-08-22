@@ -558,6 +558,60 @@ try {
       && /0 vinculadas/.test(wikiNaTela)
       && /0 pendentes/.test(wikiNaTela), wikiNaTela.slice(0, 220));
 
+  /* O JARVIS atual mantém a conversa e a integração Mark XIII, mas o README
+   * aponta para um artefato visual V7 independente. Esta jornada abre a
+   * aplicação real, não o harness V2, e prova a composição V7 + fallback sem
+   * transformar a superfície visual em um novo motor de autoridade. */
+  const paginaApp = await navegador.newPage();
+  const errosApp = [];
+  paginaApp.on('pageerror', (error) => errosApp.push(error.message));
+  await paginaApp.goto(`${BASE}/#/jarvis`, { waitUntil: 'load', timeout: 40000 });
+  await paginaApp.waitForFunction(() => {
+    return !!document.querySelector('.jv-visual-switcher')
+      && !!document.querySelector('.jv-visual-switcher__frame')
+      && !!document.querySelector('.jarvis-chat');
+  }, null, { timeout: 25000 }).catch(() => {});
+  await paginaApp.waitForTimeout(1200);
+  const jarvisNaTela = await paginaApp.locator('#saida').innerText().catch(() => '');
+  const jarvisVisual = await paginaApp.evaluate(() => {
+    const switcher = document.querySelector('.jv-visual-switcher');
+    const frame = document.querySelector('.jv-visual-switcher__frame');
+    const fallback = document.querySelector('.jv-visual-switcher__fallback');
+    return {
+      state: switcher?.getAttribute('data-visual-state') ?? null,
+      source: switcher?.getAttribute('data-visual-source') ?? null,
+      frameSrc: frame?.getAttribute('src') ?? null,
+      frameTitle: frame?.getAttribute('title') ?? null,
+      sandbox: frame?.getAttribute('sandbox') ?? null,
+      fallbackPresent: fallback?.getAttribute('data-v7-fallback') === 'true',
+      fallbackHidden: fallback?.hasAttribute('hidden') ?? false,
+      hasChat: !!document.querySelector('.jarvis-chat'),
+      hasConfig: !!document.querySelector('.jarvis-toolbar'),
+    };
+  });
+  const v7Path = '/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html';
+  conferir('a aplicação real JARVIS mantém chat e composição visual V7',
+    jarvisVisual.source === 'jarvis-nucleo-v7'
+      && jarvisVisual.hasChat === true
+      && jarvisVisual.hasConfig === true,
+    JSON.stringify({ jarvisVisual, tela: jarvisNaTela.slice(0, 120) }));
+  conferir('o visual V7 usa somente o artefato local same-origin',
+    jarvisVisual.frameSrc === `${BASE}${v7Path}`
+      && jarvisVisual.frameTitle?.includes('Núcleo V7') === true
+      && jarvisVisual.sandbox === 'allow-scripts allow-same-origin',
+    JSON.stringify(jarvisVisual));
+  conferir('o Mark XIII permanece disponível como fallback do V7',
+    (jarvisVisual.state === 'ready' || jarvisVisual.state === 'fallback' || jarvisVisual.state === 'loading')
+      && jarvisVisual.fallbackPresent === true
+      && (jarvisVisual.state !== 'ready' || jarvisVisual.fallbackHidden === true),
+    JSON.stringify(jarvisVisual));
+  conferir('a integração visual não expõe credenciais ou autoridade',
+    !/token|secret|claim|role|permission/i.test(JSON.stringify(jarvisVisual)),
+    JSON.stringify(jarvisVisual));
+  conferir('a aplicação real JARVIS não produz erro de JavaScript',
+    errosApp.length === 0,
+    errosApp.slice(0, 2).join(' | '));
+
   /* O DEFEITO 1: se `view` devolver o módulo em vez do elemento, isto fica
    * vazio. A asserção é de IDENTIDADE, não de tamanho — a versão anterior media
    * `length > 100` e reprovou quando a view nativa (mais enxuta que a página da

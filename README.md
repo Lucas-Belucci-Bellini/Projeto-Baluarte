@@ -58,12 +58,12 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 
 ## J.A.R.V.I.S. e o núcleo visual
 
-O J.A.R.V.I.S. é a camada de assistente, memória, ferramentas e experiência inteligente do Baluarte. O núcleo visual V7 funciona como uma página HTML multipágina independente, com Three.js, Web Audio e artefato JavaScript compilado para produção.
+O J.A.R.V.I.S. é a camada de assistente, memória, ferramentas e experiência inteligente do Baluarte. O **Núcleo Visual V7** agora é a composição visual da rota real `/jarvis`: o HTML standalone é carregado localmente no caminho principal, enquanto o console Mark XIII permanece montado como fallback caso o artefato não carregue. O V7 continua sendo uma superfície visual independente, com Three.js, Web Audio e artefato JavaScript compilado para produção; o chat, as sessões, a memória, o Spotify read-only e os modos de IA permanecem na página principal.
 
 | Entrada | Descrição |
 |---|---|
-| [Abrir o Núcleo V7](https://projeto-baluarte.vercel.app/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) | Visual 3D da linha operacional; o marco 1.2.7 adiciona a integração local Briefing→Evidence pelo Registry. |
-| [`jarvis-nucleo-v7.html`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) | Página visual e controles de interação. |
+| [Abrir o Núcleo V7](https://projeto-baluarte.vercel.app/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) | Visual 3D da linha operacional; o mesmo artefato agora aparece dentro da rota real `/jarvis`, com fallback Mark XIII. |
+| [`jarvis-nucleo-v7.html`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) | Página visual e controles de interação; fonte usada pela composição V7 integrada em `/jarvis`. |
 | [`jarvis-nucleo-v7.ts`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.ts) | Fonte TypeScript canônica. |
 | [`jarvis-nucleo-v7.js`](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/blob/main/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.js) | Artefato compilado carregado em produção. |
 
