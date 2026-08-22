@@ -7,6 +7,7 @@ export {
   exchangeSpotifyAuthorizationCode,
   refreshSpotifyAccessToken,
   createSpotifyPlaybackMonitor,
+  isSpotifyClientId,
   spotifyPlaybackEndpoint,
   spotifyDefaultScope,
 } from './jarvis-spotify.ts';

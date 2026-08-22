@@ -61,10 +61,10 @@ Os testes cobrem PKCE/S256, formato moderno do Client ID, rejeição de `localho
 
 ## Correções finais desta onda
 
-O Client ID agora aceita o formato alfanumérico público com `_` e `-`, incluindo o prefixo `spak_`, dentro de limite bounded de 20 a 128 caracteres. O validador passou a rejeitar `localhost` como Redirect URI HTTP e aceita somente `127.0.0.1` ou `[::1]` em desenvolvimento, conforme a regra atual do Spotify.
+O Client ID agora aceita o formato alfanumérico público com `_` e `-`, entre 20 e 128 caracteres, mas rejeita explicitamente o prefixo `spak_`: esse prefixo identifica uma chave secreta do Spotify Soloist, não um Client ID OAuth. O validador passou a rejeitar `localhost` como Redirect URI HTTP e aceita somente `127.0.0.1` ou `[::1]` em desenvolvimento, conforme a regra atual do Spotify.
 
 O fluxo PKCE guarda um `returnTo` interno opcional, limitado a caminhos relativos, para voltar à tela `#/jarvis` após a troca do código. O boot limpa `code` e `state` da URL antes de navegar, evitando deixar o código OAuth no histórico visível. O evento de sessão atualiza o botão, a telemetria e o núcleo visual sem carregar access token ou refresh token.
 
 O núcleo Mark XIII reage apenas a estados de playback publicados pelo monitor: `playing` cria uma pulsação de baixa amplitude, `paused` mantém uma indicação discreta e `unknown` conserva o estado online sem inventar música. A reação não captura áudio do Spotify e não tenta sincronizar conteúdo.
 
-A integração continua não verificada contra a conta Spotify real porque o dashboard `https://developer.spotify.com/dashboard` esteve indisponível no Chrome conectado durante a auditoria. O passo operacional restante é cadastrar o Client ID público e as Redirect URIs exatas no dashboard quando ele voltar a responder, depois clicar em `Conectar Spotify` na rota JARVIS.
+A integração continua não verificada contra a conta Spotify real porque o dashboard `https://developer.spotify.com/dashboard` esteve indisponível no Chrome conectado durante a auditoria. O passo operacional restante da Web API é cadastrar o Client ID público e as Redirect URIs exatas no dashboard quando ele voltar a responder, depois clicar em `Conectar Spotify` na rota JARVIS. A chave Soloist segue outro caminho: daemon local protegido e ponte read-only, descritos em `SPOTIFY_SOLOIST_API_KEY_OBSERVATION_2026-08-22.md`.

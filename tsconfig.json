@@ -7,7 +7,8 @@
     "noEmit": true,
     "skipLibCheck": true,
     "allowJs": false,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "types": ["node"]
   },
   "include": [
     "src/core/events.ts",
@@ -267,6 +268,8 @@
     "src/utils/jarvis-permissoes.ts",
     "src/utils/jarvis-context.ts",
     "src/utils/jarvis-music-presence.ts",
+    "src/utils/jarvis-spotify-soloist.ts",
+    "scripts/spotify-soloist-bridge.ts",
     "src/utils/jarvis-spotify.ts",
     "src/utils/jarvis-spotify-session.ts",
     "src/utils/jarvis-contracts.ts",

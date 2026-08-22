@@ -54,8 +54,18 @@ export interface SpotifyPlaybackMonitor {
   poll(): Promise<SpotifyPlaybackPollResult>;
 }
 
+export function isSpotifyClientId(value: string): boolean {
+  const normalized = value.trim();
+  return normalized.length >= 20
+    && normalized.length <= 128
+    && !normalized.startsWith('spak_')
+    && /^[A-Za-z0-9_-]+$/.test(normalized);
+}
+
 function assertConfig(config: SpotifyPkceConfig): void {
-  if (!/^[A-Za-z0-9_-]{20,128}$/.test(config.clientId)) throw new Error('SPOTIFY_CLIENT_ID_INVALID');
+  if (!isSpotifyClientId(config.clientId)) {
+    throw new Error(config.clientId.trim().startsWith('spak_') ? 'SPOTIFY_SOLOIST_KEY_NOT_CLIENT_ID' : 'SPOTIFY_CLIENT_ID_INVALID');
+  }
   let redirect: URL;
   try { redirect = new URL(config.redirectUri); } catch { throw new Error('SPOTIFY_REDIRECT_URI_INVALID'); }
   const local = redirect.hostname === '127.0.0.1' || redirect.hostname === '[::1]';

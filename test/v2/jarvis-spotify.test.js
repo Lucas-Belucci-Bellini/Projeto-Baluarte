@@ -4,6 +4,7 @@ import {
   createSpotifyPkceChallenge,
   exchangeSpotifyAuthorizationCode,
   createSpotifyPlaybackMonitor,
+  isSpotifyClientId,
 } from '../../src/utils/jarvis-spotify.ts';
 import {
   getJarvisMusicSnapshot,
@@ -28,6 +29,14 @@ test('redirect URI de produção exige HTTPS e rejeita credenciais, hash e HTTP 
   await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'https://baluarte.example/callback#oauth' }), /SPOTIFY_REDIRECT_URI_INVALID/);
   await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://localhost:4173/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
   await assert.doesNotReject(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://127.0.0.1:4173/callback' }));
+});
+
+test('chave Soloist spak_ não é aceita como Client ID OAuth', async () => {
+  assert.equal(isSpotifyClientId('spak_fake_soloist_secret_value_12345'), false);
+  await assert.rejects(
+    () => createSpotifyPkceChallenge({ ...config, clientId: 'spak_fake_soloist_secret_value_12345' }),
+    /SPOTIFY_SOLOIST_KEY_NOT_CLIENT_ID/,
+  );
 });
 
 test('PKCE usa S256, state e somente o escopo mínimo de playback', async () => {

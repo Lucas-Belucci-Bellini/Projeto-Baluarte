@@ -1232,7 +1232,7 @@ export function jarvisPage(): HTMLDivElement {
   markXiiiSpotifyOff = () => globalThis.removeEventListener('baluarte:spotify-session', onSpotifySession);
   const spotifyControls = h('div', { style: { display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' } }, spotifyStatus, spotifyClientInput, spotifyButton);
   const spotifyHint = h('p', { className: 'jarvis-config__warn u-text-muted', style: { margin: '6px 0 0' } },
-    `Client ID público salvo neste navegador. Redirect URI: ${location.origin}${location.pathname}. Cadastre essa URI exatamente no Spotify. O fluxo usa PKCE/S256, não usa Client Secret e pede somente user-read-playback-state.`);
+    `Client ID OAuth público salvo neste navegador. Redirect URI: ${location.origin}${location.pathname}. Cadastre essa URI exatamente no Spotify. O fluxo usa PKCE/S256, não usa Client Secret e pede somente user-read-playback-state. A chave Spotify Soloist com prefixo spak_ não é Client ID: trate-a como segredo local do daemon Soloist e nunca cole aqui.`);
   fullPage.appendChild(
     h('div', { className: 'jarvis-toolbar' },
       modeBadgeEl,

@@ -18,16 +18,16 @@ globalThis.dispatchEvent = (event) => { events.push(event); return true; };
 const spotifySession = await import('../../src/utils/jarvis-spotify-session.ts');
 
 test('Spotify Client ID: memoriza somente valor público válido', () => {
-  spotifySession.rememberSpotifyClientId('spak_MEgONNbpUahsaIa3Cp35');
-  assert.equal(spotifySession.getSpotifyClientId(), 'spak_MEgONNbpUahsaIa3Cp35');
+  spotifySession.rememberSpotifyClientId('oauth_client_id_fake_12345');
+  assert.equal(spotifySession.getSpotifyClientId(), 'oauth_client_id_fake_12345');
   spotifySession.rememberSpotifyClientId('short');
-  assert.equal(spotifySession.getSpotifyClientId(), 'spak_MEgONNbpUahsaIa3Cp35');
+  assert.equal(spotifySession.getSpotifyClientId(), '');
   assert.doesNotMatch(JSON.stringify(local), /token|secret|password/i);
 });
 
 test('Spotify PKCE: Client ID e retorno ficam na sessão, sem Client Secret', async () => {
   const authorizationUrl = await spotifySession.beginSpotifyAuthorization({
-    clientId: 'spak_MEgONNbpUahsaIa3Cp35',
+    clientId: 'oauth_client_id_fake_12345',
     redirectUri: 'https://projeto-baluarte.vercel.app/',
     returnTo: '/#/jarvis',
     scope: spotifySession.spotifyDefaultScope,
@@ -35,14 +35,14 @@ test('Spotify PKCE: Client ID e retorno ficam na sessão, sem Client Secret', as
   const url = new URL(authorizationUrl);
   const raw = session.getItem('baluarte:spotify:pkce');
   assert.equal(url.origin, 'https://accounts.spotify.com');
-  assert.equal(url.searchParams.get('client_id'), 'spak_MEgONNbpUahsaIa3Cp35');
+  assert.equal(url.searchParams.get('client_id'), 'oauth_client_id_fake_12345');
   assert.equal(url.searchParams.get('code_challenge_method'), 'S256');
   assert.equal(url.searchParams.get('scope'), 'user-read-playback-state');
   assert.match(raw, /"codeVerifier":"[A-Za-z0-9._~-]{43,128}"/);
   assert.match(raw, /"returnTo":"\/#\/jarvis"/);
   assert.doesNotMatch(raw, /client_secret|access_token|refresh_token/i);
   await spotifySession.beginSpotifyAuthorization({
-    clientId: 'spak_MEgONNbpUahsaIa3Cp35',
+    clientId: 'oauth_client_id_fake_12345',
     redirectUri: 'https://projeto-baluarte.vercel.app/',
     returnTo: 'https://evil.example/#/jarvis',
   });

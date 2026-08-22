@@ -3,6 +3,7 @@ import {
   exchangeSpotifyAuthorizationCode,
   refreshSpotifyAccessToken,
   createSpotifyPlaybackMonitor,
+  isSpotifyClientId,
 } from './jarvis-spotify';
 import type { SpotifyPkceConfig, SpotifyPlaybackMonitor, SpotifyPlaybackPollResult, SpotifyTokens } from './jarvis-spotify';
 
@@ -71,7 +72,7 @@ function emitSessionEvent(detail: SpotifySessionEventDetail): void {
 
 export function getSpotifyClientId(): string {
   const value = persistentStorage()?.getItem(CLIENT_ID_KEY)?.trim() ?? '';
-  return /^[A-Za-z0-9_-]{20,128}$/.test(value) ? value : '';
+  return isSpotifyClientId(value) ? value : '';
 }
 
 export function rememberSpotifyClientId(clientId: string): void {
@@ -79,7 +80,8 @@ export function rememberSpotifyClientId(clientId: string): void {
   const target = persistentStorage();
   if (!target) return;
   if (!value) { target.removeItem(CLIENT_ID_KEY); return; }
-  if (/^[A-Za-z0-9_-]{20,128}$/.test(value)) target.setItem(CLIENT_ID_KEY, value);
+  if (isSpotifyClientId(value)) target.setItem(CLIENT_ID_KEY, value);
+  else target.removeItem(CLIENT_ID_KEY);
 }
 
 export async function beginSpotifyAuthorization(config: SpotifyPkceConfig): Promise<string> {

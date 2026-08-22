@@ -1,6 +1,6 @@
 import { clearStatus, setStatus, type StatusValue } from './baluarte-status';
 
-export type JarvisMusicSource = 'html-media' | 'spotify-embed' | 'spotify-api';
+export type JarvisMusicSource = 'html-media' | 'spotify-embed' | 'spotify-api' | 'spotify-soloist';
 export type JarvisMusicPlayback = 'playing' | 'paused' | 'unknown' | 'idle';
 
 export interface JarvisMusicSnapshot {
@@ -124,6 +124,24 @@ export function observeJarvisSpotifyApiPlayback(
   publish({
     playback,
     source: 'spotify-api',
+    title: text(title),
+    artist: text(artist),
+    positionMs: finite(positionMs),
+    durationMs: finite(durationMs),
+    observedAt: now(),
+  });
+}
+
+export function observeJarvisSpotifySoloistPlayback(
+  playback: 'playing' | 'paused' | 'unknown',
+  title: string | null,
+  artist: string | null,
+  positionMs: number | undefined,
+  durationMs: number | undefined,
+): void {
+  publish({
+    playback,
+    source: 'spotify-soloist',
     title: text(title),
     artist: text(artist),
     positionMs: finite(positionMs),

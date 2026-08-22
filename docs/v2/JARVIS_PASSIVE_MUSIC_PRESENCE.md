@@ -1,6 +1,6 @@
 # JARVIS — Presença Musical Passiva
 
-**Estado:** primeira fatia implementada no navegador; integração OAuth do Spotify ainda não ativada
+**Estado:** presença do navegador implementada; Web API OAuth PKCE e ponte local Soloist read-only disponíveis como caminhos opt-in
 
 ## O que foi entregue
 
@@ -22,17 +22,20 @@ O estado publicado em `window.BaluarteStatus.jarvisMusic` contém somente playba
 | Enviar automaticamente cada faixa para um modelo | Não implementado |
 | Criar turno de conversa sem o usuário falar | Não acontece |
 
-O site não pode inspecionar a aba ou o aplicativo Spotify de outro contexto por causa do isolamento de origem do navegador. Para acompanhar o Spotify fora da página do Baluarte, seria necessário um fluxo OAuth com a Web API do Spotify ou uma bridge nativa/OpenClaw autorizada pelo operador.
+O site não pode inspecionar a aba ou o aplicativo Spotify de outro contexto por causa do isolamento de origem do navegador. Para acompanhar o Spotify fora da página do Baluarte existem dois caminhos distintos: Web API OAuth PKCE no navegador, usando apenas Client ID público e tokens em memória, ou uma ponte local Soloist autorizada pelo operador. A chave `spak_` do Soloist pertence somente ao daemon local e nunca deve chegar ao site.
 
-## Contrato futuro do Spotify
+## Contrato de integração externa do Spotify
 
-Uma integração futura deve ser opt-in e serverless apenas para o mínimo necessário: `user-read-currently-playing` ou escopo equivalente, tokens fora do bundle público, polling com intervalo controlado, redaction de tokens e botão claro para desconectar. O estado deve ser considerado `unknown` quando a API estiver indisponível, nunca inferido como “pausado”.
+A Web API é opt-in e usa somente o mínimo necessário: `user-read-playback-state`, tokens fora do bundle público, polling com intervalo controlado, redaction de tokens e botão claro para desconectar. O estado deve ser considerado `unknown` quando a API estiver indisponível, nunca inferido como “pausado”.
 
-A bridge nativa também deverá exigir autorização explícita, expor somente metadados necessários e permitir desligamento imediato. Nenhuma integração Spotify real deve ser ativada antes de revisar consentimento, armazenamento de tokens, política de revogação e comportamento offline.
+A ponte Soloist local implementada em `scripts/spotify-soloist-bridge.ts` exige bind em loopback, token próprio do bridge, CORS restrito e somente `GET /v1/spotify/playback`. Ela chama apenas `soloist ctl now --json`, redige URI, capa, volume, fila e ações, e converte indisponibilidade em erro/`unknown`. A API key `spak_` não é lida pela ponte: ela é usada somente pelo operador ao iniciar o daemon Soloist, fora do Git e do browser.
 
 ## Arquivos
 
 - `src/utils/jarvis-music-presence.ts`
+- `src/utils/jarvis-spotify-soloist.ts`
+- `scripts/spotify-soloist-bridge.ts`
+- `test/v2/jarvis-spotify-soloist.test.js`
 - `src/utils/music-embeds.d.ts`
 - `src/pages/musicas.ts`
 - `src/main.js`
@@ -40,4 +43,4 @@ A bridge nativa também deverá exigir autorização explícita, expor somente m
 
 ## Próximo passo
 
-Validar visualmente a página de músicas e, em uma etapa separada, desenhar o contrato de conexão Spotify/OpenClaw. A etapa externa só deve começar após a conta, escopos e destino de tokens serem confirmados pelo operador.
+Validar visualmente a página de músicas e, quando o operador quiser usar o Soloist, iniciar o daemon local com a chave protegida e o WebSocket em loopback. O JARVIS deve apontar somente para a ponte read-only com token próprio; nenhum segredo deve ser inserido no campo Client ID OAuth.

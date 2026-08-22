@@ -22,6 +22,7 @@
     "mobile:open": "cap open android",
     "verificar-nexus": "node scripts/verificar-nexus.mjs",
     "relatorio:diario": "node scripts/v2-daily-report.mjs",
+    "spotify:soloist:bridge": "tsx scripts/spotify-soloist-bridge.ts",
     "monitor:issues": "node scripts/v2-issue-monitor.mjs",
     "gen-arma3-totais": "node scripts/gerar-arma3-totais.mjs",
     "testar-parsers-arma3": "python3 scripts/arma3/testar-parsers.py",
