@@ -577,6 +577,11 @@ try {
     const switcher = document.querySelector('.jv-visual-switcher');
     const frame = document.querySelector('.jv-visual-switcher__frame');
     const fallback = document.querySelector('.jv-visual-switcher__fallback');
+    const page = document.querySelector('.page-jarvis');
+    const children = page ? [...page.children] : [];
+    const layout = page?.querySelector('.jv-layout');
+    const directSpotifyCard = children.some((child) =>
+      child.classList.contains('card') && child.textContent?.includes('Presença musical externa'));
     return {
       state: switcher?.getAttribute('data-visual-state') ?? null,
       source: switcher?.getAttribute('data-visual-source') ?? null,
@@ -586,15 +591,25 @@ try {
       fallbackPresent: fallback?.getAttribute('data-v7-fallback') === 'true',
       fallbackHidden: fallback?.hasAttribute('hidden') ?? false,
       hasChat: !!document.querySelector('.jarvis-chat'),
+      hasSessions: !!document.querySelector('.jv-sessions'),
       hasConfig: !!document.querySelector('.jarvis-toolbar'),
+      visualIndex: switcher ? children.indexOf(switcher) : -1,
+      chatLayoutIndex: layout ? children.indexOf(layout) : -1,
+      directSpotifyCard,
     };
   });
   const v7Path = '/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html';
   conferir('a aplicação real JARVIS mantém chat e composição visual V7',
     jarvisVisual.source === 'jarvis-nucleo-v7'
       && jarvisVisual.hasChat === true
+      && jarvisVisual.hasSessions === true
       && jarvisVisual.hasConfig === true,
     JSON.stringify({ jarvisVisual, tela: jarvisNaTela.slice(0, 120) }));
+  conferir('o layout coloca o V7 antes da conversa e remove o card Spotify principal',
+    jarvisVisual.visualIndex === 0
+      && jarvisVisual.chatLayoutIndex > jarvisVisual.visualIndex
+      && jarvisVisual.directSpotifyCard === false,
+    JSON.stringify(jarvisVisual));
   conferir('o visual V7 usa somente o artefato local same-origin',
     jarvisVisual.frameSrc === `${BASE}${v7Path}`
       && jarvisVisual.frameTitle?.includes('Núcleo V7') === true
@@ -605,6 +620,21 @@ try {
       && jarvisVisual.fallbackPresent === true
       && (jarvisVisual.state !== 'ready' || jarvisVisual.fallbackHidden === true),
     JSON.stringify(jarvisVisual));
+  await paginaApp.locator('.jarvis-toolbar button').click();
+  const spotifyLayout = await paginaApp.evaluate(() => {
+    const section = document.querySelector('.jv-spotify-settings');
+    const config = section?.closest('.jarvis-config');
+    return {
+      inConfig: Boolean(config),
+      visible: section ? getComputedStyle(section).display !== 'none' : false,
+      controls: section?.querySelectorAll('button, input').length ?? 0,
+    };
+  });
+  conferir('o Spotify continua acessível dentro de Modos & Config',
+    spotifyLayout.inConfig === true
+      && spotifyLayout.visible === true
+      && spotifyLayout.controls >= 2,
+    JSON.stringify(spotifyLayout));
   conferir('a integração visual não expõe credenciais ou autoridade',
     !/token|secret|claim|role|permission/i.test(JSON.stringify(jarvisVisual)),
     JSON.stringify(jarvisVisual));

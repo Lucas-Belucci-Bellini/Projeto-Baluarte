@@ -826,7 +826,7 @@ function updateModeBadge(): void {
   }
 }
 
-function renderConfigPanel(): HTMLDivElement {
+function renderConfigPanel(extra?: HTMLElement): HTMLDivElement {
   const conf = cfg();
   const panel = h('div', { className: 'jarvis-config' });
 
@@ -1155,6 +1155,7 @@ function renderConfigPanel(): HTMLDivElement {
   renderModes();
   renderBody();
   panel.append(modeBar, profileRow(), humanizeRow(), memoryRow(), skillsRow(), bodyEl);
+  if (extra) panel.appendChild(extra);
   return panel;
 }
 
@@ -1221,7 +1222,7 @@ export function jarvisPage(): HTMLDivElement {
     onclick: () => {
       configOpen = !configOpen;
       configWrap.style.display = configOpen ? 'block' : 'none';
-      if (configOpen) { empty(configWrap); configWrap.appendChild(renderConfigPanel()); }
+      if (configOpen) { empty(configWrap); configWrap.appendChild(renderConfigPanel(spotifySettings)); }
     }
   }, '⚙ Modos & Config');
 
@@ -1292,7 +1293,7 @@ export function jarvisPage(): HTMLDivElement {
     spotifyInputStatus,
     spotifyClearButton,
   );
-  const spotifyControls = h('div', { style: { display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' } }, spotifyStatus, spotifyClientRow, spotifyButton);
+  const spotifyControls = h('div', { className: 'jv-spotify-settings__controls' }, spotifyStatus, spotifyClientRow, spotifyButton);
   const spotifyHint = h('div', { className: 'jarvis-config__warn u-text-muted', style: { margin: '6px 0 0' } },
     h('p', { style: { margin: '0 0 6px' } },
       `O app pode vir com a configuração pronta. Se aparecer o campo vazio, um administrador precisa cadastrar uma única vez o Client ID público. Redirect URI deste app: `,
@@ -1307,6 +1308,12 @@ export function jarvisPage(): HTMLDivElement {
       ),
       h('p', { style: { margin: '6px 0 0' } }, 'Nunca cole aqui senha, Client Secret, token ou uma chave que comece com spak_. Essa chave pertence ao Soloist local e não é necessária para este botão.'),
     ));
+  const spotifySettings = h('section', { className: 'jv-spotify-settings', 'aria-labelledby': 'jv-spotify-settings-title' },
+    h('div', { className: 'jv-spotify-settings__title', id: 'jv-spotify-settings-title' }, '♫ Presença musical externa'),
+    h('p', { className: 'jv-spotify-settings__summary' }, 'Somente metadados de playback; sem áudio e sem comandos de reprodução.'),
+    spotifyControls,
+    spotifyHint,
+  );
   fullPage.appendChild(
     h('div', { className: 'jarvis-toolbar' },
       modeBadgeEl,
@@ -1317,12 +1324,6 @@ export function jarvisPage(): HTMLDivElement {
     )
   );
   fullPage.appendChild(configWrap);
-  fullPage.appendChild(h('div', { className: 'card', style: { marginBottom: '10px' } },
-    h('b', null, '♫ Presença musical externa'),
-    h('span', { className: 'u-text-muted', style: { marginLeft: '8px' } }, 'somente metadados de playback; sem áudio e sem comandos de reprodução'),
-    spotifyControls,
-    spotifyHint,
-  ));
 
   sessionsEl = h('div', { className: 'jv-sessions__list' });
   const sessionsPanel = h('div', { className: 'jv-sessions' },
