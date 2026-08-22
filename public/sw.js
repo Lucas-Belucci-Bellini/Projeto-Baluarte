@@ -24,10 +24,11 @@
  *   1.2.7 — marco Briefing→Evidence pelo Registry e release sincronizada.
  *   1.2.8 — piloto local Wiki Zomboid com schema e Evidence bounded.
  *   1.2.9 — observabilidade bounded de status da Evidence no piloto Wiki.
+ *   1.3.0 — fila local bounded e read-only para revisão de Evidence pendente.
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.2.9';
+const VERSION = 'baluarte-v1.3.0';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 

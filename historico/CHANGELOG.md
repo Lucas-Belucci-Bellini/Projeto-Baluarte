@@ -6,6 +6,18 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Candidata `1.3.0`: fila local de revisão Evidence
+
+A candidata `1.3.0` adiciona ao piloto Wiki Zomboid uma `reviewQueue(limit)` local, bounded e somente leitura. A fila considera apenas evidências `pending`, usa limite padrão 25 e máximo 100, congela a saída e retorna somente `id`, `claimKey`, `status`, `confidence`, `observedAt` e `sourceRevision`. Não há `markStatus` no Wiki, conteúdo de claim, fonte, URI, publisher, token, role ou permissão expostos.
+
+O teste focal cobre dois registros pendentes, limite, campos omitidos, imutabilidade, argumentos inválidos, fallback sem Evidence e exclusão após `verified` usando a API do módulo Evidence apenas no teste. A integração browser passou `49/49`; o runner oficial passou os gates locais aplicáveis, com Rust `blocked-known` código 101 mantido por incompatibilidade de toolchain. O commit funcional `3f05e240` e o hardening `0ab6f428` foram publicados diretamente na `main`, com CI remota aplicável verde.
+
+**Status:** candidata em validação de release; nenhuma tag `v1.3.0` ou `desktop-v1.3.0` foi criada ainda. Os artefatos desktop, manifests e resposta HTTP serão registrados somente após o workflow de release completar nos três sistemas.
+
+**Documentação:** [`docs/releases/v1.3.0.md`](../docs/releases/v1.3.0.md), [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
+
+---
+
 ## 2026-08-22 — Release `1.2.9`: observabilidade de status da Evidence publicada
 
 A release `1.2.9` continua o piloto V2 Wiki Zomboid/Evidence com contagens bounded por status (`pending`, `verified`, `rejected` e `superseded`). A view informa somente a quantidade de registros vinculados e pendentes; não há ação de aprovação, alteração de status, exposição de statements ou autoridade client-side.

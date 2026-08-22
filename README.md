@@ -51,7 +51,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados; piloto Wiki Zomboid/Evidence local validado. |
-| **Web/Desktop** | `1.2.9` publicada | Release com observabilidade bounded de status da Evidence no piloto Wiki Zomboid; instaladores Windows, Linux e macOS verificados. V1 preservada e V2 em construção incremental. |
+| **Web/Desktop** | `1.3.0` em validação; `1.2.9` publicada | Candidata com fila local bounded e read-only para revisão de Evidence pendente; a release pública anterior tem instaladores Windows, Linux e macOS verificados. V1 preservada e V2 em construção incremental. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
@@ -82,6 +82,7 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Piloto Wiki Zomboid / Evidence | [`WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md) |
 | Release 1.2.8 — piloto Wiki Zomboid | [`v1.2.8.md`](docs/releases/v1.2.8.md) | Publicada com tags `v1.2.8` e `desktop-v1.2.8`; assets desktop verificados. |
 | Release 1.2.9 — observabilidade Evidence | [`v1.2.9.md`](docs/releases/v1.2.9.md) | Publicada com tags `v1.2.9` e `desktop-v1.2.9`; assets desktop verificados. |
+| Release 1.3.0 — fila local de revisão Evidence | [`v1.3.0.md`](docs/releases/v1.3.0.md) | Candidata em validação; só será publicada após gates, CI, tags e artefatos desktop verificáveis. |
 | Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
 | Design System e Information Architecture | [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md) |
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |
