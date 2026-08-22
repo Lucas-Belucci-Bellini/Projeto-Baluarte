@@ -1,6 +1,6 @@
 # V2 Wiki Zomboid — Piloto de Schema e Evidence
 
-**Status:** `IMPLEMENTADO LOCALMENTE — aguardando publicação e release incremental`
+**Status:** `PUBLICADO NA main — release incremental em preparação`
 
 **Data:** 2026-08-22
 
@@ -18,7 +18,7 @@ O piloto não raspa a Steam Workshop, não faz fetch automático, não cria pers
 
 O registro normalizado é congelado, a fonte carrega URL, título, publisher e revisão do dataset, e a chave determinística usa o formato `zomboid:workshop:<workshopId>`. `v2/data/wiki-zomboid.js` permanece como wrapper de compatibilidade para a implementação TypeScript.
 
-O módulo `v2/modules/wiki-zomboid/module.js` expõe uma API V2 bounded com `list`, `get`, `summary` e `appendEvidence`. O módulo registra uma rota local `/wiki-zomboid`, declara estabilidade `beta`, não pede permissões, não declara storage e referencia Evidence como ligação fraca por `references.modules: ['evidence']`.
+O módulo `v2/modules/wiki-zomboid/module.js` expõe uma API V2 bounded com `list`, `get`, `summary`, `reviewQueue` e `appendEvidence`. O módulo registra uma rota local `/wiki-zomboid`, declara estabilidade `beta`, não pede permissões, não declara storage e referencia Evidence como ligação fraca por `references.modules: ['evidence']`.
 
 Durante `init`, o módulo resolve Evidence exclusivamente por `ctx.talvez('evidence', { versao: 1 })`. Quando Evidence está disponível, `appendEvidence` usa `evidence.appendCatalog` e produz registros `pending` com proveniência explícita, confidence conservadora `0.75` e collector `wiki-zomboid-local-catalog`. Quando Evidence não está registrada, o módulo continua funcional e retorna `null` para a tentativa de anexação; não há import direto do módulo Evidence nem capacidade ad-hoc.
 
@@ -34,16 +34,16 @@ O teste focal `test/v2/wiki-zomboid-module.test.js` cobre validação, normaliza
 
 | Evidência | Resultado |
 |---|---:|
-| Teste focal Wiki Zomboid | **4/4** |
+| Teste focal Wiki Zomboid | **4/4** (inclui queue pending-only, limite, imutabilidade, campos omitidos, argumentos inválidos e exclusão após `verified`) |
 | `npm run tipos:ts` | Verde |
 | `npm run tipos:v2` | Verde |
 | `npm test` | **1254/1254** |
 | `npm run build` | Verde; warnings conhecidos de chunks grandes |
-| `npm run v2:integracao` | **48/48** em `PORTA_V2=4195` com Chromium do ambiente |
+| `npm run v2:integracao` | **49/49** em `PORTA_V2=4195` com Chromium do ambiente |
 | Smoke V1 anterior | `99/99` |
-| Caminho crítico anterior | `15/15` |
+| Caminho crítico | `15/15` |
 
-A integração browser provou que os sete módulos sobem sem falha, que o Registry entrega 20 rotas, que a navegação derivada possui seis entradas, que a API Wiki Zomboid retorna o resumo esperado e que a view renderiza pelo router real da V1 adaptado ao harness. Também confirmou a preservação da sidebar V1, das invariantes de autorização e do fallback de observabilidade.
+A integração browser provou que os sete módulos sobem sem falha, que o Registry entrega 20 rotas, que a navegação derivada possui seis entradas, que a API Wiki Zomboid retorna o resumo esperado, que `reviewQueue` inicia vazia no boot limpo e que a view renderiza pelo router real da V1 adaptado ao harness. Também confirmou a preservação da sidebar V1, das invariantes de autorização e do fallback de observabilidade.
 
 ## Segurança e limites
 
@@ -55,7 +55,7 @@ A superfície V2 não concede acesso administrativo. A existência de `/zomboid-
 
 ## Próximo passo
 
-Depois da publicação deste slice, a próxima evolução válida é medir a necessidade de busca/indexação e revisar o schema com mais fixtures reais do catálogo, ainda sem scraping ou persistência remota. A entrada de dados externos, worker Python, fila de ingestão, embeddings e pgvector permanecem posteriores e dependem de contratos de retenção, concorrência, tenancy, revisão humana e staging autorizado.
+O commit funcional deste slice foi publicado na `main` em `3f05e240` (`feat(v2): add bounded evidence review queue`) após os gates locais; a CI remota aplicável do SHA terminou verde. A release do app ainda não foi criada. A próxima evolução válida é medir a necessidade de busca/indexação e revisar o schema com mais fixtures reais do catálogo, ainda sem scraping ou persistência remota. A entrada de dados externos, worker Python, fila de ingestão, embeddings e pgvector permanecem posteriores e dependem de contratos de retenção, concorrência, tenancy, revisão humana e staging autorizado.
 
 A persistência Supabase permanece bloqueada até aprovação explícita de staging, custo, migration, RLS e rollback. O próximo release do app só deve ser criado após o commit funcional, documentação, gates locais, CI remoto e artefatos desktop passarem como conjunto.
 
@@ -80,4 +80,4 @@ O piloto foi ampliado sem alterar sua fronteira de segurança: o resumo da API a
 
 O gate browser passou a verificar que o Registry resolve o resumo Wiki Zomboid com zero evidências vinculadas no boot limpo e que a superfície mostra `0 vinculadas · 0 pendentes`. O teste focal continua cobrindo a transição local para um registro `pending`, confirmando que a contagem por status acompanha o store compartilhado.
 
-Esta observabilidade prepara um futuro fluxo de revisão, mas não o implementa. Mudança de status, revisão humana, roles administrativas, auditoria de consumidor e persistência remota continuam fora deste marco e dependem de autoridade server-side, retenção, tenancy, RLS e rollback aprovados.
+Esta observabilidade prepara um futuro fluxo de revisão, mas não o implementa. A nova `reviewQueue(limit)` é um read-model local, bounded e somente leitura: considera apenas registros `pending`, aplica limite padrão 25 e máximo 100, retorna somente `id`, `claimKey`, `status`, `confidence`, `observedAt` e `sourceRevision`, e congela a fila e seus itens. Ela não expõe `statement`, `source`, URI, título, publisher, collector, `moduleId`, token, claims ou permissão. Quando Evidence não está disponível, retorna `[]`. Mudança de status, revisão humana, roles administrativas, auditoria de consumidor e persistência remota continuam fora deste marco e dependem de autoridade server-side, retenção, tenancy, RLS e rollback aprovados.

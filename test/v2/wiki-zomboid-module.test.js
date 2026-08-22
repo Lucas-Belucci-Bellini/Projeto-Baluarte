@@ -104,14 +104,35 @@ test('Wiki Zomboid resolve Evidence pelo Registry e anexa somente fato local bou
     rejected: 0,
     superseded: 0,
   });
-  const queue = wikiZomboid.api.reviewQueue(1);
-  assert.equal(queue.length, 1);
-  assert.equal(queue[0]?.status, 'pending');
-  assert.equal(queue[0]?.claimKey, record?.claimKey);
-  assert.equal(Object.hasOwn(queue[0] ?? {}, 'statement'), false);
-  assert.equal(Object.hasOwn(queue[0] ?? {}, 'uri'), false);
+  const secondRecord = wikiZomboid.api.appendEvidence('3736408852', 'category');
+  assert.equal(secondRecord?.status, 'pending');
+  const fullQueue = wikiZomboid.api.reviewQueue();
+  assert.equal(fullQueue.length, 2);
+  assert.equal(Object.isFrozen(fullQueue), true);
+  assert.equal(Object.isFrozen(fullQueue[0]), true);
+  assert.deepEqual(Object.keys(fullQueue[0] ?? {}).sort(), [
+    'claimKey',
+    'confidence',
+    'id',
+    'observedAt',
+    'sourceRevision',
+    'status',
+  ]);
+  assert.equal(Object.hasOwn(fullQueue[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(fullQueue[0] ?? {}, 'source'), false);
+  assert.equal(Object.hasOwn(fullQueue[0] ?? {}, 'collector'), false);
+  assert.equal(Object.hasOwn(fullQueue[0] ?? {}, 'moduleId'), false);
+  assert.equal(Object.hasOwn(fullQueue[0] ?? {}, 'uri'), false);
+  assert.equal(Object.hasOwn(fullQueue[0] ?? {}, 'publisher'), false);
   assert.equal(Object.hasOwn(record ?? {}, 'source'), true);
   assert.equal(Object.hasOwn(record ?? {}, 'statement'), true);
+  assert.equal(wikiZomboid.api.reviewQueue(1).length, 1);
+  assert.throws(() => wikiZomboid.api.reviewQueue(0), /inteiro positivo/);
+  assert.throws(() => wikiZomboid.api.reviewQueue(-1), /inteiro positivo/);
+  assert.throws(() => wikiZomboid.api.reviewQueue(1.5), /inteiro positivo/);
+  assert.throws(() => wikiZomboid.api.reviewQueue('1'), /inteiro positivo/);
+  assert.equal(evidence.api.markStatus(record.id, 'verified')?.status, 'verified');
+  assert.deepEqual(wikiZomboid.api.reviewQueue().map((item) => item.claimKey), [secondRecord.claimKey]);
 
   wikiZomboid.lifecycle.dispose();
   evidence.lifecycle.dispose();

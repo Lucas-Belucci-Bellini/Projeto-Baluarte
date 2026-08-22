@@ -78,7 +78,7 @@ function summary() {
   });
 }
 
-/** @param {string} workshopId @param {string} [field] */
+/** @param {number} [limit] */
 function reviewQueue(limit) {
   const max = boundedLimit(limit);
   const linkedEvidence = evidenceApi?.listByModule('wiki-zomboid') ?? [];
