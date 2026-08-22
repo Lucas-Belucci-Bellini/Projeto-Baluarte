@@ -45,3 +45,20 @@ test('Evidence API funciona após init e libera o store em dispose', () => {
   assert.deepEqual(evidence.api.list(), []);
   assert.throws(() => evidence.api.append(input), /não foi inicializado/);
 });
+
+test('Evidence emite eventos bounded sem incluir conteúdo da evidência', () => {
+  const events = [];
+  evidence.lifecycle.init({
+    log: { debug: () => {} },
+    bus: { emit: (event, payload) => events.push({ event, payload }) },
+  });
+  const record = evidence.api.append(input);
+  evidence.api.markStatus(record.id, 'verified');
+  assert.deepEqual(events, [
+    { event: 'evidence:appended', payload: { id: input.id, moduleId: 'evidence', status: 'pending' } },
+    { event: 'evidence:status-changed', payload: { id: input.id, moduleId: 'evidence', status: 'verified' } },
+  ]);
+  assert.equal(Object.hasOwn(events[0].payload, 'statement'), false);
+  assert.equal(Object.hasOwn(events[0].payload, 'source'), false);
+  evidence.lifecycle.dispose();
+});

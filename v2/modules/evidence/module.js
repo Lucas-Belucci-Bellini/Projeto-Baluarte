@@ -11,15 +11,20 @@ import { evidenceFromCatalog } from '../../data/catalog-evidence.js';
 
 /** @typedef {import('../../data/evidence.ts').EvidenceInput} EvidenceInput */
 /** @typedef {import('../../data/evidence.ts').EvidenceRecord} EvidenceRecord */
-/** @typedef {{log: {debug: (message: string) => void}}} EvidenceContext */
+/** @typedef {{emit: (event: string, payload?: unknown) => void}} EvidenceBus */
+/** @typedef {{log: {debug: (message: string) => void}, bus?: EvidenceBus}} EvidenceContext */
 
 /** @type {EvidenceStore|null} */
 let store = null;
+/** @type {EvidenceBus|null} */
+let bus = null;
 
 /** @param {EvidenceInput} input @returns {EvidenceRecord} */
 function append(input) {
   if (!store) throw new Error('evidence ainda não foi inicializado');
-  return store.append(input);
+  const record = store.append(input);
+  bus?.emit('evidence:appended', { id: record.id, moduleId: record.moduleId, status: record.status });
+  return record;
 }
 
 /** @param {import('../../data/catalog-evidence.ts').CatalogEvidenceInput} input */
@@ -56,7 +61,9 @@ export default {
     /** @param {string} id @param {import('../../data/evidence.ts').EvidenceStatus} status @param {string} [supersededBy] */
     markStatus: (id, status, supersededBy) => {
       if (!store) throw new Error('evidence ainda não foi inicializado');
-      return store.markStatus(id, status, supersededBy);
+      const record = store.markStatus(id, status, supersededBy);
+      bus?.emit('evidence:status-changed', { id: record.id, moduleId: record.moduleId, status: record.status });
+      return record;
     },
   },
   apiVersion: 1,
@@ -65,10 +72,12 @@ export default {
     /** @param {EvidenceContext} ctx */
     init(ctx) {
       store = new EvidenceStore();
+      bus = ctx.bus ?? null;
       ctx.log.debug('evidence no ar');
     },
     dispose() {
       store = null;
+      bus = null;
     },
   },
 };

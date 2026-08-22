@@ -10,8 +10,9 @@ import { buildPrompt, deduplicate, normalizeItem } from './data.js';
 
 /** @typedef {{get: (key:string, fallback?:unknown) => unknown, set: (key:string, value:unknown) => void}} BriefingStorage */
 /** @typedef {{info: (message:string, fields?:Record<string, unknown>) => void, aviso: (message:string, fields?:Record<string, unknown>) => void, erro: (message:string, error?:unknown, fields?:Record<string, unknown>) => void}} BriefingLog */
-/** @typedef {{storage:BriefingStorage, log:BriefingLog, metricas?:{contar:(name:string, fields?:Record<string, unknown>) => void}, bus?:{emit:(event:string, payload?:unknown) => void}}} BriefingContext */
-/** @typedef {{ctx:BriefingContext, items:import('./data.js').BriefingItem[]}} BriefingState */
+/** @typedef {{appendCatalog: (input: import('../../data/catalog-evidence.ts').CatalogEvidenceInput) => import('../../data/evidence.ts').EvidenceRecord, get?: (id:string) => import('../../data/evidence.ts').EvidenceRecord|null}} BriefingEvidence */
+/** @typedef {{storage:BriefingStorage, log:BriefingLog, metricas?:{contar:(name:string, fields?:Record<string, unknown>) => void}, bus?:{emit:(event:string, payload?:unknown) => void}, evidence?:BriefingEvidence}} BriefingContext */
+/** @typedef {{ctx:BriefingContext, items:import('./data.js').BriefingItem[], evidenceLinked:number, evidenceErrors:number}} BriefingState */
 
 /** @type {BriefingState|null} */
 let state = null;
@@ -32,7 +33,14 @@ const moduleManifest = {
   storage: [{ key: 'briefing:items', version: 1, class: 'local' }],
   events: { emits: ['briefing:atualizado'], consumes: [] },
   api: {
-    health: () => ({ ok: true, status: state ? 'ready' : 'stopped', items: state?.items.length ?? 0 }),
+    health: () => ({
+      ok: true,
+      status: state ? 'ready' : 'stopped',
+      items: state?.items.length ?? 0,
+      evidence: state?.ctx.evidence ? 'linked' : 'not-configured',
+      evidenceLinked: state?.evidenceLinked ?? 0,
+      evidenceErrors: state?.evidenceErrors ?? 0,
+    }),
     /** @param {string} topic @param {number} [limit] */
     prompt: (topic, limit) => buildPrompt(topic, limit),
     /** @param {unknown} rawItems */
@@ -50,8 +58,8 @@ const moduleManifest = {
       const items = Array.isArray(stored)
         ? stored.map((item) => normalizeItem(item)).filter((item) => item !== null)
         : [];
-      state = { ctx, items };
-      ctx.log.info('briefing preparado', { items: items.length, modo: 'read-only' });
+      state = { ctx, items, evidenceLinked: 0, evidenceErrors: 0 };
+      ctx.log.info('briefing preparado', { items: items.length, modo: 'read-only', evidence: ctx.evidence ? 'linked' : 'not-configured' });
     },
     dispose() {
       state = null;
@@ -59,16 +67,64 @@ const moduleManifest = {
   }
 };
 
-/** @param {unknown} rawItems @returns {{ok:boolean, total:number, items:import('./data.js').BriefingItem[], error?:string}} */
+/** @param {import('./data.js').BriefingItem} item @returns {import('../../data/catalog-evidence.ts').CatalogEvidenceInput} */
+function evidenceInput(item) {
+  return {
+    moduleId: 'briefing',
+    entityId: item.id,
+    field: 'article',
+    value: {
+      title: item.title,
+      source: item.source,
+      url: item.url,
+      publishedAt: item.publishedAt,
+      status: item.status,
+    },
+    source: { uri: item.url, title: item.title, publisher: item.source, revision: item.capturedAt },
+    retrievedAt: item.capturedAt,
+    confidence: item.confidence,
+    collector: 'briefing-ingest',
+    evidenceId: `briefing:${item.id}`,
+  };
+}
+
+/** @param {readonly import('./data.js').BriefingItem[]} items @returns {{linked:number, errors:number}} */
+function linkEvidence(items) {
+  if (!state?.ctx.evidence) return { linked: 0, errors: 0 };
+  let linked = 0;
+  let errors = 0;
+  for (const item of items) {
+    const id = `briefing:${item.id}`;
+    if (state.ctx.evidence.get?.(id)) {
+      linked += 1;
+      continue;
+    }
+    try {
+      state.ctx.evidence.appendCatalog(evidenceInput(item));
+      linked += 1;
+    } catch {
+      errors += 1;
+    }
+  }
+  return { linked, errors };
+}
+
+/** @param {unknown} rawItems @returns {{ok:boolean, total:number, items:import('./data.js').BriefingItem[], evidenceLinked:number, evidenceErrors:number, error?:string}} */
 function ingest(rawItems) {
-  if (!state) return { ok: false, total: 0, items: [], error: 'briefing não está ativo' };
-  if (!Array.isArray(rawItems)) return { ok: false, total: 0, items: [], error: 'items deve ser array' };
+  if (!state) return { ok: false, total: 0, items: [], evidenceLinked: 0, evidenceErrors: 0, error: 'briefing não está ativo' };
+  if (!Array.isArray(rawItems)) return { ok: false, total: 0, items: [], evidenceLinked: 0, evidenceErrors: 0, error: 'items deve ser array' };
   const candidates = rawItems.map((item) => normalizeItem(item)).filter((item) => item !== null);
-  state.items = deduplicate([...state.items, ...candidates]);
+  const knownIds = new Set(state.items.map((item) => item.id));
+  const nextItems = deduplicate([...state.items, ...candidates]);
+  const newItems = nextItems.filter((item) => !knownIds.has(item.id));
+  const evidence = linkEvidence(newItems);
+  state.items = nextItems;
+  state.evidenceLinked += evidence.linked;
+  state.evidenceErrors += evidence.errors;
   state.ctx.storage.set('briefing:items', state.items);
-  state.ctx.metricas?.contar('briefing_ingestao', { recebidos: rawItems.length, aceitos: candidates.length });
-  state.ctx.bus?.emit('briefing:atualizado', { total: state.items.length });
-  return { ok: true, total: state.items.length, items: [...state.items] };
+  state.ctx.metricas?.contar('briefing_ingestao', { recebidos: rawItems.length, aceitos: candidates.length, evidenceLinked: evidence.linked, evidenceErrors: evidence.errors });
+  state.ctx.bus?.emit('briefing:atualizado', { total: state.items.length, evidenceLinked: evidence.linked, evidenceErrors: evidence.errors });
+  return { ok: true, total: state.items.length, items: [...state.items], evidenceLinked: evidence.linked, evidenceErrors: evidence.errors };
 }
 
 export default moduleManifest;

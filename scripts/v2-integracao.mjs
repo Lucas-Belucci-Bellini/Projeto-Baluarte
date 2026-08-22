@@ -51,6 +51,14 @@ const viteBin = (() => {
 const servidor = spawn(process.execPath, [viteBin, '--port', String(PORTA), '--strictPort', '--host', '127.0.0.1'],
   { cwd: process.cwd(), stdio: 'ignore' });
 
+const encerrarServidor = async () => {
+  if (servidor.exitCode !== null || servidor.signalCode !== null) return;
+  const saiu = new Promise((resolve) => servidor.once('exit', resolve));
+  if (!servidor.kill('SIGTERM')) return;
+  await Promise.race([saiu, new Promise((resolve) => setTimeout(resolve, 1000))]);
+  if (servidor.exitCode === null && servidor.signalCode === null) servidor.kill('SIGKILL');
+};
+
 const esperarServidor = async () => {
   for (let i = 0; i < 60; i++) {
     try { if ((await fetch(BASE, { signal: AbortSignal.timeout(1500) })).ok) return true; } catch { /* subindo */ }
@@ -605,7 +613,7 @@ try {
   conferir('nenhum erro de JS', errosJs.length === 0, errosJs.slice(0, 2).join(' | '));
 } finally {
   await navegador?.close().catch(() => {});
-  servidor.kill();
+  await encerrarServidor();
 }
 
 const falhas = passos.filter((p) => !p.ok);
