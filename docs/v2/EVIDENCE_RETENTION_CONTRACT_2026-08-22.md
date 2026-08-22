@@ -1,6 +1,6 @@
 # Evidence Retention Preview — Contrato local V2
 
-**Status:** contrato implementado no commit funcional `752206fb`; candidata `1.3.1` em validação
+**Status:** implementado e publicado na release `1.3.1`; commit funcional `752206fb`, versionamento `9b734394`
 **Data:** 2026-08-22
 **Autor:** Manus AI
 **Dependência:** `v2/data/evidence.ts` e módulo `evidence`

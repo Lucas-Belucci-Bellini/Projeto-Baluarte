@@ -6,13 +6,17 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-22 — Candidata `1.3.1`: preview local de retenção Evidence
+## 2026-08-22 — Release `1.3.1`: preview local de retenção Evidence publicada
 
-A candidata `1.3.1` adiciona ao módulo V2 Evidence uma projeção `retentionPreview(options)` local, determinística, bounded e somente leitura. Ela classifica registros pela idade relativa a uma data `now` explícita, sem apagar, alterar, verificar ou promover evidências. A saída omite conteúdo de claims, fontes, tokens e permissões.
+A release `1.3.1` adiciona ao módulo V2 Evidence uma projeção `retentionPreview(options)` local, determinística, bounded e somente leitura. Ela classifica registros pela idade relativa a uma data `now` explícita, sem apagar, alterar, verificar ou promover evidências. A saída omite conteúdo de claims, fontes, tokens e permissões.
 
 Os testes focais do contrato passaram `9/9`; a integração browser passou `50/50`; o runner oficial corrigido para a porta padrão passou todos os gates de código, mantendo apenas Rust local como `blocked-known` código 101 por incompatibilidade de toolchain. O commit funcional `752206fb` foi publicado diretamente na `main` e a CI remota aplicável terminou verde.
 
-**Status:** candidata em validação de release; nenhuma tag `v1.3.1` ou `desktop-v1.3.1` foi criada ainda. Os gates de versionamento, Desktop Release e artefatos HTTP ainda precisam ser verificados antes de declarar publicação.
+**Status:** publicada no commit de versionamento `9b7343940c82c3ba487a0129b0171e38794c6567`, com as tags `v1.3.1` e `desktop-v1.3.1`. A CI remota aplicável passou em 8/8 workflows; o Desktop Release `32592402608` terminou verde em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease e possui oito assets verificados.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.3.1.exe` (644.015.682 bytes), `Baluarte-Launcher-1.3.1.AppImage` (773.768.691 bytes), `Baluarte-Launcher-1.3.1-arm64.dmg` (406.508.904 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.3.1`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.3.1
 
 **Documentação:** [`docs/releases/v1.3.1.md`](../docs/releases/v1.3.1.md), [`docs/v2/EVIDENCE_RETENTION_CONTRACT_2026-08-22.md`](../docs/v2/EVIDENCE_RETENTION_CONTRACT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
 
