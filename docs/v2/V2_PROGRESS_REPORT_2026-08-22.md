@@ -1,6 +1,6 @@
 # Relatório de progresso da V2
 
-**Código auditado:** `978e13e3c27628401425828d6edad81f46430958`
+**Código auditado:** `9ae47cea549b886874a223b4adf9573cc07e1e29`
 
 **Branch:** `main`
 
@@ -10,29 +10,29 @@
 
 ## Resumo executivo
 
-O Projeto-Baluarte está **significativamente mais perto da primeira release Alpha da V2**, mas ainda está distante da conclusão da V2 estável como produto completo. A principal transição já vencida foi a migração de páginas: existem **0 páginas canônicas JavaScript**, **115 implementações canônicas TypeScript** e **115 wrappers JavaScript preservados para compatibilidade**. Esse objetivo específico está em 100% no escopo de páginas, mas os wrappers continuam corretamente no repositório e não devem ser removidos em lote [1].
+O Projeto-Baluarte está **significativamente mais perto da primeira release Alpha da V2**, mas ainda está distante da conclusão da V2 estável como produto completo. A principal transição já vencida foi a migração de páginas: existem **0 páginas canônicas JavaScript**, **123 implementações canônicas TypeScript** e **115 wrappers JavaScript preservados para compatibilidade**. Esse objetivo específico está em 100% no escopo de páginas, mas os wrappers continuam corretamente no repositório e não devem ser removidos em lote [1].
 
-A construção geral está no fim da fundação e entrando na etapa de primeiro vertical slice completo. O checkpoint mais recente ligou Briefing→Evidence pelo Registry/API real, sem capacidade ad-hoc, e tornou essa ligação observável na superfície V2. Core, Runtime, Event Bus, observabilidade read-only, contratos de sessão, JARVIS Mark XIII, presença Spotify, Registry piloto, Billing local e documentação já possuem implementação e evidência local. O que ainda impede a declaração de uma V2 pronta é a combinação de **Data/Evidence real, Auth/RBAC server-side, Supabase/RLS, isolamento operacional uniforme de módulos, estabilização, aceite físico do app e critérios de RC**.
+A construção geral está no fim da fundação e avançou para slices verticais locais. O checkpoint mais recente publicou a fila Wiki Zomboid→Evidence pelo Registry/API real, sem capacidade ad-hoc, bounded e read-only para registros pendentes. Core, Runtime, Event Bus, observabilidade read-only, contratos de sessão, JARVIS Mark XIII, presença Spotify, Registry piloto, Billing local e documentação já possuem implementação e evidência local. O que ainda impede a declaração de uma V2 pronta é a combinação de **Data/Evidence real, Auth/RBAC server-side, Supabase/RLS, isolamento operacional uniforme de módulos, estabilização, aceite físico do app e critérios de RC**.
 
-Para responder objetivamente à pergunta “quanto falta”, esta medição usa dois indicadores diferentes. O índice ponderado de prontidão das 28 fases do mapa V2 é **57,3%**, calculado a partir dos estados documentados e com pesos explícitos; ele é uma métrica de planejamento, não uma promessa de produto. A migração de páginas está em **100%**, os gates locais executáveis estão em **21/21**, e a suíte comportamental está em **1250/1250**. A V2 está, portanto, **mais da metade construída como fundação**, porém ainda não está na metade final de uma release estável: os marcos Beta, RC, estabilização e COMPLETE continuam abertos.
+Para responder objetivamente à pergunta “quanto falta”, esta medição usa dois indicadores diferentes. O índice ponderado de prontidão das 28 fases do mapa V2 é **57,3%**, calculado a partir dos estados documentados e com pesos explícitos; ele é uma métrica de planejamento, não uma promessa de produto. A migração de páginas está em **100%**, os gates locais executáveis aplicáveis estão em **20 com código 0**, o Rust permanece separado como `blocked-known`, e a suíte comportamental está em **1254/1254**. A V2 está, portanto, **mais da metade construída como fundação**, porém ainda não está na metade final de uma release estável: os marcos Beta, RC, estabilização e COMPLETE continuam abertos.
 
 ## Estado observado
 
 | Indicador | Estado observado |
 |---|---:|
-| `origin/main` auditado | `978e13e3` |
+| `origin/main` auditado | `9ae47cea` |
 | Páginas canônicas JS restantes | **0** |
 | Arquivos físicos `.js` em `src/pages/` | **115**, todos wrappers de compatibilidade |
-| Implementações `.ts` em `src/pages/` | **115** |
+| Implementações `.ts` em `src/pages/` | **123** |
 | Arquivos `.d.ts` em `src/pages/` | **8** |
-| Suíte completa | **1250/1250** |
-| Integração V2 | **46/46** |
+| Suíte completa | **1254/1254** |
+| Integração V2 | **49/49** |
 | Smoke de rotas | **99/99** |
 | Caminho crítico | **15/15** |
-| Gates do runner oficial | **21 passaram, 1 `blocked-known`, 0 falhas novas** |
+| Gates do runner oficial | **20 com código 0, 1 `blocked-known`, 0 falhas novas** |
 | Focal Spotify/Soloist/Mark XIII | **19/19** |
 | CI remoto aplicável | **8 workflows verdes no SHA; Supabase Preview não foi disparado neste push** |
-| Última release operacional | **`1.2.6` publicada** |
+| Última release operacional | **`1.3.0` publicada** |
 
 O `blocked-known` é o teste Rust local com código 101 porque o Cargo disponível não interpreta a metadata `edition2024`; esse bloqueio já é conhecido e separado da aplicação. O check remoto de Rust foi observado como verde. O Supabase Preview permaneceu uma dependência externa, com a mensagem de versões de migrations remotas ausentes no diretório local; nenhuma migration, DDL, branch de staging ou escrita remota foi executada.
 
@@ -47,7 +47,7 @@ O `blocked-known` é o teste Rust local com código 101 porque o Cargo disponív
 | Índice ponderado das fases V2 | **57,3%** | Estimativa de prontidão de fases, calculada sobre estados da matriz, não sobre linhas de código. |
 | V2 estável `2.0.0` | **não declarada** | Ainda faltam Beta, RC, estabilização, dados reais, autoridade server-side e testes mensais. |
 
-O índice de 57,3% foi calculado atribuindo `1,0` a uma fase concluída no escopo declarado, `0,75` a uma fase avançada, `0,5` a uma fase parcial, `0,35` a uma fase experimental ou inicial e `0` a uma fase não iniciada ou adiada. Esse número é útil para acompanhar tendência, mas não substitui os critérios de saída das releases.
+O índice de 57,3% foi calculado atribuindo `1,0` a uma fase concluída no escopo declarado, `0,75` a uma fase avançada, `0,5` a uma fase parcial, `0,35` a uma fase experimental ou inicial e `0` a uma fase não iniciada ou adiada. Esse número não foi recomputado neste slice; os novos números são evidências de avanço, não uma porcentagem inventada. O índice é útil para acompanhar tendência, mas não substitui os critérios de saída das releases.
 
 ## Mapa de marcos
 
@@ -62,13 +62,13 @@ O índice de 57,3% foi calculado atribuindo `1,0` a uma fase concluída no escop
 | `2.0.0-rc.1` — Protótipo de app | Não iniciado como release | Exigir Beta sem bloqueios críticos, onboarding, auth, offline e aceite web/desktop/mobile. |
 | `2.0.0` — V2 estável | Não iniciada | Exigir RC aprovado, módulos prioritários concluídos, gates obrigatórios verdes e testes mensais ativados. |
 
-A release pública atual é `1.2.6`, com o visual JARVIS Núcleo V7 e os instaladores verificados. Ela é uma release operacional da linha existente, não a V2 estável. O próximo marco planejado é `2.0.0-alpha.1`, e a matriz de release confirma que a existência de páginas TypeScript não basta para declarar a V2 completa [2].
+A release pública atual é `1.3.0`, com a fila local de revisão Evidence do piloto Wiki Zomboid e os instaladores verificados. Ela é uma release operacional incremental, não a V2 estável. O próximo marco planejado é `2.0.0-alpha.1`, e a matriz de release confirma que a existência de páginas TypeScript não basta para declarar a V2 completa [2].
 
 ## O que já está construído
 
-A fundação possui Core, Boot, Runtime, Event Bus, Storage local, permissões deny-by-default, contratos de observabilidade, sessão server-validated read-only, cliente HTTP read-only, doctor V2, pilotos de Module Registry, Billing local e integração de 46 asserções. O JARVIS também possui contexto bounded, recall cacheado, seleção lazy de schemas, visual Mark XIII lightweight, reação de playback e Spotify PKCE read-only. Essas entregas estão comprovadas por testes e gates, mas várias permanecem deliberadamente read-only até existir autoridade server-side [3].
+A fundação possui Core, Boot, Runtime, Event Bus, Storage local, permissões deny-by-default, contratos de observabilidade, sessão server-validated read-only, cliente HTTP read-only, doctor V2, pilotos de Module Registry, Billing local e integração de 49 asserções. O JARVIS também possui contexto bounded, recall cacheado, seleção lazy de schemas, visual Mark XIII lightweight, reação de playback e Spotify PKCE read-only. Essas entregas estão comprovadas por testes e gates, mas várias permanecem deliberadamente read-only até existir autoridade server-side [3].
 
-A linha V1 continua preservada. O router, as 99 rotas do smoke, os wrappers de compatibilidade e a release `1.2.6` não devem ser reescritos apenas para acelerar um percentual. A arquitetura correta é continuar adicionando slices pequenos por cima da superfície estável, com fallback e rollback por módulo.
+A linha V1 continua preservada. O router, as 99 rotas do smoke, os wrappers de compatibilidade e a release `1.3.0` não devem ser reescritos apenas para acelerar um percentual. A arquitetura correta é continuar adicionando slices pequenos por cima da superfície estável, com fallback e rollback por módulo.
 
 ## O que falta para a conclusão real
 
@@ -105,14 +105,14 @@ Não devem ser executados DDL, migrations, alterações de RLS, envio de WhatsAp
 
 | Comando ou evidência | Resultado |
 |---|---|
-| `git fetch origin main` | `origin/main` confirmado em `978e13e3`. |
+| `git fetch origin main` | `origin/main` confirmado em `9ae47cea`. |
 | Inventário físico de `src/pages` | 115 `.js` wrappers, 115 `.ts` canônicos e 8 `.d.ts`. |
-| Runner oficial | 21 gates código 0; Rust código 101 conhecido; nenhuma falha nova. |
-| `npm test` dentro do runner | 1250/1250. |
+| Runner oficial | 20 gates código 0; Rust código 101 conhecido; nenhuma falha nova. |
+| `npm test` dentro do runner | 1254/1254. |
 | `npm run tipos:ts` | Passou. |
 | `npm run tipos:v2` | Passou. |
 | `npm run build` | Passou com warnings conhecidos de chunks grandes. |
-| `npm run v2:integracao` | 46/46 |
+| `npm run v2:integracao` | 49/49 |
 | `npm run smoke` | 99/99. |
 | `npm run caminho-critico` | 15/15. |
 | CI remoto no SHA | 8 workflows verdes; Supabase Preview não foi disparado neste push. |
@@ -179,3 +179,23 @@ O slice Wiki Zomboid/Evidence avançou com observabilidade bounded por status. O
 | Release operacional | `v1.2.9` publicada |
 
 O índice ponderado formal continua em 57,3% até nova recomputação completa da matriz. O avanço deste checkpoint não fecha a V2: revisão humana, retenção, persistência, Supabase/RLS, autoridade server-side, aceite físico do app, estabilização, RC e testes mensais permanecem pendentes. A release `1.2.9` está documentada em [`docs/releases/v1.2.9.md`](../releases/v1.2.9.md).
+
+## Checkpoint mais recente — Wiki Zomboid Evidence review queue / Release 1.3.0 — 2026-08-22
+
+O slice `wiki-zomboid-evidence-review-queue` adicionou `reviewQueue(limit)` como read-model local, bounded e somente leitura. A fila filtra somente Evidence `pending`, aplica limite padrão 25 e máximo 100, congela a saída e retorna apenas `id`, `claimKey`, `status`, `confidence`, `observedAt` e `sourceRevision`. Não existe `markStatus` no Wiki e não há exposição de statement, fonte, URI, publisher, collector, `moduleId`, token, claims ou permissão. O fallback sem Evidence retorna `[]`; um registro `verified` não aparece na fila.
+
+| Indicador | Resultado |
+|---|---:|
+| Commit funcional | `3f05e240` |
+| Hardening de testes/documentação | `0ab6f428` |
+| Commit de versionamento | `9ae47cea` |
+| Teste focal Wiki Zomboid | 4/4 |
+| Suíte completa | 1254/1254 |
+| Integração V2 | 49/49 |
+| Smoke / caminho crítico | 99/99 / 15/15 |
+| Runner oficial | 20 gates código 0; Rust 101 `blocked-known` |
+| CI remota do versionamento | 8/8 workflows verdes |
+| Desktop Release | `32588898329`, Windows/macOS ARM64/Ubuntu verdes |
+| Release operacional | `v1.3.0` e `desktop-v1.3.0` públicas; 8 assets e manifests verificados |
+
+A release `1.3.0` não declara a V2 estável. O Service Worker foi sincronizado para `baluarte-v1.3.0`, a V1 e os wrappers foram preservados e os instaladores, blockmaps e manifests responderam HTTP 200. O próximo passo é definir retenção, auditoria de consumidor e revisão humana com autoridade server-side; persistência Supabase/RLS continua bloqueada sem aprovação explícita.

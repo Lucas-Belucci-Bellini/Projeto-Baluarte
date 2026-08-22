@@ -1,6 +1,6 @@
 # V2 Wiki Zomboid — Piloto de Schema e Evidence
 
-**Status:** `PUBLICADO NA main — release incremental em preparação`
+**Status:** `PUBLICADO NA main — release 1.3.0 verificada`
 
 **Data:** 2026-08-22
 
@@ -55,9 +55,9 @@ A superfície V2 não concede acesso administrativo. A existência de `/zomboid-
 
 ## Próximo passo
 
-O commit funcional deste slice foi publicado na `main` em `3f05e240` (`feat(v2): add bounded evidence review queue`) após os gates locais; a CI remota aplicável do SHA terminou verde. A release do app ainda não foi criada. A próxima evolução válida é medir a necessidade de busca/indexação e revisar o schema com mais fixtures reais do catálogo, ainda sem scraping ou persistência remota. A entrada de dados externos, worker Python, fila de ingestão, embeddings e pgvector permanecem posteriores e dependem de contratos de retenção, concorrência, tenancy, revisão humana e staging autorizado.
+O commit funcional deste slice foi publicado na `main` em `3f05e240` (`feat(v2): add bounded evidence review queue`), o hardening foi publicado em `0ab6f428` e o commit de versionamento em `9ae47cea`; os gates locais e a CI remota aplicável terminaram verdes. A release pública `v1.3.0` foi verificada após o Desktop Release `32588898329` concluir nos três sistemas. A próxima evolução válida é medir a necessidade de busca/indexação e revisar o schema com mais fixtures reais do catálogo, ainda sem scraping ou persistência remota. A entrada de dados externos, worker Python, fila de ingestão, embeddings e pgvector permanecem posteriores e dependem de contratos de retenção, concorrência, tenancy, revisão humana e staging autorizado.
 
-A persistência Supabase permanece bloqueada até aprovação explícita de staging, custo, migration, RLS e rollback. O próximo release do app só deve ser criado após o commit funcional, documentação, gates locais, CI remoto e artefatos desktop passarem como conjunto.
+A persistência Supabase permanece bloqueada até aprovação explícita de staging, custo, migration, RLS e rollback. A release `v1.3.0` está pública, não-draft e não-prerelease, com oito assets e manifests `latest*.yml` declarando `version: 1.3.0`; os instaladores e blockmaps responderam HTTP 200. A próxima evolução continua condicionada a novos contratos, gates locais, CI remoto e artefatos verificáveis.
 
 ## Referências
 

@@ -6,13 +6,17 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-22 — Candidata `1.3.0`: fila local de revisão Evidence
+## 2026-08-22 — Release `1.3.0`: fila local de revisão Evidence publicada
 
-A candidata `1.3.0` adiciona ao piloto Wiki Zomboid uma `reviewQueue(limit)` local, bounded e somente leitura. A fila considera apenas evidências `pending`, usa limite padrão 25 e máximo 100, congela a saída e retorna somente `id`, `claimKey`, `status`, `confidence`, `observedAt` e `sourceRevision`. Não há `markStatus` no Wiki, conteúdo de claim, fonte, URI, publisher, token, role ou permissão expostos.
+A release `1.3.0` adiciona ao piloto Wiki Zomboid uma `reviewQueue(limit)` local, bounded e somente leitura. A fila considera apenas evidências `pending`, usa limite padrão 25 e máximo 100, congela a saída e retorna somente `id`, `claimKey`, `status`, `confidence`, `observedAt` e `sourceRevision`. Não há `markStatus` no Wiki, conteúdo de claim, fonte, URI, publisher, token, role ou permissão expostos.
 
 O teste focal cobre dois registros pendentes, limite, campos omitidos, imutabilidade, argumentos inválidos, fallback sem Evidence e exclusão após `verified` usando a API do módulo Evidence apenas no teste. A integração browser passou `49/49`; o runner oficial passou os gates locais aplicáveis, com Rust `blocked-known` código 101 mantido por incompatibilidade de toolchain. O commit funcional `3f05e240` e o hardening `0ab6f428` foram publicados diretamente na `main`, com CI remota aplicável verde.
 
-**Status:** candidata em validação de release; nenhuma tag `v1.3.0` ou `desktop-v1.3.0` foi criada ainda. Os artefatos desktop, manifests e resposta HTTP serão registrados somente após o workflow de release completar nos três sistemas.
+**Status:** publicada no commit de versionamento `9ae47cea549b886874a223b4adf9573cc07e1e29`, com as tags `v1.3.0` e `desktop-v1.3.0`. Os oito workflows remotos aplicáveis passaram; o Desktop Release `32588898329` terminou verde em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.3.0.exe` (644.015.736 bytes), `Baluarte-Launcher-1.3.0.AppImage` (773.768.732 bytes), `Baluarte-Launcher-1.3.0-arm64.dmg` (406.515.679 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.3.0`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.3.0
 
 **Documentação:** [`docs/releases/v1.3.0.md`](../docs/releases/v1.3.0.md), [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
 
