@@ -31,7 +31,7 @@
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.3.3';
+const VERSION = 'baluarte-v1.3.4';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
