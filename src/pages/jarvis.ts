@@ -39,6 +39,7 @@ import {
   isSpotifyConnected,
   rememberSpotifyClientId,
 } from '../utils/jarvis-spotify-session';
+import { getConfiguredSpotifyClientId, isSpotifyClientId } from '../utils/jarvis-spotify';
 import type { SpotifySessionEventDetail } from '../utils/jarvis-spotify-session';
 import { humanize } from '../utils/jarvis-style.js';
 import {
@@ -1204,14 +1205,37 @@ export function jarvisPage(): HTMLDivElement {
   }, '⚙ Modos & Config');
 
   const skillCount = listSkillSummaries().length;
-  const spotifyClientInput = h('input', { className: 'input input--sm', type: 'text', autocomplete: 'off', spellcheck: 'false', value: getSpotifyClientId(), placeholder: 'Spotify Client ID (público)', style: { width: '220px' } });
+  const configuredSpotifyClientId = getConfiguredSpotifyClientId();
+  const savedSpotifyClientId = getSpotifyClientId();
+  const spotifyClientInput = h('input', {
+    className: 'input input--sm',
+    type: 'text',
+    autocomplete: 'off',
+    spellcheck: 'false',
+    value: configuredSpotifyClientId || savedSpotifyClientId,
+    placeholder: configuredSpotifyClientId ? 'Spotify configurado pelo app' : 'Client ID público',
+    'aria-label': 'Client ID público do Spotify',
+    disabled: Boolean(configuredSpotifyClientId),
+    style: { width: '220px' },
+    oninput: (e: Event) => {
+      const value = valorDoCampo(e).trim();
+      if (!value) spotifyInputStatus.textContent = 'ainda não configurado';
+      else if (value.startsWith('spak_')) spotifyInputStatus.textContent = 'isso é chave Soloist, não Client ID';
+      else if (!isSpotifyClientId(value)) spotifyInputStatus.textContent = 'formato não reconhecido';
+      else spotifyInputStatus.textContent = 'pronto para conectar';
+    },
+  });
+  const spotifyInputStatus = h('span', { className: 'u-text-muted', 'aria-live': 'polite', style: { fontSize: '11px' } },
+    configuredSpotifyClientId ? 'configurado pelo app' : savedSpotifyClientId ? 'salvo neste dispositivo' : 'ainda não configurado');
   const spotifyStatus = h('span', { className: 'badge badge--cyan' }, spotifyConnected ? 'SPOTIFY · ONLINE' : 'SPOTIFY · OFF');
   const spotifyButton = h('button', {
     className: 'btn btn--ghost btn--sm',
     onclick: () => {
       if (isSpotifyConnected()) { disconnectSpotify(); spotifyStatus.textContent = 'SPOTIFY · OFF'; spotifyButton.textContent = '♫ Conectar Spotify'; markXiiiConsole?.setMusic(false); return; }
       const clientId = spotifyClientInput.value.trim();
-      if (!clientId) { toast('Informe o Client ID público criado no Spotify for Developers.'); return; }
+      if (!clientId) { toast('O Spotify ainda não está configurado neste app. Peça ao administrador para concluir a configuração uma única vez.'); return; }
+      if (clientId.startsWith('spak_')) { toast('Essa é uma chave do Spotify Soloist. Não cole chaves spak_ aqui; este campo aceita somente Client ID público.'); return; }
+      if (!isSpotifyClientId(clientId)) { toast('Esse valor não parece um Client ID público do Spotify. Confira o campo e tente novamente.'); return; }
       rememberSpotifyClientId(clientId);
       const redirectUri = `${location.origin}${location.pathname}`;
       const returnTo = `${location.pathname}${location.search}${location.hash}`;
@@ -1230,9 +1254,38 @@ export function jarvisPage(): HTMLDivElement {
   };
   globalThis.addEventListener('baluarte:spotify-session', onSpotifySession);
   markXiiiSpotifyOff = () => globalThis.removeEventListener('baluarte:spotify-session', onSpotifySession);
-  const spotifyControls = h('div', { style: { display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' } }, spotifyStatus, spotifyClientInput, spotifyButton);
-  const spotifyHint = h('p', { className: 'jarvis-config__warn u-text-muted', style: { margin: '6px 0 0' } },
-    `Client ID OAuth público salvo neste navegador. Redirect URI: ${location.origin}${location.pathname}. Cadastre essa URI exatamente no Spotify. O fluxo usa PKCE/S256, não usa Client Secret e pede somente user-read-playback-state. A chave Spotify Soloist com prefixo spak_ não é Client ID: trate-a como segredo local do daemon Soloist e nunca cole aqui.`);
+  const spotifyClearButton = h('button', {
+    className: 'btn btn--ghost btn--sm',
+    type: 'button',
+    style: { display: configuredSpotifyClientId ? 'none' : 'inline-flex' },
+    onclick: () => {
+      rememberSpotifyClientId('');
+      spotifyClientInput.value = '';
+      spotifyInputStatus.textContent = 'ainda não configurado';
+      toast('Client ID removido somente deste dispositivo.', { type: 'info' });
+    },
+  }, 'Limpar neste dispositivo');
+  const spotifyClientRow = h('label', { style: { display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' } },
+    h('span', { className: 'u-text-muted', style: { fontSize: '11px' } }, 'Client ID público'),
+    spotifyClientInput,
+    spotifyInputStatus,
+    spotifyClearButton,
+  );
+  const spotifyControls = h('div', { style: { display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', marginTop: '8px' } }, spotifyStatus, spotifyClientRow, spotifyButton);
+  const spotifyHint = h('div', { className: 'jarvis-config__warn u-text-muted', style: { margin: '6px 0 0' } },
+    h('p', { style: { margin: '0 0 6px' } },
+      `O app pode vir com a configuração pronta. Se aparecer o campo vazio, um administrador precisa cadastrar uma única vez o Client ID público. Redirect URI deste app: `,
+      h('code', null, `${location.origin}${location.pathname}`),
+      '. O fluxo usa PKCE/S256, não usa Client Secret e pede somente leitura.'),
+    h('details', null,
+      h('summary', { style: { cursor: 'pointer' } }, 'Como conectar em 3 passos'),
+      h('ol', { style: { margin: '6px 0 0', paddingLeft: '20px' } },
+        h('li', null, 'Clique em “Conectar Spotify”.'),
+        h('li', null, 'Entre na sua conta Spotify e aceite a permissão de leitura.'),
+        h('li', null, 'Volte para o JARVIS; o núcleo mostrará a presença musical quando houver playback.'),
+      ),
+      h('p', { style: { margin: '6px 0 0' } }, 'Nunca cole aqui senha, Client Secret, token ou uma chave que comece com spak_. Essa chave pertence ao Soloist local e não é necessária para este botão.'),
+    ));
   fullPage.appendChild(
     h('div', { className: 'jarvis-toolbar' },
       modeBadgeEl,

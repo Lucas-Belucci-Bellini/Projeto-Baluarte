@@ -68,3 +68,9 @@ O fluxo PKCE guarda um `returnTo` interno opcional, limitado a caminhos relativo
 O núcleo Mark XIII reage apenas a estados de playback publicados pelo monitor: `playing` cria uma pulsação de baixa amplitude, `paused` mantém uma indicação discreta e `unknown` conserva o estado online sem inventar música. A reação não captura áudio do Spotify e não tenta sincronizar conteúdo.
 
 A integração continua não verificada contra a conta Spotify real porque o dashboard `https://developer.spotify.com/dashboard` esteve indisponível no Chrome conectado durante a auditoria. O passo operacional restante da Web API é cadastrar o Client ID público e as Redirect URIs exatas no dashboard quando ele voltar a responder, depois clicar em `Conectar Spotify` na rota JARVIS. A chave Soloist segue outro caminho: daemon local protegido e ponte read-only, descritos em `SPOTIFY_SOLOIST_API_KEY_OBSERVATION_2026-08-22.md`.
+
+## Experiência para usuários finais
+
+A configuração do app pode fornecer o Client ID público por meio de `VITE_SPOTIFY_CLIENT_ID`. Esse valor é um identificador público de aplicação e não substitui Client Secret, access token ou refresh token. Quando presente, o JARVIS preenche e bloqueia o campo técnico, deixando para o usuário final apenas o botão `Conectar Spotify`, a tela normal de login/consentimento e a opção de desconectar.
+
+O procedimento sem linguagem técnica está documentado em `docs/v2/JARVIS_SPOTIFY_USER_GUIDE.md`. A chave `spak_` do Soloist continua fora desse fluxo: ela não é aceita pelo validador de Client ID, não deve ser colada no campo e só pode permanecer no ambiente privado do daemon local.

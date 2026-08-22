@@ -62,6 +62,18 @@ export function isSpotifyClientId(value: string): boolean {
     && /^[A-Za-z0-9_-]+$/.test(normalized);
 }
 
+export function getConfiguredSpotifyClientId(): string {
+  try {
+    const metadata = import.meta as ImportMeta & { readonly env?: Record<string, unknown> };
+    const value = typeof metadata.env?.VITE_SPOTIFY_CLIENT_ID === 'string'
+      ? metadata.env.VITE_SPOTIFY_CLIENT_ID
+      : '';
+    return isSpotifyClientId(value) ? value.trim() : '';
+  } catch {
+    return '';
+  }
+}
+
 function assertConfig(config: SpotifyPkceConfig): void {
   if (!isSpotifyClientId(config.clientId)) {
     throw new Error(config.clientId.trim().startsWith('spak_') ? 'SPOTIFY_SOLOIST_KEY_NOT_CLIENT_ID' : 'SPOTIFY_CLIENT_ID_INVALID');
