@@ -2,8 +2,7 @@ import { h } from './helpers.js';
 
 export type JarvisV7VisualState = 'loading' | 'ready' | 'fallback';
 
-/** Captura local do núcleo dourado aprovado como visual principal do app. */
-export const JARVIS_V7_PATH = '/jarvis/jarvis-nucleo-browser.webp';
+export const JARVIS_V7_PATH = '/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html';
 
 export interface JarvisV7VisualOptions {
   readonly fallback: HTMLElement;
@@ -13,7 +12,7 @@ export interface JarvisV7VisualOptions {
 
 export interface JarvisV7Visual {
   readonly root: HTMLDivElement;
-  readonly image: HTMLImageElement;
+  readonly frame: HTMLIFrameElement;
   readonly source: string;
   setState(state: JarvisV7VisualState): void;
   dispose(): void;
@@ -44,43 +43,46 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
     className: 'jv-visual-switcher',
     dataset: { visualSource: 'jarvis-nucleo-v7', visualState: 'loading' },
   }) as HTMLDivElement;
-  const image = h('img', {
-    className: 'jv-visual-switcher__image',
-    src: source,
-    alt: 'Núcleo dourado J.A.R.V.I.S. do Projeto Baluarte',
+  const frame = h('iframe', {
+    className: 'jv-visual-switcher__frame',
+    title: 'J.A.R.V.I.S. Núcleo V7 — visualização 3D',
     loading: 'eager',
-    decoding: 'async',
-  }) as HTMLImageElement;
+    referrerPolicy: 'no-referrer',
+    sandbox: 'allow-scripts allow-same-origin',
+    src: source,
+    'aria-label': 'J.A.R.V.I.S. Núcleo V7, visualização 3D',
+  }) as HTMLIFrameElement;
   const fallback = options.fallback;
   fallback.classList.add('jv-visual-switcher__fallback');
   fallback.dataset.v7Fallback = 'true';
-  root.append(image, fallback);
+  root.append(frame, fallback);
 
   let disposed = false;
   const setState = (state: JarvisV7VisualState): void => {
     if (disposed) return;
     root.dataset.visualState = state;
-    image.hidden = state !== 'ready';
+    frame.hidden = state !== 'ready';
     fallback.hidden = state === 'ready';
     options.onState?.(state);
   };
   const onLoad = (): void => setState('ready');
   const onError = (): void => setState('fallback');
-  image.addEventListener('load', onLoad);
-  image.addEventListener('error', onError);
+  frame.addEventListener('load', onLoad);
+  frame.addEventListener('error', onError);
   setState('loading');
 
   return {
     root,
-    image,
+    frame,
     source,
     setState,
     dispose(): void {
       if (disposed) return;
       disposed = true;
-      image.removeEventListener('load', onLoad);
-      image.removeEventListener('error', onError);
-      image.remove();
+      frame.removeEventListener('load', onLoad);
+      frame.removeEventListener('error', onError);
+      frame.src = 'about:blank';
+      frame.remove();
       fallback.hidden = false;
       fallback.classList.remove('jv-visual-switcher__fallback');
       delete fallback.dataset.v7Fallback;

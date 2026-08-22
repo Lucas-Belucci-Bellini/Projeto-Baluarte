@@ -639,8 +639,9 @@
 /* Integração visual do Núcleo V7: o artefato standalone tem seu próprio tema;
  * esta camada somente garante composição e fallback no caminho /jarvis. */
 .jv-visual-switcher { position: relative; min-height: 520px; overflow: hidden; border: 1px solid rgba(221, 179, 94, .18); background: #0b0910; }
-.jv-visual-switcher__image { display: block; width: 100%; min-height: 520px; height: 520px; border: 0; background: #0b0910; object-fit: cover; object-position: center; }
-.jv-visual-switcher__image[hidden], .jv-visual-switcher__fallback[hidden] { display: none; }
+.jv-visual-switcher__frame, .jv-visual-switcher__image { display: block; width: 100%; min-height: 520px; height: 520px; border: 0; background: #0b0910; }
+.jv-visual-switcher__image { object-fit: cover; object-position: center; }
+.jv-visual-switcher__frame[hidden], .jv-visual-switcher__image[hidden], .jv-visual-switcher__fallback[hidden] { display: none; }
 .jv-visual-switcher__fallback { min-height: 520px; }
 .jv-visual-switcher__reference-fallback { position: relative; min-height: 520px; background: #06070b; }
 .jv-visual-switcher__reference { display: block; width: 100%; min-height: 520px; height: 520px; object-fit: cover; object-position: center; }
@@ -649,7 +650,7 @@
 .jv-visual-switcher[data-visual-state="fallback"]::after { position: absolute; top: 12px; left: 50%; z-index: 4; padding: 4px 8px; border: 1px solid rgba(221, 179, 94, .22); background: rgba(6, 7, 11, .76); color: #d9b866; content: 'V7 · imagem de referência'; font-size: 9px; letter-spacing: 1.4px; transform: translateX(-50%); pointer-events: none; }
 @media (max-width: 900px) {
   .jv-visual-switcher, .jv-visual-switcher__fallback { min-height: 420px; }
-  .jv-visual-switcher__image { min-height: 420px; height: 420px; }
+  .jv-visual-switcher__frame, .jv-visual-switcher__image { min-height: 420px; height: 420px; }
   .jv-visual-switcher__reference-fallback { min-height: 420px; }
   .jv-visual-switcher__reference { min-height: 420px; height: 420px; }
 }
