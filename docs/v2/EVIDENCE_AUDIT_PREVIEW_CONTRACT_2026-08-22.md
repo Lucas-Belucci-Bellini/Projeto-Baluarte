@@ -1,6 +1,6 @@
 # Evidence Audit Preview — Contrato local V2
 
-**Status:** contrato em desenho antes da implementação
+**Status:** implementado no commit funcional `dbd09f52`; release `1.3.2` publicada após validação
 **Data:** 2026-08-22
 **Autor:** Manus AI
 **Dependência:** `v2/data/evidence.ts` e módulo `evidence`

@@ -6,6 +6,24 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-22 — Release `1.3.2`: auditoria estrutural local Evidence publicada
+
+A release `1.3.2` adiciona ao módulo V2 Evidence uma projeção `auditPreview(options?)` local, estrutural, bounded e somente leitura. Ela permite filtrar por `moduleId`, limitar a saída e observar contagens dos registros devolvidos por status, sem criar um event log operacional, sem apagar dados e sem conceder autoridade.
+
+Cada registro projetado contém somente `id`, `moduleId`, `status` e `observedAt`; o resumo contém `returned`, contagens de `pending`, `verified`, `rejected` e `superseded`, além de `truncated`. Statement, source, URI, publisher, revision, collector, confidence, claimKey, retrievedAt, supersededBy, tokens, claims e permissões não atravessam a fronteira.
+
+Os testes focais do contrato passaram `11/11`; a integração browser passou `51/51`; o runner oficial passou os gates de código aplicáveis, mantendo Rust local como `blocked-known` código 101 por incompatibilidade de toolchain. O commit funcional `dbd09f52` e o commit de versionamento `5d2142d7` foram publicados diretamente na `main`, com CI remota aplicável verde.
+
+**Status:** publicada com as tags `v1.3.2` e `desktop-v1.3.2`. A CI remota do commit de versionamento passou em 8/8 workflows; o Desktop Release `32595313050` terminou verde em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease e possui oito assets verificados.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.3.2.exe` (644.015.829 bytes), `Baluarte-Launcher-1.3.2.AppImage` (773.768.687 bytes), `Baluarte-Launcher-1.3.2-arm64.dmg` (406.309.979 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.3.2`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.3.2
+
+**Documentação:** [`docs/releases/v1.3.2.md`](../docs/releases/v1.3.2.md), [`docs/v2/EVIDENCE_AUDIT_PREVIEW_CONTRACT_2026-08-22.md`](../docs/v2/EVIDENCE_AUDIT_PREVIEW_CONTRACT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
+
+---
+
 ## 2026-08-22 — Release `1.3.1`: preview local de retenção Evidence publicada
 
 A release `1.3.1` adiciona ao módulo V2 Evidence uma projeção `retentionPreview(options)` local, determinística, bounded e somente leitura. Ela classifica registros pela idade relativa a uma data `now` explícita, sem apagar, alterar, verificar ou promover evidências. A saída omite conteúdo de claims, fontes, tokens e permissões.

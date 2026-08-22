@@ -38,7 +38,7 @@ Este slice ainda não faz ingestão, deduplicação semântica, busca full-text,
 
 ## Próximo passo recomendado
 
-O adapter local de catálogo e a fila Wiki Zomboid já foram conectados ao módulo e validados com fixtures. O próximo slice válido é medir retenção local e auditoria de consumidor com datas determinísticas, limites de idade, duplicidade, concorrência e descarte somente projetado. Só depois de fechar esses contratos deve entrar retenção operacional, fila de ingestão, worker Python ou pgvector.
+O adapter local de catálogo, a fila Wiki Zomboid e as projeções locais de retenção/auditoria já foram conectados ao módulo e validados com fixtures. O próximo slice válido é definir a política operacional de retenção e auditoria server-side com identidade, tenancy, ownership, concorrência, exportação e rollback. Só depois de aprovação explícita devem entrar persistência remota, fila de ingestão, worker Python ou pgvector.
 
 
 ## Checkpoint seguinte — Wiki Zomboid schema pilot — 2026-08-22
@@ -56,3 +56,14 @@ O commit funcional `752206fb` adicionou `projectEvidenceRetention` ao contrato T
 A validação passou teste focal Evidence `9/9`, suíte completa `1256/1256`, typechecks, build com warning conhecido de chunks grandes, integração V2 `50/50`, smoke `99/99`, caminho crítico `15/15` e runner oficial com 20 gates código 0. A primeira execução do runner teve falso vermelho de `v2_integracao` porque `PORTA_V2=4195` não era limpa pelo runner, que remove apenas 4193/4194; após matar somente os Vite stale do harness e rerodar em 4193, o gate passou e Rust permaneceu `blocked-known` código 101. O commit funcional e o commit de versionamento tiveram 8/8 workflows remotos verdes.
 
 A release `v1.3.1` e a tag `desktop-v1.3.1` foram publicadas após o Desktop Release `32592402608` passar em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease, possui oito assets, os manifests declaram `version: 1.3.1` e os oito downloads responderam HTTP 200. A nota detalhada está em [`docs/releases/v1.3.1.md`](../releases/v1.3.1.md) e o contrato em [`EVIDENCE_RETENTION_CONTRACT_2026-08-22.md`](./EVIDENCE_RETENTION_CONTRACT_2026-08-22.md).
+
+
+## Checkpoint mais recente — Evidence audit preview / Release 1.3.2 — 2026-08-22
+
+O commit funcional `dbd09f52` adicionou `projectEvidenceAudit` ao contrato TypeScript e `auditPreview(options?)` ao módulo Evidence. A projeção aceita chamada sem opções, filtra opcionalmente por `moduleId`, aplica limite padrão 25 e máximo 100, preserva a ordem append-only e retorna somente `scope`, `limit`, registros estruturais e resumo bounded. Cada registro contém apenas `id`, `moduleId`, `status` e `observedAt`; o resumo contém `returned`, contagens por status e `truncated`. Nenhum statement, fonte, URI, publisher, revision, collector, confidence, claimKey, retrievedAt, token, role, claim ou permissão é exposto.
+
+A validação passou teste focal Evidence `11/11`, suíte completa `1258/1258`, `tipos:ts`, `tipos:v2`, build com warning conhecido de chunks grandes, integração V2 `51/51`, smoke `99/99`, caminho crítico `15/15` e runner oficial com 20 gates código 0. Rust local permaneceu `blocked-known` código 101 pela incompatibilidade do Cargo com `edition2024`. Os oito workflows remotos aplicáveis do commit funcional e do commit de versionamento terminaram verdes.
+
+A release `v1.3.2` e a tag `desktop-v1.3.2` foram publicadas após o Desktop Release `32595313050` passar em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease, possui oito assets, os manifests declaram `version: 1.3.2` e os oito downloads responderam HTTP 200. A nota detalhada está em [`docs/releases/v1.3.2.md`](../releases/v1.3.2.md) e o contrato em [`EVIDENCE_AUDIT_PREVIEW_CONTRACT_2026-08-22.md`](./EVIDENCE_AUDIT_PREVIEW_CONTRACT_2026-08-22.md).
+
+O próximo marco é uma política operacional de retenção e auditoria server-side com identidade, tenancy, ownership, concorrência, exportação e rollback. Este checkpoint não cria persistência remota nem autorização client-side.
