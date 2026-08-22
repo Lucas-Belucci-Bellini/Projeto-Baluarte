@@ -40,8 +40,8 @@ A recomendação de produto é começar com o **gerador determinístico versiona
 
 | Componente | Responsabilidade | Saída |
 | --- | --- | --- |
-| `scripts/v2-daily-report.mjs` | Coletar SHA, git status, inventário, gates e branches | `reports/daily/YYYY-MM-DD.md` e `.json` |
-| `scripts/v2-issue-monitor.mjs` | Ler issues/PRs e aplicar regras de prioridade/deduplicação | `reports/daily/issues.json` |
+| `scripts/v2-daily-report.mjs` | Fazer `fetch` read-only, criar worktree temporário em `origin/main`, coletar SHA, inventário físico, docs, releases, feature, gates e alertas | `reports/daily/YYYY-MM-DD.md` e `.json` |
+| `scripts/v2-issue-monitor.mjs` | Ler o relatório corrente, aplicar regras de prioridade/deduplicação e imprimir alertas estruturados | saída informativa sem mutação |
 | `scripts/v2-gate-summary.mjs` | Normalizar jobs e agrupar causas raiz | Matriz de gates e causas |
 | `docs/v2/DAILY_PROGRESS_AUTOMATION.md` | Contrato operacional e regras | Este documento |
 | Configuração de destinatários | E-mails e papéis dos colaboradores | Variáveis protegidas, nunca commitadas |
@@ -59,9 +59,9 @@ O horário ainda precisa ser confirmado pelo proprietário. A configuração ini
 
 ## 8. Configuração inicial ativada
 
-A configuração inicial foi ativada em 15 de agosto de 2026: destinatário `lucasbb2007@gmail.com`, Gmail conectado e rotina diária às **09:00 em `America/Sao_Paulo` (GMT-3)**. O agendamento está ativo e vinculado ao conector Gmail. A execução foi instruída a enviar o resumo diário e alertas críticos, mas permanece proibida de comentar, fechar, atribuir, fazer merge, publicar ou executar qualquer ação destrutiva no GitHub.
+A configuração inicial foi ativada em 15 de agosto de 2026: destinatário `lucasbb2007@gmail.com`, Gmail conectado e rotina diária às **09:00 em `America/Sao_Paulo` (GMT-3)**. O agendamento está ativo e vinculado ao conector Gmail. A execução foi instruída a enviar o resumo diário e alertas críticos, mas permanece proibida de comentar, fechar, atribuir, fazer merge, publicar ou executar qualquer ação destrutiva no GitHub. O gerador v2 usa `git fetch origin main` e um worktree temporário exatamente no SHA observado antes de contar páginas ou rodar gates; as dependências são reutilizadas somente por symlink local e o checkout principal não é alterado.
 
-Antes de gerar ou enviar cada resumo, a execução deve inspecionar o estado atual do `origin/main`: SHA, commits novos, inventário físico de páginas canônicas, documentação recente, gates disponíveis e alterações relevantes em `feature/login-cadastro` e no plano de releases. A rotina continua usando o gerador versionado (`npm run relatorio:diario`) e o monitor (`npm run monitor:issues`); o resumo não pode ser montado a partir de snapshot histórico quando houver mudanças novas no projeto. Se uma execução externa exigir confirmação adicional de envio, o relatório não deve ser considerado entregue até que a confirmação apareça; a coleta e o arquivo local continuam sendo a fonte de auditoria.
+Antes de gerar ou enviar cada resumo, a execução deve inspecionar o estado atual do `origin/main`: SHA, commits novos, inventário físico de páginas canônicas e wrappers, documentação recente, execução dos gates disponíveis, alterações relevantes em `feature/login-cadastro` e o plano de releases. A rotina usa o gerador versionado (`npm run relatorio:diario`) e o monitor (`npm run monitor:issues`); o resumo não pode ser montado a partir de snapshot histórico quando houver mudanças novas no projeto. O JSON v2 registra `originMainSha`, `observation.worktreeCreated`, `rootCauses`, `cascadeEffects`, `criticalAlerts` e os comandos observados. Se uma execução externa exigir confirmação adicional de envio, o relatório não deve ser considerado entregue até que a confirmação apareça; a coleta e o arquivo local continuam sendo a fonte de auditoria.
 
 ## 9. Aceite
 
