@@ -6,6 +6,52 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-23 — Release `1.3.6`: o Núcleo sabe o que toca, e passa a poder acompanhar
+
+A queixa do operador: *"a função música não reconhece a música que tá tocando no
+spotify, como resultado o espectrômetro não acompanha a música"*. Uma frase, duas
+causas independentes.
+
+**O Núcleo não sabia.** O V7 vive num `<iframe>` e não fala com o Spotify — quem
+tem a sessão é a página que o embute, e não havia canal nenhum entre as duas. O
+botão `♪ música` chamava a partitura generativa do Baluarte e respondia
+*"partitura generativa a tocar"* com a faixa do operador tocando na cara dele.
+Agora a página publica os metadados no quadro por `postMessage` same-origin, com
+`targetOrigin` fechado, e o V7 só aceita mensagem do próprio pai, da mesma origem
+e com a etiqueta certa. O botão passa a dizer `♪ Paint It, Black · The Rolling
+Stones`; sem título utilizável, `♪ spotify a tocar`; nada tocando, volta a
+`♪ música`. A ponte sobe **antes** da cena: ela não depende do three.js, e o
+botão precisa dizer a verdade mesmo enquanto o astrolábio alinha.
+
+**O Núcleo não podia acompanhar — e por aí não há conserto.** O Spotify não
+entrega som a esta página: a Web API dá metadados, a política do endpoint diz
+*"do not synchronize Spotify content"*, e nem o Web Playback SDK salvaria,
+porque o áudio dele passa por EME/DRM e um `createMediaElementSource` sobre ele
+devolve silêncio. O que existe é analisar o som **real**: entrou
+`AudioEngine.captureSystem()`, com `getDisplayMedia` de áudio de aba ou de
+sistema. Só o analisador recebe o sinal — devolver a música com atraso por cima
+do que já se ouve seria pior que nada; a faixa de vídeo, que o Chrome exige
+pedir para dar áudio de aba, morre na entrada; e cada modo de falha ensina o
+passo seguinte em vez de dizer "não deu".
+
+Dois caminhos chegam lá: o botão novo `◐ som do pc` (atalho `a`), e o próprio
+`♪ música` — que, **com o Spotify tocando**, deixa de significar "inventa uma" e
+passa a significar "esta". Sem Spotify tocando, o comportamento antigo continua
+inteiro. O quadro passou a declarar `allow="microphone; display-capture"`: ele é
+same-origin e já herdaria a política, mas declarar é o que impede uma mudança
+futura de origem ou de cabeçalho de desligar as duas capacidades em silêncio.
+
+Suíte `1279/1279`, portão de integração `58/58`, build, typechecks,
+`verificar-nexus` e catálogos verdes. A ponte foi exercitada em navegador ponta a
+ponta, **incluindo a rejeição de mensagem forjada de outra fonte**. O que a
+observação não cobriu está dito na nota: o clique em `◐ som do pc`, porque os
+handlers do HUD sobem dentro do `init()`, que exige o three.js — bloqueado no
+ambiente remoto.
+
+**Documentação:** [`docs/releases/v1.3.6.md`](../docs/releases/v1.3.6.md).
+
+---
+
 ## 2026-08-23 — Release `1.3.5`, onda 2: a web recebe o Núcleo, e o Spotify vira um clique
 
 Duas coisas que o operador viu na tela do site, e que eram a mesma dívida

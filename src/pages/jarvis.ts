@@ -1273,6 +1273,13 @@ export function jarvisPage(): HTMLDivElement {
     }
     spotifyStatus.textContent = detail.connected ? 'SPOTIFY · ONLINE' : 'SPOTIFY · OFF';
     spotifyButton.textContent = detail.connected ? '♫ Desconectar Spotify' : '♫ Conectar Spotify';
+    /* Mesma ponte da web: o Núcleo V7 vive num iframe e não enxerga a sessão do
+     * Spotify. Só metadado de playback atravessa — nunca token. */
+    jarvisV7Visual?.publicarPresencaMusical({
+      tocando: detail.connected === true && detail.playback === 'playing',
+      titulo: typeof detail.title === 'string' ? detail.title : null,
+      artista: typeof detail.artist === 'string' ? detail.artist : null,
+    });
   };
   globalThis.addEventListener('baluarte:spotify-session', onSpotifySession);
   markXiiiSpotifyOff = () => globalThis.removeEventListener('baluarte:spotify-session', onSpotifySession);

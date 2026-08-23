@@ -80,7 +80,7 @@ const VIEWS: ViewSpec[] = [
    Um analisador em paralelo (nunca em série com a saída) para o microfone
    não realimentar. Três envelopes com ataque rápido e queda lenta, mais um
    detetor de batida sobre o fluxo do grave.                                  */
-type AudioMode = 'off' | 'gen' | 'file' | 'mic';
+type AudioMode = 'off' | 'gen' | 'file' | 'mic' | 'sistema';
 
 class AudioEngine {
   ctx: AudioContext | null = null;
@@ -160,6 +160,59 @@ class AudioEngine {
     return this.label;
   }
 
+  /**
+   * Áudio do SISTEMA (ou de uma aba) — a única fonte que faz o espectrómetro
+   * acompanhar o Spotify de verdade.
+   *
+   * O porquê, sem rodeios: a Web API do Spotify entrega **metadados**, não som,
+   * e a política dela proíbe sincronizar conteúdo. Mesmo o Web Playback SDK não
+   * salva: o áudio dele passa por EME/DRM, e um `createMediaElementSource` sobre
+   * ele devolve silêncio. Não existe caminho, dentro da página, que analise a
+   * forma de onda do Spotify. O que existe é este: o operador partilha a aba ou
+   * o ecrã **com som**, e o analisador recebe o sinal real — venha ele do
+   * Spotify, do YouTube ou de qualquer coisa que esteja a tocar.
+   *
+   * Só o analisador, como no microfone: o sinal NÃO volta para as colunas, senão
+   * o operador ouviria a própria música duplicada e com atraso.
+   */
+  async captureSystem(): Promise<boolean> {
+    const ctx = this.ensure(); this.resume();
+    if (this.mode === 'sistema') { this.silence(); return false; }
+    const media = navigator.mediaDevices as MediaDevices & {
+      getDisplayMedia?: (c: MediaStreamConstraints) => Promise<MediaStream>;
+    };
+    if (typeof media?.getDisplayMedia !== 'function') throw new Error('SEM_CAPTURA');
+    let stream: MediaStream;
+    try {
+      stream = await media.getDisplayMedia({
+        video: true,
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+      });
+    } catch { throw new Error('RECUSADO'); }
+    if (!stream.getAudioTracks().length) {
+      stream.getTracks().forEach(t => t.stop());
+      throw new Error('SEM_AUDIO');
+    }
+    /* Só depois do diálogo: escolher a janela pode suspender o contexto. */
+    this.detach();
+    if (ctx.state === 'suspended') await ctx.resume();
+    /* O vídeo veio junto porque o Chrome não oferece áudio de aba sem ele; não
+     * é usado para nada e é desligado aqui — capturar imagem sem precisar dela
+     * seria recolher mais do que o núcleo pede. */
+    stream.getVideoTracks().forEach(t => t.stop());
+    this.micStream = stream;
+    this.micSrc = ctx.createMediaStreamSource(stream);
+    this.micSrc.connect(this.analyser!);
+    stream.getAudioTracks().forEach(t => {
+      t.onended = () => { if (this.mode === 'sistema') { this.silence(); this.onEnded?.(); } };
+    });
+    this.mode = 'sistema'; this.label = 'áudio do sistema';
+    return true;
+  }
+
+  /** Avisa quem desenha o HUD que a partilha acabou pelo banner do navegador. */
+  onEnded: (() => void) | null = null;
+
   async useMic(): Promise<boolean> {
     const ctx = this.ensure(); this.resume();
     if (this.mode === 'mic') { this.silence(); return false; }
@@ -180,7 +233,13 @@ class AudioEngine {
     if (this.mediaEl) { this.mediaEl.pause(); }
     if (this.mediaSrc) { try { this.mediaSrc.disconnect(); } catch (e) { /* já solto */ } }
     if (this.micSrc) { try { this.micSrc.disconnect(); } catch (e) { /* já solto */ } }
-    if (this.micStream) { this.micStream.getTracks().forEach(t => t.stop()); this.micStream = null; }
+    if (this.micStream) {
+      /* Solta o aviso ANTES de parar: `stop()` não dispara `ended` pela
+       * especificação, mas um motor que dispare faria `silence()` reentrar em
+       * `detach()` sem fim. Custa uma linha e fecha a porta. */
+      this.micStream.getTracks().forEach(t => { t.onended = null; t.stop(); });
+      this.micStream = null;
+    }
     this.peak = { bass: 0.05, mid: 0.04, treble: 0.02, level: 0.04 };
     this.mean = { bass: 0.02, mid: 0.02, treble: 0.01, level: 0.02 };
     this.specPeak = 24; this.beatCool = 0;
@@ -1127,9 +1186,59 @@ function touched(): void {
 function markAudioButtons(): void {
   const set = (id: string, on: boolean) =>
     document.getElementById(id)!.setAttribute('aria-pressed', String(on));
-  set('bMusic', audio.mode === 'gen');
+  set('bMusic', audio.mode === 'gen' || audio.mode === 'sistema');
+  set('bSystem', audio.mode === 'sistema');
   set('bMic', audio.mode === 'mic');
   set('bFile', audio.mode === 'file');
+}
+
+/* ─ presença musical externa, vinda do Baluarte ────────────────────────────
+ *
+ * O núcleo vive num <iframe> e não fala com o Spotify: quem tem a sessão é a
+ * página que o embute. Sem esta ponte, o operador via o Spotify tocando e o
+ * núcleo respondendo "partitura generativa" — que foi exatamente a queixa.
+ *
+ * O que chega aqui é só metadado: se está tocando, título e artista. É o que a
+ * Web API do Spotify entrega, e o bastante para o botão dizer a verdade. */
+interface PresencaMusical {
+  readonly tocando: boolean;
+  readonly titulo: string | null;
+  readonly artista: string | null;
+}
+let presenca: PresencaMusical = { tocando: false, titulo: null, artista: null };
+
+function rotuloDaFaixa(): string {
+  if (!presenca.tocando) return '';
+  const titulo = (presenca.titulo ?? '').trim();
+  if (!titulo) return 'spotify a tocar';
+  const artista = (presenca.artista ?? '').trim();
+  return artista ? `${titulo} · ${artista}` : titulo;
+}
+
+function pintarBotaoMusica(): void {
+  const alvo = document.getElementById('musicName');
+  if (!alvo) return;
+  const faixa = rotuloDaFaixa();
+  alvo.textContent = faixa ? `♪ ${faixa}` : '♪ música';
+  document.getElementById('bMusic')!.title = faixa
+    ? `${faixa} — o núcleo acompanha partilhando o som do PC`
+    : 'partitura generativa do Baluarte';
+}
+
+function ouvirPresencaMusical(): void {
+  addEventListener('message', (event: MessageEvent) => {
+    if (event.origin !== location.origin || event.source !== window.parent) return;
+    const dado = event.data;
+    if (dado === null || typeof dado !== 'object') return;
+    const registo = dado as Record<string, unknown>;
+    if (registo.source !== 'baluarte-presenca-musical') return;
+    presenca = {
+      tocando: registo.tocando === true,
+      titulo: typeof registo.titulo === 'string' ? registo.titulo : null,
+      artista: typeof registo.artista === 'string' ? registo.artista : null,
+    };
+    pintarBotaoMusica();
+  });
 }
 
 function bind(): void {
@@ -1184,10 +1293,18 @@ function bind(): void {
 
   /* som */
   const fileInput = document.getElementById('file') as HTMLInputElement;
+  /* Com o Spotify tocando, "música" deixa de significar "inventa uma": significa
+   * ESTA. E como o Spotify não entrega som a esta página, a única forma de o
+   * espectrómetro acompanhar é o operador partilhar o áudio — é para lá que o
+   * botão passa a levar, dizendo o nome da faixa em vez de um pedido genérico. */
   document.getElementById('bMusic')!.onclick = () => {
+    touched();
+    if (audio.mode === 'sistema') { audio.silence(); markAudioButtons(); toast('silêncio'); return; }
+    if (presenca.tocando) { capturarSistema(rotuloDaFaixa()); return; }
     const on = audio.toggleGenerative();
-    markAudioButtons(); toast(on ? 'partitura generativa a tocar' : 'silêncio'); touched();
+    markAudioButtons(); toast(on ? 'partitura generativa a tocar' : 'silêncio');
   };
+  document.getElementById('bSystem')!.onclick = () => { touched(); capturarSistema(rotuloDaFaixa()); };
   document.getElementById('bFile')!.onclick = () => { fileInput.click(); touched(); };
   fileInput.onchange = () => {
     const f = fileInput.files && fileInput.files[0];
@@ -1235,6 +1352,7 @@ function bind(): void {
     else if (k === 'm') (document.getElementById('bMusic') as HTMLElement).click();
     else if (k === 'o') (document.getElementById('bFile') as HTMLElement).click();
     else if (k === 'i') (document.getElementById('bMic') as HTMLElement).click();
+    else if (k === 'a') (document.getElementById('bSystem') as HTMLElement).click();
     else if (k === 'p') savePNG();
     else if (k === 'h') {
       hudOn = !hudOn;
@@ -1249,6 +1367,23 @@ function bind(): void {
 
   setInterval(() => { if (audio.mode === 'off' && Math.random() < 0.35) pulse(420); }, 8000);
   setInterval(() => { if (scanT < 0) fireScan(); }, CFG.scanEvery * 1000);
+}
+
+/* Um lugar só para a captura, porque dois botões levam a ela e os modos de
+ * falha são o que o operador precisa entender: recusar o diálogo, escolher uma
+ * janela que não partilha som, ou um navegador sem a API. Cada um diz o que
+ * fazer a seguir — "não deu" não ensina nada. */
+function capturarSistema(faixa: string): void {
+  audio.captureSystem().then(on => {
+    markAudioButtons();
+    if (!on) { toast('silêncio'); return; }
+    toast(faixa ? `a acompanhar · ${faixa}` : 'a acompanhar o som do pc');
+  }).catch((erro: unknown) => {
+    const causa = erro instanceof Error ? erro.message : '';
+    if (causa === 'SEM_AUDIO') toast('escolha uma ABA e marque "partilhar áudio"');
+    else if (causa === 'SEM_CAPTURA') toast('este navegador não partilha áudio');
+    else toast('partilha cancelada');
+  });
 }
 
 function loadTrack(f: File): void {
@@ -1447,6 +1582,13 @@ function animate(): void {
 
   if (composer) composer.render(); else renderer.render(scene, camera);
 }
+
+/* A ponte com a presença musical do Baluarte é ligada ANTES do arranque da cena,
+ * e de propósito: ela não depende do three.js, e o botão precisa dizer a verdade
+ * mesmo enquanto o astrolábio ainda alinha — ou se ele nunca alinhar. */
+ouvirPresencaMusical();
+pintarBotaoMusica();
+audio.onEnded = () => { markAudioButtons(); toast('partilha encerrada'); };
 
 /* ═══ 7 · ARRANQUE ═════════════════════════════════════════════════════════ */
 

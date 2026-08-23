@@ -10,11 +10,29 @@ export interface JarvisV7VisualOptions {
   readonly onState?: (state: JarvisV7VisualState) => void;
 }
 
+/** Só metadado de playback: o que a Web API do Spotify entrega, e nada além. */
+export interface JarvisV7PresencaMusical {
+  readonly tocando: boolean;
+  readonly titulo: string | null;
+  readonly artista: string | null;
+}
+
 export interface JarvisV7Visual {
   readonly root: HTMLDivElement;
   readonly frame: HTMLIFrameElement;
   readonly source: string;
   setState(state: JarvisV7VisualState): void;
+  /**
+   * Conta ao Núcleo o que está tocando fora dele.
+   *
+   * O V7 vive num `<iframe>` e não fala com o Spotify — quem tem a sessão é
+   * esta página. Sem esta ponte, o operador via o Spotify tocando e o botão
+   * `♪ música` respondendo "partitura generativa", que é uma resposta errada
+   * para a pergunta certa. O estado fica guardado e é reenviado quando o quadro
+   * termina de carregar, senão uma faixa que já tocava antes do `load` nunca
+   * chegaria lá.
+   */
+  publicarPresencaMusical(presenca: JarvisV7PresencaMusical): void;
   dispose(): void;
 }
 
@@ -49,6 +67,11 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
     loading: 'eager',
     referrerPolicy: 'no-referrer',
     sandbox: 'allow-scripts allow-same-origin',
+    /* O quadro é same-origin, então a política de permissões já o alcançaria por
+     * herança; declarar mesmo assim é o que impede uma mudança futura de origem
+     * ou de cabeçalho de desligar microfone e partilha de áudio em silêncio —
+     * e é por essas duas que o espectrómetro recebe som de verdade. */
+    allow: 'microphone; display-capture',
     src: source,
     'aria-label': 'J.A.R.V.I.S. Núcleo V7, visualização 3D',
   }) as HTMLIFrameElement;
@@ -65,7 +88,18 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
     fallback.hidden = state === 'ready';
     options.onState?.(state);
   };
-  const onLoad = (): void => setState('ready');
+  let presencaAtual: JarvisV7PresencaMusical | null = null;
+  const enviarPresenca = (): void => {
+    if (disposed || presencaAtual === null) return;
+    frame.contentWindow?.postMessage({
+      source: 'baluarte-presenca-musical',
+      tocando: presencaAtual.tocando,
+      titulo: presencaAtual.titulo,
+      artista: presencaAtual.artista,
+    }, currentOrigin());
+  };
+
+  const onLoad = (): void => { setState('ready'); enviarPresenca(); };
   const onError = (): void => setState('fallback');
 
   /* O `load` do iframe só conta que o DOCUMENTO carregou. Se o three.js não
@@ -93,6 +127,10 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
     frame,
     source,
     setState,
+    publicarPresencaMusical(presenca: JarvisV7PresencaMusical): void {
+      presencaAtual = presenca;
+      enviarPresenca();
+    },
     dispose(): void {
       if (disposed) return;
       disposed = true;
