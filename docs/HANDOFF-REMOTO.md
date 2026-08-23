@@ -57,8 +57,17 @@ O que trava cada item, hoje:
 2. **Contract test `Manifest → Registry → Permission → Runtime`** — pressupõe o
    item 1. Escrever contra um `v2/harness/main.js` que está prestes a mudar é
    trabalho que nasce para ser refeito.
-3. **`Supabase Preview`** — independente de tudo acima, e o único vermelho do
-   `main`. Bom primeiro alvo se quiser algo desacoplado.
+3. ~~**`Supabase Preview`**~~ — **diagnosticado em 23/08/2026**, em
+   [`docs/v2/SUPABASE_PREVIEW_DIAGNOSTICO_2026-08-23.md`](./v2/SUPABASE_PREVIEW_DIAGNOSTICO_2026-08-23.md).
+   Não era credencial nem técnica: o banco é **compartilhado** por Baluarte,
+   Veritas, TaxForge e outros (98 migrations remotas, 17 neste repositório, 82
+   em nenhum dos dois), e as migrations são aplicadas pelo dashboard/API — que
+   carimba a própria versão — em vez de `supabase db push`. O vermelho é
+   **estrutural**: não fecha enquanto outro repositório escrever no mesmo banco.
+   O que sobrou é decisão do operador entre três saídas (separar bancos, eleger
+   um repositório dono, ou desligar a integração), e um achado à parte: as
+   migrations `billing_foundation` e `security_definer_search_path_hardening`
+   **não foram aplicadas** — o schema `billing` não existe no banco.
 
 ## Armadilhas já pagas — não reintroduza
 

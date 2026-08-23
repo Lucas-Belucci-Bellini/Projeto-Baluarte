@@ -159,7 +159,15 @@ router.register('/perfil', lazy(() => import('./pages/perfil.ts'), 'perfilPage')
 router.register('/login', lazy(() => import('./pages/login.ts'), 'loginPage'));
 router.register('/economia', lazy(() => import('./pages/economia.ts'), 'economiaPage'));
 router.register('/dolar', lazy(() => import('./pages/dolar.ts'), 'dolarPage'));
-router.register('/jarvis', lazy(() => import('./pages/jarvis.ts'), 'jarvisPage'));
+/* /jarvis obedece o #238 na prática: na WEB carrega só o Núcleo V7 (o 3D e as
+ * funções dele no canto); no APP carrega o JARVIS completo — chat, sessões,
+ * memória, skills e agente. São dois chunks distintos, então o navegador nem
+ * baixa o motor de IA que não vai usar. O cockpit do Núcleo continua abrindo a
+ * página completa na aba própria (git-nexus-cockpit), que é app-only. */
+router.register('/jarvis', (args) => (isNative()
+  ? import('./pages/jarvis.ts').then((m) => m.jarvisPage(args))
+  : import('./pages/jarvis-nucleo.ts').then((m) => m.jarvisNucleoPage(args))
+).catch(recoverChunk));
 router.register('/ia-proprietaria', lazyNexus('ia'));
 router.register('/radar', lazy(() => import('./pages/radar.ts'), 'radarPage'));
 router.register('/geo', lazy(() => import('./pages/geopulse.ts'), 'geopulsePage'));

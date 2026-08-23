@@ -1593,18 +1593,28 @@ function animate() {
         renderer.render(scene, camera);
 }
 /* ═══ 7 · ARRANQUE ═════════════════════════════════════════════════════════ */
+function avisarPai(status, motivo) {
+    try {
+        if (window.parent === window)
+            return;
+        window.parent.postMessage(motivo ? { source: 'jarvis-nucleo-v7', status, reason: motivo } : { source: 'jarvis-nucleo-v7', status }, location.origin);
+    }
+    catch { /* sem pai acessível: o artefato standalone segue igual */ }
+}
 (function boot(tries) {
     if (typeof THREE !== 'undefined') {
         try {
             init();
             setView(0, true);
             animate();
+            avisarPai('ready');
         }
         catch (e) {
             const el = document.getElementById('err');
             el.style.display = 'block';
             el.textContent = 'erro: ' + e.message;
             console.error(e);
+            avisarPai('failed', typeof e?.message === 'string' ? e.message : 'erro no arranque');
         }
     }
     else if (tries < 90) {
@@ -1612,5 +1622,6 @@ function animate() {
     }
     else {
         document.getElementById('loading').textContent = 'falha ao carregar three.js';
+        avisarPai('failed', 'three.js');
     }
 })(0);

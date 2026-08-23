@@ -9,6 +9,7 @@ export {
   createSpotifyPlaybackMonitor,
   isSpotifyClientId,
   getConfiguredSpotifyClientId,
+  SPOTIFY_PUBLIC_CLIENT_ID,
   spotifyPlaybackEndpoint,
   spotifyDefaultScope,
 } from './jarvis-spotify.ts';

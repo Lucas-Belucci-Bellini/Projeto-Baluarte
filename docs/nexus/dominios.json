@@ -517,7 +517,7 @@
    "peso": "leve"
   },
   "baluarte-jarvis-core": {
-   "responsabilidade": "Motor do J.A.R.V.I.S.: cérebro, conselho, laboratório de LLM e o console visual integrado Mark XIII da rota /jarvis.",
+   "responsabilidade": "Motor do J.A.R.V.I.S.: cérebro, conselho, laboratório de LLM e o console visual integrado Mark XIII da rota /jarvis — que no app carrega a página completa e na web carrega só o Núcleo V7 (#238).",
    "estado": "desenvolvimento",
    "rotas": [
     "/jarvis",
@@ -531,6 +531,7 @@
    ],
    "origem": [
     "src/pages/jarvis.ts",
+    "src/pages/jarvis-nucleo.ts",
     "src/pages/jarvis-dashboard.ts",
     "src/pages/ia-proprietaria.js",
     "src/pages/ia-proprietaria.ts",

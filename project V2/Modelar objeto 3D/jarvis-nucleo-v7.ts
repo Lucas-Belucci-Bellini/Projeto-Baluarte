@@ -1449,14 +1449,35 @@ function animate(): void {
 }
 
 /* ═══ 7 · ARRANQUE ═════════════════════════════════════════════════════════ */
+
+/* O núcleo roda dentro de um <iframe> na rota /jarvis e, na web, ele É a página
+ * inteira. Quando o arranque falha — three.js que não chega, WebGL indisponível
+ * — o quadro em si carregou, então o evento `load` diz "pronto" e o pai fica
+ * exibindo um retângulo com uma frase de erro em vez da referência estática.
+ * Este aviso é o que deixa o pai saber a diferença. O iframe é same-origin por
+ * construção; `targetOrigin` fecha a mensagem nessa origem. */
+function avisarPai(status: 'ready' | 'failed', motivo?: string): void {
+  try {
+    if (window.parent === window) return;
+    window.parent.postMessage(
+      motivo ? { source: 'jarvis-nucleo-v7', status, reason: motivo } : { source: 'jarvis-nucleo-v7', status },
+      location.origin,
+    );
+  } catch { /* sem pai acessível: o artefato standalone segue igual */ }
+}
+
 (function boot(tries: number): void {
   if (typeof THREE !== 'undefined') {
-    try { init(); setView(0, true); animate(); }
+    try { init(); setView(0, true); animate(); avisarPai('ready'); }
     catch (e: any) {
       const el = document.getElementById('err')!;
       el.style.display = 'block'; el.textContent = 'erro: ' + e.message;
       console.error(e);
+      avisarPai('failed', typeof e?.message === 'string' ? e.message : 'erro no arranque');
     }
   } else if (tries < 90) { setTimeout(() => boot(tries + 1), 60); }
-  else { document.getElementById('loading')!.textContent = 'falha ao carregar three.js'; }
+  else {
+    document.getElementById('loading')!.textContent = 'falha ao carregar three.js';
+    avisarPai('failed', 'three.js');
+  }
 })(0);

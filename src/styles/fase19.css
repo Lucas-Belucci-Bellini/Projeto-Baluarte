@@ -677,3 +677,76 @@
   .jv-visual-switcher__reference-fallback { min-height: 420px; }
   .jv-visual-switcher__reference { min-height: 420px; height: 420px; }
 }
+
+/* Núcleo na WEB (#238) — a rota /jarvis fora do Launcher mostra o V7 e mais
+ * nada. As funções (música, ficheiro, microfone, pulso, varrimento, dissecar,
+ * retrato, rotação, captura, temas) já moram no canto do próprio artefato e
+ * ligam/desligam por lá; o que fica de fora do iframe é só a doca do Baluarte,
+ * com o controle de presença musical externa. */
+.page-nucleo {
+  --nucleo-altura: calc(100vh - var(--header-height) - var(--space-lg) * 2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.page-nucleo .jv-visual-switcher { flex: 1; min-height: var(--nucleo-altura); }
+.page-nucleo .jv-visual-switcher__frame,
+.page-nucleo .jv-visual-switcher__reference { height: var(--nucleo-altura); min-height: var(--nucleo-altura); }
+/* Na web o quadro é alto: `cover` cortaria justamente o painel de funções
+ * do canto, que é o que a referência precisa mostrar. */
+.page-nucleo .jv-visual-switcher__reference { object-fit: contain; }
+.page-nucleo .jv-visual-switcher__fallback,
+.page-nucleo .jv-visual-switcher__reference-fallback { min-height: var(--nucleo-altura); }
+
+/* Canto inferior esquerdo: o HUD do V7 usa o topo (título ao centro, ações à
+ * direita) e o rodapé central (toast), então a doca não disputa espaço. */
+.jv-nucleo-dock {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: min(300px, 62vw);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.jv-nucleo-dock__badge {
+  padding: 4px 9px;
+  border: 1px solid rgba(221, 179, 94, .28);
+  border-radius: 3px;
+  background: rgba(6, 7, 11, .74);
+  color: #9d9078;
+}
+.jv-nucleo-dock__badge[data-conectado="true"] { border-color: rgba(122, 214, 168, .5); color: #8ed7bd; }
+.jv-nucleo-dock__botao {
+  padding: 7px 12px;
+  border: 1px solid rgba(221, 179, 94, .3);
+  border-radius: 3px;
+  background: rgba(212, 162, 78, .08);
+  color: #eec886;
+  font: inherit;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s, color .18s;
+}
+.jv-nucleo-dock__botao:hover { background: rgba(212, 162, 78, .2); box-shadow: 0 0 14px rgba(212, 162, 78, .22); }
+.jv-nucleo-dock__botao:focus-visible { outline: 1px solid #eec886; outline-offset: 2px; }
+.jv-nucleo-dock__faixa { color: #d9b866; letter-spacing: 1.2px; text-transform: none; }
+.jv-nucleo-dock__faixa:empty { display: none; }
+.jv-nucleo-dock__app { color: rgba(157, 144, 120, .82); font-size: 8.5px; letter-spacing: 1.6px; text-decoration: none; }
+.jv-nucleo-dock__app:hover { color: #eec886; }
+
+@media (max-width: 900px) {
+  .page-nucleo { --nucleo-altura: calc(100vh - var(--header-height) - var(--space-lg) * 2); }
+  .page-nucleo .jv-visual-switcher,
+  .page-nucleo .jv-visual-switcher__frame,
+  .page-nucleo .jv-visual-switcher__reference,
+  .page-nucleo .jv-visual-switcher__fallback,
+  .page-nucleo .jv-visual-switcher__reference-fallback { min-height: 420px; }
+  .jv-nucleo-dock { left: 12px; bottom: 12px; }
+}
