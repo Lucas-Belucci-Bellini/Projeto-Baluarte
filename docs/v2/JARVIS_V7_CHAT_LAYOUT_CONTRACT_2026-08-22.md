@@ -1,8 +1,16 @@
 # JARVIS V7 + Chat — Contrato de composição visual
 
-**Status:** implementação local em validação  
+**Status:** ⚠️ **vale só para o APP desde 2026-08-23** — ver
+[`JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md`](./JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md)  
 **Data:** 2026-08-22  
 **Rota:** `/#/jarvis`
+
+> **O que mudou.** Este contrato descreve a rota `/jarvis` com o Núcleo V7 no topo
+> e a conversa logo abaixo. Em 23/08/2026 esse arranjo passou a ser o **do
+> Launcher**: no navegador, a rota carrega só o Núcleo (`src/pages/jarvis-nucleo.ts`),
+> sem chat, sem sessões e sem barra de configuração — a regra do #238 aplicada
+> onde ela mais doía. Tudo que este documento afirma continua verdade sobre o
+> app; sobre a web, quem manda é o contrato novo.
 
 ## Decisão
 

@@ -558,10 +558,17 @@ try {
       && /0 vinculadas/.test(wikiNaTela)
       && /0 pendentes/.test(wikiNaTela), wikiNaTela.slice(0, 220));
 
-  /* O JARVIS atual mantém a conversa e a integração Mark XIII, mas o README
-   * aponta para um artefato visual V7 independente. Esta jornada abre a
-   * aplicação real, não o harness V2, e prova a composição V7 + fallback sem
-   * transformar a superfície visual em um novo motor de autoridade. */
+  /* A rota /jarvis na WEB é o Núcleo V7 e nada mais (#238). Esta jornada abre a
+   * aplicação real, não o harness V2, e prova três coisas de uma vez: que a
+   * composição V7 + fallback está de pé, que o motor de IA **não** chega ao
+   * navegador, e que a presença musical cabe num clique.
+   *
+   * Este bloco já mediu o contrato anterior — V7 no topo e a conversa logo
+   * abaixo — e as asserções foram reescritas junto com a mudança, não
+   * afrouxadas: `hasChat`, `hasSessions` e `hasConfig` continuam sendo cobrados,
+   * agora como FALSO. Uma asserção que só sumisse deixaria o chat voltar à web
+   * sem ninguém perceber, que é o defeito que a mudança foi corrigir. Quem
+   * exercita a superfície completa é o app, fora do alcance deste portão. */
   const paginaApp = await navegador.newPage();
   const errosApp = [];
   paginaApp.on('pageerror', (error) => errosApp.push(error.message));
@@ -569,7 +576,7 @@ try {
   await paginaApp.waitForFunction(() => {
     return !!document.querySelector('.jv-visual-switcher')
       && !!document.querySelector('.jv-visual-switcher__frame')
-      && !!document.querySelector('.jarvis-chat');
+      && !!document.querySelector('.jv-nucleo-dock');
   }, null, { timeout: 25000 }).catch(() => {});
   await paginaApp.waitForTimeout(1200);
   const jarvisNaTela = await paginaApp.locator('#saida').innerText().catch(() => '');
@@ -577,9 +584,9 @@ try {
     const switcher = document.querySelector('.jv-visual-switcher');
     const frame = document.querySelector('.jv-visual-switcher__frame');
     const fallback = document.querySelector('.jv-visual-switcher__fallback');
-    const page = document.querySelector('.page-jarvis');
+    const page = document.querySelector('.page-nucleo');
     const children = page ? [...page.children] : [];
-    const layout = page?.querySelector('.jv-layout');
+    const dock = page?.querySelector('.jv-nucleo-dock');
     const directSpotifyCard = children.some((child) =>
       child.classList.contains('card') && child.textContent?.includes('Presença musical externa'));
     return {
@@ -590,24 +597,26 @@ try {
       sandbox: frame?.getAttribute('sandbox') ?? null,
       fallbackPresent: fallback?.getAttribute('data-v7-fallback') === 'true',
       fallbackHidden: fallback?.hasAttribute('hidden') ?? false,
+      paginaNucleo: Boolean(page),
       hasChat: !!document.querySelector('.jarvis-chat'),
       hasSessions: !!document.querySelector('.jv-sessions'),
       hasConfig: !!document.querySelector('.jarvis-toolbar'),
       visualIndex: switcher ? children.indexOf(switcher) : -1,
-      chatLayoutIndex: layout ? children.indexOf(layout) : -1,
+      dockIndex: dock ? children.indexOf(dock) : -1,
       directSpotifyCard,
     };
   });
   const v7Path = '/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html';
-  conferir('a aplicação real JARVIS mantém chat e composição visual V7',
-    jarvisVisual.source === 'jarvis-nucleo-v7'
-      && jarvisVisual.hasChat === true
-      && jarvisVisual.hasSessions === true
-      && jarvisVisual.hasConfig === true,
+  conferir('a web serve o Núcleo V7 sem o motor de IA junto',
+    jarvisVisual.paginaNucleo === true
+      && jarvisVisual.source === 'jarvis-nucleo-v7'
+      && jarvisVisual.hasChat === false
+      && jarvisVisual.hasSessions === false
+      && jarvisVisual.hasConfig === false,
     JSON.stringify({ jarvisVisual, tela: jarvisNaTela.slice(0, 120) }));
-  conferir('o layout coloca o V7 antes da conversa e remove o card Spotify principal',
+  conferir('o Núcleo ocupa a página e a doca fica depois dele, sem card grande de Spotify',
     jarvisVisual.visualIndex === 0
-      && jarvisVisual.chatLayoutIndex > jarvisVisual.visualIndex
+      && jarvisVisual.dockIndex > jarvisVisual.visualIndex
       && jarvisVisual.directSpotifyCard === false,
     JSON.stringify(jarvisVisual));
   conferir('o visual V7 usa somente o artefato local same-origin',
@@ -615,26 +624,35 @@ try {
       && jarvisVisual.frameTitle?.includes('Núcleo V7') === true
       && jarvisVisual.sandbox === 'allow-scripts allow-same-origin',
     JSON.stringify(jarvisVisual));
-  conferir('o Mark XIII permanece disponível como fallback do V7',
+  conferir('a referência estática permanece disponível como fallback do V7',
     (jarvisVisual.state === 'ready' || jarvisVisual.state === 'fallback' || jarvisVisual.state === 'loading')
       && jarvisVisual.fallbackPresent === true
       && (jarvisVisual.state !== 'ready' || jarvisVisual.fallbackHidden === true),
     JSON.stringify(jarvisVisual));
-  await paginaApp.locator('.jarvis-toolbar button').click();
-  const spotifyLayout = await paginaApp.evaluate(() => {
-    const section = document.querySelector('.jv-spotify-settings');
-    const config = section?.closest('.jarvis-config');
+  /* "Um clique e conectou" é asserção sobre o que o operador precisa FAZER, não
+   * sobre o que existe: a doca tem um botão e nenhum campo para preencher antes
+   * dele. Um campo de Client ID de volta aqui reprova — foi exatamente o passo
+   * que a mudança removeu. Conectar de verdade sai do escopo do portão: sai do
+   * domínio, exige conta e consentimento humano. */
+  const spotifyDoca = await paginaApp.evaluate(() => {
+    const dock = document.querySelector('.jv-nucleo-dock');
     return {
-      inConfig: Boolean(config),
-      visible: section ? getComputedStyle(section).display !== 'none' : false,
-      controls: section?.querySelectorAll('button, input').length ?? 0,
+      presente: Boolean(dock),
+      visivel: dock ? getComputedStyle(dock).display !== 'none' : false,
+      botoes: dock?.querySelectorAll('button').length ?? 0,
+      campos: dock?.querySelectorAll('input, textarea, select').length ?? 0,
+      rotulo: dock?.querySelector('button')?.textContent?.trim().toLowerCase() ?? '',
+      estado: dock?.querySelector('.jv-nucleo-dock__badge')?.textContent?.trim() ?? '',
     };
   });
-  conferir('o Spotify continua acessível dentro de Modos & Config',
-    spotifyLayout.inConfig === true
-      && spotifyLayout.visible === true
-      && spotifyLayout.controls >= 2,
-    JSON.stringify(spotifyLayout));
+  conferir('a presença musical conecta pela doca, num clique e sem campo para preencher',
+    spotifyDoca.presente === true
+      && spotifyDoca.visivel === true
+      && spotifyDoca.botoes === 1
+      && spotifyDoca.campos === 0
+      && spotifyDoca.rotulo.includes('spotify')
+      && /SPOTIFY · (ONLINE|OFF)/.test(spotifyDoca.estado),
+    JSON.stringify(spotifyDoca));
   conferir('a integração visual não expõe credenciais ou autoridade',
     !/token|secret|claim|role|permission/i.test(JSON.stringify(jarvisVisual)),
     JSON.stringify(jarvisVisual));
