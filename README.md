@@ -51,7 +51,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados; piloto Wiki Zomboid/Evidence local validado. |
-| **Web/Desktop** | `1.3.5` em preparação | A `1.3.4` está publicada; a `1.3.5` prepara o layout em que o Núcleo V7 aparece seguido diretamente pela conversa, com Spotify recolhido em Modos & Config. |
+| **Web/Desktop** | `1.3.5` em publicação | A `1.3.5` divide a rota `/jarvis` por ambiente: na web só o Núcleo V7 com as funções no canto; no Launcher o JARVIS completo, com a conversa logo abaixo do visual. O Spotify conecta num clique — o Client ID público vem no build. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |

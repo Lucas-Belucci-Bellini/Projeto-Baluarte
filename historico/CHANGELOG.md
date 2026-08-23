@@ -6,7 +6,7 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-23 — a web recebe o Núcleo, e só ele; o Spotify vira um clique
+## 2026-08-23 — Release `1.3.5`, onda 2: a web recebe o Núcleo, e o Spotify vira um clique
 
 Duas coisas que o operador viu na tela do site, e que eram a mesma dívida
 antiga: o mega-plano #238 diz *web leve, app completo*, e a rota `/jarvis` fazia
@@ -56,11 +56,13 @@ e [`docs/v2/JARVIS_SPOTIFY_USER_GUIDE.md`](../docs/v2/JARVIS_SPOTIFY_USER_GUIDE.
 
 ---
 
-## 2026-08-22 — Release `1.3.5`: layout V7 + conversa em preparação
+## 2026-08-22 — Release `1.3.5`, onda 1: layout V7 + conversa
 
 O slice funcional publicado no commit `a1f0a03b` recompõe a rota real `/jarvis`: o Núcleo V7 ocupa a superfície principal, a conversa aparece diretamente abaixo e o painel grande de presença musical deixa de interromper esse fluxo. O Spotify permanece disponível dentro de `Modos & Config`, limitado a metadados read-only e PKCE.
 
-A validação local passou `1264/1264` testes, `58/58` na integração browser com as asserções novas, `99/99` rotas no smoke, `15/15` no caminho crítico, typechecks e build. A CI aplicável do commit funcional terminou verde. A versão `1.3.5` está em preparação; ainda depende do commit de versionamento, CI correspondente, tags, Desktop Release e oito assets verificáveis.
+A validação local passou `1264/1264` testes, `58/58` na integração browser com as asserções novas, `99/99` rotas no smoke, `15/15` no caminho crítico, typechecks e build. A CI aplicável do commit funcional terminou verde.
+
+> **A 1.3.5 não foi publicada nesta data.** Ela ficou em preparação até 23/08, quando a onda 2 (a entrada acima) dividiu a rota por ambiente: este layout passou a valer **só para o app**, e a web recebeu o Núcleo sozinho. As duas ondas saem juntas na mesma versão — a nota é [`docs/releases/v1.3.5.md`](../docs/releases/v1.3.5.md).
 
 **Documentação:** [`docs/releases/v1.3.5.md`](../docs/releases/v1.3.5.md), [`docs/v2/JARVIS_V7_CHAT_LAYOUT_CONTRACT_2026-08-22.md`](../docs/v2/JARVIS_V7_CHAT_LAYOUT_CONTRACT_2026-08-22.md) e [`docs/v2/JARVIS_V7_CHAT_LAYOUT_OBSERVATION_2026-08-22.md`](../docs/v2/JARVIS_V7_CHAT_LAYOUT_OBSERVATION_2026-08-22.md).
 
