@@ -62,7 +62,26 @@ export function isSpotifyClientId(value: string): boolean {
     && /^[A-Za-z0-9_-]+$/.test(normalized);
 }
 
-export function getConfiguredSpotifyClientId(): string {
+/**
+ * Client ID PÚBLICO do app `Baluarte JARVIS` no Spotify for Developers.
+ *
+ * Não é segredo, e não vira um por estar aqui: o PKCE/S256 existe justamente
+ * para que o identificador do cliente possa ser público — quem tem só ele não
+ * consegue trocar código por token sem o `code_verifier` daquela sessão. O
+ * Client Secret continua fora do navegador, e este fluxo nunca o usa.
+ *
+ * Ele mora no código, e não apenas numa variável de ambiente, porque a promessa
+ * da rota /jarvis é "um clique e conectou". Enquanto o valor dependia de
+ * configuração por deploy, o primeiro clique de qualquer pessoa caía no aviso
+ * "peça ao administrador para concluir a configuração" — que, no projeto
+ * pessoal do operador, é pedir para ele mesmo.
+ *
+ * `VITE_SPOTIFY_CLIENT_ID` continua tendo precedência, para quem publicar o
+ * Baluarte com um app Spotify próprio.
+ */
+export const SPOTIFY_PUBLIC_CLIENT_ID = 'dd328e1507f84496aefb78a805bb284a';
+
+function envSpotifyClientId(): string {
   try {
     const metadata = import.meta as ImportMeta & { readonly env?: Record<string, unknown> };
     const value = typeof metadata.env?.VITE_SPOTIFY_CLIENT_ID === 'string'
@@ -72,6 +91,12 @@ export function getConfiguredSpotifyClientId(): string {
   } catch {
     return '';
   }
+}
+
+export function getConfiguredSpotifyClientId(): string {
+  const doAmbiente = envSpotifyClientId();
+  if (doAmbiente) return doAmbiente;
+  return isSpotifyClientId(SPOTIFY_PUBLIC_CLIENT_ID) ? SPOTIFY_PUBLIC_CLIENT_ID : '';
 }
 
 function assertConfig(config: SpotifyPkceConfig): void {

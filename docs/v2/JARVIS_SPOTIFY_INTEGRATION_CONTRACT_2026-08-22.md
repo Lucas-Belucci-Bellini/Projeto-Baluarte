@@ -74,3 +74,46 @@ A integração continua não verificada contra a conta Spotify real porque o das
 A configuração do app pode fornecer o Client ID público por meio de `VITE_SPOTIFY_CLIENT_ID`. Esse valor é um identificador público de aplicação e não substitui Client Secret, access token ou refresh token. Quando presente, o JARVIS preenche e bloqueia o campo técnico, deixando para o usuário final apenas o botão `Conectar Spotify`, a tela normal de login/consentimento e a opção de desconectar.
 
 O procedimento sem linguagem técnica está documentado em `docs/v2/JARVIS_SPOTIFY_USER_GUIDE.md`. A chave `spak_` do Soloist continua fora desse fluxo: ela não é aceita pelo validador de Client ID, não deve ser colada no campo e só pode permanecer no ambiente privado do daemon local.
+
+## Atualização 2026-08-23 — o Client ID público passa a vir no build
+
+A configuração no dashboard, que estava bloqueada na auditoria acima, foi
+concluída: o aplicativo `Baluarte JARVIS` existe, está em Development mode, e
+tem as duas Redirect URIs de produção cadastradas —
+`https://projeto-baluarte.vercel.app/` e
+`https://projeto-baluarte-lucasbellini-1240s-projects.vercel.app/`.
+
+Com isso, o Client ID público passou a viver no código, em
+`SPOTIFY_PUBLIC_CLIENT_ID` (`src/utils/jarvis-spotify.ts`).
+`VITE_SPOTIFY_CLIENT_ID` continua tendo precedência, para quem publicar o
+Baluarte com um app Spotify próprio.
+
+O motivo é o comportamento observado pelo operador: o botão respondia *"O
+Spotify ainda não está configurado neste app. Peça ao administrador para
+concluir a configuração uma única vez."* Num projeto pessoal, esse
+administrador é o próprio operador — e a variável de build só existiria se
+alguém a tivesse publicado no Vercel antes. O valor é um identificador público
+de aplicação: o PKCE/S256 existe justamente para que ele possa ser público, já
+que sem o `code_verifier` daquela sessão ninguém troca código por token. Client
+Secret, access token e refresh token continuam fora do repositório e fora do
+navegador persistente.
+
+Efeito na interface: o campo técnico "Client ID público" **some** da página
+completa quando o build já traz o identificador, deixando apenas o botão — e
+volta sozinho num build publicado sem Client ID, que é quando ele serve. Na
+web, a rota `/jarvis` passou a ser só o Núcleo, com a doca de presença musical
+no canto; o contrato dessa mudança está em
+[`JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md`](JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md).
+
+Nada mais do fluxo mudou: escopo `user-read-playback-state`, PKCE/S256, sem
+Client Secret, tokens só em memória, sem comandos de reprodução e sem
+sincronização de conteúdo.
+
+### Limite conhecido: Development mode
+
+O aplicativo Spotify está em Development mode, que é o padrão de app novo. Ele
+funciona normalmente para a conta do próprio operador; qualquer outra conta
+precisa ser adicionada em **User Management** no dashboard, ou o app precisa
+pedir extensão de quota. Enquanto isso valer, o botão da web conecta para o
+operador e devolve erro de autorização para terceiros — isso é limite do
+cadastro, não defeito do código.

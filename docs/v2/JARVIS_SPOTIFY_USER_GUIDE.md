@@ -38,7 +38,7 @@ Como a chave apareceu em uma imagem compartilhada, ela deve ser considerada pote
 
 | Situação | O que fazer |
 |---|---|
-| O botão diz que o app não está configurado | Peça ao administrador para configurar o Client ID público uma única vez. Não tente usar a chave `spak_`. |
+| O botão diz que o app não está configurado | Só acontece em build publicado sem Client ID público. Desde 2026-08-23 ele vem embutido (`SPOTIFY_PUBLIC_CLIENT_ID`); se a mensagem aparecer, o build saiu de um fork que apagou o valor. Não tente usar a chave `spak_`. |
 | O Spotify rejeita a autorização | Verifique se a Redirect URI cadastrada é exatamente igual à mostrada no JARVIS, incluindo protocolo, domínio, caminho e barra final. |
 | A conexão volta para o JARVIS, mas fica offline | Desconecte e tente novamente. Se continuar, o administrador deve verificar o cadastro do aplicativo Spotify. |
 | A música toca, mas o núcleo mostra estado desconhecido | O Spotify pode estar sem estado disponível, a sessão pode ter expirado ou a rede pode estar indisponível. O estado desconhecido é intencional para evitar informação inventada. |
@@ -51,7 +51,9 @@ O JARVIS observa apenas metadados de playback. Não há captura de áudio, recon
 
 ## Para o administrador
 
-Para que o usuário final não veja configuração técnica, publique o Client ID OAuth como variável pública de build `VITE_SPOTIFY_CLIENT_ID`. O valor é um identificador público, não um Client Secret. O campo ficará preenchido e bloqueado no aplicativo, e o usuário verá apenas o botão de conexão.
+Desde 2026-08-23 não há nada a fazer no caso normal: o Client ID público do app `Baluarte JARVIS` vem embutido no build (`SPOTIFY_PUBLIC_CLIENT_ID`, em `src/utils/jarvis-spotify.ts`), o campo técnico some da tela e o usuário vê só o botão. Publicar `VITE_SPOTIFY_CLIENT_ID` continua funcionando e tem precedência — é o caminho para quem hospeda o Baluarte com um aplicativo Spotify próprio.
+
+O aplicativo está em Development mode. Isso basta para a conta do dono; outras contas precisam ser adicionadas em **User Management** no dashboard do Spotify, ou o aplicativo precisa pedir extensão de quota.
 
 Nunca publique `SPOTIFY_SOLOIST_API_KEY`, `SOLOIST_API_KEY`, Client Secret, access token ou refresh token. A chave Soloist deve permanecer no ambiente privado do daemon. A integração local read-only está documentada em `docs/v2/SPOTIFY_SOLOIST_API_KEY_OBSERVATION_2026-08-22.md` e o contrato Web API está em `docs/v2/JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md`.
 

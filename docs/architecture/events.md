@@ -61,7 +61,7 @@ O bus é `src/core/events.js`. Ele aceita curinga — `bus.on('*')` para tudo e
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
 | `route:before` | `src/core/router.ts` | — |
-| `route:change` | `src/core/router.ts` | `src/main.js` · `src/pages/jarvis.ts` · `src/utils/nexus.js` |
+| `route:change` | `src/core/router.ts` | `src/main.js` · `src/pages/jarvis-nucleo.ts` · `src/pages/jarvis.ts` · `src/utils/nexus.js` |
 | `route:error` | `src/core/router.ts` | `src/main.js` |
 | `route:notfound` | `src/core/router.ts` | `src/main.js` |
 

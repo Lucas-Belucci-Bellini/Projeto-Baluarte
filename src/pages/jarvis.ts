@@ -1254,8 +1254,8 @@ export function jarvisPage(): HTMLDivElement {
     className: 'btn btn--ghost btn--sm',
     onclick: () => {
       if (isSpotifyConnected()) { disconnectSpotify(); spotifyStatus.textContent = 'SPOTIFY · OFF'; spotifyButton.textContent = '♫ Conectar Spotify'; markXiiiConsole?.setMusic(false); return; }
-      const clientId = spotifyClientInput.value.trim();
-      if (!clientId) { toast('O Spotify ainda não está configurado neste app. Peça ao administrador para concluir a configuração uma única vez.'); return; }
+      const clientId = (configuredSpotifyClientId || spotifyClientInput.value).trim();
+      if (!clientId) { toast('Este build saiu sem Client ID público do Spotify. Cole um no campo acima, ou publique com VITE_SPOTIFY_CLIENT_ID.'); return; }
       if (clientId.startsWith('spak_')) { toast('Essa é uma chave do Spotify Soloist. Não cole chaves spak_ aqui; este campo aceita somente Client ID público.'); return; }
       if (!isSpotifyClientId(clientId)) { toast('Esse valor não parece um Client ID público do Spotify. Confira o campo e tente novamente.'); return; }
       rememberSpotifyClientId(clientId);
@@ -1293,10 +1293,18 @@ export function jarvisPage(): HTMLDivElement {
     spotifyInputStatus,
     spotifyClearButton,
   );
-  const spotifyControls = h('div', { className: 'jv-spotify-settings__controls' }, spotifyStatus, spotifyClientRow, spotifyButton);
+  /* Com o Client ID vindo do build, o campo técnico não tem o que pedir: some
+   * da tela e sobra o que o operador realmente faz — um clique. Ele volta
+   * sozinho num build publicado sem Client ID, que é quando ele serve. */
+  const spotifyControls = h('div', { className: 'jv-spotify-settings__controls' },
+    spotifyStatus,
+    !configuredSpotifyClientId && spotifyClientRow,
+    spotifyButton);
   const spotifyHint = h('div', { className: 'jarvis-config__warn u-text-muted', style: { margin: '6px 0 0' } },
     h('p', { style: { margin: '0 0 6px' } },
-      `O app pode vir com a configuração pronta. Se aparecer o campo vazio, um administrador precisa cadastrar uma única vez o Client ID público. Redirect URI deste app: `,
+      configuredSpotifyClientId
+        ? 'O Client ID público já vem neste build: é um clique em “Conectar Spotify” e a autorização acontece na tela do próprio Spotify. Redirect URI deste app: '
+        : 'Este build saiu sem Client ID público; cadastre um, uma única vez, no campo acima. Redirect URI deste app: ',
       h('code', null, `${location.origin}${location.pathname}`),
       '. O fluxo usa PKCE/S256, não usa Client Secret e pede somente leitura.'),
     h('details', null,

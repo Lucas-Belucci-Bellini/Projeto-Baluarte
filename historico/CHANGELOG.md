@@ -6,6 +6,56 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-23 — a web recebe o Núcleo, e só ele; o Spotify vira um clique
+
+Duas coisas que o operador viu na tela do site, e que eram a mesma dívida
+antiga: o mega-plano #238 diz *web leve, app completo*, e a rota `/jarvis` fazia
+o contrário.
+
+**O que a web mostrava.** A superfície inteira do JARVIS — seis modos de IA,
+sessões em IndexedDB, memória, recall, skills, agente com ferramentas — empilhada
+embaixo do Núcleo V7, que ficava espremido no topo. Agora `/jarvis` escolhe a
+página pelo ambiente: no navegador carrega `src/pages/jarvis-nucleo.ts`, que é o
+Núcleo V7 ocupando a área de conteúdo com as funções dele no canto (música,
+ficheiro, microfone, pulso, varrimento, dissecar, retrato, rotação, captura e os
+três temas), mais a doca de presença musical; no Launcher
+(`window.baluarte.native`) segue carregando o JARVIS completo, intacto. São dois
+chunks: o da web mede **2,4 kB**, contra os ~50 kB da página completa mais
+`jarvis-engine`, `jarvis-brain`, memória e recall que ela arrasta. O cockpit do
+Núcleo continua abrindo a página completa na aba própria, e isso é app-only.
+
+**O que o botão do Spotify respondia.** *"O Spotify ainda não está configurado
+neste app. Peça ao administrador para concluir a configuração uma única vez."* —
+num projeto pessoal, esse administrador é o próprio operador. O aplicativo
+`Baluarte JARVIS` já existe no Spotify for Developers, com as duas Redirect URIs
+de produção cadastradas, então o Client ID **público** passou a viver no código
+(`SPOTIFY_PUBLIC_CLIENT_ID`), com `VITE_SPOTIFY_CLIENT_ID` mantendo precedência
+para quem hospedar com um app próprio. Ele é identificador público por
+construção — o PKCE/S256 existe para que possa ser: sem o `code_verifier` da
+sessão ninguém troca código por token. Client Secret, access token e refresh
+token continuam fora do repositório e fora do navegador persistente. Na página
+completa, o campo técnico "Client ID público" some quando o build já traz o
+valor, e volta sozinho num build publicado sem ele.
+
+**Um terceiro defeito, achado ao verificar.** O `load` de um `<iframe>` conta que
+o *documento* carregou, não que o núcleo subiu: com o three.js indisponível, o
+pai marcava `ready` e exibia um retângulo com a frase `falha ao carregar
+three.js`. Tolerável quando o núcleo era um bloco no topo; inaceitável agora que
+ele é a página inteira. O artefato V7 passou a avisar o desfecho por
+`postMessage` same-origin, e `createJarvisV7Visual` troca para a referência
+estática quando o arranque falha. O caminho foi exercitado de verdade: a CDN do
+three.js está bloqueada no ambiente remoto, e a observação de navegador terminou
+em `data-visual-state="fallback"`, sem `.jarvis-chat` e sem `.jv-sessions`.
+
+Suíte local `1265/1265`, build, `verificar-nexus`, catálogos de eventos e
+storage, tabela de estabilidade e `tsc` limpos.
+
+**Documentação:** [`docs/v2/JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md`](../docs/v2/JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md),
+[`docs/v2/JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md`](../docs/v2/JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md)
+e [`docs/v2/JARVIS_SPOTIFY_USER_GUIDE.md`](../docs/v2/JARVIS_SPOTIFY_USER_GUIDE.md).
+
+---
+
 ## 2026-08-22 — Release `1.3.5`: layout V7 + conversa em preparação
 
 O slice funcional publicado no commit `a1f0a03b` recompõe a rota real `/jarvis`: o Núcleo V7 ocupa a superfície principal, a conversa aparece diretamente abaixo e o painel grande de presença musical deixa de interromper esse fluxo. O Spotify permanece disponível dentro de `Modos & Config`, limitado a metadados read-only e PKCE.

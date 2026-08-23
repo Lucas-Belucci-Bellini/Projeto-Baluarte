@@ -67,8 +67,25 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
   };
   const onLoad = (): void => setState('ready');
   const onError = (): void => setState('fallback');
+
+  /* O `load` do iframe só conta que o DOCUMENTO carregou. Se o three.js não
+   * chegar ou o WebGL não subir, o documento carrega igual e o núcleo fica um
+   * retângulo com uma frase de erro — pior ainda na web, onde ele é a página
+   * inteira. O artefato V7 avisa o desfecho por postMessage; é esse aviso, e
+   * não o `load`, que sabe a diferença entre "pronto" e "falhou". */
+  const onMessage = (event: MessageEvent): void => {
+    if (event.origin !== currentOrigin() || event.source !== frame.contentWindow) return;
+    const payload = event.data;
+    if (payload === null || typeof payload !== 'object') return;
+    const record = payload as Record<string, unknown>;
+    if (record.source !== 'jarvis-nucleo-v7') return;
+    if (record.status === 'failed') setState('fallback');
+    else if (record.status === 'ready') setState('ready');
+  };
+
   frame.addEventListener('load', onLoad);
   frame.addEventListener('error', onError);
+  globalThis.addEventListener('message', onMessage);
   setState('loading');
 
   return {
@@ -81,6 +98,7 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
       disposed = true;
       frame.removeEventListener('load', onLoad);
       frame.removeEventListener('error', onError);
+      globalThis.removeEventListener('message', onMessage);
       frame.src = 'about:blank';
       frame.remove();
       fallback.hidden = false;
