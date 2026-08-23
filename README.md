@@ -51,7 +51,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 |---|---|---|
 | **V1** | Estável | Linha de referência para uso normal e compatibilidade. |
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados; piloto Wiki Zomboid/Evidence local validado. |
-| **Web/Desktop** | `1.3.5` em publicação | A `1.3.5` divide a rota `/jarvis` por ambiente: na web só o Núcleo V7 com as funções no canto; no Launcher o JARVIS completo, com a conversa logo abaixo do visual. O Spotify conecta num clique — o Client ID público vem no build. |
+| **Web/Desktop** | `1.3.6` em publicação | A `1.3.5` dividiu a rota `/jarvis` por ambiente (web = só o Núcleo V7; app = o JARVIS completo) e pôs o Spotify a um clique. A `1.3.6` faz o Núcleo saber o que toca no Spotify e capta o som real do PC, para o espectrómetro acompanhar. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
 | **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
@@ -87,6 +87,8 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Release 1.3.2 — auditoria estrutural Evidence | [`v1.3.2.md`](docs/releases/v1.3.2.md) | Publicada com tags `v1.3.2` e `desktop-v1.3.2`; oito assets, manifests e instaladores verificados. |
 | Release 1.3.3 — integração visual Núcleo V7 | [`v1.3.3.md`](docs/releases/v1.3.3.md) | Publicada com tags `v1.3.3` e `desktop-v1.3.3`; oito assets, manifests e instaladores verificados. |
 | Release 1.3.4 — verificação live do Núcleo V7 | [`v1.3.4.md`](docs/releases/v1.3.4.md) | Publicada com tags `v1.3.4` e `desktop-v1.3.4`; oito assets, manifests e instaladores verificados. |
+| Release 1.3.5 — o Núcleo na web, e o Spotify num clique | [`v1.3.5.md`](docs/releases/v1.3.5.md) | Publicada com a tag `v1.3.5`; oito assets e os três manifests verificados. Sem `desktop-v1.3.5`: o build foi disparado por `workflow_dispatch`. |
+| Release 1.3.6 — presença musical e som real do PC | [`v1.3.6.md`](docs/releases/v1.3.6.md) | O Núcleo passa a saber o que toca no Spotify e a captar o áudio do sistema para o espectrómetro acompanhar. |
 | Release 1.3.5 — V7 + conversa em superfície única | [`v1.3.5.md`](docs/releases/v1.3.5.md) | Em preparação; funcionalidade publicada na main, aguardando bump, CI de versão, Desktop Release e assets públicos. |
 | Matriz de execução corrente | [`MASTER_EXECUTION_MATRIX.md`](docs/v2/MASTER_EXECUTION_MATRIX.md) |
 | Design System e Information Architecture | [`PHASE_UI_DESIGN_SYSTEM.md`](docs/v2/PHASE_UI_DESIGN_SYSTEM.md) |

@@ -147,6 +147,48 @@ class AudioEngine {
         this.label = file.name.replace(/\.[^.]+$/, '');
         return this.label;
     }
+    async captureSystem() {
+        const ctx = this.ensure();
+        this.resume();
+        if (this.mode === 'sistema') {
+            this.silence();
+            return false;
+        }
+        const media = navigator.mediaDevices;
+        if (typeof media?.getDisplayMedia !== 'function')
+            throw new Error('SEM_CAPTURA');
+        let stream;
+        try {
+            stream = await media.getDisplayMedia({
+                video: true,
+                audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+            });
+        }
+        catch {
+            throw new Error('RECUSADO');
+        }
+        if (!stream.getAudioTracks().length) {
+            stream.getTracks().forEach(t => t.stop());
+            throw new Error('SEM_AUDIO');
+        }
+        this.detach();
+        if (ctx.state === 'suspended')
+            await ctx.resume();
+        stream.getVideoTracks().forEach(t => t.stop());
+        this.micStream = stream;
+        this.micSrc = ctx.createMediaStreamSource(stream);
+        this.micSrc.connect(this.analyser);
+        stream.getAudioTracks().forEach(t => {
+            t.onended = () => { if (this.mode === 'sistema') {
+                this.silence();
+                this.onEnded?.();
+            } };
+        });
+        this.mode = 'sistema';
+        this.label = 'áudio do sistema';
+        return true;
+    }
+    onEnded = null;
     async useMic() {
         const ctx = this.ensure();
         this.resume();
@@ -188,7 +230,7 @@ class AudioEngine {
             catch (e) { /* já solto */ }
         }
         if (this.micStream) {
-            this.micStream.getTracks().forEach(t => t.stop());
+            this.micStream.getTracks().forEach(t => { t.onended = null; t.stop(); });
             this.micStream = null;
         }
         this.peak = { bass: 0.05, mid: 0.04, treble: 0.02, level: 0.04 };
@@ -1193,9 +1235,48 @@ function touched() {
 }
 function markAudioButtons() {
     const set = (id, on) => document.getElementById(id).setAttribute('aria-pressed', String(on));
-    set('bMusic', audio.mode === 'gen');
+    set('bMusic', audio.mode === 'gen' || audio.mode === 'sistema');
+    set('bSystem', audio.mode === 'sistema');
     set('bMic', audio.mode === 'mic');
     set('bFile', audio.mode === 'file');
+}
+let presenca = { tocando: false, titulo: null, artista: null };
+function rotuloDaFaixa() {
+    if (!presenca.tocando)
+        return '';
+    const titulo = (presenca.titulo ?? '').trim();
+    if (!titulo)
+        return 'spotify a tocar';
+    const artista = (presenca.artista ?? '').trim();
+    return artista ? `${titulo} · ${artista}` : titulo;
+}
+function pintarBotaoMusica() {
+    const alvo = document.getElementById('musicName');
+    if (!alvo)
+        return;
+    const faixa = rotuloDaFaixa();
+    alvo.textContent = faixa ? `♪ ${faixa}` : '♪ música';
+    document.getElementById('bMusic').title = faixa
+        ? `${faixa} — o núcleo acompanha partilhando o som do PC`
+        : 'partitura generativa do Baluarte';
+}
+function ouvirPresencaMusical() {
+    addEventListener('message', (event) => {
+        if (event.origin !== location.origin || event.source !== window.parent)
+            return;
+        const dado = event.data;
+        if (dado === null || typeof dado !== 'object')
+            return;
+        const registo = dado;
+        if (registo.source !== 'baluarte-presenca-musical')
+            return;
+        presenca = {
+            tocando: registo.tocando === true,
+            titulo: typeof registo.titulo === 'string' ? registo.titulo : null,
+            artista: typeof registo.artista === 'string' ? registo.artista : null,
+        };
+        pintarBotaoMusica();
+    });
 }
 function bind() {
     const stageEl = document.getElementById('stage');
@@ -1259,11 +1340,22 @@ function bind() {
     /* som */
     const fileInput = document.getElementById('file');
     document.getElementById('bMusic').onclick = () => {
+        touched();
+        if (audio.mode === 'sistema') {
+            audio.silence();
+            markAudioButtons();
+            toast('silêncio');
+            return;
+        }
+        if (presenca.tocando) {
+            capturarSistema(rotuloDaFaixa());
+            return;
+        }
         const on = audio.toggleGenerative();
         markAudioButtons();
         toast(on ? 'partitura generativa a tocar' : 'silêncio');
-        touched();
     };
+    document.getElementById('bSystem').onclick = () => { touched(); capturarSistema(rotuloDaFaixa()); };
     document.getElementById('bFile').onclick = () => { fileInput.click(); touched(); };
     fileInput.onchange = () => {
         const f = fileInput.files && fileInput.files[0];
@@ -1325,6 +1417,8 @@ function bind() {
             document.getElementById('bFile').click();
         else if (k === 'i')
             document.getElementById('bMic').click();
+        else if (k === 'a')
+            document.getElementById('bSystem').click();
         else if (k === 'p')
             savePNG();
         else if (k === 'h') {
@@ -1345,6 +1439,24 @@ function bind() {
         pulse(420); }, 8000);
     setInterval(() => { if (scanT < 0)
         fireScan(); }, CFG.scanEvery * 1000);
+}
+function capturarSistema(faixa) {
+    audio.captureSystem().then(on => {
+        markAudioButtons();
+        if (!on) {
+            toast('silêncio');
+            return;
+        }
+        toast(faixa ? `a acompanhar · ${faixa}` : 'a acompanhar o som do pc');
+    }).catch((erro) => {
+        const causa = erro instanceof Error ? erro.message : '';
+        if (causa === 'SEM_AUDIO')
+            toast('escolha uma ABA e marque "partilhar áudio"');
+        else if (causa === 'SEM_CAPTURA')
+            toast('este navegador não partilha áudio');
+        else
+            toast('partilha cancelada');
+    });
 }
 function loadTrack(f) {
     audio.playFile(f).then(name => {
@@ -1593,6 +1705,9 @@ function animate() {
         renderer.render(scene, camera);
 }
 /* ═══ 7 · ARRANQUE ═════════════════════════════════════════════════════════ */
+ouvirPresencaMusical();
+pintarBotaoMusica();
+audio.onEnded = () => { markAudioButtons(); toast('partilha encerrada'); };
 function avisarPai(status, motivo) {
     try {
         if (window.parent === window)

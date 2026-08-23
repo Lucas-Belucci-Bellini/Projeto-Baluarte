@@ -117,6 +117,14 @@ export function jarvisNucleoPage(): HTMLDivElement {
     badge.dataset.conectado = String(detail.connected);
     botao.textContent = detail.connected ? '♫ desconectar' : '♫ conectar spotify';
     faixa.textContent = faixaVisivel(detail);
+    /* O Núcleo mora num iframe e não fala com o Spotify: sem isto, ele
+     * responderia "partitura generativa" com a faixa tocando na cara do
+     * operador. Só metadado atravessa — nunca token. */
+    visual?.publicarPresencaMusical({
+      tocando: detail.connected === true && detail.playback === 'playing',
+      titulo: typeof detail.title === 'string' ? detail.title : null,
+      artista: typeof detail.artist === 'string' ? detail.artist : null,
+    });
   };
   globalThis.addEventListener('baluarte:spotify-session', aoMudarSessao);
 
