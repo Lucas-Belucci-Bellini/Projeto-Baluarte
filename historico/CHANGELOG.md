@@ -6,6 +6,55 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-24 — V2, Fase 03: o bus contava sucesso e perdia fracasso
+
+Os dois componentes da Fase 03 sabiam dizer **o que estavam a fazer**. Nenhum
+sabia dizer **se estava a correr mal**.
+
+`bus.contagem()` sobe a cada `emit` — igual se os handlers todos funcionaram e
+igual se todos levantaram. O handler que levanta ia para `deps.log?.erro?.()`, e
+`criarBus()` **sem deps**, que é o construtor padrão, perdia-o inteiro. Um bus
+cuja telemetria toda está partida ficava indistinguível de um saudável.
+
+`estado()` do escalonador é instantâneo: depois de a fila drenar, um que recusou
+400 trabalhos por `FilaCheia` fica idêntico a um que nunca recebeu nenhum. A
+recusa ia para `deps.metricas?.contar?.()`, opcional pela mesma razão.
+
+Agora a falha é **contada por evento** e as últimas ficam com a **cadeia junto**
+(anel limitado, mensagem e não `Error` — reter o objeto manteria stack e
+closures vivas). O escalonador acumula enfileirados, concluídos, falhados,
+recusados e cancelados, independente das métricas injetadas.
+
+**O veredito é deliberadamente conservador.** Só é `unhealthy` a condição que
+impede o componente de trabalhar e que o código já decide sozinho: bus sem
+nenhum inscrito (o evento cai no vazio) e fila no teto (a recusar trabalho neste
+instante). Falha de handler **não** degrada o bus — o isolamento é decisão de
+desenho, então um handler a levantar é o bus a funcionar como projetado, e
+degradar por isso contradiria a regra que o `V2_HEALTH.md` já fixa para falha de
+módulo. Saturação também não: um escalonador cheio a trabalhar está a fazer o
+que lhe pediram.
+
+Não há limiar do tipo "mais de N falhas é unhealthy" — escolher esse N é decidir
+política, que é a mesma decisão não tomada que mantém o `retry` desta fase por
+fazer. O sinal que o substitui sem inventar nada é a razão: `falhas ==
+emissões` é um handler que **nunca** funcionou, e esse aparece nomeado.
+
+Não há `liveness`: o Core já responde a isso em `saude.js`, e um campo que só
+sabe dizer `healthy` é carimbo, não sinal.
+
+Junto, um defeito vizinho: o harness expunha `eventos: bus.contagem()` como
+**valor**, congelado no boot — exatamente contra o que o comentário da linha
+seguinte avisa. Ninguém o consumia, então não havia sintoma. Virou função, e a
+saúde nova entrou ao lado como `saudeBus()`/`saudeTrabalho()`.
+
+Suíte `1347/1347`, integração `58/58`, build, typechecks, `verificar-nexus`,
+catálogos e tabela de estabilidade verdes. Saúde é observação: nada aqui inicia,
+para, cancela ou concede.
+
+**Documentação:** [`docs/v2/EVENT_BUS_HEALTH_2026-08-24.md`](../docs/v2/EVENT_BUS_HEALTH_2026-08-24.md).
+
+---
+
 ## 2026-08-24 — Release `1.3.8`: o Núcleo sabe o que toca, sem passar pelo Spotify
 
 A release que fecha a queixa original — *"a função música não reconhece a música
