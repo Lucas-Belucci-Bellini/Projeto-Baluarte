@@ -6,7 +6,7 @@ aqui o que mudou.
 
 ---
 
-## 2026-08-24 — o Núcleo vira o palco: conversa e config saem de baixo e sobem por cima
+## 2026-08-24 — Release `1.3.7`: o Núcleo vira o palco, e a conversa sobe por cima dele
 
 A queixa do operador, olhando o app: *"tem como deixar essa parte de forma que
 ela fique dentro e seja ativável pelos botões do jarvis […] mas sem descer criar
@@ -53,7 +53,7 @@ typechecks sem erro. Observação de navegador com o app simulado: abrir pela a�
 vinda de dentro do quadro acende o botão certo, trocar de superfície fecha a
 anterior, `Esc` fecha, e a `.page-jarvis` termina em 886 px numa janela de 900.
 
-**Documentação:** [`docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md`](../docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md).
+**Documentação:** [`docs/releases/v1.3.7.md`](../docs/releases/v1.3.7.md) e [`docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md`](../docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md).
 
 ---
 
