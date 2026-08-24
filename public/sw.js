@@ -32,10 +32,11 @@
  *   1.3.5 — a web recebe só o Núcleo V7; o Spotify conecta num clique.
  *   1.3.6 — o Núcleo sabe o que toca no Spotify e capta o som real do PC.
  *   1.3.7 — o Núcleo vira o palco: conversa e config em camadas sobre ele.
+ *   1.3.8 — o Núcleo sabe o que toca na máquina, sem passar pelo Spotify.
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.3.7';
+const VERSION = 'baluarte-v1.3.8';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
