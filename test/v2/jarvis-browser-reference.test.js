@@ -2,8 +2,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
-const repoRoot = path.resolve(new URL('../..', import.meta.url).pathname);
+const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
 const pageSource = fs.readFileSync(path.join(repoRoot, 'src/pages/jarvis.ts'), 'utf8');
 const assetPath = path.join(repoRoot, 'public/jarvis/jarvis-nucleo-browser.webp');
 

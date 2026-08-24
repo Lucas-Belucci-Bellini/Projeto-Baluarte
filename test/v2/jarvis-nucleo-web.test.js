@@ -48,7 +48,7 @@ test('o Client ID embutido é identificador público, nunca segredo', () => {
 });
 
 test('a rota /jarvis carrega o Núcleo na web e o JARVIS completo no app', () => {
-  assert.match(main, /router\.register\('\/jarvis', \(args\) => \(isNative\(\)/);
+  assert.match(main, /reg\('\/jarvis', \(args\) => \(isNative\(\)/);
   assert.match(main, /import\('\.\/pages\/jarvis\.ts'\)\.then\(\(m\) => m\.jarvisPage\(args\)\)/);
   assert.match(main, /import\('\.\/pages\/jarvis-nucleo\.ts'\)\.then\(\(m\) => m\.jarvisNucleoPage\(args\)\)/);
 });

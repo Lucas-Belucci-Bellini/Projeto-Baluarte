@@ -27,11 +27,16 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { comLF } from '../../scripts/lib/eol.mjs';
 
 const raiz = join(fileURLToPath(new URL('../..', import.meta.url)));
 const ler = (...partes) => readFileSync(join(raiz, ...partes), 'utf8');
 
-const nucleoV7 = ler('project V2', 'Modelar objeto 3D', 'jarvis-nucleo-v7.ts');
+/* comLF: em checkout Windows o disco tem CRLF (sem .gitattributes pro .ts), e
+ * `^\s+` em modo multiline casa o \r do fim da linha anterior como o "espaço"
+ * antes de uma chamada sem indentação — um falso positivo só no Windows (ver
+ * scripts/lib/eol.mjs). O conteúdo não muda; só a comparação. */
+const nucleoV7 = comLF(ler('project V2', 'Modelar objeto 3D', 'jarvis-nucleo-v7.ts'));
 const artefatoV7 = ler('project V2', 'Modelar objeto 3D', 'jarvis-nucleo-v7.js');
 const htmlV7 = ler('project V2', 'Modelar objeto 3D', 'jarvis-nucleo-v7.html');
 const visual = ler('src', 'utils', 'jarvis-v7-visual.ts');
