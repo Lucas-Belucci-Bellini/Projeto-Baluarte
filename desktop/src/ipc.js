@@ -15,6 +15,7 @@ const nexus = require('./nexus');
 const hermes = require('./hermes');
 const arquivos = require('./arquivos');
 const arma3 = require('./arma3');
+const musica = require('./musica');
 const { criarRuntime } = require('./runtime');
 
 /**
@@ -119,6 +120,19 @@ function buildHandlers(ctx) {
     'arma3:status': async (payload = {}) => arma3.status(payload),
     'arma3:extrair': async (payload = {}) => arma3.extrair(payload),
     'arma3:entregar': async (payload = {}) => arma3.entregar(payload),
+
+    // 1.3.8: o que toca na máquina, lido do SMTC do Windows.
+    //
+    // Não passa por conta nem por OAuth: o Windows já sabe o que está tocando,
+    // seja o Spotify, o navegador ou o VLC. É leitura de metadado — título,
+    // artista, estado e app de origem. Nunca áudio; o espectrómetro continua a
+    // vir da captura do sistema, que pede consentimento próprio.
+    //
+    // `agora` DEGRADA em vez de estourar fora do Windows, e `diagnostico`
+    // devolve o texto cru da sonda — sem ele, uma falha na máquina do operador
+    // chega aqui como "não funcionou" e nada mais.
+    'musica:agora': async () => musica.agora(),
+    'musica:diagnostico': async () => musica.diagnostico(),
 
     // V2: o Runtime nativo (Rust), pelo transporte de `v2/core/runtime-stdio.js`.
     //

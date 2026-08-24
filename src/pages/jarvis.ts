@@ -40,6 +40,12 @@ import {
   rememberSpotifyClientId,
 } from '../utils/jarvis-spotify-session';
 import { getConfiguredSpotifyClientId, isSpotifyClientId } from '../utils/jarvis-spotify';
+import {
+  createMusicaNativaMonitor,
+  musicaNativaDisponivel,
+  type MusicaNativaAgora,
+  type MusicaNativaMonitor,
+} from '../utils/jarvis-musica-nativa';
 import type { SpotifySessionEventDetail } from '../utils/jarvis-spotify-session';
 import { humanize } from '../utils/jarvis-style.js';
 import {
@@ -105,6 +111,9 @@ let markXiiiSpotifyOff: (() => void) | null = null;
  * sem o soltar deixaria um handler vivo mexendo em painéis já descartados. */
 let markXiiiEscOff: (() => void) | null = null;
 let markXiiiPalcoOff: (() => void) | null = null;
+/* A sonda do sistema pergunta ao Windows de 5 em 5 s. Deixá-la viva depois de
+ * sair da rota faria o app spawnar PowerShell atrás de outra tela. */
+let markXiiiMusicaNativa: MusicaNativaMonitor | null = null;
 
 function applyRuntimeObservation(observation: MarkXiiiRuntimeObservation): void {
   markXiiiConsole?.setRuntimeObservation(observation);
@@ -123,6 +132,8 @@ function disposeMarkXiiiConsole(): void {
   markXiiiEscOff = null;
   markXiiiPalcoOff?.();
   markXiiiPalcoOff = null;
+  markXiiiMusicaNativa?.stop();
+  markXiiiMusicaNativa = null;
   markXiiiConsole?.dispose();
   markXiiiConsole = null;
 }
@@ -1298,6 +1309,40 @@ export function jarvisPage(): HTMLDivElement {
   };
   globalThis.addEventListener('baluarte:spotify-session', onSpotifySession);
   markXiiiSpotifyOff = () => globalThis.removeEventListener('baluarte:spotify-session', onSpotifySession);
+
+  /* O caminho que NÃO depende do Spotify.
+   *
+   * A ligação por OAuth continua a existir e é o único caminho na web. Mas ela
+   * depende de configuração que não é do Baluarte — conta, app registado, e a
+   * conta listada em User Management enquanto o app estiver em Development mode.
+   * Enquanto qualquer dessas peças faltar, o Núcleo não sabe o que toca.
+   *
+   * O Windows sabe. O SMTC entrega título e artista do que QUALQUER aplicação
+   * está tocando, sem conta nenhuma. Quando ele responde, ganha do Spotify aqui:
+   * é a fonte que reflete o que o operador está mesmo a ouvir, venha de onde
+   * vier. Só metadado atravessa para dentro do quadro do V7 — nunca token. */
+  const sistemaStatus = h('span', { className: 'badge badge--cyan' }, 'SISTEMA · —');
+  const sistemaFaixa = h('span', { className: 'u-text-muted', 'aria-live': 'polite', style: { fontSize: '11px' } }, '');
+  const aoMudarSistema = (agora: MusicaNativaAgora): void => {
+    if (!agora.disponivel) {
+      sistemaStatus.textContent = 'SISTEMA · OFF';
+      sistemaFaixa.textContent = agora.motivo ?? '';
+      return;
+    }
+    const tocando = agora.playback === 'playing';
+    sistemaStatus.textContent = tocando ? 'SISTEMA · TOCANDO' : agora.playback === 'paused' ? 'SISTEMA · PAUSADO' : 'SISTEMA · ONLINE';
+    const nome = agora.titulo ? (agora.artista ? `${agora.titulo} · ${agora.artista}` : agora.titulo) : '';
+    sistemaFaixa.textContent = nome ? `♪ ${nome}${agora.app ? ` (${agora.app})` : ''}` : 'nada tocando agora';
+    markXiiiConsole?.setPlayback(agora.playback === 'idle' ? 'unknown' : agora.playback);
+    jarvisV7Visual?.publicarPresencaMusical({ tocando, titulo: agora.titulo, artista: agora.artista });
+  };
+  if (musicaNativaDisponivel()) {
+    markXiiiMusicaNativa = createMusicaNativaMonitor({ onChange: aoMudarSistema });
+    markXiiiMusicaNativa.start();
+  } else {
+    sistemaStatus.textContent = 'SISTEMA · SÓ NO APP';
+    sistemaFaixa.textContent = 'a leitura do que toca no computador vive no Launcher';
+  }
   const spotifyClearButton = h('button', {
     className: 'btn btn--ghost btn--sm',
     type: 'button',
@@ -1322,6 +1367,12 @@ export function jarvisPage(): HTMLDivElement {
     spotifyStatus,
     !configuredSpotifyClientId && spotifyClientRow,
     spotifyButton);
+  /* A leitura do sistema vem PRIMEIRO na tela porque é a que funciona sem
+   * configuração nenhuma. O Spotify fica logo abaixo, para quem quiser a
+   * sessão dele — e para a web, onde esta linha não tem como existir. */
+  const sistemaControls = h('div', { className: 'jv-spotify-settings__controls' },
+    sistemaStatus,
+    sistemaFaixa);
   const spotifyHint = h('div', { className: 'jarvis-config__warn u-text-muted', style: { margin: '6px 0 0' } },
     h('p', { style: { margin: '0 0 6px' } },
       configuredSpotifyClientId
@@ -1341,6 +1392,7 @@ export function jarvisPage(): HTMLDivElement {
   const spotifySettings = h('section', { className: 'jv-spotify-settings', 'aria-labelledby': 'jv-spotify-settings-title' },
     h('div', { className: 'jv-spotify-settings__title', id: 'jv-spotify-settings-title' }, '♫ Presença musical externa'),
     h('p', { className: 'jv-spotify-settings__summary' }, 'Somente metadados de playback; sem áudio e sem comandos de reprodução.'),
+    sistemaControls,
     spotifyControls,
     spotifyHint,
   );

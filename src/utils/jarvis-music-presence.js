@@ -6,6 +6,7 @@ export {
   getJarvisMusicSnapshot,
   observeJarvisSpotifyPlayback,
   observeJarvisSpotifyApiPlayback,
+  observeJarvisSistemaPlayback,
   startJarvisMusicPresence,
   stopJarvisMusicPresence
 } from './jarvis-music-presence.ts';
