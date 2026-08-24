@@ -49,12 +49,48 @@ test('Spotify PKCE: Client ID e retorno ficam na sessão, sem Client Secret', as
   assert.match(session.getItem('baluarte:spotify:pkce'), /"returnTo":null/);
 });
 
-test('Spotify callback: state divergente é rejeitado e só emite estado desconectado', async () => {
+/**
+ * A queixa do operador: *"por algum motivo mesmo eu sendo redirecionado eu não
+ * consigo conectar ao spotify"*.
+ *
+ * O handshake estava certo — foi exercitado ponta a ponta em navegador. O que
+ * faltava era o contrário: quando o Spotify recusa, TODOS os modos de falha
+ * terminavam no mesmo silêncio. O distintivo continuava `SPOTIFY · OFF`, sem
+ * nada no ecrã nem no console a dizer porquê, e não havia como distinguir
+ * "cancelei" de "o Redirect URI não bate" de "a minha conta não está na lista
+ * do Development mode". O que se cobra aqui é que o motivo sobreviva.
+ */
+test('Spotify callback: state divergente é rejeitado, e o motivo sai junto', async () => {
   events.length = 0;
   const result = await spotifySession.resumeSpotifyAuthorization('code=code-value&state=wrong-state');
   assert.equal(result, 'rejected');
   assert.equal(events.at(-1)?.type, 'baluarte:spotify-session');
-  assert.deepEqual(events.at(-1)?.detail, { connected: false });
+  assert.deepEqual(events.at(-1)?.detail, { connected: false, reason: 'ESTADO_PERDIDO' });
+});
+
+test('Spotify callback: a recusa do Spotify chega com as palavras dele', async () => {
+  events.length = 0;
+  const result = await spotifySession.resumeSpotifyAuthorization(
+    'error=access_denied&error_description=User+not+registered+in+the+Developer+Dashboard',
+  );
+  assert.equal(result, 'rejected');
+  const detail = events.at(-1)?.detail;
+  assert.equal(detail?.connected, false);
+  assert.equal(detail?.reason, 'ACESSO_NEGADO');
+  /* Sem isto, "cancelei" e "a minha conta não está na lista" são a mesma tela. */
+  assert.match(detail?.reasonText, /access_denied — User not registered in the Developer Dashboard/);
+});
+
+test('Spotify: cada motivo diz o que fazer a seguir, não só que falhou', () => {
+  for (const motivo of ['ACESSO_NEGADO', 'ESTADO_PERDIDO', 'CODIGO_REJEITADO', 'TROCA_FALHOU', 'RESPOSTA_INVALIDA']) {
+    const frase = spotifySession.describeSpotifyFailure(motivo);
+    assert.ok(frase.length > 30, `o motivo ${motivo} não explica nada`);
+  }
+  /* O Development mode é a causa mais comum de "autorizei e não conectou", e a
+   * única que o Spotify não deixa o Baluarte detetar sozinho. */
+  assert.match(spotifySession.describeSpotifyFailure('ACESSO_NEGADO'), /Development mode/);
+  assert.match(spotifySession.describeSpotifyFailure('CODIGO_REJEITADO'), /Redirect URI/);
+  assert.equal(spotifySession.describeSpotifyFailure(undefined), '');
 });
 
 const markXiii = await import('../../src/utils/jarvis-mark-xiii.ts');

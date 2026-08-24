@@ -6,6 +6,50 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-24 — O Núcleo sabe o que toca sem passar pelo Spotify
+
+A queixa: *"por algum motivo mesmo eu sendo redirecionado eu não consigo
+conectar ao spotify"*. E, depois do diagnóstico: *"acho que criar algo que faça
+isso funcionar seria legal"*.
+
+**O handshake do Spotify está correto** — exercitado ponta a ponta em navegador.
+O que trava não é código: é configuração de terceiro. Conta, app registado no
+dashboard, e — enquanto o app estiver em **Development mode** — a conta do
+operador listada em User Management. Nenhuma linha deste repositório resolve a
+terceira, e melhorar a mensagem de erro só explica melhor a mesma parede.
+
+**O Windows já sabe.** O SMTC é o cartão de mídia do sistema, e qualquer
+aplicação que toque som publica ali: o Spotify de desktop, o Spotify no
+navegador, o YouTube, o VLC. Ler dali dá título e artista **sem conta, sem OAuth,
+sem allowlist** — e cobre mais fontes do que o caminho do Spotify jamais cobriria,
+porque ele só sabe do Spotify.
+
+Entrou a leitura nativa: `powershell` (WinRT) → `desktop/src/musica.js` → canal
+IPC `musica:agora` → poller de 5 s → presença global → o quadro do V7. **O Núcleo
+não mudou**: ele já consumia a presença desde a 1.3.6; trocou-se quem a alimenta.
+No app, quando o SMTC responde, ele ganha do Spotify — é a fonte que reflete o
+que o operador está mesmo a ouvir. Na web, o Spotify continua a ser o único
+caminho, e continua inteiro.
+
+Só metadado atravessa: título, artista, estado e app de origem. Nunca áudio,
+nunca comandos de reprodução. O espectrómetro continua a vir da captura do
+sistema — as duas juntas são a resposta inteira: o SMTC dá o **nome**, a captura
+dá a **forma de onda**.
+
+Fora do Windows a sonda **degrada com motivo** em vez de estourar, e na web diz
+onde a capacidade mora. O canal `musica:diagnostico` devolve o texto cru da
+sonda, porque uma falha na máquina do operador chegaria aqui como "não
+funcionou" e nada mais.
+
+Suíte `1306/1306`, portão de integração `58/58`, build, typechecks,
+`verificar-nexus`, catálogos e tabela de estabilidade verdes. Verificado em
+navegador com a ponte nativa simulada. **Não verificado:** a leitura real do
+WinRT — esta sessão corre em Linux, e o SMTC exige Windows.
+
+**Documentação:** [`docs/v2/MUSICA_NATIVA_SMTC_2026-08-24.md`](../docs/v2/MUSICA_NATIVA_SMTC_2026-08-24.md).
+
+---
+
 ## 2026-08-24 — Release `1.3.7`: o Núcleo vira o palco, e a conversa sobe por cima dele
 
 A queixa do operador, olhando o app: *"tem como deixar essa parte de forma que

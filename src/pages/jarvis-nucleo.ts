@@ -37,6 +37,10 @@ const SPOTIFY_SCOPE = 'user-read-playback-state';
 
 /** Só metadados de faixa; sem áudio, sem comando de reprodução. */
 function faixaVisivel(detail: SpotifySessionEventDetail): string {
+  /* Uma volta que falhou deixava a faixa vazia: o dock ficava idêntico a quem
+   * nunca tentou conectar. O motivo curto fica aqui, ao lado do distintivo; a
+   * frase inteira, com o que fazer, sai no aviso do arranque. */
+  if (detail.connected !== true && detail.reason) return `⚠ ${detail.reason.replace(/_/g, ' ').toLowerCase()}`;
   if (detail.connected !== true) return '';
   const titulo = typeof detail.title === 'string' ? detail.title.trim() : '';
   const artista = typeof detail.artist === 'string' ? detail.artist.trim() : '';

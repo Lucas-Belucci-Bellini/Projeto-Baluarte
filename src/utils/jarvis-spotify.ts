@@ -155,6 +155,23 @@ function tokenFromPayload(value: unknown): SpotifyTokens {
   };
 }
 
+/**
+ * O que o Spotify respondeu, em palavras dele.
+ *
+ * Um 400 na troca do código pode ser Redirect URI que não bate, código já usado,
+ * `code_verifier` errado ou app em Development mode — e o corpo da resposta diz
+ * qual, em `error` e `error_description`. Sem isto, todos esses casos chegam ao
+ * operador como o mesmo silêncio, e não há como distinguir um do outro.
+ */
+async function spotifyErrorDetail(response: Response): Promise<string> {
+  try {
+    const record = recordOf(await response.clone().json());
+    const erro = typeof record?.error === 'string' ? record.error : '';
+    const descricao = typeof record?.error_description === 'string' ? record.error_description : '';
+    return [erro, descricao].filter(Boolean).join(' — ').slice(0, 200);
+  } catch { return ''; }
+}
+
 export async function exchangeSpotifyAuthorizationCode(
   config: SpotifyPkceConfig,
   code: string,
@@ -174,7 +191,11 @@ export async function exchangeSpotifyAuthorizationCode(
       code_verifier: codeVerifier,
     }).toString(),
   });
-  if (!response.ok) throw new Error(response.status === 400 ? 'SPOTIFY_AUTHORIZATION_REJECTED' : 'SPOTIFY_TOKEN_EXCHANGE_FAILED');
+  if (!response.ok) {
+    const codigo = response.status === 400 ? 'SPOTIFY_AUTHORIZATION_REJECTED' : 'SPOTIFY_TOKEN_EXCHANGE_FAILED';
+    const detalhe = await spotifyErrorDetail(response);
+    throw new Error(detalhe ? `${codigo}: ${detalhe}` : codigo);
+  }
   return tokenFromPayload(await response.json());
 }
 

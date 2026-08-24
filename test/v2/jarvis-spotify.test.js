@@ -122,3 +122,29 @@ test('estado musical manual continua compatível com o mesmo contexto', () => {
   assert.equal(getJarvisMusicSnapshot().playback, 'paused');
   assert.match(getJarvisRuntimeContext(), /Faixa pausada/);
 });
+
+/**
+ * O corpo do 400 do Spotify é a única frase que diz POR QUE a troca falhou:
+ * Redirect URI que não bate, código já gasto, `code_verifier` errado. Sem ela,
+ * todos esses casos chegam ao operador como o mesmo "não conectou".
+ */
+test('Spotify: a recusa da troca carrega o que o Spotify respondeu', async () => {
+  const config = { clientId: 'oauth_client_id_fake_12345', redirectUri: 'https://projeto-baluarte.vercel.app/' };
+  const recusa = async () => new Response(
+    JSON.stringify({ error: 'invalid_grant', error_description: 'Invalid redirect URI' }),
+    { status: 400, headers: { 'Content-Type': 'application/json' } },
+  );
+  await assert.rejects(
+    () => exchangeSpotifyAuthorizationCode(config, 'codigo', 'verificador', recusa),
+    /^Error: SPOTIFY_AUTHORIZATION_REJECTED: invalid_grant — Invalid redirect URI$/,
+  );
+});
+
+test('Spotify: uma resposta sem corpo legível ainda produz o código do erro', async () => {
+  const config = { clientId: 'oauth_client_id_fake_12345', redirectUri: 'https://projeto-baluarte.vercel.app/' };
+  const quebrada = async () => new Response('<html>gateway</html>', { status: 502 });
+  await assert.rejects(
+    () => exchangeSpotifyAuthorizationCode(config, 'codigo', 'verificador', quebrada),
+    /^Error: SPOTIFY_TOKEN_EXCHANGE_FAILED$/,
+  );
+});

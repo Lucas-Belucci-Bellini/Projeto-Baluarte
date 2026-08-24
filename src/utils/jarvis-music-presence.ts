@@ -1,6 +1,6 @@
 import { clearStatus, setStatus, type StatusValue } from './baluarte-status';
 
-export type JarvisMusicSource = 'html-media' | 'spotify-embed' | 'spotify-api' | 'spotify-soloist';
+export type JarvisMusicSource = 'html-media' | 'spotify-embed' | 'spotify-api' | 'spotify-soloist' | 'sistema';
 export type JarvisMusicPlayback = 'playing' | 'paused' | 'unknown' | 'idle';
 
 export interface JarvisMusicSnapshot {
@@ -146,6 +146,31 @@ export function observeJarvisSpotifySoloistPlayback(
     artist: text(artist),
     positionMs: finite(positionMs),
     durationMs: finite(durationMs),
+    observedAt: now(),
+  });
+}
+
+/**
+ * O que o SISTEMA diz que está tocando (SMTC do Windows, pelo app).
+ *
+ * Fonte diferente das outras em espécie, não só em nome: as demais observam algo
+ * que o próprio Baluarte embute, e esta observa o computador inteiro — vale para
+ * o Spotify, o navegador, o VLC. Sem posição nem duração, porque o SMTC não as
+ * garante em todas as aplicações e um número que às vezes mente é pior que
+ * nenhum.
+ */
+export function observeJarvisSistemaPlayback(
+  playback: 'playing' | 'paused' | 'unknown',
+  title: string | null,
+  artist: string | null,
+): void {
+  publish({
+    playback,
+    source: 'sistema',
+    title: text(title),
+    artist: text(artist),
+    positionMs: null,
+    durationMs: null,
     observedAt: now(),
   });
 }
