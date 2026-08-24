@@ -54,7 +54,11 @@ const main = readFileSync(MAIN, 'utf8');
 
 /* Rotas reais: só as chamadas de registro em coluna zero. O bloco de exemplo
  * do topo do main.js é indentado dentro do comentário, então não entra. */
-const rotasReais = [...main.matchAll(/^router\.register\('([^']+)'/gm)].map((m) => m[1]);
+/* Duas formas de registar, e as duas contam: `router.register` direto, e o
+ * `reg()` que embrulha a rota no portão de conta. Reconhecer só a primeira
+ * fez este verificador declarar 98 rotas como fantasmas no dia em que o
+ * portão entrou — o mapa estava certo, o detetor é que ficou desatualizado. */
+const rotasReais = [...main.matchAll(/^(?:router\.register|reg)\('([^']+)'/gm)].map((m) => m[1]);
 
 /* Rotas declaradas no mapa: domínios + lacunas (uma rota sem domínio ainda é
  * responsabilidade de alguém — a lacuna é o registro honesto disso). */
@@ -120,7 +124,7 @@ for (const [nome, e] of Object.entries(mapa.externos)) {
  * levar. Aconteceu com o shell, que declarava /sobre, /roadmap e /projetos
  * sem nenhuma delas na origem. Aqui o main.js é a fonte: ele diz qual arquivo
  * atende cada rota. */
-const paginaDaRota = [...main.matchAll(/^router\.register\('([^']+)'.*?\.\/pages\/([^']+)'/gm)];
+const paginaDaRota = [...main.matchAll(/^(?:router\.register|reg)\('([^']+)'.*?\.\/pages\/([^']+)'/gm)];
 for (const [, rota, arquivo] of paginaDaRota) {
   const caminho = `src/pages/${arquivo}`;
   const pasta = `${caminho.slice(0, caminho.lastIndexOf('/'))}/`;
