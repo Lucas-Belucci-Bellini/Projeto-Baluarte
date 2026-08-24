@@ -6,6 +6,39 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-24 — Release `1.3.8`: o Núcleo sabe o que toca, sem passar pelo Spotify
+
+A release que fecha a queixa original — *"a função música não reconhece a música
+que tá tocando"* — por um caminho que **não depende de conta nenhuma**.
+
+**O que testar:** no app, ponha qualquer coisa para tocar (Spotify de desktop,
+Spotify no navegador, YouTube, VLC) e abra `/jarvis` → `⚙ config`. A linha
+`SISTEMA` deve mostrar `SISTEMA · TOCANDO` com o nome da faixa e o app de origem.
+Na web ela diz `SISTEMA · SÓ NO APP`, de propósito: só o processo nativo alcança
+o WinRT (#238 — app completo, web leve).
+
+O handshake do Spotify está correto; o que trava é configuração de terceiro —
+conta, app registado, e a conta listada em User Management enquanto o app estiver
+em Development mode. O Windows já sabe o que toca, e o SMTC cobre MAIS fontes do
+que o Spotify jamais cobriria, porque ele só sabe do Spotify.
+
+Entrou também, desde a 1.3.7: a volta do Spotify que falha passa a **dizer por
+quê** (antes, todo modo de falha terminava no mesmo silêncio), e a Fase 03 da V2
+— correlação e causação no Event Bus, interno e sem mudança visível.
+
+Só metadado atravessa: título, artista, estado e app de origem. Nunca áudio,
+nunca comandos de reprodução. O espectrómetro continua vindo da captura do
+sistema — o SMTC dá o **nome**, a captura dá a **forma de onda**.
+
+Suíte `1319/1319`, portão de integração `58/58`, build, typechecks,
+`verificar-nexus`, catálogos e tabela de estabilidade verdes. **Não verificado:**
+a leitura real do WinRT — as sessões correm em Linux e o SMTC exige Windows; é
+justamente o que esta release existe para pôr à prova.
+
+**Documentação:** [`docs/releases/v1.3.8.md`](../docs/releases/v1.3.8.md).
+
+---
+
 ## 2026-08-24 — V2, Fase 03: o Event Bus ganha a cadeia de um evento
 
 O bus já dizia **quem** emitiu (`origem`). Não dizia **de quê**. Num sistema em
