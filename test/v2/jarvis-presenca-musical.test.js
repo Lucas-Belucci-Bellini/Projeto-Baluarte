@@ -123,8 +123,11 @@ test('só metadado atravessa para dentro do quadro — nunca token', () => {
 });
 
 test('o estado é reenviado quando o quadro termina de carregar', () => {
-  /* Uma faixa que já tocava antes do `load` nunca chegaria lá sem isto. */
-  assert.match(visual, /const onLoad = \(\): void => \{ setState\('ready'\); enviarPresenca\(\); \}/);
+  /* Uma faixa que já tocava antes do `load` nunca chegaria lá sem isto. O que se
+   * cobra é a ordem — `ready` e então o reenvio —, não o que mais o `load` faz:
+   * o reenvio das superfícies entrou na mesma linha depois, e prender a
+   * asserção ao fim dela transformaria um acréscimo correto em vermelho. */
+  assert.match(visual, /const onLoad = \(\): void => \{ setState\('ready'\); enviarPresenca\(\);/);
 });
 
 test('o quadro declara as permissões de que a captura depende', () => {
