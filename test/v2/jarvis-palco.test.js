@@ -22,7 +22,6 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { comLF } from '../../scripts/lib/eol.mjs';
 
 const raiz = join(fileURLToPath(new URL('../..', import.meta.url)));
 const ler = (...partes) => readFileSync(join(raiz, ...partes), 'utf8');
@@ -33,10 +32,7 @@ const htmlV7 = ler('project V2', 'Modelar objeto 3D', 'jarvis-nucleo-v7.html');
 const visual = ler('src', 'utils', 'jarvis-v7-visual.ts');
 const paginaApp = ler('src', 'pages', 'jarvis.ts');
 const paginaWeb = ler('src', 'pages', 'jarvis-nucleo.ts');
-/* comLF: checkout Windows grava .css em CRLF (sem .gitattributes pro .css) e a
- * asserção abaixo casa `\{\n\s+flex` de forma literal — só a comparação muda,
- * ver scripts/lib/eol.mjs. */
-const estilos = comLF(ler('src', 'styles', 'fase19.css'));
+const estilos = ler('src', 'styles', 'fase19.css');
 
 test('os botões de superfície nascem escondidos no HUD', () => {
   /* A web embute o mesmo artefato e não tem conversa nenhuma. Se nascessem

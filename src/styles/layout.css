@@ -14,31 +14,6 @@
   grid-template-columns: var(--sidebar-width-collapsed) 1fr;
 }
 
-/* Portão de conta (/login): tela dedicada, sem sidebar/header — some o resto
- * do shell em vez de mostrar um menu cheio de rotas que o visitante não pode
- * abrir ainda. Seletor `.shell.shell--gate` (duas classes) de propósito: bate
- * a especificidade do `.shell` dentro do @media mobile mais abaixo, senão o
- * breakpoint reganha a grade em telas pequenas. */
-.shell.shell--gate {
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: 'main';
-}
-.shell--gate .sidebar,
-.shell--gate .header {
-  display: none;
-}
-.shell--gate .main {
-  grid-area: main;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.shell--gate .main__inner {
-  width: 100%;
-}
-
 /* ============== HEADER ============== */
 .header {
   grid-area: header;

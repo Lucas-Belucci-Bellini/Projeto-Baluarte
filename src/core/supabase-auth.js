@@ -47,7 +47,7 @@ export function isLoggedIn() {
   return !!(s && s.access_token);
 }
 
-/** Lê `{ id, email, meta }` do JWT (decode local, sem verificar — só pra UI). Também traz `provider`. */
+/** Lê `{ id, email, meta }` do JWT (decode local, sem verificar — só pra UI). */
 export function currentUser() {
   const s = loadSession();
   if (!s || !s.access_token) return null;
@@ -57,8 +57,7 @@ export function currentUser() {
     return {
       id: payload.sub,
       email: payload.email || '',
-      meta: payload.user_metadata || {},
-      provider: payload.app_metadata?.provider || 'email'
+      meta: payload.user_metadata || {}
     };
   } catch {
     return null;
@@ -112,31 +111,6 @@ export async function signInWithPassword(email, password) {
   if (!session) throw new Error('Resposta de autenticação inválida.');
   storeSession(session);
 }
-
-/**
- * Atualiza a conta logada (`/auth/v1/user`, PUT — exige o access_token atual).
- * Trocar o e-mail dispara confirmação do Supabase pro endereço novo; a sessão
- * atual não muda até o link ser confirmado. Trocar a senha já vale na hora.
- */
-async function updateUser(patch) {
-  const token = await getAccessToken();
-  if (!token) throw new Error('Sessão expirada. Entre novamente.');
-  const res = await fetch(`${supabaseUrl()}/auth/v1/user`, {
-    method: 'PUT',
-    headers: { apikey: supabaseAnonKey(), authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-    body: JSON.stringify(patch),
-    signal: AbortSignal.timeout(8000)
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.msg || data.error_description || data.error || 'Não foi possível atualizar a conta.');
-  return data;
-}
-
-/** Troca a senha da conta logada. */
-export const updatePassword = (password) => updateUser({ password });
-
-/** Troca o e-mail da conta logada (o Supabase manda confirmação pro endereço novo). */
-export const updateEmail = (email) => updateUser({ email });
 
 /** Encerra a sessão (revoga no servidor, best-effort, e limpa local). */
 export async function signOut() {

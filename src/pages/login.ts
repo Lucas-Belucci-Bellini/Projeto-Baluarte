@@ -149,9 +149,7 @@ function authForm(mode: AuthMode, onSwitch: (next: AuthMode) => void): HTMLFormE
 
 function accountCard(): HTMLDivElement {
   const box = h('div', { className: 'lg-card' });
-  /* Cadastro vem antes do login (operador quer novos usuários obrigados a
-   * criar conta primeiro): aba padrão e ordem visual começam em "signup". */
-  let mode: AuthMode = 'signup';
+  let mode: AuthMode = 'login';
 
   function render(): void {
     empty(box);
@@ -197,13 +195,13 @@ function accountCard(): HTMLDivElement {
 
     box.appendChild(h('div', { className: 'lg-tabs' },
       h('button', {
-        className: `lg-tab${mode === 'signup' ? ' is-active' : ''}`,
-        onclick: (): void => { mode = 'signup'; render(); },
-      }, 'Criar conta'),
-      h('button', {
         className: `lg-tab${mode === 'login' ? ' is-active' : ''}`,
         onclick: (): void => { mode = 'login'; render(); },
       }, 'Entrar'),
+      h('button', {
+        className: `lg-tab${mode === 'signup' ? ' is-active' : ''}`,
+        onclick: (): void => { mode = 'signup'; render(); },
+      }, 'Criar conta'),
     ));
     box.appendChild(h('button', {
       className: 'btn-google',
@@ -225,9 +223,9 @@ export function loginPage(): HTMLDivElement {
     h('div', { className: 'page-header anim-fade-in' },
       h('div', { className: 'page-header__crumbs' },
         h('span', null, 'BALUARTE'), h('span', null, '›'), h('span', null, 'ACESSO')),
-      h('h1', { className: 'page-header__title' }, '⛨ Criar Conta / Entrar'),
+      h('h1', { className: 'page-header__title' }, '⛨ Entrar / Criar Conta'),
       h('p', { className: 'page-header__description' },
-        'É preciso ter uma conta para acessar o Baluarte. Ela também sincroniza estética (tema + universo) e favoritos entre dispositivos.'),
+        'Sua conta sincroniza estética (tema + universo) e favoritos entre dispositivos.'),
     ),
   );
   page.appendChild(h('div', { className: 'lg-wrap anim-fade-in' }, accountCard()));

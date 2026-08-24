@@ -3,17 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { comLF } from '../../scripts/lib/eol.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../..');
-/* comLF: checkout Windows grava o .tsv em CRLF (sem .gitattributes pra ele) —
- * sem normalizar, a última coluna de cada linha carrega um '\r' residual e
- * nunca bate com o texto limpo abaixo. Ver scripts/lib/eol.mjs. */
-const manifest = comLF(fs.readFileSync(
+const manifest = fs.readFileSync(
   path.join(root, 'docs/v2/SUPABASE_REMOTE_MIGRATION_MANIFEST_2026-08-20.tsv'),
   'utf8',
-));
+);
 const driftAudit = fs.readFileSync(
   path.join(root, 'docs/v2/SUPABASE_MIGRATION_DRIFT_AUDIT_2026-08-20.md'),
   'utf8',
