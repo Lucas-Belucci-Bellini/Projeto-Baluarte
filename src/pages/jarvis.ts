@@ -60,7 +60,7 @@ import type { RecallDoc } from '../utils/jarvis-recall.js';
 import { initSkills, removeSkill } from '../utils/jarvis-tools.js';
 import { listSkillSummaries } from '../utils/jarvis-skills.js';
 import { createMarkXiiiConsole, type MarkXiiiConsole, type MarkXiiiRuntimeObservation } from '../utils/jarvis-mark-xiii';
-import { createJarvisV7Visual, type JarvisV7Visual } from '../utils/jarvis-v7-visual';
+import { createJarvisV7Visual, ocuparAlturaRestante, type JarvisV7Visual, type JarvisV7Superficie } from '../utils/jarvis-v7-visual';
 
 /** Um modo de operação do JARVIS, como aparece na grade de seleção. */
 interface ModoJarvis {
@@ -101,6 +101,10 @@ let jarvisV7Visual: JarvisV7Visual | null = null;
 let markXiiiRuntimeOff: (() => void) | null = null;
 let markXiiiRouteOff: (() => void) | null = null;
 let markXiiiSpotifyOff: (() => void) | null = null;
+/* O Esc fecha a superfície aberta, e o ouvinte é do documento — sair da rota
+ * sem o soltar deixaria um handler vivo mexendo em painéis já descartados. */
+let markXiiiEscOff: (() => void) | null = null;
+let markXiiiPalcoOff: (() => void) | null = null;
 
 function applyRuntimeObservation(observation: MarkXiiiRuntimeObservation): void {
   markXiiiConsole?.setRuntimeObservation(observation);
@@ -115,6 +119,10 @@ function disposeMarkXiiiConsole(): void {
   markXiiiRouteOff = null;
   markXiiiSpotifyOff?.();
   markXiiiSpotifyOff = null;
+  markXiiiEscOff?.();
+  markXiiiEscOff = null;
+  markXiiiPalcoOff?.();
+  markXiiiPalcoOff = null;
   markXiiiConsole?.dispose();
   markXiiiConsole = null;
 }
@@ -1173,7 +1181,7 @@ export function jarvisPage(): HTMLDivElement {
   /* Preenche o cache de memória p/ a ferramenta recall_memory do agente. */
   buildMemoryCorpus(null).then(setMemoryCache).catch(() => {});
 
-  const fullPage = h('div', { className: 'page-jarvis' });
+  const fullPage = h('div', { className: 'page-jarvis page-jarvis--palco' });
 
   modeBadgeEl = h('span', { className: 'badge badge--cyan' }, '');
   const spotifyConnected = isSpotifyConnected();
@@ -1207,24 +1215,31 @@ export function jarvisPage(): HTMLDivElement {
     className: 'jv-visual-switcher__reference-fallback',
     'aria-label': 'Referência visual do núcleo J.A.R.V.I.S.',
   }, browserReference, markXiiiConsole.root);
+  /* Declarado antes do visual porque o HUD do Núcleo chama de volta — e só é
+   * preenchido lá embaixo, quando os painéis existem. */
+  let abrirSuperficie: (qual: JarvisV7Superficie) => void = () => {};
+  const socorro = h('div', { className: 'jv-palco__socorro', hidden: true, role: 'group', 'aria-label': 'Superfícies do JARVIS' });
+
   jarvisV7Visual = createJarvisV7Visual({
     fallback: visualFallback,
     onState: (state) => {
       if (markXiiiConsole) markXiiiConsole.root.dataset.visualV7State = state;
+      /* Os botões de conversa e config moram DENTRO do Núcleo. Se o Núcleo não
+       * subir, eles não existem — e o app ficaria sem chat, sem aviso. Esta
+       * tira aparece só nesse caso, e é a única razão de ela existir. */
+      socorro.hidden = state !== 'fallback';
     },
+    onSuperficie: (qual) => abrirSuperficie(qual),
   });
-  fullPage.appendChild(jarvisV7Visual.root);
 
-  let configOpen = false;
-  const configWrap = h('div', { className: 'jarvis-config-wrap', style: { display: 'none' } });
-  const configToggle = h('button', {
-    className: 'btn btn--ghost btn--sm',
-    onclick: () => {
-      configOpen = !configOpen;
-      configWrap.style.display = configOpen ? 'block' : 'none';
-      if (configOpen) { empty(configWrap); configWrap.appendChild(renderConfigPanel(spotifySettings)); }
-    }
-  }, '⚙ Modos & Config');
+  /* O palco: o Núcleo ocupa a área de conteúdo e as superfícies do JARVIS
+   * flutuam por cima dele. A página não cresce para baixo — era isso que
+   * transformava o núcleo em cabeçalho de outra coisa. */
+  const palco = h('div', { className: 'jv-palco' }, jarvisV7Visual.root);
+  fullPage.appendChild(palco);
+  markXiiiPalcoOff = ocuparAlturaRestante(palco);
+
+  const configWrap = h('div', { className: 'jarvis-config-wrap' });
 
   const skillCount = listSkillSummaries().length;
   const configuredSpotifyClientId = getConfiguredSpotifyClientId();
@@ -1329,16 +1344,12 @@ export function jarvisPage(): HTMLDivElement {
     spotifyControls,
     spotifyHint,
   );
-  fullPage.appendChild(
-    h('div', { className: 'jarvis-toolbar' },
-      modeBadgeEl,
-      isUsingFallback() && h('span', { className: 'badge badge--warning' }, 'MEMÓRIA VOLÁTIL'),
-      skillCount > 0 && h('span', { className: 'badge badge--cyan', title: 'Habilidades que o JARVIS aprendeu' },
-        `🧬 ${skillCount} skill${skillCount > 1 ? 's' : ''}`),
-      h('div', { style: { marginLeft: 'auto' } }, configToggle)
-    )
+  const barraDeEstado = h('div', { className: 'jarvis-toolbar' },
+    modeBadgeEl,
+    isUsingFallback() && h('span', { className: 'badge badge--warning' }, 'MEMÓRIA VOLÁTIL'),
+    skillCount > 0 && h('span', { className: 'badge badge--cyan', title: 'Habilidades que o JARVIS aprendeu' },
+      `🧬 ${skillCount} skill${skillCount > 1 ? 's' : ''}`),
   );
-  fullPage.appendChild(configWrap);
 
   sessionsEl = h('div', { className: 'jv-sessions__list' });
   const sessionsPanel = h('div', { className: 'jv-sessions' },
@@ -1363,14 +1374,69 @@ export function jarvisPage(): HTMLDivElement {
     )
   );
 
-  fullPage.appendChild(
-    h('div', { className: 'jv-layout' }, sessionsPanel, chatPanel)
-  );
+  /* ── as duas superfícies, como camadas sobre o Núcleo ────────────────────
+   *
+   * Nada aqui é novo: são a mesma conversa e o mesmo painel de configuração de
+   * sempre. O que mudou é onde vivem. Antes ficavam EMPILHADOS abaixo do
+   * Núcleo, e a rota crescia para baixo até o 3D virar um cabeçalho. Agora
+   * flutuam por cima, uma de cada vez, abertas pelos botões do próprio HUD. */
+  const painel = (superficie: JarvisV7Superficie, titulo: string, ...conteudo: (Node | false)[]): HTMLElement =>
+    h('section', { className: 'jv-painel', dataset: { superficie }, hidden: true, 'aria-label': titulo },
+      h('header', { className: 'jv-painel__topo' },
+        h('span', { className: 'jv-painel__titulo' }, titulo),
+        h('button', {
+          className: 'jv-painel__fechar', type: 'button', 'aria-label': `Fechar ${titulo}`,
+          onclick: () => abrirSuperficie(superficie),
+        }, '×'),
+      ),
+      h('div', { className: 'jv-painel__corpo' }, ...conteudo.filter(Boolean) as Node[]),
+    );
+
+  const painelConversa = painel('conversa', 'Conversa',
+    h('div', { className: 'jv-layout' }, sessionsPanel, chatPanel));
+  const painelConfig = painel('config', 'Modos & Config', barraDeEstado, configWrap);
+
+  palco.appendChild(h('div', { className: 'jv-camada' }, painelConversa, painelConfig));
+
+  /* A tira de socorro: mesmos dois botões, fora do Núcleo, para o caso de ele
+   * não subir. Fica escondida enquanto o V7 estiver de pé. */
+  for (const [superficie, rotulo] of [['conversa', '◈ conversa'], ['config', '⚙ config']] as const) {
+    socorro.appendChild(h('button', {
+      className: 'jv-palco__socorro-botao', type: 'button',
+      onclick: () => abrirSuperficie(superficie),
+    }, rotulo));
+  }
+  palco.appendChild(socorro);
+
+  let superficieAberta: JarvisV7Superficie | null = null;
+  abrirSuperficie = (qual: JarvisV7Superficie): void => {
+    /* Premir de novo o botão que já está aceso fecha — é o que um botão com
+     * `aria-pressed` promete, e evita o operador ter de caçar o ×. */
+    superficieAberta = superficieAberta === qual ? null : qual;
+    painelConversa.hidden = superficieAberta !== 'conversa';
+    painelConfig.hidden = superficieAberta !== 'config';
+    if (superficieAberta === 'config') {
+      /* Recomposto a cada abertura: o painel lê flags, modos e sessões que
+       * podem ter mudado enquanto ele estava fechado. */
+      empty(configWrap);
+      configWrap.appendChild(renderConfigPanel(spotifySettings));
+    }
+    jarvisV7Visual?.publicarSuperficieAberta(superficieAberta);
+    if (superficieAberta === 'conversa') setTimeout(() => entrada.focus(), 40);
+  };
+
+  const aoTeclar = (e: KeyboardEvent): void => {
+    if (e.key === 'Escape' && superficieAberta) abrirSuperficie(superficieAberta);
+  };
+  document.addEventListener('keydown', aoTeclar);
+  markXiiiEscOff = () => document.removeEventListener('keydown', aoTeclar);
+
+  /* Só agora o Núcleo fica sabendo que existem superfícies para abrir. */
+  jarvisV7Visual.publicarSuperficies({ conversa: true, config: true });
 
   updateModeBadge();
   renderMessages();
   void refreshSessions();
-  setTimeout(() => entrada.focus(), 50);
 
   return fullPage;
 }

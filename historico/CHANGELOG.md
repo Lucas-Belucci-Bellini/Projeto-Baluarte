@@ -6,6 +6,57 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-24 — o Núcleo vira o palco: conversa e config saem de baixo e sobem por cima
+
+A queixa do operador, olhando o app: *"tem como deixar essa parte de forma que
+ela fique dentro e seja ativável pelos botões do jarvis […] mas sem descer criar
+mais página para baixo como está agora"*.
+
+A rota `/jarvis` empilhava três blocos — o Núcleo V7, a barra de estado com o
+`⚙ Modos & Config`, e a conversa. A página crescia para baixo e o 3D, que é a
+superfície principal, virava cabeçalho de outra coisa. Agora o Núcleo ocupa a
+área de conteúdo inteira e as duas superfícies flutuam **sobre** ele, uma de cada
+vez, como gaveta à esquerda: `◈ conversa` (atalho `c`) e `⚙ config` (atalho `g`),
+premidos no próprio HUD do V7. Premir o botão aceso fecha; `Esc` também. A
+largura para antes da coluna de ações do Núcleo, porque são aqueles botões que
+abrem e fecham isto.
+
+**O Núcleo não abre nada** — e é isso que torna a mudança barata. Ele vive num
+`<iframe>` e não sabe o que é uma sessão de chat; implementar os botões lá dentro
+daria ao artefato 3D, que também roda sozinho, dependência de coisas que não
+existem nele. Então a página **declara** o que tem (`baluarte-superficies`), o
+Núcleo apenas **avisa** que o botão foi premido (`baluarte-nucleo-acao`), e a
+página abre e **devolve o estado** para o botão acender
+(`baluarte-superficie-estado`). Tudo same-origin, com `targetOrigin` fechado, e a
+oferta é reenviada no `load` do quadro — sem isso, um reload deixaria os botões
+escondidos com a conversa aberta atrás deles. A web não declara superfície
+nenhuma, e lá os botões continuam invisíveis.
+
+Como os botões moram dentro do V7, um three.js que não chegue levaria a conversa
+junto. A tira `.jv-palco__socorro` traz os mesmos dois botões fora do quadro e
+aparece **somente** com o visual em `fallback`.
+
+**A altura passou a ser medida, não calculada.** `calc(100vh - cabeçalho -
+padding)` errava por 39 px, porque o que fica acima do palco varia — a faixa "V2
+em construção" é dispensável pelo operador. Trinta e nove pixels são o bastante
+para nascer a barra de rolagem que o palco existe para não ter.
+`ocuparAlturaRestante()` mede, remede até o layout assentar, e solta os ouvintes
+ao sair da rota.
+
+**Um resto conhecido, que não é deste palco:** a página ainda rola 40 px porque
+`.shell` tem `min-height: 100vh` e fica abaixo da faixa de 40 px do topo. É
+anterior a esta mudança e vale para as 99 rotas; a correção é de uma linha no
+`layout.css`, mas mexe no shell de tudo e não entra de carona aqui.
+
+Suíte `1291/1291`, `verificar-nexus`, catálogos e tabela de estabilidade verdes,
+typechecks sem erro. Observação de navegador com o app simulado: abrir pela ação
+vinda de dentro do quadro acende o botão certo, trocar de superfície fecha a
+anterior, `Esc` fecha, e a `.page-jarvis` termina em 886 px numa janela de 900.
+
+**Documentação:** [`docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md`](../docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md).
+
+---
+
 ## 2026-08-23 — Release `1.3.6`: o Núcleo sabe o que toca, e passa a poder acompanhar
 
 A queixa do operador: *"a função música não reconhece a música que tá tocando no

@@ -1225,6 +1225,60 @@ function pintarBotaoMusica(): void {
     : 'partitura generativa do Baluarte';
 }
 
+/* ─ superfícies do Baluarte ────────────────────────────────────────────────
+ *
+ * A conversa e a configuração do JARVIS não moram aqui — moram na página que
+ * embute o núcleo. Mas o operador pediu que fossem abertas DAQUI, pelos mesmos
+ * botões do canto, em vez de a página crescer para baixo e o núcleo virar um
+ * cabeçalho de algo maior.
+ *
+ * Então o núcleo não implementa nenhuma das duas: ele só avisa que o botão foi
+ * premido. Quem tem a conversa é quem a abre. E os botões só existem se o pai
+ * disser que as tem — a web não tem, e lá eles continuam invisíveis. */
+type Superficie = 'conversa' | 'config';
+
+function botaoDaSuperficie(qual: Superficie): HTMLElement | null {
+  return document.getElementById(qual === 'conversa' ? 'bChat' : 'bConfig');
+}
+
+function pedirSuperficie(qual: Superficie): void {
+  try {
+    if (window.parent === window) return;
+    window.parent.postMessage({ source: 'baluarte-nucleo-acao', acao: qual }, location.origin);
+  } catch { /* sem pai acessível */ }
+}
+
+function ouvirSuperficies(): void {
+  addEventListener('message', (event: MessageEvent) => {
+    if (event.origin !== location.origin || event.source !== window.parent) return;
+    const dado = event.data;
+    if (dado === null || typeof dado !== 'object') return;
+    const registo = dado as Record<string, unknown>;
+
+    /* Quais superfícies existem do outro lado. */
+    if (registo.source === 'baluarte-superficies') {
+      const oferece = (qual: Superficie): boolean => registo[qual] === true;
+      const algumaOferecida = oferece('conversa') || oferece('config');
+      const separador = document.getElementById('sepSurfaces');
+      if (separador) separador.hidden = !algumaOferecida;
+      for (const qual of ['conversa', 'config'] as const) {
+        const botao = botaoDaSuperficie(qual);
+        if (botao) botao.hidden = !oferece(qual);
+      }
+      return;
+    }
+
+    /* Qual delas está aberta agora — o botão acende junto, senão o operador
+     * fica sem saber se o clique fez alguma coisa. */
+    if (registo.source === 'baluarte-superficie-estado') {
+      const aberta = typeof registo.aberta === 'string' ? registo.aberta : null;
+      for (const qual of ['conversa', 'config'] as const) {
+        botaoDaSuperficie(qual)?.setAttribute('aria-pressed', String(aberta === qual));
+      }
+    }
+  });
+}
+
 function ouvirPresencaMusical(): void {
   addEventListener('message', (event: MessageEvent) => {
     if (event.origin !== location.origin || event.source !== window.parent) return;
@@ -1305,6 +1359,8 @@ function bind(): void {
     markAudioButtons(); toast(on ? 'partitura generativa a tocar' : 'silêncio');
   };
   document.getElementById('bSystem')!.onclick = () => { touched(); capturarSistema(rotuloDaFaixa()); };
+  document.getElementById('bChat')!.onclick = () => { touched(); pedirSuperficie('conversa'); };
+  document.getElementById('bConfig')!.onclick = () => { touched(); pedirSuperficie('config'); };
   document.getElementById('bFile')!.onclick = () => { fileInput.click(); touched(); };
   fileInput.onchange = () => {
     const f = fileInput.files && fileInput.files[0];
@@ -1353,6 +1409,8 @@ function bind(): void {
     else if (k === 'o') (document.getElementById('bFile') as HTMLElement).click();
     else if (k === 'i') (document.getElementById('bMic') as HTMLElement).click();
     else if (k === 'a') (document.getElementById('bSystem') as HTMLElement).click();
+    else if (k === 'c' && !botaoDaSuperficie('conversa')?.hidden) botaoDaSuperficie('conversa')!.click();
+    else if (k === 'g' && !botaoDaSuperficie('config')?.hidden) botaoDaSuperficie('config')!.click();
     else if (k === 'p') savePNG();
     else if (k === 'h') {
       hudOn = !hudOn;
@@ -1587,6 +1645,7 @@ function animate(): void {
  * e de propósito: ela não depende do three.js, e o botão precisa dizer a verdade
  * mesmo enquanto o astrolábio ainda alinha — ou se ele nunca alinhar. */
 ouvirPresencaMusical();
+ouvirSuperficies();
 pintarBotaoMusica();
 audio.onEnded = () => { markAudioButtons(); toast('partilha encerrada'); };
 

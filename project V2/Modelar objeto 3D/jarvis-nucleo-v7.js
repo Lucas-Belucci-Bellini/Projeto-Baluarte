@@ -1260,6 +1260,46 @@ function pintarBotaoMusica() {
         ? `${faixa} — o núcleo acompanha partilhando o som do PC`
         : 'partitura generativa do Baluarte';
 }
+function botaoDaSuperficie(qual) {
+    return document.getElementById(qual === 'conversa' ? 'bChat' : 'bConfig');
+}
+function pedirSuperficie(qual) {
+    try {
+        if (window.parent === window)
+            return;
+        window.parent.postMessage({ source: 'baluarte-nucleo-acao', acao: qual }, location.origin);
+    }
+    catch { /* sem pai acessível */ }
+}
+function ouvirSuperficies() {
+    addEventListener('message', (event) => {
+        if (event.origin !== location.origin || event.source !== window.parent)
+            return;
+        const dado = event.data;
+        if (dado === null || typeof dado !== 'object')
+            return;
+        const registo = dado;
+        if (registo.source === 'baluarte-superficies') {
+            const oferece = (qual) => registo[qual] === true;
+            const algumaOferecida = oferece('conversa') || oferece('config');
+            const separador = document.getElementById('sepSurfaces');
+            if (separador)
+                separador.hidden = !algumaOferecida;
+            for (const qual of ['conversa', 'config']) {
+                const botao = botaoDaSuperficie(qual);
+                if (botao)
+                    botao.hidden = !oferece(qual);
+            }
+            return;
+        }
+        if (registo.source === 'baluarte-superficie-estado') {
+            const aberta = typeof registo.aberta === 'string' ? registo.aberta : null;
+            for (const qual of ['conversa', 'config']) {
+                botaoDaSuperficie(qual)?.setAttribute('aria-pressed', String(aberta === qual));
+            }
+        }
+    });
+}
 function ouvirPresencaMusical() {
     addEventListener('message', (event) => {
         if (event.origin !== location.origin || event.source !== window.parent)
@@ -1356,6 +1396,8 @@ function bind() {
         toast(on ? 'partitura generativa a tocar' : 'silêncio');
     };
     document.getElementById('bSystem').onclick = () => { touched(); capturarSistema(rotuloDaFaixa()); };
+    document.getElementById('bChat').onclick = () => { touched(); pedirSuperficie('conversa'); };
+    document.getElementById('bConfig').onclick = () => { touched(); pedirSuperficie('config'); };
     document.getElementById('bFile').onclick = () => { fileInput.click(); touched(); };
     fileInput.onchange = () => {
         const f = fileInput.files && fileInput.files[0];
@@ -1419,6 +1461,10 @@ function bind() {
             document.getElementById('bMic').click();
         else if (k === 'a')
             document.getElementById('bSystem').click();
+        else if (k === 'c' && !botaoDaSuperficie('conversa')?.hidden)
+            botaoDaSuperficie('conversa').click();
+        else if (k === 'g' && !botaoDaSuperficie('config')?.hidden)
+            botaoDaSuperficie('config').click();
         else if (k === 'p')
             savePNG();
         else if (k === 'h') {
@@ -1706,6 +1752,7 @@ function animate() {
 }
 /* ═══ 7 · ARRANQUE ═════════════════════════════════════════════════════════ */
 ouvirPresencaMusical();
+ouvirSuperficies();
 pintarBotaoMusica();
 audio.onEnded = () => { markAudioButtons(); toast('partilha encerrada'); };
 function avisarPai(status, motivo) {

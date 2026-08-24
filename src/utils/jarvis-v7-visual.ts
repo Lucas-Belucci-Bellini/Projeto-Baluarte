@@ -4,10 +4,26 @@ export type JarvisV7VisualState = 'loading' | 'ready' | 'fallback';
 
 export const JARVIS_V7_PATH = '/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html';
 
+/** As superfícies que a página oferece ao Núcleo — o app tem as duas; a web, nenhuma. */
+export type JarvisV7Superficie = 'conversa' | 'config';
+
+export interface JarvisV7SuperficiesOferecidas {
+  readonly conversa: boolean;
+  readonly config: boolean;
+}
+
 export interface JarvisV7VisualOptions {
   readonly fallback: HTMLElement;
   readonly source?: string;
   readonly onState?: (state: JarvisV7VisualState) => void;
+  /**
+   * Chamado quando alguém prime um dos botões de superfície no HUD do Núcleo.
+   *
+   * O Núcleo não abre nada: ele avisa. Quem tem a conversa é quem a abre — é
+   * isso que permite os botões viverem lá dentro sem o artefato 3D saber o que
+   * é uma sessão de chat.
+   */
+  readonly onSuperficie?: (superficie: JarvisV7Superficie) => void;
 }
 
 /** Só metadado de playback: o que a Web API do Spotify entrega, e nada além. */
@@ -33,6 +49,10 @@ export interface JarvisV7Visual {
    * chegaria lá.
    */
   publicarPresencaMusical(presenca: JarvisV7PresencaMusical): void;
+  /** Diz ao Núcleo quais botões de superfície mostrar. Sem isto, nenhum aparece. */
+  publicarSuperficies(oferecidas: JarvisV7SuperficiesOferecidas): void;
+  /** Devolve ao Núcleo qual superfície está aberta, para o botão acender junto. */
+  publicarSuperficieAberta(aberta: JarvisV7Superficie | null): void;
   dispose(): void;
 }
 
@@ -41,6 +61,47 @@ function currentOrigin(): string {
   return locationValue && typeof locationValue.origin === 'string'
     ? locationValue.origin
     : 'http://localhost';
+}
+
+/**
+ * Faz o palco ocupar o que sobra da janela — medindo, não calculando.
+ *
+ * `calc(100vh - cabeçalho - padding)` erra aqui, e erra por pouco: o que fica
+ * acima do palco varia com a faixa "V2 em construção", que o operador pode
+ * fechar, e com o padding do shell. Medido em navegador, o erro era de 42 px —
+ * o bastante para a página ganhar barra de rolagem, que é exatamente o defeito
+ * que o palco existe para não ter.
+ *
+ * Devolve a função que solta os ouvintes; chamá-la é obrigatório ao sair da rota.
+ */
+export function ocuparAlturaRestante(elemento: HTMLElement, folga = 14): () => void {
+  let ultimo = -1;
+  const ajustar = (): void => {
+    const topo = elemento.getBoundingClientRect().top;
+    const disponivel = Math.max(320, Math.round(window.innerHeight - topo - folga));
+    /* Sair cedo quando nada mudou é o que impede o observador de se realimentar:
+     * mudar a altura muda o corpo, que dispara o observador de novo. */
+    if (disponivel === ultimo) return;
+    ultimo = disponivel;
+    elemento.style.setProperty('--palco-altura', `${disponivel}px`);
+  };
+  /* A primeira medição pega a página a meio caminho — o shell ainda monta, a
+   * faixa do topo ainda entra — e mediu 39 px a menos numa observação real. O
+   * observador abaixo não corrige isso: o corpo tem `min-height: 100vh` e não
+   * muda de altura quando o palco muda. Daí as remedições escalonadas, que a
+   * guarda de igualdade torna baratas: a que chegar depois do layout assentar
+   * é a que vale, e as outras saem sem tocar em nada. */
+  ajustar();
+  const remedicoes = [0, 60, 250, 800].map((atraso) => setTimeout(ajustar, atraso));
+  window.addEventListener('resize', ajustar);
+  /* A faixa do topo some sem a janela mudar de tamanho: só o layout avisa. */
+  const observador = typeof ResizeObserver === 'function' ? new ResizeObserver(ajustar) : null;
+  observador?.observe(document.body);
+  return (): void => {
+    for (const id of remedicoes) clearTimeout(id);
+    window.removeEventListener('resize', ajustar);
+    observador?.disconnect();
+  };
 }
 
 export function normalizeJarvisV7Url(source = JARVIS_V7_PATH): string {
@@ -99,7 +160,25 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
     }, currentOrigin());
   };
 
-  const onLoad = (): void => { setState('ready'); enviarPresenca(); };
+  /* O estado das superfícies também é guardado e reenviado no `load`: o quadro
+   * recarrega, e sem isto os botões voltariam escondidos com a conversa aberta
+   * atrás deles. */
+  let superficiesAtuais: JarvisV7SuperficiesOferecidas | null = null;
+  let superficieAberta: JarvisV7Superficie | null = null;
+  const enviarSuperficies = (): void => {
+    if (disposed || superficiesAtuais === null) return;
+    frame.contentWindow?.postMessage({
+      source: 'baluarte-superficies',
+      conversa: superficiesAtuais.conversa,
+      config: superficiesAtuais.config,
+    }, currentOrigin());
+    frame.contentWindow?.postMessage({
+      source: 'baluarte-superficie-estado',
+      aberta: superficieAberta,
+    }, currentOrigin());
+  };
+
+  const onLoad = (): void => { setState('ready'); enviarPresenca(); enviarSuperficies(); };
   const onError = (): void => setState('fallback');
 
   /* O `load` do iframe só conta que o DOCUMENTO carregou. Se o three.js não
@@ -112,6 +191,11 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
     const payload = event.data;
     if (payload === null || typeof payload !== 'object') return;
     const record = payload as Record<string, unknown>;
+    if (record.source === 'baluarte-nucleo-acao') {
+      const acao = record.acao;
+      if (acao === 'conversa' || acao === 'config') options.onSuperficie?.(acao);
+      return;
+    }
     if (record.source !== 'jarvis-nucleo-v7') return;
     if (record.status === 'failed') setState('fallback');
     else if (record.status === 'ready') setState('ready');
@@ -130,6 +214,14 @@ export function createJarvisV7Visual(options: JarvisV7VisualOptions): JarvisV7Vi
     publicarPresencaMusical(presenca: JarvisV7PresencaMusical): void {
       presencaAtual = presenca;
       enviarPresenca();
+    },
+    publicarSuperficies(oferecidas: JarvisV7SuperficiesOferecidas): void {
+      superficiesAtuais = oferecidas;
+      enviarSuperficies();
+    },
+    publicarSuperficieAberta(aberta: JarvisV7Superficie | null): void {
+      superficieAberta = aberta;
+      enviarSuperficies();
     },
     dispose(): void {
       if (disposed) return;

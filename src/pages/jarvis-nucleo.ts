@@ -23,7 +23,7 @@
 import { h } from '../utils/helpers.js';
 import { bus } from '../core/events.js';
 import { toast } from '../utils/toast';
-import { createJarvisV7Visual } from '../utils/jarvis-v7-visual';
+import { createJarvisV7Visual, ocuparAlturaRestante } from '../utils/jarvis-v7-visual';
 import type { JarvisV7Visual } from '../utils/jarvis-v7-visual';
 import { getConfiguredSpotifyClientId } from '../utils/jarvis-spotify';
 import {
@@ -98,6 +98,10 @@ export function jarvisNucleoPage(): HTMLDivElement {
     page.appendChild(fallback);
   }
 
+  /* Mesma medição do app: `calc(100vh - …)` erra pela faixa do topo, e o erro
+   * vira barra de rolagem numa página que deveria caber inteira. */
+  const soltarAltura = ocuparAlturaRestante(page);
+
   const conectado = isSpotifyConnected();
   const badge = h('span', {
     className: 'jv-nucleo-dock__badge',
@@ -142,6 +146,7 @@ export function jarvisNucleoPage(): HTMLDivElement {
   const pararNaSaida = bus.on<{ path?: string }>('route:change', ({ path }) => {
     if (path === '/jarvis') return;
     globalThis.removeEventListener('baluarte:spotify-session', aoMudarSessao);
+    soltarAltura();
     visual?.dispose();
     visual = null;
     pararNaSaida();
