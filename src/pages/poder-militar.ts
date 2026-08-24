@@ -1,6 +1,6 @@
 import '../styles/militar.css';
 import { h } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 
 type RankingMetric = 'gfp' | 'avioes' | 'navios' | 'tanques' | 'soldados';
 interface Ranking { readonly pais: string; readonly bandeira: string; readonly gfp: number; readonly posicao: number; readonly nuclear: boolean; readonly ogivas: number; readonly avioes: number; readonly navios: number; readonly tanques: number; readonly soldados: number; readonly tags: readonly string[]; }

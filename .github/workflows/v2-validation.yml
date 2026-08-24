@@ -19,7 +19,9 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # A instalação do Chromium com dependências do sistema pode passar de 15 min
+    # em runners frios; o timeout maior evita cancelamento falso do gate.
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +37,18 @@ jobs:
 
       - name: Typecheck V2
         run: npm run tipos:v2
+
+      # O portão abre um Chromium de verdade. O `npm ci` traz a biblioteca do
+      # Playwright, não o navegador — sem este passo o `v2:integracao` morre
+      # antes da primeira asserção. Ficou invisível porque o `Typecheck V2`
+      # falhava antes e deixava este passo `skipped`.
+      - name: Cache do Chromium do Playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Chromium do Playwright
+        run: npx playwright install chromium
 
       - name: V2 integration
         run: npm run v2:integracao

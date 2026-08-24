@@ -8,7 +8,7 @@
 import '../styles/aprendizado.css';
 import { h, empty } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { drawChart } from '../utils/chart-engine.js';
 import type { ChartData, ChartOptions } from '../utils/chart-engine.js';
 import {

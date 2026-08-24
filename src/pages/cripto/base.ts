@@ -1,5 +1,5 @@
 import { h, debounce } from '../../utils/helpers.js';
-import { toast } from '../../utils/toast.js';
+import { toast } from '../../utils/toast';
 import { toBase64, fromBase64, toBase32, fromBase32, toHex, fromHex } from '../../utils/cripto-engine.js';
 import type { BaseEncoders } from '../../utils/cripto-engine.js';
 

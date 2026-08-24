@@ -8,8 +8,8 @@
 import '../styles/color-studio.css';
 import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { toast } from '../utils/toast';
+import { setStatus } from '../utils/baluarte-status';
 import {
   clamp,
   hexToRgb,
@@ -18,8 +18,8 @@ import {
   hslToRgb,
   rgbToOklch,
   contrastRatio,
-} from '../utils/cor.js';
-import type { HslColor, RgbColor } from '../utils/cor.js';
+} from '../utils/cor';
+import type { HslColor, RgbColor } from '../utils/cor';
 
 const STORAGE_KEY = 'color-studio:color';
 type Channel = 'r' | 'g' | 'b';

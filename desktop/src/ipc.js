@@ -10,10 +10,13 @@
 //
 // É aqui que o M3 vai plugar os handlers `nexus.*` (motor real do GitNexus).
 const { ipcMain, shell, app } = require('electron');
+const path = require('node:path');
 const nexus = require('./nexus');
 const hermes = require('./hermes');
 const arquivos = require('./arquivos');
 const arma3 = require('./arma3');
+const musica = require('./musica');
+const { criarRuntime } = require('./runtime');
 
 /**
  * Monta os handlers permitidos. `ctx` injeta o que vem do main:
@@ -22,6 +25,18 @@ const arma3 = require('./arma3');
  *   remoteUrl: string
  */
 function buildHandlers(ctx) {
+  /* A raiz confiável do Runtime vive no `userData`, seguindo o M4 (RFC #232): o
+   * app provê os recursos dele numa pasta própria, sem tocar no sistema.
+   *
+   * Fica AQUI e não no topo do módulo porque `app.getPath` depende do app estar
+   * pronto, e `buildHandlers` só roda no `registerIpc` (main.js:403). No topo,
+   * um `require` deste arquivo antes do `ready` derrubaria o arranque.
+   *
+   * `criarRuntime` não spawna nada — só a primeira operação sobe o processo. */
+  const runtime = criarRuntime({
+    raiz: path.join(app.getPath('userData'), 'runtime-root')
+  });
+
   return {
     // liveness trivial — útil pra UI confirmar a ponte
     ping: async () => 'pong',
@@ -104,7 +119,42 @@ function buildHandlers(ctx) {
     // empurra para ramo protegido, e só commita os JSONs de scripts/arma3/out.
     'arma3:status': async (payload = {}) => arma3.status(payload),
     'arma3:extrair': async (payload = {}) => arma3.extrair(payload),
-    'arma3:entregar': async (payload = {}) => arma3.entregar(payload)
+    'arma3:entregar': async (payload = {}) => arma3.entregar(payload),
+
+    // 1.3.8: o que toca na máquina, lido do SMTC do Windows.
+    //
+    // Não passa por conta nem por OAuth: o Windows já sabe o que está tocando,
+    // seja o Spotify, o navegador ou o VLC. É leitura de metadado — título,
+    // artista, estado e app de origem. Nunca áudio; o espectrómetro continua a
+    // vir da captura do sistema, que pede consentimento próprio.
+    //
+    // `agora` DEGRADA em vez de estourar fora do Windows, e `diagnostico`
+    // devolve o texto cru da sonda — sem ele, uma falha na máquina do operador
+    // chega aqui como "não funcionou" e nada mais.
+    'musica:agora': async () => musica.agora(),
+    'musica:diagnostico': async () => musica.diagnostico(),
+
+    // V2: o Runtime nativo (Rust), pelo transporte de `v2/core/runtime-stdio.js`.
+    //
+    // `status` DEGRADA em vez de estourar quando o binário não está no pacote —
+    // que é o estado normal enquanto a release não o empacota. Mesmo contrato do
+    // `hermes:status`, e pela mesma razão: recurso ausente não pode virar app
+    // quebrado.
+    'runtime:status': async () => runtime.status(),
+    'runtime:autorizar': async (payload = {}) => {
+      if (!payload.envelope) throw new Error('envelope é obrigatório');
+      return runtime.autorizar(payload.envelope);
+    },
+    'runtime:ler': async (payload = {}) => {
+      // O confinamento de caminho é do Runtime, do outro lado da fronteira; aqui
+      // só se cobra a FORMA, para não mandar `undefined` atravessar como se
+      // fosse pedido legítimo.
+      if (!payload.envelope) throw new Error('envelope é obrigatório');
+      if (typeof payload.modulo !== 'string' || typeof payload.path !== 'string') {
+        throw new Error('modulo e path são obrigatórios');
+      }
+      return runtime.ler(payload.envelope, payload.modulo, payload.path);
+    }
   };
 }
 

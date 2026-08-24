@@ -2,10 +2,10 @@ import '../styles/biblioteca.css';
 import '../styles/graficos.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { router } from '../core/router.js';
 import type { RouteArgs } from '../core/router.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { ARCS, UNIVERSES, loadSaga } from '../data/cronicas.js';
 import type { CronicaArc, CronicaChapter } from '../data/cronicas.js';
 

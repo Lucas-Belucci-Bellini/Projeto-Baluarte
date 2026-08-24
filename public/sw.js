@@ -16,10 +16,26 @@
  *           época carregava cache velho (o "3D não funciona" mesmo com o site
  *           novo no ar).
  *   1.0.0-rc — ficou em v0.9.1 enquanto o site já dizia 2.0.0.
+ *   1.1.0 — primeira release pública após o salto deliberado da 1.0.0.
+ *   1.1.5 — fundação V2 incremental e dashboard JARVIS atualizado.
+ *   1.2.0 — migração incremental do frontend e fechamento de contratos V2.
+ *   1.2.5 — distribuição do Launcher com artefatos desktop verificáveis.
+ *   1.2.6 — promoção do visual JARVIS Núcleo V7 e alinhamento web/desktop.
+ *   1.2.7 — marco Briefing→Evidence pelo Registry e release sincronizada.
+ *   1.2.8 — piloto local Wiki Zomboid com schema e Evidence bounded.
+ *   1.2.9 — observabilidade bounded de status da Evidence no piloto Wiki.
+ *   1.3.0 — fila local bounded e read-only para revisão de Evidence pendente.
+ *   1.3.1 — preview local bounded de retenção Evidence, sem mutação.
+ *   1.3.2 — auditoria estrutural local bounded da Evidence, sem mutação.
+ *   1.3.3 — integração visual do Núcleo V7 na rota /jarvis com fallback Mark XIII.
+ *   1.3.4 — verificação live do V7 na rota publicada e documentação do marco.
+ *   1.3.5 — a web recebe só o Núcleo V7; o Spotify conecta num clique.
+ *   1.3.6 — o Núcleo sabe o que toca no Spotify e capta o som real do PC.
+ *   1.3.7 — o Núcleo vira o palco: conversa e config em camadas sobre ele.
  *
  * Na terceira não vai passar: `test/versao.test.js` compara este número com o
  * `package.json` e o `version.js` e reprova o CI se divergirem. */
-const VERSION = 'baluarte-v1.0.0-rc';
+const VERSION = 'baluarte-v1.3.7';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 

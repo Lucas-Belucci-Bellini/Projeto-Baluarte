@@ -20,8 +20,8 @@ import { getToolSchemas, runTool } from './jarvis-tools.js';
 import './jarvis-nexus-tools.js'; // registra o Git Nexus como skills do JARVIS (#231)
 import { findCapability } from '../data/site-capabilities.js';
 import { addMemory, searchMemories, conceptLabel } from './jarvis-brain.js';
-import { getBaluarteBriefing } from './jarvis-context.js';
-import { buildNewsBriefingPrompt } from './news-briefing.js';
+import { getBaluarteBriefing } from './jarvis-context.ts';
+import { buildNewsBriefingPrompt } from './news-briefing.ts';
 
 const HISTORY_KEY = 'jarvis:history';
 const CONFIG_KEY = 'jarvis:config';
@@ -627,7 +627,7 @@ export async function processAgent(messages, config, onToolCall) {
       system: config.systemPrompt +
         ' Você tem ferramentas para navegar e consultar o Baluarte. Use-as quando fizer sentido.' +
         ' Você também pode APRENDER habilidades novas: se precisar de uma capacidade repetível que ainda não existe, crie-a com create_skill (JS puro, fica salva e disponível nas próximas conversas) e então use-a. Confira o que já aprendeu com list_skills.',
-      tools: getToolSchemas(),
+      tools: getToolSchemas({ query: config.toolFocus }),
       messages: apiMessages
     };
 

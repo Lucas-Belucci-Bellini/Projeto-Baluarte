@@ -24,3 +24,28 @@ test('falha antiga sai da janela', () => {
   assert.equal(health.marcarFalha('alpha', new Error('2')), true);
   assert.equal(health.podeReiniciar('alpha'), true);
 });
+
+test('histórico registra transições sem stack trace e mantém cópia defensiva', () => {
+  const health = criarRuntimeHealth({ clock: () => 123 });
+  health.marcarSaudavel('alpha');
+  health.marcarFalha('alpha', new Error('boom'));
+
+  const historico = health.incidentes();
+  assert.deepEqual(historico, [
+    { type: 'healthy', id: 'alpha', timestamp: 123, status: 'healthy', restarts: 0 },
+    { type: 'failed', id: 'alpha', timestamp: 123, status: 'failed', restarts: 1, error: 'boom' },
+  ]);
+  assert.equal('stack' in historico[1], false);
+  historico[0].status = 'corrompido';
+  assert.equal(health.incidentes()[0].status, 'healthy');
+});
+
+test('histórico é limitado e preserva apenas os eventos mais recentes', () => {
+  let agora = 100;
+  const health = criarRuntimeHealth({ maxIncidents: 2, clock: () => agora++ });
+  health.marcarSaudavel('a');
+  health.marcarSaudavel('b');
+  health.marcarSaudavel('c');
+
+  assert.deepEqual(health.incidentes().map(({ id }) => id), ['b', 'c']);
+});

@@ -8,7 +8,7 @@
 
 import '../styles/conselho.css';
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { runCouncil } from '../utils/jarvis-council.js';
 import type { CouncilMember } from '../utils/jarvis-council.js';
 import { getLoadedModel } from '../utils/jarvis-webllm.js';

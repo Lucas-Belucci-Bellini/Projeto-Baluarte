@@ -47,7 +47,8 @@ export default {
     { path: '/editor', view: (args) => import('../../../src/pages/editor.js').then((m) => m.editorPage(args)) }
   ],
 
-  nav: { section: 'ferramentas', order: 10 },
+  /* UI single-surface pilot: matches the V1 Código & Dev domain. */
+  nav: { section: 'Código & Dev', order: 10 },
   dependencies: [],
 
   /* Nenhuma: o editor roda no navegador, sobre estado local. Executar código é

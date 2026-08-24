@@ -7,7 +7,7 @@
 
 import '../styles/apis.css';
 import { h, empty, uid } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { storage } from '../core/storage.js';
 import { loadConfig, saveConfig, resolveServerBase } from '../utils/jarvis-engine.js';
 

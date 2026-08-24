@@ -279,17 +279,15 @@ function deepLinkFromArgv(argv) {
 
 /* ============================ auto-update ============================ */
 
-/* ⚠️ A 1.0.0 é a ÚLTIMA versão que o app instala sozinho (ADR-003).
+/* A linha pública 1.0.0 foi pulada; 1.2.5 continua a linha de release pós-salto.
  *
- * Daqui em diante o operador **decide** se instala. O motivo não é capricho: o
- * que vem depois da 1.0.0 é a V2 — código novo, arquitetura nova — e empurrar
- * isso por auto-update para quem estava usando uma versão estável é trocar o
- * chão de alguém sem perguntar. Quem quiser a V2 instala por conta e risco;
- * quem não quiser fica na 1.0.0, que é justamente a linha-base que o ADR-001
- * existe para preservar.
+ * O operador continua decidindo quando baixar e instalar. O motivo é segurança
+ * operacional: a release traz bundles TypeScript compilados, contratos V2 e um
+ * fallback offline que precisam ser aceitos como conjunto. O app não deve trocar
+ * silenciosamente o chão de quem está trabalhando.
  *
- * `autoDownload = false`: o app ainda AVISA que existe versão nova, mas só baixa
- * se mandarem. Avisar é serviço; baixar sozinho é decidir pelo outro. */
+ * `autoDownload = false`: o app avisa que existe versão nova, mas só baixa após
+ * confirmação. A instalação também exige confirmação explícita. */
 function setupUpdates() {
   if (!autoUpdater || !app.isPackaged) return;
   autoUpdater.autoDownload = false;
@@ -305,9 +303,11 @@ function setupUpdates() {
       title: 'Existe uma versão nova',
       message: `Baluarte ${info && info.version ? info.version : 'novo'} está disponível.`,
       detail:
-        'A 1.0.0 é a última versão que o Baluarte instalava sozinho. O que vem ' +
-        'depois dela é código novo (V2) — baixar é por sua conta e risco.\n\n' +
-        'Se preferir ficar onde está, é só recusar: a 1.0.0 continua funcionando ' +
+        'A 1.2.5 continua a linha pública após o salto planejado. Ela inclui ' +
+        'bundles TypeScript compilados, contratos Auth/RLS, observabilidade V2, ' +
+        'melhorias do JARVIS e atualização do fallback offline. ' +
+        'Baixar é uma decisão do operador.\n\n' +
+        'Se preferir ficar onde está, é só recusar; a versão atual continua funcionando ' +
         'e você pode instalar depois, quando quiser.',
       buttons: ['Baixar agora', 'Agora não'],
       defaultId: 1,        // o padrão é NÃO mexer no que funciona

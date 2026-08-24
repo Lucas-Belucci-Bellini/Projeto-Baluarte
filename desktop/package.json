@@ -1,7 +1,7 @@
 {
   "name": "baluarte-launcher",
   "productName": "Baluarte Launcher",
-  "version": "0.9.2",
+  "version": "1.3.7",
   "private": true,
   "description": "Launcher desktop do Projeto Baluarte — hub nativo com conexão à web e auto-update.",
   "author": "Lucas Belucci Bellini",
@@ -49,6 +49,21 @@
         "to": "web",
         "filter": [
           "**/*"
+        ]
+      },
+      {
+        "from": "../v2/core",
+        "to": "v2core",
+        "filter": [
+          "runtime-stdio.js"
+        ]
+      },
+      {
+        "from": "../v2/runtime/target/release",
+        "to": "runtime",
+        "filter": [
+          "baluarte-runtime",
+          "baluarte-runtime.exe"
         ]
       }
     ],

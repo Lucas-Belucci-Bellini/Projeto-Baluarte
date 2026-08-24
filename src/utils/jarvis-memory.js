@@ -19,6 +19,16 @@ const DB_VERSION = 1;
 let dbPromise = null;
 const memFallback = { sessions: [], messages: [] };
 let usingFallback = false;
+let memoryRevision = 0;
+
+function bumpMemoryRevision() {
+  memoryRevision = memoryRevision >= Number.MAX_SAFE_INTEGER ? 0 : memoryRevision + 1;
+  return memoryRevision;
+}
+
+export function getMemoryRevision() {
+  return memoryRevision;
+}
 
 function openDB() {
   if (dbPromise) return dbPromise;
@@ -72,6 +82,7 @@ export async function createSession(title, mode) {
   } catch {
     memFallback.sessions.push(session);
   }
+  bumpMemoryRevision();
   return session;
 }
 
@@ -85,18 +96,24 @@ export async function listSessions() {
   }
 }
 
-export async function updateSession(id, patch) {
+export async function updateSession(id, patch, invalidate = true) {
+  let changed = false;
   try {
     const store = await tx('sessions', 'readwrite');
     const session = await reqAsync(store.get(id));
     if (session) {
       Object.assign(session, patch, { updatedAt: Date.now() });
       await reqAsync(store.put(session));
+      changed = true;
     }
   } catch {
     const s = memFallback.sessions.find((x) => x.id === id);
-    if (s) Object.assign(s, patch, { updatedAt: Date.now() });
+    if (s) {
+      Object.assign(s, patch, { updatedAt: Date.now() });
+      changed = true;
+    }
   }
+  if (changed && invalidate) bumpMemoryRevision();
 }
 
 export async function deleteSession(id) {
@@ -112,6 +129,7 @@ export async function deleteSession(id) {
     memFallback.sessions = memFallback.sessions.filter((s) => s.id !== id);
     memFallback.messages = memFallback.messages.filter((m) => m.sessionId !== id);
   }
+  bumpMemoryRevision();
 }
 
 /* ===== Messages ===== */
@@ -126,7 +144,8 @@ export async function addMessage(sessionId, role, text) {
     msg.id = memFallback.messages.length + 1;
     memFallback.messages.push(msg);
   }
-  await updateSession(sessionId, {});
+  await updateSession(sessionId, {}, false);
+  bumpMemoryRevision();
   /* Espelho no Nexus (Supabase): IndexedDB é local e morre com limpeza de
    * dados/reinstalação — o operador já perdeu conversas assim. Cada mensagem
    * de conversa (user/jarvis; tool não) vira uma memory, best-effort. */
@@ -171,6 +190,7 @@ export async function clearAll() {
     memFallback.sessions = [];
     memFallback.messages = [];
   }
+  bumpMemoryRevision();
 }
 
 export function isUsingFallback() {

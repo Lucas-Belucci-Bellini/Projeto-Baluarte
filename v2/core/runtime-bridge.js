@@ -15,6 +15,14 @@
 
 import { PERMISSOES } from './manifest.js';
 
+/* `PERMISSOES` é uma tupla de literais, então o `includes` dela só aceita os
+ * próprios literais como argumento. Nos dois usos abaixo a pergunta é o
+ * contrário — "esta string QUALQUER está na lista?" —, que é exatamente o que
+ * valida entrada não confiável. Ler pela visão larga mantém a validação
+ * possível sem afrouxar o tipo de quem PRODUZ permissões. */
+/** @type {ReadonlyArray<string>} */
+const PERMISSOES_CONHECIDAS = PERMISSOES;
+
 /**
  * @typedef {{modulo: string, permissoes: ReadonlyArray<string>}} RuntimeGrant
  */
@@ -42,7 +50,7 @@ export function envelopeRuntime(grants) {
     ids.add(grant.modulo);
 
     const permissoes = [...new Set(grant.permissoes)];
-    const desconhecidas = permissoes.filter((p) => !PERMISSOES.includes(p));
+    const desconhecidas = permissoes.filter((p) => !PERMISSOES_CONHECIDAS.includes(p));
     if (desconhecidas.length) throw new TypeError(`permissões desconhecidas no grant de "${grant.modulo}": ${desconhecidas.join(', ')}`);
     return { modulo: grant.modulo, permissoes };
   });
@@ -82,7 +90,7 @@ export function validarEnvelopeRuntime(envelope) {
       }
       const vistas = new Set();
       modulo.permissoes.forEach((permissao, j) => {
-        if (typeof permissao !== 'string' || !PERMISSOES.includes(permissao)) {
+        if (typeof permissao !== 'string' || !PERMISSOES_CONHECIDAS.includes(permissao)) {
           erros.push(`modulos[${i}].permissoes[${j}] desconhecida: ${JSON.stringify(permissao)}`);
         } else if (vistas.has(permissao)) {
           erros.push(`permissão duplicada em ${modulo.modulo}: "${permissao}"`);

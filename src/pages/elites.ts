@@ -7,7 +7,7 @@ import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import type { RouteArgs } from '../core/router.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { ROSTERS } from '../data/elites-rosters.js';
 import {
   EQUIPES,

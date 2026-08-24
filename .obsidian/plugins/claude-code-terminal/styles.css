@@ -1,0 +1,315 @@
+/* xterm.js core styles */
+.xterm {
+    cursor: text;
+    position: relative;
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+}
+
+.xterm.focus,
+.xterm:focus {
+    outline: none;
+}
+
+.xterm .xterm-helpers {
+    position: absolute;
+    top: 0;
+    z-index: 5;
+}
+
+.xterm .xterm-helper-textarea {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    position: absolute;
+    opacity: 0;
+    left: -9999em;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: -5;
+    white-space: nowrap;
+    overflow: hidden;
+    resize: none;
+}
+
+.xterm .composition-view {
+    background: #000;
+    color: #FFF;
+    display: none;
+    position: absolute;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.xterm .composition-view.active {
+    display: block;
+}
+
+.xterm .xterm-viewport {
+    background-color: #000;
+    overflow-y: scroll;
+    cursor: default;
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.xterm .xterm-screen {
+    position: relative;
+}
+
+.xterm .xterm-screen canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.xterm .xterm-scroll-area {
+    visibility: hidden;
+}
+
+.xterm-char-measure-element {
+    display: inline-block;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: -9999em;
+    line-height: normal;
+}
+
+.xterm.enable-mouse-events {
+    cursor: default;
+}
+
+.xterm.xterm-cursor-pointer,
+.xterm .xterm-cursor-pointer {
+    cursor: pointer;
+}
+
+.xterm.column-select.focus {
+    cursor: crosshair;
+}
+
+.xterm .xterm-accessibility:not(.debug),
+.xterm .xterm-message {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    color: transparent;
+    pointer-events: none;
+}
+
+.xterm .xterm-accessibility-tree:not(.debug) *::selection {
+    color: transparent;
+}
+
+.xterm .xterm-accessibility-tree {
+    user-select: text;
+    white-space: pre;
+}
+
+.xterm .live-region {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.xterm-dim {
+    opacity: 1 !important;
+}
+
+.xterm-underline-1 { text-decoration: underline; }
+.xterm-underline-2 { text-decoration: double underline; }
+.xterm-underline-3 { text-decoration: wavy underline; }
+.xterm-underline-4 { text-decoration: dotted underline; }
+.xterm-underline-5 { text-decoration: dashed underline; }
+
+.xterm-overline {
+    text-decoration: overline;
+}
+
+.xterm-strikethrough {
+    text-decoration: line-through;
+}
+
+.xterm-screen .xterm-decoration-container .xterm-decoration {
+    z-index: 6;
+    position: absolute;
+}
+
+.xterm-screen .xterm-decoration-container .xterm-decoration.xterm-decoration-top-layer {
+    z-index: 7;
+}
+
+.xterm-decoration-overview-ruler {
+    z-index: 8;
+    position: absolute;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+}
+
+.xterm-decoration-top {
+    z-index: 2;
+    position: relative;
+}
+
+/* Claude Terminal - Floating panel (native Obsidian style) */
+
+.claude-terminal-floating {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 500px;
+  height: 350px;
+  min-width: 300px;
+  min-height: 200px;
+  background-color: var(--background-primary);
+  border: 1px solid var(--modal-border-color, var(--background-modifier-border));
+  border-radius: var(--radius-m, 8px);
+  box-shadow: var(--shadow-s, 0 2px 8px rgba(0, 0, 0, 0.2));
+  display: flex;
+  flex-direction: column;
+  z-index: var(--layer-popover, 1000);
+  overflow: hidden;
+}
+
+.claude-terminal-floating.is-hidden {
+  display: none;
+}
+
+.claude-terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 6px 12px;
+  background-color: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.claude-terminal-header:active {
+  cursor: grabbing;
+}
+
+.claude-terminal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.claude-terminal-title {
+  font-size: var(--font-ui-small, 12px);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-normal);
+}
+
+.claude-terminal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Use Obsidian's clickable-icon pattern */
+.claude-terminal-btn {
+  background: transparent;
+  border: none;
+  color: var(--icon-color, var(--text-muted));
+  cursor: var(--cursor, pointer);
+  padding: 4px;
+  border-radius: var(--clickable-icon-radius, 4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.claude-terminal-btn:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--icon-color-hover, var(--text-normal));
+}
+
+.claude-terminal-btn-close:hover {
+  background-color: var(--background-modifier-error, #e81123);
+  color: var(--text-on-accent, white);
+}
+
+.claude-terminal-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  position: relative;
+}
+
+.claude-terminal-content .xterm {
+  height: 100%;
+  width: 100%;
+}
+
+.claude-terminal-content .xterm-viewport {
+  background-color: var(--background-primary) !important;
+}
+
+/* Resize handle in bottom-left corner */
+.claude-terminal-resize {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nesw-resize;
+  z-index: 10;
+}
+
+.claude-terminal-resize::before {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid var(--text-faint);
+  border-bottom: 2px solid var(--text-faint);
+}
+
+.claude-terminal-resize:hover::before {
+  border-color: var(--text-muted);
+}
+
+/* Xterm styling for Obsidian theme */
+.claude-terminal-floating .xterm-rows {
+  font-family: var(--font-monospace), Menlo, Monaco, "Courier New", monospace;
+}
+
+/* Native sidebar view styling */
+.claude-terminal-view-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-primary);
+}
+
+.claude-terminal-view-container .claude-terminal-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.claude-terminal-view-container .xterm {
+  height: 100%;
+  width: 100%;
+}
+
+.claude-terminal-view-container .xterm-viewport {
+  background-color: var(--background-primary) !important;
+}

@@ -31,7 +31,17 @@
     "allowJs": true,
     "allowImportingTsExtensions": true,
     "skipLibCheck": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "types": ["node"],
+    "maxNodeModuleJsDepth": 0
   },
-  "include": ["core/**/*.js", "modules/cripto/**/*.js", "modules/briefing/**/*.js"]
+  "include": [
+    "core/**/*.js",
+    "core/**/*.ts",
+    "modules/cripto/**/*.js",
+    "modules/briefing/**/*.js",
+    "modules/visor3d/**/*.js",
+    "modules/visor3d/**/*.d.ts",
+    "modules/evidence/**/*.js"
+  ]
 }

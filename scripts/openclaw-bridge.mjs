@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import http from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 
 const DEFAULT_GATEWAY_URL = 'http://127.0.0.1:18789';
 const DEFAULT_BRIDGE_HOST = '127.0.0.1';
@@ -17,13 +18,41 @@ function gatewayUrl() {
   return (process.env.OPENCLAW_GATEWAY_URL || DEFAULT_GATEWAY_URL).replace(/\/$/, '');
 }
 
-function allowedOrigin(request) {
+function allowedOrigin(request, configuredOverride = null) {
   const origin = request.headers.origin;
-  const configured = (process.env.BALUARTE_ALLOWED_ORIGIN || '').trim();
+  const configured = (configuredOverride ?? process.env.BALUARTE_ALLOWED_ORIGIN ?? '').trim();
   if (!origin) return null;
   if (configured && origin === configured) return origin;
+  if (configuredOverride !== null) return null;
   if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) return origin;
   return null;
+}
+
+function tokensMatch(expected, received) {
+  if (typeof expected !== 'string' || typeof received !== 'string') return false;
+  const expectedBytes = Buffer.from(expected);
+  const receivedBytes = Buffer.from(received);
+  if (expectedBytes.length !== receivedBytes.length) return false;
+  return timingSafeEqual(expectedBytes, receivedBytes);
+}
+
+function normalizedHostname(hostname) {
+  return String(hostname || '').toLowerCase().replace(/^\[/, '').replace(/\]$/, '');
+}
+
+function assertHarnessLoopbackUrl(rawUrl) {
+  let parsed;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    throw new Error('harness_upstream_invalid_url');
+  }
+  const host = normalizedHostname(parsed.hostname);
+  const loopback = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  if (!loopback || !['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) {
+    throw new Error('harness_upstream_must_be_loopback');
+  }
+  return parsed.toString().replace(/\/$/, '');
 }
 
 function writeJson(response, status, body, origin = null) {
@@ -76,9 +105,11 @@ function safeError(error) {
 export function createOpenClawBridge(options = {}) {
   const upstream = options.gatewayUrl || gatewayUrl();
   const timeoutMs = options.timeoutMs || envNumber('OPENCLAW_TIMEOUT_MS', DEFAULT_TIMEOUT_MS);
+  const configuredOrigin = options.allowedOrigin ?? null;
+  const requiredBridgeToken = options.requiredBridgeToken ?? null;
   const fetchImpl = options.fetchImpl || fetch;
   const handler = async (request, response) => {
-    const origin = allowedOrigin(request);
+    const origin = allowedOrigin(request, configuredOrigin);
     const method = request.method || 'GET';
     const path = request.url || '/';
 
@@ -94,7 +125,11 @@ export function createOpenClawBridge(options = {}) {
     }
 
     if (path === '/health' && method === 'GET') {
-      return writeJson(response, 200, { ok: true, mode: 'read-only-bridge' }, origin);
+      return writeJson(response, 200, {
+        ok: true,
+        mode: options.healthMode || 'read-only-bridge',
+        ...(options.authority ? { authority: options.authority } : {}),
+      }, origin);
     }
 
     if (path !== '/v1/chat/completions' || method !== 'POST') {
@@ -103,6 +138,18 @@ export function createOpenClawBridge(options = {}) {
 
     if (request.headers.origin && !origin) {
       return writeJson(response, 403, { ok: false, error: 'origin_not_allowed' });
+    }
+
+    if (requiredBridgeToken !== null) {
+      const receivedToken = Array.isArray(request.headers['x-baluarte-bridge-token'])
+        ? request.headers['x-baluarte-bridge-token'][0]
+        : request.headers['x-baluarte-bridge-token'];
+      if (typeof receivedToken !== 'string' || receivedToken.length === 0) {
+        return writeJson(response, 401, { ok: false, error: 'bridge_token_required' }, origin);
+      }
+      if (!tokensMatch(requiredBridgeToken, receivedToken)) {
+        return writeJson(response, 401, { ok: false, error: 'bridge_token_invalid' }, origin);
+      }
     }
 
     let payload;
@@ -158,6 +205,28 @@ export function createOpenClawBridge(options = {}) {
       return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
     },
   };
+}
+
+export function createOpenClawHarnessBridge(options = {}) {
+  const bridgeToken = options.bridgeToken || process.env.BALUARTE_OPENCLAW_HARNESS_TOKEN;
+  if (!bridgeToken) throw new Error('harness_bridge_token_required');
+  const upstream = assertHarnessLoopbackUrl(
+    options.gatewayUrl || process.env.BALUARTE_OPENCLAW_HARNESS_GATEWAY_URL || DEFAULT_GATEWAY_URL,
+  );
+  const allowedOriginValue = options.allowedOrigin
+    || process.env.BALUARTE_OPENCLAW_HARNESS_ORIGIN
+    || 'http://localhost:5173';
+  if (!/^https?:\/\/[^/]+$/i.test(allowedOriginValue)) {
+    throw new Error('harness_origin_invalid');
+  }
+  return createOpenClawBridge({
+    ...options,
+    gatewayUrl: upstream,
+    allowedOrigin: allowedOriginValue,
+    requiredBridgeToken: bridgeToken,
+    healthMode: 'harness-only',
+    authority: 'not-authorized',
+  });
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -5,7 +5,7 @@
 import '../styles/ocr.css';
 import { h } from '../utils/helpers.js';
 import { aoSair } from '../core/ciclo-vida.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 
 const TESSERACT_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
 const STATUS_PT: Readonly<Record<string, string>> = {

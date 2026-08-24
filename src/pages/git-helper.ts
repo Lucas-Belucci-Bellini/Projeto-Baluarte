@@ -1,6 +1,6 @@
 import '../styles/git-helper.css';
 import { h } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { GIT_SECTIONS, GITIGNORE_TEMPLATES } from '../data/git-helper.js';
 import type { GitSection, GitignoreTemplate } from '../data/git-helper.js';
 

@@ -9,7 +9,7 @@
 import '../styles/biblioteca.css';
 import '../styles/jogos.css';
 import { h, empty, cx } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import * as players from '../utils/players-engine.js';
 import { JS_DESAFIOS, HTML_DESAFIOS, CSS_NIVEIS, JUSTIFY_OPCOES, ALIGN_OPCOES } from '../data/jogos.js';
 import { CODE_QUEST, CODE_QUEST_TOTAL } from '../data/code-quest.js';

@@ -2,7 +2,7 @@ import '../styles/gerar-codigo.css';
 import { h, empty, randHex } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { loadConfig, processServer } from '../utils/jarvis-engine.js';
 import type { JarvisConfig, JarvisMessage } from '../utils/jarvis-engine.js';
 import { highlight } from '../utils/syntax-highlight.js';

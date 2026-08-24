@@ -1,0 +1,37 @@
+{
+  "installRoot": ".baluarte/tools",
+  "tools": [
+    {
+      "id": "gitnexus",
+      "name": "GitNexus",
+      "repo": "https://github.com/abhigyanpatwari/GitNexus.git",
+      "localPath": ".baluarte/tools/gitnexus",
+      "installedCommit": "dac33d80",
+      "role": "Grafo real de codigo, MCP e CLI local para o Nucleo de IA.",
+      "commands": {
+        "sync": "npm run tools:sync -- gitnexus",
+        "setup": "npm run tools:sync -- gitnexus --with-setup",
+        "analyze": "npm run nexus:analyze",
+        "serve": "npm run nexus:serve"
+      },
+      "setup": [
+        {
+          "cwd": ".baluarte/tools/gitnexus/gitnexus-shared",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": [
+            "install"
+          ]
+        },
+        {
+          "cwd": ".baluarte/tools/gitnexus/gitnexus",
+          "command": "npm",
+          "windowsCommand": "npm.cmd",
+          "args": [
+            "install"
+          ]
+        }
+      ]
+    }
+  ]
+}

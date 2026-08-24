@@ -1,0 +1,150 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  createSpotifyPkceChallenge,
+  exchangeSpotifyAuthorizationCode,
+  createSpotifyPlaybackMonitor,
+  isSpotifyClientId,
+} from '../../src/utils/jarvis-spotify.ts';
+import {
+  getJarvisMusicSnapshot,
+  observeJarvisSpotifyApiPlayback,
+} from '../../src/utils/jarvis-music-presence.ts';
+import { getJarvisRuntimeContext } from '../../src/utils/jarvis-context.ts';
+
+const config = { clientId: '1234567890abcdefghijkl', redirectUri: 'https://baluarte.example/callback' };
+
+function response(status, body, headers = {}) {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    headers: { get: (name) => headers[name] ?? null },
+    json: async () => body,
+  };
+}
+
+test('redirect URI de produção exige HTTPS e rejeita credenciais, hash e HTTP externo', async () => {
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://baluarte.example/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'https://user:pass@baluarte.example/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'https://baluarte.example/callback#oauth' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.rejects(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://localhost:4173/callback' }), /SPOTIFY_REDIRECT_URI_INVALID/);
+  await assert.doesNotReject(() => createSpotifyPkceChallenge({ ...config, redirectUri: 'http://127.0.0.1:4173/callback' }));
+});
+
+test('chave Soloist spak_ não é aceita como Client ID OAuth', async () => {
+  assert.equal(isSpotifyClientId('spak_test'), false);
+  await assert.rejects(
+    () => createSpotifyPkceChallenge({ ...config, clientId: 'spak_test' }),
+    /SPOTIFY_SOLOIST_KEY_NOT_CLIENT_ID/,
+  );
+});
+
+test('PKCE usa S256, state e somente o escopo mínimo de playback', async () => {
+  const challenge = await createSpotifyPkceChallenge(config);
+  const url = new URL(challenge.authorizationUrl);
+  assert.equal(url.origin, 'https://accounts.spotify.com');
+  assert.equal(url.searchParams.get('code_challenge_method'), 'S256');
+  assert.equal(url.searchParams.get('scope'), 'user-read-playback-state');
+  assert.equal(url.searchParams.get('state'), challenge.state);
+  assert.match(challenge.codeVerifier, /^[A-Za-z0-9._~-]{43,128}$/);
+  assert.equal(url.searchParams.get('code_challenge'), challenge.codeChallenge);
+});
+
+test('troca o código PKCE sem client secret e mantém tokens fora do status musical', async () => {
+  let request;
+  const tokens = await exchangeSpotifyAuthorizationCode(config, 'code-value', 'verifier-value-'.padEnd(48, 'x'), async (url, init) => {
+    request = { url, init };
+    return response(200, { access_token: 'access-token', refresh_token: 'refresh-token', expires_in: 3600 });
+  });
+  assert.equal(tokens.accessToken, 'access-token');
+  assert.equal(request.url, 'https://accounts.spotify.com/api/token');
+  assert.equal(request.init.headers.Authorization, undefined);
+  assert.match(request.init.body, /grant_type=authorization_code/);
+  assert.doesNotMatch(JSON.stringify(getJarvisMusicSnapshot()), /access-token|refresh-token/);
+});
+
+test('monitor publica faixa playing no registro único e no contexto do JARVIS', async () => {
+  const monitor = createSpotifyPlaybackMonitor({
+    accessToken: 'secret-token',
+    documentLike: { visibilityState: 'visible' },
+    fetchFn: async (url, init) => {
+      assert.equal(url, 'https://api.spotify.com/v1/me/player');
+      assert.equal(init.headers.Authorization, 'Bearer secret-token');
+      return response(200, { is_playing: true, progress_ms: 1234, item: { name: 'Núcleo', duration_ms: 180000, artists: [{ name: 'Baluarte' }] } });
+    },
+  });
+  const result = await monitor.poll();
+  assert.equal(result.kind, 'playing');
+  const snapshot = getJarvisMusicSnapshot();
+  assert.equal(snapshot.source, 'spotify-api');
+  assert.equal(snapshot.playback, 'playing');
+  assert.equal(snapshot.title, 'Núcleo');
+  assert.match(getJarvisRuntimeContext({ compact: true }), /Núcleo/);
+  assert.match(getJarvisRuntimeContext({ compact: true }), /spotify-api/);
+});
+
+test('204 vira unknown, não pausa inventada, e não deixa faixa antiga', async () => {
+  const monitor = createSpotifyPlaybackMonitor({
+    accessToken: 'token',
+    fetchFn: async () => response(204, null),
+  });
+  const result = await monitor.poll();
+  assert.equal(result.kind, 'unknown');
+  assert.equal(getJarvisMusicSnapshot().playback, 'unknown');
+  assert.equal(getJarvisMusicSnapshot().title, null);
+});
+
+test('401 tenta uma renovação em memória antes de encerrar a sessão e 429 respeita Retry-After', async () => {
+  let calls = 0;
+  const refreshed = createSpotifyPlaybackMonitor({
+    accessToken: 'expired-token',
+    refreshAccessToken: async () => 'fresh-token',
+    fetchFn: async (_url, init) => {
+      calls += 1;
+      return init.headers.Authorization === 'Bearer expired-token'
+        ? response(401, {})
+        : response(204, null);
+    },
+  });
+  assert.equal((await refreshed.poll()).kind, 'unknown');
+  assert.equal(calls, 2);
+  assert.doesNotMatch(JSON.stringify(getJarvisMusicSnapshot()), /fresh-token/);
+  const unauthorized = createSpotifyPlaybackMonitor({ accessToken: 'token', fetchFn: async () => response(401, {}) });
+  assert.equal((await unauthorized.poll()).kind, 'unauthorized');
+  const limited = createSpotifyPlaybackMonitor({ accessToken: 'token', fetchFn: async () => response(429, {}, { 'Retry-After': '17' }) });
+  const result = await limited.poll();
+  assert.equal(result.kind, 'rate-limited');
+  assert.equal(result.retryAfterMs, 17000);
+});
+
+test('estado musical manual continua compatível com o mesmo contexto', () => {
+  observeJarvisSpotifyApiPlayback('paused', 'Faixa pausada', 'Artista', 300, 1000);
+  assert.equal(getJarvisMusicSnapshot().playback, 'paused');
+  assert.match(getJarvisRuntimeContext(), /Faixa pausada/);
+});
+
+/**
+ * O corpo do 400 do Spotify é a única frase que diz POR QUE a troca falhou:
+ * Redirect URI que não bate, código já gasto, `code_verifier` errado. Sem ela,
+ * todos esses casos chegam ao operador como o mesmo "não conectou".
+ */
+test('Spotify: a recusa da troca carrega o que o Spotify respondeu', async () => {
+  const config = { clientId: 'oauth_client_id_fake_12345', redirectUri: 'https://projeto-baluarte.vercel.app/' };
+  const recusa = async () => new Response(
+    JSON.stringify({ error: 'invalid_grant', error_description: 'Invalid redirect URI' }),
+    { status: 400, headers: { 'Content-Type': 'application/json' } },
+  );
+  await assert.rejects(
+    () => exchangeSpotifyAuthorizationCode(config, 'codigo', 'verificador', recusa),
+    /^Error: SPOTIFY_AUTHORIZATION_REJECTED: invalid_grant — Invalid redirect URI$/,
+  );
+});
+
+test('Spotify: uma resposta sem corpo legível ainda produz o código do erro', async () => {
+  const config = { clientId: 'oauth_client_id_fake_12345', redirectUri: 'https://projeto-baluarte.vercel.app/' };
+  const quebrada = async () => new Response('<html>gateway</html>', { status: 502 });
+  await assert.rejects(
+    () => exchangeSpotifyAuthorizationCode(config, 'codigo', 'verificador', quebrada),
+    /^Error: SPOTIFY_TOKEN_EXCHANGE_FAILED$/,
+  );
+});

@@ -15,6 +15,10 @@ export default defineConfig({
     sourcemap: false,
     emptyOutDir: true,
     rollupOptions: {
+      input: {
+        app: 'index.html',
+        jarvisNucleoV7: 'project V2/Modelar objeto 3D/jarvis-nucleo-v7.html'
+      },
       output: {
         /* Code-splitting por rota: cada página é importada dinamicamente em
          * main.js, então o Rollup gera um chunk próprio por página

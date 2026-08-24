@@ -30,20 +30,30 @@
 
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, sep } from 'node:path';
 
 import { semComentarios } from './lib/sem-comentarios.mjs';
+import { mesmoConteudo } from './lib/eol.mjs';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(raiz, 'src');
 const DESTINO = join(raiz, 'docs/architecture/events.md');
 
-function arquivosJS(dir) {
+/* Varre `.js` E `.ts`.
+ *
+ * Varria só `.js`, e a migração para TypeScript esvaziou o catálogo em
+ * silêncio: quem migra ganha um `flags.ts` com o `bus.emit` e deixa um
+ * `flags.js` que só re-exporta. O gerador lia o shim, não achava evento
+ * nenhum, e o catálogo perdeu eventos sem ninguém notar — o passo do CI que
+ * cobraria isso ficava atrás de um typecheck vermelho, que abortava o job
+ * antes. `.d.ts` fica de fora: é declaração, não código que emite.
+ */
+function arquivosFonte(dir) {
   const out = [];
   for (const nome of readdirSync(dir)) {
     const p = join(dir, nome);
-    if (statSync(p).isDirectory()) out.push(...arquivosJS(p));
-    else if (nome.endsWith('.js')) out.push(p);
+    if (statSync(p).isDirectory()) out.push(...arquivosFonte(p));
+    else if (nome.endsWith('.js') || (nome.endsWith('.ts') && !nome.endsWith('.d.ts'))) out.push(p);
   }
   return out.sort();
 }
@@ -56,10 +66,19 @@ const registro = (nome) => {
   return eventos.get(nome);
 };
 
-const PADRAO = /bus\s*\.\s*(emit|on)\s*\(\s*(['"])([^'"]+)\2/g;
+/* O `(?:<…>)?` é o argumento de tipo: em TypeScript se escreve
+ * `bus.on<NucleoEvent>('nucleo:event', …)`, e o padrão antigo exigia o parêntese
+ * colado no nome do método. Toda chamada tipada era invisível — foi assim que
+ * `toast` sumiu do catálogo e que três eventos ficaram "emitido sem ouvinte"
+ * tendo ouvinte. `[^()]` impede que o genérico avance por cima da chamada. */
+const PADRAO = /bus\s*\.\s*(emit|on)\s*(?:<[^()]*?>)?\s*\(\s*(['"])([^'"]+)\2/g;
 
-for (const arquivo of arquivosJS(SRC)) {
-  const rel = relative(raiz, arquivo);
+for (const arquivo of arquivosFonte(SRC)) {
+  /* Barra normal sempre: no Windows o `relative` devolve `src\core\flags.ts`, e
+   * o catálogo gerado lá deixaria de bater com o gerado no CI — o verificador
+   * acusaria drift que não existe. O separador é do sistema; o documento é do
+   * repositório. */
+  const rel = relative(raiz, arquivo).split(sep).join('/');
   const codigo = semComentarios(readFileSync(arquivo, 'utf8'));
   for (const m of codigo.matchAll(PADRAO)) {
     const [, metodo, , nome] = m;
@@ -164,7 +183,11 @@ const conteudo = L.join('\n');
 if (process.argv.includes('--verificar')) {
   let atual = '';
   try { atual = readFileSync(DESTINO, 'utf8'); } catch { /* não existe */ }
-  if (atual !== conteudo) {
+  /* Ignorando o fim de linha: em checkout Windows o disco tem CRLF e o gerador
+   * emite `\n`, então a comparação crua reprova por `\r` e por mais nada — com
+   * uma mensagem que manda regenerar, o que não muda linha alguma. Ver
+   * `lib/eol.mjs`. */
+  if (!mesmoConteudo(atual, conteudo)) {
     console.error('🔴 docs/architecture/events.md está fora de sincronia com o código.');
     console.error('   Rode `npm run gen-catalogo-eventos` e commite o resultado.');
     process.exit(1);

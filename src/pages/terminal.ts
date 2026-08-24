@@ -8,7 +8,7 @@ import { aoSair } from '../core/ciclo-vida.js';
 import { autocomplete, createContext, execute } from '../utils/terminal-engine.js';
 import type { TerminalContext } from '../utils/terminal-engine.js';
 import { COMMANDS } from '../data/terminal-commands.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 
 const ANSI_COLORS: Readonly<Record<string, string>> = {
   '30': '#000', '31': '#ff3355', '32': '#00ff88', '33': '#ffaa00',

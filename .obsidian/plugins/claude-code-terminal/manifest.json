@@ -1,0 +1,10 @@
+{
+  "id": "claude-code-terminal",
+  "name": "Claude Code Terminal",
+  "version": "1.0.1",
+  "minAppVersion": "1.5.0",
+  "description": "Embedded terminal with Claude Code AI integration.",
+  "author": "Daniel Ternyak",
+  "authorUrl": "https://github.com/dternyak",
+  "isDesktopOnly": true
+}

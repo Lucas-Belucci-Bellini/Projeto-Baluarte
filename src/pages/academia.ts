@@ -2,7 +2,7 @@ import '../styles/academia.css';
 import { h, cx, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { LANGS_ACADEMY, TOTAL_LANGS, findLang, LEARNING_RESOURCES, TECH_INTRO, TECH_CARREIRAS } from '../data/academia.js';
 import type { AcademyLanguage, AcademyModule, LearningResourceCategory, CareerCard } from '../data/academia.js';
 import { getLang as getEditorLang } from '../data/editor-langs.js';

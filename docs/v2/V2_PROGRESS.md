@@ -22,14 +22,152 @@ Decision Log. Serve para uma sessão nova descobrir rapidamente o que já existe
 - [x] Per-module lifecycle status
 - [x] Operational platform facade
 
+## Portão de integração (`npm run v2:integracao`) — 15/15
+
+- [x] roda no Windows
+- [x] espera por condição, não por relógio
+
+Duas correções, ambas no `scripts/v2-integracao.mjs`; nenhuma no módulo.
+
+**Nunca tinha rodado no Windows.** `spawn('npx', …)` morre em `ENOENT` — o Node
+24 recusa spawnar `.cmd` (CVE-2024-27980), e `npx` é `npx.cmd`. Morria antes da
+primeira asserção: 0/14, não 13/14. Chamamos o bin do vite com o próprio Node.
+
+**O `13/14` era do relógio, não do briefing.** O portão dormia um tempo fixo
+(900 ms) antes de ler a tela. A view do `briefing` é a única importada sob
+demanda com esse orçamento — onde a primeira transformação do Vite passa disso,
+o portão reprova um módulo correto, e a mensagem mostra a tela *anterior*
+(`Lab de Criptografia`), que parece defeito de render. Sleep fixo mede a
+máquina, não o sistema.
+
+Medido, com a view atrasada 2 s de propósito: relógio → `13/14`, condição →
+`14/14`. E com `view` devolvendo o **módulo** (o defeito de
+[`V2_MODULE_RULES.md`](./V2_MODULE_RULES.md)), a condição ainda reprova —
+`view não é um nó: object`. Só o falso vermelho saiu; o verdadeiro ficou.
+
+> A hipótese herdada era "view devolve o ELEMENTO". Ela está descartada: o
+> `loadView` do `briefing` devolve o elemento desde o commit que o criou
+> (`446a272e`), e a asserção do portão está certa — não foi afrouxada.
+
+## Portão de tipos (`npm run tipos:v2`) — 0 erros
+
+- [x] 61 → 0, sem afrouxar `strict`, `checkJs` ou `noImplicitAny`
+- [x] o `V2 integration` do CI saiu do `skipped` e **passa**
+
+Estava vermelho havia dias em três branches sem ninguém ver: os últimos commits
+do `main` eram do bot de câmbio, e push de bot não dispara workflow. E como no
+`v2-validation.yml` os passos são sequenciais, o typecheck vermelho deixava o
+`V2 integration` `skipped` — o portão acima existia, mas **não era exercitado**.
+
+Consertá-lo revelou mais duas camadas atrás dele: os dois geradores de catálogo
+não enxergavam TypeScript (varriam só `.js` e liam o shim de re-export), e o
+workflow nunca instalava o Chromium do Playwright.
+
+## A fachada dirige o entrypoint, e a cadeia inteira tem contrato
+
+- [x] a Plataforma sobe o sistema — supervisor, saúde e lifecycle em runtime
+- [x] `Manifest → Registry → Permission → Runtime` testado com as peças **reais**
+
+O `criarPlataforma` existia, tinha teste e não era usado por ninguém: o único
+consumidor era o próprio teste. O `v2/harness/main.js` dirigia o `boot` na mão.
+As três peças estavam prontas *em isolamento*; nada as compunha em execução
+real, então "a fundação está de pé" era verdade em teste e hipótese em campo.
+
+Medido depois de integrar: `partida.estado` = `ready`, supervisor em `ready`,
+lifecycle com 4/4 `running` e 0 `failed`, e o portão em **14/14** — não 13/14,
+porque a falha do briefing que a sessão anterior reportou como pré-existente era
+justamente o falso vermelho que o `navegarAte` já tinha corrigido.
+
+> A metade daquele commit que mexia no `scripts/v2-integracao.mjs` foi
+> **descartada**: o `main` já tinha a correção do `npx` *e* estava à frente.
+> Trazer o commit inteiro teria reintroduzido os sleeps fixos. Commit antigo é
+> matéria-prima, não pacote — confira contra o `main` antes de aplicar inteiro.
+
+O contract test cobre a costura que nenhum teste de unidade alcança, com as
+quatro peças reais — o `contract-slice.test.js` faz o mesmo percurso com registro
+e decisor falsos, e mock prova o mock (Regra 7).
+
+**Um mutante sobreviveu na primeira rodada.** Removida a poda do
+`conhecerModulos`, o teste seguia verde: o `avaliar()` barra por
+"não-declarada" mesmo com a concessão ainda guardada. Duas defesas, a primeira
+cobrindo a segunda — Regra 1 outra vez. Quem enxerga a poda sozinha é o estado
+persistido: sem ela, `exportar()` mantém a permissão e o `importar()` do próximo
+arranque a ressuscita sob um manifesto que não a declara mais.
+
+## O ciclo passa pelo Runtime Host antes do `init`
+
+- [x] `running` exige autorização aberta — quem não abre não chega ao `init`
+- [x] a ordem do contrato (`open → init → start`, `stop → close → dispose`) é executada
+- [x] o entrypoint injeta um Host real; o portão cobra que ele foi consultado
+
+Terceira vez o mesmo padrão, e vale nomear: **peça pronta, testada e desligada.**
+Primeiro o `criarPlataforma`, depois o contract test, agora o
+`criarLifecycleRuntime` — o Host por módulo. Ele existia, tinha teste próprio, e
+a busca textual pelos importadores achou **um** consumidor de produção
+(`vertical-slice.js`), que não é o caminho por onde os módulos sobem. O
+`ciclo.ts` ia direto ao `init`.
+
+O efeito era um módulo declarado `running` cuja autorização nunca tinha sido
+pedida uma única vez. O `V2_LIFECYCLE_RUNTIME_CONTRACT.md` descrevia a ordem
+certa desde sempre; ninguém a executava. **Contrato sem executor é intenção** — e
+o retrato mentia com todas as luzes verdes, porque peça correta e desligada dá
+exatamente o mesmo diagnóstico que peça ligada.
+
+O teto do `init` foi extraído (`comTeto`) e passou a valer para a abertura: um
+Runtime que não responde pendura a subida do mesmo jeito que um `init` que trava,
+e esse caminho novo não passava por teto nenhum.
+
+**Oito mutantes plantados, oito mortos** — incluindo o mutante que É a doença
+original (remover a chamada ao Host: 8 dos 12 testes caem). O portão foi de
+14 para **15/15**, e a asserção nova é a única que enxerga o defeito: plantando-o
+no entrypoint, as outras 14 seguem verdes e ela devolve `[]`.
+
+> **Grant vazio é autorização disponível.** `militar` declara `NETWORK`, não
+> recebe nada e continua subindo — como antes. Tratar "sem permissão concedida"
+> como "sem autorização" derrubaria um módulo correto e transformaria
+> deny-by-default em deny-tudo. A distinção quase virou defeito ao desenhar isto.
+
+O `--strictPort` entrou no portão junto: sem ele o Vite troca de porta em
+silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
+
 ## Próximo bloco
 
-- [ ] integrar a fachada ao entrypoint oficial da V2
-- [ ] contract test completo Manifest → Registry → Permission → Runtime
-- [ ] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
-- [ ] observabilidade de transições `starting/running/stopping`
-- [ ] transporte concreto depois do contrato estabilizado
-- [ ] primeiro vertical slice de módulo nativo
+- [x] integrar a fachada ao entrypoint oficial da V2
+- [x] contract test completo Manifest → Registry → Permission → Runtime
+- [x] lifecycle + Runtime Host: módulo só fica `running` quando sua autorização estiver disponível
+- [x] observabilidade de transições `starting/running/stopping`
+- [x] transporte concreto depois do contrato estabilizado
+      — o portão E2E (`scripts/v2-runtime-smoke.mjs`) **usa** o
+      `criarRuntimeStdio` em vez de reimplementar o protocolo, e fala com o
+      binário Rust de verdade. Antes havia duas implementações do mesmo
+      protocolo, e a única que tocava o binário passava por fora do transporte —
+      por isso ele não tinha consumidor, e por isso o E2E ficava verde sem provar
+      nada sobre ele. Medido no Windows: `cargo test` 12+3, smoke OK pelo
+      transporte, 12/12 no transporte, 9/9 mutantes.
+      A ponte do app desktop entrou junto (`desktop/src/runtime.js` + canais
+      `runtime:*` no `ipc.js` + empacotamento por `extraResources` + build do
+      Rust no `desktop-release.yml`): **8/8**, com ponta a ponta atravessando
+      ponte → transporte ESM → processo Rust. **Aberto:** o caminho
+      `process.resourcesPath`, que só existe em app empacotado — nenhum
+      instalador foi produzido com isto dentro.
+      Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
+- [x] primeiro vertical slice de módulo nativo
+      — a cadeia do [`V2_VERTICAL_SLICE.md`](./V2_VERTICAL_SLICE.md) percorrida
+      com o Runtime **real** (`test/v2/slice-nativo.test.js`, 5/5): Registry →
+      autorização pelo **processo Rust** → sessão → init → start → running → stop
+      → dispose → close, com Registry, Permission System, ciclo, transporte e
+      binário reais. Antes o Runtime era sempre espião ou duplo, e "só fica
+      `running` com sessão aberta" valia sobre um Runtime que nunca existira.
+      O `ModuleContext` ganhou `ctx.runtime.lerArquivo(caminho)` — a alça recebe
+      *caminho, e só*, com o id do módulo fechado por closure; é isso que impede
+      um módulo de nomear a raiz de outro. O `init` de `alpha` lê o próprio
+      arquivo e o **Rust** recusa o `../`.
+      A injeção em produção entrou junto: `v2/core/runtime-app.js` adapta
+      `window.baluarte.invoke` à forma do contexto, e o entrypoint o injeta em
+      `deps.runtime`. Fora do app devolve `null`, então o contexto na web fica
+      idêntico ao de antes — `v2:integracao` segue **15/15**.
+      **Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro; o
+      ramo `process.resourcesPath` continua sem exercício.
 
 ## Regra de manutenção
 

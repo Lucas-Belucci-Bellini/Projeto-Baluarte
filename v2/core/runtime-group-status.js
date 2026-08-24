@@ -20,9 +20,13 @@ export function criarRuntimeGroupStatus(options = {}) {
   const { batches, states = new Map() } = options;
   if (!batches || typeof batches.batches !== 'function') throw new TypeError('batches inválidos');
 
+  /* Ver `runtime-supervisor.js`: o estreitamento da guarda não atravessa a
+   * fronteira da função declarada. */
+  const fonte = batches;
+
   /** @returns {Readonly<{group: RuntimeGroupState, modules: ReadonlyArray<Readonly<{id: string, state: RuntimeGroupState}>>}>} */
   function snapshot() {
-    const modules = batches.batches().flat().map(id => ({ id, state: states.get(id) ?? 'created' }));
+    const modules = fonte.batches().flat().map(id => ({ id, state: states.get(id) ?? 'created' }));
     const values = modules.map(module => module.state);
     let group = /** @type {RuntimeGroupState} */ ('created');
     if (values.some(state => state === 'failed')) group = 'failed';
@@ -31,7 +35,7 @@ export function criarRuntimeGroupStatus(options = {}) {
     else if (values.length && values.every(state => state === 'stopped')) group = 'stopped';
     else if (values.length && values.every(state => state === 'ready')) group = 'ready';
     else if (values.some(state => state === 'starting')) group = 'starting';
-    return Object.freeze({ group, modules: Object.freeze(modules.map(Object.freeze)) });
+    return Object.freeze({ group, modules: Object.freeze(modules.map((m) => Object.freeze(m))) });
   }
 
   return Object.freeze({ snapshot });

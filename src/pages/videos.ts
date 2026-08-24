@@ -8,7 +8,7 @@
 import '../styles/biblioteca.css';
 import '../styles/videos.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { storage } from '../core/storage.js';
 import { router } from '../core/router.js';
 import { PLAYLISTS, TOTAL_VIDEOS, TOTAL_PLAYLISTS, findPlaylist, findVideo } from '../data/videos.js';

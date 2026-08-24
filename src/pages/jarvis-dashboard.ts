@@ -36,8 +36,35 @@ interface DashboardEvent {
 
 interface DashboardCommit {
   hash: string;
+  sha?: string;
   message: string;
   date: string;
+}
+
+interface DashboardActivity {
+  date: string;
+  count: number;
+}
+
+interface DashboardCommitsResponse {
+  head?: string;
+  commits: DashboardCommit[];
+  activity: DashboardActivity[];
+  activityTruncated: boolean;
+}
+
+interface DashboardMonitorData {
+  status: DashboardStatus;
+  sessions: DashboardSession[];
+  events: DashboardEvent[];
+  memories: MemoryMap;
+}
+
+interface DashboardSnapshot extends DashboardMonitorData {
+  commits: DashboardCommit[];
+  activity: DashboardActivity[];
+  activityTruncated: boolean;
+  head: string | null;
 }
 
 type MemoryFacts = Record<string, unknown>;
@@ -49,10 +76,15 @@ interface DashboardDemoData {
   events: DashboardEvent[];
   memories: MemoryMap;
   commits: DashboardCommit[];
+  activity: DashboardActivity[];
 }
 
-let pollTimer: number | null = null;
+let monitorTimer: number | null = null;
+let graphTimer: number | null = null;
 let rootElement: HTMLDivElement | null = null;
+let monitorInFlight = false;
+let graphInFlight = false;
+let snapshot: DashboardSnapshot | null = null;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -101,11 +133,39 @@ function parseEvents(value: unknown): DashboardEvent[] {
   }));
 }
 
-function parseCommits(value: unknown): DashboardCommit[] {
-  if (!isRecord(value) || !Array.isArray(value.commits)) return [];
-  return value.commits.filter(isRecord).map((commit) => ({
-    hash: stringValue(commit.hash) ?? '—', message: stringValue(commit.message) ?? '—', date: stringValue(commit.date) ?? '—',
+function parseCommits(value: unknown): DashboardCommitsResponse {
+  if (!isRecord(value) || !Array.isArray(value.commits)) {
+    return { commits: [], activity: [], activityTruncated: false };
+  }
+  const commits = value.commits.filter(isRecord).map((commit) => ({
+    hash: stringValue(commit.hash) ?? '—',
+    sha: stringValue(commit.sha),
+    message: stringValue(commit.message) ?? '—',
+    date: stringValue(commit.date) ?? '—',
   }));
+  const activity = Array.isArray(value.activity)
+    ? value.activity.filter(isRecord).map((item) => ({
+      date: stringValue(item.date) ?? '—',
+      count: numberValue(item.count) ?? 0,
+    }))
+    : [];
+  return {
+    head: stringValue(value.head),
+    commits,
+    activity,
+    activityTruncated: value.activityTruncated === true,
+  };
+}
+
+function mergeCommits(current: readonly DashboardCommit[], incoming: readonly DashboardCommit[]): DashboardCommit[] {
+  const merged = [...incoming, ...current];
+  const seen = new Set<string>();
+  return merged.filter((commit) => {
+    const key = commit.sha ?? commit.hash;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 20);
 }
 
 function parseMemoryFacts(value: unknown): MemoryFacts {
@@ -163,6 +223,10 @@ function demoData(): DashboardDemoData {
       { hash: '7469130', message: 'feat: seção militar 12/12', date: 'ontem' },
       { hash: 'd515d25', message: 'feat: tecnologia, táticas, história', date: 'há 2 dias' },
     ],
+    activity: Array.from({ length: 14 }, (_, index) => ({
+      date: new Date(now - (13 - index) * 86400000).toISOString().slice(0, 10),
+      count: [3, 7, 2, 11, 5, 9, 4, 6, 8, 12, 5, 10, 7, 14][index],
+    })),
   };
 }
 
@@ -222,75 +286,242 @@ function renderCommits(commits: readonly DashboardCommit[]): HTMLDivElement {
     h('span', { className: 'jd-commit-row__msg' }, commit.message),
     h('span', { className: 'jd-commit-row__date u-text-muted' }, commit.date),
   ));
-  return card('Histórico Git', '⎇', rows);
+  return card('Últimos commits', '⎇', [
+    h('p', { className: 'jd-card__hint' }, `Janela visual: ${commits.length} commits; o restante fica agregado no gráfico.`),
+    ...rows,
+  ]);
 }
 
-function renderDashboard(root: HTMLDivElement, status: DashboardStatus, sessions: readonly DashboardSession[], events: readonly DashboardEvent[], memories: MemoryMap, commits: readonly DashboardCommit[]): void {
+function renderActivity(activity: readonly DashboardActivity[], truncated: boolean): HTMLDivElement {
+  if (!activity.length) return card('Cadência de commits', '▥', [h('p', { className: 'u-text-muted' }, 'Sem atividade agregada.')]);
+  const max = Math.max(...activity.map((item) => item.count), 1);
+  const total = activity.reduce((sum, item) => sum + item.count, 0);
+  const bars = activity.map((item) => {
+    const parts = item.date.split('-');
+    const label = parts.length >= 3 ? `${parts[2]}/${parts[1]}` : item.date;
+    const height = Math.max(4, Math.round((item.count / max) * 100));
+    return h('div', { className: 'jd-activity__item', title: `${item.date}: ${item.count} commits` },
+      h('span', { className: 'jd-activity__count' }, String(item.count)),
+      h('span', { className: 'jd-activity__bar-wrap' }, h('span', { className: 'jd-activity__bar', style: { height: `${height}%` } })),
+      h('span', { className: 'jd-activity__label' }, label),
+    );
+  });
+  return card('Cadência de commits', '▥', [
+    h('div', { className: 'jd-activity__summary' }, `${total} commits nos últimos ${activity.length} dias`),
+    h('div', { className: 'jd-activity' }, ...bars),
+    ...(truncated ? [h('p', { className: 'jd-card__hint' }, 'A série atingiu o teto de amostragem; os valores podem estar subestimados.')] : []),
+  ]);
+}
+
+function panelTarget(root: HTMLDivElement, id: string): HTMLDivElement | null {
+  const target = root.querySelector(`#${id}`);
+  return target instanceof HTMLDivElement ? target : null;
+}
+
+function clearPanelState(target: HTMLDivElement): void {
+  target.querySelector('.jd-panel-state')?.remove();
+}
+
+function appendPanelState(target: HTMLDivElement, message: string, kind: 'warning' | 'error'): void {
+  clearPanelState(target);
+  target.appendChild(h('div', { className: `jd-panel-state jd-panel-state--${kind}` }, message));
+}
+
+function demoSnapshot(): DashboardSnapshot {
+  const demo = demoData();
+  return {
+    status: demo.status,
+    sessions: demo.sessions,
+    events: demo.events,
+    memories: demo.memories,
+    commits: demo.commits,
+    activity: demo.activity,
+    activityTruncated: false,
+    head: null,
+  };
+}
+
+function renderHeaderStatus(root: HTMLDivElement, status: DashboardStatus): void {
+  const badge = root.querySelector('#jd-header-status');
+  if (!(badge instanceof HTMLSpanElement)) return;
+  badge.className = `jd-badge ${status.demo ? 'jd-badge--demo' : 'jd-badge--online'}`;
+  badge.textContent = status.demo ? '◐ demonstração' : '● online';
+}
+
+function renderDashboardShell(root: HTMLDivElement): void {
   empty(root);
-  if (status.demo) root.appendChild(offlineBanner());
   root.appendChild(h('div', { className: 'jd-header' },
     h('h1', null, '◉ Jarvis Dashboard'),
     h('div', { className: 'jd-header__meta' },
-      h('span', { className: `jd-badge ${status.demo ? 'jd-badge--demo' : 'jd-badge--online'}` }, status.demo ? '◐ demonstração' : '● online'),
+      h('span', { id: 'jd-header-status', className: 'jd-badge jd-badge--demo' }, '◐ conectando'),
       h('span', { className: 'u-text-muted' }, `Atualiza em ${POLL_INTERVAL / 1000}s`),
     ),
   ));
-  const grid = h('div', { className: 'jd-grid' });
-  grid.append(renderStatus(status), renderSessions(sessions), renderMemory(status.users ?? [], memories), renderEvents(events), renderCommits(commits));
+  const grid = h('div', { className: 'jd-grid jd-dashboard-grid' });
+  grid.append(
+    h('div', { id: 'jd-monitor-panel', className: 'jd-dashboard-panel' }),
+    h('div', { id: 'jd-graph-panel', className: 'jd-dashboard-panel' }),
+  );
   root.appendChild(grid);
 }
 
-async function loadDashboard(root: HTMLDivElement): Promise<void> {
-  empty(root);
-  root.appendChild(h('div', { className: 'jd-loader' }, 'Conectando ao Jarvis DB…'));
-  let status: DashboardStatus;
+function renderMonitorPanels(root: HTMLDivElement, data: DashboardMonitorData, stateMessage = ''): void {
+  const target = panelTarget(root, 'jd-monitor-panel');
+  if (!target) return;
+  empty(target);
+  if (data.status.demo) target.appendChild(offlineBanner());
+  target.append(
+    renderStatus(data.status),
+    renderSessions(data.sessions),
+    renderMemory(data.status.users ?? [], data.memories),
+    renderEvents(data.events),
+  );
+  if (stateMessage) appendPanelState(target, stateMessage, 'warning');
+  else clearPanelState(target);
+}
+
+function renderGraphPanels(root: HTMLDivElement, commits: readonly DashboardCommit[], activity: readonly DashboardActivity[], activityTruncated: boolean, stateMessage = ''): void {
+  const target = panelTarget(root, 'jd-graph-panel');
+  if (!target) return;
+  empty(target);
+  target.append(renderActivity(activity, activityTruncated), renderCommits(commits));
+  if (stateMessage) appendPanelState(target, stateMessage, 'warning');
+  else clearPanelState(target);
+}
+
+function renderGraphError(root: HTMLDivElement, message: string): void {
+  const target = panelTarget(root, 'jd-graph-panel');
+  if (!target) return;
+  empty(target);
+  target.appendChild(card('Cadência de commits', '▥', [h('p', { className: 'u-text-muted' }, message)]));
+  appendPanelState(target, 'O monitor continua independente e seguirá atualizando.', 'error');
+}
+
+async function fetchCommits(after: string | null): Promise<DashboardCommitsResponse> {
+  const query = after ? `&after=${encodeURIComponent(after)}` : '';
   try {
-    status = parseStatus(await api('/jarvis-db/status'));
-  } catch {
-    const demo = demoData();
-    renderDashboard(root, demo.status, demo.sessions, demo.events, demo.memories, demo.commits);
-    return;
+    return parseCommits(await api(`/jarvis-db/commits?limit=20${query}`));
+  } catch (error) {
+    if (!after) throw error;
+    return parseCommits(await api('/jarvis-db/commits?limit=20'));
   }
-  if (!status.online) {
-    const demo = demoData();
-    renderDashboard(root, demo.status, demo.sessions, demo.events, demo.memories, demo.commits);
-    return;
-  }
-  const [sessionsResult, eventsResult, commitsResult] = await Promise.allSettled([
-    api('/jarvis-db/sessions?limit=15'), api('/jarvis-db/events'), api('/jarvis-db/commits?limit=20'),
-  ]);
-  const sessions = sessionsResult.status === 'fulfilled' ? parseSessions(sessionsResult.value) : [];
-  const events = eventsResult.status === 'fulfilled' ? parseEvents(eventsResult.value) : [];
-  const commits = commitsResult.status === 'fulfilled' ? parseCommits(commitsResult.value) : [];
-  const memories: MemoryMap = {};
-  await Promise.all((status.users ?? []).map(async (user) => {
-    try {
-      const value = await api(`/jarvis-db/memory/${encodeURIComponent(user)}`);
-      memories[user] = isRecord(value) ? parseMemoryFacts(value.facts) : {};
-    } catch {
-      memories[user] = {};
+}
+
+async function refreshMonitor(root: HTMLDivElement): Promise<void> {
+  if (monitorInFlight || rootElement !== root) return;
+  monitorInFlight = true;
+  try {
+    const status = parseStatus(await api('/jarvis-db/status'));
+    if (!status.online) {
+      const demo = demoSnapshot();
+      snapshot = { ...(snapshot ?? demo), ...demo };
+      renderHeaderStatus(root, demo.status);
+      renderMonitorPanels(root, demo);
+      return;
     }
-  }));
-  renderDashboard(root, status, sessions, events, memories, commits);
+
+    const previous = snapshot;
+    const [sessionsResult, eventsResult] = await Promise.allSettled([
+      api('/jarvis-db/sessions?limit=15'),
+      api('/jarvis-db/events?limit=50'),
+    ]);
+    const sessions = sessionsResult.status === 'fulfilled' ? parseSessions(sessionsResult.value) : previous?.sessions ?? [];
+    const events = eventsResult.status === 'fulfilled' ? parseEvents(eventsResult.value) : previous?.events ?? [];
+    const memories: MemoryMap = {};
+    await Promise.all((status.users ?? []).map(async (user) => {
+      try {
+        const value = await api(`/jarvis-db/memory/${encodeURIComponent(user)}`);
+        memories[user] = isRecord(value) ? parseMemoryFacts(value.facts) : {};
+      } catch {
+        memories[user] = previous?.memories[user] ?? {};
+      }
+    }));
+    const monitorData: DashboardMonitorData = { status, sessions, events, memories };
+    snapshot = { ...(previous ?? demoSnapshot()), ...monitorData };
+    renderHeaderStatus(root, status);
+    renderMonitorPanels(root, monitorData);
+  } catch {
+    const previous = snapshot ?? demoSnapshot();
+    snapshot = previous;
+    renderHeaderStatus(root, previous.status);
+    renderMonitorPanels(root, previous, 'Monitor temporariamente indisponível; último estado mantido.');
+  } finally {
+    monitorInFlight = false;
+  }
+}
+
+async function refreshGraph(root: HTMLDivElement): Promise<void> {
+  if (graphInFlight || rootElement !== root) return;
+  graphInFlight = true;
+  try {
+    const previous = snapshot ?? demoSnapshot();
+    const commitData = await fetchCommits(previous.head);
+    const commits = mergeCommits(previous.commits, commitData.commits);
+    const activity = commitData.activity.length ? commitData.activity : previous.activity;
+    const activityTruncated = commitData.activity.length ? commitData.activityTruncated : previous.activityTruncated;
+    snapshot = {
+      ...previous,
+      commits,
+      activity,
+      activityTruncated,
+      head: commitData.head ?? previous.head,
+    };
+    renderGraphPanels(root, commits, activity, activityTruncated);
+  } catch {
+    if (snapshot?.commits.length || snapshot?.activity.length) {
+      renderGraphPanels(root, snapshot.commits, snapshot.activity, snapshot.activityTruncated, 'Gráfico temporariamente indisponível; último estado mantido.');
+    } else {
+      renderGraphError(root, 'Não foi possível carregar a cadência de commits agora.');
+    }
+  } finally {
+    graphInFlight = false;
+  }
+}
+
+function scheduleMonitorPoll(root: HTMLDivElement): void {
+  if (rootElement !== root) return;
+  monitorTimer = window.setTimeout(async () => {
+    await refreshMonitor(root);
+    scheduleMonitorPoll(root);
+  }, POLL_INTERVAL);
+}
+
+function scheduleGraphPoll(root: HTMLDivElement): void {
+  if (rootElement !== root) return;
+  graphTimer = window.setTimeout(async () => {
+    await refreshGraph(root);
+    scheduleGraphPoll(root);
+  }, POLL_INTERVAL);
 }
 
 function startPolling(root: HTMLDivElement): void {
   stopPolling();
-  pollTimer = window.setInterval(() => { void loadDashboard(root); }, POLL_INTERVAL);
+  scheduleMonitorPoll(root);
+  scheduleGraphPoll(root);
 }
 
 function stopPolling(): void {
-  if (pollTimer !== null) {
-    window.clearInterval(pollTimer);
-    pollTimer = null;
+  if (monitorTimer !== null) {
+    window.clearTimeout(monitorTimer);
+    monitorTimer = null;
+  }
+  if (graphTimer !== null) {
+    window.clearTimeout(graphTimer);
+    graphTimer = null;
   }
 }
 
 export function jarvisDashboardPage(): HTMLDivElement {
   stopPolling();
+  snapshot = null;
+  monitorInFlight = false;
+  graphInFlight = false;
   const root = h('div', { className: 'jarvis-dashboard-page page-wrap' });
   rootElement = root;
-  void loadDashboard(root).then(() => startPolling(root));
+  renderDashboardShell(root);
+  void refreshMonitor(root);
+  void refreshGraph(root);
+  startPolling(root);
   const observer = new MutationObserver(() => {
     if (!document.contains(root)) {
       stopPolling();

@@ -1,36 +1,102 @@
 # JavaScript restante e roadmap de migração para TypeScript
 
-**Base de trabalho:** `49466a54a3958381b7d22dad28b5678f64d53a71` (último `main` publicado antes da onda 4.50)
-**Status:** INVENTÁRIO ATUALIZADO — J1 do JARVIS, Modpack, Projetos, Zomboid, laboratório cripto completo, Calculadoras, utilitárias, Git Nexus Gate, Segurança, Banco, Centro Militar, Poder Militar, Comms, Baixar, Portas, Diagnóstico, Economia, Orçamentos Militares, Shadow, Triangulação, GeoPulse, JSON Studio, Batalha Naval, IA Proprietária, FFT, Color Studio, Morse standalone, Central de APIs, Perfil, Esteganografia, Utilidades, Mural, Terminal-IA, OCR, Gráficos, Aprendizado, Terminal Web, Código, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Cinema, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Modelos 3D, Mapa Tático e Radar, Rádio, Musicas, Núcleo Mark XIII e JARVIS Vision foram implementados; **5 páginas canônicas** continuam no mapa abaixo.
+**Base de trabalho:** `main` publicada em `ca5b259e4dce5ac649262b9279e8c4a2d20270ef`, após as Waves 39–43
+**Status:** INVENTÁRIO ATUALIZADO — todas as páginas canônicas estão em TypeScript; os 115 arquivos `.js` físicos de página são wrappers de compatibilidade; **nenhuma página continua canônica em JavaScript** (ver §0). Os gates locais e os 7 workflows remotos da Wave 43 estão verdes.
 **Objetivo:** responder exatamente o que ainda é JavaScript canônico, o que já é apenas compatibilidade e qual é a ordem segura para continuar a migração.
+
+> **As seções históricas abaixo preservam a fotografia anterior à conclusão das páginas.** A verificação atual do filesystem confirma **zero páginas canônicas JavaScript** em `src/pages`; o JavaScript restante está concentrado em dados, utilitários, Core V1/V2 e arquivos de configuração, que seguem um roadmap separado.
 
 > **Conclusão executiva:** ainda há muito JavaScript no repositório, mas ele não representa um único bloco de trabalho. O próximo passo não deve ser converter todos os arquivos de uma vez. O caminho correto é continuar por contratos: páginas pequenas e de baixo risco, depois dados com declarações estruturais, depois Core/integrations e, em paralelo controlado, os contratos V2 que concentram os 61 erros atuais.
 
+## 0. As 5 últimas páginas — ✅ CONCLUÍDO em 18/08/2026
+
+**Não há mais página canônica em JavaScript.** O comando de verificação do
+[`docs/PROMPT-MIGRACAO-TS.md`](../PROMPT-MIGRACAO-TS.md) imprime
+`nenhuma pagina canonica em JS`: todo `.js` em `src/pages/` é wrapper de uma
+linha, e são **114 implementações `.ts`** (contadas com
+`globSync('src/pages/**/*.ts')`, subpastas incluídas).
+
+| Página | Linhas | Sem tipo (antes) | Situação |
+| --- | ---: | ---: | --- |
+| `visao.js` | 832 | 0 | ✅ migrada (PR #455) |
+| `wiki-arma3.js` | 756 | 3 | ✅ migrada (PR #456) |
+| `vanguard.js` | 822 | 5 | ✅ migrada (PR #457) |
+| `jarvis.js` | 999 | 5 | ✅ migrada (PR #457) |
+| `arma3-tutorial.js` | 1376 | 9 | ✅ migrada (PR #457) |
+
+### O que a migração custou de verdade: **declarações, não páginas**
+
+A previsão deste documento estava certa — o bloqueio nunca foi a página, foram as
+fontes. Ao todo, **41 arquivos de declaração** — 35 novos e 6 corrigidos
+(`git diff --name-status 3998e8ff..HEAD -- '*.d.ts'`) —, e o trabalho neles foi
+maior que o das cinco páginas somadas.
+
+### O que os tipos acharam (o motivo de a migração existir)
+
+Nenhum destes é erro de anotação: são defeitos que estavam no ar.
+
+- **`A3ColInfo` era `any` em silêncio.** `wiki-arma3.d.ts` importava o tipo de
+  `arma3-colecao.js`, que **não tinha `.d.ts`**. Sob `skipLibCheck`, import
+  quebrado não vira erro — vira `any`. `const x: number = A3COL_INFO.nome`
+  passava.
+- **`replaceChildren(…, null)` renderiza a palavra `"null"` na tela.** Medido no
+  Chromium: `d.replaceChildren(p, null, null)` → `"<p>ALGO</p>nullnull"`.
+  Diferente do `h()`, que descarta filho nulo.
+- **Quatro `carregar*()` devolvem o envelope, não o array** — declarar array teria
+  posto um `.filter is not a function` esperando quem os usasse.
+- **Seis exportações invisíveis**: `processNewsBriefing`, `healthCheckServer`,
+  `isWebGPUAvailable`, `preloadWebLLM`, `HERMES_AGENT_DEFAULT` e
+  `HERMES_LOCAL_DEFAULT_URL` existiam no `.js` e faltavam no `.d.ts`. Mais
+  `Arma3Preset.id`, do qual a `/arma3-tutorial` inteira depende.
+- **Duas assinaturas mentindo**: `getBaluarteBriefing()` declarada sem o
+  `{ compact }` que recebe, e `WebLLMCallbacks.onProgress` com um parâmetro
+  quando a implementação chama com dois (texto **e** fração — a barra de
+  progresso usa a fração).
+- **`MapLibreNamespace` não declarava `Marker`**, usado pelo mapa tático do
+  `/vanguard` desde que ele existe.
+- Comparações sobre campo opcional (`variantes > 1`, `fov.modos > 1`) que em
+  JavaScript devolvem `false` calado, e subtração de `boolean` (`a.ehMod - b.ehMod`).
+
+> **O padrão foi mantido, e é medido:** das **114** páginas em TypeScript,
+> **nenhuma usa `any`** — zero ocorrências de `: any` ou `as any` em
+> `src/pages/*.ts`. Página migrada com `any` passa no portão e não conserta
+> defeito nenhum; é tipo decorativo, o oposto do motivo de a migração existir.
+
+### Como cada página foi verificada
+
+`tipos:ts` 0 · `tipos:v2` 0 · suíte **960/960** · `smoke` 98/98 rotas verdes · `v2:integracao` **19/19** · `caminho-critico` **15/15** · build verde com o aviso histórico de chunks grandes. E o portão foi confirmado **vendo** cada arquivo novo: com um defeito
+plantado no `.ts`, o `tipos:ts` fica vermelho e volta a verde quando ele sai —
+peça pronta e desligada daria o mesmo retrato verde que peça ligada.
+
+Onde dava para comparar, o smoke mostrou o **mesmo** tamanho de render antes e
+depois (`/vanguard` 12.141 caracteres e 659 nós; `/jarvis` 913 e 47), que é a
+evidência de que o comportamento não mudou — não só de que a rota abre.
+
 ## 1. Fotografia atual
 
-A contagem foi feita diretamente no workspace após a onda 4.50 e a migração das páginas anteriores. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **203 módulos JavaScript canônicos restantes** depois de retirar 149 wrappers; `vite.config.js` continua sendo uma configuração opcional fora do domínio da aplicação.
+A contagem foi feita diretamente no workspace após a conclusão das cinco últimas páginas e a correção do visor3d. Os arquivos `.d.ts` foram separados das implementações TypeScript, porque uma declaração de fronteira não significa que a implementação JavaScript já tenha sido convertida. Em `src` e `v2` existem **213 módulos JavaScript canônicos restantes** depois de retirar 142 wrappers; `vite.config.js` continua sendo uma configuração opcional fora do domínio da aplicação.
 
 | Área | JavaScript total | JavaScript canônico restante | TypeScript de implementação | `.d.ts` de fronteira |
 | --- | ---: | ---: | ---: | ---: |
-| `src/core` | 17 | 11 | 6 | 8 |
-| `src/layout` | 5 | 1 | 4 | 1 |
-| `src/pages` | 114 | 5 | 109 | 7 |
-| `src/data` | 59 | 59 | 0 | 38 |
-| `src/utils` | 98 | 71 | 28 | 72 |
-| `v2/core` | 47 | 43 | 4 | 6 |
-| `v2/modules` | 8 | 8 | 0 | 0 |
+| `src/core` | 17 | 14 | 6 | 8 |
+| `src/layout` | 5 | 3 | 4 | 1 |
+| `src/pages` | 114 | 0 | 114 | 8 |
+| `src/data` | 59 | 59 | 0 | 57 |
+| `src/utils` | 98 | 79 | 28 | 88 |
+| `v2/core` | 48 | 44 | 4 | 6 |
+| `v2/modules` | 11 | 11 | 0 | 1 |
 | `v2/harness` | 1 | 1 | 0 | 0 |
 | `src/nexus` | 1 | 1 | 0 | 0 |
 | `src/main.js` | 1 | 1 | 0 | 0 |
 | `src/styles.d.ts` | 0 | 0 | 0 | 1 |
 | `vite.config.js` | 1 | Opcional | 0 | 0 |
-| **Total** | **352** | **203** | **151** | **134** |
+| **Total** | **355** | **213** | **156** | **171** |
 
-A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **295 arquivos JS em `src`**, **56 em `v2`**, **149 wrappers de compatibilidade** e **151 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, **109 páginas**, adaptadores visuais/integrações, os contratos J1, a Central de Música, os painéis de mídia/IDE e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
+A soma de `src` e `v2` também pode ser lida de forma mais simples: existem **299 arquivos JS em `src`**, **56 em `v2`**, **142 wrappers de compatibilidade** e **156 implementações TypeScript canônicas**. As implementações já migradas cobrem o Core V1, Layout, **114 páginas**, adaptadores visuais/integrações, os contratos J1, a Central de Música, os painéis de mídia/IDE e o Core V2 tipado; os wrappers permanecem para preservar os imports legados.
 
 ## 2. O que já não precisa ser convertido agora
 
-Cento e quarenta e nove arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
+Cento e quarenta e dois arquivos JavaScript são wrappers de compatibilidade que reexportam uma implementação TypeScript. Eles continuam no repositório de propósito, porque páginas e testes legados ainda importam os caminhos `.js`.
 
 | Wrapper | Implementação canônica |
 | --- | --- |
@@ -60,7 +126,7 @@ Esses wrappers **não são dívida de conversão funcional**. Removê-los agora 
 
 ### 3.1 Páginas — maior volume, mas não todo o maior risco
 
-Ainda existem **5 módulos de páginas em JavaScript canônico**. A migração deve ser feita por risco, não apenas por tamanho; Dossiê, Simbolos, Gerar Código, Git Helper, Dólar, Biblioteca, Academia, CiberSeg, Robotica, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Filmes, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Núcleo Mark XIII, JARVIS Vision, Modelos 3D, Mapa Tático, Radar, Rádio e Musicas já saíram desta contagem.
+Não existem mais módulos de páginas em JavaScript canônico: o inventário operacional registra **0**. A migração deve ser feita por risco, não apenas por tamanho; Dossiê, Simbolos, Gerar Código, Git Helper, Dólar, Biblioteca, Academia, CiberSeg, Robotica, Regex, Tabela-Verdade, Calculadora Científica, Jogos, QR Studio, Calculadora Numérica, Logic Sim, Editor, Conselho, TV, Filmes, Memes, Mini-LLM, Memória, Cockpit Nexus, Central de Vídeos, Media Hub, painel de Extração Arma 3, Segundo Cérebro, Dashboard JARVIS, Git Nexus, Núcleo Mark XIII, JARVIS Vision, Modelos 3D, Mapa Tático, Radar, Rádio e Musicas já saíram desta contagem.
 
 | Grupo | Exemplos | Estado | Risco |
 | --- | --- | --- | --- |
@@ -192,5 +258,28 @@ Cada página ou módulo migrado deve manter o seguinte ciclo: implementação ca
 [1]: ./TYPESCRIPT_MIGRATION.md "Histórico das ondas TypeScript, gates e contratos publicados"
 [2]: ../../v2/jsconfig.json "Portão de checkJs estrito da V2"
 [3]: ../../src/main.js "Registro de rotas, boot e divisão eager/lazy"
-[4]: ../../relatorios/smoke-rotas.md "Smoke atual das 98 rotas"
+[4]: ../../relatorios/smoke-rotas.md "Smoke atual das 99 rotas"
 [5]: ./MAIN_ERROR_AUDIT.md "Auditoria anterior de causas raiz e efeitos cascata"
+
+## Fotografia corrente — Waves 39–43 / Wave 43 publicada
+
+A fotografia corrente foi atualizada após as Waves 39–43 no commit documental `ca5b259e4dce5ac649262b9279e8c4a2d20270ef`. O inventário determinístico confirma **0 páginas canônicas JavaScript**. Os números abaixo distinguem arquivos físicos de implementações canônicas:
+
+| Indicador | Estado corrente |
+|---|---:|
+| Páginas canônicas JS restantes | **0** |
+| Arquivos físicos `.js` em `src/pages/` (incluindo subpastas) | **115**, todos wrappers |
+| Arquivos físicos `.ts` em `src/pages/` (incluindo subpastas) | **123** |
+| Implementações `.ts` em `src/` | **320** |
+| Contratos `.d.ts` em `src/` | **164** |
+| Consumers TypeScript ainda carregando wrapper de página `.js` | **0** |
+| Smoke | **99/99** |
+| Integração V2 local | **21/21** |
+| Caminho crítico | **15/15** |
+| CI remoto da Wave 43 | **7/7 workflows verdes** |
+
+A diferença entre arquivos físicos e dívida funcional é intencional: os 115 arquivos `.js` de página são wrappers de compatibilidade que reexportam implementações `.ts`. Eles não devem ser removidos em lote enquanto houver consumidores legados, testes ou contratos de compatibilidade. O inventário operacional registra páginas canônicas, não apenas extensões físicas.
+
+`login.js` permanece como compatibilidade e `login.ts` é a implementação canônica. As Waves 39–43 também promoveram os consumers TypeScript restantes do Nexus, do gate nativo e do painel de extração Arma 3, mantendo os wrappers para JavaScript.
+
+O próximo bloqueador de release é validar a configuração real de Supabase Auth/RLS e redirects permitidos em ambiente remoto; essa evidência ainda não está disponível neste ciclo. A UI não autoriza `developer`, `admin` ou `owner`; essas decisões devem continuar server-side. A conversão do login não autoriza, por si só, a declaração de `1.1.0`.

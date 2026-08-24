@@ -1,6 +1,6 @@
 import '../styles/seguranca.css';
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { guardEnabled, setGuardEnabled, getGuardLog, clearGuardLog, guardStats, TOOL_LEVEL } from '../utils/jarvis-guard.js';
 import type { GuardLevel } from '../utils/jarvis-guard.js';
 

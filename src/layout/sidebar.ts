@@ -12,7 +12,7 @@ import { storage } from '../core/storage.js';
 import { CODENAME, VERSION } from '../data/version.js';
 import { cx, h } from '../utils/helpers.js';
 import { iconByPath, iconForPath, lineIcon } from '../utils/icons.js';
-import { canInstall, onInstallChange, promptInstall } from '../utils/pwa.js';
+import { canInstall, onInstallChange, promptInstall } from '../utils/pwa';
 
 export interface NavItem {
   path: string;
@@ -51,7 +51,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'IA & Jarvis',
     items: [
-      { path: '/git-nexus', label: 'Núcleo de IA', icon: '🔗', phase: 1 },
+      { path: '/jarvis', label: 'Núcleo de IA', icon: '🔗', phase: 1 },
     ],
   },
   {

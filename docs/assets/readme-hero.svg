@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 460" role="img" aria-labelledby="title desc">
+  <title id="title">Projeto Baluarte — J.A.R.V.I.S. command core</title>
+  <desc id="desc">Dark technical interface with golden orbital rings and a central neural network.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08070d"/>
+      <stop offset="0.52" stop-color="#15101c"/>
+      <stop offset="1" stop-color="#09080e"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffe5a2" stop-opacity="0.95"/>
+      <stop offset="0.18" stop-color="#d4a24e" stop-opacity="0.44"/>
+      <stop offset="0.62" stop-color="#d4a24e" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#d4a24e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8d5b1d"/>
+      <stop offset="0.5" stop-color="#f2ca79"/>
+      <stop offset="1" stop-color="#9e6d27"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse">
+      <path d="M38 0H0V38" fill="none" stroke="#d4a24e" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="460" fill="url(#bg)"/>
+  <rect width="1600" height="460" fill="url(#grid)"/>
+  <g opacity="0.24" stroke="#d4a24e" stroke-width="1">
+    <path d="M0 82H1600M0 378H1600"/>
+    <path d="M120 0L0 120M1480 0L1600 120M0 340L120 460M1600 340L1480 460"/>
+  </g>
+  <g transform="translate(1190 230)" fill="none" filter="url(#glow)">
+    <circle r="175" stroke="#d4a24e" stroke-opacity="0.2" stroke-width="1"/>
+    <circle r="124" stroke="#eec886" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="3 12"/>
+    <ellipse rx="226" ry="72" transform="rotate(-22)" stroke="#d4a24e" stroke-opacity="0.6" stroke-width="2"/>
+    <ellipse rx="226" ry="72" transform="rotate(42)" stroke="#d4a24e" stroke-opacity="0.34" stroke-width="1"/>
+    <circle r="76" fill="url(#core)" stroke="#f4ecdd" stroke-opacity="0.7" stroke-width="1"/>
+    <g stroke="#f4ecdd" stroke-opacity="0.7" stroke-width="1">
+      <path d="M-70 0L-25-48L31-38L68 8L29 52L-42 46Z"/>
+      <path d="M-25-48L-42 46M31-38L29 52M-70 0L68 8M-42 46L31-38M-25-48L29 52"/>
+    </g>
+    <g fill="#ffe3a0" stroke="none">
+      <circle cx="-70" cy="0" r="4"/><circle cx="-25" cy="-48" r="4"/><circle cx="31" cy="-38" r="4"/>
+      <circle cx="68" cy="8" r="4"/><circle cx="29" cy="52" r="4"/><circle cx="-42" cy="46" r="4"/>
+    </g>
+  </g>
+  <g transform="translate(92 106)" fill="none" stroke="#d4a24e">
+    <rect width="392" height="12" rx="2" opacity="0.5"/>
+    <rect y="34" width="286" height="5" rx="2" opacity="0.78"/>
+    <rect y="62" width="410" height="3" rx="2" opacity="0.42"/>
+    <rect y="98" width="168" height="1" opacity="0.7"/>
+  </g>
+  <g transform="translate(92 376)" fill="#d4a24e">
+    <circle cx="7" cy="0" r="5"/><circle cx="172" cy="0" r="5"/><circle cx="337" cy="0" r="5"/>
+    <path d="M24 0H150M189 0H315M354 0H465" stroke="#d4a24e" stroke-width="2" opacity="0.55"/>
+  </g>
+  <path d="M92 36H1508" stroke="url(#gold)" stroke-width="2" opacity="0.55"/>
+  <path d="M92 424H1508" stroke="url(#gold)" stroke-width="1" opacity="0.35"/>
+</svg>

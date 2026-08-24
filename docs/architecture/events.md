@@ -18,60 +18,60 @@ O bus é `src/core/events.js`. Ele aceita curinga — `bus.on('*')` para tudo e
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `toast` | `src/utils/toast.js` | `src/utils/toast.js` |
+| `toast` | `src/utils/toast.ts` | `src/utils/toast.ts` |
 
 ## `flags`
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `flags:ambiente` | `src/core/flags.js` | — |
-| `flags:mudou` | `src/core/flags.js` | — |
-| `flags:promovida` | `src/core/flags.js` | — |
+| `flags:ambiente` | `src/core/flags.ts` | — |
+| `flags:mudou` | `src/core/flags.ts` | — |
+| `flags:promovida` | `src/core/flags.ts` | — |
 
 ## `hermes`
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `hermes:engine` | `src/utils/jarvis-hermes-agent.js` | `src/pages/git-nexus-nucleo.js` |
+| `hermes:engine` | `src/utils/jarvis-hermes-agent.js` | `src/pages/git-nexus-nucleo.ts` |
 
 ## `nucleo`
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `nucleo:event` | `src/utils/nucleo-socket.js` | `src/pages/git-nexus-cockpit.js` · `src/pages/git-nexus-nucleo.js` |
-| `nucleo:status` | `src/utils/nucleo-socket.js` | `src/pages/git-nexus-cockpit.js` · `src/pages/git-nexus-nucleo.js` |
+| `nucleo:event` | `src/utils/nucleo-socket.js` | `src/pages/git-nexus-cockpit.ts` · `src/pages/git-nexus-nucleo.ts` |
+| `nucleo:status` | `src/utils/nucleo-socket.js` | `src/pages/git-nexus-cockpit.ts` · `src/pages/git-nexus-nucleo.ts` · `src/pages/jarvis.ts` |
 
 ## `page`
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `page:pin` | `src/layout/header.js` | `src/layout/shell.js` |
+| `page:pin` | `src/layout/header.ts` | `src/layout/shell.ts` |
 
 ## `permissions`
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `permissions:concedida` | `src/core/permissions.js` | `src/core/politica.js` |
-| `permissions:declarada` | `src/core/permissions.js` | — |
-| `permissions:negada` | `src/core/permissions.js` | — |
-| `permissions:revogada` | `src/core/permissions.js` | `src/core/politica.js` |
+| `permissions:concedida` | `src/core/permissions.ts` | `src/core/politica.js` |
+| `permissions:declarada` | `src/core/permissions.ts` | — |
+| `permissions:negada` | `src/core/permissions.ts` | — |
+| `permissions:revogada` | `src/core/permissions.ts` | `src/core/politica.js` |
 
 ## `route`
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `route:before` | `src/core/router.js` | — |
-| `route:change` | `src/core/router.js` | `src/main.js` · `src/utils/nexus.js` |
-| `route:error` | `src/core/router.js` | `src/main.js` |
-| `route:notfound` | `src/core/router.js` | `src/main.js` |
+| `route:before` | `src/core/router.ts` | — |
+| `route:change` | `src/core/router.ts` | `src/main.js` · `src/pages/jarvis-nucleo.ts` · `src/pages/jarvis.ts` · `src/utils/nexus.js` |
+| `route:error` | `src/core/router.ts` | `src/main.js` |
+| `route:notfound` | `src/core/router.ts` | `src/main.js` |
 
 ## `sidebar`
 
 | Evento | Emitido por | Escutado por |
 | --- | --- | --- |
-| `sidebar:close-mobile` | `src/layout/shell.js` · `src/layout/sidebar.js` | `src/layout/sidebar.js` |
-| `sidebar:toggle-collapse` | `src/layout/header.js` · `src/layout/sidebar.js` | `src/layout/sidebar.js` |
-| `sidebar:toggle-mobile` | `src/layout/header.js` | `src/layout/sidebar.js` |
+| `sidebar:close-mobile` | `src/layout/shell.ts` · `src/layout/sidebar.ts` | `src/layout/sidebar.ts` |
+| `sidebar:toggle-collapse` | `src/layout/header.ts` · `src/layout/sidebar.ts` | `src/layout/sidebar.ts` |
+| `sidebar:toggle-mobile` | `src/layout/header.ts` | `src/layout/sidebar.ts` |
 
 ## Pontas soltas
 
@@ -83,12 +83,12 @@ perguntas que valem ser feitas antes de congelar a 1.0.0.
 Pode ser ponto de extensão deixado de propósito, ou pode ser ouvinte que alguém
 apagou e não percebeu. O emissor continua custando trabalho ou nenhum dos dois.
 
-- `flags:ambiente` — emitido por `src/core/flags.js`
-- `flags:mudou` — emitido por `src/core/flags.js`
-- `flags:promovida` — emitido por `src/core/flags.js`
-- `permissions:declarada` — emitido por `src/core/permissions.js`
-- `permissions:negada` — emitido por `src/core/permissions.js`
-- `route:before` — emitido por `src/core/router.js`
+- `flags:ambiente` — emitido por `src/core/flags.ts`
+- `flags:mudou` — emitido por `src/core/flags.ts`
+- `flags:promovida` — emitido por `src/core/flags.ts`
+- `permissions:declarada` — emitido por `src/core/permissions.ts`
+- `permissions:negada` — emitido por `src/core/permissions.ts`
+- `route:before` — emitido por `src/core/router.ts`
 
 ### Escutado e ninguém emite
 
