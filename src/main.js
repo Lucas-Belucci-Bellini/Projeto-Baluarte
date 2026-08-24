@@ -130,25 +130,6 @@ const lazyLeve = (tab, loader, fn) => (args) =>
     : loader().then((m) => m[fn](args))
   ).catch(recoverChunk);
 
-/* Portão de conta: /home é a vitrine pública e /login é a própria porta —
- * o resto do site exige sessão. `reg()` substitui `router.register()` nas
- * rotas gateadas; sem sessão, mostra o aviso e manda pro /login ANTES de
- * chamar o handler real (nem baixa o chunk da rota bloqueada). */
-const PUBLIC_ROUTES = new Set(['/home', '/home-3d', '/home2', '/login']);
-
-function reg(pattern, handler, meta) {
-  if (PUBLIC_ROUTES.has(pattern)) {
-    router.register(pattern, handler, meta);
-    return;
-  }
-  router.register(pattern, (args) => {
-    if (isLoggedIn()) return handler(args);
-    toast('Você precisa ter uma conta para prosseguir.', { type: 'warning', duration: 3200 });
-    router.navigate('/login');
-    return null;
-  }, meta);
-}
-
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */

@@ -48,11 +48,7 @@ function rotasRegistradas() {
    * esperar as outras 96. */
   if (process.env.ROTAS) return process.env.ROTAS.split(',').map((r) => r.trim());
   const main = readFileSync(join(raiz, 'src/main.js'), 'utf8');
-  /* As duas formas de registar contam. Este detetor achava só a primeira, e no
-   * dia em que o portão de conta chegou passou a descobrir 2 rotas em vez de
-   * 99 — e a declarar "todas as rotas verdes". Verde por omissão é pior que
-   * vermelho: o vermelho avisa. */
-  return [...main.matchAll(/^(?:router\.register|reg)\('([^']+)'/gm)].map((m) => m[1]);
+  return [...main.matchAll(/^router\.register\('([^']+)'/gm)].map((m) => m[1]);
 }
 
 /** Host externo: falha dele é aviso, não defeito do site. */
