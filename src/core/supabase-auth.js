@@ -47,7 +47,7 @@ export function isLoggedIn() {
   return !!(s && s.access_token);
 }
 
-/** Lê `{ id, email, meta, provider }` do JWT (decode local, sem verificar — só pra UI). */
+/** Lê `{ id, email, meta }` do JWT (decode local, sem verificar — só pra UI). Também traz `provider`. */
 export function currentUser() {
   const s = loadSession();
   if (!s || !s.access_token) return null;
@@ -89,12 +89,6 @@ export async function signUpWithPassword(email, password) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.msg || data.error_description || data.error || 'Não foi possível criar a conta.');
-  if (data.access_token && data.refresh_token) {
-    storeSession({
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
-    });
   const session = projectAuthSession(data);
   if (session) {
     storeSession(session);
@@ -114,11 +108,6 @@ export async function signInWithPassword(email, password) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error_description || data.msg || 'E-mail ou senha inválidos.');
-  storeSession({
-    access_token: data.access_token,
-    refresh_token: data.refresh_token,
-    expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
-  });
   const session = projectAuthSession(data);
   if (!session) throw new Error('Resposta de autenticação inválida.');
   storeSession(session);
