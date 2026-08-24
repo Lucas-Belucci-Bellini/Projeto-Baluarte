@@ -21,7 +21,7 @@ import { router } from './core/router.js';
 import { bus } from './core/events.js';
 import { appState } from './core/state.js';
 import { aplicarPolitica } from './core/politica.js';
-import { mountShell, renderPage } from './layout/shell.js';
+import { mountShell, renderPage, getShellRefs } from './layout/shell.js';
 /* Home é eager (primeiro paint instantâneo). As demais páginas carregam sob
  * demanda via import() dinâmico — o Vite faz code-splitting automático, então
  * o bundle inicial fica pequeno e cada rota baixa só o seu próprio chunk. */
@@ -165,7 +165,8 @@ reg('/memes', lazy(() => import('./pages/memes.js'), 'memesPage'));
 reg('/filmes', lazy(() => import('./pages/filmes.js'), 'filmesPage'));
 reg('/shadow', lazy(() => import('./pages/shadow.js'), 'shadowPage'));
 reg('/perfil', lazy(() => import('./pages/perfil.js'), 'perfilPage'));
-reg('/login', lazy(() => import('./pages/login.js'), 'loginPage'));
+reg('/conta', lazy(() => import('./pages/conta.js'), 'contaPage'));
+reg('/login', lazy(() => import('./pages/login.js'), 'loginPage'), { fullscreen: true });
 reg('/economia', lazy(() => import('./pages/economia.js'), 'economiaPage'));
 reg('/dolar', lazy(() => import('./pages/dolar.js'), 'dolarPage'));
 reg('/jarvis', lazyNexus('jarvis'));
@@ -229,8 +230,11 @@ router.setNotFound((path) => notFoundPage(path));
 /* ==============================================================
  *  Wire router → shell
  * ============================================================== */
-bus.on('route:change', ({ view, path }) => {
+bus.on('route:change', ({ view, path, route }) => {
   if (view) {
+    /* Rota "fullscreen" (hoje só /login): tela de portão, sem sidebar/header —
+     * vem ANTES da experiência normal do site, não é mais um item do menu. */
+    getShellRefs()?.shell.classList.toggle('shell--gate', !!route?.meta?.fullscreen);
     renderPage(view, path);
     /* carregou ok: zera a guarda de reload (cada deploy novo ganha 1 tentativa). */
     try { sessionStorage.removeItem(CHUNK_RELOAD_FLAG); } catch { /* sem storage */ }

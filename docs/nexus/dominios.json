@@ -615,16 +615,19 @@
    "estado": "desenvolvimento",
    "rotas": [
     "/perfil",
-    "/login"
+    "/login",
+    "/conta"
    ],
    "origem": [
     "src/pages/perfil.js",
     "src/pages/login.js",
+    "src/pages/conta.js",
     "src/core/user-prefs.js",
     "src/data/perfis.js",
     "src/data/skills.js",
     "src/styles/perfil.css",
-    "src/styles/login.css"
+    "src/styles/login.css",
+    "src/styles/conta.css"
    ],
    "precisa": [
     "baluarte-core",

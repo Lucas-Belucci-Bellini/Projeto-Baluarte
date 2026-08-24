@@ -40,6 +40,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: '/baixar', label: 'Baixar o App', icon: '⬇', phase: 1 },
       { path: '/login', label: 'Entrar / Criar Conta', icon: '⛨', phase: 1 },
       { path: '/perfil', label: 'Perfil', icon: '◔', phase: 1 },
+      { path: '/conta', label: 'Configurações da Conta', icon: '⚙', phase: 1 },
       { path: '/projetos', label: 'Projetos', icon: '📁', phase: 1 },
       { path: '/mural', label: 'Mural', icon: '📣', phase: 1 },
       { path: '/comms', label: 'Rede Neural', icon: '📡', phase: 1 },
