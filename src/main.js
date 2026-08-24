@@ -24,7 +24,7 @@ import { homePage } from './pages/home.js';
 import { notFoundPage, loadErrorPage } from './pages/_placeholder.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
-import { initToast } from './utils/toast.ts';
+import { initToast, toast } from './utils/toast.ts';
 import { initPaleta } from './utils/paleta.js';
 import './styles/paleta.css';
 import { initTheme } from './utils/theme.js';
@@ -35,7 +35,7 @@ import { handleAuthRedirect } from './core/supabase-auth.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
 import { startJarvisMusicPresence } from './utils/jarvis-music-presence.ts';
-import { resumeSpotifyAuthorization } from './utils/jarvis-spotify-session.ts';
+import { resumeSpotifyAuthorization, describeSpotifyFailure } from './utils/jarvis-spotify-session.ts';
 
 /* ==============================================================
  *  Helper de carregamento sob demanda (code-splitting via Vite).
@@ -66,6 +66,35 @@ function recoverChunk(err) {
 
 const lazy = (loader, fn) => (args) =>
   loader().then((m) => m[fn](args)).catch(recoverChunk);
+
+/**
+ * A volta do Spotify que não deu certo tem de dizer alguma coisa.
+ *
+ * Antes, todo modo de falha — recusa do Spotify, sessão perdida, código
+ * rejeitado na troca — terminava num `catch` vazio: o distintivo continuava
+ * `SPOTIFY · OFF` e não havia nada, nem no ecrã nem no console, que dissesse
+ * porquê. O aviso mora no boot, e não na página, porque é no boot que a volta
+ * aterra: a rota `/jarvis` pode nem estar montada nesse instante.
+ */
+function avisarFalhaSpotify(event) {
+  const detail = event instanceof CustomEvent ? event.detail : null;
+  if (!detail || detail.connected !== false || !detail.reason) return;
+  const explicacao = describeSpotifyFailure(detail.reason);
+  const doSpotify = typeof detail.reasonText === 'string' && detail.reasonText ? ` (Spotify: ${detail.reasonText})` : '';
+  console.warn(`[spotify] ${detail.reason}${doSpotify}`);
+  toast(`${explicacao}${doSpotify}`, { type: 'warning', duration: 12000 });
+  /* O código da volta já foi gasto: deixá-lo no endereço faz um F5 tentar de
+   * novo com um código morto, e falhar por um motivo diferente do original. */
+  limparVoltaDoSpotify();
+}
+
+function limparVoltaDoSpotify() {
+  try {
+    const atual = new URL(window.location.href);
+    if (!atual.searchParams.has('code') && !atual.searchParams.has('error')) return;
+    window.history.replaceState(null, '', `${atual.pathname}${atual.hash}`);
+  } catch { /* sem History API → o endereço fica como está */ }
+}
 
 function restoreSpotifyReturn(event) {
   const detail = event instanceof CustomEvent ? event.detail : null;
@@ -262,13 +291,19 @@ function boot() {
   }
 
   appState.set({ bootedAt: Date.now() });
+  /* O canal de avisos vem primeiro de propósito: `toast()` só emite no bus, e
+   * quem o mostra é o ouvinte que o `initToast()` regista. Enquanto ele estava
+   * depois do shell, um aviso emitido no arranque — como o da volta do Spotify,
+   * logo abaixo — era emitido para ninguém e desaparecia. */
+  initToast();
   /* Presença musical passiva: observa apenas media elements deste app e sinais
    * explícitos dos embeds; não usa microfone, scraping cross-origin ou turnos de IA. */
   startJarvisMusicPresence();
   window.addEventListener('baluarte:spotify-session', restoreSpotifyReturn);
+  window.addEventListener('baluarte:spotify-session', avisarFalhaSpotify);
   void resumeSpotifyAuthorization().then((result) => {
-    if (result === 'rejected') console.warn('[spotify] autorização rejeitada ou state inválido');
-  }).catch(() => undefined);
+    if (result === 'rejected') console.warn('[spotify] autorização não concluída — ver o aviso na tela');
+  }).catch((erro) => { console.error('[spotify] falha inesperada ao retomar a autorização', erro); });
   /* Perf mobile/low-end (v0.4.0): detecta aparelho fraco → classe `is-lowfx` no
    * <html> (CSS alivia o grão) + `window.__baluarteLowFx` (o herói WebGL corta
    * partículas). Reduced-motion também entra como low-fx. */
@@ -304,7 +339,6 @@ function boot() {
   } catch { playBootIntro(); }
 
   mountShell(root);
-  initToast();
   /* Ctrl/⌘+K acha qualquer uma das rotas registradas. Vai DEPOIS do
    * router.register de todas elas (o índice sai do próprio router), e antes do
    * start só pra o atalho já valer no primeiro paint. */
