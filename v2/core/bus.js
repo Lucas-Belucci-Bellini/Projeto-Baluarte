@@ -51,6 +51,18 @@
  * Exigir que cada módulo passasse isso à mão seria garantir que a cadeia se
  * parte justamente nos módulos que ninguém reviu — que são os que se investiga.
  *
+ * ── Health: o bus contava sucesso e perdia fracasso ────────────────────────
+ *
+ * `contagem()` sobe a cada `emit` — igual se os handlers todos funcionaram e
+ * igual se todos levantaram. O handler que levanta era passado a
+ * `deps.log?.erro?.()` e acabava ali; com `criarBus()` sem deps, que é o padrão,
+ * desaparecia inteiro. Um bus cuja telemetria toda está partida ficava
+ * indistinguível de um saudável.
+ *
+ * Então a falha passa a ser **contada por evento**, e as últimas ficam com a
+ * cadeia junto. O log continua — a contagem não o substitui, é o que sobra
+ * quando ninguém injetou log.
+ *
  * ⚠️ **O limite honesto:** a herança vale para o que é emitido ENQUANTO o
  * handler corre. Um handler `async` que emite depois de um `await` já saiu do
  * despacho, e o `emit` nasceria com cadeia nova. Para esse caso existe
@@ -70,6 +82,17 @@ const RE_CURINGA_PREFIXO = /:\*$/;
  * @property {number} versao      do formato do payload, não do módulo
  * @property {string} em          ISO 8601
  * @property {Record<string, unknown>} [contexto]
+ */
+
+/**
+ * @typedef {object} FalhaBus
+ * @property {string} evento
+ * @property {string} origem
+ * @property {string} correlacao  a cadeia — é o que liga a falha ao que a causou
+ * @property {string|null} causa
+ * @property {string} erro        a MENSAGEM, não o Error: guardar o objeto num
+ *                                anel de 50 retém stack e closures vivas
+ * @property {string} em
  */
 
 /**
@@ -112,13 +135,19 @@ export function derivar(envelope) {
 }
 
 /**
- * @param {{log?: {aviso: Function, erro: Function}}} [deps]
+ * @param {{log?: {aviso?: Function, erro?: Function}, tetoFalhas?: number}} [deps]
  */
 export function criarBus(deps = {}) {
   /** @type {Map<string, Set<Function>>} */
   const inscritos = new Map();
   /** @type {Map<string, number>} contagem por evento, para o diagnóstico */
   const contador = new Map();
+
+  /** @type {Map<string, number>} falhas de handler por evento */
+  const falhasPorEvento = new Map();
+  /** @type {FalhaBus[]} as últimas, limitadas — histórico sem limite é vazamento */
+  const ultimasFalhas = [];
+  const TETO_FALHAS = deps.tetoFalhas ?? 50;
 
   /** @param {string} padrao @param {Function} fn */
   function on(padrao, fn) {
@@ -208,6 +237,20 @@ export function criarBus(deps = {}) {
           /* Isolamento: um handler ruim não impede os outros. Registrar é
            * obrigatório — engolir aqui seria criar o buraco negro clássico em que
            * eventos "somem" sem ninguém saber por quê. */
+          falhasPorEvento.set(evento, (falhasPorEvento.get(evento) ?? 0) + 1);
+          ultimasFalhas.push({
+            evento,
+            origem: envelope.origem,
+            correlacao: envelope.correlacao,
+            causa: envelope.causa,
+            erro: err instanceof Error ? err.message : String(err),
+            em: envelope.em
+          });
+          /* O anel: sem teto, um handler que levanta em laço enche a memória —
+           * e o histórico que se quer ler é o recente, não o de há uma hora. */
+          if (ultimasFalhas.length > TETO_FALHAS) {
+            ultimasFalhas.splice(0, ultimasFalhas.length - TETO_FALHAS);
+          }
           deps.log?.erro?.('handler de evento levantou', err, {
             evento, origem: envelope.origem, correlacao: envelope.correlacao
           });
@@ -236,12 +279,76 @@ export function criarBus(deps = {}) {
     return Object.fromEntries(contador);
   }
 
+  /**
+   * A saúde do bus — o que `contagem()` sozinha não conta.
+   *
+   * ── Por que NÃO há `liveness` aqui ──────────────────────────────────────
+   * `liveness` responde "o processo está vivo?". O bus é uma estrutura de
+   * dados dentro do Core, e o Core já responde a isso em `saude.js`. Um campo
+   * que só sabe dizer `healthy` não é sinal — é um carimbo, e um carimbo num
+   * retrato de saúde acaba lido como garantia. Fica de fora de propósito.
+   *
+   * ── O que `readiness` responde, e por que é essa a pergunta ─────────────
+   * Um bus sem nenhum inscrito **engole tudo em silêncio**: o `emit` sucede, o
+   * contador sobe, e o evento não chega a ninguém. É o "evento órfão" que a
+   * matriz da Fase 03 nomeia como risco, visto do lado do runtime. É a única
+   * condição que impede o bus de fazer o seu trabalho, e por isso é a única
+   * que vira `unhealthy`.
+   *
+   * ── O que NÃO vira `unhealthy`, e por quê ───────────────────────────────
+   * Handler que levanta. O isolamento é decisão de desenho deste bus (está no
+   * cabeçalho): um handler ruim não derruba os outros, então um handler a
+   * levantar é o bus a funcionar como projetado. Degradar o veredito por isso
+   * contradiria a mesma regra de isolamento que `saude.js` já segue para
+   * falhas de módulo. A falha aparece nos motivos e na contagem — que é onde
+   * ela é acionável — e não no veredito.
+   */
+  function saude() {
+    let ouvintes = 0;
+    for (const conjunto of inscritos.values()) ouvintes += conjunto.size;
+
+    let emissoes = 0;
+    for (const n of contador.values()) emissoes += n;
+    let falhas = 0;
+    for (const n of falhasPorEvento.values()) falhas += n;
+
+    /** @type {Record<string, {emissoes: number, falhas: number}>} */
+    const porEvento = {};
+    for (const [evento, n] of contador) {
+      porEvento[evento] = { emissoes: n, falhas: falhasPorEvento.get(evento) ?? 0 };
+    }
+    /* Um evento pode ter falha sem estar no contador se `limpar()` correu no
+     * meio; incluir na mesma, para a soma bater com `contagem.falhas`. */
+    for (const [evento, n] of falhasPorEvento) {
+      if (!porEvento[evento]) porEvento[evento] = { emissoes: 0, falhas: n };
+    }
+
+    const motivos = [];
+    if (ouvintes === 0) motivos.push('nenhum inscrito: todo evento emitido cai no vazio');
+    if (falhas) motivos.push(`${falhas} falha(s) de handler`);
+    /* O sinal que vale a pena ler primeiro: um evento cujos handlers falham
+     * SEMPRE é um handler que nunca funcionou, não um que oscila. */
+    for (const [evento, { emissoes: e, falhas: f }] of Object.entries(porEvento)) {
+      if (f > 0 && e > 0 && f >= e) motivos.push(`"${evento}": handler falha em toda emissão (${f}/${e})`);
+    }
+
+    return {
+      readiness: ouvintes > 0 ? 'healthy' : 'unhealthy',
+      motivos,
+      contagem: { emissoes, falhas, padroes: inscritos.size, ouvintes },
+      porEvento,
+      ultimasFalhas: ultimasFalhas.map((f) => ({ ...f }))
+    };
+  }
+
   function limpar() {
     inscritos.clear();
     contador.clear();
+    falhasPorEvento.clear();
+    ultimasFalhas.length = 0;
   }
 
-  return { on, emit, inscricoes, contagem, limpar };
+  return { on, emit, inscricoes, contagem, saude, limpar };
 }
 
 /** @typedef {ReturnType<typeof criarBus>} Bus */

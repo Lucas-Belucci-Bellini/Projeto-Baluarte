@@ -6,6 +6,20 @@
  * que uma tarefa já iniciada decida como interromper sua própria operação.
  * A estrutura de heap e o descarte preguiçoso preservam comportamento linear
  * amortizado sob carga, sem criar conexão, worker ou armazenamento remoto.
+ *
+ * ── Health: `estado()` é instantâneo, e por isso esquece ────────────────────
+ *
+ * `estado()` diz o que está a correr AGORA. Depois de a fila drenar, um
+ * escalonador que recusou 400 trabalhos por `FilaCheia` fica idêntico a um que
+ * nunca recebeu nenhum — a recusa ia para `deps.metricas?.contar?.()`, que é
+ * opcional, e sem métricas injetadas desaparecia inteira.
+ *
+ * `saude()` acrescenta o acumulado (concluídos, falhados, recusados,
+ * cancelados) e um veredito. O veredito usa a única condição bloqueante que
+ * este código já decide sozinho — fila no teto, ou seja, a recusar trabalho
+ * neste instante. Saturação (`rodando >= limite` com fila) é contrapressão
+ * normal e aparece como motivo, não como veredito: um escalonador cheio a
+ * trabalhar está a fazer exatamente o que lhe foi pedido.
  */
 
 export const INTERATIVO = 10;
@@ -57,6 +71,21 @@ export interface DependenciasEscalonador {
   readonly metricas?: DependenciasMetricas;
 }
 
+export interface ContagemEscalonador {
+  readonly enfileirados: number;
+  readonly concluidos: number;
+  readonly falhados: number;
+  readonly recusados: number;
+  readonly cancelados: number;
+}
+
+export interface SaudeEscalonador {
+  readonly readiness: 'healthy' | 'unhealthy';
+  readonly motivos: readonly string[];
+  readonly estado: EstadoEscalonador;
+  readonly contagem: ContagemEscalonador;
+}
+
 export interface EstadoEscalonador {
   readonly rodando: number;
   readonly naFila: number;
@@ -77,6 +106,7 @@ export interface Escalonador {
   enfileirar<T>(modulo: string, nome: string, fn: FuncaoTrabalho<T>, opcoes?: OpcoesTrabalho): Promise<T>;
   paraModulo(modulo: string): EscalonadorModulo;
   estado(): EstadoEscalonador;
+  saude(): SaudeEscalonador;
 }
 
 interface NoHeap {
@@ -156,6 +186,14 @@ export function criarEscalonador(
   let sequencia = 0;
   let naFila = 0;
 
+  /* Acumulados, independentes de `deps.metricas`: as métricas são opcionais e
+   * sem elas o histórico do escalonador não existia. Isto é o que sobra. */
+  let enfileirados = 0;
+  let concluidos = 0;
+  let falhados = 0;
+  let recusados = 0;
+  let cancelados = 0;
+
   const emUso = (modulo: string): number => rodandoPor.get(modulo) ?? 0;
 
   function talvezElegivel(modulo: string): void {
@@ -201,6 +239,7 @@ export function criarEscalonador(
 
   function executar(trabalho: TrabalhoItem): void {
     if (trabalho.sinal?.aborted) {
+      cancelados += 1;
       deps.metricas?.contar?.('trabalho_cancelado', { modulo: trabalho.modulo });
       trabalho.rejeitar(new Cancelado('cancelado antes de começar'));
       return;
@@ -211,6 +250,8 @@ export function criarEscalonador(
     const inicio = Date.now();
 
     const encerrar = (ok: boolean): void => {
+      if (ok) concluidos += 1;
+      else falhados += 1;
       rodando -= 1;
       const restante = emUso(trabalho.modulo) - 1;
       if (restante <= 0) rodandoPor.delete(trabalho.modulo);
@@ -257,6 +298,7 @@ export function criarEscalonador(
     opcoes: OpcoesTrabalho = {},
   ): Promise<T> {
     if (naFila >= tetoFila) {
+      recusados += 1;
       deps.metricas?.contar?.('trabalho_recusado', { modulo });
       return Promise.reject(new FilaCheia(tetoFila));
     }
@@ -279,6 +321,7 @@ export function criarEscalonador(
         if (trabalho.cancelada || trabalho.despachada) return;
         trabalho.cancelada = true;
         naFila -= 1;
+        cancelados += 1;
         deps.metricas?.contar?.('trabalho_cancelado', { modulo });
         rejeitar(new Cancelado('cancelado na fila'));
       }, { once: true });
@@ -290,6 +333,7 @@ export function criarEscalonador(
       }
       empurrar(heap, trabalho);
       naFila += 1;
+      enfileirados += 1;
       talvezElegivel(modulo);
       deps.metricas?.contar?.('trabalho_enfileirado', { modulo });
       bombear();
@@ -318,5 +362,38 @@ export function criarEscalonador(
     };
   }
 
-  return { enfileirar, paraModulo, estado };
+  /**
+   * O veredito, e o que ele deliberadamente não decide.
+   *
+   * `unhealthy` só na fila no teto — a única condição em que este escalonador
+   * **recusa trabalho neste instante**, e a única que ele já decide sozinho
+   * (é o `FilaCheia` que `enfileirar` levanta). Saturação e falhas são motivos.
+   *
+   * Falha de trabalho não vira veredito pela mesma razão que falha de handler
+   * não vira no bus: a tarefa é de outro, e um escalonador que entrega a
+   * rejeição a quem pediu está a funcionar. Escolher um limiar — "mais de N
+   * falhas é unhealthy" — seria inventar política, que é exatamente o que
+   * mantém o `retry` desta fase por fazer.
+   *
+   * Isto é observação. Não inicia, não para, não cancela e não concede nada.
+   */
+  function saude(): SaudeEscalonador {
+    const motivos: string[] = [];
+    const filaNoTeto = naFila >= tetoFila;
+
+    if (filaNoTeto) motivos.push(`fila no teto (${naFila}/${tetoFila}): trabalho novo está a ser recusado`);
+    else if (rodando >= limite && naFila > 0) motivos.push(`saturado: ${rodando}/${limite} a correr com ${naFila} à espera`);
+    if (recusados) motivos.push(`${recusados} trabalho(s) recusado(s) por fila cheia`);
+    if (falhados) motivos.push(`${falhados} trabalho(s) falhado(s)`);
+    if (cancelados) motivos.push(`${cancelados} trabalho(s) cancelado(s)`);
+
+    return {
+      readiness: filaNoTeto ? 'unhealthy' : 'healthy',
+      motivos,
+      estado: estado(),
+      contagem: { enfileirados, concluidos, falhados, recusados, cancelados },
+    };
+  }
+
+  return { enfileirar, paraModulo, estado, saude };
 }

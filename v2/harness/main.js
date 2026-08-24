@@ -539,11 +539,16 @@ async function principal() {
     controlledRolloutEvidencePilot,
     promotionGatePilot,
     registros,
-    eventos: bus.contagem(),
     /* FUNÇÃO, não valor: a primeira versão tirava o retrato uma vez, no boot, e
      * o teste lia um instantâneo anterior ao clique — dava "medido: {}" com a
      * métrica funcionando. Ponte de teste que congela estado mente sobre o
-     * sistema vivo. */
+     * sistema vivo. Isto aqui era um valor, e caía nesse mesmo buraco. */
+    eventos: () => bus.contagem(),
+    /* A saúde da Fase 03: o que a contagem sozinha não conta — falha de handler
+     * por evento e fila a recusar trabalho. Observação, não autoridade: nada
+     * aqui inicia, para ou concede o que quer que seja. */
+    saudeBus: () => bus.saude(),
+    saudeTrabalho: () => trabalho.saude(),
     metricas: () => metricas.retrato(),
     /* Idem: função, porque concessão muda em runtime e o teste precisa ver a
      * mudança, não o retrato do boot. */
