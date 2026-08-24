@@ -656,8 +656,8 @@
     "/login"
    ],
    "origem": [
-    "src/pages/perfil.js",
-    "src/pages/login.js",
+    "src/pages/perfil.ts",
+    "src/pages/login.ts",
     "src/core/user-prefs.js",
     "src/data/perfis.js",
     "src/data/skills.js",
