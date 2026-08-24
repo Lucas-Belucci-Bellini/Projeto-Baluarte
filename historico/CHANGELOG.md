@@ -35,6 +35,10 @@ Suíte `1319/1319`, portão de integração `58/58`, build, typechecks,
 a leitura real do WinRT — as sessões correm em Linux e o SMTC exige Windows; é
 justamente o que esta release existe para pôr à prova.
 
+**Publicada:** tag `v1.3.8` em `7cce9d42b`, oito assets e os três manifests
+a declarar `1.3.8`, não-draft e não-prerelease. Backup da `main` antes do merge:
+`backup/2026-08-24-antes-da-1.3.8`.
+
 **Documentação:** [`docs/releases/v1.3.8.md`](../docs/releases/v1.3.8.md).
 
 ---
