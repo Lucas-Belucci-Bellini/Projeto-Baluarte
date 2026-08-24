@@ -8,7 +8,7 @@ import '../styles/graficos.css';
 import { h, cx, debounce } from '../utils/helpers.js';
 import { aoSair } from '../core/ciclo-vida.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import {
   CHART_TYPES,
   PALETTES,

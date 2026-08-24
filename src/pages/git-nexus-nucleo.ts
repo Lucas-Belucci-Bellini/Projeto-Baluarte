@@ -1,12 +1,13 @@
 import '../styles/nucleo-screen.css';
 import { h, empty } from '../utils/helpers.js';
 import { bus } from '../core/events.js';
-import { loadConfig, saveConfig, processLocal, processClaude, processOllama, processServer, processHermes, processClaudeServer, processOpenClaw, processAgent } from '../utils/jarvis-engine.js';
+import { loadConfig, saveConfig, processLocal, processClaude, processOllama, processServer, processHermes, processClaudeServer, processOpenClaw, processAgent, getBaluarteBriefing } from '../utils/jarvis-engine.js';
 import type { JarvisConfig, JarvisMessage, JarvisToolCallback } from '../utils/jarvis-engine.js';
+import { getStatusText } from '../utils/baluarte-status';
 import { processHermesAgent } from '../utils/jarvis-hermes-agent.js';
 import { processHermesLocal, healthHermesLocal, listHermesLocalModels, HERMES_LOCAL_PRESETS } from '../utils/hermes-local.js';
-import { nativeHermesStatus } from '../utils/jarvis-hermes-native.js';
-import type { NativeHermesStatus } from '../utils/jarvis-hermes-native.js';
+import { nativeHermesStatus } from '../utils/jarvis-hermes-native';
+import type { NativeHermesStatus } from '../utils/jarvis-hermes-native';
 import { WEBLLM_MODELS } from '../utils/jarvis-webllm.js';
 import { speak, stopSpeaking, voiceEnabled, setVoiceEnabled, voiceLang, setVoiceLang, setElevenKey, hasElevenKey, VOICE_LANGS } from '../utils/jarvis-voice.js';
 import { initNucleoLink, getNucleoUrl, setNucleoUrl, setNucleoToken, simulateNucleoEvent } from '../utils/nucleo-socket.js';
@@ -32,20 +33,20 @@ function errorText(error: unknown): string { return error instanceof Error ? err
 function isModo(value: string): value is Modo { return (MODOS as readonly string[]).includes(value); }
 
 const FUNCOES: readonly PanelFunction[] = [
-  { id: 'grafo', nome: 'Grafo de Código', match: /\bgrafo\b|c[óo]digo (3d|em 3d)/, load: () => import('./git-nexus.js').then((module) => module.gitNexusPage()) },
-  { id: 'vision', nome: 'Corpo Total', match: /corpo (total|inteiro)|ativa\w* (a )?vis[ãa]o|\bvis[ãa]o\b/, load: () => import('./jarvis-vision.js').then((module) => module.jarvisVisionPage()) },
-  { id: 'gerar', nome: 'Gerar Código', match: /gerar c[óo]digo|gera c[óo]digo/, load: () => import('./gerar-codigo.js').then((module) => module.gerarCodigoPage()) },
-  { id: 'conselho', nome: 'Conselho de IAs', match: /conselho/, load: () => import('./conselho.js').then((module) => module.conselhoPage()) },
-  { id: 'apis', nome: 'Central de APIs', match: /\bapis?\b|central de apis|chaves/, load: () => import('./apis.js').then((module) => module.apisPage()) },
-  { id: 'dashboard', nome: 'Dashboard', match: /dashboard|painel de (m[ée]tricas|status)/, load: () => import('./jarvis-dashboard.js').then((module) => module.jarvisDashboardPage()) },
-  { id: 'ml', nome: 'ML da Memória', match: /\bml\b|aprendizado|machine learning/, load: () => import('./aprendizado.js').then((module) => module.aprendizadoPage()) },
-  { id: 'llm', nome: 'Mini-LLM', match: /mini[- ]?llm|\bllm\b/, load: () => import('./llm-lab.js').then((module) => module.llmLabPage()) },
-  { id: 'cerebro', nome: 'Segundo Cérebro', match: /c[ée]rebro/, load: () => import('./cerebro.js').then((module) => module.cerebroPage()) },
-  { id: 'memoria', nome: 'Memória', match: /mem[óo]ria/, load: () => import('./memoria.js').then((module) => module.memoriaPage()) },
-  { id: 'terminal', nome: 'Terminal-IA', match: /terminal/, load: () => import('./terminal-ia.js').then((module) => module.terminalIaPage()) },
-  { id: 'seguranca', nome: 'Segurança', match: /seguran[çc]a/, load: () => import('./seguranca.js').then((module) => module.segurancaPage()) },
-  { id: 'ia', nome: 'IA Proprietária', match: /ia propriet[áa]ria|propriet[áa]ria/, load: () => import('./ia-proprietaria.js').then((module) => module.iaProprietariaPage()) },
-  { id: 'jarvis', nome: 'J.A.R.V.I.S. completo', match: /jarvis completo|chat completo|sess[õo]es/, load: () => import('./jarvis.js').then((module) => module.jarvisPage()) },
+  { id: 'grafo', nome: 'Grafo de Código', match: /\bgrafo\b|c[óo]digo (3d|em 3d)/, load: () => import('./git-nexus').then((module) => module.gitNexusPage()) },
+  { id: 'vision', nome: 'Corpo Total', match: /corpo (total|inteiro)|ativa\w* (a )?vis[ãa]o|\bvis[ãa]o\b/, load: () => import('./jarvis-vision').then((module) => module.jarvisVisionPage()) },
+  { id: 'gerar', nome: 'Gerar Código', match: /gerar c[óo]digo|gera c[óo]digo/, load: () => import('./gerar-codigo').then((module) => module.gerarCodigoPage()) },
+  { id: 'conselho', nome: 'Conselho de IAs', match: /conselho/, load: () => import('./conselho').then((module) => module.conselhoPage()) },
+  { id: 'apis', nome: 'Central de APIs', match: /\bapis?\b|central de apis|chaves/, load: () => import('./apis').then((module) => module.apisPage()) },
+  { id: 'dashboard', nome: 'Dashboard', match: /dashboard|painel de (m[ée]tricas|status)/, load: () => import('./jarvis-dashboard').then((module) => module.jarvisDashboardPage()) },
+  { id: 'ml', nome: 'ML da Memória', match: /\bml\b|aprendizado|machine learning/, load: () => import('./aprendizado').then((module) => module.aprendizadoPage()) },
+  { id: 'llm', nome: 'Mini-LLM', match: /mini[- ]?llm|\bllm\b/, load: () => import('./llm-lab').then((module) => module.llmLabPage()) },
+  { id: 'cerebro', nome: 'Segundo Cérebro', match: /c[ée]rebro/, load: () => import('./cerebro').then((module) => module.cerebroPage()) },
+  { id: 'memoria', nome: 'Memória', match: /mem[óo]ria/, load: () => import('./memoria').then((module) => module.memoriaPage()) },
+  { id: 'terminal', nome: 'Terminal-IA', match: /terminal/, load: () => import('./terminal-ia').then((module) => module.terminalIaPage()) },
+  { id: 'seguranca', nome: 'Segurança', match: /seguran[çc]a/, load: () => import('./seguranca').then((module) => module.segurancaPage()) },
+  { id: 'ia', nome: 'IA Proprietária', match: /ia propriet[áa]ria|propriet[áa]ria/, load: () => import('./ia-proprietaria').then((module) => module.iaProprietariaPage()) },
+  { id: 'jarvis', nome: 'J.A.R.V.I.S. completo', match: /jarvis completo|chat completo|sess[õo]es/, load: () => import('./jarvis').then((module) => module.jarvisPage()) },
 ];
 
 function payloadRecord(value: unknown): Record<string, unknown> { return isRecord(value) ? value : {}; }
@@ -118,7 +119,7 @@ export function gitNexusNucleo(args: NucleoArgs = {}): HTMLDivElement {
     const requested = /^(mostrar?|abrir?|ativar?|exibir?|rodar?)\b/.test(lower) ? lower.replace(/^(mostrar?|abrir?|ativar?|exibir?|rodar?)\s*/, '') : lower; const panelFunction = FUNCOES.find((fn) => fn.match.test(requested)); if (panelFunction && requested.length < 40) { abrirFuncao(panelFunction); bubble('jarvis', panelFunction.id === 'vision' ? 'Ativando o Corpo Total, senhor.' : `${panelFunction.nome} materializado. Diga "fechar" quando terminar.`); return; }
     convo.push({ role: 'user', content: text }); think(true);
     try {
-      const current = loadConfig(); const call = { ...current }; let response: string; const onTool: JarvisToolCallback = (name, _input, result) => { think(false); bubble('tool', `⚙ ${name} → ${result?.ok ? 'ok' : 'erro'}`); think(true); };
+      const current = loadConfig(); const call: JarvisConfig = { ...current, systemPrompt: `${current.systemPrompt || ''}\n\n${getBaluarteBriefing({ compact: !['agente', 'hermes-agente'].includes(current.mode ?? '') })}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}` }; let response: string; const onTool: JarvisToolCallback = (name, _input, result) => { think(false); bubble('tool', `⚙ ${name} → ${result?.ok ? 'ok' : 'erro'}`); think(true); };
       if (current.mode === 'agente') response = await processAgent(convo, call, onTool); else if (current.mode === 'hermes-agente') response = await processHermesAgent(convo, call, onTool, {}); else if (current.mode === 'claude') response = await processClaude(convo, call); else if (current.mode === 'ollama') response = await processOllama(convo, call); else if (current.mode === 'hermes-local') response = await processHermesLocal(convo, call); else if (current.mode === 'servidor') response = await processServer(convo, call); else if (current.mode === 'hermes') response = await processHermes(convo, call); else if (current.mode === 'claude-servidor') response = await processClaudeServer(convo, call); else if (current.mode === 'openclaw') response = await processOpenClaw(convo, call); else if (current.mode === 'webllm') { const module = await import('../utils/jarvis-webllm.js'); response = await module.processWebLLM(convo, call, { onProgress: (partial) => { if (thinking) thinking.textContent = `⬇ ${partial}`; }, onToken: (partial) => { if (thinking) thinking.textContent = partial; } }); } else { const local = processLocal(text); response = local.text; const action = local.action; if (action?.type === 'navigate') { const target = FUNCOES.find((fn) => action.payload.includes(fn.id)); if (target) abrirFuncao(target); } }
       think(false); convo.push({ role: 'assistant', content: response }); if (convo.length > 24) convo.splice(0, convo.length - 24); void import('../utils/nexus.js').then((module) => module.nexusMemory(`[${current.mode}] operador: ${text}\njarvis: ${response.slice(0, 4000)}`, ['conversa', 'jarvis', 'nucleo', current.mode ?? 'local'])).catch(() => undefined); bubble('jarvis', response); speak(response); scene?.pulse(360);
     } catch (error: unknown) { think(false); bubble('jarvis', `⚙ ${errorText(error)} — diga "modo local" pra respostas imediatas sem configuração.`); }

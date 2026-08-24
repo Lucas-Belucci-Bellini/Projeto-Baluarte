@@ -18,7 +18,7 @@
  */
 /** @typedef {{startAll: () => Promise<string[]>, stopAll: () => Promise<void>}} RuntimeManagerGroup */
 
-/** @param {RuntimeManagerGroupOptions} [options] @returns {RuntimeManagerGroup} */
+/** @param {Partial<RuntimeManagerGroupOptions>} [options] @returns {RuntimeManagerGroup} */
 export function criarRuntimeManagerGroup(options = {}) {
   const { manager, registry, dependencies, batches, readinessWait, events } = options;
   if (!manager || typeof manager.start !== 'function' || typeof manager.stop !== 'function') throw new TypeError('manager inválido');
@@ -28,12 +28,17 @@ export function criarRuntimeManagerGroup(options = {}) {
   if (readinessWait && typeof readinessWait !== 'function') throw new TypeError('readinessWait inválido');
   if (events && typeof events !== 'object') throw new TypeError('events inválido');
 
+  /* Ver `runtime-supervisor.js`: o estreitamento das guardas não atravessa a
+   * fronteira das funções declaradas abaixo. */
+  const gerente = manager;
+  const lotes = batches;
+
   async function startAll() {
     const started = [];
     try {
-      for (const [index, batch] of batches.batches().entries()) {
+      for (const [index, batch] of lotes.batches().entries()) {
         events?.groupBatchStarted?.(index, batch);
-        const results = await Promise.allSettled(batch.map(id => manager.start(id)));
+        const results = await Promise.allSettled(batch.map(id => gerente.start(id)));
         const failure = results.find(result => result.status === 'rejected');
         for (let i = 0; i < results.length; i++) {
           if (results[i].status === 'fulfilled') started.push(batch[i]);
@@ -47,7 +52,7 @@ export function criarRuntimeManagerGroup(options = {}) {
       events?.groupStartupFailed?.(error);
       const rollback = [...started].reverse();
       for (const id of rollback) {
-        try { await manager.stop(id); } catch { /* original startup/readiness error wins */ }
+        try { await gerente.stop(id); } catch { /* original startup/readiness error wins */ }
       }
       if (rollback.length) events?.groupRollback?.(rollback);
       throw error;
@@ -56,21 +61,29 @@ export function criarRuntimeManagerGroup(options = {}) {
 
   async function stopAll() {
     const errors = [];
-    const batchesInReverse = [...batches.batches()].reverse();
+    const batchesInReverse = [...lotes.batches()].reverse();
     for (let reverseIndex = 0; reverseIndex < batchesInReverse.length; reverseIndex++) {
       const batch = batchesInReverse[reverseIndex];
       const index = batchesInReverse.length - reverseIndex - 1;
       const ids = [...batch].reverse();
-      const results = await Promise.allSettled(ids.map(id => manager.stop(id)));
+      const results = await Promise.allSettled(ids.map(id => gerente.stop(id)));
       for (let i = 0; i < results.length; i++) {
-        if (results[i].status === 'rejected') errors.push({ id: ids[i], error: results[i].reason });
+        /* Numa const: `results[i].status === 'rejected'` seguido de
+         * `results[i].reason` indexa duas vezes, e o TS não carrega o
+         * estreitamento de um acesso para o seguinte. */
+        const resultado = results[i];
+        if (resultado.status === 'rejected') errors.push({ id: ids[i], error: resultado.reason });
       }
       events?.groupBatchStopped?.(index, ids);
     }
     if (errors.length) {
       events?.groupShutdownFailed?.(errors);
       const aggregate = new AggregateError(errors.map(item => item.error), 'Falha ao encerrar um ou mais módulos');
-      aggregate.details = errors;
+      /* `details` é campo NOSSO, não do AggregateError padrão: leva o par
+       * id↔erro para quem captura, sem obrigar a recompor a partir de
+       * `errors[]`. `Object.assign` porque a atribuição direta não existe no
+       * tipo — o campo é uma extensão deliberada, não um descuido. */
+      Object.assign(aggregate, { details: errors });
       throw aggregate;
     }
   }

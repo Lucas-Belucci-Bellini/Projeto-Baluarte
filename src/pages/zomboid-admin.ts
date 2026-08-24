@@ -1,7 +1,7 @@
 import '../styles/zomboid-admin.css';
 import { h, empty, normalize, debounce } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { PZ_COMMANDS, PZ_IDS, PZ_CATS } from '../data/zomboid-admin.js';
 import type { PzId, PzCategory } from '../data/zomboid-admin.js';
 

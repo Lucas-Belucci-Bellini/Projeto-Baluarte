@@ -7,7 +7,7 @@
 
 import '../styles/batalha-naval.css';
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 
 const N = 10;
 const COLS = 'ABCDEFGHIJ';

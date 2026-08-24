@@ -1,10 +1,10 @@
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
 import { lineIcon } from '../utils/icons.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { fetchWikiSummary, wikiArticleUrl } from '../utils/wikipedia.js';
-import { fetchMilCuration } from '../utils/mil-curation.js';
-import type { MilCurationMap } from '../utils/mil-curation.js';
+import { fetchMilCuration } from '../utils/mil-curation';
+import type { MilCurationMap } from '../utils/mil-curation';
 import type { WikiSummary } from '../utils/wikipedia.js';
 import '../styles/centro-militar.css';
 

@@ -30,6 +30,7 @@ import { notFoundPage, loadErrorPage } from './pages/_placeholder.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { hxBeacon } from './utils/hx-beacon.js';
 import { initToast, toast } from './utils/toast.js';
+import { initToast, toast } from './utils/toast.ts';
 import { initPaleta } from './utils/paleta.js';
 import './styles/paleta.css';
 import { initTheme } from './utils/theme.js';
@@ -37,8 +38,12 @@ import { initUniverse } from './utils/universe-theme.js';
 import { playBootIntro } from './utils/boot-intro.js';
 import { countPageView } from './utils/page-views.js';
 import { handleAuthRedirect, isLoggedIn } from './core/supabase-auth.js';
+import { countPageView } from './utils/page-views.ts';
+import { handleAuthRedirect } from './core/supabase-auth.js';
 import { $ } from './utils/helpers.js';
 import { VERSION } from './data/version.js';
+import { startJarvisMusicPresence } from './utils/jarvis-music-presence.ts';
+import { resumeSpotifyAuthorization, describeSpotifyFailure } from './utils/jarvis-spotify-session.ts';
 
 /* ==============================================================
  *  Helper de carregamento sob demanda (code-splitting via Vite).
@@ -70,6 +75,48 @@ function recoverChunk(err) {
 const lazy = (loader, fn) => (args) =>
   loader().then((m) => m[fn](args)).catch(recoverChunk);
 
+/**
+ * A volta do Spotify que não deu certo tem de dizer alguma coisa.
+ *
+ * Antes, todo modo de falha — recusa do Spotify, sessão perdida, código
+ * rejeitado na troca — terminava num `catch` vazio: o distintivo continuava
+ * `SPOTIFY · OFF` e não havia nada, nem no ecrã nem no console, que dissesse
+ * porquê. O aviso mora no boot, e não na página, porque é no boot que a volta
+ * aterra: a rota `/jarvis` pode nem estar montada nesse instante.
+ */
+function avisarFalhaSpotify(event) {
+  const detail = event instanceof CustomEvent ? event.detail : null;
+  if (!detail || detail.connected !== false || !detail.reason) return;
+  const explicacao = describeSpotifyFailure(detail.reason);
+  const doSpotify = typeof detail.reasonText === 'string' && detail.reasonText ? ` (Spotify: ${detail.reasonText})` : '';
+  console.warn(`[spotify] ${detail.reason}${doSpotify}`);
+  toast(`${explicacao}${doSpotify}`, { type: 'warning', duration: 12000 });
+  /* O código da volta já foi gasto: deixá-lo no endereço faz um F5 tentar de
+   * novo com um código morto, e falhar por um motivo diferente do original. */
+  limparVoltaDoSpotify();
+}
+
+function limparVoltaDoSpotify() {
+  try {
+    const atual = new URL(window.location.href);
+    if (!atual.searchParams.has('code') && !atual.searchParams.has('error')) return;
+    window.history.replaceState(null, '', `${atual.pathname}${atual.hash}`);
+  } catch { /* sem History API → o endereço fica como está */ }
+}
+
+function restoreSpotifyReturn(event) {
+  const detail = event instanceof CustomEvent ? event.detail : null;
+  if (!detail || detail.connected !== true || typeof detail.returnTo !== 'string') return;
+  const hashIndex = detail.returnTo.indexOf('#');
+  const route = hashIndex >= 0 ? detail.returnTo.slice(hashIndex + 1) : '';
+  if (!/^\/[A-Za-z0-9_./?=&-]{0,240}$/.test(route)) return;
+  setTimeout(() => {
+    window.history.replaceState(null, '', window.location.pathname);
+    router.navigate(route, { replace: true });
+  }, 0);
+}
+
+
 /* Roda DENTRO do Baluarte Launcher? A ponte (`window.baluarte`) só existe no app;
  * usado pra gatear trabalho pesado pro nativo e manter o boot da web leve (#238). */
 const isNative = () => typeof window !== 'undefined' && !!window.baluarte && window.baluarte.native === true;
@@ -78,7 +125,7 @@ const isNative = () => typeof window !== 'undefined' && !!window.baluarte && win
  * Git Nexus na aba certa. No app abre a aba; na web o gate mostra o teaser
  * (a seção IA é app-only). Deep-link também via #/git-nexus?tab=<id>. */
 const lazyNexus = (tab) => (args) =>
-  import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab })).catch(recoverChunk);
+  import('./pages/git-nexus-gate.ts').then((m) => m.gitNexusGate({ ...args, tab })).catch(recoverChunk);
 
 /* Rotas LEVES do Núcleo (L1 Conhecimento + L2 Memória, do `docs/OMEGA-PRISM.md`):
  * são leves e por-usuário (Supabase), então a regra #238 as coloca na WEB (a
@@ -87,7 +134,7 @@ const lazyNexus = (tab) => (args) =>
  * No APP seguem caindo no cockpit unificado do Núcleo, na aba certa (sem regressão). */
 const lazyLeve = (tab, loader, fn) => (args) =>
   (isNative()
-    ? import('./pages/git-nexus-gate.js').then((m) => m.gitNexusGate({ ...args, tab }))
+    ? import('./pages/git-nexus-gate.ts').then((m) => m.gitNexusGate({ ...args, tab }))
     : loader().then((m) => m[fn](args))
   ).catch(recoverChunk);
 
@@ -197,6 +244,97 @@ reg('/armas-por-pais', lazy(() => import('./pages/armas-por-pais.js'), 'armasPor
 reg('/guerras-conflitos', lazy(() => import('./pages/guerras-conflitos.js'), 'guerrasConflitosPage'));
 reg('/batalhas-historicas', lazy(() => import('./pages/batalhas-historicas.js'), 'batalhasHistoricasPage'));
 reg('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia-militar.js'), 'enciclopediaMilitarPage'));
+router.register('/home', (args) => homePage(args));   // eager: 1º paint (args → ?spline=)
+router.register('/baixar', lazy(() => import('./pages/baixar.ts'), 'baixarPage'));
+router.register('/ferramentas', lazy(() => import('./pages/ferramentas.ts'), 'ferramentasPage'));
+router.register('/editor', lazy(() => import('./pages/editor.ts'), 'editorPage'));
+router.register('/json-studio', lazy(() => import('./pages/json-studio.ts'), 'jsonStudioPage'));
+router.register('/qr-studio', lazy(() => import('./pages/qr-studio.ts'), 'qrStudioPage'));
+router.register('/git-helper', lazy(() => import('./pages/git-helper.ts'), 'gitHelperPage'));
+router.register('/terminal', lazy(() => import('./pages/terminal.ts'), 'terminalPage'));
+router.register('/calc-cientifica', lazy(() => import('./pages/calc-cientifica.ts'), 'calcCientificaPage'));
+router.register('/calc-numerica', lazy(() => import('./pages/calc-numerica.ts'), 'calcNumericaPage'));
+router.register('/calculadoras', lazy(() => import('./pages/calculadoras/index.ts'), 'calculadorasPage'));
+router.register('/tabela-verdade', lazy(() => import('./pages/tabela-verdade.ts'), 'tabelaVerdadePage'));
+router.register('/cripto', lazy(() => import('./pages/cripto/index.ts'), 'criptoPage'));
+router.register('/esteganografia', lazy(() => import('./pages/esteganografia.ts'), 'esteganografiaPage'));
+router.register('/graficos', lazy(() => import('./pages/graficos.ts'), 'graficosPage'));
+router.register('/simbolos', lazy(() => import('./pages/simbolos.ts'), 'simbolosPage'));
+router.register('/color-studio', lazy(() => import('./pages/color-studio.ts'), 'colorStudioPage'));
+router.register('/regex', lazy(() => import('./pages/regex.ts'), 'regexPage'));
+router.register('/arsenal', lazy(() => import('./pages/arsenal.ts'), 'arsenalPage'));
+router.register('/militar', lazy(() => import('./pages/militar.ts'), 'militarPage'));   // hub consolidado das frentes militares
+router.register('/modelos-3d', lazy(() => import('./pages/modelos-3d.ts'), 'modelos3dPage'));   // visualizador 3D militar (#310)
+router.register('/biblioteca', lazy(() => import('./pages/biblioteca.ts'), 'bibliotecaPage'));
+router.register('/elites', lazy(() => import('./pages/elites.ts'), 'elitesPage'));
+router.register('/dossie', lazy(() => import('./pages/dossie.ts'), 'dossiePage'));
+router.register('/ciberseg', lazy(() => import('./pages/ciberseg.ts'), 'cibersegPage'));
+router.register('/academia', lazy(() => import('./pages/academia.ts'), 'academiaPage'));
+router.register('/robotica', lazy(() => import('./pages/robotica.ts'), 'roboticaPage'));
+router.register('/fft', lazy(() => import('./pages/fft.ts'), 'fftPage'));
+router.register('/radio', lazy(() => import('./pages/radio.ts'), 'radioPage'));
+router.register('/musicas', lazy(() => import('./pages/musicas.ts'), 'musicasPage'));
+router.register('/media', lazy(() => import('./pages/media.ts'), 'mediaPage'));
+router.register('/videos', lazy(() => import('./pages/videos.ts'), 'videosPage'));
+router.register('/tv', lazy(() => import('./pages/tv.ts'), 'tvPage'));
+router.register('/utilidades', lazy(() => import('./pages/utilidades.ts'), 'utilidadesPage'));
+router.register('/jogos', lazy(() => import('./pages/jogos.ts'), 'jogosPage'));
+router.register('/batalha-naval', lazy(() => import('./pages/batalha-naval.ts'), 'batalhaNavalPage'));
+router.register('/universo', lazy(() => import('./pages/universo.ts'), 'universoPage'));
+router.register('/tabela-periodica', lazy(() => import('./pages/tabela-periodica.ts'), 'tabelaPeriodicaPage'));
+router.register('/modpack', lazy(() => import('./pages/modpack.ts'), 'modpackPage'));
+router.register('/wiki-arma3', lazy(() => import('./pages/wiki-arma3.ts'), 'wikiArma3Page'));   // wiki de Arma 3 (capa/índice/artigo via ?p= ?a=)
+router.register('/arma3-tutorial', lazy(() => import('./pages/arma3-tutorial.ts'), 'arma3TutorialPage'));   // tutorial dos 105 mods do preset
+router.register('/vanguard', lazy(() => import('./pages/vanguard.ts'), 'vanguardPage'));                     // Project Vanguard: computador de tiro + coordenadas
+router.register('/zomboid', lazy(() => import('./pages/zomboid.ts'), 'zomboidPage'));   // coleção Project Zomboid (Spartan Gamer BR)
+router.register('/zomboid-admin', lazy(() => import('./pages/zomboid-admin.ts'), 'zomboidAdminPage'));   // admin de servidor PZ
+router.register('/guia-pc', lazy(() => import('./pages/guia-pc.ts'), 'guiaPcPage'));
+router.register('/logic-sim', lazy(() => import('./pages/logic-sim.ts'), 'logicSimPage'));
+router.register('/portas', lazy(() => import('./pages/portas.ts'), 'portasPage'));
+router.register('/morse', lazy(() => import('./pages/morse.ts'), 'morsePage'));
+router.register('/memes', lazy(() => import('./pages/memes.ts'), 'memesPage'));
+router.register('/filmes', lazy(() => import('./pages/filmes.ts'), 'filmesPage'));
+router.register('/shadow', lazy(() => import('./pages/shadow.ts'), 'shadowPage'));
+router.register('/perfil', lazy(() => import('./pages/perfil.ts'), 'perfilPage'));
+router.register('/login', lazy(() => import('./pages/login.ts'), 'loginPage'));
+router.register('/economia', lazy(() => import('./pages/economia.ts'), 'economiaPage'));
+router.register('/dolar', lazy(() => import('./pages/dolar.ts'), 'dolarPage'));
+/* /jarvis obedece o #238 na prática: na WEB carrega só o Núcleo V7 (o 3D e as
+ * funções dele no canto); no APP carrega o JARVIS completo — chat, sessões,
+ * memória, skills e agente. São dois chunks distintos, então o navegador nem
+ * baixa o motor de IA que não vai usar. O cockpit do Núcleo continua abrindo a
+ * página completa na aba própria (git-nexus-cockpit), que é app-only. */
+router.register('/jarvis', (args) => (isNative()
+  ? import('./pages/jarvis.ts').then((m) => m.jarvisPage(args))
+  : import('./pages/jarvis-nucleo.ts').then((m) => m.jarvisNucleoPage(args))
+).catch(recoverChunk));
+router.register('/ia-proprietaria', lazyNexus('ia'));
+router.register('/radar', lazy(() => import('./pages/radar.ts'), 'radarPage'));
+router.register('/geo', lazy(() => import('./pages/geopulse.ts'), 'geopulsePage'));
+router.register('/find', lazy(() => import('./pages/find.ts'), 'findPage'));
+router.register('/triangulacao', lazy(() => import('./pages/triangulacao.ts'), 'triangulacaoPage'));
+router.register('/llm-lab', lazyNexus('llm'));
+
+router.register('/sobre', lazy(() => import('./pages/sobre.ts'), 'sobrePage'));
+router.register('/roadmap', lazy(() => import('./pages/roadmap.ts'), 'roadmapPage'));
+router.register('/diagnostico', lazy(() => import('./pages/diagnostico.ts'), 'diagnosticoPage'));
+router.register('/jarvis-dashboard', lazyNexus('dashboard'));
+router.register('/mapa', lazy(() => import('./pages/mapa.ts'), 'mapaPage'));
+router.register('/visao', lazy(() => import('./pages/visao.ts'), 'visaoPage'));
+router.register('/jarvis-vision', lazyLeve('vision', () => import('./pages/jarvis-vision.ts'), 'jarvisVisionPage'));   // app → aba do Núcleo (#316)
+router.register('/forcas-armadas', lazy(() => import('./pages/forcas-armadas.ts'), 'forcasArmadasPage'));
+router.register('/orcamentos-militares', lazy(() => import('./pages/orcamentos-militares.ts'), 'orcamentosMilitaresPage'));
+router.register('/poder-militar', lazy(() => import('./pages/poder-militar.ts'), 'poderMilitarPage'));
+router.register('/arsenal-expandido', lazy(() => import('./pages/arsenal-expandido.ts'), 'arsenalExpandidoPage'));
+router.register('/forcas-especiais', lazy(() => import('./pages/forcas-especiais.ts'), 'forcasEspeciaisPage'));
+router.register('/organizacao-militar', lazy(() => import('./pages/organizacao-militar.ts'), 'organizacaoMilitarPage'));
+router.register('/tecnologia-militar', lazy(() => import('./pages/tecnologia-militar.ts'), 'tecnologiaMilitarPage'));
+router.register('/taticas-estrategias', lazy(() => import('./pages/taticas-estrategias.ts'), 'taticasEstrategiasPage'));
+router.register('/historia-militar', lazy(() => import('./pages/historia-militar.ts'), 'historiaMilitarPage'));
+router.register('/armas-por-pais', lazy(() => import('./pages/armas-por-pais.ts'), 'armasPorPaisPage'));
+router.register('/guerras-conflitos', lazy(() => import('./pages/guerras-conflitos.ts'), 'guerrasConflitosPage'));
+router.register('/batalhas-historicas', lazy(() => import('./pages/batalhas-historicas.ts'), 'batalhasHistoricasPage'));
+router.register('/enciclopedia-militar', lazy(() => import('./pages/enciclopedia-militar.ts'), 'enciclopediaMilitarPage'));
 
 /* ==============================================================
  *  Dev & Projetos — auto-análise do próprio site
@@ -218,6 +356,23 @@ reg('/apis', lazyNexus('apis'));
  * experiência completa (git-nexus.js) sob demanda. Mantém o chunk pesado fora da web. */
 reg('/git-nexus', lazy(() => import('./pages/git-nexus-gate.js'), 'gitNexusGate'));
 reg('/aprendizado', lazyNexus('ml'));
+router.register('/codigo', lazy(() => import('./pages/codigo.ts'), 'codigoPage'));
+router.register('/projetos', lazy(() => import('./pages/projetos.ts'), 'projetosPage'));
+router.register('/mural', lazy(() => import('./pages/mural.ts'), 'muralPage'));
+router.register('/comms', lazy(() => import('./pages/comms.ts'), 'commsPage'));   // Rede Neural — chat global em tempo real (0008)
+router.register('/banco', lazy(() => import('./pages/banco.ts'), 'bancoPage'));
+router.register('/cerebro', lazyLeve('cerebro', () => import('./pages/cerebro.ts'), 'cerebroPage'));
+router.register('/ocr', lazy(() => import('./pages/ocr.ts'), 'ocrPage'));
+router.register('/memoria', lazyLeve('memoria', () => import('./pages/memoria.ts'), 'memoriaPage'));
+router.register('/terminal-ia', lazyNexus('terminal'));
+router.register('/seguranca', lazyNexus('seguranca'));
+router.register('/gerar-codigo', lazyLeve('gerar', () => import('./pages/gerar-codigo.ts'), 'gerarCodigoPage'));   // app → aba do Núcleo (#316)
+router.register('/conselho', lazyNexus('conselho'));
+router.register('/apis', lazyNexus('apis'));
+/* /git-nexus passa pelo GATE leve (#238 Fase 2): web → teaser; app → carrega a
+ * experiência completa (git-nexus.js) sob demanda. Mantém o chunk pesado fora da web. */
+router.register('/git-nexus', lazy(() => import('./pages/git-nexus-gate.ts'), 'gitNexusGate'));
+router.register('/aprendizado', lazyNexus('ml'));
 /* /home-3d e /home2 — aliases pra home oficial (links antigos / preview). */
 reg('/home-3d', (args) => homePage(args));
 reg('/home2', (args) => homePage(args));
@@ -267,6 +422,19 @@ function boot() {
   }
 
   appState.set({ bootedAt: Date.now() });
+  /* O canal de avisos vem primeiro de propósito: `toast()` só emite no bus, e
+   * quem o mostra é o ouvinte que o `initToast()` regista. Enquanto ele estava
+   * depois do shell, um aviso emitido no arranque — como o da volta do Spotify,
+   * logo abaixo — era emitido para ninguém e desaparecia. */
+  initToast();
+  /* Presença musical passiva: observa apenas media elements deste app e sinais
+   * explícitos dos embeds; não usa microfone, scraping cross-origin ou turnos de IA. */
+  startJarvisMusicPresence();
+  window.addEventListener('baluarte:spotify-session', restoreSpotifyReturn);
+  window.addEventListener('baluarte:spotify-session', avisarFalhaSpotify);
+  void resumeSpotifyAuthorization().then((result) => {
+    if (result === 'rejected') console.warn('[spotify] autorização não concluída — ver o aviso na tela');
+  }).catch((erro) => { console.error('[spotify] falha inesperada ao retomar a autorização', erro); });
   /* Perf mobile/low-end (v0.4.0): detecta aparelho fraco → classe `is-lowfx` no
    * <html> (CSS alivia o grão) + `window.__baluarteLowFx` (o herói WebGL corta
    * partículas). Reduced-motion também entra como low-fx. */
@@ -302,7 +470,6 @@ function boot() {
   } catch { playBootIntro(); }
 
   mountShell(root);
-  initToast();
   /* Ctrl/⌘+K acha qualquer uma das rotas registradas. Vai DEPOIS do
    * router.register de todas elas (o índice sai do próprio router), e antes do
    * start só pra o atalho já valer no primeiro paint. */

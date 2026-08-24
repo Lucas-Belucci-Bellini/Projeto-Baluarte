@@ -2,10 +2,10 @@ import '../styles/biblioteca.css';
 import '../styles/simbolos.css';
 import { h, cx, debounce, empty, normalize } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { SYMBOL_CATEGORIES, describe, getAllSymbols, countTotal } from '../data/symbols.js';
 import type { SymbolEntry } from '../data/symbols.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 
 const STORAGE_KEY = 'simbolos:state';
 

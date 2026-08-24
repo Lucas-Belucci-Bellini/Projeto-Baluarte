@@ -30,6 +30,14 @@ venv/
 Humanity always first/
 GitNexus-1.6.7/
 
+# Ferramentas externas instaladas localmente com git clone/git pull.
+# O repo versiona o manifest e os scripts de bootstrap; os clones, caches e
+# builds ficam na maquina do operador para nao virar submodulo fantasma nem
+# inflar o deploy.
+.baluarte/
+.gitnexus/
+
+
 # Índice do Smart Connections (#420, item 7). 19 MB, 96 arquivos `.ajson` de
 # embeddings e logs de evento DERIVADOS dos nossos próprios READMEs e docs —
 # nenhum arquivo de src/ ou scripts/ lê ou escreve isto, é cache de ferramenta

@@ -8,7 +8,7 @@
 import '../styles/regex.css';
 import { h, debounce, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 
 const STORAGE_KEY = 'regex:state';
 

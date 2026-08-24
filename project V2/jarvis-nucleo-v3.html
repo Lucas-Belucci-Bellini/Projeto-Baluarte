@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NÚCLEO J.A.R.V.I.S. v3 · Projeto Baluarte</title>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{--bg:#0b0910;--accent:#d4a24e;--accent2:#eec886;--txt:#f4ecdd;--dim:#9d9078;
+    --line:rgba(212,162,78,0.22);--glow:rgba(212,162,78,0.4)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
+    font-family:'IBM Plex Mono',ui-monospace,monospace;cursor:crosshair;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)} a:hover{color:var(--accent2)}
+  #stage{position:fixed;inset:0;z-index:1}
+  canvas{display:block}
+  .layer{position:fixed;inset:0;pointer-events:none}
+  #grid{z-index:2;opacity:.13;
+    background-image:linear-gradient(rgba(212,162,78,.5) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(212,162,78,.5) 1px,transparent 1px);background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(ellipse 68% 68% at 50% 50%,#000,transparent 78%);
+    mask-image:radial-gradient(ellipse 68% 68% at 50% 50%,#000,transparent 78%)}
+  #scan{z-index:3;opacity:.32;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,.022) 0 1px,transparent 1px 3px)}
+  #vig{z-index:4;background:radial-gradient(ellipse 118% 100% at 50% 50%,transparent 46%,rgba(4,3,8,.85) 100%)}
+
+  .corner{position:fixed;z-index:6;width:54px;height:54px;border-color:var(--accent);opacity:.5;pointer-events:none}
+  .tl{top:20px;left:20px;border-top:1.5px solid;border-left:1.5px solid}
+  .tr{top:20px;right:20px;border-top:1.5px solid;border-right:1.5px solid}
+  .bl{bottom:20px;left:20px;border-bottom:1.5px solid;border-left:1.5px solid}
+  .br{bottom:20px;right:20px;border-bottom:1.5px solid;border-right:1.5px solid}
+
+  #title{position:fixed;z-index:6;top:38px;left:0;right:0;text-align:center;pointer-events:none;
+    text-transform:uppercase;text-shadow:0 0 18px var(--glow)}
+  #title .k{font-size:9.5px;letter-spacing:7px;color:var(--dim)}
+  #title b{display:block;margin-top:8px;font-family:'Cormorant Garamond',serif;font-weight:700;
+    font-size:clamp(22px,3.2vw,38px);letter-spacing:16px;color:var(--txt)}
+  #title .s{margin-top:9px;font-size:9px;letter-spacing:5px;color:var(--accent)}
+
+  #actions{position:fixed;z-index:7;top:26px;right:26px;display:flex;flex-direction:column;
+    align-items:stretch;gap:8px}
+  button{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+    color:var(--accent2);background:rgba(212,162,78,.07);border:1px solid rgba(212,162,78,.4);
+    border-radius:3px;padding:8px 11px;cursor:crosshair;transition:background .18s,box-shadow .18s}
+  button:hover{background:rgba(212,162,78,.2);box-shadow:0 0 14px rgba(212,162,78,.25)}
+  button[aria-pressed=true]{background:rgba(212,162,78,.26);border-color:var(--accent2);color:var(--txt)}
+
+  #readout{position:fixed;z-index:6;bottom:46px;left:0;right:0;display:flex;justify-content:center;
+    gap:clamp(16px,4vw,40px);flex-wrap:wrap;padding:0 26px;pointer-events:none;
+    font-size:9.5px;letter-spacing:3px;text-transform:uppercase}
+  #readout .k{color:var(--dim)} #readout .v{color:var(--accent2);text-shadow:0 0 10px var(--glow)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4fe08a;
+    box-shadow:0 0 9px #4fe08a;margin-right:8px;vertical-align:middle;animation:blink 2.2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+  #hint{position:fixed;z-index:6;bottom:22px;left:0;right:0;text-align:center;color:var(--dim);
+    font-size:8.5px;letter-spacing:3px;opacity:.6;pointer-events:none;text-transform:uppercase}
+  #loading{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);color:var(--accent);font-size:10px;letter-spacing:6px;
+    text-transform:uppercase;transition:opacity .7s}
+  #err{position:fixed;z-index:8;left:0;right:0;bottom:76px;text-align:center;color:#e07a6a;
+    font-size:9px;letter-spacing:2px;display:none}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div class="layer" id="grid"></div>
+<div class="layer" id="scan"></div>
+<div class="layer" id="vig"></div>
+
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+
+<div id="title">
+  <div class="k">núcleo online</div>
+  <b>J·A·R·V·I·S</b>
+  <div class="s">Mark XIII · rede neural · Projeto Baluarte</div>
+</div>
+
+<div id="actions">
+  <button id="bPulse">⚡ pulso de dados</button>
+  <button id="bSpin" aria-pressed="true">↻ rotação</button>
+  <button id="bDl">▼ baixar .html</button>
+</div>
+
+<div id="readout">
+  <span><span class="dot"></span><span class="v">rede neural</span> <span class="k">ativa</span></span>
+  <span><span class="k">energia</span> <span class="v" id="pwr">98%</span></span>
+  <span><span class="k">partículas</span> <span class="v" id="pcount">—</span></span>
+  <span><span class="k">sinapses</span> <span class="v" id="links">—</span></span>
+  <span><span class="k">latência</span> <span class="v" id="lat">04 ms</span></span>
+</div>
+<div id="hint">mova o cursor para inclinar o núcleo e repelir a rede</div>
+
+<div id="loading">inicializando núcleo…</div>
+<div id="err"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════
+   NÚCLEO J.A.R.V.I.S. v3 — Projeto Baluarte
+   Ajustes desta versão vs. v2:
+   · esfera oclusora dentro do núcleo → o coração lê como VOLUME, não como
+     mancha branca (as partículas do fundo deixam de somar por cima);
+   · rampa de cor por deslocamento (ouro fundo → âmbar nas cristas) via
+     atributo aDisp, em vez de branco uniforme;
+   · halo de Fresnel na borda → silhueta legível sem estourar o bloom;
+   · gaiola hexagonal dupla contrarrotativa → estrutura em volta do plasma;
+   · anel-mostrador (astrolábio) com marcas, alinhado ao eixo do núcleo;
+   · bloom com limiar alto + ACESFilmic → brilho sem clipar em branco;
+   · rede neural mais esparsa e com linhas por proximidade real (menos teia).
+   ► AFINE TUDO NO OBJETO CFG ◄
+   ════════════════════════════════════════════════════════════════════════ */
+const CFG = {
+  cCoreDeep:  0xb9762a,   // vales do plasma (ouro escuro)
+  cCoreHigh:  0xffdf9f,   // cristas do plasma (âmbar claro)
+  cCage:      0xd4a24e,   // gaiola hexagonal
+  cRings:     0xf0a83c,   // anéis de dados
+  cRingAlt:   0xffb347,
+  cConstel:   0xffd07a,   // rede neural
+  cDust:      0xff9c3a,
+  bg:         0x0b0910,
+
+  spinCore: 0.09, spinRings: 0.42, spinDust: 0.025, spinCage: 0.14,
+  coreDetail: 4, ringCount: 5, constelPts: 120, dustCount: 1200,
+  noiseFreq: 1.35, noiseAmp: 0.40, noiseSpeed: 0.30,
+  pulseSpeed: 1.15, pulseAmt: 0.10,
+  bloomStrength: 0.85, bloomRadius: 0.55, bloomThreshold: 0.62, exposure: 1.0,
+  parallax: 0.42, repelRadius: 2.6, repelForce: 1.7,
+  linkDist: 2.55, linkOpacity: 0.55,
+};
+
+const T = window.THREE;
+let scene, camera, renderer, composer, bloomPass;
+let coreGroup, corePoints, coreBase, coreNormals, coreDisp, occluder, rim, simplex;
+let cages = [], rings = [];
+let constel, constelBase, constelVel, linkGeo;
+let dust, spinning = true, linkCount = 0;
+const target = {x:0,y:0}, cur = {x:0,y:0};
+const mouse = new T.Vector2(-999,-999), mw = new T.Vector3();
+const clock = new T.Clock();
+
+function init(){
+  scene = new T.Scene();
+  scene.fog = new T.FogExp2(CFG.bg, 0.030);
+  camera = new T.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 200);
+  camera.position.set(0, 0, 14);
+
+  renderer = new T.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setClearColor(CFG.bg, 1);
+  renderer.toneMapping = T.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = CFG.exposure;
+  document.getElementById('stage').appendChild(renderer.domElement);
+
+  simplex = new T.SimplexNoise();
+  coreGroup = new T.Group(); scene.add(coreGroup);
+  buildCore(); buildCages(); buildRings(); buildConstellation(); buildDust(); postFX(); bind();
+
+  document.getElementById('pcount').textContent = (coreBase.length/3|0).toLocaleString('pt-BR');
+  const ld = document.getElementById('loading');
+  ld.style.opacity = '0'; setTimeout(()=>ld.remove(), 750);
+}
+
+/* 1 ─ CORAÇÃO DE PLASMA: micropartículas + oclusor + halo de borda ───────── */
+function buildCore(){
+  const geo = new T.IcosahedronGeometry(2.0, CFG.coreDetail);
+  coreBase = Float32Array.from(geo.attributes.position.array);
+  coreNormals = new Float32Array(coreBase.length);
+  for(let i=0;i<coreBase.length;i+=3){
+    const v = new T.Vector3(coreBase[i],coreBase[i+1],coreBase[i+2]).normalize();
+    coreNormals[i]=v.x; coreNormals[i+1]=v.y; coreNormals[i+2]=v.z;
+  }
+  coreDisp = new Float32Array(coreBase.length/3);
+  const pGeo = new T.BufferGeometry();
+  pGeo.setAttribute('position', new T.BufferAttribute(Float32Array.from(coreBase),3));
+  pGeo.setAttribute('aDisp', new T.BufferAttribute(coreDisp,1));
+
+  corePoints = new T.Points(pGeo, new T.ShaderMaterial({
+    uniforms:{
+      uDeep:{value:new T.Color(CFG.cCoreDeep)}, uHigh:{value:new T.Color(CFG.cCoreHigh)},
+      uSize:{value:3.2}, uPixel:{value:Math.min(devicePixelRatio,2)},
+    },
+    transparent:true, depthWrite:false, depthTest:true, blending:T.AdditiveBlending,
+    vertexShader:`
+      attribute float aDisp; uniform float uSize; uniform float uPixel;
+      varying float vDist; varying float vD;
+      void main(){
+        vec4 mv = modelViewMatrix * vec4(position,1.0);
+        vDist = -mv.z; vD = aDisp;
+        gl_PointSize = uSize * uPixel * (60.0/vDist) * (0.7 + vD*0.7);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader:`
+      uniform vec3 uDeep; uniform vec3 uHigh;
+      varying float vDist; varying float vD;
+      void main(){
+        vec2 c = gl_PointCoord - 0.5;
+        float d = length(c);
+        if(d > 0.5) discard;
+        float core = smoothstep(0.5, 0.05, d);
+        float fade = smoothstep(20.0, 5.0, vDist);
+        vec3 col = mix(uDeep, uHigh, clamp(vD*1.15, 0.0, 1.0));
+        gl_FragColor = vec4(col, core * fade * (0.24 + vD*0.42));
+      }`
+  }));
+  coreGroup.add(corePoints);
+
+  // oclusor: casca opaca quase preta logo por dentro das partículas — é ela
+  // que dá volume (esconde o hemisfério de trás) e mata o estouro branco.
+  occluder = new T.Mesh(new T.SphereGeometry(1.80, 48, 32),
+    new T.MeshBasicMaterial({color:0x0a0810}));
+  coreGroup.add(occluder);
+
+  // halo de Fresnel: acende só a borda vista de raspão
+  rim = new T.Mesh(new T.SphereGeometry(2.22, 48, 32), new T.ShaderMaterial({
+    uniforms:{ uColor:{value:new T.Color(CFG.cRingAlt)}, uPow:{value:3.2}, uInt:{value:0.55} },
+    transparent:true, depthWrite:false, blending:T.AdditiveBlending, side:T.BackSide,
+    vertexShader:`
+      varying vec3 vN; varying vec3 vV;
+      void main(){
+        vN = normalize(normalMatrix * normal);
+        vec4 mv = modelViewMatrix * vec4(position,1.0);
+        vV = normalize(-mv.xyz);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader:`
+      uniform vec3 uColor; uniform float uPow; uniform float uInt;
+      varying vec3 vN; varying vec3 vV;
+      void main(){
+        float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), uPow);
+        gl_FragColor = vec4(uColor, f * uInt);
+      }`
+  }));
+  coreGroup.add(rim);
+}
+
+/* 2 ─ GAIOLA HEXAGONAL DUPLA (estrutura em volta do plasma) ─────────────── */
+function buildCages(){
+  [[2.55, 1, 0.30], [3.05, 2, 0.16]].forEach(([r, detail, op], i)=>{
+    const cage = new T.LineSegments(
+      new T.WireframeGeometry(new T.IcosahedronGeometry(r, detail)),
+      new T.LineBasicMaterial({color:CFG.cCage, transparent:true, opacity:op,
+        blending:T.AdditiveBlending, depthWrite:false}));
+    cage.userData.dir = i%2 ? -1 : 1;
+    coreGroup.add(cage); cages.push(cage);
+  });
+}
+
+/* 3 ─ ANÉIS DE DADOS (tracejado + mostrador + nós) ─────────────────────── */
+function circleGeo(radius, segments){
+  const pts=[];
+  for(let i=0;i<=segments;i++){ const a=i/segments*Math.PI*2;
+    pts.push(new T.Vector3(Math.cos(a)*radius, Math.sin(a)*radius, 0)); }
+  return new T.BufferGeometry().setFromPoints(pts);
+}
+function buildRings(){
+  for(let i=0;i<CFG.ringCount;i++){
+    const g = new T.Group(), R = 3.7 + i*0.72, col = i%2 ? CFG.cRingAlt : CFG.cRings;
+    const dash = new T.Line(circleGeo(R,240), new T.LineDashedMaterial({color:col,
+      transparent:true, opacity:0.42-i*0.04, dashSize:0.14+(i%3)*0.1,
+      gapSize:0.08+(i%2)*0.14, blending:T.AdditiveBlending, depthWrite:false}));
+    dash.computeLineDistances(); g.add(dash);
+
+    const marks = i%2 ? 48 : 72, mv=[];
+    for(let k=0;k<marks;k++){ const a=k/marks*Math.PI*2;
+      const inner = (k%6===0) ? R-0.24 : R-0.10;
+      mv.push(Math.cos(a)*inner, Math.sin(a)*inner, 0, Math.cos(a)*R, Math.sin(a)*R, 0); }
+    const mg = new T.BufferGeometry();
+    mg.setAttribute('position', new T.Float32BufferAttribute(mv,3));
+    g.add(new T.LineSegments(mg, new T.LineBasicMaterial({color:col, transparent:true,
+      opacity:0.26, blending:T.AdditiveBlending, depthWrite:false})));
+
+    const nodes = 3+(i%4), nv=[], vv=[];
+    for(let k=0;k<nodes;k++){ const a=(k/nodes)*Math.PI*2+i;
+      const x=Math.cos(a)*R, y=Math.sin(a)*R;
+      nv.push(x,y,0);
+      vv.push(x,y,0, Math.cos(a)*(R+0.34), Math.sin(a)*(R+0.34), 0); }
+    const ng=new T.BufferGeometry(); ng.setAttribute('position', new T.Float32BufferAttribute(nv,3));
+    g.add(new T.Points(ng, new T.PointsMaterial({color:CFG.cRingAlt, size:0.13,
+      transparent:true, opacity:0.9, blending:T.AdditiveBlending, depthWrite:false})));
+    const vg=new T.BufferGeometry(); vg.setAttribute('position', new T.Float32BufferAttribute(vv,3));
+    g.add(new T.LineSegments(vg, new T.LineBasicMaterial({color:CFG.cRingAlt,
+      transparent:true, opacity:0.55, blending:T.AdditiveBlending, depthWrite:false})));
+
+    g.rotation.x = Math.PI*(0.12+i*0.17);
+    g.rotation.y = Math.PI*(i*0.21);
+    g.userData.spin = {
+      x:(Math.random()-0.5)*CFG.spinRings*0.5,
+      y:(Math.random()-0.5)*CFG.spinRings*0.5,
+      z:(0.3+Math.random()*0.5)*CFG.spinRings*(i%2?1:-1),
+    };
+    coreGroup.add(g); rings.push(g);
+  }
+}
+
+/* 4 ─ REDE NEURAL (nós + sinapses que acendem) ─────────────────────────── */
+function buildConstellation(){
+  const n = CFG.constelPts;
+  constelBase = new Float32Array(n*3);
+  const p = new Float32Array(n*3);
+  constelVel = new Float32Array(n*3);
+  for(let i=0;i<n;i++){
+    const r = 5.8+Math.random()*4.2, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+    const x=r*Math.sin(ph)*Math.cos(th), y=r*Math.sin(ph)*Math.sin(th)*0.78, z=r*Math.cos(ph);
+    constelBase[i*3]=p[i*3]=x; constelBase[i*3+1]=p[i*3+1]=y; constelBase[i*3+2]=p[i*3+2]=z;
+  }
+  const pg = new T.BufferGeometry();
+  pg.setAttribute('position', new T.BufferAttribute(p,3));
+  constel = new T.Points(pg, new T.PointsMaterial({color:CFG.cConstel, size:0.11,
+    transparent:true, opacity:0.85, blending:T.AdditiveBlending, depthWrite:false}));
+  scene.add(constel);
+
+  const maxLinks = n*5;
+  linkGeo = new T.BufferGeometry();
+  linkGeo.setAttribute('position', new T.BufferAttribute(new Float32Array(maxLinks*6),3));
+  linkGeo.setAttribute('color', new T.BufferAttribute(new Float32Array(maxLinks*6),3));
+  scene.add(new T.LineSegments(linkGeo, new T.LineBasicMaterial({vertexColors:true,
+    transparent:true, opacity:CFG.linkOpacity, blending:T.AdditiveBlending, depthWrite:false})));
+}
+function updateLinks(t){
+  const pos = constel.geometry.attributes.position.array;
+  const lp = linkGeo.attributes.position.array, lc = linkGeo.attributes.color.array;
+  const n = CFG.constelPts, maxD = CFG.linkDist, base = new T.Color(CFG.cConstel);
+  let li=0, ci=0; linkCount=0;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const dx=pos[i*3]-pos[j*3], dy=pos[i*3+1]-pos[j*3+1], dz=pos[i*3+2]-pos[j*3+2];
+    const d=Math.sqrt(dx*dx+dy*dy+dz*dz);
+    if(d>=maxD) continue;
+    const b = (1-d/maxD) * (0.30 + 0.70*Math.abs(Math.sin(t*2.0 + (i*13+j)*0.7)));
+    lp[li++]=pos[i*3]; lp[li++]=pos[i*3+1]; lp[li++]=pos[i*3+2];
+    lp[li++]=pos[j*3]; lp[li++]=pos[j*3+1]; lp[li++]=pos[j*3+2];
+    for(let k=0;k<2;k++){ lc[ci++]=base.r*b; lc[ci++]=base.g*b; lc[ci++]=base.b*b; }
+    linkCount++;
+    if(li >= lp.length-6){ i=n; break; }
+  }
+  linkGeo.setDrawRange(0, linkCount*2);
+  linkGeo.attributes.position.needsUpdate = true;
+  linkGeo.attributes.color.needsUpdate = true;
+}
+
+/* 5 ─ POEIRA ───────────────────────────────────────────────────────────── */
+function buildDust(){
+  const n=CFG.dustCount, p=new Float32Array(n*3);
+  for(let i=0;i<n;i++){ const r=12+Math.random()*22, th=Math.random()*Math.PI*2,
+    ph=Math.acos(2*Math.random()-1);
+    p[i*3]=r*Math.sin(ph)*Math.cos(th); p[i*3+1]=r*Math.sin(ph)*Math.sin(th); p[i*3+2]=r*Math.cos(ph); }
+  const g=new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(p,3));
+  dust = new T.Points(g, new T.PointsMaterial({color:CFG.cDust, size:0.085,
+    transparent:true, opacity:0.32, blending:T.AdditiveBlending, depthWrite:false}));
+  scene.add(dust);
+}
+
+/* 6 ─ PÓS-PROCESSAMENTO ────────────────────────────────────────────────── */
+function postFX(){
+  if(!T.EffectComposer){
+    const e=document.getElementById('err');
+    e.style.display='block'; e.textContent='pós-processamento indisponível — renderizando sem bloom';
+    return;
+  }
+  composer = new T.EffectComposer(renderer);
+  composer.addPass(new T.RenderPass(scene, camera));
+  bloomPass = new T.UnrealBloomPass(new T.Vector2(innerWidth,innerHeight),
+    CFG.bloomStrength, CFG.bloomRadius, CFG.bloomThreshold);
+  composer.addPass(bloomPass);
+  if(T.CopyShader){
+    const copy = new T.ShaderPass(T.CopyShader);
+    copy.renderToScreen = true; composer.addPass(copy);
+  }
+}
+
+/* pulso de dados: sobretom de energia (sem glitch destrutivo) ───────────── */
+let pulseUntil = 0;
+function pulse(ms){ pulseUntil = performance.now() + (ms||600); }
+
+function bind(){
+  addEventListener('mousemove', e=>{ mouse.x=e.clientX; mouse.y=e.clientY;
+    target.x=(e.clientX/innerWidth-0.5); target.y=(e.clientY/innerHeight-0.5); });
+  addEventListener('touchmove', e=>{ const t=e.touches[0]; mouse.x=t.clientX; mouse.y=t.clientY;
+    target.x=(t.clientX/innerWidth-0.5); target.y=(t.clientY/innerHeight-0.5); }, {passive:true});
+  addEventListener('resize', resize);
+  document.getElementById('bPulse').onclick = ()=>pulse(700);
+  const bs = document.getElementById('bSpin');
+  bs.onclick = ()=>{ spinning=!spinning; bs.setAttribute('aria-pressed', String(spinning)); };
+  document.getElementById('bDl').onclick = downloadSelf;
+  setInterval(()=>{
+    document.getElementById('pwr').textContent = (95+Math.floor(Math.random()*5))+'%';
+    document.getElementById('lat').textContent =
+      String(2+Math.floor(Math.random()*6)).padStart(2,'0')+' ms';
+  }, 1600);
+  setInterval(()=>{ if(Math.random()<0.35) pulse(420); }, 7000);
+}
+
+function resize(){
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  if(composer) composer.setSize(innerWidth, innerHeight);
+  if(bloomPass) bloomPass.setSize(innerWidth, innerHeight);
+  corePoints.material.uniforms.uPixel.value = Math.min(devicePixelRatio,2);
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.getElapsedTime();
+  const boost = performance.now() < pulseUntil ? 1 : 0;
+
+  // plasma: turbulência + rampa de cor por deslocamento
+  const pos = corePoints.geometry.attributes.position.array;
+  const pulseS = 1 + Math.sin(t*CFG.pulseSpeed)*CFG.pulseAmt + boost*0.05;
+  for(let i=0, k=0; i<pos.length; i+=3, k++){
+    const bx=coreBase[i], by=coreBase[i+1], bz=coreBase[i+2];
+    const n3 = simplex.noise3d(
+      bx*CFG.noiseFreq + t*CFG.noiseSpeed, by*CFG.noiseFreq,
+      bz*CFG.noiseFreq - t*CFG.noiseSpeed);
+    const u = 0.5 + n3*0.5;
+    const disp = u * CFG.noiseAmp * pulseS;
+    coreDisp[k] = u;
+    pos[i]   = (bx + coreNormals[i]  *disp)*pulseS;
+    pos[i+1] = (by + coreNormals[i+1]*disp)*pulseS;
+    pos[i+2] = (bz + coreNormals[i+2]*disp)*pulseS;
+  }
+  corePoints.geometry.attributes.position.needsUpdate = true;
+  corePoints.geometry.attributes.aDisp.needsUpdate = true;
+  occluder.scale.setScalar(pulseS);
+  rim.scale.setScalar(pulseS);
+  rim.material.uniforms.uInt.value = 0.5 + 0.16*Math.sin(t*CFG.pulseSpeed) + boost*0.35;
+  if(bloomPass) bloomPass.strength = CFG.bloomStrength + boost*0.5;
+
+  if(spinning){
+    coreGroup.rotation.y += dt*CFG.spinCore;
+    coreGroup.rotation.x  = Math.sin(t*0.16)*0.10;
+    cages.forEach((c,i)=>{ c.rotation.y += dt*CFG.spinCage*c.userData.dir;
+      c.rotation.x += dt*CFG.spinCage*0.35*(i?1:-1); });
+    rings.forEach(r=>{ const s=r.userData.spin;
+      r.rotation.x+=dt*s.x; r.rotation.y+=dt*s.y; r.rotation.z+=dt*s.z; });
+    dust.rotation.y += dt*CFG.spinDust; dust.rotation.x += dt*CFG.spinDust*0.4;
+    constel.rotation.y += dt*0.04;
+  }
+
+  // rede neural: repulsão do cursor + mola de volta
+  mw.set(target.x*2, -target.y*2, 0).unproject(camera).sub(camera.position).normalize();
+  const dist = -camera.position.z / mw.z;
+  const world = camera.position.clone().add(mw.multiplyScalar(dist));
+  const cp = constel.geometry.attributes.position.array, n = CFG.constelPts;
+  for(let i=0;i<n;i++){
+    const ix=i*3;
+    let dx=cp[ix]-world.x, dy=cp[ix+1]-world.y, dz=cp[ix+2]-world.z;
+    const d=Math.sqrt(dx*dx+dy*dy+dz*dz)||1;
+    if(d<CFG.repelRadius && mouse.x>-900){
+      const f=(1-d/CFG.repelRadius)*CFG.repelForce;
+      constelVel[ix]+=(dx/d)*f*dt; constelVel[ix+1]+=(dy/d)*f*dt; constelVel[ix+2]+=(dz/d)*f*dt;
+    }
+    constelVel[ix]   += (constelBase[ix]  -cp[ix]  )*2.2*dt;
+    constelVel[ix+1] += (constelBase[ix+1]-cp[ix+1])*2.2*dt;
+    constelVel[ix+2] += (constelBase[ix+2]-cp[ix+2])*2.2*dt;
+    constelVel[ix]*=0.9; constelVel[ix+1]*=0.9; constelVel[ix+2]*=0.9;
+    cp[ix]+=constelVel[ix]; cp[ix+1]+=constelVel[ix+1]; cp[ix+2]+=constelVel[ix+2];
+  }
+  constel.geometry.attributes.position.needsUpdate = true;
+  updateLinks(t);
+  document.getElementById('links').textContent = String(linkCount).padStart(3,'0');
+
+  cur.x += (target.x-cur.x)*0.045; cur.y += (target.y-cur.y)*0.045;
+  camera.position.x = cur.x*7*CFG.parallax;
+  camera.position.y = -cur.y*5*CFG.parallax;
+  camera.lookAt(0,0,0);
+
+  if(composer) composer.render(); else renderer.render(scene, camera);
+}
+
+function downloadSelf(){
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+  a.download = 'jarvis-nucleo-v3.html';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+(function boot(tries){
+  if(window.THREE && window.THREE.SimplexNoise){
+    try{ init(); animate(); }
+    catch(e){ const el=document.getElementById('err');
+      el.style.display='block'; el.textContent='erro: '+e.message; console.error(e); }
+  } else if(tries<90){ setTimeout(()=>boot(tries+1), 60); }
+  else { document.getElementById('loading').textContent='falha ao carregar three.js'; }
+})(0);
+</script>
+</body>
+</html>

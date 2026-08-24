@@ -7,7 +7,7 @@
 
 import '../styles/llm-lab.css';
 import { h, empty, cx } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { buildVocab, NgramModel, NeuralBigram, SAMPLE_CORPORA } from '../utils/llm-mini.js';
 import type { CharVocabulary } from '../utils/llm-mini.js';
 

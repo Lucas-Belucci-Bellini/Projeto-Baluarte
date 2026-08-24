@@ -9,7 +9,7 @@
 import '../styles/fase18.css';
 import { h } from '../utils/helpers.js';
 import { router } from '../core/router.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { isShadowUnlocked, openShadowGate, lockShadow } from '../utils/shadow-gate.js';
 
 interface StorageReport {

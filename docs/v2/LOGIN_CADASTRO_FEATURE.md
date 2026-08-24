@@ -1,12 +1,12 @@
 # Feature `login-cadastro`
 
-**Estado:** branch remota disponível, ainda não incorporada ao `main`.
+**Estado:** integrada e publicada na `main` em `07d815b83f308605a1f7baf0371088f7a5a4ab09`. Checks remotos de Auth/RLS ainda precisam ser observados para promoção do release.
 
-**Branch:** `feature/login-cadastro`
+**Branch de origem:** `feature/login-cadastro`
 
-**Commit observado:** `9ffbe39ed4213610c07b549df8a002ea03fdb0a8`
-
-**Base de comparação:** `main` auditado em `603bd6002ccc2030d0a0311958516fc20de69552`.
+**Commit de origem:** `9ffbe39ed4213610c07b549df8a002ea03fdb0a8`
+**Conversão TypeScript:** `login.ts` no commit `7e50207b`
+**Base publicada:** `main` em `07d815b83f308605a1f7baf0371088f7a5a4ab09`.
 
 ## 1. O que há de novo
 
@@ -52,11 +52,11 @@ O fluxo precisa manter as seguintes regras antes do merge:
 
 ## 4. Pendências antes de merge
 
-A branch introduz `src/pages/login.js`, que é uma nova página JavaScript canônica. Para manter a regra do projeto de não parar até migrar todas as páginas, o caminho recomendado é converter a implementação para `src/pages/login.ts` e deixar `login.js` apenas como wrapper de compatibilidade antes de incorporar a feature ao `main`.
+A implementação foi convertida para `src/pages/login.ts` e `login.js` agora é apenas wrapper de compatibilidade. A rota continua registrada no router V1 e a migração respeita a regra de zero páginas canônicas JavaScript.
 
-Também devem ser adicionados testes de comportamento para cadastro confirmado, cadastro aguardando e-mail, senha divergente, login inválido, login válido, refresh expirado, logout offline, redirect Google e Supabase não configurado. A feature deve passar `npm run tipos:ts`, `npm test`, `npm run build`, `npm run smoke`, `npm run v2:integracao` e `npm run caminho-critico`.
+Foram adicionados testes de contrato para cadastro confirmado/pendente, senha divergente, timeouts, logout, redirect OAuth, rota e vínculo RLS. Na integração local, a feature passou `npm run tipos:ts`, `npm run tipos:v2`, `npm test` (**965/965**), `npm run build`, `npm run smoke` (**99/99**), `npm run v2:integracao` (**19/19**), `npm run caminho-critico` (**15/15**), `npm run prova-offline` (**9/9**) e `npm run sonda-memoria`.
 
-A branch não deve ser mergeada somente porque o GitHub a considera mergeable. O merge depende do typecheck da nova página, das verificações de RLS e dos checks obrigatórios do `main`. Depois da conversão, o commit da feature deve ser rebaseado ou reaplicado sobre o `main` atual e submetido a um único ciclo de gates.
+A integração foi reaplicada sobre a main atual e submetida a um único ciclo local de gates. A promoção do release ainda depende de observar Auth/RLS, redirect allow-list e configuração real do Supabase em ambiente remoto; a UI não decide papéis elevados.
 
 ## 5. Relação com o roadmap
 

@@ -18,14 +18,20 @@ if (!fs.existsSync(reportPath)) {
 
 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 const issues = report.github?.importantIssues ?? [];
+const alerts = report.criticalAlerts ?? [];
 const newNumbers = new Set(report.changesSincePrevious?.newImportantIssues ?? []);
 
 console.log(`issue-monitor: ${issues.length} issues prioritárias conhecidas`);
-if (!newNumbers.size) {
+if (!alerts.length && !newNumbers.size) {
   console.log('issue-monitor: nenhum alerta novo');
   process.exit(0);
 }
 
+for (const alert of alerts) {
+  console.log(`ALERTA ${alert.severity}: ${alert.kind} — ${alert.reason}`);
+  console.log(`resumo: ${alert.summary}`);
+  if (alert.url) console.log(`url: ${alert.url}`);
+}
 for (const issue of issues.filter((item) => newNumbers.has(item.number))) {
   console.log(`ALERTA issue #${issue.number}: ${issue.title}`);
   console.log(`labels: ${issue.labels.join(', ') || '—'}`);

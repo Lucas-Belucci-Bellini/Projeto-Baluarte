@@ -8,7 +8,7 @@
 import '../styles/mural.css';
 import { h, empty, randHex } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { supabaseConfigured, dbSelect } from '../core/supabase.js';
 
 const POSTS_KEY = 'mural:posts';

@@ -8,7 +8,7 @@
 import '../styles/editor.css';
 import { h, cx, debounce, empty } from '../utils/helpers.js';
 import { aoSair } from '../core/ciclo-vida.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { highlight } from '../utils/syntax-highlight.js';
 import { createAutocomplete } from '../utils/editor-autocomplete.js';
 import type { AutocompleteController } from '../utils/editor-autocomplete.js';
@@ -27,7 +27,7 @@ import {
 import type { EditorRunResult, EditorState, EditorTab } from '../utils/editor-engine.js';
 import { getLang, langForExt } from '../data/editor-langs.js';
 import * as vfs from '../utils/vfs.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { setStatus } from '../utils/baluarte-status';
 
 type FindMode = 'find' | 'replace';
 

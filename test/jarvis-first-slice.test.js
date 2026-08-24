@@ -5,6 +5,7 @@ import { getBaluarteBriefing, selectContextMessages } from '../src/utils/jarvis-
 import { buildNewsBriefingPrompt, deduplicateNews, normalizeNewsItem } from '../src/utils/news-briefing.js';
 import { createOpenClawBridge } from '../scripts/openclaw-bridge.mjs';
 import briefing from '../v2/modules/briefing/module.js';
+import evidence from '../v2/modules/evidence/module.js';
 import { criarRegistry } from '../v2/core/registry.js';
 import { criarVerticalSlice } from '../v2/core/vertical-slice.js';
 
@@ -85,6 +86,7 @@ test('bridge OpenClaw encaminha chat para upstream fake e bloqueia origem extern
 
 test('manifesto briefing entra no Registry e vertical slice abre/fecha Runtime', async () => {
   const registry = criarRegistry();
+  assert.deepEqual(briefing.references, { modules: ['evidence'] });
   assert.equal(registry.registrar(briefing), true);
   const selo = registry.selar();
   assert.equal(selo.ok, true);
@@ -102,4 +104,89 @@ test('manifesto briefing entra no Registry e vertical slice abre/fecha Runtime',
   assert.equal(slice.estado('briefing'), 'stopped');
   assert.deepEqual(opened, ['briefing']);
   assert.deepEqual(closed, ['briefing']);
+});
+
+
+test('Briefing liga candidatos novos à Evidence compartilhada sem duplicar o store', () => {
+  const stored = new Map();
+  const events = [];
+  const metrics = [];
+  const resolvedReferences = [];
+  evidence.lifecycle.init({ log: { debug: () => {} } });
+  briefing.lifecycle.init({
+    storage: {
+      get: (key, fallback) => stored.has(key) ? stored.get(key) : fallback,
+      set: (key, value) => stored.set(key, value),
+    },
+    log: {
+      info: () => {},
+      aviso: () => {},
+      erro: () => {},
+    },
+    metricas: { contar: (name, fields) => metrics.push({ name, fields }) },
+    bus: { emit: (event, payload) => events.push({ event, payload }) },
+    talvez: (target, requirement) => {
+      resolvedReferences.push({ target, requirement });
+      return target === 'evidence' ? evidence.api : null;
+    },
+  });
+
+  const item = {
+    source: 'Fonte de teste',
+    url: 'https://example.test/briefing/1',
+    title: 'Notícia de teste com proveniência',
+    publishedAt: '2026-08-20T10:00:00.000Z',
+    capturedAt: '2026-08-20T10:05:00.000Z',
+    language: 'pt-BR',
+    topics: ['v2'],
+    summary: 'Resumo local para o teste.',
+    confidence: 0.9,
+  };
+  const result = briefing.api.ingest([item, item]);
+
+  assert.deepEqual(resolvedReferences, [{ target: 'evidence', requirement: { versao: 1 } }]);
+  assert.equal(result.ok, true);
+  assert.equal(result.total, 1);
+  assert.equal(result.evidenceLinked, 1);
+  assert.equal(result.evidenceErrors, 0);
+  const linkedEvidence = evidence.api.listByModule('briefing')[0];
+  assert.equal(evidence.api.listByModule('briefing').length, 1);
+  assert.equal(linkedEvidence?.claimKey, `briefing:${result.items[0].id}:article`);
+  assert.equal(linkedEvidence?.moduleId, 'briefing');
+  assert.deepEqual(events, [
+    { event: 'briefing:atualizado', payload: { total: 1, evidenceLinked: 1, evidenceErrors: 0 } },
+  ]);
+  assert.equal(metrics[0].name, 'briefing_ingestao');
+  assert.deepEqual(briefing.api.health(), {
+    ok: true,
+    status: 'ready',
+    items: 1,
+    evidence: 'linked',
+    evidenceLinked: 1,
+    evidenceErrors: 0,
+  });
+  briefing.lifecycle.dispose();
+  evidence.lifecycle.dispose();
+});
+
+
+test('Briefing permanece utilizável sem Evidence e sinaliza a capacidade ausente', () => {
+  const stored = new Map();
+  briefing.lifecycle.init({
+    storage: {
+      get: (key, fallback) => stored.has(key) ? stored.get(key) : fallback,
+      set: (key, value) => stored.set(key, value),
+    },
+    log: { info: () => {}, aviso: () => {}, erro: () => {} },
+  });
+  const result = briefing.api.ingest([{
+    source: 'Fonte local',
+    url: 'https://example.test/briefing/fallback',
+    title: 'Candidato sem Evidence ativa',
+  }]);
+  assert.equal(result.ok, true);
+  assert.equal(result.evidenceLinked, 0);
+  assert.equal(result.evidenceErrors, 0);
+  assert.equal(briefing.api.health().evidence, 'not-configured');
+  briefing.lifecycle.dispose();
 });

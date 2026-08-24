@@ -7,7 +7,7 @@
 
 import '../styles/tv.css';
 import { h, cx, empty, pad2 } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 import { TV_CHANNELS, channelForHour, dailySchedule, TOTAL_CHANNELS } from '../data/tv.js';
 import type { TvChannel } from '../data/tv.js';
 

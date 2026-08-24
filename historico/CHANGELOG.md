@@ -6,6 +6,1008 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-24 — O Núcleo sabe o que toca sem passar pelo Spotify
+
+A queixa: *"por algum motivo mesmo eu sendo redirecionado eu não consigo
+conectar ao spotify"*. E, depois do diagnóstico: *"acho que criar algo que faça
+isso funcionar seria legal"*.
+
+**O handshake do Spotify está correto** — exercitado ponta a ponta em navegador.
+O que trava não é código: é configuração de terceiro. Conta, app registado no
+dashboard, e — enquanto o app estiver em **Development mode** — a conta do
+operador listada em User Management. Nenhuma linha deste repositório resolve a
+terceira, e melhorar a mensagem de erro só explica melhor a mesma parede.
+
+**O Windows já sabe.** O SMTC é o cartão de mídia do sistema, e qualquer
+aplicação que toque som publica ali: o Spotify de desktop, o Spotify no
+navegador, o YouTube, o VLC. Ler dali dá título e artista **sem conta, sem OAuth,
+sem allowlist** — e cobre mais fontes do que o caminho do Spotify jamais cobriria,
+porque ele só sabe do Spotify.
+
+Entrou a leitura nativa: `powershell` (WinRT) → `desktop/src/musica.js` → canal
+IPC `musica:agora` → poller de 5 s → presença global → o quadro do V7. **O Núcleo
+não mudou**: ele já consumia a presença desde a 1.3.6; trocou-se quem a alimenta.
+No app, quando o SMTC responde, ele ganha do Spotify — é a fonte que reflete o
+que o operador está mesmo a ouvir. Na web, o Spotify continua a ser o único
+caminho, e continua inteiro.
+
+Só metadado atravessa: título, artista, estado e app de origem. Nunca áudio,
+nunca comandos de reprodução. O espectrómetro continua a vir da captura do
+sistema — as duas juntas são a resposta inteira: o SMTC dá o **nome**, a captura
+dá a **forma de onda**.
+
+Fora do Windows a sonda **degrada com motivo** em vez de estourar, e na web diz
+onde a capacidade mora. O canal `musica:diagnostico` devolve o texto cru da
+sonda, porque uma falha na máquina do operador chegaria aqui como "não
+funcionou" e nada mais.
+
+Suíte `1306/1306`, portão de integração `58/58`, build, typechecks,
+`verificar-nexus`, catálogos e tabela de estabilidade verdes. Verificado em
+navegador com a ponte nativa simulada. **Não verificado:** a leitura real do
+WinRT — esta sessão corre em Linux, e o SMTC exige Windows.
+
+**Documentação:** [`docs/v2/MUSICA_NATIVA_SMTC_2026-08-24.md`](../docs/v2/MUSICA_NATIVA_SMTC_2026-08-24.md).
+
+---
+
+## 2026-08-24 — Release `1.3.7`: o Núcleo vira o palco, e a conversa sobe por cima dele
+
+A queixa do operador, olhando o app: *"tem como deixar essa parte de forma que
+ela fique dentro e seja ativável pelos botões do jarvis […] mas sem descer criar
+mais página para baixo como está agora"*.
+
+A rota `/jarvis` empilhava três blocos — o Núcleo V7, a barra de estado com o
+`⚙ Modos & Config`, e a conversa. A página crescia para baixo e o 3D, que é a
+superfície principal, virava cabeçalho de outra coisa. Agora o Núcleo ocupa a
+área de conteúdo inteira e as duas superfícies flutuam **sobre** ele, uma de cada
+vez, como gaveta à esquerda: `◈ conversa` (atalho `c`) e `⚙ config` (atalho `g`),
+premidos no próprio HUD do V7. Premir o botão aceso fecha; `Esc` também. A
+largura para antes da coluna de ações do Núcleo, porque são aqueles botões que
+abrem e fecham isto.
+
+**O Núcleo não abre nada** — e é isso que torna a mudança barata. Ele vive num
+`<iframe>` e não sabe o que é uma sessão de chat; implementar os botões lá dentro
+daria ao artefato 3D, que também roda sozinho, dependência de coisas que não
+existem nele. Então a página **declara** o que tem (`baluarte-superficies`), o
+Núcleo apenas **avisa** que o botão foi premido (`baluarte-nucleo-acao`), e a
+página abre e **devolve o estado** para o botão acender
+(`baluarte-superficie-estado`). Tudo same-origin, com `targetOrigin` fechado, e a
+oferta é reenviada no `load` do quadro — sem isso, um reload deixaria os botões
+escondidos com a conversa aberta atrás deles. A web não declara superfície
+nenhuma, e lá os botões continuam invisíveis.
+
+Como os botões moram dentro do V7, um three.js que não chegue levaria a conversa
+junto. A tira `.jv-palco__socorro` traz os mesmos dois botões fora do quadro e
+aparece **somente** com o visual em `fallback`.
+
+**A altura passou a ser medida, não calculada.** `calc(100vh - cabeçalho -
+padding)` errava por 39 px, porque o que fica acima do palco varia — a faixa "V2
+em construção" é dispensável pelo operador. Trinta e nove pixels são o bastante
+para nascer a barra de rolagem que o palco existe para não ter.
+`ocuparAlturaRestante()` mede, remede até o layout assentar, e solta os ouvintes
+ao sair da rota.
+
+**Um resto conhecido, que não é deste palco:** a página ainda rola 40 px porque
+`.shell` tem `min-height: 100vh` e fica abaixo da faixa de 40 px do topo. É
+anterior a esta mudança e vale para as 99 rotas; a correção é de uma linha no
+`layout.css`, mas mexe no shell de tudo e não entra de carona aqui.
+
+Suíte `1291/1291`, `verificar-nexus`, catálogos e tabela de estabilidade verdes,
+typechecks sem erro. Observação de navegador com o app simulado: abrir pela ação
+vinda de dentro do quadro acende o botão certo, trocar de superfície fecha a
+anterior, `Esc` fecha, e a `.page-jarvis` termina em 886 px numa janela de 900.
+
+**Documentação:** [`docs/releases/v1.3.7.md`](../docs/releases/v1.3.7.md) e [`docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md`](../docs/v2/JARVIS_PALCO_SUPERFICIES_2026-08-24.md).
+
+---
+
+## 2026-08-23 — Release `1.3.6`: o Núcleo sabe o que toca, e passa a poder acompanhar
+
+A queixa do operador: *"a função música não reconhece a música que tá tocando no
+spotify, como resultado o espectrômetro não acompanha a música"*. Uma frase, duas
+causas independentes.
+
+**O Núcleo não sabia.** O V7 vive num `<iframe>` e não fala com o Spotify — quem
+tem a sessão é a página que o embute, e não havia canal nenhum entre as duas. O
+botão `♪ música` chamava a partitura generativa do Baluarte e respondia
+*"partitura generativa a tocar"* com a faixa do operador tocando na cara dele.
+Agora a página publica os metadados no quadro por `postMessage` same-origin, com
+`targetOrigin` fechado, e o V7 só aceita mensagem do próprio pai, da mesma origem
+e com a etiqueta certa. O botão passa a dizer `♪ Paint It, Black · The Rolling
+Stones`; sem título utilizável, `♪ spotify a tocar`; nada tocando, volta a
+`♪ música`. A ponte sobe **antes** da cena: ela não depende do three.js, e o
+botão precisa dizer a verdade mesmo enquanto o astrolábio alinha.
+
+**O Núcleo não podia acompanhar — e por aí não há conserto.** O Spotify não
+entrega som a esta página: a Web API dá metadados, a política do endpoint diz
+*"do not synchronize Spotify content"*, e nem o Web Playback SDK salvaria,
+porque o áudio dele passa por EME/DRM e um `createMediaElementSource` sobre ele
+devolve silêncio. O que existe é analisar o som **real**: entrou
+`AudioEngine.captureSystem()`, com `getDisplayMedia` de áudio de aba ou de
+sistema. Só o analisador recebe o sinal — devolver a música com atraso por cima
+do que já se ouve seria pior que nada; a faixa de vídeo, que o Chrome exige
+pedir para dar áudio de aba, morre na entrada; e cada modo de falha ensina o
+passo seguinte em vez de dizer "não deu".
+
+Dois caminhos chegam lá: o botão novo `◐ som do pc` (atalho `a`), e o próprio
+`♪ música` — que, **com o Spotify tocando**, deixa de significar "inventa uma" e
+passa a significar "esta". Sem Spotify tocando, o comportamento antigo continua
+inteiro. O quadro passou a declarar `allow="microphone; display-capture"`: ele é
+same-origin e já herdaria a política, mas declarar é o que impede uma mudança
+futura de origem ou de cabeçalho de desligar as duas capacidades em silêncio.
+
+Suíte `1279/1279`, portão de integração `58/58`, build, typechecks,
+`verificar-nexus` e catálogos verdes. A ponte foi exercitada em navegador ponta a
+ponta, **incluindo a rejeição de mensagem forjada de outra fonte**. O que a
+observação não cobriu está dito na nota: o clique em `◐ som do pc`, porque os
+handlers do HUD sobem dentro do `init()`, que exige o three.js — bloqueado no
+ambiente remoto.
+
+**Documentação:** [`docs/releases/v1.3.6.md`](../docs/releases/v1.3.6.md).
+
+---
+
+## 2026-08-23 — Release `1.3.5`, onda 2: a web recebe o Núcleo, e o Spotify vira um clique
+
+Duas coisas que o operador viu na tela do site, e que eram a mesma dívida
+antiga: o mega-plano #238 diz *web leve, app completo*, e a rota `/jarvis` fazia
+o contrário.
+
+**O que a web mostrava.** A superfície inteira do JARVIS — seis modos de IA,
+sessões em IndexedDB, memória, recall, skills, agente com ferramentas — empilhada
+embaixo do Núcleo V7, que ficava espremido no topo. Agora `/jarvis` escolhe a
+página pelo ambiente: no navegador carrega `src/pages/jarvis-nucleo.ts`, que é o
+Núcleo V7 ocupando a área de conteúdo com as funções dele no canto (música,
+ficheiro, microfone, pulso, varrimento, dissecar, retrato, rotação, captura e os
+três temas), mais a doca de presença musical; no Launcher
+(`window.baluarte.native`) segue carregando o JARVIS completo, intacto. São dois
+chunks: o da web mede **2,4 kB**, contra os ~50 kB da página completa mais
+`jarvis-engine`, `jarvis-brain`, memória e recall que ela arrasta. O cockpit do
+Núcleo continua abrindo a página completa na aba própria, e isso é app-only.
+
+**O que o botão do Spotify respondia.** *"O Spotify ainda não está configurado
+neste app. Peça ao administrador para concluir a configuração uma única vez."* —
+num projeto pessoal, esse administrador é o próprio operador. O aplicativo
+`Baluarte JARVIS` já existe no Spotify for Developers, com as duas Redirect URIs
+de produção cadastradas, então o Client ID **público** passou a viver no código
+(`SPOTIFY_PUBLIC_CLIENT_ID`), com `VITE_SPOTIFY_CLIENT_ID` mantendo precedência
+para quem hospedar com um app próprio. Ele é identificador público por
+construção — o PKCE/S256 existe para que possa ser: sem o `code_verifier` da
+sessão ninguém troca código por token. Client Secret, access token e refresh
+token continuam fora do repositório e fora do navegador persistente. Na página
+completa, o campo técnico "Client ID público" some quando o build já traz o
+valor, e volta sozinho num build publicado sem ele.
+
+**Um terceiro defeito, achado ao verificar.** O `load` de um `<iframe>` conta que
+o *documento* carregou, não que o núcleo subiu: com o three.js indisponível, o
+pai marcava `ready` e exibia um retângulo com a frase `falha ao carregar
+three.js`. Tolerável quando o núcleo era um bloco no topo; inaceitável agora que
+ele é a página inteira. O artefato V7 passou a avisar o desfecho por
+`postMessage` same-origin, e `createJarvisV7Visual` troca para a referência
+estática quando o arranque falha. O caminho foi exercitado de verdade: a CDN do
+three.js está bloqueada no ambiente remoto, e a observação de navegador terminou
+em `data-visual-state="fallback"`, sem `.jarvis-chat` e sem `.jv-sessions`.
+
+Suíte local `1265/1265`, build, `verificar-nexus`, catálogos de eventos e
+storage, tabela de estabilidade e `tsc` limpos.
+
+**Documentação:** [`docs/v2/JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md`](../docs/v2/JARVIS_NUCLEO_WEB_CONTRACT_2026-08-23.md),
+[`docs/v2/JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md`](../docs/v2/JARVIS_SPOTIFY_INTEGRATION_CONTRACT_2026-08-22.md)
+e [`docs/v2/JARVIS_SPOTIFY_USER_GUIDE.md`](../docs/v2/JARVIS_SPOTIFY_USER_GUIDE.md).
+
+---
+
+## 2026-08-22 — Release `1.3.5`, onda 1: layout V7 + conversa
+
+O slice funcional publicado no commit `a1f0a03b` recompõe a rota real `/jarvis`: o Núcleo V7 ocupa a superfície principal, a conversa aparece diretamente abaixo e o painel grande de presença musical deixa de interromper esse fluxo. O Spotify permanece disponível dentro de `Modos & Config`, limitado a metadados read-only e PKCE.
+
+A validação local passou `1264/1264` testes, `58/58` na integração browser com as asserções novas, `99/99` rotas no smoke, `15/15` no caminho crítico, typechecks e build. A CI aplicável do commit funcional terminou verde.
+
+> **A 1.3.5 não foi publicada nesta data.** Ela ficou em preparação até 23/08, quando a onda 2 (a entrada acima) dividiu a rota por ambiente: este layout passou a valer **só para o app**, e a web recebeu o Núcleo sozinho. As duas ondas saem juntas na mesma versão — a nota é [`docs/releases/v1.3.5.md`](../docs/releases/v1.3.5.md).
+
+**Documentação:** [`docs/releases/v1.3.5.md`](../docs/releases/v1.3.5.md), [`docs/v2/JARVIS_V7_CHAT_LAYOUT_CONTRACT_2026-08-22.md`](../docs/v2/JARVIS_V7_CHAT_LAYOUT_CONTRACT_2026-08-22.md) e [`docs/v2/JARVIS_V7_CHAT_LAYOUT_OBSERVATION_2026-08-22.md`](../docs/v2/JARVIS_V7_CHAT_LAYOUT_OBSERVATION_2026-08-22.md).
+
+---
+
+## 2026-08-22 — Release `1.3.3`: integração visual do Núcleo V7 publicada
+
+O commit funcional `6d62a0ce` integra o artefato local JARVIS Núcleo V7 à rota real `/jarvis` por composição same-origin sandboxed, mantendo o console Mark XIII como fallback. Chat, sessões, memória, modos de IA, observação do Runtime e Spotify read-only permanecem fora do iframe; nenhum segredo, token ou permissão de microfone/autoplay é transferido.
+
+A validação local passou a suíte `1262/1262`, integração browser `56/56`, smoke `99/99`, caminho crítico `15/15`, typechecks, build e o runner oficial com 20 gates de código. A CI remota passou em 8/8 workflows no commit funcional `6d62a0ce` e em 8/8 workflows no commit de versionamento `57e2adb0`. O Desktop Release `32598087385` passou em Windows, macOS ARM64 e Ubuntu.
+
+**Status:** publicada com as tags `v1.3.3` e `desktop-v1.3.3`, ambas apontando para `57e2adb08b5a5c6b9142da069a8ab12597bc8030`. A release pública não é draft nem prerelease, possui oito assets e todos os downloads responderam HTTP 200; os três manifests declaram `version: 1.3.3`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.3.3
+
+**Documentação:** [`docs/releases/v1.3.3.md`](../docs/releases/v1.3.3.md), [`docs/v2/JARVIS_V7_INTEGRATION_CONTRACT_2026-08-22.md`](../docs/v2/JARVIS_V7_INTEGRATION_CONTRACT_2026-08-22.md) e [`docs/v2/JARVIS_V7_BROWSER_OBSERVATION_2026-08-22.md`](../docs/v2/JARVIS_V7_BROWSER_OBSERVATION_2026-08-22.md).
+
+---
+
+## 2026-08-22 — Release `1.3.2`: auditoria estrutural local Evidence publicada
+
+A release `1.3.2` adiciona ao módulo V2 Evidence uma projeção `auditPreview(options?)` local, estrutural, bounded e somente leitura. Ela permite filtrar por `moduleId`, limitar a saída e observar contagens dos registros devolvidos por status, sem criar um event log operacional, sem apagar dados e sem conceder autoridade.
+
+Cada registro projetado contém somente `id`, `moduleId`, `status` e `observedAt`; o resumo contém `returned`, contagens de `pending`, `verified`, `rejected` e `superseded`, além de `truncated`. Statement, source, URI, publisher, revision, collector, confidence, claimKey, retrievedAt, supersededBy, tokens, claims e permissões não atravessam a fronteira.
+
+Os testes focais do contrato passaram `11/11`; a integração browser passou `51/51`; o runner oficial passou os gates de código aplicáveis, mantendo Rust local como `blocked-known` código 101 por incompatibilidade de toolchain. O commit funcional `dbd09f52` e o commit de versionamento `5d2142d7` foram publicados diretamente na `main`, com CI remota aplicável verde.
+
+**Status:** publicada com as tags `v1.3.2` e `desktop-v1.3.2`. A CI remota do commit de versionamento passou em 8/8 workflows; o Desktop Release `32595313050` terminou verde em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease e possui oito assets verificados.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.3.2.exe` (644.015.829 bytes), `Baluarte-Launcher-1.3.2.AppImage` (773.768.687 bytes), `Baluarte-Launcher-1.3.2-arm64.dmg` (406.309.979 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.3.2`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.3.2
+
+**Documentação:** [`docs/releases/v1.3.2.md`](../docs/releases/v1.3.2.md), [`docs/v2/EVIDENCE_AUDIT_PREVIEW_CONTRACT_2026-08-22.md`](../docs/v2/EVIDENCE_AUDIT_PREVIEW_CONTRACT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
+
+---
+
+## 2026-08-22 — Release `1.3.1`: preview local de retenção Evidence publicada
+
+A release `1.3.1` adiciona ao módulo V2 Evidence uma projeção `retentionPreview(options)` local, determinística, bounded e somente leitura. Ela classifica registros pela idade relativa a uma data `now` explícita, sem apagar, alterar, verificar ou promover evidências. A saída omite conteúdo de claims, fontes, tokens e permissões.
+
+Os testes focais do contrato passaram `9/9`; a integração browser passou `50/50`; o runner oficial corrigido para a porta padrão passou todos os gates de código, mantendo apenas Rust local como `blocked-known` código 101 por incompatibilidade de toolchain. O commit funcional `752206fb` foi publicado diretamente na `main` e a CI remota aplicável terminou verde.
+
+**Status:** publicada no commit de versionamento `9b7343940c82c3ba487a0129b0171e38794c6567`, com as tags `v1.3.1` e `desktop-v1.3.1`. A CI remota aplicável passou em 8/8 workflows; o Desktop Release `32592402608` terminou verde em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease e possui oito assets verificados.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.3.1.exe` (644.015.682 bytes), `Baluarte-Launcher-1.3.1.AppImage` (773.768.691 bytes), `Baluarte-Launcher-1.3.1-arm64.dmg` (406.508.904 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.3.1`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.3.1
+
+**Documentação:** [`docs/releases/v1.3.1.md`](../docs/releases/v1.3.1.md), [`docs/v2/EVIDENCE_RETENTION_CONTRACT_2026-08-22.md`](../docs/v2/EVIDENCE_RETENTION_CONTRACT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
+
+---
+
+## 2026-08-22 — Release `1.3.0`: fila local de revisão Evidence publicada
+
+A release `1.3.0` adiciona ao piloto Wiki Zomboid uma `reviewQueue(limit)` local, bounded e somente leitura. A fila considera apenas evidências `pending`, usa limite padrão 25 e máximo 100, congela a saída e retorna somente `id`, `claimKey`, `status`, `confidence`, `observedAt` e `sourceRevision`. Não há `markStatus` no Wiki, conteúdo de claim, fonte, URI, publisher, token, role ou permissão expostos.
+
+O teste focal cobre dois registros pendentes, limite, campos omitidos, imutabilidade, argumentos inválidos, fallback sem Evidence e exclusão após `verified` usando a API do módulo Evidence apenas no teste. A integração browser passou `49/49`; o runner oficial passou os gates locais aplicáveis, com Rust `blocked-known` código 101 mantido por incompatibilidade de toolchain. O commit funcional `3f05e240` e o hardening `0ab6f428` foram publicados diretamente na `main`, com CI remota aplicável verde.
+
+**Status:** publicada no commit de versionamento `9ae47cea549b886874a223b4adf9573cc07e1e29`, com as tags `v1.3.0` e `desktop-v1.3.0`. Os oito workflows remotos aplicáveis passaram; o Desktop Release `32588898329` terminou verde em Windows, macOS ARM64 e Ubuntu. A release pública não é draft nem prerelease.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.3.0.exe` (644.015.736 bytes), `Baluarte-Launcher-1.3.0.AppImage` (773.768.732 bytes), `Baluarte-Launcher-1.3.0-arm64.dmg` (406.515.679 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.3.0`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.3.0
+
+**Documentação:** [`docs/releases/v1.3.0.md`](../docs/releases/v1.3.0.md), [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md) e [`docs/v2/PHASE_02_EVIDENCE_SLICE.md`](../docs/v2/PHASE_02_EVIDENCE_SLICE.md).
+
+---
+
+## 2026-08-22 — Release `1.2.9`: observabilidade de status da Evidence publicada
+
+A release `1.2.9` continua o piloto V2 Wiki Zomboid/Evidence com contagens bounded por status (`pending`, `verified`, `rejected` e `superseded`). A view informa somente a quantidade de registros vinculados e pendentes; não há ação de aprovação, alteração de status, exposição de statements ou autoridade client-side.
+
+O módulo continua local/read-only, sem permissões novas, rede, scraping, persistência, Supabase, Auth, RLS, OpenClaw ou WhatsApp. O teste focal passou 4/4, a integração browser passou 48/48 e o runner oficial passou 21 gates, com Rust local 101 mantido como `blocked-known`.
+
+**Status:** publicada no commit `55690622e3d3254da6fd7f5e7c856771d641c1a7`, com as tags `v1.2.9` e `desktop-v1.2.9`. Os oito workflows remotos do commit passaram. O Desktop Release `32586471279` terminou verde em Windows, macOS ARM64 e Ubuntu.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.2.9.exe` (644.015.671 bytes), `Baluarte-Launcher-1.2.9.AppImage` (773.768.702 bytes), `Baluarte-Launcher-1.2.9-arm64.dmg` (406.495.909 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos declarando `version: 1.2.9`.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.9
+
+**Documentação:** [`docs/releases/v1.2.9.md`](../docs/releases/v1.2.9.md) e [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md).
+
+---
+
+## 2026-08-22 — Release `1.2.8`: piloto Wiki Zomboid e Evidence publicada
+
+A release `1.2.8` adiciona o piloto V2 Wiki Zomboid com schema TypeScript, catálogo local bounded e proveniência explícita. O módulo declara `references.modules: ['evidence']`, resolve Evidence por `ctx.talvez('evidence', { versao: 1 })` e mantém fallback funcional quando Evidence não está disponível.
+
+O harness V2 passa a registrar sete módulos, 20 rotas internas e seis itens de navegação. A superfície `/wiki-zomboid` permanece local/read-only e não substitui as rotas públicas V1 `/zomboid` e `/zomboid-admin`. O slice passou teste focal `4/4`, suíte `1254/1254`, integração browser `48/48` e runner oficial com 21 gates verdes; Rust local código 101 permanece `blocked-known`.
+
+**Status:** publicada no commit `77dbfff135c788903c7f87a6618b38063f097a59`, com as tags `v1.2.8` e `desktop-v1.2.8`. Os oito workflows remotos do commit passaram. O Desktop Release `32584486665` terminou verde em Windows, macOS ARM64 e Ubuntu.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.2.8.exe` (644.015.586 bytes), `Baluarte-Launcher-1.2.8.AppImage` (773.768.715 bytes), `Baluarte-Launcher-1.2.8-arm64.dmg` (406.549.251 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`. Os manifestos declaram `version: 1.2.8` e os SHA-512 dos instaladores.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.8
+
+**Documentação:** [`docs/releases/v1.2.8.md`](../docs/releases/v1.2.8.md) e [`docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md`](../docs/v2/WIKI_ZOMBOID_SCHEMA_PILOT_2026-08-22.md).
+
+---
+
+## 2026-08-22 — Release `1.2.7`: Briefing→Evidence pelo Registry publicada
+
+A release `1.2.7` sincroniza a versão web e do Launcher e promove o vínculo do Briefing com a Evidence Layer pelo contrato real de módulos V2: `references.modules: ['evidence']` e `ctx.talvez('evidence', { versao: 1 })`. O harness registra seis módulos ativos, Evidence continua sem rota e a navegação V1 permanece com cinco entradas.
+
+A superfície do Briefing informa quando a Evidence local está conectada. O marco continua local/read-only: não adiciona Supabase, DDL, migrations, RLS, Auth de produção, OpenClaw, WhatsApp, publicação automática ou ações externas. A suíte anterior passou em `1250/1250`, a integração em `46/46`, smoke em `99/99`, caminho crítico em `15/15` e o runner manteve 21 gates verdes com Rust local `blocked-known` código 101.
+
+**Status:** publicada no commit `0e200328612c64299f550363fe3440712e491806`, com as tags `v1.2.7` e `desktop-v1.2.7`. Os oito workflows remotos do commit passaram; o Desktop Release `32581796791` terminou verde nos três sistemas. A release pública não é draft nem prerelease e os três instaladores responderam HTTP 200.
+
+**Assets verificados:** `Baluarte-Launcher-Setup-1.2.7.exe` (644,015,362 bytes), `Baluarte-Launcher-1.2.7.AppImage` (773,768,701 bytes), `Baluarte-Launcher-1.2.7-arm64.dmg` (406,313,600 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`, todos publicados na release.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.7
+
+**Documentação:** [`docs/releases/v1.2.7.md`](../docs/releases/v1.2.7.md).
+
+---
+
+## 2026-08-20 — Release `1.2.6`: JARVIS Núcleo V7 publicada
+
+A linha `1.2.6` promove o visual **JARVIS Núcleo V7 — Astrolábio Sonoro** como entrypoint 3D canônico do Vite. A experiência usa TypeScript como fonte, artefato JavaScript standalone, Three.js, Web Audio reativo, deteção de batida, FFT, temas ouro/rubi/jade, vistas, pulso, varrimento e captura.
+
+O bump de versão foi sincronizado em `package.json`, `package-lock.json`, `desktop/package.json`, `desktop/package-lock.json`, `src/data/version.js`, `public/sw.js` e no default do workflow Desktop Release. O Service Worker usa `baluarte-v1.2.6` para invalidar os caches anteriores.
+
+O contrato `test/jarvis-v7-release.test.js` comprova a existência do HTML, TypeScript e artefato compilado e verifica que `vite.config.js` empacota a variante da pasta `project V2/Modelar objeto 3D`. Os gates locais executados antes da publicação foram: Nexus verde, TypeScript V1/V2 verde, testes verdes, build verde, integração V2 `25/25`, smoke `99/99` e caminho crítico `15/15`.
+
+O workflow `32405066321` terminou com sucesso em Windows, macOS ARM64 e Ubuntu. A tag `v1.2.6` está pública, não é draft e não é prerelease; a API de releases passou a retornar `v1.2.6` como Latest.
+
+**Main SHA auditado:** `e3dcf5b8f8bf751da8dfafc9d332d8adf19cc652`.
+
+**Tags:** `v1.2.6` e `desktop-v1.2.6`, ambas apontando para o SHA auditado.
+
+**Assets verificados HTTP 200:** `Baluarte-Launcher-Setup-1.2.6.exe` (644,007,179 bytes), `Baluarte-Launcher-1.2.6.AppImage` (773,760,467 bytes), `Baluarte-Launcher-1.2.6-arm64.dmg` (406,503,539 bytes), dois blockmaps e os manifestos `latest.yml`, `latest-linux.yml` e `latest-mac.yml`. Os manifestos declaram `version: 1.2.6` e os SHA-512 dos instaladores.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.6
+
+**Documentação:** [`docs/releases/v1.2.6.md`](../docs/releases/v1.2.6.md).
+
+---
+
+## 2026-08-20 — Release `1.2.5`: artefatos baixáveis do Baluarte Launcher
+
+A release `1.2.5` alinha a versão do site e do `Baluarte Launcher`, atualizando `package.json`, `package-lock.json`, `desktop/package.json`, `desktop/package-lock.json`, `src/data/version.js` e `public/sw.js`. O Service Worker usa `baluarte-v1.2.5`, invalidando os caches da linha anterior.
+
+O pipeline Desktop Release foi endurecido para conferir a versão do `desktop/package.json` contra o tag `desktop-v1.2.5` quando acionado por tag e contra a versão solicitada quando acionado manualmente. O workflow `32382473203` terminou com sucesso nos jobs Windows, macOS e Ubuntu.
+
+O Launcher deixa de anunciar a linha textual `1.1.5` na mensagem de atualização e passa a descrever a linha `1.2.5`. O comportamento continua opt-in: `autoDownload = false`, confirmação antes do download e confirmação antes da instalação.
+
+A causa da inconsistência anterior foi documentada: o site estava em `1.2.0`, o `desktop/package.json` estava em `1.1.5`, e a cadeia de release desktop era independente da tag web. A página `/baixar` consome `/releases/latest`; após a publicação, a API retornou `v1.2.5` como release Latest, pública e não-prerelease.
+
+**Release pública:** https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v1.2.5
+
+**Main SHA auditado:** `56d026c4b51c4339ce8723c29059ad5822c54e00`.
+
+**Assets verificados:** `Baluarte-Launcher-Setup-1.2.5.exe` (644,006,334 bytes), `Baluarte-Launcher-1.2.5.AppImage` (773,756,395 bytes), `Baluarte-Launcher-1.2.5-arm64.dmg` (406,513,285 bytes), dois blockmaps e os manifests `latest.yml`, `latest-linux.yml` e `latest-mac.yml`. Os oito assets responderam HTTP 200.
+
+---
+
+## 2026-08-20 — Release `1.2.0`: frontend TypeScript incremental e fundação V2
+
+A release `1.2.0` consolida as Waves 23–35 da construção incremental do Projeto-Baluarte. A V1 permanece funcional e compatível, enquanto as fronteiras canônicas do frontend e da camada de utilitários avançam para TypeScript com wrappers `.js` preservados onde consumidores legados ainda existem.
+
+Entre as entregas estão a promoção dos contratos de boot e contexto do JARVIS, presença musical e sessão Spotify, `baluarte-status`, Markdown, briefing de notícias, cor e triangulação, curadoria militar, toast, efeitos imersivos, atmosfera, progresso de scroll, scroll reveal, PWA, contador de visitas, page views, carregadores MapLibre/WebGL, fingerprint engine e card spotlight. O mapa Nexus foi mantido sincronizado com cada promoção arquitetural.
+
+A release também registra a continuidade da fundação V2: Runtime, Registry, Platform, saúde, permissões deny-by-default, integração com o router V1, Data Layer em evolução e contratos de observabilidade. O JARVIS continua tratado como módulo isolável, sem tornar OpenClaw, Spotify ou notícias dependências obrigatórias do boot da V1.
+
+**Validação do SHA da Wave 35 (`561aff89f90fac275d892ba0764cfdddd6c9a7bc`):** `verificar-nexus`, `tipos:ts`, `tipos:v2`, testes, build, integração V2 `21/21`, smoke `99/99` e caminho crítico `15/15` verdes. Os oito workflows remotos — CI, V2 Runtime, V2 Core, Core CI, V2 Validation, CodeQL, Arma 3 Data CI e Vigia das rotas — terminaram com sucesso. O runtime Rust local continua com a limitação conhecida do Cargo 1.75.0 diante de dependência `edition2024`; o workflow remoto correspondente passou.
+
+A versão foi alinhada em `package.json`, `package-lock.json`, `src/data/version.js`, `public/sw.js` e README. A alteração do Service Worker usa `baluarte-v1.2.0`, invalidando caches das releases anteriores conforme o contrato de atualização offline.
+
+Relatório técnico da onda: [`docs/v2/TYPESCRIPT_MIGRATION_WAVE_35_2026_08_20.md`](../docs/v2/TYPESCRIPT_MIGRATION_WAVE_35_2026_08_20.md).
+
+---
+
+## 2026-08-18 — `/arma3-tutorial` fecha a migração: **nenhuma página canônica em JavaScript**
+
+A última das cinco. Com ela, o comando de verificação do
+`docs/PROMPT-MIGRACAO-TS.md` imprime `nenhuma pagina canonica em JS` — todo
+`.js` em `src/pages/` é wrapper de uma linha, e são **114 implementações `.ts`**
+(contadas com `globSync('src/pages/**/*.ts')`, subpastas incluídas).
+
+**A página mais bloqueada era a mais bloqueada por um motivo:** 13 fontes sem
+declaração, somando ~6.500 linhas de catálogo gerado. Todas ganharam `.d.ts` com
+as formas **medidas** sobre o dado real, não supostas.
+
+**O que o tipo achou, e não era pouco:**
+
+- **Quatro `carregar*()` devolvem o ENVELOPE, não o array.** `carregarAcessorios`,
+  `carregarVeiculos`, `carregarEquipamento` e `carregarSoldados` chamam
+  `buscarDataset` **sem** `campo`, então entregam `{ acessorios: […] }`,
+  `{ veiculos: […], faccoes: … }` e assim por diante. Só `carregarArsenal` passa
+  `campo: 'armas'` e devolve a lista. Declarar array nos quatro teria posto um
+  `.filter is not a function` esperando a primeira pessoa que os usasse.
+- **`Arma3Preset` não declarava `id`** — e a página inteira depende de
+  `ARMA3_PRESETS.find((p) => p.id === PRESET_ID)`. O campo existe no dado desde
+  sempre; para o TypeScript, não existia.
+- **O `find` do preset podia devolver `undefined`** e a página seguia montando
+  `preset.mods` e `preset.arquivo`. Agora, se o preset oficial sumir do catálogo,
+  a tela diz isso em uma linha em vez de estourar no meio da montagem.
+- **Um termo de busca morto na aba Soldados.** O filtro concatenava
+  `${(s.classes || []).join(' ')}`, e **soldado não tem campo `classes`** —
+  medido: 0 de 940 (quem tem é o equipamento, 241 de 241). O termo sempre somou
+  string vazia. Saiu; a busca faz exatamente o que já fazia.
+
+**O depósito `D` é a peça que mais ganhou com o tipo.** Ele recebe módulos por
+`import()` dinâmico conforme a aba abre, e antes era `{}` — qualquer acesso
+passava. Agora é a interseção dos nove namespaces, cada um `Partial`, porque
+"ainda não chegou" é o estado normal. Ler dele exige `exigirBase()`, que **falha
+alto** dizendo qual base faltou, em vez de deixar um `undefined.filter` estourar
+cinco quadros depois, longe da causa.
+
+Zero `any`: as **114** páginas em TypeScript seguem sem nenhuma ocorrência de
+`: any` ou `as any`.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 rotas verdes**
+· build limpo. Portão confirmado vendo o arquivo: defeito plantado em
+`arma3-tutorial.ts` deixa o `tipos:ts` vermelho.
+
+`/arma3-tutorial` rendeu **29.101 caracteres e 957 nós** — o **mesmo** número da
+medição anterior à migração. As quatro páginas desta rodada bateram exatamente o
+tamanho de antes (`/wiki-arma3` 3.658/263, `/vanguard` 12.141/659, `/jarvis`
+913/47), que é a evidência de que o comportamento não mudou — não só de que a
+rota abre.
+
+## 2026-08-18 — `/jarvis` em TypeScript, e quatro exportações que o TypeScript não enxergava
+
+Quarta das cinco últimas páginas. Implementação em `src/pages/jarvis.ts`; o `.js`
+virou re-export e o `src/main.js` não mudou.
+
+**O padrão do dia se repetiu: o defeito estava nas declarações, não na página.**
+Cinco fontes não tinham `.d.ts` (`jarvis-memory`, `jarvis-recall`,
+`jarvis-skills`, `jarvis-style`, `jarvis-tools` — 1.091 linhas), e as que
+existiam estavam **incompletas de um jeito que só aparece quando alguém tenta
+usá-las**:
+
+- `processNewsBriefing` e `healthCheckServer` são exportadas pelo
+  `jarvis-engine.js` e **não estavam declaradas** — para o TypeScript elas não
+  existiam, embora a página importe as duas desde sempre. Mesma coisa com
+  `isWebGPUAvailable` e `preloadWebLLM` (`jarvis-webllm`),
+  `HERMES_AGENT_DEFAULT` (`jarvis-hermes-agent`) e `HERMES_LOCAL_DEFAULT_URL`
+  (`hermes-local`). Seis exportações invisíveis, todas em uso.
+- `getBaluarteBriefing()` estava declarada **sem argumento**, mas a implementação
+  real (`jarvis-context.ts`) recebe `{ compact }` — e a página passa. O
+  `compact` é o que encurta o briefing em todos os modos **menos** os de agente,
+  que precisam do texto inteiro para escolher ferramenta.
+- `WebLLMCallbacks.onProgress` estava declarada com **um** parâmetro; a
+  implementação chama com **dois** (`texto, fração 0..1`). A barra de progresso
+  do download usa a fração — declarar só o texto tornaria o segundo parâmetro um
+  erro de tipo justamente em quem já o consome.
+
+O `role` das mensagens virou união fechada (`'user' | 'jarvis' | 'tool'`), o que
+alinha a memória com o `jarvis-engine` e deixa a conversa ir direto para os
+motores sem conversão nem asserção.
+
+**Na página, o TypeScript pegou uma bolha que ele achava que nunca existia:** no
+modo Navegador a bolha de streaming é criada dentro do callback `onToken`, e o
+compilador não enxerga atribuição feita em closure — concluía que ela seguia
+`null` depois do `await` e estreitava para `never`. A bolha passou a morar num
+objeto, que é o que a análise de fluxo consegue acompanhar.
+
+As peças que só existem depois do boot (`messagesEl`, `inputEl`, `config`) ganharam
+um acessor `exigir()` que **lança** se forem usadas antes — o mesmo desfecho que
+a versão JavaScript já tinha (`TypeError`), de propósito: `return` mudo ali daria
+exatamente o retrato verde de peça desligada.
+
+Zero `any`: nenhuma página em TypeScript tem uma ocorrência sequer.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · build limpo. Portão
+confirmado vendo o arquivo: defeito plantado em `jarvis.ts` deixa o `tipos:ts`
+vermelho.
+
+## 2026-08-18 — `/vanguard` em TypeScript: o motor de tiro inteiro ganha declaração, e um `"null"` que ia parar na tela
+
+Terceira das cinco últimas páginas. A implementação foi para
+`src/pages/vanguard.ts`; o `.js` virou re-export e o `src/main.js` não mudou.
+
+**O trabalho não foi a página, foram as fontes.** A `/vanguard` consome 5 módulos
+que não tinham tipo, e um deles é o motor do Project Vanguard inteiro —
+`src/utils/vanguard/`, ~2.000 linhas de matemática pura reexportadas por um
+`index.js` de `export *`. Declarar só os 7 símbolos que a página usa teria
+deixado os outros ~50 invisíveis, e **`export *` que não resolve não vira erro
+sob `skipLibCheck`: vira `any` em silêncio**, que é exatamente o defeito
+consertado ontem no `A3ColInfo`. Então foram os 9 arquivos, um `.d.ts` cada:
+`angles`, `geo`, `mgrs`, `gridref`, `arma3-grid`, `ballistics`, `charges`,
+`fire-mission` e o `index`. Mais `arma3-armas`, `arma3-terrenos`,
+`arma3-balistica` e `arma3-grade`.
+
+As declarações não são decorativas — foram testadas com o defeito plantado, e
+**recusam as seis coisas erradas** que interessam: sistema de mil inventado
+(`radToMil(1, 'inventado')`), ler `elevacaoRad` de uma solução que não resolveu,
+misturar `lat` com `x/y` numa posição, tratar `A3ARM[0].v0` como `number` (é
+`number | null`), tratar `tamanhoM` como `number` (4 dos 31 mundos não declaram),
+e ignorar o `null` de `gradeParaMetros`.
+
+**O que o tipo achou na página.** `saida.replaceChildren(…, preferida ? … : null,
+avisos.length ? … : null)`. Diferente do `h()`, que descarta filho nulo,
+`replaceChildren` converte o que não é `Node` em **texto** — medido no Chromium:
+`d.replaceChildren(p, null, null)` → `"<p>ALGO</p>nullnull"`. A palavra "null"
+ia para a tela. Agora a lista é montada e filtrada antes de entrar.
+
+Achou também que **`MapLibreNamespace` não declarava `Marker`**, embora a página
+faça `new ml.Marker(...).setLngLat(...).addTo(mapa)` desde que o mapa tático
+existe — a única consumidora de `Marker` no repo. Entrou no `maplibre-loader.ts`
+e no `.d.ts` que anda com ele.
+
+E `a.ehMod - b.ehMod` no `sort` dos terrenos: subtração de `boolean`, que o
+JavaScript aceita coagindo. Virou `Number(a.ehMod) - Number(b.ehMod)`.
+
+Zero `any`: nenhuma página em TypeScript tem uma ocorrência sequer.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 verdes**.
+`/vanguard` rendeu **12.141 caracteres e 659 nós** — o **mesmo** número da
+medição anterior à migração, que é a evidência de que o comportamento não mudou.
+Portão confirmado vendo o arquivo: defeito plantado em `vanguard.ts` deixa o
+`tipos:ts` vermelho.
+
+## 2026-08-18 — `/wiki-arma3` em TypeScript, e um `any` que estava escondido atrás do `skipLibCheck`
+
+Segunda das cinco últimas páginas (`docs/v2/TYPESCRIPT_REMAINING.md §0`). A
+implementação foi para `src/pages/wiki-arma3.ts`; o `.js` virou o re-export de
+uma linha, e o `src/main.js` **não mudou** — continua importando o `.js`, como
+nas 103 páginas anteriores.
+
+**O achado não estava na página, estava na declaração.** `src/data/wiki-arma3.d.ts`
+importava `A3ColInfo` de `./arma3-colecao.js` — e esse arquivo de declaração
+**não existia**. Como o portão roda com `skipLibCheck`, o import quebrado nunca
+virou erro: virou `any` em silêncio. Medido antes de consertar, com o tipo mais
+errado que se consegue escrever:
+
+```ts
+const x: number = A3COL_INFO.nome;   // passava
+```
+
+Um tipo que não recusa nada é tipo decorativo, que é exatamente o que esta
+migração existe para não produzir. Daí `src/data/arma3-colecao.d.ts` (novo), com
+as formas **medidas** sobre os 237 itens do catálogo, não supostas: `guia`
+aparece em 95 deles e `dlcs` em 12 — os dois opcionais; o resto está nos 237. A
+mesma linha agora é vermelha, e a declaração já serve a `/arma3-tutorial`, que é
+a outra consumidora do catálogo.
+
+**O que o tipo achou na própria página:** quatro comparações `variantes > 1` sobre
+campo opcional (`number | undefined`), que em JavaScript devolvem `false` calado
+quando o config não declarou o número — em armas, acessórios, equipamentos e
+soldados. Agora são `(variantes ?? 0) > 1`. Também saiu dali a duplicação de
+`n()`, que era a mesma função copiada em cinco fichas: virou uma `num()` só.
+
+Zero `any`: as 103 páginas em TypeScript seguem sem nenhuma ocorrência de
+`: any` ou `as any`.
+
+✅ `tipos:ts` 0 · `tipos:v2` 0 · suíte **954/954** · smoke **98/98 rotas verdes**,
+com `/wiki-arma3` em 3.658 caracteres e 263 nós (título "Wiki de Arma 3", zero
+erros de JavaScript). O portão foi confirmado **vendo** o arquivo novo: com um
+defeito plantado em `wiki-arma3.ts` o `tipos:ts` fica vermelho, e volta a verde
+quando ele sai — peça pronta e desligada daria o mesmo retrato verde.
+
+## 2026-08-17 — `.gitattributes` fixa `*.md` em LF (e a renormalização não existiu)
+
+A outra metade da decisão do fim de linha. O conserto cirúrgico
+(`scripts/lib/eol.mjs`) normaliza os dois lados da **comparação**; este arquivo
+tira a variável do jogo antes: `.md` é LF no disco em qualquer sistema, em vez de
+depender do `core.autocrlf` de cada máquina.
+
+**Confirmado antes num Windows de verdade**, que é o que faltava — o remoto só
+tinha reproduzido o sintoma no Linux convertendo os destinos à mão. Nesta máquina
+o `core.autocrlf` é `true` e os três destinos estão em CRLF puro no disco; os três
+verificadores passam. E o verde é do conserto, não de acaso: neutralizado o
+`comLF`, os três ficam vermelhos sobre o mesmo disco, com a mesma mensagem
+enganosa de sempre.
+
+**A renormalização esperada não aconteceu, porque não havia o que renormalizar.**
+A previsão registrada era um diff grande, tocando todo `.md` versionado. Medido:
+os **167** `.md` já estão LF no índice (`git ls-files --eol`) — o `core.autocrlf`
+converte na escrita, então nunca houve blob CRLF de `.md` para desfazer. O diff é
+**um arquivo novo**, e mais nada.
+
+Consequência que vale saber, porque é contra-intuitiva: nesta árvore de trabalho
+os 160 `.md` **continuam CRLF no disco** mesmo com o atributo valendo. O git não
+os vê como modificados — o filtro `clean` converte CRLF→LF e o resultado bate com
+o blob — então não tem por que reescrevê-los. O atributo passa a valer em checkout
+novo.
+
+Por isso os dois consertos **se somam de propósito**, e não é defesa em
+profundidade por acaso: o `eol.mjs` é o que protege toda árvore que já existe,
+inclusive esta. Um efeito colateral disso é que, em árvore já renormalizada, o
+mutante do `eol.mjs` deixa de ficar vermelho — a proteção continua correta, mas
+some o sintoma que a testava.
+
+Sem regra `* text=auto`: existem blobs CRLF versionados de propósito
+(`android/gradlew.bat`, os presets `.html` do Arma 3, um transcript `.txt`), e uma
+regra geral os reescreveria. O escopo é `.md`, que é onde a classe do problema
+vive — os únicos verificadores que comparam texto de arquivo inteiro são os três,
+e os três leem `.md`. O `verificar-nexus` usa `JSON.parse`, imune a fim de linha.
+## 2026-08-17 — `starting` e `stopping` deixam de ser palavra e viram estado
+
+`starting` estava em `ESTADOS_MODULO` desde o começo e **nada o produzia**. O
+retrato só via estados assentados, então quem observasse o ciclo no meio do voo
+recebia uma resposta errada com todas as luzes verdes — a assinatura do defeito
+que este repositório já pagou três vezes.
+
+**`stopping` não existia.** A fila dizia "o vocabulário já existe"; existia para
+`starting`, não para `stopping`. Então este item **acrescenta um estado ao
+contrato**, e não apenas liga um que estava lá.
+
+O ciclo passou a ser a fonte: `emTransicao()` devolve `{ modulo, direcao, etapa }`
+enquanto uma fase executa, e `null` quando nada está em voo. `etapa` reusa o
+vocabulário de `LifecycleFailure.fase` de propósito — é a mesma pergunta ("em que
+fase?"), respondida antes de haver falha em vez de depois. O status apenas
+traduz, e **exige** a peça: ciclo sem `emTransicao` é recusado na construção,
+porque retrato que nunca acusa transição é indistinguível de sistema que nunca
+transiciona.
+
+**A transição é decidida antes de `vivos()`, e isso é necessidade, não estilo.**
+Na descida o módulo continua vivo enquanto desce; perguntar a `vivos()` primeiro
+devolveria `running` justamente para quem está parando. Invertida a ordem, três
+testes caem.
+
+Duas mentiras vizinhas caíram junto, ambas do mesmo formato:
+
+- **Módulo ainda não alcançado na subida saía como `stopped`** — "saiu do ar"
+  sobre quem nunca entrou. Agora é `registered`, que é a definição escrita no
+  contrato.
+- **Quem já desceu continuava em `vivos()` até o fim da descida**, então durante
+  todo o desligamento o `boot.diagnostico()` listava o sistema inteiro com rotas
+  e permissões, dizendo que estava no ar enquanto era desmontado. A saída passou
+  a ser progressiva.
+
+E um terceiro achado, do mesmo formato e fora do enunciado: **falha em `start`
+era reportada como falha em `init`**. `'start'` estava em `LifecycleStage` e nada
+o emitia — a etapa não avançava antes da chamada. Rótulo errado manda quem lê o
+diagnóstico para o handler errado, que é exatamente o motivo de a fase `runtime`
+ter sido criada na rodada anterior. Nenhum teste fixava o comportamento antigo.
+
+**Sete mutantes plantados, sete mortos.** O da transição pendurada também derruba
+um teste pré-existente (`sem autorização o módulo NÃO vira running`), o que mostra
+que a ordem nova sustenta a garantia do Runtime Host, e não só a nova. Suíte
+905 → **916**.
+
+> O harness de mutação tropeçou primeiro na família "Windows", **sétima
+> instância**: trecho multilinha nunca casava, porque o disco é CRLF e os
+> literais do script eram LF. Mesma lição do `scripts/lib/eol.mjs` — normalize
+> antes de comparar. Dois mutantes "sobreviveram" por isso antes do conserto:
+> ferramenta de medição quebrada dá exatamente o mesmo verde que peça correta.
+
+Muda contrato e formato de dado (`ESTADOS_MODULO`, `ModuleLifecycleState`,
+`LifecycleSummary` com `starting`/`stopping`, e `ModuleCycle.emTransicao`), então
+**para para revisão** em vez de ir direto ao `main`.
+## 2026-08-17 — o transporte por stdio ganha consumidor, e o protocolo para de ser dois
+
+**Quarta peça pronta e desligada.** O `criarRuntimeStdio` existia, tinha
+documento próprio (`docs/v2/V2_RUNTIME_STDIO.md`) descrevendo o protocolo linha a
+linha, e a busca textual pelos importadores achou **zero** — nem produção, nem
+teste. Depois da fachada, do contract test e do Runtime Host, o padrão já não
+surpreende; o que muda é que agora se procura por ele antes.
+
+Os testes novos falam com **processo real**, não com duplo de `spawn`. A opção
+`spawnFn` existe e teria sido mais fácil, mas duplo prova o formato das mensagens
+e para aí. O que só um processo de verdade expõe é I/O — e era exatamente ali que
+estava o defeito.
+
+**O defeito:** resposta inválida fazia o `parseResposta` lançar **dentro do
+handler de `line`**, com o `pending` já zerado uma linha antes. O erro subia como
+exceção não capturada **e a promessa do chamador nunca assentava**. Um Runtime
+que respondesse lixo penduraria o Core em silêncio — mesma família do "init que
+trava não pendura o Baluarte", agora na fronteira do processo.
+
+Medido nos dois sentidos, e a medida é o argumento: sem o conserto os dois testes
+de resposta inválida **não falham, eles travam** — a suíte do arquivo leva
+**71,8 s** (dois testes queimando o teto do runner) contra **639 ms** com ele.
+Nove mutantes plantados, nove mortos; dois deles matam por travamento, que é o
+defeito reaparecendo.
+
+**Um sobreviveu na primeira rodada, e o motivo vale mais que o conserto.**
+Remover o `clearTimeout` do assentamento passava por todos os testes de
+comportamento: o timer órfão dispara, o `retirarDeVoo` é seguro contra nulo, e
+ele não acha ninguém. O estrago só existe se o órfão pegar a requisição
+**seguinte** em voo — e os dois timers ficam separados apenas pela duração da
+requisição anterior, uma janela de milissegundos. Pegá-la por tempo pediria
+margens apertadas, e portão instável troca um defeito estreito por um vermelho
+aleatório. A saída foi observar o recurso em vez do comportamento:
+`process.getActiveResourcesInfo()` conta os `Timeout` vivos, e o delta entre uma
+requisição e a seguinte só cresce se um teto tiver ficado armado. Determinístico,
+sem relógio.
+
+O `pending = null` continua **antes** do parse de propósito: a requisição sai de
+voo quando a linha dela chega, tenha a linha sentido ou não. Zerar depois faria a
+próxima resposta cair sobre uma requisição já respondida.
+
+### E aí apareceu por que a peça nunca tinha sido ligada
+
+O `scripts/v2-runtime-smoke.mjs` — o portão E2E que o CI roda — **reimplementava
+o protocolo à mão**: `spawn` próprio, serialização própria, buffer de linhas
+próprio, teto próprio. Existiam **duas implementações do mesmo protocolo**, e a
+única que falava com o binário passava por fora do transporte.
+
+Isso não era duplicação estética, era a explicação inteira. O transporte não
+tinha consumidor porque quem fazia I/O concreto o contornava; e o E2E ficava
+verde provando o protocolo *do script*, não o do transporte. O transporte podia
+estar quebrado sem que nada acusasse — **e estava**, com o pendura acima.
+
+Agora o smoke usa o `criarRuntimeStdio`. O portão passa a exercitar a peça que o
+resto do sistema usaria, e some a segunda implementação.
+
+### O teto virou requisito, não escopo extra
+
+`enviar()` não tinha teto; o smoke tinha um de 5 s. Fazer o smoke usar o
+transporte sem teto teria **removido uma proteção existente** — então
+`TETO_RUNTIME_MS` entrou junto, com `tetoMs` para sobrescrever.
+
+O `clearTimeout` mora num lugar só (`retirarDeVoo`) porque são **quatro** os
+caminhos que assentam uma requisição: resposta, erro do processo, saída do
+processo, falha de escrita. Esquecê-lo em qualquer um faz o teto disparar sobre
+requisição já respondida, e o estrago aparece na requisição **seguinte** — o pior
+lugar para procurar. Há mutante para os dois lados.
+
+### O Rust rodou nesta máquina pela primeira vez
+
+`cargo` não existia aqui; agora existe, e com ele caiu a fronteira que separava
+"do remoto" de "do local". Instalado o Rust 1.97.1. As Build Tools do Visual
+Studio **não** deram: o instalador precisa de elevação e sai com `1602`
+(cancelado) numa sessão não-interativa. O caminho que funcionou foi o toolchain
+**GNU** com um MinGW portátil por winget, sem admin.
+
+Com isso, três verificações que o handoff listava como exclusivas do remoto
+passaram a rodar aqui:
+
+| | |
+| --- | --- |
+| `npm run v2:runtime` | **12 + 3 testes, 0 falhas** |
+| smoke E2E contra o `.exe` real | **OK** |
+| testes do transporte | **12/12**, com 9/9 mutantes mortos |
+| suíte | 905 → **917** |
+
+E os três testes de processo que a `MAIN_ERROR_AUDIT` listava como quebrados
+(`process_rejects_invalid_json_and_continues` e irmãos) passam — o que confirma
+**por execução** o que a anotação de ROOT-RUNTIME-001 só tinha confirmado por
+leitura.
+
+### E a cadeia do vertical slice rodou com o Runtime de verdade
+
+`test/v2/slice-nativo.test.js` percorre o desenho do `V2_VERTICAL_SLICE.md` —
+Registry → autorização → sessão → init → start → running → stop → dispose →
+close — com **todas** as peças reais, inclusive o binário.
+
+A diferença não é de grau. O `abrir` do Host, no entrypoint, chama
+`criarGrantRuntime`: autorização **sem transporte**, porque no navegador não há
+processo com quem falar. Todo teste anterior usou espião ou duplo. Então a
+propriedade central — "um módulo só entra em `running` depois de abrir seu
+Runtime" — era verdadeira sobre um Runtime que **nunca tinha existido**. Agora
+quem decide se o módulo sobe é o processo Rust.
+
+Três propriedades cobradas, e a terceira é a que garante que o teste não passa à
+toa: **declarar não é receber.** Sem concessão, o módulo sobe (grant vazio é
+autorização disponível — tratá-lo como negação transformaria deny-by-default em
+deny-tudo) e a leitura é **negada pelo Rust**. Mesma rota, permissão diferente,
+resultado diferente: a discriminação vem do outro lado da fronteira, não do
+JavaScript. Remover o Host do `criarCiclo` derruba o primeiro teste.
+
+### E o módulo passou a USAR o Runtime, não só a ser autorizado por ele
+
+`criarContexto` ganhou a dependência opcional `runtime`, e o `ModuleContext`
+ganhou `ctx.runtime.lerArquivo(caminho)`. Com isso o `init` de um módulo lê um
+arquivo pelo Runtime nativo — a cadeia de **uso**, que faltava.
+
+**A propriedade está na aridade.** A alça entregue ao módulo recebe *caminho, e
+só*: o id fica fechado por closure, preenchido pelo contexto. Se aceitasse o
+módulo como argumento, `alpha` poderia nomear a raiz de `beta`, e o confinamento
+por módulo seria convenção em vez de garantia. O mutante que troca a alça por uma
+que aceita o módulo derruba dois testes; o que remove o runtime do contexto
+derruba os mesmos dois.
+
+**A permissão não é rechecada no contexto** — quem cobra é o Rust, do outro lado.
+Repetir seria defesa em profundidade escondendo mutante (Regra 1), o mesmo motivo
+pelo qual o status de lifecycle não recheca autorização.
+
+O portão de tipos pegou o que a suíte não pegaria: `Deps` não declarava
+`runtime`, e depois `deps.runtime` ficou "possivelmente undefined" dentro da
+closure — a checagem no spread não estreita lá dentro. Resolvido capturando antes
+do `return`, e não com `!`: `deps` é objeto de quem chama, e calar o compilador
+esconderia o caso real.
+
+### E a injeção em produção fechou o circuito
+
+`v2/core/runtime-app.js` adapta `window.baluarte.invoke('runtime:ler', …)` à forma
+que o contexto espera, e o entrypoint o injeta em `deps.runtime`. Renderer → IPC →
+main → Runtime, com a alça chegando ao módulo pelo `ctx`.
+
+**Fora do app devolve `null`**, e `null` deixa o contexto exatamente como era. Um
+adaptador que fingisse existir na web daria aos módulos uma alça que sempre falha
+— pior do que não ter alça. Gate do #238: web leve, app completo. O portão
+`v2:integracao` segue **15/15** no navegador, que é a prova de que o caminho web
+não mudou.
+
+Três decisões, cada uma com mutante:
+
+- **Ambiente meio montado é ausência.** `native` sem `invoke` é ponte quebrada;
+  tratá-la como pronta empurraria o erro para dentro do `init` de um módulo, longe
+  da causa. E `native` tem de ser `true`, não apenas verdadeiro — o mutante que
+  troca por `!ponte.native` morre.
+- **O envelope é remontado a cada chamada.** Congelá-lo no boot faria a leitura
+  responder sobre o passado: conceder depois do arranque não alcançaria o módulo,
+  revogar tampouco. Mesma razão de `declarado.concedidas` ser função. O teste cobre
+  os três instantes — antes, depois de conceder, depois de revogar.
+- **O Host continua autorizando localmente, mesmo no app.** Trocar
+  `criarGrantRuntime` pela autorização nativa faria um binário ausente derrubar
+  módulos que hoje sobem. E não afrouxa nada: quem nega a leitura de quem não
+  recebeu `READ_FILES` é o Rust, na hora do uso.
+
+**Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro. A cadeia
+está provada em Node com as peças reais e o adaptador contra ponte falsa; o ramo
+`process.resourcesPath` continua sem exercício.
+
+### E a ponte do app desktop entrou junto
+
+O `desktop/` era uma ilha CommonJS **sem um único teste**, e nada nele importava
+de `v2/`. Agora há `desktop/src/runtime.js`, com os canais `runtime:status`,
+`runtime:autorizar` e `runtime:ler` na allowlist do `ipc.js`.
+
+Escrito sem `require('electron')` de propósito — a raiz confiável entra injetada
+(`app.getPath('userData')/runtime-root`, seguindo o M4/RFC #232), calculada no
+`buildHandlers` e não no topo do módulo, porque `app.getPath` depende do app
+pronto. É o que permitiu testar a ponte em Node puro, e é o primeiro teste que o
+`desktop/` já teve: **8/8**, incluindo o ponta a ponta que atravessa ponte →
+transporte ESM → processo Rust, no Windows.
+
+Duas armadilhas pagas no caminho:
+
+- **`pathToFileURL` no `import()` dinâmico.** O transporte é ESM e o `main` é
+  CommonJS. Em Windows, `import()` de caminho absoluto (`C:\...`) falha sem URL
+  `file://` — família "Windows", oitava instância.
+- **`extraResources` com `filter` não falha quando a origem falta**, só não
+  copia. Declarar o empacotamento sem compilar o Rust antes teria produzido uma
+  release sem o Runtime, degradando educadamente, sem ninguém notar. Por isso o
+  `desktop-release.yml` ganhou o build do Rust **antes** de empacotar, por SO da
+  matriz.
+
+**Ausência não é erro:** sem binário, `status()` devolve
+`{ disponivel: false, motivo }`, mesmo contrato do `hermes:status`. Hoje é o
+estado normal de qualquer máquina que não rodou `cargo build`.
+
+**O que isto não prova:** o app empacotado. O ponta a ponta prova a ponte, não o
+instalador — o caminho `process.resourcesPath` só existe em app empacotado e
+segue sendo o único ramo não exercitado. E nada sobre o alvo **MSVC**: o binário
+aqui é GNU.
+
+## 2026-08-17 — `running` passa a exigir autorização de Runtime
+
+Pela terceira vez seguida o defeito foi o mesmo: **peça pronta, testada e
+desligada.** O `criarLifecycleRuntime` — o Runtime Host por módulo — existia,
+tinha teste próprio, e a busca textual pelos importadores achou **um** consumidor
+de produção (`vertical-slice.js`), que não é o caminho por onde os módulos sobem.
+O `ciclo.ts` ia direto ao `init`.
+
+O `docs/v2/V2_LIFECYCLE_RUNTIME_CONTRACT.md` descrevia desde sempre a ordem certa
+— `Runtime.open → init → start`, e `stop → Runtime.close → dispose`. Ninguém a
+executava. O resultado era um módulo declarado `running` cuja autorização nunca
+tinha sido pedida uma única vez: o retrato afirmava sobre o Runtime uma coisa que
+o Runtime não sabia, com todas as luzes verdes. Peça correta e desligada dá
+exatamente o mesmo diagnóstico que peça ligada — até alguém perguntar por ela.
+
+Agora o ciclo abre o Host antes do `init`. Quem não abre não executa fase nenhuma,
+não entra em `vivos()` e portanto não pode ser `running`; a falha é reportada na
+fase **`runtime`**, e não em `init`, porque `init` não rodou e o rótulo errado
+manda quem lê o diagnóstico para o arquivo errado. O teto do `init` foi extraído
+(`comTeto`) e passou a valer para a abertura — Runtime que não responde pendura a
+subida igual a um `init` que trava, e o caminho novo não passava por teto nenhum.
+
+O Host é opcional no ciclo (sem ele o comportamento é o de antes, o que mantém
+honestos os testes de unidade das outras peças), **mas o entrypoint passa um
+real**: opcional que ninguém injeta era justamente a doença anterior.
+
+**Oito mutantes plantados, oito mortos** — incluindo o que É a doença original:
+removida a chamada ao Host, 8 dos 12 testes novos caem. Suíte 893 → 905.
+
+O portão de integração foi de 14 para **15/15**. A asserção nova é a única que
+enxerga o defeito: plantando-o no entrypoint, as outras 14 seguem verdes e ela
+devolve `[]` — o estado exato de antes desta mudança.
+
+> **Grant vazio é autorização disponível.** `militar` declara `NETWORK`, não
+> recebe nada e continua subindo. Tratar "sem permissão concedida" como "sem
+> autorização" derrubaria um módulo correto e transformaria deny-by-default em
+> deny-tudo. A distinção quase virou defeito ao desenhar isto.
+
+O que isto **não** prova: nada sobre o Runtime Rust, que não existe no navegador.
+A sessão injetada no entrypoint é a autorização sem transporte
+(`criarGrantRuntime`); o transporte concreto é item posterior da fila.
+
+Junto veio o `--strictPort` no `scripts/v2-integracao.mjs`: sem ele o Vite troca
+de porta em silêncio quando a escolhida está ocupada, e o portão passa a medir um
+servidor zumbi de outra execução.
+
+### E os verificadores de catálogo pararam de dar vermelho falso no Windows
+
+Os três geradores comparavam a string gerada (`join('\n')`) com o que o
+`readFileSync` traz do disco. Em qualquer checkout Windows o disco tem CRLF — não
+há `.gitattributes`, então o `core.autocrlf` converte no checkout — e a
+comparação falhava por `\r`, e por mais nada.
+
+O sintoma era traiçoeiro porque a mensagem mandava fazer a coisa errada: *"rode o
+gerador e commite o resultado"*. Regenerar não muda linha nenhuma, o `git diff`
+sai vazio, e o operador ficava olhando um vermelho sem conteúdo com um conserto
+que não conserta. No Linux não há conversão, então o CI é verde e o defeito é
+invisível de um lado só.
+
+**Medido, não deduzido:** o sintoma foi reproduzido no Linux convertendo os três
+destinos para CRLF de verdade no disco. Com o conserto os três passam; com ele
+removido, os três ficam vermelhos sobre o mesmo disco. O caminho de escrita não
+mudou — os geradores seguem emitindo `\n`, e rodá-los deixa `git diff` vazio.
+
+Das duas saídas possíveis, o operador escolheu as duas em ordem: a cirúrgica
+(esta) agora, e o `.gitattributes` com `*.md text eol=lf` depois — ela
+renormaliza todo `.md` versionado e merece branch e diff próprios.
+
+## 2026-08-16 — a fachada da V2 saiu do teste e foi para o ar
+
+O `criarPlataforma` existia, tinha teste e **não era usado por ninguém**: busca
+textual pelos importadores mostrou que o único consumidor era o próprio teste. O
+`v2/harness/main.js` — o entrypoint oficial da V2 na prática — dirigia o `boot`
+na mão, sem supervisor, sem saúde, sem status de lifecycle. As três peças
+estavam marcadas como prontas, e estavam, *em isolamento*. Em execução real nada
+as compunha.
+
+Agora quem sobe é a Plataforma. Medido no navegador: `partida.estado` = `ready`,
+supervisor em `ready`, lifecycle com 4/4 `running` e 0 `failed`. A superfície
+`window.__v2` cresceu sem mudar — `diagnostico()` continua sendo o do boot,
+porque o portão de integração lê `.modulos` dali.
+
+O portão foi a **14/14**, não 13/14. A falha `a superfície de briefing V2
+renderiza`, que a sessão anterior reportou como pré-existente, era o falso
+vermelho que o `navegarAte` (espera por condição, não por relógio) já tinha
+corrigido no `main`.
+
+**O que não veio junto.** A implementação vinha de uma branch onde a fachada
+estava misturada com 8 scripts sem relação, e o commit dela também mexia no
+`scripts/v2-integracao.mjs`. Essa metade foi descartada de propósito: o `main`
+já tinha aquela correção *e* estava à frente. Aplicar o commit inteiro teria
+reintroduzido os sleeps de 900/1800 ms — regredido o `main` para consertar algo
+que já estava consertado melhor.
+
+Junto veio o contract test completo `Manifest → Registry → Permission → Runtime`,
+com as quatro peças **reais** — o `contract-slice.test.js` percorre o mesmo
+caminho com registro e decisor falsos, e mock prova o mock. São 9 casos novos
+(suíte 884 → 893).
+
+Dos seis mutantes plantados, **um sobreviveu**: removida a poda do
+`conhecerModulos`, o teste seguia verde, porque o `avaliar()` já barra por
+"não-declarada". Duas defesas, a primeira cobrindo a segunda. Quem enxerga a
+poda sozinha é o estado persistido — sem ela o `exportar()` mantém a permissão e
+o `importar()` do próximo arranque a ressuscita sob um manifesto que não a
+declara mais. Com as asserções sobre `exportar()` e sobre o rastro `podar`, o
+sexto mutante morre.
+
+## 2026-08-16 — o portão de tipos da V2 estava vermelho, e ninguém via
+
+`npm run tipos:v2` saiu de **61 erros para zero**. Estava assim havia pelo menos
+um dia, em três branches — e o `main` não acusava porque os últimos commits eram
+do bot de câmbio, e o GitHub **não dispara workflow em push feito com o
+`GITHUB_TOKEN` padrão**. O primeiro push humano acendeu a luz.
+
+O que isso custava: no `v2-validation.yml` os passos são sequenciais, então com o
+`Typecheck V2` falhando o `V2 integration` ficava `skipped`. O portão de
+integração da V2 — o mesmo que a entrada abaixo deixou em 14/14 — **não estava
+sendo exercitado no CI**.
+
+Nenhuma regra foi afrouxada: `strict`, `checkJs` e `noImplicitAny` seguem
+ligados, sem `@ts-ignore`, sem tirar arquivo do `include`.
+
+Os 61 eram quatro causas repetidas: `@types/node` que não chegava ao `jsconfig`
+(e `types: ["node"]` sozinho *piorava* para 131, arrastando um `.js` de dentro
+do `node_modules` — `maxNodeModuleJsDepth: 0` corta); `options = {}` com typedef
+de campos obrigatórios, um default que mentia; estreitamento de guarda que não
+atravessa função declarada; e `map(Object.freeze)` passado como referência, que
+resolve para a sobrecarga genérica errada.
+
+Duas discrepâncias eram reais, e foram corrigidas **no contrato, não no código**:
+`RuntimeStateOf` dizia `() => unknown` embora `stateOf` sempre tenha recebido o
+id do módulo; e `RuntimeManager.restart` prometia os campos de status planos
+enquanto o código sempre devolveu o status aninhado em `status`. Nenhum
+consumidor lia os campos planos — mudar o retorno para casar com um contrato que
+nunca valeu seria trocar mentira de documentação por quebra de comportamento.
+
+## 2026-08-16 — o portão da V2 nunca tinha rodado no Windows
+
+`npm run v2:integracao` está em **14/14**. A correção não foi no módulo: foi no
+portão, e em dois lugares.
+
+`spawn('npx', …)` morria em `ENOENT` antes da primeira asserção — o Node 24
+recusa spawnar `.cmd` (CVE-2024-27980) e `npx` é `npx.cmd`. Ou seja, aqui o
+portão não dava 13/14: dava **0/14**, e ninguém tinha visto porque ele nunca
+havia rodado nesta plataforma. Passa a chamar o bin do vite com o próprio Node.
+
+O `13/14` relatado era do **relógio**. As três navegações dormiam tempo fixo
+(900/900/1800 ms) antes de ler a tela. A view do `briefing` é a única importada
+sob demanda com orçamento de 900 ms: onde a primeira transformação do Vite passa
+disso, o portão reprova um módulo correto — e imprime a tela *anterior*
+("Lab de Criptografia"), o que parece defeito de render. Sleep fixo mede a
+máquina, não o sistema.
+
+A hipótese herdada era *"view devolve o ELEMENTO"*
+([`V2_MODULE_RULES.md`](../docs/v2/V2_MODULE_RULES.md)). Está descartada: o
+`loadView` do briefing devolve o elemento desde o commit que o criou. A asserção
+também estava certa e **não foi afrouxada** — os predicados seguem inalterados
+byte a byte. Medido, com a view atrasada 2 s de propósito: relógio → 13/14;
+condição → 14/14. E com `view` devolvendo o módulo, a condição ainda reprova
+(`view não é um nó: object`). Saiu o falso vermelho, ficou o verdadeiro.
+
 ## 2026-08-10 — três bloqueadores achados às vésperas do congelamento
 
 A varredura final da 1.0.0 não era para achar nada. Achou três, e o pior deles

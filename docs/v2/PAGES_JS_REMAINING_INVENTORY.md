@@ -1,29 +1,28 @@
 # Inventário detalhado — páginas JavaScript restantes
 
-**SHA auditado:** `49466a54a3958381b7d22dad28b5678f64d53a71`
-**Gerado em:** 2026-08-15T11:01:50.143Z
-**Status:** INVENTÁRIO OPERACIONAL — páginas `.js` classificadas por implementação canônica; wrappers que apenas reexportam `.ts` foram excluídos.
+**SHA auditado:** `ca5b259e4dce5ac649262b9279e8c4a2d20270ef`
+**Gerado em:** 2026-08-20T13:44:00-03:00
+**Status:** INVENTÁRIO OPERACIONAL — zero páginas `.js` canônicas; os arquivos `.js` físicos restantes são wrappers de compatibilidade que reexportam `.ts`.
 
 > Este relatório é gerado a partir do filesystem real. Uma página só sai da lista quando sua implementação canônica passa para `.ts`, o `.js` vira wrapper compatível e os gates comportamentais permanecem verdes.
 
 ## Resumo
 
-Existem **5 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
+Existem **0 páginas JavaScript canônicas restantes**. A onda de biblioteca, academia, ciberseg e robotica foi concluída; a próxima onda deve ser escolhida pelo risco documentado. Os wrappers de compatibilidade não são contados como dívida funcional.
 
-| Grupo | Páginas restantes |
+| Indicador | Quantidade / resultado |
 | --- | ---: |
-| Arma 3, 3D e visualização | 4 |
-| IA, Nexus e memória | 1 |
+| Páginas canônicas JavaScript restantes | **0** |
+| Wrappers físicos `.js` em `src/pages/` (incluindo subpastas) | **115** |
+| Implementações TypeScript em `src/pages/` (incluindo subpastas) | **123** |
+| Consumers TypeScript ainda carregando wrapper de página `.js` | **0** após a Wave 43 |
+| Rotas no smoke | **99/99** verdes |
+| Mapa Nexus | **21/21** domínios, 0 lacunas |
 
 ## Matriz completa
 
 | # | Arquivo | Linhas | Bytes | Grupo | Risco | Próxima ação |
 | ---: | --- | ---: | ---: | --- | --- | --- |
-| 1 | `src/pages/arma3-tutorial.js` | 1376 | 76440 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
-| 2 | `src/pages/jarvis.js` | 999 | 47820 | IA, Nexus e memória | alto | tipar motores, transportes e memória antes da superfície |
-| 3 | `src/pages/visao.js` | 832 | 32084 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
-| 4 | `src/pages/vanguard.js` | 822 | 39020 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
-| 5 | `src/pages/wiki-arma3.js` | 756 | 35414 | Arma 3, 3D e visualização | alto | isolar dados grandes, WebGL e ciclo de vida visual |
 
 ## Critérios de saída
 

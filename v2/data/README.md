@@ -78,3 +78,9 @@ Fundação, não módulos (§23 do plano — *preparar ≠ implementar*):
 - **ingestão**: normalização, deduplicação, classificação
 - **busca**: full-text e `pgvector`, quando houver consulta real para medir
 - **migração** de `src/data/` (21k linhas de JS) para tabelas
+
+## Evidence Layer — primeiro slice V2
+
+O contrato local `evidence.ts` e o módulo `../modules/evidence/module.js` já foram implementados. Eles validam proveniência, confidence, datas, status e ciclo de supersessão sem rede, banco ou dependência de frontend. O store em memória existe para testar o contrato e o lifecycle; ele não substitui a migration Postgres nem autoriza ingestão automática.
+
+A persistência deve ser adicionada somente quando houver adapter, política de tenancy, testes de concorrência e estratégia de retenção. Até lá, a migration SQL continua sendo fundação preparada, não uma implementação acoplada ao navegador.

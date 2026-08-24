@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reator Mark XIII · Projeto Baluarte</title>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0b0910; --accent:#d4a24e; --accent2:#eec886; --txt:#f4ecdd;
+    --dim:#9d9078; --line:rgba(212,162,78,0.22); --glow:rgba(212,162,78,0.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
+    font-family:'IBM Plex Mono',ui-monospace,monospace;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)} a:hover{color:var(--accent2)}
+  three-d-stage:not(:defined){visibility:hidden}
+  three-d-stage{position:fixed;inset:0;width:100%;height:100%;
+    --stage-btn-bg:rgba(212,162,78,0.09);
+    --stage-btn-bg-hover:rgba(212,162,78,0.2);
+    --stage-btn-border:rgba(212,162,78,0.45);
+    --stage-btn-fg:#eec886;
+    --stage-btn-radius:4px;
+    --stage-btn-font:'IBM Plex Mono',monospace;
+    --stage-btn-size:9.5px;
+    --stage-btn-tracking:2px;
+    --stage-btn-transform:uppercase;
+    --stage-note-fg:rgba(157,144,120,0.75);
+    --stage-note-tracking:2px}
+
+  /* ── camadas decorativas ─────────────────────────────────────── */
+  .layer{position:fixed;inset:0;pointer-events:none}
+  #grid{z-index:2;opacity:.16;
+    background-image:linear-gradient(rgba(212,162,78,.5) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(212,162,78,.5) 1px,transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(ellipse 70% 70% at 50% 45%,#000,transparent 78%);
+    mask-image:radial-gradient(ellipse 70% 70% at 50% 45%,#000,transparent 78%)}
+  #bloom{z-index:3;mix-blend-mode:screen;opacity:0;transition:opacity .8s}
+  #bloom i{position:absolute;width:520px;height:520px;margin:-260px 0 0 -260px;display:block;
+    background:radial-gradient(circle,rgba(255,196,110,.5),rgba(255,150,40,.16) 34%,transparent 68%)}
+  #scan{z-index:3;opacity:.35;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,.022) 0 1px,transparent 1px 3px)}
+  #vig{z-index:4;background:radial-gradient(ellipse 120% 100% at 50% 45%,transparent 48%,rgba(4,3,8,.82) 100%)}
+
+  /* ── moldura HUD ─────────────────────────────────────────────── */
+  .corner{position:fixed;z-index:6;width:56px;height:56px;border-color:var(--accent);opacity:.55;pointer-events:none}
+  .tl{top:20px;left:20px;border-top:1.5px solid;border-left:1.5px solid}
+  .tr{top:20px;right:20px;border-top:1.5px solid;border-right:1.5px solid}
+  .bl{bottom:20px;left:20px;border-bottom:1.5px solid;border-left:1.5px solid}
+  .br{bottom:20px;right:20px;border-bottom:1.5px solid;border-right:1.5px solid}
+
+  #title{position:fixed;z-index:6;top:36px;left:0;right:0;text-align:center;pointer-events:none;
+    text-transform:uppercase;text-shadow:0 0 18px var(--glow)}
+  #title .k{font-size:9.5px;letter-spacing:7px;color:var(--dim)}
+  #title b{display:block;margin-top:7px;font-family:'Cormorant Garamond',serif;font-weight:700;
+    font-size:clamp(24px,3.4vw,40px);letter-spacing:14px;color:var(--txt)}
+  #title .s{margin-top:8px;font-size:9px;letter-spacing:5px;color:var(--accent)}
+
+  /* ── painel de leituras ─────────────────────────────────────── */
+  #readout{position:fixed;z-index:6;top:96px;left:32px;width:212px;pointer-events:none;
+    border-left:1px solid var(--line);padding:2px 0 2px 14px}
+  #readout h3{font-size:8.5px;letter-spacing:3.5px;color:var(--dim);font-weight:500;
+    text-transform:uppercase;margin-bottom:12px}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    padding:5px 0;border-bottom:1px dashed rgba(212,162,78,.12);font-size:10px;letter-spacing:1.4px}
+  .row span:first-child{color:var(--dim);text-transform:uppercase;font-size:8.5px;letter-spacing:2px}
+  .row span:last-child{color:var(--accent2);text-shadow:0 0 10px var(--glow)}
+  #status{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:8.5px;
+    letter-spacing:2.5px;color:var(--dim);text-transform:uppercase}
+  #status i{width:7px;height:7px;border-radius:50%;background:#4fe08a;
+    box-shadow:0 0 9px #4fe08a;animation:blink 2.2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ── rótulos projetados ─────────────────────────────────────── */
+  #labels{position:fixed;inset:0;z-index:7;pointer-events:none}
+  #leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .lab{position:absolute;top:0;left:0;white-space:nowrap;opacity:0;transition:opacity .25s;
+    border-bottom:1px solid rgba(212,162,78,.5);padding-bottom:4px}
+  .lab b{display:block;font-size:9.5px;letter-spacing:2.6px;color:var(--txt);font-weight:500;
+    text-transform:uppercase;text-shadow:0 0 12px rgba(8,6,14,.9)}
+  .lab span{display:block;margin-top:3px;font-size:8.5px;letter-spacing:1.8px;color:var(--accent)}
+
+  /* ── controles ──────────────────────────────────────────────── */
+  #controls{position:fixed;z-index:8;left:32px;bottom:44px;width:264px;
+    border:1px solid var(--line);background:rgba(14,11,22,.72);backdrop-filter:blur(9px);
+    padding:15px 16px 17px}
+  #controls h3{font-size:8.5px;letter-spacing:3.5px;color:var(--dim);font-weight:500;
+    text-transform:uppercase;margin-bottom:13px;display:flex;justify-content:space-between}
+  #controls h3 em{font-style:normal;color:var(--accent2)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;
+    background:linear-gradient(90deg,var(--accent) 0%,rgba(212,162,78,.18) 0%);
+    border-radius:2px;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
+    border-radius:2px;background:var(--accent2);box-shadow:0 0 10px var(--glow);
+    transform:rotate(45deg);cursor:pointer}
+  .btns{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+  button{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;
+    text-transform:uppercase;color:var(--accent2);background:rgba(212,162,78,.07);
+    border:1px solid rgba(212,162,78,.4);border-radius:3px;padding:7px 9px;cursor:pointer;
+    transition:background .18s,box-shadow .18s}
+  button:hover{background:rgba(212,162,78,.2);box-shadow:0 0 14px rgba(212,162,78,.25)}
+  button[aria-pressed=true]{background:rgba(212,162,78,.26);border-color:var(--accent2);
+    color:var(--txt)}
+  .btns .ico{min-width:32px;text-align:center;font-size:11px;letter-spacing:0}
+
+  #loading{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);color:var(--accent);font-size:10px;letter-spacing:6px;
+    text-transform:uppercase;transition:opacity .7s}
+
+  @media (max-width:900px){
+    #readout{display:none}
+    #controls{left:16px;right:16px;width:auto;bottom:78px}
+  }
+</style>
+</head>
+<body>
+
+<three-d-stage id="stage" name="reator-mark-xiii" background="#0b0910" env-dark autorotate
+  hint="arraste para orbitar · roda para zoom · botão direito desloca"></three-d-stage>
+
+<div class="layer" id="grid"></div>
+<div class="layer" id="bloom"><i></i></div>
+<div class="layer" id="scan"></div>
+<div class="layer" id="vig"></div>
+
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+
+<div id="title">
+  <div class="k">núcleo online</div>
+  <b>MARK XIII</b>
+  <div class="s">Reator de contenção · Projeto Baluarte</div>
+</div>
+
+<div id="readout">
+  <h3>Telemetria do núcleo</h3>
+  <div class="row"><span>energia</span><span id="r-pwr">98%</span></div>
+  <div class="row"><span>plasma</span><span id="r-tmp">4.2 GJ</span></div>
+  <div class="row"><span>rotor</span><span id="r-rpm">1 480 rpm</span></div>
+  <div class="row"><span>contenção</span><span id="r-int">íntegra</span></div>
+  <div class="row"><span>peças</span><span id="r-parts">—</span></div>
+  <div id="status"><i></i>sistema estável</div>
+</div>
+
+<div id="labels"><svg id="leaders"></svg></div>
+
+<div id="controls">
+  <h3><span>vista explodida</span><em id="expVal">0%</em></h3>
+  <input type="range" id="exp" min="0" max="100" value="0">
+  <div class="btns">
+    <button id="bLabels" aria-pressed="true">rótulos</button>
+    <button id="bSpin" aria-pressed="true">girar</button>
+    <button class="ico" id="bIn" title="aproximar">+</button>
+    <button class="ico" id="bOut" title="afastar">−</button>
+    <button id="bReset">reenquadrar</button>
+  </div>
+</div>
+
+<div id="loading">montando o reator…</div>
+
+<script src="./three-d-stage.js"></script>
+<script type="module">
+import * as THREE from 'three';
+import { buildReactor, CY } from './reator-mark-xiii.js';
+
+const stage = document.getElementById('stage');
+await stage.ready;
+
+const { model, materials, rotor, hotspots, corePos } = buildReactor();
+stage.setObject(model);
+
+/* luz do próprio núcleo — vive na cena, fora do objeto exportado */
+const coreLight = new THREE.PointLight(0xffb347, 3.2, 2.4, 2);
+coreLight.position.copy(corePos);
+stage.scene.add(coreLight);
+
+/* contagem de peças + botões do palco em português */
+let meshes = 0;
+model.traverse((o) => { if (o.isMesh) meshes++; });
+document.getElementById('r-parts').textContent = String(meshes).padStart(3, '0') + ' peças';
+const tb = stage.shadowRoot.querySelectorAll('.toolbar button');
+if (tb[0]) tb[0].textContent = 'baixar obj + mtl';
+if (tb[1]) tb[1].textContent = 'baixar glb';
+
+/* ── vista explodida ─────────────────────────────────────────── */
+const parts = [];
+model.traverse((o) => {
+  if (!o.userData.explode) return;
+  parts.push({
+    o, home: o.position.clone(),
+    dir: new THREE.Vector3().fromArray(o.userData.explode.dir).normalize(),
+    dist: o.userData.explode.dist,
+  });
+});
+const exp = document.getElementById('exp');
+const expVal = document.getElementById('expVal');
+function setExplode(v) {
+  for (const p of parts) p.o.position.copy(p.home).addScaledVector(p.dir, v * p.dist);
+  expVal.textContent = Math.round(v * 100) + '%';
+  exp.style.background =
+    'linear-gradient(90deg,var(--accent) ' + v * 100 + '%,rgba(212,162,78,.18) ' + v * 100 + '%)';
+}
+exp.addEventListener('input', () => setExplode(exp.value / 100));
+
+/* ── rótulos projetados ──────────────────────────────────────── */
+const labelBox = document.getElementById('labels');
+const svg = document.getElementById('leaders');
+const NSVG = 'http://www.w3.org/2000/svg';
+const labels = hotspots.map((hs) => {
+  const el = document.createElement('div');
+  el.className = 'lab';
+  el.innerHTML = '<b></b><span></span>';
+  el.querySelector('b').textContent = hs.label;
+  el.querySelector('span').textContent = hs.value;
+  labelBox.appendChild(el);
+  const line = document.createElementNS(NSVG, 'path');
+  line.setAttribute('fill', 'none');
+  line.setAttribute('stroke', 'rgba(212,162,78,0.55)');
+  line.setAttribute('stroke-width', '1');
+  svg.appendChild(line);
+  const dot = document.createElementNS(NSVG, 'circle');
+  dot.setAttribute('r', '2.6');
+  dot.setAttribute('fill', '#eec886');
+  svg.appendChild(dot);
+  return { hs, el, line, dot, normal: new THREE.Vector3().fromArray(hs.normal).normalize() };
+});
+
+let showLabels = true;
+const v = new THREE.Vector3();
+const wn = new THREE.Vector3();
+const toCam = new THREE.Vector3();
+function updateLabels() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  for (const L of labels) {
+    L.hs.anchor.getWorldPosition(v);
+    wn.copy(L.normal).applyQuaternion(L.hs.anchor.getWorldQuaternion(new THREE.Quaternion()));
+    toCam.copy(stage.camera.position).sub(v).normalize();
+    const facing = wn.dot(toCam) > 0.12;
+    v.project(stage.camera);
+    const x = (v.x * 0.5 + 0.5) * w, y = (-v.y * 0.5 + 0.5) * h;
+    const on = showLabels && facing && v.z < 1;
+    L.el.style.opacity = on ? '1' : '0';
+    L.line.style.opacity = L.dot.style.opacity = on ? '1' : '0';
+    if (!on) continue;
+    const lx = x + L.hs.dx, ly = y + L.hs.dy;
+    L.el.style.transform = 'translate(' + lx + 'px,' + ly + 'px)';
+    const wEl = L.el.offsetWidth;
+    const ex = L.hs.dx >= 0 ? lx - 8 : lx + wEl + 8;
+    const ey = ly + L.el.offsetHeight - 1;
+    L.line.setAttribute('d', 'M' + x + ' ' + y + ' L' + ex + ' ' + ey + ' L' +
+      (L.hs.dx >= 0 ? lx + wEl : lx) + ' ' + ey);
+    L.dot.setAttribute('cx', x);
+    L.dot.setAttribute('cy', y);
+  }
+}
+
+/* ── falso bloom que segue o coração ────────────────────────── */
+const bloom = document.getElementById('bloom');
+const bloomDot = bloom.querySelector('i');
+function updateBloom() {
+  v.copy(corePos);
+  model.localToWorld(v);
+  v.project(stage.camera);
+  bloomDot.style.transform = 'translate(' +
+    (v.x * 0.5 + 0.5) * stage.clientWidth + 'px,' + (-v.y * 0.5 + 0.5) * stage.clientHeight + 'px)';
+}
+
+/* ── animação por frame ─────────────────────────────────────── */
+let rpm = 1480;
+stage.onFrame = (t, dt) => {
+  rotor.rotation.z += dt * (rpm / 1480) * 0.9;
+  const pulse = 1.75 + 0.55 * Math.sin(t * 1.5) + 0.12 * Math.sin(t * 6.1);
+  materials.plasma.emissiveIntensity = pulse;
+  coreLight.intensity = 2.4 + pulse * 0.5;
+  updateLabels();
+  updateBloom();
+};
+
+/* ── botões de câmera ───────────────────────────────────────── */
+const home = {
+  pos: stage.camera.position.clone(),
+  target: stage.controls.target.clone(),
+};
+function zoom(f) {
+  const c = stage.camera, tg = stage.controls.target;
+  const d = c.position.clone().sub(tg);
+  const len = THREE.MathUtils.clamp(d.length() * f, 0.45, 4.5);
+  c.position.copy(tg).add(d.setLength(len));
+}
+document.getElementById('bIn').onclick = () => zoom(0.82);
+document.getElementById('bOut').onclick = () => zoom(1.22);
+document.getElementById('bReset').onclick = () => {
+  stage.camera.position.copy(home.pos);
+  stage.controls.target.copy(home.target);
+  stage.controls.update();
+};
+const bLabels = document.getElementById('bLabels');
+bLabels.onclick = () => {
+  showLabels = !showLabels;
+  bLabels.setAttribute('aria-pressed', String(showLabels));
+};
+const bSpin = document.getElementById('bSpin');
+bSpin.onclick = () => {
+  const on = !stage.controls.autoRotate;
+  stage.controls.autoRotate = on;
+  bSpin.setAttribute('aria-pressed', String(on));
+};
+stage.controls.addEventListener('start', () => bSpin.setAttribute('aria-pressed', 'false'));
+
+/* ── telemetria viva ───────────────────────────────────────── */
+setInterval(() => {
+  document.getElementById('r-pwr').textContent = (95 + Math.floor(Math.random() * 5)) + '%';
+  document.getElementById('r-tmp').textContent =
+    (4.0 + Math.random() * 0.4).toFixed(1) + ' GJ';
+  rpm = 1440 + Math.floor(Math.random() * 90);
+  document.getElementById('r-rpm').textContent =
+    String(rpm).replace(/^(\d)(\d{3})$/, '$1 $2') + ' rpm';
+}, 1600);
+
+/* ── fim do carregamento ───────────────────────────────────── */
+setExplode(0);
+const ld = document.getElementById('loading');
+ld.style.opacity = '0';
+bloom.style.opacity = '1';
+setTimeout(() => ld.remove(), 800);
+</script>
+</body>
+</html>

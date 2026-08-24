@@ -4,7 +4,7 @@
 
 import '../styles/militar.css';
 import { h } from '../utils/helpers.js';
-import { buildImmersiveHero } from '../utils/immersive.js';
+import { buildImmersiveHero } from '../utils/immersive';
 
 type TechDomainId = 'terra' | 'ar' | 'mar' | 'espaco' | 'futuro';
 type TechStatus = 'Operacional' | 'Implantação' | 'Teste' | 'Pesquisa' | 'Desenvolvimento' | 'Controverso';

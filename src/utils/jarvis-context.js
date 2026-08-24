@@ -4,7 +4,10 @@
  */
 export {
   getBaluarteBriefing,
+  getJarvisRuntimeContext,
   invalidateBaluarteBriefing,
   selectContextMessages,
+  recordJarvisContextObservation,
+  getLastJarvisContextObservation,
   findJarvisCapability,
 } from './jarvis-context.ts';

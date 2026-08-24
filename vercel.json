@@ -28,6 +28,12 @@
     "api/claude.py": {
       "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
     },
+    "api/claims.py": {
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
+    "api/observability.py": {
+      "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
+    },
     "api/voz.py": {
       "excludeFiles": "{public/**,src/**,dist/**,android/**,assets/**}"
     }

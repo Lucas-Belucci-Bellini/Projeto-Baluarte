@@ -29,11 +29,14 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+/* Para resolver o bin do Vite sem presumir o layout de `node_modules`. */
+import { createRequire } from 'node:module';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PORTA = Number(process.env.PORTA || 4173);
 const BASE = process.env.BASE || `http://127.0.0.1:${PORTA}`;
 const ESPERA = Number(process.env.ESPERA_MS || 900);
+const NAVEGACAO_TIMEOUT = Number(process.env.NAVEGACAO_TIMEOUT_MS || 15000);
 const TEXTO_MINIMO = 60;
 
 /* No CI o Playwright resolve o Chromium sozinho. `CHROME_PATH` existe pra
@@ -114,7 +117,7 @@ async function auditar(rotas) {
 
     const t0 = Date.now();
     try {
-      await pag.goto(`${BASE}/#${rota}`, { waitUntil: 'load', timeout: 30000 });
+      await pag.goto(`${BASE}/#${rota}`, { waitUntil: 'domcontentloaded', timeout: NAVEGACAO_TIMEOUT });
       await pag.waitForTimeout(ESPERA);
       const info = await pag.evaluate(() => {
         const alvo = document.querySelector('main') || document.body;
@@ -204,8 +207,37 @@ if (!process.env.BASE) {
     console.error('smoke: não há dist/. Rode `npm run build` antes, ou passe BASE=<url>.');
     process.exit(1);
   }
-  servidor = spawn('npx', ['vite', 'preview', '--port', String(PORTA), '--host', '127.0.0.1'],
-    { cwd: raiz, stdio: 'ignore', detached: false });
+  /* Chamamos o bin do Vite com o PRÓPRIO Node, e não `npx`.
+   *
+   * `spawn('npx', …)` morre em `ENOENT` no Windows: o Node 24 recusa spawnar
+   * `.cmd` (correção do CVE-2024-27980), e `npx` é `npx.cmd`. O smoke inteiro
+   * caía antes de abrir o navegador — e como o CI só roda Linux, o defeito era
+   * invisível de um lado só. O `scripts/v2-integracao.mjs` já tinha pago por
+   * isto; este arquivo tinha o mesmo defeito, não consertado.
+   *
+   * `require.resolve` em vez de presumir `./node_modules/vite`: assim o
+   * hoisting do npm continua sendo respeitado.
+   *
+   * `--strictPort` não é detalhe: sem ele o Vite troca de porta EM SILÊNCIO
+   * quando a escolhida está ocupada, e o smoke passa a medir um servidor zumbi
+   * de outra execução — verde sobre a build errada. */
+  const viteBin = (() => {
+    try {
+      return join(
+        dirname(createRequire(import.meta.url).resolve('vite/package.json')),
+        'bin',
+        'vite.js'
+      );
+    } catch {
+      return join(raiz, 'node_modules', 'vite', 'bin', 'vite.js');
+    }
+  })();
+
+  servidor = spawn(
+    process.execPath,
+    [viteBin, 'preview', '--port', String(PORTA), '--strictPort', '--host', '127.0.0.1'],
+    { cwd: raiz, stdio: 'ignore', detached: false }
+  );
   if (!await esperarPreview(BASE)) {
     console.error('smoke: o preview não subiu.');
     servidor.kill();

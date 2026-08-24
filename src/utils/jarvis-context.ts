@@ -5,13 +5,14 @@ import { ARCS, ARCS_TOTAL } from '../data/cronicas.js';
 import { UNIVERSOS } from '../data/universos.js';
 import { capabilitiesText, findCapability } from '../data/site-capabilities.js';
 import { codeContext } from './jarvis-brain.js';
+import { getStatusText } from './baluarte-status';
 export interface JarvisRouteCapability {
   readonly path: string;
   readonly label: string;
 }
 
 export interface JarvisMessage {
-  readonly role: string;
+  readonly role: 'user' | 'assistant' | 'jarvis' | 'tool' | 'system';
   readonly text?: string;
   readonly content?: string;
 }
@@ -31,12 +32,18 @@ export interface ContextMetrics {
   readonly truncated: boolean;
 }
 
+export interface JarvisContextObservation extends ContextMetrics {
+  readonly mode: string;
+  readonly preparationMs: number;
+}
+
 interface BriefingCache {
   readonly key: string;
   readonly text: string;
 }
 
 const briefingCache = new Map<string, BriefingCache>();
+let lastContextObservation: JarvisContextObservation | null = null;
 
 function briefingKey(): string {
   return [VERSION, TOTAL, TOTAL_EQUIPES, ARCS_TOTAL, UNIVERSOS.length].join(':');
@@ -72,6 +79,10 @@ export function invalidateBaluarteBriefing(): void {
   briefingCache.clear();
 }
 
+export function getJarvisRuntimeContext(options: BriefingOptions = {}): string {
+  return `${getBaluarteBriefing(options)}\n\n## ESTADO ATUAL DO SITE (somente leitura)\n${getStatusText()}`;
+}
+
 export function selectContextMessages(
   messages: readonly JarvisMessage[],
   budget: ContextBudget = {},
@@ -98,6 +109,20 @@ export function selectContextMessages(
 
   if (selected.length < messages.length) truncated = true;
   return { messages: selected, metrics: { messages: selected.length, characters, truncated } };
+}
+
+export function recordJarvisContextObservation(observation: JarvisContextObservation): void {
+  lastContextObservation = {
+    mode: String(observation.mode).slice(0, 32),
+    messages: Math.max(0, Math.floor(observation.messages)),
+    characters: Math.max(0, Math.floor(observation.characters)),
+    truncated: observation.truncated === true,
+    preparationMs: Math.max(0, Math.min(60_000, Math.round(observation.preparationMs))),
+  };
+}
+
+export function getLastJarvisContextObservation(): JarvisContextObservation | null {
+  return lastContextObservation ? { ...lastContextObservation } : null;
 }
 
 export function findJarvisCapability(query: string): JarvisRouteCapability | null {

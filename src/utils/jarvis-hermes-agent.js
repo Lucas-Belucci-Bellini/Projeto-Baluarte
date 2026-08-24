@@ -97,7 +97,7 @@ export async function processHermesAgent(messages, config = {}, onToolCall, cbs 
 
   return runLocalAgent({
     brain,
-    tools: getToolSchemas(),
+    tools: getToolSchemas({ query: config.toolFocus }),
     exec: runTool,
     persona,
     messages,

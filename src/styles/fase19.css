@@ -182,6 +182,29 @@
   line-height: 1.5;
   margin: 0;
 }
+.jv-spotify-settings {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-cyan-edge);
+}
+.jv-spotify-settings__title {
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+.jv-spotify-settings__summary {
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.jv-spotify-settings__controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
 
 .jarvis-chat {
   flex: 1;
@@ -532,3 +555,322 @@
 .eco-card { transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base); }
 .eco-card:hover { border-color: var(--color-cyan-edge); box-shadow: var(--shadow-glow-cyan); transform: translateY(-3px); }
 .eco-card__value { text-shadow: 0 0 12px color-mix(in srgb, var(--color-cyan) 35%, transparent); }
+
+/* ===== JARVIS · Console integrado Mark XIII ===== */
+.jv-mark-xiii {
+  --jv-mark-bg: #06070b;
+  --jv-mark-panel: rgba(13, 15, 22, .82);
+  --jv-mark-line: rgba(221, 179, 94, .25);
+  --jv-mark-text: #f3ead7;
+  --jv-mark-muted: #9b907c;
+  --jv-mark-accent: #e8c679;
+  position: relative;
+  min-height: 520px;
+  margin: 0 0 14px;
+  overflow: hidden;
+  border: 1px solid var(--jv-mark-line);
+  border-radius: 8px;
+  background: radial-gradient(ellipse at 52% 47%, rgba(197, 144, 47, .08), transparent 42%), var(--jv-mark-bg);
+  color: var(--jv-mark-text);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, .52), 0 12px 38px rgba(0, 0, 0, .25);
+  font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace);
+}
+.jv-mark-xiii::before,
+.jv-mark-xiii::after {
+  position: absolute;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  content: '';
+  pointer-events: none;
+  opacity: .64;
+}
+.jv-mark-xiii::before { top: 14px; left: 14px; border-top: 1px solid var(--jv-mark-accent); border-left: 1px solid var(--jv-mark-accent); }
+.jv-mark-xiii::after { right: 14px; bottom: 14px; border-right: 1px solid var(--jv-mark-accent); border-bottom: 1px solid var(--jv-mark-accent); }
+.jv-mark-xiii__topline,
+.jv-mark-xiii__bottom {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 54px;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(221, 179, 94, .16);
+  background: rgba(7, 8, 13, .72);
+}
+.jv-mark-xiii__bottom { border-top: 1px solid rgba(221, 179, 94, .16); border-bottom: 0; justify-content: space-between; }
+.jv-mark-xiii__brand { display: flex; align-items: center; gap: 9px; min-width: 150px; font-family: var(--font-display, Georgia, serif); font-size: 16px; letter-spacing: 4px; }
+.jv-mark-xiii__sigil { color: var(--jv-mark-accent); font-size: 18px; text-shadow: 0 0 14px rgba(232, 198, 121, .75); }
+.jv-mark-xiii__indicators { display: flex; flex: 1; justify-content: center; gap: 15px; color: var(--jv-mark-muted); font-size: 9px; letter-spacing: 1.7px; }
+.jv-mark-xiii__indicator { white-space: nowrap; }
+.jv-mark-xiii__indicator::before { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #4b5563; content: ''; }
+.jv-mark-xiii__indicator.is-online::before { background: #52d496; box-shadow: 0 0 10px rgba(82, 212, 150, .8); }
+.jv-mark-xiii[data-runtime-connection="unknown"] .jv-mark-xiii__indicator::before { background: #d5a84f; box-shadow: 0 0 8px rgba(213, 168, 79, .45); }
+.jv-mark-xiii[data-runtime-connection="disconnected"] .jv-mark-xiii__indicator::before { background: #c87878; box-shadow: 0 0 8px rgba(200, 120, 120, .38); }
+.jv-mark-xiii[data-runtime-health="failed"] .jv-mark-xiii__value { color: #dc8b8b; }
+.jv-mark-xiii[data-runtime-health="degraded"] .jv-mark-xiii__value { color: #e0bd72; }
+.jv-mark-xiii[data-runtime-authority="not-authorized"] .jv-mark-xiii__telemetry::after { display: block; margin-top: 8px; color: var(--jv-mark-muted); content: 'SINAL OBSERVADO · SEM CLAIM'; font-size: 8px; letter-spacing: 1px; }
+.jv-mark-xiii[data-runtime-severity="warning"] .jv-mark-xiii__indicator::before { background: #e0bd72; box-shadow: 0 0 8px rgba(224, 189, 114, .42); }
+.jv-mark-xiii[data-runtime-severity="critical"] .jv-mark-xiii__indicator::before { background: #dc8b8b; box-shadow: 0 0 8px rgba(220, 139, 139, .42); }
+.jv-mark-xiii[data-runtime-fallback="blocked"] .jv-mark-xiii__value { color: #dc8b8b; }
+.jv-mark-xiii[data-runtime-fallback="degraded"] .jv-mark-xiii__value { color: #e0bd72; }
+.jv-mark-xiii__time { display: flex; align-items: end; gap: 12px; min-width: 180px; justify-content: flex-end; color: var(--jv-mark-muted); font-size: 9px; letter-spacing: 1px; text-align: right; }
+.jv-mark-xiii__date { color: var(--jv-mark-accent); font-size: 8px; letter-spacing: 1.6px; text-transform: uppercase; }
+.jv-mark-xiii__clock { color: var(--jv-mark-text); font-size: 16px; letter-spacing: 1px; }
+.jv-mark-xiii__stage { position: relative; min-height: 410px; }
+.jv-mark-xiii__canvas { display: block; width: 100%; height: 410px; background: transparent; }
+.jv-mark-xiii__stage::before { position: absolute; z-index: 1; inset: 0; background: repeating-linear-gradient(180deg, rgba(255, 255, 255, .018) 0 1px, transparent 1px 4px); content: ''; pointer-events: none; }
+.jv-mark-xiii__scanline { position: absolute; z-index: 2; inset: 0; background: radial-gradient(ellipse at 50% 52%, transparent 0 38%, rgba(3, 3, 8, .58) 82%); pointer-events: none; }
+.jv-mark-xiii__title-block { position: absolute; z-index: 3; top: 18px; left: 0; right: 0; color: var(--jv-mark-text); text-align: center; text-shadow: 0 0 18px rgba(232, 198, 121, .3); pointer-events: none; }
+.jv-mark-xiii__title-block span { display: block; font-family: var(--font-display, Georgia, serif); font-size: clamp(18px, 3vw, 29px); letter-spacing: 9px; }
+.jv-mark-xiii__title-block small { display: block; margin-top: 6px; color: var(--jv-mark-accent); font-size: 8px; letter-spacing: 3px; }
+.jv-mark-xiii__telemetry { position: absolute; z-index: 3; top: 22px; right: 18px; width: 205px; padding: 13px 14px; border: 1px solid rgba(221, 179, 94, .32); border-radius: 8px; background: var(--jv-mark-panel); backdrop-filter: blur(9px); }
+.jv-mark-xiii__telemetry-title { margin-bottom: 10px; color: var(--jv-mark-accent); font-family: var(--font-display, Georgia, serif); font-size: 13px; letter-spacing: 2px; }
+.jv-mark-xiii__telemetry-row { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px dashed rgba(221, 179, 94, .12); color: var(--jv-mark-muted); font-size: 9px; letter-spacing: 1px; }
+.jv-mark-xiii__telemetry-row:last-child { border-bottom: 0; }
+.jv-mark-xiii__value { color: var(--jv-mark-accent); text-align: right; text-shadow: 0 0 9px rgba(232, 198, 121, .35); }
+.jv-mark-xiii__caption { position: absolute; z-index: 3; bottom: 17px; left: 50%; padding: 7px 12px; border: 1px solid rgba(221, 179, 94, .22); border-radius: 999px; background: rgba(6, 7, 11, .72); color: var(--jv-mark-accent); font-family: var(--font-display, Georgia, serif); font-size: 12px; transform: translateX(-50%); white-space: nowrap; }
+.jv-mark-xiii__presence { display: flex; align-items: center; gap: 8px; color: var(--jv-mark-muted); font-size: 9px; letter-spacing: 1.4px; }
+.jv-mark-xiii__presence-dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; }
+.jv-mark-xiii[data-music="true"] .jv-mark-xiii__presence-dot { background: #52d496; box-shadow: 0 0 10px rgba(82, 212, 150, .8); }
+.jv-mark-xiii__presence-state { color: var(--jv-mark-accent); }
+.jv-mark-xiii__actions { display: flex; align-items: center; gap: 7px; }
+.jv-mark-xiii__action,
+.jv-mark-xiii__swatch { min-height: 28px; border: 1px solid rgba(221, 179, 94, .34); border-radius: 4px; background: rgba(221, 179, 94, .07); color: var(--jv-mark-accent); font-family: inherit; font-size: 9px; letter-spacing: 1px; cursor: pointer; }
+.jv-mark-xiii__action { padding: 0 9px; }
+.jv-mark-xiii__swatch { width: 18px; height: 18px; min-height: 18px; padding: 0; border-radius: 50%; }
+.jv-mark-xiii__swatch[data-theme="gold"] { background: #e8c679; }
+.jv-mark-xiii__swatch[data-theme="rose"] { background: #d7837a; }
+.jv-mark-xiii__swatch[data-theme="jade"] { background: #64c8a0; }
+.jv-mark-xiii__theme-label { color: var(--jv-mark-muted); font-size: 8px; letter-spacing: 1.5px; }
+.jv-mark-xiii[data-theme="rose"] { --jv-mark-accent: #f3b0a9; --jv-mark-line: rgba(221, 128, 124, .28); }
+.jv-mark-xiii[data-theme="jade"] { --jv-mark-accent: #8ed7bd; --jv-mark-line: rgba(112, 201, 163, .28); }
+@media (prefers-reduced-motion: reduce) { .jv-mark-xiii *, .jv-mark-xiii *::before, .jv-mark-xiii *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 900px) {
+  .jv-mark-xiii { min-height: 460px; }
+  .jv-mark-xiii__topline { flex-wrap: wrap; }
+  .jv-mark-xiii__indicators { order: 3; width: 100%; justify-content: flex-start; overflow-x: auto; }
+  .jv-mark-xiii__time { margin-left: auto; }
+  .jv-mark-xiii__stage, .jv-mark-xiii__canvas { min-height: 350px; height: 350px; }
+  .jv-mark-xiii__telemetry { top: auto; right: 12px; bottom: 16px; width: 190px; }
+  .jv-mark-xiii__caption { left: 14px; transform: none; font-size: 10px; }
+  .jv-mark-xiii__bottom { align-items: flex-start; flex-direction: column; }
+}
+
+
+/* Integração visual do Núcleo V7: o artefato standalone tem seu próprio tema;
+ * esta camada somente garante composição e fallback no caminho /jarvis. */
+.jv-visual-switcher { position: relative; min-height: 520px; overflow: hidden; border: 1px solid rgba(221, 179, 94, .18); background: #0b0910; }
+.jv-visual-switcher__frame, .jv-visual-switcher__image { display: block; width: 100%; min-height: 520px; height: 520px; border: 0; background: #0b0910; }
+.jv-visual-switcher__image { object-fit: cover; object-position: center; }
+.jv-visual-switcher__frame[hidden], .jv-visual-switcher__image[hidden], .jv-visual-switcher__fallback[hidden] { display: none; }
+.jv-visual-switcher__fallback { min-height: 520px; }
+.jv-visual-switcher__reference-fallback { position: relative; min-height: 520px; background: #06070b; }
+.jv-visual-switcher__reference { display: block; width: 100%; min-height: 520px; height: 520px; object-fit: cover; object-position: center; }
+.jv-visual-switcher__reference-fallback > .jv-mark-xiii { position: absolute; inset: 0; visibility: hidden; pointer-events: none; }
+.jv-visual-switcher[data-visual-state="loading"]::after { position: absolute; top: 12px; left: 50%; z-index: 4; padding: 4px 8px; border: 1px solid rgba(221, 179, 94, .22); background: rgba(6, 7, 11, .76); color: #d9b866; content: 'V7 · alinhando'; font-size: 9px; letter-spacing: 1.4px; transform: translateX(-50%); pointer-events: none; }
+.jv-visual-switcher[data-visual-state="fallback"]::after { position: absolute; top: 12px; left: 50%; z-index: 4; padding: 4px 8px; border: 1px solid rgba(221, 179, 94, .22); background: rgba(6, 7, 11, .76); color: #d9b866; content: 'V7 · imagem de referência'; font-size: 9px; letter-spacing: 1.4px; transform: translateX(-50%); pointer-events: none; }
+@media (max-width: 900px) {
+  .jv-visual-switcher, .jv-visual-switcher__fallback { min-height: 420px; }
+  .jv-visual-switcher__frame, .jv-visual-switcher__image { min-height: 420px; height: 420px; }
+  .jv-visual-switcher__reference-fallback { min-height: 420px; }
+  .jv-visual-switcher__reference { min-height: 420px; height: 420px; }
+}
+
+/* Núcleo na WEB (#238) — a rota /jarvis fora do Launcher mostra o V7 e mais
+ * nada. As funções (música, ficheiro, microfone, pulso, varrimento, dissecar,
+ * retrato, rotação, captura, temas) já moram no canto do próprio artefato e
+ * ligam/desligam por lá; o que fica de fora do iframe é só a doca do Baluarte,
+ * com o controle de presença musical externa. */
+.page-nucleo {
+  --palco-altura: calc(100vh - var(--header-height) - var(--space-lg) * 2);   /* só o palpite inicial: `ocuparAlturaRestante` mede e corrige */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.page-nucleo { min-height: 0; }
+.page-nucleo .jv-visual-switcher { flex: none; height: var(--palco-altura); min-height: 0; }
+.page-nucleo .jv-visual-switcher__frame,
+.page-nucleo .jv-visual-switcher__reference { height: var(--palco-altura); min-height: var(--palco-altura); }
+/* Na web o quadro é alto: `cover` cortaria justamente o painel de funções
+ * do canto, que é o que a referência precisa mostrar. */
+.page-nucleo .jv-visual-switcher__reference { object-fit: contain; }
+.page-nucleo .jv-visual-switcher__fallback,
+.page-nucleo .jv-visual-switcher__reference-fallback { min-height: var(--palco-altura); }
+
+/* Canto inferior esquerdo: o HUD do V7 usa o topo (título ao centro, ações à
+ * direita) e o rodapé central (toast), então a doca não disputa espaço. */
+.jv-nucleo-dock {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: min(300px, 62vw);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.jv-nucleo-dock__badge {
+  padding: 4px 9px;
+  border: 1px solid rgba(221, 179, 94, .28);
+  border-radius: 3px;
+  background: rgba(6, 7, 11, .74);
+  color: #9d9078;
+}
+.jv-nucleo-dock__badge[data-conectado="true"] { border-color: rgba(122, 214, 168, .5); color: #8ed7bd; }
+.jv-nucleo-dock__botao {
+  padding: 7px 12px;
+  border: 1px solid rgba(221, 179, 94, .3);
+  border-radius: 3px;
+  background: rgba(212, 162, 78, .08);
+  color: #eec886;
+  font: inherit;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s, color .18s;
+}
+.jv-nucleo-dock__botao:hover { background: rgba(212, 162, 78, .2); box-shadow: 0 0 14px rgba(212, 162, 78, .22); }
+.jv-nucleo-dock__botao:focus-visible { outline: 1px solid #eec886; outline-offset: 2px; }
+.jv-nucleo-dock__faixa { color: #d9b866; letter-spacing: 1.2px; text-transform: none; }
+.jv-nucleo-dock__faixa:empty { display: none; }
+.jv-nucleo-dock__app { color: rgba(157, 144, 120, .82); font-size: 8.5px; letter-spacing: 1.6px; text-decoration: none; }
+.jv-nucleo-dock__app:hover { color: #eec886; }
+
+@media (max-width: 900px) {
+  .page-nucleo { --palco-altura: calc(100vh - var(--header-height) - var(--space-lg) * 2);   /* só o palpite inicial: `ocuparAlturaRestante` mede e corrige */ }
+  .page-nucleo .jv-visual-switcher,
+  .page-nucleo .jv-visual-switcher__frame,
+  .page-nucleo .jv-visual-switcher__reference,
+  .page-nucleo .jv-visual-switcher__fallback,
+  .page-nucleo .jv-visual-switcher__reference-fallback { min-height: 420px; }
+  .jv-nucleo-dock { left: 12px; bottom: 12px; }
+}
+
+/* Palco do JARVIS no APP (#238 · 1.3.7) — o Núcleo ocupa a área de conteúdo e
+ * as superfícies do JARVIS flutuam POR CIMA dele, uma de cada vez, abertas
+ * pelos botões do próprio HUD do V7.
+ *
+ * Antes a conversa e o painel de configuração ficavam empilhados ABAIXO do
+ * Núcleo: a rota crescia para baixo e o 3D virava cabeçalho de outra coisa.
+ * Aqui a página não rola — o que rola é o corpo do painel aberto. */
+/* Sem isto a página impõe a própria altura mínima e o palco estica junto,
+ * ignorando a medição — e volta a barra de rolagem. */
+.page-jarvis--palco { min-height: 0; }
+.page-jarvis .jv-palco {
+  flex: none;
+  height: var(--palco-altura);
+  --palco-altura: calc(100vh - var(--header-height) - var(--space-lg) * 2);   /* idem: palpite até a medição chegar */
+  position: relative;
+  min-height: 0;
+}
+.jv-palco .jv-visual-switcher { min-height: var(--palco-altura); }
+.jv-palco .jv-visual-switcher__frame,
+.jv-palco .jv-visual-switcher__reference { height: var(--palco-altura); min-height: var(--palco-altura); }
+.jv-palco .jv-visual-switcher__fallback,
+.jv-palco .jv-visual-switcher__reference-fallback { min-height: var(--palco-altura); }
+.jv-palco .jv-visual-switcher__reference { object-fit: contain; }
+
+/* A camada não intercepta o rato: quem intercepta é o painel aberto. Sem isto,
+ * uma folha transparente por cima do Núcleo comeria o arrasto do astrolábio. */
+.jv-camada { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+
+/* Gaveta à esquerda, não cortina: o Núcleo continua sendo o palco, e a coluna
+ * de ações do V7 (158 px, no canto superior direito) continua alcançável — são
+ * os botões que abrem e fecham isto. */
+.jv-painel {
+  position: absolute;
+  top: 92px; bottom: 18px; left: 18px;
+  width: min(560px, calc(100% - 230px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(221, 179, 94, .28);
+  border-radius: 4px;
+  background: rgba(8, 7, 12, .92);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .55);
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+}
+.jv-painel[hidden] { display: none; }
+.jv-painel__topo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(221, 179, 94, .18);
+  background: rgba(212, 162, 78, .05);
+}
+.jv-painel__titulo { color: #d9b866; font-size: 10px; letter-spacing: 2.4px; text-transform: uppercase; }
+.jv-painel__fechar {
+  margin-left: auto;
+  padding: 0 8px;
+  border: 1px solid rgba(221, 179, 94, .24);
+  border-radius: 3px;
+  background: transparent;
+  color: #d9b866;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.jv-painel__fechar:hover { background: rgba(212, 162, 78, .16); color: #f4ecdd; }
+.jv-painel__fechar:focus-visible { outline: 1px solid #eec886; outline-offset: 2px; }
+.jv-painel__corpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-height: 0;
+  padding: var(--space-sm);
+  overflow-y: auto;
+}
+/* A conversa preenche o painel e rola por dentro; o `min-height: 480px` do
+ * layout original empurraria o campo de texto para fora da caixa. */
+.jv-painel__corpo .jv-layout { flex: 1; min-height: 0; }
+.jv-painel__corpo .jarvis-chat { min-height: 0; }
+.jv-painel[data-superficie="conversa"] .jv-painel__corpo { overflow: hidden; }
+.jv-painel .jarvis-toolbar { margin-bottom: 0; flex-wrap: wrap; }
+.jv-painel .jarvis-config-wrap { margin-bottom: 0; }
+
+/* Só aparece quando o V7 não sobe: sem o HUD, não haveria como abrir nada. */
+.jv-palco__socorro {
+  position: absolute;
+  top: 18px; right: 18px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 158px;
+}
+.jv-palco__socorro[hidden] { display: none; }
+.jv-palco__socorro-botao {
+  padding: 7px 10px;
+  border: 1px solid rgba(221, 179, 94, .3);
+  border-radius: 3px;
+  background: rgba(6, 7, 11, .82);
+  color: #eec886;
+  font: inherit;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.jv-palco__socorro-botao:hover { background: rgba(212, 162, 78, .2); }
+.jv-palco__socorro-botao:focus-visible { outline: 1px solid #eec886; outline-offset: 2px; }
+
+@media (max-width: 900px) {
+  .jv-painel { width: min(460px, calc(100% - 190px)); }
+}
+@media (max-width: 700px) {
+  /* Sem largura para conviver com a coluna de ações: o painel toma a metade de
+   * baixo e o HUD continua inteiro em cima dele. */
+  .jv-painel { top: 46%; left: 12px; bottom: 12px; width: calc(100% - 24px); }
+  .jv-palco__socorro { width: 128px; }
+}

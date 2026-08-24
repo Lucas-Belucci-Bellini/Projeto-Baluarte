@@ -1,0 +1,1040 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-08-19",
+  "generatedAt": "2026-08-19T02:05:59.997Z",
+  "repo": "Lucas-Belucci-Bellini/Projeto-Baluarte",
+  "git": {
+    "sha": "854972ca8e7a2a09727650d74426731e83f6fdc4",
+    "branch": "main",
+    "dirty": true,
+    "statusLines": [
+      "\u001b[31m??\u001b[m reports/daily/2026-08-19.json",
+      "\u001b[31m??\u001b[m reports/daily/2026-08-19.md"
+    ],
+    "subject": "fix(ops): inspect current project before daily report"
+  },
+  "migration": {
+    "pagesJavaScriptTotal": 355,
+    "canonicalPagesRemaining": [],
+    "typescriptPageImplementations": null,
+    "javascriptWrappers": 142,
+    "typescriptImplementations": 156,
+    "boundaryDeclarations": 171,
+    "source": "docs/v2/PAGES_JS_REMAINING_INVENTORY.md"
+  },
+  "github": {
+    "available": true,
+    "errors": [],
+    "runs": [
+      {
+        "id": 32207320343,
+        "workflow": "V2 Validation",
+        "status": "in_progress",
+        "conclusion": "",
+        "createdAt": "2026-08-19T02:05:52Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions/runs/32207320343",
+        "title": "fix(ops): inspect current project before daily report"
+      },
+      {
+        "id": 32207320346,
+        "workflow": "CodeQL",
+        "status": "in_progress",
+        "conclusion": "",
+        "createdAt": "2026-08-19T02:05:52Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions/runs/32207320346",
+        "title": "fix(ops): inspect current project before daily report"
+      },
+      {
+        "id": 32207320341,
+        "workflow": "V2 Runtime",
+        "status": "in_progress",
+        "conclusion": "",
+        "createdAt": "2026-08-19T02:05:52Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions/runs/32207320341",
+        "title": "fix(ops): inspect current project before daily report"
+      },
+      {
+        "id": 32207320387,
+        "workflow": "CI",
+        "status": "in_progress",
+        "conclusion": "",
+        "createdAt": "2026-08-19T02:05:52Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions/runs/32207320387",
+        "title": "fix(ops): inspect current project before daily report"
+      },
+      {
+        "id": 32207320344,
+        "workflow": "Core CI",
+        "status": "in_progress",
+        "conclusion": "",
+        "createdAt": "2026-08-19T02:05:52Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions/runs/32207320344",
+        "title": "fix(ops): inspect current project before daily report"
+      },
+      {
+        "id": 32207320355,
+        "workflow": "Arma 3 Data CI",
+        "status": "in_progress",
+        "conclusion": "",
+        "createdAt": "2026-08-19T02:05:52Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions/runs/32207320355",
+        "title": "fix(ops): inspect current project before daily report"
+      },
+      {
+        "id": 32207320318,
+        "workflow": "Vigia das rotas",
+        "status": "in_progress",
+        "conclusion": "",
+        "createdAt": "2026-08-19T02:05:51Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/actions/runs/32207320318",
+        "title": "fix(ops): inspect current project before daily report"
+      }
+    ],
+    "allOpenIssues": [
+      {
+        "number": 454,
+        "title": "continuation: AEGIS Ocean dual-use governance added to Alpha roadmap",
+        "labels": [
+          "documentation"
+        ],
+        "updatedAt": "2026-08-17T04:25:24Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/454",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 432,
+        "title": "🔴 Vigia das rotas: há tela quebrada",
+        "labels": [
+          "vigia-rotas"
+        ],
+        "updatedAt": "2026-08-14T05:30:12Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/432",
+        "author": "app/github-actions"
+      },
+      {
+        "number": 430,
+        "title": "V2: verificação especializada por domínio e integrador de contratos",
+        "labels": [
+          "V2"
+        ],
+        "updatedAt": "2026-08-13T16:37:23Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/430",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 423,
+        "title": "Plano Mestre V2 — Construção, Integração e Evolução Contínua",
+        "labels": [],
+        "updatedAt": "2026-08-13T18:38:09Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 422,
+        "title": "Plano 02 — Wiki Project Zomboid na V2",
+        "labels": [],
+        "updatedAt": "2026-08-13T18:35:49Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 420,
+        "title": "Plano 01 — Fundação, Hardening e Transição V1 → V2",
+        "labels": [],
+        "updatedAt": "2026-08-13T18:35:35Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 406,
+        "title": "PROJETO-NEXUS-BALUARTE.md",
+        "labels": [],
+        "updatedAt": "2026-07-31T05:31:04Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/406",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 405,
+        "title": "coisas para fazer",
+        "labels": [],
+        "updatedAt": "2026-07-31T06:05:00Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/405",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 403,
+        "title": "ADICIONAR MAIS MUSICAS",
+        "labels": [],
+        "updatedAt": "2026-07-26T20:22:22Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/403",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 398,
+        "title": "🔫 Masterplan — A MELHOR wiki de armas do Arma 3 (estilo Fallout wiki, porém completa): database + balística + visor in-game do Drive",
+        "labels": [],
+        "updatedAt": "2026-07-24T06:38:02Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/398",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 386,
+        "title": "🎮 0.7.2 — Biblioteca TOTAL dos modpacks de Arma 3 + armas em 3D no visor",
+        "labels": [],
+        "updatedAt": "2026-07-17T15:05:59Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/386",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 383,
+        "title": "Capítulo 11: A Caçada Urbana e a Captura do Otachi",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:09:17Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/383",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 382,
+        "title": "Capítulo 3: O Conselho dos Predadores e a Chegada da Frota",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:07:57Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/382",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 381,
+        "title": "Capítulo 10: Inteligência na Sala de Comando e a Caçada Urbana",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:07:39Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/381",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 380,
+        "title": "Capítulo 9: O Ataque Aéreo e a Armadura Secreta",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:07:22Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/380",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 379,
+        "title": "Capítulo 8: O Poder Cru do Deus Irae",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:07:07Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/379",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 378,
+        "title": "Capítulo 7: Infiltração Noturna e Confronto Colossal",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:06:52Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/378",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 377,
+        "title": "Capítulo 6: O Alerta Duplo e o Plano de Batalha",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:06:34Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/377",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 376,
+        "title": "Capítulo 5: O Plano Suicida e o DNA da Colmeia",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:06:16Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/376",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 375,
+        "title": "Capítulo 4: O Encontro dos Colossos e a Cathedral de Metal",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:05:59Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/375",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 374,
+        "title": "Capítulo 2: Círculo de Fogo: A Chegada do Caos - Parte II: A Revelação",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:05:40Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/374",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 373,
+        "title": "Capítulo 1: Círculo de Fogo: A Chegada do Caos - Introdução e Primeiro Contato",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:05:22Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/373",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 372,
+        "title": "Começo do Manga da Fan Fic Crônicas da Baluarte: Onde os Deuses Sangram",
+        "labels": [],
+        "updatedAt": "2026-07-16T03:18:55Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/372",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 369,
+        "title": "🗂️ 0.6.0 — JARVIS Arquivista: agente de arquivos do PC (busca + relatório, com bloqueios)",
+        "labels": [],
+        "updatedAt": "2026-07-17T03:05:45Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/369",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 360,
+        "title": "ei",
+        "labels": [],
+        "updatedAt": "2026-07-11T22:54:16Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/360",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 356,
+        "title": "musicas proprias  (adicionar a sessão musicas)",
+        "labels": [],
+        "updatedAt": "2026-07-11T23:34:34Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/356",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 348,
+        "title": "🚀 MEGA PLANO: Integração de Ecossistema e Treinamento Massivo de IA",
+        "labels": [],
+        "updatedAt": "2026-07-11T14:44:51Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/348",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 340,
+        "title": "🧭 v0.5.0 — Hermes como motor padrão, seletor de modelos, APK direto no site, Corpo Total consertado e Voz do J.A.R.V.I.S.",
+        "labels": [],
+        "updatedAt": "2026-07-11T19:39:14Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/340",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 338,
+        "title": "🚀 Fechar a v0.4.0: launcher 0.4.0 publicado + Corpo Total reconhecido no app (PC e celular)",
+        "labels": [],
+        "updatedAt": "2026-07-05T04:29:49Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/338",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 323,
+        "title": "🚀 v0.4.0 — Release Mobile (Android + iOS) + super otimização do site",
+        "labels": [],
+        "updatedAt": "2026-07-04T17:42:43Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/323",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 316,
+        "title": "🧠 Núcleo de IA 10x — cockpit unificado + otimização 3D (Blender) + ponte Java para o app",
+        "labels": [],
+        "updatedAt": "2026-07-11T14:44:31Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/316",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 310,
+        "title": "modelos 3d (visulizador de modelos em 3d)",
+        "labels": [],
+        "updatedAt": "2026-07-02T05:56:48Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/310",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 307,
+        "title": "arrumar (supabase)",
+        "labels": [],
+        "updatedAt": "2026-07-07T18:38:54Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/307",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 291,
+        "title": "🧭 Regras do operador + backlog (Supabase, Rádio/Música offline, acesso ao banco)",
+        "labels": [],
+        "updatedAt": "2026-08-13T03:41:19Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/291",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 262,
+        "title": "🌌 Estudo: design 3D imersivo com Spline como base do novo visual das páginas",
+        "labels": [],
+        "updatedAt": "2026-06-20T04:45:43Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/262",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 259,
+        "title": "📦 Próxima release do app (Baluarte Launcher) com o novo design + Núcleo de IA",
+        "labels": [],
+        "updatedAt": "2026-06-22T19:03:55Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/259",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 258,
+        "title": "🧭 Encolher a sidebar: seção IA & JARVIS vira só \"Git Nexus\" (Núcleo de IA)",
+        "labels": [],
+        "updatedAt": "2026-06-20T04:11:05Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/258",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 248,
+        "title": "📒 Manual de operação & continuidade do Baluarte — comece por aqui (NÃO FECHAR)",
+        "labels": [
+          "documentation"
+        ],
+        "updatedAt": "2026-06-18T21:48:27Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/248",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 246,
+        "title": "Desing",
+        "labels": [],
+        "updatedAt": "2026-06-26T00:14:35Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/246",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 240,
+        "title": "🗺️ Roadmap mestre — fila de continuação do Baluarte (siga esta issue)",
+        "labels": [],
+        "updatedAt": "2026-07-12T20:34:50Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/240",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 238,
+        "title": "🧭 Mega-plano: App completo + Site leve — dois pesos, uma base",
+        "labels": [],
+        "updatedAt": "2026-06-18T21:57:03Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/238",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 232,
+        "title": "App desktop — M4: ambiente auto-provisionado (preflight de runtimes próprios)",
+        "labels": [],
+        "updatedAt": "2026-06-15T17:19:51Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/232",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 231,
+        "title": "JARVIS ↔ Git Nexus: o grafo de código como skills do JARVIS (inspirado no OpenJarvis)",
+        "labels": [],
+        "updatedAt": "2026-06-15T12:43:54Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/231",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 222,
+        "title": "App desktop do Baluarte (Electron) — launcher com web + auto-update p/ rodar as versões pesadas",
+        "labels": [],
+        "updatedAt": "2026-06-15T00:12:41Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/222",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 210,
+        "title": "temos que arrumar",
+        "labels": [],
+        "updatedAt": "2026-06-13T03:57:11Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/210",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 208,
+        "title": "Humanity always first",
+        "labels": [],
+        "updatedAt": "2026-06-12T21:37:25Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/208",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 207,
+        "title": "3d",
+        "labels": [],
+        "updatedAt": "2026-06-12T21:33:58Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/207",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 205,
+        "title": "ideias",
+        "labels": [],
+        "updatedAt": "2026-06-25T17:21:36Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/205",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 204,
+        "title": "Analisador de meta dados do codigo",
+        "labels": [],
+        "updatedAt": "2026-06-13T19:12:15Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/204",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 203,
+        "title": "conselho de segurança ",
+        "labels": [],
+        "updatedAt": "2026-06-11T22:47:57Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/203",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 200,
+        "title": "APIS",
+        "labels": [],
+        "updatedAt": "2026-06-12T02:57:43Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/200",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 197,
+        "title": "resolver o editor de codigo",
+        "labels": [],
+        "updatedAt": "2026-06-11T10:52:41Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/197",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 196,
+        "title": "melhoria de ui do site",
+        "labels": [],
+        "updatedAt": "2026-06-10T23:20:18Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/196",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 195,
+        "title": "melhorar o design do site",
+        "labels": [],
+        "updatedAt": "2026-06-13T14:22:44Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/195",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 194,
+        "title": "update futuro",
+        "labels": [],
+        "updatedAt": "2026-06-13T03:19:48Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/194",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 193,
+        "title": "Categoria upgrade classe SSS",
+        "labels": [],
+        "updatedAt": "2026-06-10T22:28:00Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/193",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 186,
+        "title": "ideia futuro ",
+        "labels": [],
+        "updatedAt": "2026-06-10T21:36:27Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/186",
+        "author": "Lucas-Belucci-Bellini"
+      }
+    ],
+    "importantIssues": [
+      {
+        "number": 430,
+        "title": "V2: verificação especializada por domínio e integrador de contratos",
+        "labels": [
+          "V2"
+        ],
+        "updatedAt": "2026-08-13T16:37:23Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/430",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 423,
+        "title": "Plano Mestre V2 — Construção, Integração e Evolução Contínua",
+        "labels": [],
+        "updatedAt": "2026-08-13T18:38:09Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/423",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 422,
+        "title": "Plano 02 — Wiki Project Zomboid na V2",
+        "labels": [],
+        "updatedAt": "2026-08-13T18:35:49Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 420,
+        "title": "Plano 01 — Fundação, Hardening e Transição V1 → V2",
+        "labels": [],
+        "updatedAt": "2026-08-13T18:35:35Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 323,
+        "title": "🚀 v0.4.0 — Release Mobile (Android + iOS) + super otimização do site",
+        "labels": [],
+        "updatedAt": "2026-07-04T17:42:43Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/323",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 307,
+        "title": "arrumar (supabase)",
+        "labels": [],
+        "updatedAt": "2026-07-07T18:38:54Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/307",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 291,
+        "title": "🧭 Regras do operador + backlog (Supabase, Rádio/Música offline, acesso ao banco)",
+        "labels": [],
+        "updatedAt": "2026-08-13T03:41:19Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/291",
+        "author": "Lucas-Belucci-Bellini"
+      },
+      {
+        "number": 259,
+        "title": "📦 Próxima release do app (Baluarte Launcher) com o novo design + Núcleo de IA",
+        "labels": [],
+        "updatedAt": "2026-06-22T19:03:55Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/259",
+        "author": "Lucas-Belucci-Bellini"
+      }
+    ],
+    "openPullRequests": [
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/ecosystem-round-018-aegis-inventory",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 453,
+        "title": "docs: advance ecosystem checkpoint to AEGIS round 019",
+        "updatedAt": "2026-08-17T04:21:22Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/453"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/continuation-round-018",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 452,
+        "title": "docs: advance ecosystem continuation to AEGIS Round 018",
+        "updatedAt": "2026-08-17T04:59:46Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/452"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/taxforge-provider-discovery-v1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 451,
+        "title": "docs: record TaxForge provider discovery",
+        "updatedAt": "2026-08-17T04:55:36Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/451"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/mesh-aegis-veritas-discovery-v1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 450,
+        "title": "docs: record AEGIS-Veritas capability discovery",
+        "updatedAt": "2026-08-17T04:38:54Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/450"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/mesh-taxforge-ark-consumer-gate-v1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 449,
+        "title": "docs: gate TaxForge ARK consumer hypothesis",
+        "updatedAt": "2026-08-17T04:34:46Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/449"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/mesh-taxforge-ark-discovery-v1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 448,
+        "title": "docs: record TaxForge ARK discovery v1",
+        "updatedAt": "2026-08-17T04:30:42Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/448"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/ecosystem-provider-consumer-matrix-v1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 447,
+        "title": "docs: add provider consumer discovery matrix v1",
+        "updatedAt": "2026-08-17T04:26:33Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/447"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/ark-capability-contract-v1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 446,
+        "title": "docs: define ARK mesh capability contract v1",
+        "updatedAt": "2026-08-17T04:22:22Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/446"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/ark-supabase-mapping-v1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 445,
+        "title": "docs: map ARK persistence to Supabase and Mesh boundaries",
+        "updatedAt": "2026-08-17T04:18:05Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/445"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/supabase-rls-mesh-audit",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 444,
+        "title": "docs: audit Supabase RLS boundary before mesh registry",
+        "updatedAt": "2026-08-17T04:01:49Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/444"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/rls-policy-classification",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 443,
+        "title": "docs: classify current TaxForge RLS policies",
+        "updatedAt": "2026-08-17T03:49:15Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/443"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/supabase-policy-diff",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 442,
+        "title": "docs: record Supabase policy diff checkpoint",
+        "updatedAt": "2026-08-17T03:45:00Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/442"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/supabase-rls-matrix",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 441,
+        "title": "docs: define initial Supabase RLS matrix",
+        "updatedAt": "2026-08-17T03:20:02Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/441"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/identity-tenant-contract",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 440,
+        "title": "docs: define ecosystem identity and tenant contract",
+        "updatedAt": "2026-08-17T03:15:56Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/440"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/baluarte-subsystem-map",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 439,
+        "title": "docs: map Baluarte branches to subsystems",
+        "updatedAt": "2026-08-17T02:55:02Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/439"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/baluarte-branch-inventory",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 438,
+        "title": "docs: establish branch inventory navigation layer",
+        "updatedAt": "2026-08-17T01:51:04Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/438"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "docs/taxforge-domain-spec",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 437,
+        "title": "docs: define TaxForge ecosystem domain",
+        "updatedAt": "2026-08-17T01:46:50Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/437"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/baluarte-briefing-v2-render-29ebb0",
+        "isDraft": false,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 433,
+        "title": "Claude/baluarte briefing v2 render 29ebb0",
+        "updatedAt": "2026-08-16T16:25:22Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/433"
+      },
+      {
+        "baseRefName": "v2/ci-specialists-type-hardening",
+        "headRefName": "v2/js-specialist-contract-hardening",
+        "isDraft": false,
+        "mergeStateStatus": "UNSTABLE",
+        "number": 431,
+        "title": "V2: JS specialist hardening — runtime health contracts",
+        "updatedAt": "2026-08-14T01:54:27Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/431"
+      },
+      {
+        "baseRefName": "v2/runtime-observability-integration",
+        "headRefName": "v2/ci-specialists-type-hardening",
+        "isDraft": false,
+        "mergeStateStatus": "UNSTABLE",
+        "number": 429,
+        "title": "V2: endurecer especialista JavaScript/JSDoc",
+        "updatedAt": "2026-08-13T16:43:12Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/429"
+      },
+      {
+        "baseRefName": "v2-sync-current",
+        "headRefName": "v2/ci-specialists",
+        "isDraft": false,
+        "mergeStateStatus": "UNSTABLE",
+        "number": 428,
+        "title": "V2: define specialist CI by language",
+        "updatedAt": "2026-08-13T22:35:59Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/428"
+      },
+      {
+        "baseRefName": "v2-sync-current",
+        "headRefName": "v2/runtime-observability-integration",
+        "isDraft": false,
+        "mergeStateStatus": "UNSTABLE",
+        "number": 426,
+        "title": "V2: integrate RuntimeManagerGroup observability",
+        "updatedAt": "2026-08-13T16:37:16Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/426"
+      },
+      {
+        "baseRefName": "v2-sync-current",
+        "headRefName": "claude/issue-420-baluarte-cdzuo0",
+        "isDraft": false,
+        "mergeStateStatus": "DIRTY",
+        "number": 425,
+        "title": "V2: sync latest architecture work into v2-sync-current",
+        "updatedAt": "2026-08-13T23:21:54Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/425"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/issue-420-baluarte-cdzuo0",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 421,
+        "title": "🛡️ Hardening 1.0.0 (#420) — fronteira de permissão, storage versionado, política e /diagnostico",
+        "updatedAt": "2026-08-13T23:17:38Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/421"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/gitattributes-gerados",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 419,
+        "title": "gitattributes: dado gerado para de contar como código escrito",
+        "updatedAt": "2026-08-03T19:50:39Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/419"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/wiki-icones",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 418,
+        "title": "wiki: os ícones extraídos chegam a veículo, item e soldado",
+        "updatedAt": "2026-08-03T15:38:34Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/418"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/mapa-maplibre-npm",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 417,
+        "title": "O mapa não desenhava: MapLibre vinha do CDN e o CSS não era esperado",
+        "updatedAt": "2026-08-03T14:55:43Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/417"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/projeto-baluarte-issues-txo9fl",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 409,
+        "title": "fix(arma3): calculadora corrige o valor do campo ao sair (achado na varredura geral)",
+        "updatedAt": "2026-08-01T23:01:39Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/409"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/projeto-baluarte-issues-y7jv88",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 408,
+        "title": "docs(nexus): Fase 1 do Nexus entregue — 20 domínios semeados e ligados ao monólito",
+        "updatedAt": "2026-08-01T17:26:55Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/408"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "chore/0011-nexus-hardening",
+        "isDraft": false,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 366,
+        "title": "feat(supabase): 0011 blindagem das tabelas de Direito (policies RLS +…",
+        "updatedAt": "2026-07-12T15:02:22Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/366"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "vercel/install-vercel-web-analytics-bmt8az",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 309,
+        "title": "Install Vercel Web Analytics",
+        "updatedAt": "2026-07-02T04:09:45Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/309"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/issues-to-docs",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 303,
+        "title": "docs(issues): snapshot das 24 issues abertas em docs/issues/ (issues → docs)",
+        "updatedAt": "2026-06-27T19:05:57Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/303"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/plano-mestre",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 302,
+        "title": "docs: Plano Mestre — handoff entre conversas (estado + frentes grandes)",
+        "updatedAt": "2026-06-27T19:01:23Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/302"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "vendor/cl4r1t4s-readonly",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 301,
+        "title": "vendor(cl4r1t4s): referência ISOLADA de system-prompts (AGPL — NÃO MERGEAR)",
+        "updatedAt": "2026-06-27T18:57:08Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/301"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/codeql-ignore-vendor",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 300,
+        "title": "ci(codeql): exclui vendor/ da análise (código de terceiros)",
+        "updatedAt": "2026-06-25T20:30:38Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/300"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/omega-fatia1-cerebro-notas",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 299,
+        "title": "feat(#231): Omega Prism Fatia 1 — Segundo Cérebro por usuário (notas na conta)",
+        "updatedAt": "2026-06-25T06:35:27Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/299"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/vendor-omega-prism",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 294,
+        "title": "vendor: repos de referência do Omega Prism (NÃO MERGEAR — referência)",
+        "updatedAt": "2026-06-27T18:55:35Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/294"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/charming-turing-u337s1",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 293,
+        "title": "feat(#291): Loja do Baluarte — /loja (Shopify, print-on-demand)",
+        "updatedAt": "2026-06-23T21:19:50Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/293"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/busy-hopper-9w0zw9",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 288,
+        "title": "feat(#187): login do dono (OTP) + publicar no mural",
+        "updatedAt": "2026-06-22T11:29:11Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/288"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "claude/gitnexus-fase2-lazy-symbols",
+        "isDraft": true,
+        "mergeStateStatus": "UNKNOWN",
+        "number": 250,
+        "title": "perf(#238): Fase 2 — gate parcial do Git Nexus (codemap-symbols lazy)",
+        "updatedAt": "2026-06-18T22:06:42Z",
+        "url": "https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/250"
+      }
+    ]
+  },
+  "release": {
+    "nextRecommended": "1.1.0 — Identidade Preview",
+    "document": "docs/v2/RELEASE_PLAN.md"
+  },
+  "changesSincePrevious": {
+    "previousDate": "2026-08-15",
+    "shaChanged": true,
+    "canonicalPagesDelta": -9,
+    "newImportantIssues": []
+  }
+}

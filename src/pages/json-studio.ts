@@ -8,8 +8,8 @@
 import '../styles/json-studio.css';
 import { h, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
-import { setStatus as publishStatus } from '../utils/baluarte-status.js';
+import { toast } from '../utils/toast';
+import { setStatus as publishStatus } from '../utils/baluarte-status';
 
 const STORAGE_KEY = 'json-studio:input';
 const SAMPLE = `{

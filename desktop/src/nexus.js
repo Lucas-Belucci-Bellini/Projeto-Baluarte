@@ -91,6 +91,7 @@ async function graph() {
 function vendoredEntry() {
   // Raízes prováveis: ao lado do app empacotado e na raiz do repo (dev).
   const roots = [
+    process.env.BALUARTE_GITNEXUS_DIR,
     path.join(__dirname, '..', '..'), // repo root em dev (desktop/src → repo)
     process.resourcesPath ? path.join(process.resourcesPath, 'engine') : null,
     process.cwd()
@@ -99,6 +100,9 @@ function vendoredEntry() {
   // pacote em `…/gitnexus`). Só serve se o `dist/` estiver compilado — a cópia
   // do repo tem só `src/` (TS), então isto é um best-effort pós-build.
   const subdirs = [
+    '.',
+    '.baluarte/tools/gitnexus/gitnexus',
+    '.baluarte/tools/gitnexus',
     'GitNexus-1.6.7/GitNexus-1.6.7/gitnexus',
     'GitNexus-1.6.7/gitnexus',
     'GitNexus-1.6.7/GitNexus-1.6.7',

@@ -1,5 +1,5 @@
 import { h, debounce } from '../../utils/helpers.js';
-import { toast } from '../../utils/toast.js';
+import { toast } from '../../utils/toast';
 import { toMorse, fromMorse, playMorse, stopMorse } from '../../utils/cripto-engine.js';
 
 export function morsePanel(): HTMLDivElement {

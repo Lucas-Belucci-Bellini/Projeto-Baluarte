@@ -10,7 +10,7 @@
  * porque a promessa acima já foi quebrada duas vezes, e a segunda deixou todo
  * mundo preso em cache velho (ver o cabeçalho do `sw.js`).
  *
- * `-rc` sai no congelamento da 1.0.0 (ADR-001 / ADR-003).
+ * A linha pública 1.0.0 foi pulada; a linha de produto segue com releases semânticas.
  */
-export const VERSION = '1.0.0-rc';
+export const VERSION = '1.3.7';
 export const CODENAME = 'Mark XIII';

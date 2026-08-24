@@ -8,7 +8,7 @@
 import '../styles/calc.css';
 import { h, cx, empty } from '../utils/helpers.js';
 import { storage } from '../core/storage.js';
-import { toast } from '../utils/toast.js';
+import { toast } from '../utils/toast';
 import { evaluate, formatResult } from '../utils/calc-engine.js';
 import type { AngleMode } from '../utils/calc-engine.js';
 

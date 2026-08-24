@@ -1,5 +1,5 @@
 import { h, debounce } from '../../utils/helpers.js';
-import { toast } from '../../utils/toast.js';
+import { toast } from '../../utils/toast';
 import { allHashes } from '../../utils/cripto-engine.js';
 import type { HashResults } from '../../utils/cripto-engine.js';
 

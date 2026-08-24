@@ -1,5 +1,203 @@
 # 🤝 Handoff — trabalho pra uma sessão LOCAL (com skills)
 
+## ⏭️ Retomada de 17/08/2026 (fim do dia) — comece por aqui
+
+**O `main` recebeu 20 commits e está em `3998e8ff`.** Backup do estado anterior:
+`backup/2026-08-17-antes-merge-v2` → `91b01188`, já no `origin`. Desfazer é
+`git push -f origin backup/2026-08-17-antes-merge-v2:main`.
+
+### ⚠️ A primeira coisa a fazer
+
+**Conferir o CI do `3998e8ff`.** O merge foi verificado localmente e nada nele
+passou pelo CI antes de entrar — push em branch de feature não dispara workflow,
+só push no `main` dispara. Então a validação no Linux aconteceu *depois*. Olhe o
+**SHA**, não a cor da última execução.
+
+Verificado local antes do push: tipos 0 · suíte 952/952 · `v2:integracao` 17/17 ·
+`cargo test` 12+3 · smoke do Runtime OK · smoke das rotas todo verde · build 0 ·
+3 verificadores de catálogo + nexus.
+
+### O que mudou de capacidade nesta máquina
+
+**O Rust roda aqui agora** — três verificações saíram da coluna "só o remoto".
+As Build Tools do Visual Studio **não** instalam em sessão não-interativa (o
+instalador precisa de elevação e sai com `1602`); o caminho que funcionou foi o
+toolchain **GNU** com MinGW portátil, sem admin:
+
+```
+cargo +stable-x86_64-pc-windows-gnu test --manifest-path v2/runtime/Cargo.toml
+```
+
+Com o `mingw64\bin` do pacote `BrechtSanders.WinLibs.POSIX.UCRT` no `PATH` — sem
+ele o build morre em `dlltool.exe not found`. **O binário produzido é GNU, não
+MSVC**; uma release Windows deveria usar MSVC, e isso precisa de um clique no UAC.
+
+### Fila da V2 — os três do "próximo bloco" fecharam
+
+Transições observáveis, transporte concreto e vertical slice nativo estão `[x]`
+no [`v2/V2_PROGRESS.md`](./v2/V2_PROGRESS.md). O que ficou **aberto**, e é o
+próximo passo natural:
+
+- **glTF + raycasting no `visor3d`** (§12 do Master Plan) — é onde o visualizador
+  começa a valer o nome. Peso de app, não de web.
+- **O app empacotado com o Runtime dentro.** O ramo `process.resourcesPath` é o
+  único que continua sem exercício: nenhum instalador foi produzido com as
+  mudanças. Exige rodar o `desktop-release.yml`.
+- **`feat/v2-ambiente-aplicado`** está empurrada e **não** mesclada — muda
+  `LifecycleStartResult` (contrato). Nela, `ambiente` deixou de ser palavra e
+  virou regra aplicada pelo ciclo. Efeito prático hoje é zero (os 5 módulos
+  declaram `ambos`); marcar o `visor3d` como `app` é **decisão de produto**, não
+  tomada.
+
+### Migração `.js → .ts`: faltam 5 páginas, e a ordem importa
+
+Medição em [`v2/TYPESCRIPT_REMAINING.md §0`](./v2/TYPESCRIPT_REMAINING.md).
+`visao.js` é a **única sem bloqueio** (1 import, 0 sem tipo); as outras quatro
+exigem `.d.ts` das fontes de dados primeiro. O padrão a manter: das 102 páginas
+já migradas, **nenhuma usa `any`**.
+
+### Armadilhas novas desta rodada
+
+A família "Windows" chegou a **nove**: o `npm run smoke` morria em `spawn npx`
+(consertado), e o `import()` dinâmico de caminho absoluto falha sem
+`pathToFileURL`. Duas mais, de outra natureza:
+
+- **`extraResources` com `filter` não falha quando a origem falta** — só não
+  copia. Declarar empacotamento sem gerar o artefato produz release silenciosa
+  sem o recurso.
+- **Asserção fixada em número mágico envelhece.** Três asserções do
+  `v2:integracao` ficaram vermelhas ao entrar um módulo, sem defeito algum. A do
+  Runtime passou a comparar com `vivos`; as de rota e nav seguem exatas de
+  propósito, porque só o número fixo pega sumiço.
+
+## ⏭️ Comece por aqui — retomada de 17/08/2026
+
+> O operador migrou para o **local** porque os plugins que ele precisa só
+> funcionam lá. O prompt pronto para colar está em
+> **[`PROMPT-CONTINUACAO-LOCAL.md`](./PROMPT-CONTINUACAO-LOCAL.md)**.
+
+**O que entrou no `main` nesta rodada** (PR #435, CI verde no Linux nos 15 checks
+— `Supabase Preview` sai como `skipped`, não vermelho):
+
+| | |
+| --- | --- |
+| lifecycle + Runtime Host | módulo só fica `running` com autorização aberta |
+| portão `v2:integracao` | 14 → **15/15**, e `--strictPort` |
+| suíte | 893 → **905** |
+| verificadores de catálogo | passam em disco CRLF (o vermelho falso do Windows) |
+
+Com isso o **"próximo bloco" do [`v2/V2_PROGRESS.md`](./v2/V2_PROGRESS.md) está
+com os três primeiros itens fechados.** A fila continua em:
+
+- [ ] observabilidade de transições `starting`/`running`/`stopping`
+- [ ] transporte concreto depois do contrato estabilizado
+- [ ] primeiro vertical slice de módulo nativo
+
+### As duas coisas que SÓ o local resolve agora
+
+1. **Confirmar o conserto do CRLF na máquina real.** Ele foi medido no Linux
+   convertendo os três destinos para CRLF de verdade no disco: com o conserto os
+   três passam, com ele removido os três ficam vermelhos. Isso reproduz o
+   sintoma, **não substitui** rodar num checkout Windows de verdade:
+
+   ```
+   npm run gen-tabela-estabilidade -- --verificar
+   npm run gen-catalogo-eventos    -- --verificar
+   npm run gen-catalogo-storage    -- --verificar
+   ```
+
+   Se ainda houver vermelho, **é outro defeito** — não é este; olhe o conteúdo
+   antes de regenerar (regeneração que *remove* linha merece desconfiança).
+
+2. **O `.gitattributes` com `*.md text eol=lf`.** Decisão do operador: cirúrgico
+   agora (feito), renormalização depois. Ela mexe em **todo** `.md` versionado,
+   então é uma branch própria, com o diff conferido antes.
+
+### Decisões já tomadas — não re-litigar
+
+- **"Baixa junto com o app" são DOIS assuntos, não um.** O operador confirmou:
+  viram duas tarefas separadas. (a) **GitNexus** — vai empacotado no instalador
+  da 1.0.0, é local-only pelos binários nativos. (b) **Chromium do Playwright** —
+  114 MB, exigido pelo `v2:integracao`. Os dois foram **medidos na máquina** em
+  17/08 e a seção abaixo corrige o diagnóstico dos dois.
+
+### 📏 O que a medição de 17/08 mudou nessas duas tarefas
+
+**(a) O índice do GitNexus não estava corrompido.** O erro real, com todas as
+letras: `Database file version: 43, Current build storage version: 41`. O banco
+está íntegro — quem não consegue lê-lo é o motor, que é **mais velho** que o
+arquivo. "Corrompido" mandava reconstruir; o problema era versão.
+
+Reindexar com o motor atual (`node .gitnexus/run.cjs analyze --index-only`, 56 s)
+faz o `impact()` **voltar a responder**. Só que responde errado, e é preciso saber
+disso antes de confiar:
+
+| | antes (motor novo, ilegível) | depois (motor atual, legível) |
+| --- | --- | --- |
+| nós | 19.619 | **12.971** |
+| arestas | 51.448 | **26.100** |
+| fluxos | 818 | **300** |
+
+E o teste decisivo, contra verdade conhecida: `impact("criarStatusLifecycle")`
+devolve **só os dois arquivos de teste** e omite `v2/core/plataforma.ts:9,54` —
+o **único consumidor de produção** — com `risk: "LOW"`. É a armadilha do
+**gerador que não enxerga TypeScript**, a mesma que já mordeu os dois geradores
+de catálogo, agora confirmada no GitNexus. No `v2/core` são 4 arquivos `.ts`
+contra 47 `.js`, então o buraco é pequeno em contagem e enorme em consequência:
+a resposta parece completa e verde.
+
+> **Conclusão prática, que não muda:** continue substituindo `impact()` por busca
+> textual dos importadores, e declare isso a cada edição — como o `CLAUDE.md`
+> manda. O que muda é o motivo: não é mais "o índice está quebrado", é "o índice
+> responde e mente sobre TypeScript". A segunda é pior, porque tem cara de
+> resposta. E `risk: UNKNOWN` com `impactedCount: 0` segue sendo "não respondeu",
+> nunca "nada afetado".
+>
+> O conserto de verdade é alinhar o motor do MCP com o `gitnexus@1.6.7` que já
+> está global (storage ≥ 43), e **só então** reindexar. Enquanto isso não
+> acontecer, reindexar troca ilegível por incompleto.
+
+Detalhe que atrapalha quem vier: o `.gitnexus/` mora **no repositório pai**, não
+nos worktrees. De dentro de um worktree o comando do `CLAUDE.md` não existe, e há
+**dois repositórios registrados com o mesmo nome** (`Projeto-Baluarte`) — o de
+verdade em `Desktop/`, e uma cópia de junho em
+`.gemini/antigravity/scratch/` com 4.452 nós. Passe o caminho explícito em `repo:`.
+
+**(b) O Chromium do Playwright: a causa é o caret, não o contêiner.** O repo
+declara `playwright ^1.49.0`; o que está instalado é **1.62.1**, e é ele que
+exige o build **1234**. O `^` deixa a versão andar a cada `npm install`, então
+qualquer Chromium pré-instalado descasa sozinho com o tempo — o build **1194** do
+contêiner remoto é o sintoma, não a doença. Pinar a versão do Playwright é o que
+faz o browser pré-instalado continuar valendo.
+
+Nesta máquina o par está certo (`chromium-1234` em `%LOCALAPPDATA%\ms-playwright`),
+e por isso **o portão roda aqui sem `CHROME_PATH`**: `npm run v2:integracao` deu
+**15/15** no Windows em 17/08.
+- **`Supabase Preview` não é defeito técnico e não é credencial.** Já
+  diagnosticado: o projeto `hcwzsxdcvmswebunznak` é **compartilhado** com outras
+  aplicações do operador (`veritas_circuit_*`, `room_001_*`, `knowledge_layer_*`,
+  `skill_*`, `billing_entitlements`), que aplicaram migrations direto no banco.
+  As 15 migrations do repo estão todas no remoto, na mesma ordem, sem
+  divergência; as outras 69 não são schema do Baluarte. As três saídas — projeto
+  dedicado / importar as 69 / desconectar a integração — são **decisão de
+  produto**. Não consertar por conta própria.
+
+### Armadilhas que já custaram caro
+
+A família **"Windows"** agora tem seis instâncias: `spawn` de `.cmd`,
+`path.relative`, `npm test`, os verificadores Python em cp1252, o console, e o
+CRLF. **Script novo que monta caminho, compara texto de arquivo ou spawna
+processo tem que ser pensado nos dois sistemas** — o CI só cobre Linux.
+
+E as três desta rodada: **peça pronta e desligada** dá o mesmo retrato verde que
+peça ligada (três vezes seguidas: fachada, contract test, Runtime Host — sempre
+ache os importadores antes de acreditar que algo está em uso); **defesa em
+profundidade esconde mutante** (plante o defeito, Regra 1); e **espera por
+relógio** — use `--strictPort` em qualquer script que suba servidor, senão você
+mede um servidor zumbi.
+
+---
+
 > **Por que este doc existe.** Parte do desenvolvimento do Baluarte roda numa
 > sessão **remota** (container na nuvem). Algumas capacidades vivem **só na
 > máquina do operador** e não chegam ao remoto:

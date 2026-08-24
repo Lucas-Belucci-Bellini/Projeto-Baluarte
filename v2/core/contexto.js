@@ -91,6 +91,10 @@ export class ErroChave extends Error {
  * @property {{paraModulo: (id: string) => {fazer: Function, INTERATIVO: number, NORMAL: number, FUNDO: number}}} [trabalho]
  * @property {import('./permissoes.js').Permissoes} [permissoes] quem DECIDE; sem
  *   ele, um manifesto que declara permissão não monta contexto — ver abaixo
+ * @property {{lerArquivo: (modulo: string, caminho: string) => Promise<Record<string, unknown>>}} [runtime]
+ *   o Runtime nativo. Recebe `modulo` porque quem preenche é o CONTEXTO, com o id
+ *   do próprio módulo — a alça entregue ao módulo não tem esse parâmetro. Ausente
+ *   no navegador, onde não há processo com quem falar.
  */
 
 /**
@@ -253,6 +257,12 @@ export function criarContexto(manifesto, deps) {
     return deps.apis.talvez(id, manifesto.references?.modules ?? [], alvo, exigencia);
   };
 
+  /* Capturado aqui, e não lido de `deps` dentro da closure: a checagem no spread
+   * abaixo não estreita o tipo lá dentro. Um `!` calaria o compilador e
+   * esconderia o caso real — `deps` é objeto de quem chama, e nada impede que
+   * `runtime` suma entre a checagem e a chamada. */
+  const runtimeInjetado = deps.runtime;
+
   return {
     modulo: id,
     log,
@@ -267,6 +277,29 @@ export function criarContexto(manifesto, deps) {
     ...(deps.trabalho ? { trabalho: deps.trabalho.paraModulo(id) } : {}),
     ...(deps.apis ? { usar, talvez } : {}),
     ...(bus ? { bus } : {}),
+    /* O Runtime nativo, já preso a ESTE módulo.
+     *
+     * `id` está fechado por closure, e isso é a propriedade inteira: a chamada
+     * NÃO recebe o módulo como argumento. Se recebesse, qualquer módulo poderia
+     * nomear a raiz de outro e a fronteira viraria decoração — o confinamento
+     * seria convenção, não garantia.
+     *
+     * Opcional de propósito: sem `deps.runtime` o contexto é o de sempre, que é
+     * o caso do navegador — lá não há processo com quem falar. Quem injeta é o
+     * app desktop.
+     *
+     * A permissão NÃO é rechecada aqui. Quem cobra `READ_FILES` é o Runtime, do
+     * outro lado da fronteira; repetir a checagem seria defesa em profundidade
+     * escondendo mutante (Regra 1 das V2_TESTING_RULES) — o mesmo motivo pelo
+     * qual o `V2_MODULE_LIFECYCLE_STATUS` não recheca autorização. */
+    ...(runtimeInjetado
+      ? {
+          runtime: {
+            /** @param {string} caminho @returns {Promise<Record<string, unknown>>} */
+            lerArquivo: (caminho) => runtimeInjetado.lerArquivo(id, caminho)
+          }
+        }
+      : {}),
     /** O que este módulo declarou — para o `/diagnostico` mostrar sem adivinhar. */
     declarado: {
       permissoes: [...declaradas],

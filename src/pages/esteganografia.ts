@@ -7,8 +7,8 @@
 
 import '../styles/esteganografia.css';
 import { h, mount } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
-import { setStatus } from '../utils/baluarte-status.js';
+import { toast } from '../utils/toast';
+import { setStatus } from '../utils/baluarte-status';
 import {
   textToBytes,
   bytesToText,

@@ -7,9 +7,9 @@
  */
 
 import { h, empty } from '../utils/helpers.js';
-import { toast } from '../utils/toast.js';
-import { statusExtracao, extrairArma3, entregarArma3 } from '../utils/arma3-extracao.js';
-import type { Arma3DeliveryResult, Arma3Status } from '../utils/arma3-extracao.js';
+import { toast } from '../utils/toast';
+import { statusExtracao, extrairArma3, entregarArma3 } from '../utils/arma3-extracao';
+import type { Arma3DeliveryResult, Arma3Status } from '../utils/arma3-extracao';
 
 const LABELS: Record<string, string> = {
   armas: 'Armas', mapas: 'Mapas', itens: 'Itens', veiculos: 'Veículos',

@@ -30,7 +30,7 @@ jobs:
   rotas:
     name: Todas as rotas estão verdes?
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -44,8 +44,13 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Cache do Chromium do Playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Navegador
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Build de produção
         run: npm run build

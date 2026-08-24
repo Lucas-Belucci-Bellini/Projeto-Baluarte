@@ -15,7 +15,7 @@ import type { ModelCollection, ModelSeed, SketchfabModel } from '../data/modelos
 import type { GalleryModel } from '../data/galeria-3d.js';
 import type { UniversalViewerSource, Viewer3DController } from '../utils/visor-3d.js';
 import '../styles/modelos-3d.css';
-import { sondarWebGL } from '../utils/webgl-probe.js';
+import { sondarWebGL } from '../utils/webgl-probe';
 
 const GROUPS = [
   ['todos', 'Todos'], ['militar', 'Militar'], ['armas', 'Armas'], ['mechas', 'Mechas & Pacific Rim'],

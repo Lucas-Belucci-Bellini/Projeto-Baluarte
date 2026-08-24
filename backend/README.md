@@ -49,7 +49,30 @@ export GEMINI_API_KEY="sua-chave"      # Windows: set GEMINI_API_KEY=sua-chave
 python server.py                        # sobe em http://127.0.0.1:8000
 ```
 
-Confira: abra <http://127.0.0.1:8000/health> — deve responder `{"ok": true, "hasKey": true}`.
+Confira: abra <http://127.0.0.1:8000/health>. O endpoint responde o contrato `server-health/v1`, mantendo `ok`, `model` e `hasKey` para compatibilidade:
+
+```json
+{
+  "contractVersion": "server-health/v1",
+  "source": "runtime-observed",
+  "connection": "connected",
+  "health": "healthy",
+  "severity": "none",
+  "fallback": "available",
+  "authority": "not-authorized",
+  "ok": true,
+  "service": "jarvis-backend",
+  "model": "gemini-2.5-flash",
+  "hasKey": true,
+  "detail": "health endpoint + Gemini key observados"
+}
+```
+
+`ok` indica que o processo respondeu; não significa que o Gemini esteja pronto. Sem `GEMINI_API_KEY`, o endpoint permanece conectado, mas projeta `health: degraded`, `severity: warning` e `fallback: degraded`. A projeção é somente leitura: não executa fallback, não desabilita módulos e não concede autoridade.
+
+Para habilitar somente a consulta de identidade do endpoint `/claims/observe`, configure `SUPABASE_URL` e `SUPABASE_ANON_KEY` no ambiente do backend. O servidor consulta `/auth/v1/user` com o Bearer recebido e redige o resultado. Essa consulta não cria roles, não aceita `module:execute`, não chama o Permission Manager e não substitui RLS. Sem as duas variáveis, sem Bearer válido ou com erro de rede, a resposta permanece `decision: not-authorized`.
+
+A projeção formal de escopos aceita somente as roles server-side `user`, `admin`, `dev` e `owner`. `user` observa `platform:observe`; as outras três observam, sem autorização operacional, `platform:observe`, `registry:read` e `module:read`. Role desconhecida, `user_metadata` ou payload sem `iat`/`exp` não recebe escopos. A função `project_verified_supabase_payload()` não decodifica JWT: ela recebe apenas dados que uma biblioteca/JWKS confiável já verificou.
 
 ## Usar no site
 
@@ -61,11 +84,25 @@ o servidor pesquisa no Google e responde.
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `GET` | `/health` | Status + se a `GEMINI_API_KEY` está configurada |
+| `GET` | `/health` | Contrato `server-health/v1`: liveness, health observado, severidade, fallback read-only e presença booleana da `GEMINI_API_KEY` |
 | `POST` | `/chat` | `{ messages: [{role, content}], system }` → `{ resposta }` |
+| `GET` | `/claims/observe` | Observa identidade por Bearer + Supabase Auth; sem configuração/token válido, nega por padrão e nunca retorna token ou metadata. `/user` não fabrica TTL nem escopos. O transporte usa allowlist CORS, rate limit process-local e auditoria redigida. |
+| `GET` | `/observability/observe` | Combina `server-health/v1` e `server-claims/v1` em `server-observation/v1`, com evidência bounded de health/claims/fallback e autoridade sempre `not-authorized`. |
 
 O servidor é **stateless**: o site envia a conversa inteira a cada chamada (o
 histórico vive no site, em IndexedDB), evitando dessincronização.
+
+## Configuração de hardening
+
+Para um deploy publicado, defina as origens exatas do site e ajuste o limite conforme a capacidade do serviço:
+
+```text
+BALUARTE_ALLOWED_ORIGINS=https://seu-site.example
+BALUARTE_CLAIMS_RATE_LIMIT=30
+BALUARTE_CLAIMS_RATE_WINDOW_SECONDS=60
+```
+
+A especificação completa, os casos de falha, os riscos e o rollback estão em [`SERVER_CLAIMS_HARDENING_CONTRACT_2026-08-21.md`](../docs/v2/SERVER_CLAIMS_HARDENING_CONTRACT_2026-08-21.md). O contrato combinado de evidência está em [`SERVER_OBSERVATION_EVIDENCE_CONTRACT_2026-08-21.md`](../docs/v2/SERVER_OBSERVATION_EVIDENCE_CONTRACT_2026-08-21.md).
 
 ## Deploy com HTTPS (para usar no site PUBLICADO)
 
@@ -105,5 +142,8 @@ docker run -p 8000:8000 -e GEMINI_API_KEY="sua-chave" baluarte-ia
 ### Regras
 
 - A `GEMINI_API_KEY` fica **só** no ambiente do servidor — nunca no front.
-- CORS já está liberado (`*`), então o site (qualquer origem) consegue chamar.
+- CORS usa origens exatas configuradas em `BALUARTE_ALLOWED_ORIGINS`, separadas por vírgula. Sem configuração, somente `http://localhost:5173` e `http://127.0.0.1:5173` são aceitas; wildcard, caminhos e origens malformadas são rejeitados.
+- O endpoint `/claims/observe` aplica `BALUARTE_CLAIMS_RATE_LIMIT` por `BALUARTE_CLAIMS_RATE_WINDOW_SECONDS`. O padrão é 30 requisições por 60 segundos por bucket de transporte. É uma contenção process-local, não uma quota distribuída para múltiplas instâncias.
+- A auditoria registra somente método, rota, classe HTTP, origem permitida, rate limit, decisão e presença booleana de request-id. Tokens, Authorization, subject, e-mail, metadata, IP e detalhes de upstream nunca são registrados.
+- Os envelopes `server-health/v1`, `server-claims/v1` e `server-observation/v1` são observações do backend e ainda não são o `PlatformDiagnostic` da V2. `server-observation/v1` apenas compõe health, claims redigidos e códigos de evidência; não concede escopos, não executa fallback e não substitui RLS, Permission Manager, Registry ou Event Bus.
 - A URL pública precisa ser **HTTPS** para o site publicado conseguir usá-la.

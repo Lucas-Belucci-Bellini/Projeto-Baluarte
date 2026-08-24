@@ -11,6 +11,11 @@
 
 import { supabaseUrl, supabaseAnonKey, supabaseConfigured } from './supabase.js';
 import { storage } from './storage.js';
+import {
+  projectAuthSession,
+  projectRefreshSession,
+  projectStoredAuthSession,
+} from './auth-session.ts';
 
 /* Chave SEM o prefixo — o wrapper põe `baluarte:` sozinho, então o nome completo
  * continua sendo `baluarte:auth:session`, exatamente o que já está gravado no
@@ -25,7 +30,7 @@ const SESSION_KEY = 'auth:session';
 const listeners = new Set();
 
 function loadSession() {
-  return storage.get(SESSION_KEY, null);
+  return projectStoredAuthSession(storage.get(SESSION_KEY, null));
 }
 
 function storeSession(s) {
@@ -90,6 +95,9 @@ export async function signUpWithPassword(email, password) {
       refresh_token: data.refresh_token,
       expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
     });
+  const session = projectAuthSession(data);
+  if (session) {
+    storeSession(session);
     return { confirmed: true };
   }
   return { confirmed: false };
@@ -111,6 +119,9 @@ export async function signInWithPassword(email, password) {
     refresh_token: data.refresh_token,
     expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
   });
+  const session = projectAuthSession(data);
+  if (!session) throw new Error('Resposta de autenticação inválida.');
+  storeSession(session);
 }
 
 /**
@@ -173,12 +184,10 @@ export async function getAccessToken() {
     });
     if (!res.ok) { storeSession(null); return null; }
     const data = await res.json();
-    storeSession({
-      access_token: data.access_token,
-      refresh_token: data.refresh_token || s.refresh_token,
-      expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600)
-    });
-    return data.access_token;
+    const session = projectRefreshSession(data, s.refresh_token);
+    if (!session) { storeSession(null); return null; }
+    storeSession(session);
+    return session.access_token;
   } catch {
     return null;
   }
@@ -201,8 +210,12 @@ export function handleAuthRedirect() {
   /* Limpa o hash do OAuth e manda pra home (não deixa token na URL). */
   try { history.replaceState(null, '', window.location.pathname + window.location.search + '#/home'); } catch { /* ok */ }
 
-  if (access_token && refresh_token) {
-    storeSession({ access_token, refresh_token, expires_at: Math.floor(Date.now() / 1000) + expires_in });
+  const hasCompleteTokens = access_token && refresh_token;
+  const session = hasCompleteTokens
+    ? projectAuthSession({ access_token, refresh_token, expires_in })
+    : null;
+  if (session) {
+    storeSession(session);
     return true;
   }
   return false;
