@@ -31,7 +31,7 @@ test('a página real do JARVIS monta o console Mark XIII integrado ao shell', ()
 test('a entrada visual do shell e o router apontam para a mesma página integrada', () => {
   /* A rota é a mesma; quem muda é o peso do que ela carrega (#238): o JARVIS
    * completo só entra no app, e a web recebe o Núcleo V7 sozinho. */
-  assert.match(main, /reg\('\/jarvis', \(args\) => \(isNative\(\)/);
+  assert.match(main, /router\.register\('\/jarvis', \(args\) => \(isNative\(\)/);
   assert.match(main, /import\('\.\/pages\/jarvis\.ts'\)\.then\(\(m\) => m\.jarvisPage\(args\)\)/);
   assert.match(main, /import\('\.\/pages\/jarvis-nucleo\.ts'\)\.then\(\(m\) => m\.jarvisNucleoPage\(args\)\)/);
   assert.match(sidebar, /path: '\/jarvis', label: 'Núcleo de IA'/);

@@ -1,5 +1,2 @@
-/**
- * Compatibilidade temporária para consumidores JavaScript durante a migração.
- * A implementação canônica está em `login.ts`.
- */
+/** Compatibilidade V1: a página canônica vive em login.ts. */
 export { loginPage } from './login.ts';

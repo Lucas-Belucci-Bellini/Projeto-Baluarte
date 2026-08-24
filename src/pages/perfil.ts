@@ -104,7 +104,6 @@ const STATS: readonly StatDefinition[] = [
 ];
 
 const LINKS: readonly QuickLink[] = [
-  { label: 'Configurações da Conta', route: '/conta', icon: '⛨' },
   { label: 'Repositório GitHub', url: 'https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte', icon: '⎇' },
   { label: 'Crônicas da Baluarte', route: '/biblioteca', icon: '◫' },
   { label: 'Hub de Ferramentas', route: '/ferramentas', icon: '⚙' },
