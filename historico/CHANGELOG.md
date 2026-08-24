@@ -6,6 +6,48 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-24 — V2, Fase 03: o Event Bus ganha a cadeia de um evento
+
+O bus já dizia **quem** emitiu (`origem`). Não dizia **de quê**. Num sistema em
+que um clique vira `rota:mudou`, que dispara `modulo:carregar`, que dispara
+`runtime:pedido`, que falha, a pergunta da investigação não é "quem emitiu o
+erro" — é *"o que começou isto?"*. Sem um fio ligando os quatro, a resposta sai
+de adivinhar por timestamp, que é o que para de funcionar com concorrência.
+
+Cada envelope carrega agora **três identidades**: `id` (este evento),
+`correlacao` (a cadeia) e `causa` (o `id` do anterior). A `causa` é o que torna
+a cadeia uma **árvore** — com `correlacao` sozinha sabe-se que os eventos são
+parentes, com `causa` sabe-se quem gerou quem.
+
+**A propagação é automática:** um `emit` de dentro de um handler herda a cadeia
+e aponta a causa sozinho. Exigir que cada módulo passasse isso à mão seria
+garantir que a cadeia se parte justamente nos módulos que ninguém reviu — que
+são os que se acaba a investigar. O escopo é guardado e restaurado, não limpo:
+despachos aninham, e limpar no fim do aninhado deixaria o resto dos handlers do
+externo a emitir fora da cadeia.
+
+**O limite documentado e cobrado por teste:** a herança vale para o que é
+emitido *enquanto* o handler corre. Um handler `async` que emite depois de um
+`await` já saiu do despacho — para esse caso existe `derivar(envelope)`. Não há
+como adivinhar sem `AsyncLocalStorage`, que não existe no navegador.
+
+Nada do que o bus já garantia mudou, e há teste a cobrá-lo: curinga continua
+sendo inscrição e não evento, origem ausente continua `desconhecida`, o handler
+continua isolado. O `gen-catalogo-eventos` varre `bus.emit('nome'` e não é
+afetado por campos novos no envelope.
+
+Fase 03 pedia "health, correlation, retry and cancel". O **cancel já existia**
+no escalonador (`v2/core/trabalho.ts`); a **correlation** fecha aqui. `retry` e
+`health` continuam em aberto — o retry depende de decidir política por classe de
+evento, e essa decisão não estava tomada.
+
+Suíte `1319/1319`, portão de integração `58/58`, build, `tipos:ts` e `tipos:v2`
+sem erro, `verificar-nexus`, catálogos e tabela de estabilidade verdes.
+
+**Documentação:** [`docs/v2/EVENT_BUS_CORRELACAO_2026-08-24.md`](../docs/v2/EVENT_BUS_CORRELACAO_2026-08-24.md).
+
+---
+
 ## 2026-08-24 — O Núcleo sabe o que toca sem passar pelo Spotify
 
 A queixa: *"por algum motivo mesmo eu sendo redirecionado eu não consigo

@@ -27,18 +27,89 @@
  *
  * **Handler isolado.** Um que levanta não impede os demais. Telemetria quebrada
  * não pode derrubar a aplicação.
+ *
+ * ── Correlação: `origem` responde "quem", falta responder "de quê" ──────────
+ *
+ * `origem` diz qual módulo emitiu ESTE evento. Não diz de onde ele veio. Num
+ * sistema em que um clique vira `rota:mudou`, que dispara `modulo:carregar`,
+ * que dispara `runtime:pedido`, que falha — a pergunta da investigação não é
+ * "quem emitiu o erro" (o runtime, obviamente), é **"o que começou isto?"**.
+ * Sem um fio ligando os quatro, a resposta exige adivinhar por timestamp, que é
+ * exatamente o que deixa de funcionar quando há concorrência.
+ *
+ * Então cada envelope carrega três identidades, e não uma:
+ *
+ *   `id`         — este evento, único.
+ *   `correlacao` — a CADEIA inteira. Igual nos quatro do exemplo acima.
+ *   `causa`      — o `id` do evento imediatamente anterior. É o que torna a
+ *                  cadeia uma ÁRVORE e não um saco: com `correlacao` sozinha
+ *                  sabe-se que os quatro são parentes, com `causa` sabe-se quem
+ *                  gerou quem.
+ *
+ * **A propagação é automática.** Um `emit` feito de dentro de um handler herda
+ * a `correlacao` do evento que está a ser tratado e aponta `causa` para ele.
+ * Exigir que cada módulo passasse isso à mão seria garantir que a cadeia se
+ * parte justamente nos módulos que ninguém reviu — que são os que se investiga.
+ *
+ * ⚠️ **O limite honesto:** a herança vale para o que é emitido ENQUANTO o
+ * handler corre. Um handler `async` que emite depois de um `await` já saiu do
+ * despacho, e o `emit` nasceria com cadeia nova. Para esse caso existe
+ * `derivar(envelope)`, que devolve o `meta` a passar à mão. Não há como o bus
+ * adivinhar sozinho sem `AsyncLocalStorage`, que não existe no navegador.
  */
 
 const RE_CURINGA_PREFIXO = /:\*$/;
 
 /**
  * @typedef {object} Envelope
+ * @property {string} id          identidade deste evento
  * @property {string} evento
- * @property {string} origem     qual módulo emitiu — o que falta na V1
- * @property {number} versao     do formato do payload, não do módulo
- * @property {string} em         ISO 8601
+ * @property {string} origem      qual módulo emitiu — o que falta na V1
+ * @property {string} correlacao  a cadeia a que este evento pertence
+ * @property {string|null} causa  o `id` do evento que causou este
+ * @property {number} versao      do formato do payload, não do módulo
+ * @property {string} em          ISO 8601
  * @property {Record<string, unknown>} [contexto]
  */
+
+/**
+ * Identificador curto e legível num log.
+ *
+ * Não é UUID de propósito: `crypto.randomUUID` exige contexto seguro e o valor
+ * aparece em toda linha de diagnóstico — 36 caracteres por evento tornam o log
+ * ilegível justamente quando se está a lê-lo com pressa. Doze caracteres de
+ * base36 dão ~62 bits, folgado para distinguir cadeias de uma sessão.
+ */
+function novoId() {
+  const bytes = new Uint8Array(8);
+  /* `getRandomValues` existe no navegador e no Node moderno. O fallback não é
+   * decorativo: sem ele, um ambiente sem `crypto` (um runner antigo, um teste
+   * com global trocado) derrubaria o bus inteiro — e o bus não pode ser o que
+   * quebra primeiro. */
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  let saida = '';
+  for (const b of bytes) saida += b.toString(36).padStart(2, '0');
+  return saida.slice(0, 12);
+}
+
+/**
+ * O `meta` que continua a cadeia de um envelope, para quem emite fora do
+ * despacho — tipicamente um handler `async`, depois de um `await`.
+ */
+/**
+ * @param {unknown} envelope
+ * @returns {{correlacao?: string, causa?: string|null}}
+ */
+export function derivar(envelope) {
+  if (!envelope || typeof envelope !== 'object') return {};
+  const { correlacao, id } = /** @type {Partial<Envelope>} */ (envelope);
+  if (typeof correlacao !== 'string' || !correlacao) return {};
+  return { correlacao, causa: typeof id === 'string' ? id : null };
+}
 
 /**
  * @param {{log?: {aviso: Function, erro: Function}}} [deps]
@@ -79,21 +150,44 @@ export function criarBus(deps = {}) {
   }
 
   /**
+   * O envelope que está a ser despachado AGORA, ou `null` fora de despacho.
+   *
+   * É o que torna a correlação automática. Funciona porque `emit` é síncrono e
+   * o JavaScript tem uma thread só: enquanto os handlers de um evento correm,
+   * qualquer `emit` que eles façam acontece dentro desta janela.
+   *
+   * @type {Envelope|null}
+   */
+  let emDespacho = null;
+
+  /**
    * @param {string} evento
    * @param {any} [payload]
-   * @param {{origem?: string, versao?: number, contexto?: Record<string, unknown>}} [meta]
+   * @param {{origem?: string, versao?: number, contexto?: Record<string, unknown>,
+   *          correlacao?: string, causa?: string|null}} [meta]
    */
   function emit(evento, payload, meta = {}) {
     if (evento === '*' || RE_CURINGA_PREFIXO.test(evento)) {
       throw new Error(`[bus] "${evento}" é padrão de inscrição, não evento. Não dá pra emitir.`);
     }
 
+    /* A precedência é explícito > herdado > cadeia nova. O explícito vem
+     * primeiro porque é o único caminho de quem cruza uma fronteira assíncrona
+     * ou de processo: se a herança ganhasse, `derivar()` não teria como
+     * funcionar dentro de um handler. */
+    const herdado = emDespacho;
+    const correlacao = meta.correlacao ?? herdado?.correlacao ?? novoId();
+    const causa = meta.causa !== undefined ? meta.causa : (herdado?.id ?? null);
+
     /** @type {Envelope} */
     const envelope = {
+      id: novoId(),
       evento,
       /* `desconhecida` em vez de vazio: quem lê um log com origem vazia acha que
        * o campo quebrou; com "desconhecida" sabe que ninguém declarou. */
       origem: meta.origem ?? 'desconhecida',
+      correlacao,
+      causa,
       versao: meta.versao ?? 1,
       em: new Date().toISOString(),
       ...(meta.contexto ? { contexto: meta.contexto } : {})
@@ -101,15 +195,28 @@ export function criarBus(deps = {}) {
 
     contador.set(evento, (contador.get(evento) ?? 0) + 1);
 
-    for (const fn of alvos(evento)) {
-      try {
-        fn(payload, envelope);
-      } catch (err) {
-        /* Isolamento: um handler ruim não impede os outros. Registrar é
-         * obrigatório — engolir aqui seria criar o buraco negro clássico em que
-         * eventos "somem" sem ninguém saber por quê. */
-        deps.log?.erro?.('handler de evento levantou', err, { evento, origem: envelope.origem });
+    /* Guardar e restaurar o anterior, em vez de limpar: os despachos aninham
+     * (A → handler emite B → handlers de B correm), e limpar no fim de B faria
+     * o resto dos handlers de A emitirem já fora da cadeia. */
+    const anterior = emDespacho;
+    emDespacho = envelope;
+    try {
+      for (const fn of alvos(evento)) {
+        try {
+          fn(payload, envelope);
+        } catch (err) {
+          /* Isolamento: um handler ruim não impede os outros. Registrar é
+           * obrigatório — engolir aqui seria criar o buraco negro clássico em que
+           * eventos "somem" sem ninguém saber por quê. */
+          deps.log?.erro?.('handler de evento levantou', err, {
+            evento, origem: envelope.origem, correlacao: envelope.correlacao
+          });
+        }
       }
+    } finally {
+      /* `finally` e não o fim do bloco: `alvos()` percorre um Map e um erro ali
+       * deixaria o bus preso na cadeia deste evento para sempre. */
+      emDespacho = anterior;
     }
 
     return envelope;
