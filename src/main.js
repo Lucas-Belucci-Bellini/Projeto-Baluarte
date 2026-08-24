@@ -6,15 +6,10 @@
  * router.start() pinta a primeira tela.
  *
  * Para ADICIONAR uma rota, registre-a abaixo:
- *   reg('/x', lazy(() => import('./pages/x.js'), 'xPage'));
+ *   router.register('/x', lazy(() => import('./pages/x.js'), 'xPage'));
  * O lazy() faz code-splitting: cada página vira um chunk próprio, baixado só
  * quando acessada. Lembre de também colocar a rota em sidebar.js (menu),
  * shell.js (título) e icons.js (ícone) — ver CONTRIBUTING.md.
- *
- * `reg()` é `router.register()` + portão de conta: toda rota exige sessão,
- * exceto as de PUBLIC_ROUTES (/home e /login). Sem sessão, o aviso dispara e
- * a navegação vai pro /login antes do handler real (e o chunk dele) rodar —
- * use `router.register()` direto só pra uma rota que deva ficar pública.
  */
 
 import { router } from './core/router.js';
@@ -135,25 +130,6 @@ const lazyLeve = (tab, loader, fn) => (args) =>
     : loader().then((m) => m[fn](args))
   ).catch(recoverChunk);
 
-/* Portão de conta: /home é a vitrine pública e /login é a própria porta —
- * o resto do site exige sessão. `reg()` substitui `router.register()` nas
- * rotas gateadas; sem sessão, mostra o aviso e manda pro /login ANTES de
- * chamar o handler real (nem baixa o chunk da rota bloqueada). */
-const PUBLIC_ROUTES = new Set(['/home', '/home-3d', '/home2', '/login']);
-
-function reg(pattern, handler, meta) {
-  if (PUBLIC_ROUTES.has(pattern)) {
-    router.register(pattern, handler, meta);
-    return;
-  }
-  router.register(pattern, (args) => {
-    if (isLoggedIn()) return handler(args);
-    toast('Você precisa ter uma conta para prosseguir.', { type: 'warning', duration: 3200 });
-    router.navigate('/login');
-    return null;
-  }, meta);
-}
-
 /* ==============================================================
  *  Rotas funcionais (Fase 1, 2, 3, 4)
  * ============================================================== */
@@ -270,8 +246,8 @@ reg('/apis', lazyNexus('apis'));
 reg('/git-nexus', lazy(() => import('./pages/git-nexus-gate.ts'), 'gitNexusGate'));
 reg('/aprendizado', lazyNexus('ml'));
 /* /home-3d e /home2 — aliases pra home oficial (links antigos / preview). */
-reg('/home-3d', (args) => homePage(args));
-reg('/home2', (args) => homePage(args));
+router.register('/home-3d', (args) => homePage(args));
+router.register('/home2', (args) => homePage(args));
 
 /* ==============================================================
  *  Todas as rotas acima são reais (sem placeholders). Fallback 404:

@@ -53,10 +53,8 @@ const mapa = JSON.parse(readFileSync(MAPA, 'utf8'));
 const main = readFileSync(MAIN, 'utf8');
 
 /* Rotas reais: só as chamadas de registro em coluna zero. O bloco de exemplo
- * do topo do main.js é indentado dentro do comentário, então não entra.
- * `reg()` é o portão de conta (#420/login) por cima de `router.register()` —
- * praticamente toda rota passa por ele hoje; o padrão aceita os dois. */
-const rotasReais = [...main.matchAll(/^(?:reg|router\.register)\('([^']+)'/gm)].map((m) => m[1]);
+ * do topo do main.js é indentado dentro do comentário, então não entra. */
+const rotasReais = [...main.matchAll(/^router\.register\('([^']+)'/gm)].map((m) => m[1]);
 
 /* Rotas declaradas no mapa: domínios + lacunas (uma rota sem domínio ainda é
  * responsabilidade de alguém — a lacuna é o registro honesto disso). */
@@ -122,7 +120,7 @@ for (const [nome, e] of Object.entries(mapa.externos)) {
  * levar. Aconteceu com o shell, que declarava /sobre, /roadmap e /projetos
  * sem nenhuma delas na origem. Aqui o main.js é a fonte: ele diz qual arquivo
  * atende cada rota. */
-const paginaDaRota = [...main.matchAll(/^(?:reg|router\.register)\('([^']+)'.*?\.\/pages\/([^']+)'/gm)];
+const paginaDaRota = [...main.matchAll(/^router\.register\('([^']+)'.*?\.\/pages\/([^']+)'/gm)];
 for (const [, rota, arquivo] of paginaDaRota) {
   const caminho = `src/pages/${arquivo}`;
   const pasta = `${caminho.slice(0, caminho.lastIndexOf('/'))}/`;
