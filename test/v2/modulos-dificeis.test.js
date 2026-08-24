@@ -40,7 +40,7 @@ test('as 15 rotas existem de verdade no main.js da V1', () => {
   const main = ler('src/main.js');
   for (const { path } of militar.routes) {
     assert.ok(
-      main.includes(`router.register('${path}'`),
+      main.includes(`reg('${path}'`) || main.includes(`router.register('${path}'`),
       `${path} está no manifesto e não existe na V1`
     );
   }
