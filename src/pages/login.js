@@ -94,7 +94,9 @@ function authForm(mode, onSwitch) {
  * (tabs + Google + formulário). Re-renderiza sozinho no login/logout. */
 function accountCard() {
   const box = h('div', { className: 'lg-card' });
-  let mode = 'login';
+  /* Cadastro vem antes do login (operador quer novos usuários obrigados a
+   * criar conta primeiro): aba padrão e ordem visual começam em "signup". */
+  let mode = 'signup';
 
   function render() {
     empty(box);
@@ -129,13 +131,13 @@ function accountCard() {
 
     box.appendChild(h('div', { className: 'lg-tabs' },
       h('button', {
-        className: 'lg-tab' + (mode === 'login' ? ' is-active' : ''),
-        onclick: () => { mode = 'login'; render(); }
-      }, 'Entrar'),
-      h('button', {
         className: 'lg-tab' + (mode === 'signup' ? ' is-active' : ''),
         onclick: () => { mode = 'signup'; render(); }
-      }, 'Criar conta')));
+      }, 'Criar conta'),
+      h('button', {
+        className: 'lg-tab' + (mode === 'login' ? ' is-active' : ''),
+        onclick: () => { mode = 'login'; render(); }
+      }, 'Entrar')));
     box.appendChild(h('button', { className: 'btn-google', onclick: () => signInWithGoogle() },
       h('span', { className: 'btn-google__g', html: GOOGLE_G_SVG }),
       mode === 'signup' ? 'Criar conta com Google' : 'Entrar com Google'));
@@ -154,9 +156,9 @@ export function loginPage() {
     h('div', { className: 'page-header anim-fade-in' },
       h('div', { className: 'page-header__crumbs' },
         h('span', null, 'BALUARTE'), h('span', null, '›'), h('span', null, 'ACESSO')),
-      h('h1', { className: 'page-header__title' }, '⛨ Entrar / Criar Conta'),
+      h('h1', { className: 'page-header__title' }, '⛨ Criar Conta / Entrar'),
       h('p', { className: 'page-header__description' },
-        'Sua conta sincroniza estética (tema + universo) e favoritos entre dispositivos.'))
+        'É preciso ter uma conta para acessar o Baluarte. Ela também sincroniza estética (tema + universo) e favoritos entre dispositivos.'))
   );
 
   page.appendChild(h('div', { className: 'lg-wrap anim-fade-in' }, accountCard()));
