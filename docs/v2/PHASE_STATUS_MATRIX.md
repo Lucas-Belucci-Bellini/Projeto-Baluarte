@@ -313,3 +313,10 @@ A alpha.4 acompanha o resumo local e bounded de latência do Event Bus, mesclado
 | Release | [`v2.0.0-alpha.4`](../releases/v2.0.0-alpha.4.md), pré-release em preparação |
 
 A latência permanece observação local e read-only. Retry, thresholds, percentis, alertas, persistência, rede, Supabase/RLS, tenancy, ownership, revisão humana server-side e promoção operacional continuam fora do escopo ou bloqueados por contrato/staging.
+
+
+## Gate de decisão — Evidence ownership e retenção operacional — 2026-08-25
+
+A auditoria publicada em [`EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md`](./EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md) concluiu que não existe um slice local seguro para adicionar `ownerId`, `tenantId`, `eligibleForDeletion` ou aprovação humana. `moduleId` identifica o namespace produtor, não propriedade operacional. A camada local mantém `retentionPreview`, `auditPreview` e `reviewQueue` como projeções bounded e read-only.
+
+O próximo avanço de ownership/retenção fica bloqueado até contrato server-side com identidade, tenancy, RLS/membership, concorrência, auditoria, política de retenção, rollback, custo e staging aprovados. Nenhum código, migration, rota, storage, permissão ou escrita remota foi criado neste gate.
