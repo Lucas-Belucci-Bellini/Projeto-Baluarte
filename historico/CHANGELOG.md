@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-25 — Release `v2.0.0-alpha.3`: Evidence review queue
+
+A terceira pré-release acompanhável da V2 centraliza a fila local de revisão no contrato Evidence. `projectEvidenceReviewQueue()` e `EvidenceStore.reviewQueue()` selecionam somente evidências `pending`, com escopo opcional por módulo, limite bounded, ordem append-only, resumo de truncamento e redaction estrutural.
+
+O Wiki Zomboid delega a seleção à política central e preserva seu formato público legado. O marco foi mesclado pela PR #476 no SHA `9784e161`. A validação passou `1357` testes com `6` ignorados, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, sonda de memória, Security Contracts Node 24 `73/73` e `10` checks remotos com sucesso; o Supabase Preview permaneceu skipped por política.
+
+A release continua alpha: não altera status, cria tarefas, faz rede, persiste em banco, remove evidência, concede autoridade ou implementa revisão humana server-side. A documentação completa está em [`docs/releases/v2.0.0-alpha.3.md`](../docs/releases/v2.0.0-alpha.3.md).
+
+---
+
 ## 2026-08-25 — Release `v2.0.0-alpha.2`: Auth server-observation UI
 
 A segunda pré-release acompanhável da V2 integra o cliente `server-observation-http/v1` ao botão de teste do modo Servidor no JARVIS. A UI resolve somente endpoints controlados, faz GET sem body e projeta health, conexão, fallback e `reasonCode` em estado bounded e read-only.

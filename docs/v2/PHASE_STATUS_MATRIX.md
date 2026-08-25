@@ -275,3 +275,22 @@ A `v2.0.0-alpha.2` marca a integração do cliente `server-observation-http/v1` 
 | Offline / memória | `9/9` / sem acúmulo de timer, loop ou áudio |
 
 A release não declara a V2 estável. Login, refresh/redirect, logout, Supabase Auth, RLS, tenancy, claims de autoridade, roles, retry, cache, persistência e promoção operacional permanecem fora do escopo. O `Supabase Preview` permaneceu skipped por política e nenhuma escrita remota foi executada.
+
+
+## Release em preparação — V2 `v2.0.0-alpha.3` / Evidence review queue — 2026-08-25
+
+A alpha.3 acompanha a centralização da fila local de revisão Evidence no commit `9784e161`. `projectEvidenceReviewQueue()` e `EvidenceStore.reviewQueue()` selecionam somente registros `pending`, com escopo opcional por módulo, limite padrão 25/teto 100, ordem append-only, resumo de truncamento e projeção congelada. O Wiki Zomboid delega a política sem quebrar sua API legada.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#476](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/476), mesclada |
+| Teste focal Evidence + Wiki Zomboid | `11/11` |
+| Suíte / integração V2 | `1357` aprovados, `6` ignorados / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo de timer, loop ou áudio |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `10` sucessos, `1` skipped |
+| Release | [`v2.0.0-alpha.3`](../releases/v2.0.0-alpha.3.md), pré-release em preparação |
+
+A fila não altera status, cria tarefas, envia rede, grava banco, remove evidência, concede autoridade ou implementa revisão humana server-side. Persistência Postgres/Supabase, RLS, tenancy, ownership, concorrência remota, retenção operacional e exportação continuam fora do escopo ou dependentes de decisão/staging separados.
