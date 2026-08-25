@@ -6,6 +6,52 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-24 — V2, Fase 6: o segredo saía pelo relatório de configuração
+
+O `v2/core/config.js` promete no cabeçalho que "o caminho acidental — logar o
+objeto de config inteiro, mandar o diagnóstico para alguém, serializar num
+relatório — **não consiga** vazar". `paraDiagnostico()` cumpria. **`validacao()`
+não** — e ela é, por desenho, o caminho mais acidental que existe: é o que se lê
+e se loga quando o boot falha.
+
+Três defeitos, todos nas mesmas poucas linhas:
+
+1. o valor bruto do segredo entrava na mensagem em texto claro —
+   `DSN="postgres//operador:SENHA_REAL@…"`, `TOK="sk-live-51H8xQ2eZvKYlo"`;
+2. o valor convertido entrava pela mensagem de faixa —
+   `"app:pin" = 31415926 > máximo 9999`;
+3. e a mensagem ainda mentia: dizia "não está definida" sobre uma variável
+   **definida** que fora recusada, mandando o operador definir o que já tinha.
+
+**Por que os 19 testes que já existiam não apanharam:** todos os de segredo usam
+`tipo: 'texto'`, e `String(x)` nunca falha para um valor definido — o ramo da
+recusa jamais era percorrido com um segredo. Os novos usam `url`, `numero` e
+`booleano`, que é onde moram a DSN com senha e a chave `sk-live-…`.
+
+O corte é **por declaração, não por mensagem**: o valor do não-segredo continua
+a aparecer, porque é assim que se acha uma variável mal escrita, e esconder tudo
+tornaria o diagnóstico inútil no caso comum. Dois testes cobram isso.
+
+Presente-e-recusada passa a ser um terceiro estado, diferente de ausente — e é a
+raiz do defeito 3. Daí também `origem` deixar de dar o crédito a quem foi
+recusado: antes bastava a variável existir para levar o crédito com o padrão em
+vigor, e quem lesse isso mexeria na variável errada. Um campo `envRejeitada`
+nomeia a tentativa.
+
+⚠️ **Alcance real:** o `config.js` é importado só pelo próprio teste e **não
+está ligado ao boot**. Não houve vazamento em produção — é defeito latente,
+consertado antes de o módulo ser ligado, que é quando ninguém revisita estas
+linhas. Isto **não** liga o módulo ao boot nem cria fonte única: isso é o resto
+da Fase 6.
+
+Suíte `1361/1361`, integração `58/58`, build, typechecks, `verificar-nexus`,
+catálogos e tabela de estabilidade verdes. Contra o `config.js` anterior, 9 dos
+14 testes novos falham — os 5 que passam nos dois são guardas de regressão.
+
+**Documentação:** [`docs/v2/CONFIG_SECRET_REDACTION_2026-08-24.md`](../docs/v2/CONFIG_SECRET_REDACTION_2026-08-24.md).
+
+---
+
 ## 2026-08-24 — V2, Fase 03: o bus contava sucesso e perdia fracasso
 
 Os dois componentes da Fase 03 sabiam dizer **o que estavam a fazer**. Nenhum
