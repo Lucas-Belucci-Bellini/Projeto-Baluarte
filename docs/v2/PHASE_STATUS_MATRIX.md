@@ -334,6 +334,27 @@ A alpha.5 acompanha o benchmark offline do Event Bus no commit funcional `6d0d16
 O benchmark fecha apenas uma evidência local de custo. Retry, threshold operacional, percentis, alertas, backpressure, hardware de usuário, persistência, RLS, ownership e autoridade continuam fora do escopo.
 
 
+## Release em preparação — V2 `v2.0.0-alpha.6` / Doctor environment classification — 2026-08-25
+
+A alpha.6 acompanha o hardening do `verify:v2` no commit funcional `8bf27ac`. A ausência exata do SDK opcional `google-genai` nos dois transportes Python declarados passa a ser `blocked-known`, enquanto falhas não reconhecidas continuam `failed` e Cargo ausente continua `unknown`.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#483](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/483), mesclada |
+| Teste focal Doctor | `7/7` |
+| Catálogo | `22` registros bounded; benchmark Event Bus incluído |
+| Suíte / integração V2 | passou / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `10` sucessos, `1` skipped |
+| Doctor local | Python transport `blocked-known`; Rust `unknown` por Cargo indisponível |
+| Release | [`v2.0.0-alpha.6`](../releases/v2.0.0-alpha.6.md), pré-release em preparação |
+
+A alpha.6 não instala dependências nem mascara `unknown`: o Doctor mantém saída não-verde quando não consegue classificar o runtime Rust. Não foram adicionados retry, persistência, RLS, tenancy, ownership, revisão humana ou autoridade.
+
+
 ## Gate de decisão — Evidence ownership e retenção operacional — 2026-08-25
 
 A auditoria publicada em [`EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md`](./EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md) concluiu que não existe um slice local seguro para adicionar `ownerId`, `tenantId`, `eligibleForDeletion` ou aprovação humana. `moduleId` identifica o namespace produtor, não propriedade operacional. A camada local mantém `retentionPreview`, `auditPreview` e `reviewQueue` como projeções bounded e read-only.

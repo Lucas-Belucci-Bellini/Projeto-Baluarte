@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-25 — Release `v2.0.0-alpha.6`: Doctor environment classification
+
+A sexta pré-release acompanhável da V2 endurece o `verify:v2`. Quando o SDK opcional `google-genai`, declarado em `backend/requirements.txt`, não está instalado, os checks de transporte Python reconhecem somente essa ausência exata como `blocked-known`; falhas diferentes continuam `failed`.
+
+O marco foi mesclado pela PR #483 no SHA `8bf27ac`. O teste focal do Doctor passou `7/7`; a suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `10` checks remotos verdes e `1` skipped por política. O catálogo permanece com 22 registros bounded, incluindo o benchmark de latência do Event Bus.
+
+No sandbox atual, Cargo indisponível continua `unknown` e mantém a saída do Doctor não-verde. A mudança não mascara incerteza, não instala dependências e não altera runtime, Auth, RLS, persistência, autoridade ou V1. As notas completas estão em [`docs/releases/v2.0.0-alpha.6.md`](../docs/releases/v2.0.0-alpha.6.md).
+
+---
+
 ## 2026-08-25 — Release `v2.0.0-alpha.5`: Event Bus latency budget
 
 A quinta pré-release acompanhável da V2 adiciona `npm run bench:event-bus`, um benchmark offline que mede o caminho real de `criarBus().emit()` em três cargas de ouvintes, com warmup, conferência de entrega e validação de `bus.saude().latencia`.
