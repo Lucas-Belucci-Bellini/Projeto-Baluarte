@@ -294,3 +294,22 @@ A alpha.3 acompanha a centralização da fila local de revisão Evidence no comm
 | Release | [`v2.0.0-alpha.3`](../releases/v2.0.0-alpha.3.md), pré-release em preparação |
 
 A fila não altera status, cria tarefas, envia rede, grava banco, remove evidência, concede autoridade ou implementa revisão humana server-side. Persistência Postgres/Supabase, RLS, tenancy, ownership, concorrência remota, retenção operacional e exportação continuam fora do escopo ou dependentes de decisão/staging separados.
+
+
+## Release em preparação — V2 `v2.0.0-alpha.4` / Event Bus latency health — 2026-08-25
+
+A alpha.4 acompanha o resumo local e bounded de latência do Event Bus, mesclado no SHA `3efab862`. `bus.saude().latencia` expõe `n`, média, mínimo e máximo, sem array de amostras, sem threshold e sem mudar readiness, correlação, isolamento ou autoridade.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#478](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/478), mesclada |
+| Testes focais Event Bus | `51/51` |
+| Suíte / integração V2 | passou / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `11` sucessos, `1` skipped |
+| Release | [`v2.0.0-alpha.4`](../releases/v2.0.0-alpha.4.md), pré-release em preparação |
+
+A latência permanece observação local e read-only. Retry, thresholds, percentis, alertas, persistência, rede, Supabase/RLS, tenancy, ownership, revisão humana server-side e promoção operacional continuam fora do escopo ou bloqueados por contrato/staging.

@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-25 — Release `v2.0.0-alpha.4`: Event Bus latency health
+
+A quarta pré-release acompanhável da V2 acrescenta ao `bus.saude()` o resumo local e bounded de latência por despacho: `n`, `mediaMs`, `minMs` e `maxMs`. O estado interno guarda somente contagem, soma, mínimo e máximo; relógio inválido não interrompe o Bus, e `limpar()` remove o resumo.
+
+O marco foi mesclado pela PR #478 no SHA `3efab862`. A validação focal passou `51/51`; os gates locais de tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória, Security Contracts `73/73` e `git diff --check` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A release continua alpha: não implementa retry, thresholds, percentis, alertas, persistência, rede, Supabase/RLS, tenancy, ownership, revisão humana server-side ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.4.md`](../docs/releases/v2.0.0-alpha.4.md).
+
+---
+
 ## 2026-08-25 — Release `v2.0.0-alpha.3`: Evidence review queue
 
 A terceira pré-release acompanhável da V2 centraliza a fila local de revisão no contrato Evidence. `projectEvidenceReviewQueue()` e `EvidenceStore.reviewQueue()` selecionam somente evidências `pending`, com escopo opcional por módulo, limite bounded, ordem append-only, resumo de truncamento e redaction estrutural.
