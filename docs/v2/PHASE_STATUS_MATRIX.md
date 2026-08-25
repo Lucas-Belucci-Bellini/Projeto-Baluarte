@@ -218,3 +218,22 @@ O último marco publicou `projectEvidenceAudit` no contrato TypeScript e `auditP
 | Release operacional | `v1.3.2` e `desktop-v1.3.2` públicas; oito assets e manifests verificados |
 
 A release `1.3.2` é incremental e não declara a V2 estável. A V1, o router e os wrappers foram preservados. O próximo passo é uma política operacional de retenção e auditoria server-side com identidade, tenancy, ownership, concorrência e rollback; persistência Supabase/RLS continua bloqueada sem aprovação explícita. As fases 25–27 permanecem não iniciadas.
+
+
+## Checkpoint publicado — V2 `v2.0.0-alpha.1` / Runtime Group Observability — 2026-08-25
+
+A primeira pré-release acompanhável da V2 publica a composição `RuntimeManagerGroup → RuntimeGroupLifecycle → RuntimeStateEvents → RuntimeSupervisor`. O `RuntimeGroupStatus` ganhou `status()` compatível com o supervisor e preservou `snapshot()`. Os hooks de grupo foram alinhados para arrays somente leitura, e a ponte de observabilidade redige erros antes de gravá-los no histórico.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#472](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/472), mesclada sem conflito |
+| SHA publicado na `main` | `efdeaf8e` |
+| Teste focal da observabilidade | `8/8` |
+| Suíte completa | `1351` aprovados, `6` ignorados |
+| `tipos:v2` / build | passaram |
+| Integração V2 | `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| CI remoto aplicável | `11` sucesso, `1` skipped |
+| Release | [`v2.0.0-alpha.1`](../releases/v2.0.0-alpha.1.md), pré-release |
+
+Este marco não declara a V2 estável. Retry por classe de evento, persistência remota, Supabase/RLS, claims de autoridade, promoção operacional e uso do Runtime como autoridade de produção permanecem fora do escopo ou bloqueados por decisão/staging. A V1, o router, o shell e os módulos de produto foram preservados. A próxima frente deve ser outro slice local previsto na matriz, com política explícita e gates completos antes de uma nova alpha.
