@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-25 — Release `v2.0.0-alpha.8`: Task Manager duration health
+
+A oitava pré-release acompanhável da V2 adiciona `latencia` ao `escalonador.saude()`, com `n`, `mediaMs`, `minMs` e `maxMs` para tarefas que chegaram a iniciar. Sucessos e falhas entram no resumo; cancelamentos antes do início não entram como duração. O acumulador é bounded, independente de `deps.metricas` e protegido contra relógio inválido.
+
+O marco foi mesclado pela PR #487 no SHA `e82c62b`. Os testes focais do Task Manager passaram `35/35`; tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A métrica legada `trabalho_ms`, readiness, prioridade, fila, concorrência, cancelamento e V1 foram preservados. O marco não cria percentis, budgets universais, alertas, retry, backpressure novo, persistência, RLS, Auth, ownership, revisão humana ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.8.md`](../docs/releases/v2.0.0-alpha.8.md).
+
+---
+
 ## 2026-08-25 — Release `v2.0.0-alpha.7`: Doctor bounded evidence replay
 
 A sétima pré-release acompanhável da V2 limita o replay de evidências do `verify:v2`. O modo `--evidence` verifica o tamanho do arquivo antes do parse e aceita no máximo `256 KiB` e `100` registros antes da normalização. Entrada excessiva é rejeitada, não truncada.
