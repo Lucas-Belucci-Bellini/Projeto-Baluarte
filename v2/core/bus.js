@@ -96,6 +96,14 @@ const RE_CURINGA_PREFIXO = /:\*$/;
  */
 
 /**
+ * @typedef {object} ResumoLatenciaBus
+ * @property {number} n              despachos medidos
+ * @property {number} mediaMs        média em milissegundos
+ * @property {number|null} minMs     menor despacho; null sem amostras
+ * @property {number|null} maxMs     maior despacho; null sem amostras
+ */
+
+/**
  * Identificador curto e legível num log.
  *
  * Não é UUID de propósito: `crypto.randomUUID` exige contexto seguro e o valor
@@ -135,7 +143,8 @@ export function derivar(envelope) {
 }
 
 /**
- * @param {{log?: {aviso?: Function, erro?: Function}, tetoFalhas?: number}} [deps]
+ * @param {{log?: {aviso?: Function, erro?: Function}, tetoFalhas?: number,
+ *          relogio?: () => number}} [deps]
  */
 export function criarBus(deps = {}) {
   /** @type {Map<string, Set<Function>>} */
@@ -148,6 +157,48 @@ export function criarBus(deps = {}) {
   /** @type {FalhaBus[]} as últimas, limitadas — histórico sem limite é vazamento */
   const ultimasFalhas = [];
   const TETO_FALHAS = deps.tetoFalhas ?? 50;
+
+  /* O relógio é uma dependência de observabilidade, nunca uma dependência de
+   * funcionamento. Se um ambiente o trocar ou fizer o relógio falhar, o bus
+   * continua emitindo; uma métrica não pode ser o primeiro componente a cair. */
+  const relogio = deps.relogio ?? (() => {
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+      return performance.now();
+    }
+    return Date.now();
+  });
+
+  /** @type {{n: number, soma: number, minMs: number, maxMs: number}|null} */
+  let latencia = null;
+
+  /** @returns {number|null} */
+  function agoraSeguro() {
+    try {
+      const valor = relogio();
+      return Number.isFinite(valor) ? valor : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** @param {number|null} inicio */
+  function registrarLatencia(inicio) {
+    if (inicio === null) return;
+    const fim = agoraSeguro();
+    if (fim === null) return;
+    /* Relógios monotônicos são preferidos, mas o clamp torna a saída honesta
+     * também em ambientes que injetam Date.now() e sofrem ajuste de relógio. */
+    const duracao = Math.max(0, fim - inicio);
+    if (!Number.isFinite(duracao)) return;
+    if (!latencia) {
+      latencia = { n: 1, soma: duracao, minMs: duracao, maxMs: duracao };
+      return;
+    }
+    latencia.n += 1;
+    latencia.soma += duracao;
+    if (duracao < latencia.minMs) latencia.minMs = duracao;
+    if (duracao > latencia.maxMs) latencia.maxMs = duracao;
+  }
 
   /** @param {string} padrao @param {Function} fn */
   function on(padrao, fn) {
@@ -205,6 +256,7 @@ export function criarBus(deps = {}) {
      * ou de processo: se a herança ganhasse, `derivar()` não teria como
      * funcionar dentro de um handler. */
     const herdado = emDespacho;
+    const inicio = agoraSeguro();
     const correlacao = meta.correlacao ?? herdado?.correlacao ?? novoId();
     const causa = meta.causa !== undefined ? meta.causa : (herdado?.id ?? null);
 
@@ -260,6 +312,7 @@ export function criarBus(deps = {}) {
       /* `finally` e não o fim do bloco: `alvos()` percorre um Map e um erro ali
        * deixaria o bus preso na cadeia deste evento para sempre. */
       emDespacho = anterior;
+      registrarLatencia(inicio);
     }
 
     return envelope;
@@ -337,6 +390,14 @@ export function criarBus(deps = {}) {
       motivos,
       contagem: { emissoes, falhas, padroes: inscritos.size, ouvintes },
       porEvento,
+      latencia: latencia
+        ? {
+            n: latencia.n,
+            mediaMs: +(latencia.soma / latencia.n).toFixed(2),
+            minMs: latencia.minMs,
+            maxMs: latencia.maxMs
+          }
+        : { n: 0, mediaMs: 0, minMs: null, maxMs: null },
       ultimasFalhas: ultimasFalhas.map((f) => ({ ...f }))
     };
   }
@@ -346,6 +407,7 @@ export function criarBus(deps = {}) {
     contador.clear();
     falhasPorEvento.clear();
     ultimasFalhas.length = 0;
+    latencia = null;
   }
 
   return { on, emit, inscricoes, contagem, saude, limpar };
