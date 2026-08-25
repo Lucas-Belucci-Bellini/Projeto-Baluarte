@@ -67,9 +67,16 @@ não é truncada pelo anel** — 20 falhas com anel de 3 continuam a contar 20.
 | `motivos` | fila no teto, saturação, recusas, falhas, cancelamentos |
 | `estado` | o `estado()` de sempre, embutido |
 | `contagem` | `{enfileirados, concluidos, falhados, recusados, cancelados}` |
+| `latencia` | `{n, mediaMs, minMs, maxMs}` para tarefas que chegaram a iniciar; resumo local bounded e read-only |
 
 Os acumulados são **independentes de `deps.metricas`**. As métricas continuam a
 receber tudo o que já recebiam; isto é o que sobra quando ninguém as injetou.
+
+`latencia` também é independente de `deps.metricas`: conta somente tarefas que
+iniciaram execução, incluindo sucesso e falha, e não conta cancelamentos antes
+do início. O relógio monotônico é protegido contra exceção, valor não finito e
+ajuste para trás; uma falha de telemetria não interrompe o escalonador. O campo
+não escolhe limiar, não degrada `readiness` e não inicia retry.
 
 ## Onde o veredito é conservador, e por quê
 

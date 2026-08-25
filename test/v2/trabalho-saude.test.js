@@ -147,6 +147,32 @@ test('escalonador em repouso é healthy e sem motivos', () => {
   });
 });
 
+test('a saúde resume duração de tarefas concluídas e falhadas com relógio injetado', async () => {
+  const tempos = [10, 15, 18, 26, 40, 47];
+  const e = criarEscalonador({ relogio: () => tempos.shift() });
+
+  await e.enfileirar('m', 'ok', () => 1);
+  await assert.rejects(e.enfileirar('m', 'falha', () => { throw new Error('x'); }));
+
+  assert.deepEqual(e.saude().latencia, {
+    n: 2,
+    mediaMs: 6.5,
+    minMs: 5,
+    maxMs: 8,
+  });
+});
+
+test('relógio inválido não quebra o escalonador nem cria latência falsa', async () => {
+  const e = criarEscalonador({ relogio: () => { throw new Error('clock indisponível'); } });
+  assert.equal(await e.enfileirar('m', 'ok', () => 1), 1);
+  assert.deepEqual(e.saude().latencia, {
+    n: 0,
+    mediaMs: 0,
+    minMs: null,
+    maxMs: null,
+  });
+});
+
 test('a saúde traz o estado, e ele bate com estado()', async () => {
   const e = criarEscalonador({ limite: 2, limitePorModulo: 2 });
   await e.enfileirar('m', 'ok', () => 1);
