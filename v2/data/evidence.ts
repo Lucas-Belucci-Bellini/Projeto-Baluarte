@@ -107,6 +107,34 @@ export interface EvidenceAuditPreview {
   readonly summary: EvidenceAuditSummary;
 }
 
+export interface EvidenceReviewOptions {
+  readonly moduleId?: string;
+  readonly limit?: number;
+}
+
+export interface EvidenceReviewItem {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly claimKey: string;
+  readonly status: 'pending';
+  readonly confidence: number;
+  readonly observedAt: string;
+  readonly sourceRevision: string | null;
+}
+
+export interface EvidenceReviewSummary {
+  readonly returned: number;
+  readonly available: number;
+  readonly truncated: boolean;
+}
+
+export interface EvidenceReviewQueue {
+  readonly scope: string;
+  readonly limit: number;
+  readonly items: readonly EvidenceReviewItem[];
+  readonly summary: EvidenceReviewSummary;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -133,6 +161,8 @@ const DEFAULT_RETENTION_LIMIT = 25;
 const MAX_RETENTION_LIMIT = 100;
 const DEFAULT_AUDIT_LIMIT = 25;
 const MAX_AUDIT_LIMIT = 100;
+const DEFAULT_REVIEW_LIMIT = 25;
+const MAX_REVIEW_LIMIT = 100;
 
 function boundedPositive(value: number | undefined, fallback: number, maximum: number, name: string): number {
   if (value === undefined) return fallback;
@@ -208,6 +238,43 @@ function normalizeAuditOptions(options: EvidenceAuditOptions | null | undefined)
     moduleId: options.moduleId?.trim() ?? null,
     limit: boundedPositive(options.limit, DEFAULT_AUDIT_LIMIT, MAX_AUDIT_LIMIT, 'limit'),
   };
+}
+
+export function projectEvidenceReviewQueue(
+  records: readonly EvidenceRecord[],
+  options: EvidenceReviewOptions = {},
+): EvidenceReviewQueue {
+  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('opções de revisão devem ser um objeto');
+  }
+  if (options.moduleId !== undefined && !isNonEmptyString(options.moduleId)) {
+    throw new TypeError('moduleId deve ser texto não vazio');
+  }
+  const moduleId = options.moduleId?.trim() ?? null;
+  const limit = boundedPositive(options.limit, DEFAULT_REVIEW_LIMIT, MAX_REVIEW_LIMIT, 'limit');
+  const scoped = moduleId === null
+    ? records
+    : records.filter((record) => record.moduleId === moduleId);
+  const pending = scoped.filter((record) => record.status === 'pending');
+  const items = pending.slice(0, limit).map((record) => Object.freeze({
+    id: record.id,
+    moduleId: record.moduleId,
+    claimKey: record.claimKey,
+    status: 'pending' as const,
+    confidence: record.confidence,
+    observedAt: record.observedAt,
+    sourceRevision: record.source.revision ?? null,
+  }));
+  return Object.freeze({
+    scope: moduleId ?? 'all',
+    limit,
+    items: Object.freeze(items),
+    summary: Object.freeze({
+      returned: items.length,
+      available: pending.length,
+      truncated: pending.length > limit,
+    }),
+  });
 }
 
 export function projectEvidenceAudit(
@@ -353,5 +420,9 @@ export class EvidenceStore {
 
   auditPreview(options?: EvidenceAuditOptions): EvidenceAuditPreview {
     return projectEvidenceAudit(this.list(), options);
+  }
+
+  reviewQueue(options?: EvidenceReviewOptions): EvidenceReviewQueue {
+    return projectEvidenceReviewQueue(this.list(), options);
   }
 }
