@@ -5,6 +5,7 @@ import {
   projectServerObservationHttpToRuntime,
   resolveServerObservationEndpoint,
 } from '../../src/security/server-observation-ui.ts';
+import { fetchServerObservation } from '../../src/security/server-observation-http.js';
 
 function envelope(overrides = {}) {
   return {
@@ -49,6 +50,13 @@ function envelope(overrides = {}) {
     ...overrides,
   };
 }
+
+test('wrapper JavaScript expõe o cliente HTTP canônico para Node nativo', async () => {
+  const result = await fetchServerObservation({});
+  assert.equal(result.contractVersion, 'server-observation-http/v1');
+  assert.equal(result.transport.reasonCode, 'configuration-missing');
+  assert.equal(result.authority, 'not-authorized');
+});
 
 test('resolve endpoint respeita same-origin e servidor local explícito', () => {
   assert.equal(
