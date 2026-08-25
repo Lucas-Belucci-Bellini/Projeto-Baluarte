@@ -219,3 +219,58 @@ test('a saúde não mudou nada do que o bus já garantia', () => {
   assert.deepEqual(bus.inscricoes(), [{ padrao: 'b', ouvintes: 1 }]);
   assert.equal(typeof bus.contagem().a, 'number');
 });
+
+test('saude() resume a latência de cada despacho sem guardar amostras', () => {
+  const tempos = [0, 5, 10, 13, 20, 28];
+  const bus = criarBus({ relogio: () => tempos.shift() });
+  bus.on('a', () => {});
+
+  bus.emit('a');
+  bus.emit('a');
+  bus.emit('a');
+
+  assert.deepEqual(bus.saude().latencia, {
+    n: 3,
+    mediaMs: 5.33,
+    minMs: 3,
+    maxMs: 8
+  });
+});
+
+test('latência é registrada mesmo quando um handler falha', () => {
+  const tempos = [100, 107];
+  const bus = criarBus({ relogio: () => tempos.shift() });
+  bus.on('a', () => { throw new Error('falha observada'); });
+
+  bus.emit('a');
+
+  assert.equal(bus.saude().contagem.falhas, 1);
+  assert.deepEqual(bus.saude().latencia, { n: 1, mediaMs: 7, minMs: 7, maxMs: 7 });
+});
+
+test('relógio inválido não derruba o despacho nem envenena o resumo', () => {
+  const bus = criarBus({ relogio: () => NaN });
+  let recebido = 0;
+  bus.on('a', () => { recebido += 1; });
+
+  bus.emit('a');
+
+  assert.equal(recebido, 1);
+  assert.deepEqual(bus.saude().latencia, { n: 0, mediaMs: 0, minMs: null, maxMs: null });
+});
+
+test('limpar() zera também o resumo de latência', () => {
+  let agora = 0;
+  const bus = criarBus({ relogio: () => agora++ });
+  bus.on('a', () => {});
+  bus.emit('a');
+  bus.limpar();
+
+  assert.deepEqual(bus.saude().latencia, { n: 0, mediaMs: 0, minMs: null, maxMs: null });
+});
+
+test('o resumo de latência não muda readiness nem concede autoridade', () => {
+  const bus = criarBus({ relogio: () => 1 });
+  assert.equal(bus.saude().readiness, 'unhealthy');
+  assert.equal('authority' in bus.saude(), false);
+});
