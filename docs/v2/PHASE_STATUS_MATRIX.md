@@ -218,3 +218,23 @@ O último marco publicou `projectEvidenceAudit` no contrato TypeScript e `auditP
 | Release operacional | `v1.3.2` e `desktop-v1.3.2` públicas; oito assets e manifests verificados |
 
 A release `1.3.2` é incremental e não declara a V2 estável. A V1, o router e os wrappers foram preservados. O próximo passo é uma política operacional de retenção e auditoria server-side com identidade, tenancy, ownership, concorrência e rollback; persistência Supabase/RLS continua bloqueada sem aprovação explícita. As fases 25–27 permanecem não iniciadas.
+
+
+## Checkpoint de código — Server Observation UI / Auth read-only slice — 2026-08-25
+
+O cliente `server-observation-http/v1` passou a ter uma integração read-only na UI do JARVIS. O modo Servidor resolve apenas endpoints controlados (`/api/observability` same-origin em HTTPS ou `/observability/observe` no FastAPI local/explicitamente configurado), faz GET sem body e projeta o resultado para `RuntimeObservation`. Endpoint inválido não tenta rede; timeout, HTTP, rate limit e rede viram estados bounded; tokens, corpos e mensagens externas não chegam à UI.
+
+| Evidência | Resultado |
+|---|---:|
+| Teste focal server-observation UI | `4/4` |
+| Regressão JARVIS + observação HTTP | `9/9` |
+| `npm run tipos:ts` / `npm run tipos:v2` | passaram |
+| `npm test` | `1355` aprovados, `6` ignorados |
+| `npm run build` | passou; warning conhecido de chunks grandes |
+| `npm run v2:integracao` | `58/58` |
+| `npm run smoke` | `99/99` |
+| `npm run caminho-critico` | `15/15` |
+| `npm run prova-offline` | `9/9` |
+| `npm run sonda-memoria` | passou; nenhuma rota acumulou timer, loop ou áudio |
+
+O slice não altera Auth, RLS, roles, `runtimeAuthority`, `publicPromotionAllowed`, refresh, logout, cache, retry ou promoção operacional. O próximo passo de Auth continua sendo um contrato separado para refresh/redirect real; o cliente server-observation permanece observação manual e não autorizada.

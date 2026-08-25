@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-25 — V2, Auth read-only: Server Observation na UI
+
+O modo Servidor do JARVIS agora usa o cliente `server-observation-http/v1` para testar o endpoint controlado e projetar um `RuntimeObservation` bounded. Em HTTPS com URL vazia, a UI usa o adapter same-origin `/api/observability`; em desenvolvimento, usa o endpoint FastAPI local. URLs inválidas não executam rede.
+
+A UI não recebe corpo externo, token, subject, role, metadata ou mensagem arbitrária. O resultado só informa estado de conexão, health, fallback e `reasonCode`; `authority` continua `not-authorized` e `publicPromotionAllowed` continua `false`. O health check legado foi substituído somente nesse botão, sem alteração nos modos de conversa.
+
+O slice passou tipos TS/V2, regressão geral `1355`/`1355` com `6` ignorados, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9` e sonda de memória. O contrato está em [`docs/v2/SERVER_OBSERVATION_UI_CONTRACT_2026-08-25.md`](../docs/v2/SERVER_OBSERVATION_UI_CONTRACT_2026-08-25.md).
+
+---
+
 ## 2026-08-24 — V2, Fase 03: o bus contava sucesso e perdia fracasso
 
 Os dois componentes da Fase 03 sabiam dizer **o que estavam a fazer**. Nenhum
