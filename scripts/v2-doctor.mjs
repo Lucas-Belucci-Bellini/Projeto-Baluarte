@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import process from 'node:process';
 
 const SAFE = 'safe';
 const NOT_RUN = 'not-run';
+
+export const DOCTOR_EVIDENCE_LIMITS = Object.freeze({
+  maxBytes: 256 * 1024,
+  maxRecords: 100,
+});
 
 export const DOCTOR_CHECKS = Object.freeze([
   { id: 'event_catalog', category: 'contracts', command: 'node scripts/gen-catalogo-eventos.mjs --verificar', executable: 'node', args: ['scripts/gen-catalogo-eventos.mjs', '--verificar'], policy: SAFE },
@@ -189,6 +194,19 @@ function inventoryRecords() {
   ];
 }
 
+function readDoctorEvidence(evidencePath) {
+  const bytes = statSync(evidencePath).size;
+  if (bytes > DOCTOR_EVIDENCE_LIMITS.maxBytes) {
+    throw new Error(`doctor evidence exceeds ${DOCTOR_EVIDENCE_LIMITS.maxBytes} bytes`);
+  }
+  const raw = JSON.parse(readFileSync(evidencePath, 'utf8'));
+  if (!Array.isArray(raw)) throw new Error('doctor evidence must be an array');
+  if (raw.length > DOCTOR_EVIDENCE_LIMITS.maxRecords) {
+    throw new Error(`doctor evidence exceeds ${DOCTOR_EVIDENCE_LIMITS.maxRecords} records`);
+  }
+  return raw;
+}
+
 function parseArgs(argv) {
   const args = new Set(argv.slice(2));
   const evidenceIndex = argv.indexOf('--evidence');
@@ -200,11 +218,7 @@ function parseArgs(argv) {
 
 export function buildDoctorReport({ cwd = process.cwd(), inventoryOnly = false, evidencePath = null } = {}) {
   if (inventoryOnly) return summarizeDoctor(inventoryRecords());
-  if (evidencePath) {
-    const raw = JSON.parse(readFileSync(evidencePath, 'utf8'));
-    if (!Array.isArray(raw)) throw new Error('doctor evidence must be an array');
-    return summarizeDoctor(raw);
-  }
+  if (evidencePath) return summarizeDoctor(readDoctorEvidence(evidencePath));
   return summarizeDoctor([...DOCTOR_CHECKS.map((check) => runCheck(check, cwd)), cargoRecord(cwd)]);
 }
 
