@@ -11,7 +11,8 @@
  */
 /**
  * @typedef {{
- *   snapshot: () => Readonly<{group: RuntimeGroupState, modules: ReadonlyArray<Readonly<{id: string, state: RuntimeGroupState}>>}>
+ *   snapshot: () => Readonly<{group: RuntimeGroupState, modules: ReadonlyArray<Readonly<{id: string, state: RuntimeGroupState}>>}>,
+ *   status: () => RuntimeGroupState
  * }} RuntimeGroupStatus
  */
 
@@ -38,5 +39,10 @@ export function criarRuntimeGroupStatus(options = {}) {
     return Object.freeze({ group, modules: Object.freeze(modules.map((m) => Object.freeze(m))) });
   }
 
-  return Object.freeze({ snapshot });
+  /** @returns {RuntimeGroupState} */
+  function status() {
+    return snapshot().group;
+  }
+
+  return Object.freeze({ snapshot, status });
 }

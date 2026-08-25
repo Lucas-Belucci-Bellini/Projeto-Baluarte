@@ -21,9 +21,15 @@ Novos componentes só devem entrar quando houver uma responsabilidade que não e
 - Supervisor read-only
 - Boundary documentada para Supabase
 
+## Reconciliação 2026-08-25
+
+A integração de observabilidade do `RuntimeManagerGroup` já está publicada na `main`: o grupo aceita hooks de batch, readiness, rollback e shutdown, e `module-runtime-events.js` os projeta como eventos estruturados. A lacuna restante era de contrato: `criarRuntimeGroupStatus()` expunha somente `snapshot()`, enquanto `criarRuntimeSupervisor()` consumia `groupStatus.status()`.
+
+A correção desta branch adiciona `status()` como projeção compatível do grupo e preserva `snapshot()` sem alteração. Um teste de composição agora liga o status coletivo real ao supervisor read-only, com Registry e histórico de eventos reais. Nenhuma autoridade operacional, persistência ou integração Supabase foi introduzida.
+
 ## Próxima etapa
 
-Integrar os componentes de observabilidade ao RuntimeManagerGroup existente, preservando suas garantias de startup, readiness, rollback e shutdown. Depois executar a suíte existente e revisar divergências com `main` antes de qualquer merge.
+Integrar essa composição no caminho executável que usa o `RuntimeManagerGroup`, com teste de contrato atravessando `RuntimeManagerGroup → RuntimeGroupLifecycle → RuntimeStateEvents → RuntimeSupervisor`, preservando startup, readiness, rollback e shutdown. Depois executar a suíte existente e revisar divergências com `main` antes de qualquer merge.
 
 ## Não fazer neste checkpoint
 
