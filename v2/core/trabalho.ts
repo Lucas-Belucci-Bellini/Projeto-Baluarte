@@ -15,11 +15,13 @@
  * opcional, e sem métricas injetadas desaparecia inteira.
  *
  * `saude()` acrescenta o acumulado (concluídos, falhados, recusados,
- * cancelados) e um veredito. O veredito usa a única condição bloqueante que
- * este código já decide sozinho — fila no teto, ou seja, a recusar trabalho
- * neste instante. Saturação (`rodando >= limite` com fila) é contrapressão
- * normal e aparece como motivo, não como veredito: um escalonador cheio a
- * trabalhar está a fazer exatamente o que lhe foi pedido.
+ * cancelados), a duração das tarefas que iniciaram e um veredito. A duração
+ * guarda apenas n/soma/mínimo/máximo; não é budget, alerta ou política. O
+ * veredito usa a única condição bloqueante que este código já decide sozinho —
+ * fila no teto, ou seja, a recusar trabalho neste instante. Saturação
+ * (`rodando >= limite` com fila) é contrapressão normal e aparece como motivo,
+ * não como veredito: um escalonador cheio a trabalhar está a fazer exatamente o
+ * que lhe foi pedido.
  */
 
 export const INTERATIVO = 10;
@@ -44,6 +46,7 @@ export interface OpcoesEscalonador {
   readonly limite?: number;
   readonly limitePorModulo?: number;
   readonly tetoFila?: number;
+  readonly relogio?: () => number;
 }
 
 export interface ContextoTrabalho {
@@ -79,11 +82,19 @@ export interface ContagemEscalonador {
   readonly cancelados: number;
 }
 
+export interface LatenciaEscalonador {
+  readonly n: number;
+  readonly mediaMs: number;
+  readonly minMs: number | null;
+  readonly maxMs: number | null;
+}
+
 export interface SaudeEscalonador {
   readonly readiness: 'healthy' | 'unhealthy';
   readonly motivos: readonly string[];
   readonly estado: EstadoEscalonador;
   readonly contagem: ContagemEscalonador;
+  readonly latencia: LatenciaEscalonador;
 }
 
 export interface EstadoEscalonador {
@@ -178,6 +189,12 @@ export function criarEscalonador(
   const limite = opcoes.limite ?? 6;
   const limitePorModulo = opcoes.limitePorModulo ?? Math.max(1, Math.ceil(limite / 2));
   const tetoFila = opcoes.tetoFila ?? 500;
+  const relogio = opcoes.relogio ?? (() => {
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+      return performance.now();
+    }
+    return Date.now();
+  });
 
   const filaPorModulo = new Map<string, Heap<TrabalhoItem>>();
   const candidatos: Heap<Candidato> = { itens: [] };
@@ -193,6 +210,32 @@ export function criarEscalonador(
   let falhados = 0;
   let recusados = 0;
   let cancelados = 0;
+  let latencia: { n: number; soma: number; minMs: number; maxMs: number } | null = null;
+
+  function agoraSeguro(): number | null {
+    try {
+      const valor = relogio();
+      return Number.isFinite(valor) ? valor : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function registrarLatencia(inicio: number | null): void {
+    if (inicio === null) return;
+    const fim = agoraSeguro();
+    if (fim === null) return;
+    const duracao = Math.max(0, fim - inicio);
+    if (!Number.isFinite(duracao)) return;
+    if (!latencia) {
+      latencia = { n: 1, soma: duracao, minMs: duracao, maxMs: duracao };
+      return;
+    }
+    latencia.n += 1;
+    latencia.soma += duracao;
+    if (duracao < latencia.minMs) latencia.minMs = duracao;
+    if (duracao > latencia.maxMs) latencia.maxMs = duracao;
+  }
 
   const emUso = (modulo: string): number => rodandoPor.get(modulo) ?? 0;
 
@@ -247,7 +290,8 @@ export function criarEscalonador(
 
     rodando += 1;
     rodandoPor.set(trabalho.modulo, emUso(trabalho.modulo) + 1);
-    const inicio = Date.now();
+    const inicio = agoraSeguro();
+    const inicioParede = Date.now();
 
     const encerrar = (ok: boolean): void => {
       if (ok) concluidos += 1;
@@ -256,7 +300,8 @@ export function criarEscalonador(
       const restante = emUso(trabalho.modulo) - 1;
       if (restante <= 0) rodandoPor.delete(trabalho.modulo);
       else rodandoPor.set(trabalho.modulo, restante);
-      deps.metricas?.medir?.('trabalho_ms', Date.now() - inicio, {
+      registrarLatencia(inicio);
+      deps.metricas?.medir?.('trabalho_ms', Date.now() - inicioParede, {
         modulo: trabalho.modulo,
         ok: String(ok),
       });
@@ -392,6 +437,14 @@ export function criarEscalonador(
       motivos,
       estado: estado(),
       contagem: { enfileirados, concluidos, falhados, recusados, cancelados },
+      latencia: latencia
+        ? {
+            n: latencia.n,
+            mediaMs: +(latencia.soma / latencia.n).toFixed(2),
+            minMs: latencia.minMs,
+            maxMs: latencia.maxMs,
+          }
+        : { n: 0, mediaMs: 0, minMs: null, maxMs: null },
     };
   }
 
