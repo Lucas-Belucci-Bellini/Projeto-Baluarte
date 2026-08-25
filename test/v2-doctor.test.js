@@ -1,8 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import {
   DOCTOR_CHECKS,
+  DOCTOR_EVIDENCE_LIMITS,
   buildDoctorReport,
   classifyDoctorFailure,
   normalizeDoctorRecord,
@@ -64,6 +68,35 @@ test('doctor catalogues the Event Bus benchmark as safe observability', () => {
     args: ['run', 'bench:event-bus'],
     policy: 'safe',
   });
+});
+
+test('doctor accepts bounded evidence and rejects oversized evidence', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'baluarte-doctor-'));
+  try {
+    const validPath = join(directory, 'valid.json');
+    writeFileSync(validPath, JSON.stringify([{ id: 'x', state: 'green' }]));
+    const report = buildDoctorReport({ evidencePath: validPath });
+    assert.equal(report.counts.green, 1);
+
+    const tooManyPath = join(directory, 'too-many.json');
+    writeFileSync(tooManyPath, JSON.stringify(Array.from(
+      { length: DOCTOR_EVIDENCE_LIMITS.maxRecords + 1 },
+      (_, index) => ({ id: `x-${index}`, state: 'green' }),
+    )));
+    assert.throws(
+      () => buildDoctorReport({ evidencePath: tooManyPath }),
+      /exceeds 100 records/,
+    );
+
+    const tooLargePath = join(directory, 'too-large.json');
+    writeFileSync(tooLargePath, JSON.stringify({ padding: 'x'.repeat(DOCTOR_EVIDENCE_LIMITS.maxBytes) }));
+    assert.throws(
+      () => buildDoctorReport({ evidencePath: tooLargePath }),
+      /exceeds 262144 bytes/,
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('inventory-only mode lists checks without executing them', () => {
