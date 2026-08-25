@@ -258,3 +258,20 @@ O cliente `server-observation-http/v1` passou a ter uma integração read-only n
 | Security Contracts Node 24 | `72/72` no dispatch manual do workflow |
 
 O slice não altera Auth, RLS, roles, `runtimeAuthority`, `publicPromotionAllowed`, refresh, logout, cache, retry ou promoção operacional. O próximo passo de Auth continua sendo um contrato separado para refresh/redirect real; o cliente server-observation permanece observação manual e não autorizada.
+
+
+## Release publicada — V2 `v2.0.0-alpha.2` / Auth server-observation UI — 2026-08-25
+
+A `v2.0.0-alpha.2` marca a integração do cliente `server-observation-http/v1` à UI do modo Servidor do JARVIS. O marco foi mesclado pela PR #474 no SHA `42c8741d` e publicado como pré-release acompanhável.
+
+| Evidência | Resultado |
+|---|---:|
+| Release | [`v2.0.0-alpha.2`](../releases/v2.0.0-alpha.2.md), pré-release |
+| PR | [#474](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/474), mesclada |
+| CI remoto | `12` sucessos, `1` skipped |
+| Security Contracts Node 24 | `72/72` |
+| Suíte / integração V2 | `1355` aprovados, `6` ignorados / `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo de timer, loop ou áudio |
+
+A release não declara a V2 estável. Login, refresh/redirect, logout, Supabase Auth, RLS, tenancy, claims de autoridade, roles, retry, cache, persistência e promoção operacional permanecem fora do escopo. O `Supabase Preview` permaneceu skipped por política e nenhuma escrita remota foi executada.
