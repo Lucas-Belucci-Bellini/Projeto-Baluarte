@@ -1,6 +1,7 @@
 name: Security Contracts
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
