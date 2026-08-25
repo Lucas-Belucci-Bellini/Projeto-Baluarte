@@ -315,6 +315,25 @@ A alpha.4 acompanha o resumo local e bounded de latência do Event Bus, mesclado
 A latência permanece observação local e read-only. Retry, thresholds, percentis, alertas, persistência, rede, Supabase/RLS, tenancy, ownership, revisão humana server-side e promoção operacional continuam fora do escopo ou bloqueados por contrato/staging.
 
 
+## Release em preparação — V2 `v2.0.0-alpha.5` / Event Bus latency budget — 2026-08-25
+
+A alpha.5 acompanha o benchmark offline do Event Bus no commit funcional `6d0d168`. O comando `npm run bench:event-bus` mede três cargas de ouvintes, valida entrega completa e confere o contador interno de latência. A execução observada ficou entre `9,460` e `10,103 µs` por despacho externo no sandbox Linux/Node 22, sem transformar o número em threshold.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#481](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/481), mesclada |
+| Benchmark | passou em 20.000 operações por cenário |
+| Suíte / integração V2 | passou / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `11` sucessos, `1` skipped |
+| Release | [`v2.0.0-alpha.5`](../releases/v2.0.0-alpha.5.md), pré-release em preparação |
+
+O benchmark fecha apenas uma evidência local de custo. Retry, threshold operacional, percentis, alertas, backpressure, hardware de usuário, persistência, RLS, ownership e autoridade continuam fora do escopo.
+
+
 ## Gate de decisão — Evidence ownership e retenção operacional — 2026-08-25
 
 A auditoria publicada em [`EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md`](./EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md) concluiu que não existe um slice local seguro para adicionar `ownerId`, `tenantId`, `eligibleForDeletion` ou aprovação humana. `moduleId` identifica o namespace produtor, não propriedade operacional. A camada local mantém `retentionPreview`, `auditPreview` e `reviewQueue` como projeções bounded e read-only.
