@@ -13,6 +13,7 @@ export const DOCTOR_CHECKS = Object.freeze([
   { id: 'types_ts', category: 'typescript', command: 'npx tsc -p tsconfig.json --noEmit', executable: 'npx', args: ['tsc', '-p', 'tsconfig.json', '--noEmit'], policy: SAFE },
   { id: 'types_v2', category: 'typescript-v2', command: 'npx tsc -p v2/jsconfig.json --noEmit', executable: 'npx', args: ['tsc', '-p', 'v2/jsconfig.json', '--noEmit'], policy: SAFE },
   { id: 'npm_test', category: 'tests', command: 'npm test', executable: 'npm', args: ['test'], policy: SAFE },
+  { id: 'event_bus_latency_benchmark', category: 'performance', command: 'npm run bench:event-bus', executable: 'npm', args: ['run', 'bench:event-bus'], policy: SAFE },
   { id: 'python_claims', category: 'python-contracts', command: 'python3 backend/test_claims_adapter.py', executable: 'python3', args: ['backend/test_claims_adapter.py'], policy: SAFE },
   { id: 'python_claims_transport', category: 'python-contracts', command: 'python3 backend/test_claims_transport.py', executable: 'python3', args: ['backend/test_claims_transport.py'], policy: SAFE },
   { id: 'python_observation', category: 'python-contracts', command: 'python3 backend/test_observation_contract.py', executable: 'python3', args: ['backend/test_observation_contract.py'], policy: SAFE },
@@ -75,6 +76,36 @@ export function summarizeDoctor(records) {
   };
 }
 
+export function classifyDoctorFailure(check, error) {
+  const exitCode = asExitCode(error?.status);
+  const diagnostic = `${String(error?.stderr ?? '')}\n${String(error?.message ?? '')}`;
+  const optionalGoogleSdkMissing = (check.id === 'python_claims_transport'
+    || check.id === 'python_observation_transport')
+    && /ModuleNotFoundError: No module named ['\"]google['\"]/.test(diagnostic);
+
+  if (optionalGoogleSdkMissing) {
+    return normalizeDoctorRecord({
+      id: check.id,
+      category: check.category,
+      state: 'blocked-known',
+      command: check.command,
+      exitCode,
+      reasonCode: 'python-google-genai-missing',
+      summary: 'Optional Python transport is blocked because the declared google-genai SDK is not installed in this environment.',
+    });
+  }
+
+  return normalizeDoctorRecord({
+    id: check.id,
+    category: check.category,
+    state: 'failed',
+    command: check.command,
+    exitCode,
+    reasonCode: 'command-failed',
+    summary: 'Command returned a non-zero result.',
+  });
+}
+
 function runCheck(check, cwd) {
   if (check.policy === NOT_RUN) {
     return normalizeDoctorRecord({
@@ -103,16 +134,7 @@ function runCheck(check, cwd) {
       summary: 'Command completed successfully.',
     });
   } catch (error) {
-    const exitCode = asExitCode(error?.status);
-    return normalizeDoctorRecord({
-      id: check.id,
-      category: check.category,
-      state: 'failed',
-      command: check.command,
-      exitCode,
-      reasonCode: 'command-failed',
-      summary: 'Command returned a non-zero result.',
-    });
+    return classifyDoctorFailure(check, error);
   }
 }
 
