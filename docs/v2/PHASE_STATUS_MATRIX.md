@@ -334,6 +334,26 @@ A alpha.5 acompanha o benchmark offline do Event Bus no commit funcional `6d0d16
 O benchmark fecha apenas uma evidência local de custo. Retry, threshold operacional, percentis, alertas, backpressure, hardware de usuário, persistência, RLS, ownership e autoridade continuam fora do escopo.
 
 
+## Release em preparação — V2 `v2.0.0-alpha.7` / Doctor bounded evidence replay — 2026-08-25
+
+A alpha.7 acompanha os limites de replay do `verify:v2 --evidence` no commit funcional `a1af93c`. O Doctor rejeita arquivos acima de `256 KiB` ou listas acima de `100` registros antes de normalizar a evidência; não há truncamento silencioso.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#485](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/485), mesclada |
+| Teste focal Doctor | `8/8` |
+| Limites | `256 KiB` / `100` registros |
+| Suíte / integração V2 | passou / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `10` sucessos, `1` skipped |
+| Release | [`v2.0.0-alpha.7`](../releases/v2.0.0-alpha.7.md), pré-release em preparação |
+
+O replay limitado protege a entrada do Doctor e mantém estados não-verdes honestos. Nenhuma persistência, rede, RLS, Auth, ownership, revisão humana ou autoridade foi adicionada.
+
+
 ## Release em preparação — V2 `v2.0.0-alpha.6` / Doctor environment classification — 2026-08-25
 
 A alpha.6 acompanha o hardening do `verify:v2` no commit funcional `8bf27ac`. A ausência exata do SDK opcional `google-genai` nos dois transportes Python declarados passa a ser `blocked-known`, enquanto falhas não reconhecidas continuam `failed` e Cargo ausente continua `unknown`.

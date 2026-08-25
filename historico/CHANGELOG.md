@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-25 — Release `v2.0.0-alpha.7`: Doctor bounded evidence replay
+
+A sétima pré-release acompanhável da V2 limita o replay de evidências do `verify:v2`. O modo `--evidence` verifica o tamanho do arquivo antes do parse e aceita no máximo `256 KiB` e `100` registros antes da normalização. Entrada excessiva é rejeitada, não truncada.
+
+O marco foi mesclado pela PR #485 no SHA `a1af93c`. O teste focal do Doctor passou `8/8`; tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `10` checks remotos verdes e `1` skipped por política.
+
+A mudança protege o diagnóstico contra entrada ilimitada, mas não autentica a fonte, não concede autoridade e não cria persistência, rede, RLS, Auth, ownership ou revisão humana. As notas completas estão em [`docs/releases/v2.0.0-alpha.7.md`](../docs/releases/v2.0.0-alpha.7.md).
+
+---
+
 ## 2026-08-25 — Release `v2.0.0-alpha.6`: Doctor environment classification
 
 A sexta pré-release acompanhável da V2 endurece o `verify:v2`. Quando o SDK opcional `google-genai`, declarado em `backend/requirements.txt`, não está instalado, os checks de transporte Python reconhecem somente essa ausência exata como `blocked-known`; falhas diferentes continuam `failed`.
