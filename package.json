@@ -43,6 +43,7 @@
     "prova-offline": "node scripts/prova-offline.mjs",
     "tipos:v2": "tsc -p v2/jsconfig.json",
     "v2:integracao": "node scripts/v2-integracao.mjs",
+    "bench:event-bus": "node scripts/event-bus-latency-benchmark.mjs",
     "verify:v2": "node scripts/v2-doctor.mjs",
     "v2:runtime": "cargo test --manifest-path v2/runtime/Cargo.toml"
   },

@@ -234,3 +234,9 @@ A validação passou teste focal Evidence `11/11`, suíte `1258/1258`, `tipos:ts
 As tags `v1.3.2` e `desktop-v1.3.2` apontam para `5d2142d7`. O Desktop Release `32595313050` passou em Windows, macOS ARM64 e Ubuntu. A release pública `v1.3.2` não é draft nem prerelease, possui oito assets, os manifests declaram `version: 1.3.2` e todos os downloads responderam HTTP 200. O Service Worker usa `baluarte-v1.3.2`.
 
 O próximo passo continua sendo definir retenção operacional e auditoria server-side com identidade, tenancy, ownership, concorrência, exportação e rollback. Este checkpoint não cria persistência remota, autorização client-side, auditoria operacional de produção ou UI de revisão.
+
+## Checkpoint de medição — Event Bus latency budget — 2026-08-25
+
+O script `scripts/event-bus-latency-benchmark.mjs`, disponível como `npm run bench:event-bus`, mede o caminho real de `criarBus().emit()` em três cargas de ouvintes, com aquecimento do JIT, validação de entrega e conferência de `bus.saude().latencia`. A execução registrada em [`EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md`](./EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md) observou 9,460–10,103 µs por despacho externo em 20.000 operações por cenário no sandbox Linux/Node 22.
+
+A medição fecha uma evidência local de custo, mas não fecha threshold de produção, percentil, alerta, retry, backpressure, hardware de usuário ou disponibilidade operacional. O Event Bus permanece observação local, e a política de retry por classe de evento continua bloqueada até ADR explícito.

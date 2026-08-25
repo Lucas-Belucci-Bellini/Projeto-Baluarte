@@ -89,3 +89,15 @@ alvo: 17.9 MB
 ── Rust ──
         18 ms   (hash ae627395, 57162 chaves-abre)
 ```
+
+## 2026-08-25 — Event Bus latency health
+
+Execução: `npm run bench:event-bus` · Linux x64 · Node v22.13.0 · Intel Xeon @ 2.50GHz · 2.000 warmup + 20.000 operações por cenário.
+
+| Cenário | Média externa | Operações/s | Média interna | Máximo interno |
+|---|---:|---:|---:|---:|
+| 1 direto + curinga | 9,460 µs | 105.709 | 0,01 ms | 0,473 ms |
+| 10 diretos + curinga | 9,586 µs | 104.319 | 0,01 ms | 0,395 ms |
+| 20 diretos + curinga | 10,103 µs | 98.976 | 0,01 ms | 0,274 ms |
+
+A medição é diagnóstica e não estabelece threshold, promessa de hardware ou gate de CI. O contrato e o método estão em [`docs/v2/EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md`](../docs/v2/EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md).
