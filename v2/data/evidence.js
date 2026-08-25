@@ -4,5 +4,6 @@ export {
   normalizeEvidence,
   projectEvidenceAudit,
   projectEvidenceRetention,
+  projectEvidenceReviewQueue,
   validateEvidence,
 } from './evidence.ts';

@@ -5,6 +5,7 @@ import {
   normalizeEvidence,
   projectEvidenceAudit,
   projectEvidenceRetention,
+  projectEvidenceReviewQueue,
   validateEvidence,
 } from '../../v2/data/evidence.ts';
 
@@ -110,6 +111,49 @@ test('evidence retention preview is deterministic, bounded and read-only', () =>
   assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', maxAgeDays: 1.5 }), /maxAgeDays deve ser/);
   assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', limit: 0 }), /limit deve ser/);
   assert.throws(() => projectEvidenceRetention(store.list(), { now: '2026-09-01', limit: 1.5 }), /limit deve ser/);
+});
+
+test('evidence review queue is bounded, scoped and structural', () => {
+  const store = new EvidenceStore();
+  store.append({ ...base, id: 'review-pending-1', moduleId: 'wiki-arma3' });
+  store.append({ ...base, id: 'review-verified', moduleId: 'wiki-arma3', status: 'verified' });
+  store.append({ ...base, id: 'review-pending-2', moduleId: 'evidence' });
+  store.append({ ...base, id: 'review-pending-3', moduleId: 'wiki-arma3' });
+
+  const queue = projectEvidenceReviewQueue(store.list(), { moduleId: 'wiki-arma3', limit: 1 });
+  assert.equal(queue.scope, 'wiki-arma3');
+  assert.equal(queue.limit, 1);
+  assert.deepEqual(queue.items.map((item) => [item.id, item.status, item.sourceRevision]), [
+    ['review-pending-1', 'pending', 'r1'],
+  ]);
+  assert.deepEqual(queue.summary, { returned: 1, available: 2, truncated: true });
+  assert.equal(Object.isFrozen(queue), true);
+  assert.equal(Object.isFrozen(queue.items), true);
+  assert.equal(Object.isFrozen(queue.items[0]), true);
+  assert.deepEqual(Object.keys(queue.items[0] ?? {}).sort(), [
+    'claimKey',
+    'confidence',
+    'id',
+    'moduleId',
+    'observedAt',
+    'sourceRevision',
+    'status',
+  ]);
+  assert.equal(Object.hasOwn(queue.items[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(queue.items[0] ?? {}, 'source'), false);
+  assert.equal(Object.hasOwn(queue.items[0] ?? {}, 'collector'), false);
+
+  const all = store.reviewQueue();
+  assert.deepEqual(all.items.map((item) => item.id), [
+    'review-pending-1',
+    'review-pending-2',
+    'review-pending-3',
+  ]);
+  assert.deepEqual(all.summary, { returned: 3, available: 3, truncated: false });
+  assert.throws(() => projectEvidenceReviewQueue(store.list(), { moduleId: '' }), /moduleId deve ser/);
+  assert.throws(() => projectEvidenceReviewQueue(store.list(), { limit: 0 }), /limit deve ser/);
+  assert.throws(() => projectEvidenceReviewQueue(store.list(), { limit: 1.5 }), /limit deve ser/);
+  assert.equal(store.list().length, 4);
 });
 
 test('evidence audit preview is structural, bounded and read-only', () => {
