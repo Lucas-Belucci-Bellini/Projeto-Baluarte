@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-25 — Release `v2.0.0-alpha.2`: Auth server-observation UI
+
+A segunda pré-release acompanhável da V2 integra o cliente `server-observation-http/v1` ao botão de teste do modo Servidor no JARVIS. A UI resolve somente endpoints controlados, faz GET sem body e projeta health, conexão, fallback e `reasonCode` em estado bounded e read-only.
+
+O marco foi mesclado pela PR #474 no SHA `42c8741d`. A validação passou `1355` testes com `6` ignorados, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, sonda de memória, Security Contracts Node 24 `72/72` e `12` checks remotos com sucesso; o Supabase Preview permaneceu skipped por política.
+
+A release continua alpha: não implementa login, refresh/redirect, logout, Auth/RLS, tenancy, roles, retry, cache, persistência ou promoção operacional. A documentação completa está em [`docs/releases/v2.0.0-alpha.2.md`](../docs/releases/v2.0.0-alpha.2.md).
+
+---
+
 ## 2026-08-25 — Release `v2.0.0-alpha.1`: Runtime Group Observability
 
 A primeira pré-release acompanhável da V2 publica a composição observável do `RuntimeManagerGroup`, sem declarar estabilidade e sem substituir a V1. O caminho reúne manager group, lifecycle, eventos estruturados, histórico de estado e supervisor read-only, preservando startup, readiness, rollback e shutdown.
