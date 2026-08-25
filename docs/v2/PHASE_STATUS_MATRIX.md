@@ -237,3 +237,24 @@ A primeira pré-release acompanhável da V2 publica a composição `RuntimeManag
 | Release | [`v2.0.0-alpha.1`](../releases/v2.0.0-alpha.1.md), pré-release |
 
 Este marco não declara a V2 estável. Retry por classe de evento, persistência remota, Supabase/RLS, claims de autoridade, promoção operacional e uso do Runtime como autoridade de produção permanecem fora do escopo ou bloqueados por decisão/staging. A V1, o router, o shell e os módulos de produto foram preservados. A próxima frente deve ser outro slice local previsto na matriz, com política explícita e gates completos antes de uma nova alpha.
+
+
+## Checkpoint de código — Server Observation UI / Auth read-only slice — 2026-08-25
+
+O cliente `server-observation-http/v1` passou a ter uma integração read-only na UI do JARVIS. O modo Servidor resolve apenas endpoints controlados (`/api/observability` same-origin em HTTPS ou `/observability/observe` no FastAPI local/explicitamente configurado), faz GET sem body e projeta o resultado para `RuntimeObservation`. Endpoint inválido não tenta rede; timeout, HTTP, rate limit e rede viram estados bounded; tokens, corpos e mensagens externas não chegam à UI.
+
+| Evidência | Resultado |
+|---|---:|
+| Teste focal server-observation UI | `5/5` |
+| Regressão JARVIS + observação HTTP | `9/9` |
+| `npm run tipos:ts` / `npm run tipos:v2` | passaram |
+| `npm test` | `1355` aprovados, `6` ignorados |
+| `npm run build` | passou; warning conhecido de chunks grandes |
+| `npm run v2:integracao` | `58/58` |
+| `npm run smoke` | `99/99` |
+| `npm run caminho-critico` | `15/15` |
+| `npm run prova-offline` | `9/9` |
+| `npm run sonda-memoria` | passou; nenhuma rota acumulou timer, loop ou áudio |
+| Security Contracts Node 24 | `72/72` no dispatch manual do workflow |
+
+O slice não altera Auth, RLS, roles, `runtimeAuthority`, `publicPromotionAllowed`, refresh, logout, cache, retry ou promoção operacional. O próximo passo de Auth continua sendo um contrato separado para refresh/redirect real; o cliente server-observation permanece observação manual e não autorizada.
