@@ -51,7 +51,8 @@
     "check:module-mode-policy": "node scripts/module-mode-policy-check.mjs",
     "verify:v2": "node scripts/v2-doctor.mjs",
     "drill:v2:backup": "node --experimental-strip-types scripts/v2-backup-restore-drill.mjs",
-    "v2:runtime": "cargo test --manifest-path v2/runtime/Cargo.toml"
+    "v2:runtime": "cargo test --manifest-path v2/runtime/Cargo.toml",
+    "v2:desktop-packaged": "node scripts/v2-packaged-runtime-smoke.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",
