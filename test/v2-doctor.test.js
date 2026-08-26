@@ -70,6 +70,18 @@ test('doctor catalogues the Event Bus benchmark as safe observability', () => {
   });
 });
 
+test('doctor catalogues the storage policy verification as safe data evidence', () => {
+  const check = DOCTOR_CHECKS.find((item) => item.id === 'storage_catalog');
+  assert.deepEqual(check, {
+    id: 'storage_catalog',
+    category: 'data-contracts',
+    command: 'node scripts/gen-catalogo-storage.mjs --verificar',
+    executable: 'node',
+    args: ['scripts/gen-catalogo-storage.mjs', '--verificar'],
+    policy: 'safe',
+  });
+});
+
 test('doctor accepts bounded evidence and rejects oversized evidence', () => {
   const directory = mkdtempSync(join(tmpdir(), 'baluarte-doctor-'));
   try {
