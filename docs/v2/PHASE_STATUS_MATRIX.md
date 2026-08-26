@@ -585,3 +585,28 @@ A `v2.0.0-alpha.16` publicou o slice `module-registry-mode-policy/v1` no SHA int
 O checkpoint avança a fronteira local de `MODULE-RBAC-001`, mas não implementa Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila, mutação remota ou promoção pública. O campo `actorRole` do request é ignorado; a origem das identidades é fixa em `server-test-fixture`. A fixture fornece apenas decisões sintéticas ao callback auditado do Module Registry Health e não é autoridade de produção.
 
 A documentação do contrato está em [`MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md`](./MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md). A auditoria real em staging permanece dependente de quatro identidades isoladas, políticas RLS verificáveis, cleanup idempotente, auditoria persistente, revisão de segurança, custo e rollback aprovados. A Phase 5/14/22 continua parcial nas fronteiras remotas; o `unknown`, `blocked-known` e `not-run` do Doctor permanecem estados honestos.
+
+
+## Checkpoint técnico integrado — V2 `v2.0.0-alpha.17` / Doctor observa Module Mode Policy — 2026-08-26
+
+O slice de observabilidade do Doctor foi integrado pela PR [#506](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/506) no SHA `8917525eb0f7dfdbe6b4092560de4e27ead1921f`, sobre a alpha.16 em `635fbc0bee694a13e97c307f906be864c9237a91`. A documentação desta alpha.17 está sendo preparada separadamente; nenhum tag alpha.17 foi criado neste checkpoint.
+
+| Evidência | Resultado |
+|---|---:|
+| Commit funcional da slice | `8f894e4` |
+| SHA integrado na `main` | `8917525` |
+| PR técnica | `#506`, mesclada com squash |
+| Backup pré-merge | `backup/2026-08-26-before-v2-doctor-mode-check` |
+| Check novo | `module_mode_policy`, `green` |
+| Verificador da fixture | 4 identidades, 6 casos, 3 allow / 3 deny, spoof deny |
+| Teste focal do Doctor | `10/10` |
+| Suíte completa | `1385` aprovados, `6` ignorados, zero falhas |
+| Integração / smoke / caminho crítico | `58/58` / `99/99` / `15/15` |
+| Offline / Security Contracts | `9/9` / `76/76` |
+| Doctor com dependências | 16 green, 2 blocked-known, 1 unknown, 5 not-run, 0 failed |
+| CI remoto da PR técnica | 10 sucessos, 1 skipped, nenhum pendente |
+| Workflows pós-merge do SHA | todos verdes |
+
+A alpha.17 somente melhora a observabilidade local do contrato já existente. Não implementa Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, persistência, auditoria remota, retenção operacional, rede, retry, fila, restart ou autoridade de produção. V1, router, sidebar, boot, Storage, Evidence, Event Bus e Service Worker permanecem preservados.
+
+O Doctor mantém estados honestos: o novo check pode estar `green`, mas o relatório global retorna exit `2` quando Cargo permanece `unknown`; `blocked-known` e `not-run` não são convertidos. A documentação contratual está em [`V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md`](./V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md), e a nota de release está em [`v2.0.0-alpha.17.md`](../releases/v2.0.0-alpha.17.md).

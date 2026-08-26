@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.17`: Doctor observa Module Mode Policy
+
+A décima sétima pré-release acompanhável da V2 torna observável no `verify:v2` o contrato local `module-registry-mode-policy/v1`: o Doctor executa `node scripts/module-mode-policy-check.mjs` como check `safe`/read-only com id `module_mode_policy`. A fixture canônica continua sendo a única fonte da matriz de quatro identidades, seis casos, três decisões allow, três deny e spoof negado.
+
+O marco técnico foi mesclado pela PR #506 no SHA `8917525e`; a documentação desta release está sendo mesclada separadamente. O teste focal do Doctor passou `10/10`; a suíte passou com `1385` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `76/76` passaram. O Doctor registrou `16` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelo estado ambiental de Cargo.
+
+O slice não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, persistência, auditoria remota, retenção operacional, rede, retry, restart, fila, mutação remota ou autoridade de produção. V1, router, sidebar, boot, Storage, Evidence, Event Bus e Service Worker permanecem preservados. A PR #501 de privacidade continua separada e a PR #471 do Claude Code permanece aberta como draft e intocada. As notas completas estão em [`docs/releases/v2.0.0-alpha.17.md`](../docs/releases/v2.0.0-alpha.17.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.16`: Module Mode Policy fake server-side local
 
 A décima sexta pré-release acompanhável da V2 adiciona a fixture determinística `module-registry-mode-policy/v1` para exercitar decisões `allow`/`deny` dos modos `active`, `maintenance` e `disabled` antes de qualquer staging Supabase/RLS. A fixture expõe exatamente quatro identidades sintéticas — `fixture-user`, `fixture-admin`, `fixture-dev` e `fixture-owner` — nos papéis fechados `user`, `admin`, `dev` e `owner`; `actorRole` enviado no request não eleva autoridade.
