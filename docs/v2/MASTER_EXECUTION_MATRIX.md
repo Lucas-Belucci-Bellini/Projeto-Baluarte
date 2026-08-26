@@ -249,3 +249,12 @@ O gap `RECOVERY-001` ganhou um ensaio local reproduzível no comando `npm run dr
 A execução passou com `backupValidado: true`, três chaves estruturais restauradas (`editor:state`, `permissoes`, `ui:theme`), sessão excluída e chave desconhecida ignorada. A suíte canônica de backup passou `14/14`. O resultado demonstra o caminho local da ponte V1→V2, mas não aprova RPO/RTO, durabilidade, criptografia, retenção, ownership, tenancy, auditoria, recuperação remota ou restauração entre máquinas; o gap operacional permanece parcial e bloqueado para produção.
 
 O contrato detalhado está em [`V2_BACKUP_RESTORE_DRILL_2026-08-26.md`](./V2_BACKUP_RESTORE_DRILL_2026-08-26.md). Nenhuma rede, storage remoto, Supabase, migration, RLS, Auth real, credencial ou escrita de produção foi utilizada.
+
+
+## Checkpoint de performance — Evidence local bounded search — 2026-08-26
+
+A busca local da Evidence foi medida sobre o dataset `PZ_IDS` curado: `159` mods, `640` registros derivados somente de campos declarados e `250` repetições por cenário. As médias observadas ficaram entre `119,301 µs` e `223,172 µs`, com limites `25`/`100`, `returned` nunca acima do limite e `available` contado antes do corte.
+
+O benchmark é reprodutível pelo comando `npm run bench:evidence-search` e está detalhado em [`EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md`](./EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md). Ele mede uma busca linear em memória e não fecha budget de produção, full-text, ranking, pgvector, índice persistente, consulta remota ou relevância operacional.
+
+A lacuna de search/index fica parcialmente atendida no escopo local bounded. Volume real de produção, requisitos de relevância, tenancy, retenção, RLS, custos e staging continuam necessários antes de qualquer persistência ou decisão de plataforma.

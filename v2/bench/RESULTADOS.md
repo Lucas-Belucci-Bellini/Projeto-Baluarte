@@ -116,3 +116,20 @@ Execução: `node --experimental-strip-types v2/bench/core-js.mjs` · Linux x86_
 | Autoconsistência | passou: `latencia.n === 50.000` |
 
 Esta execução é diagnóstico local. O custo externo e a duração interna são caminhos de medição diferentes; os valores não são SLA nem threshold de produção. O método completo está em [`docs/v2/TASK_MANAGER_LATENCY_BENCHMARK_2026-08-26.md`](../docs/v2/TASK_MANAGER_LATENCY_BENCHMARK_2026-08-26.md).
+
+
+## 2026-08-26 — Evidence local bounded search
+
+Execução: `npm run bench:evidence-search` · Linux x86_64 · Node v22.13.0 · dataset local `PZ_IDS` com 159 mods curados e 640 registros Evidence derivados · 250 repetições por cenário.
+
+| Cenário | Limite | Disponíveis | Retornados | Média |
+|---|---:|---:|---:|---:|
+| Todos os metadados (`wiki-zomboid`) | 25 | 640 | 25 | 125,435 µs |
+| Campo workshop (`workshopid`) | 100 | 159 | 100 | 202,140 µs |
+| Revisão do dataset | 100 | 640 | 100 | 223,172 µs |
+| Escopo + estado (`wiki-zomboid`) | 100 | 640 | 100 | 119,301 µs |
+
+Todos os cenários confirmaram `returned <= limit` e `available` antes do corte. A medição é local e diagnóstica; não estabelece full-text, índice persistente, ranking, SLA, threshold ou budget de produção. O método está em [`docs/v2/EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md`](../docs/v2/EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md).
+
+
+Repetição no mesmo ambiente e dataset: `94,968 µs` (todos), `173,501 µs` (workshop), `222,314 µs` (revisão) e `90,390 µs` (escopo + estado). As contagens permaneceram `640` disponíveis, limites `25`/`100` e `250` repetições. A variação confirma que os valores são diagnóstico local, não threshold.
