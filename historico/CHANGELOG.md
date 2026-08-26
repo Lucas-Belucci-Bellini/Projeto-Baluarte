@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.9`: local backup/restore drill
+
+A nona pré-release acompanhável da V2 adiciona `npm run drill:v2:backup`, um ensaio local e reproduzível sobre a ponte de backup já existente. O drill exporta dados locais com Unicode, valida o envelope, simula perda com `clearAll()`, restaura as chaves esperadas, confirma que `auth:session` não é exportada/restaurada, rejeita chave desconhecida e limpa o fallback in-memory no `finally`.
+
+O marco foi mesclado pela PR #489 no SHA `69fbd92`. O drill passou, a suíte canônica de backup passou `14/14`, tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+O ensaio demonstra o caminho local V1→V2, mas não aprova RPO/RTO, durabilidade, criptografia, retenção, ownership, tenancy, auditoria, restauração entre máquinas ou recuperação remota. Nenhuma rede, storage remoto, Supabase, migration, RLS, Auth real, credencial ou escrita de produção foi utilizada. As notas completas estão em [`docs/releases/v2.0.0-alpha.9.md`](../docs/releases/v2.0.0-alpha.9.md).
+
+---
+
 ## 2026-08-25 — Release `v2.0.0-alpha.8`: Task Manager duration health
 
 A oitava pré-release acompanhável da V2 adiciona `latencia` ao `escalonador.saude()`, com `n`, `mediaMs`, `minMs` e `maxMs` para tarefas que chegaram a iniciar. Sucessos e falhas entram no resumo; cancelamentos antes do início não entram como duração. O acumulador é bounded, independente de `deps.metricas` e protegido contra relógio inválido.
