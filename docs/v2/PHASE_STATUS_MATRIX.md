@@ -614,13 +614,14 @@ O Doctor mantém estados honestos: o novo check pode estar `green`, mas o relat�
 
 ## Fechamento documental — V2 `v2.0.0-alpha.17` — 2026-08-26
 
-A documentação da alpha.17 foi mesclada pela PR [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507) no SHA `379f6670ce5e8544a898d92a37869beb80b93545`, após os checks aplicáveis da PR terminarem verdes. Este fechamento corrige a rastreabilidade do checkpoint anterior, que foi escrito enquanto a documentação ainda estava em preparação; a tag `v2.0.0-alpha.17` permanece dependente da publicação final após todos os gates pós-merge desse SHA.
+A documentação da alpha.17 foi iniciada pela PR [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507) no SHA `379f6670ce5e8544a898d92a37869beb80b93545` e finalizada pela PR [#508](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/508) no SHA `f06bbb90252ebc798ea3d94d85ffc60a9b4608e2`, após os checks aplicáveis de ambas terminarem verdes. Este fechamento corrige a rastreabilidade do checkpoint anterior, que foi escrito enquanto a documentação ainda estava em preparação; a tag `v2.0.0-alpha.17` permanece dependente da publicação final após todos os gates pós-merge do SHA final.
 
 | Evidência | Resultado |
 |---|---:|
-| PR documental | `#507`, squash-merged |
-| SHA documental final | `379f667` |
+| PR documental inicial | `#507`, squash-merged |
+| PR de finalização | `#508`, squash-merged |
+| SHA documental final | `f06bbb9` |
 | CI pós-merge | 7 workflows verdes |
 | Tag alpha.17 | ainda não criada neste fechamento |
 
-A correção não altera código, contratos, V1, router, boot, Storage, Evidence, Auth, RLS, Supabase, workflows ou autoridade operacional. O próximo passo de publicação deve apontar a tag para o SHA final desta correção documental somente depois de seus próprios gates pós-merge terminarem sem falhas ou pendências.
+A correção não altera código, contratos, V1, router, boot, Storage, Evidence, Auth, RLS, Supabase, workflows ou autoridade operacional. O próximo passo de publicação deve apontar a tag para o SHA final `f06bbb90252ebc798ea3d94d85ffc60a9b4608e2` somente depois de os gates pós-merge desse SHA terminarem sem falhas ou pendências.
