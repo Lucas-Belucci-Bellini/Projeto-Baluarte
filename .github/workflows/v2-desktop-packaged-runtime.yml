@@ -1,0 +1,52 @@
+name: V2 Desktop Packaged Runtime
+
+on:
+  push:
+    branches:
+      - main
+      - v2-development
+      - 'claude/**'
+    paths:
+      - 'desktop/**'
+      - 'v2/runtime/**'
+      - 'scripts/v2-packaged-runtime-smoke.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/v2-desktop-packaged-runtime.yml'
+  pull_request:
+    branches:
+      - main
+      - v2-development
+    paths:
+      - 'desktop/**'
+      - 'v2/runtime/**'
+      - 'scripts/v2-packaged-runtime-smoke.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/v2-desktop-packaged-runtime.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  packaged-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Install desktop dependencies
+        run: npm ci --prefix desktop
+
+      - name: Validate packaged Electron Runtime
+        run: npm run v2:desktop-packaged
