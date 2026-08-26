@@ -334,6 +334,25 @@ A alpha.5 acompanha o benchmark offline do Event Bus no commit funcional `6d0d16
 O benchmark fecha apenas uma evidência local de custo. Retry, threshold operacional, percentis, alertas, backpressure, hardware de usuário, persistência, RLS, ownership e autoridade continuam fora do escopo.
 
 
+## Release em preparação — V2 `v2.0.0-alpha.8` / Task Manager duration health — 2026-08-25
+
+A alpha.8 acompanha o resumo local e bounded de duração das tarefas no `escalonador.saude()`, mesclado no commit funcional `e82c62b`. O campo expõe `n`, `mediaMs`, `minMs` e `maxMs` para tarefas que iniciaram, incluindo sucesso e falha, sem contar cancelamento pré-início.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#487](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/487), mesclada |
+| Testes focais Task Manager | `35/35` |
+| Suíte / integração V2 | passou / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `11` sucessos, `1` skipped |
+| Release | [`v2.0.0-alpha.8`](../releases/v2.0.0-alpha.8.md), pré-release em preparação |
+
+A duração é observação acumulada e independente de métricas opcionais. Não escolhe threshold, degrada readiness, inicia retry, concede autoridade ou altera a V1.
+
+
 ## Release em preparação — V2 `v2.0.0-alpha.7` / Doctor bounded evidence replay — 2026-08-25
 
 A alpha.7 acompanha os limites de replay do `verify:v2 --evidence` no commit funcional `a1af93c`. O Doctor rejeita arquivos acima de `256 KiB` ou listas acima de `100` registros antes de normalizar a evidência; não há truncamento silencioso.
