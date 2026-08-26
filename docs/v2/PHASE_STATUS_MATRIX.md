@@ -513,3 +513,27 @@ O benchmark do boot real da Plataforma V2 foi integrado na `main` no SHA `ac89b6
 Este checkpoint atende parcialmente a medição de startup das Phases 02/21. Os relógios são diferentes: `bootInterno` vem do Supervisor e `browserReady` inclui navegação, serving, execução e observação do harness. Ambos permanecem diagnóstico local e não estabelecem SLA, threshold, budget de produção, Web Vital, hardware matrix ou política de regressão. O preview é aceito somente com marcadores do HTML do harness, evitando que um `200` do site V1 stale seja confundido com sucesso V2.
 
 A pré-release `v2.0.0-alpha.13` será criada somente após esta documentação passar pelos checks remotos e ser mesclada na `main`; nenhum tag ou release é implícito por este checkpoint documental.
+
+
+## Checkpoint documental — V2 `v2.0.0-alpha.14` / Doctor storage catalog — 2026-08-26
+
+O Doctor passou a verificar o catálogo canônico de storage local por meio do registro seguro `storage_catalog`. O marco foi integrado na `main` no SHA `52810d0b7d867ca72552f3a14e3bdf87a21fdb3b` pela PR [#499](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/499).
+
+| Evidência | Resultado |
+|---|---:|
+| Commit funcional na `main` | `52810d0b` |
+| PR técnica | `#499`, mesclada com squash |
+| Novo check | `storage_catalog` / `data-contracts` / `safe` |
+| Comando verificado | `node scripts/gen-catalogo-storage.mjs --verificar` |
+| Catálogo | `72` chaves declaradas com migração; estado `green` |
+| Doctor | `23` registros: `15` green, `2` blocked-known, `1` unknown, `5` not-run, `0` failed |
+| Teste focal | `9/9` |
+| Integração V2 | `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR técnica | `10` sucessos, `1` skipped, nenhum pendente |
+
+O check é somente leitura: não escreve catálogo, não corrige divergências, não instala SDK, não inicia harness, não mata processos, não executa migrations e não consulta Supabase. O Cargo ausente permaneceu `unknown` e produziu `exit 2` no Doctor; os transportes Python opcionais sem SDK permaneceram `blocked-known`. Nenhum estado não verde foi convertido em sucesso.
+
+Este checkpoint atende parcialmente a governança local da Phase 05/23. Persistência remota, ownership, tenancy, RLS, revisão humana, Auth real, retenção operacional e autoridade continuam bloqueados por seus contratos e dependências próprios. A pré-release `v2.0.0-alpha.14` somente será criada após a PR documental passar pelos checks remotos e ser mesclada; nenhum tag ou release é implícito por este checkpoint.
