@@ -334,6 +334,27 @@ A alpha.5 acompanha o benchmark offline do Event Bus no commit funcional `6d0d16
 O benchmark fecha apenas uma evidência local de custo. Retry, threshold operacional, percentis, alertas, backpressure, hardware de usuário, persistência, RLS, ownership e autoridade continuam fora do escopo.
 
 
+## Release em preparação — V2 `v2.0.0-alpha.10` / Evidence local bounded search — 2026-08-26
+
+A alpha.10 acompanha a busca local bounded da Evidence, mesclada no commit funcional `dcdb7ff`. A API consulta somente metadados estruturais em memória, preserva a ordem append-only e não concede autoridade.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#491](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/491), mesclada |
+| Testes Evidence + module | `14/14` |
+| Limite | padrão `25`, teto `100` |
+| Redaction | sem statement, URI, publisher ou collector |
+| Suíte / integração V2 | passou / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `11` sucessos, `1` skipped |
+| Release | [`v2.0.0-alpha.10`](../releases/v2.0.0-alpha.10.md), pré-release em preparação |
+
+A busca não é full-text, ranking, pgvector ou índice persistente. Não usa rede, banco, Supabase, RLS, ownership, tenancy, revisão humana ou autoridade.
+
+
 ## Release em preparação — V2 `v2.0.0-alpha.9` / Local backup-restore drill — 2026-08-26
 
 A alpha.9 acompanha o ensaio local reproduzível de backup/restore do `RECOVERY-001`, mesclado no commit funcional `69fbd92`. O comando `npm run drill:v2:backup` exercita a ponte existente em fallback in-memory, com limpeza garantida no final.

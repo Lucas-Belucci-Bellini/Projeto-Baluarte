@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.10`: Evidence local bounded search
+
+A décima pré-release acompanhável da V2 adiciona uma busca local, determinística e read-only ao Evidence Layer. `projectEvidenceSearch`, `EvidenceStore.search` e `evidence.api.search` filtram `id`, `claimKey`, `moduleId` e `source.revision`, com limite padrão 25 e teto 100, preservando a ordem append-only e redigindo statement, URI, publisher e collector.
+
+O marco foi mesclado pela PR #491 no SHA `dcdb7ff`. Os testes Evidence e module passaram `14/14`; tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A busca não é full-text, ranking, pgvector, índice persistente, consulta remota, Evidence server-side, ownership, tenancy, revisão humana ou autoridade. O Wiki Zomboid, a V1 e as projeções anteriores permanecem compatíveis. As notas completas estão em [`docs/releases/v2.0.0-alpha.10.md`](../docs/releases/v2.0.0-alpha.10.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.9`: local backup/restore drill
 
 A nona pré-release acompanhável da V2 adiciona `npm run drill:v2:backup`, um ensaio local e reproduzível sobre a ponte de backup já existente. O drill exporta dados locais com Unicode, valida o envelope, simula perda com `clearAll()`, restaura as chaves esperadas, confirma que `auth:session` não é exportada/restaurada, rejeita chave desconhecida e limpa o fallback in-memory no `finally`.
