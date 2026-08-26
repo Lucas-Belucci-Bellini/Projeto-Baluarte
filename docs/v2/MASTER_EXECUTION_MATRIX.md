@@ -258,3 +258,10 @@ A busca local da Evidence foi medida sobre o dataset `PZ_IDS` curado: `159` mods
 O benchmark é reprodutível pelo comando `npm run bench:evidence-search` e está detalhado em [`EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md`](./EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md). Ele mede uma busca linear em memória e não fecha budget de produção, full-text, ranking, pgvector, índice persistente, consulta remota ou relevância operacional.
 
 A lacuna de search/index fica parcialmente atendida no escopo local bounded. Volume real de produção, requisitos de relevância, tenancy, retenção, RLS, custos e staging continuam necessários antes de qualquer persistência ou decisão de plataforma.
+
+
+## Checkpoint de performance — renderização das rotas reais — 2026-08-26
+
+O comando `npm run bench:routes` mede o preview local de produção nas `99` rotas descobertas diretamente de `src/main.js`, em `3` repetições, com settle de `900 ms` e timeout de navegação de `15 s`. Todas as rotas permaneceram verdes nas três rodadas. A navegação teve p50 `163,186 ms`, p95 `190,465 ms`, média `166,612 ms` e máximo `404,826 ms`; a observação após settle teve p50 `1104,435 ms`, p95 `1236,586 ms`, média `1122,866 ms` e máximo `1457,885 ms`.
+
+A medição está detalhada em [`ROUTE_RENDER_BENCHMARK_2026-08-26.md`](./ROUTE_RENDER_BENCHMARK_2026-08-26.md). Ela é diagnóstico local do Chromium/preview e não estabelece SLA, threshold, budget de produção, comparação entre hardware, política de regressão ou critério de promoção. O smoke permanece o gate funcional de rotas; nenhuma regra da V1, do router ou do smoke foi alterada.
