@@ -441,3 +441,26 @@ A alpha.6 não instala dependências nem mascara `unknown`: o Doctor mantém sa�
 A auditoria publicada em [`EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md`](./EVIDENCE_OWNERSHIP_RETENTION_GATE_2026-08-25.md) concluiu que não existe um slice local seguro para adicionar `ownerId`, `tenantId`, `eligibleForDeletion` ou aprovação humana. `moduleId` identifica o namespace produtor, não propriedade operacional. A camada local mantém `retentionPreview`, `auditPreview` e `reviewQueue` como projeções bounded e read-only.
 
 O próximo avanço de ownership/retenção fica bloqueado até contrato server-side com identidade, tenancy, RLS/membership, concorrência, auditoria, política de retenção, rollback, custo e staging aprovados. Nenhum código, migration, rota, storage, permissão ou escrita remota foi criado neste gate.
+
+
+## Checkpoint documental — V2 `v2.0.0-alpha.11` / Evidence search benchmark — 2026-08-26
+
+O slice técnico da alpha.11 foi integrado na `main` no SHA `3b7950f9fe5f70056159044263cdf90ccd458a6c` pela PR [#493](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/493). O comando `npm run bench:evidence-search` mede a busca Evidence local bounded sobre o catálogo real curado `PZ_IDS`, com `159` entradas, `640` registros derivados, quatro cenários e `250` repetições por cenário. As médias das duas execuções estão registradas em [`EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md`](./EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md), incluindo a variação do sandbox.
+
+| Evidência | Resultado |
+|---|---:|
+| Commit funcional na `main` | `3b7950f9` |
+| PR técnica | `#493`, mesclada com squash |
+| Benchmark | duas execuções; 4 cenários × 250 repetições |
+| Dataset | `159` mods curados / `640` registros Evidence |
+| Testes focais Evidence + module | `14/14` |
+| Suíte completa | `1370` aprovados, `6` ignorados, zero falhas |
+| Integração V2 | `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR técnica | `11` sucessos, `1` skipped, nenhum pendente |
+
+Este checkpoint atende parcialmente a lacuna de medição da busca local, mas não fecha a decisão de search/index da V2. A busca continua linear em memória, sem full-text, ranking, pgvector, índice persistente, consulta remota ou threshold/SLA de produção. Persistência Evidence server-side, ownership, tenancy, RLS, revisão humana, Auth real, retenção operacional e autoridade continuam bloqueados por contrato, staging, custo e rollback próprios. A V1, o router e os módulos existentes permanecem preservados.
+
+A pré-release `v2.0.0-alpha.11` será criada somente após esta documentação passar pelos checks remotos e ser mesclada na `main`; nenhum tag ou release é implícito por este checkpoint documental.
