@@ -5,5 +5,6 @@ export {
   projectEvidenceAudit,
   projectEvidenceRetention,
   projectEvidenceReviewQueue,
+  projectEvidenceSearch,
   validateEvidence,
 } from './evidence.ts';

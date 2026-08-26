@@ -135,6 +135,38 @@ export interface EvidenceReviewQueue {
   readonly summary: EvidenceReviewSummary;
 }
 
+export interface EvidenceSearchOptions {
+  readonly query: string;
+  readonly moduleId?: string;
+  readonly status?: EvidenceStatus;
+  readonly limit?: number;
+}
+
+export interface EvidenceSearchItem {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly claimKey: string;
+  readonly status: EvidenceStatus;
+  readonly confidence: number;
+  readonly observedAt: string;
+  readonly sourceRevision: string | null;
+}
+
+export interface EvidenceSearchSummary {
+  readonly returned: number;
+  readonly available: number;
+  readonly truncated: boolean;
+}
+
+export interface EvidenceSearchResult {
+  readonly query: string;
+  readonly scope: string;
+  readonly status: EvidenceStatus | 'all';
+  readonly limit: number;
+  readonly items: readonly EvidenceSearchItem[];
+  readonly summary: EvidenceSearchSummary;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -163,6 +195,8 @@ const DEFAULT_AUDIT_LIMIT = 25;
 const MAX_AUDIT_LIMIT = 100;
 const DEFAULT_REVIEW_LIMIT = 25;
 const MAX_REVIEW_LIMIT = 100;
+const DEFAULT_SEARCH_LIMIT = 25;
+const MAX_SEARCH_LIMIT = 100;
 
 function boundedPositive(value: number | undefined, fallback: number, maximum: number, name: string): number {
   if (value === undefined) return fallback;
@@ -238,6 +272,57 @@ function normalizeAuditOptions(options: EvidenceAuditOptions | null | undefined)
     moduleId: options.moduleId?.trim() ?? null,
     limit: boundedPositive(options.limit, DEFAULT_AUDIT_LIMIT, MAX_AUDIT_LIMIT, 'limit'),
   };
+}
+
+export function projectEvidenceSearch(
+  records: readonly EvidenceRecord[],
+  options: EvidenceSearchOptions,
+): EvidenceSearchResult {
+  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('opções de busca devem ser um objeto');
+  }
+  if (!isNonEmptyString(options.query)) throw new TypeError('query deve ser texto não vazio');
+  if (options.moduleId !== undefined && !isNonEmptyString(options.moduleId)) {
+    throw new TypeError('moduleId deve ser texto não vazio');
+  }
+  if (options.status !== undefined && !isEvidenceStatus(options.status)) {
+    throw new TypeError('status de evidência inválido');
+  }
+  const query = options.query.trim().toLocaleLowerCase();
+  const moduleId = options.moduleId?.trim() ?? null;
+  const status = options.status ?? null;
+  const limit = boundedPositive(options.limit, DEFAULT_SEARCH_LIMIT, MAX_SEARCH_LIMIT, 'limit');
+  const scoped = records.filter((record) => (
+    (moduleId === null || record.moduleId === moduleId)
+      && (status === null || record.status === status)
+  ));
+  const matches = scoped.filter((record) => [
+    record.id,
+    record.claimKey,
+    record.moduleId,
+    record.source.revision ?? '',
+  ].some((field) => field.toLocaleLowerCase().includes(query)));
+  const items = matches.slice(0, limit).map((record) => Object.freeze({
+    id: record.id,
+    moduleId: record.moduleId,
+    claimKey: record.claimKey,
+    status: record.status,
+    confidence: record.confidence,
+    observedAt: record.observedAt,
+    sourceRevision: record.source.revision ?? null,
+  }));
+  return Object.freeze({
+    query: options.query.trim(),
+    scope: moduleId ?? 'all',
+    status: status ?? 'all',
+    limit,
+    items: Object.freeze(items),
+    summary: Object.freeze({
+      returned: items.length,
+      available: matches.length,
+      truncated: matches.length > limit,
+    }),
+  });
 }
 
 export function projectEvidenceReviewQueue(
@@ -424,5 +509,9 @@ export class EvidenceStore {
 
   reviewQueue(options?: EvidenceReviewOptions): EvidenceReviewQueue {
     return projectEvidenceReviewQueue(this.list(), options);
+  }
+
+  search(options: EvidenceSearchOptions): EvidenceSearchResult {
+    return projectEvidenceSearch(this.list(), options);
   }
 }
