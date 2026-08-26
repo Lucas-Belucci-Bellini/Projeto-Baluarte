@@ -1,13 +1,13 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — RELEASE 1.3.2 PUBLISHED / EVIDENCE AUDIT PREVIEW READ-ONLY / EVIDENCE RETENTION PREVIEW READ-ONLY / WIKI ZOMBOID EVIDENCE REVIEW QUEUE READ-ONLY / LOGIN + AUTH ADAPTER TYPESCRIPT / SERVER-OBSERVATION HTTP READ-ONLY / JARVIS SPOTIFY PKCE + MARK XIII PLAYBACK PRESENCE / JARVIS LOCAL CONTEXT OPTIMIZATION / MODULE REGISTRY OPERATIONAL POLICY PILOT / BILLING FOUNDATION LOCAL / V2 DOCTOR EXPANDED / V1 FALLBACK`
-**Data da observação:** 2026-08-22
+**Status:** `CURRENT — V2 ALPHA.18 TECHNICAL SLICE INTEGRATED / PACKAGED RUNTIME LINUX CI VERIFIED / RELEASE DOCUMENTATION PENDING / V1 FALLBACK`
+**Data da observação:** 2026-08-26
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado na medição corrente:** `5d2142d7fa553260d03ffe85f2f0ef90775e2542` (`chore(release): prepare 1.3.2`)
-**SHA funcional anterior:** `dbd09f52b055f72679f633e3d45a181b13f1b0f9` (`feat(v2): add bounded evidence audit preview`)
-**Reconciliação documental-base anterior:** `a3a88c04` (`docs(v2): reconcile spotify milestone matrices`)
-**Tag de release base:** `v1.3.2`
+**SHA observado na medição corrente:** `ca325d03fbddf77b43b64519ba2f69cdf4f07f4f` (`feat(v2): prove packaged desktop runtime`)
+**SHA funcional anterior:** `0c85f35a5266945ed347ab87ed607b669363271a` (`docs(v2): align alpha.17 final SHA`)
+**Reconciliação documental-base anterior:** `0c85f35` (`docs(v2): align alpha.17 final SHA`)
+**Tag de release base:** `v2.0.0-alpha.17`
 **Autor:** Manus AI
 
 > Esta matriz reconcilia o Master Super-Prompt Ω com #420, #422, #423, #430, #454 e o código observado. `COMPLETE` significa concluído dentro do escopo declarado; nunca significa que o domínio inteiro da V2 está pronto para produção.
@@ -321,3 +321,25 @@ O Doctor passa a incluir `module_mode_policy` como check `safe`/read-only, execu
 | Exit code do Doctor | `2`, preservando o `unknown` ambiental do Cargo |
 
 O check somente chama um comando local sem rede, storage, token, claims, Supabase, SQL, migration, RLS, tenancy, ownership, persistência, retry, fila, restart ou promoção pública. Os estados `blocked-known`, `unknown` e `not-run` continuam honestos; nenhum foi mascarado para fazer o Doctor parecer verde. O contrato está em [`V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md`](./V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md).
+
+
+## Checkpoint de integração — Runtime desktop empacotado / alpha.18 — 2026-08-26
+
+A PR #510 integrou o gate `v2:desktop-packaged` no SHA `ca325d03fbddf77b43b64519ba2f69cdf4f07f4f`. O comando constrói o bundle web, compila o Runtime Rust em release, empacota o Electron com `desktop/package.json` e executa um artefato `linux-unpacked` temporário sob Xvfb. O entrypoint de smoke exige `app.isPackaged`, recusa `BALUARTE_RUNTIME_BIN`, confirma binário e transporte em `process.resourcesPath`, autoriza o módulo sintético, lê arquivo confinado e verifica a recusa de `../`.
+
+| Evidência | Resultado |
+|---|---:|
+| PR técnica | `#510`, squash-merged |
+| SHA integrado | `ca325d03` |
+| Backup pré-merge | `backup/2026-08-26-before-v2-packaged-runtime` |
+| Workflow PR | `33021833916`, sucesso |
+| Workflow pós-merge | `33022206259`, sucesso |
+| Workflows pós-merge totais | `9/9` sucesso |
+| `npm test` anterior ao merge | `1385` aprovados, `6` ignorados, `0` falhas |
+| Integração / smoke / caminho crítico | passou / `99/99` / `15/15` |
+| Offline / memória / Security Contracts | `9/9` / passou / `73/73` |
+| Smoke empacotado local | bloqueado por `cargo` ausente no sandbox |
+
+A prova fecha a lacuna de localização e comunicação do Runtime no pacote Linux. Não é aceite físico de Windows/macOS, não publica instaladores, não prova assinatura, auto-update, OAuth, câmera, microfone, persistência, Auth/RLS ou Runtime como autoridade de produção. V1, router, sidebar, Service Worker e launcher normal permanecem preservados. O contrato está em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md).
+
+A alpha.18 aguarda a finalização documental e a verificação do SHA documental antes de tag/release. A PR #501 continua OPEN/DRAFT e isolada; a PR #471 continua OPEN/DRAFT e intocada.
