@@ -276,3 +276,11 @@ Duas execuções de cinco repetições passaram com `ready`, exatamente sete mó
 A metodologia e a ocorrência de preview stale estão em [`V2_BOOT_BENCHMARK_2026-08-26.md`](./V2_BOOT_BENCHMARK_2026-08-26.md). A espera do preview exige os marcadores do HTML do harness, impedindo que um `200` do site V1 seja aceito como alvo V2.
 
 Este checkpoint atende parcialmente a medição de startup da Phase 02/21. Os tempos continuam diagnóstico local: não estabelecem SLA, threshold, budget, Web Vital, comparação de hardware, estabilidade longitudinal ou política automática de regressão. Não foram alterados boot, Plataforma, router, V1, Auth, Evidence, Supabase, RLS, tenancy, ownership, permissões ou autoridade.
+
+## Checkpoint de integração — Project Registry local read-only — 2026-08-26
+
+O slice `project-registry-local` adiciona um contrato TypeScript e wrapper JavaScript para um inventário local bounded de projetos externos citados no Master Plan. O catálogo inicial possui quatro entradas (`Veritas`, `DailyPlanner`, `Stock Analyzer Bot` e `Project Vanguard`), todas provenientes somente da referência de roadmap, com `auditState: not-audited` e `decision: defer`.
+
+A API `projectRegistrySnapshot()` valida entradas, rejeita IDs duplicados, filtra por texto/estado/decisão, limita o resultado ao padrão 25 e teto 100 e congela a saída. O comando `npm run check:project-registry` é read-only e imprime apenas resumo local; o teste focal cobre catálogo, filtro, limite, imutabilidade e rejeição de promoção de entrada não auditada.
+
+O contrato está em [`PROJECT_REGISTRY_LOCAL_CONTRACT_2026-08-26.md`](./PROJECT_REGISTRY_LOCAL_CONTRACT_2026-08-26.md). Este checkpoint não consulta, baixa, instala, importa, executa ou autoriza repositórios externos; não inventa URL, licença, manutenção, arquitetura, capability, risco ou custo. Não cria marketplace, plugin loader, adapter, bridge, Auth, RLS, Supabase, ownership, tenancy, persistência ou autoridade. A Phase 14 — Project Integration continua parcial e a auditoria externa de qualquer projeto permanece uma decisão futura, passiva e separada.
