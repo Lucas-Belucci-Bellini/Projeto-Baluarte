@@ -265,3 +265,14 @@ A lacuna de search/index fica parcialmente atendida no escopo local bounded. Vol
 O comando `npm run bench:routes` mede o preview local de produção nas `99` rotas descobertas diretamente de `src/main.js`, em `3` repetições, com settle de `900 ms` e timeout de navegação de `15 s`. Todas as rotas permaneceram verdes nas três rodadas. A navegação teve p50 `163,186 ms`, p95 `190,465 ms`, média `166,612 ms` e máximo `404,826 ms`; a observação após settle teve p50 `1104,435 ms`, p95 `1236,586 ms`, média `1122,866 ms` e máximo `1457,885 ms`.
 
 A medição está detalhada em [`ROUTE_RENDER_BENCHMARK_2026-08-26.md`](./ROUTE_RENDER_BENCHMARK_2026-08-26.md). Ela é diagnóstico local do Chromium/preview e não estabelece SLA, threshold, budget de produção, comparação entre hardware, política de regressão ou critério de promoção. O smoke permanece o gate funcional de rotas; nenhuma regra da V1, do router ou do smoke foi alterada.
+
+
+## Checkpoint de performance — boot real da Plataforma V2 — 2026-08-26
+
+O comando `npm run bench:v2:boot` mede o caminho real do harness `v2/harness/index.html#/cripto`, sem recriar o Core e sem alterar o router V1. Cada repetição abre um contexto Chromium novo e observa `window.__v2.partida`, produzido por `criarPlataforma(...).iniciar()` no harness. O cenário real contém sete módulos V2 e vinte rotas V1.
+
+Duas execuções de cinco repetições passaram com `ready`, exatamente sete módulos vivos, zero falhas de boot e vinte rotas V1 em todas as amostras. O boot interno teve p50/p95/média/máximo de `14/14/14/14 ms` na primeira execução e `14/15/14,2/15 ms` na segunda. O tempo observado no browser até `window.__v2.partida` teve `225,801/783,116/329,453/783,116 ms` e `214,871/855,046/342,108/855,046 ms`, respectivamente.
+
+A metodologia e a ocorrência de preview stale estão em [`V2_BOOT_BENCHMARK_2026-08-26.md`](./V2_BOOT_BENCHMARK_2026-08-26.md). A espera do preview exige os marcadores do HTML do harness, impedindo que um `200` do site V1 seja aceito como alvo V2.
+
+Este checkpoint atende parcialmente a medição de startup da Phase 02/21. Os tempos continuam diagnóstico local: não estabelecem SLA, threshold, budget, Web Vital, comparação de hardware, estabilidade longitudinal ou política automática de regressão. Não foram alterados boot, Plataforma, router, V1, Auth, Evidence, Supabase, RLS, tenancy, ownership, permissões ou autoridade.

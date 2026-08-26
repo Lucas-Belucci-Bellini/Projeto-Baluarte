@@ -145,3 +145,17 @@ Execução: `npm run build && npm run bench:routes` · preview local de produç�
 | Observação após settle | 1104,435 ms | 1236,586 ms | 1122,866 ms | 1457,885 ms |
 
 Totais por rodada: `115030,943 ms`, `114779,153 ms` e `114626,039 ms`. Todas as 99 rotas ficaram verdes em todas as repetições. O benchmark fecha uma evidência local de custo do caminho real, sem threshold, SLA, budget de produção ou comparação entre hardware. A metodologia e as limitações estão em [`docs/v2/ROUTE_RENDER_BENCHMARK_2026-08-26.md`](../docs/v2/ROUTE_RENDER_BENCHMARK_2026-08-26.md).
+
+
+## 2026-08-26 — Boot real da Plataforma V2
+
+Execução: `npm run build && npm run bench:v2:boot` · harness real `v2/harness/index.html#/cripto` · sete módulos V2 · vinte rotas V1 · 5 repetições por execução · timeout de 25 s.
+
+| Execução | Métrica | p50 | p95 | Média | Máximo |
+|---|---|---:|---:|---:|---:|
+| 1 | Boot interno da Plataforma | 14 ms | 14 ms | 14 ms | 14 ms |
+| 1 | Browser até `window.__v2.partida` | 225,801 ms | 783,116 ms | 329,453 ms | 783,116 ms |
+| 2 | Boot interno da Plataforma | 14 ms | 15 ms | 14,2 ms | 15 ms |
+| 2 | Browser até `window.__v2.partida` | 214,871 ms | 855,046 ms | 342,108 ms | 855,046 ms |
+
+Todas as 10 amostras ficaram em `ready`, com exatamente 7 módulos vivos, 0 falhas de boot e 20 rotas V1. O primeiro sample de cada execução foi o mais lento no browser, evidenciando a diferença cold/warm. A medição é diagnóstico local; não estabelece threshold, SLA, budget de produção, Web Vital ou gate quantitativo. O método e a correção para preview stale estão em [`docs/v2/V2_BOOT_BENCHMARK_2026-08-26.md`](../docs/v2/V2_BOOT_BENCHMARK_2026-08-26.md).
