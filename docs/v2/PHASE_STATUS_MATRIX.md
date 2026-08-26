@@ -1,11 +1,11 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA observado para a medição corrente:** `5d2142d7fa553260d03ffe85f2f0ef90775e2542` (`chore(release): prepare 1.3.2`)
-**SHA funcional anterior:** `dbd09f52b055f72679f633e3d45a181b13f1b0f9` (`feat(v2): add bounded evidence audit preview`)
-**Última reconciliação documental anterior:** `a3a88c04` (`docs(v2): reconcile spotify milestone matrices`)
-**Último marco publicado:** `evidence-audit-preview` — auditoria estrutural local bounded da Evidence, sem mutação
-**Base anterior:** `2093059410bf2aa6c8a0f90795e91625d0be1d53`
-**Data:** 2026-08-22
+**SHA observado para a medição corrente:** `ca325d03fbddf77b43b64519ba2f69cdf4f07f4f` (`feat(v2): prove packaged desktop runtime`)
+**SHA funcional anterior:** `0c85f35a5266945ed347ab87ed607b669363271a` (`docs(v2): align alpha.17 final SHA`)
+**Última reconciliação documental anterior:** `0c85f35` (`docs(v2): align alpha.17 final SHA`)
+**Último marco publicado:** `v2.0.0-alpha.17` — Doctor observa Module Mode Policy
+**Próximo marco técnico integrado:** `v2.0.0-alpha.18` — Runtime desktop empacotado; release documental pendente
+**Data:** 2026-08-26
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 
 ## Resumo
@@ -589,7 +589,7 @@ A documentação do contrato está em [`MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-0
 
 ## Checkpoint técnico integrado — V2 `v2.0.0-alpha.17` / Doctor observa Module Mode Policy — 2026-08-26
 
-O slice de observabilidade do Doctor foi integrado pela PR [#506](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/506) no SHA `8917525eb0f7dfdbe6b4092560de4e27ead1921f`, sobre a alpha.16 em `635fbc0bee694a13e97c307f906be864c9237a91`. A documentação desta alpha.17 está sendo preparada separadamente; nenhum tag alpha.17 foi criado neste checkpoint.
+O slice de observabilidade do Doctor foi integrado pela PR [#506](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/506) no SHA `8917525eb0f7dfdbe6b4092560de4e27ead1921f`, sobre a alpha.16 em `635fbc0bee694a13e97c307f906be864c9237a91`. A documentação foi finalizada pelas PRs [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507), [#508](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/508) e [#509](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/509), e a tag `v2.0.0-alpha.17` foi publicada no SHA final `0c85f35a5266945ed347ab87ed607b669363271a`.
 
 | Evidência | Resultado |
 |---|---:|
@@ -614,14 +614,38 @@ O Doctor mantém estados honestos: o novo check pode estar `green`, mas o relat�
 
 ## Fechamento documental — V2 `v2.0.0-alpha.17` — 2026-08-26
 
-A documentação da alpha.17 foi iniciada pela PR [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507) no SHA `379f6670ce5e8544a898d92a37869beb80b93545` e finalizada pela PR [#508](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/508) no SHA `f06bbb90252ebc798ea3d94d85ffc60a9b4608e2`, após os checks aplicáveis de ambas terminarem verdes. Este fechamento corrige a rastreabilidade do checkpoint anterior, que foi escrito enquanto a documentação ainda estava em preparação; a tag `v2.0.0-alpha.17` permanece dependente da publicação final após todos os gates pós-merge do SHA final.
+A documentação da alpha.17 foi iniciada pela PR [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507) no SHA `379f6670ce5e8544a898d92a37869beb80b93545`, finalizada pela PR [#508](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/508) no SHA `f06bbb90252ebc798ea3d94d85ffc60a9b4608e2` e alinhada ao SHA final pela PR [#509](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/509), após os checks aplicáveis terminarem verdes. A tag `v2.0.0-alpha.17` foi então publicada no SHA final `0c85f35a5266945ed347ab87ed607b669363271a`.
 
 | Evidência | Resultado |
 |---|---:|
 | PR documental inicial | `#507`, squash-merged |
 | PR de finalização | `#508`, squash-merged |
-| SHA documental final | `f06bbb9` |
-| CI pós-merge | 7 workflows verdes |
-| Tag alpha.17 | ainda não criada neste fechamento |
+| SHA documental intermediário | `f06bbb9` |
+| PR de alinhamento final | `#509`, squash-merged |
+| SHA final da main e da release | `0c85f35a` |
+| CI pós-merge final | workflows aplicáveis verdes |
+| Tag alpha.17 | publicada como pré-release |
 
-A correção não altera código, contratos, V1, router, boot, Storage, Evidence, Auth, RLS, Supabase, workflows ou autoridade operacional. O próximo passo de publicação deve apontar a tag para o SHA final `f06bbb90252ebc798ea3d94d85ffc60a9b4608e2` somente depois de os gates pós-merge desse SHA terminarem sem falhas ou pendências.
+A correção não alterou código, contratos, V1, router, boot, Storage, Evidence, Auth, RLS, Supabase, workflows ou autoridade operacional. A release publicada aponta para o SHA final `0c85f35a5266945ed347ab87ed607b669363271a`; a próxima documentação de alpha é a alpha.18, referente ao Runtime desktop empacotado integrado no SHA `ca325d03`.
+
+
+## Checkpoint técnico integrado — V2 `v2.0.0-alpha.18` / Runtime desktop empacotado — 2026-08-26
+
+O slice da PR [#510](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/510) foi squash-merged no SHA `ca325d03fbddf77b43b64519ba2f69cdf4f07f4f`. O gate `V2 Desktop Packaged Runtime` constrói o bundle web, compila o binário Rust em release, empacota o Electron usando a configuração real de `desktop/package.json` e executa o artefato `linux-unpacked` sob Xvfb. O smoke prova `process.resourcesPath`, autorização, leitura confinada e rejeição de `../`.
+
+| Evidência | Resultado |
+|---|---:|
+| PR técnica | `#510`, mesclada com squash |
+| SHA integrado na `main` | `ca325d03` |
+| Backup pré-merge | `backup/2026-08-26-before-v2-packaged-runtime` |
+| Workflow PR | `33021833916`, sucesso |
+| Workflow pós-merge específico | `33022206259`, sucesso |
+| Workflows pós-merge do SHA | `9/9` sucesso |
+| Teste focal desktop | `7` aprovados, `1` ignorado honesto, zero falhas |
+| Suíte / integração / smoke / caminho crítico | `1385/6/0` / passou / `99/99` / `15/15` |
+| Offline / memória / Security Contracts | `9/9` / passou / `73/73` |
+| Doctor | `16` green, `2` blocked-known, `1` unknown, `5` not-run, `0` failed; exit `2` |
+
+Este checkpoint fecha a lacuna de localização e comunicação do Runtime no pacote Linux dentro do escopo `linux-unpacked`. O sandbox local não possui `cargo`, portanto o smoke empacotado local permanece bloqueado ambientalmente; a prova final veio do workflow remoto com toolchain Rust. Windows/macOS físicos, assinatura, NSIS/DMG/AppImage instalado, auto-update, OAuth, câmera, microfone, persistência, Auth/RLS e autoridade de produção continuam pendentes. V1, router, sidebar, wrappers, Service Worker e launcher normal permanecem preservados.
+
+A nota está em [`../releases/v2.0.0-alpha.18.md`](../releases/v2.0.0-alpha.18.md), o contrato em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md). A tag/release alpha.18 somente será criada após a documentação final, os gates do SHA documental e a verificação do SHA publicado.

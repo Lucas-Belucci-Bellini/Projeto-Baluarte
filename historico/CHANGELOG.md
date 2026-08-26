@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Marco `v2.0.0-alpha.18`: Runtime desktop empacotado
+
+A décima oitava slice acompanhável da V2 adiciona o comando `npm run v2:desktop-packaged` e o workflow `V2 Desktop Packaged Runtime`. O gate constrói o bundle web, compila o Runtime Rust em release, empacota o Electron em diretório temporário e executa o artefato Linux sob Xvfb. O smoke verifica binário e transporte em `process.resourcesPath`, autorização, leitura confinada e recusa de `../`.
+
+O marco foi integrado pela PR #510 no SHA `ca325d03`. O workflow da PR e os nove workflows pós-merge terminaram com sucesso; `npm test` permaneceu em `1385` aprovados, `6` ignorados e zero falhas, com integração, smoke, caminho crítico, offline, memória e Security Contracts verdes. O sandbox local não possui Cargo, então o smoke empacotado local ficou explicitamente bloqueado por ambiente; essa lacuna foi coberta pelo workflow remoto real, sem mascaramento.
+
+A alpha.18 não publica instaladores, não altera `desktop-release.yml`, não cria Auth, RLS, Supabase, persistência, rede, nova autoridade, IPC, retry ou atualização automática. V1, router, sidebar, wrappers, Service Worker e launcher normal permanecem preservados. A PR #501 continua OPEN/DRAFT e isolada; a PR #471 continua OPEN/DRAFT e intocada. A tag/release será criada somente depois da documentação final e dos gates pós-merge do SHA documental. A nota está em [`docs/releases/v2.0.0-alpha.18.md`](../docs/releases/v2.0.0-alpha.18.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.17`: Doctor observa Module Mode Policy
 
 A décima sétima pré-release acompanhável da V2 torna observável no `verify:v2` o contrato local `module-registry-mode-policy/v1`: o Doctor executa `node scripts/module-mode-policy-check.mjs` como check `safe`/read-only com id `module_mode_policy`. A fixture canônica continua sendo a única fonte da matriz de quatro identidades, seis casos, três decisões allow, três deny e spoof negado.

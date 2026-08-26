@@ -147,10 +147,14 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       A ponte do app desktop entrou junto (`desktop/src/runtime.js` + canais
       `runtime:*` no `ipc.js` + empacotamento por `extraResources` + build do
       Rust no `desktop-release.yml`): **8/8**, com ponta a ponta atravessando
-      ponte → transporte ESM → processo Rust. **Aberto:** o caminho
-      `process.resourcesPath`, que só existe em app empacotado — nenhum
-      instalador foi produzido com isto dentro.
-      Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
+      ponte → transporte ESM → processo Rust. O smoke empacotado da alpha.18
+      fecha o caminho `process.resourcesPath` no artefato Linux `linux-unpacked`:
+      binário e transporte foram encontrados dentro de `resources/`, a leitura
+      confinada passou e `../` foi recusado. O teste roda em diretório temporário
+      com `--publish never`; Windows/macOS físicos, assinatura, instalador final
+      e auto-update continuam fora deste aceite.
+      Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md) e
+      [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md).
 - [x] primeiro vertical slice de módulo nativo
       — a cadeia do [`V2_VERTICAL_SLICE.md`](./V2_VERTICAL_SLICE.md) percorrida
       com o Runtime **real** (`test/v2/slice-nativo.test.js`, 5/5): Registry →
@@ -166,10 +170,20 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       `window.baluarte.invoke` à forma do contexto, e o entrypoint o injeta em
       `deps.runtime`. Fora do app devolve `null`, então o contexto na web fica
       idêntico ao de antes — `v2:integracao` segue **15/15**.
-      **Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro; o
-      ramo `process.resourcesPath` continua sem exercício.
+      O aceite empacotado da alpha.18 foi executado pelo workflow remoto
+      `V2 Desktop Packaged Runtime` no SHA final `ca325d03`; o sandbox local
+      não possui Cargo e mantém o mesmo caso como bloqueio ambiental honesto.
 
 ## Regra de manutenção
 
 Uma caixa só vira `[x]` quando existe código e teste correspondente. Documentar
 uma intenção não conta como implementação.
+
+
+## Checkpoint publicado no código — Runtime desktop empacotado / alpha.18
+
+A PR #510 integrou o comando `npm run v2:desktop-packaged` e o workflow `V2 Desktop Packaged Runtime` no SHA `ca325d03`. O workflow remoto passou no PR e novamente após o merge: compilou o Runtime Rust em release, empacotou o Electron com `desktop/package.json`, executou `linux-unpacked` sob Xvfb e confirmou o uso de `process.resourcesPath`, autorização, leitura confinada e recusa de `../`.
+
+Os gates de regressão permaneceram verdes: suíte `1385` aprovados, `6` ignorados e zero falhas; integração V2, build, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória, Security Contracts `73/73`, Project Registry e Module Mode Policy. O Doctor ficou em `16` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto. O smoke empacotado não foi concluído no sandbox porque `cargo` não está instalado; o bloqueio ambiental não foi mascarado.
+
+Este checkpoint não fecha aceite físico multiplataforma, assinatura, auto-update, persistência, Auth/RLS ou Runtime como autoridade de produção. O contrato está em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md).

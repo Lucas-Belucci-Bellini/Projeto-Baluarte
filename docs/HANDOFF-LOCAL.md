@@ -40,9 +40,13 @@ próximo passo natural:
 
 - **glTF + raycasting no `visor3d`** (§12 do Master Plan) — é onde o visualizador
   começa a valer o nome. Peso de app, não de web.
-- **O app empacotado com o Runtime dentro.** O ramo `process.resourcesPath` é o
-  único que continua sem exercício: nenhum instalador foi produzido com as
-  mudanças. Exige rodar o `desktop-release.yml`.
+- **O app empacotado com o Runtime dentro.** O ramo `process.resourcesPath` foi
+  exercitado pela alpha.18 no workflow `V2 Desktop Packaged Runtime`: o artefato
+  Linux `linux-unpacked` encontrou binário e transporte em `resources/`, passou
+  por autorização/leitura confinada e recusou `../`. O smoke usa saída temporária
+  e `--publish never`; o sandbox local continua sem Cargo, e Windows/macOS
+  físicos, assinatura, instalador final e auto-update ainda exigem aceite próprio.
+  Ver [`v2/V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./v2/V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md).
 - **`feat/v2-ambiente-aplicado`** está empurrada e **não** mesclada — muda
   `LifecycleStartResult` (contrato). Nela, `ambiente` deixou de ser palavra e
   virou regra aplicada pelo ciclo. Efeito prático hoje é zero (os 5 módulos
