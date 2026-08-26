@@ -464,3 +464,26 @@ O slice técnico da alpha.11 foi integrado na `main` no SHA `3b7950f9fe5f7005615
 Este checkpoint atende parcialmente a lacuna de medição da busca local, mas não fecha a decisão de search/index da V2. A busca continua linear em memória, sem full-text, ranking, pgvector, índice persistente, consulta remota ou threshold/SLA de produção. Persistência Evidence server-side, ownership, tenancy, RLS, revisão humana, Auth real, retenção operacional e autoridade continuam bloqueados por contrato, staging, custo e rollback próprios. A V1, o router e os módulos existentes permanecem preservados.
 
 A pré-release `v2.0.0-alpha.11` será criada somente após esta documentação passar pelos checks remotos e ser mesclada na `main`; nenhum tag ou release é implícito por este checkpoint documental.
+
+
+## Checkpoint documental — V2 `v2.0.0-alpha.12` / Route render benchmark — 2026-08-26
+
+O benchmark de renderização das rotas reais foi integrado na `main` no SHA `fef61db938913fcdbdecd537b016d0dd5001289b` pela PR [#495](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/495). O comando `npm run bench:routes` descobre `99` rotas de `src/main.js`, abre cada rota em Chromium contra preview de produção, mede navegação e settle bounded e fecha cada página imediatamente.
+
+| Evidência | Resultado |
+|---|---:|
+| Commit funcional na `main` | `fef61db9` |
+| PR técnica | `#495`, mesclada com squash |
+| Benchmark | `99/99` rotas × `3` repetições |
+| Navegação | p50 `163,186 ms`; p95 `190,465 ms`; média `166,612 ms`; máximo `404,826 ms` |
+| Observação após settle | p50 `1104,435 ms`; p95 `1236,586 ms`; média `1122,866 ms`; máximo `1457,885 ms` |
+| Suíte completa | `1370` aprovados, `6` ignorados, zero falhas |
+| Integração V2 | `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR técnica | `11` sucessos, `1` skipped, nenhum pendente |
+
+Este checkpoint atende parcialmente a medição da Phase 21 — Performance e preserva o smoke como gate funcional. Os tempos dependem do ambiente local, incluem settle deliberado para lazy routes e não estabelecem SLA, threshold, budget, Web Vitals, comparação de hardware ou política de regressão. Não foram adicionadas persistência, rede, Auth, RLS, tenancy, ownership, permissão ou autoridade.
+
+A pré-release `v2.0.0-alpha.12` será criada somente após esta documentação passar pelos checks remotos e ser mesclada na `main`; nenhum tag ou release é implícito por este checkpoint documental.

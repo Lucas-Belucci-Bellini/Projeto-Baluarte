@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.12`: benchmark de renderização das rotas reais
+
+A décima segunda pré-release acompanhável da V2 publica `npm run bench:routes`, que descobre as rotas diretamente de `src/main.js` e mede o caminho real de renderização em Chromium. As 99 rotas passaram em 3 repetições, com tempos de navegação e observação após settle registrados em p50, p95, média e máximo.
+
+O marco foi mesclado pela PR #495 no SHA `fef61db`. Navegação: p50 `163,186 ms`, p95 `190,465 ms`, média `166,612 ms`, máximo `404,826 ms`; observação após settle: p50 `1104,435 ms`, p95 `1236,586 ms`, média `1122,866 ms`, máximo `1457,885 ms`. Tipos, suíte `1370`/`6` ignorados, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A medição é diagnóstico local: não cria SLA, threshold, budget de produção, política de regressão, Web Vitals, comparação de hardware ou nova autoridade. O smoke e a V1 permanecem preservados. As notas completas estão em [`docs/releases/v2.0.0-alpha.12.md`](../docs/releases/v2.0.0-alpha.12.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.11`: Evidence search benchmark
 
 A décima primeira pré-release acompanhável da V2 publica o benchmark local da busca Evidence sobre o catálogo real curado `PZ_IDS`: `159` mods, `640` registros derivados e quatro cenários com `250` repetições. Duas execuções mantiveram os limites bounded e registraram médias locais entre `90,390` e `223,172 µs`, com a variação completa documentada na nota do marco.
