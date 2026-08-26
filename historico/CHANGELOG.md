@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.15`: Project Registry local read-only
+
+A décima quinta pré-release acompanhável da V2 adiciona um catálogo local, read-only e bounded para os quatro projetos externos citados no Master Plan: `veritas`, `dailyplanner`, `stock-analyzer-bot` e `project-vanguard`. Como nenhum foi auditado externamente nesta slice, todos permanecem `not-audited` com decisão obrigatória `defer`.
+
+O marco foi mesclado pela PR #502 no SHA `82d2c05e`. O comando `npm run check:project-registry` confirmou 4 entradas e 4 decisões `defer`; o teste focal passou `5/5`; a suíte passou com `1376` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73` passaram. Os checks remotos aplicáveis ficaram em `11` sucessos, `1` skipped por política e nenhum pendente; Vercel Preview concluiu verde.
+
+O Registry não consulta, baixa, instala, importa, executa, sincroniza ou autoriza código externo. Não inventa URL, licença, manutenção, arquitetura, risco ou custo e não cria marketplace, plugin loader, adapter, bridge, Auth, RLS, Supabase, ownership, tenancy, persistência ou autoridade. A Phase 14 continua parcial e qualquer auditoria externa futura deverá ser passiva, baseada em fonte oficial e registrada antes de qualquer integração. A alpha.15 não inclui a PR #501 de privacidade, que continua separada e bloqueada por rate limit externo do Vercel. As notas completas estão em [`docs/releases/v2.0.0-alpha.15.md`](../docs/releases/v2.0.0-alpha.15.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.14`: Doctor verifica o catálogo canônico de storage
 
 A décima quarta pré-release acompanhável da V2 adiciona `storage_catalog` ao `verify:v2`. O Doctor agora executa `node scripts/gen-catalogo-storage.mjs --verificar` como check `safe`/read-only e confirma as 72 chaves do catálogo sem escrever, instalar, iniciar harness, matar processos ou acessar serviços remotos.
