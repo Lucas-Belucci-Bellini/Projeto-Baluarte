@@ -14,6 +14,7 @@ export const DOCTOR_EVIDENCE_LIMITS = Object.freeze({
 
 export const DOCTOR_CHECKS = Object.freeze([
   { id: 'event_catalog', category: 'contracts', command: 'node scripts/gen-catalogo-eventos.mjs --verificar', executable: 'node', args: ['scripts/gen-catalogo-eventos.mjs', '--verificar'], policy: SAFE },
+  { id: 'storage_catalog', category: 'data-contracts', command: 'node scripts/gen-catalogo-storage.mjs --verificar', executable: 'node', args: ['scripts/gen-catalogo-storage.mjs', '--verificar'], policy: SAFE },
   { id: 'nexus', category: 'architecture', command: 'npm run verificar-nexus', executable: 'npm', args: ['run', 'verificar-nexus'], policy: SAFE },
   { id: 'types_ts', category: 'typescript', command: 'npx tsc -p tsconfig.json --noEmit', executable: 'npx', args: ['tsc', '-p', 'tsconfig.json', '--noEmit'], policy: SAFE },
   { id: 'types_v2', category: 'typescript-v2', command: 'npx tsc -p v2/jsconfig.json --noEmit', executable: 'npx', args: ['tsc', '-p', 'v2/jsconfig.json', '--noEmit'], policy: SAFE },

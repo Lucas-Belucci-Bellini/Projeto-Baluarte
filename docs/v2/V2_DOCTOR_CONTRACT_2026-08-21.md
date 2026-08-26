@@ -3,7 +3,7 @@
 **Status:** EXPANDED CATALOG — local read-only diagnosis
 **Repository:** `Lucas-Belucci-Bellini/Projeto-Baluarte`  
 **Base SHA:** `e171b7f4dcf86810da5981442d1b65a2684b3fcc`
-**Addendum:** Event Bus latency benchmark check added 2026-08-25
+**Addendum:** Event Bus latency benchmark check added 2026-08-25; storage catalog verification added 2026-08-26
 **Scope:** classify known gates; never repair, configure, deploy or mask
 
 ## 1. Purpose
@@ -32,7 +32,7 @@ When `--evidence <path>` is used, the Doctor validates the file size before pars
 
 ## 4. Minimum catalog
 
-The expanded catalog now contains 22 bounded records: 16 safe local commands, 5 gates intentionally marked `not-run` because they write artifacts or start a local harness, and one Rust runtime record classified from the observed Cargo toolchain. It covers event catalog, Nexus, TypeScript strict, V2 TypeScript, npm tests, the Event Bus latency benchmark, Python contracts, local security contracts, build, V2 integration, smoke, critical path, Python compilation and Rust runtime. Evidence replay through `--evidence` is bounded to `256 KiB` and `100` records before normalization. The doctor may read local metadata for these checks, but it must not reimplement their assertions or claim that a skipped command passed. The Event Bus benchmark is a safe observability command: a green result means that the instrument executed and its bounded self-consistency checks passed; it does not mean that a production latency budget or hardware target was met.
+The expanded catalog now contains 23 bounded records: 17 safe local commands, 5 gates intentionally marked `not-run` because they write artifacts or start a local harness, and one Rust runtime record classified from the observed Cargo toolchain. It covers event catalog, storage catalog, Nexus, TypeScript strict, V2 TypeScript, npm tests, the Event Bus latency benchmark, Python contracts, local security contracts, build, V2 integration, smoke, critical path, Python compilation and Rust runtime. Evidence replay through `--evidence` is bounded to `256 KiB` and `100` records before normalization. The doctor may read local metadata for these checks, but it must not reimplement their assertions or claim that a skipped command passed. The Event Bus benchmark is a safe observability command: a green result means that the instrument executed and its bounded self-consistency checks passed; it does not mean that a production latency budget or hardware target was met.
 
 Remote CI is represented as `unknown` unless a complete, current result is intentionally supplied. An optional dependency absence is `blocked-known` only when it matches the declared environment contract exactly; unrelated command failures remain `failed`. Build, harness integration, smoke, critical path and Python compilation are `not-run` in the doctor because the official runner already owns their execution and artifact cleanup. Supabase, staging, RLS and distributed provider readiness remain `not-run` or `blocked-known` according to the evidence; the doctor never provisions or writes to them.
 
