@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.11`: Evidence search benchmark
+
+A décima primeira pré-release acompanhável da V2 publica o benchmark local da busca Evidence sobre o catálogo real curado `PZ_IDS`: `159` mods, `640` registros derivados e quatro cenários com `250` repetições. Duas execuções mantiveram os limites bounded e registraram médias locais entre `90,390` e `223,172 µs`, com a variação completa documentada na nota do marco.
+
+O slice técnico foi mesclado pela PR #493 no SHA `3b7950f`. O benchmark passou nas duas execuções; testes focais Evidence + module `14/14`; suíte `1370` aprovados e `6` ignorados; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram. A PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A medição é diagnóstico local: não cria threshold/SLA de produção, full-text, ranking, pgvector, índice persistente, consulta remota, persistência server-side, RLS, tenancy, ownership, revisão humana ou autoridade. A V1 e os contratos anteriores permanecem preservados. As notas completas estão em [`docs/releases/v2.0.0-alpha.11.md`](../docs/releases/v2.0.0-alpha.11.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.10`: Evidence local bounded search
 
 A décima pré-release acompanhável da V2 adiciona uma busca local, determinística e read-only ao Evidence Layer. `projectEvidenceSearch`, `EvidenceStore.search` e `evidence.api.search` filtram `id`, `claimKey`, `moduleId` e `source.revision`, com limite padrão 25 e teto 100, preservando a ordem append-only e redigindo statement, URI, publisher e collector.
