@@ -29,6 +29,7 @@ export const DOCTOR_CHECKS = Object.freeze([
   { id: 'controlled_rollout', category: 'security-ui', command: 'npx tsx --test test/controlled-rollout-evidence.test.js', executable: 'npx', args: ['tsx', '--test', 'test/controlled-rollout-evidence.test.js'], policy: SAFE },
   { id: 'rls_local', category: 'security-local', command: 'npx tsx --test test/rls-staging-contract.test.js', executable: 'npx', args: ['tsx', '--test', 'test/rls-staging-contract.test.js'], policy: SAFE },
   { id: 'distributed_rate_limit', category: 'security-local', command: 'npx tsx --test test/distributed-rate-limit-contract.test.js', executable: 'npx', args: ['tsx', '--test', 'test/distributed-rate-limit-contract.test.js'], policy: SAFE },
+  { id: 'module_mode_policy', category: 'security-local', command: 'node scripts/module-mode-policy-check.mjs', executable: 'node', args: ['scripts/module-mode-policy-check.mjs'], policy: SAFE },
   { id: 'doctor_tests', category: 'doctor', command: 'npx tsx --test test/v2-doctor.test.js', executable: 'npx', args: ['tsx', '--test', 'test/v2-doctor.test.js'], policy: SAFE },
   { id: 'build', category: 'build', command: 'npm run build', executable: 'npm', args: ['run', 'build'], policy: NOT_RUN, reasonCode: 'build-writes-dist' },
   { id: 'v2_integracao', category: 'integration', command: 'npm run v2:integracao', executable: 'npm', args: ['run', 'v2:integracao'], policy: NOT_RUN, reasonCode: 'starts-local-harness' },

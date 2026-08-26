@@ -305,3 +305,19 @@ O slice `module-registry-mode-policy/v1` adiciona uma fixture determinística e 
 A matriz da fixture é deliberadamente local: `user` não altera modo; `dev` pode solicitar `active`/`maintenance`, mas não `disabled`; `admin` e `owner` cobrem os três modos. Decisões allow carregam `requestId`, `actorId`, `actorRole` e `approvedBy` sintéticos para satisfazer o contrato `requireAudit`; decisões deny usam somente razões bounded. O campo `actorRole` do request é ignorado.
 
 O checkpoint não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila ou mutação remota. A fixture não é política de produção, não prova staging e não autoriza qualquer operação no browser. A integração real depende de staging separado, identidades de teste, RLS verificável, cleanup idempotente, revisão de segurança, auditoria persistente e rollback aprovado. O contrato está em [`MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md`](./MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md).
+
+
+## Checkpoint de observabilidade — Doctor registra Module Mode Policy — 2026-08-26
+
+O Doctor passa a incluir `module_mode_policy` como check `safe`/read-only, executando `node scripts/module-mode-policy-check.mjs`. O comando reutiliza a fixture canônica `module-registry-mode-policy/v1`, que expõe quatro identidades sintéticas e rejeita spoof de `actorRole`; o Doctor não cria uma segunda política nem aplica qualquer modo de módulo.
+
+| Evidência local | Resultado |
+|---|---:|
+| Testes focais do Doctor | `10/10` |
+| `module_mode_policy` | `green` |
+| Verificador da fixture | 4 identidades, 6 casos, 3 allow / 3 deny, spoof deny |
+| Doctor total | 24 registros: 16 green, 2 blocked-known, 1 unknown, 5 not-run |
+| Falhas reais | 0 |
+| Exit code do Doctor | `2`, preservando o `unknown` ambiental do Cargo |
+
+O check somente chama um comando local sem rede, storage, token, claims, Supabase, SQL, migration, RLS, tenancy, ownership, persistência, retry, fila, restart ou promoção pública. Os estados `blocked-known`, `unknown` e `not-run` continuam honestos; nenhum foi mascarado para fazer o Doctor parecer verde. O contrato está em [`V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md`](./V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md).

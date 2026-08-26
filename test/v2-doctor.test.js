@@ -118,3 +118,16 @@ test('inventory-only mode lists checks without executing them', () => {
   assert.equal(report.counts.failed, 0);
   assert.equal(report.records.every((record) => record.reasonCode === 'inventory-only'), true);
 });
+
+
+test('doctor catalogues Module Mode Policy as safe local security evidence', () => {
+  const check = DOCTOR_CHECKS.find((item) => item.id === 'module_mode_policy');
+  assert.deepEqual(check, {
+    id: 'module_mode_policy',
+    category: 'security-local',
+    command: 'node scripts/module-mode-policy-check.mjs',
+    executable: 'node',
+    args: ['scripts/module-mode-policy-check.mjs'],
+    policy: 'safe',
+  });
+});
