@@ -334,6 +334,27 @@ A alpha.5 acompanha o benchmark offline do Event Bus no commit funcional `6d0d16
 O benchmark fecha apenas uma evidência local de custo. Retry, threshold operacional, percentis, alertas, backpressure, hardware de usuário, persistência, RLS, ownership e autoridade continuam fora do escopo.
 
 
+## Release em preparação — V2 `v2.0.0-alpha.9` / Local backup-restore drill — 2026-08-26
+
+A alpha.9 acompanha o ensaio local reproduzível de backup/restore do `RECOVERY-001`, mesclado no commit funcional `69fbd92`. O comando `npm run drill:v2:backup` exercita a ponte existente em fallback in-memory, com limpeza garantida no final.
+
+| Evidência | Resultado |
+|---|---:|
+| PR | [#489](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/489), mesclada |
+| Drill local | passou; backup validado, três chaves restauradas |
+| Proteções | sessão excluída; chave desconhecida ignorada |
+| Suíte canônica backup | `14/14` |
+| Suíte / integração V2 | passou / `58/58` |
+| Tipos TS/V2 e build | passaram; warning conhecido de chunks grandes |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR | `11` sucessos, `1` skipped |
+| Release | [`v2.0.0-alpha.9`](../releases/v2.0.0-alpha.9.md), pré-release em preparação |
+
+O drill não aprova RPO/RTO, durabilidade, criptografia, retenção, ownership, tenancy, auditoria ou recuperação remota. Nenhuma escrita de produção foi executada.
+
+
 ## Release em preparação — V2 `v2.0.0-alpha.8` / Task Manager duration health — 2026-08-25
 
 A alpha.8 acompanha o resumo local e bounded de duração das tarefas no `escalonador.saude()`, mesclado no commit funcional `e82c62b`. O campo expõe `n`, `mediaMs`, `minMs` e `maxMs` para tarefas que iniciaram, incluindo sucesso e falha, sem contar cancelamento pré-início.
