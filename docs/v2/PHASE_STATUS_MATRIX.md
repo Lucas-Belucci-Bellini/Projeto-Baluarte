@@ -537,3 +537,24 @@ O Doctor passou a verificar o catálogo canônico de storage local por meio do r
 O check é somente leitura: não escreve catálogo, não corrige divergências, não instala SDK, não inicia harness, não mata processos, não executa migrations e não consulta Supabase. O Cargo ausente permaneceu `unknown` e produziu `exit 2` no Doctor; os transportes Python opcionais sem SDK permaneceram `blocked-known`. Nenhum estado não verde foi convertido em sucesso.
 
 Este checkpoint atende parcialmente a governança local da Phase 05/23. Persistência remota, ownership, tenancy, RLS, revisão humana, Auth real, retenção operacional e autoridade continuam bloqueados por seus contratos e dependências próprios. A pré-release `v2.0.0-alpha.14` somente será criada após a PR documental passar pelos checks remotos e ser mesclada; nenhum tag ou release é implícito por este checkpoint.
+
+## Checkpoint publicado — V2 `v2.0.0-alpha.15` / Project Registry local read-only — 2026-08-26
+
+A `v2.0.0-alpha.15` publicou o slice `project-registry-local` no SHA `82d2c05cdd9fc3b7a68170b808795f2a218d3af1`, integrado pela PR [#502](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/502). O catálogo local contém quatro candidatos citados no Master Plan: `Veritas`, `DailyPlanner`, `Stock Analyzer Bot` e `Project Vanguard`. Todos permanecem `auditState: not-audited` e `decision: defer`, pois nenhuma auditoria externa foi realizada.
+
+| Evidência | Resultado |
+|---|---:|
+| Commit funcional na `main` | `82d2c05` |
+| PR técnica | `#502`, mesclada com squash |
+| Catálogo | 4 entradas conservadoras |
+| Comando | `npm run check:project-registry` |
+| Teste focal | `5/5` |
+| Suíte completa | `1376` aprovados, `6` ignorados, zero falhas |
+| Integração V2 | `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR técnica | `11` sucessos, `1` skipped, nenhum pendente |
+| Vercel Preview | concluído verde |
+
+O marco avança apenas a governança local da Phase 14. O Project Registry é read-only e bounded, não consulta, baixa, instala, importa, executa ou autoriza repositórios externos. Não inventa URL, licença, manutenção, arquitetura, capability, risco ou custo; não cria marketplace, plugin loader, adapter, bridge, Auth, RLS, Supabase, ownership, tenancy, persistência ou autoridade. A Phase 14 permanece parcial e a integração externa continua dependente de auditoria passiva, licença, segurança, contrato, isolamento e decisão explícita.
