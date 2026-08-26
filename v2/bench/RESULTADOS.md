@@ -101,3 +101,18 @@ Execução: `npm run bench:event-bus` · Linux x64 · Node v22.13.0 · Intel Xeo
 | 20 diretos + curinga | 10,103 µs | 98.976 | 0,01 ms | 0,274 ms |
 
 A medição é diagnóstica e não estabelece threshold, promessa de hardware ou gate de CI. O contrato e o método estão em [`docs/v2/EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md`](../docs/v2/EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md).
+
+## 2026-08-26 — Task Manager duration health
+
+Execução: `node --experimental-strip-types v2/bench/core-js.mjs` · Linux x86_64 · Node v22.13.0 · `limite: 8` · `50.000` tarefas triviais.
+
+| Medida | Resultado |
+|---|---:|
+| Tarefas submetidas / observadas no health | `50.000 / 50.000` |
+| Custo externo médio por tarefa | `5,6 µs` |
+| Tempo externo total | `279 ms` |
+| Média interna | `0,010 ms` |
+| Mínimo / máximo interno | `0,002 / 80,656 ms` |
+| Autoconsistência | passou: `latencia.n === 50.000` |
+
+Esta execução é diagnóstico local. O custo externo e a duração interna são caminhos de medição diferentes; os valores não são SLA nem threshold de produção. O método completo está em [`docs/v2/TASK_MANAGER_LATENCY_BENCHMARK_2026-08-26.md`](../docs/v2/TASK_MANAGER_LATENCY_BENCHMARK_2026-08-26.md).

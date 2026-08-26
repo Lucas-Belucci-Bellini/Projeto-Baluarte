@@ -240,3 +240,12 @@ O próximo passo continua sendo definir retenção operacional e auditoria serve
 O script `scripts/event-bus-latency-benchmark.mjs`, disponível como `npm run bench:event-bus`, mede o caminho real de `criarBus().emit()` em três cargas de ouvintes, com aquecimento do JIT, validação de entrega e conferência de `bus.saude().latencia`. A execução registrada em [`EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md`](./EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md) observou 9,460–10,103 µs por despacho externo em 20.000 operações por cenário no sandbox Linux/Node 22.
 
 A medição fecha uma evidência local de custo, mas não fecha threshold de produção, percentil, alerta, retry, backpressure, hardware de usuário ou disponibilidade operacional. O Event Bus permanece observação local, e a política de retry por classe de evento continua bloqueada até ADR explícito.
+
+
+## Checkpoint operacional — local backup/restore drill — 2026-08-26
+
+O gap `RECOVERY-001` ganhou um ensaio local reproduzível no comando `npm run drill:v2:backup`. O drill exercita a ponte de backup já existente em processo Node com fallback in-memory: prepara o storage, exporta dados com Unicode, valida o envelope, simula perda com `clearAll()`, restaura as chaves esperadas, confirma exclusão de `auth:session`, rejeita uma chave desconhecida e limpa o estado no bloco `finally`.
+
+A execução passou com `backupValidado: true`, três chaves estruturais restauradas (`editor:state`, `permissoes`, `ui:theme`), sessão excluída e chave desconhecida ignorada. A suíte canônica de backup passou `14/14`. O resultado demonstra o caminho local da ponte V1→V2, mas não aprova RPO/RTO, durabilidade, criptografia, retenção, ownership, tenancy, auditoria, recuperação remota ou restauração entre máquinas; o gap operacional permanece parcial e bloqueado para produção.
+
+O contrato detalhado está em [`V2_BACKUP_RESTORE_DRILL_2026-08-26.md`](./V2_BACKUP_RESTORE_DRILL_2026-08-26.md). Nenhuma rede, storage remoto, Supabase, migration, RLS, Auth real, credencial ou escrita de produção foi utilizada.
