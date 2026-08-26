@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.14`: Doctor verifica o catálogo canônico de storage
+
+A décima quarta pré-release acompanhável da V2 adiciona `storage_catalog` ao `verify:v2`. O Doctor agora executa `node scripts/gen-catalogo-storage.mjs --verificar` como check `safe`/read-only e confirma as 72 chaves do catálogo sem escrever, instalar, iniciar harness, matar processos ou acessar serviços remotos.
+
+O marco foi mesclado pela PR #499 no SHA `52810d0b`. O Doctor passou a expor 23 registros: 15 green, 2 blocked-known, 1 unknown, 5 not-run e 0 failed; `storage_catalog` ficou green. O teste focal passou 9/9, integração V2 58/58, smoke 99/99, caminho crítico 15/15, offline 9/9, Security Contracts 73/73 e os checks remotos aplicáveis ficaram verdes, com 1 skipped por política.
+
+Cargo ausente permaneceu corretamente `unknown`, com `verify:v2` retornando exit 2; os transportes Python opcionais sem SDK permaneceram `blocked-known`. O slice não altera V1, storage, formatos, Auth, Evidence, Supabase, RLS, tenancy, ownership, retenção, revisão humana, retry, permissões ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.14.md`](../docs/releases/v2.0.0-alpha.14.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.13`: benchmark do boot real da Plataforma V2
 
 A décima terceira pré-release acompanhável da V2 publica `npm run bench:v2:boot`, um benchmark read-only sobre o harness real da Plataforma V2. Duas execuções de cinco amostras chegaram a `ready` com sete módulos vivos, zero falhas de boot e vinte rotas V1 em todas as amostras.
