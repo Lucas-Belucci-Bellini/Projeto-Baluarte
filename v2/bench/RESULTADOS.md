@@ -133,3 +133,15 @@ Todos os cenários confirmaram `returned <= limit` e `available` antes do corte.
 
 
 Repetição no mesmo ambiente e dataset: `94,968 µs` (todos), `173,501 µs` (workshop), `222,314 µs` (revisão) e `90,390 µs` (escopo + estado). As contagens permaneceram `640` disponíveis, limites `25`/`100` e `250` repetições. A variação confirma que os valores são diagnóstico local, não threshold.
+
+
+## 2026-08-26 — Renderização das rotas reais
+
+Execução: `npm run build && npm run bench:routes` · preview local de produção · catálogo descoberto de `src/main.js` com 99 rotas · 3 repetições · settle 900 ms · timeout 15 s.
+
+| Métrica | p50 | p95 | Média | Máximo |
+|---|---:|---:|---:|---:|
+| Navegação até DOMContentLoaded | 163,186 ms | 190,465 ms | 166,612 ms | 404,826 ms |
+| Observação após settle | 1104,435 ms | 1236,586 ms | 1122,866 ms | 1457,885 ms |
+
+Totais por rodada: `115030,943 ms`, `114779,153 ms` e `114626,039 ms`. Todas as 99 rotas ficaram verdes em todas as repetições. O benchmark fecha uma evidência local de custo do caminho real, sem threshold, SLA, budget de produção ou comparação entre hardware. A metodologia e as limitações estão em [`docs/v2/ROUTE_RENDER_BENCHMARK_2026-08-26.md`](../docs/v2/ROUTE_RENDER_BENCHMARK_2026-08-26.md).
