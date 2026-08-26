@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.13`: benchmark do boot real da Plataforma V2
+
+A décima terceira pré-release acompanhável da V2 publica `npm run bench:v2:boot`, um benchmark read-only sobre o harness real da Plataforma V2. Duas execuções de cinco amostras chegaram a `ready` com sete módulos vivos, zero falhas de boot e vinte rotas V1 em todas as amostras.
+
+O marco foi mesclado pela PR #497 no SHA `ac89b65a`. Boot interno: primeira execução p50/p95/média/máximo `14/14/14/14 ms`; segunda `14/15/14,2/15 ms`. Browser até `window.__v2.partida`: primeira `225,801/783,116/329,453/783,116 ms`; segunda `214,871/855,046/342,108/855,046 ms`. Tipos, suíte `1370` aprovados e `6` ignorados, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A medição é diagnóstico local e não cria SLA, threshold, budget de produção, Web Vital, hardware matrix ou política de regressão. O slice não altera boot, Plataforma, router, V1, Auth, Evidence, Supabase, RLS, tenancy, ownership, permissões, retry ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.13.md`](../docs/releases/v2.0.0-alpha.13.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.12`: benchmark de renderização das rotas reais
 
 A décima segunda pré-release acompanhável da V2 publica `npm run bench:routes`, que descobre as rotas diretamente de `src/main.js` e mede o caminho real de renderização em Chromium. As 99 rotas passaram em 3 repetições, com tempos de navegação e observação após settle registrados em p50, p95, média e máximo.

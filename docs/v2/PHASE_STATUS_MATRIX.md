@@ -487,3 +487,29 @@ O benchmark de renderização das rotas reais foi integrado na `main` no SHA `fe
 Este checkpoint atende parcialmente a medição da Phase 21 — Performance e preserva o smoke como gate funcional. Os tempos dependem do ambiente local, incluem settle deliberado para lazy routes e não estabelecem SLA, threshold, budget, Web Vitals, comparação de hardware ou política de regressão. Não foram adicionadas persistência, rede, Auth, RLS, tenancy, ownership, permissão ou autoridade.
 
 A pré-release `v2.0.0-alpha.12` será criada somente após esta documentação passar pelos checks remotos e ser mesclada na `main`; nenhum tag ou release é implícito por este checkpoint documental.
+
+
+## Checkpoint documental — V2 `v2.0.0-alpha.13` / Boot real da Plataforma — 2026-08-26
+
+O benchmark do boot real da Plataforma V2 foi integrado na `main` no SHA `ac89b65a6aec3cc67db9eea9e780e2723c2164ad` pela PR [#497](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/497). O comando `npm run bench:v2:boot` observa o harness existente `v2/harness/index.html#/cripto`, produzido por `criarPlataforma(...).iniciar()`, sem recriar o Core ou alterar o router V1.
+
+| Evidência | Resultado |
+|---|---:|
+| Commit funcional na `main` | `ac89b65a` |
+| PR técnica | `#497`, mesclada com squash |
+| Repetições | duas execuções de `5` amostras |
+| Invariantes | `ready`, 7 módulos vivos, 0 falhas de boot, 20 rotas V1 em todas as 10 amostras |
+| Boot interno — execução 1 | p50/p95/média/máximo `14/14/14/14 ms` |
+| Boot interno — execução 2 | p50/p95/média/máximo `14/15/14,2/15 ms` |
+| Browser até `window.__v2.partida` — execução 1 | `225,801/783,116/329,453/783,116 ms` |
+| Browser até `window.__v2.partida` — execução 2 | `214,871/855,046/342,108/855,046 ms` |
+| Suíte completa | `1370` aprovados, `6` ignorados, zero falhas |
+| Integração V2 | `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts Node 24 | `73/73` |
+| CI remoto da PR técnica | `11` sucessos, `1` skipped, nenhum pendente |
+
+Este checkpoint atende parcialmente a medição de startup das Phases 02/21. Os relógios são diferentes: `bootInterno` vem do Supervisor e `browserReady` inclui navegação, serving, execução e observação do harness. Ambos permanecem diagnóstico local e não estabelecem SLA, threshold, budget de produção, Web Vital, hardware matrix ou política de regressão. O preview é aceito somente com marcadores do HTML do harness, evitando que um `200` do site V1 stale seja confundido com sucesso V2.
+
+A pré-release `v2.0.0-alpha.13` será criada somente após esta documentação passar pelos checks remotos e ser mesclada na `main`; nenhum tag ou release é implícito por este checkpoint documental.
