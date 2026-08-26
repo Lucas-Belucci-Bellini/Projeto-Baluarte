@@ -284,3 +284,24 @@ O slice `project-registry-local` adiciona um contrato TypeScript e wrapper JavaS
 A API `projectRegistrySnapshot()` valida entradas, rejeita IDs duplicados, filtra por texto/estado/decisão, limita o resultado ao padrão 25 e teto 100 e congela a saída. O comando `npm run check:project-registry` é read-only e imprime apenas resumo local; o teste focal cobre catálogo, filtro, limite, imutabilidade e rejeição de promoção de entrada não auditada.
 
 O contrato está em [`PROJECT_REGISTRY_LOCAL_CONTRACT_2026-08-26.md`](./PROJECT_REGISTRY_LOCAL_CONTRACT_2026-08-26.md). Este checkpoint não consulta, baixa, instala, importa, executa ou autoriza repositórios externos; não inventa URL, licença, manutenção, arquitetura, capability, risco ou custo. Não cria marketplace, plugin loader, adapter, bridge, Auth, RLS, Supabase, ownership, tenancy, persistência ou autoridade. A Phase 14 — Project Integration continua parcial e a auditoria externa de qualquer projeto permanece uma decisão futura, passiva e separada.
+
+
+## Checkpoint de segurança local — Module Mode Policy fake server-side — 2026-08-26
+
+O slice `module-registry-mode-policy/v1` adiciona uma fixture determinística e in-memory para a fronteira de autorização dos modos `active`, `maintenance` e `disabled` do Module Registry. A fixture expõe exatamente quatro identidades sintéticas (`fixture-user`, `fixture-admin`, `fixture-dev` e `fixture-owner`) nos papéis fechados `user`, `admin`, `dev` e `owner`. Ela produz decisões `allow`/`deny` para o callback auditado de `criarModuleRegistryHealth()`, mas não altera o Registry, não inicia módulo e não concede autoridade ao frontend.
+
+| Evidência local | Resultado |
+|---|---:|
+| Verificador | `npm run check:module-mode-policy` |
+| Identidades | 4 |
+| Casos da matriz | 6 |
+| Decisões | 3 allow / 3 deny |
+| Spoof de `actorRole` client-side | deny |
+| Teste focal | `8/8` |
+| `npm run tipos:ts` | passou |
+| `npm run tipos:v2` | passou |
+| `git diff --check` | passou |
+
+A matriz da fixture é deliberadamente local: `user` não altera modo; `dev` pode solicitar `active`/`maintenance`, mas não `disabled`; `admin` e `owner` cobrem os três modos. Decisões allow carregam `requestId`, `actorId`, `actorRole` e `approvedBy` sintéticos para satisfazer o contrato `requireAudit`; decisões deny usam somente razões bounded. O campo `actorRole` do request é ignorado.
+
+O checkpoint não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila ou mutação remota. A fixture não é política de produção, não prova staging e não autoriza qualquer operação no browser. A integração real depende de staging separado, identidades de teste, RLS verificável, cleanup idempotente, revisão de segurança, auditoria persistente e rollback aprovado. O contrato está em [`MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md`](./MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md).
