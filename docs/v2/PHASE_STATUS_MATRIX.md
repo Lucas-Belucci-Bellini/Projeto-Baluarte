@@ -558,3 +558,30 @@ A `v2.0.0-alpha.15` publicou o slice `project-registry-local` no SHA `82d2c05cdd
 | Vercel Preview | concluído verde |
 
 O marco avança apenas a governança local da Phase 14. O Project Registry é read-only e bounded, não consulta, baixa, instala, importa, executa ou autoriza repositórios externos. Não inventa URL, licença, manutenção, arquitetura, capability, risco ou custo; não cria marketplace, plugin loader, adapter, bridge, Auth, RLS, Supabase, ownership, tenancy, persistência ou autoridade. A Phase 14 permanece parcial e a integração externa continua dependente de auditoria passiva, licença, segurança, contrato, isolamento e decisão explícita.
+
+
+## Checkpoint publicado — V2 `v2.0.0-alpha.16` / Module Mode Policy fake server-side local — 2026-08-26
+
+A `v2.0.0-alpha.16` publicou o slice `module-registry-mode-policy/v1` no SHA integrado `5820b6aa61c9b32607ca6a19580dc1f315021a51`, pela PR [#504](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/504). A implementação local é uma fixture determinística e in-memory que expõe exatamente quatro identidades sintéticas (`fixture-user`, `fixture-admin`, `fixture-dev` e `fixture-owner`) nos papéis fechados `user`, `admin`, `dev` e `owner`.
+
+| Evidência | Resultado |
+|---|---:|
+| Commit funcional da slice | `3ec2eb1` |
+| SHA integrado na `main` | `5820b6a` |
+| PR técnica | `#504`, mesclada com squash |
+| Verificador | `npm run check:module-mode-policy` |
+| Matriz da fixture | 4 identidades, 6 casos, 3 allow / 3 deny |
+| Spoof de `actorRole` client-side | deny |
+| Teste focal | `8/8` |
+| Suíte completa | `1384` aprovados, `6` ignorados, zero falhas |
+| Integração V2 | `58/58` |
+| Smoke / caminho crítico | `99/99` / `15/15` |
+| Offline / memória | `9/9` / sem acúmulo detectado |
+| Security Contracts selecionados | `76/76` |
+| Doctor com dependências | `15` green, `2` blocked-known, `1` unknown, `5` not-run, `0` failed |
+| CI remoto da PR técnica | `11` sucessos, `1` skipped, nenhum pendente |
+| Vercel Preview | concluído verde |
+
+O checkpoint avança a fronteira local de `MODULE-RBAC-001`, mas não implementa Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila, mutação remota ou promoção pública. O campo `actorRole` do request é ignorado; a origem das identidades é fixa em `server-test-fixture`. A fixture fornece apenas decisões sintéticas ao callback auditado do Module Registry Health e não é autoridade de produção.
+
+A documentação do contrato está em [`MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md`](./MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md). A auditoria real em staging permanece dependente de quatro identidades isoladas, políticas RLS verificáveis, cleanup idempotente, auditoria persistente, revisão de segurança, custo e rollback aprovados. A Phase 5/14/22 continua parcial nas fronteiras remotas; o `unknown`, `blocked-known` e `not-run` do Doctor permanecem estados honestos.

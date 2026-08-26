@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-26 — Release `v2.0.0-alpha.16`: Module Mode Policy fake server-side local
+
+A décima sexta pré-release acompanhável da V2 adiciona a fixture determinística `module-registry-mode-policy/v1` para exercitar decisões `allow`/`deny` dos modos `active`, `maintenance` e `disabled` antes de qualquer staging Supabase/RLS. A fixture expõe exatamente quatro identidades sintéticas — `fixture-user`, `fixture-admin`, `fixture-dev` e `fixture-owner` — nos papéis fechados `user`, `admin`, `dev` e `owner`; `actorRole` enviado no request não eleva autoridade.
+
+O marco foi mesclado pela PR #504 no SHA `5820b6aa`. O verificador confirmou 4 identidades, 6 casos, 3 allow, 3 deny e spoof negado; o teste focal passou `8/8`; a suíte passou com `1384` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts selecionados `76/76` passaram. O Doctor, com dependências disponíveis, registrou `15` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelos estados ambientais.
+
+A fixture não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila, mutação remota ou promoção pública. Ela fornece somente uma decisão sintética ao callback auditado do Module Registry Health e não é autoridade de produção. A PR #501 de privacidade e a PR #471 do Claude Code continuam separadas. As notas completas estão em [`docs/releases/v2.0.0-alpha.16.md`](../docs/releases/v2.0.0-alpha.16.md).
+
+---
+
 ## 2026-08-26 — Release `v2.0.0-alpha.15`: Project Registry local read-only
 
 A décima quinta pré-release acompanhável da V2 adiciona um catálogo local, read-only e bounded para os quatro projetos externos citados no Master Plan: `veritas`, `dailyplanner`, `stock-analyzer-bot` e `project-vanguard`. Como nenhum foi auditado externamente nesta slice, todos permanecem `not-audited` com decisão obrigatória `defer`.
