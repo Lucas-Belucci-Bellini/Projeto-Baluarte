@@ -198,3 +198,21 @@ O Doctor agora observa esse comando como `module_registry_health`, categoria `se
 Gates locais do slice: focal Health/Plataforma/Doctor `32/32`; suíte completa `1386` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`; build; smoke `99/99`; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`; e Doctor `17` green, `2` blocked-known, `1` unknown, `5` not-run, `0` failed com exit `2` honesto pelo Cargo ausente. O candidato de Project Registry permanece `not-audited/defer`: buscas read-only não encontraram fonte oficial inequívoca com identidade e licença suficientes, portanto nenhum projeto externo foi promovido.
 
 A implementação técnica deste checkpoint está integrada na `main` pelo SHA `17d1accdd036382b166ef430bc4b696f36436fec`; a documentação final e a tag/release ainda dependem de PR separada e dos gates correspondentes. O marco não fecha health remoto, restart real, RLS, tenancy, ownership, retenção operacional, Auth, billing, fontes externas, autoridade server-side de produção, Windows/macOS, assinatura ou auto-update.
+
+
+## Checkpoint integrado — Platform Diagnostic com Task Manager Health / alpha.20 técnica — 0365f7f
+
+A PR #519 integrou uma projeção opcional e somente leitura da saúde do escalonador local na fachada `criarPlataforma()`. `PlatformOptions.trabalho` aceita somente `saude()`, `PlatformDiagnostic.trabalho` retorna `SaudeEscalonador` quando a dependência é fornecida e retorna `null` sem ela. Uma dependência sem `saude()` é recusada no construtor. A Plataforma não reimplementa o Task Manager, não inicia ou cancela tarefas e não cria política de retry, threshold ou unhealthy.
+
+A implementação técnica foi preparada no commit `dbfe5156b7c797390956aaf365e87010b25529af`, publicada na PR [#519](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/519) e squash-merged na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`. O Vercel inicialmente ficou pending por rate limit e depois concluiu com sucesso; a PR só foi marcada ready após `CLEAN`/`MERGEABLE`. O backup remoto `backup/2026-08-27-before-v2-platform-task-diagnostic` preserva o SHA técnico.
+
+Gates locais: focal Plataforma `7/7`; `tipos:ts`; `tipos:v2`; suíte `1388` aprovados, `6` skipped e `0` falhas; build; integração V2 `58/58`; smoke; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`. O Doctor terminou com `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto pelo Cargo ausente. Os oito workflows pós-merge do SHA `0365f7f` terminaram verdes.
+
+Este checkpoint melhora a observabilidade local da Plataforma, mas não fecha retry do Event Bus/Task Manager, persistência, dashboards, incidentes operacionais duráveis, Auth, RLS, tenancy, ownership, billing, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, aceitação física desktop/mobile, estabilização, RC ou V2 estável. A V1, router, shell, sidebar, wrappers, Service Worker e branches concorrentes foram preservados.
+
+
+## Checkpoint documental final — alpha.20 após PR #521
+
+A nota `docs/releases/v2.0.0-alpha.20.md`, o `MASTER_EXECUTION_MATRIX`, o `PHASE_STATUS_MATRIX` e o changelog foram integrados pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520) no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521) no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`; os sete workflows pós-merge da finalização terminaram verdes.
+
+A tag `v2.0.0-alpha.20` ainda não existe. O próximo passo é verificar que `main` permanece nesse SHA final, criar uma tag anotada nesse commit, confirmar `refs/tags/v2.0.0-alpha.20^{}` e somente então publicar a pré-release com `gh release create --verify-tag --prerelease`. Até essa verificação, o marco permanece em estado de release pendente.
