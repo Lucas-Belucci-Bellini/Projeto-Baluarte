@@ -12,7 +12,7 @@ A vigésima slice técnica acompanhável da V2 integra pela PR #519 uma projeç�
 
 Os gates locais passaram: focal Plataforma `7/7`; `tipos:ts`; `tipos:v2`; suíte `1388` aprovados, `6` ignorados e zero falhas; build; integração V2 `58/58`; smoke; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`. O Doctor registrou `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto por Cargo ausente. A PR passou `11` checks, com Vercel liberado, e os oito workflows pós-merge do SHA `0365f7f` terminaram verdes.
 
-A implementação técnica está na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`; o backup é `backup/2026-08-27-before-v2-platform-task-diagnostic`. A nota de release e a reconciliação das matrizes estão em preparação nesta branch documental; tag e release só serão criadas após checks remotos, finalização com SHA documental exato e verificação do alvo anotado. A V1, o router, o shell, a sidebar, os wrappers, o Service Worker, #501 e #471 permanecem preservados e separados.
+A implementação técnica está na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`; o backup é `backup/2026-08-27-before-v2-platform-task-diagnostic`. A nota de release e a reconciliação das matrizes foram integradas pela PR #520 no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`; a finalização #521 registrará o SHA documental definitivo antes da tag/release. A V1, o router, o shell, a sidebar, os wrappers, o Service Worker, #501 e #471 permanecem preservados e separados.
 
 ---
 
