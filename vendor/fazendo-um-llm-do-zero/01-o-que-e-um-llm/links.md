@@ -1,0 +1,35 @@
+# 🔗 Links — Capítulo 01: O que é um LLM
+
+## 📦 Repositório do Projeto
+
+👉 [Repositório da Série](../README.md)
+
+---
+
+## 📒 Notebook deste Capítulo
+
+### Visualizar no GitHub
+👉 [Repositório da Série](../README.md)
+
+### Abrir diretamente no Google Colab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vongrossi/fazendo-um-llm-do-zero/blob/main/01-o-que-e-um-llm/notebook.ipynb)
+
+---
+
+## ✍️ Artigos Explicativos
+
+### Dev.to
+[Fazendo um LLM do Zero #01 — A Mágica é Apenas Estatística (Bem Feita)](https://dev.to/vongrossi/fazendo-um-llm-do-zero-01-a-magica-e-apenas-estatistica-bem-feita-7k)
+
+### Medium
+[Fazendo um LLM do Zero #01 — A mágica é apenas estatística bem feita](https://medium.com/@angelovongrossi/fazendo-um-llm-do-zero-01-a-mágica-é-apenas-estatística-bem-feita-0843ae21714a)
+
+---
+
+## 💡 Dica
+
+Se estiver abrindo no Colab:
+
+1. Vá em **Runtime → Change runtime type**
+2. Ative GPU (opcional)
+3. Execute todas as células em ordem

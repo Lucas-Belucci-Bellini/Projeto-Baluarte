@@ -1,0 +1,35 @@
+# 🔗 Links — Capítulo 03: Atenção
+
+## 📦 Repositório do Projeto
+
+👉 [Repositório da Série](../README.md)
+
+---
+
+## 📒 Notebook deste Capítulo
+
+### Visualizar no GitHub
+👉 [Repositório da Série](../README.md)
+
+### Abrir diretamente no Google Colab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vongrossi/fazendo-um-llm-do-zero/blob/main/03-atencao/notebook.ipynb)
+
+---
+
+## ✍️ Artigos Explicativos
+
+### Dev.to
+[Fazendo um LLM do Zero #03 — Atenção é Tudo o que Você Precisa](https://dev.to/vongrossi/fazendo-um-llm-do-zero-03-atencao-e-tudo-o-que-voce-precisa-3lk5)
+
+### Medium
+[Fazendo um LLM do Zero #03 — Atenção é tudo o que você precisa](https://medium.com/@angelovongrossi/fazendo-um-llm-do-zero-03-atenção-é-tudo-o-que-você-precisa-7890b732cc3d)
+
+---
+
+## 💡 Dica
+
+Se estiver abrindo no Colab:
+
+1. Vá em **Runtime → Change runtime type**
+2. Ative GPU (opcional)
+3. Execute todas as células em ordem
