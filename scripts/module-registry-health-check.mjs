@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { criarModuleRegistryHealth } from '../v2/core/module-registry-health.js';
+import { criarModuleModePolicy } from '../v2/core/module-registry-mode-policy.js';
 import { criarRuntimeHealth } from '../v2/core/module-runtime-health.js';
 
 function registryFake(ids) {
@@ -12,6 +13,7 @@ function registryFake(ids) {
 }
 
 const registry = registryFake(['alpha', 'beta']);
+const modePolicy = criarModuleModePolicy();
 let now = 1000;
 const runtimeHealth = criarRuntimeHealth({
   maxRestarts: 1,
@@ -23,13 +25,7 @@ const health = criarModuleRegistryHealth(registry, runtimeHealth, {
   requireAudit: true,
   clock: () => now,
   audit: (entry) => auditEntries.push(entry),
-  authorize: (request) => ({
-    allowed: request.id === 'beta' && request.mode === 'maintenance',
-    requestId: request.requestId,
-    actorId: 'fixture-operator',
-    actorRole: 'admin',
-    approvedBy: 'fixture-approver',
-  }),
+  authorize: modePolicy.authorizeAs('fixture-admin'),
 });
 
 const decisions = [];
@@ -65,7 +61,9 @@ assert.equal(
 assert.equal(health.podeAtivar('beta'), false);
 assert.equal(auditEntries.length, 1);
 assert.equal(auditEntries[0].type, 'registry.mode.changed');
+assert.equal(auditEntries[0].actorId, 'fixture-admin');
 assert.equal(auditEntries[0].actorRole, 'admin');
+assert.equal(auditEntries[0].approvedBy, 'fixture-owner');
 decisions.push('allow');
 
 const snapshot = health.resumo();
