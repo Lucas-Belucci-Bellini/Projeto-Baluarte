@@ -15,6 +15,7 @@ import { criarContexto, ErroPermissao, ErroChave } from '../../v2/core/contexto.
 import { criarPermissoes } from '../../v2/core/permissoes.js';
 import { criarLog, definirDestino, coletor, definirNivelMinimo } from '../../v2/core/log.js';
 import { normalizar } from '../../v2/core/manifest.js';
+import { criarBus } from '../../v2/core/bus.js';
 
 /** Storage de mentira, para ver o que o contexto deixa passar. */
 function storageFalso(inicial = {}) {
@@ -211,6 +212,30 @@ test('o evento emitido carrega a ORIGEM — o que falta no bus da V1', () => {
   );
   ctx.bus.emit('cripto:cifrado');
   assert.equal(bus.emitidos[0].meta.origem, 'cripto');
+});
+
+test('o contexto encaminha metadados do envelope e preserva a origem do módulo', () => {
+  const bus = criarBus();
+  let envelope;
+  bus.on('cripto:cifrado', (_, recebido) => { envelope = recebido; });
+  const ctx = criarContexto(
+    manifesto({ events: { emits: ['cripto:cifrado'], consumes: [] } }),
+    { storage: storageFalso(), bus }
+  );
+
+  ctx.bus.emit('cripto:cifrado', { n: 1 }, {
+    origem: 'modulo-falso',
+    versao: 3,
+    contexto: { request: 'abc' },
+    correlacao: 'cadeia-externa',
+    causa: 'evento-anterior'
+  });
+
+  assert.equal(envelope.origem, 'cripto', 'a origem deve vir do contexto, não do chamador');
+  assert.equal(envelope.versao, 3);
+  assert.deepEqual(envelope.contexto, { request: 'abc' });
+  assert.equal(envelope.correlacao, 'cadeia-externa');
+  assert.equal(envelope.causa, 'evento-anterior');
 });
 
 test('sem bus injetado, o contexto simplesmente não tem bus', () => {
