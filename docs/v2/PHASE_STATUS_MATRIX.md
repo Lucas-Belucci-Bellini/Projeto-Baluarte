@@ -1,11 +1,11 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA observado para a medição corrente:** `ca325d03fbddf77b43b64519ba2f69cdf4f07f4f` (`feat(v2): prove packaged desktop runtime`)
-**SHA funcional anterior:** `0c85f35a5266945ed347ab87ed607b669363271a` (`docs(v2): align alpha.17 final SHA`)
-**Última reconciliação documental anterior:** `0c85f35` (`docs(v2): align alpha.17 final SHA`)
-**Último marco publicado:** `v2.0.0-alpha.17` — Doctor observa Module Mode Policy
-**Próximo marco técnico integrado:** `v2.0.0-alpha.18` — Runtime desktop empacotado; release documental pendente
-**Data:** 2026-08-26
+**SHA observado para a medição corrente:** `17d1accdd036382b166ef430bc4b696f36436fec` (`feat(v2): observe module registry health locally`)
+**SHA funcional anterior:** `7c928fe5af20d508d1b25f969df9862aaa84c608` (`docs(v2): finalize alpha.18 tag target`)
+**Última reconciliação documental anterior:** `7c928fe` (`docs(v2): finalize alpha.18 tag target`)
+**Último marco publicado:** `v2.0.0-alpha.18` — Runtime desktop empacotado
+**Próximo marco técnico integrado:** `v2.0.0-alpha.19` — Module Registry Health local/read-only; release documental pendente
+**Data:** 2026-08-27
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 
 ## Resumo
@@ -659,4 +659,4 @@ A nota está em [`../releases/v2.0.0-alpha.18.md`](../releases/v2.0.0-alpha.18.m
 | Doctor `module_registry_health` | `IMPLEMENTED / VALIDATING` | Check `safe` integrado em `scripts/v2-doctor.mjs`; Doctor `17 green`, `2 blocked-known`, `1 unknown`, `5 not-run`, `0 failed`, exit `2` honesto | Cargo permanece `unknown` no sandbox; checks mutantes/remotos continuam separados |
 | Reconciliação de Project Registry | `DEFERRED` | Busca GitHub read-only não produziu fonte oficial inequívoca com licença/identidade suficientes; quatro entradas continuam `not-audited/defer` | Não promover, adaptar, importar ou executar projeto externo sem fonte oficial, licença, evidência, revisão e rollback |
 | Gates locais | `GREEN` | Focal `32/32`; suíte `1386` pass, `6` skipped, `0` fail; integração `58/58`; smoke `99/99`; caminho `15/15`; offline `9/9`; Security Contracts `73/73` | Build e harness geram artefatos que devem ser limpos antes do commit |
-| Release | `PENDING DOCUMENTATION/REMOTE` | Contrato, auditoria e nota alpha.19 preparados; PRs ainda não abertas | Não criar tag/release antes de PR, backup, checks completos e workflows pós-merge |
+| Release | `PENDING DOCUMENTATION/REMOTE` | PR técnica #514 merged no SHA `17d1acc`; contrato, auditoria e nota alpha.19 presentes; PR documental final ainda pendente | Não criar tag/release antes de PR documental, backup, checks completos e workflows pós-merge |

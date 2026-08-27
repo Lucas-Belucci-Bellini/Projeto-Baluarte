@@ -12,7 +12,7 @@ A décima nona slice acompanhável da V2 adiciona `npm run check:module-registry
 
 Os gates locais passaram: focal Health/Plataforma/Doctor `32/32`, suíte `1386` aprovados, `6` ignorados e zero falhas, integração V2 `58/58`, build, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73`. O Doctor registrou `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto pelo Cargo ausente. O Project Registry continua sem promoção: buscas read-only não encontraram fonte oficial inequívoca para os quatro nomes e todos permanecem `not-audited/defer`.
 
-Este marco está em preparação documental e ainda não entrou na main nem foi publicado. Não altera V1, Auth, RLS, Supabase, tenancy, ownership, persistência, rede, retry, billing, autoridade de produção ou branches concorrentes. A PR #501 continua isolada e a #471 do Claude Code permanece intocada. A nota está em [`docs/releases/v2.0.0-alpha.19.md`](../docs/releases/v2.0.0-alpha.19.md).
+A implementação técnica foi integrada pela PR #514 no SHA `17d1acc`. Os oito workflows pós-merge — CI, Core CI, V2 Runtime, V2 Core, V2 Validation, V2 Desktop Packaged Runtime, CodeQL, Vigia das rotas e Arma 3 Data CI — terminaram com sucesso. A documentação final e a tag/release ainda estão pendentes de PR separada. Não altera V1, Auth, RLS, Supabase, tenancy, ownership, persistência, rede, retry, billing, autoridade de produção ou branches concorrentes. A PR #501 continua isolada e a #471 do Claude Code permanece intocada. A nota está em [`docs/releases/v2.0.0-alpha.19.md`](../docs/releases/v2.0.0-alpha.19.md).
 
 ---
 
