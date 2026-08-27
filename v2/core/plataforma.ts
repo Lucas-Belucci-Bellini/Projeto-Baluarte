@@ -17,6 +17,7 @@ import type {
 } from './lifecycle-status.js';
 import type { ModuleRegistry } from './registry.js';
 import type { Supervisor, SupervisorStatus } from './supervisor.js';
+import type { Escalonador, SaudeEscalonador } from './trabalho.js';
 
 export interface RegistryDiagnosticEntry {
   id: string;
@@ -41,6 +42,8 @@ export interface PlatformOptions {
     resumo(): RegistryDiagnosticEntry[];
     incidentes?(): RegistryDiagnosticIncident[];
   };
+  /** Projeção opcional e read-only do escalonador local do Core. */
+  trabalho?: Pick<Escalonador, 'saude'>;
 }
 
 export interface PlatformDiagnostic {
@@ -55,6 +58,7 @@ export interface PlatformDiagnostic {
     resumo: LifecycleSummary;
   };
   boot: ReturnType<Boot['diagnostico']>;
+  trabalho: SaudeEscalonador | null;
 }
 
 export interface Platform {
@@ -80,6 +84,9 @@ export function criarPlataforma(
     || typeof boot.diagnostico !== 'function'
   ) {
     throw new TypeError('boot inválido');
+  }
+  if (options.trabalho !== undefined && typeof options.trabalho.saude !== 'function') {
+    throw new TypeError('trabalho inválido');
   }
 
   const saude = criarMonitorSaude(boot);
@@ -108,6 +115,7 @@ export function criarPlataforma(
         resumo: lifecycle.resumo(),
       },
       boot: boot.diagnostico(),
+      trabalho: options.trabalho?.saude() ?? null,
     };
   }
 

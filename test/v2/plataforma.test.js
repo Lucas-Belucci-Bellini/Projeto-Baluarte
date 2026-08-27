@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import { criarPlataforma } from '../../v2/core/plataforma.js';
 import { criarRuntimeHealth } from '../../v2/core/module-runtime-health.js';
 import { criarModuleRegistryHealth } from '../../v2/core/module-registry-health.js';
+import { criarEscalonador } from '../../v2/core/trabalho.js';
 
-function montar({ falhas = [], vivos = ['core'], registryHealth = undefined } = {}) {
+function montar({ falhas = [], vivos = ['core'], registryHealth = undefined, trabalho = undefined } = {}) {
   const registry = {
     listar: () => ['core'],
     modulo: () => ({ name: 'Core', version: '2.0.0' })
@@ -26,7 +27,7 @@ function montar({ falhas = [], vivos = ['core'], registryHealth = undefined } = 
     descer: async () => { fase = 'parado'; return { ok: true, problemas: [] }; },
     diagnostico: () => ({ fase, modulos: vivos, falhas, eventosOrfaos: [], referenciasOrfas: [] })
   };
-  return criarPlataforma(registry, boot, { registryHealth });
+  return criarPlataforma(registry, boot, { registryHealth, trabalho });
 }
 
 test('fachada expõe saúde e lifecycle no diagnóstico', () => {
@@ -43,6 +44,22 @@ test('fachada expõe saúde e lifecycle no diagnóstico', () => {
     podeReiniciar: true,
   }]);
   assert.deepEqual(d.registry.incidentes, []);
+  assert.equal(d.trabalho, null);
+});
+
+test('fachada expõe a saúde do escalonador real no diagnóstico', async () => {
+  const trabalho = criarEscalonador();
+  await trabalho.enfileirar('core', 'probe', () => 'ok');
+
+  const d = montar({ trabalho }).diagnostico();
+  assert.equal(d.trabalho.readiness, 'healthy');
+  assert.equal(d.trabalho.contagem.enfileirados, 1);
+  assert.equal(d.trabalho.contagem.concluidos, 1);
+  assert.equal(d.trabalho.estado.naFila, 0);
+});
+
+test('fachada recusa um escalonador sem saúde', () => {
+  assert.throws(() => montar({ trabalho: {} }), /trabalho inválido/);
 });
 
 test('fachada expõe overrides de maintenance no diagnóstico do Registry', () => {
