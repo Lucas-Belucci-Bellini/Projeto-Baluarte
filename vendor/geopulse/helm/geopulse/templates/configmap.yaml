@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geopulse.fullname" . }}-config
+  labels:
+    {{- include "geopulse.labels" . | nindent 4 }}
+data:
+  # Frontend URL (legacy fallback)
+  GEOPULSE_UI_URL: {{ .Values.config.uiUrl | quote }}
+  GEOPULSE_PUBLIC_BASE_URL: {{ .Values.config.publicBaseUrl | quote }}
+  GEOPULSE_CORS_ENABLED: {{ .Values.config.cors.enabled | quote }}
+  GEOPULSE_CORS_ORIGINS: {{ .Values.config.cors.origins | quote }}
+
+  # Cookie configuration
+  GEOPULSE_COOKIE_DOMAIN: {{ .Values.config.cookieDomain | quote }}
+  GEOPULSE_AUTH_SECURE_COOKIES: {{ .Values.config.authSecureCookies | quote }}
+
+  # Admin configuration
+  GEOPULSE_ADMIN_EMAIL: {{ .Values.config.admin.email | quote }}
+
+  # Authentication & Registration
+  GEOPULSE_AUTH_REGISTRATION_ENABLED: {{ .Values.config.auth.registrationEnabled | quote }}
+  GEOPULSE_AUTH_PASSWORD_REGISTRATION_ENABLED: {{ .Values.config.auth.passwordRegistrationEnabled | quote }}
+  GEOPULSE_AUTH_OIDC_REGISTRATION_ENABLED: {{ .Values.config.auth.oidcRegistrationEnabled | quote }}
+
+  # Login Control
+  GEOPULSE_AUTH_LOGIN_ENABLED: {{ .Values.config.auth.loginEnabled | quote }}
+  GEOPULSE_AUTH_PASSWORD_LOGIN_ENABLED: {{ .Values.config.auth.passwordLoginEnabled | quote }}
+  GEOPULSE_AUTH_OIDC_LOGIN_ENABLED: {{ .Values.config.auth.oidcLoginEnabled | quote }}
+  GEOPULSE_AUTH_ADMIN_LOGIN_BYPASS_ENABLED: {{ .Values.config.auth.adminLoginBypassEnabled | quote }}
+
+  # JWT Configuration
+  GEOPULSE_JWT_ACCESS_TOKEN_LIFESPAN: {{ .Values.config.jwt.accessTokenLifespan | quote }}
+  GEOPULSE_JWT_REFRESH_TOKEN_LIFESPAN: {{ .Values.config.jwt.refreshTokenLifespan | quote }}
+  GEOPULSE_JWT_ISSUER: {{ .Values.config.jwt.issuer | quote }}
+  GEOPULSE_JWT_PUBLIC_KEY_LOCATION: {{ .Values.config.jwt.publicKeyLocation | quote }}
+  GEOPULSE_JWT_PRIVATE_KEY_LOCATION: {{ .Values.config.jwt.privateKeyLocation | quote }}
+
+  # GPS Filtering
+  GEOPULSE_GPS_FILTER_NEGATIVE_ACCURACY_ENABLED: {{ .Values.config.gps.filterNegativeAccuracy | quote }}
+  GEOPULSE_GPS_FILTER_INACCURATE_DATA_ENABLED: {{ .Values.config.gps.filterInaccurateData | quote }}
+  GEOPULSE_GPS_MAX_ALLOWED_ACCURACY: {{ .Values.config.gps.maxAllowedAccuracy | quote }}
+  GEOPULSE_GPS_MAX_ALLOWED_SPEED: {{ .Values.config.gps.maxAllowedSpeed | quote }}
+
+  # Prometheus Metrics
+  GEOPULSE_PROMETHEUS_ENABLED: {{ .Values.config.prometheus.enabled | quote }}
+  GEOPULSE_PROMETHEUS_REFRESH_INTERVAL: {{ .Values.config.prometheus.refreshInterval | quote }}
+  GEOPULSE_PROMETHEUS_GPS_POINTS_ENABLED: {{ .Values.config.prometheus.gpsPoints.enabled | quote }}
+  GEOPULSE_PROMETHEUS_USER_METRICS_ENABLED: {{ .Values.config.prometheus.userMetrics.enabled | quote }}
+  GEOPULSE_PROMETHEUS_TIMELINE_ENABLED: {{ .Values.config.prometheus.timeline.enabled | quote }}
+  GEOPULSE_PROMETHEUS_FAVORITES_ENABLED: {{ .Values.config.prometheus.favorites.enabled | quote }}
+  GEOPULSE_PROMETHEUS_GEOCODING_ENABLED: {{ .Values.config.prometheus.geocoding.enabled | quote }}
+  GEOPULSE_PROMETHEUS_MEMORY_ENABLED: {{ .Values.config.prometheus.memory.enabled | quote }}
+
+  # Geocoding Configuration
+  GEOPULSE_GEOCODING_PRIMARY_PROVIDER: {{ .Values.config.geocoding.primaryProvider | quote }}
+  GEOPULSE_GEOCODING_FALLBACK_PROVIDER: {{ .Values.config.geocoding.fallbackProvider | quote }}
+  GEOPULSE_GEOCODING_DELAY_MS: {{ .Values.config.geocoding.delayMs | quote }}
+  GEOPULSE_GEOCODING_CACHE_MAX_BBOX_AREA_KM2: {{ .Values.config.geocoding.cacheMaxBboxAreaKm2 | quote }}
+  GEOPULSE_GEOCODING_NOMINATIM_ENABLED: {{ .Values.config.geocoding.nominatim.enabled | quote }}
+  GEOPULSE_GEOCODING_NOMINATIM_URL: {{ .Values.config.geocoding.nominatim.url | quote }}
+  GEOPULSE_GEOCODING_NOMINATIM_LANGUAGE: {{ .Values.config.geocoding.nominatim.language | quote }}
+  GEOPULSE_GEOCODING_PHOTON_ENABLED: {{ .Values.config.geocoding.photon.enabled | quote }}
+  GEOPULSE_GEOCODING_PHOTON_URL: {{ .Values.config.geocoding.photon.url | quote }}
+  GEOPULSE_GEOCODING_PHOTON_LANGUAGE: {{ .Values.config.geocoding.photon.language | quote }}
+  GEOPULSE_GEOCODING_GOOGLE_MAPS_ENABLED: {{ .Values.config.geocoding.googleMaps.enabled | quote }}
+  GEOPULSE_GEOCODING_GOOGLE_MAPS_LANGUAGE: {{ .Values.config.geocoding.googleMaps.language | quote }}
+  GEOPULSE_GEOCODING_MAPBOX_ENABLED: {{ .Values.config.geocoding.mapbox.enabled | quote }}
+
+  # Location Sharing
+  GEOPULSE_SHARE_BASE_URL: {{ .Values.config.share.baseUrl | quote }}
+  GEOPULSE_INVITATION_BASE_URL: {{ .Values.config.invitation.baseUrl | quote }}
+
+  # OwnTracks
+  GEOPULSE_OWNTRACKS_PING_TIMESTAMP_OVERRIDE: {{ .Values.config.owntracks.pingTimestampOverride | quote }}
+
+  # Backend URL (internal)
+  GEOPULSE_BACKEND_URL: {{ include "geopulse.backend.url" . | quote }}
+
+  # PostgreSQL connection
+  GEOPULSE_POSTGRES_HOST: {{ include "geopulse.postgres.host" . | quote }}
+  GEOPULSE_POSTGRES_PORT: {{ include "geopulse.postgres.port" . | quote }}
+  GEOPULSE_POSTGRES_DB: {{ include "geopulse.postgres.database" . | quote }}
+  GEOPULSE_POSTGRES_USERNAME: {{ include "geopulse.postgres.username" . | quote }}
+  GEOPULSE_POSTGRES_URL: {{ include "geopulse.postgres.jdbcUrl" . | quote }}
+
+  {{- if .Values.mosquitto.enabled }}
+  # MQTT configuration
+  GEOPULSE_MQTT_ENABLED: "true"
+  GEOPULSE_MQTT_BROKER_HOST: {{ include "geopulse.mosquitto.host" . | quote }}
+  GEOPULSE_MQTT_BROKER_PORT: {{ .Values.mosquitto.service.port | quote }}
+  GEOPULSE_MQTT_USERNAME: {{ .Values.mosquitto.username | quote }}
+  {{- else }}
+  GEOPULSE_MQTT_ENABLED: "false"
+  {{- end }}
+
+  # OIDC Configuration
+  GEOPULSE_OIDC_ENABLED: {{ .Values.config.oidc.enabled | quote }}
+  GEOPULSE_OIDC_CALLBACK_BASE_URL: {{ .Values.config.oidc.callbackBaseUrl | quote }}
+  GEOPULSE_OIDC_AUTO_LINK_ACCOUNTS: {{ .Values.config.oidc.autoLinkAccounts | quote }}
+  GEOPULSE_OIDC_CLEANUP_ENABLED: {{ .Values.config.oidc.cleanupEnabled | quote }}
+  GEOPULSE_OIDC_JWKS_CACHE_TTL_HOURS: {{ .Values.config.oidc.jwksCacheTtlHours | default "24" | quote }}
+
+  {{- if .Values.config.oidc.google.enabled }}
+  GEOPULSE_OIDC_PROVIDER_GOOGLE_ENABLED: "true"
+  GEOPULSE_OIDC_PROVIDER_GOOGLE_CLIENT_ID: {{ .Values.config.oidc.google.clientId | quote }}
+  {{- end }}
+
+  {{- if .Values.config.oidc.microsoft.enabled }}
+  GEOPULSE_OIDC_PROVIDER_MICROSOFT_ENABLED: "true"
+  GEOPULSE_OIDC_PROVIDER_MICROSOFT_CLIENT_ID: {{ .Values.config.oidc.microsoft.clientId | quote }}
+  {{- end }}
+
+  {{- if .Values.config.oidc.generic.enabled }}
+  GEOPULSE_OIDC_PROVIDER_GENERIC_ENABLED: "true"
+  GEOPULSE_OIDC_PROVIDER_GENERIC_NAME: {{ .Values.config.oidc.generic.name | quote }}
+  GEOPULSE_OIDC_PROVIDER_GENERIC_CLIENT_ID: {{ .Values.config.oidc.generic.clientId | quote }}
+  GEOPULSE_OIDC_PROVIDER_GENERIC_DISCOVERY_URL: {{ .Values.config.oidc.generic.discoveryUrl | quote }}
+  {{- end }}
+
+  {{- if .Values.postgres.enabled }}
+  # PostgreSQL tuning parameters
+  GEOPULSE_POSTGRES_SHARED_BUFFERS: {{ .Values.postgres.config.sharedBuffers | quote }}
+  GEOPULSE_POSTGRES_WORK_MEM: {{ .Values.postgres.config.workMem | quote }}
+  GEOPULSE_POSTGRES_MAINTENANCE_WORK_MEM: {{ .Values.postgres.config.maintenanceWorkMem | quote }}
+  GEOPULSE_POSTGRES_EFFECTIVE_CACHE_SIZE: {{ .Values.postgres.config.effectiveCacheSize | quote }}
+  GEOPULSE_POSTGRES_MAX_WAL_SIZE: {{ .Values.postgres.config.maxWalSize | quote }}
+  GEOPULSE_POSTGRES_CHECKPOINT_TARGET: {{ .Values.postgres.config.checkpointCompletionTarget | quote }}
+  GEOPULSE_POSTGRES_WAL_BUFFERS: {{ .Values.postgres.config.walBuffers | quote }}
+  GEOPULSE_POSTGRES_RANDOM_PAGE_COST: {{ .Values.postgres.config.randomPageCost | quote }}
+  GEOPULSE_POSTGRES_IO_CONCURRENCY: {{ .Values.postgres.config.effectiveIoConcurrency | quote }}
+  GEOPULSE_POSTGRES_AUTOVACUUM_NAPTIME: {{ .Values.postgres.config.autovacuumNaptime | quote }}
+  GEOPULSE_POSTGRES_VACUUM_SCALE_FACTOR: {{ .Values.postgres.config.autovacuumVacuumScaleFactor | quote }}
+  GEOPULSE_POSTGRES_LOG_SLOW_QUERIES: {{ .Values.postgres.config.logMinDurationStatement | quote }}
+  {{- end }}

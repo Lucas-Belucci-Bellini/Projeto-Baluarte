@@ -1,0 +1,909 @@
+export class UserProfilePage {
+  constructor(page) {
+    this.page = page;
+    
+    this.selectors = {
+      // Tab navigation - using PrimeVue TabMenu structure
+      profileTab: '.p-tabmenu-item:has(.p-tabmenu-item-label:has-text("Profile"))',
+      securityTab: '.p-tabmenu-item:has(.p-tabmenu-item-label:has-text("Security"))',
+      aiAssistantTab: '.p-tabmenu-item:has(.p-tabmenu-item-label:has-text("AI Assistant"))',
+      immichTab: '.p-tabmenu-item:has(.p-tabmenu-item-label:has-text("Immich"))',
+      displayTab: '.p-tabmenu-item:has(.p-tabmenu-item-label:has-text("Display"))',
+      
+      // Profile Information tab selectors
+      profile: {
+        fullNameInput: '#fullName',
+        emailInput: '#email',
+        timezoneDropdown: '#timezone',
+        timezoneDropdownTrigger: '#timezone .p-select-dropdown, #timezone .p-select-label',
+        timezoneOptions: '[role="option"], .p-select-option',
+        timezoneLabel: '#timezone .p-select-label',
+        dateFormatDropdown: '#dateFormat',
+        dateFormatLabel: '#dateFormat .p-select-label',
+        dateFormatOptions: '[role="option"], .p-select-option',
+        timeFormatDropdown: '#timeFormat',
+        timeFormatLabel: '#timeFormat .p-select-label',
+        timeFormatOptions: '[role="option"], .p-select-option',
+        defaultRedirectUrlDropdown: '#defaultRedirectUrl',
+        defaultRedirectUrlLabel: '#defaultRedirectUrl .p-select-label',
+        defaultRedirectUrlOptions: '[role="option"], .p-select-option',
+        customRedirectUrlInput: '#customRedirectUrl',
+        saveButton: 'button[type="submit"]:has-text("Save Changes")',
+        resetButton: 'button:has-text("Reset")',
+        avatarOptions: '.avatar-option',
+        selectedAvatar: '.avatar-option.active',
+        userAvatar: '.user-avatar',
+        errorMessage: '.error-message'
+      },
+
+      // Display tab selectors
+      display: {
+        customMapTileUrlInput: '#customMapTileUrl',
+        pathSimplificationToggle: '.setting-card:has-text("Enable Path Simplification") .p-toggleswitch',
+        saveButton: 'button[type="submit"]:has-text("Save Changes")',
+        resetButton: 'button:has-text("Reset to Defaults")',
+        errorMessage: '.error-message'
+      },
+      
+      // Security tab selectors
+      security: {
+        currentPasswordInput: '#currentPassword input',
+        newPasswordInput: '#newPassword input',
+        confirmPasswordInput: '#confirmPassword input',
+        changePasswordButton: 'button[type="submit"]:has-text("Change Password")',
+        cancelButton: 'button:has-text("Cancel")',
+        errorMessage: '.error-message'
+      },
+
+      // AI Assistant tab selectors
+      ai: {
+        enableToggle: '#ai-enabled',
+        openaiApiKeyInput: '#openai-api-key input',
+        openaiApiUrlInput: '#openai-api-url',
+        openaiModelDropdown: '#openai-model',
+        openaiModelInput: '#openai-model input',
+        saveButton: 'button[type="submit"]:has-text("Save AI Settings")',
+        configuredIndicator: 'small:has-text("API key is configured")',
+        errorMessage: '.error-message'
+      },
+      
+      // Immich Integration tab selectors
+      immich: {
+        enableToggle: '.p-toggleswitch',
+        serverUrlInput: '#immichServerUrl',
+        apiKeyInput: '#immichApiKey input',
+        saveButton: 'button[type="submit"]:has-text("Save Settings")',
+        resetButton: 'button:has-text("Reset")',
+        connectionStatus: '.connection-status',
+        statusIndicator: '.status-indicator',
+        errorMessage: '.error-message'
+      },
+      
+      // Common elements
+      toast: '.p-toast-message',
+      toastSuccess: '.p-toast-message-success',
+      toastError: '.p-toast-message-error',
+      pageTitle: '.page-title'
+    };
+  }
+
+  /**
+   * Navigate to user profile page
+   */
+  async navigate() {
+    await this.page.goto('/app/profile');
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Wait for page to load
+   */
+  async waitForPageLoad() {
+    await this.page.waitForSelector(this.selectors.pageTitle);
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Check if currently on profile page
+   */
+  async isOnProfilePage() {
+    try {
+      await this.page.waitForURL('**/app/profile', { timeout: 5000 });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // =============================================================================
+  // TAB NAVIGATION
+  // =============================================================================
+
+  /**
+   * Switch to Profile Information tab
+   */
+  async switchToProfileTab() {
+    await this.page.locator(this.selectors.profileTab).click();
+    await this.page.waitForTimeout(500); // Wait for tab content to load
+  }
+
+  /**
+   * Switch to Security tab
+   */
+  async switchToSecurityTab() {
+    await this.page.locator(this.selectors.securityTab).click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Switch to AI Assistant tab
+   */
+  async switchToAiAssistantTab() {
+    await this.page.locator(this.selectors.aiAssistantTab).click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Switch to Immich Integration tab
+   */
+  async switchToImmichTab() {
+    await this.page.locator(this.selectors.immichTab).click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Switch to Display tab
+   */
+  async switchToDisplayTab() {
+    await this.page.locator(this.selectors.displayTab).click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Check if Profile Information tab is active
+   */
+  async isProfileTabActive() {
+    const tabItem = this.page.locator(this.selectors.profileTab);
+    const classes = await tabItem.getAttribute('class');
+    return classes && classes.includes('p-tabmenu-item-active');
+  }
+
+  /**
+   * Check if Security tab is active
+   */
+  async isSecurityTabActive() {
+    const tabItem = this.page.locator(this.selectors.securityTab);
+    const classes = await tabItem.getAttribute('class');
+    return classes && classes.includes('p-tabmenu-item-active');
+  }
+
+  /**
+   * Check if AI Assistant tab is active
+   */
+  async isAiAssistantTabActive() {
+    const tabItem = this.page.locator(this.selectors.aiAssistantTab);
+    const classes = await tabItem.getAttribute('class');
+    return classes && classes.includes('p-tabmenu-item-active');
+  }
+
+  /**
+   * Check if Immich Integration tab is active
+   */
+  async isImmichTabActive() {
+    const tabItem = this.page.locator(this.selectors.immichTab);
+    const classes = await tabItem.getAttribute('class');
+    return classes && classes.includes('p-tabmenu-item-active');
+  }
+
+  /**
+   * Check if Display tab is active
+   */
+  async isDisplayTabActive() {
+    const tabItem = this.page.locator(this.selectors.displayTab);
+    const classes = await tabItem.getAttribute('class');
+    return classes && classes.includes('p-tabmenu-item-active');
+  }
+
+  // =============================================================================
+  // PROFILE INFORMATION TAB
+  // =============================================================================
+
+  /**
+   * Fill profile form
+   */
+  async fillProfileForm(fullName) {
+    await this.page.fill(this.selectors.profile.fullNameInput, fullName);
+  }
+
+  /**
+   * Select avatar by index
+   */
+  async selectAvatar(index) {
+    const avatarOptions = this.page.locator(this.selectors.profile.avatarOptions);
+    await avatarOptions.nth(index).click();
+  }
+
+  /**
+   * Get current full name value
+   */
+  async getFullNameValue() {
+    return await this.page.inputValue(this.selectors.profile.fullNameInput);
+  }
+
+  /**
+   * Get current email value
+   */
+  async getEmailValue() {
+    return await this.page.inputValue(this.selectors.profile.emailInput);
+  }
+
+  /**
+   * Check if email field is disabled
+   */
+  async isEmailFieldDisabled() {
+    return await this.page.isDisabled(this.selectors.profile.emailInput);
+  }
+
+  /**
+   * Get selected avatar index
+   */
+  async getSelectedAvatarIndex() {
+    const avatarOptions = this.page.locator(this.selectors.profile.avatarOptions);
+    const count = await avatarOptions.count();
+    
+    for (let i = 0; i < count; i++) {
+      const classes = await avatarOptions.nth(i).getAttribute('class');
+      if (classes.includes('active')) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Check if Save Changes button is enabled
+   */
+  async isSaveButtonEnabled() {
+    return !await this.page.isDisabled(this.selectors.profile.saveButton);
+  }
+
+  /**
+   * Save profile changes
+   */
+  async saveProfile() {
+    await this.page.click(this.selectors.profile.saveButton);
+  }
+
+  /**
+   * Reset profile form
+   */
+  async resetProfile() {
+    await this.page.click(this.selectors.profile.resetButton);
+  }
+
+  /**
+   * Get profile validation error message
+   */
+  async getProfileErrorMessage() {
+    try {
+      const errorElement = this.page.locator(this.selectors.profile.errorMessage).first();
+      if (await errorElement.isVisible({ timeout: 2000 })) {
+        return await errorElement.textContent();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Select timezone from dropdown
+   */
+  async selectTimezone(timezone) {
+    // Click on the dropdown to open it
+    await this.page.click(this.selectors.profile.timezoneLabel);
+    
+    // Wait for dropdown options to appear
+    await this.page.waitForSelector(this.selectors.profile.timezoneOptions, { timeout: 10000 });
+    
+    // Click on the specific timezone option
+    const optionSelector = this.page.locator(this.selectors.profile.timezoneOptions).filter({ hasText: timezone });
+    await optionSelector.first().click();
+    
+    // Wait for dropdown to close and selection to be processed
+    await this.page.waitForTimeout(1000);
+  }
+
+  /**
+   * Get currently selected timezone
+   */
+  async getSelectedTimezone() {
+    // Get the displayed value in the dropdown label
+    const dropdownLabel = this.page.locator(this.selectors.profile.timezoneLabel);
+    const text = await dropdownLabel.textContent();
+    
+    // If showing placeholder text, return empty or handle accordingly
+    if (text === 'Select your timezone') {
+      return null;
+    }
+    
+    return text?.trim();
+  }
+
+  /**
+   * Get timezone value from localStorage
+   */
+  async getTimezoneFromLocalStorage() {
+    const userInfo = await this.page.evaluate(() => {
+      const userInfoStr = localStorage.getItem('userInfo');
+      return userInfoStr ? JSON.parse(userInfoStr) : null;
+    });
+    return userInfo?.timezone || null;
+  }
+
+  /**
+   * Select date format from dropdown
+   */
+  async selectDateFormat(dateFormatLabel) {
+    await this.page.click(this.selectors.profile.dateFormatLabel);
+    await this.page.waitForSelector(this.selectors.profile.dateFormatOptions, { timeout: 10000 });
+
+    const optionSelector = this.page.locator(this.selectors.profile.dateFormatOptions).filter({ hasText: dateFormatLabel });
+    await optionSelector.first().click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Get currently selected date format label
+   */
+  async getSelectedDateFormat() {
+    const dropdownLabel = this.page.locator(this.selectors.profile.dateFormatLabel);
+    const text = await dropdownLabel.textContent();
+    if (text === 'Select your preferred date format') {
+      return null;
+    }
+    return text?.trim();
+  }
+
+  /**
+   * Get date format value from localStorage
+   */
+  async getDateFormatFromLocalStorage() {
+    const userInfo = await this.page.evaluate(() => {
+      const userInfoStr = localStorage.getItem('userInfo');
+      return userInfoStr ? JSON.parse(userInfoStr) : null;
+    });
+    return userInfo?.dateFormat || null;
+  }
+
+  /**
+   * Select time format from dropdown
+   */
+  async selectTimeFormat(timeFormatLabel) {
+    await this.page.click(this.selectors.profile.timeFormatLabel);
+    await this.page.waitForSelector(this.selectors.profile.timeFormatOptions, { timeout: 10000 });
+
+    const optionSelector = this.page.locator(this.selectors.profile.timeFormatOptions).filter({ hasText: timeFormatLabel });
+    await optionSelector.first().click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Get currently selected time format label
+   */
+  async getSelectedTimeFormat() {
+    const dropdownLabel = this.page.locator(this.selectors.profile.timeFormatLabel);
+    const text = await dropdownLabel.textContent();
+    if (text === 'Select your preferred time format') {
+      return null;
+    }
+    return text?.trim();
+  }
+
+  /**
+   * Get time format value from localStorage
+   */
+  async getTimeFormatFromLocalStorage() {
+    const userInfo = await this.page.evaluate(() => {
+      const userInfoStr = localStorage.getItem('userInfo');
+      return userInfoStr ? JSON.parse(userInfoStr) : null;
+    });
+    return userInfo?.timeFormat || null;
+  }
+
+  /**
+   * Select default redirect URL from dropdown
+   */
+  async selectDefaultRedirectUrl(option) {
+    // Click on the dropdown to open it
+    await this.page.click(this.selectors.profile.defaultRedirectUrlLabel);
+
+    // Wait for dropdown options to appear
+    await this.page.waitForSelector(this.selectors.profile.defaultRedirectUrlOptions, { timeout: 10000 });
+
+    // Click on the specific option
+    const optionSelector = this.page.locator(this.selectors.profile.defaultRedirectUrlOptions).filter({ hasText: option });
+    await optionSelector.first().click();
+
+    // Wait for dropdown to close and selection to be processed
+    await this.page.waitForTimeout(1000);
+  }
+
+  /**
+   * Get currently selected default redirect URL
+   */
+  async getSelectedDefaultRedirectUrl() {
+    const dropdownLabel = this.page.locator(this.selectors.profile.defaultRedirectUrlLabel);
+    const text = await dropdownLabel.textContent();
+
+    if (text === 'Select your default page') {
+      return null;
+    }
+
+    return text?.trim();
+  }
+
+  /**
+   * Fill custom redirect URL input
+   */
+  async fillCustomRedirectUrl(url) {
+    await this.page.fill(this.selectors.profile.customRedirectUrlInput, url);
+  }
+
+  /**
+   * Get custom redirect URL value
+   */
+  async getCustomRedirectUrlValue() {
+    try {
+      const input = this.page.locator(this.selectors.profile.customRedirectUrlInput);
+      if (await input.isVisible({ timeout: 2000 })) {
+        return await input.inputValue();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Get default redirect URL value from localStorage
+   */
+  async getDefaultRedirectUrlFromLocalStorage() {
+    const userInfo = await this.page.evaluate(() => {
+      const userInfoStr = localStorage.getItem('userInfo');
+      return userInfoStr ? JSON.parse(userInfoStr) : null;
+    });
+    return userInfo?.defaultRedirectUrl || null;
+  }
+
+  /**
+   * Check if custom URL input is visible
+   */
+  async isCustomRedirectUrlInputVisible() {
+    try {
+      const input = this.page.locator(this.selectors.profile.customRedirectUrlInput);
+      return await input.isVisible({ timeout: 2000 });
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Clear default redirect URL selection
+   */
+  async clearDefaultRedirectUrl() {
+    // Try to find and click the clear button
+    const clearIconSelectors = [
+      '#defaultRedirectUrl .p-select-clear-icon',
+      '#defaultRedirectUrl .p-dropdown-clear-icon',
+      '#defaultRedirectUrl button[aria-label="Clear"]',
+      '#defaultRedirectUrl .p-icon-times',
+      '#defaultRedirectUrl [role="button"][aria-label="Clear"]'
+    ];
+
+    for (const selector of clearIconSelectors) {
+      try {
+        const element = this.page.locator(selector);
+        if (await element.isVisible({ timeout: 1000 })) {
+          await element.click();
+          await this.page.waitForTimeout(500);
+          return true;
+        }
+      } catch (e) {
+        // Try next selector
+      }
+    }
+
+    return false;
+  }
+
+  // =============================================================================
+  // SECURITY TAB
+  // =============================================================================
+
+  /**
+   * Fill password change form
+   */
+  async fillPasswordForm(currentPassword, newPassword, confirmPassword) {
+    await this.page.fill(this.selectors.security.currentPasswordInput, currentPassword);
+    await this.page.fill(this.selectors.security.newPasswordInput, newPassword);
+    await this.page.fill(this.selectors.security.confirmPasswordInput, confirmPassword);
+  }
+
+  /**
+   * Check if Change Password button is enabled
+   */
+  async isChangePasswordButtonEnabled() {
+    return !await this.page.isDisabled(this.selectors.security.changePasswordButton);
+  }
+
+  /**
+   * Submit password change
+   */
+  async changePassword() {
+    await this.page.click(this.selectors.security.changePasswordButton);
+  }
+
+  /**
+   * Cancel password change
+   */
+  async cancelPasswordChange() {
+    await this.page.click(this.selectors.security.cancelButton);
+  }
+
+  /**
+   * Get password validation error message
+   */
+  async getPasswordErrorMessage() {
+    try {
+      const errorElement = this.page.locator(this.selectors.security.errorMessage).first();
+      if (await errorElement.isVisible({ timeout: 2000 })) {
+        return await errorElement.textContent();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Check if password form is empty
+   */
+  async isPasswordFormEmpty() {
+    const current = await this.page.inputValue(this.selectors.security.currentPasswordInput);
+    const newPassword = await this.page.inputValue(this.selectors.security.newPasswordInput);
+    const confirm = await this.page.inputValue(this.selectors.security.confirmPasswordInput);
+    
+    return !current && !newPassword && !confirm;
+  }
+
+  // =============================================================================
+  // AI ASSISTANT TAB
+  // =============================================================================
+
+  /**
+   * Toggle AI Assistant
+   */
+  async toggleAIAssistant() {
+    await this.page.click(this.selectors.ai.enableToggle);
+  }
+
+  /**
+   * Check if AI Assistant is enabled
+   */
+  async isAIAssistantEnabled() {
+    const toggle = this.page.locator(this.selectors.ai.enableToggle);
+    const classes = await toggle.getAttribute('class');
+    return classes && classes.includes('p-toggleswitch-checked');
+  }
+
+  /**
+   * Fill OpenAI API Key
+   */
+  async fillOpenAIApiKey(apiKey) {
+    await this.page.fill(this.selectors.ai.openaiApiKeyInput, apiKey);
+  }
+
+  /**
+   * Fill OpenAI API URL
+   */
+  async fillOpenAIApiUrl(apiUrl) {
+    await this.page.fill(this.selectors.ai.openaiApiUrlInput, apiUrl);
+  }
+
+  /**
+   * Select or enter OpenAI model
+   */
+  async selectOpenAIModel(modelName) {
+    // Click the dropdown
+    await this.page.click(this.selectors.ai.openaiModelDropdown);
+    await this.page.waitForTimeout(300);
+
+    // Type the model name (dropdown is editable)
+    await this.page.fill(this.selectors.ai.openaiModelInput, modelName);
+
+    // Try to click the option if it exists, otherwise just blur
+    try {
+      await this.page.locator(`[role="option"]:has-text("${modelName}")`).click({ timeout: 1000 });
+    } catch {
+      // Model name was typed directly, just press Enter or blur
+      await this.page.keyboard.press('Enter');
+    }
+
+    await this.page.waitForTimeout(300);
+  }
+
+  /**
+   * Get OpenAI API URL value
+   */
+  async getOpenAIApiUrl() {
+    return await this.page.inputValue(this.selectors.ai.openaiApiUrlInput);
+  }
+
+  /**
+   * Check if OpenAI API key is configured
+   */
+  async isOpenAIApiKeyConfigured() {
+    return await this.page.locator(this.selectors.ai.configuredIndicator).isVisible();
+  }
+
+  /**
+   * Check if Save AI Settings button is enabled
+   */
+  async isAISaveButtonEnabled() {
+    return !await this.page.isDisabled(this.selectors.ai.saveButton);
+  }
+
+  /**
+   * Save AI settings
+   */
+  async saveAISettings() {
+    await this.page.click(this.selectors.ai.saveButton);
+  }
+
+  /**
+   * Get AI Assistant validation error message
+   */
+  async getAIErrorMessage() {
+    try {
+      const errorElement = this.page.locator(this.selectors.ai.errorMessage).first();
+      if (await errorElement.isVisible({ timeout: 2000 })) {
+        return await errorElement.textContent();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  // =============================================================================
+  // IMMICH INTEGRATION TAB
+  // =============================================================================
+
+  /**
+   * Toggle Immich integration
+   */
+  async toggleImmichIntegration() {
+    await this.page.click(this.selectors.immich.enableToggle);
+  }
+
+  /**
+   * Check if Immich integration is enabled
+   */
+  async isImmichIntegrationEnabled() {
+    const toggle = this.page.locator(this.selectors.immich.enableToggle);
+    const classes = await toggle.getAttribute('class');
+    return classes && classes.includes('p-toggleswitch-checked');
+  }
+
+  /**
+   * Fill Immich configuration form
+   */
+  async fillImmichForm(serverUrl, apiKey) {
+    if (serverUrl !== null) {
+      await this.page.fill(this.selectors.immich.serverUrlInput, serverUrl);
+    }
+    if (apiKey !== null) {
+      await this.page.fill(this.selectors.immich.apiKeyInput, apiKey);
+    }
+  }
+
+  /**
+   * Get Immich server URL value
+   */
+  async getImmichServerUrl() {
+    return await this.page.inputValue(this.selectors.immich.serverUrlInput);
+  }
+
+  /**
+   * Check if Immich fields are disabled
+   */
+  async areImmichFieldsDisabled() {
+    const serverUrlDisabled = await this.page.isDisabled(this.selectors.immich.serverUrlInput);
+    const apiKeyDisabled = await this.page.isDisabled(this.selectors.immich.apiKeyInput);
+    return serverUrlDisabled && apiKeyDisabled;
+  }
+
+  /**
+   * Check if Save Settings button is enabled
+   */
+  async isImmichSaveButtonEnabled() {
+    return !await this.page.isDisabled(this.selectors.immich.saveButton);
+  }
+
+  /**
+   * Save Immich settings
+   */
+  async saveImmichSettings() {
+    await this.page.click(this.selectors.immich.saveButton);
+  }
+
+  /**
+   * Reset Immich form
+   */
+  async resetImmichForm() {
+    await this.page.click(this.selectors.immich.resetButton);
+  }
+
+  /**
+   * Get Immich validation error message
+   */
+  async getImmichErrorMessage() {
+    try {
+      const errorElement = this.page.locator(this.selectors.immich.errorMessage).first();
+      if (await errorElement.isVisible({ timeout: 2000 })) {
+        return await errorElement.textContent();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Get Immich connection status
+   */
+  async getImmichConnectionStatus() {
+    try {
+      const statusElement = this.page.locator(this.selectors.immich.statusIndicator);
+      if (await statusElement.isVisible({ timeout: 2000 })) {
+        return await statusElement.textContent();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Check if connection status shows connected
+   */
+  async isImmichConnected() {
+    const status = await this.getImmichConnectionStatus();
+    return status && status.includes('Connected');
+  }
+
+  // =============================================================================
+  // DISPLAY TAB
+  // =============================================================================
+
+  /**
+   * Fill custom map tile URL
+   */
+  async fillCustomMapTileUrl(url) {
+    await this.page.fill(this.selectors.display.customMapTileUrlInput, url);
+  }
+
+  /**
+   * Get custom map tile URL value
+   */
+  async getCustomMapTileUrl() {
+    return await this.page.inputValue(this.selectors.display.customMapTileUrlInput);
+  }
+
+  /**
+   * Toggle path simplification
+   */
+  async togglePathSimplification() {
+    await this.page.click(this.selectors.display.pathSimplificationToggle);
+  }
+
+  /**
+   * Check if path simplification is enabled
+   */
+  async isPathSimplificationEnabled() {
+    const toggle = this.page.locator(this.selectors.display.pathSimplificationToggle);
+    const classes = await toggle.getAttribute('class');
+    return classes && classes.includes('p-toggleswitch-checked');
+  }
+
+  /**
+   * Save display settings
+   */
+  async saveDisplaySettings() {
+    await this.page.click(this.selectors.display.saveButton);
+  }
+
+  /**
+   * Reset display settings
+   */
+  async resetDisplaySettings() {
+    await this.page.click(this.selectors.display.resetButton);
+  }
+
+  /**
+   * Get display validation error message
+   */
+  async getDisplayErrorMessage() {
+    try {
+      const errorElement = this.page.locator(this.selectors.display.errorMessage).first();
+      if (await errorElement.isVisible({ timeout: 2000 })) {
+        return await errorElement.textContent();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Check if Save button is enabled on Display tab
+   */
+  async isDisplaySaveButtonEnabled() {
+    return !await this.page.isDisabled(this.selectors.display.saveButton);
+  }
+
+  // =============================================================================
+  // COMMON UTILITIES
+  // =============================================================================
+
+  /**
+   * Wait for success toast message
+   */
+  async waitForSuccessToast() {
+    await this.page.waitForSelector(this.selectors.toastSuccess, { timeout: 10000 });
+  }
+
+  /**
+   * Wait for error toast message
+   */
+  async waitForErrorToast() {
+    await this.page.waitForSelector(this.selectors.toastError, { timeout: 10000 });
+  }
+
+  /**
+   * Wait for toast notifications to disappear
+   */
+  async waitForToastToDisappear(timeout = 10000) {
+    try {
+      await this.page.waitForSelector(this.selectors.toast, { state: 'hidden', timeout });
+    } catch {
+      // Toast might already be gone
+    }
+    // Let fade-out animation finish to avoid stale selector races
+    await this.page.waitForTimeout(250);
+  }
+
+  /**
+   * Get toast message text
+   */
+  async getToastMessage() {
+    try {
+      const toastElement = this.page.locator(`${this.selectors.toast} .p-toast-detail`).first();
+      if (await toastElement.isVisible({ timeout: 2000 })) {
+        return await toastElement.textContent();
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Wait for any loading to complete
+   */
+  async waitForLoading() {
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(500);
+  }
+}

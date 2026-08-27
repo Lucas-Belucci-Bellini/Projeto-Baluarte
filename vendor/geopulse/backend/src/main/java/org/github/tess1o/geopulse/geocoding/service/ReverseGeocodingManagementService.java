@@ -1,0 +1,701 @@
+package org.github.tess1o.geopulse.geocoding.service;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.context.ManagedExecutor;
+import org.eclipse.microprofile.faulttolerance.exceptions.CircuitBreakerOpenException;
+import org.github.tess1o.geopulse.favorites.service.FavoriteLocationService;
+import org.github.tess1o.geopulse.favorites.model.FavoriteLocationsDto;
+import org.github.tess1o.geopulse.geocoding.config.GeocodingConfigurationService;
+import org.github.tess1o.geopulse.geocoding.dto.*;
+import org.github.tess1o.geopulse.geocoding.mapper.ReverseGeocodingDTOMapper;
+import org.github.tess1o.geopulse.geocoding.model.ReverseGeocodingLocationEntity;
+import org.github.tess1o.geopulse.geocoding.repository.ReverseGeocodingLocationRepository;
+import org.github.tess1o.geopulse.geocoding.service.GeocodingCopyOnWriteHandler.UpdateResult;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+/**
+ * Service for managing reverse geocoding results with copy-on-write semantics.
+ * Handles CRUD operations, reconciliation, and synchronization with timeline_stays.
+ * <p>
+ * Copy-on-Write Strategy:
+ * - user_id = NULL: Original/shared data from provider (unmodified by any user)
+ * - user_id = UUID: User-specific copy (modified by that user)
+ * <p>
+ * Modification Behavior:
+ * - Modifying original (user_id=NULL): Creates user-specific copy, keeps original
+ * - Modifying own copy (user_id=current_user): Updates in-place
+ * - Modifying other's copy (user_id!=current_user): Rejects with 403 Forbidden
+ */
+@ApplicationScoped
+@Slf4j
+public class ReverseGeocodingManagementService {
+
+    private final ReverseGeocodingLocationRepository geocodingRepository;
+    private final GeocodingProviderFactory providerFactory;
+    private final GeocodingConfigurationService configService;
+    private final ReverseGeocodingDTOMapper dtoMapper;
+    private final GeocodingCopyOnWriteHandler copyOnWriteHandler;
+    private final GeocodingReconciliationService reconciliationService;
+    private final ReconciliationJobProgressService reconciliationProgressService;
+    private final ManagedExecutor managedExecutor;
+    private final UserLocationNormalizationService userLocationNormalizationService;
+    private final FavoriteLocationService favoriteLocationService;
+
+    @ConfigProperty(name = "geocoding.reconcile.item.max-attempts", defaultValue = "3")
+    int reconcileItemMaxAttempts;
+
+    @ConfigProperty(name = "geocoding.reconcile.circuit-open-wait.ms", defaultValue = "15000")
+    long reconcileCircuitOpenWaitMs;
+
+    @ConfigProperty(name = "geocoding.reconcile.inter-item-delay.ms", defaultValue = "1000")
+    long reconcileInterItemDelayMs;
+
+    @Inject
+    public ReverseGeocodingManagementService(
+            ReverseGeocodingLocationRepository geocodingRepository,
+            GeocodingProviderFactory providerFactory,
+            GeocodingConfigurationService configService,
+            ReverseGeocodingDTOMapper dtoMapper,
+            GeocodingCopyOnWriteHandler copyOnWriteHandler,
+            GeocodingReconciliationService reconciliationService,
+            ReconciliationJobProgressService reconciliationProgressService,
+            ManagedExecutor managedExecutor,
+            UserLocationNormalizationService userLocationNormalizationService,
+            FavoriteLocationService favoriteLocationService) {
+        this.geocodingRepository = geocodingRepository;
+        this.providerFactory = providerFactory;
+        this.configService = configService;
+        this.dtoMapper = dtoMapper;
+        this.copyOnWriteHandler = copyOnWriteHandler;
+        this.reconciliationService = reconciliationService;
+        this.reconciliationProgressService = reconciliationProgressService;
+        this.managedExecutor = managedExecutor;
+        this.userLocationNormalizationService = userLocationNormalizationService;
+        this.favoriteLocationService = favoriteLocationService;
+    }
+
+    /**
+     * Get paginated list of geocoding results for user management page.
+     * Shows only entities relevant to current user.
+     */
+    public List<ReverseGeocodingDTO> getGeocodingResults(
+            UUID userId, String providerName, String searchText, int page, int limit,
+            String sortField, String sortOrder) {
+
+        // Use new user-filtered repository method
+        List<ReverseGeocodingLocationEntity> entities = geocodingRepository.findForUserManagementPage(
+                userId, providerName, null, null, searchText, page, limit, sortField, sortOrder);
+
+        return dtoMapper.toDTOList(entities);
+    }
+
+    /**
+     * Get total count with filters for user management page.
+     */
+    public long countGeocodingResults(UUID userId, String providerName, String searchText) {
+        return geocodingRepository.countForUserManagementPage(userId, providerName, null, null, searchText);
+    }
+
+    /**
+     * Get a single geocoding result by ID.
+     * Ensures user can only access their own copies or originals they reference.
+     */
+    public ReverseGeocodingDTO getGeocodingResult(UUID userId, Long id) {
+        ReverseGeocodingLocationEntity entity = geocodingRepository.findById(id);
+        if (entity == null) {
+            throw new NotFoundException("Geocoding result not found: " + id);
+        }
+
+        // Security check: User can access if it's original OR belongs to them
+        if (entity.getUser() != null && !entity.isOwnedBy(userId)) {
+            throw new ForbiddenException("Cannot access another user's geocoding data");
+        }
+
+        return dtoMapper.toDTO(entity);
+    }
+
+    /**
+     * Update geocoding result with copy-on-write semantics.
+     * <p>
+     * Behavior:
+     * - If entity belongs to current user: Update in-place
+     * - If entity is original (user_id=NULL): Create user-specific copy, keep original
+     * - If entity belongs to another user: Reject (403 Forbidden)
+     */
+    @Transactional
+    public ReverseGeocodingDTO updateGeocodingResult(UUID currentUserId, Long geocodingId, ReverseGeocodingUpdateDTO updateDTO) {
+        ReverseGeocodingLocationEntity entity = geocodingRepository.findById(geocodingId);
+        if (entity == null) {
+            throw new NotFoundException("Geocoding result not found: " + geocodingId);
+        }
+
+        UpdateResult result = copyOnWriteHandler.handleUserUpdate(currentUserId, entity, updateDTO);
+        return dtoMapper.toDTO(result.entity());
+    }
+
+    /**
+     * Bulk update geocoding results with copy-on-write semantics.
+     * Only updates city and/or country fields for selected entities.
+     */
+    @Transactional
+    public BulkUpdateGeocodingResult bulkUpdateGeocoding(UUID currentUserId, BulkUpdateGeocodingDto bulkDto) {
+        log.info("Starting bulk update geocoding for user {}: {} results, updateCity={}, updateCountry={}",
+                currentUserId, bulkDto.getGeocodingIds().size(), bulkDto.getUpdateCity(), bulkDto.getUpdateCountry());
+
+        java.util.Map<Long, String> failures = new java.util.HashMap<>();
+        int successCount = 0;
+
+        for (Long geocodingId : bulkDto.getGeocodingIds()) {
+            try {
+                ReverseGeocodingLocationEntity entity = geocodingRepository.findById(geocodingId);
+                if (entity == null) {
+                    failures.put(geocodingId, "Geocoding result not found");
+                    continue;
+                }
+
+                // Security check
+                if (entity.getUser() != null && !entity.isOwnedBy(currentUserId)) {
+                    failures.put(geocodingId, "Cannot modify another user's geocoding data");
+                    continue;
+                }
+
+                // Build update DTO with only selected fields
+                ReverseGeocodingUpdateDTO updateDTO = ReverseGeocodingUpdateDTO.builder()
+                        .displayName(entity.getDisplayName()) // Keep existing
+                        .city(Boolean.TRUE.equals(bulkDto.getUpdateCity()) ? bulkDto.getCity().trim() : entity.getCity())
+                        .country(Boolean.TRUE.equals(bulkDto.getUpdateCountry()) ? bulkDto.getCountry().trim() : entity.getCountry())
+                        .build();
+
+                // Use copy-on-write handler to apply update
+                copyOnWriteHandler.handleUserUpdate(currentUserId, entity, updateDTO);
+                successCount++;
+
+                log.debug("Successfully updated geocoding {} for user {}", geocodingId, currentUserId);
+
+            } catch (Exception e) {
+                log.warn("Failed to update geocoding {} in bulk operation: {}", geocodingId, e.getMessage());
+                failures.put(geocodingId, e.getMessage());
+            }
+        }
+
+        int failedCount = failures.size();
+        log.info("Bulk update geocoding completed for user {}: {} successful, {} failed out of {} total",
+                currentUserId, successCount, failedCount, bulkDto.getGeocodingIds().size());
+
+        return BulkUpdateGeocodingResult.builder()
+                .totalRequested(bulkDto.getGeocodingIds().size())
+                .successCount(successCount)
+                .failedCount(failedCount)
+                .failures(failures)
+                .build();
+    }
+
+    /**
+     * Get distinct city and country values for current user's geocoding results.
+     * Includes both originals they reference and their own user-specific copies.
+     */
+    public DistinctValuesDto getDistinctValues(UUID userId) {
+        // Use management page query to get all entities accessible to user
+        List<ReverseGeocodingLocationEntity> entities = geocodingRepository.findForUserManagementPage(
+                userId, null, null, null, null, 1, Integer.MAX_VALUE, null, null);
+
+        List<String> cities = entities.stream()
+                .map(ReverseGeocodingLocationEntity::getCity)
+                .filter(city -> city != null && !city.trim().isEmpty())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+
+        List<String> countries = entities.stream()
+                .map(ReverseGeocodingLocationEntity::getCountry)
+                .filter(country -> country != null && !country.trim().isEmpty())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+
+        return DistinctValuesDto.builder()
+                .cities(cities)
+                .countries(countries)
+                .build();
+    }
+
+
+    /**
+     * Reconcile geocoding entity with provider (re-fetch from API).
+     * <p>
+     * Behavior:
+     * - If data unchanged: No action
+     * - If data changed:
+     * - Original (user_id=NULL): Create user-specific copy with new data
+     * - User's copy: Update in-place
+     * - Another user's copy: Reject (403)
+     */
+    public ReverseGeocodingDTO reconcileWithProvider(UUID currentUserId, Long geocodingId, String providerName) {
+        return reconciliationService.reconcileWithProvider(currentUserId, geocodingId, providerName);
+    }
+
+    /**
+     * Normalize city/country of a single geocoding entity for a specific user.
+     * Uses copy-on-write semantics where needed.
+     */
+    @Transactional
+    public ReverseGeocodingDTO normalizeGeocodingForUser(UUID currentUserId, Long geocodingId) {
+        ReverseGeocodingLocationEntity entity = geocodingRepository.findById(geocodingId);
+        if (entity == null) {
+            throw new NotFoundException("Geocoding result not found: " + geocodingId);
+        }
+        if (entity.getUser() != null && !entity.isOwnedBy(currentUserId)) {
+            throw new ForbiddenException("Cannot modify another user's geocoding data");
+        }
+
+        UserLocationNormalizationService.NormalizedLocation normalized =
+                userLocationNormalizationService.normalizeForUser(currentUserId, entity.getCity(), entity.getCountry());
+        if (!normalized.changed()) {
+            return dtoMapper.toDTO(entity);
+        }
+
+        ReverseGeocodingUpdateDTO updateDTO = ReverseGeocodingUpdateDTO.builder()
+                .displayName(entity.getDisplayName())
+                .city(normalized.city())
+                .country(normalized.country())
+                .build();
+        UpdateResult result = copyOnWriteHandler.handleUserUpdate(currentUserId, entity, updateDTO);
+        return dtoMapper.toDTO(result.entity());
+    }
+
+    /**
+     * Reconcile geocoding results with a specific provider (batch operation).
+     */
+    public ReverseGeocodingReconcileResult reconcileWithProvider(UUID currentUserId, ReverseGeocodingReconcileRequest request) {
+        List<Long> idsToReconcile = determineIdsToReconcile(currentUserId, request);
+
+        log.info("Reconciling {} geocoding results for user {} with provider: {}",
+                idsToReconcile.size(), currentUserId, request.getProviderName());
+
+        int totalProcessed = 0;
+        int successfulUpdates = 0;
+        int failedUpdates = 0;
+        List<ReverseGeocodingReconcileResult.ReconcileError> errors = new ArrayList<>();
+
+        for (Long id : idsToReconcile) {
+            totalProcessed++;
+            try {
+                reconciliationService.reconcileWithProvider(currentUserId, id, request.getProviderName());
+                successfulUpdates++;
+            } catch (Exception e) {
+                failedUpdates++;
+                log.warn("Failed to reconcile geocoding result {} for user {}: {}",
+                        id, currentUserId, e.getMessage());
+                errors.add(ReverseGeocodingReconcileResult.ReconcileError.builder()
+                        .geocodingId(id)
+                        .errorMessage(e.getMessage())
+                        .build());
+            }
+        }
+
+        log.info("Reconciliation complete for user {}: {} processed, {} successful, {} failed",
+                currentUserId, totalProcessed, successfulUpdates, failedUpdates);
+
+        return ReverseGeocodingReconcileResult.builder()
+                .totalProcessed(totalProcessed)
+                .successfulUpdates(successfulUpdates)
+                .failedUpdates(failedUpdates)
+                .errors(errors)
+                .build();
+    }
+
+    /**
+     * Start async bulk reconciliation job and return job ID immediately.
+     * This is the new async method that creates a job and processes it in the background.
+     */
+    public UUID reconcileWithProviderAsync(UUID currentUserId, ReverseGeocodingReconcileRequest request) {
+        List<Long> idsToReconcile = determineIdsToReconcile(currentUserId, request);
+
+        // Create job
+        UUID jobId = reconciliationProgressService.createJob(
+                currentUserId, request.getProviderName(), idsToReconcile.size());
+
+        log.info("Starting async reconciliation job {} for user {} ({} items)",
+                jobId, currentUserId, idsToReconcile.size());
+
+        // Run reconciliation asynchronously using ManagedExecutor
+        CompletableFuture.runAsync(() -> {
+            try {
+                processReconciliationJob(jobId, currentUserId, idsToReconcile, request.getProviderName());
+            } catch (Exception e) {
+                log.error("Failed to process reconciliation job {}", jobId, e);
+                reconciliationProgressService.failJob(jobId, e.getMessage());
+            }
+        }, managedExecutor);
+
+        return jobId;
+    }
+
+    public UUID applyNormalizationRulesAsync(UUID currentUserId, ApplyNormalizationRulesRequest request) {
+        boolean applyToGeocoding = Boolean.TRUE.equals(request.getApplyToGeocoding());
+        boolean applyToFavorites = Boolean.TRUE.equals(request.getApplyToFavorites());
+
+        int geocodingCount = 0;
+        int favoritesCount = 0;
+        List<Long> geocodingIds = List.of();
+        if (applyToGeocoding) {
+            geocodingIds = geocodingRepository.findForUserManagementPage(
+                    currentUserId, null, null, null, null, 1, Integer.MAX_VALUE, null, null)
+                    .stream()
+                    .map(ReverseGeocodingLocationEntity::getId)
+                    .collect(Collectors.toList());
+            geocodingCount = geocodingIds.size();
+        }
+        if (applyToFavorites) {
+            FavoriteLocationsDto favorites = favoriteLocationService.getFavorites(currentUserId);
+            favoritesCount = favorites.getPoints().size() + favorites.getAreas().size();
+        }
+
+        int totalItems = geocodingCount + favoritesCount;
+        UUID jobId = reconciliationProgressService.createJob(currentUserId, "normalization-rules", totalItems);
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("mode", "normalization-rules");
+        metadata.put("applyToGeocoding", applyToGeocoding);
+        metadata.put("applyToFavorites", applyToFavorites);
+        metadata.put("geocodingProcessed", 0);
+        metadata.put("geocodingUpdated", 0);
+        metadata.put("geocodingFailed", 0);
+        metadata.put("favoritesProcessed", 0);
+        metadata.put("favoritesUpdated", 0);
+        metadata.put("favoritesFailed", 0);
+        reconciliationProgressService.updateMetadata(jobId, metadata);
+
+        List<Long> finalGeocodingIds = geocodingIds;
+        CompletableFuture.runAsync(() -> {
+            try {
+                processNormalizationJob(jobId, currentUserId, finalGeocodingIds, applyToFavorites, null);
+            } catch (Exception e) {
+                log.error("Failed to process normalization job {}", jobId, e);
+                reconciliationProgressService.failJob(jobId, e.getMessage());
+            }
+        }, managedExecutor);
+
+        return jobId;
+    }
+
+    public UUID applyNormalizationRuleAsync(UUID currentUserId, Long ruleId, ApplyNormalizationRulesRequest request) {
+        boolean applyToGeocoding = Boolean.TRUE.equals(request.getApplyToGeocoding());
+        boolean applyToFavorites = Boolean.TRUE.equals(request.getApplyToFavorites());
+        NormalizationRuleDto rule = userLocationNormalizationService.getRule(currentUserId, ruleId);
+
+        int geocodingCount = 0;
+        int favoritesCount = 0;
+        List<Long> geocodingIds = List.of();
+        if (applyToGeocoding) {
+            geocodingIds = geocodingRepository.findForUserManagementPage(
+                            currentUserId, null, null, null, null, 1, Integer.MAX_VALUE, null, null)
+                    .stream()
+                    .map(ReverseGeocodingLocationEntity::getId)
+                    .collect(Collectors.toList());
+            geocodingCount = geocodingIds.size();
+        }
+        if (applyToFavorites) {
+            FavoriteLocationsDto favorites = favoriteLocationService.getFavorites(currentUserId);
+            favoritesCount = favorites.getPoints().size() + favorites.getAreas().size();
+        }
+
+        int totalItems = geocodingCount + favoritesCount;
+        UUID jobId = reconciliationProgressService.createJob(currentUserId, "normalization-rules", totalItems);
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("mode", "normalization-rules");
+        metadata.put("singleRule", true);
+        metadata.put("ruleId", rule.getId());
+        metadata.put("applyToGeocoding", applyToGeocoding);
+        metadata.put("applyToFavorites", applyToFavorites);
+        metadata.put("geocodingProcessed", 0);
+        metadata.put("geocodingUpdated", 0);
+        metadata.put("geocodingFailed", 0);
+        metadata.put("favoritesProcessed", 0);
+        metadata.put("favoritesUpdated", 0);
+        metadata.put("favoritesFailed", 0);
+        reconciliationProgressService.updateMetadata(jobId, metadata);
+
+        List<Long> finalGeocodingIds = geocodingIds;
+        CompletableFuture.runAsync(() -> {
+            try {
+                processNormalizationJob(jobId, currentUserId, finalGeocodingIds, applyToFavorites, rule);
+            } catch (Exception e) {
+                log.error("Failed to process single-rule normalization job {}", jobId, e);
+                reconciliationProgressService.failJob(jobId, e.getMessage());
+            }
+        }, managedExecutor);
+
+        return jobId;
+    }
+
+    /**
+     * Process reconciliation job with progress tracking.
+     * This runs asynchronously and updates progress after each item.
+     */
+    @ActivateRequestContext
+    void processReconciliationJob(UUID jobId, UUID userId, List<Long> ids, String providerName) {
+        int successCount = 0;
+        int failedCount = 0;
+
+        log.info("Processing reconciliation job {} with {} items", jobId, ids.size());
+
+        for (int i = 0; i < ids.size(); i++) {
+            Long id = ids.get(i);
+            if (i > 0) {
+                sleepWithInterruptHandling(Math.max(0, reconcileInterItemDelayMs),
+                        "inter-item reconciliation delay", jobId, id);
+            }
+
+            boolean reconciled = reconcileWithRetry(userId, id, providerName, jobId);
+            if (reconciled) {
+                successCount++;
+            } else {
+                failedCount++;
+            }
+
+            // Update progress after each item
+            reconciliationProgressService.updateProgress(jobId, i + 1, successCount, failedCount);
+        }
+
+        // Mark complete
+        reconciliationProgressService.completeJob(jobId);
+        log.info("Reconciliation job {} completed: {} success, {} failed", jobId, successCount, failedCount);
+    }
+
+    @ActivateRequestContext
+    @Transactional
+    void processNormalizationJob(
+            UUID jobId,
+            UUID userId,
+            List<Long> geocodingIds,
+            boolean applyToFavorites,
+            NormalizationRuleDto singleRule) {
+        int processed = 0;
+        int successCount = 0;
+        int failedCount = 0;
+        int geocodingUpdated = 0;
+        int geocodingFailed = 0;
+
+        for (Long geocodingId : geocodingIds) {
+            processed++;
+            try {
+                ReverseGeocodingDTO before = getGeocodingResult(userId, geocodingId);
+                ReverseGeocodingDTO after = singleRule == null
+                        ? normalizeGeocodingForUser(userId, geocodingId)
+                        : applySingleNormalizationRuleToGeocoding(userId, geocodingId, singleRule);
+                successCount++;
+                if (!safeEquals(before.getCity(), after.getCity()) || !safeEquals(before.getCountry(), after.getCountry())) {
+                    geocodingUpdated++;
+                }
+            } catch (Exception e) {
+                failedCount++;
+                geocodingFailed++;
+                log.warn("Normalization failed for geocoding {} in job {}: {}", geocodingId, jobId, e.getMessage());
+            }
+
+            updateNormalizationMetadata(jobId, processed, successCount, failedCount,
+                    processed, geocodingUpdated, geocodingFailed, 0, 0, 0);
+        }
+
+        int favoritesProcessed = 0;
+        int favoritesUpdated = 0;
+        int favoritesFailed = 0;
+        if (applyToFavorites) {
+            FavoriteLocationService.BulkDomainApplyResult favoritesResult = singleRule == null
+                    ? favoriteLocationService.applyNormalizationRulesToFavorites(userId)
+                    : favoriteLocationService.applyNormalizationRuleToFavorites(userId, singleRule);
+            favoritesProcessed = favoritesResult.processed();
+            favoritesUpdated = favoritesResult.updated();
+            favoritesFailed = favoritesResult.failed();
+            processed += favoritesProcessed;
+            successCount += Math.max(0, favoritesProcessed - favoritesFailed);
+            failedCount += favoritesFailed;
+        }
+
+        updateNormalizationMetadata(jobId, processed, successCount, failedCount,
+                geocodingIds.size(), geocodingUpdated, geocodingFailed,
+                favoritesProcessed, favoritesUpdated, favoritesFailed);
+
+        reconciliationProgressService.completeJob(jobId);
+    }
+
+    @Transactional
+    ReverseGeocodingDTO applySingleNormalizationRuleToGeocoding(UUID currentUserId, Long geocodingId, NormalizationRuleDto rule) {
+        ReverseGeocodingLocationEntity entity = geocodingRepository.findById(geocodingId);
+        if (entity == null) {
+            throw new NotFoundException("Geocoding result not found: " + geocodingId);
+        }
+        if (entity.getUser() != null && !entity.isOwnedBy(currentUserId)) {
+            throw new ForbiddenException("Cannot modify another user's geocoding data");
+        }
+
+        UserLocationNormalizationService.NormalizedLocation normalized =
+                userLocationNormalizationService.applySingleRule(rule, entity.getCity(), entity.getCountry());
+        if (!normalized.changed()) {
+            return dtoMapper.toDTO(entity);
+        }
+
+        ReverseGeocodingUpdateDTO updateDTO = ReverseGeocodingUpdateDTO.builder()
+                .displayName(entity.getDisplayName())
+                .city(normalized.city())
+                .country(normalized.country())
+                .build();
+        UpdateResult result = copyOnWriteHandler.handleUserUpdate(currentUserId, entity, updateDTO);
+        return dtoMapper.toDTO(result.entity());
+    }
+
+    /**
+     * Job-level retry wrapper for reconciliation.
+     * Provider-level @Retry/@CircuitBreaker remains on provider methods; this loop controls
+     * per-item retry budget and circuit-open cooldown between attempts within bulk jobs.
+     */
+    private boolean reconcileWithRetry(UUID userId, Long geocodingId, String providerName, UUID jobId) {
+        int maxAttempts = Math.max(1, reconcileItemMaxAttempts);
+
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                reconciliationService.reconcileWithProvider(userId, geocodingId, providerName);
+                return true;
+            } catch (Exception e) {
+                boolean circuitOpen = isCircuitBreakerOpenFailure(e);
+                if (attempt >= maxAttempts) {
+                    log.warn("Failed to reconcile geocoding result {} in job {} after {} attempts: {}",
+                            geocodingId, jobId, attempt, e.getMessage());
+                    return false;
+                }
+
+                if (circuitOpen) {
+                    long waitMs = Math.max(0, reconcileCircuitOpenWaitMs);
+                    log.warn("Circuit breaker open while reconciling geocoding result {} in job {}. " +
+                                    "Waiting {}ms before retry {}/{}",
+                            geocodingId, jobId, waitMs, attempt + 1, maxAttempts);
+                    sleepWithInterruptHandling(waitMs, "circuit-breaker cooldown", jobId, geocodingId);
+                } else {
+                    log.warn("Failed to reconcile geocoding result {} in job {} (attempt {}/{}): {}",
+                            geocodingId, jobId, attempt, maxAttempts, e.getMessage());
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isCircuitBreakerOpenFailure(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            if (current instanceof CircuitBreakerOpenException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    private void sleepWithInterruptHandling(long delayMs, String reason, UUID jobId, Long geocodingId) {
+        if (delayMs <= 0) {
+            return;
+        }
+
+        try {
+            Thread.sleep(delayMs);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(
+                    "Reconciliation job " + jobId + " interrupted during " + reason +
+                            " for geocoding " + geocodingId, e);
+        }
+    }
+
+    /**
+     * Determine which IDs to reconcile based on request.
+     */
+    private List<Long> determineIdsToReconcile(UUID userId, ReverseGeocodingReconcileRequest request) {
+        if (Boolean.TRUE.equals(request.getReconcileAll())) {
+            // Get all geocoding IDs for user (from management page query)
+            List<ReverseGeocodingLocationEntity> entities = geocodingRepository.findForUserManagementPage(
+                    userId, request.getFilterByProvider(), null, null, null, 1, Integer.MAX_VALUE, null, null);
+            return entities.stream()
+                    .map(ReverseGeocodingLocationEntity::getId)
+                    .collect(Collectors.toList());
+        } else {
+            // Reconcile only specified IDs
+            return request.getGeocodingIds();
+        }
+    }
+
+    /**
+     * Get list of enabled providers (for reconciliation).
+     */
+    public List<GeocodingProviderDTO> getEnabledProviders() {
+        List<GeocodingProviderDTO> providers = new ArrayList<>();
+
+        String primaryProvider = configService.getPrimaryProvider();
+        String fallbackProvider = configService.getFallbackProvider();
+
+        List<String> enabledProviders = providerFactory.getEnabledProviders();
+
+        for (String providerName : enabledProviders) {
+            providers.add(GeocodingProviderDTO.builder()
+                    .name(providerName)
+                    .displayName(providerName)
+                    .enabled(true)
+                    .isPrimary(providerName.equalsIgnoreCase(primaryProvider))
+                    .isFallback(providerName.equalsIgnoreCase(fallbackProvider))
+                    .build());
+        }
+
+        return providers;
+    }
+
+    /**
+     * Get list of providers that have data in the database (for filtering).
+     */
+    public List<String> getProvidersWithData() {
+        return geocodingRepository.findDistinctProviderNames();
+    }
+
+    private void updateNormalizationMetadata(
+            UUID jobId,
+            int processedItems,
+            int successCount,
+            int failedCount,
+            int geocodingProcessed,
+            int geocodingUpdated,
+            int geocodingFailed,
+            int favoritesProcessed,
+            int favoritesUpdated,
+            int favoritesFailed) {
+        reconciliationProgressService.updateProgress(jobId, processedItems, successCount, failedCount);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("geocodingProcessed", geocodingProcessed);
+        metadata.put("geocodingUpdated", geocodingUpdated);
+        metadata.put("geocodingFailed", geocodingFailed);
+        metadata.put("favoritesProcessed", favoritesProcessed);
+        metadata.put("favoritesUpdated", favoritesUpdated);
+        metadata.put("favoritesFailed", favoritesFailed);
+        reconciliationProgressService.updateMetadata(jobId, metadata);
+    }
+
+    private boolean safeEquals(String left, String right) {
+        if (left == null) {
+            return right == null;
+        }
+        return left.equals(right);
+    }
+}

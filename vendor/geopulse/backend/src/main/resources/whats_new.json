@@ -1,0 +1,14 @@
+[
+  {
+    "version": "1.30.0",
+    "title": "GeoPulse 1.30.0",
+    "highlights": [
+      "Added option to use Apprise Key/Tag notification system instead of raw URLs",
+      "Added a backend changes to allow mobile client to connect to the GeoPulse server",
+      "Fixed OwnTracks integration in some edge cases",
+      "Fixed issue with Photon when not supported language was used",
+      "Fixed UI instructions for GPSLogger"
+    ],
+    "releaseUrl": "https://github.com/tess1o/geopulse/releases/tag/v1.30.0"
+  }
+]

@@ -1,0 +1,70 @@
+package org.github.tess1o.geopulse.gpssource.repository;
+
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.github.tess1o.geopulse.gpssource.model.GpsSourceConfigEntity;
+import org.github.tess1o.geopulse.shared.gps.GpsSourceType;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@ApplicationScoped
+public class GpsSourceRepository implements PanacheRepositoryBase<GpsSourceConfigEntity, UUID> {
+
+    public List<GpsSourceConfigEntity> findByUserId(UUID userId) {
+        return list("user.id = ?1", userId);
+    }
+
+    public Optional<GpsSourceConfigEntity> findByConfigIdAndUserId(UUID configId, UUID userId) {
+        return list("user.id = ?1 and id = ?2", userId, configId).stream().findFirst();
+    }
+
+    public List<GpsSourceConfigEntity> findByUserIdAndSourceType(UUID userId, GpsSourceType sourceType) {
+        return list("user.id = ?1 and sourceType = ?2", userId, sourceType);
+    }
+
+    public long deleteByUserIdAndConfigId(UUID configId, UUID userId) {
+        return delete("id = ?1 and user.id = ?2", configId, userId);
+    }
+
+    public Optional<GpsSourceConfigEntity> findByUsername(String username) {
+        return find("username = ?1", username).firstResultOptional();
+    }
+
+    public Optional<GpsSourceConfigEntity> findByUsernameAndSourceType(String username, GpsSourceType sourceType) {
+        return find("username = ?1 and sourceType = ?2 and active = true", username, sourceType).firstResultOptional();
+    }
+
+    public Optional<GpsSourceConfigEntity> findByToken(String token) {
+        return find("token = ?1", token).firstResultOptional();
+    }
+
+    public Optional<GpsSourceConfigEntity> findByTokenAndSourceType(String token, GpsSourceType sourceType) {
+        return find("token = ?1 and sourceType = ?2 and active = true", token, sourceType).firstResultOptional();
+    }
+
+    public List<GpsSourceConfigEntity> findAllActiveByTokenAndSourceType(String token, GpsSourceType sourceType) {
+        return list("token = ?1 and sourceType = ?2 and active = true", token, sourceType);
+    }
+
+    public List<GpsSourceConfigEntity> findByUserIdSourceTypeAndToken(UUID userId, GpsSourceType sourceType, String token) {
+        return list("user.id = ?1 and sourceType = ?2 and token = ?3", userId, sourceType, token);
+    }
+
+    public Optional<GpsSourceConfigEntity> findByUsernameAndConnectionType(String username, GpsSourceConfigEntity.ConnectionType connectionType) {
+        return find("username = ?1 and connectionType = ?2 and active = true", username, connectionType).firstResultOptional();
+    }
+
+    /**
+     * Find existing GPS source configurations by user, username and source type for duplicate detection during import.
+     * 
+     * @param userId The user ID
+     * @param username The username
+     * @param sourceType The source type
+     * @return List of potential duplicate GPS source configurations
+     */
+    public List<GpsSourceConfigEntity> findByUserAndUsernameAndType(UUID userId, String username, GpsSourceType sourceType) {
+        return list("user.id = ?1 AND username = ?2 AND sourceType = ?3", userId, username, sourceType);
+    }
+}

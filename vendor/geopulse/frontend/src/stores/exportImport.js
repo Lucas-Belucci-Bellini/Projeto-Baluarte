@@ -1,0 +1,637 @@
+import { defineStore } from 'pinia'
+import apiService from '../utils/apiService'
+import chunkedUploadService from '../utils/chunkedUploadService'
+
+export const useExportImportStore = defineStore('exportImport', {
+    state: () => ({
+        // Export state
+        exportJobs: [],
+        currentExportJob: null,
+
+        // Import state
+        importJobs: [],
+        currentImportJob: null,
+
+        // UI state
+        isExporting: false,
+        isImporting: false,
+        uploadProgress: 0,
+        isUploading: false,
+
+        // Chunked upload state (for internal tracking)
+        currentChunkInfo: null  // { index, completed, total }
+    }),
+
+    getters: {
+        // Export getters
+        getExportJobs: (state) => state.exportJobs,
+        getCurrentExportJob: (state) => state.currentExportJob,
+        hasActiveExportJob: (state) => {
+            return state.currentExportJob && 
+                   ['processing', 'validating'].includes(state.currentExportJob.status)
+        },
+        getCompletedExportJobs: (state) => {
+            return state.exportJobs.filter(job => job.status === 'completed')
+        },
+        getFailedExportJobs: (state) => {
+            return state.exportJobs.filter(job => job.status === 'failed')
+        },
+
+        // Import getters
+        getImportJobs: (state) => state.importJobs,
+        getCurrentImportJob: (state) => state.currentImportJob,
+        hasActiveImportJob: (state) => {
+            return state.currentImportJob && 
+                   ['processing', 'validating'].includes(state.currentImportJob.status)
+        },
+        getCompletedImportJobs: (state) => {
+            return state.importJobs.filter(job => job.status === 'completed')
+        },
+        getFailedImportJobs: (state) => {
+            return state.importJobs.filter(job => job.status === 'failed')
+        },
+
+        // UI state getters
+        getIsExporting: (state) => state.isExporting,
+        getIsImporting: (state) => state.isImporting,
+        getIsProcessing: (state) => state.isExporting || state.isImporting
+    },
+
+    actions: {
+        // Export actions
+        setExportJobs(jobs) {
+            this.exportJobs = jobs
+        },
+
+        setCurrentExportJob(job) {
+            this.currentExportJob = job
+        },
+
+        addExportJob(job) {
+            const existingIndex = this.exportJobs.findIndex(j => j.exportJobId === job.exportJobId)
+            if (existingIndex !== -1) {
+                this.exportJobs[existingIndex] = job
+            } else {
+                this.exportJobs.unshift(job)
+            }
+        },
+
+        updateExportJob(jobId, updates) {
+            const job = this.exportJobs.find(j => j.exportJobId === jobId)
+            if (job) {
+                Object.assign(job, updates)
+            }
+            if (this.currentExportJob?.exportJobId === jobId) {
+                Object.assign(this.currentExportJob, updates)
+            }
+        },
+
+        removeExportJob(jobId) {
+            this.exportJobs = this.exportJobs.filter(j => j.exportJobId !== jobId)
+            if (this.currentExportJob?.exportJobId === jobId) {
+                this.currentExportJob = null
+            }
+        },
+
+        // Import actions
+        setImportJobs(jobs) {
+            this.importJobs = jobs
+        },
+
+        setCurrentImportJob(job) {
+            this.currentImportJob = job
+        },
+
+        addImportJob(job) {
+            const existingIndex = this.importJobs.findIndex(j => j.importJobId === job.importJobId)
+            if (existingIndex !== -1) {
+                this.importJobs[existingIndex] = job
+            } else {
+                this.importJobs.unshift(job)
+            }
+        },
+
+        updateImportJob(jobId, updates) {
+            const job = this.importJobs.find(j => j.importJobId === jobId)
+            if (job) {
+                Object.assign(job, updates)
+            }
+            if (this.currentImportJob?.importJobId === jobId) {
+                Object.assign(this.currentImportJob, updates)
+            }
+        },
+
+        removeImportJob(jobId) {
+            this.importJobs = this.importJobs.filter(j => j.importJobId !== jobId)
+            if (this.currentImportJob?.importJobId === jobId) {
+                this.currentImportJob = null
+            }
+        },
+
+        // API Actions - Export
+        async createExportJob(dataTypes, dateRange, format = 'json') {
+            this.isExporting = true
+            try {
+                const response = await apiService.post('/export/create', {
+                    dataTypes,
+                    dateRange,
+                    format
+                })
+
+                // Handle successful response
+                if (response.success) {
+                    this.setCurrentExportJob(response)
+                    this.addExportJob(response)
+                    return response
+                } else {
+                    throw new Error(response.error?.message || 'Export creation failed')
+                }
+            } catch (error) {
+                // Handle API error responses
+                if (error.response?.data?.error) {
+                    const apiError = error.response.data.error
+                    throw new Error(apiError.message || 'Export creation failed')
+                }
+                throw error
+            } finally {
+                this.isExporting = false
+            }
+        },
+
+        async fetchExportStatus(exportJobId) {
+            try {
+                const response = await apiService.get(`/export/status/${exportJobId}`)
+                
+                // Handle successful response
+                if (response.success) {
+                    this.updateExportJob(exportJobId, response)
+                    
+                    if (this.currentExportJob?.exportJobId === exportJobId) {
+                        this.setCurrentExportJob(response)
+                    }
+                    
+                    return response
+                } else {
+                    throw new Error(response.error?.message || 'Failed to fetch export status')
+                }
+            } catch (error) {
+                // Handle API error responses
+                if (error.response?.data?.error) {
+                    const apiError = error.response.data.error
+                    throw new Error(apiError.message || 'Failed to fetch export status')
+                }
+                throw error
+            }
+        },
+
+        async fetchExportJobs(limit = 10, offset = 0) {
+            try {
+                const response = await apiService.get(`/export/jobs?limit=${limit}&offset=${offset}`)
+                
+                // Handle successful response
+                if (response.success) {
+                    this.setExportJobs(response.jobs)
+                    return response
+                } else {
+                    throw new Error(response.error?.message || 'Failed to fetch export jobs')
+                }
+            } catch (error) {
+                // Handle API error responses
+                if (error.response?.data?.error) {
+                    const apiError = error.response.data.error
+                    throw new Error(apiError.message || 'Failed to fetch export jobs')
+                }
+                throw error
+            }
+        },
+
+        async downloadExportFile(exportJobId) {
+            try {
+                // This will trigger a file download directly from the backend
+                const response = await apiService.download(`/export/download/${exportJobId}`)
+                return response
+            } catch (error) {
+                throw error
+            }
+        },
+
+        async deleteExportJob(exportJobId) {
+            try {
+                const response = await apiService.delete(`/export/jobs/${exportJobId}`)
+                // Handle successful response
+                if (response.status === 'success') {
+                    this.removeExportJob(exportJobId)
+                    return true
+                } else {
+                    throw new Error(response.error?.message || 'Failed to delete export job')
+                }
+            } catch (error) {
+                // Handle API error responses
+                if (error.response?.data?.error) {
+                    const apiError = error.response.data.error
+                    throw new Error(apiError.message || 'Failed to delete export job')
+                }
+                throw error
+            }
+        },
+
+        // API Actions - Export (OwnTracks)
+        // Convenience wrapper for createExportJob with OwnTracks format
+        async createOwnTracksExportJob(dateRange) {
+            return this.createExportJob(['raw_gps'], dateRange, 'owntracks')
+        },
+
+        // API Actions - Export (GeoJSON)
+        // Convenience wrapper for createExportJob with GeoJSON format
+        async createGeoJsonExportJob(dateRange) {
+            return this.createExportJob(['raw_gps'], dateRange, 'geojson')
+        },
+
+        // API Actions - Export (GPX)
+        // Convenience wrapper for createExportJob with GPX format
+        async createGpxExportJob(dateRange, zipPerTrip = false, zipGroupBy = 'individual') {
+            this.isExporting = true
+            try {
+                const response = await apiService.post('/export/create', {
+                    dataTypes: ['raw_gps'],
+                    dateRange,
+                    format: 'gpx',
+                    options: {
+                        zipPerTrip,
+                        zipGroupBy
+                    }
+                })
+
+                // Handle successful response
+                if (response.success) {
+                    this.setCurrentExportJob(response)
+                    this.addExportJob(response)
+                    return response
+                } else {
+                    throw new Error(response.error?.message || 'GPX export creation failed')
+                }
+            } catch (error) {
+                // Handle API error responses
+                if (error.response?.data?.error) {
+                    const apiError = error.response.data.error
+                    throw new Error(apiError.message || 'GPX export creation failed')
+                }
+                throw error
+            } finally {
+                this.isExporting = false
+            }
+        },
+
+        // API Actions - Export (CSV)
+        // Convenience wrapper for createExportJob with CSV format
+        async createCsvExportJob(dateRange) {
+            return this.createExportJob(['raw_gps'], dateRange, 'csv')
+        },
+
+        // Download CSV template
+        async downloadCsvTemplate() {
+            try {
+                await apiService.download('/export/csv/template')
+                return true
+            } catch (error) {
+                throw error
+            }
+        },
+
+        // API Actions - Export single trip as GPX
+        async exportTripAsGpx(tripId) {
+            try {
+                // This will trigger a file download directly from the backend
+                const response = await apiService.download(`/export/gpx/trip/${tripId}`)
+                return response
+            } catch (error) {
+                throw error
+            }
+        },
+
+        // API Actions - Export single stay as GPX
+        async exportStayAsGpx(stayId) {
+            try {
+                // This will trigger a file download directly from the backend
+                const response = await apiService.download(`/export/gpx/stay/${stayId}`)
+                return response
+            } catch (error) {
+                throw error
+            }
+        },
+
+        // Helper method for file uploads - decides between chunked and direct upload
+        // Uses unified /import/upload endpoint for all formats
+        async _performUpload(file, importFormat, options = {}) {
+            // Check if file should use chunked upload (>80MB)
+            if (chunkedUploadService.shouldUseChunkedUpload(file)) {
+                // Use chunked upload for large files
+                return await chunkedUploadService.uploadFile(file, importFormat, options, {
+                    onProgress: (progress) => {
+                        this.uploadProgress = progress
+                    },
+                    onChunkComplete: (index, completed, total) => {
+                        this.currentChunkInfo = { index, completed, total }
+                    }
+                })
+            } else {
+                // Use direct upload for smaller files via unified endpoint
+                const formData = new FormData()
+                formData.append('file', file)
+                formData.append('format', importFormat)
+                formData.append('options', JSON.stringify(options))
+
+                const response = await apiService.post('/import/upload', formData, {
+                    onUploadProgress: (progressEvent) => {
+                        // Cap at 99% during upload, reach 100% only when response received
+                        const progress = Math.round((progressEvent.loaded * 99) / progressEvent.total)
+                        this.uploadProgress = Math.min(progress, 99)
+                    }
+                })
+
+                // Upload complete, show 100%
+                this.uploadProgress = 100
+
+                return response
+            }
+        },
+
+        // API Actions - Import
+        async uploadImportFile(file, options = {}) {
+            this.isImporting = true
+            this.isUploading = true
+            this.uploadProgress = 0
+            this.currentChunkInfo = null
+            try {
+                const response = await this._performUpload(file, 'geopulse', options)
+
+                // Keep upload card visible for 500ms to show completion
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+                this.setCurrentImportJob(response)
+                this.addImportJob(response)
+
+                return response
+            } catch (error) {
+                throw error
+            } finally {
+                this.isImporting = false
+                this.isUploading = false
+                this.uploadProgress = 0
+                this.currentChunkInfo = null
+            }
+        },
+
+        // API Actions - Import (OwnTracks)
+        async uploadOwnTracksImportFile(file, options = {}) {
+            this.isImporting = true
+            this.isUploading = true
+            this.uploadProgress = 0
+            this.currentChunkInfo = null
+            try {
+                const response = await this._performUpload(file, 'owntracks', options)
+
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+                this.setCurrentImportJob(response)
+                this.addImportJob(response)
+
+                return response
+            } catch (error) {
+                throw error
+            } finally {
+                this.isImporting = false
+                this.isUploading = false
+                this.uploadProgress = 0
+                this.currentChunkInfo = null
+            }
+        },
+
+        async uploadGpxImportFile(file, options = {}) {
+            this.isImporting = true
+            this.isUploading = true
+            this.uploadProgress = 0
+            this.currentChunkInfo = null
+            try {
+                const response = await this._performUpload(file, 'gpx', options)
+
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+                this.setCurrentImportJob(response)
+                this.addImportJob(response)
+
+                return response
+            } catch (error) {
+                throw error
+            } finally {
+                this.isImporting = false
+                this.isUploading = false
+                this.uploadProgress = 0
+                this.currentChunkInfo = null
+            }
+        },
+
+        // API Actions - Import (Google Timeline)
+        async uploadGoogleTimelineImportFile(file, options = {}) {
+            this.isImporting = true
+            this.isUploading = true
+            this.uploadProgress = 0
+            this.currentChunkInfo = null
+            try {
+                const response = await this._performUpload(file, 'google-timeline', options)
+
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+                this.setCurrentImportJob(response)
+                this.addImportJob(response)
+
+                return response
+            } catch (error) {
+                throw error
+            } finally {
+                this.isImporting = false
+                this.isUploading = false
+                this.uploadProgress = 0
+                this.currentChunkInfo = null
+            }
+        },
+
+        // API Actions - Import (GeoJSON)
+        async uploadGeoJsonImportFile(file, options = {}) {
+            this.isImporting = true
+            this.isUploading = true
+            this.uploadProgress = 0
+            this.currentChunkInfo = null
+            try {
+                const response = await this._performUpload(file, 'geojson', options)
+
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+                this.setCurrentImportJob(response)
+                this.addImportJob(response)
+
+                return response
+            } catch (error) {
+                throw error
+            } finally {
+                this.isImporting = false
+                this.isUploading = false
+                this.uploadProgress = 0
+                this.currentChunkInfo = null
+            }
+        },
+
+        // API Actions - Import (CSV)
+        async uploadCsvImportFile(file, options = {}) {
+            this.isImporting = true
+            this.isUploading = true
+            this.uploadProgress = 0
+            this.currentChunkInfo = null
+            try {
+                const response = await this._performUpload(file, 'csv', options)
+
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+                this.setCurrentImportJob(response)
+                this.addImportJob(response)
+
+                return response
+            } catch (error) {
+                throw error
+            } finally {
+                this.isImporting = false
+                this.isUploading = false
+                this.uploadProgress = 0
+                this.currentChunkInfo = null
+            }
+        },
+
+        async fetchImportStatus(importJobId) {
+            try {
+                const response = await apiService.get(`/import/status/${importJobId}`)
+                
+                this.updateImportJob(importJobId, response)
+                
+                if (this.currentImportJob?.importJobId === importJobId) {
+                    this.setCurrentImportJob(response)
+                }
+                
+                return response
+            } catch (error) {
+                throw error
+            }
+        },
+
+        async fetchImportJobs(limit = 10, offset = 0) {
+            try {
+                const response = await apiService.get(`/import/jobs?limit=${limit}&offset=${offset}`)
+                
+                this.setImportJobs(response.jobs)
+                
+                return response
+            } catch (error) {
+                throw error
+            }
+        },
+
+        // Utility actions
+        pollJobStatus(jobId, isExport = true) {
+            let timeoutId = null
+            let isCancelled = false
+
+            const poll = async () => {
+                if (isCancelled) return
+
+                try {
+                    const response = isExport
+                        ? await this.fetchExportStatus(jobId)
+                        : await this.fetchImportStatus(jobId)
+
+                    // Stop polling only when job completes or fails
+                    if (['completed', 'failed'].includes(response.status)) {
+                        return response
+                    }
+
+                    // Keep polling for processing/validating jobs
+                    // Important: Timeline generation during imports can take 10-30 minutes
+                    if (!isCancelled) {
+                        timeoutId = setTimeout(() => poll(), 2000) // Poll every 2 seconds
+                    }
+
+                    return response
+                } catch (error) {
+                    console.error('Polling error:', error)
+                    // Retry on error after longer delay
+                    if (!isCancelled) {
+                        timeoutId = setTimeout(() => poll(), 5000)
+                    }
+                }
+            }
+
+            // Start polling
+            poll()
+
+            // Return cancel function
+            return {
+                cancel: () => {
+                    isCancelled = true
+                    if (timeoutId) {
+                        clearTimeout(timeoutId)
+                        timeoutId = null
+                    }
+                }
+            }
+        },
+
+        // Clear all data
+        clearAllData() {
+            this.exportJobs = []
+            this.importJobs = []
+            this.currentExportJob = null
+            this.currentImportJob = null
+            this.isExporting = false
+            this.isImporting = false
+            this.currentChunkInfo = null
+        },
+
+        // Get data type display names
+        getDataTypeDisplayName(dataType) {
+            const displayNames = {
+                rawgps: 'Raw GPS Data',
+                favorites: 'Favorite Locations',
+                reversegeocodinglocation: 'Reverse Geocoding Data',
+                locationsources: 'Location Sources',
+                userinfo: 'User Information',
+                statistics: 'Statistics'
+            }
+            return displayNames[dataType] || dataType
+        },
+
+        // Get file size display
+        getFileSizeDisplay(bytes) {
+            if (!bytes) return 'Unknown'
+            
+            const units = ['B', 'KB', 'MB', 'GB']
+            let size = bytes
+            let unitIndex = 0
+
+            while (size >= 1024 && unitIndex < units.length - 1) {
+                size /= 1024
+                unitIndex++
+            }
+
+            return `${size.toFixed(1)} ${units[unitIndex]}`
+        },
+
+        // Get status display info
+        getStatusDisplayInfo(status) {
+            const statusInfo = {
+                processing: { label: 'Processing', severity: 'info', icon: 'pi pi-spin pi-spinner' },
+                validating: { label: 'Validating', severity: 'info', icon: 'pi pi-spin pi-spinner' },
+                completed: { label: 'Completed', severity: 'success', icon: 'pi pi-check' },
+                failed: { label: 'Failed', severity: 'error', icon: 'pi pi-times' }
+            }
+            return statusInfo[status] || { label: status, severity: 'secondary', icon: 'pi pi-question' }
+        }
+    }
+})

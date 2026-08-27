@@ -1,0 +1,741 @@
+import { expect } from '@playwright/test';
+
+export class ShareLinksPage {
+  constructor(page) {
+    this.page = page;
+  }
+
+  // Selectors
+  get selectors() {
+    return {
+      // Page elements
+      pageTitle: 'h1:has-text("Share Links")',
+      pageDescription: 'text="Create and manage shareable links to your location data"',
+
+      // Header actions
+      createLinkButton: 'button:has-text("Create New")',
+      createFirstLinkButton: 'button:has-text("Create Your First Link")',
+      createMenu: '#create_menu',
+      liveLocationMenuItem: '.p-menu-item[aria-label="Live Location Share"]',
+      timelineMenuItem: '.p-menu-item[aria-label="Timeline Share"]',
+      menuItemLink: '.p-menu-item-link',
+
+      // Loading state
+      loadingSpinner: '.p-progress-spinner',
+      loadingMessage: 'text="Loading share links..."',
+
+      // Error state
+      errorMessage: '.p-message-error',
+
+      // Empty state
+      emptyState: '.empty-state',
+      emptyIcon: '.empty-icon',
+      emptyStateTitle: '.empty-state h3:has-text("No share links yet")',
+
+      // Share type sections
+      shareTypeSection: '.share-type-section',
+      timelineShareSection: '.share-type-section:has(.type-title:has-text("Timeline Shares"))',
+      liveLocationShareSection: '.share-type-section:has(.type-title:has-text("Live Location Shares"))',
+      typeTitle: '.type-title',
+
+      // Links sections
+      linksSection: '.links-section',
+      activeLinksSection: '.links-section:has(.section-subtitle:has-text("Active"))',
+      expiredLinksSection: '.links-section:has(.section-subtitle:has-text("Expired"))',
+      sectionTitle: '.section-title',
+      sectionSubtitle: '.section-subtitle',
+
+      // Link cards
+      linkCard: '.link-card',
+      activeLinkCard: '.link-card.active',
+      expiredLinkCard: '.link-card.expired',
+      timelineLinkCard: '.timeline-card',
+      liveLocationLinkCard: '.live-location-card',
+      linkTitle: '.link-title',
+      linkMeta: '.link-meta',
+      linkDate: '.link-date',
+      linkExpires: '.link-expires',
+
+      // Link status
+      linkStatus: '.link-status',
+      activeTag: '.p-tag:has-text("Active")',
+      expiredTag: '.p-tag:has-text("Expired")',
+
+      // Link details
+      linkUrlSection: '.link-url-section',
+      shareUrlInput: '.share-url-input',
+      copyButton: 'button:has(.pi-copy)',
+
+      // Link settings
+      linkSettings: '.link-settings',
+      settingItem: '.setting-item',
+      settingLabel: '.setting-label',
+      settingValue: '.setting-value',
+
+      // Timeline-specific info
+      timelineInfo: '.timeline-info',
+      timelineStatus: '.timeline-info .p-tag',
+
+      // Link actions
+      editButton: 'button:has-text("Edit")',
+      deleteButton: 'button:has-text("Delete")',
+
+      // Create/Edit Dialog - Live Location
+      shareDialog: '.p-dialog',
+      dialogHeader: '.p-dialog-header',
+      createDialogHeader: '.p-dialog-header:has-text("Create Share Link")',
+      editDialogHeader: '.p-dialog-header:has-text("Edit Share Link")',
+
+      // Timeline Dialog
+      timelineDialog: '.p-dialog:has(.p-dialog-header:has-text("Timeline"))',
+      createTimelineDialogHeader: '.p-dialog-header:has-text("Create Timeline Share")',
+      editTimelineDialogHeader: '.p-dialog-header:has-text("Edit Timeline Share")',
+
+      // Form fields - Live Location
+      nameInput: '#name',
+      currentOnlyRadio: '#current-only',
+      withHistoryRadio: '#with-history',
+      historyHoursInput: '#history-hours',
+      expiresAtCalendar: '#expires_at',
+      hasPasswordCheckbox: '#has_password',
+      passwordInput: '#password',
+      useCustomTilesCheckbox: '#use_custom_tiles',
+      customTileUrlInput: '#custom-tile-url',
+
+      // Form fields - Timeline (TimelineShareDialog uses simple IDs)
+      timelineNameInput: '.p-dialog:has(.p-dialog-header:has-text("Timeline")) #name',
+      startDateCalendar: '#start-date',
+      endDateCalendar: '#end-date',
+      timelineExpiresAtCalendar: '#expires-at',
+      showCurrentCheckbox: '#show-current',
+      showPhotosCheckbox: '#show-photos',
+      timelinePasswordCheckbox: '#has-password',
+      timelinePasswordInput: '#password',
+      timelineCustomTilesCheckbox: '#use-custom-tiles',
+      timelineCustomTileUrlInput: '#custom-tile-url',
+
+      // Form actions
+      cancelButton: 'button:has-text("Cancel")',
+      submitButton: '.submit-btn',
+      createSubmitButton: 'button:has-text("Create Link")',
+      updateSubmitButton: 'button:has-text("Update Link")',
+
+      // Delete Confirmation Dialog
+      deleteDialog: '.delete-dialog',
+      deleteDialogHeader: '.p-dialog-header:has-text("Confirm Delete")',
+      warningIcon: '.warning-icon',
+      deleteMessage: '.delete-message',
+      confirmDeleteButton: '.delete-dialog button:has-text("Delete")',
+      cancelDeleteButton: '.delete-dialog button:has-text("Cancel")',
+
+      // Toast notifications
+      toast: '.p-toast',
+      toastMessage: '.p-toast-message',
+      toastSummary: '.p-toast-summary',
+      toastDetail: '.p-toast-detail',
+      successToast: '.p-toast-message-success',
+      errorToast: '.p-toast-message-error'
+    };
+  }
+
+  /**
+   * Navigation Methods
+   */
+  async navigate() {
+    await this.page.goto('/app/share-links');
+  }
+
+  async isOnShareLinksPage() {
+    try {
+      const url = this.page.url();
+      return url.includes('/app/share-links');
+    } catch {
+      return false;
+    }
+  }
+
+  async waitForPageLoad() {
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(500);
+  }
+
+  async waitForLoadingComplete() {
+    try {
+      await this.page.waitForSelector(this.selectors.loadingSpinner, { state: 'hidden', timeout: 10000 });
+    } catch {
+      // Loading spinner might not appear for fast operations
+    }
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Empty State Methods
+   */
+  async hasEmptyState() {
+    return await this.page.locator(this.selectors.emptyState).isVisible();
+  }
+
+  async clickCreateFirstLink() {
+    await this.page.locator(this.selectors.createFirstLinkButton).click();
+    await this.waitForMenuToOpen();
+  }
+
+  async waitForMenuToOpen() {
+    await this.page.waitForSelector(this.selectors.createMenu, { state: 'visible', timeout: 2000 });
+  }
+
+  /**
+   * Link List Methods
+   */
+  async getActiveLinkCards() {
+    return this.page.locator(this.selectors.activeLinkCard);
+  }
+
+  async getExpiredLinkCards() {
+    return this.page.locator(this.selectors.expiredLinkCard);
+  }
+
+  async getActiveLinksCount() {
+    return await this.page.locator(this.selectors.activeLinkCard).count();
+  }
+
+  async getExpiredLinksCount() {
+    return await this.page.locator(this.selectors.expiredLinkCard).count();
+  }
+
+  async hasActiveLinksSection() {
+    return await this.page.locator(this.selectors.activeLinksSection).isVisible();
+  }
+
+  async hasExpiredLinksSection() {
+    return await this.page.locator(this.selectors.expiredLinksSection).isVisible();
+  }
+
+  async getLinkCardByName(name) {
+    return this.page.locator(`.link-card:has(.link-title:has-text("${name}"))`).first();
+  }
+
+  async isLinkActive(name) {
+    const card = await this.getLinkCardByName(name);
+    return await card.locator(this.selectors.activeTag).isVisible();
+  }
+
+  async isLinkExpired(name) {
+    const card = await this.getLinkCardByName(name);
+    return await card.locator(this.selectors.expiredTag).isVisible();
+  }
+
+  /**
+   * Link Details Methods
+   */
+  async getLinkUrl(linkName) {
+    const card = await this.getLinkCardByName(linkName);
+    const input = card.locator(this.selectors.shareUrlInput);
+    return await input.inputValue();
+  }
+
+  async getLinkSetting(linkName, settingLabel) {
+    const card = await this.getLinkCardByName(linkName);
+    await card.waitFor({ state: 'visible', timeout: 15000 });
+
+    const normalize = (text) => (text || '').replace(/\s+/g, ' ').replace(/:\s*$/, '').trim().toLowerCase();
+    const targetLabel = normalize(settingLabel);
+
+    const rows = card.locator(this.selectors.settingItem);
+    const rowCount = await rows.count();
+    const availableLabels = [];
+
+    for (let i = 0; i < rowCount; i++) {
+      const row = rows.nth(i);
+      const labelText = await row.locator(this.selectors.settingLabel).first().textContent().catch(() => '');
+      const normalizedLabel = normalize(labelText);
+      if (normalizedLabel) {
+        availableLabels.push(normalizedLabel);
+      }
+
+      if (normalizedLabel.includes(targetLabel)) {
+        const valueText = await row.locator(this.selectors.settingValue).first().innerText();
+        return valueText.replace(/\s+/g, ' ').trim();
+      }
+    }
+
+    throw new Error(
+      `Setting "${settingLabel}" not found in link card "${linkName}". Available labels: ${availableLabels.join(', ')}`
+    );
+  }
+
+  async isPasswordProtected(linkName) {
+    const value = await this.getLinkSetting(linkName, 'Password Protected');
+    return value === 'Yes';
+  }
+
+  async getViewCount(linkName) {
+    const value = await this.getLinkSetting(linkName, 'View Count');
+    return parseInt(value);
+  }
+
+  async showsHistory(linkName) {
+    const value = await this.getLinkSetting(linkName, 'Show History');
+    return value === 'Yes';
+  }
+
+  /**
+   * Create Link Methods
+   */
+  async clickCreateNewLink() {
+    await this.page.locator(this.selectors.createLinkButton).click();
+  }
+
+  async isCreateDialogVisible() {
+    return await this.page.locator(this.selectors.createDialogHeader).isVisible();
+  }
+
+  async isEditDialogVisible() {
+    return await this.page.locator(this.selectors.editDialogHeader).isVisible();
+  }
+
+  async fillLinkForm({ name, showHistory, expiresAt, hasPassword, password }) {
+    if (name !== undefined) {
+      await this.page.locator(this.selectors.nameInput).fill(name);
+    }
+
+    if (showHistory !== undefined) {
+      if (showHistory) {
+        await this.page.locator(this.selectors.withHistoryRadio).click();
+      } else {
+        await this.page.locator(this.selectors.currentOnlyRadio).click();
+      }
+    }
+
+    if (expiresAt !== undefined) {
+      // PrimeVue Calendar component - need to find the input inside the span wrapper
+      const calendarInput = this.page.locator(`${this.selectors.expiresAtCalendar} input`);
+
+      // Click to focus
+      await calendarInput.click();
+
+      // Clear existing value
+      await calendarInput.press('Control+A');
+      await calendarInput.press('Backspace');
+
+      // Format date as MM/DD/YY HH:mm
+      const month = String(expiresAt.getMonth() + 1).padStart(2, '0');
+      const day = String(expiresAt.getDate()).padStart(2, '0');
+      const year = String(expiresAt.getFullYear()).slice(-2);
+      const hours = String(expiresAt.getHours()).padStart(2, '0');
+      const minutes = String(expiresAt.getMinutes()).padStart(2, '0');
+
+      // Type the date
+      await calendarInput.fill(`${month}/${day}/${year} ${hours}:${minutes}`);
+
+      // Press Tab to move to next field (this will close the calendar overlay without closing the dialog)
+      await calendarInput.press('Tab');
+
+      // Wait for calendar overlay to close
+      await this.page.waitForTimeout(300);
+    }
+
+    if (hasPassword !== undefined) {
+      // PrimeVue Checkbox - check if there's a wrapper or use direct input
+      const checkboxWrapper = this.page.locator(this.selectors.hasPasswordCheckbox);
+      const checkboxInput = checkboxWrapper.locator('input[type="checkbox"]');
+
+      const inputExists = await checkboxInput.count();
+      const checkbox = inputExists > 0 ? checkboxInput : checkboxWrapper;
+
+      const isChecked = await checkbox.isChecked();
+      if (hasPassword !== isChecked) {
+        // Click the wrapper (the visible checkbox element) not the hidden input
+        await checkboxWrapper.click();
+      }
+    }
+
+    if (password !== undefined && hasPassword) {
+      // PrimeVue Password component might also have a wrapper
+      // Try to find input inside the password component
+      const passwordField = this.page.locator(`${this.selectors.passwordInput} input`).first();
+      const passwordFieldExists = await passwordField.count();
+
+      if (passwordFieldExists > 0) {
+        await passwordField.fill(password);
+      } else {
+        // Fallback to direct input if no wrapper exists
+        await this.page.locator(this.selectors.passwordInput).fill(password);
+      }
+    }
+  }
+
+  async submitCreateForm() {
+    await this.page.locator(this.selectors.createSubmitButton).click();
+  }
+
+  async submitUpdateForm() {
+    await this.page.locator(this.selectors.updateSubmitButton).click();
+  }
+
+  async cancelDialog() {
+    await this.page.locator(this.selectors.cancelButton).first().click();
+  }
+
+  async createShareLink(linkData) {
+    await this.clickCreateNewLink();
+    await this.waitForDialogToOpen();
+    await this.fillLinkForm(linkData);
+    await this.submitCreateForm();
+  }
+
+  async waitForDialogToOpen() {
+    await this.page.waitForSelector(this.selectors.shareDialog, { state: 'visible', timeout: 5000 });
+  }
+
+  async waitForDialogToClose() {
+    await this.page.waitForSelector(this.selectors.shareDialog, { state: 'hidden', timeout: 5000 });
+  }
+
+  /**
+   * Edit Link Methods
+   */
+  async clickEditLink(linkName) {
+    const card = await this.getLinkCardByName(linkName);
+    await card.locator(this.selectors.editButton).click();
+  }
+
+  async editShareLink(linkName, updatedData) {
+    await this.clickEditLink(linkName);
+    await this.waitForDialogToOpen();
+    await this.fillLinkForm(updatedData);
+    await this.submitUpdateForm();
+  }
+
+  /**
+   * Delete Link Methods
+   */
+  async clickDeleteLink(linkName) {
+    const card = await this.getLinkCardByName(linkName);
+    await card.locator(this.selectors.deleteButton).click();
+  }
+
+  async isDeleteDialogVisible() {
+    return await this.page.locator(this.selectors.deleteDialog).isVisible();
+  }
+
+  async confirmDelete() {
+    await this.page.locator(this.selectors.confirmDeleteButton).click();
+  }
+
+  async cancelDelete() {
+    await this.page.locator(this.selectors.cancelDeleteButton).click();
+  }
+
+  async deleteShareLink(linkName) {
+    await this.clickDeleteLink(linkName);
+    await this.waitForDeleteDialogToOpen();
+    await this.confirmDelete();
+  }
+
+  async waitForDeleteDialogToOpen() {
+    await this.page.waitForSelector(this.selectors.deleteDialog, { state: 'visible', timeout: 5000 });
+  }
+
+  async waitForDeleteDialogToClose() {
+    await this.page.waitForSelector(this.selectors.deleteDialog, { state: 'hidden', timeout: 5000 });
+  }
+
+  /**
+   * Copy to Clipboard Methods
+   */
+  async clickCopyButton(linkName) {
+    const card = await this.getLinkCardByName(linkName);
+    await card.locator(this.selectors.copyButton).click();
+  }
+
+  /**
+   * Create Menu Methods
+   */
+  async clickCreateButton() {
+    await this.page.locator(this.selectors.createLinkButton).click();
+    await this.waitForMenuToOpen();
+  }
+
+  async selectLiveLocationShare() {
+    // Click on the menu item - target the link inside the menu item
+    const menuItem = this.page.locator(this.selectors.liveLocationMenuItem);
+    await menuItem.locator(this.selectors.menuItemLink).click();
+  }
+
+  async selectTimelineShare() {
+    // Click on the menu item - target the link inside the menu item
+    const menuItem = this.page.locator(this.selectors.timelineMenuItem);
+    await menuItem.locator(this.selectors.menuItemLink).click();
+  }
+
+  async createLiveLocationShare() {
+    await this.clickCreateButton();
+    await this.selectLiveLocationShare();
+    await this.waitForDialogToOpen();
+  }
+
+  async createTimelineShare() {
+    await this.clickCreateButton();
+    await this.selectTimelineShare();
+    await this.waitForTimelineDialogToOpen();
+  }
+
+  /**
+   * Timeline Dialog Methods
+   */
+  async isTimelineDialogVisible() {
+    return await this.page.locator(this.selectors.timelineDialog).isVisible();
+  }
+
+  async waitForTimelineDialogToOpen() {
+    await this.page.waitForSelector(this.selectors.timelineDialog, { state: 'visible', timeout: 5000 });
+  }
+
+  async waitForTimelineDialogToClose() {
+    await this.page.waitForSelector(this.selectors.timelineDialog, { state: 'hidden', timeout: 5000 });
+  }
+
+  /**
+   * Fill a date picker in the timeline dialog
+   * Timeline calendars have inputmode="none" so we must use the calendar UI, not type
+   */
+  async fillTimelineDatePicker(fieldId, date) {
+    const wrapper = this.page.locator(`#${fieldId}`);
+
+    // Click the calendar dropdown button to open the picker
+    const dropdownButton = wrapper.locator('button.p-datepicker-dropdown');
+    await dropdownButton.click();
+
+    // Wait for calendar to open
+    await this.page.waitForSelector('.p-datepicker', { state: 'visible', timeout: 2000 });
+
+    // Navigate to the correct month if needed
+    const now = new Date();
+    const targetMonth = date.getMonth();
+    const targetYear = date.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const monthsDiff = (targetYear - currentYear) * 12 + (targetMonth - currentMonth);
+
+    if (monthsDiff < 0) {
+      // Need to go backwards (previous months)
+      const prevButton = this.page.locator('.p-datepicker-prev-button');
+      for (let i = 0; i < Math.abs(monthsDiff); i++) {
+        await prevButton.click();
+        await this.page.waitForTimeout(200);
+      }
+    } else if (monthsDiff > 0) {
+      // Need to go forwards (future months)
+      const nextButton = this.page.locator('.p-datepicker-next-button');
+      for (let i = 0; i < monthsDiff; i++) {
+        await nextButton.click();
+        await this.page.waitForTimeout(200);
+      }
+    }
+
+    // Click the day in the calendar (using has-text to find the day number)
+    const dayNumber = date.getDate();
+    await this.page.locator(`.p-datepicker-calendar td:not(.p-datepicker-other-month):has-text("${dayNumber}")`).first().click();
+
+    // Wait for calendar to close
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Fill timeline share form
+   */
+  async fillTimelineShareForm({ name, startDate, endDate, expiresAt, showCurrent, showPhotos, hasPassword, password, useCustomTiles, customTileUrl }) {
+    // Fill name (optional)
+    if (name !== undefined) {
+      await this.page.locator(this.selectors.timelineNameInput).fill(name);
+    }
+
+    // Fill start date (required)
+    if (startDate) {
+      await this.fillTimelineDatePicker('start-date', startDate);
+    }
+
+    // Fill end date (required)
+    if (endDate) {
+      await this.fillTimelineDatePicker('end-date', endDate);
+    }
+
+    // Fill expiration date (optional)
+    if (expiresAt) {
+      await this.fillTimelineDatePicker('expires-at', expiresAt);
+    }
+
+    // Show current location checkbox (default is checked)
+    if (showCurrent !== undefined) {
+      const checkboxWrapper = this.page.locator(this.selectors.showCurrentCheckbox);
+      const checkboxInput = checkboxWrapper.locator('input[type="checkbox"]');
+      const isChecked = await checkboxInput.isChecked();
+      if (showCurrent !== isChecked) {
+        await checkboxWrapper.click();
+      }
+    }
+
+    // Show photos checkbox
+    if (showPhotos !== undefined) {
+      const checkboxWrapper = this.page.locator(this.selectors.showPhotosCheckbox);
+      const checkboxInput = checkboxWrapper.locator('input[type="checkbox"]');
+      const isChecked = await checkboxInput.isChecked();
+      if (showPhotos !== isChecked) {
+        await checkboxWrapper.click();
+      }
+    }
+
+    // Password protection
+    if (hasPassword !== undefined) {
+      const checkboxWrapper = this.page.locator(this.selectors.timelinePasswordCheckbox);
+      const checkboxInput = checkboxWrapper.locator('input[type="checkbox"]');
+      const isChecked = await checkboxInput.isChecked();
+      if (hasPassword !== isChecked) {
+        await checkboxWrapper.click();
+        await this.page.waitForTimeout(300);
+      }
+    }
+
+    if (password !== undefined && hasPassword) {
+      // PrimeVue Password component - find input inside wrapper
+      const passwordInput = this.page.locator(`${this.selectors.timelinePasswordInput} input`);
+      await passwordInput.fill(password);
+    }
+
+    // Custom tiles
+    if (useCustomTiles !== undefined) {
+      const checkboxWrapper = this.page.locator(this.selectors.timelineCustomTilesCheckbox);
+      const checkboxInput = checkboxWrapper.locator('input[type="checkbox"]');
+      const isChecked = await checkboxInput.isChecked();
+      if (useCustomTiles !== isChecked) {
+        await checkboxWrapper.click();
+        await this.page.waitForTimeout(300);
+      }
+    }
+
+    if (customTileUrl !== undefined && useCustomTiles) {
+      await this.page.locator(this.selectors.timelineCustomTileUrlInput).fill(customTileUrl);
+    }
+  }
+
+  /**
+   * Submit timeline share form
+   */
+  async submitTimelineShareForm() {
+    // The submit button is the second button in the footer (first is Cancel)
+    // It has a check icon, vs Cancel which has an X icon
+    const submitButton = this.page.locator('.p-dialog-footer button:has(.pi-check)');
+    await submitButton.click();
+  }
+
+  /**
+   * Create a timeline share via UI
+   */
+  async createTimelineShareViaUI(formData) {
+    await this.clickCreateButton();
+    await this.selectTimelineShare();
+    await this.waitForTimelineDialogToOpen();
+    await this.fillTimelineShareForm(formData);
+    await this.submitTimelineShareForm();
+  }
+
+  /**
+   * Share Type Section Methods
+   */
+  async hasTimelineSharesSection() {
+    return await this.page.locator(this.selectors.timelineShareSection).isVisible();
+  }
+
+  async hasLiveLocationSharesSection() {
+    return await this.page.locator(this.selectors.liveLocationShareSection).isVisible();
+  }
+
+  async getTimelineSharesCount() {
+    const section = this.page.locator(this.selectors.timelineShareSection);
+    return await section.locator(this.selectors.linkCard).count();
+  }
+
+  async getLiveLocationSharesCount() {
+    const section = this.page.locator(this.selectors.liveLocationShareSection);
+    return await section.locator(this.selectors.linkCard).count();
+  }
+
+  /**
+   * Timeline-Specific Link Details Methods
+   */
+  async getTimelineStatus(linkName) {
+    const card = await this.getLinkCardByName(linkName);
+    const statusTag = card.locator(this.selectors.timelineStatus);
+    return await statusTag.textContent();
+  }
+
+  async getTimelineDateRange(linkName) {
+    const dateRangeValue = await this.getLinkSetting(linkName, 'Date Range');
+    return dateRangeValue;
+  }
+
+  async showsCurrentLocation(linkName) {
+    const card = await this.getLinkCardByName(linkName);
+    const showCurrentSetting = card.locator('.setting-item').filter({
+      has: this.page.locator('.setting-label:has-text("Show Current Location")')
+    });
+
+    if (await showCurrentSetting.count() > 0) {
+      const value = await showCurrentSetting.locator(this.selectors.settingValue).textContent();
+      return value.trim() === 'Yes';
+    }
+    return false;
+  }
+
+  async showsPhotos(linkName) {
+    const card = await this.getLinkCardByName(linkName);
+    const showPhotosSetting = card.locator('.setting-item').filter({
+      has: this.page.locator('.setting-label:has-text("Show Photos")')
+    });
+
+    if (await showPhotosSetting.count() > 0) {
+      const value = await showPhotosSetting.locator(this.selectors.settingValue).textContent();
+      return value.trim() === 'Yes';
+    }
+    return false;
+  }
+
+  /**
+   * Toast Notification Methods
+   */
+  async waitForSuccessToast(expectedText = null) {
+    await this.page.waitForSelector(this.selectors.successToast, { state: 'visible', timeout: 5000 });
+    if (expectedText) {
+      const detail = await this.page.locator(this.selectors.toastDetail).textContent();
+      expect(detail.toLowerCase()).toContain(expectedText.toLowerCase());
+    }
+  }
+
+  async waitForErrorToast() {
+    await this.page.waitForSelector(this.selectors.errorToast, { state: 'visible', timeout: 5000 });
+  }
+
+  async waitForToastToDisappear() {
+    await this.page.waitForSelector(this.selectors.toast, { state: 'hidden', timeout: 10000 });
+  }
+
+  /**
+   * Wait for link to appear in UI after database insertion
+   */
+  async waitForLinkToAppear(linkName, timeout = 5000) {
+    await this.page.waitForSelector(`.link-card:has(.link-title:has-text("${linkName}"))`, {
+      state: 'visible',
+      timeout: timeout
+    });
+  }
+
+  /**
+   * Wait for UI to update after database changes
+   */
+  async waitForUIUpdate() {
+    await this.page.waitForTimeout(1000);
+    await this.page.waitForLoadState('networkidle');
+  }
+}
