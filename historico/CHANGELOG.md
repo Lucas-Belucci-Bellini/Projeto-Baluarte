@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-27 — Próximo marco `v2.0.0-alpha.19`: Module Registry Health observável
+
+A décima nona slice acompanhável da V2 adiciona `npm run check:module-registry-health` e o check `module_registry_health` ao Doctor. O verificador local/read-only reutiliza `criarModuleRegistryHealth` e `criarRuntimeHealth` para cobrir seis casos, três allow, três deny, degradação isolada, quarentena após falhas excedentes, manutenção auditada, negação server-side e cópia defensiva do retrato.
+
+Os gates locais passaram: focal Health/Plataforma/Doctor `32/32`, suíte `1386` aprovados, `6` ignorados e zero falhas, integração V2 `58/58`, build, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73`. O Doctor registrou `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto pelo Cargo ausente. O Project Registry continua sem promoção: buscas read-only não encontraram fonte oficial inequívoca para os quatro nomes e todos permanecem `not-audited/defer`.
+
+Este marco está em preparação documental e ainda não entrou na main nem foi publicado. Não altera V1, Auth, RLS, Supabase, tenancy, ownership, persistência, rede, retry, billing, autoridade de produção ou branches concorrentes. A PR #501 continua isolada e a #471 do Claude Code permanece intocada. A nota está em [`docs/releases/v2.0.0-alpha.19.md`](../docs/releases/v2.0.0-alpha.19.md).
+
+---
+
 ## 2026-08-26 — Marco `v2.0.0-alpha.18`: Runtime desktop empacotado
 
 A décima oitava slice acompanhável da V2 adiciona o comando `npm run v2:desktop-packaged` e o workflow `V2 Desktop Packaged Runtime`. O gate constrói o bundle web, compila o Runtime Rust em release, empacota o Electron em diretório temporário e executa o artefato Linux sob Xvfb. O smoke verifica binário e transporte em `process.resourcesPath`, autorização, leitura confinada e recusa de `../`.

@@ -131,3 +131,15 @@ test('doctor catalogues Module Mode Policy as safe local security evidence', () 
     policy: 'safe',
   });
 });
+
+test('doctor catalogues Module Registry Health as safe local security evidence', () => {
+  const check = DOCTOR_CHECKS.find((item) => item.id === 'module_registry_health');
+  assert.deepEqual(check, {
+    id: 'module_registry_health',
+    category: 'security-local',
+    command: 'node scripts/module-registry-health-check.mjs',
+    executable: 'node',
+    args: ['scripts/module-registry-health-check.mjs'],
+    policy: 'safe',
+  });
+});

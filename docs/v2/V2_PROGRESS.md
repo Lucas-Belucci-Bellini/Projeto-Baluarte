@@ -187,3 +187,14 @@ A PR #510 integrou o comando `npm run v2:desktop-packaged` e o workflow `V2 Desk
 Os gates de regressão permaneceram verdes: suíte `1385` aprovados, `6` ignorados e zero falhas; integração V2, build, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória, Security Contracts `73/73`, Project Registry e Module Mode Policy. O Doctor ficou em `16` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto. O smoke empacotado não foi concluído no sandbox porque `cargo` não está instalado; o bloqueio ambiental não foi mascarado.
 
 Este checkpoint não fecha aceite físico multiplataforma, assinatura, auto-update, persistência, Auth/RLS ou Runtime como autoridade de produção. O contrato está em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md).
+
+
+## Checkpoint de implementação — Module Registry Health observável / alpha.19 em preparação
+
+O comando `npm run check:module-registry-health` agora exerce a implementação canônica de `criarModuleRegistryHealth` com uma fixture local bounded. São seis casos determinísticos: módulo desconhecido permanece `unregistered` e não ativável; módulo registrado pode ativar; módulo saudável permanece observável; falha isolada degrada; falhas excedentes colocam somente o módulo em `quarantined`; manutenção autorizada exige decisão auditada; negação server-side preserva o modo registrado; e o retrato retornado não permite alterar o estado interno por mutação do array devolvido.
+
+O Doctor agora observa esse comando como `module_registry_health`, categoria `security-local` e política `safe`. O check não inicia, para, reinicia ou concede permissões a módulos reais; não consulta rede, armazenamento, Auth, RLS, Supabase ou fonte externa. A saída observada foi `6` casos, `3` allow, `3` deny, `1` entrada de auditoria, `3` incidentes e `network: not-used`.
+
+Gates locais do slice: focal Health/Plataforma/Doctor `32/32`; suíte completa `1386` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`; build; smoke `99/99`; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`; e Doctor `17` green, `2` blocked-known, `1` unknown, `5` not-run, `0` failed com exit `2` honesto pelo Cargo ausente. O candidato de Project Registry permanece `not-audited/defer`: buscas read-only não encontraram fonte oficial inequívoca com identidade e licença suficientes, portanto nenhum projeto externo foi promovido.
+
+Este checkpoint ainda está em preparação documental. Não fecha health remoto, restart real, RLS, tenancy, ownership, retenção operacional, Auth, billing, fontes externas, autoridade server-side de produção, Windows/macOS, assinatura ou auto-update.

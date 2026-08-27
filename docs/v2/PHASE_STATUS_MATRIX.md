@@ -649,3 +649,14 @@ O slice da PR [#510](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/p
 Este checkpoint fecha a lacuna de localização e comunicação do Runtime no pacote Linux dentro do escopo `linux-unpacked`. O sandbox local não possui `cargo`, portanto o smoke empacotado local permanece bloqueado ambientalmente; a prova final veio do workflow remoto com toolchain Rust. Windows/macOS físicos, assinatura, NSIS/DMG/AppImage instalado, auto-update, OAuth, câmera, microfone, persistência, Auth/RLS e autoridade de produção continuam pendentes. V1, router, sidebar, wrappers, Service Worker e launcher normal permanecem preservados.
 
 A nota está em [`../releases/v2.0.0-alpha.18.md`](../releases/v2.0.0-alpha.18.md), o contrato em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md). A tag/release alpha.18 somente será criada após a documentação final, os gates do SHA documental e a verificação do SHA publicado.
+
+
+## Checkpoint alpha.19 — Module Registry Health observável
+
+| Marco | Estado | Evidência | Limites |
+|---|---|---|---|
+| Verificador local/read-only de Health | `IMPLEMENTED / VALIDATING` | `npm run check:module-registry-health`; 6 casos, 3 allow, 3 deny; desconhecido, saudável, degraded, quarantined, maintenance auditada, negação server-side e cópia defensiva | Não executa módulo real, não acessa rede/storage e não substitui RLS ou autorização de produção |
+| Doctor `module_registry_health` | `IMPLEMENTED / VALIDATING` | Check `safe` integrado em `scripts/v2-doctor.mjs`; Doctor `17 green`, `2 blocked-known`, `1 unknown`, `5 not-run`, `0 failed`, exit `2` honesto | Cargo permanece `unknown` no sandbox; checks mutantes/remotos continuam separados |
+| Reconciliação de Project Registry | `DEFERRED` | Busca GitHub read-only não produziu fonte oficial inequívoca com licença/identidade suficientes; quatro entradas continuam `not-audited/defer` | Não promover, adaptar, importar ou executar projeto externo sem fonte oficial, licença, evidência, revisão e rollback |
+| Gates locais | `GREEN` | Focal `32/32`; suíte `1386` pass, `6` skipped, `0` fail; integração `58/58`; smoke `99/99`; caminho `15/15`; offline `9/9`; Security Contracts `73/73` | Build e harness geram artefatos que devem ser limpos antes do commit |
+| Release | `PENDING DOCUMENTATION/REMOTE` | Contrato, auditoria e nota alpha.19 preparados; PRs ainda não abertas | Não criar tag/release antes de PR, backup, checks completos e workflows pós-merge |
