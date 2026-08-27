@@ -1,13 +1,13 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — V2 ALPHA.19 TECHNICAL SLICE INTEGRATED / MODULE REGISTRY HEALTH LOCAL-READ-ONLY VERIFIED / RELEASE DOCUMENTATION PENDING / V1 FALLBACK`
+**Status:** `CURRENT — V2 ALPHA.20 TECHNICAL SLICE INTEGRATED / FINAL DOCUMENTATION INTEGRATED / TAG AND RELEASE PENDING / V1 FALLBACK`
 **Data da observação:** 2026-08-27
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado na medição corrente:** `17d1accdd036382b166ef430bc4b696f36436fec` (`feat(v2): observe module registry health locally`)
-**SHA funcional anterior:** `7c928fe5af20d508d1b25f969df9862aaa84c608` (`docs(v2): finalize alpha.18 tag target`)
-**Reconciliação documental-base anterior:** `7c928fe` (`docs(v2): finalize alpha.18 tag target`)
-**Tag de release base:** `v2.0.0-alpha.18`
+**SHA observado na medição corrente:** `1b7ce92fc5a0dff0e11bf362a470c14b6663f108` (`docs(v2): finalize alpha.20 traceability`)
+**SHA funcional anterior:** `0365f7fa451de20784c9eb745df853b363c7aeab` (`feat(v2): expose task manager health in platform diagnostic`)
+**Reconciliação documental-base anterior:** `fc90959` (`docs(v2): record alpha.20 integration evidence`)
+**Tag de release base:** `v2.0.0-alpha.19`
 **Autor:** Manus AI
 
 > Esta matriz reconcilia o Master Super-Prompt Ω com #420, #422, #423, #430, #454 e o código observado. `COMPLETE` significa concluído dentro do escopo declarado; nunca significa que o domínio inteiro da V2 está pronto para produção.
@@ -358,3 +358,21 @@ A alpha.18 aguarda a finalização documental e a verificação do SHA documenta
 | Project Registry | Busca read-only sem fonte oficial inequívoca; quatro candidatos continuam `not-audited/defer` |
 | Status | Implementação técnica integrada pela PR #514 no SHA `17d1acc`; documentação final e release ainda condicionadas à PR documental |
 | Fora do escopo | Health remoto, restart real, Auth, RLS, tenancy, ownership, retenção operacional, billing, integração de fonte externa, assinatura e auto-update |
+
+
+## Checkpoint de medição — 2026-08-27 — PR #519 / SHA `0365f7f`
+
+A fachada `criarPlataforma()` passou a projetar opcionalmente `PlatformDiagnostic.trabalho`, delegando a leitura a `Escalonador.saude()`. O contrato valida a dependência, preserva `null` quando ausente e não altera fila, lifecycle, retry, readiness ou autorização. A implementação técnica foi integrada pela PR [#519](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/519), com commit técnico `dbfe5156b7c797390956aaf365e87010b25529af` e squash merge em `0365f7fa451de20784c9eb745df853b363c7aeab`.
+
+A PR teve `11` checks de sucesso, `1` skipped por política e `0` pending/cancelados, incluindo Vercel Preview liberado após o rate limit. Os oito workflows pós-merge do SHA terminaram com sucesso. O backup `backup/2026-08-27-before-v2-platform-task-diagnostic` preserva o commit técnico.
+
+O marco melhora a observabilidade local agregada, mas não altera a classificação das fases: persistência, RLS, Auth/RBAC server-side, ownership, retenção operacional, retry por classe de evento, Knowledge Mesh formal, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, estabilização, RC e V2 estável continuam pendentes, bloqueados ou deferidos conforme a matriz. V1, router, shell, sidebar, wrappers, Service Worker e branches de Claude Code permanecem preservados.
+
+
+## Checkpoint documental final pós-#521 — alpha.20
+
+A nota de release e as matrizes foram integradas na `main` pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520), no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521), no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`; os sete workflows pós-merge desse SHA terminaram com sucesso. A tag anotada `v2.0.0-alpha.20` e a release prerelease continuam pendentes e não são implícitas neste documento.
+
+As branches `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam para os heads das PRs (`dbfe515`, `a05bbe7`, `2064396`), não para uma `main` pré-merge. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme necessário, usando seus pais históricos/baselines (`43bc15e`, `0365f7f` e `fc90959`); nenhuma dessas branches deve ser apresentada como rollback pré-merge.
+
+O marco técnico continua limitado à projeção read-only de `Escalonador.saude()` dentro de `PlatformDiagnostic`. O restante da execução da V2 — persistência/retenção, Auth/RBAC/RLS server-side, tenancy/ownership, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, assinatura, auto-update, beta, RC e stable — permanece pendente, bloqueado ou deferido. Nenhuma conclusão de domínio amplo é inferida deste checkpoint.
