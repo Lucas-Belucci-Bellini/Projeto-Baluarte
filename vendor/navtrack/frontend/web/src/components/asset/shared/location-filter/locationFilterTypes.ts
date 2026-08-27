@@ -1,0 +1,69 @@
+import { LatLong } from "@navtrack/shared/api/model";
+import { CircleGeofence } from "../../../ui/map/geofence/GeofenceCircle";
+
+export enum LocationFilterType {
+  Date,
+  Geofence,
+  Speed,
+  Altitude,
+  Duration
+}
+
+export enum DateRange {
+  ThisWeek,
+  LastWeek,
+  ThisMonth,
+  LastMonth,
+  Custom
+}
+
+type FilterOptions = {
+  enabled: boolean;
+  open: boolean;
+  order?: number;
+};
+
+export type DateFilter = {
+  startDate: Date;
+  endDate: Date;
+  range: DateRange;
+  open: boolean;
+};
+
+export type CircleGeofenceFilter = FilterOptions & {
+  geofence?: CircleGeofence;
+  map?: {
+    center: LatLong;
+    zoom: number;
+  };
+};
+
+export type SpeedFilter = FilterOptions & {
+  minSpeed?: number;
+  maxSpeed?: number;
+};
+
+export type SpeedFilterFormValues = {
+  minSpeed: string;
+  maxSpeed: string;
+};
+
+export type AltitudeFilter = FilterOptions & {
+  minAltitude?: number;
+  maxAltitude?: number;
+};
+
+export type AltitudeFilterFormValues = {
+  minAltitude?: string;
+  maxAltitude?: string;
+};
+
+export type DurationFilter = FilterOptions & {
+  minDuration?: number;
+  maxDuration?: number;
+};
+
+export type DurationFilterFormValues = {
+  minDuration?: string;
+  maxDuration?: string;
+};
