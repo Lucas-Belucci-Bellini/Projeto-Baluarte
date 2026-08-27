@@ -1,0 +1,32 @@
+node_modules
+# Environment files
+.env
+# Build outputs
+build/
+.svelte-kit/
+# Logs
+logs
+*.log
+# Database
+*.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+.kiro/
+.vscode/
+temp/
+**/*.db-journal
+
+uploads/
+
+# Paraglide
+src/lib/paraglide
+project.inlang/cache/
+.opencode

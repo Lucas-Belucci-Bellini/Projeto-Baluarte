@@ -1,0 +1,29 @@
+# Dependencies
+**/node_modules
+
+# Build artifacts
+**/build
+
+# Development files
+.git
+.gitignore
+.env*
+.vscode
+.idea
+*.log
+
+# Documentation
+README.md
+docs/
+*.md
+
+# CI/CD
+.github/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+*.db
+
+# Package lock file (commented out to allow proper dependency resolution)
+**/package-lock.json
