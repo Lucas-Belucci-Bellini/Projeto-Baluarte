@@ -1,6 +1,6 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — V2 ALPHA.20 TECHNICAL SLICE INTEGRATED / TASK MANAGER HEALTH IN PLATFORM DIAGNOSTIC VERIFIED / RELEASE DOCUMENTATION PENDING / V1 FALLBACK`
+**Status:** `CURRENT — V2 ALPHA.20 TECHNICAL SLICE INTEGRATED / DOCUMENTATION INTEGRATED / FINALIZATION AND TAG PENDING / V1 FALLBACK`
 **Data da observação:** 2026-08-27
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
@@ -367,3 +367,10 @@ A fachada `criarPlataforma()` passou a projetar opcionalmente `PlatformDiagnosti
 A PR teve `11` checks de sucesso, `1` skipped por política e `0` pending/cancelados, incluindo Vercel Preview liberado após o rate limit. Os oito workflows pós-merge do SHA terminaram com sucesso. O backup `backup/2026-08-27-before-v2-platform-task-diagnostic` preserva o commit técnico.
 
 O marco melhora a observabilidade local agregada, mas não altera a classificação das fases: persistência, RLS, Auth/RBAC server-side, ownership, retenção operacional, retry por classe de evento, Knowledge Mesh formal, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, estabilização, RC e V2 estável continuam pendentes, bloqueados ou deferidos conforme a matriz. V1, router, shell, sidebar, wrappers, Service Worker e branches de Claude Code permanecem preservados.
+
+
+## Checkpoint documental pós-#520 — finalização alpha.20
+
+A nota de release e as matrizes foram integradas na `main` pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520), no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. Os sete workflows pós-merge terminaram com sucesso. A branch atual de finalização deverá registrar o SHA documental definitivo como PR #521; somente após seus checks e merge será criada a tag anotada `v2.0.0-alpha.20`.
+
+O marco técnico continua limitado à projeção read-only de `Escalonador.saude()` dentro de `PlatformDiagnostic`. O restante da execução da V2 — persistência/retensão, Auth/RBAC/RLS server-side, tenancy/ownership, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, assinatura, auto-update, beta, RC e stable — permanece pendente, bloqueado ou deferido. Nenhuma conclusão de domínio amplo é inferida deste checkpoint.
