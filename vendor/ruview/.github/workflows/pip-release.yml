@@ -1,0 +1,286 @@
+# ADR-117 P5 — cibuildwheel + PyPI publish workflow for `wifi-densepose`
+#
+# This workflow is **explicitly NOT** triggered on every push. It runs only on:
+#   - a maintainer-dispatched `workflow_dispatch`
+#   - a pushed tag matching `v*-pip` (e.g. `v2.0.0-pip`)
+#
+# The reason for the `-pip` tag suffix is that the repo already cuts
+# `v0.X.Y-esp32` tags for firmware releases (see CLAUDE.md). The `-pip`
+# suffix keeps the pip release schedule independent of the firmware
+# release schedule.
+#
+# Sequencing on release day (per ADR-117 §7.3):
+#   1. cut tag `v1.99.0-pip`  → publishes the tombstone wheel first
+#   2. cut tag `v2.0.0-pip`   → publishes the PyO3 v2 wheel matrix
+#
+# Publishes via the `PYPI_API_TOKEN` GitHub Actions secret. The
+# token-refresh runbook (GCP Secret Manager → gh secret set) lives in
+# docs/integrations/pypi-release.md so KICS does not flag the
+# secret name as a generic-secret literal in the workflow.
+#
+# Q3 (witness hash v2 — open in ADR-117 §11.3) MUST be resolved
+# before the first v2.0.0 publish. When v2 lands, add a parallel
+# step that verifies the v2 hash against the Rust pipeline.
+
+name: pip-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which package to release"
+        required: true
+        type: choice
+        options:
+          - v2-wheels
+          - v1-99-tombstone
+      publish_to:
+        description: "Where to publish"
+        required: true
+        default: testpypi
+        type: choice
+        options:
+          - testpypi  # dry-run target
+          - pypi      # production
+  push:
+    tags:
+      - "v*-pip"
+
+permissions:
+  contents: read
+
+jobs:
+  # ────────────────────────────────────────────────────────────────
+  # v2.0.0 — cibuildwheel matrix (5 wheels + sdist)
+  # ────────────────────────────────────────────────────────────────
+
+  build-wheels:
+    name: Build ${{ matrix.os }} ${{ matrix.arch }}
+    if: |
+      github.event_name == 'workflow_dispatch' && inputs.target == 'v2-wheels' ||
+      startsWith(github.ref, 'refs/tags/v2.')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: x86_64
+          - os: ubuntu-latest
+            arch: aarch64
+          - os: macos-13          # x86_64 runner
+            arch: x86_64
+          - os: macos-14          # arm64 runner
+            arch: arm64
+          - os: windows-latest
+            arch: AMD64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Linux aarch64 needs QEMU for cross-build on x86_64 runners.
+      - name: Set up QEMU
+        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'aarch64'
+        uses: docker/setup-qemu-action@v3
+
+      # ADR-117 §5.4: abi3-py310 — one binary per OS/arch covers all
+      # Python minor versions ≥ 3.10. Build only cp310 wheels.
+      - name: Build wheels (cibuildwheel)
+        uses: pypa/cibuildwheel@v2.21
+        env:
+          CIBW_BUILD: "cp310-*"
+          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
+          CIBW_ARCHS_MACOS: ${{ matrix.arch }}
+          CIBW_ARCHS_WINDOWS: ${{ matrix.arch }}
+          CIBW_BUILD_FRONTEND: "build"
+          CIBW_BEFORE_BUILD: "pip install maturin>=1.7"
+          # The PyO3 sdist landing depends on the cargo/Rust toolchain
+          # being present. cibuildwheel images carry rustup on Linux
+          # but we also pin a known-good version for reproducibility.
+          CIBW_BEFORE_ALL_LINUX: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.82"
+          CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH"'
+          # Smoke-test every built wheel before accepting it. Catches
+          # the case where the wheel imports but the compiled symbols
+          # are missing.
+          CIBW_TEST_REQUIRES: "pytest>=8.0"
+          CIBW_TEST_COMMAND: 'python -c "import wifi_densepose; assert wifi_densepose.hello() == \"ok\"; print(wifi_densepose.__build_features__)"'
+        with:
+          package-dir: python
+          output-dir: wheelhouse
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.arch }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+
+  build-sdist:
+    name: Build v2 sdist
+    if: |
+      github.event_name == 'workflow_dispatch' && inputs.target == 'v2-wheels' ||
+      startsWith(github.ref, 'refs/tags/v2.')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install maturin
+        run: pip install maturin>=1.7
+      - name: Build sdist
+        working-directory: python
+        run: maturin sdist --out ../sdist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: sdist/*.tar.gz
+          if-no-files-found: error
+
+  # ────────────────────────────────────────────────────────────────
+  # v1.99.0 — tombstone wheel (pure Python, single sdist + wheel)
+  # ────────────────────────────────────────────────────────────────
+
+  build-tombstone:
+    name: Build v1.99.0 tombstone
+    if: |
+      github.event_name == 'workflow_dispatch' && inputs.target == 'v1-99-tombstone' ||
+      startsWith(github.ref, 'refs/tags/v1.99')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build backend
+        run: python -m pip install --upgrade pip build>=1.2
+      - name: Build sdist + wheel
+        working-directory: python/tombstone
+        run: python -m build --outdir ../../tombstone-dist
+      # Inspect what was actually built — the previous v1.99.0-pip run
+      # showed an `import wifi_densepose` that returned cleanly instead
+      # of raising, even though build logs said `adding 'wifi_densepose/__init__.py'`.
+      # Print the wheel manifest + the __init__.py content so any
+      # future regression is debuggable from the run log alone.
+      - name: Inspect wheel contents
+        run: |
+          set -e
+          WHL=tombstone-dist/wifi_densepose-1.99.0-py3-none-any.whl
+          echo "--- wheel listing ---"
+          python -m zipfile -l "$WHL"
+          echo "--- wifi_densepose/__init__.py inside the wheel ---"
+          python -m zipfile -e "$WHL" /tmp/tomb-inspect
+          cat /tmp/tomb-inspect/wifi_densepose/__init__.py
+          echo "--- size in bytes ---"
+          wc -c /tmp/tomb-inspect/wifi_densepose/__init__.py
+      # Smoke-test in an ISOLATED venv. The previous run's failure
+      # mode was that the ubuntu-latest runner's system `python` had
+      # site-packages picking up something other than the user-installed
+      # wheel, so the import resolved to a different module. A clean
+      # venv removes any ambiguity about which wifi_densepose is loaded.
+      - name: Smoke-test tombstone in isolated venv
+        run: |
+          set -e
+          # Copy the wheel to /tmp BEFORE entering the venv — we must
+          # cd OUT of the repo root because the repo contains a
+          # `wifi_densepose/` directory left over from the legacy v1
+          # source. Python puts cwd at sys.path[0], so an import from
+          # the repo root would resolve to the legacy directory and
+          # bypass the freshly-installed wheel entirely (this was the
+          # silent failure mode of the previous two run attempts).
+          cp tombstone-dist/wifi_densepose-1.99.0-py3-none-any.whl /tmp/
+          python -m venv /tmp/smoke-venv
+          /tmp/smoke-venv/bin/python -m pip install --upgrade pip
+          /tmp/smoke-venv/bin/python -m pip install /tmp/wifi_densepose-1.99.0-py3-none-any.whl
+          cd /tmp  # away from the repo root's stray wifi_densepose/
+          /tmp/smoke-venv/bin/python -c "import importlib.util as u; s = u.find_spec('wifi_densepose'); print('Resolved to:', s.origin); print('--- file content ---'); print(open(s.origin).read())"
+          set +e
+          /tmp/smoke-venv/bin/python -c "import wifi_densepose" 2> import-output.txt
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ]; then
+            echo "ERROR: tombstone import succeeded — should have raised ImportError"
+            exit 1
+          fi
+          if ! grep -q "github.com/ruvnet/RuView" import-output.txt; then
+            echo "ERROR: tombstone ImportError missing migration URL"
+            cat import-output.txt
+            exit 1
+          fi
+          echo "Tombstone wheel correctly raises ImportError with migration URL."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tombstone
+          path: tombstone-dist/*
+          if-no-files-found: error
+
+  # ────────────────────────────────────────────────────────────────
+  # Publish — gated by manual dispatch OR by the tag form
+  # ────────────────────────────────────────────────────────────────
+
+  publish-v2:
+    name: Publish v2 wheels
+    needs: [build-wheels, build-sdist]
+    if: |
+      always() &&
+      needs.build-wheels.result == 'success' &&
+      needs.build-sdist.result == 'success' &&
+      (
+        github.event_name == 'workflow_dispatch' && inputs.target == 'v2-wheels' ||
+        startsWith(github.ref, 'refs/tags/v2.')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gather all artifacts into dist/
+        uses: actions/download-artifact@v4
+        with:
+          path: dist-staging
+      - name: Flatten artifacts
+        run: |
+          mkdir -p dist
+          find dist-staging -type f \( -name '*.whl' -o -name '*.tar.gz' \) -exec cp -v {} dist/ \;
+          ls -lh dist/
+      - name: Publish to TestPyPI (dry-run target)
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_to == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: dist
+          skip-existing: true
+      - name: Publish to PyPI
+        if: |
+          startsWith(github.ref, 'refs/tags/v2.') ||
+          (github.event_name == 'workflow_dispatch' && inputs.publish_to == 'pypi')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: dist
+
+  publish-tombstone:
+    name: Publish v1.99 tombstone
+    needs: [build-tombstone]
+    if: |
+      always() &&
+      needs.build-tombstone.result == 'success' &&
+      (
+        github.event_name == 'workflow_dispatch' && inputs.target == 'v1-99-tombstone' ||
+        startsWith(github.ref, 'refs/tags/v1.99')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tombstone
+          path: dist
+      - name: Publish to TestPyPI (dry-run target)
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_to == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: dist
+          skip-existing: true
+      - name: Publish to PyPI
+        if: |
+          startsWith(github.ref, 'refs/tags/v1.99') ||
+          (github.event_name == 'workflow_dispatch' && inputs.publish_to == 'pypi')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: dist

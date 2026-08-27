@@ -1,0 +1,3 @@
+a53b2c018bfd2e367525bedf6dc3fda6bc9639d1a9cc9e8bf9eb3e9fee379ed2 *firmware/esp32-csi-node/release_bins/s3-fair-adr110/bootloader.bin
+53eb50ea890a8388b8a39285a3dd34c53651535c689a3b42f136a5ed7f424145 *firmware/esp32-csi-node/release_bins/s3-fair-adr110/esp32-csi-node.bin
+4c2cc4ffd52641e23b779bd57b3908014083ac3c1aab395756478c89e70d81f0 *firmware/esp32-csi-node/release_bins/s3-fair-adr110/partition-table.bin

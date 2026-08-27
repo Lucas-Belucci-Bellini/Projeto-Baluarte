@@ -1,0 +1,51 @@
+blueprint:
+  name: RuView — notify on possible distress
+  description: >
+    Send a push notification when RuView's HA-MIND inference layer
+    detects sustained elevated heart rate + agitated motion without a
+    fall (possible_distress primitive). Includes the explainability
+    reason payload so the recipient knows why the alert fired.
+    Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/01-notify-on-possible-distress.yaml
+  input:
+    distress_entity:
+      name: Possible distress binary_sensor
+      description: The `binary_sensor.*_possible_distress` entity published by RuView.
+      selector:
+        entity:
+          domain: binary_sensor
+    notify_target:
+      name: Notification service
+      description: Notify service to call (e.g. `notify.mobile_app_pixel_8`).
+      selector:
+        text: {}
+    cooldown_minutes:
+      name: Cooldown (minutes)
+      description: Suppress repeat alerts within this window.
+      default: 15
+      selector:
+        number:
+          min: 0
+          max: 240
+          unit_of_measurement: minutes
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input distress_entity
+    from: "off"
+    to: "on"
+
+action:
+  - service: !input notify_target
+    data:
+      title: "⚠️ Possible distress detected"
+      message: >
+        RuView flagged sustained elevated heart rate + agitated motion in
+        {{ state_attr(trigger.entity_id, 'friendly_name') or trigger.entity_id }}.
+        Reason: {{ state_attr(trigger.entity_id, 'reason') or 'none provided' }}.
+  - delay:
+      minutes: !input cooldown_minutes

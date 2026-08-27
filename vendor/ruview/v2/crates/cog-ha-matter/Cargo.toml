@@ -1,0 +1,49 @@
+[package]
+name = "cog-ha-matter"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Cognitum Cog: Home Assistant + Matter integration for the Seed (ADR-116). Wraps ADR-115's HA-DISCO + HA-MIND publisher as a Seed-installable artifact with mDNS, embedded broker, RuVector-backed thresholds, and Ed25519 witness."
+
+[[bin]]
+name = "cog-ha-matter"
+path = "src/main.rs"
+
+[lib]
+name = "cog_ha_matter"
+path = "src/lib.rs"
+
+[dependencies]
+# CLI + logging — same shape as cog-pose-estimation (ADR-101).
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Async runtime for the publisher + mDNS responder + WebSocket pump.
+tokio = { workspace = true, features = ["full"] }
+
+# ADR-115 publisher is the heart of this cog — we wrap it.
+# default-features = false matches the sensing-server's pattern.
+wifi-densepose-sensing-server = { version = "0.3.1", path = "../wifi-densepose-sensing-server", default-features = false, features = ["mqtt"] }
+
+# Hardware crate for SyncPacket + NodeState bridging (ADR-110 substrate).
+wifi-densepose-hardware = { version = "0.3.0", path = "../wifi-densepose-hardware" }
+
+# Witness chain (ADR-116 P4): SHA-256 hash chain + Ed25519 signature
+# layer for tamper-evident audit logs (ADR-116 §2.2). Same version
+# already vetted by ruv-neural — keep them aligned.
+sha2 = { workspace = true }
+ed25519-dalek = "2.1"
+
+# mDNS responder (ADR-116 P4 §2.2): pure-Rust zero-conf daemon.
+# Same version pinned in wifi-densepose-desktop to keep the
+# workspace lockfile narrow.
+mdns-sd = "0.11"
+
+[dev-dependencies]
+tempfile = "3.10"

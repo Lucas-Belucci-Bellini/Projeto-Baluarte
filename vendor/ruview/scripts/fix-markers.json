@@ -1,0 +1,278 @@
+{
+  "_comment": "Fix-marker regression guard for RuView. Each marker asserts that a previously-shipped fix is still present. CI (.github/workflows/fix-regression-guard.yml) fails if a `require` pattern is missing from all of a marker's `files` (the fix was likely reverted) or if a `forbid` pattern reappears (the bug was re-introduced). Run locally: `python scripts/check_fix_markers.py` (or `--list`, `--json`, `--only ID`). Patterns are literal substrings unless wrapped in /.../ (regex). Add a marker whenever you ship a fix that would be expensive to silently lose.",
+  "schema_version": 1,
+  "markers": [
+    {
+      "id": "RuView#396",
+      "title": "ESP32-S3 CSI: MGMT-only promiscuous filter (SPI flash cache race crash fix)",
+      "files": ["firmware/esp32-csi-node/main/csi_collector.c"],
+      "require": ["WIFI_PROMIS_FILTER_MASK_MGMT", "RuView#396"],
+      "rationale": "Promiscuous MGMT+DATA produces 100-500 Hz HW interrupts that crash Core 0 in wDev_ProcessFiq (SPI flash cache race in the WiFi blob). Reverting to the full filter reintroduces the boot-loop / crash.",
+      "ref": "https://github.com/ruvnet/RuView/issues/396"
+    },
+    {
+      "id": "RuView#521",
+      "title": "ESP32-S3 CSI: disable WiFi modem sleep (WIFI_PS_NONE) so the CSI callback isn't starved",
+      "files": ["firmware/esp32-csi-node/main/csi_collector.c"],
+      "require": ["esp_wifi_set_ps(WIFI_PS_NONE)", "RuView#521"],
+      "rationale": "The ESP-IDF STA default WIFI_PS_MIN_MODEM lets the modem sleep between DTIM beacons; combined with the MGMT-only filter the per-second CSI yield collapses toward 0 pps. csi_collector_init() must force WIFI_PS_NONE.",
+      "ref": "https://github.com/ruvnet/RuView/issues/521"
+    },
+    {
+      "id": "RuView#517",
+      "title": "Aggregator classifies sibling RuView UDP packet magics instead of erroring on them",
+      "files": [
+        "v2/crates/wifi-densepose-hardware/src/esp32_parser.rs",
+        "v2/crates/wifi-densepose-hardware/src/error.rs",
+        "v2/crates/wifi-densepose-hardware/src/bin/aggregator.rs"
+      ],
+      "require": ["ruview_sibling_packet_name", "NonCsiPacket", "RUVIEW_VITALS_MAGIC"],
+      "rationale": "The firmware multiplexes 0xC5110002..0xC5110007 (vitals, feature, fused, compressed, feature-state, temporal) onto the CSI UDP port. The parser must report these as ParseError::NonCsiPacket so the aggregator can skip them, not log 'invalid magic' parse-error noise.",
+      "ref": "https://github.com/ruvnet/RuView/issues/517"
+    },
+    {
+      "id": "RuView#505",
+      "title": "Firmware release: version.txt must match the release tag (firmware-ci version-guard)",
+      "files": [".github/workflows/firmware-ci.yml"],
+      "require": ["version-guard", "version.txt"],
+      "rationale": "v0.6.3-esp32 shipped a binary that internally identified as 0.6.2 because version.txt was never bumped. The version-guard job fails the release run when the tag's X.Y.Z doesn't match firmware/esp32-csi-node/version.txt.",
+      "ref": "https://github.com/ruvnet/RuView/issues/505"
+    },
+    {
+      "id": "RuView#354",
+      "title": "Firmware embeds its version from version.txt and logs it at boot",
+      "files": [
+        "firmware/esp32-csi-node/CMakeLists.txt",
+        "firmware/esp32-csi-node/main/main.c"
+      ],
+      "require": ["PROJECT_VER", "version.txt", "esp_app_get_description"],
+      "rationale": "esp_app_get_description()->version must derive from version.txt (CMake file(STRINGS ...)), and the boot log line surfaces it for fleet monitoring.",
+      "ref": "https://github.com/ruvnet/RuView/issues/354"
+    },
+    {
+      "id": "RuView#263",
+      "title": "Fall detection: default threshold 15.0 rad/s2 + consecutive-frame debounce + cooldown",
+      "files": [
+        "firmware/esp32-csi-node/main/nvs_config.c",
+        "firmware/esp32-csi-node/main/edge_processing.c",
+        "firmware/esp32-csi-node/main/edge_processing.h"
+      ],
+      "require": ["15.0f", "EDGE_FALL_CONSEC_MIN", "EDGE_FALL_COOLDOWN_MS"],
+      "forbid": ["/fall_thresh\\s*=\\s*2\\.0f\\b/"],
+      "rationale": "Default fall_thresh of 2.0 rad/s2 caused alert storms (false positives). 15.0 with a 3-consecutive-frame debounce + 5 s cooldown verified 0 false alerts in 600 frames on COM7.",
+      "ref": "https://github.com/ruvnet/RuView/issues/263"
+    },
+    {
+      "id": "RuView#266-321",
+      "title": "Edge DSP task: batch limit so it can't starve IDLE1 and trip the task watchdog",
+      "files": ["firmware/esp32-csi-node/main/edge_processing.c", "firmware/esp32-csi-node/main/edge_processing.h"],
+      "require": ["EDGE_BATCH_LIMIT"],
+      "rationale": "On busy LANs the edge DSP task processed frames back-to-back with only 1-tick yields, starving IDLE1 enough to trip the 5-second task watchdog. The batch limit forces a longer yield every N frames.",
+      "ref": "https://github.com/ruvnet/RuView/issues/266"
+    },
+    {
+      "id": "RuView#265",
+      "title": "4 MB flash variant: dual-OTA partition table + 4mb sdkconfig, built by firmware-ci",
+      "files": [
+        "firmware/esp32-csi-node/partitions_4mb.csv",
+        "firmware/esp32-csi-node/sdkconfig.defaults.4mb",
+        ".github/workflows/firmware-ci.yml"
+      ],
+      "require": ["sdkconfig.defaults.4mb"],
+      "rationale": "Support for ESP32-S3-N16R8 / N8R2 and other 4 MB boards. The firmware-ci build matrix must keep building the 4mb variant so it doesn't bit-rot.",
+      "ref": "https://github.com/ruvnet/RuView/issues/265"
+    },
+    {
+      "id": "RuView#232-375-385-386-390",
+      "title": "ESP32-S3 CSI: defensive early-capture of NVS config before wifi_init_sta() corrupts it",
+      "files": ["firmware/esp32-csi-node/main/csi_collector.c"],
+      "require": ["early capture", "s_filter_mac"],
+      "rationale": "wifi_init_sta() can clobber g_nvs_config (confirmed on device 80:b5:4e:c1:be:b8). Module-local statics must be captured before WiFi init and used by the CSI callback instead of g_nvs_config.",
+      "ref": "https://github.com/ruvnet/RuView/issues/390"
+    },
+    {
+      "id": "ADR-028-proof",
+      "title": "Deterministic pipeline proof (Trust Kill Switch): artifacts present and re-run in CI",
+      "files": [
+        "archive/v1/data/proof/verify.py",
+        "archive/v1/data/proof/expected_features.sha256",
+        "archive/v1/data/proof/sample_csi_data.json",
+        ".github/workflows/verify-pipeline.yml"
+      ],
+      "require": ["VERDICT", "expected_features.sha256", "verify.py"],
+      "rationale": "verify.py feeds a seeded reference signal through the production CSI pipeline and SHA-256-hashes the output; expected_features.sha256 pins it; verify-pipeline.yml re-runs it on every PR. Losing any of these removes the project's tamper-evidence guarantee (ADR-028).",
+      "ref": "docs/adr/ADR-028-esp32-capability-audit.md"
+    },
+    {
+      "id": "ADR-028-witness-bundle",
+      "title": "Release-time witness bundle generator + self-verification script",
+      "files": ["scripts/generate-witness-bundle.sh"],
+      "require": ["VERIFY.sh", "witness-bundle"],
+      "rationale": "scripts/generate-witness-bundle.sh produces the self-contained, recipient-verifiable witness bundle (witness log + proof + test results + firmware hashes + VERIFY.sh). Part of the ADR-028 attestation chain.",
+      "ref": "docs/WITNESS-LOG-028.md"
+    },
+    {
+      "id": "RuView#559",
+      "title": "./verify wrapper points at archive/v1/ paths (post-v1-archive layout)",
+      "files": ["verify"],
+      "require": ["${SCRIPT_DIR}/archive/v1/data/proof", "${SCRIPT_DIR}/archive/v1/src"],
+      "rationale": "After v1 moved to archive/v1, the ./verify wrapper still pointed at the removed v1/ paths and failed before reaching verify.py on a fresh clone. Reverting to the un-prefixed paths reintroduces the FAIL-before-pipeline regression that #559 reported.",
+      "ref": "https://github.com/ruvnet/RuView/issues/559"
+    },
+    {
+      "id": "RuView#561",
+      "title": "ESP32 CSI firmware README documents the correct flash offsets (app at 0x20000, ota_data at 0xf000)",
+      "files": ["firmware/esp32-csi-node/README.md"],
+      "require": [
+        "0x20000 firmware/esp32-csi-node/build/esp32-csi-node.bin",
+        "0xf000  firmware/esp32-csi-node/build/ota_data_initial.bin",
+        "firmware/esp32-csi-node/provision.py"
+      ],
+      "forbid": [
+        "/0x10000 firmware\\/esp32-csi-node\\/build\\/esp32-csi-node\\.bin/",
+        "/python scripts\\/provision\\.py/"
+      ],
+      "rationale": "Partition tables (partitions_display.csv, partitions_4mb.csv) put ota_0 at 0x20000. The README previously said 0x10000 and pointed at scripts/provision.py (an older copy). Reverting causes first-time users to misflash and miss WiFi provisioning.",
+      "ref": "https://github.com/ruvnet/RuView/issues/561"
+    },
+    {
+      "id": "RuView#588-SEC020",
+      "title": "provision.py prints a fixed (set)/(empty) marker, not a length-leaking asterisk run",
+      "files": ["scripts/provision.py", "firmware/esp32-csi-node/provision.py"],
+      "require": ["(set)' if args.password else '(empty)"],
+      "forbid": ["/'\\*' \\* len\\(args\\.password\\)/"],
+      "rationale": "Both provision.py scripts previously printed '*' * len(args.password), masking the value but leaking the password length. Flagged as SEC020 by Repobility. Fix replaces with a fixed (set)/(empty) marker.",
+      "ref": "https://github.com/ruvnet/RuView/issues/588"
+    },
+    {
+      "id": "RuView#593",
+      "title": "vital_signs.rs uses circular variance for wrapped atan2 phase values",
+      "files": ["v2/crates/wifi-densepose-sensing-server/src/vital_signs.rs"],
+      "require": [
+        "phase_circular_variance",
+        "standard circular variance (1 - mean resultant length)",
+        "test_phase_variance_handles_wraparound"
+      ],
+      "rationale": "Phases come from atan2 and are wrapped to (-pi, pi]. The original linear mean/variance treated two phases straddling +/-pi (physically ~0 rad apart) as ~2*pi apart, producing variance ~pi^2 instead of ~1e-6 and feeding that noise straight into the heart-rate FFT buffer. Caused jumpy vitals in #519 and +/-15 BPM jitter in #485.",
+      "ref": "https://github.com/ruvnet/RuView/issues/593"
+    },
+    {
+      "id": "RuView#590-fuzz-stub",
+      "title": "Fuzz host stubs declare WIFI_PS_NONE / wifi_ps_type_t / esp_wifi_set_ps()",
+      "files": ["firmware/esp32-csi-node/test/stubs/esp_stubs.h"],
+      "require": ["wifi_ps_type_t", "WIFI_PS_NONE", "esp_wifi_set_ps"],
+      "rationale": "csi_collector.c:346 calls esp_wifi_set_ps(WIFI_PS_NONE) per the RuView#521 fix. The host-native fuzz target compiles csi_collector.c against test/stubs/esp_stubs.h; missing these symbols red-greens the Fuzz Testing (ADR-061 Layer 6) job. Was red on main for ~5 weeks before PR #590.",
+      "ref": "https://github.com/ruvnet/RuView/pull/590"
+    },
+    {
+      "id": "RuView#590-swarm-test",
+      "title": "QEMU swarm test passes --force-partial to provision.py for per-node overlays",
+      "files": ["scripts/qemu_swarm.py"],
+      "require": ["--force-partial"],
+      "rationale": "The per-node TDM/channel overlay intentionally omits WiFi creds (those live in the base flash image). Without --force-partial the issue #391 wifi-trio guard in provision.py rejects the call and breaks the Swarm Test (ADR-062) job. Was red on main for ~5 weeks before PR #590.",
+      "ref": "https://github.com/ruvnet/RuView/pull/590"
+    },
+    {
+      "id": "RuView#615",
+      "title": "path_safety::safe_id gates user-controlled IDs at filesystem boundaries",
+      "files": [
+        "v2/crates/wifi-densepose-sensing-server/src/path_safety.rs",
+        "v2/crates/wifi-densepose-sensing-server/src/recording.rs",
+        "v2/crates/wifi-densepose-sensing-server/src/model_manager.rs",
+        "v2/crates/wifi-densepose-sensing-server/src/training_api.rs"
+      ],
+      "require": [
+        "path_safety::safe_id",
+        "pub fn safe_id"
+      ],
+      "rationale": "Five endpoints used to embed user-controlled identifiers (session_name, model_id, dataset_id, recording id) into format!() paths with no sanitization, allowing classic '../../etc/passwd' reads, writes, and deletes on the server filesystem. The safe_id helper enforces [A-Za-z0-9._-] only (no leading '.', max 64 chars) and must run before any user input reaches a format!() that builds a path. Removing the helper or skipping it at any of these call sites reintroduces the #615 attack surface.",
+      "ref": "https://github.com/ruvnet/RuView/issues/615"
+    },
+    {
+      "id": "RuView#596-ota-fail-closed",
+      "title": "ESP32 OTA upload fails closed when no PSK is provisioned",
+      "files": ["firmware/esp32-csi-node/main/ota_update.c"],
+      "require": [
+        "fail-closed, see RuView#596 audit",
+        "OTA rejected: no PSK in NVS"
+      ],
+      "forbid": [
+        "/auth disabled \\(permissive for dev\\)/",
+        "/No PSK provisioned \\u2014 auth disabled/"
+      ],
+      "rationale": "ota_check_auth previously returned true when s_ota_psk[0] == '\\0', so any host on the WiFi could push attacker-controlled firmware to a freshly-flashed node over plain HTTP on port 8032 — no Secure Boot V2, no signed-image verification, single LAN call could brick or backdoor a node. Flagged in the deep-review of PR #596. Fail-closed means the OTA server still starts (so operators can provision a PSK via USB-CDC without reflashing) but the upload endpoint refuses every request until provision.py --ota-psk <hex> writes the NVS key. Reverting this lets the rogue-LAN attack reopen.",
+      "ref": "https://github.com/ruvnet/RuView/pull/596#pullrequestreview"
+    },
+    {
+      "id": "RuView#560",
+      "title": "verify.py quantizes features before SHA-256 for cross-platform hash stability",
+      "files": ["archive/v1/data/proof/verify.py"],
+      "require": [
+        "HASH_QUANTIZATION_DECIMALS",
+        "np.round(flat, HASH_QUANTIZATION_DECIMALS)"
+      ],
+      "rationale": "Without quantization, the SHA-256 of features_to_bytes() diverges across SIMD backends (Intel AVX2/AVX-512 vs Apple Silicon NEON) because scipy.fft's pocketfft kernels reorder vectorized FP operations differently per build. IEEE 754 guarantees per-operation determinism, not associativity. Rounding to 9 decimal places (~5 orders of magnitude headroom over observed ULP drift) collapses the cross-platform divergence to a single canonical hash. Removing the round() call reintroduces the macOS arm64 vs Linux x86_64 hash mismatch in issue #560.",
+      "ref": "https://github.com/ruvnet/RuView/issues/560"
+    },
+    {
+      "id": "RuView#679",
+      "title": "ESP32-S3 CSI: csi_collector_set_node_id() called before wifi_init_sta() so node_id is never clobbered",
+      "files": ["firmware/esp32-csi-node/main/main.c"],
+      "require": ["csi_collector_set_node_id"],
+      "forbid": ["/csi_collector_init.*node_id\\s*=\\s*1[^0-9]/"],
+      "rationale": "release_bins/ shipped v0.4.3.1 binaries that lacked csi_collector_set_node_id() — every provisioned node reported node_id=1 over UDP regardless of NVS value, making a 4-node deployment look like a single node. main.c must call csi_collector_set_node_id(g_nvs_config.node_id) immediately after nvs_config_load() and before wifi_init_sta(). Reverting silently breaks multi-node deployments with no build-time error.",
+      "ref": "https://github.com/ruvnet/RuView/issues/679"
+    },
+    {
+      "id": "RuView#683",
+      "title": "ESP32-S3 edge tier>=2: vTaskDelay(1) after multi-person vitals and WASM dispatch prevents IDLE1 starvation / WDT storm",
+      "files": ["firmware/esp32-csi-node/main/edge_processing.c"],
+      "require": [
+        "if (s_cfg.tier >= 2) vTaskDelay(1);",
+        "Yield after WASM dispatch to feed Core 1 watchdog (#683)"
+      ],
+      "rationale": "At edge tier>=2 on N16R8 PSRAM boards, process_frame() runs update_multi_person_vitals() (4 persons × 256 history samples) plus wasm_runtime_on_frame() back-to-back. The vTaskDelay(1) in edge_task() only fires AFTER process_frame() fully returns — if process_frame() takes >5 s (common on PSRAM-backed boards under sustained 30 pps CSI load), IDLE1 on Core 1 never runs and the Task Watchdog Timer fires. The fix adds two vTaskDelay(1) calls inside process_frame(), gated on tier>=2, at the multi-person vitals boundary and after WASM dispatch. Removing them re-opens the WDT storm on N16R8 hardware.",
+      "ref": "https://github.com/ruvnet/RuView/issues/683"
+    },
+    {
+      "id": "RuView#786-tombstone-import",
+      "title": "Tombstone (v1.99.0) __init__.py must raise ImportError with migration URL on import",
+      "files": ["python/tombstone/src/wifi_densepose/__init__.py"],
+      "require": [
+        "raise ImportError(",
+        "pip install wifi-densepose==2.0.0",
+        "github.com/ruvnet/RuView"
+      ],
+      "forbid": [
+        "/^def\\s/",
+        "/^class\\s/",
+        "/^import\\s+wifi_densepose/"
+      ],
+      "rationale": "ADR-117 §7.2 — the v1.99.0 tombstone wheel exists solely to raise a legible ImportError when v1.x users upgrade. If a future refactor adds real code (def / class / imports beyond the bare raise), the module may load partway before failing, breaking the migration narrative. The require patterns lock in the raise + the v2 install hint + the repo URL.",
+      "ref": "https://github.com/ruvnet/RuView/pull/786"
+    },
+    {
+      "id": "RuView#786-tombstone-smoke-cwd",
+      "title": "pip-release.yml tombstone smoke-test must cd out of repo root before importing",
+      "files": [".github/workflows/pip-release.yml"],
+      "require": [
+        "cd /tmp  # away from the repo root's stray wifi_densepose/"
+      ],
+      "rationale": "ADR-117 §P5 — the repo root contains a legacy `./wifi_densepose/__init__.py` from v1. Python places cwd at sys.path[0], so running `import wifi_densepose` from the repo root after a fresh venv install resolves to the legacy directory and bypasses the tombstone wheel entirely. The smoke-test step MUST `cd /tmp` before the import, otherwise CI silently passes against the wrong package. This was the root cause of run 26366648768.",
+      "ref": "https://github.com/ruvnet/RuView/pull/786"
+    },
+    {
+      "id": "RuView#786-pypi-token-auth",
+      "title": "pip-release.yml must authenticate to PyPI via PYPI_API_TOKEN secret, not OIDC",
+      "files": [".github/workflows/pip-release.yml"],
+      "require": [
+        "password: ${{ secrets.PYPI_API_TOKEN }}"
+      ],
+      "forbid": [
+        "id-token: write"
+      ],
+      "rationale": "ADR-117 §P5 — the project is registered with PyPI via API token, not OIDC Trusted Publisher. The token is sourced from GCP Secret Manager (see docs/integrations/pypi-release.md). Re-introducing the `id-token: write` permission would suggest a partial OIDC migration that won't actually work without registering the Trusted Publisher on pypi.org first — a silent regression that would 403 on the next publish.",
+      "ref": "https://github.com/ruvnet/RuView/pull/786"
+    }
+  ]
+}
