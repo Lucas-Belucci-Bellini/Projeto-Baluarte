@@ -42,9 +42,9 @@ export function criarVerticalSlice(registry, permissoes, runtimeSession) {
     let erro;
     try { await hooks.stop?.(id); }
     catch (e) { erro = e; }
-    try { await hooks.dispose?.(id); }
-    catch (e) { erro ??= e; }
     try { await runtimeLifecycle.fechar(id); }
+    catch (e) { erro ??= e; }
+    try { await hooks.dispose?.(id); }
     catch (e) { erro ??= e; }
     estados.set(id, 'stopped');
     if (erro) throw erro;
