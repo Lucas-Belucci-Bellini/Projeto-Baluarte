@@ -343,3 +343,18 @@ A PR #510 integrou o gate `v2:desktop-packaged` no SHA `ca325d03fbddf77b43b64519
 A prova fecha a lacuna de localização e comunicação do Runtime no pacote Linux. Não é aceite físico de Windows/macOS, não publica instaladores, não prova assinatura, auto-update, OAuth, câmera, microfone, persistência, Auth/RLS ou Runtime como autoridade de produção. V1, router, sidebar, Service Worker e launcher normal permanecem preservados. O contrato está em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md).
 
 A alpha.18 aguarda a finalização documental e a verificação do SHA documental antes de tag/release. A PR #501 continua OPEN/DRAFT e isolada; a PR #471 continua OPEN/DRAFT e intocada.
+
+
+## Checkpoint alpha.19 — Module Registry Health local/read-only
+
+| Campo | Estado verificado |
+|---|---|
+| Slice | `module_registry_health` como observabilidade operacional bounded |
+| Implementação | `scripts/module-registry-health-check.mjs` reutiliza `criarModuleRegistryHealth` e `criarRuntimeHealth` |
+| Doctor | Check `safe` em `scripts/v2-doctor.mjs` |
+| Cobertura | 6 casos, 3 allow, 3 deny; desconhecido, saudável, degraded, quarantined, maintenance auditada, negação server-side e cópia defensiva |
+| Rede/Storage | Não usados; nenhuma escrita remota ou autoridade de produção |
+| Gates | Focal `32/32`; suíte `1386` pass, `6` skipped, `0` fail; integração `58/58`; smoke `99/99`; caminho `15/15`; offline `9/9`; Security Contracts `73/73`; Doctor `17 green`, `2 blocked-known`, `1 unknown`, `5 not-run`, `0 failed`, exit `2` honesto |
+| Project Registry | Busca read-only sem fonte oficial inequívoca; quatro candidatos continuam `not-audited/defer` |
+| Status | Implementação local concluída; documentação e integração remota ainda condicionadas aos gates da PR |
+| Fora do escopo | Health remoto, restart real, Auth, RLS, tenancy, ownership, retenção operacional, billing, integração de fonte externa, assinatura e auto-update |

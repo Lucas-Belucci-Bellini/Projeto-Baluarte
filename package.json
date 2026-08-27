@@ -49,6 +49,7 @@
     "bench:v2:boot": "node scripts/v2-boot-benchmark.mjs",
     "check:project-registry": "node --experimental-strip-types scripts/project-registry-check.mjs",
     "check:module-mode-policy": "node scripts/module-mode-policy-check.mjs",
+    "check:module-registry-health": "node scripts/module-registry-health-check.mjs",
     "verify:v2": "node scripts/v2-doctor.mjs",
     "drill:v2:backup": "node --experimental-strip-types scripts/v2-backup-restore-drill.mjs",
     "v2:runtime": "cargo test --manifest-path v2/runtime/Cargo.toml",
