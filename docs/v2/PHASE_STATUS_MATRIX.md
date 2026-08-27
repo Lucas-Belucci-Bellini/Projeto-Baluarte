@@ -1,16 +1,16 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA observado para a medição corrente:** `1b7ce92fc5a0dff0e11bf362a470c14b6663f108` (`docs(v2): finalize alpha.20 traceability`)
-**SHA funcional anterior:** `0365f7fa451de20784c9eb745df853b363c7aeab` (`feat(v2): expose task manager health in platform diagnostic`)
-**Última reconciliação documental anterior:** `fc90959` (`docs(v2): record alpha.20 integration evidence`)
-**Último marco publicado:** `v2.0.0-alpha.19` — Module Registry Health local/read-only
-**Próximo marco técnico integrado:** `v2.0.0-alpha.20` — diagnóstico da saúde do Task Manager; documentação final integrada, tag/release pendentes
+**SHA observado para a medição corrente:** `25cbc9f374e5ac658403f1e83a1b540d8d2f4798` (`fix(v2): serialize concurrent runtime restarts`)
+**SHA funcional anterior:** `9ca947816378180b41d2fe2939e9e5b96ff796bd` (`feat(v2): preserve event metadata through module context`)
+**Última reconciliação documental anterior:** `f0a11e33` (`docs(v2): close alpha.20 release traceability`)
+**Último marco publicado:** `v2.0.0-alpha.20` — diagnóstico da saúde do Task Manager, publicada como prerelease
+**Próximo marco técnico integrado:** `v2.0.0-alpha.21` candidata — Runtime Restart Single-Flight; tag/release pendentes
 **Data:** 2026-08-27
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 
 ## Resumo
 
-O Projeto-Baluarte já possui uma fundação significativa: governança e documentação V2, Core inicial, Event Bus, Storage, permissões básicas, Runtime/Session/Bridge, integração V2, migração das páginas canônicas para TypeScript, fronteira Node/TypeScript dos geradores e automação diária. A baseline corrente passa `tipos:ts`, `tipos:v2`, testes 1258/1258, build, integração 51/51, smoke 99/99 e caminho crítico 15/15. A suíte focal Spotify/Soloist + Mark XIII passa em 19/19. O `verify:v2` publicado no SHA anterior mantém um catálogo de 21 registros, com 15 checks locais verdes, um bloqueio conhecido de Rust e cinco gates explicitamente não executados por política. O marco de Billing permanece em 67/67, o piloto operacional do Registry foi validado no browser real e o JARVIS possui benchmarks locais de contexto/tool schemas e recall cross-session.
+O Projeto-Baluarte já possui uma fundação significativa: governança e documentação V2, Core inicial, Event Bus, Storage, permissões básicas, Runtime/Session/Bridge, integração V2, migração das páginas canônicas para TypeScript, fronteira Node/TypeScript dos geradores e automação diária. A medição local mais recente da slice de restart passou `tipos:ts`, `tipos:v2`, teste focal `3/3`, suíte `1391` pass com `6` skipped e `0` fail, build, integração `58/58`, smoke, caminho crítico, offline, memória e Security Contracts `73/73`. O `verify:v2` mantém estados honestos, incluindo Cargo como `unknown`; a publicação alpha.20 está verificada e a alpha.21 permanece apenas candidata até sua documentação e tag próprias.
 
 Isso ainda não equivale à V2 completa do prompt mestre. Permanecem pendentes o vertical slice completo com Data/Evidence e observabilidade de produto, Module Registry operacional uniforme, sessão/login-cadastro server-validated projetada localmente; integração HTTP e RLS, validação Runtime em toolchain compatível, hardening de segurança, layout Command Shell Modular, app preview, JARVIS medido/otimizado, bridge OpenClaw/MCP protegido, notícias com proveniência, testes mensais e critérios de RC/COMPLETE.
 
@@ -673,8 +673,29 @@ A Phase 07/17 de observabilidade melhora somente o diagnóstico local agregado. 
 
 ## Checkpoint documental final 2026-08-27 — alpha.20 após PR #521
 
-A documentação da alpha.20 foi integrada pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520) no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`, depois de sete workflows pós-merge verdes. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521) no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`, e os sete workflows pós-merge desse SHA terminaram verdes. A tag anotada e a release `v2.0.0-alpha.20` ainda estão pendentes.
+A documentação da alpha.20 foi integrada pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520) no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`, depois de sete workflows pós-merge verdes. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521) no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`, e os sete workflows pós-merge desse SHA terminaram verdes. A correção documental final foi integrada pela PR [#522](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/522) no SHA `f0a11e33a7163746c5d2087762c68a654e1a6dcb`; a tag anotada e a release `v2.0.0-alpha.20` foram verificadas e publicadas nesse SHA.
 
-As branches remotas `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam, respectivamente, para os heads `dbfe515`, `a05bbe7` e `2064396` das PRs; não são backups do estado pré-merge da `main` e não devem ser tratados como rollback para a baseline. O rollback correto é um `git revert` normal dos squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme o escopo a desfazer, preservando os pais históricos/baselines (`43bc15e`, `0365f7f` e `fc90959`).
+As branches remotas `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam, respectivamente, para os heads `dbfe515`, `a05bbe7` e `2064396` das PRs; não são backups do estado pré-merge da `main` e não devem ser tratados como rollback para a baseline. A backup `backup/2026-08-27-before-v2-alpha20-release-final` aponta para o baseline real `1b7ce92` anterior à #522. O rollback correto é um `git revert` normal dos squash merges `0365f7f`, `fc90959`, `1b7ce92` e `f0a11e33`, conforme o escopo a desfazer, preservando os pais históricos/baselines (`43bc15e`, `0365f7f`, `fc90959` e `1b7ce92`).
 
 Enquanto isso, o status das fases não é promovido por narrativa: a observabilidade agregada local recebeu a projeção do Task Manager, mas persistência operacional, Auth/RBAC/RLS server-side, ownership/tenancy, retry distribuído, Knowledge Mesh formal, Evidence remoto, Risk Engine, OpenClaw, Hermes, aceite físico multiplataforma, assinatura/auto-update, beta, RC e V2 estável continuam pendentes, bloqueados ou deferidos conforme os contratos canônicos.
+
+
+## Checkpoint pós-alpha.20 — Core lifecycle, Event Context e Runtime Restart / alpha.21 candidata
+
+Após a publicação da `v2.0.0-alpha.20`, a PR [#517](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/517) foi sincronizada à `main`, passou 11 checks remotos e Vercel e foi squash-merged no SHA `f62ece73eae089f0a42478f7ee2ef36b5cd2fcd3`. Ela corrige a ordem de shutdown do módulo para `stop → Runtime.close → dispose`. A PR [#518](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/518) foi igualmente sincronizada, passou 11 checks e Vercel e foi squash-merged no SHA `9ca947816378180b41d2fe2939e9e5b96ff796bd`; ela preserva metadados autorizados do envelope através de `ctx.bus.emit`.
+
+A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) adicionou single-flight bounded a `criarRuntimeRestart()`. Chamadas concorrentes do mesmo módulo compartilham a mesma promessa e não sobrepõem `stop → sleep → start`; chamadas para módulos diferentes continuam independentes. O contrato está em [`RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md`](./RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md). O marco é uma melhoria local de lifecycle e não configura restart automático, lock distribuído, persistência, retry remoto ou autoridade operacional.
+
+| Evidência do marco | Resultado |
+|---|---:|
+| Teste focal do restart | `3/3` |
+| Suíte completa local | `1397` testes: `1391` pass, `6` skipped, `0` fail |
+| TypeScript | `tipos:ts` e `tipos:v2` passaram |
+| Build e integração | Build passou; integração V2 `58/58` |
+| Jornadas locais | Smoke, caminho crítico, offline e memória passaram |
+| Security Contracts | `73/73` |
+| Doctor | Exit `2` honesto por Cargo ausente; sem falhas mascaradas |
+| PR #523 | `11` checks verdes, `1` skipped por política, Vercel success |
+| Pós-merge do SHA `25cbc9f3` | `8/8` workflows verdes; V2 Validation verde na tentativa 2 após timeout externo de Checkout |
+
+Este checkpoint melhora as Phases 1, 2, 3, 7 e 25 apenas no escopo declarado; não as transforma em concluídas. Persistência, Auth/RBAC/RLS server-side, tenancy, ownership, retenção operacional, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade persistente, aceite físico desktop/mobile, assinatura, auto-update, beta, RC e stable permanecem pendentes, bloqueados ou deferidos conforme a matriz. A `v2.0.0-alpha.21` ainda não foi criada: a publicação exigirá nota final própria, tag anotada e gates pós-merge correspondentes. Rollback: `git revert` normal do squash merge da #523; a backup `backup/2026-08-27-before-v2-runtime-restart-single-flight` aponta para o baseline real `9ca94781` anterior à PR.

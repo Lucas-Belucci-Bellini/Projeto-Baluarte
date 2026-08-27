@@ -5,14 +5,32 @@ criada uma branch de backup (`backup/AAAA-MM-DD-...`); **depois** registra-se
 aqui o que mudou.
 
 ---
+## 2026-08-27 — Marco técnico candidato `v2.0.0-alpha.21`: Runtime Restart Single-Flight
 
+Após a alpha.20 publicada, as PRs #517 e #518 foram sincronizadas contra a `main`, validadas com 11 checks e Vercel success cada uma e squash-merged nos SHAs `f62ece73` e `9ca94781`. A #517 corrige `stop → Runtime.close → dispose`; a #518 preserva metadados autorizados de envelope através de `ctx.bus.emit`.
+
+A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) adiciona single-flight bounded a `criarRuntimeRestart()`: chamadas concorrentes do mesmo módulo compartilham a mesma promessa e não sobrepõem `stop → sleep → start`. O commit técnico `e216f3f7` foi squash-merged no SHA `25cbc9f374e5ac658403f1e83a1b540d8d2f4798`. O contrato está em [`docs/v2/RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md`](../docs/v2/RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md).
+
+| Evidência | Resultado |
+|---|---:|
+| Teste focal / suíte | `3/3`; `1391` pass, `6` skipped, `0` fail |
+| Tipos / build / integração | `tipos:ts`, `tipos:v2`, build e `58/58` |
+| Jornadas / segurança | smoke, caminho crítico, offline, memória e Security Contracts `73/73` |
+| Doctor | exit `2` honesto por Cargo ausente |
+| PR / pós-merge | `11` checks verdes, Vercel success; `8/8` workflows pós-merge verdes, V2 Validation verde na tentativa 2 após timeout externo de Checkout |
+| Rollback | `git revert` normal do squash merge; backup pré-merge aponta para `9ca94781` |
+
+A alpha.21 ainda é somente candidata documental: não há tag ou release alpha.21. A mudança não adiciona retry automático, persistência, lock distribuído, autoridade operacional, Supabase, Auth/RLS, tenancy, ownership, billing, OpenClaw, Hermes, Knowledge Mesh ou Risk Engine. V1, router, shell, sidebar, wrappers, Service Worker, #501 e #471 permanecem preservados e separados.
+
+---
 ## 2026-08-27 — Próximo marco `v2.0.0-alpha.20`: diagnóstico da saúde do Task Manager
+
 
 A vigésima slice técnica acompanhável da V2 integra pela PR #519 uma projeção opcional e somente leitura da saúde do escalonador local na fachada `criarPlataforma()`. `PlatformDiagnostic.trabalho` delega a `Escalonador.saude()`, retorna `null` quando não configurado e rejeita uma dependência sem `saude()`. Não há nova fila, retry, threshold, autoridade, persistência ou efeito externo.
 
 Os gates locais passaram: focal Plataforma `7/7`; `tipos:ts`; `tipos:v2`; suíte `1388` aprovados, `6` ignorados e zero falhas; build; integração V2 `58/58`; smoke; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`. O Doctor registrou `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto por Cargo ausente. A PR passou `11` checks, com Vercel liberado, e os oito workflows pós-merge do SHA `0365f7f` terminaram verdes.
 
-A implementação técnica está na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`; o backup técnico `backup/2026-08-27-before-v2-platform-task-diagnostic` aponta para o commit da PR, não para uma `main` pré-merge. A nota de release e a reconciliação das matrizes foram integradas pela PR #520 no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`; a finalização de rastreabilidade foi integrada pela PR #521 no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`, com os sete workflows pós-merge verdes. As branches `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` também apontam para heads de PR (`a05bbe7` e `2064396`), não para baselines pré-merge. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme o escopo, preservando seus pais históricos; não se deve tratar essas três branches como rollback pré-merge. A tag/release `v2.0.0-alpha.20` ainda está pendente e não é implícita por este registro. A V1, o router, o shell, a sidebar, os wrappers, o Service Worker, #501 e #471 permanecem preservados e separados.
+A implementação técnica está na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`; o backup técnico `backup/2026-08-27-before-v2-platform-task-diagnostic` aponta para o commit da PR, não para uma `main` pré-merge. A nota de release e a reconciliação das matrizes foram integradas pela PR #520 no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`; a finalização de rastreabilidade foi integrada pela PR #521 no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`, com os sete workflows pós-merge verdes. As branches `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` também apontam para heads de PR (`a05bbe7` e `2064396`), não para baselines pré-merge. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme o escopo, preservando seus pais históricos; não se deve tratar essas três branches como rollback pré-merge. A tag anotada `v2.0.0-alpha.20` aponta para `f0a11e33a7163746c5d2087762c68a654e1a6dcb`, foi verificada e a prerelease foi publicada em [v2.0.0-alpha.20](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v2.0.0-alpha.20). A V1, o router, o shell, a sidebar, os wrappers, o Service Worker, #501 e #471 permanecem preservados e separados.
 
 ---
 

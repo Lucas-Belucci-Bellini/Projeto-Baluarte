@@ -1,13 +1,13 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — V2 ALPHA.20 TECHNICAL SLICE INTEGRATED / FINAL DOCUMENTATION INTEGRATED / TAG AND RELEASE PENDING / V1 FALLBACK`
+**Status:** `CURRENT — V2 ALPHA.21 TECHNICAL SLICE INTEGRATED / RELEASE DOCUMENTATION PENDING / TAG AND RELEASE PENDING / V1 FALLBACK`
 **Data da observação:** 2026-08-27
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado na medição corrente:** `1b7ce92fc5a0dff0e11bf362a470c14b6663f108` (`docs(v2): finalize alpha.20 traceability`)
-**SHA funcional anterior:** `0365f7fa451de20784c9eb745df853b363c7aeab` (`feat(v2): expose task manager health in platform diagnostic`)
-**Reconciliação documental-base anterior:** `fc90959` (`docs(v2): record alpha.20 integration evidence`)
-**Tag de release base:** `v2.0.0-alpha.19`
+**SHA observado na medição corrente:** `25cbc9f374e5ac658403f1e83a1b540d8d2f4798` (`fix(v2): serialize concurrent runtime restarts`)
+**SHA funcional anterior:** `9ca947816378180b41d2fe2939e9e5b96ff796bd` (`feat(v2): preserve event metadata through module context`)
+**Reconciliação documental-base anterior:** `f0a11e33` (`docs(v2): close alpha.20 release traceability`)
+**Tag de release base:** `v2.0.0-alpha.20` — publicada como prerelease
 **Autor:** Manus AI
 
 > Esta matriz reconcilia o Master Super-Prompt Ω com #420, #422, #423, #430, #454 e o código observado. `COMPLETE` significa concluído dentro do escopo declarado; nunca significa que o domínio inteiro da V2 está pronto para produção.
@@ -371,8 +371,27 @@ O marco melhora a observabilidade local agregada, mas não altera a classificaç
 
 ## Checkpoint documental final pós-#521 — alpha.20
 
-A nota de release e as matrizes foram integradas na `main` pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520), no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521), no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`; os sete workflows pós-merge desse SHA terminaram com sucesso. A tag anotada `v2.0.0-alpha.20` e a release prerelease continuam pendentes e não são implícitas neste documento.
+A nota de release e as matrizes foram integradas na `main` pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520), no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521), no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`; os sete workflows pós-merge desse SHA terminaram com sucesso. A correção documental final foi integrada pela PR [#522](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/522), no SHA `f0a11e33a7163746c5d2087762c68a654e1a6dcb`; a tag anotada `v2.0.0-alpha.20` e a release prerelease foram verificadas e publicadas nesse SHA.
 
-As branches `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam para os heads das PRs (`dbfe515`, `a05bbe7`, `2064396`), não para uma `main` pré-merge. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme necessário, usando seus pais históricos/baselines (`43bc15e`, `0365f7f` e `fc90959`); nenhuma dessas branches deve ser apresentada como rollback pré-merge.
+As branches `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam para os heads das PRs (`dbfe515`, `a05bbe7`, `2064396`), não para uma `main` pré-merge. A backup `backup/2026-08-27-before-v2-alpha20-release-final` aponta para o baseline real `1b7ce92` anterior à #522. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959`, `1b7ce92` e `f0a11e33`, conforme necessário, usando seus pais históricos/baselines (`43bc15e`, `0365f7f`, `fc90959` e `1b7ce92`); nenhuma das três branches antigas deve ser apresentada como rollback pré-merge.
 
 O marco técnico continua limitado à projeção read-only de `Escalonador.saude()` dentro de `PlatformDiagnostic`. O restante da execução da V2 — persistência/retenção, Auth/RBAC/RLS server-side, tenancy/ownership, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, assinatura, auto-update, beta, RC e stable — permanece pendente, bloqueado ou deferido. Nenhuma conclusão de domínio amplo é inferida deste checkpoint.
+
+
+## Checkpoint pós-alpha.20 — PRs #517, #518 e #523 / alpha.21 candidata
+
+A sequência pós-alpha.20 avançou o Core/Module System em três slices isoladas. A PR [#517](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/517) foi sincronizada contra a `main`, validada com 11 checks e Vercel success e integrada no SHA `f62ece73eae089f0a42478f7ee2ef36b5cd2fcd3`, corrigindo `stop → Runtime.close → dispose`. A PR [#518](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/518) foi sincronizada, validada com 11 checks e Vercel success e integrada no SHA `9ca947816378180b41d2fe2939e9e5b96ff796bd`, preservando metadados autorizados de envelope em `ctx.bus.emit`.
+
+A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) adicionou single-flight por módulo a `criarRuntimeRestart()`. Chamadas concorrentes do mesmo módulo compartilham a mesma `Promise`, evitando duas sequências simultâneas de `stop → sleep → start`; módulos diferentes permanecem independentes. O contrato está em [`RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md`](./RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md). A slice não altera o contrato de injeção do `RuntimeManager`, não cria retry automático, persistência, lock distribuído ou autoridade operacional.
+
+| Item | Evidência |
+|---|---|
+| Commit técnico da branch #523 | `e216f3f7c9e9058d3c1301ee154e8710399946b9` |
+| SHA integrado na `main` | `25cbc9f374e5ac658403f1e83a1b540d8d2f4798` |
+| Gates locais | Focal `3/3`; suíte `1397` com `1391` pass, `6` skipped, `0` fail; `tipos:ts`; `tipos:v2`; build; integração `58/58`; smoke; caminho crítico; offline; memória; Security Contracts `73/73` |
+| Doctor | Exit `2` honesto por Cargo ausente, sem falhas mascaradas |
+| Checks da PR #523 | `11` sucessos, `1` skipped por política, Vercel success |
+| Pós-merge #523 | `8/8` workflows verdes; V2 Validation verde na tentativa 2 após timeout externo no Checkout do job Rust |
+| Backup pré-merge | `backup/2026-08-27-before-v2-runtime-restart-single-flight` → baseline real `9ca94781` |
+
+A alpha.20 continua sendo a última prerelease publicada e está registrada em [v2.0.0-alpha.20](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v2.0.0-alpha.20). A alpha.21 é somente candidata documental neste checkpoint: sua nota, tag e release ainda não existem. O marco não fecha as fases de persistência, Auth/RBAC/RLS server-side, tenancy, ownership, retenção operacional, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade persistente, aceite físico, assinatura, auto-update, beta, RC ou stable. V1, router, shell, sidebar, wrappers, Service Worker, #501 e #471 permanecem preservados e separados.
