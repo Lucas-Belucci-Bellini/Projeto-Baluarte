@@ -1,12 +1,12 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — V2 ALPHA.20 TECHNICAL SLICE INTEGRATED / DOCUMENTATION INTEGRATED / FINALIZATION AND TAG PENDING / V1 FALLBACK`
+**Status:** `CURRENT — V2 ALPHA.20 TECHNICAL SLICE INTEGRATED / FINAL DOCUMENTATION INTEGRATED / TAG AND RELEASE PENDING / V1 FALLBACK`
 **Data da observação:** 2026-08-27
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado na medição corrente:** `0365f7fa451de20784c9eb745df853b363c7aeab` (`feat(v2): expose task manager health in platform diagnostic`)
-**SHA funcional anterior:** `7c928fe5af20d508d1b25f969df9862aaa84c608` (`docs(v2): finalize alpha.18 tag target`)
-**Reconciliação documental-base anterior:** `7c928fe` (`docs(v2): finalize alpha.18 tag target`)
+**SHA observado na medição corrente:** `1b7ce92fc5a0dff0e11bf362a470c14b6663f108` (`docs(v2): finalize alpha.20 traceability`)
+**SHA funcional anterior:** `0365f7fa451de20784c9eb745df853b363c7aeab` (`feat(v2): expose task manager health in platform diagnostic`)
+**Reconciliação documental-base anterior:** `fc90959` (`docs(v2): record alpha.20 integration evidence`)
 **Tag de release base:** `v2.0.0-alpha.19`
 **Autor:** Manus AI
 
@@ -369,8 +369,10 @@ A PR teve `11` checks de sucesso, `1` skipped por política e `0` pending/cancel
 O marco melhora a observabilidade local agregada, mas não altera a classificação das fases: persistência, RLS, Auth/RBAC server-side, ownership, retenção operacional, retry por classe de evento, Knowledge Mesh formal, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, estabilização, RC e V2 estável continuam pendentes, bloqueados ou deferidos conforme a matriz. V1, router, shell, sidebar, wrappers, Service Worker e branches de Claude Code permanecem preservados.
 
 
-## Checkpoint documental pós-#520 — finalização alpha.20
+## Checkpoint documental final pós-#521 — alpha.20
 
-A nota de release e as matrizes foram integradas na `main` pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520), no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. Os sete workflows pós-merge terminaram com sucesso. A branch atual de finalização deverá registrar o SHA documental definitivo como PR #521; somente após seus checks e merge será criada a tag anotada `v2.0.0-alpha.20`.
+A nota de release e as matrizes foram integradas na `main` pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520), no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521), no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`; os sete workflows pós-merge desse SHA terminaram com sucesso. A tag anotada `v2.0.0-alpha.20` e a release prerelease continuam pendentes e não são implícitas neste documento.
 
-O marco técnico continua limitado à projeção read-only de `Escalonador.saude()` dentro de `PlatformDiagnostic`. O restante da execução da V2 — persistência/retensão, Auth/RBAC/RLS server-side, tenancy/ownership, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, assinatura, auto-update, beta, RC e stable — permanece pendente, bloqueado ou deferido. Nenhuma conclusão de domínio amplo é inferida deste checkpoint.
+As branches `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam para os heads das PRs (`dbfe515`, `a05bbe7`, `2064396`), não para uma `main` pré-merge. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme necessário, usando seus pais históricos/baselines (`43bc15e`, `0365f7f` e `fc90959`); nenhuma dessas branches deve ser apresentada como rollback pré-merge.
+
+O marco técnico continua limitado à projeção read-only de `Escalonador.saude()` dentro de `PlatformDiagnostic`. O restante da execução da V2 — persistência/retenção, Auth/RBAC/RLS server-side, tenancy/ownership, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, assinatura, auto-update, beta, RC e stable — permanece pendente, bloqueado ou deferido. Nenhuma conclusão de domínio amplo é inferida deste checkpoint.

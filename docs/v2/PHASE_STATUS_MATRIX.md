@@ -1,10 +1,10 @@
 # V2 Master Prompt — Matriz de fases e estado atual
 
-**SHA observado para a medição corrente:** `0365f7fa451de20784c9eb745df853b363c7aeab` (`feat(v2): expose task manager health in platform diagnostic`)
-**SHA funcional anterior:** `7c928fe5af20d508d1b25f969df9862aaa84c608` (`docs(v2): finalize alpha.18 tag target`)
-**Última reconciliação documental anterior:** `7c928fe` (`docs(v2): finalize alpha.18 tag target`)
+**SHA observado para a medição corrente:** `1b7ce92fc5a0dff0e11bf362a470c14b6663f108` (`docs(v2): finalize alpha.20 traceability`)
+**SHA funcional anterior:** `0365f7fa451de20784c9eb745df853b363c7aeab` (`feat(v2): expose task manager health in platform diagnostic`)
+**Última reconciliação documental anterior:** `fc90959` (`docs(v2): record alpha.20 integration evidence`)
 **Último marco publicado:** `v2.0.0-alpha.19` — Module Registry Health local/read-only
-**Próximo marco técnico integrado:** `v2.0.0-alpha.20` — diagnóstico da saúde do Task Manager; documentação integrada, finalização pendente
+**Próximo marco técnico integrado:** `v2.0.0-alpha.20` — diagnóstico da saúde do Task Manager; documentação final integrada, tag/release pendentes
 **Data:** 2026-08-27
 **Critério:** uma fase só é `concluída` quando existe implementação, teste, documentação, validação e publicação na `main`. Uma documentação de intenção não é evidência de implementação.
 
@@ -671,8 +671,10 @@ A evidência local foi: teste focal da Plataforma `7/7`; `tipos:ts`; `tipos:v2`;
 A Phase 07/17 de observabilidade melhora somente o diagnóstico local agregado. Continuam pendentes observabilidade persistente, incidentes com retenção, dashboards, retry por classe de evento, persistência/RLS, Auth/RBAC server-side, Knowledge Mesh formal, Risk Engine, OpenClaw, Hermes, aceitação física, estabilização e RC. A V1 e suas superfícies de compatibilidade permanecem preservadas.
 
 
-## Checkpoint documental 2026-08-27 — alpha.20 aguardando finalização
+## Checkpoint documental final 2026-08-27 — alpha.20 após PR #521
 
-A documentação da alpha.20 foi integrada pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520) no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`, depois de sete workflows pós-merge verdes. A branch atual de finalização registra o SHA documental e será aberta como PR #521. O critério de publicação ainda exige checks próprios da finalização, criação da tag anotada e verificação do commit apontado.
+A documentação da alpha.20 foi integrada pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520) no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`, depois de sete workflows pós-merge verdes. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521) no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`, e os sete workflows pós-merge desse SHA terminaram verdes. A tag anotada e a release `v2.0.0-alpha.20` ainda estão pendentes.
+
+As branches remotas `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam, respectivamente, para os heads `dbfe515`, `a05bbe7` e `2064396` das PRs; não são backups do estado pré-merge da `main` e não devem ser tratados como rollback para a baseline. O rollback correto é um `git revert` normal dos squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme o escopo a desfazer, preservando os pais históricos/baselines (`43bc15e`, `0365f7f` e `fc90959`).
 
 Enquanto isso, o status das fases não é promovido por narrativa: a observabilidade agregada local recebeu a projeção do Task Manager, mas persistência operacional, Auth/RBAC/RLS server-side, ownership/tenancy, retry distribuído, Knowledge Mesh formal, Evidence remoto, Risk Engine, OpenClaw, Hermes, aceite físico multiplataforma, assinatura/auto-update, beta, RC e V2 estável continuam pendentes, bloqueados ou deferidos conforme os contratos canônicos.
