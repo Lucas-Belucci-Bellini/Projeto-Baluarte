@@ -93,6 +93,48 @@ test('claims ausentes ou expiradas não liberam módulo saudável', () => {
   assert.ok(expired.reasons.includes('claims-stale'));
 });
 
+test('issuer ou audience incompatíveis não liberam módulo saudável', () => {
+  const wrongIssuerClaims = observeServerClaims({
+    issuer: 'https://attacker.example',
+    subject: 'subject-identity-test',
+    audience: 'baluarte',
+    scopes: ['platform:observe'],
+    issuedAt: NOW - 1_000,
+    expiresAt: NOW + 30_000,
+    requestId: 'request-wrong-issuer',
+    source: 'server-validated',
+    authenticated: true,
+  }, {
+    expectedIssuer: 'https://auth.example',
+    expectedAudience: 'baluarte',
+    nowMs: NOW,
+  });
+  const wrongIssuer = projectIdentityRelease(wrongIssuerClaims, role('admin'), { mode: 'healthy' });
+  assert.equal(wrongIssuer.projection, 'disabled');
+  assert.ok(wrongIssuer.reasons.includes('claims-untrusted'));
+  assert.equal(wrongIssuer.publicPromotionAllowed, false);
+
+  const wrongAudienceClaims = observeServerClaims({
+    issuer: 'https://auth.example',
+    subject: 'subject-identity-test',
+    audience: 'other-service',
+    scopes: ['platform:observe'],
+    issuedAt: NOW - 1_000,
+    expiresAt: NOW + 30_000,
+    requestId: 'request-wrong-audience',
+    source: 'server-validated',
+    authenticated: true,
+  }, {
+    expectedIssuer: 'https://auth.example',
+    expectedAudience: 'baluarte',
+    nowMs: NOW,
+  });
+  const wrongAudience = projectIdentityRelease(wrongAudienceClaims, role('admin'), { mode: 'healthy' });
+  assert.equal(wrongAudience.projection, 'disabled');
+  assert.ok(wrongAudience.reasons.includes('claims-untrusted'));
+  assert.equal(wrongAudience.publicPromotionAllowed, false);
+});
+
 test('modo desconhecido é tratado como disabled e a saída não expõe identidade', () => {
   const result = projectIdentityRelease(freshClaims(), role('user'), { mode: 'modo-secreto' });
   const serialized = JSON.stringify(result);

@@ -39,6 +39,7 @@ test('claims server-side válidas aceitam somente escopos conhecidos e read-only
   });
 
   assert.equal(observation.identity.issuerPresent, true);
+  assert.equal(observation.identity.issuerMatched, true);
   assert.equal(observation.identity.subjectPresent, true);
   assert.equal(observation.identity.audienceMatched, true);
   assert.equal(observation.identity.authenticated, true);
@@ -62,6 +63,7 @@ test('issuer, audience, origem ou autenticação inválidos zeram os escopos ace
     nowMs: 12_000,
   });
 
+  assert.equal(observation.identity.issuerMatched, false);
   assert.equal(observation.identity.audienceMatched, false);
   assert.equal(observation.identity.authenticated, false);
   assert.equal(observation.identity.trustedSource, false);
