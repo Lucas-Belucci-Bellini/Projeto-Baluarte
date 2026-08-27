@@ -44,3 +44,33 @@ test('backoff cresce com as tentativas', async () => {
   await restart.reiniciar('alpha', new Error('2'));
   assert.deepEqual(delays, [10, 20]);
 });
+
+test('chamadas concorrentes compartilham uma única sequência de restart', async () => {
+  const ctx = make();
+  const delays = [];
+  const eventos = [];
+  let liberarParada;
+  const parada = new Promise(resolve => { liberarParada = resolve; });
+  const pararOriginal = ctx.supervisor.parar;
+  ctx.supervisor.parar = async id => {
+    eventos.push(`stop-enter:${id}`);
+    await parada;
+    return pararOriginal(id);
+  };
+  const restart = criarRuntimeRestart({ ...ctx, sleep: async ms => delays.push(ms), baseDelayMs: 10 });
+
+  const primeira = restart.reiniciar('alpha', new Error('primeira'));
+  const segunda = restart.reiniciar('alpha', new Error('duplicada'));
+
+  assert.strictEqual(segunda, primeira);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(eventos, ['stop-enter:alpha']);
+  assert.equal(ctx.health.estado().restarts.length, 1);
+
+  liberarParada();
+  const [resultadoA, resultadoB] = await Promise.all([primeira, segunda]);
+  assert.deepEqual(resultadoA, resultadoB);
+  assert.deepEqual(ctx.events, ['stop:alpha', 'start:alpha']);
+  assert.deepEqual(delays, [10]);
+  assert.equal(ctx.health.estado().status, 'healthy');
+});
