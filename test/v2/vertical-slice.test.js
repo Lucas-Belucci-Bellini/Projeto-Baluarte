@@ -6,12 +6,18 @@ function registry() {
   return { selado: true, modulo: (id) => id === 'alpha' ? { id } : null };
 }
 
-function runtime() {
+function runtime(trace = null) {
   const calls = [];
   return {
     calls,
-    abrir: async (_r, _p, id) => calls.push(`open:${id}`),
-    fechar: async (id) => calls.push(`close:${id}`)
+    abrir: async (_r, _p, id) => {
+      calls.push(`open:${id}`);
+      trace?.push(`open:${id}`);
+    },
+    fechar: async (id) => {
+      calls.push(`close:${id}`);
+      trace?.push(`close:${id}`);
+    }
   };
 }
 
@@ -56,6 +62,26 @@ test('falha no start fecha Runtime e marca módulo como failed', async () => {
   assert.equal(slice.estado('alpha'), 'failed');
   assert.deepEqual(events, ['init', 'dispose']);
   assert.deepEqual(rt.calls, ['open:alpha', 'close:alpha']);
+});
+
+test('vertical slice fecha Runtime antes de descartar o módulo', async () => {
+  const trace = [];
+  const rt = runtime(trace);
+  const slice = criarVerticalSlice(registry(), {}, rt);
+
+  await slice.iniciar('alpha', {
+    init: async () => trace.push('init'),
+    start: async () => trace.push('start')
+  });
+  trace.length = 0;
+
+  await slice.parar('alpha', {
+    stop: async () => trace.push('stop'),
+    dispose: async () => trace.push('dispose')
+  });
+
+  assert.deepEqual(trace, ['stop', 'close:alpha', 'dispose']);
+  assert.equal(slice.estado('alpha'), 'stopped');
 });
 
 test('não abre Runtime para módulo inexistente', async () => {
