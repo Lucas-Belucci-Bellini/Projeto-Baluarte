@@ -95,6 +95,10 @@ function claimsAreReady(claims: ServerClaimsObservation | null | undefined, reas
     reasons.push('claims-untrusted');
     ready = false;
   }
+  if (!claims.identity.issuerMatched || !claims.identity.audienceMatched) {
+    reasons.push('claims-untrusted');
+    ready = false;
+  }
   if (!claims.identity.authenticated) {
     reasons.push('claims-untrusted');
     ready = false;
