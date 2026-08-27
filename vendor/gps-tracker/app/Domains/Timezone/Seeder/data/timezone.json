@@ -1,0 +1,1806 @@
+[
+    {
+        "zone": "Africa/Abidjan",
+        "default": false
+    },
+    {
+        "zone": "Africa/Accra",
+        "default": false
+    },
+    {
+        "zone": "Africa/Addis_Ababa",
+        "default": false
+    },
+    {
+        "zone": "Africa/Algiers",
+        "default": false
+    },
+    {
+        "zone": "Africa/Asmara",
+        "default": false
+    },
+    {
+        "zone": "Africa/Bamako",
+        "default": false
+    },
+    {
+        "zone": "Africa/Bangui",
+        "default": false
+    },
+    {
+        "zone": "Africa/Banjul",
+        "default": false
+    },
+    {
+        "zone": "Africa/Bissau",
+        "default": false
+    },
+    {
+        "zone": "Africa/Blantyre",
+        "default": false
+    },
+    {
+        "zone": "Africa/Brazzaville",
+        "default": false
+    },
+    {
+        "zone": "Africa/Bujumbura",
+        "default": false
+    },
+    {
+        "zone": "Africa/Cairo",
+        "default": false
+    },
+    {
+        "zone": "Africa/Casablanca",
+        "default": false
+    },
+    {
+        "zone": "Africa/Ceuta",
+        "default": false
+    },
+    {
+        "zone": "Africa/Conakry",
+        "default": false
+    },
+    {
+        "zone": "Africa/Dakar",
+        "default": false
+    },
+    {
+        "zone": "Africa/Dar_es_Salaam",
+        "default": false
+    },
+    {
+        "zone": "Africa/Djibouti",
+        "default": false
+    },
+    {
+        "zone": "Africa/Douala",
+        "default": false
+    },
+    {
+        "zone": "Africa/El_Aaiun",
+        "default": false
+    },
+    {
+        "zone": "Africa/Freetown",
+        "default": false
+    },
+    {
+        "zone": "Africa/Gaborone",
+        "default": false
+    },
+    {
+        "zone": "Africa/Harare",
+        "default": false
+    },
+    {
+        "zone": "Africa/Johannesburg",
+        "default": false
+    },
+    {
+        "zone": "Africa/Juba",
+        "default": false
+    },
+    {
+        "zone": "Africa/Kampala",
+        "default": false
+    },
+    {
+        "zone": "Africa/Khartoum",
+        "default": false
+    },
+    {
+        "zone": "Africa/Kigali",
+        "default": false
+    },
+    {
+        "zone": "Africa/Kinshasa",
+        "default": false
+    },
+    {
+        "zone": "Africa/Lagos",
+        "default": false
+    },
+    {
+        "zone": "Africa/Libreville",
+        "default": false
+    },
+    {
+        "zone": "Africa/Lome",
+        "default": false
+    },
+    {
+        "zone": "Africa/Luanda",
+        "default": false
+    },
+    {
+        "zone": "Africa/Lubumbashi",
+        "default": false
+    },
+    {
+        "zone": "Africa/Lusaka",
+        "default": false
+    },
+    {
+        "zone": "Africa/Malabo",
+        "default": false
+    },
+    {
+        "zone": "Africa/Maputo",
+        "default": false
+    },
+    {
+        "zone": "Africa/Maseru",
+        "default": false
+    },
+    {
+        "zone": "Africa/Mbabane",
+        "default": false
+    },
+    {
+        "zone": "Africa/Mogadishu",
+        "default": false
+    },
+    {
+        "zone": "Africa/Monrovia",
+        "default": false
+    },
+    {
+        "zone": "Africa/Nairobi",
+        "default": false
+    },
+    {
+        "zone": "Africa/Ndjamena",
+        "default": false
+    },
+    {
+        "zone": "Africa/Niamey",
+        "default": false
+    },
+    {
+        "zone": "Africa/Nouakchott",
+        "default": false
+    },
+    {
+        "zone": "Africa/Ouagadougou",
+        "default": false
+    },
+    {
+        "zone": "Africa/Porto-Novo",
+        "default": false
+    },
+    {
+        "zone": "Africa/Sao_Tome",
+        "default": false
+    },
+    {
+        "zone": "Africa/Tripoli",
+        "default": false
+    },
+    {
+        "zone": "Africa/Tunis",
+        "default": false
+    },
+    {
+        "zone": "Africa/Windhoek",
+        "default": false
+    },
+    {
+        "zone": "America/Adak",
+        "default": false
+    },
+    {
+        "zone": "America/Anchorage",
+        "default": false
+    },
+    {
+        "zone": "America/Anguilla",
+        "default": false
+    },
+    {
+        "zone": "America/Antigua",
+        "default": false
+    },
+    {
+        "zone": "America/Araguaina",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Buenos_Aires",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Catamarca",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Cordoba",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Jujuy",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/La_Rioja",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Mendoza",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Rio_Gallegos",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Salta",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/San_Juan",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/San_Luis",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Tucuman",
+        "default": false
+    },
+    {
+        "zone": "America/Argentina/Ushuaia",
+        "default": false
+    },
+    {
+        "zone": "America/Aruba",
+        "default": false
+    },
+    {
+        "zone": "America/Asuncion",
+        "default": false
+    },
+    {
+        "zone": "America/Atikokan",
+        "default": false
+    },
+    {
+        "zone": "America/Bahia",
+        "default": false
+    },
+    {
+        "zone": "America/Bahia_Banderas",
+        "default": false
+    },
+    {
+        "zone": "America/Barbados",
+        "default": false
+    },
+    {
+        "zone": "America/Belem",
+        "default": false
+    },
+    {
+        "zone": "America/Belize",
+        "default": false
+    },
+    {
+        "zone": "America/Blanc-Sablon",
+        "default": false
+    },
+    {
+        "zone": "America/Boa_Vista",
+        "default": false
+    },
+    {
+        "zone": "America/Bogota",
+        "default": false
+    },
+    {
+        "zone": "America/Boise",
+        "default": false
+    },
+    {
+        "zone": "America/Cambridge_Bay",
+        "default": false
+    },
+    {
+        "zone": "America/Campo_Grande",
+        "default": false
+    },
+    {
+        "zone": "America/Cancun",
+        "default": false
+    },
+    {
+        "zone": "America/Caracas",
+        "default": false
+    },
+    {
+        "zone": "America/Cayenne",
+        "default": false
+    },
+    {
+        "zone": "America/Cayman",
+        "default": false
+    },
+    {
+        "zone": "America/Chicago",
+        "default": false
+    },
+    {
+        "zone": "America/Chihuahua",
+        "default": false
+    },
+    {
+        "zone": "America/Costa_Rica",
+        "default": false
+    },
+    {
+        "zone": "America/Creston",
+        "default": false
+    },
+    {
+        "zone": "America/Cuiaba",
+        "default": false
+    },
+    {
+        "zone": "America/Curacao",
+        "default": false
+    },
+    {
+        "zone": "America/Danmarkshavn",
+        "default": false
+    },
+    {
+        "zone": "America/Dawson",
+        "default": false
+    },
+    {
+        "zone": "America/Dawson_Creek",
+        "default": false
+    },
+    {
+        "zone": "America/Denver",
+        "default": false
+    },
+    {
+        "zone": "America/Detroit",
+        "default": false
+    },
+    {
+        "zone": "America/Dominica",
+        "default": false
+    },
+    {
+        "zone": "America/Edmonton",
+        "default": false
+    },
+    {
+        "zone": "America/Eirunepe",
+        "default": false
+    },
+    {
+        "zone": "America/El_Salvador",
+        "default": false
+    },
+    {
+        "zone": "America/Fort_Nelson",
+        "default": false
+    },
+    {
+        "zone": "America/Fortaleza",
+        "default": false
+    },
+    {
+        "zone": "America/Glace_Bay",
+        "default": false
+    },
+    {
+        "zone": "America/Goose_Bay",
+        "default": false
+    },
+    {
+        "zone": "America/Grand_Turk",
+        "default": false
+    },
+    {
+        "zone": "America/Grenada",
+        "default": false
+    },
+    {
+        "zone": "America/Guadeloupe",
+        "default": false
+    },
+    {
+        "zone": "America/Guatemala",
+        "default": false
+    },
+    {
+        "zone": "America/Guayaquil",
+        "default": false
+    },
+    {
+        "zone": "America/Guyana",
+        "default": false
+    },
+    {
+        "zone": "America/Halifax",
+        "default": false
+    },
+    {
+        "zone": "America/Havana",
+        "default": false
+    },
+    {
+        "zone": "America/Hermosillo",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Indianapolis",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Knox",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Marengo",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Petersburg",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Tell_City",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Vevay",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Vincennes",
+        "default": false
+    },
+    {
+        "zone": "America/Indiana/Winamac",
+        "default": false
+    },
+    {
+        "zone": "America/Inuvik",
+        "default": false
+    },
+    {
+        "zone": "America/Iqaluit",
+        "default": false
+    },
+    {
+        "zone": "America/Jamaica",
+        "default": false
+    },
+    {
+        "zone": "America/Juneau",
+        "default": false
+    },
+    {
+        "zone": "America/Kentucky/Louisville",
+        "default": false
+    },
+    {
+        "zone": "America/Kentucky/Monticello",
+        "default": false
+    },
+    {
+        "zone": "America/Kralendijk",
+        "default": false
+    },
+    {
+        "zone": "America/La_Paz",
+        "default": false
+    },
+    {
+        "zone": "America/Lima",
+        "default": false
+    },
+    {
+        "zone": "America/Los_Angeles",
+        "default": false
+    },
+    {
+        "zone": "America/Lower_Princes",
+        "default": false
+    },
+    {
+        "zone": "America/Maceio",
+        "default": false
+    },
+    {
+        "zone": "America/Managua",
+        "default": false
+    },
+    {
+        "zone": "America/Manaus",
+        "default": false
+    },
+    {
+        "zone": "America/Marigot",
+        "default": false
+    },
+    {
+        "zone": "America/Martinique",
+        "default": false
+    },
+    {
+        "zone": "America/Matamoros",
+        "default": false
+    },
+    {
+        "zone": "America/Mazatlan",
+        "default": false
+    },
+    {
+        "zone": "America/Menominee",
+        "default": false
+    },
+    {
+        "zone": "America/Merida",
+        "default": false
+    },
+    {
+        "zone": "America/Metlakatla",
+        "default": false
+    },
+    {
+        "zone": "America/Mexico_City",
+        "default": false
+    },
+    {
+        "zone": "America/Miquelon",
+        "default": false
+    },
+    {
+        "zone": "America/Moncton",
+        "default": false
+    },
+    {
+        "zone": "America/Monterrey",
+        "default": false
+    },
+    {
+        "zone": "America/Montevideo",
+        "default": false
+    },
+    {
+        "zone": "America/Montserrat",
+        "default": false
+    },
+    {
+        "zone": "America/Nassau",
+        "default": false
+    },
+    {
+        "zone": "America/New_York",
+        "default": false
+    },
+    {
+        "zone": "America/Nipigon",
+        "default": false
+    },
+    {
+        "zone": "America/Nome",
+        "default": false
+    },
+    {
+        "zone": "America/Noronha",
+        "default": false
+    },
+    {
+        "zone": "America/North_Dakota/Beulah",
+        "default": false
+    },
+    {
+        "zone": "America/North_Dakota/Center",
+        "default": false
+    },
+    {
+        "zone": "America/North_Dakota/New_Salem",
+        "default": false
+    },
+    {
+        "zone": "America/Nuuk",
+        "default": false
+    },
+    {
+        "zone": "America/Ojinaga",
+        "default": false
+    },
+    {
+        "zone": "America/Panama",
+        "default": false
+    },
+    {
+        "zone": "America/Pangnirtung",
+        "default": false
+    },
+    {
+        "zone": "America/Paramaribo",
+        "default": false
+    },
+    {
+        "zone": "America/Phoenix",
+        "default": false
+    },
+    {
+        "zone": "America/Port_of_Spain",
+        "default": false
+    },
+    {
+        "zone": "America/Port-au-Prince",
+        "default": false
+    },
+    {
+        "zone": "America/Porto_Velho",
+        "default": false
+    },
+    {
+        "zone": "America/Puerto_Rico",
+        "default": false
+    },
+    {
+        "zone": "America/Punta_Arenas",
+        "default": false
+    },
+    {
+        "zone": "America/Rainy_River",
+        "default": false
+    },
+    {
+        "zone": "America/Rankin_Inlet",
+        "default": false
+    },
+    {
+        "zone": "America/Recife",
+        "default": false
+    },
+    {
+        "zone": "America/Regina",
+        "default": false
+    },
+    {
+        "zone": "America/Resolute",
+        "default": false
+    },
+    {
+        "zone": "America/Rio_Branco",
+        "default": false
+    },
+    {
+        "zone": "America/Santarem",
+        "default": false
+    },
+    {
+        "zone": "America/Santiago",
+        "default": false
+    },
+    {
+        "zone": "America/Santo_Domingo",
+        "default": false
+    },
+    {
+        "zone": "America/Sao_Paulo",
+        "default": false
+    },
+    {
+        "zone": "America/Scoresbysund",
+        "default": false
+    },
+    {
+        "zone": "America/Sitka",
+        "default": false
+    },
+    {
+        "zone": "America/St_Barthelemy",
+        "default": false
+    },
+    {
+        "zone": "America/St_Johns",
+        "default": false
+    },
+    {
+        "zone": "America/St_Kitts",
+        "default": false
+    },
+    {
+        "zone": "America/St_Lucia",
+        "default": false
+    },
+    {
+        "zone": "America/St_Thomas",
+        "default": false
+    },
+    {
+        "zone": "America/St_Vincent",
+        "default": false
+    },
+    {
+        "zone": "America/Swift_Current",
+        "default": false
+    },
+    {
+        "zone": "America/Tegucigalpa",
+        "default": false
+    },
+    {
+        "zone": "America/Thule",
+        "default": false
+    },
+    {
+        "zone": "America/Thunder_Bay",
+        "default": false
+    },
+    {
+        "zone": "America/Tijuana",
+        "default": false
+    },
+    {
+        "zone": "America/Toronto",
+        "default": false
+    },
+    {
+        "zone": "America/Tortola",
+        "default": false
+    },
+    {
+        "zone": "America/Vancouver",
+        "default": false
+    },
+    {
+        "zone": "America/Whitehorse",
+        "default": false
+    },
+    {
+        "zone": "America/Winnipeg",
+        "default": false
+    },
+    {
+        "zone": "America/Yakutat",
+        "default": false
+    },
+    {
+        "zone": "America/Yellowknife",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Casey",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Davis",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/DumontDUrville",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Macquarie",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Mawson",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/McMurdo",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Palmer",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Rothera",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Syowa",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Troll",
+        "default": false
+    },
+    {
+        "zone": "Antarctica/Vostok",
+        "default": false
+    },
+    {
+        "zone": "Arctic/Longyearbyen",
+        "default": false
+    },
+    {
+        "zone": "Asia/Aden",
+        "default": false
+    },
+    {
+        "zone": "Asia/Almaty",
+        "default": false
+    },
+    {
+        "zone": "Asia/Amman",
+        "default": false
+    },
+    {
+        "zone": "Asia/Anadyr",
+        "default": false
+    },
+    {
+        "zone": "Asia/Aqtau",
+        "default": false
+    },
+    {
+        "zone": "Asia/Aqtobe",
+        "default": false
+    },
+    {
+        "zone": "Asia/Ashgabat",
+        "default": false
+    },
+    {
+        "zone": "Asia/Atyrau",
+        "default": false
+    },
+    {
+        "zone": "Asia/Baghdad",
+        "default": false
+    },
+    {
+        "zone": "Asia/Bahrain",
+        "default": false
+    },
+    {
+        "zone": "Asia/Baku",
+        "default": false
+    },
+    {
+        "zone": "Asia/Bangkok",
+        "default": false
+    },
+    {
+        "zone": "Asia/Barnaul",
+        "default": false
+    },
+    {
+        "zone": "Asia/Beirut",
+        "default": false
+    },
+    {
+        "zone": "Asia/Bishkek",
+        "default": false
+    },
+    {
+        "zone": "Asia/Brunei",
+        "default": false
+    },
+    {
+        "zone": "Asia/Chita",
+        "default": false
+    },
+    {
+        "zone": "Asia/Choibalsan",
+        "default": false
+    },
+    {
+        "zone": "Asia/Colombo",
+        "default": false
+    },
+    {
+        "zone": "Asia/Damascus",
+        "default": false
+    },
+    {
+        "zone": "Asia/Dhaka",
+        "default": false
+    },
+    {
+        "zone": "Asia/Dili",
+        "default": false
+    },
+    {
+        "zone": "Asia/Dubai",
+        "default": false
+    },
+    {
+        "zone": "Asia/Dushanbe",
+        "default": false
+    },
+    {
+        "zone": "Asia/Famagusta",
+        "default": false
+    },
+    {
+        "zone": "Asia/Gaza",
+        "default": false
+    },
+    {
+        "zone": "Asia/Hebron",
+        "default": false
+    },
+    {
+        "zone": "Asia/Ho_Chi_Minh",
+        "default": false
+    },
+    {
+        "zone": "Asia/Hong_Kong",
+        "default": false
+    },
+    {
+        "zone": "Asia/Hovd",
+        "default": false
+    },
+    {
+        "zone": "Asia/Irkutsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Jakarta",
+        "default": false
+    },
+    {
+        "zone": "Asia/Jayapura",
+        "default": false
+    },
+    {
+        "zone": "Asia/Jerusalem",
+        "default": false
+    },
+    {
+        "zone": "Asia/Kabul",
+        "default": false
+    },
+    {
+        "zone": "Asia/Kamchatka",
+        "default": false
+    },
+    {
+        "zone": "Asia/Karachi",
+        "default": false
+    },
+    {
+        "zone": "Asia/Kathmandu",
+        "default": false
+    },
+    {
+        "zone": "Asia/Khandyga",
+        "default": false
+    },
+    {
+        "zone": "Asia/Kolkata",
+        "default": false
+    },
+    {
+        "zone": "Asia/Krasnoyarsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Kuala_Lumpur",
+        "default": false
+    },
+    {
+        "zone": "Asia/Kuching",
+        "default": false
+    },
+    {
+        "zone": "Asia/Kuwait",
+        "default": false
+    },
+    {
+        "zone": "Asia/Macau",
+        "default": false
+    },
+    {
+        "zone": "Asia/Magadan",
+        "default": false
+    },
+    {
+        "zone": "Asia/Makassar",
+        "default": false
+    },
+    {
+        "zone": "Asia/Manila",
+        "default": false
+    },
+    {
+        "zone": "Asia/Muscat",
+        "default": false
+    },
+    {
+        "zone": "Asia/Nicosia",
+        "default": false
+    },
+    {
+        "zone": "Asia/Novokuznetsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Novosibirsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Omsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Oral",
+        "default": false
+    },
+    {
+        "zone": "Asia/Phnom_Penh",
+        "default": false
+    },
+    {
+        "zone": "Asia/Pontianak",
+        "default": false
+    },
+    {
+        "zone": "Asia/Pyongyang",
+        "default": false
+    },
+    {
+        "zone": "Asia/Qatar",
+        "default": false
+    },
+    {
+        "zone": "Asia/Qostanay",
+        "default": false
+    },
+    {
+        "zone": "Asia/Qyzylorda",
+        "default": false
+    },
+    {
+        "zone": "Asia/Riyadh",
+        "default": false
+    },
+    {
+        "zone": "Asia/Sakhalin",
+        "default": false
+    },
+    {
+        "zone": "Asia/Samarkand",
+        "default": false
+    },
+    {
+        "zone": "Asia/Seoul",
+        "default": false
+    },
+    {
+        "zone": "Asia/Shanghai",
+        "default": false
+    },
+    {
+        "zone": "Asia/Singapore",
+        "default": false
+    },
+    {
+        "zone": "Asia/Srednekolymsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Taipei",
+        "default": false
+    },
+    {
+        "zone": "Asia/Tashkent",
+        "default": false
+    },
+    {
+        "zone": "Asia/Tbilisi",
+        "default": false
+    },
+    {
+        "zone": "Asia/Tehran",
+        "default": false
+    },
+    {
+        "zone": "Asia/Thimphu",
+        "default": false
+    },
+    {
+        "zone": "Asia/Tokyo",
+        "default": false
+    },
+    {
+        "zone": "Asia/Tomsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Ulaanbaatar",
+        "default": false
+    },
+    {
+        "zone": "Asia/Urumqi",
+        "default": false
+    },
+    {
+        "zone": "Asia/Ust-Nera",
+        "default": false
+    },
+    {
+        "zone": "Asia/Vientiane",
+        "default": false
+    },
+    {
+        "zone": "Asia/Vladivostok",
+        "default": false
+    },
+    {
+        "zone": "Asia/Yakutsk",
+        "default": false
+    },
+    {
+        "zone": "Asia/Yangon",
+        "default": false
+    },
+    {
+        "zone": "Asia/Yekaterinburg",
+        "default": false
+    },
+    {
+        "zone": "Asia/Yerevan",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Azores",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Bermuda",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Canary",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Cape_Verde",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Faroe",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Madeira",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Reykjavik",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/South_Georgia",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/St_Helena",
+        "default": false
+    },
+    {
+        "zone": "Atlantic/Stanley",
+        "default": false
+    },
+    {
+        "zone": "Australia/Adelaide",
+        "default": false
+    },
+    {
+        "zone": "Australia/Brisbane",
+        "default": false
+    },
+    {
+        "zone": "Australia/Broken_Hill",
+        "default": false
+    },
+    {
+        "zone": "Australia/Darwin",
+        "default": false
+    },
+    {
+        "zone": "Australia/Eucla",
+        "default": false
+    },
+    {
+        "zone": "Australia/Hobart",
+        "default": false
+    },
+    {
+        "zone": "Australia/Lindeman",
+        "default": false
+    },
+    {
+        "zone": "Australia/Lord_Howe",
+        "default": false
+    },
+    {
+        "zone": "Australia/Melbourne",
+        "default": false
+    },
+    {
+        "zone": "Australia/Perth",
+        "default": false
+    },
+    {
+        "zone": "Australia/Sydney",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-1",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-10",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-11",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-12",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-2",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-3",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-4",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-5",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-6",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-7",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-8",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT-9",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+1",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+10",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+11",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+12",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+2",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+3",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+4",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+5",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+6",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+7",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+8",
+        "default": false
+    },
+    {
+        "zone": "Etc/GMT+9",
+        "default": false
+    },
+    {
+        "zone": "Etc/UTC",
+        "default": false
+    },
+    {
+        "zone": "Europe/Amsterdam",
+        "default": false
+    },
+    {
+        "zone": "Europe/Andorra",
+        "default": false
+    },
+    {
+        "zone": "Europe/Astrakhan",
+        "default": false
+    },
+    {
+        "zone": "Europe/Athens",
+        "default": false
+    },
+    {
+        "zone": "Europe/Belgrade",
+        "default": false
+    },
+    {
+        "zone": "Europe/Berlin",
+        "default": false
+    },
+    {
+        "zone": "Europe/Bratislava",
+        "default": false
+    },
+    {
+        "zone": "Europe/Brussels",
+        "default": false
+    },
+    {
+        "zone": "Europe/Bucharest",
+        "default": false
+    },
+    {
+        "zone": "Europe/Budapest",
+        "default": false
+    },
+    {
+        "zone": "Europe/Busingen",
+        "default": false
+    },
+    {
+        "zone": "Europe/Chisinau",
+        "default": false
+    },
+    {
+        "zone": "Europe/Copenhagen",
+        "default": false
+    },
+    {
+        "zone": "Europe/Dublin",
+        "default": false
+    },
+    {
+        "zone": "Europe/Gibraltar",
+        "default": false
+    },
+    {
+        "zone": "Europe/Guernsey",
+        "default": false
+    },
+    {
+        "zone": "Europe/Helsinki",
+        "default": false
+    },
+    {
+        "zone": "Europe/Isle_of_Man",
+        "default": false
+    },
+    {
+        "zone": "Europe/Istanbul",
+        "default": false
+    },
+    {
+        "zone": "Europe/Jersey",
+        "default": false
+    },
+    {
+        "zone": "Europe/Kaliningrad",
+        "default": false
+    },
+    {
+        "zone": "Europe/Kiev",
+        "default": false
+    },
+    {
+        "zone": "Europe/Kirov",
+        "default": false
+    },
+    {
+        "zone": "Europe/Kyiv",
+        "default": false
+    },
+    {
+        "zone": "Europe/Lisbon",
+        "default": false
+    },
+    {
+        "zone": "Europe/Ljubljana",
+        "default": false
+    },
+    {
+        "zone": "Europe/London",
+        "default": false
+    },
+    {
+        "zone": "Europe/Luxembourg",
+        "default": false
+    },
+    {
+        "zone": "Europe/Madrid",
+        "default": true
+    },
+    {
+        "zone": "Europe/Malta",
+        "default": false
+    },
+    {
+        "zone": "Europe/Mariehamn",
+        "default": false
+    },
+    {
+        "zone": "Europe/Minsk",
+        "default": false
+    },
+    {
+        "zone": "Europe/Monaco",
+        "default": false
+    },
+    {
+        "zone": "Europe/Moscow",
+        "default": false
+    },
+    {
+        "zone": "Europe/Oslo",
+        "default": false
+    },
+    {
+        "zone": "Europe/Paris",
+        "default": false
+    },
+    {
+        "zone": "Europe/Podgorica",
+        "default": false
+    },
+    {
+        "zone": "Europe/Prague",
+        "default": false
+    },
+    {
+        "zone": "Europe/Riga",
+        "default": false
+    },
+    {
+        "zone": "Europe/Rome",
+        "default": false
+    },
+    {
+        "zone": "Europe/Samara",
+        "default": false
+    },
+    {
+        "zone": "Europe/San_Marino",
+        "default": false
+    },
+    {
+        "zone": "Europe/Sarajevo",
+        "default": false
+    },
+    {
+        "zone": "Europe/Saratov",
+        "default": false
+    },
+    {
+        "zone": "Europe/Simferopol",
+        "default": false
+    },
+    {
+        "zone": "Europe/Skopje",
+        "default": false
+    },
+    {
+        "zone": "Europe/Sofia",
+        "default": false
+    },
+    {
+        "zone": "Europe/Stockholm",
+        "default": false
+    },
+    {
+        "zone": "Europe/Tallinn",
+        "default": false
+    },
+    {
+        "zone": "Europe/Tirane",
+        "default": false
+    },
+    {
+        "zone": "Europe/Ulyanovsk",
+        "default": false
+    },
+    {
+        "zone": "Europe/Uzhgorod",
+        "default": false
+    },
+    {
+        "zone": "Europe/Vaduz",
+        "default": false
+    },
+    {
+        "zone": "Europe/Vatican",
+        "default": false
+    },
+    {
+        "zone": "Europe/Vienna",
+        "default": false
+    },
+    {
+        "zone": "Europe/Vilnius",
+        "default": false
+    },
+    {
+        "zone": "Europe/Volgograd",
+        "default": false
+    },
+    {
+        "zone": "Europe/Warsaw",
+        "default": false
+    },
+    {
+        "zone": "Europe/Zagreb",
+        "default": false
+    },
+    {
+        "zone": "Europe/Zaporozhye",
+        "default": false
+    },
+    {
+        "zone": "Europe/Zurich",
+        "default": false
+    },
+    {
+        "zone": "Indian/Antananarivo",
+        "default": false
+    },
+    {
+        "zone": "Indian/Chagos",
+        "default": false
+    },
+    {
+        "zone": "Indian/Christmas",
+        "default": false
+    },
+    {
+        "zone": "Indian/Cocos",
+        "default": false
+    },
+    {
+        "zone": "Indian/Comoro",
+        "default": false
+    },
+    {
+        "zone": "Indian/Kerguelen",
+        "default": false
+    },
+    {
+        "zone": "Indian/Mahe",
+        "default": false
+    },
+    {
+        "zone": "Indian/Maldives",
+        "default": false
+    },
+    {
+        "zone": "Indian/Mauritius",
+        "default": false
+    },
+    {
+        "zone": "Indian/Mayotte",
+        "default": false
+    },
+    {
+        "zone": "Indian/Reunion",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Apia",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Auckland",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Bougainville",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Chatham",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Chuuk",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Easter",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Efate",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Fakaofo",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Fiji",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Funafuti",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Galapagos",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Gambier",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Guadalcanal",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Guam",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Honolulu",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Kanton",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Kiritimati",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Kosrae",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Kwajalein",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Majuro",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Marquesas",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Midway",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Nauru",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Niue",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Norfolk",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Noumea",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Pago_Pago",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Palau",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Pitcairn",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Pohnpei",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Port_Moresby",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Rarotonga",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Saipan",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Tahiti",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Tarawa",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Tongatapu",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Wake",
+        "default": false
+    },
+    {
+        "zone": "Pacific/Wallis",
+        "default": false
+    }
+]

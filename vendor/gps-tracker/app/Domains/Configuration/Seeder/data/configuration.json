@@ -1,0 +1,37 @@
+[
+    {
+        "key": "position_filter_distance",
+        "value": 5,
+        "description": "Discard positions if the previous position for same trip is less than X meters from the current one"
+    },
+
+    {
+        "key": "position_filter_distance_multiplier",
+        "value": 0,
+        "description": "Adjusts minimum separation proportionally based on speed (ref 100 km/h). Value is added to 100 as base. 0 = disabled (uses fixed distance)"
+    },
+
+    {
+        "key": "trip_wait_minutes",
+        "value": 15,
+        "description": "Wait X minutes between positions to create a new trip"
+    },
+
+    {
+        "key": "position_filter_signal",
+        "value": 1,
+        "description": "Discard positions that do not contain a valid signal"
+    },
+
+    {
+        "key": "shared_enabled",
+        "value": 0,
+        "description": "Enable or Disable the public panel of shared devices (/shared)"
+    },
+
+    {
+        "key": "shared_slug",
+        "value": "",
+        "description": "Add a slug to the /shared path to avoid direct access in the generic URL"
+    }
+]

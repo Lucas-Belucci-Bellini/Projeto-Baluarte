@@ -1,0 +1,43 @@
+// Events on Load
+import './data-map.js';
+import './data-table-pagination.js';
+import './data-map-fence.js';
+import './data-map-polygon.js';
+import './data-map-device.js';
+import './data-map-vehicle.js';
+import './data-map-refuel.js';
+import './data-map-point.js';
+import './data-map-trip.js';
+import './data-map-heat.js';
+import './data-current-datetime.js';
+import './nav-tabs.js';
+
+// Events on Listener
+import './data-calculator.js';
+import './data-notification-request.js';
+import './data-datepicker.js';
+import './data-accordion.js';
+import './alarm-notification.js';
+import './mobile-menu.js';
+import './side-menu.js';
+import './data-checkall.js';
+import './data-input-insert.js';
+import './data-link-to-post.js';
+import './data-password-generate.js';
+import './data-input-file-custom.js';
+import './data-input-default.js';
+import './data-table-sort.js';
+import './data-table-search.js';
+import './data-change-submit.js';
+import './data-password-show.js';
+import './data-copy.js';
+import './data-select.js';
+import './data-scroll-bottom.js';
+import './data-click-one.js';
+import './data-delete-modal-one.js';
+import './data-update-boolean.js';
+import './data-tippy.js';
+import './modal.js';
+import './alert.js';
+import './data-maintenance-update-item.js';
+import './service-worker.js';

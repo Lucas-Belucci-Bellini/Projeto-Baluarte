@@ -1,0 +1,32 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+
+    level: 5
+
+    ignoreErrors:
+        - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable#'
+        - '#Access to an undefined property object::#'
+        - '#Access to an undefined property .*Abstract#'
+        - '#Access to an undefined property .*\\Model#'
+        - '#App\\Domains\\User\\Model\\User.* does not accept Illuminate\\Contracts\\Auth\\Authenticatable#'
+        - '#but returns Illuminate\\Database\\Eloquent\\Builder#'
+        - '#Call to an undefined .*Abstract#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Queue\\ShouldQueue#'
+        - '#Call to an undefined method Illuminate\\Database\\ConnectionInterface#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model#'
+        - '#Call to private method .* of parent class App\\Domains\\Core\\Model\\Builder\\BuilderAbstract#'
+        - '#expects App\\Domains\\Core\\Model\\ModelAbstract\|null, Illuminate\\Contracts\\Auth\\Authenticatable\|null given#'
+        - '#expects App\\Domains\\Core\\Model\\ModelAbstract, Illuminate\\Contracts\\Auth\\Authenticatable given#'
+        - '#expects App\\Domains\\User\\Model\\User, Illuminate\\Contracts\\Auth\\Authenticatable given#'
+        - '#expects App\\Domains\\User\\Model\\User\|null, Illuminate\\Contracts\\Auth\\Authenticatable given#'
+        - '#Parameter \#1 \$callback of method Illuminate\\Support\\Collection#'
+        - '#Property App\\Domains\\.* does not accept Illuminate\\Database\\Eloquent#'
+        - '#returns .*Abstract.#'
+        - '#should return App\\Domains\\.*\\Model.* but returns Illuminate\\Database\\Eloquent\\Model#'
+        - '#should return App\\Domains\\.*\\Model\\Collection\\.* but returns Illuminate\\Database\\Eloquent\\Collection#'
+        - '#\\Domains.*\\Model\\.*Illuminate\\Database\\Eloquent\\Model given#'
+        - '#Unsafe usage of new static#'
