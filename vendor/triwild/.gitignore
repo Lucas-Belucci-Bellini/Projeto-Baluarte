@@ -1,0 +1,12 @@
+*build*
+xcode*
+.idea
+*.code-workspace
+
+bin*
+bin_rel*
+
+*.DS_Store*
+
+
+extern
