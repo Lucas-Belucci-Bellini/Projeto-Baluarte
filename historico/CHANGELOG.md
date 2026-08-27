@@ -6,6 +6,16 @@ aqui o que mudou.
 
 ---
 
+## 2026-08-27 — Próximo marco `v2.0.0-alpha.20`: diagnóstico da saúde do Task Manager
+
+A vigésima slice técnica acompanhável da V2 integra pela PR #519 uma projeção opcional e somente leitura da saúde do escalonador local na fachada `criarPlataforma()`. `PlatformDiagnostic.trabalho` delega a `Escalonador.saude()`, retorna `null` quando não configurado e rejeita uma dependência sem `saude()`. Não há nova fila, retry, threshold, autoridade, persistência ou efeito externo.
+
+Os gates locais passaram: focal Plataforma `7/7`; `tipos:ts`; `tipos:v2`; suíte `1388` aprovados, `6` ignorados e zero falhas; build; integração V2 `58/58`; smoke; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`. O Doctor registrou `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto por Cargo ausente. A PR passou `11` checks, com Vercel liberado, e os oito workflows pós-merge do SHA `0365f7f` terminaram verdes.
+
+A implementação técnica está na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`; o backup é `backup/2026-08-27-before-v2-platform-task-diagnostic`. A nota de release e a reconciliação das matrizes estão em preparação nesta branch documental; tag e release só serão criadas após checks remotos, finalização com SHA documental exato e verificação do alvo anotado. A V1, o router, o shell, a sidebar, os wrappers, o Service Worker, #501 e #471 permanecem preservados e separados.
+
+---
+
 ## 2026-08-27 — Próximo marco `v2.0.0-alpha.19`: Module Registry Health observável
 
 A décima nona slice acompanhável da V2 adiciona `npm run check:module-registry-health` e o check `module_registry_health` ao Doctor. O verificador local/read-only reutiliza `criarModuleRegistryHealth` e `criarRuntimeHealth` para cobrir seis casos, três allow, três deny, degradação isolada, quarentena após falhas excedentes, manutenção auditada, negação server-side e cópia defensiva do retrato.
