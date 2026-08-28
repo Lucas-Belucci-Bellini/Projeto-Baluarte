@@ -40,6 +40,7 @@ export interface EvidenceRecord {
   readonly status: EvidenceStatus;
   readonly moduleId: string;
   readonly collector: string;
+  readonly revision: number;
   readonly supersededBy?: string;
 }
 
@@ -167,6 +168,35 @@ export interface EvidenceSearchResult {
   readonly summary: EvidenceSearchSummary;
 }
 
+export type EvidenceRevisionKind = 'appended' | 'status-changed';
+
+export interface EvidenceRevision {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly revision: number;
+  readonly kind: EvidenceRevisionKind;
+  readonly status: EvidenceStatus;
+  readonly observedAt: string;
+  readonly supersededBy?: string;
+}
+
+export interface EvidenceRevisionOptions {
+  readonly limit?: number;
+}
+
+export interface EvidenceRevisionSummary {
+  readonly returned: number;
+  readonly available: number;
+  readonly truncated: boolean;
+}
+
+export interface EvidenceRevisionPreview {
+  readonly id: string;
+  readonly limit: number;
+  readonly revisions: readonly EvidenceRevision[];
+  readonly summary: EvidenceRevisionSummary;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -197,6 +227,8 @@ const DEFAULT_REVIEW_LIMIT = 25;
 const MAX_REVIEW_LIMIT = 100;
 const DEFAULT_SEARCH_LIMIT = 25;
 const MAX_SEARCH_LIMIT = 100;
+const DEFAULT_REVISION_LIMIT = 25;
+const MAX_REVISION_LIMIT = 100;
 
 function boundedPositive(value: number | undefined, fallback: number, maximum: number, name: string): number {
   if (value === undefined) return fallback;
@@ -272,6 +304,29 @@ function normalizeAuditOptions(options: EvidenceAuditOptions | null | undefined)
     moduleId: options.moduleId?.trim() ?? null,
     limit: boundedPositive(options.limit, DEFAULT_AUDIT_LIMIT, MAX_AUDIT_LIMIT, 'limit'),
   };
+}
+
+export function projectEvidenceRevisionHistory(
+  id: string,
+  history: readonly EvidenceRevision[],
+  options: EvidenceRevisionOptions = {},
+): EvidenceRevisionPreview {
+  if (!isNonEmptyString(id)) throw new TypeError('id deve ser texto não vazio');
+  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('opções de histórico devem ser um objeto');
+  }
+  const limit = boundedPositive(options.limit, DEFAULT_REVISION_LIMIT, MAX_REVISION_LIMIT, 'limit');
+  const revisions = history.slice(0, limit).map((revision) => Object.freeze({ ...revision }));
+  return Object.freeze({
+    id: id.trim(),
+    limit,
+    revisions: Object.freeze(revisions),
+    summary: Object.freeze({
+      returned: revisions.length,
+      available: history.length,
+      truncated: history.length > limit,
+    }),
+  });
 }
 
 export function projectEvidenceSearch(
@@ -450,17 +505,28 @@ export function normalizeEvidence(input: EvidenceInput): EvidenceRecord {
     status: input.status ?? 'pending',
     moduleId: input.moduleId.trim(),
     collector: input.collector?.trim() ?? 'unknown',
+    revision: 1,
     ...(input.supersededBy ? { supersededBy: input.supersededBy.trim() } : {}),
   });
 }
 
 export class EvidenceStore {
   private readonly records = new Map<string, EvidenceRecord>();
+  private readonly revisions = new Map<string, readonly EvidenceRevision[]>();
 
   append(input: EvidenceInput): EvidenceRecord {
     const record = normalizeEvidence(input);
     if (this.records.has(record.id)) throw new Error(`evidência duplicada: ${record.id}`);
     this.records.set(record.id, record);
+    this.revisions.set(record.id, [Object.freeze({
+      id: record.id,
+      moduleId: record.moduleId,
+      revision: record.revision,
+      kind: 'appended',
+      status: record.status,
+      observedAt: record.observedAt,
+      ...(record.supersededBy ? { supersededBy: record.supersededBy } : {}),
+    })]);
     return record;
   }
 
@@ -486,10 +552,25 @@ export class EvidenceStore {
     const next: EvidenceRecord = Object.freeze({
       ...current,
       status,
+      revision: current.revision + 1,
       ...(supersededBy ? { supersededBy } : {}),
     });
     this.records.set(id, next);
+    const history = this.revisions.get(id) ?? [];
+    this.revisions.set(id, [...history, Object.freeze({
+      id: next.id,
+      moduleId: next.moduleId,
+      revision: next.revision,
+      kind: 'status-changed',
+      status: next.status,
+      observedAt: next.observedAt,
+      ...(next.supersededBy ? { supersededBy: next.supersededBy } : {}),
+    })]);
     return next;
+  }
+
+  revisionPreview(id: string, options: EvidenceRevisionOptions = {}): EvidenceRevisionPreview {
+    return projectEvidenceRevisionHistory(id, this.revisions.get(id) ?? [], options);
   }
 
   snapshot(): readonly EvidenceRecord[] {

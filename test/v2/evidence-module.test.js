@@ -99,6 +99,22 @@ test('Evidence auditPreview permanece redigido durante o lifecycle', () => {
   assert.throws(() => evidence.api.auditPreview({ moduleId: '' }), /moduleId deve ser/);
 });
 
+test('Evidence revisionPreview expõe histórico estrutural durante o lifecycle', () => {
+  evidence.lifecycle.init({ log: { debug: () => {} } });
+  const record = evidence.api.append(input);
+  evidence.api.markStatus(record.id, 'verified');
+  const preview = evidence.api.revisionPreview(record.id);
+  assert.deepEqual(preview.revisions.map((revision) => [revision.revision, revision.kind, revision.status]), [
+    [1, 'appended', 'pending'],
+    [2, 'status-changed', 'verified'],
+  ]);
+  assert.deepEqual(preview.summary, { returned: 2, available: 2, truncated: false });
+  assert.equal(Object.hasOwn(preview.revisions[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(preview.revisions[0] ?? {}, 'source'), false);
+  evidence.lifecycle.dispose();
+  assert.deepEqual(evidence.api.revisionPreview(record.id).summary, { returned: 0, available: 0, truncated: false });
+});
+
 test('Evidence search permanece bounded e read-only durante o lifecycle', () => {
   assert.deepEqual(evidence.api.search({ query: 'missing' }), {
     query: 'missing',
