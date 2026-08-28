@@ -140,6 +140,7 @@ espera delas.
 | gate | resultado |
 |---|---:|
 | `npm test` | `1409/1409` |
+| `test/security/*` — o portão que guarda esta mudança | `81/81` |
 | `npm run v2:integracao` | `58/58` |
 | `tipos:ts` · `tipos:v2` | 0 erros |
 | `build`, `verificar-nexus`, catálogos, tabela de estabilidade | verdes |
