@@ -60,6 +60,35 @@ test('evidence status changes preserve the observed fact and record supersession
   const superseded = store.markStatus(base.id, 'superseded', 'ev-002');
   assert.equal(superseded.supersededBy, 'ev-002');
   assert.equal(superseded.statement, base.statement);
+  assert.equal(store.get(base.id)?.revision, 3);
+});
+
+test('evidence revision history is bounded, immutable and structural', () => {
+  const store = new EvidenceStore();
+  store.append(base);
+  store.markStatus(base.id, 'verified');
+  store.markStatus(base.id, 'superseded', 'ev-002');
+
+  const preview = store.revisionPreview(base.id);
+  assert.deepEqual(preview.revisions.map((revision) => [revision.id, revision.revision, revision.kind, revision.status, revision.supersededBy ?? null]), [
+    [base.id, 1, 'appended', 'pending', null],
+    [base.id, 2, 'status-changed', 'verified', null],
+    [base.id, 3, 'status-changed', 'superseded', 'ev-002'],
+  ]);
+  assert.deepEqual(preview.summary, { returned: 3, available: 3, truncated: false });
+  assert.equal(Object.isFrozen(preview), true);
+  assert.equal(Object.isFrozen(preview.revisions), true);
+  assert.equal(Object.isFrozen(preview.revisions[0]), true);
+  assert.equal(Object.hasOwn(preview.revisions[0] ?? {}, 'statement'), false);
+  assert.equal(Object.hasOwn(preview.revisions[0] ?? {}, 'source'), false);
+
+  const limited = store.revisionPreview(base.id, { limit: 2 });
+  assert.equal(limited.revisions.length, 2);
+  assert.deepEqual(limited.summary, { returned: 2, available: 3, truncated: true });
+  assert.deepEqual(store.revisionPreview('missing').summary, { returned: 0, available: 0, truncated: false });
+  assert.throws(() => store.revisionPreview(''), /id deve ser/);
+  assert.throws(() => store.revisionPreview(base.id, { limit: 0 }), /limit deve ser/);
+  assert.throws(() => store.revisionPreview(base.id, { limit: 1.5 }), /limit deve ser/);
 });
 
 test('evidence retention preview is deterministic, bounded and read-only', () => {
