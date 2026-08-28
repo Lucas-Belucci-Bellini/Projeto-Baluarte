@@ -139,7 +139,7 @@ espera delas.
 
 | gate | resultado |
 |---|---:|
-| `npm test` | `1361/1361` |
+| `npm test` | `1409/1409` |
 | `npm run v2:integracao` | `58/58` |
 | `tipos:ts` · `tipos:v2` | 0 erros |
 | `build`, `verificar-nexus`, catálogos, tabela de estabilidade | verdes |

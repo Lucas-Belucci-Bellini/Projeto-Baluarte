@@ -58,7 +58,7 @@ A alpha.18 não publica instaladores, não altera `desktop-release.yml`, não cr
 
 A décima sétima pré-release acompanhável da V2 torna observável no `verify:v2` o contrato local `module-registry-mode-policy/v1`: o Doctor executa `node scripts/module-mode-policy-check.mjs` como check `safe`/read-only com id `module_mode_policy`. A fixture canônica continua sendo a única fonte da matriz de quatro identidades, seis casos, três decisões allow, três deny e spoof negado.
 
-O marco técnico foi mesclado pela PR #506 no SHA `8917525e`; a documentação inicial foi mesclada pela PR [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507) no SHA `379f6670`, e a finalização de rastreabilidade pela PR [#508](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/508) no SHA `f06bbb9`. O teste focal do Doctor passou `10/10`; a suíte passou com `1385` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `76/76` passaram. O Doctor registrou `16` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelo estado ambiental de Cargo.
+O marco técnico foi mesclado pela PR #506 no SHA `8917525e`; a documentação inicial foi mesclada pela PR [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507) no SHA `379f6670`, e a finalização de rastreabilidade pela PR [#508](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/508) no SHA `f06bbb9`. O teste focal do Doctor passou `10/10`; a suíte passou com `1385` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `81/81` passaram. O Doctor registrou `16` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelo estado ambiental de Cargo.
 
 O slice não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, persistência, auditoria remota, retenção operacional, rede, retry, restart, fila, mutação remota ou autoridade de produção. V1, router, sidebar, boot, Storage, Evidence, Event Bus e Service Worker permanecem preservados. A PR #501 de privacidade continua separada e a PR #471 do Claude Code permanece aberta como draft e intocada. As notas completas estão em [`docs/releases/v2.0.0-alpha.17.md`](../docs/releases/v2.0.0-alpha.17.md).
 
@@ -68,7 +68,7 @@ O slice não implementa login, Auth, JWT, claims, service role, Supabase, SQL, m
 
 A décima sexta pré-release acompanhável da V2 adiciona a fixture determinística `module-registry-mode-policy/v1` para exercitar decisões `allow`/`deny` dos modos `active`, `maintenance` e `disabled` antes de qualquer staging Supabase/RLS. A fixture expõe exatamente quatro identidades sintéticas — `fixture-user`, `fixture-admin`, `fixture-dev` e `fixture-owner` — nos papéis fechados `user`, `admin`, `dev` e `owner`; `actorRole` enviado no request não eleva autoridade.
 
-O marco foi mesclado pela PR #504 no SHA `5820b6aa`. O verificador confirmou 4 identidades, 6 casos, 3 allow, 3 deny e spoof negado; o teste focal passou `8/8`; a suíte passou com `1384` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts selecionados `76/76` passaram. O Doctor, com dependências disponíveis, registrou `15` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelos estados ambientais.
+O marco foi mesclado pela PR #504 no SHA `5820b6aa`. O verificador confirmou 4 identidades, 6 casos, 3 allow, 3 deny e spoof negado; o teste focal passou `8/8`; a suíte passou com `1384` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts selecionados `81/81` passaram. O Doctor, com dependências disponíveis, registrou `15` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelos estados ambientais.
 
 A fixture não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila, mutação remota ou promoção pública. Ela fornece somente uma decisão sintética ao callback auditado do Module Registry Health e não é autoridade de produção. A PR #501 de privacidade e a PR #471 do Claude Code continuam separadas. As notas completas estão em [`docs/releases/v2.0.0-alpha.16.md`](../docs/releases/v2.0.0-alpha.16.md).
 
@@ -271,7 +271,7 @@ consertado antes de o módulo ser ligado, que é quando ninguém revisita estas
 linhas. Isto **não** liga o módulo ao boot nem cria fonte única: isso é o resto
 da Fase 6.
 
-Suíte `1361/1361`, integração `58/58`, build, typechecks, `verificar-nexus`,
+Suíte `1409/1409`, integração `58/58`, build, typechecks, `verificar-nexus`,
 catálogos e tabela de estabilidade verdes. Contra o `config.js` anterior, 9 dos
 14 testes novos falham — os 5 que passam nos dois são guardas de regressão.
 
