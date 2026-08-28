@@ -22,12 +22,22 @@ export function avaliarSaude(retrato) {
       liveness: 'unhealthy',
       readiness: 'unhealthy',
       fase: 'desconhecida',
-      motivos: ['retrato ausente']
+      motivos: ['retrato ausente'],
+      /* `contagem` é declarada como obrigatória em `saude.d.ts`, e este caminho
+       * omitia-a. Um consumidor TypeScript — `plataforma.ts` é um — escreve
+       * `s.contagem.modulos` confiando no tipo e apanha um TypeError EXATAMENTE
+       * quando o sistema já está doente, que é o pior momento para o
+       * diagnóstico morrer. Zero é a contagem honesta: não se observou nada. */
+      contagem: { modulos: 0, falhas: 0, eventosOrfaos: 0, referenciasOrfas: 0 }
     };
   }
 
   const motivos = [];
-  const fase = retrato.fase;
+  /* `desconhecida` e não `undefined`: o caminho do retrato ausente logo acima já
+   * usa essa palavra, e um retrato sem fase produzia a linha "Core não está no
+   * ar: undefined" — que é a não-mensagem clássica — e ainda fazia o campo
+   * `fase` desaparecer do JSON, porque `undefined` não serializa. */
+  const fase = typeof retrato.fase === 'string' && retrato.fase ? retrato.fase : 'desconhecida';
   const vivos = Array.isArray(retrato.modulos) ? retrato.modulos : [];
   const falhas = Array.isArray(retrato.falhas) ? retrato.falhas : [];
   const eventosOrfaos = Array.isArray(retrato.eventosOrfaos) ? retrato.eventosOrfaos : [];
@@ -83,8 +93,34 @@ export function criarMonitorSaude(boot) {
     estado = novoEstado;
   }
 
+  /**
+   * Uma sonda de saúde que LEVANTA é pior do que inútil: quem a chama pergunta
+   * "está saudável?" para decidir o que fazer, e recebe uma exceção em vez de um
+   * veredito — então o supervisor que devia reagir ao `unhealthy` morre junto
+   * com o que ia diagnosticar. Pior ainda desde que o diagnóstico da Plataforma
+   * agrega várias saúdes: uma sonda que estoura derruba o agregado inteiro.
+   *
+   * `avaliarSaude` já falha fechado para qualquer retrato inválido — `null`,
+   * texto, número. O que faltava era o Boot LEVANTAR ao ser perguntado, que
+   * escapava por cima dessa proteção em vez de passar por ela.
+   */
   function verificar() {
-    return avaliarSaude(boot.diagnostico());
+    let retrato;
+    try {
+      retrato = boot.diagnostico();
+    } catch (erro) {
+      /* Distinguir de "o Boot não deu nada": um Boot que rebenta e um Boot que
+       * devolve lixo são problemas diferentes, e quem lê o motivo precisa saber
+       * qual dos dois foi. */
+      return {
+        liveness: 'unhealthy',
+        readiness: 'unhealthy',
+        fase: 'desconhecida',
+        motivos: [`o diagnóstico do Boot levantou: ${erro instanceof Error ? erro.message : String(erro)}`],
+        contagem: { modulos: 0, falhas: 0, eventosOrfaos: 0, referenciasOrfas: 0 }
+      };
+    }
+    return avaliarSaude(retrato);
   }
 
   function retrato() {

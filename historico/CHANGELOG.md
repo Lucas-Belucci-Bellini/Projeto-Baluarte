@@ -5,6 +5,44 @@ criada uma branch de backup (`backup/AAAA-MM-DD-...`); **depois** registra-se
 aqui o que mudou.
 
 ---
+## 2026-08-28 — V2: a sonda de saúde do Core podia levantar em vez de responder
+
+`verificar()` chamava `boot.diagnostico()` sem guarda. Um Boot que rebenta ao
+ser perguntado fazia a exceção subir para quem perguntou — e quem chama uma
+sonda de saúde pergunta *"está saudável?"* para **decidir o que fazer**:
+recebendo uma exceção, o supervisor que devia reagir ao `unhealthy` morre junto
+com aquilo que ia diagnosticar.
+
+Não era lacuna de intenção: `avaliarSaude` já falha fechado para **qualquer**
+retrato inválido (`null`, texto, número). Faltava o caminho do **lançamento**,
+que escapava por cima dessa proteção em vez de passar por dentro dela. Pesa mais
+agora que o diagnóstico da Plataforma **agrega** saúdes — a alpha.20 juntou a do
+Task Manager: um agregado é tão robusto quanto a sonda mais frágil que ele chama.
+
+Mais dois, na mesma família:
+
+- **O relatório dizia `undefined`.** Retrato sem `fase` produzia
+  `"Core não está no ar: undefined"` e fazia o campo `fase` sumir do JSON, porque
+  `undefined` não serializa. O módulo já tinha a palavra certa (`desconhecida`)
+  no caminho do retrato ausente e não a usava aqui.
+- **O runtime não honrava o tipo que ele próprio declara.** `saude.d.ts` declara
+  `contagem` como obrigatória e todo caminho de erro a omitia. Um consumidor
+  TypeScript — `plataforma.ts` é um — escreve `s.contagem.modulos` confiando no
+  tipo e apanha um `TypeError` exatamente quando o sistema já está doente.
+
+Os vereditos não mudaram, e a sonda continua a consultar o Boot a cada chamada:
+um Boot que rebenta e depois recupera tem de ser visto a recuperar, e cachear o
+`unhealthy` deixaria o sistema marcado como doente para sempre.
+
+Suíte `1422/1422`, segurança `81/81`, integração `58/58`, build, typechecks,
+`verificar-nexus`, catálogos e tabela de estabilidade verdes. Contra o
+`saude.js` anterior, **11 dos 13** testes novos falham; os 2 que passam nos dois
+são guardas de regressão.
+
+**Documentação:** [`docs/v2/CORE_HEALTH_FALHA_FECHADA_2026-08-28.md`](../docs/v2/CORE_HEALTH_FALHA_FECHADA_2026-08-28.md).
+
+---
+
 ## 2026-08-27 — Marco técnico candidato `v2.0.0-alpha.21`: Runtime Restart Single-Flight
 
 Após a alpha.20 publicada, as PRs #517 e #518 foram sincronizadas contra a `main`, validadas com 11 checks e Vercel success cada uma e squash-merged nos SHAs `f62ece73` e `9ca94781`. A #517 corrige `stop → Runtime.close → dispose`; a #518 preserva metadados autorizados de envelope através de `ctx.bus.emit`.
