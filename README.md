@@ -32,6 +32,7 @@
 | **Usar a plataforma** | [projeto-baluarte.vercel.app](https://projeto-baluarte.vercel.app) |
 | **Abrir o J.A.R.V.I.S. Núcleo V7** | [Modelagem 3D funcional](https://projeto-baluarte.vercel.app/project%20V2/Modelar%20objeto%203D/jarvis-nucleo-v7.html) |
 | **Ler o roadmap completo** | [`docs/ROADMAP_COMPLETO.md`](docs/ROADMAP_COMPLETO.md) |
+| **Acompanhar o histórico de commits** | [`HISTORICO_DE_COMMITS.md`](HISTORICO_DE_COMMITS.md) |
 | **Entrar na V2** | [`ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md) |
 | **Rodar localmente** | [`Como rodar`](#como-rodar) |
 | **Baixar o Launcher** | [`/baixar`](https://projeto-baluarte.vercel.app/#/baixar) e [releases do GitHub](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases) |
@@ -96,7 +97,8 @@ A reconstrução é conduzida por três planos complementares: [#420 — Fundaç
 | Regras V2 | [`V2_RULES.md`](docs/v2/V2_RULES.md) |
 | Migração para TypeScript | [`TYPESCRIPT_MIGRATION.md`](docs/v2/TYPESCRIPT_MIGRATION.md) |
 | Projeto Nexus Baluarte | [`docs/PROJETO-NEXUS-BALUARTE.md`](docs/PROJETO-NEXUS-BALUARTE.md) |
-| Histórico de merges | [`2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md) |
+| Histórico completo de commits | [`HISTORICO_DE_COMMITS.md`](HISTORICO_DE_COMMITS.md) — ledger por blocos com SHA, mensagem e arquivos afetados. |
+| Histórico narrativo de merges | [`2026-08-13_V2_MERGE_HISTORY.md`](docs/v2/history/2026-08-13_V2_MERGE_HISTORY.md) |
 | Plano de releases | [`RELEASE_PLAN.md`](docs/v2/RELEASE_PLAN.md) |
 | Release 1.2.7 — Briefing→Evidence pelo Registry | [`v1.2.7.md`](docs/releases/v1.2.7.md) |
 | Release 1.2.6 — JARVIS Núcleo V7 | [`v1.2.6.md`](docs/releases/v1.2.6.md) |
