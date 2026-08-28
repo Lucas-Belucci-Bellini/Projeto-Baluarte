@@ -29,7 +29,9 @@ npm run build    # gera dist/ (valide SEMPRE antes de commitar)
 | `api/` | funções serverless (chat=Gemini, hermes, memory, health) |
 | `scripts/` | geradores (`gen-codemap.mjs`, `gen-arsenal.mjs`) |
 | `docs/` | documentação de features |
-| `historico/CHANGELOG.md` | histórico do que entra no `main` |
+| `HISTORICO_DE_COMMITS.md` | índice público do ledger completo de commits e arquivos afetados |
+| `historico/commits-main/` | blocos gerados do histórico da linha `main` |
+| `historico/CHANGELOG.md` | histórico narrativo de marcos e releases que entram no `main` |
 
 ## Convenções de código
 - **Cabeçalho JSDoc** no topo de cada arquivo dizendo o que ele faz.
@@ -70,7 +72,10 @@ npm run build    # gera dist/ (valide SEMPRE antes de commitar)
 
 ## Fluxo de git (importante)
 Antes de cada merge no `main`: **cria uma branch de backup** (`backup/AAAA-MM-DD-...`),
-faz o **fast-forward no `main`** e **registra em `historico/CHANGELOG.md`**.
+faz o **squash merge normal** depois dos checks aplicáveis e registra o marco em `historico/CHANGELOG.md` quando houver uma mudança integrada. O ledger exaustivo em [`HISTORICO_DE_COMMITS.md`](HISTORICO_DE_COMMITS.md) e [`historico/commits-main/`](historico/commits-main/) é atualizado por uma PR documental separada, baseada no `origin/main` pós-merge e com staging explícito.
+
+Não trate branch aberta, draft, check pendente, bloqueio de Vercel ou release candidata como commit integrado. A memória canônica da V2 continua em `docs/v2/`; o histórico apenas registra evidências de integração.
+
 Desenvolva sempre numa branch, valide com `npm run build`, e só então consolide.
 
 > Dica: o **Raio-X do Código** (`/codigo`) mostra o grafo dos imports e tem um
