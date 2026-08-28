@@ -18,6 +18,7 @@ import type {
 import type { ModuleRegistry } from './registry.js';
 import type { Supervisor, SupervisorStatus } from './supervisor.js';
 import type { Escalonador, SaudeEscalonador } from './trabalho.js';
+import type { criarBus } from './bus.js';
 
 export interface RegistryDiagnosticEntry {
   id: string;
@@ -44,6 +45,8 @@ export interface PlatformOptions {
   };
   /** Projeção opcional e read-only do escalonador local do Core. */
   trabalho?: Pick<Escalonador, 'saude'>;
+  /** Projeção opcional e read-only da saúde do Event Bus local do Core. */
+  bus?: Pick<ReturnType<typeof criarBus>, 'saude'>;
 }
 
 export interface PlatformDiagnostic {
@@ -59,6 +62,7 @@ export interface PlatformDiagnostic {
   };
   boot: ReturnType<Boot['diagnostico']>;
   trabalho: SaudeEscalonador | null;
+  bus: ReturnType<ReturnType<typeof criarBus>['saude']> | null;
 }
 
 export interface Platform {
@@ -88,6 +92,9 @@ export function criarPlataforma(
   if (options.trabalho !== undefined && typeof options.trabalho.saude !== 'function') {
     throw new TypeError('trabalho inválido');
   }
+  if (options.bus !== undefined && typeof options.bus.saude !== 'function') {
+    throw new TypeError('bus inválido');
+  }
 
   const saude = criarMonitorSaude(boot);
   const supervisor = criarSupervisor(boot, saude);
@@ -116,6 +123,7 @@ export function criarPlataforma(
       },
       boot: boot.diagnostico(),
       trabalho: options.trabalho?.saude() ?? null,
+      bus: options.bus?.saude() ?? null,
     };
   }
 

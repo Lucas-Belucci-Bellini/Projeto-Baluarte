@@ -4,8 +4,9 @@ import { criarPlataforma } from '../../v2/core/plataforma.js';
 import { criarRuntimeHealth } from '../../v2/core/module-runtime-health.js';
 import { criarModuleRegistryHealth } from '../../v2/core/module-registry-health.js';
 import { criarEscalonador } from '../../v2/core/trabalho.js';
+import { criarBus } from '../../v2/core/bus.js';
 
-function montar({ falhas = [], vivos = ['core'], registryHealth = undefined, trabalho = undefined } = {}) {
+function montar({ falhas = [], vivos = ['core'], registryHealth = undefined, trabalho = undefined, bus = undefined } = {}) {
   const registry = {
     listar: () => ['core'],
     modulo: () => ({ name: 'Core', version: '2.0.0' })
@@ -27,7 +28,7 @@ function montar({ falhas = [], vivos = ['core'], registryHealth = undefined, tra
     descer: async () => { fase = 'parado'; return { ok: true, problemas: [] }; },
     diagnostico: () => ({ fase, modulos: vivos, falhas, eventosOrfaos: [], referenciasOrfas: [] })
   };
-  return criarPlataforma(registry, boot, { registryHealth, trabalho });
+  return criarPlataforma(registry, boot, { registryHealth, trabalho, bus });
 }
 
 test('fachada expõe saúde e lifecycle no diagnóstico', () => {
@@ -45,6 +46,7 @@ test('fachada expõe saúde e lifecycle no diagnóstico', () => {
   }]);
   assert.deepEqual(d.registry.incidentes, []);
   assert.equal(d.trabalho, null);
+  assert.equal(d.bus, null);
 });
 
 test('fachada expõe a saúde do escalonador real no diagnóstico', async () => {
@@ -56,6 +58,22 @@ test('fachada expõe a saúde do escalonador real no diagnóstico', async () => 
   assert.equal(d.trabalho.contagem.enfileirados, 1);
   assert.equal(d.trabalho.contagem.concluidos, 1);
   assert.equal(d.trabalho.estado.naFila, 0);
+});
+
+test('fachada expõe a saúde do Event Bus real no diagnóstico', () => {
+  const bus = criarBus();
+  bus.on('core:probe', () => {});
+  bus.emit('core:probe', { safe: true }, { origem: 'core' });
+
+  const d = montar({ bus }).diagnostico();
+  assert.equal(d.bus.readiness, 'healthy');
+  assert.deepEqual(d.bus.contagem, { emissoes: 1, falhas: 0, padroes: 1, ouvintes: 1 });
+  assert.deepEqual(d.bus.porEvento['core:probe'], { emissoes: 1, falhas: 0 });
+  assert.equal('authority' in d.bus, false);
+});
+
+test('fachada recusa um Event Bus sem saúde', () => {
+  assert.throws(() => montar({ bus: {} }), /bus inválido/);
 });
 
 test('fachada recusa um escalonador sem saúde', () => {
