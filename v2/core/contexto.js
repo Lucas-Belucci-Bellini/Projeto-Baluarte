@@ -68,7 +68,7 @@ export class ErroChave extends Error {
 
 /**
  * @typedef {object} BusV2
- * @property {(ev: string, payload?: any, meta?: Record<string, unknown>) => void} emit
+ * @property {(ev: string, payload?: any, meta?: {versao?: number, contexto?: Record<string, unknown>, correlacao?: string, causa?: string|null}) => unknown} emit
  * @property {(ev: string, fn: Function) => (() => void)} on
  *
  * ⚠️ **O bus da V1 NÃO satisfaz este contrato.** `src/core/events.js` declara
@@ -201,13 +201,23 @@ export function criarContexto(manifesto, deps) {
      * módulo emitindo em nome de outro corrompe o catálogo de eventos, e o
      * catálogo é o que permite descobrir quem depende de quê (§7).
      * @param {string} evento @param {any} [payload]
+     * @param {{versao?: number, contexto?: Record<string, unknown>, correlacao?: string, causa?: string|null}} [meta]
      */
-    emit(evento, payload) {
+    emit(evento, payload, meta = {}) {
       if (!podeEmitir.has(evento)) {
         throw new Error(`módulo "${id}" não declarou emitir "${evento}"`);
       }
-      /* `origem` no envelope é o que a §7 pede e o bus da V1 não tem. */
-      barramento.emit(evento, payload, { origem: id });
+      /* Encaminhar somente os campos do contrato impede que um módulo falsifique
+       * a origem ou injete opções desconhecidas no barramento. A origem é uma
+       * propriedade do contexto, não uma escolha de quem chama `ctx.bus.emit`. */
+      const { versao, contexto, correlacao, causa } = meta ?? {};
+      return barramento.emit(evento, payload, {
+        ...(versao === undefined ? {} : { versao }),
+        ...(contexto === undefined ? {} : { contexto }),
+        ...(correlacao === undefined ? {} : { correlacao }),
+        ...(causa === undefined ? {} : { causa }),
+        origem: id
+      });
     },
     /** Escutar é livre — é o ponto do Event Bus (ver `V2_MODULE_RULES.md`). */
     /** @param {string} evento @param {Function} fn */

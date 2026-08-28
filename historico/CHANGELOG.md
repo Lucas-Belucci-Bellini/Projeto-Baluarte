@@ -5,6 +5,233 @@ criada uma branch de backup (`backup/AAAA-MM-DD-...`); **depois** registra-se
 aqui o que mudou.
 
 ---
+## 2026-08-27 — Marco técnico candidato `v2.0.0-alpha.21`: Runtime Restart Single-Flight
+
+Após a alpha.20 publicada, as PRs #517 e #518 foram sincronizadas contra a `main`, validadas com 11 checks e Vercel success cada uma e squash-merged nos SHAs `f62ece73` e `9ca94781`. A #517 corrige `stop → Runtime.close → dispose`; a #518 preserva metadados autorizados de envelope através de `ctx.bus.emit`.
+
+A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) adiciona single-flight bounded a `criarRuntimeRestart()`: chamadas concorrentes do mesmo módulo compartilham a mesma promessa e não sobrepõem `stop → sleep → start`. O commit técnico `e216f3f7` foi squash-merged no SHA `25cbc9f374e5ac658403f1e83a1b540d8d2f4798`. O contrato está em [`docs/v2/RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md`](../docs/v2/RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md).
+
+| Evidência | Resultado |
+|---|---:|
+| Teste focal / suíte | `3/3`; `1391` pass, `6` skipped, `0` fail |
+| Tipos / build / integração | `tipos:ts`, `tipos:v2`, build e `58/58` |
+| Jornadas / segurança | smoke, caminho crítico, offline, memória e Security Contracts `73/73` |
+| Doctor | exit `2` honesto por Cargo ausente |
+| PR / pós-merge | `11` checks verdes, Vercel success; `8/8` workflows pós-merge verdes, V2 Validation verde na tentativa 2 após timeout externo de Checkout |
+| Rollback | `git revert` normal do squash merge; backup pré-merge aponta para `9ca94781` |
+
+A alpha.21 ainda é somente candidata documental: não há tag ou release alpha.21. A mudança não adiciona retry automático, persistência, lock distribuído, autoridade operacional, Supabase, Auth/RLS, tenancy, ownership, billing, OpenClaw, Hermes, Knowledge Mesh ou Risk Engine. V1, router, shell, sidebar, wrappers, Service Worker, #501 e #471 permanecem preservados e separados.
+
+---
+## 2026-08-27 — Próximo marco `v2.0.0-alpha.20`: diagnóstico da saúde do Task Manager
+
+
+A vigésima slice técnica acompanhável da V2 integra pela PR #519 uma projeção opcional e somente leitura da saúde do escalonador local na fachada `criarPlataforma()`. `PlatformDiagnostic.trabalho` delega a `Escalonador.saude()`, retorna `null` quando não configurado e rejeita uma dependência sem `saude()`. Não há nova fila, retry, threshold, autoridade, persistência ou efeito externo.
+
+Os gates locais passaram: focal Plataforma `7/7`; `tipos:ts`; `tipos:v2`; suíte `1388` aprovados, `6` ignorados e zero falhas; build; integração V2 `58/58`; smoke; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`. O Doctor registrou `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto por Cargo ausente. A PR passou `11` checks, com Vercel liberado, e os oito workflows pós-merge do SHA `0365f7f` terminaram verdes.
+
+A implementação técnica está na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`; o backup técnico `backup/2026-08-27-before-v2-platform-task-diagnostic` aponta para o commit da PR, não para uma `main` pré-merge. A nota de release e a reconciliação das matrizes foram integradas pela PR #520 no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`; a finalização de rastreabilidade foi integrada pela PR #521 no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`, com os sete workflows pós-merge verdes. As branches `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` também apontam para heads de PR (`a05bbe7` e `2064396`), não para baselines pré-merge. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959` e `1b7ce92`, conforme o escopo, preservando seus pais históricos; não se deve tratar essas três branches como rollback pré-merge. A tag anotada `v2.0.0-alpha.20` aponta para `f0a11e33a7163746c5d2087762c68a654e1a6dcb`, foi verificada e a prerelease foi publicada em [v2.0.0-alpha.20](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v2.0.0-alpha.20). A V1, o router, o shell, a sidebar, os wrappers, o Service Worker, #501 e #471 permanecem preservados e separados.
+
+---
+
+## 2026-08-27 — Próximo marco `v2.0.0-alpha.19`: Module Registry Health observável
+
+A décima nona slice acompanhável da V2 adiciona `npm run check:module-registry-health` e o check `module_registry_health` ao Doctor. O verificador local/read-only reutiliza `criarModuleRegistryHealth` e `criarRuntimeHealth` para cobrir seis casos, três allow, três deny, degradação isolada, quarentena após falhas excedentes, manutenção auditada, negação server-side e cópia defensiva do retrato.
+
+Os gates locais passaram: focal Health/Plataforma/Doctor `32/32`, suíte `1386` aprovados, `6` ignorados e zero falhas, integração V2 `58/58`, build, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73`. O Doctor registrou `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto pelo Cargo ausente. O Project Registry continua sem promoção: buscas read-only não encontraram fonte oficial inequívoca para os quatro nomes e todos permanecem `not-audited/defer`.
+
+A implementação técnica foi integrada pela PR #514 no SHA `17d1acc`. Os nove workflows pós-merge — CI, Core CI, V2 Runtime, V2 Core, V2 Validation, V2 Desktop Packaged Runtime, CodeQL, Vigia das rotas e Arma 3 Data CI — terminaram com sucesso. A documentação foi finalizada pela PR #515 no SHA `dff8dd5`; este alinhamento de contagem aguarda integração antes da tag/release. Não altera V1, Auth, RLS, Supabase, tenancy, ownership, persistência, rede, retry, billing, autoridade de produção ou branches concorrentes. A PR #501 continua isolada e a #471 do Claude Code permanece intocada. A nota está em [`docs/releases/v2.0.0-alpha.19.md`](../docs/releases/v2.0.0-alpha.19.md).
+
+---
+
+## 2026-08-26 — Marco `v2.0.0-alpha.18`: Runtime desktop empacotado
+
+A décima oitava slice acompanhável da V2 adiciona o comando `npm run v2:desktop-packaged` e o workflow `V2 Desktop Packaged Runtime`. O gate constrói o bundle web, compila o Runtime Rust em release, empacota o Electron em diretório temporário e executa o artefato Linux sob Xvfb. O smoke verifica binário e transporte em `process.resourcesPath`, autorização, leitura confinada e recusa de `../`.
+
+O marco foi integrado pela PR #510 no SHA `ca325d03`. O workflow da PR e os nove workflows pós-merge terminaram com sucesso; `npm test` permaneceu em `1385` aprovados, `6` ignorados e zero falhas, com integração, smoke, caminho crítico, offline, memória e Security Contracts verdes. O sandbox local não possui Cargo, então o smoke empacotado local ficou explicitamente bloqueado por ambiente; essa lacuna foi coberta pelo workflow remoto real, sem mascaramento.
+
+A alpha.18 não publica instaladores, não altera `desktop-release.yml`, não cria Auth, RLS, Supabase, persistência, rede, nova autoridade, IPC, retry ou atualização automática. V1, router, sidebar, wrappers, Service Worker e launcher normal permanecem preservados. A PR #501 continua OPEN/DRAFT e isolada; a PR #471 continua OPEN/DRAFT e intocada. A tag/release será criada somente depois da documentação final e dos gates pós-merge do SHA documental. A nota está em [`docs/releases/v2.0.0-alpha.18.md`](../docs/releases/v2.0.0-alpha.18.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.17`: Doctor observa Module Mode Policy
+
+A décima sétima pré-release acompanhável da V2 torna observável no `verify:v2` o contrato local `module-registry-mode-policy/v1`: o Doctor executa `node scripts/module-mode-policy-check.mjs` como check `safe`/read-only com id `module_mode_policy`. A fixture canônica continua sendo a única fonte da matriz de quatro identidades, seis casos, três decisões allow, três deny e spoof negado.
+
+O marco técnico foi mesclado pela PR #506 no SHA `8917525e`; a documentação inicial foi mesclada pela PR [#507](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/507) no SHA `379f6670`, e a finalização de rastreabilidade pela PR [#508](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/508) no SHA `f06bbb9`. O teste focal do Doctor passou `10/10`; a suíte passou com `1385` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `76/76` passaram. O Doctor registrou `16` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelo estado ambiental de Cargo.
+
+O slice não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, persistência, auditoria remota, retenção operacional, rede, retry, restart, fila, mutação remota ou autoridade de produção. V1, router, sidebar, boot, Storage, Evidence, Event Bus e Service Worker permanecem preservados. A PR #501 de privacidade continua separada e a PR #471 do Claude Code permanece aberta como draft e intocada. As notas completas estão em [`docs/releases/v2.0.0-alpha.17.md`](../docs/releases/v2.0.0-alpha.17.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.16`: Module Mode Policy fake server-side local
+
+A décima sexta pré-release acompanhável da V2 adiciona a fixture determinística `module-registry-mode-policy/v1` para exercitar decisões `allow`/`deny` dos modos `active`, `maintenance` e `disabled` antes de qualquer staging Supabase/RLS. A fixture expõe exatamente quatro identidades sintéticas — `fixture-user`, `fixture-admin`, `fixture-dev` e `fixture-owner` — nos papéis fechados `user`, `admin`, `dev` e `owner`; `actorRole` enviado no request não eleva autoridade.
+
+O marco foi mesclado pela PR #504 no SHA `5820b6aa`. O verificador confirmou 4 identidades, 6 casos, 3 allow, 3 deny e spoof negado; o teste focal passou `8/8`; a suíte passou com `1384` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts selecionados `76/76` passaram. O Doctor, com dependências disponíveis, registrou `15` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, mantendo exit 2 honesto pelos estados ambientais.
+
+A fixture não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila, mutação remota ou promoção pública. Ela fornece somente uma decisão sintética ao callback auditado do Module Registry Health e não é autoridade de produção. A PR #501 de privacidade e a PR #471 do Claude Code continuam separadas. As notas completas estão em [`docs/releases/v2.0.0-alpha.16.md`](../docs/releases/v2.0.0-alpha.16.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.15`: Project Registry local read-only
+
+A décima quinta pré-release acompanhável da V2 adiciona um catálogo local, read-only e bounded para os quatro projetos externos citados no Master Plan: `veritas`, `dailyplanner`, `stock-analyzer-bot` e `project-vanguard`. Como nenhum foi auditado externamente nesta slice, todos permanecem `not-audited` com decisão obrigatória `defer`.
+
+O marco foi mesclado pela PR #502 no SHA `82d2c05e`. O comando `npm run check:project-registry` confirmou 4 entradas e 4 decisões `defer`; o teste focal passou `5/5`; a suíte passou com `1376` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73` passaram. Os checks remotos aplicáveis ficaram em `11` sucessos, `1` skipped por política e nenhum pendente; Vercel Preview concluiu verde.
+
+O Registry não consulta, baixa, instala, importa, executa, sincroniza ou autoriza código externo. Não inventa URL, licença, manutenção, arquitetura, risco ou custo e não cria marketplace, plugin loader, adapter, bridge, Auth, RLS, Supabase, ownership, tenancy, persistência ou autoridade. A Phase 14 continua parcial e qualquer auditoria externa futura deverá ser passiva, baseada em fonte oficial e registrada antes de qualquer integração. A alpha.15 não inclui a PR #501 de privacidade, que continua separada e bloqueada por rate limit externo do Vercel. As notas completas estão em [`docs/releases/v2.0.0-alpha.15.md`](../docs/releases/v2.0.0-alpha.15.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.14`: Doctor verifica o catálogo canônico de storage
+
+A décima quarta pré-release acompanhável da V2 adiciona `storage_catalog` ao `verify:v2`. O Doctor agora executa `node scripts/gen-catalogo-storage.mjs --verificar` como check `safe`/read-only e confirma as 72 chaves do catálogo sem escrever, instalar, iniciar harness, matar processos ou acessar serviços remotos.
+
+O marco foi mesclado pela PR #499 no SHA `52810d0b`. O Doctor passou a expor 23 registros: 15 green, 2 blocked-known, 1 unknown, 5 not-run e 0 failed; `storage_catalog` ficou green. O teste focal passou 9/9, integração V2 58/58, smoke 99/99, caminho crítico 15/15, offline 9/9, Security Contracts 73/73 e os checks remotos aplicáveis ficaram verdes, com 1 skipped por política.
+
+Cargo ausente permaneceu corretamente `unknown`, com `verify:v2` retornando exit 2; os transportes Python opcionais sem SDK permaneceram `blocked-known`. O slice não altera V1, storage, formatos, Auth, Evidence, Supabase, RLS, tenancy, ownership, retenção, revisão humana, retry, permissões ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.14.md`](../docs/releases/v2.0.0-alpha.14.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.13`: benchmark do boot real da Plataforma V2
+
+A décima terceira pré-release acompanhável da V2 publica `npm run bench:v2:boot`, um benchmark read-only sobre o harness real da Plataforma V2. Duas execuções de cinco amostras chegaram a `ready` com sete módulos vivos, zero falhas de boot e vinte rotas V1 em todas as amostras.
+
+O marco foi mesclado pela PR #497 no SHA `ac89b65a`. Boot interno: primeira execução p50/p95/média/máximo `14/14/14/14 ms`; segunda `14/15/14,2/15 ms`. Browser até `window.__v2.partida`: primeira `225,801/783,116/329,453/783,116 ms`; segunda `214,871/855,046/342,108/855,046 ms`. Tipos, suíte `1370` aprovados e `6` ignorados, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A medição é diagnóstico local e não cria SLA, threshold, budget de produção, Web Vital, hardware matrix ou política de regressão. O slice não altera boot, Plataforma, router, V1, Auth, Evidence, Supabase, RLS, tenancy, ownership, permissões, retry ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.13.md`](../docs/releases/v2.0.0-alpha.13.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.12`: benchmark de renderização das rotas reais
+
+A décima segunda pré-release acompanhável da V2 publica `npm run bench:routes`, que descobre as rotas diretamente de `src/main.js` e mede o caminho real de renderização em Chromium. As 99 rotas passaram em 3 repetições, com tempos de navegação e observação após settle registrados em p50, p95, média e máximo.
+
+O marco foi mesclado pela PR #495 no SHA `fef61db`. Navegação: p50 `163,186 ms`, p95 `190,465 ms`, média `166,612 ms`, máximo `404,826 ms`; observação após settle: p50 `1104,435 ms`, p95 `1236,586 ms`, média `1122,866 ms`, máximo `1457,885 ms`. Tipos, suíte `1370`/`6` ignorados, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A medição é diagnóstico local: não cria SLA, threshold, budget de produção, política de regressão, Web Vitals, comparação de hardware ou nova autoridade. O smoke e a V1 permanecem preservados. As notas completas estão em [`docs/releases/v2.0.0-alpha.12.md`](../docs/releases/v2.0.0-alpha.12.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.11`: Evidence search benchmark
+
+A décima primeira pré-release acompanhável da V2 publica o benchmark local da busca Evidence sobre o catálogo real curado `PZ_IDS`: `159` mods, `640` registros derivados e quatro cenários com `250` repetições. Duas execuções mantiveram os limites bounded e registraram médias locais entre `90,390` e `223,172 µs`, com a variação completa documentada na nota do marco.
+
+O slice técnico foi mesclado pela PR #493 no SHA `3b7950f`. O benchmark passou nas duas execuções; testes focais Evidence + module `14/14`; suíte `1370` aprovados e `6` ignorados; integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram. A PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A medição é diagnóstico local: não cria threshold/SLA de produção, full-text, ranking, pgvector, índice persistente, consulta remota, persistência server-side, RLS, tenancy, ownership, revisão humana ou autoridade. A V1 e os contratos anteriores permanecem preservados. As notas completas estão em [`docs/releases/v2.0.0-alpha.11.md`](../docs/releases/v2.0.0-alpha.11.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.10`: Evidence local bounded search
+
+A décima pré-release acompanhável da V2 adiciona uma busca local, determinística e read-only ao Evidence Layer. `projectEvidenceSearch`, `EvidenceStore.search` e `evidence.api.search` filtram `id`, `claimKey`, `moduleId` e `source.revision`, com limite padrão 25 e teto 100, preservando a ordem append-only e redigindo statement, URI, publisher e collector.
+
+O marco foi mesclado pela PR #491 no SHA `dcdb7ff`. Os testes Evidence e module passaram `14/14`; tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A busca não é full-text, ranking, pgvector, índice persistente, consulta remota, Evidence server-side, ownership, tenancy, revisão humana ou autoridade. O Wiki Zomboid, a V1 e as projeções anteriores permanecem compatíveis. As notas completas estão em [`docs/releases/v2.0.0-alpha.10.md`](../docs/releases/v2.0.0-alpha.10.md).
+
+---
+
+## 2026-08-26 — Release `v2.0.0-alpha.9`: local backup/restore drill
+
+A nona pré-release acompanhável da V2 adiciona `npm run drill:v2:backup`, um ensaio local e reproduzível sobre a ponte de backup já existente. O drill exporta dados locais com Unicode, valida o envelope, simula perda com `clearAll()`, restaura as chaves esperadas, confirma que `auth:session` não é exportada/restaurada, rejeita chave desconhecida e limpa o fallback in-memory no `finally`.
+
+O marco foi mesclado pela PR #489 no SHA `69fbd92`. O drill passou, a suíte canônica de backup passou `14/14`, tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+O ensaio demonstra o caminho local V1→V2, mas não aprova RPO/RTO, durabilidade, criptografia, retenção, ownership, tenancy, auditoria, restauração entre máquinas ou recuperação remota. Nenhuma rede, storage remoto, Supabase, migration, RLS, Auth real, credencial ou escrita de produção foi utilizada. As notas completas estão em [`docs/releases/v2.0.0-alpha.9.md`](../docs/releases/v2.0.0-alpha.9.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.8`: Task Manager duration health
+
+A oitava pré-release acompanhável da V2 adiciona `latencia` ao `escalonador.saude()`, com `n`, `mediaMs`, `minMs` e `maxMs` para tarefas que chegaram a iniciar. Sucessos e falhas entram no resumo; cancelamentos antes do início não entram como duração. O acumulador é bounded, independente de `deps.metricas` e protegido contra relógio inválido.
+
+O marco foi mesclado pela PR #487 no SHA `e82c62b`. Os testes focais do Task Manager passaram `35/35`; tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A métrica legada `trabalho_ms`, readiness, prioridade, fila, concorrência, cancelamento e V1 foram preservados. O marco não cria percentis, budgets universais, alertas, retry, backpressure novo, persistência, RLS, Auth, ownership, revisão humana ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.8.md`](../docs/releases/v2.0.0-alpha.8.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.7`: Doctor bounded evidence replay
+
+A sétima pré-release acompanhável da V2 limita o replay de evidências do `verify:v2`. O modo `--evidence` verifica o tamanho do arquivo antes do parse e aceita no máximo `256 KiB` e `100` registros antes da normalização. Entrada excessiva é rejeitada, não truncada.
+
+O marco foi mesclado pela PR #485 no SHA `a1af93c`. O teste focal do Doctor passou `8/8`; tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `10` checks remotos verdes e `1` skipped por política.
+
+A mudança protege o diagnóstico contra entrada ilimitada, mas não autentica a fonte, não concede autoridade e não cria persistência, rede, RLS, Auth, ownership ou revisão humana. As notas completas estão em [`docs/releases/v2.0.0-alpha.7.md`](../docs/releases/v2.0.0-alpha.7.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.6`: Doctor environment classification
+
+A sexta pré-release acompanhável da V2 endurece o `verify:v2`. Quando o SDK opcional `google-genai`, declarado em `backend/requirements.txt`, não está instalado, os checks de transporte Python reconhecem somente essa ausência exata como `blocked-known`; falhas diferentes continuam `failed`.
+
+O marco foi mesclado pela PR #483 no SHA `8bf27ac`. O teste focal do Doctor passou `7/7`; a suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória e Security Contracts `73/73` passaram; a PR teve `10` checks remotos verdes e `1` skipped por política. O catálogo permanece com 22 registros bounded, incluindo o benchmark de latência do Event Bus.
+
+No sandbox atual, Cargo indisponível continua `unknown` e mantém a saída do Doctor não-verde. A mudança não mascara incerteza, não instala dependências e não altera runtime, Auth, RLS, persistência, autoridade ou V1. As notas completas estão em [`docs/releases/v2.0.0-alpha.6.md`](../docs/releases/v2.0.0-alpha.6.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.5`: Event Bus latency budget
+
+A quinta pré-release acompanhável da V2 adiciona `npm run bench:event-bus`, um benchmark offline que mede o caminho real de `criarBus().emit()` em três cargas de ouvintes, com warmup, conferência de entrega e validação de `bus.saude().latencia`.
+
+A execução registrada observou `9,460` a `10,103 µs` por despacho externo em 20.000 operações por cenário no sandbox Linux/Node 22. O marco foi mesclado pela PR #481 no SHA `6d0d168`. Os gates locais de tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória, Security Contracts `73/73` e `git diff --check` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A medição é diagnóstico local: não cria threshold, percentil, alerta, retry, backpressure, persistência, rede, Supabase/RLS, tenancy, ownership ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.5.md`](../docs/releases/v2.0.0-alpha.5.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.4`: Event Bus latency health
+
+A quarta pré-release acompanhável da V2 acrescenta ao `bus.saude()` o resumo local e bounded de latência por despacho: `n`, `mediaMs`, `minMs` e `maxMs`. O estado interno guarda somente contagem, soma, mínimo e máximo; relógio inválido não interrompe o Bus, e `limpar()` remove o resumo.
+
+O marco foi mesclado pela PR #478 no SHA `3efab862`. A validação focal passou `51/51`; os gates locais de tipos, suíte, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, memória, Security Contracts `73/73` e `git diff --check` passaram; a PR teve `11` checks remotos verdes e `1` skipped por política.
+
+A release continua alpha: não implementa retry, thresholds, percentis, alertas, persistência, rede, Supabase/RLS, tenancy, ownership, revisão humana server-side ou autoridade. As notas completas estão em [`docs/releases/v2.0.0-alpha.4.md`](../docs/releases/v2.0.0-alpha.4.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.3`: Evidence review queue
+
+A terceira pré-release acompanhável da V2 centraliza a fila local de revisão no contrato Evidence. `projectEvidenceReviewQueue()` e `EvidenceStore.reviewQueue()` selecionam somente evidências `pending`, com escopo opcional por módulo, limite bounded, ordem append-only, resumo de truncamento e redaction estrutural.
+
+O Wiki Zomboid delega a seleção à política central e preserva seu formato público legado. O marco foi mesclado pela PR #476 no SHA `9784e161`. A validação passou `1357` testes com `6` ignorados, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, sonda de memória, Security Contracts Node 24 `73/73` e `10` checks remotos com sucesso; o Supabase Preview permaneceu skipped por política.
+
+A release continua alpha: não altera status, cria tarefas, faz rede, persiste em banco, remove evidência, concede autoridade ou implementa revisão humana server-side. A documentação completa está em [`docs/releases/v2.0.0-alpha.3.md`](../docs/releases/v2.0.0-alpha.3.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.2`: Auth server-observation UI
+
+A segunda pré-release acompanhável da V2 integra o cliente `server-observation-http/v1` ao botão de teste do modo Servidor no JARVIS. A UI resolve somente endpoints controlados, faz GET sem body e projeta health, conexão, fallback e `reasonCode` em estado bounded e read-only.
+
+O marco foi mesclado pela PR #474 no SHA `42c8741d`. A validação passou `1355` testes com `6` ignorados, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, sonda de memória, Security Contracts Node 24 `72/72` e `12` checks remotos com sucesso; o Supabase Preview permaneceu skipped por política.
+
+A release continua alpha: não implementa login, refresh/redirect, logout, Auth/RLS, tenancy, roles, retry, cache, persistência ou promoção operacional. A documentação completa está em [`docs/releases/v2.0.0-alpha.2.md`](../docs/releases/v2.0.0-alpha.2.md).
+
+---
+
+## 2026-08-25 — Release `v2.0.0-alpha.1`: Runtime Group Observability
+
+A primeira pré-release acompanhável da V2 publica a composição observável do `RuntimeManagerGroup`, sem declarar estabilidade e sem substituir a V1. O caminho reúne manager group, lifecycle, eventos estruturados, histórico de estado e supervisor read-only, preservando startup, readiness, rollback e shutdown.
+
+O `RuntimeGroupStatus` agora oferece `status()` para o contrato consumido pelo supervisor, mantendo `snapshot()` compatível. Os hooks de grupo aceitam arrays somente leitura, e a ponte redige erros antes de registrá-los no histórico. A cobertura focal ficou em `8/8`; a regressão passou em `1351` testes, com `6` ignorados; a integração V2 ficou em `58/58`, o smoke em `99/99` e o caminho crítico em `15/15`.
+
+A release é alpha porque retry do Event Bus, persistência remota, Supabase/RLS, autoridade server-side e promoção operacional continuam fora deste marco ou bloqueados por decisão/staging. A documentação completa está em [`docs/releases/v2.0.0-alpha.1.md`](../docs/releases/v2.0.0-alpha.1.md).
+---
+
+## 2026-08-25 — V2, Auth read-only: Server Observation na UI
+
+O modo Servidor do JARVIS agora usa o cliente `server-observation-http/v1` para testar o endpoint controlado e projetar um `RuntimeObservation` bounded. Em HTTPS com URL vazia, a UI usa o adapter same-origin `/api/observability`; em desenvolvimento, usa o endpoint FastAPI local. URLs inválidas não executam rede.
+
+A UI não recebe corpo externo, token, subject, role, metadata ou mensagem arbitrária. O resultado só informa estado de conexão, health, fallback e `reasonCode`; `authority` continua `not-authorized` e `publicPromotionAllowed` continua `false`. O health check legado foi substituído somente nesse botão, sem alteração nos modos de conversa.
+
+O slice passou tipos TS/V2, regressão geral `1355`/`1355` com `6` ignorados, build, integração V2 `58/58`, smoke `99/99`, caminho crítico `15/15`, prova offline `9/9`, sonda de memória e Security Contracts Node 24 `72/72`. O contrato está em [`docs/v2/SERVER_OBSERVATION_UI_CONTRACT_2026-08-25.md`](../docs/v2/SERVER_OBSERVATION_UI_CONTRACT_2026-08-25.md).
+
+---
 
 ## 2026-08-24 — V2, Fase 6: o segredo saía pelo relatório de configuração
 
@@ -53,6 +280,7 @@ catálogos e tabela de estabilidade verdes. Contra o `config.js` anterior, 9 dos
 ---
 
 ## 2026-08-24 — V2, Fase 03: o bus contava sucesso e perdia fracasso
+
 
 Os dois componentes da Fase 03 sabiam dizer **o que estavam a fazer**. Nenhum
 sabia dizer **se estava a correr mal**.

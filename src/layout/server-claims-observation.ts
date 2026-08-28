@@ -27,6 +27,7 @@ export interface ServerClaimsObservation {
   readonly source: 'server-authority-projection';
   readonly identity: {
     readonly issuerPresent: boolean;
+    readonly issuerMatched: boolean;
     readonly subjectPresent: boolean;
     readonly audienceMatched: boolean;
     readonly authenticated: boolean;
@@ -116,8 +117,9 @@ export function observeServerClaims(
     contractVersion: SERVER_CLAIMS_OBSERVATION_CONTRACT_VERSION,
     source: 'server-authority-projection',
     identity: Object.freeze({
-      issuerPresent: issuer !== null,
-      subjectPresent: subject !== null,
+    issuerPresent: issuer !== null,
+    issuerMatched: issuerMatches,
+    subjectPresent: subject !== null,
       audienceMatched,
       authenticated,
       trustedSource,

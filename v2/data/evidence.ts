@@ -40,6 +40,7 @@ export interface EvidenceRecord {
   readonly status: EvidenceStatus;
   readonly moduleId: string;
   readonly collector: string;
+  readonly revision: number;
   readonly supersededBy?: string;
 }
 
@@ -107,6 +108,95 @@ export interface EvidenceAuditPreview {
   readonly summary: EvidenceAuditSummary;
 }
 
+export interface EvidenceReviewOptions {
+  readonly moduleId?: string;
+  readonly limit?: number;
+}
+
+export interface EvidenceReviewItem {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly claimKey: string;
+  readonly status: 'pending';
+  readonly confidence: number;
+  readonly observedAt: string;
+  readonly sourceRevision: string | null;
+}
+
+export interface EvidenceReviewSummary {
+  readonly returned: number;
+  readonly available: number;
+  readonly truncated: boolean;
+}
+
+export interface EvidenceReviewQueue {
+  readonly scope: string;
+  readonly limit: number;
+  readonly items: readonly EvidenceReviewItem[];
+  readonly summary: EvidenceReviewSummary;
+}
+
+export interface EvidenceSearchOptions {
+  readonly query: string;
+  readonly moduleId?: string;
+  readonly status?: EvidenceStatus;
+  readonly limit?: number;
+}
+
+export interface EvidenceSearchItem {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly claimKey: string;
+  readonly status: EvidenceStatus;
+  readonly confidence: number;
+  readonly observedAt: string;
+  readonly sourceRevision: string | null;
+}
+
+export interface EvidenceSearchSummary {
+  readonly returned: number;
+  readonly available: number;
+  readonly truncated: boolean;
+}
+
+export interface EvidenceSearchResult {
+  readonly query: string;
+  readonly scope: string;
+  readonly status: EvidenceStatus | 'all';
+  readonly limit: number;
+  readonly items: readonly EvidenceSearchItem[];
+  readonly summary: EvidenceSearchSummary;
+}
+
+export type EvidenceRevisionKind = 'appended' | 'status-changed';
+
+export interface EvidenceRevision {
+  readonly id: string;
+  readonly moduleId: string;
+  readonly revision: number;
+  readonly kind: EvidenceRevisionKind;
+  readonly status: EvidenceStatus;
+  readonly observedAt: string;
+  readonly supersededBy?: string;
+}
+
+export interface EvidenceRevisionOptions {
+  readonly limit?: number;
+}
+
+export interface EvidenceRevisionSummary {
+  readonly returned: number;
+  readonly available: number;
+  readonly truncated: boolean;
+}
+
+export interface EvidenceRevisionPreview {
+  readonly id: string;
+  readonly limit: number;
+  readonly revisions: readonly EvidenceRevision[];
+  readonly summary: EvidenceRevisionSummary;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -133,6 +223,12 @@ const DEFAULT_RETENTION_LIMIT = 25;
 const MAX_RETENTION_LIMIT = 100;
 const DEFAULT_AUDIT_LIMIT = 25;
 const MAX_AUDIT_LIMIT = 100;
+const DEFAULT_REVIEW_LIMIT = 25;
+const MAX_REVIEW_LIMIT = 100;
+const DEFAULT_SEARCH_LIMIT = 25;
+const MAX_SEARCH_LIMIT = 100;
+const DEFAULT_REVISION_LIMIT = 25;
+const MAX_REVISION_LIMIT = 100;
 
 function boundedPositive(value: number | undefined, fallback: number, maximum: number, name: string): number {
   if (value === undefined) return fallback;
@@ -208,6 +304,117 @@ function normalizeAuditOptions(options: EvidenceAuditOptions | null | undefined)
     moduleId: options.moduleId?.trim() ?? null,
     limit: boundedPositive(options.limit, DEFAULT_AUDIT_LIMIT, MAX_AUDIT_LIMIT, 'limit'),
   };
+}
+
+export function projectEvidenceRevisionHistory(
+  id: string,
+  history: readonly EvidenceRevision[],
+  options: EvidenceRevisionOptions = {},
+): EvidenceRevisionPreview {
+  if (!isNonEmptyString(id)) throw new TypeError('id deve ser texto não vazio');
+  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('opções de histórico devem ser um objeto');
+  }
+  const limit = boundedPositive(options.limit, DEFAULT_REVISION_LIMIT, MAX_REVISION_LIMIT, 'limit');
+  const revisions = history.slice(0, limit).map((revision) => Object.freeze({ ...revision }));
+  return Object.freeze({
+    id: id.trim(),
+    limit,
+    revisions: Object.freeze(revisions),
+    summary: Object.freeze({
+      returned: revisions.length,
+      available: history.length,
+      truncated: history.length > limit,
+    }),
+  });
+}
+
+export function projectEvidenceSearch(
+  records: readonly EvidenceRecord[],
+  options: EvidenceSearchOptions,
+): EvidenceSearchResult {
+  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('opções de busca devem ser um objeto');
+  }
+  if (!isNonEmptyString(options.query)) throw new TypeError('query deve ser texto não vazio');
+  if (options.moduleId !== undefined && !isNonEmptyString(options.moduleId)) {
+    throw new TypeError('moduleId deve ser texto não vazio');
+  }
+  if (options.status !== undefined && !isEvidenceStatus(options.status)) {
+    throw new TypeError('status de evidência inválido');
+  }
+  const query = options.query.trim().toLocaleLowerCase();
+  const moduleId = options.moduleId?.trim() ?? null;
+  const status = options.status ?? null;
+  const limit = boundedPositive(options.limit, DEFAULT_SEARCH_LIMIT, MAX_SEARCH_LIMIT, 'limit');
+  const scoped = records.filter((record) => (
+    (moduleId === null || record.moduleId === moduleId)
+      && (status === null || record.status === status)
+  ));
+  const matches = scoped.filter((record) => [
+    record.id,
+    record.claimKey,
+    record.moduleId,
+    record.source.revision ?? '',
+  ].some((field) => field.toLocaleLowerCase().includes(query)));
+  const items = matches.slice(0, limit).map((record) => Object.freeze({
+    id: record.id,
+    moduleId: record.moduleId,
+    claimKey: record.claimKey,
+    status: record.status,
+    confidence: record.confidence,
+    observedAt: record.observedAt,
+    sourceRevision: record.source.revision ?? null,
+  }));
+  return Object.freeze({
+    query: options.query.trim(),
+    scope: moduleId ?? 'all',
+    status: status ?? 'all',
+    limit,
+    items: Object.freeze(items),
+    summary: Object.freeze({
+      returned: items.length,
+      available: matches.length,
+      truncated: matches.length > limit,
+    }),
+  });
+}
+
+export function projectEvidenceReviewQueue(
+  records: readonly EvidenceRecord[],
+  options: EvidenceReviewOptions = {},
+): EvidenceReviewQueue {
+  if (options === null || typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('opções de revisão devem ser um objeto');
+  }
+  if (options.moduleId !== undefined && !isNonEmptyString(options.moduleId)) {
+    throw new TypeError('moduleId deve ser texto não vazio');
+  }
+  const moduleId = options.moduleId?.trim() ?? null;
+  const limit = boundedPositive(options.limit, DEFAULT_REVIEW_LIMIT, MAX_REVIEW_LIMIT, 'limit');
+  const scoped = moduleId === null
+    ? records
+    : records.filter((record) => record.moduleId === moduleId);
+  const pending = scoped.filter((record) => record.status === 'pending');
+  const items = pending.slice(0, limit).map((record) => Object.freeze({
+    id: record.id,
+    moduleId: record.moduleId,
+    claimKey: record.claimKey,
+    status: 'pending' as const,
+    confidence: record.confidence,
+    observedAt: record.observedAt,
+    sourceRevision: record.source.revision ?? null,
+  }));
+  return Object.freeze({
+    scope: moduleId ?? 'all',
+    limit,
+    items: Object.freeze(items),
+    summary: Object.freeze({
+      returned: items.length,
+      available: pending.length,
+      truncated: pending.length > limit,
+    }),
+  });
 }
 
 export function projectEvidenceAudit(
@@ -298,17 +505,28 @@ export function normalizeEvidence(input: EvidenceInput): EvidenceRecord {
     status: input.status ?? 'pending',
     moduleId: input.moduleId.trim(),
     collector: input.collector?.trim() ?? 'unknown',
+    revision: 1,
     ...(input.supersededBy ? { supersededBy: input.supersededBy.trim() } : {}),
   });
 }
 
 export class EvidenceStore {
   private readonly records = new Map<string, EvidenceRecord>();
+  private readonly revisions = new Map<string, readonly EvidenceRevision[]>();
 
   append(input: EvidenceInput): EvidenceRecord {
     const record = normalizeEvidence(input);
     if (this.records.has(record.id)) throw new Error(`evidência duplicada: ${record.id}`);
     this.records.set(record.id, record);
+    this.revisions.set(record.id, [Object.freeze({
+      id: record.id,
+      moduleId: record.moduleId,
+      revision: record.revision,
+      kind: 'appended',
+      status: record.status,
+      observedAt: record.observedAt,
+      ...(record.supersededBy ? { supersededBy: record.supersededBy } : {}),
+    })]);
     return record;
   }
 
@@ -334,10 +552,25 @@ export class EvidenceStore {
     const next: EvidenceRecord = Object.freeze({
       ...current,
       status,
+      revision: current.revision + 1,
       ...(supersededBy ? { supersededBy } : {}),
     });
     this.records.set(id, next);
+    const history = this.revisions.get(id) ?? [];
+    this.revisions.set(id, [...history, Object.freeze({
+      id: next.id,
+      moduleId: next.moduleId,
+      revision: next.revision,
+      kind: 'status-changed',
+      status: next.status,
+      observedAt: next.observedAt,
+      ...(next.supersededBy ? { supersededBy: next.supersededBy } : {}),
+    })]);
     return next;
+  }
+
+  revisionPreview(id: string, options: EvidenceRevisionOptions = {}): EvidenceRevisionPreview {
+    return projectEvidenceRevisionHistory(id, this.revisions.get(id) ?? [], options);
   }
 
   snapshot(): readonly EvidenceRecord[] {
@@ -353,5 +586,13 @@ export class EvidenceStore {
 
   auditPreview(options?: EvidenceAuditOptions): EvidenceAuditPreview {
     return projectEvidenceAudit(this.list(), options);
+  }
+
+  reviewQueue(options?: EvidenceReviewOptions): EvidenceReviewQueue {
+    return projectEvidenceReviewQueue(this.list(), options);
+  }
+
+  search(options: EvidenceSearchOptions): EvidenceSearchResult {
+    return projectEvidenceSearch(this.list(), options);
   }
 }

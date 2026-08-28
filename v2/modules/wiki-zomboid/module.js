@@ -7,7 +7,7 @@ import {
 
 /** @typedef {import('../../data/evidence.ts').EvidenceRecord} EvidenceRecord */
 /** @typedef {import('../../data/catalog-evidence.ts').CatalogEvidenceInput} CatalogEvidenceInput */
-/** @typedef {{appendCatalog: (input: CatalogEvidenceInput) => EvidenceRecord, listByModule: (moduleId: string) => readonly EvidenceRecord[]}} EvidenceApi */
+/** @typedef {{appendCatalog: (input: CatalogEvidenceInput) => EvidenceRecord, listByModule: (moduleId: string) => readonly EvidenceRecord[], reviewQueue: (options?: {moduleId?: string, limit?: number}) => {items: readonly Record<string, unknown>[]}}} EvidenceApi */
 /** @typedef {{talvez?: (alvo: string, exigencia?: {versao?: number}) => EvidenceApi|null, log: {debug: (message: string, campos?: Record<string, unknown>) => void}}} WikiContext */
 
 const RETRIEVED_AT = '2026-08-22T00:00:00.000Z';
@@ -81,18 +81,15 @@ function summary() {
 /** @param {number} [limit] */
 function reviewQueue(limit) {
   const max = boundedLimit(limit);
-  const linkedEvidence = evidenceApi?.listByModule('wiki-zomboid') ?? [];
-  return Object.freeze(linkedEvidence
-    .filter((record) => record.status === 'pending')
-    .slice(0, max)
-    .map((record) => Object.freeze({
-      id: record.id,
-      claimKey: record.claimKey,
-      status: record.status,
-      confidence: record.confidence,
-      observedAt: record.observedAt,
-      sourceRevision: record.source.revision ?? null,
-    })));
+  const queue = evidenceApi?.reviewQueue({ moduleId: 'wiki-zomboid', limit: max });
+  return Object.freeze((queue?.items ?? []).map((item) => Object.freeze({
+    id: item.id,
+    claimKey: item.claimKey,
+    status: item.status,
+    confidence: item.confidence,
+    observedAt: item.observedAt,
+    sourceRevision: item.sourceRevision,
+  })));
 }
 
 /** @param {string} workshopId @param {string} [field] */

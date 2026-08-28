@@ -25,17 +25,17 @@ export function criarRuntimeEvents({ clock = () => Date.now(), sink = () => {} }
     restarting: (id, attempt, delayMs) => emit('module.restarting', { id, attempt, delayMs }),
     /** @param {string} id */
     exhausted: (id) => emit('module.restart_exhausted', { id }),
-    /** @param {number} index @param {string[]} ids */
+    /** @param {number} index @param {ReadonlyArray<string>} ids */
     groupBatchStarted: (index, ids) => emit('runtime.group_batch_started', { index, ids: [...ids] }),
-    /** @param {number} index @param {string[]} ids */
+    /** @param {number} index @param {ReadonlyArray<string>} ids */
     groupBatchReady: (index, ids) => emit('runtime.group_batch_ready', { index, ids: [...ids] }),
     /** @param {unknown} error */
     groupStartupFailed: (error) => emit('runtime.group_startup_failed', { error: errorMessage(error) }),
-    /** @param {string[]} ids */
+    /** @param {ReadonlyArray<string>} ids */
     groupRollback: (ids) => emit('runtime.group_rollback', { ids: [...ids] }),
-    /** @param {number} index @param {string[]} ids */
+    /** @param {number} index @param {ReadonlyArray<string>} ids */
     groupBatchStopped: (index, ids) => emit('runtime.group_batch_stopped', { index, ids: [...ids] }),
-    /** @param {{id: string, error: unknown}[]} errors */
+    /** @param {ReadonlyArray<{id: string, error: unknown}>} errors */
     groupShutdownFailed: (errors) => emit('runtime.group_shutdown_failed', { errors: errors.map(item => ({ id: item.id, error: errorMessage(item.error) })) })
   };
 }

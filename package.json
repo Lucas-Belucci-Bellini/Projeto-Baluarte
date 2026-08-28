@@ -43,8 +43,17 @@
     "prova-offline": "node scripts/prova-offline.mjs",
     "tipos:v2": "tsc -p v2/jsconfig.json",
     "v2:integracao": "node scripts/v2-integracao.mjs",
+    "bench:event-bus": "node scripts/event-bus-latency-benchmark.mjs",
+    "bench:evidence-search": "node --experimental-strip-types scripts/evidence-search-benchmark.mjs",
+    "bench:routes": "node scripts/route-render-benchmark.mjs",
+    "bench:v2:boot": "node scripts/v2-boot-benchmark.mjs",
+    "check:project-registry": "node --experimental-strip-types scripts/project-registry-check.mjs",
+    "check:module-mode-policy": "node scripts/module-mode-policy-check.mjs",
+    "check:module-registry-health": "node scripts/module-registry-health-check.mjs",
     "verify:v2": "node scripts/v2-doctor.mjs",
-    "v2:runtime": "cargo test --manifest-path v2/runtime/Cargo.toml"
+    "drill:v2:backup": "node --experimental-strip-types scripts/v2-backup-restore-drill.mjs",
+    "v2:runtime": "cargo test --manifest-path v2/runtime/Cargo.toml",
+    "v2:desktop-packaged": "node scripts/v2-packaged-runtime-smoke.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",

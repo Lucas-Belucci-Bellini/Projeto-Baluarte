@@ -89,3 +89,73 @@ alvo: 17.9 MB
 ── Rust ──
         18 ms   (hash ae627395, 57162 chaves-abre)
 ```
+
+## 2026-08-25 — Event Bus latency health
+
+Execução: `npm run bench:event-bus` · Linux x64 · Node v22.13.0 · Intel Xeon @ 2.50GHz · 2.000 warmup + 20.000 operações por cenário.
+
+| Cenário | Média externa | Operações/s | Média interna | Máximo interno |
+|---|---:|---:|---:|---:|
+| 1 direto + curinga | 9,460 µs | 105.709 | 0,01 ms | 0,473 ms |
+| 10 diretos + curinga | 9,586 µs | 104.319 | 0,01 ms | 0,395 ms |
+| 20 diretos + curinga | 10,103 µs | 98.976 | 0,01 ms | 0,274 ms |
+
+A medição é diagnóstica e não estabelece threshold, promessa de hardware ou gate de CI. O contrato e o método estão em [`docs/v2/EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md`](../docs/v2/EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md).
+
+## 2026-08-26 — Task Manager duration health
+
+Execução: `node --experimental-strip-types v2/bench/core-js.mjs` · Linux x86_64 · Node v22.13.0 · `limite: 8` · `50.000` tarefas triviais.
+
+| Medida | Resultado |
+|---|---:|
+| Tarefas submetidas / observadas no health | `50.000 / 50.000` |
+| Custo externo médio por tarefa | `5,6 µs` |
+| Tempo externo total | `279 ms` |
+| Média interna | `0,010 ms` |
+| Mínimo / máximo interno | `0,002 / 80,656 ms` |
+| Autoconsistência | passou: `latencia.n === 50.000` |
+
+Esta execução é diagnóstico local. O custo externo e a duração interna são caminhos de medição diferentes; os valores não são SLA nem threshold de produção. O método completo está em [`docs/v2/TASK_MANAGER_LATENCY_BENCHMARK_2026-08-26.md`](../docs/v2/TASK_MANAGER_LATENCY_BENCHMARK_2026-08-26.md).
+
+
+## 2026-08-26 — Evidence local bounded search
+
+Execução: `npm run bench:evidence-search` · Linux x86_64 · Node v22.13.0 · dataset local `PZ_IDS` com 159 mods curados e 640 registros Evidence derivados · 250 repetições por cenário.
+
+| Cenário | Limite | Disponíveis | Retornados | Média |
+|---|---:|---:|---:|---:|
+| Todos os metadados (`wiki-zomboid`) | 25 | 640 | 25 | 125,435 µs |
+| Campo workshop (`workshopid`) | 100 | 159 | 100 | 202,140 µs |
+| Revisão do dataset | 100 | 640 | 100 | 223,172 µs |
+| Escopo + estado (`wiki-zomboid`) | 100 | 640 | 100 | 119,301 µs |
+
+Todos os cenários confirmaram `returned <= limit` e `available` antes do corte. A medição é local e diagnóstica; não estabelece full-text, índice persistente, ranking, SLA, threshold ou budget de produção. O método está em [`docs/v2/EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md`](../docs/v2/EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md).
+
+
+Repetição no mesmo ambiente e dataset: `94,968 µs` (todos), `173,501 µs` (workshop), `222,314 µs` (revisão) e `90,390 µs` (escopo + estado). As contagens permaneceram `640` disponíveis, limites `25`/`100` e `250` repetições. A variação confirma que os valores são diagnóstico local, não threshold.
+
+
+## 2026-08-26 — Renderização das rotas reais
+
+Execução: `npm run build && npm run bench:routes` · preview local de produção · catálogo descoberto de `src/main.js` com 99 rotas · 3 repetições · settle 900 ms · timeout 15 s.
+
+| Métrica | p50 | p95 | Média | Máximo |
+|---|---:|---:|---:|---:|
+| Navegação até DOMContentLoaded | 163,186 ms | 190,465 ms | 166,612 ms | 404,826 ms |
+| Observação após settle | 1104,435 ms | 1236,586 ms | 1122,866 ms | 1457,885 ms |
+
+Totais por rodada: `115030,943 ms`, `114779,153 ms` e `114626,039 ms`. Todas as 99 rotas ficaram verdes em todas as repetições. O benchmark fecha uma evidência local de custo do caminho real, sem threshold, SLA, budget de produção ou comparação entre hardware. A metodologia e as limitações estão em [`docs/v2/ROUTE_RENDER_BENCHMARK_2026-08-26.md`](../docs/v2/ROUTE_RENDER_BENCHMARK_2026-08-26.md).
+
+
+## 2026-08-26 — Boot real da Plataforma V2
+
+Execução: `npm run build && npm run bench:v2:boot` · harness real `v2/harness/index.html#/cripto` · sete módulos V2 · vinte rotas V1 · 5 repetições por execução · timeout de 25 s.
+
+| Execução | Métrica | p50 | p95 | Média | Máximo |
+|---|---|---:|---:|---:|---:|
+| 1 | Boot interno da Plataforma | 14 ms | 14 ms | 14 ms | 14 ms |
+| 1 | Browser até `window.__v2.partida` | 225,801 ms | 783,116 ms | 329,453 ms | 783,116 ms |
+| 2 | Boot interno da Plataforma | 14 ms | 15 ms | 14,2 ms | 15 ms |
+| 2 | Browser até `window.__v2.partida` | 214,871 ms | 855,046 ms | 342,108 ms | 855,046 ms |
+
+Todas as 10 amostras ficaram em `ready`, com exatamente 7 módulos vivos, 0 falhas de boot e 20 rotas V1. O primeiro sample de cada execução foi o mais lento no browser, evidenciando a diferença cold/warm. A medição é diagnóstico local; não estabelece threshold, SLA, budget de produção, Web Vital ou gate quantitativo. O método e a correção para preview stale estão em [`docs/v2/V2_BOOT_BENCHMARK_2026-08-26.md`](../docs/v2/V2_BOOT_BENCHMARK_2026-08-26.md).

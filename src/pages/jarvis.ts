@@ -12,10 +12,10 @@ import { bus } from '../core/events.js';
 import { toast } from '../utils/toast';
 import {
   loadConfig, saveConfig,
-  processLocal, processClaude, processOllama, processServer, processNewsBriefing, processHermes, processClaudeServer, processOpenClaw, processAgent,
-  healthCheckServer
+  processLocal, processClaude, processOllama, processServer, processNewsBriefing, processHermes, processClaudeServer, processOpenClaw, processAgent
 } from '../utils/jarvis-engine.js';
 import type { JarvisConfig } from '../utils/jarvis-engine.js';
+import { fetchServerObservationForUi } from '../security/server-observation-ui';
 import {
   processWebLLM, isWebGPUAvailable, WEBLLM_MODELS, preloadWebLLM, getLoadedModel
 } from '../utils/jarvis-webllm.js';
@@ -978,27 +978,31 @@ function renderConfigPanel(extra?: HTMLElement): HTMLDivElement {
           testStatus.textContent = 'testando…';
           testStatus.className = 'u-text-muted';
           try {
-            const info = await healthCheckServer(conf.serverUrl);
-            const observedHealth = info.health === 'healthy' || info.health === 'degraded'
-              ? info.health
-              : info.hasKey ? 'healthy' : 'degraded';
-            const observedSeverity = info.severity === 'none' || info.severity === 'info' || info.severity === 'warning' || info.severity === 'critical'
-              ? info.severity
-              : info.hasKey ? 'none' : 'warning';
-            const observedFallback = info.fallback === 'available' || info.fallback === 'degraded' || info.fallback === 'blocked' || info.fallback === 'unknown'
-              ? info.fallback
-              : info.hasKey ? 'available' : 'degraded';
+            const result = await fetchServerObservationForUi({ serverUrl: conf.serverUrl });
+            const info = result.observation;
+            const observedHealth = info.health;
+            const observedSeverity = info.severity;
+            const observedFallback = info.fallback;
             applyRuntimeObservation({
               source: 'runtime-observed',
-              connection: info.connection === 'disconnected' ? 'disconnected' : 'connected',
+              connection: info.connection,
               authority: 'not-authorized',
               health: observedHealth,
               severity: observedSeverity,
               fallback: observedFallback,
-              detail: info.detail ?? (info.hasKey ? 'health endpoint + Gemini key observados' : 'health endpoint observado; chave Gemini ausente'),
+              detail: info.detail,
             });
-            testStatus.textContent = observedHealth === 'healthy' ? '✓ online · chave Gemini OK' : '✓ online · backend degradado';
-            testStatus.className = observedHealth === 'healthy' ? 'u-text-cyan' : 'u-text-warning';
+            if (result.result.outcome === 'observed') {
+              const healthy = observedHealth === 'healthy';
+              testStatus.textContent = healthy ? '✓ backend observado · saudável' : '✓ backend observado · degradado';
+              testStatus.className = healthy ? 'u-text-cyan' : 'u-text-warning';
+            } else {
+              const reason = result.result.transport.reasonCode;
+              testStatus.textContent = reason === 'configuration-missing'
+                ? '✗ endpoint não configurado'
+                : `✗ observação indisponível · ${reason}`;
+              testStatus.className = 'u-text-muted';
+            }
           } catch {
             applyRuntimeObservation({
               source: 'runtime-observed',

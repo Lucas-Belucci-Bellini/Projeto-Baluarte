@@ -147,10 +147,14 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       A ponte do app desktop entrou junto (`desktop/src/runtime.js` + canais
       `runtime:*` no `ipc.js` + empacotamento por `extraResources` + build do
       Rust no `desktop-release.yml`): **8/8**, com ponta a ponta atravessando
-      ponte → transporte ESM → processo Rust. **Aberto:** o caminho
-      `process.resourcesPath`, que só existe em app empacotado — nenhum
-      instalador foi produzido com isto dentro.
-      Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md).
+      ponte → transporte ESM → processo Rust. O smoke empacotado da alpha.18
+      fecha o caminho `process.resourcesPath` no artefato Linux `linux-unpacked`:
+      binário e transporte foram encontrados dentro de `resources/`, a leitura
+      confinada passou e `../` foi recusado. O teste roda em diretório temporário
+      com `--publish never`; Windows/macOS físicos, assinatura, instalador final
+      e auto-update continuam fora deste aceite.
+      Ver [`V2_RUNTIME_STDIO.md`](./V2_RUNTIME_STDIO.md) e
+      [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md).
 - [x] primeiro vertical slice de módulo nativo
       — a cadeia do [`V2_VERTICAL_SLICE.md`](./V2_VERTICAL_SLICE.md) percorrida
       com o Runtime **real** (`test/v2/slice-nativo.test.js`, 5/5): Registry →
@@ -166,10 +170,59 @@ silêncio quando a escolhida está ocupada, e o portão mede um servidor zumbi.
       `window.baluarte.invoke` à forma do contexto, e o entrypoint o injeta em
       `deps.runtime`. Fora do app devolve `null`, então o contexto na web fica
       idêntico ao de antes — `v2:integracao` segue **15/15**.
-      **Aberto:** ninguém abriu um Baluarte empacotado com o Runtime dentro; o
-      ramo `process.resourcesPath` continua sem exercício.
+      O aceite empacotado da alpha.18 foi executado pelo workflow remoto
+      `V2 Desktop Packaged Runtime` no SHA final `ca325d03`; o sandbox local
+      não possui Cargo e mantém o mesmo caso como bloqueio ambiental honesto.
 
 ## Regra de manutenção
 
 Uma caixa só vira `[x]` quando existe código e teste correspondente. Documentar
 uma intenção não conta como implementação.
+
+
+## Checkpoint publicado no código — Runtime desktop empacotado / alpha.18
+
+A PR #510 integrou o comando `npm run v2:desktop-packaged` e o workflow `V2 Desktop Packaged Runtime` no SHA `ca325d03`. O workflow remoto passou no PR e novamente após o merge: compilou o Runtime Rust em release, empacotou o Electron com `desktop/package.json`, executou `linux-unpacked` sob Xvfb e confirmou o uso de `process.resourcesPath`, autorização, leitura confinada e recusa de `../`.
+
+Os gates de regressão permaneceram verdes: suíte `1385` aprovados, `6` ignorados e zero falhas; integração V2, build, smoke `99/99`, caminho crítico `15/15`, offline `9/9`, memória, Security Contracts `73/73`, Project Registry e Module Mode Policy. O Doctor ficou em `16` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto. O smoke empacotado não foi concluído no sandbox porque `cargo` não está instalado; o bloqueio ambiental não foi mascarado.
+
+Este checkpoint não fecha aceite físico multiplataforma, assinatura, auto-update, persistência, Auth/RLS ou Runtime como autoridade de produção. O contrato está em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md).
+
+
+## Checkpoint integrado — Module Registry Health observável / alpha.19 com release pendente
+
+O comando `npm run check:module-registry-health` agora exerce a implementação canônica de `criarModuleRegistryHealth` com uma fixture local bounded. São seis casos determinísticos: módulo desconhecido permanece `unregistered` e não ativável; módulo registrado pode ativar; módulo saudável permanece observável; falha isolada degrada; falhas excedentes colocam somente o módulo em `quarantined`; manutenção autorizada exige decisão auditada; negação server-side preserva o modo registrado; e o retrato retornado não permite alterar o estado interno por mutação do array devolvido.
+
+O Doctor agora observa esse comando como `module_registry_health`, categoria `security-local` e política `safe`. O check não inicia, para, reinicia ou concede permissões a módulos reais; não consulta rede, armazenamento, Auth, RLS, Supabase ou fonte externa. A saída observada foi `6` casos, `3` allow, `3` deny, `1` entrada de auditoria, `3` incidentes e `network: not-used`.
+
+Gates locais do slice: focal Health/Plataforma/Doctor `32/32`; suíte completa `1386` aprovados, `6` ignorados e zero falhas; integração V2 `58/58`; build; smoke `99/99`; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`; e Doctor `17` green, `2` blocked-known, `1` unknown, `5` not-run, `0` failed com exit `2` honesto pelo Cargo ausente. O candidato de Project Registry permanece `not-audited/defer`: buscas read-only não encontraram fonte oficial inequívoca com identidade e licença suficientes, portanto nenhum projeto externo foi promovido.
+
+A implementação técnica deste checkpoint está integrada na `main` pelo SHA `17d1accdd036382b166ef430bc4b696f36436fec`; a documentação final e a tag/release ainda dependem de PR separada e dos gates correspondentes. O marco não fecha health remoto, restart real, RLS, tenancy, ownership, retenção operacional, Auth, billing, fontes externas, autoridade server-side de produção, Windows/macOS, assinatura ou auto-update.
+
+
+## Checkpoint integrado — Platform Diagnostic com Task Manager Health / alpha.20 técnica — 0365f7f
+
+A PR #519 integrou uma projeção opcional e somente leitura da saúde do escalonador local na fachada `criarPlataforma()`. `PlatformOptions.trabalho` aceita somente `saude()`, `PlatformDiagnostic.trabalho` retorna `SaudeEscalonador` quando a dependência é fornecida e retorna `null` sem ela. Uma dependência sem `saude()` é recusada no construtor. A Plataforma não reimplementa o Task Manager, não inicia ou cancela tarefas e não cria política de retry, threshold ou unhealthy.
+
+A implementação técnica foi preparada no commit `dbfe5156b7c797390956aaf365e87010b25529af`, publicada na PR [#519](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/519) e squash-merged na `main` no SHA `0365f7fa451de20784c9eb745df853b363c7aeab`. O Vercel inicialmente ficou pending por rate limit e depois concluiu com sucesso; a PR só foi marcada ready após `CLEAN`/`MERGEABLE`. O backup remoto `backup/2026-08-27-before-v2-platform-task-diagnostic` preserva o SHA técnico.
+
+Gates locais: focal Plataforma `7/7`; `tipos:ts`; `tipos:v2`; suíte `1388` aprovados, `6` skipped e `0` falhas; build; integração V2 `58/58`; smoke; caminho crítico `15/15`; offline `9/9`; memória; Security Contracts `73/73`. O Doctor terminou com `17` green, `2` blocked-known, `1` unknown, `5` not-run e `0` failed, com exit `2` honesto pelo Cargo ausente. Os oito workflows pós-merge do SHA `0365f7f` terminaram verdes.
+
+Este checkpoint melhora a observabilidade local da Plataforma, mas não fecha retry do Event Bus/Task Manager, persistência, dashboards, incidentes operacionais duráveis, Auth, RLS, tenancy, ownership, billing, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, aceitação física desktop/mobile, estabilização, RC ou V2 estável. A V1, router, shell, sidebar, wrappers, Service Worker e branches concorrentes foram preservados.
+
+
+## Checkpoint documental final — alpha.20 após PR #521
+
+A nota `docs/releases/v2.0.0-alpha.20.md`, o `MASTER_EXECUTION_MATRIX`, o `PHASE_STATUS_MATRIX` e o changelog foram integrados pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520) no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521) no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`; os sete workflows pós-merge da finalização terminaram verdes.
+
+A tag anotada `v2.0.0-alpha.20` aponta para o SHA final documental `f0a11e33a7163746c5d2087762c68a654e1a6dcb`, foi verificada com `refs/tags/v2.0.0-alpha.20^{}` e a prerelease foi publicada em [v2.0.0-alpha.20](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v2.0.0-alpha.20). A alpha.20 permanece um marco bounded; sua publicação não fecha a V2.
+
+## Checkpoint integrado — Runtime Restart Single-Flight / alpha.21 candidata — `25cbc9f3`
+
+Após a alpha.20, as PRs [#517](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/517) e [#518](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/518) foram sincronizadas contra a `main` atual, passaram pelos gates e foram squash-merged nos SHAs `f62ece73eae089f0a42478f7ee2ef36b5cd2fcd3` e `9ca947816378180b41d2fe2939e9e5b96ff796bd`. A PR #517 corrige a ordem de encerramento `stop → Runtime.close → dispose`; a #518 preserva metadados autorizados do envelope através de `ctx.bus.emit`.
+
+A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) adicionou single-flight bounded ao `criarRuntimeRestart()`: chamadas concorrentes do mesmo módulo compartilham a mesma promessa, evitando sequências simultâneas de `stop → sleep → start`, sem alterar o orçamento/backoff, o contrato de injeção do `RuntimeManager` ou qualquer superfície V1. O contrato está em [`RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md`](./RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md).
+
+A slice passou localmente em focal `3/3`, `npm test` `1397` testes com `1391` pass, `6` skipped e `0` fail, `tipos:ts`, `tipos:v2`, build, integração `58/58`, smoke, caminho crítico, offline, memória e Security Contracts `73/73`. O Doctor terminou com exit `2` honesto por Cargo ausente, sem falhas mascaradas. A PR teve `11` checks verdes, `1` skipped por política e Vercel success; os oito workflows pós-merge do SHA `25cbc9f3` terminaram verdes, com a V2 Validation concluída na tentativa 2 após o job Rust original expirar no Checkout.
+
+O marco melhora a serialização in-memory do restart, mas não adiciona restart automático, locks distribuídos, persistência, retry remoto, supervisão de dependências ou autoridade operacional. A próxima tag/release, se aprovada após documentação final e gates correspondentes, será uma prerelease separada; nenhuma alpha.21 é declarada neste checkpoint. Rollback: `git revert` normal do squash merge da #523; a backup `backup/2026-08-27-before-v2-runtime-restart-single-flight` aponta para o baseline real `9ca94781` anterior à PR.

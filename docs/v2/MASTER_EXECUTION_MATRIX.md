@@ -1,13 +1,13 @@
 # MASTER EXECUTION MATRIX
 
-**Status:** `CURRENT — RELEASE 1.3.2 PUBLISHED / EVIDENCE AUDIT PREVIEW READ-ONLY / EVIDENCE RETENTION PREVIEW READ-ONLY / WIKI ZOMBOID EVIDENCE REVIEW QUEUE READ-ONLY / LOGIN + AUTH ADAPTER TYPESCRIPT / SERVER-OBSERVATION HTTP READ-ONLY / JARVIS SPOTIFY PKCE + MARK XIII PLAYBACK PRESENCE / JARVIS LOCAL CONTEXT OPTIMIZATION / MODULE REGISTRY OPERATIONAL POLICY PILOT / BILLING FOUNDATION LOCAL / V2 DOCTOR EXPANDED / V1 FALLBACK`
-**Data da observação:** 2026-08-22
+**Status:** `CURRENT — V2 ALPHA.21 TECHNICAL SLICE INTEGRATED / RELEASE DOCUMENTATION PENDING / TAG AND RELEASE PENDING / V1 FALLBACK`
+**Data da observação:** 2026-08-27
 **Repositório:** `Lucas-Belucci-Bellini/Projeto-Baluarte`
 **Branch oficial:** `main`
-**SHA observado na medição corrente:** `5d2142d7fa553260d03ffe85f2f0ef90775e2542` (`chore(release): prepare 1.3.2`)
-**SHA funcional anterior:** `dbd09f52b055f72679f633e3d45a181b13f1b0f9` (`feat(v2): add bounded evidence audit preview`)
-**Reconciliação documental-base anterior:** `a3a88c04` (`docs(v2): reconcile spotify milestone matrices`)
-**Tag de release base:** `v1.3.2`
+**SHA observado na medição corrente:** `25cbc9f374e5ac658403f1e83a1b540d8d2f4798` (`fix(v2): serialize concurrent runtime restarts`)
+**SHA funcional anterior:** `9ca947816378180b41d2fe2939e9e5b96ff796bd` (`feat(v2): preserve event metadata through module context`)
+**Reconciliação documental-base anterior:** `f0a11e33` (`docs(v2): close alpha.20 release traceability`)
+**Tag de release base:** `v2.0.0-alpha.20` — publicada como prerelease
 **Autor:** Manus AI
 
 > Esta matriz reconcilia o Master Super-Prompt Ω com #420, #422, #423, #430, #454 e o código observado. `COMPLETE` significa concluído dentro do escopo declarado; nunca significa que o domínio inteiro da V2 está pronto para produção.
@@ -35,7 +35,7 @@
 | 05 | Data Layer | `IN PROGRESS` | Storage, schema, migrations | Acesso direto e classificação incompleta | Local storage/offline e generators verdes | Backup, retention e RLS pendentes | Latency/size budgets pendentes | Data docs | `32b59ad5` | Auditar GEN-TS-002 e persistence |
 | 06 | Evidence / Wiki contracts | `IN PROGRESS` — auditoria estrutural publicada | Data, provenance, schemas | Dado externo tratado como fato | Catálogo Zomboid com 159 entradas, Evidence por Registry, summary por status, `reviewQueue` bounded, `retentionPreview` determinístico, `auditPreview` estrutural e integração 51/51 | Source/license/revision required; retenção operacional, ownership e revisão humana server-side ausentes | Search/index budgets pendentes | Wiki/Evidence docs e release 1.3.2 | `5d2142d7` | Retenção operacional, ownership e revisão humana |
 | 07 | Real Persistence / Supabase / RLS | `BLOCKED` para produção; contrato local publicado | Staging, migrations, RPC, RLS, rollback | Ambiente errado ou write sem atomicidade | Auditoria RLS/staging, matriz local 7/7; sem write remoto autorizado | Security review obrigatória | Sem benchmark remoto | [`RLS_STAGING_AUDIT_2026-08-21.md`](./RLS_STAGING_AUDIT_2026-08-21.md), [`RLS_STAGING_AUTHORIZATION_CONTRACT_2026-08-21.md`](./RLS_STAGING_AUTHORIZATION_CONTRACT_2026-08-21.md) | `f3973ecc` | Aprovar custo/staging e executar RLS formal |
-| 08 | Auth / Authorization / Tenancy | `IN PROGRESS` — formulário e fronteira do adapter tipados; release de identidade continua bloqueado | Login-cadastro, `auth-session.ts`, Supabase Auth, claims, RLS | 25 focais HTTP/server-validated/claims/Auth; 1235/1235 total; build, V2, Nexus e CI aplicáveis verdes | Server-side authority faltante; UI/adapter não decidem roles | Cliente HTTP read-only, refresh/redirect real, auditoria server-side e RLS remoto pendentes | [`SERVER_OBSERVATION_HTTP_AUDIT_2026-08-22.md`](./SERVER_OBSERVATION_HTTP_AUDIT_2026-08-22.md), [`SERVER_OBSERVATION_HTTP_CONTRACT_2026-08-22.md`](./SERVER_OBSERVATION_HTTP_CONTRACT_2026-08-22.md), [`SERVER_VALIDATED_SESSION_CONTRACT_2026-08-22.md`](./SERVER_VALIDATED_SESSION_CONTRACT_2026-08-22.md) | `9e2caca3` | Integrar o cliente read-only na UI com endpoint de ambiente controlado; nenhuma autorização client-side |
+| 08 | Auth / Authorization / Tenancy | `IN PROGRESS` — formulário, adapter e cliente de observação read-only tipados; release de identidade continua bloqueado | Login-cadastro, `auth-session.ts`, Supabase Auth, claims, RLS | Cliente HTTP integrado ao modo Servidor/JARVIS; tipos TS, suíte geral, build, V2, smoke, caminho crítico e CI remoto aplicáveis verdes | Server-side authority faltante; UI/adapter não decidem roles | Refresh/redirect real, auditoria server-side e RLS remoto pendentes | [`SERVER_OBSERVATION_HTTP_AUDIT_2026-08-22.md`](./SERVER_OBSERVATION_HTTP_AUDIT_2026-08-22.md), [`SERVER_OBSERVATION_HTTP_CONTRACT_2026-08-22.md`](./SERVER_OBSERVATION_HTTP_CONTRACT_2026-08-22.md), [`SERVER_OBSERVATION_UI_CONTRACT_2026-08-25.md`](./SERVER_OBSERVATION_UI_CONTRACT_2026-08-25.md), [`SERVER_VALIDATED_SESSION_CONTRACT_2026-08-22.md`](./SERVER_VALIDATED_SESSION_CONTRACT_2026-08-22.md) | `v2/server-observation-ui` | Integrar refresh/redirect real em contrato separado; nenhuma autorização client-side |
 | 09 | Permissions / Module RBAC | `IN PROGRESS` | Auth, tenancy, registry | Admin/dev/owner falsificáveis no cliente | Concessão/revogação local e V2 gates | RLS/claims não comprovados | Sem RLS cost benchmark | Permission docs | `32b59ad5` | Contrato server-side |
 | 10 | Billing Foundation / Entitlements / Usage | `IN PROGRESS` local; `BLOCKED` remoto | Data, tenancy, RLS, observability | Cobrança sem transação/reconciliação | `UsageLedger` append-only, idempotência, preflight local, `billing-mutation/v1`, 67/67 Billing tests, 1215/1215 total | Provider/write desligados; entitlement não concede autoridade | Sem provider cost benchmark | [`BILLING_FOUNDATION_AUDIT_2026-08-21.md`](./BILLING_FOUNDATION_AUDIT_2026-08-21.md), [`BILLING_FOUNDATION_CONTRACT_2026-08-21.md`](./BILLING_FOUNDATION_CONTRACT_2026-08-21.md) | `93e21960` | RLS/provider/staging aprovados separadamente |
 | 11 | JARVIS Core / Tools / Memory / Knowledge | `IN PROGRESS` com visual lightweight, consumidor server-health read-only, transporte PlatformDiagnostic redigido, severidade/fallback, adaptador V2, política operacional por módulo read-only e budget de contexto | Core, evidence, permissions, rota `/jarvis`, Event Bus V1, PlatformDiagnostic read-only | Agente ganhar autoridade excessiva ou visual afirmar saúde sem evidência | Contexto, Spotify PKCE, presence, fakes, console Mark XIII, benchmark `jarvis:performance`, orçamento 72/40 partículas e stride adaptativo, projeção `nucleo:status`, health manual, `server-health/v1` em FastAPI/Vercel, envelope `platform-observation/v1` com TTL/redaction, `projectPlatformDiagnostic()`, `claims-observation/v1`, adaptador `server-claims/v1` FastAPI/Vercel com roles fechadas, TTL formal, least privilege, CORS por allowlist, rate limit process-local, auditoria redigida, envelope `server-observation/v1`, budget 12k/24 e 18k/32 para agentes, observação bounded, cache/seleção lazy de schemas | Opt-in, least privilege, roles/expiração server-side, claims formais, rate limit distribuído, RLS e auditoria operacional de produção pendentes | Hardware real lado a lado com OpenClaw, ponte autenticada para PlatformDiagnostic, prompt/tool/memory benchmark e latência real pendentes | JARVIS docs, [`JARVIS_MARK_XIII_INTEGRATED_VISUAL_2026-08-20.md`](./JARVIS_MARK_XIII_INTEGRATED_VISUAL_2026-08-20.md), [`JARVIS_MARK_XIII_PERFORMANCE_MATRIX_2026-08-20.md`](./JARVIS_MARK_XIII_PERFORMANCE_MATRIX_2026-08-20.md), [`JARVIS_MARK_XIII_RUNTIME_OBSERVATION_2026-08-20.md`](./JARVIS_MARK_XIII_RUNTIME_OBSERVATION_2026-08-20.md), [`JARVIS_SERVER_HEALTH_CONTRACT_2026-08-20.md`](./JARVIS_SERVER_HEALTH_CONTRACT_2026-08-20.md) e [`JARVIS_MARK_XIII_LIGHTWEIGHT_OPTIMIZATION_2026-08-20.md`](./JARVIS_MARK_XIII_LIGHTWEIGHT_OPTIMIZATION_2026-08-20.md) e [`JARVIS_LOCAL_OPTIMIZATION_AUDIT_2026-08-21.md`](./JARVIS_LOCAL_OPTIMIZATION_AUDIT_2026-08-21.md) e [`JARVIS_LOCAL_OPTIMIZATION_CONTRACT_2026-08-21.md`](./JARVIS_LOCAL_OPTIMIZATION_CONTRACT_2026-08-21.md) | `bcb246df` publicado; otimização local read-only, seleção lazy conservadora e Spotify PKCE read-only com presença Mark XIII | Tool registry, claims/RLS, assinatura/origem server-side, rate limit distribuído, auditoria operacional de produção, rollout controlado e benchmark em hardware real |
@@ -50,7 +50,7 @@
 | 20 | Marketplace / plugins / third-party registry | `DEFERRED` | Module system, sandbox, licenses, billing | Supply-chain and permission risk | No production marketplace evidence | Manifest, sandbox, audit required | Scale/cost unknown | Future roadmap | — | Only after Module System |
 | 21 | Performance / accessibility / UX audit | `IN PROGRESS` parcial | All surfaces | Claiming light/fast without measurement | Harness UI keyboard/focus/reduced-motion matrix; JARVIS benchmark; adaptive particles/FPS; smoke/path critical | Reduced motion and adaptive visual budget implemented locally; server-side accessibility evidence absent | Hardware matrix, boot, route, DB, JARVIS and mobile budgets incomplete | Design docs, [`COMMAND_CENTER_A11Y_MATRIX_2026-08-20.md`](./COMMAND_CENTER_A11Y_MATRIX_2026-08-20.md) e [`JARVIS_MARK_XIII_PERFORMANCE_MATRIX_2026-08-20.md`](./JARVIS_MARK_XIII_PERFORMANCE_MATRIX_2026-08-20.md) | `50891ae2` publicado | Observability and measured matrix |
 | 22 | Release / environments / rollback | `COMPLETE` for 1.3.2 scope | CI, changelog, SW, tags, desktop artifacts | Release without recovery evidence | v1.3.2 and desktop-v1.3.2 tags, 8/8 assets HTTP 200, Desktop Release 32595313050; Rust local remains blocked-known | No secrets; rollback to v1.3.1 documented | Artifact/bundle warnings known | Changelog, release plan and v1.3.2 note | `5d2142d7` | Asset checksums and rollback evidence |
-| 23 | Full doctor / verify:v2 / setup:v2 | `IN PROGRESS — local catalog published` | All real gates and environment contracts | One command hides unknown states | 21-record catalog; 15 green, 1 blocked-known, 5 not-run, 0 failed/unknown | Must preserve unknown/blocked | Runtime/remote distinctions required | [`V2_DOCTOR_CONTRACT_2026-08-21.md`](./V2_DOCTOR_CONTRACT_2026-08-21.md) | `0f9922bf` | Reconcile remote evidence and setup contracts |
+| 23 | Full doctor / verify:v2 / setup:v2 | `IN PROGRESS — local catalog published` | All real gates and environment contracts | One command hides unknown states | 23-record catalog; 15 green, 2 blocked-known, 1 unknown, 5 not-run, 0 failed | Must preserve unknown/blocked | Runtime/remote distinctions required | [`V2_DOCTOR_CONTRACT_2026-08-21.md`](./V2_DOCTOR_CONTRACT_2026-08-21.md) | `0f9922bf` | Reconcile remote evidence and setup contracts |
 | UI | Baluarte Design System & Information Architecture | `IN PROGRESS — COMMAND CENTER A11Y + JARVIS MARK XIII / MODULE REGISTRY POLICY / V1 FALLBACK` | Module Manifest, Registry, layout, router, permissions, health, deep links, fallback, rollback, claims, command descriptors | Public promotion without server-side authority, a second shell/sidebar or a visual claim without health evidence | UI-01/UI-02/UI-03/UI-04 docs; `MODULE_ALIGNMENT_PILOT_2026-08-20.md`; `SINGLE_SURFACE_EDITOR_PILOT_2026-08-20.md`; `PROMOTION_GATE_EDITOR_2026-08-20.md`; `COMMAND_CENTER_NAVIGATION_CONTRACT_2026-08-20.md`; `COMMAND_CENTER_VISUAL_HARNESS_PILOT_2026-08-20.md`; `COMMAND_CENTER_A11Y_MATRIX_2026-08-20.md`; `MODULE_OBSERVATION_VISUAL_CONTRACT_2026-08-21.md`; `CONTROLLED_ROLLOUT_EVIDENCE_CONTRACT_2026-08-21.md`; `MODULE_REGISTRY_PILOT_CONTRACT_2026-08-21.md`; `RLS_STAGING_AUTHORIZATION_CONTRACT_2026-08-21.md`; 16/16 UI tests; 45/45 V2 integration; 7/7 RLS local | Server-side claims and audit required; stability is not health; no client-only roles; visual pilot, module observation and keyboard matrix are harness-only | Keyboard, focus and reduced motion covered in harness; responsive, bundle, boot, DB and route budgets pending | PHASE UI and Command Center docs | `f3973ecc` publicado | Next: explicit staging approval; no remote DDL by inference |
 | 24 | V2 RC / freeze / stable / observation | `DEFERRED` | Core, modules, data, auth, billing, security, recovery | Declaring complete too early | Criteria not satisfied | Sign-offs absent | Scalability not measured | Master Prompt | — | Only after blockers close |
 | TS Pages | Page implementation stability | `COMPLETE — 0 canonical JS pages` | `src/pages`, wrappers, TypeScript strict, router and tests | Counting compatibility wrappers as unfinished pages or removing them too early | 123 TS implementations, 115 JS wrappers, 0 canonical JS, 1256/1256 tests | Integrations and full V2 maturity still have separate gates | Performance/accessibility budgets remain independent | [`PAGES_TS_STABILITY_AUDIT_2026-08-20.md`](./PAGES_TS_STABILITY_AUDIT_2026-08-20.md) | `8ad3fdf2` | Maintain wrappers until consumer audit; add new pages in TS |
@@ -234,3 +234,164 @@ A validação passou teste focal Evidence `11/11`, suíte `1258/1258`, `tipos:ts
 As tags `v1.3.2` e `desktop-v1.3.2` apontam para `5d2142d7`. O Desktop Release `32595313050` passou em Windows, macOS ARM64 e Ubuntu. A release pública `v1.3.2` não é draft nem prerelease, possui oito assets, os manifests declaram `version: 1.3.2` e todos os downloads responderam HTTP 200. O Service Worker usa `baluarte-v1.3.2`.
 
 O próximo passo continua sendo definir retenção operacional e auditoria server-side com identidade, tenancy, ownership, concorrência, exportação e rollback. Este checkpoint não cria persistência remota, autorização client-side, auditoria operacional de produção ou UI de revisão.
+
+## Checkpoint de medição — Event Bus latency budget — 2026-08-25
+
+O script `scripts/event-bus-latency-benchmark.mjs`, disponível como `npm run bench:event-bus`, mede o caminho real de `criarBus().emit()` em três cargas de ouvintes, com aquecimento do JIT, validação de entrega e conferência de `bus.saude().latencia`. A execução registrada em [`EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md`](./EVENT_BUS_LATENCY_BENCHMARK_2026-08-25.md) observou 9,460–10,103 µs por despacho externo em 20.000 operações por cenário no sandbox Linux/Node 22.
+
+A medição fecha uma evidência local de custo, mas não fecha threshold de produção, percentil, alerta, retry, backpressure, hardware de usuário ou disponibilidade operacional. O Event Bus permanece observação local, e a política de retry por classe de evento continua bloqueada até ADR explícito.
+
+
+## Checkpoint operacional — local backup/restore drill — 2026-08-26
+
+O gap `RECOVERY-001` ganhou um ensaio local reproduzível no comando `npm run drill:v2:backup`. O drill exercita a ponte de backup já existente em processo Node com fallback in-memory: prepara o storage, exporta dados com Unicode, valida o envelope, simula perda com `clearAll()`, restaura as chaves esperadas, confirma exclusão de `auth:session`, rejeita uma chave desconhecida e limpa o estado no bloco `finally`.
+
+A execução passou com `backupValidado: true`, três chaves estruturais restauradas (`editor:state`, `permissoes`, `ui:theme`), sessão excluída e chave desconhecida ignorada. A suíte canônica de backup passou `14/14`. O resultado demonstra o caminho local da ponte V1→V2, mas não aprova RPO/RTO, durabilidade, criptografia, retenção, ownership, tenancy, auditoria, recuperação remota ou restauração entre máquinas; o gap operacional permanece parcial e bloqueado para produção.
+
+O contrato detalhado está em [`V2_BACKUP_RESTORE_DRILL_2026-08-26.md`](./V2_BACKUP_RESTORE_DRILL_2026-08-26.md). Nenhuma rede, storage remoto, Supabase, migration, RLS, Auth real, credencial ou escrita de produção foi utilizada.
+
+
+## Checkpoint de performance — Evidence local bounded search — 2026-08-26
+
+A busca local da Evidence foi medida sobre o dataset `PZ_IDS` curado: `159` mods, `640` registros derivados somente de campos declarados e `250` repetições por cenário. As médias observadas ficaram entre `119,301 µs` e `223,172 µs`, com limites `25`/`100`, `returned` nunca acima do limite e `available` contado antes do corte.
+
+O benchmark é reprodutível pelo comando `npm run bench:evidence-search` e está detalhado em [`EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md`](./EVIDENCE_SEARCH_BENCHMARK_2026-08-26.md). Ele mede uma busca linear em memória e não fecha budget de produção, full-text, ranking, pgvector, índice persistente, consulta remota ou relevância operacional.
+
+A lacuna de search/index fica parcialmente atendida no escopo local bounded. Volume real de produção, requisitos de relevância, tenancy, retenção, RLS, custos e staging continuam necessários antes de qualquer persistência ou decisão de plataforma.
+
+
+## Checkpoint de performance — renderização das rotas reais — 2026-08-26
+
+O comando `npm run bench:routes` mede o preview local de produção nas `99` rotas descobertas diretamente de `src/main.js`, em `3` repetições, com settle de `900 ms` e timeout de navegação de `15 s`. Todas as rotas permaneceram verdes nas três rodadas. A navegação teve p50 `163,186 ms`, p95 `190,465 ms`, média `166,612 ms` e máximo `404,826 ms`; a observação após settle teve p50 `1104,435 ms`, p95 `1236,586 ms`, média `1122,866 ms` e máximo `1457,885 ms`.
+
+A medição está detalhada em [`ROUTE_RENDER_BENCHMARK_2026-08-26.md`](./ROUTE_RENDER_BENCHMARK_2026-08-26.md). Ela é diagnóstico local do Chromium/preview e não estabelece SLA, threshold, budget de produção, comparação entre hardware, política de regressão ou critério de promoção. O smoke permanece o gate funcional de rotas; nenhuma regra da V1, do router ou do smoke foi alterada.
+
+
+## Checkpoint de performance — boot real da Plataforma V2 — 2026-08-26
+
+O comando `npm run bench:v2:boot` mede o caminho real do harness `v2/harness/index.html#/cripto`, sem recriar o Core e sem alterar o router V1. Cada repetição abre um contexto Chromium novo e observa `window.__v2.partida`, produzido por `criarPlataforma(...).iniciar()` no harness. O cenário real contém sete módulos V2 e vinte rotas V1.
+
+Duas execuções de cinco repetições passaram com `ready`, exatamente sete módulos vivos, zero falhas de boot e vinte rotas V1 em todas as amostras. O boot interno teve p50/p95/média/máximo de `14/14/14/14 ms` na primeira execução e `14/15/14,2/15 ms` na segunda. O tempo observado no browser até `window.__v2.partida` teve `225,801/783,116/329,453/783,116 ms` e `214,871/855,046/342,108/855,046 ms`, respectivamente.
+
+A metodologia e a ocorrência de preview stale estão em [`V2_BOOT_BENCHMARK_2026-08-26.md`](./V2_BOOT_BENCHMARK_2026-08-26.md). A espera do preview exige os marcadores do HTML do harness, impedindo que um `200` do site V1 seja aceito como alvo V2.
+
+Este checkpoint atende parcialmente a medição de startup da Phase 02/21. Os tempos continuam diagnóstico local: não estabelecem SLA, threshold, budget, Web Vital, comparação de hardware, estabilidade longitudinal ou política automática de regressão. Não foram alterados boot, Plataforma, router, V1, Auth, Evidence, Supabase, RLS, tenancy, ownership, permissões ou autoridade.
+
+## Checkpoint de integração — Project Registry local read-only — 2026-08-26
+
+O slice `project-registry-local` adiciona um contrato TypeScript e wrapper JavaScript para um inventário local bounded de projetos externos citados no Master Plan. O catálogo inicial possui quatro entradas (`Veritas`, `DailyPlanner`, `Stock Analyzer Bot` e `Project Vanguard`), todas provenientes somente da referência de roadmap, com `auditState: not-audited` e `decision: defer`.
+
+A API `projectRegistrySnapshot()` valida entradas, rejeita IDs duplicados, filtra por texto/estado/decisão, limita o resultado ao padrão 25 e teto 100 e congela a saída. O comando `npm run check:project-registry` é read-only e imprime apenas resumo local; o teste focal cobre catálogo, filtro, limite, imutabilidade e rejeição de promoção de entrada não auditada.
+
+O contrato está em [`PROJECT_REGISTRY_LOCAL_CONTRACT_2026-08-26.md`](./PROJECT_REGISTRY_LOCAL_CONTRACT_2026-08-26.md). Este checkpoint não consulta, baixa, instala, importa, executa ou autoriza repositórios externos; não inventa URL, licença, manutenção, arquitetura, capability, risco ou custo. Não cria marketplace, plugin loader, adapter, bridge, Auth, RLS, Supabase, ownership, tenancy, persistência ou autoridade. A Phase 14 — Project Integration continua parcial e a auditoria externa de qualquer projeto permanece uma decisão futura, passiva e separada.
+
+
+## Checkpoint de segurança local — Module Mode Policy fake server-side — 2026-08-26
+
+O slice `module-registry-mode-policy/v1` adiciona uma fixture determinística e in-memory para a fronteira de autorização dos modos `active`, `maintenance` e `disabled` do Module Registry. A fixture expõe exatamente quatro identidades sintéticas (`fixture-user`, `fixture-admin`, `fixture-dev` e `fixture-owner`) nos papéis fechados `user`, `admin`, `dev` e `owner`. Ela produz decisões `allow`/`deny` para o callback auditado de `criarModuleRegistryHealth()`, mas não altera o Registry, não inicia módulo e não concede autoridade ao frontend.
+
+| Evidência local | Resultado |
+|---|---:|
+| Verificador | `npm run check:module-mode-policy` |
+| Identidades | 4 |
+| Casos da matriz | 6 |
+| Decisões | 3 allow / 3 deny |
+| Spoof de `actorRole` client-side | deny |
+| Teste focal | `8/8` |
+| `npm run tipos:ts` | passou |
+| `npm run tipos:v2` | passou |
+| `git diff --check` | passou |
+
+A matriz da fixture é deliberadamente local: `user` não altera modo; `dev` pode solicitar `active`/`maintenance`, mas não `disabled`; `admin` e `owner` cobrem os três modos. Decisões allow carregam `requestId`, `actorId`, `actorRole` e `approvedBy` sintéticos para satisfazer o contrato `requireAudit`; decisões deny usam somente razões bounded. O campo `actorRole` do request é ignorado.
+
+O checkpoint não implementa login, Auth, JWT, claims, service role, Supabase, SQL, migration, RLS, tenancy, ownership, rede, persistência, retry, restart, fila ou mutação remota. A fixture não é política de produção, não prova staging e não autoriza qualquer operação no browser. A integração real depende de staging separado, identidades de teste, RLS verificável, cleanup idempotente, revisão de segurança, auditoria persistente e rollback aprovado. O contrato está em [`MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md`](./MODULE_MODE_POLICY_LOCAL_CONTRACT_2026-08-26.md).
+
+
+## Checkpoint de observabilidade — Doctor registra Module Mode Policy — 2026-08-26
+
+O Doctor passa a incluir `module_mode_policy` como check `safe`/read-only, executando `node scripts/module-mode-policy-check.mjs`. O comando reutiliza a fixture canônica `module-registry-mode-policy/v1`, que expõe quatro identidades sintéticas e rejeita spoof de `actorRole`; o Doctor não cria uma segunda política nem aplica qualquer modo de módulo.
+
+| Evidência local | Resultado |
+|---|---:|
+| Testes focais do Doctor | `10/10` |
+| `module_mode_policy` | `green` |
+| Verificador da fixture | 4 identidades, 6 casos, 3 allow / 3 deny, spoof deny |
+| Doctor total | 24 registros: 16 green, 2 blocked-known, 1 unknown, 5 not-run |
+| Falhas reais | 0 |
+| Exit code do Doctor | `2`, preservando o `unknown` ambiental do Cargo |
+
+O check somente chama um comando local sem rede, storage, token, claims, Supabase, SQL, migration, RLS, tenancy, ownership, persistência, retry, fila, restart ou promoção pública. Os estados `blocked-known`, `unknown` e `not-run` continuam honestos; nenhum foi mascarado para fazer o Doctor parecer verde. O contrato está em [`V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md`](./V2_DOCTOR_MODULE_MODE_CHECK_2026-08-26.md).
+
+
+## Checkpoint de integração — Runtime desktop empacotado / alpha.18 — 2026-08-26
+
+A PR #510 integrou o gate `v2:desktop-packaged` no SHA `ca325d03fbddf77b43b64519ba2f69cdf4f07f4f`. O comando constrói o bundle web, compila o Runtime Rust em release, empacota o Electron com `desktop/package.json` e executa um artefato `linux-unpacked` temporário sob Xvfb. O entrypoint de smoke exige `app.isPackaged`, recusa `BALUARTE_RUNTIME_BIN`, confirma binário e transporte em `process.resourcesPath`, autoriza o módulo sintético, lê arquivo confinado e verifica a recusa de `../`.
+
+| Evidência | Resultado |
+|---|---:|
+| PR técnica | `#510`, squash-merged |
+| SHA integrado | `ca325d03` |
+| Backup pré-merge | `backup/2026-08-26-before-v2-packaged-runtime` |
+| Workflow PR | `33021833916`, sucesso |
+| Workflow pós-merge | `33022206259`, sucesso |
+| Workflows pós-merge totais | `9/9` sucesso |
+| `npm test` anterior ao merge | `1385` aprovados, `6` ignorados, `0` falhas |
+| Integração / smoke / caminho crítico | passou / `99/99` / `15/15` |
+| Offline / memória / Security Contracts | `9/9` / passou / `73/73` |
+| Smoke empacotado local | bloqueado por `cargo` ausente no sandbox |
+
+A prova fecha a lacuna de localização e comunicação do Runtime no pacote Linux. Não é aceite físico de Windows/macOS, não publica instaladores, não prova assinatura, auto-update, OAuth, câmera, microfone, persistência, Auth/RLS ou Runtime como autoridade de produção. V1, router, sidebar, Service Worker e launcher normal permanecem preservados. O contrato está em [`V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_CONTRACT_2026-08-26.md) e a auditoria em [`V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md`](./V2_PACKAGED_RUNTIME_AUDIT_2026-08-26.md).
+
+A alpha.18 aguarda a finalização documental e a verificação do SHA documental antes de tag/release. A PR #501 continua OPEN/DRAFT e isolada; a PR #471 continua OPEN/DRAFT e intocada.
+
+
+## Checkpoint alpha.19 — Module Registry Health local/read-only
+
+| Campo | Estado verificado |
+|---|---|
+| Slice | `module_registry_health` como observabilidade operacional bounded |
+| Implementação | `scripts/module-registry-health-check.mjs` reutiliza `criarModuleRegistryHealth` e `criarRuntimeHealth` |
+| Doctor | Check `safe` em `scripts/v2-doctor.mjs` |
+| Cobertura | 6 casos, 3 allow, 3 deny; desconhecido, saudável, degraded, quarantined, maintenance auditada, negação server-side e cópia defensiva |
+| Rede/Storage | Não usados; nenhuma escrita remota ou autoridade de produção |
+| Gates | Focal `32/32`; suíte `1386` pass, `6` skipped, `0` fail; integração `58/58`; smoke `99/99`; caminho `15/15`; offline `9/9`; Security Contracts `73/73`; Doctor `17 green`, `2 blocked-known`, `1 unknown`, `5 not-run`, `0 failed`, exit `2` honesto |
+| Project Registry | Busca read-only sem fonte oficial inequívoca; quatro candidatos continuam `not-audited/defer` |
+| Status | Implementação técnica integrada pela PR #514 no SHA `17d1acc`; documentação final e release ainda condicionadas à PR documental |
+| Fora do escopo | Health remoto, restart real, Auth, RLS, tenancy, ownership, retenção operacional, billing, integração de fonte externa, assinatura e auto-update |
+
+
+## Checkpoint de medição — 2026-08-27 — PR #519 / SHA `0365f7f`
+
+A fachada `criarPlataforma()` passou a projetar opcionalmente `PlatformDiagnostic.trabalho`, delegando a leitura a `Escalonador.saude()`. O contrato valida a dependência, preserva `null` quando ausente e não altera fila, lifecycle, retry, readiness ou autorização. A implementação técnica foi integrada pela PR [#519](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/519), com commit técnico `dbfe5156b7c797390956aaf365e87010b25529af` e squash merge em `0365f7fa451de20784c9eb745df853b363c7aeab`.
+
+A PR teve `11` checks de sucesso, `1` skipped por política e `0` pending/cancelados, incluindo Vercel Preview liberado após o rate limit. Os oito workflows pós-merge do SHA terminaram com sucesso. O backup `backup/2026-08-27-before-v2-platform-task-diagnostic` preserva o commit técnico.
+
+O marco melhora a observabilidade local agregada, mas não altera a classificação das fases: persistência, RLS, Auth/RBAC server-side, ownership, retenção operacional, retry por classe de evento, Knowledge Mesh formal, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, estabilização, RC e V2 estável continuam pendentes, bloqueados ou deferidos conforme a matriz. V1, router, shell, sidebar, wrappers, Service Worker e branches de Claude Code permanecem preservados.
+
+
+## Checkpoint documental final pós-#521 — alpha.20
+
+A nota de release e as matrizes foram integradas na `main` pela PR [#520](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/520), no SHA `fc90959a4186060a296d6632efb45ef9d20d1609`. A finalização de rastreabilidade foi integrada pela PR [#521](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/521), no SHA `1b7ce92fc5a0dff0e11bf362a470c14b6663f108`; os sete workflows pós-merge desse SHA terminaram com sucesso. A correção documental final foi integrada pela PR [#522](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/522), no SHA `f0a11e33a7163746c5d2087762c68a654e1a6dcb`; a tag anotada `v2.0.0-alpha.20` e a release prerelease foram verificadas e publicadas nesse SHA.
+
+As branches `backup/2026-08-27-before-v2-platform-task-diagnostic`, `backup/2026-08-27-before-v2-alpha20-docs` e `backup/2026-08-27-before-v2-alpha20-finalize` apontam para os heads das PRs (`dbfe515`, `a05bbe7`, `2064396`), não para uma `main` pré-merge. A backup `backup/2026-08-27-before-v2-alpha20-release-final` aponta para o baseline real `1b7ce92` anterior à #522. O rollback correto é reverter normalmente os squash merges `0365f7f`, `fc90959`, `1b7ce92` e `f0a11e33`, conforme necessário, usando seus pais históricos/baselines (`43bc15e`, `0365f7f`, `fc90959` e `1b7ce92`); nenhuma das três branches antigas deve ser apresentada como rollback pré-merge.
+
+O marco técnico continua limitado à projeção read-only de `Escalonador.saude()` dentro de `PlatformDiagnostic`. O restante da execução da V2 — persistência/retenção, Auth/RBAC/RLS server-side, tenancy/ownership, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade operacional persistente, aceite físico, assinatura, auto-update, beta, RC e stable — permanece pendente, bloqueado ou deferido. Nenhuma conclusão de domínio amplo é inferida deste checkpoint.
+
+
+## Checkpoint pós-alpha.20 — PRs #517, #518 e #523 / alpha.21 candidata
+
+A sequência pós-alpha.20 avançou o Core/Module System em três slices isoladas. A PR [#517](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/517) foi sincronizada contra a `main`, validada com 11 checks e Vercel success e integrada no SHA `f62ece73eae089f0a42478f7ee2ef36b5cd2fcd3`, corrigindo `stop → Runtime.close → dispose`. A PR [#518](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/518) foi sincronizada, validada com 11 checks e Vercel success e integrada no SHA `9ca947816378180b41d2fe2939e9e5b96ff796bd`, preservando metadados autorizados de envelope em `ctx.bus.emit`.
+
+A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) adicionou single-flight por módulo a `criarRuntimeRestart()`. Chamadas concorrentes do mesmo módulo compartilham a mesma `Promise`, evitando duas sequências simultâneas de `stop → sleep → start`; módulos diferentes permanecem independentes. O contrato está em [`RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md`](./RUNTIME_RESTART_SINGLE_FLIGHT_CONTRACT_2026-08-27.md). A slice não altera o contrato de injeção do `RuntimeManager`, não cria retry automático, persistência, lock distribuído ou autoridade operacional.
+
+| Item | Evidência |
+|---|---|
+| Commit técnico da branch #523 | `e216f3f7c9e9058d3c1301ee154e8710399946b9` |
+| SHA integrado na `main` | `25cbc9f374e5ac658403f1e83a1b540d8d2f4798` |
+| Gates locais | Focal `3/3`; suíte `1397` com `1391` pass, `6` skipped, `0` fail; `tipos:ts`; `tipos:v2`; build; integração `58/58`; smoke; caminho crítico; offline; memória; Security Contracts `73/73` |
+| Doctor | Exit `2` honesto por Cargo ausente, sem falhas mascaradas |
+| Checks da PR #523 | `11` sucessos, `1` skipped por política, Vercel success |
+| Pós-merge #523 | `8/8` workflows verdes; V2 Validation verde na tentativa 2 após timeout externo no Checkout do job Rust |
+| Backup pré-merge | `backup/2026-08-27-before-v2-runtime-restart-single-flight` → baseline real `9ca94781` |
+
+A alpha.20 continua sendo a última prerelease publicada e está registrada em [v2.0.0-alpha.20](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v2.0.0-alpha.20). A alpha.21 é somente candidata documental neste checkpoint: sua nota, tag e release ainda não existem. O marco não fecha as fases de persistência, Auth/RBAC/RLS server-side, tenancy, ownership, retenção operacional, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade persistente, aceite físico, assinatura, auto-update, beta, RC ou stable. V1, router, shell, sidebar, wrappers, Service Worker, #501 e #471 permanecem preservados e separados.

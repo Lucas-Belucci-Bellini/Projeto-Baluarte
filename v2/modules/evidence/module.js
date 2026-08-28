@@ -6,7 +6,7 @@
  * data, versão e confidence explícitos.
  */
 
-import { EvidenceStore, projectEvidenceAudit, projectEvidenceRetention } from '../../data/evidence.js';
+import { EvidenceStore, projectEvidenceAudit, projectEvidenceRetention, projectEvidenceReviewQueue, projectEvidenceRevisionHistory, projectEvidenceSearch } from '../../data/evidence.js';
 import { evidenceFromCatalog } from '../../data/catalog-evidence.js';
 
 /** @typedef {import('../../data/evidence.ts').EvidenceInput} EvidenceInput */
@@ -46,6 +46,13 @@ function auditPreview(options) {
     : projectEvidenceAudit([], options);
 }
 
+/** @param {string} id @param {import('../../data/evidence.ts').EvidenceRevisionOptions} [options] */
+function revisionPreview(id, options) {
+  return store
+    ? store.revisionPreview(id, options)
+    : projectEvidenceRevisionHistory(id, [], options);
+}
+
 export default {
   id: 'evidence',
   name: 'Evidence Layer',
@@ -74,6 +81,12 @@ export default {
     listByModule: (moduleId) => store?.listByModule(moduleId) ?? [],
     retentionPreview,
     auditPreview,
+    /** @param {import('../../data/evidence.ts').EvidenceReviewOptions} [options] */
+    reviewQueue: (options) => store?.reviewQueue(options) ?? projectEvidenceReviewQueue([], options),
+    /** @param {import('../../data/evidence.ts').EvidenceSearchOptions} options */
+    search: (options) => store?.search(options) ?? projectEvidenceSearch([], options),
+    /** @param {string} id @param {import('../../data/evidence.ts').EvidenceRevisionOptions} [options] */
+    revisionPreview,
     /** @param {string} id @param {import('../../data/evidence.ts').EvidenceStatus} status @param {string} [supersededBy] */
     markStatus: (id, status, supersededBy) => {
       if (!store) throw new Error('evidence ainda não foi inicializado');

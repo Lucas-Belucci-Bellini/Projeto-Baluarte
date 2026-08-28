@@ -45,7 +45,10 @@ pela mesma razão, ausente pelo mesmo padrão.
 | `motivos` | texto legível, o acionável primeiro |
 | `contagem` | `{emissoes, falhas, padroes, ouvintes}` |
 | `porEvento` | `{evento: {emissoes, falhas}}` |
+| `latencia` | `{n, mediaMs, minMs, maxMs}`; resumo global bounded do despacho |
 | `ultimasFalhas` | as N últimas, com **a cadeia junto** |
+
+A extensão de latência está especificada em [`EVENT_BUS_LATENCY_2026-08-25.md`](./EVENT_BUS_LATENCY_2026-08-25.md). Ela não cria thresholds, percentis ou um novo veredito de readiness.
 
 A falha guarda a **mensagem**, não o `Error`: reter o objeto num anel de 50
 manteria stack e closures vivas — o histórico de diagnóstico viraria uma fuga
@@ -64,9 +67,16 @@ não é truncada pelo anel** — 20 falhas com anel de 3 continuam a contar 20.
 | `motivos` | fila no teto, saturação, recusas, falhas, cancelamentos |
 | `estado` | o `estado()` de sempre, embutido |
 | `contagem` | `{enfileirados, concluidos, falhados, recusados, cancelados}` |
+| `latencia` | `{n, mediaMs, minMs, maxMs}` para tarefas que chegaram a iniciar; resumo local bounded e read-only |
 
 Os acumulados são **independentes de `deps.metricas`**. As métricas continuam a
 receber tudo o que já recebiam; isto é o que sobra quando ninguém as injetou.
+
+`latencia` também é independente de `deps.metricas`: conta somente tarefas que
+iniciaram execução, incluindo sucesso e falha, e não conta cancelamentos antes
+do início. O relógio monotônico é protegido contra exceção, valor não finito e
+ajuste para trás; uma falha de telemetria não interrompe o escalonador. O campo
+não escolhe limiar, não degrada `readiness` e não inicia retry.
 
 ## Onde o veredito é conservador, e por quê
 
@@ -174,5 +184,4 @@ Os que valem mencionar por serem sobre defeitos:
 
 **`retry`.** Depende de decidir política de repetição por classe de evento — o
 que é seguro repetir, e quantas vezes. Essa decisão continua por tomar, e
-tomá-la aqui seria inventar requisito. `correlation`, `cancel` e agora `health`
-estão fechados.
+tomá-la aqui seria inventar requisito. `correlation`, `cancel` e agora `health` estão fechados. A medida local de latência complementa o health sem escolher limiar operacional; seu contrato está em [`EVENT_BUS_LATENCY_2026-08-25.md`](./EVENT_BUS_LATENCY_2026-08-25.md).

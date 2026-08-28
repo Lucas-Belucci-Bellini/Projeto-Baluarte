@@ -84,3 +84,10 @@ Fundação, não módulos (§23 do plano — *preparar ≠ implementar*):
 O contrato local `evidence.ts` e o módulo `../modules/evidence/module.js` já foram implementados. Eles validam proveniência, confidence, datas, status e ciclo de supersessão sem rede, banco ou dependência de frontend. O store em memória existe para testar o contrato e o lifecycle; ele não substitui a migration Postgres nem autoriza ingestão automática.
 
 A persistência deve ser adicionada somente quando houver adapter, política de tenancy, testes de concorrência e estratégia de retenção. Até lá, a migration SQL continua sendo fundação preparada, não uma implementação acoplada ao navegador.
+
+A fila local `EvidenceStore.reviewQueue()` centraliza a seleção bounded de evidências `pending` para revisão. Ela preserva a ordem append-only, permite escopo opcional por módulo, congela a projeção e redige statement, URI, publisher e collector. O Wiki Zomboid delega a essa política, mas mantém seu formato legado de seis campos. A fila não altera status, não cria persistência e não substitui revisão humana server-side; o contrato está em [`../../docs/v2/EVIDENCE_REVIEW_QUEUE_CONTRACT_2026-08-25.md`](../../docs/v2/EVIDENCE_REVIEW_QUEUE_CONTRACT_2026-08-25.md).
+
+
+A busca local `EvidenceStore.search({ query, moduleId?, status?, limit? })` complementa as projeções de retenção, auditoria e revisão. Ela percorre somente os metadados `id`, `claimKey`, `moduleId` e `source.revision`, preserva a ordem append-only, limita o retorno a 100 itens e entrega `returned`, `available` e `truncated`. A projeção é congelada e não inclui `statement`, URI, publisher ou collector.
+
+Esta busca é diagnóstica e read-only: não autentica fonte, não promove status, não resolve ownership/tenancy, não grava banco e não é full-text, ranking ou `pgvector`. O contrato está em [`../../docs/v2/EVIDENCE_SEARCH_CONTRACT_2026-08-26.md`](../../docs/v2/EVIDENCE_SEARCH_CONTRACT_2026-08-26.md). A busca persistente permanece condicionada a consulta real, benchmark, adapter, retenção, RLS e staging aprovados.
