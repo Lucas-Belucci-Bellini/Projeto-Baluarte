@@ -88,6 +88,8 @@ export function criarConfig(declaracoes, ambiente = {}) {
   const valores = new Map();
   /** @type {string[]} */
   const problemas = [];
+  /** @type {Map<string, {presente: boolean, rejeitada: boolean}>} */
+  const origens = new Map();
 
   for (const d of declaracoes) {
     if (schema.has(d.chave)) {
@@ -104,24 +106,50 @@ export function criarConfig(declaracoes, ambiente = {}) {
     schema.set(d.chave, d);
 
     const bruto = d.env ? ambiente[d.env] : undefined;
+    const presente = bruto !== undefined;
     let valor = converter(bruto, d.tipo);
+    /* Presente e recusada é um TERCEIRO estado, diferente de ausente. Tratá-lo
+     * como ausente foi o que fazia a mensagem mandar o operador definir uma
+     * variável que ele já tinha definido. */
+    const rejeitada = presente && valor === undefined;
 
-    if (valor === undefined && bruto !== undefined) {
-      problemas.push(`${d.env}="${bruto}" não é ${d.tipo} válido (chave "${d.chave}")`);
+    if (rejeitada) {
+      /* O valor bruto entra na mensagem porque é assim que se acha um erro de
+       * digitação numa variável de ambiente — MENOS quando é segredo. `validacao()`
+       * é lida no boot que falhou, ou seja: logada. Interpolar o valor aqui punha
+       * a DSN com senha, ou a chave `sk-live-…`, em texto claro no caminho mais
+       * acidental que existe — que é justamente o que o cabeçalho deste ficheiro
+       * promete impedir. */
+      problemas.push(d.segredo
+        ? `${d.env} não é ${d.tipo} válido (chave "${d.chave}") — valor omitido por ser segredo`
+        : `${d.env}="${bruto}" não é ${d.tipo} válido (chave "${d.chave}")`);
     }
     if (valor === undefined) valor = d.segredo ? undefined : d.padrao;
 
-    if (valor === undefined && (d.obrigatorio || d.segredo)) {
+    /* `!rejeitada`: já se disse que o valor é inválido. Acrescentar "não está
+     * definida" a seguir seria contradizer a linha anterior no mesmo relatório. */
+    if (valor === undefined && (d.obrigatorio || d.segredo) && !rejeitada) {
       problemas.push(d.env
         ? `"${d.chave}" é obrigatória e ${d.env} não está definida`
         : `"${d.chave}" é obrigatória e não tem origem declarada`);
     }
 
     if (typeof valor === 'number') {
-      if (d.min !== undefined && valor < d.min) problemas.push(`"${d.chave}" = ${valor} < mínimo ${d.min}`);
-      if (d.max !== undefined && valor > d.max) problemas.push(`"${d.chave}" = ${valor} > máximo ${d.max}`);
+      /* Mesma regra da conversão: a faixa violada é o que interessa ao
+       * diagnóstico; o valor do segredo não é, e sai. */
+      if (d.min !== undefined && valor < d.min) {
+        problemas.push(d.segredo
+          ? `"${d.chave}" está abaixo do mínimo ${d.min} — valor omitido por ser segredo`
+          : `"${d.chave}" = ${valor} < mínimo ${d.min}`);
+      }
+      if (d.max !== undefined && valor > d.max) {
+        problemas.push(d.segredo
+          ? `"${d.chave}" está acima do máximo ${d.max} — valor omitido por ser segredo`
+          : `"${d.chave}" = ${valor} > máximo ${d.max}`);
+      }
     }
 
+    origens.set(d.chave, { presente, rejeitada });
     if (valor !== undefined) valores.set(d.chave, valor);
   }
 
@@ -153,15 +181,26 @@ export function criarConfig(declaracoes, ambiente = {}) {
    * — sem a que não interessa a ninguém: o valor.
    */
   function paraDiagnostico() {
-    return [...schema.values()].map((d) => ({
-      chave: d.chave,
-      tipo: d.tipo,
-      origem: d.env && ambiente[d.env] !== undefined ? `env:${d.env}` : 'padrão',
-      valor: d.segredo
-        ? (valores.has(d.chave) ? MASCARA : '(não definido)')
-        : valores.get(d.chave),
-      ...(d.descricao ? { descricao: d.descricao } : {})
-    }));
+    return [...schema.values()].map((d) => {
+      const o = origens.get(d.chave) ?? { presente: false, rejeitada: false };
+      /* `origem` diz de onde veio o valor QUE ESTÁ EM VIGOR. Antes bastava a
+       * variável existir para ela levar o crédito — mesmo quando o valor tinha
+       * sido recusado e o padrão é que estava a valer. Quem lesse isso ia mexer
+       * na variável e não veria nada mudar, porque ela não era a que mandava. */
+      const veioDoAmbiente = o.presente && !o.rejeitada;
+      return {
+        chave: d.chave,
+        tipo: d.tipo,
+        origem: veioDoAmbiente ? `env:${d.env}` : 'padrão',
+        /* Nomeia a variável recusada: sem isto, "padrão" não diz que houve uma
+         * tentativa, e a tentativa é a informação. */
+        ...(o.rejeitada ? { envRejeitada: d.env } : {}),
+        valor: d.segredo
+          ? (valores.has(d.chave) ? MASCARA : '(não definido)')
+          : valores.get(d.chave),
+        ...(d.descricao ? { descricao: d.descricao } : {})
+      };
+    });
   }
 
   /**
