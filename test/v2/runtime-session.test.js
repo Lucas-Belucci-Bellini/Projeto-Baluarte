@@ -20,6 +20,20 @@ test('abre sessão enviando apenas permissões efetivas', async () => {
   ] });
 });
 
+test('lista de módulos inválida falha fechado antes de tocar no transporte', async () => {
+  let envios = 0;
+  const session = criarSessaoRuntime(permissions({}), {
+    async enviar() { envios += 1; return respostaValida; },
+  });
+
+  await assert.rejects(session.abrir(null), /modulos deve ser uma lista/);
+  await assert.rejects(session.abrir(['']), /cada módulo deve ser texto não vazio/);
+  await assert.rejects(session.abrir(['alpha', 'alpha']), /módulo repetido: alpha/);
+  assert.equal(envios, 0);
+  assert.equal(session.estado, 'closed');
+  assert.equal(session.diagnostico().ultimoErro, null);
+});
+
 test('resposta fora do contrato impede sessão de ficar aberta', async () => {
   const session = criarSessaoRuntime(permissions({ alpha: ['READ_FILES'] }), {
     async enviar() { return JSON.stringify({ versao: 1, accepted: true }); }

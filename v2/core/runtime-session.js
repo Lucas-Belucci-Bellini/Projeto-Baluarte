@@ -18,6 +18,27 @@ import { validarRespostaRuntime } from './runtime-transport.js';
 /** @typedef {{estado: RuntimeSessionState, ultimoErro: string|null, envelope: RuntimeSessionEnvelope|null}} RuntimeSessionDiagnostics */
 /** @typedef {{abrir: (modulos: ReadonlyArray<string>) => Promise<RuntimeSessionOpenResult>, fechar: () => Promise<RuntimeSessionCloseResult>, diagnostico: () => RuntimeSessionDiagnostics, readonly estado: RuntimeSessionState}} RuntimeSession */
 
+/**
+ * Valida a entrada antes de alterar o estado da sessão ou tocar no transporte.
+ * IDs duplicados seriam grants repetidos e tornariam o envelope ambíguo; uma
+ * entrada vazia não identifica um módulo e deve falhar fechado.
+ *
+ * @param {unknown} value
+ * @returns {ReadonlyArray<string>}
+ */
+function validarListaModulos(value) {
+  if (!Array.isArray(value)) throw new TypeError('modulos deve ser uma lista');
+  const vistos = new Set();
+  for (const modulo of value) {
+    if (typeof modulo !== 'string' || modulo.trim().length === 0) {
+      throw new TypeError('cada módulo deve ser texto não vazio');
+    }
+    if (vistos.has(modulo)) throw new TypeError(`módulo repetido: ${modulo}`);
+    vistos.add(modulo);
+  }
+  return value;
+}
+
 export const ESTADOS_RUNTIME_SESSION = Object.freeze([
   'closed', 'opening', 'open', 'closing', 'failed'
 ]);
@@ -48,10 +69,11 @@ export function criarSessaoRuntime(permissoes, transporte) {
     if (estado === 'opening') throw new Error('sessão já está abrindo');
     if (estado === 'closing') throw new Error('não é possível abrir durante fechamento');
 
+    const listaModulos = validarListaModulos(modulos);
     estado = 'opening';
     ultimoErro = null;
     try {
-      const grants = modulos.map((id) => snapshotRuntime(permissoes, id));
+      const grants = listaModulos.map((id) => snapshotRuntime(permissoes, id));
       const candidato = envelopeRuntime(grants);
       const validacao = validarEnvelopeRuntime(candidato);
       if (!validacao.ok) throw new Error(`envelope inválido: ${validacao.erros.join('; ')}`);
