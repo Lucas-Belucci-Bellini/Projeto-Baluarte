@@ -143,6 +143,48 @@ export function derivar(envelope) {
 }
 
 /**
+ * Valida somente a estrutura pública do envelope; não valida o payload, que é
+ * entregue separadamente ao handler. A função é diagnóstica e read-only: não
+ * altera o envelope nem concede autoridade a quem o produziu.
+ *
+ * @param {unknown} value
+ * @returns {{valid: boolean, errors: readonly string[]}}
+ */
+export function validarEnvelope(value) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return Object.freeze({ valid: false, errors: Object.freeze(['envelope deve ser um objeto']) });
+  }
+  const envelope = /** @type {Partial<Envelope> & {contexto?: unknown}} */ (value);
+  const errors = [];
+  if (typeof envelope.id !== 'string' || envelope.id.trim().length === 0) {
+    errors.push('id deve ser texto não vazio');
+  }
+  if (typeof envelope.evento !== 'string' || envelope.evento.trim().length === 0) {
+    errors.push('evento deve ser texto não vazio');
+  }
+  if (typeof envelope.origem !== 'string' || envelope.origem.trim().length === 0) {
+    errors.push('origem deve ser texto não vazio');
+  }
+  if (typeof envelope.correlacao !== 'string' || envelope.correlacao.trim().length === 0) {
+    errors.push('correlacao deve ser texto não vazio');
+  }
+  if (envelope.causa !== null && (typeof envelope.causa !== 'string' || envelope.causa.trim().length === 0)) {
+    errors.push('causa deve ser texto ou null');
+  }
+  const versao = envelope.versao;
+  if (typeof versao !== 'number' || !Number.isInteger(versao) || versao < 1) {
+    errors.push('versao deve ser inteiro positivo');
+  }
+  if (typeof envelope.em !== 'string' || !Number.isFinite(Date.parse(envelope.em))) {
+    errors.push('em deve ser uma data ISO válida');
+  }
+  if (envelope.contexto !== undefined && (envelope.contexto === null || typeof envelope.contexto !== 'object' || Array.isArray(envelope.contexto))) {
+    errors.push('contexto deve ser um objeto');
+  }
+  return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors) });
+}
+
+/**
  * @param {{log?: {aviso?: Function, erro?: Function}, tetoFalhas?: number,
  *          relogio?: () => number}} [deps]
  */
