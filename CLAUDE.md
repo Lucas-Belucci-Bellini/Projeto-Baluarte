@@ -128,6 +128,33 @@ ninguém ver).
 - **JS puro (ES2022)**, sem TypeScript e sem framework. Verificar mudanças de UI no navegador (há a skill `run-projeto-baluarte`).
 - **Mega-plano (#238)**: web = **leve** (conteúdo + ferramentas leves); app = **completo** (IA, Git Nexus, motor real). Gate o pesado por `window.baluarte.native`.
 
+## 🕯️ Memorial — regra permanente (não remover, não resumir)
+
+👉 **[`MEMORIAL.md`](MEMORIAL.md)** (raiz) + a rota **`/memorial`** (`src/pages/memorial.ts`).
+
+O Baluarte foi construído em cima de obras feitas por pessoas reais. Quando uma
+delas morre, o nome fica. O operador fixou isso como regra do projeto, valendo
+para **todas as próximas atualizações** — não é conteúdo de release, é
+compromisso.
+
+- **Ninguém sai.** Entrada publicada **não** é removida, encurtada nem reescrita
+  para caber em redesign, migração V2 ou limpeza de repositório. Se um refactor
+  ameaçar a rota `/memorial` ou o `MEMORIAL.md`, o refactor cede — não o memorial.
+- **Fato verificado, com fonte.** Toda entrada nasce com **no mínimo duas fontes
+  independentes e confiáveis**, linkadas. Resumo de IA, print de rede social ou
+  boato **não** abrem entrada — nunca se enterra ninguém vivo. Se a checagem não
+  fecha, **não publique e pergunte ao operador**.
+- **A pessoa, não o personagem.** O personagem segue vivo na ficção (o Optimus
+  das Crônicas não morreu); o memorial é de quem morreu de verdade.
+- **Entrada nova = dois arquivos, sempre juntos**: `MEMORIAL.md` **e** o array
+  `ENTRADAS` em `src/pages/memorial.ts`. Publicar em um só é publicar pela metade.
+- **Sem métrica.** Nada de contador de acesso, engajamento ou destaque rotativo.
+  Ordem cronológica.
+
+Primeira entrada: **Peter Cullen** (1941–2026), a voz de Optimus Prime — e a
+frase que ele herdou do irmão fuzileiro, *"seja forte o bastante para ser
+gentil"*, que é o padrão de tom do projeto inteiro.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
