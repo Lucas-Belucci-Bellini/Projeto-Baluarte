@@ -1,0 +1,32 @@
+[build-system]
+requires = [
+    "setuptools>=61.2",
+    "wheel",
+]
+
+[tool.setuptools]
+packages = ["llm"]
+
+[project]
+name = "llm"
+version = "0.1.3"
+description = "Large Language Model"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "HolisticTraceAnalysis",
+    "datasets",
+    "diskcache",
+    "ipywidgets",
+    "notebook",
+    "numpy",
+    "pytest",
+    "pytest-cov",
+    "pytest-env",
+    "tiktoken",
+    "torch",
+    "torch_tb_profiler",
+    "tqdm",
+    "transformers",
+    "wandb",
+]
