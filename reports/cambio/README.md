@@ -10,4 +10,4 @@ Séries históricas de **Dólar, Euro e Bitcoin** (em BRL), coletadas a cada 12h
 - [Semanal](./semanal.md)
 - [Mensal](./mensal.md)
 
-_Atualizado: 04/09/2026, 04:54:40 · pontos: {"USD":125,"EUR":125,"BTC":266}_
+_Atualizado: 04/09/2026, 16:32:01 · pontos: {"USD":126,"EUR":126,"BTC":267}_
