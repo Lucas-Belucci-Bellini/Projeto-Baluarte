@@ -1,11 +1,11 @@
 # 📊 Relatório Mensal — Câmbio (em BRL)
 
-_Atualizado: 05/09/2026, 04:47:48 · janela: 30 dia(s) · fonte: Frankfurter (BCE) + CoinGecko_
+_Atualizado: 05/09/2026, 15:26:04 · janela: 30 dia(s) · fonte: Frankfurter (BCE) + CoinGecko_
 
 | Moeda | Atual | Variação | Mínima | Máxima | Média |
 |---|---|---|---|---|---|
 | 💵 Dólar (USD) | R$ 5,1114 | ▼ -0.08% | R$ 5,0740 | R$ 5,2102 | R$ 5,1497 |
 | 💶 Euro (EUR) | R$ 5,9405 | ▲ +0.51% | R$ 5,8764 | R$ 6,0666 | R$ 5,9738 |
-| ₿ Bitcoin (BTC) | R$ 407.753 | ▲ +23.49% | R$ 326.611 | R$ 414.607 | R$ 369.156 |
+| ₿ Bitcoin (BTC) | R$ 408.827 | ▲ +24.18% | R$ 326.611 | R$ 414.607 | R$ 370.536 |
 
 > Gerado automaticamente por `scripts/gen-cambio-report.mjs` a cada 12h. Veja o gráfico no site em **/dolar**.
