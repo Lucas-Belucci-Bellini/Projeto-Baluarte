@@ -699,3 +699,17 @@ A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) 
 | Pós-merge do SHA `25cbc9f3` | `8/8` workflows verdes; V2 Validation verde na tentativa 2 após timeout externo de Checkout |
 
 Este checkpoint melhora as Phases 1, 2, 3, 7 e 25 apenas no escopo declarado; não as transforma em concluídas. Persistência, Auth/RBAC/RLS server-side, tenancy, ownership, retenção operacional, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade persistente, aceite físico desktop/mobile, assinatura, auto-update, beta, RC e stable permanecem pendentes, bloqueados ou deferidos conforme a matriz. A `v2.0.0-alpha.21` ainda não foi criada: a publicação exigirá nota final própria, tag anotada e gates pós-merge correspondentes. Rollback: `git revert` normal do squash merge da #523; a backup `backup/2026-08-27-before-v2-runtime-restart-single-flight` aponta para o baseline real `9ca94781` anterior à PR.
+
+
+## 2026-08-27 — Auth Identity Claims Boundary integrado
+
+A PR [#528](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/528) foi squash-merged na `main` no SHA `09fff078fdf0912aee9f289919aaddd2127280de`, após backup real de `main` em `backup/2026-08-27-before-v2-auth-identity-claims-boundary` apontando para `006aa4c9f7f4d0bb550d1961c98d2841fdba205c`. A projeção local de identidade agora exige issuer e audience compatíveis, além de fonte confiável, autenticação, sujeito presente e frescor; regressões cobrem divergências de issuer/audience e o observador expõe `issuerMatched`.
+
+| Área | Estado | Evidência | Limite |
+|---|---|---|---|
+| Claims/identity projection local | `IMPLEMENTED / VERIFIED` | focal Auth + Server Claims `13/13`; types; Security Contracts; 9 workflows pós-merge verdes | não é Auth de produção |
+| Auth/login real | `BLOCKED / NOT ACCEPTED` | sessão, recuperação, OAuth, assinatura e ambiente real não foram aceitos | não ativar Supabase/RLS por inferência |
+| Module Registry health local | `IMPLEMENTED / VERIFIED` | PRs #526/#527 permanecem independentes e não foram misturadas | autoridade server-side ainda não comprovada |
+| V2 geral | `IN PROGRESS` | persistem gaps de Auth/RLS, Data/Evidence, backup/restore, RBAC server-side e aceite físico | não declarar alpha/RC/final por este checkpoint |
+
+A matriz mantém a ordem Core → Module System → contratos → Data/Evidence → Auth/RBAC server-side quando ambiente e aprovação existirem. Nenhuma migration, write remoto, billing, OpenClaw, Hermes, schedule, webhook ou integração externa foi ativada nesta unidade.

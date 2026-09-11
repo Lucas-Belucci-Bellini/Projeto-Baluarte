@@ -395,3 +395,20 @@ A PR [#523](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/523) 
 | Backup pré-merge | `backup/2026-08-27-before-v2-runtime-restart-single-flight` → baseline real `9ca94781` |
 
 A alpha.20 continua sendo a última prerelease publicada e está registrada em [v2.0.0-alpha.20](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases/tag/v2.0.0-alpha.20). A alpha.21 é somente candidata documental neste checkpoint: sua nota, tag e release ainda não existem. O marco não fecha as fases de persistência, Auth/RBAC/RLS server-side, tenancy, ownership, retenção operacional, retry distribuído, Knowledge Mesh, Risk Engine, OpenClaw, Hermes, observabilidade persistente, aceite físico, assinatura, auto-update, beta, RC ou stable. V1, router, shell, sidebar, wrappers, Service Worker, #501 e #471 permanecem preservados e separados.
+
+
+## Checkpoint 2026-08-27 — Auth Identity Claims Boundary
+
+A PR [#528](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/pull/528) foi integrada por squash merge no SHA `09fff078fdf0912aee9f289919aaddd2127280de`, sobre o baseline `006aa4c9f7f4d0bb550d1961c98d2841fdba205c`. O backup pré-merge `backup/2026-08-27-before-v2-auth-identity-claims-boundary` preserva o baseline real. Os nove workflows pós-merge — incluindo Core CI, V2 Core, V2 Runtime, V2 Validation, Security Contracts, CI, CodeQL, Arma 3 Data CI e Vigia das rotas — terminaram com sucesso.
+
+A slice exige `issuerMatched` e `audienceMatched` na projeção local de identidade, além de fonte confiável, autenticação, sujeito presente e frescor. O focal Auth + Server Claims passou `13/13`; types, suíte, build, integração, smoke, caminho crítico, offline, memória e Security Contracts passaram localmente; o Doctor permaneceu honesto com exit `2`, `17 green / 2 blocked-known / 1 unknown / 5 not-run / 0 failed`.
+
+| Phase | Atualização | Estado honesto |
+|---|---|---|
+| 04 Module Registry / Health | PRs #526/#527 continuam abertas e independentes; nenhuma foi misturada à #528 | `IN PROGRESS / EXTERNAL BLOCKER` quando Vercel falha por rate limit |
+| 08 Auth / Authorization / Tenancy | Fronteira local de claims endurecida e integrada pela #528 | `IN PROGRESS`; Auth real, sessão, assinatura, RLS e tenancy não aceitos |
+| 09 Permissions / Module RBAC | Projeções locais continuam sem autoridade server-side | `IN PROGRESS` |
+| 07 Real Persistence / Supabase / RLS | Nenhuma migration ou write remoto ativado | `BLOCKED` para produção |
+| 24 V2 RC / stable | Critérios estruturais ainda não satisfeitos | `DEFERRED` |
+
+O próximo marco executável permanece uma slice independente determinada pelo estado real do código, preferencialmente fechando contrato local de alto valor sem fabricar Auth/RLS de produção. A V2 segue `IN PROGRESS`; este checkpoint não autoriza tag `alpha.22`, release estável, billing, OpenClaw, Hermes, schedules, webhooks ou integrações externas.
