@@ -5,6 +5,40 @@ criada uma branch de backup (`backup/AAAA-MM-DD-...`); **depois** registra-se
 aqui o que mudou.
 
 ---
+## 2026-08-30 — Memorial: o Baluarte passa a registrar de quem ele é feito
+
+Peter Cullen morreu em 26 de agosto de 2026, aos 85 anos, em Los Angeles. Foi a
+voz de Optimus Prime de 1984 a 2023 — e construiu essa voz imitando o irmão,
+Larry Cullen, capitão dos Fuzileiros Navais e veterano do Vietnã, que lhe disse
+antes do teste: *"se você vai ser um herói, seja um herói de verdade... seja
+forte o bastante para ser gentil."*
+
+Um comandante que é ouvido porque não precisa gritar é um dos motivos deste site
+existir. O operador decidiu que isso não podia ficar só na cabeça de quem
+lembra, então virou estrutura:
+
+- **`MEMORIAL.md`** na raiz — a entrada do Peter e **a regra**, que vale para
+  todas as próximas: entra quem tem obra que é parte da razão do Baluarte
+  existir; **ninguém sai** (entrada publicada não é removida, resumida nem
+  reescrita para caber em redesign); fato verificado com **no mínimo duas fontes
+  independentes** — resumo de IA e boato não abrem entrada, porque não se enterra
+  ninguém vivo; a pessoa, não o personagem; e sem métrica de acesso.
+- **Rota `/memorial`** (`src/pages/memorial.ts` + `src/styles/memorial.css`),
+  na sidebar em *Início* e no mapa de títulos do shell. O conteúdo é o array
+  `ENTRADAS` — entrada nova se acrescenta ali **e** no `MEMORIAL.md`, sempre
+  juntos.
+- **Bloco no `README.md`** e a regra gravada no **`CLAUDE.md`**, para que uma
+  sessão futura sem histórico não trate o memorial como conteúdo descartável de
+  release.
+
+O Optimus das Crônicas da Baluarte continua vivo — personagem não morre junto
+com quem o interpretou. O registro é da pessoa.
+
+Detalhe de implementação: `reset.css` zera `list-style` em toda lista, então a
+numeração da regra precisou ser reposta explicitamente — numa lista de regras o
+número é conteúdo, não enfeite.
+
+---
 ## 2026-08-28 — V2: a sonda de saúde do Core podia levantar em vez de responder
 
 `verificar()` chamava `boot.diagnostico()` sem guarda. Um Boot que rebenta ao
