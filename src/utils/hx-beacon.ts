@@ -1,7 +1,8 @@
 /**
  * @internal
- * Módulo de telemetria de sessão. Não indexado, não documentado.
- * Registra acessos em planilha privada via endpoint configurado.
+ * Telemetria de sessão opcional, desativada por padrão.
+ * O contrato fail-closed está em docs/v2/HX_BEACON_PRIVACY_CONTRACT_2026-08-26.md.
+ * Só registra acessos quando há consentimento explícito e endpoint configurado.
  */
 
 interface BeaconConfig {
@@ -97,8 +98,13 @@ async function geo(): Promise<BeaconGeo> {
   }
 }
 
-export async function hxBeacon(): Promise<void> {
+export interface HxBeaconOptions {
+  readonly consent?: boolean;
+}
+
+export async function hxBeacon(options: HxBeaconOptions | null = {}): Promise<void> {
   try {
+    if (options?.consent !== true) return;
     if (CONFIG.ep === '__HX_ENDPOINT__') return;
 
     const fp = fingerprint();
