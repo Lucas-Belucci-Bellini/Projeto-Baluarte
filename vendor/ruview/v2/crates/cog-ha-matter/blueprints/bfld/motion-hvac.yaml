@@ -1,0 +1,87 @@
+blueprint:
+  name: BFLD Motion-Aware HVAC
+  description: >
+    Adjust an HVAC climate entity's setpoint when BFLD's normalized motion
+    score crosses a threshold, indicating active occupancy. Off-trigger
+    restores the original setpoint after a debounce window. Sourced from
+    ADR-122 §2.6.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/v2/crates/cog-ha-matter/blueprints/bfld/motion-hvac.yaml
+  input:
+    bfld_motion:
+      name: BFLD Motion sensor
+      description: The `sensor.<node>_bfld_motion` entity (0.0–1.0 scalar).
+      selector:
+        entity:
+          domain: sensor
+          integration: mqtt
+    target_climate:
+      name: Climate entity to adjust
+      selector:
+        target:
+          entity:
+            domain: climate
+    motion_threshold:
+      name: Motion threshold
+      description: Motion-score level above which HVAC is considered "active occupancy".
+      default: 0.3
+      selector:
+        number:
+          min: 0.05
+          max: 0.95
+          step: 0.05
+    delta_temperature_c:
+      name: Setpoint adjustment (°C)
+      description: How much to raise the heating setpoint during active occupancy.
+      default: 1.5
+      selector:
+        number:
+          min: 0.5
+          max: 5.0
+          step: 0.5
+          unit_of_measurement: "°C"
+    quiet_seconds:
+      name: Quiet hold (seconds)
+      description: Continuous below-threshold time before restoring the original setpoint.
+      default: 600
+      selector:
+        number:
+          min: 60
+          max: 7200
+          unit_of_measurement: seconds
+
+variables:
+  motion_threshold: !input motion_threshold
+  delta_c: !input delta_temperature_c
+
+trigger:
+  - platform: numeric_state
+    entity_id: !input bfld_motion
+    above: !input motion_threshold
+    id: occupied
+  - platform: numeric_state
+    entity_id: !input bfld_motion
+    below: !input motion_threshold
+    for:
+      seconds: !input quiet_seconds
+    id: quiet
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: occupied
+        sequence:
+          - service: climate.set_temperature
+            target: !input target_climate
+            data_template:
+              temperature: "{{ (state_attr(this.attributes.target.entity_id, 'temperature') | float(20.0)) + delta_c }}"
+      - conditions:
+          - condition: trigger
+            id: quiet
+        sequence:
+          - service: climate.set_temperature
+            target: !input target_climate
+            data_template:
+              temperature: "{{ (state_attr(this.attributes.target.entity_id, 'temperature') | float(20.0)) - delta_c }}"
+mode: restart

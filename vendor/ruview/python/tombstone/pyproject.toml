@@ -1,0 +1,53 @@
+# ADR-117 §7.2 / §7.4 — v1.99.0 tombstone release.
+#
+# This sub-directory builds a SEPARATE PyPI artifact from the v2.0+
+# PyO3 wheel in ../. The two share the PyPI project name
+# `wifi-densepose` but represent different versions:
+#
+#   1.0.0–1.1.0   legacy pure-Python server (archive/v1/)
+#   1.99.0        THIS PACKAGE — pure-Python wheel whose only behaviour
+#                 is to raise ImportError with the migration URL on
+#                 first import. Acts as a soft-fence for users pinned
+#                 to wifi-densepose>=1,<2.
+#   2.0.0+        PyO3 + maturin Rust core (../pyproject.toml)
+#
+# Build:
+#   cd python/tombstone
+#   python -m build
+#
+# Result: a SINGLE `py3-none-any` wheel plus an sdist. Nothing
+# compiled, no platform-specific tags.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wifi-densepose"
+version = "1.99.0"
+description = "Tombstone release. wifi-densepose v1.x is superseded by v2.0+ (PyO3 bindings to the Rust core). Install wifi-densepose==2.0.0 — see https://github.com/ruvnet/RuView/blob/main/docs/pip-migration.md"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "rUv", email = "ruv@ruv.net" },
+]
+keywords = ["wifi", "csi", "pose-estimation", "deprecated", "migration"]
+classifiers = [
+    "Development Status :: 7 - Inactive",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+# No runtime dependencies — the import raises before any code runs.
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/ruvnet/RuView"
+"Migration guide" = "https://github.com/ruvnet/RuView/blob/main/docs/pip-migration.md"
+"ADR-117 (modernization plan)" = "https://github.com/ruvnet/RuView/blob/main/docs/adr/ADR-117-pip-wifi-densepose-modernization.md"
+
+[tool.setuptools]
+packages = ["wifi_densepose"]
+package-dir = { "" = "src" }

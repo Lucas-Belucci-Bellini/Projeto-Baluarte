@@ -1,0 +1,74 @@
+blueprint:
+  name: RuView — wake-up routine on bed exit
+  description: >
+    When bed_exit fires in the morning window, ramp bedroom lights over
+    a configurable duration, start the coffee maker, and disarm the
+    home alarm. Time-window-gated so a midnight bathroom trip doesn't
+    trigger it. Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/03-wake-routine-on-bed-exit.yaml
+  input:
+    bed_exit_event:
+      name: Bed exit event entity
+      selector:
+        entity:
+          domain: event
+    bedroom_light:
+      name: Bedroom light
+      selector:
+        entity:
+          domain: light
+    coffee_maker:
+      name: Coffee maker switch
+      selector:
+        entity:
+          domain: switch
+    home_alarm:
+      name: Home alarm control panel
+      selector:
+        entity:
+          domain: alarm_control_panel
+    window_start:
+      name: Morning window start (hh:mm)
+      default: "05:00:00"
+      selector:
+        time: {}
+    window_end:
+      name: Morning window end (hh:mm)
+      default: "09:00:00"
+      selector:
+        time: {}
+    ramp_seconds:
+      name: Light ramp duration (seconds)
+      default: 600
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: s
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input bed_exit_event
+
+condition:
+  - condition: time
+    after: !input window_start
+    before: !input window_end
+
+action:
+  - service: light.turn_on
+    target:
+      entity_id: !input bedroom_light
+    data:
+      brightness_pct: 100
+      transition: !input ramp_seconds
+  - service: switch.turn_on
+    target:
+      entity_id: !input coffee_maker
+  - service: alarm_control_panel.alarm_disarm
+    target:
+      entity_id: !input home_alarm

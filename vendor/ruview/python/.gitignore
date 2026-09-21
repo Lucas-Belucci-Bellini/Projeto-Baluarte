@@ -1,0 +1,20 @@
+# Python build/install artifacts
+target/
+.venv/
+__pycache__/
+*.pyc
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Maturin develop produces .pyd extensions in wifi_densepose/
+wifi_densepose/*.pyd
+wifi_densepose/*.so
+wifi_densepose/_native.abi3.*
+
+# Local build wheels
+dist/
+wheelhouse/
+*.egg-info/

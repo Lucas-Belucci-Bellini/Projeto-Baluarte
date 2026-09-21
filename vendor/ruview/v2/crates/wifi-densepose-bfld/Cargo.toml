@@ -1,0 +1,65 @@
+[package]
+name = "wifi-densepose-bfld"
+description = "BFLD — Beamforming Feedback Layer for Detection. Privacy-gated WiFi BFI sensing primitives. See ADR-118."
+readme = "README.md"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+documentation.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[features]
+default = ["std", "serde-json"]
+std = []
+# JSON serialization for BfldEvent (ADR-121 §2.1, ADR-122 §2.1). Pulls in
+# serde + serde_json; tied to `std` because serde_json is std-only.
+serde-json = ["std", "dep:serde", "dep:serde_json"]
+# rumqttc-backed Publish trait impl. Pairs with the `mqtt` feature in
+# wifi-densepose-sensing-server so the same broker connection can serve
+# both publishers in the same process if desired.
+mqtt = ["std", "dep:rumqttc"]
+# Soul Signature integration (ADR-118 §1.4, ADR-120 §2.7, ADR-121 §2.6) —
+# enables privacy_class = 1 (derived) mode and the SoulMatchOracle gate
+# exemption. Disabled by default per the structural class-2 default.
+soul-signature = []
+
+[dependencies]
+thiserror.workspace = true
+static_assertions = "1.1"
+crc = "3"
+blake3 = { version = "1.5", default-features = false }
+serde = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }
+# MQTT publisher backend (optional). Matches the `rumqttc` choice already in
+# `wifi-densepose-sensing-server` so both crates share TLS / version posture.
+rumqttc = { version = "0.24", default-features = false, features = ["use-rustls"], optional = true }
+
+[dev-dependencies]
+proptest.workspace = true
+
+# The minimal example uses BfldEvent::to_json(), which is gated on serde-json.
+# Without this declaration, `cargo test --no-default-features` tries to build
+# the example and fails on the missing to_json() method.
+[[example]]
+name = "bfld_minimal"
+required-features = ["serde-json"]
+
+# The handle example uses the std-only publish helpers and pipeline handle.
+[[example]]
+name = "bfld_handle"
+required-features = ["std"]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"
+module_name_repetitions = "allow"
+missing_const_for_fn = "allow"
+missing_panics_doc = "allow"

@@ -1,0 +1,44 @@
+blueprint:
+  name: RuView — escalate on fall-risk score crossing
+  description: >
+    Send a notification when the fall_risk_elevated sensor crosses a
+    configurable threshold (default 70) — the resident's near-fall
+    frequency + gait-instability proxy has reached a level worth
+    investigating. Pairs with the longer-term ADR-079 P9 personalisation
+    flow once available. Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/07-fall-risk-escalation.yaml
+  input:
+    fall_risk_entity:
+      name: Fall risk elevated sensor (0-100 score)
+      selector:
+        entity:
+          domain: sensor
+    notify_target:
+      name: Notification service
+      selector:
+        text: {}
+    threshold:
+      name: Crossing threshold
+      default: 70
+      selector:
+        number:
+          min: 30
+          max: 100
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: numeric_state
+    entity_id: !input fall_risk_entity
+    above: !input threshold
+
+action:
+  - service: !input notify_target
+    data:
+      title: "⚠️ Fall-risk score elevated"
+      message: >
+        {{ trigger.to_state.attributes.friendly_name or trigger.entity_id }}
+        crossed {{ threshold }} (current value
+        {{ trigger.to_state.state }}). Consider a wellness check.

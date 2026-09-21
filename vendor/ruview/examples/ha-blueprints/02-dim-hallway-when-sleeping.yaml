@@ -1,0 +1,52 @@
+blueprint:
+  name: RuView — dim hallway when someone sleeping
+  description: >
+    Drop hallway lights to a configurable brightness when anyone in the
+    bedroom is in the someone_sleeping state. A midnight bathroom trip
+    doesn't blast full lights. Restores when sleeping flips off.
+    Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/02-dim-hallway-when-sleeping.yaml
+  input:
+    sleeping_entity:
+      name: Someone sleeping binary_sensor
+      description: The `binary_sensor.*_someone_sleeping` entity published by RuView.
+      selector:
+        entity:
+          domain: binary_sensor
+    hallway_light:
+      name: Hallway light
+      selector:
+        entity:
+          domain: light
+    sleep_brightness:
+      name: Brightness while sleeping (%)
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+
+mode: single
+
+trigger:
+  - platform: state
+    entity_id: !input sleeping_entity
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input sleeping_entity
+            state: "on"
+        sequence:
+          - service: light.turn_on
+            target:
+              entity_id: !input hallway_light
+            data:
+              brightness_pct: !input sleep_brightness
+    default:
+      - service: light.turn_off
+        target:
+          entity_id: !input hallway_light

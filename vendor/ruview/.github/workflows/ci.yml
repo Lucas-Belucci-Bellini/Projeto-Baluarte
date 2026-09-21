@@ -1,0 +1,440 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'feat/*', 'hotfix/*' ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Code Quality and Security Checks
+  # The Python codebase moved to `archive/v1/` when the runtime was rewritten in
+  # Rust under `v2/`. The lint/format/type/scan checks below still run against
+  # the archive for hygiene, but with `continue-on-error: true` everywhere — the
+  # archive is frozen reference code, not active development, so a stale lint
+  # rule shouldn't gate PRs to the Rust workspace.
+  code-quality:
+    name: Code Quality & Security
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+    - name: Checkout code
+      continue-on-error: true
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      continue-on-error: true
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      continue-on-error: true
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install black flake8 mypy bandit safety
+
+    - name: Code formatting check (Black)
+      continue-on-error: true
+      run: black --check --diff archive/v1/src archive/v1/tests
+
+    - name: Linting (Flake8)
+      continue-on-error: true
+      run: flake8 archive/v1/src archive/v1/tests --max-line-length=88 --extend-ignore=E203,W503
+
+    - name: Type checking (MyPy)
+      continue-on-error: true
+      run: mypy archive/v1/src --ignore-missing-imports
+
+    - name: Security scan (Bandit)
+      run: bandit -r archive/v1/src -f json -o bandit-report.json
+      continue-on-error: true
+
+    - name: Dependency vulnerability scan (Safety)
+      run: safety check --json --output safety-report.json
+      continue-on-error: true
+
+    - name: Upload security reports
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  # Rust Workspace Tests
+  rust-tests:
+    name: Rust Workspace Tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # `wifi-densepose-desktop` is a Tauri v2 app — `glib-sys`, `gtk-sys`,
+    # `webkit2gtk-sys`, etc. need the Linux dev libraries via pkg-config or the
+    # workspace test fails at the build step before any test runs (every recent
+    # main CI run has been red on this for exactly this reason). Install the
+    # standard Tauri-on-Ubuntu set.
+    - name: Install Tauri / GTK / serial system dev libraries
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          libglib2.0-dev \
+          libgtk-3-dev \
+          libsoup-3.0-dev \
+          libjavascriptcoregtk-4.1-dev \
+          libwebkit2gtk-4.1-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev \
+          libxdo-dev \
+          libudev-dev \
+          libdbus-1-dev \
+          libssl-dev \
+          pkg-config
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache cargo
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          v2/target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('v2/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+
+    - name: Run Rust tests
+      working-directory: v2
+      run: cargo test --workspace --no-default-features
+
+    # ADR-134 CIR tests are behind the `cir` feature so the bench dependency
+    # (Criterion) only pulls when actually exercised. Run them as a separate
+    # step so a CIR-only regression is unambiguously attributable.
+    - name: Run ADR-134 CIR tests
+      working-directory: v2
+      run: cargo test -p wifi-densepose-signal --no-default-features --features cir --tests
+
+    # ADR-134 + ADR-028 witness guard. The CIR proof runner produces a
+    # bit-deterministic SHA-256 over CirEstimator output on the synthetic
+    # reference signal. Any algorithmic regression — changes to ISTA
+    # convergence, sensing matrix construction, soft-thresholding, or input
+    # padding — breaks the hash and fails the build. To regenerate after an
+    # *intentional* change:
+    #   cd v2 && cargo run -p wifi-densepose-signal --bin cir_proof_runner \
+    #     --release --no-default-features -- --generate-hash \
+    #     > ../archive/v1/data/proof/expected_cir_features.sha256
+    - name: ADR-134 CIR witness proof (determinism guard)
+      run: bash scripts/verify-cir-proof.sh
+
+  # Unit and Integration Tests
+  # Python pytest matrix — runs against the archived v1 Python tree.
+  # `continue-on-error: true` for the same reason as code-quality above:
+  # the archive is frozen reference, not blocking the Rust workspace PRs.
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_wifi_densepose
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      continue-on-error: true
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      continue-on-error: true
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      continue-on-error: true
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-cov pytest-xdist
+
+    - name: Run unit tests
+      continue-on-error: true
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_wifi_densepose
+        REDIS_URL: redis://localhost:6379/0
+        ENVIRONMENT: test
+      run: |
+        pytest archive/v1/tests/unit/ -v --cov=archive/v1/src --cov-report=xml --cov-report=html --junitxml=junit.xml
+
+    - name: Run integration tests
+      continue-on-error: true
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_wifi_densepose
+        REDIS_URL: redis://localhost:6379/0
+        ENVIRONMENT: test
+      run: |
+        pytest archive/v1/tests/integration/ -v --junitxml=integration-junit.xml
+
+    - name: Upload coverage reports
+      continue-on-error: true
+      uses: codecov/codecov-action@v6
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+    - name: Upload test results
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          junit.xml
+          integration-junit.xml
+          htmlcov/
+
+  # Performance and Load Tests
+  # NOTE: tests/performance/locustfile.py and the src.api.main app path both
+  # predate the v1→archive/v1 reorganisation. continue-on-error: true until a
+  # proper locust suite is added under archive/v1/tests/performance/.
+  performance-test:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: [test]
+    continue-on-error: true
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install locust
+
+    - name: Start application
+      working-directory: archive/v1
+      run: |
+        uvicorn src.api.main:app --host 0.0.0.0 --port 8000 &
+        sleep 10
+
+    - name: Run performance tests
+      run: |
+        locust -f tests/performance/locustfile.py --headless --users 50 --spawn-rate 5 --run-time 60s --host http://localhost:8000
+
+    - name: Upload performance results
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-results
+        path: locust_report.html
+
+  # Docker Build and Test
+  # NOTE: the canonical Docker build for the sensing-server is now
+  # `.github/workflows/sensing-server-docker.yml` (multi-registry push, asset
+  # smoke tests, bearer-auth smoke tests — #520/#514/#443). This job predates
+  # that workflow, points at a non-existent root `Dockerfile` with a
+  # non-existent `target: production`, and pushes to a mis-cased image name —
+  # `continue-on-error: true` until it's deleted or rewired to call the new
+  # workflow, so it doesn't gate the rest of the pipeline.
+  docker-build:
+    name: Docker Build & Test
+    runs-on: ubuntu-latest
+    needs: [code-quality, test, rust-tests]
+    continue-on-error: true
+    steps:
+    - name: Checkout code
+      continue-on-error: true
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      continue-on-error: true
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      continue-on-error: true
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      continue-on-error: true
+      id: meta
+      uses: docker/metadata-action@v6
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      continue-on-error: true
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        target: production
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64
+
+    - name: Test Docker image
+      continue-on-error: true
+      run: |
+        docker run --rm -d --name test-container -p 8000:8000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        sleep 10
+        curl -f http://localhost:8000/health || exit 1
+        docker stop test-container
+
+    - name: Run container security scan
+      continue-on-error: true
+      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      continue-on-error: true
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # API Documentation
+  docs:
+    name: API Documentation
+    runs-on: ubuntu-latest
+    needs: [docker-build]
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Generate OpenAPI spec
+      working-directory: archive/v1
+      run: |
+        python -c "
+        from src.api.main import app
+        import json
+        with open('openapi.json', 'w') as f:
+            json.dump(app.openapi(), f, indent=2)
+        "
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
+        destination_dir: api-docs
+
+  # Notification
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [code-quality, test, rust-tests, performance-test, docker-build, docs]
+    if: always()
+    permissions:
+      contents: write   # required by softprops/action-gh-release
+    # GitHub Actions does not allow `secrets.X` directly in step-level `if:`
+    # expressions — only `env.X`. Promote the secret to env at job scope so
+    # the gating expression below is parseable.
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+    - name: Notify Slack on success
+      if: ${{ env.SLACK_WEBHOOK_URL != '' && needs.code-quality.result == 'success' && needs.test.result == 'success' && needs.docker-build.result == 'success' }}
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        channel: '#ci-cd'
+        text: '✅ CI pipeline completed successfully for ${{ github.ref }}'
+
+    - name: Notify Slack on failure
+      if: ${{ env.SLACK_WEBHOOK_URL != '' && (needs.code-quality.result == 'failure' || needs.test.result == 'failure' || needs.docker-build.result == 'failure') }}
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#ci-cd'
+        text: '❌ CI pipeline failed for ${{ github.ref }}'
+
+    - name: Create GitHub Release
+      if: github.ref == 'refs/heads/main' && needs.docker-build.result == 'success'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ github.run_number }}
+        name: Release v${{ github.run_number }}
+        body: |
+          Automated release from CI pipeline
+
+          **Changes:**
+          ${{ github.event.head_commit.message }}
+
+          **Docker Image:**
+          `${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}`
+        draft: false
+        prerelease: false
