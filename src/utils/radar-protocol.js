@@ -1,0 +1,5 @@
+export const RADAR = Object.freeze({ RANGE_BINS: 64, DOPPLER_BINS: 32, HEADER: 0xaa, FOOTER: 0x55, STATUS: 0xbb });
+export const OPCODES = Object.freeze({ CFAR_GUARD: 0x21, CFAR_TRAIN: 0x22, CFAR_ALPHA: 0x23, CFAR_MODE: 0x24, CFAR_ENABLE: 0x25, MTI_ENABLE: 0x26, DC_NOTCH_WIDTH: 0x27, STATUS_REQUEST: 0xff });
+export function buildCommand(opcode, value, addr = 0) { return Uint8Array.from([opcode & 255, addr & 255, (value >> 8) & 255, value & 255]); }
+export function parseDataPacket(bytes) { if (!bytes || bytes.length < 11 || bytes[0] !== RADAR.HEADER || bytes[10] !== RADAR.FOOTER) return null; const s=(a,b)=>{const v=(a<<8)|b;return v&0x8000?v-0x10000:v;}; return {rangeQ:s(bytes[1],bytes[2]),rangeI:s(bytes[3],bytes[4]),dopplerI:s(bytes[5],bytes[6]),dopplerQ:s(bytes[7],bytes[8]),detection:bytes[9]&1}; }
+export function packetFromSample(sample) { const e=v=>{v=Math.max(-32768,Math.min(32767,Math.round(v)));return[(v>>8)&255,v&255];}; const rq=e(sample.rangeQ),ri=e(sample.rangeI),di=e(sample.dopplerI),dq=e(sample.dopplerQ); return Uint8Array.from([RADAR.HEADER,...rq,...ri,...di,...dq,sample.detection?1:0,RADAR.FOOTER]); }

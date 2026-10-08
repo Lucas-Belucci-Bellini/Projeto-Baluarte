@@ -104,7 +104,8 @@ function pageTitleForRoute(path) {
     '/jarvis': 'J.A.R.V.I.S.',
     '/ia-proprietaria': 'IA Proprietária Mark 11',
     '/perfil': 'Perfil',
-    '/sobre': 'Sobre o Projeto'
+    '/sobre': 'Sobre o Projeto',
+    '/radar': 'Radar AERIS-10'
   };
   return map[path] || 'Mark XIII';
 }

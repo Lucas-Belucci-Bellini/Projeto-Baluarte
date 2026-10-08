@@ -58,6 +58,7 @@ import { jarvisPage } from './pages/jarvis.js';
 import { iaProprietariaPage } from './pages/ia-proprietaria.js';
 import { notFoundPage } from './pages/_placeholder.js';
 import { sobrePage } from './pages/sobre.js';
+import { radarPage } from './pages/radar.js';
 import { initShadowGate } from './utils/shadow-gate.js';
 import { initToast } from './utils/toast.js';
 import { initTheme } from './utils/theme.js';
@@ -114,6 +115,7 @@ router.register('/jarvis', () => jarvisPage());
 router.register('/ia-proprietaria', () => iaProprietariaPage());
 
 router.register('/sobre', () => sobrePage());
+router.register('/radar', () => radarPage());
 
 /* ==============================================================
  *  Mark XIII — 46 rotas, todas implementadas. Sem placeholders.
