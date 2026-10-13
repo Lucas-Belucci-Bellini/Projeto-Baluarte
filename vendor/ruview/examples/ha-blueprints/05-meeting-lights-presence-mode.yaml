@@ -1,0 +1,52 @@
+blueprint:
+  name: RuView — meeting lights + presence mode
+  description: >
+    When meeting_in_progress fires, set conference-room lights to a
+    professional white scene and switch presence-aware automations
+    (motion lights, ambient noise) into "meeting mode" so they don't
+    interrupt. Restores prior scene when meeting ends.
+    Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/05-meeting-lights-presence-mode.yaml
+  input:
+    meeting_entity:
+      name: Meeting in progress binary_sensor
+      selector:
+        entity:
+          domain: binary_sensor
+    meeting_lights:
+      name: Meeting room lights (group)
+      selector:
+        entity:
+          domain: light
+    meeting_scene:
+      name: Scene to activate during meeting (e.g. scene.meeting_mode)
+      selector:
+        entity:
+          domain: scene
+    restore_scene:
+      name: Scene to restore after meeting (e.g. scene.room_default)
+      selector:
+        entity:
+          domain: scene
+
+mode: single
+
+trigger:
+  - platform: state
+    entity_id: !input meeting_entity
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input meeting_entity
+            state: "on"
+        sequence:
+          - service: scene.turn_on
+            target:
+              entity_id: !input meeting_scene
+    default:
+      - service: scene.turn_on
+        target:
+          entity_id: !input restore_scene

@@ -1,0 +1,75 @@
+# ESP32-C6 CSI Node — Target overlay (ADR-110)
+#
+# Auto-applied by ESP-IDF when CONFIG_IDF_TARGET=esp32c6.
+# Layered on top of sdkconfig.defaults — only the differences live here.
+#
+# Build:
+#   idf.py set-target esp32c6
+#   idf.py build
+#
+# Hardware: stock ESP32-C6 dev board with 4 MB or 8 MB embedded flash.
+# Confirmed on COM6: ESP32-C6 (QFN40) rev v0.2, 8 MB flash, 320 KiB SRAM.
+
+# ── Target ──
+CONFIG_IDF_TARGET="esp32c6"
+
+# ── Flash & partitions (4 MB — common across C6 dev boards) ──
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions_4mb.csv"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="4MB"
+
+# ── CSI (required) ──
+CONFIG_ESP_WIFI_CSI_ENABLED=y
+
+# ── ADR-110 P2 & P3: Wi-Fi 6 / iTWT ──
+# IDF v5.4 exposes neither ESP_WIFI_11AX_SUPPORT nor ESP_WIFI_ITWT_SUPPORT as
+# user Kconfig — they're SoC capabilities (SOC_WIFI_HE_SUPPORT) auto-enabled
+# on chips that have HE support (C6/C5). WPA3 is opt-in:
+CONFIG_ESP_WIFI_ENABLE_WPA3_SAE=y
+
+# ── ADR-110 P4: 802.15.4 (raw, no OpenThread) ──
+# IEEE 802.15.4 PHY enabled for our raw beacon protocol in c6_timesync.c.
+# OpenThread is DISABLED — empirically (ch15 + ch26 tested with the same
+# negative result), enabling OpenThread MTD caused our weak-symbol overrides
+# of esp_ieee802154_receive_done/transmit_done to never fire, breaking
+# leader election. Raw 802.15.4 mode is what we actually need: a private
+# mesh protocol on a private channel, no Thread network attach.
+CONFIG_IEEE802154_ENABLED=y
+CONFIG_OPENTHREAD_ENABLED=n
+
+# ADR-110 P4: 802.15.4 channel override.
+# Default Kconfig value is 15 (2425 MHz). On the 2.4 GHz radio that's
+# directly under WiFi channel 5 (2432 MHz). Channel 26 = 2480 MHz is on
+# the WiFi guard band above channel 14, giving the 15.4 path room to RX
+# without competing with WiFi traffic for radio time.
+CONFIG_C6_TIMESYNC_CHANNEL=26
+
+# ── ADR-110 P5: LP-core (deep-sleep coprocessor) ──
+# Enable the LP RISC-V core so c6_lp_core.c can ship a wake-on-motion stub.
+CONFIG_ULP_COPROC_ENABLED=y
+CONFIG_ULP_COPROC_TYPE_LP_CORE=y
+CONFIG_ULP_COPROC_RESERVE_MEM=8192
+
+# ── No display, no WASM, no mmWave on the C6 research target ──
+# Display (ADR-045) needs 8 MB + native USB-OTG framebuffer hooks.
+# WASM3 (ADR-040) needs PSRAM for hot-loadable modules.
+# mmWave (Seeed MR60BHA2 on COM4) is a separate board.
+# CONFIG_DISPLAY_ENABLE is not set
+# CONFIG_WASM_ENABLE is not set
+
+# ── Compiler ──
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+
+# ── Logging ──
+CONFIG_BOOTLOADER_LOG_LEVEL_WARN=y
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+
+# ── lwIP / FreeRTOS — same as S3 path ──
+CONFIG_LWIP_SO_RCVBUF=y
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+CONFIG_FREERTOS_TIMER_TASK_STACK_DEPTH=8192
+
+# ── Power: keep CPU at max 160 MHz (C6 ceiling) for DSP throughput ──
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_160=y
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ=160

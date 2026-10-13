@@ -1,0 +1,99 @@
+# ADR-117 — `wifi-densepose` v2.x PyPI wheel
+#
+# This is the PyO3+maturin replacement for the legacy pure-Python
+# `wifi-densepose==1.1.0` (last release 2025-06-07). One compiled
+# extension module per OS/arch covers Python 3.10–3.13 via abi3.
+
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "wifi-densepose"
+version = "2.0.0a1"
+description = "WiFi-based human pose estimation, vital sign extraction, and ambient intelligence from Channel State Information (CSI). PyO3 bindings for the Rust core."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "rUv", email = "ruv@ruv.net" },
+]
+keywords = [
+    "wifi", "csi", "pose-estimation", "vital-signs",
+    "biometric", "ambient-intelligence", "home-assistant", "matter",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: System :: Hardware",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+# ADR-117 §5.6 — pure-Python WS/MQTT client. Lands in P4.
+client = [
+    "websockets>=12.0",
+    "paho-mqtt>=2.1",
+]
+# Developer dependencies for running the test suite + lint.
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.7",
+    "mypy>=1.13",
+]
+
+[project.urls]
+Homepage = "https://github.com/ruvnet/RuView"
+Repository = "https://github.com/ruvnet/RuView"
+Issues = "https://github.com/ruvnet/RuView/issues"
+Documentation = "https://github.com/ruvnet/RuView/tree/main/docs"
+"ADR-117 (modernization plan)" = "https://github.com/ruvnet/RuView/blob/main/docs/adr/ADR-117-pip-wifi-densepose-modernization.md"
+"Release notes (v0.7.0)" = "https://github.com/ruvnet/RuView/blob/main/docs/releases/v0.7.0-mqtt-matter.md"
+
+# Console-script entry points wired up in P5 once the CLI shim exists.
+# [project.scripts]
+# wifi-densepose = "wifi_densepose.cli:main"
+
+[tool.maturin]
+# Layout: pyproject.toml + Cargo.toml live at `python/`; the
+# python-source directory `wifi_densepose/` is a sibling (i.e. at
+# `python/wifi_densepose/`). `python-source = "."` tells maturin to
+# look for packages directly under the project root.
+python-source = "."
+module-name = "wifi_densepose._native"
+features = ["pyo3/extension-module"]
+# Strip debug symbols for smaller release wheels (ADR-117 §5.4 5 MB budget).
+strip = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-v --strict-markers"
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true

@@ -1,0 +1,65 @@
+blueprint:
+  name: RuView — auto-arm security when room not active
+  description: >
+    Auto-arm the home alarm when room_active flips to OFF for all
+    monitored rooms AND no_movement is ON in the primary room. Lets the
+    home self-protect without requiring user input at the door.
+    Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/08-auto-arm-security-when-not-active.yaml
+  input:
+    room_active_group:
+      name: Group of room_active binary_sensors (one per room)
+      description: A `group.*` entity containing every RuView room_active sensor.
+      selector:
+        entity:
+          domain: group
+    primary_no_movement:
+      name: Primary room no_movement binary_sensor
+      selector:
+        entity:
+          domain: binary_sensor
+    home_alarm:
+      name: Home alarm control panel
+      selector:
+        entity:
+          domain: alarm_control_panel
+    arm_mode:
+      name: Arm mode
+      default: arm_away
+      selector:
+        select:
+          options:
+            - arm_away
+            - arm_home
+            - arm_night
+    confirm_minutes:
+      name: Confirmation idle window (minutes)
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 120
+          unit_of_measurement: minutes
+
+mode: single
+
+trigger:
+  - platform: state
+    entity_id: !input room_active_group
+    to: "off"
+    for:
+      minutes: !input confirm_minutes
+
+condition:
+  - condition: state
+    entity_id: !input primary_no_movement
+    state: "on"
+  - condition: state
+    entity_id: !input home_alarm
+    state: disarmed
+
+action:
+  - service: "alarm_control_panel.{{ arm_mode }}"
+    target:
+      entity_id: !input home_alarm

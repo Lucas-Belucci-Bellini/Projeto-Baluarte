@@ -1,0 +1,71 @@
+{
+  "id": "ha-matter",
+  "name": "Home Assistant + Matter Bridge",
+  "category": "building",
+  "version": "0.3.0",
+  "size_kb": 12,
+  "difficulty": "easy",
+  "description": "Exposes WiFi-CSI sensing as Home Assistant entities over MQTT auto-discovery, with mDNS announcement on _ruview-ha._tcp and tamper-evident Ed25519-signed audit logs. Adds 10 semantic primitives (someone_sleeping, possible_distress, fall_risk_elevated, ...) on top of the 11 raw measurements. Privacy mode strips biometrics at the wire so only the semantic layer reaches HA — the right default for any deployment with non-tenant occupants.",
+  "featured": false,
+  "config": [
+    {
+      "key": "sensing_url",
+      "type": "string",
+      "label": "Sensing server URL",
+      "description": "Where the cog reads VitalsSnapshot from",
+      "default": "http://127.0.0.1:3000",
+      "cli_arg": "--sensing-url"
+    },
+    {
+      "key": "mqtt_host",
+      "type": "string",
+      "label": "MQTT broker host",
+      "description": "External mosquitto / HA Core MQTT host (v0.7 will add an embedded broker option)",
+      "default": "127.0.0.1",
+      "cli_arg": "--mqtt-host"
+    },
+    {
+      "key": "mqtt_port",
+      "type": "integer",
+      "label": "MQTT broker port",
+      "default": 1883,
+      "min": 1,
+      "max": 65535,
+      "cli_arg": "--mqtt-port"
+    },
+    {
+      "key": "privacy_mode",
+      "type": "boolean",
+      "label": "Privacy mode",
+      "description": "Strip biometrics at the wire — only semantic primitives are published. Recommended for any deployment with non-tenant occupants (care homes, education, shared housing).",
+      "default": false,
+      "cli_arg": "--privacy-mode"
+    },
+    {
+      "key": "mdns_hostname",
+      "type": "string",
+      "label": "mDNS hostname",
+      "description": "Must end with .local. per RFC 6762. HA's discovery integration looks up this hostname.",
+      "default": "cog-ha-matter.local.",
+      "cli_arg": "--mdns-hostname"
+    },
+    {
+      "key": "mdns_ipv4",
+      "type": "string",
+      "label": "Advertised IPv4",
+      "description": "LAN-routable address the mDNS responder advertises. HA reaches back to this for MQTT.",
+      "default": "127.0.0.1",
+      "cli_arg": "--mdns-ipv4"
+    },
+    {
+      "key": "no_mdns",
+      "type": "boolean",
+      "label": "Disable mDNS",
+      "description": "Skip the mDNS responder. Useful in containerised setups where multicast is filtered.",
+      "default": false,
+      "cli_arg": "--no-mdns"
+    }
+  ],
+  "sha256": "<FILL_IN_FROM_dist/cog-ha-matter-x86_64.sha256_AFTER_make_build>",
+  "binary_size": 0
+}

@@ -1,0 +1,61 @@
+blueprint:
+  name: BFLD Presence-Driven Lighting
+  description: >
+    Turn a light on when BFLD reports occupancy on a chosen node, and off
+    after a configurable hold period of continuous non-presence. Sourced
+    from ADR-122 §2.6 of the wifi-densepose / RuView repository.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/v2/crates/cog-ha-matter/blueprints/bfld/presence-lighting.yaml
+  input:
+    bfld_presence:
+      name: BFLD Presence sensor
+      description: The `binary_sensor.<node>_bfld_presence` entity exposed by BFLD.
+      selector:
+        entity:
+          domain: binary_sensor
+          integration: mqtt
+    target_light:
+      name: Light to control
+      selector:
+        target:
+          entity:
+            domain: light
+    hold_seconds:
+      name: Off-delay hold (seconds)
+      description: How long the room must stay empty before the light turns off.
+      default: 120
+      selector:
+        number:
+          min: 5
+          max: 3600
+          unit_of_measurement: seconds
+          mode: slider
+          step: 5
+
+trigger:
+  - platform: state
+    entity_id: !input bfld_presence
+    to: "on"
+    id: presence_on
+  - platform: state
+    entity_id: !input bfld_presence
+    to: "off"
+    for:
+      seconds: !input hold_seconds
+    id: presence_off
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: presence_on
+        sequence:
+          - service: light.turn_on
+            target: !input target_light
+      - conditions:
+          - condition: trigger
+            id: presence_off
+        sequence:
+          - service: light.turn_off
+            target: !input target_light
+mode: restart

@@ -1,0 +1,108 @@
+[package]
+name = "wifi-densepose-sensing-server"
+version = "0.3.1"
+edition.workspace = true
+description = "Lightweight Axum server for WiFi sensing UI with RuVector signal processing"
+license.workspace = true
+authors = ["rUv <ruv@ruv.net>", "WiFi-DensePose Contributors"]
+repository.workspace = true
+documentation = "https://docs.rs/wifi-densepose-sensing-server"
+keywords = ["wifi", "sensing", "server", "websocket", "csi"]
+categories = ["web-programming::http-server", "science"]
+readme = "README.md"
+
+[lib]
+name = "wifi_densepose_sensing_server"
+path = "src/lib.rs"
+
+[[bin]]
+name = "sensing-server"
+path = "src/main.rs"
+
+[dependencies]
+# Web framework
+axum = { workspace = true }
+tower-http = { version = "0.6", features = ["fs", "cors", "set-header"] }
+tokio = { workspace = true, features = ["full", "process"] }
+futures-util = "0.3"
+ruvector-mincut = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json.workspace = true
+
+# Logging
+tracing.workspace = true
+tracing-subscriber = { workspace = true }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# CLI
+clap = { workspace = true }
+
+# Multi-BSSID WiFi scanning pipeline (ADR-022 Phase 3)
+wifi-densepose-wifiscan = { version = "0.3.0", path = "../wifi-densepose-wifiscan" }
+
+# Signal processing with RuvSense pose tracker (accuracy sprint).
+# default-features = false drops the optional ndarray-linalg/BLAS chain so that
+# `--no-default-features` at the workspace root can produce a Windows-friendly
+# build without vcpkg/openblas (issue #366, #415).
+wifi-densepose-signal = { version = "0.3.1", path = "../wifi-densepose-signal", default-features = false }
+
+# Hardware crate — SyncPacket decoder for ADR-110 §A0.12 mesh-aligned timestamps.
+wifi-densepose-hardware = { version = "0.3.0", path = "../wifi-densepose-hardware" }
+
+# midstream — real-time introspection / low-latency tap (ADR-099 D1).
+# Two crates only, on purpose: scheduler / neural-solver / strange-loop are
+# explicitly out of scope of ADR-099 (D5).
+midstreamer-temporal-compare = "0.2"   # DTW / LCS / Edit-Distance pattern matching
+midstreamer-attractor        = "0.2"   # Lyapunov + regime classification
+
+# ADR-102: Edge Module Registry — fetch the canonical Cognitum cog catalog
+# at `https://storage.googleapis.com/cognitum-apps/app-registry.json`,
+# cache with TTL, surface via /api/v1/edge/registry. ureq is the smallest
+# blocking HTTP client we can use without dragging a tokio HTTP stack in;
+# rustls is enabled implicitly via the `tls` default feature.
+ureq      = { version = "2", default-features = false, features = ["tls", "json"] }
+sha2      = "0.10"
+thiserror = "1"
+
+# ADR-115 §3.8 — MQTT publisher (HA-DISCO).
+# Gated behind the `mqtt` feature so the default binary stays small for users
+# who don't need Home Assistant integration. `rumqttc` is the chosen Rust MQTT
+# client (ADR-115 §10 references). `rustls` is preferred over openssl on
+# Windows to keep parity with the rest of the workspace (`ureq` above also
+# uses rustls).
+rumqttc   = { version = "0.24", default-features = false, features = ["use-rustls"], optional = true }
+
+[features]
+default = []
+# Enables the ADR-115 §2 MQTT auto-discovery publisher. Without this feature
+# all `--mqtt-*` CLI flags still parse (cli.rs declares them unconditionally),
+# but enabling `--mqtt` at runtime logs a `WARN` and the publisher is a no-op.
+mqtt = ["dep:rumqttc"]
+# ADR-115 §3.11 — Matter Bridge (HA-FABRIC). Same gating principle: flags
+# parse unconditionally; the bridge is a no-op without this feature.
+# matter-rs is added in P7; intentionally absent in P1 to keep the dep
+# surface small until the SDK choice is validated.
+matter = []
+
+[dev-dependencies]
+tempfile = "3.10"
+# `tower::ServiceExt::oneshot` for in-process Router tests (bearer_auth).
+tower = { workspace = true }
+# ADR-115 P9 — micro-benchmarks for MQTT hot paths + semantic bus.
+# Heavy dep tree (~80 transitive crates) so it's dev-only; benches live
+# behind --features mqtt because they bench the mqtt module.
+criterion = { version = "0.5", features = ["html_reports"] }
+# ADR-115 P9 — property-based fuzzing for the wire-boundary security
+# audit. Catches edge cases the example-based unit tests would miss
+# (random Unicode, control chars, etc.). Pinned to a small version that
+# doesn't pull in proptest-derive (we don't need it).
+proptest = { version = "1.5", default-features = false, features = ["std"] }
+
+[[bench]]
+name = "mqtt_throughput"
+harness = false
+required-features = ["mqtt"]

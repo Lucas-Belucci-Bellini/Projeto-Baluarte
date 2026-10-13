@@ -1,0 +1,70 @@
+blueprint:
+  name: RuView — alert on elderly inactivity anomaly
+  description: >
+    Send a high-priority push notification when elderly_inactivity_anomaly
+    fires — the resident has been still for unusually long given their
+    personal baseline. Includes a configurable secondary call/SMS escalation
+    via a notify group if the first alert isn't acknowledged.
+    Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/04-alert-elderly-inactivity-anomaly.yaml
+  input:
+    anomaly_entity:
+      name: Elderly inactivity anomaly binary_sensor
+      selector:
+        entity:
+          domain: binary_sensor
+    primary_notify:
+      name: Primary notify service (e.g. carer's phone)
+      selector:
+        text: {}
+    escalation_notify:
+      name: Escalation notify service (optional)
+      description: Fires if anomaly stays ON after ack_timeout_min.
+      default: ""
+      selector:
+        text: {}
+    ack_timeout_min:
+      name: Escalation timeout (minutes)
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 120
+          unit_of_measurement: minutes
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input anomaly_entity
+    from: "off"
+    to: "on"
+
+action:
+  - service: !input primary_notify
+    data:
+      title: "🚨 Inactivity anomaly"
+      message: >
+        Resident has been still longer than usual. Check on them.
+        Reason: {{ state_attr(trigger.entity_id, 'reason') or 'none provided' }}.
+  - wait_for_trigger:
+      - platform: state
+        entity_id: !input anomaly_entity
+        to: "off"
+    timeout:
+      minutes: !input ack_timeout_min
+    continue_on_timeout: true
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input anomaly_entity
+            state: "on"
+          - condition: template
+            value_template: "{{ (escalation_notify | default('')) != '' }}"
+        sequence:
+          - service: !input escalation_notify
+            data:
+              title: "🆘 Escalation — anomaly still active"
+              message: "No motion for the duration of the alert window. Please intervene."

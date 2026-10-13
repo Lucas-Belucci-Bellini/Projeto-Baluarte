@@ -1,0 +1,52 @@
+blueprint:
+  name: RuView — bathroom fan while occupied
+  description: >
+    Run the bathroom exhaust fan while bathroom_occupied is ON, with a
+    configurable run-on delay after the zone clears (humidity recovery).
+    Privacy-mode-safe: bathroom_occupied is derived from zone presence,
+    not biometrics, so this works under --privacy-mode too.
+    Part of the ADR-115 §3.12 starter blueprint set.
+  domain: automation
+  source_url: https://github.com/ruvnet/RuView/blob/main/examples/ha-blueprints/06-bathroom-fan-while-occupied.yaml
+  input:
+    bathroom_entity:
+      name: Bathroom occupied binary_sensor
+      selector:
+        entity:
+          domain: binary_sensor
+    fan_switch:
+      name: Exhaust fan switch
+      selector:
+        entity:
+          domain: switch
+    run_on_minutes:
+      name: Run-on after vacated (minutes)
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: minutes
+
+mode: restart
+
+trigger:
+  - platform: state
+    entity_id: !input bathroom_entity
+
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input bathroom_entity
+            state: "on"
+        sequence:
+          - service: switch.turn_on
+            target:
+              entity_id: !input fan_switch
+    default:
+      - delay:
+          minutes: !input run_on_minutes
+      - service: switch.turn_off
+        target:
+          entity_id: !input fan_switch

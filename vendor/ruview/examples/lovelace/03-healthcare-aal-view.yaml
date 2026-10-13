@@ -1,0 +1,88 @@
+# RuView — Healthcare / AAL (Active and Assisted Living) dashboard
+#
+# A care-giver-facing view designed for deployments where the
+# resident's wellbeing is the primary signal. Uses ONLY the semantic
+# primitives — no raw HR/BR exposed to the dashboard surface — so it
+# remains useful under `--privacy-mode` where biometric values are
+# stripped from MQTT.
+#
+# Drop into a Lovelace view that the carer accesses via their phone
+# (HA mobile app). The custom-button-card and apexcharts-card
+# dependencies are optional but improve readability — install via
+# HACS or fall back to the standard "entity" and "history-graph"
+# cards below as graceful degradation.
+
+title: RuView — Care view
+path: ruview-care
+icon: mdi:heart-pulse
+
+cards:
+  - type: markdown
+    content: >
+      ## RuView — Resident care view
+      **Privacy-mode-compatible** — only inferred wellbeing states
+      shown. No biometric values exposed to this dashboard.
+
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: binary_sensor.ruview_bedroom_someone_sleeping
+            name: Sleeping
+            icon: mdi:sleep
+            color: blue
+          - type: tile
+            entity: binary_sensor.ruview_bedroom_room_active
+            name: Active
+            icon: mdi:home-account
+            color: green
+          - type: tile
+            entity: binary_sensor.ruview_bedroom_bathroom_occupied
+            name: Bathroom
+            icon: mdi:shower
+            color: cyan
+
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: binary_sensor.ruview_bedroom_possible_distress
+            name: Distress
+            icon: mdi:alert-octagon
+            color: red
+          - type: tile
+            entity: binary_sensor.ruview_bedroom_elderly_inactivity_anomaly
+            name: Inactivity anomaly
+            icon: mdi:account-off
+            color: orange
+          - type: tile
+            entity: binary_sensor.ruview_bedroom_no_movement
+            name: No movement
+            icon: mdi:hand-back-left-off
+            color: amber
+
+      - type: gauge
+        entity: sensor.ruview_bedroom_fall_risk_elevated
+        name: Fall risk (24h trailing)
+        min: 0
+        max: 100
+        severity:
+          green: 0
+          yellow: 40
+          red: 70
+
+      - type: logbook
+        title: 24h care events
+        hours_to_show: 24
+        entities:
+          - event.ruview_bedroom_fall
+          - event.ruview_bedroom_bed_exit
+          - binary_sensor.ruview_bedroom_possible_distress
+          - binary_sensor.ruview_bedroom_elderly_inactivity_anomaly
+          - binary_sensor.ruview_bedroom_no_movement
+
+      - type: entity
+        entity: binary_sensor.ruview_bedroom_presence
+        name: Last presence change
+        attribute: last_changed
+        icon: mdi:clock-outline

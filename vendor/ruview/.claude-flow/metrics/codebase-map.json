@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-05-25T06:07:33.385Z",
+  "projectRoot": "C:\\Users\\ruv\\Projects\\wifi-densepose",
+  "structure": {
+    "hasPackageJson": false,
+    "hasTsConfig": false,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1779689253386
+}
