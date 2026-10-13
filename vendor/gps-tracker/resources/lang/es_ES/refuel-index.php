@@ -1,0 +1,16 @@
+<?php return [
+    'create' => 'Crear',
+    'date_at' => 'Fecha',
+    'distance' => 'Distancia',
+    'distance_total' => 'Distancia total',
+    'end_at' => 'Fin',
+    'filter' => 'Filtrar...',
+    'map' => 'Mapa',
+    'meta-title' => 'Repostajes',
+    'price' => 'Precio',
+    'quantity' => 'Cantidad',
+    'start_at' => 'Inicio',
+    'total' => 'Importe Total',
+    'user' => 'Usuario',
+    'vehicle' => 'Vehículo',
+];

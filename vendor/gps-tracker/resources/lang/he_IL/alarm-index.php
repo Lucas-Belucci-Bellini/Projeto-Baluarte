@@ -1,0 +1,17 @@
+<?php return [
+    'create' => 'חדש',
+    'created_at' => 'נוצר בתאריך',
+    'dashboard' => 'לוּחַ מַחווָנִים',
+    'enabled' => 'מופעל',
+    'filter' => 'סנן...',
+    'meta-title' => 'התראות',
+    'name' => 'שם',
+    'notifications' => 'התראות',
+    'notifications-denied' => 'התראות מנוטרלות',
+    'notifications-enable' => 'הפעל התראות',
+    'notifications-granted' => 'התראות מופעלות',
+    'telegram' => 'טלגרם',
+    'type' => 'סוג',
+    'user' => 'משתמש',
+    'vehicles' => 'רכבים',
+];

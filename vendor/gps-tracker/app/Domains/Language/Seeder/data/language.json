@@ -1,0 +1,43 @@
+[
+    {
+        "locale": "en_US",
+        "name": "English",
+        "enabled": true,
+        "rtl": false
+    },
+
+    {
+        "locale": "es_ES",
+        "name": "Castellano",
+        "enabled": true,
+        "rtl": false
+    },
+
+    {
+        "locale": "fr_FR",
+        "name": "Français",
+        "enabled": true,
+        "rtl": false
+    },
+
+    {
+        "locale": "pt_BR",
+        "name": "Português (Brasil)",
+        "enabled": true,
+        "rtl": false
+    },
+
+    {
+        "locale": "he_IL",
+        "name": "עִברִית",
+        "enabled": true,
+        "rtl": true
+    },
+
+    {
+        "locale": "ar_AE",
+        "name": "العربية",
+        "enabled": true,
+        "rtl": true
+    }
+]

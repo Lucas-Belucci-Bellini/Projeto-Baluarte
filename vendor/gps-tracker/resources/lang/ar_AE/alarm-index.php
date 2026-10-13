@@ -1,0 +1,17 @@
+<?php return [
+    'create' => 'إنشاء',
+    'created_at' => 'تم الإنشاء',
+    'dashboard' => 'لوحة التحكم',
+    'enabled' => 'تنشيط',
+    'filter' => 'تصفية...',
+    'meta-title' => 'الإنذارات',
+    'name' => 'الاسم',
+    'notifications' => 'الإشعارات',
+    'notifications-denied' => 'تم تعطيل التنبيهات',
+    'notifications-enable' => 'تنشيط التنبيهات',
+    'notifications-granted' => 'تشغيل التنبيهات',
+    'telegram' => 'برقية',
+    'type' => 'النوع',
+    'user' => 'المستخدم',
+    'vehicles' => 'المركبات',
+];

@@ -1,0 +1,16 @@
+<?php return [
+    'create' => 'Create',
+    'date_at' => 'Date',
+    'distance' => 'Distance',
+    'distance_total' => 'Total distance',
+    'end_at' => 'End',
+    'filter' => 'Filter...',
+    'map' => 'Map',
+    'meta-title' => 'Refuelings',
+    'price' => 'Price',
+    'quantity' => 'Quantity',
+    'start_at' => 'Start',
+    'total' => 'Total Amount',
+    'user' => 'User',
+    'vehicle' => 'Vehicle',
+];

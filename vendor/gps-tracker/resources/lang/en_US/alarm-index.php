@@ -1,0 +1,17 @@
+<?php return [
+    'create' => 'Create',
+    'created_at' => 'Created',
+    'dashboard' => 'Dashboard',
+    'enabled' => 'Enabled',
+    'filter' => 'Filter...',
+    'meta-title' => 'Alarms',
+    'name' => 'Name',
+    'notifications' => 'Notifications',
+    'notifications-denied' => 'Notifications Disabled',
+    'notifications-enable' => 'Enable Notifications',
+    'notifications-granted' => 'Notifications Enabled',
+    'telegram' => 'Telegram',
+    'type' => 'Type',
+    'user' => 'User',
+    'vehicles' => 'Vehicles',
+];

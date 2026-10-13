@@ -1,0 +1,16 @@
+<?php return [
+    'amount' => 'Importer',
+    'create' => 'Créer',
+    'date_at' => 'Date',
+    'distance' => 'Distance',
+    'distance_next' => 'Distance Prochaine',
+    'end_at' => 'Fin',
+    'meta-title' => 'Maintenance',
+    'name' => 'Tâche',
+    'search' => 'Recherche',
+    'send' => 'Envoyer',
+    'start_at' => 'Accueil',
+    'user' => 'Utilisateur',
+    'vehicle' => 'Véhicule',
+    'workshop' => 'Atelier',
+];

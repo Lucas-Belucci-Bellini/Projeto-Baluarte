@@ -1,0 +1,8 @@
+[
+    "vendor|leaflet/dist/leaflet.css",
+    "vendor|leaflet.locatecontrol/dist/L.Control.Locate.min.css",
+    "vendor|leaflet-draw/dist/leaflet.draw.css",
+    "vendor|flatpickr/dist/flatpickr.min.css",
+    "vendor|tippy.js/dist/tippy.css",
+    "scss|map.scss"
+]
