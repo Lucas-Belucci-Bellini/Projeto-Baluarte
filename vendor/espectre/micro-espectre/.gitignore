@@ -1,0 +1,31 @@
+# Local configuration (security)
+src/config_local.py
+
+# MicroPython compiled files
+*.mpy
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.cache
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+csi_log.csv
+
+# Firmware cache (downloaded from GitHub releases)
+firmware/

@@ -1,0 +1,175 @@
+name: Snapshot
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  check-changes:
+    name: Check Code Changes
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+    outputs:
+      should_build: ${{ steps.filter.outputs.code }}
+    
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 2
+      
+      - name: Check for code changes
+        id: filter
+        run: |
+          # Check if any code files changed in the last commit
+          if git diff --name-only HEAD~1 HEAD | grep -qE '^(components/espectre/|examples/[^/]+\.yaml$)'; then
+            echo "code=true" >> $GITHUB_OUTPUT
+            echo "Code changes detected, will build snapshot"
+          else
+            echo "code=false" >> $GITHUB_OUTPUT
+            echo "No code changes, skipping snapshot"
+          fi
+
+  build:
+    name: Build ${{ matrix.chip }} (${{ matrix.algorithm }})
+    needs: check-changes
+    if: needs.check-changes.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - chip: ESP32
+            config: examples/espectre-esp32.yaml
+            algorithm: mvs
+          - chip: ESP32
+            config: examples/espectre-esp32.yaml
+            algorithm: ml
+          - chip: ESP32-S2
+            config: examples/espectre-s2.yaml
+            algorithm: mvs
+          - chip: ESP32-S2
+            config: examples/espectre-s2.yaml
+            algorithm: ml
+          - chip: ESP32-S3
+            config: examples/espectre-s3.yaml
+            algorithm: mvs
+          - chip: ESP32-S3
+            config: examples/espectre-s3.yaml
+            algorithm: ml
+          - chip: ESP32-C3
+            config: examples/espectre-c3.yaml
+            algorithm: mvs
+          - chip: ESP32-C3
+            config: examples/espectre-c3.yaml
+            algorithm: ml
+          - chip: ESP32-C5
+            config: examples/espectre-c5.yaml
+            algorithm: mvs
+          - chip: ESP32-C5
+            config: examples/espectre-c5.yaml
+            algorithm: ml
+          - chip: ESP32-C6
+            config: examples/espectre-c6.yaml
+            algorithm: mvs
+          - chip: ESP32-C6
+            config: examples/espectre-c6.yaml
+            algorithm: ml
+    
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Cache PlatformIO
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.platformio
+            ~/.esphome/cache
+          key: pio-espidf-${{ hashFiles('components/espectre/**') }}
+          restore-keys: |
+            pio-espidf-
+      
+      - name: Install ESPHome
+        run: |
+          python -m pip install --upgrade pip
+          pip install esphome
+      
+      - name: Compile
+        run: esphome -s git_ref ${{ github.event.workflow_run.head_sha }} -s detection_algorithm ${{ matrix.algorithm }} compile ${{ matrix.config }}
+      
+      - name: Rename firmware files
+        run: |
+          mkdir -p output
+          CHIP=$(echo "${{ matrix.chip }}" | tr '[:upper:]' '[:lower:]' | tr -d '-')
+          ALGO="${{ matrix.algorithm }}"
+          find examples/.esphome/build -name "firmware*.bin" -exec cp {} output/ \;
+          if [ "$ALGO" = "ml" ]; then
+            mv "output/firmware.factory.bin" "output/espectre-snapshot-${CHIP}-ml.bin"
+            mv "output/firmware.ota.bin" "output/espectre-snapshot-${CHIP}-ml-ota.bin"
+          else
+            mv "output/firmware.factory.bin" "output/espectre-snapshot-${CHIP}.bin"
+            mv "output/firmware.ota.bin" "output/espectre-snapshot-${CHIP}-ota.bin"
+          fi
+      
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: firmware-${{ matrix.chip }}-${{ matrix.algorithm }}
+          path: output/espectre-*.bin
+          retention-days: 1
+
+  release:
+    name: Create Snapshot Release
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download all firmware artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: firmware-*
+          path: firmware
+          merge-multiple: true
+      
+      - name: List firmware files
+        run: ls -la firmware/
+      
+      - name: Delete existing snapshot release
+        run: gh release delete snapshot --yes --cleanup-tag || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+      
+      - name: Create snapshot release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: snapshot
+          name: Snapshot Build
+          body: |
+            ⚠️ **This is an automated snapshot build from the main branch.**
+            
+            Not recommended for production use. For stable releases, use the [latest official release](https://github.com/francescopace/espectre/releases/latest).
+            
+            **Commit:** ${{ github.event.workflow_run.head_sha }}
+            **Date:** ${{ github.event.workflow_run.created_at }}
+          files: firmware/*.bin
+          draft: false
+          prerelease: true
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
