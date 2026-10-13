@@ -1,0 +1,52 @@
+services:
+  web:
+    image: ghcr.io/navtrack/web:latest
+    networks:
+      - navtrack
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - NAVTRACK_API_URL=http://localhost:3001
+      - NAVTRACK_LISTENER_HOSTNAME=your.hostname
+      - NAVTRACK_LISTENER_IP=your.ip
+
+  api:
+    image: ghcr.io/navtrack/api:latest
+    networks:
+      - navtrack
+    ports:
+      - 3001:8080
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Postgres=Host=database;Port=5432;Database=navtrack;Username=navtrack;Password=navtrack
+
+  listener:
+    image: ghcr.io/navtrack/listener:latest
+    networks:
+      - navtrack
+    ports:
+      - "7001-7100:7001-7100"
+    restart: unless-stopped
+    environment:
+      - ConnectionStrings__Postgres=Host=database;Port=5432;Database=navtrack;Username=navtrack;Password=navtrack
+
+  database:
+    image: imresamu/postgis:17-3.5.2-alpine3.21
+    restart: always
+    networks:
+      - navtrack
+    environment:
+      POSTGRES_USER: navtrack
+      POSTGRES_PASSWORD: navtrack
+    volumes:
+      - navtrack:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  navtrack:
+
+networks:
+  navtrack:

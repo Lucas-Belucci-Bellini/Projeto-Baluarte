@@ -1,0 +1,22 @@
+name: Build check
+
+on:
+  push:
+    branches:
+      - "**"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository == 'navtrack/navtrack'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Docker build
+        continue-on-error: false
+        run: |
+          docker compose -f docker-compose.test.yml up --abort-on-container-exit

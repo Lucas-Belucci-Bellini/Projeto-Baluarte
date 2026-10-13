@@ -1,0 +1,171 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import { OrganizationLiveTrackingPage } from "../components/organizations/OrganizationLiveTrackingPage";
+import { AssetLiveTrackingPage } from "../components/asset/live-tracking/AssetLiveTrackingPage";
+import { AssetTripsPage } from "../components/asset/trips/AssetTripsPage";
+import { AssetAlertsPage } from "../components/asset/alerts/AssetAlertsPage";
+import { SettingsAccountPage } from "../components/settings/SettingsAccountPage";
+import { AssetSettingsGeneralPage } from "../components/asset/settings/general/AssetSettingsGeneralPage";
+import { NewAssetPage } from "../components/asset/new/NewAssetPage";
+import { Paths } from "./Paths";
+import { SettingsAuthenticationPage } from "../components/settings/SettingsAuthenticationPage";
+import { AssetSettingsDevicePage } from "../components/asset/settings/device/AssetSettingsDevicePage";
+import { ReactNode } from "react";
+import { AuthenticatedLayoutTwoColumns } from "../components/ui/layouts/authenticated/AuthenticatedLayoutTwoColumns";
+import { AssetLogPage } from "../components/asset/log/AssetLogPage";
+import { AssetSettingsLayout } from "../components/asset/settings/shared/AssetSettingsLayout";
+import { AccountSettingsLayout } from "../components/settings/AccountSettingsLayout";
+import { AssetDashboardPage } from "../components/asset/dashboard/AssetDashboardPage";
+import { OrganizationSettingsGeneralPage } from "../components/organizations/settings/general/OrganizationSettingsGeneralPage";
+import { OrganizationTeamsPage } from "../components/teams/OrganizationTeamsPage";
+import { OrganizationUsersPage } from "../components/users/OrganizationUsersPage";
+import { TeamUsersPage } from "../components/teams/users/TeamUsersPage";
+import { TeamSettingsPage } from "../components/teams/settings/TeamSettingsPage";
+import { TeamAssetsPage } from "../components/teams/assets/TeamAssetsPage";
+import { OrganizationSettingsLayout } from "../components/organizations/settings/shared/OrganizationSettingsLayout";
+import { NotFoundPage } from "../components/shared/NotFoundPage";
+import { AuthenticatedLayoutOneColumn } from "../components/ui/layouts/authenticated/AuthenticatedLayoutOneColumn";
+import { OrganizationsPage } from "../components/organizations/OrganizationsPage";
+import { AssetUsersPage } from "../components/asset/settings/access/AssetUsersPage";
+import { AssetReportsFuelConsumptionPage } from "../components/asset/reports/AssetReportsFuelConsumptionPage";
+import { AssetReportsTripsPage } from "../components/asset/reports/AssetReportsTripsPage";
+import { AssetReportsDistancePage } from "../components/asset/reports/AssetReportsDistancePage";
+import { OrganizationDashboardPage } from "../components/organizations/dashboard/OrganizationDashboardPage";
+import { AssetReportsTripStopsPage } from "../components/asset/reports/AssetReportsTripStopsPage";
+import { AssetReportsWorkingHoursPage } from "../components/asset/reports/AssetReportsWorkingHoursPage";
+import { OrganizationSettingsWorkSchedulePage } from "../components/organizations/settings/work-schedule/OrganizationSettingsWorkSchedulePage";
+import { OrganizationReportsDistancePage } from "../components/organizations/reports/OrganizationReportsDistancePage";
+import { OrganizationReportsFuelConsumptionPage } from "../components/organizations/reports/OrganizationReportsFuelConsumptionPage";
+
+type AuthenticatedRoutesProps = {
+  mainRoutes?: ReactNode;
+  assetSettingsRoutes?: ReactNode;
+  accountSettingsRoutes?: ReactNode;
+  organizationSettingsRoutes?: ReactNode;
+  extraRoutes?: ReactNode;
+};
+
+export function AuthenticatedRoutes(props: AuthenticatedRoutesProps) {
+  return (
+    <Routes>
+      <Route element={<AuthenticatedLayoutTwoColumns />}>
+        {props.mainRoutes}
+        <Route path={Paths.OrganizationAssetsNew} element={<NewAssetPage />} />
+        <Route path={Paths.AssetAlerts} element={<AssetAlertsPage />} />
+        <Route path={Paths.AssetDashboard} element={<AssetDashboardPage />} />
+        <Route path={Paths.AssetLive} element={<AssetLiveTrackingPage />} />
+        <Route path={Paths.AssetLog} element={<AssetLogPage />} />
+        <Route
+          path={Paths.AssetReportsDistance}
+          element={<AssetReportsDistancePage />}
+        />
+        <Route
+          path={Paths.AssetReportsFuelConsumption}
+          element={<AssetReportsFuelConsumptionPage />}
+        />
+        <Route
+          path={Paths.AssetReportsTrips}
+          element={<AssetReportsTripsPage />}
+        />
+        <Route
+          path={Paths.AssetReportsStops}
+          element={<AssetReportsTripStopsPage />}
+        />
+        <Route
+          path={Paths.AssetReportsWorkingHours}
+          element={<AssetReportsWorkingHoursPage />}
+        />
+        <Route path={Paths.AssetTrips} element={<AssetTripsPage />} />
+        <Route
+          path={Paths.OrganizationLive}
+          element={<OrganizationLiveTrackingPage />}
+        />
+        <Route
+          path={Paths.OrganizationDashboard}
+          element={<OrganizationDashboardPage />}
+        />
+        <Route
+          path={Paths.OrganizationReportsDistance}
+          element={<OrganizationReportsDistancePage />}
+        />
+        <Route
+          path={Paths.OrganizationReportsFuelConsumption}
+          element={<OrganizationReportsFuelConsumptionPage />}
+        />
+        <Route
+          path={Paths.AssetReportsDistance}
+          element={<AssetReportsDistancePage />}
+        />
+        <Route
+          path={Paths.AssetReportsFuelConsumption}
+          element={<AssetReportsFuelConsumptionPage />}
+        />
+        <Route
+          path={Paths.OrganizationTeams}
+          element={<OrganizationTeamsPage />}
+        />
+        <Route
+          path={Paths.OrganizationUsers}
+          element={<OrganizationUsersPage />}
+        />
+      </Route>
+      <Route element={<OrganizationSettingsLayout />}>
+        {props.organizationSettingsRoutes}
+        <Route
+          path={Paths.OrganizationSettings}
+          element={<OrganizationSettingsGeneralPage />}
+        />
+        <Route
+          path={Paths.OrganizationSettingsWorkSchedule}
+          element={<OrganizationSettingsWorkSchedulePage />}
+        />
+      </Route>
+      <Route>
+        <Route path={Paths.TeamUsers} element={<TeamUsersPage />} />
+        <Route path={Paths.TeamAssets} element={<TeamAssetsPage />} />
+        <Route path={Paths.TeamSettings} element={<TeamSettingsPage />} />
+      </Route>
+      <Route element={<AssetSettingsLayout />}>
+        {props.assetSettingsRoutes}
+        <Route
+          path={Paths.AssetSettings}
+          element={<AssetSettingsGeneralPage />}
+        />
+        <Route
+          path={Paths.AssetSettingsDevice}
+          element={<AssetSettingsDevicePage />}
+        />
+        <Route path={Paths.AssetSettingsAccess} element={<AssetUsersPage />} />
+      </Route>
+      <Route element={<AccountSettingsLayout />}>
+        {props.accountSettingsRoutes}
+        <Route
+          path={Paths.SettingsAuthentication}
+          element={<SettingsAuthenticationPage />}
+        />
+        <Route path={Paths.SettingsAccount} element={<SettingsAccountPage />} />
+      </Route>
+      <Route
+        path={Paths.Organizations}
+        element={
+          <AuthenticatedLayoutOneColumn>
+            <OrganizationsPage />
+          </AuthenticatedLayoutOneColumn>
+        }
+      />
+      <Route
+        path={Paths.NotFound}
+        element={
+          <AuthenticatedLayoutOneColumn>
+            <NotFoundPage />
+          </AuthenticatedLayoutOneColumn>
+        }
+      />
+      {props.extraRoutes}
+      <Route
+        path={Paths.Home}
+        element={<Navigate replace to={Paths.Organizations} />}
+      />
+      <Route path="*" element={<Navigate replace to={Paths.NotFound} />} />
+    </Routes>
+  );
+}

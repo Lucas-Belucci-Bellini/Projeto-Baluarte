@@ -1,0 +1,20 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using Navtrack.Database.Model.Teams;
+
+namespace Navtrack.Api.Model.Teams;
+
+public class TeamUserModel
+{
+    [Required]
+    public string UserId { get; set; }
+    
+    [Required]
+    public string Email { get; set; }
+    
+    [Required]
+    public TeamUserRole UserRole { get; set; }
+    
+    [Required]
+    public DateTime CreatedDate { get; set; }
+}

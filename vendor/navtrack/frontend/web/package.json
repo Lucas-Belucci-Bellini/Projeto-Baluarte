@@ -1,0 +1,16 @@
+{
+  "name": "@navtrack/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "cosmos": "cosmos",
+    "cosmos:export": "cosmos-export",
+    "watch": "tsc --noEmit --watch"
+  },
+  "browserslist": [
+    "defaults"
+  ]
+}

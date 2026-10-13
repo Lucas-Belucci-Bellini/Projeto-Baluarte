@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\Navtrack.Api.Model\Navtrack.Api.Model.csproj"/>
+        <ProjectReference Include="..\Navtrack.Database.Services\Navtrack.Database.Services.csproj"/>
+        <ProjectReference Include="..\Navtrack.Database\Navtrack.Database.csproj"/>
+        <ProjectReference Include="..\Navtrack.Shared.Library\Navtrack.Shared.Library.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="IdentityServer4" Version="4.1.2"/>
+    </ItemGroup>
+</Project>

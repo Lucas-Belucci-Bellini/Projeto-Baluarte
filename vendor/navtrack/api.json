@@ -1,0 +1,4050 @@
+{
+  "x-generator": "NSwag v14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Navtrack.Api",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/account": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_CreateAccount",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_Delete",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/forgot-password": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_ForgotPassword",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/reset-password": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "Account_ResetPassword",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}/assets": {
+      "get": {
+        "tags": [
+          "Assets"
+        ],
+        "operationId": "Assets_GetList",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfAssetModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Assets"
+        ],
+        "operationId": "Assets_Create",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssetModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}": {
+      "get": {
+        "tags": [
+          "Assets"
+        ],
+        "operationId": "Assets_Get",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Assets"
+        ],
+        "operationId": "Assets_Update",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssetModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Assets"
+        ],
+        "operationId": "Assets_Delete",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/devices": {
+      "get": {
+        "tags": [
+          "Assets - Devices"
+        ],
+        "operationId": "AssetsDevices_GetList",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfDeviceModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Assets - Devices"
+        ],
+        "operationId": "AssetsDevices_CreateOrUpdate",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrUpdateAssetDeviceModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/devices/{deviceId}": {
+      "delete": {
+        "tags": [
+          "Assets - Devices"
+        ],
+        "operationId": "AssetsDevices_Delete",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/messages": {
+      "get": {
+        "tags": [
+          "Assets - Messages"
+        ],
+        "operationId": "AssetsMessages_GetList",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "MinAltitude",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "MaxAltitude",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "MinSpeed",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 6
+          },
+          {
+            "name": "MaxSpeed",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 7
+          },
+          {
+            "name": "Latitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "x-position": 8
+          },
+          {
+            "name": "Longitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "x-position": 9
+          },
+          {
+            "name": "Radius",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 10
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 11
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000,
+              "maximum": 1000.0,
+              "minimum": 0.0
+            },
+            "x-position": 12
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/reports/distance": {
+      "get": {
+        "tags": [
+          "Assets - Reports"
+        ],
+        "operationId": "AssetsReports_GetDistanceReport",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistanceReportModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/reports/trips": {
+      "get": {
+        "tags": [
+          "Assets - Reports"
+        ],
+        "operationId": "AssetsReports_GetTripReport",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripReportModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/stats/{period}": {
+      "get": {
+        "tags": [
+          "Assets - Stats"
+        ],
+        "operationId": "AssetsStats_Get",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "period",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AssetStatsPeriod"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetStatsModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/trips": {
+      "get": {
+        "tags": [
+          "Assets - Trips"
+        ],
+        "operationId": "AssetsTrips_GetList",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "MinAltitude",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "MaxAltitude",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "MinAvgSpeed",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "MaxAvgSpeed",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 6
+          },
+          {
+            "name": "MinDuration",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 7
+          },
+          {
+            "name": "MaxDuration",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 8
+          },
+          {
+            "name": "Latitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "x-position": 9
+          },
+          {
+            "name": "Longitude",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "nullable": true
+            },
+            "x-position": 10
+          },
+          {
+            "name": "Radius",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 11
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripListModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/users": {
+      "get": {
+        "tags": [
+          "Assets - Users"
+        ],
+        "operationId": "AssetsUsers_GetList",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfAssetUserModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Assets - Users"
+        ],
+        "operationId": "AssetsUsers_Create",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssetUserModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{assetId}/users/{userId}": {
+      "delete": {
+        "tags": [
+          "Assets - Users"
+        ],
+        "operationId": "AssetsUsers_Delete",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/types": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "operationId": "Devices_GetList",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfDeviceTypeModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/geocode/reverse": {
+      "get": {
+        "tags": [
+          "Geocode"
+        ],
+        "operationId": "Geocode_Reverse",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "operationId": "Health_GetGET",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "Health"
+        ],
+        "operationId": "Health_GetHEAD",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/organizations": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "operationId": "Organizations_List",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfOrganizationModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "operationId": "Organizations_Create",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrganizationModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "operationId": "Organizations_Get",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "operationId": "Organizations_Update",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrganizationModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Organizations"
+        ],
+        "operationId": "Organizations_Delete",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "OrganizationsUsers_List",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfOrganizationUserModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "OrganizationsUsers_Create",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrganizationUserModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}/users/{userId}": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "OrganizationsUsers_Update",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrganizationUserModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 3
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "OrganizationsUsers_Delete",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protocols": {
+      "get": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "Protocols_GetList",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfProtocolModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/assets": {
+      "get": {
+        "tags": [
+          "Teams - Assets"
+        ],
+        "operationId": "TeamsAssets_List",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfTeamAssetModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Teams - Assets"
+        ],
+        "operationId": "TeamsAssets_Create",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeamAssetModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/assets/{assetId}": {
+      "delete": {
+        "tags": [
+          "Teams - Assets"
+        ],
+        "operationId": "TeamsAssets_Delete",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}/teams": {
+      "get": {
+        "tags": [
+          "Teams"
+        ],
+        "operationId": "Teams_GetList",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfTeamModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Teams"
+        ],
+        "operationId": "Teams_Create",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeamModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamId}": {
+      "get": {
+        "tags": [
+          "Teams"
+        ],
+        "operationId": "Teams_Get",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Teams"
+        ],
+        "operationId": "Teams_Update",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTeamModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Teams"
+        ],
+        "operationId": "Teams_Delete",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/users": {
+      "get": {
+        "tags": [
+          "Teams - Users"
+        ],
+        "operationId": "TeamsUsers_List",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListModelOfTeamUserModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Teams - Users"
+        ],
+        "operationId": "TeamsUsers_Create",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeamUserModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/users/{userId}": {
+      "post": {
+        "tags": [
+          "Teams - Users"
+        ],
+        "operationId": "TeamsUsers_Update",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTeamUserModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 3
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Teams - Users"
+        ],
+        "operationId": "TeamsUsers_Delete",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "User_Get",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "User_Update",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/change-password": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "User_ChangePassword",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "errors": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateAccountModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "password",
+          "confirmPassword"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confirmPassword": {
+            "type": "string",
+            "minLength": 1
+          },
+          "captcha": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "DeleteAccountModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "ForgotPasswordModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ResetPasswordModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BasePasswordModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
+      },
+      "BasePasswordModel": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "required": [
+          "password",
+          "confirmPassword"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confirmPassword": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ListModelOfAssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetModel"
+            }
+          }
+        }
+      },
+      "AssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "organizationId",
+          "online",
+          "maxSpeed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "organizationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "online": {
+            "type": "boolean"
+          },
+          "maxSpeed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastMessage": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DeviceMessageModel"
+              }
+            ]
+          },
+          "lastPositionMessage": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DeviceMessageModel"
+              }
+            ]
+          },
+          "device": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DeviceModel"
+              }
+            ]
+          }
+        }
+      },
+      "DeviceMessageModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "position"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "priority": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/MessagePriority"
+              }
+            ]
+          },
+          "position": {
+            "$ref": "#/components/schemas/PositionDataModel"
+          },
+          "device": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DeviceDataModel"
+              }
+            ]
+          },
+          "vehicle": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/VehicleDataModel"
+              }
+            ]
+          },
+          "gsm": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GsmDataModel"
+              }
+            ]
+          }
+        }
+      },
+      "MessagePriority": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Low",
+          "Medium",
+          "High",
+          "Emergency"
+        ],
+        "enum": [
+          "Low",
+          "Medium",
+          "High",
+          "Emergency"
+        ]
+      },
+      "PositionDataModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "coordinates",
+          "date"
+        ],
+        "properties": {
+          "coordinates": {
+            "$ref": "#/components/schemas/LatLong"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "speed": {
+            "type": "number",
+            "format": "double"
+          },
+          "heading": {
+            "type": "number",
+            "format": "double"
+          },
+          "altitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "satellites": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hdop": {
+            "type": "number",
+            "format": "double"
+          },
+          "pdop": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "valid": {
+            "type": "boolean"
+          }
+        }
+      },
+      "LatLong": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "DeviceDataModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "odometer": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "batteryLevel": {
+            "type": "integer",
+            "format": "byte",
+            "nullable": true
+          },
+          "batteryVoltage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "batteryCurrent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "VehicleDataModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "odometer": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ignition": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "voltage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "GsmDataModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "signalLevel": {
+            "type": "integer",
+            "format": "byte",
+            "nullable": true
+          },
+          "mobileCountryCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobileNetworkCode": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "DeviceModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "serialNumber",
+          "deviceType",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "serialNumber": {
+            "type": "string",
+            "minLength": 1
+          },
+          "deviceType": {
+            "$ref": "#/components/schemas/DeviceTypeModel"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "positions": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "DeviceTypeModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "manufacturer",
+          "model",
+          "displayName",
+          "protocol"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "manufacturer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "protocol": {
+            "$ref": "#/components/schemas/ProtocolModel"
+          }
+        }
+      },
+      "ProtocolModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "port",
+          "name"
+        ],
+        "properties": {
+          "port": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "Entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateAssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "deviceTypeId",
+          "serialNumber"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "deviceTypeId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "serialNumber": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateAssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ListModelOfDeviceModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceModel"
+            }
+          }
+        }
+      },
+      "CreateOrUpdateAssetDeviceModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "serialNumber",
+          "deviceTypeId"
+        ],
+        "properties": {
+          "serialNumber": {
+            "type": "string",
+            "minLength": 1
+          },
+          "deviceTypeId": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "MessageList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ListModelOfDeviceMessageModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "totalCount"
+            ],
+            "properties": {
+              "averageSpeed": {
+                "type": "number",
+                "format": "float",
+                "nullable": true
+              },
+              "averageAltitude": {
+                "type": "number",
+                "format": "float",
+                "nullable": true
+              },
+              "totalCount": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
+        ]
+      },
+      "ListModelOfDeviceMessageModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceMessageModel"
+            }
+          }
+        }
+      },
+      "DistanceReportModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ListModelOfDistanceReportItemModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "totalDistance",
+              "totalDuration",
+              "averageSpeed",
+              "maxSpeed"
+            ],
+            "properties": {
+              "totalDistance": {
+                "type": "number",
+                "format": "double"
+              },
+              "totalDuration": {
+                "type": "number",
+                "format": "double"
+              },
+              "averageSpeed": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxSpeed": {
+                "type": "number",
+                "format": "double"
+              },
+              "totalFuelConsumption": {
+                "type": "number",
+                "format": "double",
+                "nullable": true
+              },
+              "averageFuelConsumption": {
+                "type": "number",
+                "format": "double",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "ListModelOfDistanceReportItemModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DistanceReportItemModel"
+            }
+          }
+        }
+      },
+      "DistanceReportItemModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "distance",
+          "duration",
+          "averageSpeed",
+          "maxSpeed"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "distance": {
+            "type": "number",
+            "format": "double"
+          },
+          "duration": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "fuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "averageFuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "TripReportModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ListModelOfTripReportItemModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "totalDistance",
+              "totalDuration",
+              "totalFuelConsumption",
+              "averageFuelConsumption",
+              "averageSpeed",
+              "maxSpeed"
+            ],
+            "properties": {
+              "totalDistance": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "totalDuration": {
+                "type": "number",
+                "format": "double"
+              },
+              "totalFuelConsumption": {
+                "type": "number",
+                "format": "double"
+              },
+              "averageFuelConsumption": {
+                "type": "number",
+                "format": "double"
+              },
+              "averageSpeed": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxSpeed": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        ]
+      },
+      "ListModelOfTripReportItemModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripReportItemModel"
+            }
+          }
+        }
+      },
+      "TripReportItemModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "startPosition",
+          "endPosition"
+        ],
+        "properties": {
+          "startPosition": {
+            "$ref": "#/components/schemas/PositionDataModel"
+          },
+          "endPosition": {
+            "$ref": "#/components/schemas/PositionDataModel"
+          },
+          "distance": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "duration": {
+            "type": "number",
+            "format": "double"
+          },
+          "fuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "averageFuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageSpeed": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "AssetStatsModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "distance": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "distancePrevious": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "durationPrevious": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fuelConsumptionPrevious": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fuelConsumptionAverage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fuelConsumptionAveragePrevious": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "AssetStatsPeriod": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Day",
+          "Week",
+          "Month",
+          "Year"
+        ],
+        "enum": [
+          "Day",
+          "Week",
+          "Month",
+          "Year"
+        ]
+      },
+      "TripListModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ListModelOfTripModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "totalDistance",
+              "totalDuration",
+              "totalPositions",
+              "averageSpeed",
+              "maxSpeed",
+              "averageAltitude",
+              "maxAltitude"
+            ],
+            "properties": {
+              "totalDistance": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "totalDuration": {
+                "type": "number",
+                "format": "double"
+              },
+              "totalPositions": {
+                "type": "number",
+                "format": "double"
+              },
+              "averageSpeed": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxSpeed": {
+                "type": "number",
+                "format": "double"
+              },
+              "averageAltitude": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxAltitude": {
+                "type": "number",
+                "format": "double"
+              },
+              "fuelConsumption": {
+                "type": "number",
+                "format": "double",
+                "nullable": true
+              },
+              "averageFuelConsumption": {
+                "type": "number",
+                "format": "double",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "ListModelOfTripModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripModel"
+            }
+          }
+        }
+      },
+      "TripModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "positions",
+          "startPosition",
+          "endPosition",
+          "duration",
+          "distance"
+        ],
+        "properties": {
+          "positions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PositionDataModel"
+            }
+          },
+          "startPosition": {
+            "$ref": "#/components/schemas/PositionDataModel"
+          },
+          "endPosition": {
+            "$ref": "#/components/schemas/PositionDataModel"
+          },
+          "duration": {
+            "type": "number",
+            "format": "double"
+          },
+          "distance": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxAltitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageAltitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageFuelConsumption": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "ListModelOfAssetUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetUserModel"
+            }
+          }
+        }
+      },
+      "AssetUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "userRole",
+          "userId",
+          "createdDate"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/AssetUserRole"
+          },
+          "userId": {
+            "type": "string",
+            "format": "guid",
+            "minLength": 1
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          }
+        }
+      },
+      "AssetUserRole": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Owner",
+          "Viewer"
+        ],
+        "enum": [
+          "Owner",
+          "Viewer"
+        ]
+      },
+      "CreateAssetUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "userRole"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/AssetUserRole"
+          }
+        }
+      },
+      "ListModelOfDeviceTypeModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceTypeModel"
+            }
+          }
+        }
+      },
+      "LocationModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "county": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "town": {
+            "type": "string",
+            "nullable": true
+          },
+          "village": {
+            "type": "string",
+            "nullable": true
+          },
+          "street": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "suburb": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ListModelOfOrganizationModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganizationModel"
+            }
+          }
+        }
+      },
+      "OrganizationModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "assetsCount",
+          "usersCount",
+          "teamsCount",
+          "workSchedule"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "assetsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usersCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "teamsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "workSchedule": {
+            "$ref": "#/components/schemas/WorkScheduleModel"
+          }
+        }
+      },
+      "WorkScheduleModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkScheduleDayModel"
+            }
+          }
+        }
+      },
+      "WorkScheduleDayModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dayOfWeek"
+        ],
+        "properties": {
+          "dayOfWeek": {
+            "$ref": "#/components/schemas/DayOfWeek"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "time"
+          }
+        }
+      },
+      "DayOfWeek": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ],
+        "enum": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ]
+      },
+      "CreateOrganizationModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "UpdateOrganizationModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "workSchedules": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/WorkScheduleDayModel"
+            }
+          }
+        }
+      },
+      "ListModelOfOrganizationUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganizationUserModel"
+            }
+          }
+        }
+      },
+      "OrganizationUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "userRole",
+          "userId",
+          "createdDate"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/OrganizationUserRole"
+          },
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          }
+        }
+      },
+      "OrganizationUserRole": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Owner",
+          "Member"
+        ],
+        "enum": [
+          "Owner",
+          "Member"
+        ]
+      },
+      "CreateOrganizationUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "userRole"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/OrganizationUserRole"
+          }
+        }
+      },
+      "UpdateOrganizationUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "userRole"
+        ],
+        "properties": {
+          "userRole": {
+            "$ref": "#/components/schemas/OrganizationUserRole"
+          }
+        }
+      },
+      "ListModelOfProtocolModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProtocolModel"
+            }
+          }
+        }
+      },
+      "ListModelOfTeamAssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamAssetModel"
+            }
+          }
+        }
+      },
+      "TeamAssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId",
+          "name",
+          "createdDate"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          }
+        }
+      },
+      "CreateTeamAssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ListModelOfTeamModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamModel"
+            }
+          }
+        }
+      },
+      "TeamModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "organizationId",
+          "usersCount",
+          "assetsCount"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "organizationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "usersCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assetsCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateTeamModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "UpdateTeamModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ListModelOfTeamUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamUserModel"
+            }
+          }
+        }
+      },
+      "TeamUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "userId",
+          "email",
+          "userRole",
+          "createdDate"
+        ],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/TeamUserRole"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          }
+        }
+      },
+      "TeamUserRole": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Owner",
+          "Member"
+        ],
+        "enum": [
+          "Owner",
+          "Member"
+        ]
+      },
+      "CreateTeamUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "userRole"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/TeamUserRole"
+          }
+        }
+      },
+      "UpdateTeamUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "userRole"
+        ],
+        "properties": {
+          "userRole": {
+            "$ref": "#/components/schemas/TeamUserRole"
+          }
+        }
+      },
+      "CurrentUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "email",
+          "units"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "units": {
+            "$ref": "#/components/schemas/UnitsType"
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserAssetModel"
+            }
+          },
+          "organizations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserOrganizationModel"
+            }
+          },
+          "teams": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserTeamModel"
+            }
+          },
+          "authentication": {
+            "$ref": "#/components/schemas/UserAuthenticationModel"
+          }
+        }
+      },
+      "UnitsType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Metric",
+          "Imperial"
+        ],
+        "enum": [
+          "Metric",
+          "Imperial"
+        ]
+      },
+      "UserAssetModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId",
+          "userRole"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/AssetUserRole"
+          }
+        }
+      },
+      "UserOrganizationModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizationId",
+          "userRole"
+        ],
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/OrganizationUserRole"
+          }
+        }
+      },
+      "UserTeamModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "teamId",
+          "userRole"
+        ],
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userRole": {
+            "$ref": "#/components/schemas/TeamUserRole"
+          }
+        }
+      },
+      "UserAuthenticationModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "password": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateUserModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "unitsType": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UnitsType"
+              }
+            ]
+          }
+        }
+      },
+      "ChangePasswordModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BasePasswordModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "currentPassword": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Assets"
+    },
+    {
+      "name": "Assets - Devices"
+    },
+    {
+      "name": "Assets - Messages"
+    },
+    {
+      "name": "Assets - Reports"
+    },
+    {
+      "name": "Assets - Stats"
+    },
+    {
+      "name": "Assets - Trips"
+    },
+    {
+      "name": "Assets - Users"
+    },
+    {
+      "name": "Organizations"
+    },
+    {
+      "name": "Users"
+    },
+    {
+      "name": "Teams - Assets"
+    },
+    {
+      "name": "Teams"
+    },
+    {
+      "name": "Teams - Users"
+    }
+  ]
+}

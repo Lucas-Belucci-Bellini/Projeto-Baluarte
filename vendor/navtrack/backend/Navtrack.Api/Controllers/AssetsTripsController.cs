@@ -1,0 +1,37 @@
+using System;
+using System.Threading.Tasks;
+using IdentityServer4;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Navtrack.Api.Controllers.Shared;
+using Navtrack.Api.Model.Trips;
+using Navtrack.Api.Services.Common.ActionFilters;
+using Navtrack.Api.Services.Requests;
+using Navtrack.Api.Services.Trips;
+using Navtrack.Database.Model.Assets;
+using NSwag.Annotations;
+
+namespace Navtrack.Api.Controllers;
+
+[ApiController]
+[Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+[OpenApiTag(ControllerTags.AssetsTrips)]
+public class AssetsTripsController(IRequestHandler requestHandler) : ControllerBase
+{
+    [HttpGet(ApiPaths.AssetTrips)]
+    [ProducesResponseType(typeof(TripListModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [NavtrackAuthorize(AssetUserRole.Viewer)]
+    public async Task<TripListModel> GetList([FromRoute] Guid assetId, [FromQuery] TripFilterModel filter)
+    {
+        TripListModel result = await requestHandler.Handle<GetAssetTripsRequest, TripListModel>(
+            new GetAssetTripsRequest
+            {
+                AssetId = assetId,
+                Filter = filter
+            });
+
+        return result;
+    }
+}

@@ -1,0 +1,49 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+using Navtrack.Database.Model.Devices;
+using Navtrack.Listener.Helpers;
+using Navtrack.Listener.Server;
+using Navtrack.Shared.Library.DI;
+
+namespace Navtrack.Listener.Protocols.GPSMarker;
+
+[Service(typeof(ICustomMessageHandler<GPSMarkerProtocol>))]
+public class GPSMarkerMessageHandler : BaseMessageHandler<GPSMarkerProtocol>
+{
+    public override DeviceMessageEntity? Parse(MessageInput input)
+    {
+        Match locationMatch =
+            new Regex(
+                    "\\$GM(\\d)(.{2})?" +
+                    "(\\d{15})" + // imei
+                    "T(\\d{2}\\d{2}\\d{2}\\d{2}\\d{2}\\d{2})" + // dd mm yy hh mm ss
+                    "(N|S)(\\d{2}\\d{2}\\d{4})" + // latitude dd mm ssss
+                    "(E|W)(\\d{3}\\d{2}\\d{4})" + // longitude ddd mm ssss
+                    "(\\d{3})" + // speed
+                    "(\\d{3})" + // heading
+                    "(.)" + // satellites hex
+                    "(.{2})(\\d)(\\d)(\\d{3})#")
+                .Match(input.DataMessage.String);
+
+        if (locationMatch.Success)
+        {
+            input.ConnectionContext.SetDevice(locationMatch.Groups[3].Value);
+
+            DeviceMessageEntity deviceMessage = new()
+            {
+                Date = DateTimeUtil.Convert(DateFormat.DDMMYYHHMMSS, locationMatch.Groups[4].Value),
+                Latitude = GpsUtil.Convert(GpsFormat.DDDMMmmmm, locationMatch.Groups[6].Value,
+                    locationMatch.Groups[5].Value),
+                Longitude = GpsUtil.Convert(GpsFormat.DDDMMmmmm, locationMatch.Groups[8].Value,
+                    locationMatch.Groups[7].Value),
+                Speed = locationMatch.Groups[9].Get<short?>(),
+                Heading = locationMatch.Groups[10].Get<short?>(),
+                Satellites = short.Parse(locationMatch.Groups[11].Value, NumberStyles.HexNumber)
+            };
+
+            return deviceMessage;
+        }
+
+        return null;
+    }
+}

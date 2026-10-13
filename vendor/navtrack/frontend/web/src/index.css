@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+.recharts-wrapper * {
+  outline: none !important;
+}

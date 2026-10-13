@@ -1,0 +1,31 @@
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  getOrganizationsGetQueryKey,
+  getTeamsAssetsListQueryKey,
+  useTeamsDelete
+} from "../../../api";
+
+type DeleteTeamMutationProps = {
+  organizationId?: string;
+};
+
+export function useDeleteTeamMutation(props: DeleteTeamMutationProps) {
+  const queryClient = useQueryClient();
+
+  const mutation = useTeamsDelete({
+    mutation: {
+      onSuccess: async (_, variables) => {
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: getTeamsAssetsListQueryKey(variables.teamId)
+          }),
+          queryClient.invalidateQueries({
+            queryKey: getOrganizationsGetQueryKey(props.organizationId!)
+          })
+        ]);
+      }
+    }
+  });
+
+  return mutation;
+}
