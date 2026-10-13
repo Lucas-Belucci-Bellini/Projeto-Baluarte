@@ -1,0 +1,22 @@
+{
+  "init_from": "scratch",
+  "model_path": "results/test1",
+  "training_data_path": "prince",
+  "encoding": "char",
+  "torch_compile": false,
+  "log_interval": 10,
+  "eval_interval": 10,
+  "eval_iters": 10,
+  "batch_size": 4,
+  "block_size": 8,
+  "n_layer": 3,
+  "n_head": 2,
+  "n_embd": 4,
+  "dropout": 0.2,
+  "learning_rate": 1e-3,
+  "max_iters": 50,
+  "lr_decay_iters": 50,
+  "min_lr": 1e-4,
+  "beta2": 0.99,
+  "warmup_iters": 100
+}

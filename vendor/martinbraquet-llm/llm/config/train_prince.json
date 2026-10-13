@@ -1,0 +1,21 @@
+{
+  "init_from": "scratch",
+  "model_path": "results/prince-medium",
+  "training_data_path": "prince",
+  "always_save_checkpoint": true,
+  "log_interval": 10,
+  "eval_interval": 100,
+  "eval_iters": 50,
+  "batch_size": 4,
+  "block_size": 256,
+  "n_layer": 6,
+  "n_head": 6,
+  "n_embd": 384,
+  "dropout": 0.2,
+  "learning_rate": 1e-3,
+  "min_lr": 1e-4,
+  "max_iters": 500,
+  "lr_decay_iters": 500,
+  "beta2": 0.99,
+  "warmup_iters": 100
+}
