@@ -1,0 +1,20 @@
+# Build artifacts
+*.o
+*.dSYM/
+
+# Test binaries (built by Makefile)
+test_bug1_timed_sync_init_ordering
+test_bug2_ad9523_double_setup
+test_bug3_timed_sync_noop
+test_bug4_phase_shift_before_check
+test_bug5_fine_phase_gpio_only
+test_bug6_timer_variable_collision
+test_bug7_gpio_pin_conflict
+test_bug8_uart_commented_out
+test_bug9_platform_ops_null
+test_bug10_spi_cs_not_toggled
+test_bug11_platform_spi_transmit_only
+test_bug12_pa_cal_loop_inverted
+test_bug13_dac2_adc_buffer_mismatch
+test_bug14_diag_section_args
+test_bug15_htim3_dangling_extern
