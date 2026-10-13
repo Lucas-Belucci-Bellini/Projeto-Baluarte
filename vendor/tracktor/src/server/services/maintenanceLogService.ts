@@ -1,0 +1,70 @@
+import * as schema from '../db/schema/index';
+import { db } from '../db/index';
+import { eq } from 'drizzle-orm';
+import type { ApiResponse } from '$lib/response';
+import { validateVehicleExists, performDelete } from '../utils/serviceUtils';
+import { createSuccessResponse, requireRecord } from './service-response.helper';
+
+type MaintenanceLogPayload = {
+  date: string;
+  odometer: number;
+  serviceCenter: string;
+  cost: number;
+  notes: string | null;
+  attachment: string | null;
+};
+
+export const addMaintenanceLog = async (
+  vehicleId: string,
+  maintenanceLogData: MaintenanceLogPayload
+): Promise<ApiResponse> => {
+  await validateVehicleExists(vehicleId);
+
+  const maintenanceLog = await db
+    .insert(schema.maintenanceLogTable)
+    .values({
+      ...maintenanceLogData,
+      vehicleId: vehicleId,
+      id: undefined
+    })
+    .returning();
+  return createSuccessResponse(maintenanceLog[0], 'Maintenance log added successfully.');
+};
+
+export const getMaintenanceLogs = async (vehicleId: string): Promise<ApiResponse> => {
+  const maintenanceLogs = await db.query.maintenanceLogTable.findMany({
+    where: (logs, { eq }) => eq(logs.vehicleId, vehicleId),
+    orderBy: (logs, { asc }) => [asc(logs.date), asc(logs.odometer)]
+  });
+  return createSuccessResponse(maintenanceLogs);
+};
+
+export const getMaintenanceLogById = async (id: string): Promise<ApiResponse> => {
+  const maintenanceLog = requireRecord(
+    await db.query.maintenanceLogTable.findFirst({
+      where: (logs, { eq }) => eq(logs.id, id)
+    }),
+    `No Maintenence log found for id : ${id}`
+  );
+
+  return createSuccessResponse(maintenanceLog);
+};
+
+export const updateMaintenanceLog = async (
+  id: string,
+  maintenanceLogData: MaintenanceLogPayload
+): Promise<ApiResponse> => {
+  await getMaintenanceLogById(id);
+  const updatedLog = await db
+    .update(schema.maintenanceLogTable)
+    .set({
+      ...maintenanceLogData
+    })
+    .where(eq(schema.maintenanceLogTable.id, id))
+    .returning();
+  return createSuccessResponse(updatedLog[0], 'Maintenance log updated successfully.');
+};
+
+export const deleteMaintenanceLog = async (id: string): Promise<ApiResponse> => {
+  return await performDelete(schema.maintenanceLogTable, id, 'Maintenance log');
+};
