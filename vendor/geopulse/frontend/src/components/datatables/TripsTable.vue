@@ -1,0 +1,1047 @@
+<template>
+  <BaseCard title="Trips" class="trips-table-card">
+    <!-- Table Header with Filters and Export -->
+    <template #header>
+      <div class="table-header">
+        <div v-if="!isMobile" class="table-title-section">
+          <h3 class="table-title">Trips</h3>
+          <span class="table-count">{{ filteredTripsData.length }} trips</span>
+        </div>
+        <div class="table-actions">
+          <div class="filter-controls">
+            <InputText 
+              v-model="searchTerm"
+              placeholder="Search origins/destinations..."
+              class="search-input"
+            />
+            <Select
+              v-model="selectedTransportMode"
+              :options="transportModeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Trip Type"
+              showClear
+              class="transport-filter"
+            />
+            <Select
+              v-model="distanceFilter"
+              :options="distanceFilterOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Distance"
+              showClear
+              class="distance-filter"
+            />
+          </div>
+          <Button
+            :label="isMobile ? null : 'Export CSV'"
+            :aria-label="'Export CSV'"
+            icon="pi pi-download"
+            @click="$emit('export')"
+            outlined
+            class="export-button"
+            :class="{ 'export-button--icon': isMobile }"
+          />
+        </div>
+      </div>
+    </template>
+
+    <!-- Trips Data Table -->
+    <DataTable
+      v-if="!isMobile"
+      :value="filteredTripsData"
+      :loading="loading"
+      :paginator="false"
+      sortMode="single"
+      removableSort
+      selectionMode="single"
+      v-model:selection="selectedTrip"
+      @row-select="handleRowSelect"
+      class="trips-data-table"
+      responsiveLayout="scroll"
+      :scrollable="true"
+      scrollHeight="600px"
+      :virtualScrollerOptions="{
+        itemSize: 73
+      }"
+      :pt="{
+        root: 'bg-surface-0 dark:bg-surface-950',
+        header: 'bg-surface-50 dark:bg-surface-900 border-surface-200 dark:border-surface-700',
+        tbody: 'bg-surface-0 dark:bg-surface-950',
+        row: 'bg-surface-0 dark:bg-surface-950 hover:bg-surface-50 dark:hover:bg-surface-800',
+        cell: 'text-surface-900 dark:text-surface-100 border-surface-200 dark:border-surface-700',
+        paginator: 'bg-surface-50 dark:bg-surface-900 border-surface-200 dark:border-surface-700'
+      }"
+    >
+      <!-- Start Time Column -->
+      <Column 
+        field="timestamp" 
+        header="Start Time" 
+        :sortable="true"
+        :style="{ 'min-width': '150px' }"
+      >
+        <template #body="slotProps">
+          <div class="datetime-display">
+            <div class="date-part">{{ formatDate(slotProps.data.timestamp) }}</div>
+            <div class="time-part">{{ formatTime(slotProps.data.timestamp) }}</div>
+          </div>
+        </template>
+      </Column>
+
+      <!-- End Time Column -->
+      <Column 
+        field="endTime" 
+        header="End Time"
+        :sortable="true" 
+        :style="{ 'min-width': '150px' }"
+      >
+        <template #body="slotProps">
+          <div class="datetime-display">
+            <div class="date-part">{{ getEndDate(slotProps.data) }}</div>
+            <div class="time-part">{{ getEndTime(slotProps.data) }}</div>
+          </div>
+        </template>
+      </Column>
+
+      <!-- Duration Column -->
+      <Column 
+        field="duration" 
+        header="Duration" 
+        :sortable="true"
+        :style="{ 'min-width': '100px' }"
+      >
+        <template #body="slotProps">
+          <span class="duration-badge">
+            {{ formatDuration(slotProps.data.tripDuration) }}
+          </span>
+        </template>
+      </Column>
+
+      <!-- Origin Column -->
+      <Column 
+        field="origin" 
+        header="Origin" 
+        :sortable="true"
+        :style="{ 'min-width': '180px' }"
+      >
+        <template #body="slotProps">
+          <div class="location-info">
+            <div class="location-name">
+              {{ slotProps.data.origin?.locationName || 'Unknown Origin' }}
+            </div>
+          </div>
+        </template>
+      </Column>
+
+      <!-- Destination Column -->
+      <Column 
+        field="destination" 
+        header="Destination" 
+        :sortable="true"
+        :style="{ 'min-width': '180px' }"
+      >
+        <template #body="slotProps">
+          <div class="location-info">
+            <div class="location-name">
+              {{ slotProps.data.destination?.locationName || 'Unknown Destination' }}
+            </div>
+            <div v-if="slotProps.data.destination?.address" class="location-address">
+              {{ slotProps.data.destination.address }}
+            </div>
+          </div>
+        </template>
+      </Column>
+
+      <!-- Distance Column -->
+      <Column 
+        field="distance" 
+        header="Distance" 
+        :sortable="true"
+        :style="{ 'min-width': '100px' }"
+      >
+        <template #body="slotProps">
+          <span class="distance-badge">
+            {{ formatDistance(slotProps.data.distanceMeters) }}
+          </span>
+        </template>
+      </Column>
+
+      <!-- Transport Mode Column -->
+      <Column 
+        field="movementType" 
+        header="Transport"
+        :sortable="true"
+        :style="{ 'min-width': '120px' }"
+      >
+        <template #body="slotProps">
+          <div class="transport-tags">
+            <Tag 
+              v-if="slotProps.data.movementType"
+              :value="slotProps.data.movementType"
+              :severity="getTransportSeverity(slotProps.data.movementType)"
+              :icon="getTransportIcon(slotProps.data.movementType)"
+              class="transport-tag"
+            />
+            <Tag
+              v-if="slotProps.data.movementTypeSource === 'MANUAL'"
+              value="Manual"
+              severity="warn"
+              class="transport-tag transport-tag--manual"
+            />
+            <button
+              v-if="slotProps.data.movementType === 'UNKNOWN'"
+              class="transport-set-btn"
+              @click.stop="openQuickEditDialog(slotProps.data)"
+            >
+              Set manually
+            </button>
+          </div>
+        </template>
+      </Column>
+
+      <!-- Actions Column -->
+      <Column
+        header="Actions"
+        :exportable="false"
+        :style="{ 'min-width': '150px' }"
+      >
+        <template #body="slotProps">
+          <div class="row-actions">
+            <Button
+              icon="pi pi-info-circle"
+              v-tooltip.top="'View details'"
+              outlined
+              rounded
+              size="small"
+              @click="showDetails(slotProps.data)"
+              class="action-button"
+            />
+            <Button
+              icon="pi pi-pencil"
+              v-tooltip.top="'Edit movement type'"
+              outlined
+              rounded
+              size="small"
+              severity="warning"
+              @click="openQuickEditDialog(slotProps.data)"
+              class="action-button"
+            />
+            <Button
+              icon="pi pi-question-circle"
+              v-tooltip.top="'Why this classification?'"
+              outlined
+              rounded
+              size="small"
+              severity="help"
+              @click="showClassification(slotProps.data)"
+              class="action-button"
+            />
+          </div>
+        </template>
+      </Column>
+    </DataTable>
+
+    <div
+      v-else-if="!loading && filteredTripsData.length > 0"
+      class="mobile-trip-list"
+    >
+      <article
+        v-for="trip in filteredTripsData"
+        :key="trip.id || `${trip.timestamp}-${trip.origin?.locationName}-${trip.destination?.locationName}`"
+        class="mobile-trip-card"
+      >
+        <header class="mobile-trip-header">
+          <div class="mobile-route">
+            <h4 class="mobile-route-title">
+              {{ trip.origin?.locationName || 'Unknown Origin' }} to {{ trip.destination?.locationName || 'Unknown Destination' }}
+            </h4>
+            <p v-if="trip.destination?.address" class="mobile-route-address">{{ trip.destination.address }}</p>
+          </div>
+          <span class="duration-badge mobile-duration-badge">{{ formatDuration(trip.tripDuration) }}</span>
+        </header>
+
+        <div class="mobile-trip-tags">
+          <Tag
+            v-if="trip.movementType"
+            :value="trip.movementType"
+            :severity="getTransportSeverity(trip.movementType)"
+            :icon="getTransportIcon(trip.movementType)"
+            class="transport-tag"
+          />
+          <Tag
+            v-if="trip.movementTypeSource === 'MANUAL'"
+            value="Manual"
+            severity="warn"
+            class="transport-tag transport-tag--manual"
+          />
+          <span class="distance-badge">{{ formatDistance(trip.distanceMeters) }}</span>
+        </div>
+
+        <div class="mobile-trip-meta">
+          <div class="mobile-meta-row">
+            <span class="mobile-meta-label">Start</span>
+            <span class="mobile-meta-value">{{ formatDate(trip.timestamp) }} {{ formatTime(trip.timestamp) }}</span>
+          </div>
+          <div class="mobile-meta-row">
+            <span class="mobile-meta-label">End</span>
+            <span class="mobile-meta-value">{{ getEndDate(trip) }} {{ getEndTime(trip) }}</span>
+          </div>
+        </div>
+
+        <button
+          v-if="trip.movementType === 'UNKNOWN'"
+          class="transport-set-btn mobile-transport-set-btn"
+          @click.stop="openQuickEditDialog(trip)"
+        >
+          Set transport manually
+        </button>
+
+        <div class="mobile-trip-actions">
+          <Button
+            icon="pi pi-info-circle"
+            label="Details"
+            outlined
+            size="small"
+            @click="showDetails(trip)"
+          />
+          <Button
+            icon="pi pi-pencil"
+            label="Edit"
+            outlined
+            size="small"
+            severity="warning"
+            @click="openQuickEditDialog(trip)"
+          />
+          <Button
+            icon="pi pi-question-circle"
+            label="Why"
+            outlined
+            size="small"
+            severity="help"
+            @click="showClassification(trip)"
+          />
+        </div>
+      </article>
+    </div>
+
+    <!-- No Data State -->
+    <div v-if="!loading && filteredTripsData.length === 0" class="no-data-state">
+      <i class="pi pi-car no-data-icon"></i>
+      <h4 class="no-data-title">No Trips Found</h4>
+      <p class="no-data-message">
+        No trips found for the selected date range and filters.
+      </p>
+    </div>
+
+    <!-- Trip Details Dialog -->
+    <TripDetailsDialog
+      :visible="detailsDialogVisible"
+      :trip="selectedTripForDetails"
+      @close="closeDetailsDialog"
+    />
+
+    <!-- Trip Classification Dialog -->
+    <TripClassificationDialog
+      :visible="classificationDialogVisible"
+      :trip="selectedTripForClassification"
+      @movement-updated="handleMovementTypeUpdated"
+      @close="closeClassificationDialog"
+    />
+
+    <TripMovementTypeQuickEditDialog
+      :visible="quickEditDialogVisible"
+      :trip="selectedTripForQuickEdit"
+      @movement-updated="handleMovementTypeUpdated"
+      @close="closeQuickEditDialog"
+    />
+  </BaseCard>
+</template>
+
+<script setup>
+import { ref, computed, watch, defineAsyncComponent, onMounted, onUnmounted } from 'vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import Button from 'primevue/button'
+import Tag from 'primevue/tag'
+import BaseCard from '@/components/ui/base/BaseCard.vue'
+import { useTimezone } from '@/composables/useTimezone'
+import { useTableFilters } from '@/composables/useTableFilters'
+import { formatDurationSmart, formatDistance } from '@/utils/calculationsHelpers'
+import { useAuthStore } from '@/stores/auth'
+import { storeToRefs } from 'pinia'
+import { memoizedDateTimeFormat, memoizedDurationFormat, memoizedEndTimeFormat, memoizedDistanceFormat } from '@/utils/formatMemoizer'
+
+// Lazy load the dialog components
+const TripDetailsDialog = defineAsyncComponent(() =>
+  import('@/components/dialogs/TripDetailsDialog.vue')
+)
+
+const TripClassificationDialog = defineAsyncComponent(() =>
+  import('@/components/dialogs/TripClassificationDialog.vue')
+)
+const TripMovementTypeQuickEditDialog = defineAsyncComponent(() =>
+  import('@/components/dialogs/TripMovementTypeQuickEditDialog.vue')
+)
+
+const timezone = useTimezone()
+
+const props = defineProps({
+  trips: {
+    type: Array,
+    default: () => []
+  },
+  stays: {
+    type: Array,
+    default: () => []
+  },
+  dateRange: Array,
+  loading: Boolean
+})
+
+const emit = defineEmits(['export', 'show-on-map', 'row-select'])
+
+const authStore = useAuthStore()
+const { measureUnit } = storeToRefs(authStore)
+
+// Use shared table filters composable with trips-specific options
+const {
+  searchTerm,
+  selectedTransportMode,
+  distanceFilter,
+  transportModeOptions,
+  distanceFilterOptions,
+  useTripsFilter
+} = useTableFilters()
+
+watch(measureUnit, (unit) => {
+  if (unit === 'IMPERIAL') {
+    distanceFilterOptions.value = [
+      { label: 'Less than 1 mile', value: 'short', maxDistance: 1609.34 },
+      { label: '1-10 miles', value: 'medium', minDistance: 1609.34, maxDistance: 16093.4 },
+      { label: '10-50 miles', value: 'long', minDistance: 16093.4, maxDistance: 80467.2 },
+      { label: 'More than 50 miles', value: 'very-long', minDistance: 80467.2 }
+    ]
+  } else {
+    distanceFilterOptions.value = [
+      { label: 'Less than 1 km', value: 'short', maxDistance: 1000 },
+      { label: '1-10 km', value: 'medium', minDistance: 1000, maxDistance: 10000 },
+      { label: '10-50 km', value: 'long', minDistance: 10000, maxDistance: 50000 },
+      { label: 'More than 50 km', value: 'very-long', minDistance: 50000 }
+    ]
+  }
+}, { immediate: true })
+
+// Local state
+const selectedTrip = ref(null)
+const detailsDialogVisible = ref(false)
+const selectedTripForDetails = ref(null)
+const classificationDialogVisible = ref(false)
+const selectedTripForClassification = ref(null)
+const quickEditDialogVisible = ref(false)
+const selectedTripForQuickEdit = ref(null)
+const isMobile = ref(false)
+
+// Use shared filter logic
+const filteredTripsData = useTripsFilter(
+  computed(() => props.trips),
+  computed(() => props.stays)
+)
+
+
+// Methods - Using memoized formatters for better performance
+const formatDate = (timestamp) => {
+  const cacheKeyFormat = `DATE_DISPLAY:${timezone.getDateFormat()}`
+  return memoizedDateTimeFormat(timestamp, cacheKeyFormat, (ts) => timezone.formatDateDisplay(ts))
+}
+
+const formatTime = (timestamp) => {
+  const cacheKeyFormat = `TIME:${timezone.getTimeFormat()}:m`
+  return memoizedDateTimeFormat(timestamp, cacheKeyFormat, (ts) => timezone.formatTime(ts))
+}
+
+const getEndDate = (trip) => {
+  if (!trip?.timestamp || !trip?.tripDuration) return 'N/A'
+
+  return memoizedEndTimeFormat(
+    trip.timestamp,
+    trip.tripDuration,
+    `DATE_DISPLAY:${timezone.getDateFormat()}`,
+    (startTime, duration) => {
+      const start = timezone.fromUtc(startTime)
+      const end = start.clone().add(duration, 'seconds')
+      return timezone.formatDateDisplay(end.toISOString())
+    }
+  )
+}
+
+const getEndTime = (trip) => {
+  if (!trip?.timestamp || !trip?.tripDuration) return 'N/A'
+
+  return memoizedEndTimeFormat(
+    trip.timestamp,
+    trip.tripDuration,
+    `TIME:${timezone.getTimeFormat()}:m`,
+    (startTime, duration) => {
+      const start = timezone.fromUtc(startTime)
+      const end = start.clone().add(duration, 'seconds')
+      return timezone.formatTime(end.toISOString())
+    }
+  )
+}
+
+const formatDuration = (seconds) => {
+  return memoizedDurationFormat(seconds || 0, formatDurationSmart)
+}
+
+const getTransportSeverity = (transportMode) => {
+  const severityMap = {
+    'CAR': 'info',
+    'WALK': 'success',
+    'BICYCLE': 'info',
+    'RUNNING': 'success',
+    'TRAIN': 'info',
+    'FLIGHT': 'danger',
+    'UNKNOWN': 'secondary'
+  }
+  return severityMap[transportMode?.toUpperCase()] || 'secondary'
+}
+
+const getTransportIcon = (transportMode) => {
+  const iconMap = {
+    'CAR': 'pi pi-car',
+    'WALK': 'fas fa-walking',
+    'BICYCLE': 'fas fa-bicycle',
+    'RUNNING': 'fas fa-running',
+    'TRAIN': 'fas fa-train',
+    'FLIGHT': 'fas fa-plane',
+    'UNKNOWN': 'pi pi-question-circle'
+  }
+  return iconMap[transportMode?.toUpperCase()] || 'pi pi-question-circle'
+}
+
+const handleRowSelect = (event) => {
+  emit('row-select', event.data)
+  // Also open the details dialog when a row is selected
+  showDetails(event.data)
+}
+
+const showDetails = (trip) => {
+  selectedTripForDetails.value = trip
+  detailsDialogVisible.value = true
+}
+
+const closeDetailsDialog = () => {
+  detailsDialogVisible.value = false
+  selectedTripForDetails.value = null
+}
+
+const showClassification = (trip) => {
+  selectedTripForClassification.value = trip
+  classificationDialogVisible.value = true
+}
+
+const closeClassificationDialog = () => {
+  classificationDialogVisible.value = false
+  selectedTripForClassification.value = null
+}
+
+const openQuickEditDialog = (trip) => {
+  selectedTripForQuickEdit.value = trip
+  quickEditDialogVisible.value = true
+}
+
+const closeQuickEditDialog = () => {
+  quickEditDialogVisible.value = false
+  selectedTripForQuickEdit.value = null
+}
+
+const handleMovementTypeUpdated = (updated) => {
+  if (!updated?.tripId) return
+
+  const targetTrip = props.trips.find((trip) => trip.id === updated.tripId)
+  if (targetTrip) {
+    targetTrip.movementType = updated.movementType
+    targetTrip.movementTypeSource = updated.movementTypeSource
+  }
+
+  if (selectedTripForClassification.value?.id === updated.tripId) {
+    selectedTripForClassification.value.movementType = updated.movementType
+    selectedTripForClassification.value.movementTypeSource = updated.movementTypeSource
+  }
+
+  if (selectedTripForQuickEdit.value?.id === updated.tripId) {
+    selectedTripForQuickEdit.value.movementType = updated.movementType
+    selectedTripForQuickEdit.value.movementTypeSource = updated.movementTypeSource
+  }
+}
+
+const updateMobileFlag = () => {
+  if (typeof window === 'undefined') {
+    isMobile.value = false
+    return
+  }
+  isMobile.value = window.innerWidth <= 768
+}
+
+onMounted(() => {
+  updateMobileFlag()
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateMobileFlag)
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', updateMobileFlag)
+  }
+})
+
+// Search is handled reactively in the computed filteredTripsData
+</script>
+
+<style scoped>
+.trips-table-card {
+  margin-bottom: var(--gp-spacing-lg);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gp-spacing-md);
+  margin-bottom: var(--gp-spacing-lg);
+}
+
+.table-title-section {
+  display: flex;
+  align-items: center;
+  gap: var(--gp-spacing-sm);
+}
+
+.table-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--gp-text-primary);
+}
+
+.table-count {
+  font-size: 0.875rem;
+  color: var(--gp-text-secondary);
+  font-weight: 500;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gp-spacing-md);
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--gp-spacing-sm);
+}
+
+.search-input {
+  width: 220px;
+}
+
+.transport-filter,
+.distance-filter {
+  width: 150px;
+}
+
+.datetime-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.date-part {
+  font-size: 0.85rem;
+  color: var(--gp-text-secondary);
+  font-weight: 500;
+  font-family: monospace;
+}
+
+.time-part {
+  font-size: 0.9rem;
+  color: var(--gp-text-primary);
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.duration-badge {
+  background: var(--gp-success-50);
+  color: var(--gp-success-700);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.distance-badge {
+  background: var(--gp-info-50);
+  color: var(--gp-info-700);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.location-name {
+  font-weight: 500;
+  color: var(--gp-text-primary);
+}
+
+.location-address {
+  font-size: 0.875rem;
+  color: var(--gp-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 170px;
+}
+
+.transport-tag {
+  font-size: 0.75rem;
+}
+
+.transport-tags {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.transport-tag--manual {
+  font-size: 0.65rem;
+}
+
+.transport-set-btn {
+  border: none;
+  background: transparent;
+  color: var(--gp-warning);
+  font-weight: 700;
+  font-size: 0.72rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.row-actions {
+  display: flex;
+  gap: var(--gp-spacing-xs);
+}
+
+.action-button {
+  width: 32px;
+  height: 32px;
+}
+
+.mobile-trip-list {
+  display: grid;
+  gap: var(--gp-spacing-sm);
+}
+
+.mobile-trip-card {
+  border: 1px solid var(--gp-border-light);
+  border-radius: var(--gp-radius-medium);
+  padding: var(--gp-spacing-md);
+  background: var(--gp-surface-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gp-spacing-sm);
+}
+
+.mobile-trip-header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gp-spacing-sm);
+  align-items: flex-start;
+}
+
+.mobile-route {
+  min-width: 0;
+}
+
+.mobile-route-title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--gp-text-primary);
+  line-height: 1.3;
+}
+
+.mobile-route-address {
+  margin: var(--gp-spacing-xs) 0 0;
+  font-size: 0.8rem;
+  color: var(--gp-text-secondary);
+  line-height: 1.35;
+}
+
+.mobile-duration-badge {
+  white-space: nowrap;
+  padding: 3px 8px;
+}
+
+.mobile-trip-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.mobile-trip-meta {
+  display: grid;
+  gap: 6px;
+}
+
+.mobile-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gp-spacing-sm);
+}
+
+.mobile-meta-label {
+  color: var(--gp-text-secondary);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mobile-meta-value {
+  color: var(--gp-text-primary);
+  font-size: 0.85rem;
+  text-align: right;
+  line-height: 1.35;
+}
+
+.mobile-transport-set-btn {
+  align-self: flex-start;
+}
+
+.mobile-trip-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gp-spacing-xs);
+}
+
+.no-data-state {
+  text-align: center;
+  padding: var(--gp-spacing-xxl);
+  color: var(--gp-text-secondary);
+}
+
+.no-data-icon {
+  font-size: 3rem;
+  margin-bottom: var(--gp-spacing-md);
+  opacity: 0.5;
+}
+
+.no-data-title {
+  margin: 0 0 var(--gp-spacing-sm) 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--gp-text-secondary);
+}
+
+.no-data-message {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--gp-text-muted);
+}
+
+/* Dark Mode */
+.p-dark .duration-badge {
+  background: var(--gp-success-900);
+  color: var(--gp-success-300);
+}
+
+.p-dark .distance-badge {
+  background: var(--gp-info-900);
+  color: var(--gp-info-300);
+}
+
+.p-dark .mobile-trip-card {
+  background: var(--gp-surface-dark);
+  border-color: var(--gp-border-dark);
+}
+
+.p-dark .no-data-title {
+  color: var(--gp-text-primary);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .trips-table-card :deep(.gp-card-header) {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .trips-table-card :deep(.gp-card-content) {
+    padding: 0.75rem;
+  }
+
+  .table-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .table-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 0.5rem;
+  }
+
+  .filter-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .search-input {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .transport-filter,
+  .distance-filter {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .export-button {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    min-width: 40px;
+    padding: 0;
+  }
+
+  .export-button--icon :deep(.p-button-label) {
+    display: none;
+  }
+
+  .location-address {
+    max-width: 120px;
+  }
+
+  .filter-controls :deep(.p-inputtext),
+  .filter-controls :deep(.p-select-label) {
+    font-size: 0.9rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .filter-controls :deep(.p-inputtext),
+  .filter-controls :deep(.p-select) {
+    min-height: 40px;
+  }
+
+  .filter-controls :deep(.p-select-dropdown) {
+    width: 2.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-header {
+    margin-bottom: 0.35rem;
+  }
+
+  .table-actions {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .filter-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* PrimeVue DataTable Dark Mode Styling */
+.p-dark .trips-data-table :deep(.p-datatable) {
+  background: var(--gp-surface-dark) !important;
+  color: var(--gp-text-primary) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-datatable-header) {
+  background: var(--gp-surface-darker) !important;
+  color: var(--gp-text-primary) !important;
+  border-color: var(--gp-border-dark) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-datatable-tbody > tr) {
+  background: var(--gp-surface-dark) !important;
+  color: var(--gp-text-primary) !important;
+  border-color: var(--gp-border-dark) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-datatable-tbody > tr:hover) {
+  background: var(--gp-surface-light) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-datatable-tbody > tr > td) {
+  color: var(--gp-text-primary) !important;
+  border-color: var(--gp-border-dark) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-datatable-thead > tr > th) {
+  background: var(--gp-surface-darker) !important;
+  color: var(--gp-text-primary) !important;
+  border-color: var(--gp-border-dark) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-datatable-paginator-bottom),
+.p-dark .trips-data-table :deep(.p-paginator.p-component) {
+  background: var(--gp-surface-darker) !important;
+  color: var(--gp-text-primary) !important;
+  border: 1px solid var(--gp-border-dark) !important;
+  border-top: 1px solid var(--gp-border-dark) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-datatable-wrapper) {
+  border-radius: var(--gp-radius-medium) !important;
+  overflow: hidden !important;
+  background: var(--gp-surface-dark) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-page),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-next),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-prev),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-first),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-last) {
+  color: var(--gp-text-primary) !important;
+  background: transparent !important;
+  border: 1px solid var(--gp-border-dark) !important;
+  margin: 0 2px !important;
+}
+
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-page:hover),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-next:hover),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-prev:hover),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-first:hover),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-last:hover) {
+  background: var(--gp-surface-light) !important;
+  color: var(--gp-text-primary) !important;
+  border-color: var(--gp-border-medium) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-page.p-highlight),
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-page-selected) {
+  background: var(--gp-primary) !important;
+  color: white !important;
+  border-color: var(--gp-primary) !important;
+}
+
+.p-dark .trips-data-table :deep(.p-paginator .p-paginator-current) {
+  color: var(--gp-text-secondary) !important;
+}
+</style>

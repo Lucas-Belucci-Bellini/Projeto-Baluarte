@@ -1,0 +1,88 @@
+services:
+  geopulse-keygen-dev:
+    image: alpine:latest
+    container_name: geopulse-keygen-dev
+    restart: "no"
+    volumes:
+      - ./keys:/keys
+      - ./generate-keys.sh:/generate-keys.sh
+    command: sh /generate-keys.sh
+
+  geopulse-backend-dev:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.native
+    container_name: geopulse-backend-dev
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - .env
+    environment:
+      - GEOPULSE_POSTGRES_URL=jdbc:postgresql://${GEOPULSE_POSTGRES_HOST}:${GEOPULSE_POSTGRES_PORT}/${GEOPULSE_POSTGRES_DB}
+    volumes:
+      - ./keys:/app/keys
+      - ./dumps:/app/dumps
+      - ./logs:/app/logs
+      - ./import-drop:/data/geopulse-import
+    depends_on:
+      geopulse-keygen-dev:
+        condition: service_completed_successfully
+      geopulse-postgres-dev:
+        condition: service_healthy
+
+  geopulse-ui-dev:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: geopulse-ui-dev
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - .env
+    ports:
+      - 5555:8080  # Change left port to customize external access
+    depends_on:
+      - geopulse-backend-dev
+
+  geopulse-postgres-dev:
+    image: postgis/postgis:17-3.5
+    container_name: geopulse-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${GEOPULSE_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${GEOPULSE_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${GEOPULSE_POSTGRES_DB}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data-dev:/var/lib/postgresql/data
+    # Development PostgreSQL settings with enhanced logging for debugging
+    # Minimal resource usage with detailed monitoring for local development
+    command: >
+      postgres
+      -c timezone=UTC
+      -c shared_buffers=${GEOPULSE_POSTGRES_SHARED_BUFFERS:-128MB}
+      -c work_mem=${GEOPULSE_POSTGRES_WORK_MEM:-6MB}
+      -c maintenance_work_mem=${GEOPULSE_POSTGRES_MAINTENANCE_WORK_MEM:-32MB}
+      -c effective_cache_size=${GEOPULSE_POSTGRES_EFFECTIVE_CACHE_SIZE:-512MB}
+      -c max_wal_size=${GEOPULSE_POSTGRES_MAX_WAL_SIZE:-256MB}
+      -c checkpoint_completion_target=${GEOPULSE_POSTGRES_CHECKPOINT_TARGET:-0.9}
+      -c wal_buffers=${GEOPULSE_POSTGRES_WAL_BUFFERS:-8MB}
+      -c random_page_cost=${GEOPULSE_POSTGRES_RANDOM_PAGE_COST:-1.1}
+      -c effective_io_concurrency=${GEOPULSE_POSTGRES_IO_CONCURRENCY:-50}
+      -c autovacuum_naptime=${GEOPULSE_POSTGRES_AUTOVACUUM_NAPTIME:-60s}
+      -c autovacuum_vacuum_scale_factor=${GEOPULSE_POSTGRES_VACUUM_SCALE_FACTOR:-0.2}
+      -c log_min_duration_statement=${GEOPULSE_POSTGRES_LOG_SLOW_QUERIES:-1000}
+      -c log_statement=${GEOPULSE_POSTGRES_LOG_STATEMENT:-ddl}
+      -c log_checkpoints=${GEOPULSE_POSTGRES_LOG_CHECKPOINTS:-on}
+      -c log_autovacuum_min_duration=${GEOPULSE_POSTGRES_LOG_AUTOVACUUM:-0}
+      -c track_io_timing=on
+      -c track_functions=${GEOPULSE_POSTGRES_TRACK_FUNCTIONS:-all}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${GEOPULSE_POSTGRES_USERNAME} -d ${GEOPULSE_POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data-dev:

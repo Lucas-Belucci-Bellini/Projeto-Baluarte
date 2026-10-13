@@ -1,0 +1,64 @@
+package org.github.tess1o.geopulse.streaming;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.github.tess1o.geopulse.streaming.config.TimelineConfig;
+import org.github.tess1o.geopulse.streaming.model.TimelineJobProgress;
+import org.github.tess1o.geopulse.streaming.model.domain.LocationSource;
+import org.github.tess1o.geopulse.streaming.model.domain.ProcessorMode;
+import org.github.tess1o.geopulse.streaming.model.domain.TimelineEventType;
+import org.github.tess1o.geopulse.streaming.model.dto.*;
+import org.github.tess1o.geopulse.streaming.model.entity.*;
+import org.github.tess1o.geopulse.streaming.model.shared.DataGapStayOverrideLocationStrategy;
+import org.github.tess1o.geopulse.streaming.model.shared.MovementTypeSource;
+import org.github.tess1o.geopulse.streaming.model.shared.TripType;
+
+@RegisterForReflection(targets = {
+        TimelineStayEntity.class,
+        TimelineTripEntity.class,
+        TimelineTripMovementOverrideEntity.class,
+        TimelineDataGapStayOverrideEntity.class,
+        TimelineDataGapEntity.class,
+        LocationSource.class,
+        ProcessorMode.class,
+        TimelineEventType.class,
+        TripType.class,
+        DataGapStayOverrideLocationStrategy.class,
+        MovementTypeSource.class,
+        TimelineDataGapDTO.class,
+        MovementTimelineDTO.class,
+        TimelineStayLocationDTO.class,
+        TimelineTripDTO.class,
+        TripMovementTypeUpdateRequest.class,
+        TripMovementTypeUpdateResponseDTO.class,
+        DataGapStayOverrideRequest.class,
+        DataGapStayOverrideResponseDTO.class,
+        DataGapStayConversionPreviewDTO.class,
+        TimelineDataGapDTO.class,
+        TimelineConfig.class,
+        TimelineJobProgress.class,
+        TimelineJobProgress.JobStatus.class,
+        PagedPlaceVisitsDTO.class,
+        PlaceDetailsDTO.class,
+        PlaceGeometryDTO.class,
+        PlaceStatisticsDTO.class,
+        PlaceVisitDTO.class,
+        FavoriteRelationDTO.class,
+        TripClassificationDetailsDTO.class,
+        // Location Analytics DTOs
+        LocationStatisticsDTO.class,
+        LocationAnalyticsMapPlaceDTO.class,
+        TopPlaceInLocationDTO.class,
+        CitySummaryDTO.class,
+        CityDetailsDTO.class,
+        CityInCountryDTO.class,
+        CountrySummaryDTO.class,
+        CountryDetailsDTO.class,
+        LocationSearchResultDTO.class,
+        MultiUserTimelineDTO.class,
+        MultiUserTimelineDTO.UserTimelineDTO.class,
+        MultiUserTimelineDTO.MultiUserTimelineDTOBuilder.class,
+        MultiUserTimelineDTO.TimelineStats.class,
+        PlacePhotoSearchWindowDTO.class
+})
+public class StreamingNativeConfig {
+}

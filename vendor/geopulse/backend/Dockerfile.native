@@ -1,0 +1,63 @@
+# ==========================
+# Stage 1: Native build
+# ==========================
+FROM quay.io/quarkus/ubi-quarkus-mandrel-builder-image:25.0-java25 AS build
+ARG VERSION
+ARG QUARKUS_NATIVE_BUILD_ARGS=""
+
+# Convert ARG to ENV so Maven can access it via ${env.QUARKUS_NATIVE_BUILD_ARGS}
+ENV QUARKUS_NATIVE_BUILD_ARGS=${QUARKUS_NATIVE_BUILD_ARGS}
+
+# Set working directory
+WORKDIR /app
+
+# Copy Maven wrapper and POMs
+COPY --chown=quarkus:quarkus mvnw /app/mvnw
+COPY --chown=quarkus:quarkus .mvn /app/.mvn
+COPY --chown=quarkus:quarkus pom.xml /app/
+COPY --chown=quarkus:quarkus backend/pom.xml backend/
+
+# Use non-root user for build
+USER quarkus
+WORKDIR /app
+
+# Pre-download dependencies (including native profile dependencies)
+RUN --mount=type=cache,target=/home/quarkus/.m2,uid=1001,gid=1001 \
+    ./mvnw -B org.apache.maven.plugins:maven-dependency-plugin:3.9.0:go-offline -f backend/pom.xml -Pnative
+
+# Copy backend sources
+COPY --chown=quarkus:quarkus backend/src backend/src
+
+# Build the native executable
+# Uses GraalVM defaults: x86-64-v3 for AMD64, armv8-a for ARM64 (optimal performance)
+# For old CPUs/Raspberry Pi, override via QUARKUS_NATIVE_BUILD_ARGS:
+#   AMD64 compatible (x86-64-v2): QUARKUS_NATIVE_BUILD_ARGS=",-march=x86-64-v2"
+#   ARM64 compatible (Raspberry Pi): QUARKUS_NATIVE_BUILD_ARGS=",-march=armv8-a+nolse"
+RUN --mount=type=cache,target=/home/quarkus/.m2,uid=1001,gid=1001 \
+    ./mvnw package -DskipTests -Pnative -f backend/pom.xml -Dquarkus.profile=prod
+
+# ==========================
+# Stage 2: Runtime image
+# ==========================
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.6
+WORKDIR /work
+
+# Set permissions for arbitrary UIDs and GIDs
+# Uses 777 for maximum flexibility - supports both OpenShift pattern (any UID with GID 0)
+# and standard docker-compose (any UID:GID combination like 1000:1000)
+RUN chmod 777 /work \
+    && chown 1001:0 /work
+
+# Copy the native runner
+COPY --from=build --chown=1001:0 --chmod=755 /app/backend/target/*-runner /work/application
+
+# Expose port and switch to non-root (UID 1001)
+EXPOSE 8080
+USER 1001
+
+# These can be overridden via NATIVE_IMAGE_OPTS environment variable
+ENV GEOPULSE_BACKEND_NATIVE_IMAGE_OPTS_DEFAULT="-XX:MaximumHeapSizePercent=70 -XX:MaximumYoungGenerationSizePercent=15"
+
+# Start native binary with optimized GC settings
+# Use NATIVE_IMAGE_OPTS if provided, otherwise use defaults
+ENTRYPOINT ["sh", "-c", "./application -Dquarkus.http.host=0.0.0.0 ${NATIVE_IMAGE_OPTS:-$GEOPULSE_BACKEND_NATIVE_IMAGE_OPTS_DEFAULT}"]

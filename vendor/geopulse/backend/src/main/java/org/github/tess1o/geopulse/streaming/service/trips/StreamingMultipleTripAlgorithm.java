@@ -1,0 +1,277 @@
+package org.github.tess1o.geopulse.streaming.service.trips;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import lombok.extern.slf4j.Slf4j;
+import org.github.tess1o.geopulse.streaming.model.domain.DataGap;
+import org.github.tess1o.geopulse.streaming.model.domain.Stay;
+import org.github.tess1o.geopulse.streaming.model.domain.TimelineEvent;
+import org.github.tess1o.geopulse.streaming.model.domain.Trip;
+import org.github.tess1o.geopulse.streaming.model.shared.TripType;
+import org.github.tess1o.geopulse.streaming.config.TimelineConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Slf4j
+@ApplicationScoped
+public class StreamingMultipleTripAlgorithm extends AbstractTripAlgorithm {
+
+    /**
+     * Minimum contribution ratio for a travel mode to be considered significant.
+     * Each mode must account for at least this percentage of total distance OR time to justify keeping trips separate.
+     * Example: 0.15 means walking must be at least 15% of total distance OR 15% of total time to be considered legitimate.
+     */
+    private static final double MIN_MODE_CONTRIBUTION_RATIO = 0.15;
+
+    /**
+     * Apply multi trip algorithm: allow multiple trips between stays if confident about mode changes.
+     * This is for legitimate cases like drive→walk or walk→drive transitions.
+     */
+    @Override
+    public List<TimelineEvent> apply(UUID userId, List<TimelineEvent> events, TimelineConfig config) {
+        List<TimelineEvent> processedEvents = new ArrayList<>();
+
+        Stay currentStay = null;
+        List<Trip> tripSegment = new ArrayList<>();
+
+        for (TimelineEvent event : events) {
+            if (event instanceof Stay) {
+                Stay stay = (Stay) event;
+
+                // Process accumulated trips for multi-modal analysis
+                if (!tripSegment.isEmpty() && currentStay != null) {
+                    List<Trip> processedTrips = analyzeMultiModalSegment(userId, tripSegment, config);
+
+                    // Ensure at least one trip between stays for continuity
+                    List<Trip> validTrips = processedTrips.stream()
+                            .filter(trip -> isValidTrip(trip, config))
+                            .collect(Collectors.toList());
+
+                    if (validTrips.isEmpty() && !processedTrips.isEmpty()) {
+                        // No valid trips but we have movement between stays - include the best one
+                        Trip bestTrip = processedTrips.stream()
+                                .max((t1, t2) -> Double.compare(t1.getDistanceMeters(), t2.getDistanceMeters()))
+                                .orElse(processedTrips.get(0));
+                        log.warn("Including short trip between stays for continuity: {}m, {}min",
+                                bestTrip.getDistanceMeters(), bestTrip.getDuration().toMinutes());
+                        processedEvents.add(bestTrip);
+                    } else {
+                        validTrips.forEach(processedEvents::add);
+                    }
+                } else if (currentStay != null && tripSegment.isEmpty()) {
+                    // No detected trip between consecutive stays:
+                    // - same location -> keep as-is for optional downstream merge pass
+                    // - different location -> synthesize continuity trip here
+                    if (isSameLocation(currentStay, stay)) {
+                        log.debug("Consecutive stays at same location '{}' with no trips detected - " +
+                                "left as-is in post-processing; downstream merge pass may consolidate when merge is enabled",
+                                stay.getLocationName());
+                    } else {
+                        Trip continuityTrip = createContinuityTripBetweenStays(currentStay, stay, config);
+                        if (continuityTrip != null) {
+                            log.warn("Including continuity trip between consecutive stays: '{}' -> '{}' ({}m, {}min)",
+                                    currentStay.getLocationName(), stay.getLocationName(),
+                                    continuityTrip.getDistanceMeters(), continuityTrip.getDuration().toMinutes());
+                            processedEvents.add(continuityTrip);
+                        } else {
+                            log.warn("Could not create continuity trip between consecutive stays: '{}' -> '{}'",
+                                    currentStay.getLocationName(), stay.getLocationName());
+                        }
+                    }
+                }
+
+                tripSegment.clear();
+                currentStay = stay;
+                processedEvents.add(stay);
+
+            } else if (event instanceof Trip) {
+                tripSegment.add((Trip) event);
+
+            } else {
+                if (!tripSegment.isEmpty()) {
+                    List<Trip> processedTrips = analyzeMultiModalSegment(userId, tripSegment, config);
+                    List<Trip> validTrips = processedTrips.stream()
+                            .filter(trip -> isValidTrip(trip, config))
+                            .collect(Collectors.toList());
+                    if (!validTrips.isEmpty()) {
+                        processedEvents.addAll(validTrips);
+                    } else if (event instanceof DataGap && !processedTrips.isEmpty()) {
+                        // Preserve context before a gap even when trip is below normal thresholds.
+                        Trip bestTrip = processedTrips.stream()
+                                .max((t1, t2) -> Double.compare(t1.getDistanceMeters(), t2.getDistanceMeters()))
+                                .orElse(processedTrips.get(0));
+                        log.warn("Including short trip before data gap for continuity: {}m, {}min",
+                                bestTrip.getDistanceMeters(), bestTrip.getDuration().toMinutes());
+                        processedEvents.add(bestTrip);
+                    }
+                    tripSegment.clear();
+                }
+                processedEvents.add(event);
+            }
+        }
+
+        // Handle remaining trips
+        if (!tripSegment.isEmpty()) {
+            List<Trip> processedTrips = analyzeMultiModalSegment(userId, tripSegment, config);
+            List<Trip> validTrips = processedTrips.stream()
+                    .filter(trip -> isValidTrip(trip, config))
+                    .collect(Collectors.toList());
+
+            if (validTrips.isEmpty() && !processedTrips.isEmpty() && currentStay != null) {
+                // Include best trip for continuity if we had a preceding stay
+                Trip bestTrip = processedTrips.stream()
+                        .max((t1, t2) -> Double.compare(t1.getDistanceMeters(), t2.getDistanceMeters()))
+                        .orElse(processedTrips.get(0));
+                log.warn("Including final short trip for continuity: {}m, {}min",
+                        bestTrip.getDistanceMeters(), bestTrip.getDuration().toMinutes());
+                processedEvents.add(bestTrip);
+            } else {
+                validTrips.forEach(processedEvents::add);
+            }
+        }
+
+        log.info("Multi algorithm: processed {} events into {}", events.size(), processedEvents.size());
+        return processedEvents;
+    }
+
+
+    /**
+     * Analyze trip segment for multi-modal patterns.
+     * Only split if confident about legitimate mode changes.
+     */
+    private List<Trip> analyzeMultiModalSegment(UUID userId, List<Trip> trips, TimelineConfig config) {
+        if (trips.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        if (trips.size() == 1) {
+            return trips;
+        }
+
+        // Step 1: Merge consecutive same-type trips first to avoid fragmentation
+        List<Trip> condensedTrips = mergeConsecutiveSameTypeTrips(userId, trips, config);
+
+        if (condensedTrips.size() == 1) {
+            return condensedTrips;
+        }
+
+        // Step 2: Check if we have legitimate mode diversity (not just traffic fragmentation)
+        boolean hasSignificantModeChanges = hasLegitimateModChanges(condensedTrips);
+
+        if (hasSignificantModeChanges) {
+            log.debug("Multi algorithm: keeping {} separate trips due to significant mode changes", condensedTrips.size());
+            return condensedTrips;
+        } else {
+            // Merge remaining trips
+            log.debug("Multi algorithm: merging {} similar trips", condensedTrips.size());
+            Trip merged = mergeTripSegments(userId, condensedTrips, config);
+            return merged != null ? List.of(merged) : new ArrayList<>();
+        }
+    }
+
+    /**
+     * Merge consecutive trips of the same type to eliminate fragmentation.
+     * For example: [WALK, WALK, WALK, CAR] -> [WALK, CAR]
+     */
+    private List<Trip> mergeConsecutiveSameTypeTrips(UUID userId, List<Trip> trips, TimelineConfig config) {
+        if (trips.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Trip> result = new ArrayList<>();
+        List<Trip> currentGroup = new ArrayList<>();
+        TripType currentType = null;
+
+        for (Trip trip : trips) {
+            if (currentType == null || currentType == trip.getTripType()) {
+                // Same type or first trip - add to current group
+                currentGroup.add(trip);
+                currentType = trip.getTripType();
+            } else {
+                // Different type - merge current group and start new one
+                Trip merged = mergeTripSegments(userId, currentGroup, config);
+                if (merged != null) {
+                    result.add(merged);
+                }
+                currentGroup.clear();
+                currentGroup.add(trip);
+                currentType = trip.getTripType();
+            }
+        }
+
+        // Merge final group
+        if (!currentGroup.isEmpty()) {
+            Trip merged = mergeTripSegments(userId, currentGroup, config);
+            if (merged != null) {
+                result.add(merged);
+            }
+        }
+
+        log.debug("Merged {} trips into {} condensed trips", trips.size(), result.size());
+        return result;
+    }
+
+    /**
+     * Determine if trip segments represent legitimate mode changes vs traffic fragmentation.
+     * Uses relative contribution analysis: both modes must contribute meaningfully to total distance.
+     */
+    private boolean hasLegitimateModChanges(List<Trip> trips) {
+        long walkingTrips = trips.stream().filter(t -> t.getTripType() == TripType.WALK).count();
+        long drivingTrips = trips.stream().filter(t -> t.getTripType() == TripType.CAR).count();
+
+        // If all same mode, definitely merge
+        if (walkingTrips == 0 || drivingTrips == 0) {
+            return false;
+        }
+
+        // Calculate total distance for each mode
+        double totalWalkDistance = trips.stream()
+                .filter(t -> t.getTripType() == TripType.WALK)
+                .mapToDouble(Trip::getDistanceMeters)
+                .sum();
+
+        double totalDriveDistance = trips.stream()
+                .filter(t -> t.getTripType() == TripType.CAR)
+                .mapToDouble(Trip::getDistanceMeters)
+                .sum();
+
+
+        // Calculate total time for each mode
+        double totalWalkingTime = trips.stream()
+                .filter(t -> t.getTripType() == TripType.WALK)
+                .mapToDouble(t -> t.getDuration().getSeconds())
+                .sum();
+
+        double totalDriveTime = trips.stream()
+                .filter(t -> t.getTripType() == TripType.CAR)
+                .mapToDouble(t -> t.getDuration().getSeconds())
+                .sum();
+
+        // Calculate distance-based ratios
+        double totalDistance = totalWalkDistance + totalDriveDistance;
+        double walkDistanceRatio = totalDistance > 0 ? totalWalkDistance / totalDistance : 0;
+        double driveDistanceRatio = totalDistance > 0 ? totalDriveDistance / totalDistance : 0;
+
+        // Calculate time-based ratios
+        double totalTime = totalWalkingTime + totalDriveTime;
+        double walkTimeRatio = totalTime > 0 ? totalWalkingTime / totalTime : 0;
+        double driveTimeRatio = totalTime > 0 ? totalDriveTime / totalTime : 0;
+
+        // Hybrid approach: legitimate if EITHER distance-based OR time-based thresholds are met
+        boolean distanceBasedLegit = walkDistanceRatio >= MIN_MODE_CONTRIBUTION_RATIO &&
+                                     driveDistanceRatio >= MIN_MODE_CONTRIBUTION_RATIO;
+        boolean timeBasedLegit = walkTimeRatio >= MIN_MODE_CONTRIBUTION_RATIO &&
+                                driveTimeRatio >= MIN_MODE_CONTRIBUTION_RATIO;
+        boolean legitimate = distanceBasedLegit || timeBasedLegit;
+
+        log.debug("Mode change analysis: walking={} ({}m, {}%, {}s, {}%), driving={} ({}m, {}%, {}s, {}%), " +
+                "distanceLegit={}, timeLegit={}, legitimate={}",
+                walkingTrips, (long) totalWalkDistance, walkDistanceRatio * 100, (long) totalWalkingTime, walkTimeRatio * 100,
+                drivingTrips, (long) totalDriveDistance, driveDistanceRatio * 100, (long) totalDriveTime, driveTimeRatio * 100,
+                distanceBasedLegit, timeBasedLegit, legitimate);
+
+        return legitimate;
+    }
+}

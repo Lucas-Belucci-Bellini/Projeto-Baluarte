@@ -1,0 +1,563 @@
+package org.github.tess1o.geopulse.streaming.engine;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.github.tess1o.geopulse.gps.repository.GpsPointRepository;
+import org.github.tess1o.geopulse.streaming.config.TimelineConfig;
+import org.github.tess1o.geopulse.streaming.iterator.StreamingGpsIterable;
+import org.github.tess1o.geopulse.streaming.model.domain.*;
+import org.github.tess1o.geopulse.favorites.service.FavoriteLocationService;
+import org.github.tess1o.geopulse.favorites.model.FavoriteLocationsDto;
+import org.github.tess1o.geopulse.favorites.model.FavoriteAreaDto;
+import org.github.tess1o.geopulse.streaming.service.TimelineJobProgressService;
+
+import java.time.Duration;
+import java.util.*;
+
+/**
+ * Core streaming timeline processor implementing the state machine algorithm.
+ * Processes GPS points one by one, maintaining user state and generating timeline events
+ * (stays, trips, data gaps) based on movement patterns and configured thresholds.
+ *
+ * <p>Features accuracy-based filtering to improve data quality:</p>
+ * <ul>
+ *   <li><strong>Pre-filtering:</strong> Removes GPS points with accuracy exceeding the configured threshold</li>
+ *   <li><strong>Cluster validation:</strong> Ensures staypoint clusters meet minimum accuracy ratio requirements</li>
+ *   <li><strong>Configurable thresholds:</strong> Uses staypointMaxAccuracyThreshold and staypointMinAccuracyRatio from TimelineConfig</li>
+ * </ul>
+ *
+ * <p>Accuracy validation can be disabled by setting useVelocityAccuracy=false in the configuration.</p>
+ */
+@ApplicationScoped
+@Slf4j
+public class StreamingTimelineProcessor {
+
+    /**
+     * Distance epsilon tolerance in meters for cross-platform reproducibility.
+     * A 50cm tolerance ensures that small floating-point variations in Haversine
+     * calculations don't cause different stay/trip boundary decisions across JVM versions.
+     */
+    private static final double DISTANCE_EPSILON_METERS = 0.5;
+
+    @Inject
+    DataGapDetectionEngine dataGapEngine;
+
+    @Inject
+    TimelineEventFinalizationService finalizationService;
+
+    @Inject
+    FavoriteLocationService favoriteLocationService;
+
+    @Inject
+    TimelineJobProgressService jobProgressService;
+
+    @Inject
+    GpsPointRepository gpsPointRepository;
+
+    @Inject
+    TripStopHeuristicsService tripStopHeuristicsService;
+
+
+    /**
+     * Process GPS points to generate timeline events (stays, trips, data gaps).
+     *
+     * <p>This method applies accuracy-based filtering before processing:</p>
+     * <ol>
+     *   <li>Filters GPS points using staypointMaxAccuracyThreshold</li>
+     *   <li>Processes filtered points through the state machine</li>
+     *   <li>Validates staypoint clusters using staypointMinAccuracyRatio</li>
+     *   <li>Populates location data for finalized stays</li>
+     * </ol>
+     *
+     * @param newPoints new GPS points to process (can be streaming iterable for memory efficiency)
+     * @param config    timeline configuration with accuracy thresholds
+     * @param userId    user identifier for location resolution
+     * @return list of finalized timeline events
+     */
+    public List<TimelineEvent> processPoints(Iterable<GPSPoint> newPoints, TimelineConfig config, UUID userId) {
+        return processPoints(newPoints, config, userId, null);
+    }
+
+    /**
+     * Process GPS points to generate timeline events (stays, trips, data gaps) with progress tracking.
+     *
+     * @param newPoints new GPS points to process (can be streaming iterable for memory efficiency)
+     * @param config    timeline configuration with accuracy thresholds
+     * @param userId    user identifier for location resolution
+     * @param jobId     optional job ID for progress tracking
+     * @return list of finalized timeline events
+     */
+    public List<TimelineEvent> processPoints(Iterable<GPSPoint> newPoints, TimelineConfig config, UUID userId, UUID jobId) {
+        UserState userState = new UserState();
+        List<TimelineEvent> finalizedEvents = new ArrayList<>();
+
+        // Pre-load user's favorite areas for stay detection enhancement
+        List<FavoriteAreaDto> userFavoriteAreas = loadUserFavoriteAreas(userId);
+
+        // Determine total point count for progress tracking
+        Long totalPoints = null;
+        if (jobId != null && newPoints instanceof StreamingGpsIterable) {
+            StreamingGpsIterable streamingIterable = (StreamingGpsIterable) newPoints;
+            totalPoints = streamingIterable.getTotalCount();
+        }
+
+        final int progressUpdateThreshold = 5000;
+        int processedCount = 0;
+
+        // Process points with inline accuracy filtering (streaming-friendly)
+        for (GPSPoint point : newPoints) {
+            processedCount++;
+            // Apply accuracy filter inline to support streaming without loading all points
+            if (shouldIncludePoint(point, config)) {
+                processPoint(point, userState, config, finalizedEvents, userFavoriteAreas);
+            }
+
+            // Update progress periodically
+            if (jobId != null && processedCount % progressUpdateThreshold == 0) {
+                updateProcessingProgress(jobId, processedCount, totalPoints);
+            }
+        }
+
+        // Final progress update to ensure we capture the last batch
+        if (jobId != null && totalPoints != null) {
+            updateProcessingProgress(jobId, processedCount, totalPoints);
+        }
+
+        // 3. Finalize any remaining active event
+        TimelineEvent finalEvent = finalizeActiveEvent(userState, config);
+        if (finalEvent != null) {
+            finalizedEvents.add(finalEvent);
+        }
+
+        // 4. Batch populate location data for all stays at once (with progress tracking if jobId provided)
+        finalizationService.populateStayLocations(finalizedEvents, userId, jobId);
+
+        return finalizedEvents;
+    }
+
+    /**
+     * Update processing progress with detailed point counts.
+     *
+     * @param jobId          the job ID
+     * @param processedCount number of points processed so far
+     * @param totalPoints    total number of points to process (null if unknown)
+     */
+    private void updateProcessingProgress(UUID jobId, int processedCount, Long totalPoints) {
+        // Calculate percentage in the 40-70% range
+        int percentage;
+        Map<String, Object> details = new HashMap<>();
+
+        if (totalPoints != null && totalPoints > 0) {
+            // Calculate proportional progress from 40% to 70%
+            double progressRatio = (double) processedCount / totalPoints;
+            percentage = 40 + (int) (progressRatio * 30); // Maps 0-100% progress to 40-70%
+            percentage = Math.min(70, percentage); // Cap at 70%
+
+            details.put("processedPoints", processedCount);
+            details.put("totalPoints", totalPoints);
+            details.put("pointsRemaining", totalPoints - processedCount);
+        } else {
+            // Fallback when total is unknown
+            percentage = 40;
+            details.put("processedPoints", processedCount);
+        }
+
+        jobProgressService.updateProgress(
+            jobId,
+            "Processing GPS points through state machine",
+            4,
+            percentage,
+            details
+        );
+    }
+
+    /**
+     * Process a single GPS point through the state machine.
+     * This is the main entry point for the streaming algorithm.
+     *
+     * @param point             the GPS point to process
+     * @param userState         current user processing state
+     * @param config            timeline configuration with user preferences
+     * @param finalizedEvents   list to collect finalized events
+     * @param detectGaps        whether to detect data gaps
+     * @param userFavoriteAreas user's favorite areas for enhanced stay detection
+     */
+    private void processPoint(GPSPoint point, UserState userState, TimelineConfig config, List<TimelineEvent> finalizedEvents, List<FavoriteAreaDto> userFavoriteAreas) {
+        List<TimelineEvent> gapEvents = dataGapEngine.checkForDataGap(point, userState, config);
+        finalizedEvents.addAll(gapEvents);
+
+        // 2. Main state machine processing
+        ProcessingResult stateResult = processStateMachine(point, userState, config, userFavoriteAreas);
+        finalizedEvents.addAll(stateResult.getFinalizedEvents());
+
+        // 3. Update last processed point
+        userState.setLastProcessedPoint(point);
+    }
+
+    /**
+     * Process the main state machine logic for a GPS point.
+     *
+     * @param point             GPS point to process
+     * @param userState         current state
+     * @param config            timeline configuration
+     * @param userFavoriteAreas user's favorite areas for enhanced stay detection
+     * @return processing result from state machine
+     */
+    private ProcessingResult processStateMachine(GPSPoint point, UserState userState, TimelineConfig config, List<FavoriteAreaDto> userFavoriteAreas) {
+        switch (userState.getCurrentMode()) {
+            case UNKNOWN:
+                return handleUnknownState(point, userState);
+
+            case POTENTIAL_STAY:
+                return handlePotentialStayState(point, userState, config, userFavoriteAreas);
+
+            case CONFIRMED_STAY:
+                return handleConfirmedStayState(point, userState, config, userFavoriteAreas);
+
+            case IN_TRIP:
+                return handleTripState(point, userState, config);
+
+            default:
+                log.warn("Unknown processor mode: {}", userState.getCurrentMode());
+                return ProcessingResult.withStateOnly(userState);
+        }
+    }
+
+    /**
+     * Handle UNKNOWN state - transition to POTENTIAL_STAY with first point.
+     */
+    private ProcessingResult handleUnknownState(GPSPoint point, UserState userState) {
+        userState.setCurrentMode(ProcessorMode.POTENTIAL_STAY);
+        userState.clearActivePoints();
+        userState.addActivePoint(point);
+
+        return ProcessingResult.withStateOnly(userState);
+    }
+
+    /**
+     * Handle POTENTIAL_STAY state - check distance and duration to determine next state.
+     * Enhanced with favorite area detection to handle walking within larger areas.
+     */
+    private ProcessingResult handlePotentialStayState(GPSPoint point, UserState userState, TimelineConfig config, List<FavoriteAreaDto> userFavoriteAreas) {
+        GPSPoint centroid = userState.calculateCentroid();
+        double distance = centroid.distanceTo(point);
+        double stayRadius = getStayRadius(config);
+
+        log.trace("POTENTIAL_STAY: point={}, centroid={}, distance={}, stayRadius={}",
+                point.getTimestamp(), centroid.getTimestamp(), distance, stayRadius);
+
+        if (distance > stayRadius + DISTANCE_EPSILON_METERS) {
+            log.trace("Distance {} > stayRadius {} (+ epsilon {}) - checking favorite areas before transitioning to trip",
+                    distance, stayRadius, DISTANCE_EPSILON_METERS);
+
+            // Before transitioning to trip, check if both points are within same favorite area
+            FavoriteAreaDto currentPointArea = findContainingFavoriteArea(point, userFavoriteAreas);
+            FavoriteAreaDto centroidArea = findContainingFavoriteArea(centroid, userFavoriteAreas);
+
+            if (currentPointArea != null && centroidArea != null &&
+                    currentPointArea.getId() == centroidArea.getId()) {
+                // Both points within same favorite area - continue stay detection despite distance
+                log.trace("Points within same favorite area '{}' - continuing stay detection", currentPointArea.getName());
+                userState.addActivePoint(point);
+
+                // Check duration for confirmation as normal
+                Duration stayDuration = calculateCurrentStayDuration(userState);
+                Duration minStayDuration = getMinStayDuration(config);
+
+                if (stayDuration.compareTo(minStayDuration) >= 0) {
+                    log.trace("CONFIRMED_STAY in favorite area: Duration {} >= min duration {}", stayDuration, minStayDuration);
+                    userState.setCurrentMode(ProcessorMode.CONFIRMED_STAY);
+                }
+
+                return ProcessingResult.withStateOnly(userState);
+            } else {
+                // Points not in same favorite area - transition to trip as before
+                log.trace("Points not in same favorite area - transitioning to trip");
+                return transitionToTrip(point, userState);
+            }
+        } else {
+            // Point is close - add to potential stay
+            userState.addActivePoint(point);
+
+            // Check if we've been here long enough to confirm the stay
+            Duration stayDuration = calculateCurrentStayDuration(userState);
+            Duration minStayDuration = getMinStayDuration(config);
+
+            log.trace("POTENTIAL_STAY: stayDuration={}, minStayDuration={}, activePoints={}",
+                    stayDuration, minStayDuration, userState.getActivePoints().size());
+
+            if (stayDuration.compareTo(minStayDuration) >= 0) {
+                log.trace("CONFIRMED_STAY: Duration {} >= min duration {}", stayDuration, minStayDuration);
+                userState.setCurrentMode(ProcessorMode.CONFIRMED_STAY);
+            }
+
+            return ProcessingResult.withStateOnly(userState);
+        }
+    }
+
+    /**
+     * Handle CONFIRMED_STAY state - check if user has moved away.
+     * Enhanced with favorite area detection to handle walking within larger areas.
+     */
+    private ProcessingResult handleConfirmedStayState(GPSPoint point, UserState userState, TimelineConfig config, List<FavoriteAreaDto> userFavoriteAreas) {
+        GPSPoint centroid = userState.calculateCentroid();
+        double distance = centroid.distanceTo(point);
+        double stayRadius = getStayRadius(config);
+
+        if (distance > stayRadius + DISTANCE_EPSILON_METERS) {
+            log.trace("Distance {} > stayRadius {} (+ epsilon {}) in CONFIRMED_STAY - checking favorite areas",
+                    distance, stayRadius, DISTANCE_EPSILON_METERS);
+
+            // Before finalizing stay, check if both points are within same favorite area
+            FavoriteAreaDto currentPointArea = findContainingFavoriteArea(point, userFavoriteAreas);
+            FavoriteAreaDto centroidArea = findContainingFavoriteArea(centroid, userFavoriteAreas);
+
+            if (currentPointArea != null && centroidArea != null &&
+                    currentPointArea.getId() == centroidArea.getId()) {
+                // Both points within same favorite area - continue stay despite distance
+                log.trace("Still within same favorite area '{}' - continuing stay", currentPointArea.getName());
+                userState.addActivePoint(point);
+                return ProcessingResult.withStateOnly(userState);
+            } else {
+                // Points not in same favorite area - finalize stay and start trip as before
+                log.trace("User has moved out of favorite area - finalizing stay");
+                TimelineEvent finalizedStay = finalizationService.finalizeStayWithoutLocation(userState, config);
+
+                // Start new trip
+                userState.setCurrentMode(ProcessorMode.IN_TRIP);
+                userState.clearActivePoints();
+                userState.addActivePoint(point);
+
+                return ProcessingResult.withSingleEvent(userState, finalizedStay);
+            }
+        } else {
+            // Still at the same location - continue stay
+            userState.addActivePoint(point);
+            return ProcessingResult.withStateOnly(userState);
+        }
+    }
+
+    /**
+     * Handle IN_TRIP state - continue trip until sustained stopping is detected.
+     */
+    private ProcessingResult handleTripState(GPSPoint point, UserState userState, TimelineConfig config) {
+        userState.addActivePoint(point);
+
+        // Check for sustained stopping (multiple consecutive slow points over time)
+        StopDetectionResult stopResult = detectSustainedStopInTrip(userState, config);
+
+        if (stopResult.stopDetected) {
+            // Split points: trip points (before stop) and stopped points (potential stay)
+            List<GPSPoint> allPoints = userState.copyActivePoints();
+
+            // Trip ends at the FIRST stopped point (arrival boundary).
+            // This avoids cutting the trip short when arrival is detected only after
+            // additional stopped points accumulate for confidence.
+            List<GPSPoint> tripPoints = allPoints.subList(0, stopResult.stoppedClusterStartIndex + 1);
+
+            // Stay starts at the FIRST stopped point (retroactive timestamp)
+            List<GPSPoint> stoppedPoints = allPoints.subList(stopResult.stoppedClusterStartIndex, allPoints.size());
+
+            TimelineEvent finalizedTrip = null;
+
+            // Only finalize trip if there were moving points before the stop
+            if (!tripPoints.isEmpty()) {
+                UserState tripState = new UserState();
+                tripState.setCurrentMode(ProcessorMode.IN_TRIP);
+                for (GPSPoint p : tripPoints) {
+                    tripState.addActivePoint(p);
+                }
+                finalizedTrip = finalizationService.finalizeTrip(tripState, config);
+            }
+
+            // Start new potential stay with the stopped points (retroactive to first stopped point)
+            userState.setCurrentMode(ProcessorMode.POTENTIAL_STAY);
+            userState.clearActivePoints();
+            for (GPSPoint p : stoppedPoints) {
+                userState.addActivePoint(p);
+            }
+
+            // Return trip event if one was created, otherwise just state change
+            if (finalizedTrip != null) {
+                return ProcessingResult.withSingleEvent(userState, finalizedTrip);
+            } else {
+                return ProcessingResult.withStateOnly(userState);
+            }
+        }
+
+        return ProcessingResult.withStateOnly(userState);
+    }
+
+    /**
+     * Transition from potential stay to trip state.
+     */
+    private ProcessingResult transitionToTrip(GPSPoint point, UserState userState) {
+        userState.setCurrentMode(ProcessorMode.IN_TRIP);
+        userState.addActivePoint(point);
+        return ProcessingResult.withStateOnly(userState);
+    }
+
+    /**
+     * Finalize any active event when processing completes.
+     * This is called at the end of processing a GPS point sequence.
+     *
+     * @param userState final user state
+     * @param config    timeline configuration
+     * @param userId    user identifier for location matching
+     * @return finalized event or null if none active
+     */
+    public TimelineEvent finalizeActiveEvent(UserState userState, TimelineConfig config) {
+        if (!userState.hasActivePoints()) {
+            return null;
+        }
+
+        switch (userState.getCurrentMode()) {
+            case POTENTIAL_STAY:
+            case CONFIRMED_STAY:
+                return finalizationService.finalizeStayWithoutLocation(userState, config);
+
+            case IN_TRIP:
+                return finalizationService.finalizeTrip(userState, config);
+
+            case UNKNOWN:
+            default:
+                return null;
+        }
+    }
+
+
+    // Configuration getters with fallback defaults
+
+
+    private double getStayRadius(TimelineConfig config) {
+        return config.getStaypointRadiusMeters();
+    }
+
+    private Duration getMinStayDuration(TimelineConfig config) {
+        Integer staypointMinDurationMinutes = config.getStaypointMinDurationMinutes();
+        return Duration.ofMinutes(staypointMinDurationMinutes);
+    }
+
+    /**
+     * Result of sustained stop detection containing information about the stopped cluster.
+     */
+    private static class StopDetectionResult {
+        final boolean stopDetected;
+        final int stoppedClusterStartIndex;  // Index in activePoints where stopped cluster begins
+
+        StopDetectionResult(boolean stopDetected, int stoppedClusterStartIndex) {
+            this.stopDetected = stopDetected;
+            this.stoppedClusterStartIndex = stoppedClusterStartIndex;
+        }
+
+        static StopDetectionResult noStop() {
+            return new StopDetectionResult(false, -1);
+        }
+
+        static StopDetectionResult stopDetected(int startIndex) {
+            return new StopDetectionResult(true, startIndex);
+        }
+    }
+
+    /**
+     * Check for arrival/stopping during a trip using flexible criteria.
+     * Handles both sustained stops (traffic avoidance) and immediate arrivals (destination reached).
+     * Returns information about where the stopped cluster begins for retroactive stay timestamp.
+     */
+    private StopDetectionResult detectSustainedStopInTrip(UserState userState, TimelineConfig config) {
+        List<GPSPoint> activePoints = userState.copyActivePoints();
+        TripStopHeuristicsService.TripStopDetection detection =
+                tripStopHeuristicsService.detectTripStopFromRecentWindow(activePoints, config);
+        if (detection.isStopDetected()) {
+            return StopDetectionResult.stopDetected(detection.getStoppedClusterStartIndex());
+        }
+
+        return StopDetectionResult.noStop();
+    }
+
+
+    /**
+     * Calculate current stay duration from active points (extracted for reuse).
+     */
+    private Duration calculateCurrentStayDuration(UserState userState) {
+        GPSPoint firstPoint = userState.getFirstActivePoint();
+        GPSPoint lastPoint = userState.getLastActivePoint();
+
+        if (firstPoint == null || lastPoint == null) {
+            return Duration.ZERO;
+        }
+
+        return Duration.between(firstPoint.getTimestamp(), lastPoint.getTimestamp());
+    }
+
+    /**
+     * Check if a GPS point should be included based on accuracy threshold.
+     * Points with accuracy exceeding the threshold are filtered out to prevent
+     * unreliable GPS data from affecting timeline processing.
+     *
+     * @param point the GPS point to check
+     * @param config timeline configuration containing accuracy threshold
+     * @return true if point should be included, false if it should be filtered out
+     */
+    private boolean shouldIncludePoint(GPSPoint point, TimelineConfig config) {
+        if (point == null) {
+            return false;
+        }
+
+        Double maxAccuracyThreshold = config.getStaypointMaxAccuracyThreshold();
+        if (maxAccuracyThreshold == null || maxAccuracyThreshold <= 0) {
+            // No filtering if threshold is not set or invalid
+            return true;
+        }
+
+        return point.getAccuracy() <= maxAccuracyThreshold;
+    }
+
+    /**
+     * Load user's favorite areas for enhanced stay detection.
+     * This method retrieves all favorite areas for the user to enable
+     * area-based stay detection that can handle walking within larger locations.
+     *
+     * @param userId user identifier
+     * @return list of user's favorite areas
+     */
+    private List<FavoriteAreaDto> loadUserFavoriteAreas(UUID userId) {
+        try {
+            FavoriteLocationsDto favoriteLocations = favoriteLocationService.getFavorites(userId);
+            return favoriteLocations != null && favoriteLocations.getAreas() != null
+                    ? favoriteLocations.getAreas()
+                    : new ArrayList<>();
+        } catch (Exception e) {
+            log.warn("Failed to load favorite areas for user {}: {}", userId, e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Find the favorite area that contains the given GPS point.
+     * Uses rectangular bounding box containment check.
+     *
+     * @param point         GPS point to check
+     * @param favoriteAreas list of favorite areas to search
+     * @return favorite area containing the point, or null if none found
+     */
+    private FavoriteAreaDto findContainingFavoriteArea(GPSPoint point, List<FavoriteAreaDto> favoriteAreas) {
+        if (point == null || favoriteAreas == null || favoriteAreas.isEmpty()) {
+            return null;
+        }
+
+        double pointLat = point.getLatitude();
+        double pointLon = point.getLongitude();
+
+        for (FavoriteAreaDto area : favoriteAreas) {
+            // Check if point is within the rectangular area bounds
+            if (pointLat >= area.getSouthWestLat() && pointLat <= area.getNorthEastLat() &&
+                    pointLon >= area.getSouthWestLon() && pointLon <= area.getNorthEastLon()) {
+                return area;
+            }
+        }
+
+        return null;
+    }
+}

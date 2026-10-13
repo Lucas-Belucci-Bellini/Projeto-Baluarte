@@ -1,0 +1,172 @@
+package org.github.tess1o.geopulse.export.service;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.github.tess1o.geopulse.db.PostgisTestResource;
+import org.github.tess1o.geopulse.export.model.ExportJob;
+import org.github.tess1o.geopulse.gps.integrations.owntracks.model.OwnTracksLocationMessage;
+import org.github.tess1o.geopulse.gps.model.GpsPointEntity;
+import org.github.tess1o.geopulse.gps.repository.GpsPointRepository;
+import org.github.tess1o.geopulse.testsupport.ExportTestFixtures;
+import org.github.tess1o.geopulse.testsupport.TestIds;
+import org.github.tess1o.geopulse.user.model.UserEntity;
+import org.github.tess1o.geopulse.user.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import static org.junit.jupiter.api.Assertions.*;
+/**
+ * Comprehensive unit tests for OwnTracks streaming export service.
+ */
+@QuarkusTest
+@QuarkusTestResource(value = PostgisTestResource.class)
+@Slf4j
+class OwnTracksExportServiceTest {
+    @Inject
+    OwnTracksExportService ownTracksExportService;
+    @Inject
+    UserRepository userRepository;
+    @Inject
+    GpsPointRepository gpsPointRepository;
+    @Inject
+    ObjectMapper objectMapper;
+    @Inject
+    ExportTempFileService tempFileService;
+    private UserEntity testUser;
+    private Instant testStartDate;
+    private Instant testEndDate;
+    @BeforeEach
+    @Transactional
+    void setUp() {
+        testStartDate = Instant.now().minus(2, ChronoUnit.HOURS);
+        testEndDate = Instant.now();
+        testUser = new UserEntity();
+        testUser.setEmail(TestIds.uniqueEmail("owntracks-export-test"));
+        testUser.setFullName("Test User");
+        testUser.setPasswordHash("test-hash");
+        testUser.setCreatedAt(Instant.now());
+        userRepository.persist(testUser);
+    }
+    @AfterEach
+    @Transactional
+    void tearDown() {
+        if (testUser != null) {
+            gpsPointRepository.delete("user.id", testUser.getId());
+            userRepository.delete(testUser);
+        }
+    }
+    @Test
+    @Transactional
+    void testGenerateOwnTracksExport_EmptyData() throws Exception {
+        ExportJob job = createExportJob();
+        ownTracksExportService.generateOwnTracksExport(job);
+        assertNotNull(job.getTempFilePath());
+        assertTrue(job.getFileSizeBytes() >= 0);
+        // precise verification of content
+        byte[] content = Files.readAllBytes(Paths.get(job.getTempFilePath()));
+        JsonNode root = objectMapper.readTree(content);
+        assertTrue(root.isArray());
+        assertEquals(0, root.size());
+        // cleanup
+        tempFileService.deleteTempFile(job.getTempFilePath());
+    }
+    @Test
+    @Transactional
+    void testGenerateOwnTracksExport_SinglePoint() throws Exception {
+        createGpsPoint(testStartDate, 37.7749, -122.4194, 100.0, 15.0, 95.0);
+        ExportJob job = createExportJob();
+        ownTracksExportService.generateOwnTracksExport(job);
+        assertNotNull(job.getTempFilePath());
+        byte[] content = Files.readAllBytes(Paths.get(job.getTempFilePath()));
+        JsonNode root = objectMapper.readTree(content);
+        assertEquals(1, root.size());
+        JsonNode message = root.get(0);
+        assertEquals(37.7749, message.get("lat").asDouble(), 0.0001);
+        assertEquals(-122.4194, message.get("lon").asDouble(), 0.0001);
+        assertEquals(100.0, message.get("alt").asDouble(), 0.1);
+        assertEquals(15.0, message.get("vel").asDouble(), 0.1);
+        assertEquals(95, message.get("batt").asInt());
+        // cleanup
+        tempFileService.deleteTempFile(job.getTempFilePath());
+    }
+    @Test
+    @Transactional
+    void testGenerateOwnTracksExport_StreamingLargeDataset() throws Exception {
+        log.info("Creating 2000 GPS points for streaming test...");
+        int pointCount = 2000;
+        for (int i = 0; i < pointCount; i++) {
+            createGpsPoint(
+                    testStartDate.plus(i, ChronoUnit.SECONDS),
+                    37.7749 + (i * 0.0001),
+                    -122.4194 + (i * 0.0001),
+                    100.0, 15.0, 95.0);
+            if (i % 500 == 0)
+                gpsPointRepository.flush();
+        }
+        gpsPointRepository.flush();
+        ExportJob job = createExportJob();
+        long startTime = System.currentTimeMillis();
+        ownTracksExportService.generateOwnTracksExport(job);
+        long exportTime = System.currentTimeMillis() - startTime;
+        log.info("Streamed {} points in {} ms", pointCount, exportTime);
+        assertNotNull(job.getTempFilePath());
+        byte[] content = Files.readAllBytes(Paths.get(job.getTempFilePath()));
+        JsonNode root = objectMapper.readTree(content);
+        assertEquals(pointCount, root.size());
+        log.info("Streaming export validated: {} messages", root.size());
+        // cleanup
+        tempFileService.deleteTempFile(job.getTempFilePath());
+    }
+    @Test
+    @Transactional
+    void testGenerateOwnTracksExport_ProgressTracking() throws Exception {
+        for (int i = 0; i < 100; i++) {
+            createGpsPoint(
+                    testStartDate.plus(i, ChronoUnit.SECONDS),
+                    37.7749, -122.4194, 100.0, 15.0, 95.0);
+        }
+        gpsPointRepository.flush();
+        ExportJob job = createExportJob();
+        ownTracksExportService.generateOwnTracksExport(job);
+        assertTrue(job.getProgress() >= 5);
+        assertNotNull(job.getProgressMessage());
+        assertNotNull(job.getTempFilePath());
+        // cleanup
+        tempFileService.deleteTempFile(job.getTempFilePath());
+    }
+    @Test
+    @Transactional
+    void testGenerateOwnTracksExport_ValidJsonArrayFormat() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            createGpsPoint(
+                    testStartDate.plus(i, ChronoUnit.MINUTES),
+                    37.7749, -122.4194, 100.0, 15.0, 95.0);
+        }
+        ExportJob job = createExportJob();
+        ownTracksExportService.generateOwnTracksExport(job);
+        assertNotNull(job.getTempFilePath());
+        byte[] result = Files.readAllBytes(Paths.get(job.getTempFilePath()));
+        String json = new String(result);
+        assertDoesNotThrow(() -> objectMapper.readValue(json, OwnTracksLocationMessage[].class));
+        // cleanup
+        tempFileService.deleteTempFile(job.getTempFilePath());
+    }
+    private ExportJob createExportJob() {
+        return ExportTestFixtures.exportJob(testUser.getId(), testStartDate, testEndDate);
+    }
+    private void createGpsPoint(Instant timestamp, double lat, double lon,
+            double altitude, double velocity, double battery) {
+        GpsPointEntity point = ExportTestFixtures.gpsPoint(
+                testUser, timestamp, lat, lon, altitude, velocity, 5.0, battery, "test-device",
+                org.github.tess1o.geopulse.shared.gps.GpsSourceType.OWNTRACKS);
+        gpsPointRepository.persist(point);
+    }
+}

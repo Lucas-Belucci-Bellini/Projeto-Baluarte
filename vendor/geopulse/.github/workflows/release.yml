@@ -1,0 +1,1074 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  DOCKERHUB_BACKEND_IMAGE: tess1o/geopulse-backend
+  DOCKERHUB_FRONTEND_IMAGE: tess1o/geopulse-ui
+  GHCR_BACKEND_IMAGE: ghcr.io/tess1o/geopulse-backend
+  GHCR_FRONTEND_IMAGE: ghcr.io/tess1o/geopulse-ui
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  # If this workflow fails:
+  # 1. Immediately delete the tag:
+  #    git tag -d v1.X.Y && git push origin :refs/tags/v1.X.Y
+  # 2. Fix the issue in main branch
+  # 3. Run pre-release validation workflow
+  # 4. Re-create tag with same version after validation passes
+
+  # Extract version from tag (remove 'v' prefix)
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+  # Verify pre-release validation was run for this commit
+  # TEMPORARILY DISABLED - needs stabilization
+  verify-prerelease:
+    if: false  # Disabled temporarily
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check pre-release validation
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: workflows } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'pre-release.yml',
+              status: 'success',
+              per_page: 20
+            });
+
+            const tagCommitSha = context.sha;
+            const validatedRun = workflows.workflow_runs.find(run =>
+              run.head_sha === tagCommitSha
+            );
+
+            if (!validatedRun) {
+              core.setFailed(
+                `❌ Pre-release validation not found for commit ${tagCommitSha}\n\n` +
+                `Required: Run pre-release workflow before creating release tag.\n\n` +
+                `Action required:\n` +
+                `1. Delete this tag: git tag -d ${context.ref.replace('refs/tags/', '')} && git push origin :${context.ref}\n` +
+                `2. Run pre-release validation workflow from GitHub Actions UI\n` +
+                `3. After validation passes, re-create tag: git tag -a ${context.ref.replace('refs/tags/', '')} -m "Release ${context.ref.replace('refs/tags/', '')}"\n` +
+                `4. Push tag: git push origin ${context.ref.replace('refs/tags/', '')}`
+              );
+            } else {
+              console.log(`✅ Pre-release validation passed on ${validatedRun.updated_at}`);
+              console.log(`   Run ID: ${validatedRun.id}`);
+              console.log(`   Commit: ${validatedRun.head_sha}`);
+            }
+
+  # Build Backend JVM AMD64
+  build-backend-jvm-amd64:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend JVM AMD64
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}-jvm
+          tags: |
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-amd64
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:jvm-latest-amd64
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-amd64
+            ${{ env.GHCR_BACKEND_IMAGE }}:jvm-latest-amd64
+          cache-from: type=gha,scope=jvm-amd64
+          cache-to: type=gha,mode=max,scope=jvm-amd64
+
+  # Build Backend JVM ARM64
+  build-backend-jvm-arm64:
+    needs: [prepare]
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend JVM ARM64
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile
+          platforms: linux/arm64
+          push: true
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}-jvm
+          tags: |
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-arm64
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:jvm-latest-arm64
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-arm64
+            ${{ env.GHCR_BACKEND_IMAGE }}:jvm-latest-arm64
+          cache-from: type=gha,scope=jvm-arm64
+          cache-to: type=gha,mode=max,scope=jvm-arm64
+
+  # Build Backend Native AMD64
+  build-backend-native-amd64:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend Native AMD64
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile.native
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}-native
+            QUARKUS_NATIVE_BUILD_ARGS=
+          tags: |
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-latest-amd64
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-latest-amd64
+          cache-from: type=gha,scope=native-amd64
+          cache-to: type=gha,mode=max,scope=native-amd64
+
+  # Build Backend Native ARM64
+  build-backend-native-arm64:
+    needs: [prepare]
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend Native ARM64
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile.native
+          platforms: linux/arm64
+          push: true
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}-native
+            QUARKUS_NATIVE_BUILD_ARGS=
+          tags: |
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-latest-arm64
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-latest-arm64
+          cache-from: type=gha,scope=native-arm64
+          cache-to: type=gha,mode=max,scope=native-arm64
+
+  # Build Backend Native AMD64 Compatible (x86-64-v2 for old CPUs)
+  build-backend-native-amd64-compat:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend Native AMD64 Compatible
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile.native
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}-native
+            QUARKUS_NATIVE_BUILD_ARGS=,-march=x86-64-v2
+          tags: |
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64-compat
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-compat-amd64
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64-compat
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-compat-amd64
+          cache-from: type=gha,scope=native-compat-amd64
+          cache-to: type=gha,mode=max,scope=native-compat-amd64
+
+  # Build Backend Native ARM64 Compatible (armv8-a+nolse for Raspberry Pi)
+  build-backend-native-arm64-compat:
+    needs: [prepare]
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Backend Native ARM64 Compatible
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile.native
+          platforms: linux/arm64
+          push: true
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}-native
+            QUARKUS_NATIVE_BUILD_ARGS=,-march=armv8-a+nolse
+          tags: |
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64-compat
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-compat-arm64
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64-compat
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-compat-arm64
+          cache-from: type=gha,scope=native-compat-arm64
+          cache-to: type=gha,mode=max,scope=native-compat-arm64
+
+  # Build Frontend (multi-arch)
+  build-frontend:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: frontend/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            VERSION=${{ needs.prepare.outputs.version }}
+          tags: |
+            ${{ env.DOCKERHUB_FRONTEND_IMAGE }}:${{ needs.prepare.outputs.version }}
+            ${{ env.DOCKERHUB_FRONTEND_IMAGE }}:latest
+            ${{ env.GHCR_FRONTEND_IMAGE }}:${{ needs.prepare.outputs.version }}
+            ${{ env.GHCR_FRONTEND_IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Create multi-arch manifests for JVM backend
+  create-jvm-manifests:
+    needs: [prepare, build-backend-jvm-amd64, build-backend-jvm-arm64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push Docker Hub JVM manifests
+        run: |
+          # Create versioned manifest
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-amd64 \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-arm64
+
+          # Create latest manifest
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:jvm-latest \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:jvm-latest-amd64 \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:jvm-latest-arm64
+
+      - name: Create and push GHCR JVM manifests
+        run: |
+          # Create versioned manifest
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm \
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-amd64 \
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-arm64
+
+          # Create latest manifest
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:jvm-latest \
+            ${{ env.GHCR_BACKEND_IMAGE }}:jvm-latest-amd64 \
+            ${{ env.GHCR_BACKEND_IMAGE }}:jvm-latest-arm64
+
+  # Create multi-arch manifests for native backend (optimized)
+  create-native-manifests:
+    needs: [prepare, build-backend-native-amd64, build-backend-native-arm64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push Docker Hub manifests
+        run: |
+          # Create versioned manifest
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64 \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64
+
+          # Create latest manifests
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-latest \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:latest \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-latest-amd64 \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-latest-arm64
+
+      - name: Create and push GHCR manifests
+        run: |
+          # Create versioned manifest
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native \
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64 \
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64
+
+          # Create latest manifests
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:native-latest \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:latest \
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-latest-amd64 \
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-latest-arm64
+
+  # Create multi-arch manifests for native backend (compatible)
+  create-native-compat-manifests:
+    needs: [prepare, build-backend-native-amd64-compat, build-backend-native-arm64-compat]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push Docker Hub compatible manifests
+        run: |
+          # Create versioned compat manifest
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-compat \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64-compat \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64-compat
+
+          # Create latest compat manifest
+          docker buildx imagetools create \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-compat-latest \
+            -t ${{ env.DOCKERHUB_BACKEND_IMAGE }}:compat-latest \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-compat-amd64 \
+            ${{ env.DOCKERHUB_BACKEND_IMAGE }}:native-compat-arm64
+
+      - name: Create and push GHCR compatible manifests
+        run: |
+          # Create versioned compat manifest
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-compat \
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64-compat \
+            ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64-compat
+
+          # Create latest compat manifest
+          docker buildx imagetools create \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:native-compat-latest \
+            -t ${{ env.GHCR_BACKEND_IMAGE }}:compat-latest \
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-compat-amd64 \
+            ${{ env.GHCR_BACKEND_IMAGE }}:native-compat-arm64
+
+  # Extract artifacts for non-Docker deployments (Proxmox VMs, bare metal, etc.)
+  extract-artifacts-amd64:
+    needs: [prepare, build-frontend, build-backend-jvm-amd64, build-backend-native-amd64, build-backend-native-amd64-compat]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create artifacts directory
+        run: mkdir -p artifacts
+
+      - name: Extract frontend static files from image
+        run: |
+          echo "📦 Extracting frontend from built image..."
+
+          # Pull the frontend image we just built
+          docker pull ${{ env.GHCR_FRONTEND_IMAGE }}:${{ needs.prepare.outputs.version }}
+
+          # Create container without running it
+          CONTAINER_ID=$(docker create ${{ env.GHCR_FRONTEND_IMAGE }}:${{ needs.prepare.outputs.version }})
+
+          # Copy static files from nginx html directory
+          docker cp $CONTAINER_ID:/usr/share/nginx/html ./temp-frontend
+
+          # Remove container
+          docker rm $CONTAINER_ID
+
+          # Create tarball
+          tar -czf artifacts/geopulse-frontend-${{ needs.prepare.outputs.version }}.tar.gz \
+            -C temp-frontend .
+
+          echo "✅ Frontend: $(du -h artifacts/geopulse-frontend-${{ needs.prepare.outputs.version }}.tar.gz | cut -f1)"
+
+      - name: Extract backend JVM artifacts from image
+        run: |
+          echo "📦 Extracting JVM backend from built image..."
+
+          # Pull the already-built JVM image and extract /app directly.
+          # This avoids re-running Maven during artifact extraction.
+          docker pull ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-amd64
+
+          CONTAINER_ID=$(docker create ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm-amd64)
+          mkdir -p temp-backend-jvm
+          docker cp $CONTAINER_ID:/app ./temp-backend-jvm
+          docker rm $CONTAINER_ID
+
+          # Keep release artifact structure compatible with previous quarkus-app tarball.
+          mv temp-backend-jvm/app temp-backend-jvm/quarkus-app
+          rm -rf temp-backend-jvm/quarkus-app/logs temp-backend-jvm/quarkus-app/dumps
+
+          echo "Verifying extracted backend JVM structure:"
+          ls -la temp-backend-jvm/quarkus-app/
+
+          tar -czf artifacts/geopulse-backend-jvm-${{ needs.prepare.outputs.version }}.tar.gz \
+            -C temp-backend-jvm quarkus-app
+
+          echo "✅ Backend JVM: $(du -h artifacts/geopulse-backend-jvm-${{ needs.prepare.outputs.version }}.tar.gz | cut -f1)"
+
+      - name: Extract backend native AMD64 (optimized)
+        run: |
+          echo "📦 Extracting native AMD64 backend from built image..."
+
+          # Pull the native image we just built
+          docker pull ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64
+
+          # Create container without running it
+          CONTAINER_ID=$(docker create ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64)
+
+          # Copy the native binary from /work/application
+          docker cp $CONTAINER_ID:/work/application ./artifacts/geopulse-backend-native-amd64-${{ needs.prepare.outputs.version }}
+
+          # Remove container
+          docker rm $CONTAINER_ID
+
+          # Ensure executable
+          chmod +x artifacts/geopulse-backend-native-amd64-${{ needs.prepare.outputs.version }}
+
+          echo "✅ Backend Native AMD64: $(du -h artifacts/geopulse-backend-native-amd64-${{ needs.prepare.outputs.version }} | cut -f1)"
+
+      - name: Extract backend native AMD64 compatible (x86-64-v2)
+        run: |
+          echo "📦 Extracting native AMD64 compatible backend from built image..."
+
+          # Pull the native compat image we just built
+          docker pull ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64-compat
+
+          # Create container without running it
+          CONTAINER_ID=$(docker create ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-amd64-compat)
+
+          # Copy the native binary from /work/application
+          docker cp $CONTAINER_ID:/work/application ./artifacts/geopulse-backend-native-amd64-compat-${{ needs.prepare.outputs.version }}
+
+          # Remove container
+          docker rm $CONTAINER_ID
+
+          # Ensure executable
+          chmod +x artifacts/geopulse-backend-native-amd64-compat-${{ needs.prepare.outputs.version }}
+
+          echo "✅ Backend Native AMD64 Compat: $(du -h artifacts/geopulse-backend-native-amd64-compat-${{ needs.prepare.outputs.version }} | cut -f1)"
+
+      - name: Validate AMD64 artifacts
+        run: |
+          echo "🔍 Validating AMD64 artifacts..."
+          EXPECTED_FILES=(
+            "geopulse-frontend-${{ needs.prepare.outputs.version }}.tar.gz"
+            "geopulse-backend-jvm-${{ needs.prepare.outputs.version }}.tar.gz"
+            "geopulse-backend-native-amd64-${{ needs.prepare.outputs.version }}"
+            "geopulse-backend-native-amd64-compat-${{ needs.prepare.outputs.version }}"
+          )
+
+          MISSING=0
+          for file in "${EXPECTED_FILES[@]}"; do
+            if [ ! -f "artifacts/$file" ]; then
+              echo "❌ Missing artifact: $file"
+              MISSING=1
+            else
+              SIZE=$(du -h "artifacts/$file" | cut -f1)
+              echo "✅ Found: $file ($SIZE)"
+            fi
+          done
+
+          if [ $MISSING -eq 1 ]; then
+            echo "❌ Some artifacts are missing!"
+            exit 1
+          fi
+
+          echo ""
+          echo "📊 Total AMD64 artifacts size:"
+          du -sh artifacts/ | cut -f1
+
+      - name: Upload AMD64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts-amd64
+          path: artifacts/
+          retention-days: 30
+
+      - name: Cleanup temporary directories
+        if: always()
+        run: |
+          rm -rf temp-*
+
+  # Extract ARM64 native binaries from already-built images.
+  # JVM artifact is platform-agnostic and extracted once in extract-artifacts-amd64.
+  extract-artifacts-arm64:
+    needs: [prepare, build-backend-native-arm64, build-backend-native-arm64-compat]
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create artifacts directory
+        run: mkdir -p artifacts
+
+      - name: Extract backend native ARM64 (optimized)
+        run: |
+          echo "📦 Extracting native ARM64 backend from built image..."
+
+          # Pull the native image we just built
+          docker pull ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64
+
+          # Create container without running it
+          CONTAINER_ID=$(docker create ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64)
+
+          # Copy the native binary from /work/application
+          docker cp $CONTAINER_ID:/work/application ./artifacts/geopulse-backend-native-arm64-${{ needs.prepare.outputs.version }}
+
+          # Remove container
+          docker rm $CONTAINER_ID
+
+          # Ensure executable
+          chmod +x artifacts/geopulse-backend-native-arm64-${{ needs.prepare.outputs.version }}
+
+          echo "✅ Backend Native ARM64: $(du -h artifacts/geopulse-backend-native-arm64-${{ needs.prepare.outputs.version }} | cut -f1)"
+
+      - name: Extract backend native ARM64 compatible (Raspberry Pi)
+        run: |
+          echo "📦 Extracting native ARM64 compatible backend from built image..."
+
+          # Pull the native compat image we just built
+          docker pull ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64-compat
+
+          # Create container without running it
+          CONTAINER_ID=$(docker create ${{ env.GHCR_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native-arm64-compat)
+
+          # Copy the native binary from /work/application
+          docker cp $CONTAINER_ID:/work/application ./artifacts/geopulse-backend-native-arm64-compat-${{ needs.prepare.outputs.version }}
+
+          # Remove container
+          docker rm $CONTAINER_ID
+
+          # Ensure executable
+          chmod +x artifacts/geopulse-backend-native-arm64-compat-${{ needs.prepare.outputs.version }}
+
+          echo "✅ Backend Native ARM64 Compat: $(du -h artifacts/geopulse-backend-native-arm64-compat-${{ needs.prepare.outputs.version }} | cut -f1)"
+
+      - name: Validate ARM64 artifacts
+        run: |
+          echo "🔍 Validating ARM64 artifacts..."
+          EXPECTED_FILES=(
+            "geopulse-backend-native-arm64-${{ needs.prepare.outputs.version }}"
+            "geopulse-backend-native-arm64-compat-${{ needs.prepare.outputs.version }}"
+          )
+
+          MISSING=0
+          for file in "${EXPECTED_FILES[@]}"; do
+            if [ ! -f "artifacts/$file" ]; then
+              echo "❌ Missing artifact: $file"
+              MISSING=1
+            else
+              SIZE=$(du -h "artifacts/$file" | cut -f1)
+              echo "✅ Found: $file ($SIZE)"
+            fi
+          done
+
+          if [ $MISSING -eq 1 ]; then
+            echo "❌ Some artifacts are missing!"
+            exit 1
+          fi
+
+          echo ""
+          echo "📊 Total ARM64 artifacts size:"
+          du -sh artifacts/ | cut -f1
+
+      - name: Upload ARM64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts-arm64
+          path: artifacts/
+          retention-days: 30
+
+  # Create GitHub Release with all artifacts
+  create-github-release:
+    needs: [prepare, extract-artifacts-amd64, extract-artifacts-arm64, build-frontend, create-jvm-manifests, create-native-manifests, create-native-compat-manifests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download AMD64 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts-amd64
+          path: artifacts/
+
+      - name: Download ARM64 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts-arm64
+          path: artifacts/
+
+      - name: Generate checksums
+        run: |
+          cd artifacts
+
+          # Check if any artifacts exist
+          if ! ls geopulse-* 1> /dev/null 2>&1; then
+            echo "❌ Error: No artifacts found to checksum!"
+            exit 1
+          fi
+
+          sha256sum geopulse-* > SHA256SUMS
+
+          # Validate checksums file is not empty
+          if [ ! -s SHA256SUMS ]; then
+            echo "❌ Error: SHA256SUMS file is empty!"
+            exit 1
+          fi
+
+          # Count artifacts
+          ARTIFACT_COUNT=$(wc -l < SHA256SUMS)
+          echo "✅ Generated checksums for $ARTIFACT_COUNT artifacts"
+          echo ""
+          echo "📋 Checksums:"
+          cat SHA256SUMS
+          echo ""
+          echo "📊 Artifact sizes:"
+          du -h geopulse-* | sort -h
+
+      - name: Generate release notes
+        run: |
+          cat > RELEASE_NOTES.md << 'EOF'
+          # GeoPulse ${{ needs.prepare.outputs.version }}
+          
+          ## 📝 What's Changed
+          
+          EOF
+
+      - name: Validate all artifacts before release
+        run: |
+          echo "🔍 Final validation of all artifacts..."
+          cd artifacts
+
+          EXPECTED_FILES=(
+            "geopulse-frontend-${{ needs.prepare.outputs.version }}.tar.gz"
+            "geopulse-backend-jvm-${{ needs.prepare.outputs.version }}.tar.gz"
+            "geopulse-backend-native-amd64-${{ needs.prepare.outputs.version }}"
+            "geopulse-backend-native-amd64-compat-${{ needs.prepare.outputs.version }}"
+            "geopulse-backend-native-arm64-${{ needs.prepare.outputs.version }}"
+            "geopulse-backend-native-arm64-compat-${{ needs.prepare.outputs.version }}"
+            "SHA256SUMS"
+          )
+
+          MISSING=0
+          for file in "${EXPECTED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing: $file"
+              MISSING=1
+            else
+              SIZE=$(du -h "$file" | cut -f1)
+              echo "✅ Ready: $file ($SIZE)"
+            fi
+          done
+
+          if [ $MISSING -eq 1 ]; then
+            echo ""
+            echo "❌ Cannot create release: Some artifacts are missing!"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All 7 artifacts ready for release!"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: Release v${{ needs.prepare.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          draft: true
+          prerelease: false
+          files: |
+            artifacts/geopulse-frontend-${{ needs.prepare.outputs.version }}.tar.gz
+            artifacts/geopulse-backend-jvm-${{ needs.prepare.outputs.version }}.tar.gz
+            artifacts/geopulse-backend-native-amd64-${{ needs.prepare.outputs.version }}
+            artifacts/geopulse-backend-native-amd64-compat-${{ needs.prepare.outputs.version }}
+            artifacts/geopulse-backend-native-arm64-${{ needs.prepare.outputs.version }}
+            artifacts/geopulse-backend-native-arm64-compat-${{ needs.prepare.outputs.version }}
+            artifacts/SHA256SUMS
+
+      - name: Generate release summary
+        run: |
+          echo "## 🎉 Release v${{ needs.prepare.outputs.version }} Created!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Artifacts Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | Size | Type |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|------|------|" >> $GITHUB_STEP_SUMMARY
+
+          cd artifacts
+          for file in geopulse-*; do
+            SIZE=$(du -h "$file" | cut -f1)
+            TYPE=""
+            case "$file" in
+              *frontend*) TYPE="Frontend (All platforms)" ;;
+              *jvm*) TYPE="Backend JVM (All platforms)" ;;
+              *amd64-compat*) TYPE="Backend Native (AMD64 old CPUs)" ;;
+              *amd64*) TYPE="Backend Native (AMD64 modern)" ;;
+              *arm64-compat*) TYPE="Backend Native (ARM64 Raspberry Pi)" ;;
+              *arm64*) TYPE="Backend Native (ARM64 modern)" ;;
+            esac
+            echo "| \`$file\` | $SIZE | $TYPE |" >> $GITHUB_STEP_SUMMARY
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          TOTAL_SIZE=$(du -sh . | cut -f1)
+          echo "**Total release size:** $TOTAL_SIZE" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Release URL:** https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+
+  # Publish Helm charts and documentation to GitHub Pages
+  publish-helm-and-docs:
+    needs: [prepare, build-frontend, create-jvm-manifests, create-native-manifests, create-native-compat-manifests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'latest'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install docs-website dependencies
+        run: |
+          cd docs-website
+          npm ci
+
+      - name: Fetch published Helm index from GitHub Pages
+        run: |
+          echo "Fetching current published index.yaml from GitHub Pages..."
+          PUBLISHED_INDEX="https://tess1o.github.io/geopulse/charts/index.yaml"
+
+          # Try to fetch with retries (exponential backoff: 2s, 4s, 8s)
+          for i in 1 2 3; do
+            if curl -sSf -o charts/published-index.yaml "$PUBLISHED_INDEX"; then
+              echo "✅ Successfully fetched published index"
+              echo "MERGE_INDEX=charts/published-index.yaml" >> $GITHUB_ENV
+              break
+            else
+              if [ $i -eq 3 ]; then
+                echo "⚠️ Could not fetch published index, will use local index as fallback"
+                echo "MERGE_INDEX=charts/index.yaml" >> $GITHUB_ENV
+              else
+                WAIT_TIME=$((2 ** i))
+                echo "Attempt $i failed, retrying in ${WAIT_TIME}s..."
+                sleep $WAIT_TIME
+              fi
+            fi
+          done
+
+      - name: Download existing Helm charts from GitHub Pages
+        run: |
+          echo "Downloading existing chart packages to preserve old versions..."
+          CHARTS_URL="https://tess1o.github.io/geopulse/charts"
+
+          # Only download if we successfully fetched the published index
+          if [ -f charts/published-index.yaml ]; then
+            # Extract all chart URLs from the published index
+            CHART_URLS=$(grep -E "^\s+- https://tess1o.github.io/geopulse/charts/geopulse-.*\.tgz" charts/published-index.yaml | sed 's/.*- //' | sort -u)
+
+            if [ -n "$CHART_URLS" ]; then
+              echo "Found existing charts to download:"
+              echo "$CHART_URLS"
+
+              # Download each chart
+              for URL in $CHART_URLS; do
+                FILENAME=$(basename "$URL")
+                echo "Downloading $FILENAME..."
+                if curl -sSfL -o "charts/$FILENAME" "$URL"; then
+                  echo "✅ Downloaded $FILENAME"
+                else
+                  echo "⚠️ Failed to download $FILENAME (may not exist yet)"
+                fi
+              done
+
+              echo ""
+              echo "Downloaded charts:"
+              ls -lh charts/*.tgz 2>/dev/null || echo "No charts downloaded"
+            else
+              echo "No existing charts found in published index"
+            fi
+          else
+            echo "⚠️ Skipping chart download - no published index available"
+          fi
+
+      - name: Package Helm chart
+        run: |
+          echo "Packaging Helm chart..."
+          helm package helm/geopulse -d charts
+
+      - name: Update Helm repo index
+        run: |
+          echo "Updating Helm repository index..."
+          if [ -f "$MERGE_INDEX" ]; then
+            echo "Merging with: $MERGE_INDEX"
+            helm repo index charts --url https://tess1o.github.io/geopulse/charts --merge "$MERGE_INDEX"
+          else
+            echo "Creating new index (no existing index found)"
+            helm repo index charts --url https://tess1o.github.io/geopulse/charts
+          fi
+
+          # Cleanup temporary file
+          rm -f charts/published-index.yaml
+
+      - name: Validate Helm index
+        run: |
+          echo "Validating Helm repository index..."
+
+          # Check if index.yaml is valid YAML
+          if ! grep -q "apiVersion: v1" charts/index.yaml; then
+            echo "❌ Invalid index.yaml - missing apiVersion"
+            exit 1
+          fi
+
+          # Verify the new version is included
+          NEW_VERSION="${{ needs.prepare.outputs.version }}"
+          if ! grep -q "version: $NEW_VERSION" charts/index.yaml; then
+            echo "❌ New version $NEW_VERSION not found in index"
+            exit 1
+          fi
+
+          # Verify that all chart files referenced in index.yaml exist
+          echo "Verifying chart files exist..."
+          MISSING_CHARTS=0
+          while IFS= read -r url; do
+            FILENAME=$(basename "$url")
+            if [ ! -f "charts/$FILENAME" ]; then
+              echo "❌ Missing chart file: $FILENAME"
+              MISSING_CHARTS=$((MISSING_CHARTS + 1))
+            fi
+          done < <(grep -E "^\s+- https://tess1o.github.io/geopulse/charts/geopulse-.*\.tgz" charts/index.yaml | sed 's/.*- //' | sed 's|https://tess1o.github.io/geopulse/charts/||')
+
+          if [ $MISSING_CHARTS -gt 0 ]; then
+            echo "❌ Found $MISSING_CHARTS missing chart files"
+            exit 1
+          fi
+
+          # Display all versions for verification
+          echo "✅ Index validated successfully"
+          echo "All versions in index:"
+          grep "^  version:" charts/index.yaml | awk '{print "  - " $2}' | sort -V
+          echo ""
+          echo "All chart files present:"
+          ls -1 charts/*.tgz | xargs -n1 basename
+
+      - name: Copy charts to docs-website
+        run: |
+          mkdir -p docs-website/static/charts
+          cp -r charts/* docs-website/static/charts/
+
+          echo "Copied to docs-website/static/charts:"
+          ls -lh docs-website/static/charts/
+
+      - name: Deploy documentation with Helm charts
+        env:
+          GIT_USER: ${{ github.actor }}
+          GIT_PASS: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd docs-website
+          npm run deploy
+
+      - name: Summary
+        run: |
+          echo "✅ Release ${{ needs.prepare.outputs.version }} completed successfully!"
+          echo ""
+          echo "📦 Published Docker images:"
+          echo "  - ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-jvm"
+          echo "  - ${{ env.DOCKERHUB_BACKEND_IMAGE }}:${{ needs.prepare.outputs.version }}-native (multi-arch: amd64, arm64)"
+          echo "  - ${{ env.DOCKERHUB_FRONTEND_IMAGE }}:${{ needs.prepare.outputs.version }}"
+          echo ""
+          echo "🎯 Published to:"
+          echo "  - Docker Hub"
+          echo "  - GitHub Container Registry"
+          echo "  - Helm repository (GitHub Pages)"
+          echo ""
+          echo "📝 Next: Create GitHub Release at https://github.com/${{ github.repository }}/releases/new?tag=v${{ needs.prepare.outputs.version }}"

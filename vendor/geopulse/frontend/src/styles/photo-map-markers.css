@@ -1,0 +1,58 @@
+.gp-photo-map-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.gp-photo-map-marker {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.gp-photo-map-marker-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #0f172a;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.gp-photo-map-focused-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.gp-photo-map-focused-marker {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.5);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transform: translateY(-5px);
+}

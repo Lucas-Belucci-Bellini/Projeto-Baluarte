@@ -1,0 +1,42 @@
+package org.github.tess1o.geopulse.streaming.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.github.tess1o.geopulse.shared.geo.GpsPoint;
+
+import java.time.Instant;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class TimelineStayLocationDTO implements GpsPoint {
+    private Long id;  // Database ID for the stay
+    private Instant timestamp;
+
+    // Location source references - exactly one will be populated
+    private Long favoriteId;        // Reference to FavoritesEntity.id if location came from favorite
+    private Long geocodingId;       // Reference to ReverseGeocodingLocationEntity.id if location came from geocoding
+
+    // Cached location name for display (resolved at creation time)
+    private String locationName;
+
+    // City and country information (from favorite or geocoding location)
+    private String city;
+    private String country;
+
+    /**
+     * Manual Data Gap -> Stay override ID that currently maps to this stay.
+     * Null means this stay is fully automatic.
+     */
+    private Long dataGapOverrideId;
+
+    /**
+     * Duration of stay in seconds
+     */
+    private long stayDuration;
+    private double latitude;
+    private double longitude;
+}

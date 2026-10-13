@@ -1,0 +1,97 @@
+package org.github.tess1o.geopulse.importdata.model;
+
+import lombok.Data;
+import lombok.ToString;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+@Data
+public class ImportJob {
+    private UUID jobId;
+    private UUID userId;
+    private ImportStatus status;
+    private String uploadedFileName;
+    private long fileSizeBytes;
+    private List<String> detectedDataTypes;
+    private List<String> dataTypesToImport;
+    private ImportOptions options;
+    private String error;
+    private int progress;
+    private String progressMessage;
+    private Instant createdAt;
+    private Instant completedAt;
+    private Instant estimatedProcessingTime;
+
+    // Timeline job ID - tracks the associated timeline generation job
+    // Created when timeline generation starts during import (nullable for legacy imports)
+    private UUID timelineJobId;
+
+    // Timestamps from data (captured during validation for use in clear mode)
+    private Instant dataFirstTimestamp;
+    private Instant dataLastTimestamp;
+
+    // Total record count from validation (for accurate progress tracking during import)
+    private int totalRecordsFromValidation;
+
+    // Temporary file path for large files (memory optimization)
+    // If set, use this instead of fileData
+    private String tempFilePath;
+
+    // Flag to track if data processing (GPS import, validation, etc.) is complete
+    // Separate from overall status - job can be PROCESSING (waiting for timeline)
+    // but data import is done. This prevents re-processing the same job.
+    private boolean dataProcessingCompleted = false;
+
+    // True when import actually inserted GPS data and coverage rebuild should be considered.
+    private boolean gpsDataImported = false;
+
+    // Tracks that a coverage rebuild has been triggered for this import.
+    private boolean coverageRecalculationStarted = false;
+
+    @ToString.Exclude
+    private byte[] fileData;
+
+    public ImportJob(UUID userId, ImportOptions options, String fileName, byte[] fileData) {
+        this.jobId = UUID.randomUUID();
+        this.userId = userId;
+        this.options = options;
+        this.uploadedFileName = fileName;
+        this.fileData = fileData;
+        this.fileSizeBytes = fileData.length;
+        this.status = ImportStatus.VALIDATING;
+        this.progress = 0;
+        this.progressMessage = "Validating file format...";
+        this.createdAt = Instant.now();
+        this.estimatedProcessingTime = Instant.now().plusSeconds(120); // 2 minutes estimate
+    }
+    
+    public void updateProgress(int progress, String message) {
+        this.progress = progress;
+        this.progressMessage = message;
+    }
+
+    /**
+     * Get the import data as an InputStream, abstracting whether it's from memory or file.
+     * This allows transparent handling of both small (in-memory) and large (file-based) imports.
+     */
+    public java.io.InputStream getDataStream() throws java.io.IOException {
+        if (tempFilePath != null) {
+            // Large file mode: stream from disk
+            return java.nio.file.Files.newInputStream(java.nio.file.Paths.get(tempFilePath));
+        } else if (fileData != null) {
+            // Small file mode: stream from memory
+            return new java.io.ByteArrayInputStream(fileData);
+        } else {
+            throw new IllegalStateException("ImportJob has neither tempFilePath nor fileData");
+        }
+    }
+
+    /**
+     * Check if this job uses a temporary file (vs in-memory data)
+     */
+    public boolean hasTempFile() {
+        return tempFilePath != null;
+    }
+}
