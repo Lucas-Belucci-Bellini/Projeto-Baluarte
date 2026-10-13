@@ -1,0 +1,35 @@
+# 🔗 Links — Capítulo 02: Texto Vira Número
+
+## 📦 Repositório do Projeto
+
+👉 [Repositório da Série](../README.md)
+
+---
+
+## 📒 Notebook deste Capítulo
+
+### Visualizar no GitHub
+👉 [Repositório da Série](../README.md)
+
+### Abrir diretamente no Google Colab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vongrossi/fazendo-um-llm-do-zero/blob/main/02-texto-vira-numero/notebook.ipynb)
+
+---
+
+## ✍️ Artigos Explicativos
+
+### Dev.to
+[Fazendo um LLM do Zero #02 — Como Transformar Palavras em Números sem Perder a Alma](https://dev.to/vongrossi/fazendo-um-llm-do-zero-02-como-transformar-palavras-em-numeros-sem-perder-a-alma-1mm3)
+
+### Medium
+[Fazendo um LLM do Zero #02 — Como transformar palavras em números sem perder a alma](https://medium.com/@angelovongrossi/fazendo-um-llm-do-zero-02-como-transformar-palavras-em-números-sem-perder-a-alma-fc8970ca2dd5)
+
+---
+
+## 💡 Dica
+
+Se estiver abrindo no Colab:
+
+1. Vá em **Runtime → Change runtime type**
+2. Ative GPU (opcional)
+3. Execute todas as células em ordem
