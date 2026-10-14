@@ -13,7 +13,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { criarBus } from '../../v2/core/bus.js';
+import { criarBus, validarEnvelope } from '../../v2/core/bus.js';
 
 /* ═══════════ o básico ═══════════ */
 
@@ -50,6 +50,54 @@ test('sem origem declarada, o campo diz "desconhecida" — não fica vazio', () 
   bus.emit('x:y');
   assert.equal(env.origem, 'desconhecida');
   assert.equal(env.versao, 1, 'versão padrão devia ser 1');
+});
+
+test('validarEnvelope confirma o contrato produzido pelo bus sem tocar no envelope', () => {
+  const bus = criarBus();
+  let env;
+  bus.on('x:y', (_, envelope) => { env = envelope; });
+  bus.emit('x:y', { segredo: 'fica fora do envelope' }, {
+    origem: 'fixture',
+    versao: 2,
+    contexto: { requestId: 'req-1' },
+  });
+
+  const antes = { ...env, contexto: { ...env.contexto } };
+  const result = validarEnvelope(env);
+  assert.deepEqual(result, { valid: true, errors: [] });
+  assert.equal(Object.isFrozen(result), true);
+  assert.equal(Object.isFrozen(result.errors), true);
+  assert.deepEqual(env, antes);
+  assert.equal(Object.hasOwn(env, 'payload'), false);
+});
+
+test('validarEnvelope agrega recusas estruturais e não aceita payload como requisito', () => {
+  const result = validarEnvelope({
+    id: '',
+    evento: '',
+    origem: '',
+    correlacao: '',
+    causa: 42,
+    versao: 0,
+    em: 'invalid',
+    contexto: [],
+    payload: { permitido: 'fora do envelope' },
+  });
+
+  assert.equal(result.valid, false);
+  assert.deepEqual(result.errors, [
+    'id deve ser texto não vazio',
+    'evento deve ser texto não vazio',
+    'origem deve ser texto não vazio',
+    'correlacao deve ser texto não vazio',
+    'causa deve ser texto ou null',
+    'versao deve ser inteiro positivo',
+    'em deve ser uma data ISO válida',
+    'contexto deve ser um objeto',
+  ]);
+  assert.equal(Object.isFrozen(result), true);
+  assert.equal(Object.isFrozen(result.errors), true);
+  assert.deepEqual(validarEnvelope(null), { valid: false, errors: ['envelope deve ser um objeto'] });
 });
 
 /* ═══════════ curingas (herdado da V1) ═══════════ */
