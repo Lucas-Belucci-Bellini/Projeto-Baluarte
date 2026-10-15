@@ -1,0 +1,189 @@
+/* ===== /memorial — registro permanente (regra em MEMORIAL.md) ===== */
+
+.page-memorial { max-width: 900px; }
+
+/* ---- entrada ---- */
+.memorial-entrada {
+  position: relative;
+  overflow: hidden;
+  border: var(--border-base);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  background:
+    radial-gradient(80% 120% at 50% 0%, color-mix(in srgb, var(--color-cyan) 9%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--color-surface-2), var(--color-bg-elevated));
+}
+/* fio de luz no topo: presença, não decoração */
+.memorial-entrada::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan-edge) 50%, transparent);
+}
+
+.memorial-entrada__head {
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-cyan-soft);
+}
+.memorial-entrada__nome {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1.15;
+  margin: 0 0 var(--space-xs);
+  background: linear-gradient(135deg, var(--color-text-primary), var(--color-cyan) 85%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.memorial-entrada__papel {
+  font-size: 15px;
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text-secondary);
+}
+.memorial-entrada__datas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin: 0;
+  color: var(--color-cyan);
+}
+.memorial-entrada__sep { color: var(--color-text-muted); }
+
+/* ---- a frase ---- */
+.memorial-frase {
+  position: relative;
+  margin: 0 0 var(--space-lg);
+  padding: var(--space-lg) var(--space-lg) var(--space-lg) var(--space-xl);
+  border-radius: var(--radius-md);
+  border-left: 2px solid var(--color-cyan);
+  background: var(--color-cyan-soft);
+}
+.memorial-frase__texto {
+  font-family: var(--font-display);
+  font-size: 21px;
+  line-height: 1.55;
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-primary);
+}
+.memorial-frase__autor {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+/* ---- corpo ---- */
+.memorial-entrada__corpo p,
+.memorial-porque p {
+  font-size: 15px;
+  line-height: 1.75;
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-primary);
+}
+.memorial-entrada__corpo p:last-child,
+.memorial-porque p:last-child { margin-bottom: 0; }
+
+.memorial-porque {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-magenta-edge);
+  background: var(--color-magenta-soft);
+}
+.memorial-porque__titulo {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-md);
+  color: var(--color-magenta);
+}
+
+/* ---- fontes ---- */
+.memorial-fontes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-cyan-soft);
+}
+.memorial-fontes__rotulo {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.memorial-fontes__link {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-decoration: none;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-cyan-edge);
+  color: var(--color-cyan);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+.memorial-fontes__link:hover,
+.memorial-fontes__link:focus-visible {
+  background: var(--color-cyan);
+  color: var(--color-text-inverse);
+}
+
+/* ---- a regra ---- */
+.memorial-regra {
+  border: var(--border-base);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  background: var(--color-surface);
+}
+.memorial-regra__titulo {
+  font-size: 20px;
+  margin: 0 0 var(--space-xs);
+  color: var(--color-text-primary);
+}
+.memorial-regra__intro {
+  font-size: 13px;
+  margin: 0 0 var(--space-lg);
+  color: var(--color-text-secondary);
+}
+.memorial-regra__lista {
+  /* reset.css zera list-style em toda lista; aqui a numeração é conteúdo */
+  list-style: decimal;
+  margin: 0;
+  padding-left: var(--space-lg);
+  display: grid;
+  gap: var(--space-md);
+}
+.memorial-regra__lista li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+.memorial-regra__lista li::marker {
+  font-family: var(--font-mono);
+  color: var(--color-cyan);
+}
+
+@media (max-width: 640px) {
+  .memorial-entrada,
+  .memorial-regra { padding: var(--space-lg); }
+  .memorial-entrada__nome { font-size: 27px; }
+  .memorial-frase {
+    padding: var(--space-md);
+    padding-left: var(--space-lg);
+  }
+  .memorial-frase__texto { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memorial-fontes__link { transition: none; }
+}

@@ -46,6 +46,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: '/roadmap', label: 'Roadmap', icon: '◈', phase: 1 },
       { path: '/diagnostico', label: 'Diagnóstico', icon: '🛡', phase: 1 },
       { path: '/sobre', label: 'Sobre o Projeto', icon: '◇', phase: 1 },
+      { path: '/memorial', label: 'Memorial', icon: '⬡', phase: 1 },
     ],
   },
   {

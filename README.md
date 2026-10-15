@@ -18,6 +18,18 @@
 
 </div>
 
+> [!NOTE]
+> ## ⬡ Em memória de Peter Cullen — 1941–2026
+>
+> A voz de Optimus Prime por quase quarenta anos. Ele construiu essa voz imitando
+> o irmão, **Larry Cullen**, capitão dos Fuzileiros Navais e veterano do Vietnã, que
+> lhe disse antes do teste de 1984: *"se você vai ser um herói, seja um herói de
+> verdade... seja forte o bastante para ser gentil."*
+>
+> Um comandante que é ouvido porque não precisa gritar — esse é um dos motivos
+> deste site existir, e é o padrão de como as coisas aqui devem soar.
+> **[Ler o Memorial](MEMORIAL.md)** · [`/memorial`](https://projeto-baluarte.vercel.app/#/memorial)
+
 > [!WARNING]
 > ## A V2 está em construção
 >
@@ -36,6 +48,7 @@
 | **Entrar na V2** | [`ROADMAP_V2_ONBOARDING.md`](docs/v2/roadmap/ROADMAP_V2_ONBOARDING.md) |
 | **Rodar localmente** | [`Como rodar`](#como-rodar) |
 | **Baixar o Launcher** | [`/baixar`](https://projeto-baluarte.vercel.app/#/baixar) e [releases do GitHub](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/releases) |
+| **Ler o Memorial** | [`MEMORIAL.md`](MEMORIAL.md) e a rota [`/memorial`](https://projeto-baluarte.vercel.app/#/memorial) |
 | **Propor uma mudança** | [Issues e discussões](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues) |
 
 ## Visão geral
@@ -54,7 +67,7 @@ A base V1 do navegador usa **JavaScript ES2022/ESM, HTML5, CSS3 e Vite**. A V2 a
 | **V2** | Em reconstrução | Nova arquitetura com Runtime, contratos, módulos, dados e gates dedicados; piloto Wiki Zomboid/Evidence local validado. |
 | **Web/Desktop** | `1.3.8` publicada | A `1.3.6` fez o Núcleo captar o som real do PC. A `1.3.7` transformou o Núcleo em palco: conversa e config em camadas sobre ele. A `1.3.8` faz o Núcleo saber o que toca na máquina pelo SMTC do Windows — sem conta, sem OAuth, e para qualquer player, não só o Spotify. |
 | **Deploy** | Vercel | O deploy de produção é reconstruído a partir de `main`. |
-| **Rotas** | 99 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
+| **Rotas** | 100 descobertas no smoke atual | O inventário completo está em [`MODULE_SYSTEM_AND_PAGE_INVENTORY.md`](docs/v2/MODULE_SYSTEM_AND_PAGE_INVENTORY.md). |
 | **Contribuições** | Abertas | Toda mudança passa por revisão, testes, documentação e integração. |
 
 ## J.A.R.V.I.S. e o núcleo visual

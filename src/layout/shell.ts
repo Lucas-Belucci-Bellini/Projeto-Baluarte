@@ -235,6 +235,7 @@ function pageTitleForRoute(path: string): string {
     '/conselho': 'Conselho de IAs',
     '/ocr': 'Leitor OCR',
     '/sobre': 'Sobre o Projeto',
+    '/memorial': 'Memorial',
   };
   return titles[path] ?? 'Mark XIII';
 }

@@ -205,6 +205,7 @@ router.register('/triangulacao', lazy(() => import('./pages/triangulacao.ts'), '
 router.register('/llm-lab', lazyNexus('llm'));
 
 router.register('/sobre', lazy(() => import('./pages/sobre.ts'), 'sobrePage'));
+router.register('/memorial', lazy(() => import('./pages/memorial.ts'), 'memorialPage'));
 router.register('/roadmap', lazy(() => import('./pages/roadmap.ts'), 'roadmapPage'));
 router.register('/diagnostico', lazy(() => import('./pages/diagnostico.ts'), 'diagnosticoPage'));
 router.register('/jarvis-dashboard', lazyNexus('dashboard'));
