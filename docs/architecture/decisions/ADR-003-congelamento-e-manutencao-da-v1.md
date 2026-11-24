@@ -87,11 +87,12 @@ checagem a cada 2 h). A partir da 1.0.0:
   diálogo.
 
 > **⛔ Correção (2026-11-24).** O gatilho desta seção ("a partir da 1.0.0") não
-> corresponde a versão publicada nenhuma. A regra, porém, já está em vigor no
-> código desde a **`v1.1.0`** (2026-08-19), quando `autoUpdater.autoDownload`
-> passou a `false`; a base `v1.3.8` apenas herdou esse estado. Lê-se "a partir da
-> 1.0.0" como "a partir da `v1.1.0`" — ver
-> [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
+> corresponde a versão publicada nenhuma. O que há com evidência é o comportamento
+> técnico: `autoUpdater.autoDownload = false` já estava presente na primeira
+> release publicada identificada, a **`v1.1.0`** (2026-08-19), e foi herdado pela
+> base `v1.3.8`. Isso não equivale a dizer que a regra normativa desta seção
+> passou a valer na `v1.1.0` — não há evidência de decisão registrada que fixe
+> esse marco. Ver [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
 
 ### 3b. O app aponta para um endereço fixado da 1.x
 
@@ -179,11 +180,13 @@ sem esta regra, não teria escolha nenhuma.
   > nunca existiu — uma branch apagada não aparece em listagem nenhuma, e a data
   > de criação de uma eventual branch apagada **não é recuperável**.
   >
-  > O primeiro desenvolvimento V2 identificado ocorreu em `main`, no commit
-  > `12d78a70`, em 2026-08-10 — antes da base `v1.3.8` e sem essa branch. O gate
-  > do `v2-vision.md` condiciona justamente a abertura dela, e o registro
-  > disponível não mostra essa abertura; **não há evidência**, porém, que permita
-  > declarar violação do gate, e este registro não o faz.
+  > O primeiro desenvolvimento V2 identificado está em `main`, no commit
+  > `12d78a70`, em 2026-08-10 — antes da base `v1.3.8`. Não foi possível
+  > determinar se uma eventual branch apagada com o nome `architecture/v2` também
+  > apontou para esse commit. O gate do `v2-vision.md` condiciona justamente a
+  > abertura dela, e o registro disponível não mostra essa abertura; **não há
+  > evidência**, porém, que permita declarar violação do gate, e este registro
+  > não o faz.
 - Ideia de funcionalidade que aparecer durante o congelamento vai para a
   [#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422),
   não para o `main`.
