@@ -47,6 +47,15 @@ dependência que não seja correção de segurança. Isso tudo vai para a
 
 ### 3. A 1.0.0 é a última versão que o app instala sozinho
 
+> **⛔ Correção editorial (2026-11-24) — o número do título designa a base
+> congelada, não uma release 1.0.0 publicada.** O título é mantido como registro
+> de 2026-08-09; a versão que cumpre esse papel é a **`v1.3.8`** (commit
+> `7cce9d42bf756afcb1feffb7e05a4e87f0020616`), conforme o
+> [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md). Nada do
+> comportamento técnico descrito abaixo muda por causa disto: o `autoDownload`
+> segue como está no código e a leitura do gatilho está corrigida mais adiante
+> nesta seção.
+
 > **Correção (mesmo dia).** A primeira redação desta seção dizia "o app trava na
 > linha 1.x: recebe correção, não recebe funcionalidade". Isso registrava mal a
 > decisão do operador, que é outra e mais precisa: **o auto-update termina na
