@@ -1,6 +1,6 @@
 # ADR-004 — Stack poliglota por responsabilidade, e onde ficam as fronteiras
 
-- **Status:** aceita
+- **Status:** aceita, **parcialmente revista** pelo [ADR-005](./ADR-005-v2-app-typescript-backend-poliglota.md): a exclusão de C++ foi revogada e o escopo “interface web” foi substituído pela disponibilização somente como app ([ADR-006](./ADR-006-disponibilizacao-somente-app.md)). O restante — inclusive Rust no Runtime, Python em IA/automação e a fronteira medida — continua válido.
 - **Data:** 2026-08-11
 - **Contexto:** #420 (arquitetura), #423 (ordem de construção)
 - **Medição:** [`v2/bench/RESULTADOS.md`](../../../v2/bench/RESULTADOS.md)

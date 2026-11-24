@@ -21,6 +21,13 @@ A prioridade agora **não é funcionalidade nova**. A definição em vigor:
 seguro` — e a 1.0.0 é um **ponto de congelamento**, com a V2 só depois, alvo de
 meados de 2027.
 
+> 📌 **Atualização 2026-11-24 (issues #539/#540):** o foco passou a ser a
+> reconstrução da V2, disponibilizada **somente como app**. A arquitetura-alvo
+> está em [`docs/architecture/v2/arquitetura-alvo.md`](docs/architecture/v2/arquitetura-alvo.md)
+> e as decisões em [ADR-005](docs/architecture/decisions/ADR-005-v2-app-typescript-backend-poliglota.md)
+> e [ADR-006](docs/architecture/decisions/ADR-006-disponibilizacao-somente-app.md).
+> A seção abaixo descreve o hardening da 1.0.0 e permanece como referência.
+
 👉 **[`docs/HARDENING-1.0.0.md`](docs/HARDENING-1.0.0.md)** — a fila executável da
 1.0.0: pegue o próximo item não-marcado. · 👉 **[`docs/architecture/`](docs/architecture/)**
 — overview, `v2-vision.md` (**bússola, não obra**: diz o que *não* fazer agora) e
@@ -45,9 +52,11 @@ que exerce, com benchmark em [`v2/bench/`](v2/bench/) — dá para rodar de novo
 | dados e fila entre processos | **PostgreSQL** | `SKIP LOCKED`, sem broker |
 | app desktop | **Tauri (Rust)** | migra do Electron, **pós-1.0.0** |
 
-Go, C e C++ ficam de fora, com motivo escrito no ADR. **A fronteira entre
-linguagens vai onde o volume por travessia é alto e a frequência é baixa** — onde
-a frequência é alta e o volume é baixo, a fronteira é o gargalo.
+Go e C continuam de fora. **C++ voltou ao escopo em 2026-11-24** (#540/ADR-005):
+entra como biblioteca nativa com C ABI, condicionado a benchmark — a exclusão de
+C++ do ADR-004 foi revogada, o resto da análise continua válido. **A fronteira
+entre linguagens vai onde o volume por travessia é alto e a frequência é baixa** —
+onde a frequência é alta e o volume é baixo, a fronteira é o gargalo.
 
 > A lição mais cara da Fase 0: o escalonador media **1073 µs** por tarefa e virou
 > **4,0 µs** — 265× mais rápido, **em JavaScript**, porque o defeito era O(n²).

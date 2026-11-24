@@ -41,6 +41,15 @@ When branch contents disagree, use this order:
 
 A branch is **not** authoritative merely because it contains more code.
 
+## V2 target architecture
+
+The current V2 architectural reference is
+[`docs/architecture/v2/arquitetura-alvo.md`](architecture/v2/arquitetura-alvo.md),
+derived from issues #540 and #539 and from ADRs 001–006. It separates confirmed
+decisions (✅), proposals (🟣), pending items (🟡) and open conflicts (⛔). Do not
+treat proposals in that document — including the recommended stack in #540 §15 —
+as approved architecture.
+
 ## Ecosystem navigation
 
 The Baluarte coordinates these repositories:
@@ -82,9 +91,10 @@ An agent working on Baluarte must not infer architecture from a random branch. I
 
 1. this file;
 2. `docs/ECOSYSTEM-CONTINUATION-STATE.md`;
-3. `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-4. the relevant domain specification;
-5. the current `main` implementation.
+3. `docs/architecture/v2/arquitetura-alvo.md` (V2 target architecture; check the decided/proposed/pending marks);
+4. `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+5. the relevant domain specification;
+6. the current `main` implementation.
 
 Then it may inspect historical or feature branches when needed.
 

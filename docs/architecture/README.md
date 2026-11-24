@@ -12,7 +12,8 @@ existir — o mapa já está no `CLAUDE.md`.
 |---|---|---|
 | [`overview.md`](./overview.md) | ✅ escrito | O que é o Baluarte hoje, quais são as camadas e o que atravessa quais fronteiras |
 | [`v2-vision.md`](./v2-vision.md) | ✅ escrito (**bússola, não obra**) | Para onde a V2 vai — e o que **não** fazer até a 1.0.0 fechar |
-| [`decisions/`](./decisions/) | ✅ 3 ADRs | Decisões fechadas, com o contexto que as gerou |
+| [`v2/`](./v2/) | 🟡 em elaboração | Arquitetura-alvo da V2 (#539/#540): definido, proposto, pendente e conflitos |
+| [`decisions/`](./decisions/) | ✅ 6 ADRs | Decisões fechadas, com o contexto que as gerou |
 | `core.md` | ⬜ a escrever | Router, state, storage, events, permissions, flags: contratos e quem depende de quem |
 | [`events.md`](./events.md) | ✅ **gerado** | Catálogo dos eventos do bus e quem escuta cada um — `npm run gen-catalogo-eventos`, cobrado pelo CI |
 | [`storage.md`](./storage.md) | ✅ **gerado** | Chaves, esquemas, classes de dado e como migrar sem perder o do operador — `npm run gen-catalogo-storage`, cobrado pelo CI |
@@ -35,3 +36,6 @@ anterior, nunca edição silenciosa do existente.
 - [ADR-001](./decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md) — A 1.0.0 é um ponto de congelamento, não a versão final
 - [ADR-002](./decisions/ADR-002-permissoes-deny-by-default.md) — Acesso é negado por omissão e permissão precisa ser declarada
 - [ADR-003](./decisions/ADR-003-congelamento-e-manutencao-da-v1.md) — O que "congelar a V1" significa na prática (numeração, o que o `main` aceita, o app travado na 1.x)
+- [ADR-004](./decisions/ADR-004-stack-poliglota-por-responsabilidade.md) — Stack poliglota por responsabilidade (parcialmente revista pelo ADR-005)
+- [ADR-005](./decisions/ADR-005-v2-app-typescript-backend-poliglota.md) — V2 como aplicativo, frontend TypeScript e backend Python/Rust/C++
+- [ADR-006](./decisions/ADR-006-disponibilizacao-somente-app.md) — Disponibilização somente como aplicativo durante a reconstrução
