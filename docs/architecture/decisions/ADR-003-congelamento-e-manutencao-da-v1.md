@@ -23,7 +23,18 @@ O `package.json` dizia `2.0.0` — numeração interna do Mark XIII, nunca publi
 (o repositório **não tinha nenhuma tag git**). Renumerado para `1.0.0-rc` durante
 a fase de hardening, e vira `1.0.0` no congelamento.
 
-### 2. Depois da tag `v1.0.0`, o `main` recebe só:
+> **⛔ Correção (2026-11-24).** A numeração acima não se materializou: não existe
+> tag `v1.0.0` nem release `v1.0.0` (a série salta de `v0.9.2`, 2026-08-03, para
+> `v1.1.0`, 2026-08-19). A V1 congelada é a **`v1.3.8`** — última release da
+> linha 1.x, publicada em 2026-08-24 sobre o commit
+> `7cce9d42bf756afcb1feffb7e05a4e87f0020616` —, com regime formalizado em
+> 2026-11-24, em [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
+> A V2 continua sendo a **2.0.0**. Sem tag retroativa `v1.0.0`.
+
+### 2. Depois do congelamento (base `v1.3.8`), o `main` recebe só:
+
+> *(A redação original dizia "depois da tag `v1.0.0`" — ver correção em §1. As
+> categorias abaixo não mudaram.)*
 
 - correção de bug;
 - correção de segurança;
@@ -35,6 +46,27 @@ dependência que não seja correção de segurança. Isso tudo vai para a
 `architecture/v2`.
 
 ### 3. A 1.0.0 é a última versão que o app instala sozinho
+
+> **⛔ Correção editorial (2026-11-24) — o número do título designa a base
+> congelada, não uma release 1.0.0 publicada.** O título é mantido como registro
+> de 2026-08-09; a versão que cumpre esse papel é a **`v1.3.8`** (commit
+> `7cce9d42bf756afcb1feffb7e05a4e87f0020616`), conforme o
+> [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md). O comportamento
+> técnico descrito abaixo continua válido; o que muda é a versão a que ele se
+> refere.
+>
+> **A cronologia do comportamento, verificada no fonte.** A linha
+> `autoUpdater.autoDownload = false` foi introduzida no commit `63310ee7`, em
+> 2026-08-09, e a primeira release publicada identificada que a contém é a
+> **`v1.1.0`**, de 2026-08-19 — nenhuma `v1.0.x` foi publicada. O comportamento,
+> portanto, **já existia antes da base `v1.3.8`**, que apenas o herdou: no fonte
+> do commit exato `7cce9d42bf756afcb1feffb7e05a4e87f0020616`, a linha está em
+> `desktop/src/main.js:293`.
+>
+> **O que isto não prova.** A presença no fonte não prova que os instaladores de
+> `v1.3.8` foram compilados dele. A associação entre os assets e o commit é
+> **fortemente indicada, mas não provada criptograficamente** — a mesma ressalva
+> do [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
 
 > **Correção (mesmo dia).** A primeira redação desta seção dizia "o app trava na
 > linha 1.x: recebe correção, não recebe funcionalidade". Isso registrava mal a
@@ -53,6 +85,14 @@ checagem a cada 2 h). A partir da 1.0.0:
   está, que é o comportamento seguro.
 - Instalar a V2 é **por conta e risco**, dito com essas palavras na caixa de
   diálogo.
+
+> **⛔ Correção (2026-11-24).** O gatilho desta seção ("a partir da 1.0.0") não
+> corresponde a versão publicada nenhuma. O que há com evidência é o comportamento
+> técnico: `autoUpdater.autoDownload = false` já estava presente na primeira
+> release publicada identificada, a **`v1.1.0`** (2026-08-19), e foi herdado pela
+> base `v1.3.8`. Isso não equivale a dizer que a regra normativa desta seção
+> passou a valer na `v1.1.0` — não há evidência de decisão registrada que fixe
+> esse marco. Ver [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
 
 ### 3b. O app aponta para um endereço fixado da 1.x
 
@@ -127,9 +167,26 @@ sem esta regra, não teria escolha nenhuma.
 ## Consequências
 
 - Precisa existir a tag `v1.0.0`. Sem ela não há para onde voltar, e a decisão do
-  ADR-001 fica sem objeto.
+  ADR-001 fica sem objeto. *(Lida com a correção de §1: a tag que cumpre esse
+  papel é a `v1.3.8`; a `v1.0.0` não é criada, e a condição vale para a base
+  congelada — ver [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).)*
 - A branch `architecture/v2` abre **depois** da tag, não antes (ver o gate em
   [`../v2-vision.md`](../v2-vision.md)).
+
+  > **⛔ Correção editorial (2026-11-24) — intenção, não evento confirmado.**
+  > A frase acima registra a ordem pretendida em 2026-08-09, não um fato
+  > ocorrido. A branch `architecture/v2` **não consta** entre as branches atuais
+  > do repositório: nenhuma das existentes tem esse nome. Isso não prova que ela
+  > nunca existiu — uma branch apagada não aparece em listagem nenhuma, e a data
+  > de criação de uma eventual branch apagada **não é recuperável**.
+  >
+  > O primeiro desenvolvimento V2 identificado está em `main`, no commit
+  > `12d78a70`, em 2026-08-10 — antes da base `v1.3.8`. Não foi possível
+  > determinar se uma eventual branch apagada com o nome `architecture/v2` também
+  > apontou para esse commit. O gate do `v2-vision.md` condiciona justamente a
+  > abertura dela, e o registro disponível não mostra essa abertura; **não há
+  > evidência**, porém, que permita declarar violação do gate, e este registro
+  > não o faz.
 - Ideia de funcionalidade que aparecer durante o congelamento vai para a
   [#422](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/422),
   não para o `main`.

@@ -1,9 +1,13 @@
 # Plano de prontidão — aprovação da ARQ-1 e critérios da V2
 
-> **Status:** 🔍 **planejamento — não aprova nada.**
-> D5, D6 e D7 continuam 🟡 pendentes. Nenhum ADR foi criado, nenhum ADR foi
-> alterado e nenhuma linha de código-fonte foi tocada. As redações da §4 são
-> **minutas para o operador decidir**, não decisões tomadas em nome dele.
+> **Status:** ✅ **executado em 2026-11-24** — D5, D6 e D7 foram aprovados
+> explicitamente pelo operador e registrados nos
+> [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+> [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) e
+> [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md). P0 foi fechado com
+> a criação dos três ADRs; **P1–P5 continuam obrigatórios** nas respectivas etapas.
+> Este documento permanece como registro dos critérios e portões que sustentaram a
+> aprovação — não aprova nada por si.
 >
 > **Base:** [`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md)
 > (os sete ajustes vêm dela, com as mesmas evidências) e
@@ -352,8 +356,10 @@ custo baixo no papel e custo alto no código — por isso é feita antes.
 | A-FRONT | Fronteiras de comunicação | As seis fronteiras da §4.3 do estudo e as garantias mínimas de contrato (versão, id, prazo, cancelamento, limite de bytes em requisição e resposta, erro com código estável) | O formato binário definitivo; a biblioteca de serialização; a engine da fila |
 
 **Regra de aprovação:** cada linha acima se considera aprovada quando o ADR
-correspondente (007, 008, 009 — a criar) contém a escolha, as alternativas
-descartadas com o motivo, as consequências e a data. Sem ADR, continua 🟡.
+correspondente contém a escolha, as alternativas descartadas com o motivo, as
+consequências e a data. **Cumprida em 2026-11-24:** A-D5 → ADR-007; A-D6 →
+ADR-008; A-D7, A-RESP e A-FRONT → ADR-009 (com a tabela de A-D5 como anexo
+normativo).
 
 ### 2.2 Lista B — prontidão operacional
 
@@ -480,17 +486,16 @@ Estado após a revisão final das minutas:
 | **C-A1** — justificativa medida | Estudo: errata, §1 (tabela de fatos), §2.2, §6.1; dossier §1 | Buscar `22,1`/`110,9`: só aparece rotulado como intra-webview; a base citada é 154,8 µs p50 | ✅ atendida |
 | **C-A5** — estimativas corrigidas | Estudo: errata, §1, §3.2, recursos do ARQ-1 | Buscar `10–30 MB` e `5–30 ms`: só na errata, como valor substituído; memória do Host e boot aparecem como **M** | ✅ atendida |
 | **C-A6a** — Host neutro ao shell | Canônico (vocabulário e descrição do diagrama); dossier (tabela de D6, §1, §9); estudo (errata, §6.1, §6.4, recomendação de D6) | Buscar `processo principal`: só na errata, em frases que remetem a D13, ou em condicional explícito sobre um shell (“em Tauri”) | ✅ atendida |
-| **Anexo “Dívidas de medição”** | Minuta de fronteiras (§4.2) + M1–M6 (§3.3) | Existência do anexo no ADR assinado | 🟡 depende do ADR (não criado) |
-| **Anexo “Capacidades a construir”** | Minuta de D6 (§4.2) + P0 (§3.4) | Existência do anexo e ausência de verbo no presente para supervisor e distribuição Python | 🟡 depende do ADR (não criado) |
+| **Anexo “Dívidas de medição”** | Minuta de fronteiras (§4.2) + M1–M6 (§3.3) | Anexo A dos ADR-007, ADR-008 e ADR-009 | ✅ existente |
+| **Anexo “Capacidades a construir”** | Minuta de D6 (§4.2) + P0 (§3.4) | Anexo B dos ADR-007, ADR-008 e ADR-009; verbo no presente ausente para supervisor e distribuição Python | ✅ existente |
 
 Duas observações de honestidade sobre esta tabela:
 
 1. **“Atendida” significa documentalmente atendida**, não implementada. C-A1, C-A5
    e C-A6a são condições de redação; nenhuma delas exige código, e nenhuma foi
    cumprida por código.
-2. **Os anexos só existem quando o ADR existir.** Por isso ficam 🟡: o plano não
-   pode criá-los por antecipação sem estar criando o ADR que o operador ainda não
-   autorizou.
+2. **Os anexos existem desde 2026-11-24**, porque os ADR-007/008/009 existem. A
+   criação dos ADRs fechou P0; não fechou nenhum dos critérios de P1–P5.
 
 ---
 
@@ -518,9 +523,14 @@ estar escrito como requisito, não como conquista.
 
 ### 4.2 O que deve mudar na redação antes de assinar
 
-Minutas para o operador decidir — **não** são decisões, nem texto final de ADR.
-Cada uma está escrita para ser auto-suficiente: quem ler o ADR não precisa
-adivinhar shell, engine de persistência nem estado de implementação.
+Minutas **adotadas em 2026-11-24**: cada linha abaixo virou o texto de um ADR —
+D5 no [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+D6 no [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md)
+e D7/Resp./Fronteiras no
+[ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md). O texto permanece aqui
+como registro da redação aprovada. Cada uma foi escrita para ser auto-suficiente:
+quem ler o ADR não precisa adivinhar shell, engine de persistência nem estado de
+implementação.
 
 | Decisão | Redação sugerida | Correção que embute |
 | --- | --- | --- |
@@ -595,6 +605,12 @@ como **requisitos obrigatórios de implementação**, cada um no seu portão. É
 única combinação que não transforma decisão em promessa nem prontidão em
 pré-requisito de decisão.
 
+**Executado em 2026-11-24.** P0 fechado; D5, D6 e D7 aprovados explicitamente
+pelo operador e registrados em ADR-007, ADR-008 e ADR-009. A2, A3, A4, A6b e A7
+seguem como requisitos de implementação em P1–P5, e M1–M6 como dívidas nomeadas
+nos anexos A dos três ADRs. Nenhum código foi escrito e nenhuma etapa foi
+iniciada.
+
 ---
 
 ## 5. Rastreabilidade
@@ -621,5 +637,6 @@ auditoria os tratou como ausência de implementação, não como erro de evidên
 - [`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md) — ARQ-1, tabela de donos (§2.4), matriz de transporte (§4.3), critérios de falsificação (§6.5).
 - [`arquitetura-alvo.md`](./arquitetura-alvo.md) — §16 (decisões pendentes), §17 (conflitos D8/D13), §18 (etapas A–F).
 - [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — dossier de decisão; não é decisão.
-- [`../decisions/`](../decisions/) — ADRs 001–006; nenhum alterado por este documento.
+- [`../decisions/`](../decisions/) — ADRs 001–009; os três novos (007, 008, 009)
+  nasceram das minutas deste plano. Nenhum ADR anterior foi alterado.
 - Issues [#540](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540) e [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
