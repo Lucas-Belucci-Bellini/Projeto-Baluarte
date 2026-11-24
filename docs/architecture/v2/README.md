@@ -13,7 +13,7 @@ e [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
 | [`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md) | ✅ executado (registro) | Os sete ajustes, a separação entre aprovação arquitetural e prontidão operacional, critérios verificáveis e portões P0–P5 |
 | [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) | 🟣 proposta (registro) | Opções e recomendação para D5/D6/D7 (linguagem do Core, forma dos componentes, comunicação) |
 | [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) | ✅ histórico | Como o Module System nasceu (diagnóstico da V1, manifesto, ordem de construção) |
-| [`../decisions/`](../decisions/) | ✅ ADRs 001–009 | Decisões fechadas, com contexto, alternativas e consequências |
+| [`../decisions/`](../decisions/) | ✅ ADRs 001–010 | Decisões fechadas, com contexto, alternativas e consequências |
 
 ## Hierarquia
 
@@ -24,7 +24,7 @@ e [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
 5. [`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md) — auditoria independente das evidências do estudo; também não é decisão.
 6. [`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md) — os critérios e portões (P0–P5) que sustentaram a aprovação de D5/D6/D7; não decide.
 7. [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — dossier de D5/D6/D7; registro das opções, aprovado em 2026-11-24 (a redação vigente é a dos ADRs).
-8. [`../decisions/`](../decisions/) — ADRs fechados (001–009). O canônico aponta para eles; não os substitui.
+8. [`../decisions/`](../decisions/) — ADRs fechados (001–010). O canônico aponta para eles; não os substitui.
 9. [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) — histórico do Module System; não é a arquitetura-alvo.
 
 Regra de precedência: quando o canônico e um documento antigo divergirem, o
