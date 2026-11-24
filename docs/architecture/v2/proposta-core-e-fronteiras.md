@@ -31,9 +31,9 @@ Nada abaixo é opinião; são medições ou artefatos que já existem.
 | Fato | Consequência |
 | --- | --- |
 | O produto é **somente aplicativo** ([#539](../decisions/ADR-006-disponibilizacao-somente-app.md)) | não existe “servidor web público” a proteger; o shell é local |
-| Core de orquestração em WASM mediu **~124 ns** por evento contra **~26 ns** em JS (ADR-004) | levar a orquestração de alta frequência para Rust/WASM é perda, não ganho |
+| Core de orquestração em WASM mediu **~124 ns** por evento contra **~26 ns** em JS (ADR-004) | medição **intra-webview**, registrada no ADR-004; não é a base de D5 — a base é 154,8 µs p50 de travessia de processo (auditoria §4.3) |
 | O Core de Runtime Rust já existe em `v2/runtime/`: `RuntimeHost`, `RuntimePolicy`, envelope JSON v1, `ReadFile` e `RuntimeStopped` | a fronteira Rust já tem um contrato mínimo testado; a decisão deve aproveitá-lo |
-| O worker Python já usa fila Postgres com `SKIP LOCKED` (`v2/services/tarefas`, `v2/data/migrations/001_fundacao.sql`) | trabalho assíncrono **já** tem transporte; forçá-lo por IPC seria regressão |
+| O worker Python já usa fila com `SKIP LOCKED` sobre Postgres (`v2/services/tarefas`, `v2/data/migrations/001_fundacao.sql`) | o protótipo já tem transporte para trabalho assíncrono; a engine definitiva é D8, e forçá-lo por IPC seria regressão |
 | O protótipo `v2/core` em JS dirige o router real da V1 no harness | a orquestração de UI já provou que funciona perto da interface |
 | O app V1 é Electron e o ADR-004 escolhe **Tauri** pós-1.0.0 | se Tauri prevalecer, o shell é Rust + webview; se Electron, o shell é Node — o desenho muda |
 | C++ precisa de caso medido (ADR-005) | C++ entra como biblioteca, não como processo, salvo prova em contrário |
@@ -97,7 +97,7 @@ lugar do “navegador”.
 | Componente | Forma | Por quê |
 | --- | --- | --- |
 | Frontend TypeScript | webview do shell | é onde a UI vive |
-| Host / Runtime Rust | processo principal | privilégio, supervisão, boot, ciclo de vida |
+| Host / Runtime Rust | processo privilegiado (principal × sidecar conforme D13) | privilégio, boot, ciclo de vida e, quando existir, supervisão de processos |
 | Worker Python | processo supervisionado | isolamento de dependências, GIL, falha contida |
 | Biblioteca C++ | biblioteca nativa in-process, via C ABI | desempenho sem pedágio de IPC; é o caso que justifica C++ |
 | Módulos | pacotes/manifestos carregados pelo Core | contrato já validado no protótipo |
@@ -133,9 +133,9 @@ isola, C++ acelera, Rust supervisiona, TS apresenta.
 
 | Fronteira | Transporte | Garantias |
 | --- | --- | --- |
-| UI (TS) ↔ Host (Rust) | comando IPC do shell (Tauri command ou envelope próprio), lista de operações permitidas | envelope versionado, `id` de requisição, timeout, erro com código estável |
+| UI (TS) ↔ Host (Rust) | mecanismo IPC nativo do shell que D13 escolher, com lista de operações permitidas | envelope versionado, `id` de requisição, timeout, erro com código estável |
 | Host (Rust) ↔ worker Python — chamada curta | JSON por linha sobre stdio, worker iniciado pelo Host | timeout, cancelamento, correlação, sem porta pública |
-| Host (Rust) ↔ worker Python — trabalho longo | fila Postgres com `SKIP LOCKED` (já existe) | idempotência, heartbeat, retry, estado no banco |
+| Host (Rust) ↔ worker Python — trabalho longo | fila durável com idempotência, lease e retry — engine conforme D8 (o protótipo usa `SKIP LOCKED`) | estado no banco, heartbeat, retry com teto |
 | Host (Rust) ↔ biblioteca C++ | C ABI in-process | ownership explícito, códigos de erro, thread-safety declarada |
 | Módulo ↔ Core | manifesto + API/eventos versionados (já validado) | capacidade concedida, namespace de storage |
 | Módulo ↔ dados | serviços/contratos do Core | sem conexão própria, sem esquema paralelo |
@@ -209,15 +209,16 @@ Erro:
 │  ┌───────▼─────────────┐        ┌────────▼──────────────┐   │
 │  │ WORKER — Python     │        │ BIBLIOTECA — C++      │   │
 │  │ curto: stdio        │        │ caso medido           │   │
-│  │ longo: fila Postgres│        │                       │   │
+│  │ longo: fila durável │        │                       │   │
 │  └─────────────────────┘        └───────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-O que isso resolve: o Core de UI continua rápido e perto da interface (medição do
-ADR-004), o privilégio fica em Rust (segurança), Python isola o que precisa de
-ecossistema, C++ só entra onde o benchmark justificar, e o trabalho assíncrono
-não é empurrado para IPC.
+O que isso resolve: o Core de UI continua rápido e perto da interface — a
+travessia de processo custa 154,8 µs p50, então mantê-la fora do caminho de UI
+evita esse custo —, o privilégio fica em Rust (segurança), Python isola o que
+precisa de ecossistema, C++ só entra onde o benchmark justificar, e o trabalho
+assíncrono não é empurrado para IPC.
 
 ---
 
@@ -260,8 +261,8 @@ Antes de marcar qualquer ADR como aceita, a fatia vertical mínima deve provar:
 - [ ] O Host nega uma operação sem capacidade concedida, com código estável.
 - [ ] Um worker Python sobe, responde a uma chamada curta e é encerrado por
       timeout sem travar o app.
-- [ ] Uma tarefa longa roda pela fila com `SKIP LOCKED`, sobrevive a reinício do
-      worker e não duplica execução.
+- [ ] Uma tarefa longa roda pela fila durável (engine conforme D8; no protótipo,
+      `SKIP LOCKED`), sobrevive a reinício do worker e não duplica execução.
 - [ ] Uma função C++ trivial atravessa a C ABI e devolve erro corretamente (a
       prova da fronteira; não é o caso de uso final).
 - [ ] Falha de módulo opcional não derruba o Host; falha do Host produz
@@ -274,20 +275,25 @@ Antes de marcar qualquer ADR como aceita, a fatia vertical mínima deve provar:
 ## 9. Se aprovado, o texto do ADR
 
 **ADR-007 (D5):** O aplicativo tem dois núcleos nomeados — Core de UI em
-TypeScript, no webview, e Host de Runtime em Rust, como processo principal. A
-orquestração de alta frequência permanece em TypeScript; privilégio de processo,
-filesystem, rede e supervisão ficam em Rust. Não há segundo Core em C++.
+TypeScript, no webview (onde vive a orquestração do app), e Host de Runtime em
+Rust, como processo privilegiado. A orquestração de alta frequência permanece em
+TypeScript; privilégio de processo, filesystem, rede e supervisão ficam em Rust.
+Se o Host é processo principal do sistema operacional ou sidecar é D13. Não há
+segundo Core em C++.
 
 **ADR-008 (D6):** Componentes assumem a forma que o problema exige: webview (TS),
-processo principal (Rust), worker supervisionado (Python), biblioteca in-process
-(C++ via C ABI), módulos carregados por manifesto. Nenhum componente novo vira
-processo sem requisito de isolamento demonstrado.
+processo privilegiado (Rust), worker supervisionado (Python), biblioteca
+in-process (C++ via C ABI, apenas se D4 medir ganho), módulos carregados por
+manifesto. Nenhum componente novo vira processo sem requisito de isolamento
+demonstrado. **Supervisor de processos e distribuição do worker Python são
+capacidades a construir**, não capacidades existentes.
 
 **ADR-009 (D7):** Comunicação por contrato versionado em cada fronteira: IPC com
 allowlist entre UI e Host; stdio JSON-lines para chamada curta ao worker; fila
-Postgres `SKIP LOCKED` para trabalho longo; C ABI para biblioteca nativa.
-Nenhum worker abre porta pública por padrão; JSON v1 até haver necessidade medida
-de formato binário.
+durável para trabalho longo, com idempotência, lease e retry — a engine é D8;
+C ABI para biblioteca nativa. Nenhum worker abre porta pública por padrão; JSON v1
+até haver necessidade medida de formato binário, e o envelope v1 é ponto de
+partida, não congelamento.
 
 Cada ADR deve registrar: contexto (esta proposta), alternativas descartadas,
 escolha, consequências e data. A aprovação é do operador — o agente não promove

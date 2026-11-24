@@ -29,11 +29,14 @@ issue**. Elas aparecem aqui resumidas e marcadas, porque são o ponto de partida
 mais concreto que existe — não porque estejam aprovadas.
 
 **Vocabulário.** O ADR-004 separa duas funções que a palavra “Core” costuma
-juntar: o **Core de UI** (TypeScript, no webview) e o **Host de Runtime** (Rust,
-processo principal). Neste documento, “Host” sempre significa a segunda; “Core de
-UI” a primeira. Quando aparece **“Core”** sozinho — sobretudo no Module System — é
-o lado que carrega módulos e concede capacidades, histórico do ADR-004, e não
-autoriza fundir as duas funções (isso é **D5**).
+juntar: o **Core de UI** (TypeScript, no webview — também chamado de **Core de
+Orquestração**, porque é onde vive a orquestração do app) e o **Host de Runtime**
+(Rust, processo privilegiado). Neste documento, “Host” sempre significa a segunda;
+“Core de UI” a primeira. Se o Host é processo principal do sistema operacional ou
+sidecar é **D13** e não está decidido: “privilegiado” qualifica o privilégio, não
+a posição no ciclo de vida do shell. Quando aparece **“Core”** sozinho — sobretudo
+no Module System — é o lado que carrega módulos e concede capacidades, histórico
+do ADR-004, e não autoriza fundir as duas funções (isso é **D5**).
 
 ---
 
@@ -173,7 +176,8 @@ pacote — isso é pendência ([§16](#16-decisões-pendentes)).
 ```
 
 O diagrama separa duas responsabilidades que o **ADR-004 já distingue**: Core de
-UI (TypeScript, no webview) e Host de Runtime (Rust, processo principal). A
+UI (TypeScript, no webview) e Host de Runtime (Rust, processo privilegiado — a
+forma, principal ou sidecar, é **D13**). A
 [proposta da #540 §15](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540)
 sugere consolidar os dois em um host Rust único; isso é a pendência **D5** e
 **não** está representado como decidido. O diagrama também não decide se cada

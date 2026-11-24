@@ -38,32 +38,50 @@ pré-requisito para ler o estudo.
 Marcas de estado continuam as do canônico: ✅ Definido, 🟣 Proposto, 🟡 Pendente,
 ⛔ Conflito aberto.
 
+### Errata da auditoria
+
+A [`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md)
+reproduziu os números deste estudo e encontrou divergências. O corpo do documento
+fica como **registro histórico** do que foi analisado; onde ele divergir da tabela
+abaixo, **a errata prevalece**.
+
+| Afirmação no corpo | O que a reprodução mostrou | Como ler daqui em diante |
+| --- | --- | --- |
+| "22,1 ns × 110,9 ns" como despacho de evento real (§1, §2.2, §2.3, §6.2) | É microbenchmark JS × WASM **dentro do webview** — topologia que ARQ-1 não usa. Razão reproduzida em 4,61–5,15×; valores absolutos ~30% menores | Comparativo intra-webview, sem função de prova. A base de D5 é **154,8 µs p50** de travessia de processo (auditoria §4.3) |
+| "2,4 µs por evento" no bus | Não reproduzido: **8,6–8,7 µs** estável em três execuções; há um terceiro valor de 9,46 µs no repositório | Citar **faixa 2,4–9,5 µs**, nunca um ponto sem máquina registrada |
+| "Rust 1,34× mais rápido que Node em JSON" | Não reproduzido no dataset substituto: 65 ms (Rust) × 59 ms (Node) | Rust ≈ Node nesse payload; a vantagem de Rust sobre Node é marginal, a de ambos sobre Python é grande |
+| "Rust 1,8× Node no laço de byte" | Não reproduzido: 13 ms × 14 ms (~1,08×) | idem: direção qualitativa mantida, fator não |
+| "Host Rust 10–30 MB ocioso" e "boot 5–30 ms" | Medido: **1,03 MB** ocioso e **4,8 ms** cold | Usar o medido. Webview e worker Python seguem **E**, sem medição |
+| "processo principal" (toda ocorrência) | A forma é relativa ao shell, e D13 está em aberto | Ler **processo privilegiado**; principal × sidecar é **D13** |
+| "14 testes" da fila como garantia de maturidade | Os 14 passam, mas **fora do CI** e só com `search_path` configurado | "Testes existem e passam localmente; CI e configuração pendentes" (ajuste A7) |
+
 ---
 
 ## 1. Fatos medidos que restringem as três decisões
 
 Nada nesta seção é opinião. São medições do repositório ou artefatos que já
-existem e já são testados.
+existem e já são testados. **Onde a reprodução divergiu, vale a
+[Errata](#errata-da-auditoria)** — inclusive nos itens marcados **M**.
 
 | Fato | Número / estado | Grau | Consequência para D5–D7 |
 | --- | --- | ---: | --- |
 | Travessia crua JS ↔ WASM | **2,0 ns** (JS) × **11,8 ns** (WASM) | M | Levar orquestração de UI para Rust/WASM paga pedágio antes de fazer qualquer coisa |
-| Despacho de evento real no bus | **22,1 ns** (JS) × **110,9 ns** (WASM com string) | M | `+88,7 ns` por evento — 5,0× mais caro; orquestração de alta frequência fica em TS |
+| Despacho de evento em microbenchmark intra-webview | **22,1 ns** (JS) × **110,9 ns** (WASM com string) | M | Comparativo dentro do webview, **não** é o caminho do app; a base de D5 é a travessia de processo abaixo |
 | Validação de manifesto | **0,9 µs/op** | M | O manifesto pode ser validado em toda carga sem custo perceptível |
 | Selar registro (ordenação topológica) | **63,6 µs** (10 módulos) · **347,8 µs** (100) · **3,295 ms** (1.000) | M | Escala aceitável até centenas de módulos; 1.000 módulos é caso de boot, não de interação |
 | Boot completo | **5,28 ms** (10) · **4,05 ms** (100) · **191,09 ms** (1.000) | M | O boot do Core é irrelevante frente ao boot do shell |
-| Custo do Event Bus | **2,4 µs/op** (1 direto + 1 curinga) | M | O bus só é gargalo se a UI emitir milhares de eventos por segundo |
+| Custo do Event Bus | **2,4–8,7 µs/op** (reprodução); **9,46 µs** em outro bench do repositório | M | O bus só é gargalo se a UI emitir milhares de eventos por segundo; citar faixa, não ponto |
 | Consulta de permissão | **~0,0 µs/op** (2.000.000 execuções em 83 ms) | M | Verificar permissão em toda chamada é viável; não há desculpa de desempenho para não revalidar |
 | Task Manager (50.000 tarefas triviais) | **5,0–5,6 µs** por tarefa | M | Concorrência interna não exige outra linguagem |
-| Parse JSON 17,9 MB | Python **292 ms** · Node **250 ms** · Rust **187 ms** | M | Rust é **1,34×** mais rápido que Node em JSON — fator que **não** justifica reescrita; Python é **1,17×** mais lento que Node |
+| Parse JSON 17,9 MB | Python **292 ms** · Node **250 ms** · Rust **187 ms** | M | A reprodução **não confirmou** 1,34× sobre Node (Rust ≈ Node); em nenhum cenário o fator justifica reescrita |
 | Passeio de 532.622 chaves | Python **130 ms** · Node **64 ms** · Rust **19 ms** | M | Estrutura de dados aninhada é onde a diferença aparece: Rust **3,4×** Node |
-| Laço de byte + hash (18 MB) | Python **4.240 ms** · Node **32 ms** · Rust **18 ms** | M | Rust **1,8×** Node e **236×** Python — é o caso que decide parser binário |
+| Laço de byte + hash (18 MB) | Python **4.240 ms** · Node **32 ms** · Rust **18 ms** | M | Na reprodução, Rust × Node é marginal (~1,08×) e Rust × Python é ~136× — é o caso que decide parser binário |
 | Memória de pico ao parsear 17,9 MB | Python **114 MB** · Rust **104 MB** · Node **130 MB** (rss) | M | Python não é "gastão" por natureza nesse tipo de carga; o custo dele é inicialização e dependências |
 | Boot interno da plataforma V2 (protótipo) | **14 ms** p50 | M | O protótipo de Core já sobe rápido; o gargalo é o shell/webview (**215–855 ms** até `partida`) |
 | Navegação real nas 99 rotas da V1 | p50 **163 ms** até DCL | M | A referência de experiência que a V2 precisa igualar ou superar |
 | Transporte Core → Runtime | **stdio JSON-lines já implementado**, uma requisição em voo, teto de **5 s**, limite de **1 MB** por linha | M | D7 não parte do zero: a fronteira TS→Rust já tem transporte testado |
 | Rejeições do envelope | versão incompatível, módulo duplicado, ID vazio, permissão desconhecida, permissão duplicada | M | O contrato já falha fechado; isso é base de D7, não hipótese |
-| Fila de trabalho longo | Postgres com `SKIP LOCKED`, lease + heartbeat, desligamento gracioso, erro registrado | M | O transporte de trabalho assíncrono **já existe** e não é IPC |
+| Fila de trabalho longo | Postgres com `SKIP LOCKED`, lease + heartbeat, desligamento gracioso, erro registrado | M | O mecanismo existe no protótipo; config e CI pendentes — o transporte de trabalho assíncrono não é IPC |
 | Tamanho do protótipo | Core ≈ 2.700 linhas (JS/TS) · Runtime ≈ 950 linhas (Rust) · worker ≈ 284 linhas (Python) | M | Nenhum dos lados é grande o bastante para que "reescrever" seja a opção barata por si só |
 | C++ no repositório | **zero linhas** | M | D4/D6/D7 para C++ só podem ser analisados como hipótese |
 
@@ -71,11 +89,12 @@ Três leituras que mudam o debate:
 
 1. **A fronteira não é grátis, mas também não é catástrofe.** A travessia crua
    JS↔WASM custa ~11,8 ns porque é no mesmo processo. Atravessar **processo** é
-   outra ordem de grandeza (**E**: dezenas a centenas de microssegundos por ida e
-   volta, dominado por serialização e syscall) — três a quatro ordens acima. Isso
-   não invalida processo; invalida **processo para chamada frequente**.
+   outra ordem de grandeza: **154,8 µs p50** por ida e volta (medido, 4 KB, stdio
+   real) — cerca de quatro ordens acima. Isso não invalida processo; invalida
+   **processo para chamada frequente**.
 2. **Onde Rust ganha é trabalho de byte e estrutura profunda**, não orquestração
-   (1,34× em JSON não paga reescrita; 236× em laço de byte paga).
+   (em JSON, Rust ≈ Node na reprodução, o que não paga reescrita; em byte,
+   ~136× sobre Python paga).
 3. **O que já está construído pesa.** Um desenho que descarta o transporte stdio
    e o envelope v1 existentes joga fora código testado para comprar uma hipótese.
    Isso não decide nada, mas entra no custo de cada alternativa.
@@ -109,7 +128,7 @@ abrir arquivo, falar rede, iniciar/encerrar processo, aplicar política.
 
 | Dimensão | Avaliação | Evidência |
 | --- | --- | --- |
-| Desempenho | Ótimo no caminho quente (UI não atravessa fronteira); bom no caminho frio | M: 22,1 ns por despacho de evento em JS; 2,4 µs no bus |
+| Desempenho | Ótimo no caminho quente (UI não atravessa fronteira); bom no caminho frio | M: 154,8 µs p50 por travessia de processo (auditoria §4.3); 22,1/110,9 ns apenas como comparativo intra-webview |
 | Complexidade | Média: duas linguagens, um contrato, duas autoridades | D: 1 fronteira principal a projetar e testar |
 | Manutenção | Boa: dono óbvio por sintoma; contrato versionado isola as mudanças | D: o envelope v1 já isola as duas pontas |
 | Segurança | Forte: privilégio concentrado em Rust; TS não toca filesystem nem processo | M: `RuntimePolicy` por módulo, raiz vinda do host confiável |
@@ -224,8 +243,8 @@ os workers. São três formas:
 | Dimensão | P1 — processo único | P2 — processos separados | P3 — híbrido |
 | --- | --- | --- | --- |
 | **Memória** | Menor número de cópias de runtime; um heap por linguagem no mesmo espaço | Cada processo carrega seu runtime | Paga só onde precisa |
-| **Inicialização** | Uma vez por app; **E** 40–120 ms para subir Python embutido com dependências | **E** 5–30 ms por processo Rust; **E** 120–600 ms por worker Python com dependências | Igual a P2 no que é processo; zero no que é biblioteca |
-| **Comunicação** | Chamada FFI direta, ~nanossegundos a poucos µs | Serialização + syscall; **E** dezenas–centenas de µs | Escolhida por fronteira |
+| **Inicialização** | Uma vez por app; **E** 40–120 ms para subir Python embutido com dependências | **M** 4,8 ms cold por processo Rust; **E** 120–600 ms por worker Python com dependências | Igual a P2 no que é processo; zero no que é biblioteca |
+| **Comunicação** | Chamada FFI direta, ~nanossegundos a poucos µs | Serialização + syscall; **M** 154,8 µs p50 (4 KB, stdio real) | Escolhida por fronteira |
 | **Falha** | Segfault/panic de C++, ou `abort` do interpretador, derruba **o app inteiro** | Falha contida no processo; supervisor reinicia | Contida onde há processo; contida por teste onde há FFI |
 | **Isolamento** | Nenhum entre linguagens: memória compartilhada, GIL global | Forte: memória, sinais, ambiente, dependências separados | Forte onde importa |
 | **Distribuição** | Um binário + bibliotecas + stdlib Python embutida (**E** +40–80 MB) | Um binário por componente + runtime Python empacotado (mesmo peso, mas isolado) | Soma dos dois, mínima |
@@ -237,13 +256,13 @@ os workers. São três formas:
 **TypeScript (webview).** Sempre processo separado — não é escolha. O que se
 escolhe é o **transporte** até o Host (D7) e quanto estado vive lá (D5).
 
-**Rust (Host).** Candidato natural a processo principal: é o único componente que
+**Rust (Host).** Candidato natural a processo privilegiado: é o único componente que
 precisa de privilégio real e de supervisão. Em P1 ele vira o processo que embute
 tudo — e passa a ser o ponto único de falha do aplicativo. Em P2 é um processo
 entre outros, o que é mais fraco do ponto de vista de privilégio (quem supervisiona
 o supervisor?) e mais forte do ponto de vista de falha. O Baluarte precisa dos
-dois: Host **é** processo principal *e* supervisor. P3 resolve isso: Host é o
-processo principal e supervisiona os demais.
+dois: Host **é** processo privilegiado *e* supervisor. P3 resolve isso: Host é o
+processo privilegiado e supervisiona os demais.
 
 **Python (workers).** Três perfis distintos, que costumam ser confundidos:
 
@@ -280,7 +299,7 @@ qualquer processo e perde a única vantagem que tinha.
 
 **Recomendação preliminar de D6 (🟣):** **P3 — híbrido**, com a regra escrita:
 *processo por padrão para Python; biblioteca só para C++ com benchmark; Host Rust
-é o processo principal e o supervisor dos demais.* P1 troca isolamento por
+é o processo privilegiado e o supervisor dos demais — principal × sidecar é D13.* P1 troca isolamento por
 empacotamento mais simples e não é compatível com a natureza de Python neste
 produto. P2 puro desperdiça a única razão de C++ existir.
 
@@ -414,8 +433,8 @@ sugerem.
 │  └────────────────────────┬───────────────────────────────┘  │
 │                           │ IPC do shell (allowlist, JSON)   │
 │  ┌────────────────────────▼───────────────────────────────┐  │
-│  │ HOST — processo principal, Rust                        │  │
-│  │  boot · permissões reais · filesystem · supervisor      │  │
+│  │ HOST — processo privilegiado, Rust                     │  │
+│  │  boot · permissões reais · filesystem · supervisor     │  │
 │  │  RuntimeHost · RuntimePolicy · envelope v1             │  │
 │  └────┬──────────────────────────────┬────────────────────┘  │
 │       │ stdio JSON-lines (curto)     │ C ABI (in-process)    │
@@ -456,10 +475,11 @@ envelope). Raiz de filesystem vem do Host, nunca do manifesto. IPC com allowlist
 nomeada: o webview não pede "execute isto", pede `fs.read`. Worker não abre porta.
 Segredo nunca no payload de log.
 
-**Recursos (E — ordem de grandeza, não medição).** Webview Tauri 60–120 MB;
-Host Rust 10–30 MB ocioso; worker Python 40–90 MB com dependências de IA; C++
-1–5 MB. Boot do Host 5–30 ms; worker Python residente 150–600 ms (sob demanda).
-Total ocioso plausível: 110–240 MB. **Medir antes de prometer.**
+**Recursos (M onde medido; E onde estimado).** Host Rust: **1,03 MB ocioso** e
+**4,8 ms cold** (medidos — auditoria §4.2 e §4.3). Webview 60–120 MB; worker
+Python 40–90 MB com dependências de IA; C++ 1–5 MB; worker Python residente
+150–600 ms: tudo **E**, sem medição. Total ocioso plausível: 110–240 MB.
+**Medir antes de prometer.**
 
 **Complexidade de implementação.** Média-alta. As peças novas são: IPC com
 allowlist no shell, supervisor de processos com política de reinício, contrato
@@ -686,15 +706,18 @@ Traduzindo em respostas, que continuam 🟡 pendentes:
 | Decisão | Recomendação | Estado |
 | --- | --- | --- |
 | D5 | Manter os dois núcleos do ADR-004, com tabela de donos explícita (quem decide × quem executa) | 🟡 pendente |
-| D6 | Host Rust como processo principal e supervisor; Python em processo; C++ como biblioteca só após benchmark; módulos in-process | 🟡 pendente |
-| D7 | IPC do shell (JSON, allowlist) TS↔Host; stdio JSON-lines para chamada curta a Python; fila Postgres para longo; C ABI para C++; API/eventos in-process para módulos | 🟡 pendente |
+| D6 | Host Rust como processo privilegiado e supervisor; Python em processo; C++ como biblioteca só após benchmark; módulos in-process. Principal × sidecar conforme D13 | 🟡 pendente |
+| D7 | IPC do shell (JSON, allowlist) TS↔Host; stdio JSON-lines para chamada curta a Python; fila durável para longo (engine conforme D8); C ABI para C++; API/eventos in-process para módulos | 🟡 pendente |
 
 ### 6.2 Por que esta é a mais adequada
 
-**Porque é a única que respeita a medição que já existe.** O ADR-004 mediu que
-orquestração de UI em WASM custa 5× mais por evento. ARQ-1 mantém a orquestração
-onde ela é barata e o privilégio onde ele é necessário. ARQ-2 e ARQ-4 contradizem
-essa medição; ARQ-3 a respeita mas paga infraestrutura desnecessária.
+**Porque é a única que respeita a medição que já existe.** Atravessar processo
+custa **154,8 µs p50** por ida e volta (medido), enquanto a orquestração dentro do
+webview custa nanossegundos — o comparativo intra-webview (≈5× por evento, e o
+ADR-004 registra ~124 ns contra ~26 ns) reforça a mesma direção, mas quem sustenta
+a separação é a travessia de processo. ARQ-1 mantém a orquestração onde ela é
+barata e o privilégio onde ele é necessário. ARQ-2 e ARQ-4 contradizem essa
+medição; ARQ-3 a respeita mas paga infraestrutura desnecessária.
 
 **Porque aproveita o que está testado.** Envelope v1, `RuntimePolicy`, rejeições,
 transporte stdio, fila com lease e heartbeat: tudo isso já existe e continua
@@ -736,8 +759,9 @@ reescrever o sistema.
 - **C++ continua indefinido na prática** (D4): a recomendação não resolve o escopo,
   só a forma caso ele exista.
 - **Não resolve D8 nem D13**: a fila precisa de engine, e o shell define se o
-  Host é processo principal ou sidecar. Se for Electron, ARQ-1 sobrevive com um
-  processo a mais e um hop de IPC a mais.
+  Host é processo principal do SO ou sidecar — a recomendação só fixa que ele é
+  **processo privilegiado**. Se for Electron, ARQ-1 sobrevive com um processo a
+  mais e um hop de IPC a mais.
 
 ### 6.5 Em que circunstâncias eu mudaria de recomendação
 

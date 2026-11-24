@@ -107,9 +107,9 @@ uma aposta não testada no sistema operacional de destino.
 
 **Critério objetivo de aceitação.** Existe job em `windows-latest` que executa,
 no mínimo, `cargo test` do Runtime e os testes JS do transporte stdio, com saída
-que comprove a contagem de testes executados (não apenas "verde"); e o smoke
-empacotado deixa de lançar por `win32`, executando o ciclo autorizar → ler em
-Windows.
+que comprove a contagem de testes executados (não apenas "verde") — C-A2a; e o
+smoke empacotado deixa de lançar por `win32`, executando o ciclo autorizar → ler em
+Windows — C-A2b.
 
 **Como validar.** Abrir o log do job e conferir a contagem de testes executados e
 o caminho do binário usado (`baluarte-runtime.exe`); executar o smoke em Windows
@@ -345,11 +345,11 @@ custo baixo no papel e custo alto no código — por isso é feita antes.
 
 | # | Item | O que exatamente se aprova | O que **não** se aprova junto |
 | --- | --- | --- | --- |
-| A-D5 | Consolidação dos núcleos | Dois núcleos (Core de UI TS no webview + Host de Runtime Rust em processo), com tabela de donos por dado (quem decide × quem executa) e proibição de decisão duplicada | Que a fusão em host único seja rejeitada para sempre; que a tabela da §2.4 do estudo esteja completa |
-| A-D6 | Forma dos componentes | Módulos in-process; Python em processo supervisionado; C++ como biblioteca isolada **se** D4 provar ganho; Host como processo privilegiado | Que o Host seja processo principal do SO (isso é D13); que C++ entre no build |
-| A-D7 | Mecanismo de comunicação | Transporte por fronteira: IPC do shell com allowlist (TS↔Host), stdio JSON-lines para chamada curta (Host↔Python), fila durável para trabalho longo, C ABI condicionada (C++), API/eventos in-process (módulos) | Que o envelope v1 esteja congelado; que a fila seja Postgres (isso é D8); que Protobuf ou socket nunca entrem |
-| A-RESP | Responsabilidades de cada núcleo | A tabela decide × executa, com dono único por dado e cópia descartável do outro lado | A implementação da tabela; a política de permissões (já é ADR-002) |
-| A-FRONT | Fronteiras de comunicação | As seis fronteiras da §4.3 do estudo e as garantias exigidas de cada contrato (versão, id, prazo, cancelamento, limite de bytes, erro com código estável) | O formato binário definitivo; a biblioteca de serialização |
+| A-D5 | Consolidação dos núcleos | Dois núcleos com nomes e escopos exclusivos — Core de Orquestração TypeScript (Core de UI no canônico) e Runtime/Host Rust —, tabela de propriedade com exclusivas e compartilhadas (§4.2.1) e proibição de decisão duplicada | Que a fusão em host único seja rejeitada para sempre; que a tabela esteja completa |
+| A-D6 | Forma dos componentes | Módulos in-process; Python em processo separado; C++ como biblioteca isolada **se** D4 provar ganho; Host como processo privilegiado; supervisão e distribuição do Python declaradas como **capacidades a construir** | Que o Host seja processo principal do SO (isso é D13); que C++ entre no build; que exista supervisor hoje |
+| A-D7 | Mecanismo de comunicação | Comunicação por fronteira: IPC nativo do shell que D13 escolher, com allowlist (TS↔Host); stdio JSON-lines para chamada curta (Host↔Python); fila durável com idempotência, lease e retry para trabalho longo; C ABI condicionada (C++); API/eventos in-process (módulos) | Que o envelope v1 esteja congelado; que a fila seja Postgres (isso é D8); que Protobuf ou socket nunca entrem; que o IPC seja o de um shell específico |
+| A-RESP | Responsabilidades de cada núcleo | A tabela §4.2.1: exclusivas de cada núcleo e compartilhadas com dono único de decisão e cópia descartável do outro lado | A implementação da tabela; a política de permissões (já é ADR-002) |
+| A-FRONT | Fronteiras de comunicação | As seis fronteiras da §4.3 do estudo e as garantias mínimas de contrato (versão, id, prazo, cancelamento, limite de bytes em requisição e resposta, erro com código estável) | O formato binário definitivo; a biblioteca de serialização; a engine da fila |
 
 **Regra de aprovação:** cada linha acima se considera aprovada quando o ADR
 correspondente (007, 008, 009 — a criar) contém a escolha, as alternativas
@@ -410,7 +410,8 @@ número escolhido no papel.
 | # | Critério verificável | Artefato de prova | Medição necessária |
 | --- | --- | --- | --- |
 | C-A1 | Justificativa de D5 cita 154,8 µs p50 **com comando, arquivo e ambiente**; microbenchmark rotulado como intra-webview | Texto do ADR + anexo de comandos da auditoria §9 | Já existe (auditoria §4.3) |
-| C-A2 | Job Windows executa `cargo test` + testes do transporte com contagem visível; smoke empacotado roda em `win32` | Log do workflow + saída do smoke | Contagem de testes executados em Windows (nova) |
+| C-A2a | Job mínimo em Windows executa `cargo test` do Runtime e os testes JS do transporte, com contagem de testes no log | Log do workflow | Contagem de testes executados em Windows (nova) |
+| C-A2b | Smoke do pacote roda em `win32` e falha quando o binário é removido do pacote | Saída do smoke (positiva e negativa) | Nenhuma |
 | C-A3 | Teste prova: sem processo órfão após fechar o app **e** tarefa devolvida à fila antes do lease vencer, em Linux **e** Windows | Teste automatizado + log | Tempo de retorno à fila em Windows (nova) |
 | C-A4 | `:` , `C:x`, `C:\x`, `..\x`, NUL rejeitados por teste; função de validação chamada fora dos testes | Teste unitário + busca textual | Nenhuma |
 | C-A5 | Todo número do ADR tem origem M/D/E; absolutos com variação aparecem como faixa | Tabela de evidências do ADR | Nenhuma |
@@ -443,9 +444,11 @@ baseline medido** e registrado antes da comparação. O que hoje falta medir:
 | M5 | Memória e boot do webview (Electron × WebView2) | D10/D13, prontidão do shell | Exige build e display |
 | M6 | Custo de travessia UI↔Host com o app real | critério de falsificação 1 de D5 | O número de processo (154,8 µs) não inclui IPC do shell |
 
-Regra: **M1–M6 entram no ADR como dívida nomeada**, não como estimativa. Se o
-operador quiser aprovar antes, aprova sabendo que a decisão repousa em medição de
-Linux e em leitura de código para Windows.
+Regra: **M1–M6 entram no ADR como dívida nomeada**, não como estimativa. Todo ADR
+de D5/D6/D7 carrega o anexo **“Dívidas de medição”** com estas seis linhas, o
+critério que cada uma fecha e o portão em que ela vence — sem resultado
+antecipado. Se o operador quiser aprovar antes, aprova sabendo que a decisão
+repousa em medição de Linux e em leitura de código para Windows.
 
 ### 3.4 Portões de prontidão
 
@@ -454,15 +457,40 @@ propostas no canônico (§18), viram portões:
 
 | Portão | Antes de | Critérios exigidos | Observação |
 | --- | --- | --- | --- |
-| **P0** | assinar D5/D6/D7 | C-A1, C-A5, C-A6(a) | Só redação; nenhum código |
+| **P0** | assinar D5/D6/D7 | C-A1, C-A5, C-A6(a) + anexos “Dívidas de medição” e “Capacidades a construir” | Só redação; nenhum código |
 | **P1** | Etapa A (contrato vertical) | C-A4, C-O2 | Segurança de caminho vem antes da primeira chamada real |
-| **P2** | Etapa B (runtime e módulos) | C-A3 início, C-O3 contrato escrito | Supervisor pode ser contrato antes de código |
+| **P2** | Etapa B (runtime e módulos) | C-A2a, C-A3 início, C-O3 contrato escrito | O job mínimo em Windows é pré-requisito da prova de C-A3, que exige as duas plataformas |
 | **P3** | Etapa C (worker Python) | C-A3, C-O5, C-O4, C-A7 | Python em processo só se para limpo e é distribuído |
 | **P4** | Etapa D (C++ nativo) | D4 com benchmark vs alternativas | Sem benchmark não se cria a fronteira |
-| **P5** | Distribuição / release | C-A2, C-O1, C-O6, C-O7 | Windows, fila concorrente, pacote offline |
+| **P5** | Distribuição / release | C-A2b, C-O1, C-O6, C-O7 | Smoke empacotado em Windows, fila concorrente, pacote offline |
 
 P0 é o único que a aprovação exige. P1–P5 são condições de **etapa**, não de
 decisão — e é isso que permite aprovar arquitetura sem parar a reconstrução.
+Nenhum dos sete itens operacionais foi rebaixado a recomendação: O1 → P5, O2 → P1,
+O3 → P2, O4 → P3, O5 → P3, O6 → P5, O7 → P5. Aprovar D5/D6/D7 **não** dispensa
+nenhum deles; apenas desloca a cobrança da assinatura para a etapa.
+
+### 3.5 Verificação de P0 no texto canônico e nos documentos referenciados
+
+P0 não é uma promessa para o futuro: é conferível hoje, documento por documento.
+Estado após a revisão final das minutas:
+
+| Condição | Onde foi aplicada | Como conferir | Estado |
+| --- | --- | --- | --- |
+| **C-A1** — justificativa medida | Estudo: errata, §1 (tabela de fatos), §2.2, §6.1; dossier §1 | Buscar `22,1`/`110,9`: só aparece rotulado como intra-webview; a base citada é 154,8 µs p50 | ✅ atendida |
+| **C-A5** — estimativas corrigidas | Estudo: errata, §1, §3.2, recursos do ARQ-1 | Buscar `10–30 MB` e `5–30 ms`: só na errata, como valor substituído; memória do Host e boot aparecem como **M** | ✅ atendida |
+| **C-A6a** — Host neutro ao shell | Canônico (vocabulário e descrição do diagrama); dossier (tabela de D6, §1, §9); estudo (errata, §6.1, §6.4, recomendação de D6) | Buscar `processo principal`: só na errata, em frases que remetem a D13, ou em condicional explícito sobre um shell (“em Tauri”) | ✅ atendida |
+| **Anexo “Dívidas de medição”** | Minuta de fronteiras (§4.2) + M1–M6 (§3.3) | Existência do anexo no ADR assinado | 🟡 depende do ADR (não criado) |
+| **Anexo “Capacidades a construir”** | Minuta de D6 (§4.2) + P0 (§3.4) | Existência do anexo e ausência de verbo no presente para supervisor e distribuição Python | 🟡 depende do ADR (não criado) |
+
+Duas observações de honestidade sobre esta tabela:
+
+1. **“Atendida” significa documentalmente atendida**, não implementada. C-A1, C-A5
+   e C-A6a são condições de redação; nenhuma delas exige código, e nenhuma foi
+   cumprida por código.
+2. **Os anexos só existem quando o ADR existir.** Por isso ficam 🟡: o plano não
+   pode criá-los por antecipação sem estar criando o ADR que o operador ainda não
+   autorizou.
 
 ---
 
@@ -470,9 +498,13 @@ decisão — e é isso que permite aprovar arquitetura sem parar a reconstruçã
 
 ### 4.1 É possível aprovar D5, D6 e D7 agora?
 
-**Sim — com quatro correções de redação e três condicionamentos explícitos.**
-Nenhum dos sete ajustes da auditoria muda a escolha entre ARQ-1 e as outras três
-arquiteturas; o que existe é redação a corrigir e capacidade a construir.
+**Sim — com quatro correções de redação, dois anexos obrigatórios e três
+condicionamentos explícitos.** Nenhum dos sete ajustes da auditoria muda a escolha
+entre ARQ-1 e as outras três arquiteturas; o que existe é redação a corrigir e
+capacidade a construir. As correções são A1 (justificativa medida), A5
+(estimativas), A6a (Host neutro ao shell) e as duas neutralidades de redação em D6
+e D7; os anexos são a tabela de propriedade (§4.2.1) e a matriz de fronteiras; os
+condicionamentos são D8 (engine), D13 (shell) e as capacidades a construir.
 
 O que sustenta a aprovação, em ordem de força: a fronteira de permissão funciona e
 falha fechado (testada); o transporte existe, é testado dos dois lados e está
@@ -486,15 +518,55 @@ estar escrito como requisito, não como conquista.
 
 ### 4.2 O que deve mudar na redação antes de assinar
 
-Minutas para o operador decidir — **não** são decisões, nem texto final de ADR:
+Minutas para o operador decidir — **não** são decisões, nem texto final de ADR.
+Cada uma está escrita para ser auto-suficiente: quem ler o ADR não precisa
+adivinhar shell, engine de persistência nem estado de implementação.
 
 | Decisão | Redação sugerida | Correção que embute |
 | --- | --- | --- |
-| **D5** | "Dois núcleos: Core de UI (TS, webview) e Host de Runtime (Rust, processo), com tabela de donos por dado — quem decide e quem executa — e proibição de decisão duplicada. A fusão em host único fica rejeitada para o horizonte atual, com os critérios de reabertura da §6.5 do estudo." | A1 (mede-se processo, não WASM); vocabulário "Core" do canônico |
-| **D6** | "Módulos in-process; Python em processo supervisionado; C++ como biblioteca isolada apenas se D4 medir ganho. O Host é processo **privilegiado**; se é processo principal do SO ou sidecar é D13." | A6a (neutro ao shell); supervisor declarado como peça a construir |
-| **D7** | "Transporte por fronteira: IPC do shell com allowlist (TS↔Host); stdio JSON-lines para chamada curta; fila durável para trabalho longo; C ABI condicionada; API/eventos in-process. A fila é **mecanismo**; a engine é D8." | A6b, A7 (sem citar '14 testes' como prova), D8 respeitado |
-| **Resp. por núcleo** | Adotar a tabela decide × executa da §2.4 do estudo como anexo normativo do ADR de D5, com a regra: "nenhum dado tem dois donos de decisão". | A-D5 |
-| **Fronteiras** | Adotar a matriz da §4.3 do estudo como anexo do ADR de D7, com as garantias de contrato (versão, id, prazo, cancelamento, limite de bytes) e a nota de que envelope v1 é ponto de partida, não congelamento. | A4, A7 |
+| **D5** | "O app tem dois núcleos nomeados. O **Core de Orquestração TypeScript** (o “Core de UI” do canônico, no webview) é dono exclusivo de rotas, estado de tela, composição da interface, orquestração de chamadas e cache derivado. O **Runtime/Host Rust** (processo privilegiado) é dono exclusivo de ciclo de vida de processo, filesystem, rede, raiz por módulo, revalidação de permissão e estado de execução/saúde. As responsabilidades compartilhadas estão na tabela de propriedade (§4.2.1), com um único dono de decisão por dado e cópia descartável do outro lado. A fusão em host único fica rejeitada para o horizonte atual, com os critérios de reabertura da §6.5 do estudo." | A1 (mede-se travessia de processo, não WASM); vocabulário do canônico; exclusivas × compartilhadas explícitas |
+| **D6** | "Módulos in-process; Python em processo separado; C++ como biblioteca isolada apenas se D4 medir ganho. O Host é processo **privilegiado**; se é processo principal do sistema operacional ou sidecar é D13, e nenhuma parte deste desenho presume um shell específico nem o mecanismo IPC nativo de um shell específico. **Supervisão de processos e distribuição do worker Python são capacidades a construir**, não existentes: o ADR as declara como requisito, não como conquista." | A6a (neutro ao shell); supervisor e distribuição declarados como futuros |
+| **D7** | "Comunicação definida **por fronteira**, não por tecnologia única: (a) TS↔Host pelo mecanismo IPC nativo do shell que D13 escolher, com allowlist de operações e payload JSON; (b) Host↔Python, chamada curta, por stdio JSON-lines com uma requisição em voo; (c) Host↔Python, trabalho longo, por fila durável com idempotência, lease, heartbeat e retry com teto — **a fila é o mecanismo; a engine é D8**, e nenhuma engine é presumida aqui; (d) Host↔C++ por C ABI, apenas se D4 medir ganho; (e) módulos via API/eventos in-process versionados. O envelope v1 é ponto de partida, não congelamento." | A6b; D8 respeitado; IPC sem presumir Electron nem Tauri |
+| **Resp. por núcleo** | Adotar a tabela §4.2.1 como anexo normativo do ADR de D5, com a regra: “nenhum dado tem dois donos de decisão; o lado que não decide guarda cópia descartável”. | A-D5 |
+| **Fronteiras** | Adotar a matriz da §4.3 do estudo como anexo do ADR de D7, com as garantias mínimas de cada contrato — versão, `id` de correlação, prazo, cancelamento, limite de bytes na requisição **e na resposta**, erro com código estável — mais os anexos “Dívidas de medição” (M1–M6) e “Capacidades a construir” (supervisor, distribuição do Python, empacotamento). | A4, A7, M1–M6 |
+
+#### 4.2.1 Tabela de propriedade — exclusivas e compartilhadas
+
+Base: §2.4 do estudo, com a distinção explícita entre o que é exclusivo de um
+núcleo e o que é compartilhado por decisão/execução.
+
+**Exclusivo do Core de Orquestração TypeScript**
+
+| Responsabilidade | Por que não pode estar no Host |
+| --- | --- |
+| Rota ativa e histórico de navegação | É estado de interface; atravessar processo por interação tornaria a UI refém da latência de travessia |
+| Estado de tela e composição visual | Só o webview conhece o que está montado |
+| Orquestração de chamadas (quando, em que ordem, com que prioridade) | É política de produto; o Host executa, não decide fluxo de tela |
+| Cache de dados derivados | Descartável por definição; perder não corrompe a verdade |
+| Tratamento de erro de apresentação (o que o usuário vê) | Depende do contexto visual |
+
+**Exclusivo do Runtime/Host Rust**
+
+| Responsabilidade | Por que não pode estar no Core TS |
+| --- | --- |
+| Criar e encerrar processos; supervisionar filhos | Exige garantia do sistema operacional |
+| Acesso a filesystem, rede e recursos do SO | Privilégio concentrado; TS não deve tocar |
+| Raiz física por módulo e contenção de caminho | Precisa valer mesmo se o chamador estiver errado ou comprometido |
+| Revalidação de permissão e aplicação da política | Defesa em profundidade do ADR-002; um lado só não basta |
+| Estado de execução e saúde (running/stopped/degradado) | É fato do processo, não da tela |
+| Aplicação de limite de bytes, timeout e cancelamento | Quem executa a operação é quem sabe abortá-la |
+
+**Compartilhado (com dono único de decisão)**
+
+| Responsabilidade | Dono da decisão | Dono da execução | Regra |
+| --- | --- | --- | --- |
+| Conceder `READ_FILES` a um módulo | Core TS (política declarada) | Host (revalida e aplica) | Host pode negar o que o Core concedeu; nunca conceder o que o Core negou |
+| Quais módulos sobem no boot | Host + Registry (manifesto como entrada) | Host | Divergência com o Core é erro de contrato, não “escolha de quem chegou primeiro” |
+| Dados persistidos | Data Layer (D8) | Data Layer | Nem Core nem Host são donos da verdade |
+| Versão de contrato entre fronteiras | decisão arquitetural (D7) | ambos, cada lado no seu limite | Mudança incompatível exige versão nova, não negociação em runtime |
+
+A regra que impede a duplicação: **se dois lados precisam decidir o mesmo fato,
+um deles está errado por construção** — e o teste de contrato é o que revela qual.
 
 ### 4.3 O que não pode ser prometido na aprovação
 
