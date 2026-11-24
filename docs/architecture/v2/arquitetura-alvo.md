@@ -3,6 +3,11 @@
 > **Status:** ✅ **revisão arquitetural concluída em 2026-11-24** — direção
 > parcialmente confirmada e pendências explicitadas. A conclusão da documentação
 > **não depende** da implementação; ver [§19](#19-critérios-de-conclusão).
+> **Atualização de 2026-11-24:** D5, D6 e D7 foram aprovados pelo operador e
+> registrados nos [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+> [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) e
+> [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md); onde este documento
+> divergir daqueles ADRs, o ADR vence.
 >
 > **Origem:** [issue #540](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540),
 > com o comunicado de disponibilização da [issue #539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
@@ -36,7 +41,9 @@ Orquestração**, porque é onde vive a orquestração do app) e o **Host de Run
 sidecar é **D13** e não está decidido: “privilegiado” qualifica o privilégio, não
 a posição no ciclo de vida do shell. Quando aparece **“Core”** sozinho — sobretudo
 no Module System — é o lado que carrega módulos e concede capacidades, histórico
-do ADR-004, e não autoriza fundir as duas funções (isso é **D5**).
+do ADR-004, e não autoriza fundir as duas funções: **D5 está decidido no
+[ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md)**,
+que mantém os dois núcleos separados.
 
 ---
 
@@ -51,10 +58,16 @@ do ADR-004, e não autoriza fundir as duas funções (isso é **D5**).
    aplicativo** — sem retorno do site e sem data definida ([#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539), [ADR-006](../decisions/ADR-006-disponibilizacao-somente-app.md)).
 
 O que **não** está confirmado: a divisão fina de responsabilidades entre Python,
-Rust e C++; se o Core de UI e o Host de Runtime permanecem separados ou se
-consolidam em um único núcleo (D5); o mecanismo de comunicação entre componentes
-(D7); o banco (D8); o shell do aplicativo (D13); o empacotamento; as plataformas;
-o nível de compatibilidade com a V1. Ver [§16](#16-decisões-pendentes).
+Rust e C++; o banco (D8); o shell do aplicativo (D13); o empacotamento; as
+plataformas; o nível de compatibilidade com a V1. Ver
+[§16](#16-decisões-pendentes).
+
+D5, D6 e D7, que antes estavam nesta lista, foram aprovados em 2026-11-24 —
+[ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+[ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) e
+[ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md). A aprovação é
+arquitetural: ela não conclui nenhum requisito operacional (Windows,
+empacotamento, supervisor, distribuição do Python).
 
 Decisões antigas que continuam valendo para o que já foi construído estão em
 [ADR-001](../decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md),
@@ -73,7 +86,7 @@ precisa partir disto, não de uma folha em branco.
 | Peça | Onde | Linguagem | Estado |
 | --- | --- | --- | --- |
 | Site V1 | `src/`, `index.html`, Vite 5 | JavaScript puro | congelando; referência de comportamento e dados (ADR-001/#420) |
-| App V1 | `desktop/` (Electron + IPC) | JavaScript | operacional; o ADR-004 aponta Tauri pós-1.0.0, decisão não revogada |
+| App V1 | `desktop/` (Electron + IPC) | JavaScript | operacional; o ADR-004 aponta Tauri pós-congelamento (base `v1.3.8`), decisão não revogada |
 | Core V2 protótipo | `v2/core/` — manifesto, registry, contexto, log, ciclo, boot, bus, config, api, métricas, trabalho | JS com `checkJs` + arquivos `.ts` parciais | 11 peças centrais listadas no `v2/README.md`, além de pontes de runtime; migração parcial para TS em andamento |
 | Runtime V2 | `v2/runtime/` (`Cargo.toml`, `src/`, `tests/`) | Rust | crate real; hoje só `ReadFile` implementado e `RuntimeStopped` |
 | Worker V2 | `v2/services/tarefas/` | Python | backoff, heartbeat, lote; 14 testes |
@@ -179,9 +192,11 @@ O diagrama separa duas responsabilidades que o **ADR-004 já distingue**: Core d
 UI (TypeScript, no webview) e Host de Runtime (Rust, processo privilegiado — a
 forma, principal ou sidecar, é **D13**). A
 [proposta da #540 §15](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540)
-sugere consolidar os dois em um host Rust único; isso é a pendência **D5** e
-**não** está representado como decidido. O diagrama também não decide se cada
-caixa é processo, biblioteca ou pacote (**D6**).
+sugeria consolidar os dois em um host Rust único; **D5 foi decidido em
+[ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md)
+pela separação**, com tabela de donos. O diagrama não decide se cada caixa é
+processo, biblioteca ou pacote — isso é **D6**, decidido no
+[ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md).
 
 ---
 
@@ -193,15 +208,16 @@ caixa é processo, biblioteca ou pacote (**D6**).
 | --- | --- | --- | --- |
 | Interface, navegação, estado visual, cliente dos contratos | **TypeScript** | ✅ Definido | todo o frontend; nada de JS solto no frontend novo |
 | Validação de dados no limite da interface | **TypeScript** | ✅ Definido | esquema e cliente tipados |
-| Core de UI (rotas, views, eventos de UI, estado) | **TypeScript** | ✅ ADR-004 | roda no webview do app; protótipo em `v2/core` (JS/TS parcial) |
-| Host de Runtime (processo, permissões reais, filesystem, supervisão) | **Rust** | ✅ ADR-004 | `v2/runtime` mínimo; supervisor de processos pendente |
-| Consolidação dos dois núcleos em um host Rust único | 🟡 A definir | 🟡 Pendente (D5) | proposta da #540 §15; **não aprovada** |
-| IA, coleta, automação, integrações flexíveis | **Python** | ✅ ADR-004 | executa como worker supervisionado |
+| Core de UI (rotas, views, eventos de UI, estado) | **TypeScript** | ✅ ADR-004 + [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md) | roda no webview do app; protótipo em `v2/core` (JS/TS parcial) |
+| Host de Runtime (processo, permissões reais, filesystem, supervisão) | **Rust** | ✅ ADR-004 + [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md) | `v2/runtime` mínimo; supervisor de processos **a construir** |
+| Consolidação dos dois núcleos em um host Rust único | **Separação mantida** | ✅ Decidido (D5) | [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md): dois núcleos, tabela de donos; fusão rejeitada para o horizonte atual |
+| Forma dos componentes (processo × biblioteca × mistura) | **Híbrido por necessidade** | ✅ Decidido (D6) | [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) |
+| IA, coleta, automação, integrações flexíveis | **Python** | ✅ ADR-004 + [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) | roda em processo separado; supervisão é capacidade **a construir** |
 | Parsers binários (`.p3d`, `.pbo`) | Rust | ✅ ADR-004 | Python era 140× mais lento em laço de byte |
 | Parsers de conteúdo/documento | Python | ✅ ADR-004 | ecossistema de parsing e NLP |
 | Bibliotecas nativas especializadas / SDKs C/C++ | **C++** | ✅ presença (ADR-005) · 🟡 escopo (D4) | #540 confirma a presença; a forma (biblioteca C ABI) é **proposta** |
 | Camada de dados e persistência | 🟡 A definir | 🟡 Pendente (D8) + ⛔ | ADR-004 fixa Postgres; #540 mantém pendente ([§9.3](#93-persistência--pendência-que-trava-decisões)) |
-| Mecanismo de comunicação entre linguagens | 🟡 A definir | 🟡 Pendente (D7) | proposta em [§8](#8-contratos-e-comunicação) |
+| Mecanismo de comunicação entre linguagens | **Por fronteira** | ✅ Decidido (D7) | [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md); detalhe em [§8](#8-contratos-e-comunicação) |
 | Shell do aplicativo | 🟡 A definir | 🟡 Pendente (D13) + ⛔ | direção anterior: Tauri (ADR-004), não revogada |
 
 ### 5.2 Regras de fronteira
@@ -273,9 +289,13 @@ vida, falhas possíveis, comportamento de recuperação e testes.
 8. Ao encerrar, o Core cancela tarefas, encerra workers, fecha recursos e
    persiste o estado necessário.
 
-Este fluxo descreve **ordem de dependências**, não decide D5/D6/D7. “Core” aqui é
-o lado que carrega módulos e concede capacidades; se ele roda no Host (Rust) ou no
-Core de UI (TypeScript), e quem inicia quem, continua pendente.
+Este fluxo descreve **ordem de dependências**, não a sequência exata de boot — que
+depende do shell (D13). “Core” aqui é o lado que carrega módulos e concede
+capacidades. O que já está decidido: os dois núcleos permanecem separados
+([ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md)),
+módulos rodam in-process no Core e Python roda em processo separado
+([ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md)).
+Continua em aberto qual processo do shell inicia o Host — e isso é D13.
 
 ### 6.2 Regras de falha
 
@@ -380,13 +400,13 @@ sem contrato é o defeito que a V2 existe para não repetir.
 | Fronteira | Transporte | Estado |
 | --- | --- | --- |
 | UI (TS) ↔ Core de UI | mesmo processo/webview, chamada direta tipada | ✅ protótipo |
-| Core de UI ↔ Host (Rust) | IPC com allowlist, envelope versionado, timeout e erro com código estável | 🟣 proposto (D7); hoje a ponte é JS |
-| Host ↔ worker Python — chamada curta | JSON-lines sobre stdio, worker iniciado pelo Host | 🟣 proposto |
-| Host ↔ worker Python — trabalho longo | fila com `SKIP LOCKED` | ✅ no protótipo, sobre Postgres — engine segue em conflito (D8, [§9.3](#93-persistência--pendência-que-trava-decisões)) |
-| Host ↔ biblioteca C++ | C ABI in-process: ownership, códigos de erro, thread-safety | 🟡 pendente (D4/D7) |
-| Módulo ↔ Core | API e eventos versionados; manifesto e capacidades | ✅ protótipo validado |
+| Core de UI ↔ Host (Rust) | IPC do shell que D13 escolher, com allowlist, envelope versionado, prazo, cancelamento, limite de bytes na requisição **e** na resposta e erro com código estável | ✅ decidido ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); hoje a ponte é JS |
+| Host ↔ worker Python — chamada curta | JSON-lines sobre stdio, worker iniciado pelo Host, uma requisição em voo | ✅ decidido ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)) |
+| Host ↔ worker Python — trabalho longo | fila com `SKIP LOCKED` | ✅ decidido como **mecanismo** ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); no protótipo, sobre Postgres — a **engine** segue em conflito (D8, [§9.3](#93-persistência--pendência-que-trava-decisões)) |
+| Host ↔ biblioteca C++ | C ABI in-process: ownership, códigos de erro, thread-safety | ✅ forma decidida ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)), condicionada a D4 medir ganho |
+| Módulo ↔ Core | API e eventos versionados; manifesto e capacidades | ✅ decidido ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); protótipo validado |
 | Eventos entre módulos | Event Bus com origem, versão, correlação e curinga | ✅ protótipo |
-| Módulo ↔ persistência | contratos de dados e serviços autorizados; sem conexão própria | 🟣 proposto |
+| Módulo ↔ persistência | contratos de dados e serviços autorizados; sem conexão própria | ✅ contrato pelo Core ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); engine conforme D8 |
 
 ### 8.2 Envelope do Runtime (formato existente)
 
@@ -516,10 +536,10 @@ Isso reposiciona a arquitetura:
 - recursos da V1 que só existiam para o site não são herdados automaticamente.
 
 **O que já está decidido e o que não está.** O ADR-004 registrou **Tauri (Rust)**
-como destino do app, migrando do Electron pós-1.0.0; essa decisão **não foi
-revogada**. A #540 lista a tecnologia do shell como pendente (**D13**). Até
-decisão formal em contrário, vale a direção anterior — mas ela não deve ser
-tratada como aprovada para a V2 se o operador reabrir o tema.
+como destino do app, migrando do Electron pós-congelamento (base `v1.3.8`); essa
+decisão **não foi revogada**. A #540 lista a tecnologia do shell como pendente
+(**D13**). Até decisão formal em contrário, vale a direção anterior — mas ela não
+deve ser tratada como aprovada para a V2 se o operador reabrir o tema.
 
 Ainda pendente: plataformas suportadas inicialmente, empacotamento dos runtimes
 Rust/Python/C++, assinatura, canal de atualização, rollback e diagnóstico de
@@ -559,9 +579,10 @@ baluarte/
 Decisão pendente: **monorepo único ou múltiplos repositórios**. Critérios:
 build, versionamento, ownership, distribuição e custo de integração.
 
-> O `core/host/` acima reproduz a #540 §15.4 e **presume a fusão dos núcleos**.
-> Se D5/D6 forem resolvidos pela separação do ADR-004, a estrutura vira algo como
-> `core/ui/` + `core/host/`. O layout é proposta; não decide D5.
+> O `core/host/` acima reproduz a #540 §15.4 e **presumia a fusão dos núcleos**,
+> rejeitada no [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md).
+> Com a separação decidida, a estrutura tende a `core/ui/` + `core/host/`. O layout
+> continua proposta.
 
 ---
 
@@ -665,22 +686,24 @@ falhar cedo e completa o bastante para provar todas as fronteiras.
 
 ## 16. Decisões pendentes
 
-Nenhuma linha abaixo pode ser tratada como decidida. Cada uma deve virar ADR com
-contexto, alternativas, escolha, consequências e data.
+Três linhas abaixo já foram decididas — **D5, D6 e D7**, registradas nos
+[ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+[ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) e
+[ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md) — e permanecem na
+tabela por rastreabilidade. **Todas as demais** não podem ser tratadas como
+decididas: cada uma deve virar ADR com contexto, alternativas, escolha,
+consequências e data.
 
-As três decisões que travam as demais (D5, D6 e D7) têm um dossier com opções,
-recomendação e critérios de aceite em
-[`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — ainda
-proposta, não decisão. A análise longa que sustenta o dossier — alternativas
-completas, quatro arquiteturas integradas, custos medidos × estimados e critérios
-de falsificação — está em
-[`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md), também 🟣.
-As evidências desse estudo foram auditadas de forma independente em
-[`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md) — o que
-se reproduziu, o que não se reproduziu e o que o código de fato entrega. A
-auditoria também não decide nada. O que falta para assinar D5/D6/D7 — e o que pode
-esperar a implementação — está em
-[`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md), igualmente 🔍.
+O caminho percorrido por D5/D6/D7 está documentado, nas duas pontas: a análise
+longa — alternativas completas, quatro arquiteturas integradas, custos medidos ×
+estimados e critérios de falsificação — em
+[`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md); a auditoria
+independente das evidências em
+[`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md); e os
+critérios que faltavam para assinar, com os portões P1–P5, em
+[`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md). O dossier
+[`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) permanece como
+registro das opções. Nenhum deles decide: só ADR aprovado decide.
 
 **Quem decide:** todas as linhas abaixo são decisões do operador. O agente pode
 documentar alternativas e recomendar, mas não promover proposta a decisão.
@@ -691,9 +714,9 @@ documentar alternativas e recomendar, mas não promover proposta a decisão.
 | D2 | Responsabilidade precisa de Python | desenho dos workers | base no ADR-004; falta contrato |
 | D3 | Responsabilidade precisa de Rust | desenho do Core/Runtime | base no ADR-004; falta consolidar com #540 |
 | D4 | Escopo de C++ | build, CI, distribuição | precisa de benchmark; não é "C++ para tudo" |
-| D5 | Consolidação do Core de UI e do Host: dois núcleos ou host Rust único | arquitetura do app | ADR-004 registra a separação (TS + Rust); #540 §15 propõe fusão. Nenhuma das duas formas foi aprovada para a V2 |
-| D6 | Componentes são processos, bibliotecas ou mistura | IPC, empacotamento, segurança | impacta quase tudo |
-| D7 | Mecanismo de comunicação entre linguagens | contratos, testes de contrato | §8 propõe, não decide |
+| D5 | Consolidação do Core de UI e do Host: dois núcleos ou host Rust único | arquitetura do app | ✅ **Decidido em 2026-11-24** — dois núcleos separados, com tabela de donos ([ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md)) |
+| D6 | Componentes são processos, bibliotecas ou mistura | IPC, empacotamento, segurança | ✅ **Decidido em 2026-11-24** — híbrido por necessidade ([ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md)) |
+| D7 | Mecanismo de comunicação entre linguagens | contratos, testes de contrato | ✅ **Decidido em 2026-11-24** — por fronteira ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); detalhe em §8 |
 | D8 | Banco e estratégia de persistência | Data/Evidence Layer | ⛔ ver §17 |
 | D9 | Empacotamento, atualização e rollback do app | distribuição | app-only aumenta a urgência |
 | D10 | Plataformas suportadas inicialmente | shell, build, testes | ADR-004 menciona Tauri/M3c/M4 |
@@ -701,24 +724,24 @@ documentar alternativas e recomendar, mas não promover proposta a decisão.
 | D12 | Monorepo ou múltiplos repositórios | organização do código | critérios em §12 |
 | D13 | Shell do aplicativo (Tauri vs. Electron vs. outro) | app V2 | ADR-004 indica Tauri; #540 pendente — ⛔ ver §17 |
 
-Prioridade sugerida (proposta, não decisão): **D3/D5/D6 → D7 → D1/D13 → D8 →
-D9/D10 → D2/D4 → D11/D12**. A razão é que a fronteira Core↔linguagens determina o
-formato de tudo o mais; escolher UI antes dela arrisca refazer o cliente.
+Prioridade sugerida (proposta, não decisão): **D13 → D8 → D1/D9/D10 → D2/D3/D4 → D11/D12**. D5/D6/D7 saíram da fila em 2026-11-24; **D3 continua aberto** na tabela acima e entra junto de D2/D4, que tratam do mesmo refinamento de responsabilidade. Pelo critério dos portões, D13 e D8 são o que ainda impede começar etapas específicas (A e Data/Evidence Layer).
 
 ---
 
 ## 17. Conflitos e divergências abertos
 
 Esta seção existe porque fingir que as fontes concordam é pior do que registrar a
-divergência. Nada aqui foi resolvido por este documento.
+divergência. Nenhum conflito foi resolvido por este documento; **C1, C2 e C5**
+foram resolvidos por ADR (005, 006 e 007). **C3, C4, C6 e C7 seguem abertos ou em
+andamento.**
 
 | # | Divergência | Fontes | Situação |
 | --- | --- | --- | --- |
 | C1 | C++ fora vs. C++ no backend | ADR-004 (“Go, C e C++ ficam de fora”) × #540 (“backend reunirá Python, Rust e C++”) | **Resolvido a favor da #540 apenas quanto à presença** por [ADR-005](../decisions/ADR-005-v2-app-typescript-backend-poliglota.md). Forma e escopo seguem pendentes (D4); biblioteca C ABI é **proposta**. |
 | C2 | Site/web no escopo vs. somente app | v2-vision e ADR-004 falam de “interface web”; #539 diz somente app | **Resolvido a favor do app-only** por [ADR-006](../decisions/ADR-006-disponibilizacao-somente-app.md). A menção a “web” no ADR-004 vira registro histórico. |
 | C3 | Postgres decidido vs. persistência pendente | ADR-004 (PostgreSQL) × #540 §13 e §15.6 (pendente; propõe SQLite local) | ⛔ **Aberto.** O ADR-004 não é revogado por omissão; a #540 reabre o tema. Alternativas e critérios em [§9.3](#93-persistência--pendência-que-trava-decisões). Decidir D8. |
-| C4 | Tauri decidido vs. shell pendente | ADR-004 (Tauri pós-1.0.0) × #540 §13 (shell pendente) | ⛔ **Aberto.** O ADR-004 é a direção registrada e não revogada; a #540 pode reabrir. Decidir D13. |
-| C5 | Dois núcleos (Core de UI TS + Host Rust, ADR-004) vs. host Rust único (#540 §15.2) | ADR-004 §2 × #540 §15.2 | ⛔ **Aberto (D5).** O ADR-004 continua sendo a decisão registrada; a fusão é proposta. Com app-only, “navegador” deve ser lido como “webview”. |
+| C4 | Tauri decidido vs. shell pendente | ADR-004 (Tauri pós-congelamento, base `v1.3.8`) × #540 §13 (shell pendente) | ⛔ **Aberto.** O ADR-004 é a direção registrada e não revogada; a #540 pode reabrir. Decidir D13. |
+| C5 | Dois núcleos (Core de UI TS + Host Rust, ADR-004) vs. host Rust único (#540 §15.2) | ADR-004 §2 × #540 §15.2 | ✅ **Resolvido (D5)** pelo [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md) em 2026-11-24: dois núcleos separados, com tabela de donos; fusão rejeitada para o horizonte atual. Com app-only, “navegador” deve ser lido como “webview”. |
 | C6 | Localização do código: `v2/` atual vs. `apps/ core/ backend/` proposto | `v2/README.md` × #540 §15.4 | 🟡 **Aberto**, porém sem urgência: a estrutura atual funciona até a migração. |
 | C7 | Protótipo `v2/core` em JS vs. frontend/core em TS | #540 §3 (TS) × `v2/core` (JS + `checkJs`, `.ts` parcial) | 🟡 **Em andamento.** A direção é TS; a migração acompanha a reconstrução, não é conversão isolada. |
 
@@ -741,6 +764,13 @@ trabalho e ordenar as decisões.
 Portão da etapa A: se uma chamada tipada do frontend ao Core não funcionar com
 contrato versionado, o resto do desenho está no ar. É mais barato descobrir ali.
 
+**Portões P1–P5.** A aprovação de D5/D6/D7 (2026-11-24) **não** abriu as etapas: o
+[plano de prontidão](./plano-prontidao-arq1.md#34-portões-de-prontidão) exige
+condições verificáveis antes de cada uma — C-A4/C-O2 antes da Etapa A (P1);
+C-A2a/C-A3/C-O3 antes da Etapa B (P2); C-A3/C-O5/C-O4/C-A7 antes da Etapa C (P3);
+D4 com benchmark antes da Etapa D (P4); e C-A2b/C-O1/C-O6/C-O7 antes de distribuir
+(P5). Nenhuma etapa foi iniciada.
+
 ---
 
 ## 19. Critérios de conclusão
@@ -762,6 +792,7 @@ mesmo que nenhuma linha nova da V2 exista.
 - [x] Ponto de partida real **e** lista do que não existe.
 - [x] Plano de migração com método de inventário e classificação.
 - [x] Decisões pendentes, conflitos e quem decide explicitados.
+- [x] D5, D6 e D7 aprovados pelo operador e registrados em ADR (2026-11-24).
 - [x] Links para issues, ADRs, documentos e código verificados.
 
 ### 19.2 Refinamentos que acompanham a implementação — não bloqueiam a documentação
@@ -770,11 +801,15 @@ mesmo que nenhuma linha nova da V2 exista.
       `shared/schemas/`), gerados e cobrados no CI.
 - [ ] Diagrama atualizado conforme o código entregue.
 - [ ] Inventário da V1 preenchido (o método está em [§14](#14-migração-v1--v2)).
-- [ ] ADRs das decisões D1–D13.
+- [x] ADRs de D5, D6 e D7 (2026-11-24) — [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+      [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md),
+      [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md).
+- [ ] ADRs das decisões restantes (D1–D4, D8–D13).
 
 ### 19.3 O que impede a **implementação** de começar
 
-- [ ] D5/D6/D7 aprovados (Core, forma dos componentes, comunicação).
+- [x] D5/D6/D7 aprovados (Core, forma dos componentes, comunicação) — ADR-007/008/009.
+- [ ] Portão **P1** do plano de prontidão (C-A4, C-O2) — segurança de caminho antes da Etapa A.
 - [ ] D13 (shell) resolvido antes da Etapa A.
 - [ ] D8 (persistência) resolvido antes da Data/Evidence Layer.
 - [ ] Gate e demais condições do [#420](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420)
@@ -794,12 +829,16 @@ Nenhum item de 19.3 é pré-requisito para considerar esta documentação conclu
 - [#430](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/430) — verificação especializada e integrador de contratos.
 
 **Decisões**
-- [ADR-001](../decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md) — 1.0.0 como ponto de congelamento.
+- [ADR-001](../decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md) — ponto de congelamento da V1, efetivo na `v1.3.8` ([ADR-010](../decisions/ADR-010-ponto-de-congelamento-efetivo-da-v1.md)).
 - [ADR-002](../decisions/ADR-002-permissoes-deny-by-default.md) — permissões deny-by-default.
 - [ADR-003](../decisions/ADR-003-congelamento-e-manutencao-da-v1.md) — congelamento e manutenção da V1.
 - [ADR-004](../decisions/ADR-004-stack-poliglota-por-responsabilidade.md) — stack poliglota por responsabilidade.
-- [ADR-005](../decisions/ADR-005-v2-app-typescript-backend-poliglota.md) — V2 como app, frontend TS e backend Python/Rust/C++.
+- [ADR-005](../decisions/ADR-005-v2-app-typescript-backend-poliglota.md) — V2 como app, frontend TypeScript, backend poliglota.
 - [ADR-006](../decisions/ADR-006-disponibilizacao-somente-app.md) — disponibilização somente como app.
+- [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md) — dois núcleos: Core de Orquestração e Runtime/Host (D5).
+- [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) — execução híbrida por fronteira de processo (D6).
+- [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md) — comunicação por fronteira (D7).
+- [ADR-010](../decisions/ADR-010-ponto-de-congelamento-efetivo-da-v1.md) — ponto de congelamento efetivo da V1: `v1.3.8`, vigência em 2026-11-24.
 
 **Planos e registros**
 - [`docs/v2/V2_MASTER_PLAN.md`](../../v2/V2_MASTER_PLAN.md) — as 26 seções da reconstrução.
@@ -810,9 +849,9 @@ Nenhum item de 19.3 é pré-requisito para considerar esta documentação conclu
 - [`v2/README.md`](../../../v2/README.md) — o que existe na reconstrução.
 - [`v2/runtime/CONTRACT.md`](../../../v2/runtime/CONTRACT.md) — contrato do Runtime Rust.
 
-**Propostas**
+**Propostas** (registro das alternativas; a redação que vale é a dos ADRs)
 - [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — opções e
-  recomendação para D5/D6/D7.
+  recomendação para D5/D6/D7; aprovada em 2026-11-24.
 - [`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md) — estudo longo
   que sustenta a proposta.
 

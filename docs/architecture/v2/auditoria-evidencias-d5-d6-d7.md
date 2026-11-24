@@ -1,9 +1,17 @@
 # Auditoria de evidências — D5, D6 e D7
 
 > **Status:** 🔍 **auditoria independente — não aprova nada.**
-> D5, D6 e D7 continuam 🟡 pendentes. Nenhum ADR foi criado. Nenhuma linha de
-> código-fonte do repositório foi alterada: esta auditoria só executou o que já
-> existe, leu código e mediu processos.
+> Nenhuma linha de código-fonte do repositório foi alterada por esta auditoria:
+> ela só executou o que já existe, leu código e mediu processos.
+>
+> **Atualização de 2026-11-24:** D5, D6 e D7 foram aprovados explicitamente pelo
+> operador e registrados nos
+> [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+> [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) e
+> [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md). Os sete ajustes da
+> [§6.1](#ajustes-exigidos-antes-de-a-arq-1-virar-adr) entraram como portões
+> P1–P5 e dívidas nomeadas M1–M6 nos anexos dos ADRs; nenhum deles foi declarado
+> concluído. Este documento continua sendo o registro do que a evidência sustenta.
 >
 > **Objeto auditado:** [`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md)
 > e as evidências que ele usa.
@@ -538,6 +546,14 @@ A separação entre o que trava a assinatura e o que pertence à implementação
 detalhada em [`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md), com critérios
 verificáveis por ajuste e portões P0–P5. Este parágrafo e aquele documento dizem a
 mesma coisa em níveis diferentes; nenhum dos dois aprova decisão.
+
+**Executado em 2026-11-24.** P0 foi fechado documentalmente; D5, D6 e D7 viraram
+os ADR-007, 008 e 009. Dos sete ajustes da §6.1, os **itens 1 e 5** — justificativa
+medida e estimativas corrigidas — foram fechados como redação em **P0** (C-A1 e
+C-A5); os **itens 2, 3, 4, 6 e 7** — Windows, encerramento portátil,
+`valid_module_id`, empacotamento e fila no CI — permanecem como condições de
+implementação em **P1–P5**, cada um no portão em que vence. Nada aqui foi
+declarado pronto por ter virado ADR.
 
 ---
 

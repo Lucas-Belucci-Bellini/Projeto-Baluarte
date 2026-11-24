@@ -1,11 +1,14 @@
 # Proposta de decisão — D5, D6 e D7: Core, componentes e comunicação
 
-> **Status:** 🟣 **proposta para decisão — não é ADR, não está aprovada.**
-> Nenhum ADR existente é revogado por esta proposta; D5/D13 reabrem apenas o que
-> a #540 explicitou.
-> Quando o operador decidir, cada item vira ADR (007, 008, 009) e esta proposta
-> fica como registro das alternativas. Enquanto isso, nada aqui pode ser usado
-> para justificar implementação como se fosse decisão.
+> **Status:** 🟣 **registro histórico das alternativas — aprovada em 2026-11-24.**
+> D5, D6 e D7 foram aprovados explicitamente pelo operador e registrados nos
+> [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+> [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) e
+> [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md). A redação
+> **normativa** é a dos ADRs, que adotaram as minutas da §4.2 do
+> [plano de prontidão](./plano-prontidao-arq1.md). O texto abaixo permanece como
+> registro das opções e do raciocínio; onde divergir da redação final, vale o ADR.
+> Nenhum ADR anterior é revogado por esta proposta.
 >
 > **Contexto:** itens D5, D6 e D7 de
 > [`arquitetura-alvo.md` §16](./arquitetura-alvo.md#16-decisões-pendentes).
@@ -35,7 +38,7 @@ Nada abaixo é opinião; são medições ou artefatos que já existem.
 | O Core de Runtime Rust já existe em `v2/runtime/`: `RuntimeHost`, `RuntimePolicy`, envelope JSON v1, `ReadFile` e `RuntimeStopped` | a fronteira Rust já tem um contrato mínimo testado; a decisão deve aproveitá-lo |
 | O worker Python já usa fila com `SKIP LOCKED` sobre Postgres (`v2/services/tarefas`, `v2/data/migrations/001_fundacao.sql`) | o protótipo já tem transporte para trabalho assíncrono; a engine definitiva é D8, e forçá-lo por IPC seria regressão |
 | O protótipo `v2/core` em JS dirige o router real da V1 no harness | a orquestração de UI já provou que funciona perto da interface |
-| O app V1 é Electron e o ADR-004 escolhe **Tauri** pós-1.0.0 | se Tauri prevalecer, o shell é Rust + webview; se Electron, o shell é Node — o desenho muda |
+| O app V1 é Electron e o ADR-004 escolhe **Tauri** pós-congelamento (base `v1.3.8`) | se Tauri prevalecer, o shell é Rust + webview; se Electron, o shell é Node — o desenho muda |
 | C++ precisa de caso medido (ADR-005) | C++ entra como biblioteca, não como processo, salvo prova em contrário |
 
 ---
@@ -254,7 +257,13 @@ por herança do ADR-004, mas não o decide.
 
 ## 8. Critérios de aceite da decisão
 
-Antes de marcar qualquer ADR como aceita, a fatia vertical mínima deve provar:
+> **Reclassificados em 2026-11-24.** A lista abaixo não condicionou a aprovação:
+> ela descreve a **fatia vertical mínima** e virou, no plano de prontidão,
+> requisito de implementação distribuído nos portões P1–P5 (com os critérios
+> C-A*/C-O*). Os ADRs foram aceitos com esses itens como **condições de etapa** —
+> nenhum deles foi declarado cumprido.
+
+A fatia vertical mínima deve provar:
 
 - [ ] UI TypeScript faz uma chamada tipada ao Host e recebe erro e sucesso
       padronizados.
@@ -272,7 +281,15 @@ Antes de marcar qualquer ADR como aceita, a fatia vertical mínima deve provar:
 
 ---
 
-## 9. Se aprovado, o texto do ADR
+## 9. Texto de ADR que antecedeu a aprovação (rascunho)
+
+> **Superado em 2026-11-24.** Os três parágrafos abaixo foram o rascunho levado à
+> aprovação; a redação que vale é a dos
+> [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md),
+> [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) e
+> [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md), que adotaram as
+> minutas da §4.2 do [plano de prontidão](./plano-prontidao-arq1.md). O texto fica
+> como registro da evolução.
 
 **ADR-007 (D5):** O aplicativo tem dois núcleos nomeados — Core de UI em
 TypeScript, no webview (onde vive a orquestração do app), e Host de Runtime em

@@ -1,9 +1,14 @@
 # Estudo técnico — D5, D6 e D7: núcleos, modelo de execução e comunicação
 
-> **Status:** 🟣 **estudo técnico para decisão — não é ADR, não está aprovado.**
-> Este documento compara alternativas e recomenda. **Nenhuma linha aqui é
-> decisão.** D5, D6 e D7 continuam 🟡 pendentes até aprovação explícita do
-> operador, registrada em ADR próprio.
+> **Status:** 🟣 **estudo técnico — registro histórico da análise.**
+> **Atualização de 2026-11-24:** as recomendações abaixo foram aprovadas
+> explicitamente pelo operador e registradas nos
+> [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md)
+> (D5), [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md)
+> (D6) e [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md) (D7). O corpo
+> do documento permanece como o raciocínio que sustentou a decisão; onde ele
+> disser "pendente" ou "proposta", vale a errata abaixo e o ADR correspondente.
+> Este estudo não é ADR e não substitui nenhum deles.
 >
 > Não revoga o [ADR-004](../decisions/ADR-004-stack-poliglota-por-responsabilidade.md)
 > nem aprova a seção 15 da [#540](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540).
@@ -701,13 +706,13 @@ uniformidade ao preço de infraestrutura que o produto ainda não pede.
 **ARQ-1 — dois núcleos com propriedade formalizada (D5-C), execução híbrida
 (D6-P3) e transporte escolhido por fronteira (D7, matriz da §4.3).**
 
-Traduzindo em respostas, que continuam 🟡 pendentes:
+Traduzindo em respostas, **aceitas em 2026-11-24** (ADR-007, 008 e 009):
 
 | Decisão | Recomendação | Estado |
 | --- | --- | --- |
-| D5 | Manter os dois núcleos do ADR-004, com tabela de donos explícita (quem decide × quem executa) | 🟡 pendente |
-| D6 | Host Rust como processo privilegiado e supervisor; Python em processo; C++ como biblioteca só após benchmark; módulos in-process. Principal × sidecar conforme D13 | 🟡 pendente |
-| D7 | IPC do shell (JSON, allowlist) TS↔Host; stdio JSON-lines para chamada curta a Python; fila durável para longo (engine conforme D8); C ABI para C++; API/eventos in-process para módulos | 🟡 pendente |
+| D5 | Manter os dois núcleos do ADR-004, com tabela de donos explícita (quem decide × quem executa) | ✅ aceita em 2026-11-24 — [ADR-007](../decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md) |
+| D6 | Host Rust como processo privilegiado e supervisor; Python em processo; C++ como biblioteca só após benchmark; módulos in-process. Principal × sidecar conforme D13 | ✅ aceita em 2026-11-24 — [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) |
+| D7 | IPC do shell (JSON, allowlist) TS↔Host; stdio JSON-lines para chamada curta a Python; fila durável para longo (engine conforme D8); C ABI para C++; API/eventos in-process para módulos | ✅ aceita em 2026-11-24 — [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md) |
 
 ### 6.2 Por que esta é a mais adequada
 
@@ -794,11 +799,13 @@ documentação de apoio:
 | [ADR-004](../decisions/ADR-004-stack-poliglota-por-responsabilidade.md) | Intocado; continua a decisão registrada da separação dos núcleos |
 | [ADR-005](../decisions/ADR-005-v2-app-typescript-backend-poliglota.md) | Intocado; continua restrito à #540 §1 |
 | [ADR-006](../decisions/ADR-006-disponibilizacao-somente-app.md) | Intocado |
-| [arquitetura-alvo.md](./arquitetura-alvo.md) | Recebe ponteiro para este estudo em §16; D5/D6/D7 seguem 🟡 |
+| [arquitetura-alvo.md](./arquitetura-alvo.md) | Aponta para este estudo em §16; D5/D6/D7 passaram a ✅ com os ADR-007/008/009 |
 | [proposta-core-e-fronteiras.md](./proposta-core-e-fronteiras.md) | Permanece o dossier curto de decisão; este estudo é a análise longa que o sustenta |
 
-Nenhum ADR-007/008/009 é criado. Os textos de ADR candidatos continuam apenas no
-dossier, como rascunho.
+**Atualização de 2026-11-24.** Os ADR-007, ADR-008 e ADR-009 foram criados a
+partir das minutas do [plano de prontidão](./plano-prontidao-arq1.md) §4.2, que
+adotam esta recomendação. O texto do dossier §9 continua no dossier como rascunho
+histórico; a redação que vale é a dos ADRs. D8 e D13 permanecem abertos.
 
 ---
 
@@ -861,6 +868,10 @@ Nada aqui é aprovação. O caminho para fechar D5/D6/D7:
 
 Até o passo 3, este documento é 🟣 proposta. Depois disso, ele passa a registro
 das alternativas consideradas — não a fonte da decisão.
+
+**Passos 3 e 4 concluídos em 2026-11-24:** ADR-007/008/009 criados e aceitos.
+D5/D6/D7 deixaram de bloquear a Etapa A; **D8, D13 e os portões P1–P5 continuam
+bloqueando** o que depende deles. A Etapa A não foi iniciada.
 
 ---
 

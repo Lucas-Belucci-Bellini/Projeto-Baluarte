@@ -23,7 +23,18 @@ O `package.json` dizia `2.0.0` — numeração interna do Mark XIII, nunca publi
 (o repositório **não tinha nenhuma tag git**). Renumerado para `1.0.0-rc` durante
 a fase de hardening, e vira `1.0.0` no congelamento.
 
-### 2. Depois da tag `v1.0.0`, o `main` recebe só:
+> **⛔ Correção (2026-11-24).** A numeração acima não se materializou: não existe
+> tag `v1.0.0` nem release `v1.0.0` (a série salta de `v0.9.2`, 2026-08-03, para
+> `v1.1.0`, 2026-08-19). A V1 congelada é a **`v1.3.8`** — última release da
+> linha 1.x, publicada em 2026-08-24 sobre o commit
+> `7cce9d42bf756afcb1feffb7e05a4e87f0020616` —, com regime formalizado em
+> 2026-11-24, em [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
+> A V2 continua sendo a **2.0.0**. Sem tag retroativa `v1.0.0`.
+
+### 2. Depois do congelamento (base `v1.3.8`), o `main` recebe só:
+
+> *(A redação original dizia "depois da tag `v1.0.0`" — ver correção em §1. As
+> categorias abaixo não mudaram.)*
 
 - correção de bug;
 - correção de segurança;
@@ -53,6 +64,13 @@ checagem a cada 2 h). A partir da 1.0.0:
   está, que é o comportamento seguro.
 - Instalar a V2 é **por conta e risco**, dito com essas palavras na caixa de
   diálogo.
+
+> **⛔ Correção (2026-11-24).** O gatilho desta seção ("a partir da 1.0.0") não
+> corresponde a versão publicada nenhuma. A regra, porém, já está em vigor no
+> código: `desktop/src/main.js` define `autoUpdater.autoDownload = false`, e é
+> esse comportamento que os instaladores da linha 1.3 carregam. Lê-se "a partir
+> da 1.0.0" como "a partir da base congelada `v1.3.8`" — ver
+> [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
 
 ### 3b. O app aponta para um endereço fixado da 1.x
 
@@ -127,7 +145,9 @@ sem esta regra, não teria escolha nenhuma.
 ## Consequências
 
 - Precisa existir a tag `v1.0.0`. Sem ela não há para onde voltar, e a decisão do
-  ADR-001 fica sem objeto.
+  ADR-001 fica sem objeto. *(Lida com a correção de §1: a tag que cumpre esse
+  papel é a `v1.3.8`; a `v1.0.0` não é criada, e a condição vale para a base
+  congelada — ver [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md).)*
 - A branch `architecture/v2` abre **depois** da tag, não antes (ver o gate em
   [`../v2-vision.md`](../v2-vision.md)).
 - Ideia de funcionalidade que aparecer durante o congelamento vai para a
