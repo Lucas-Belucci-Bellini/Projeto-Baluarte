@@ -1,6 +1,8 @@
 # Proposta de decisão — D5, D6 e D7: Core, componentes e comunicação
 
 > **Status:** 🟣 **proposta para decisão — não é ADR, não está aprovada.**
+> Nenhum ADR existente é revogado por esta proposta; D5/D13 reabrem apenas o que
+> a #540 explicitou.
 > Quando o operador decidir, cada item vira ADR (007, 008, 009) e esta proposta
 > fica como registro das alternativas. Enquanto isso, nada aqui pode ser usado
 > para justificar implementação como se fosse decisão.

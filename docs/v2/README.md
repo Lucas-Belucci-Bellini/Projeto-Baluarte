@@ -22,7 +22,8 @@ conversas que os geraram.
 | [`V2_MASTER_PLAN.md`](./V2_MASTER_PLAN.md) | ✅ transcrito | corpo da #423 (26 seções) |
 | [`V2_RULES.md`](./V2_RULES.md) | ✅ transcrito | comentário 2 da #423 (40 regras) |
 | [`V2_DECISION_LOG.md`](./V2_DECISION_LOG.md) | ✅ escrito | comentário 4 da #423 — **decisões que não estão no corpo do plano** |
-| [`V2_ARCHITECTURE.md`](./V2_ARCHITECTURE.md) | ✅ **proposta** | os 17 sistemas com decisão manter/refatorar/construir, medido no repo; aguarda 4 decisões do operador |
+| [`V2_ARCHITECTURE.md`](./V2_ARCHITECTURE.md) | 🟣 **proposta** (histórico do Module System) | os 17 sistemas com decisão manter/refatorar/construir, medido no repo; a arquitetura-alvo vigente é a de `../architecture/v2/` |
+| [`../architecture/v2/arquitetura-alvo.md`](../architecture/v2/arquitetura-alvo.md) | ✅ revisado | **arquitetura-alvo vigente** da V2: definido, proposto, pendente e conflitos (issues #539/#540) |
 | [`V2_STACK_REVIEW.md`](./V2_STACK_REVIEW.md) | ✅ **Fase 0** | a revisão de stack MEDIDA — componente a componente, com benchmark; ver [ADR-004](../architecture/decisions/ADR-004-stack-poliglota-por-responsabilidade.md) |
 | [`V2_STACK.md`](./V2_STACK.md) | ⛔ superado | primeira tentativa: reavaliou o stack sem questionar se o Core deveria ser JS. Fica pelo inventário e pelo erro de método |
 | [`V2_MODULE_RULES.md`](./V2_MODULE_RULES.md) | ✅ escrito | especificação do Module Manifest; espelha `v2/core/manifest.js` |

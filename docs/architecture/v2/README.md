@@ -7,10 +7,23 @@ e [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
 
 | Documento | Estado | Responde |
 | --- | --- | --- |
-| [`arquitetura-alvo.md`](./arquitetura-alvo.md) | 🟡 em elaboração | Qual é a estrutura-alvo da V2, por que cada peça existe, o que está decidido, proposto e pendente |
+| [`arquitetura-alvo.md`](./arquitetura-alvo.md) | ✅ revisado | Qual é a estrutura-alvo da V2, por que cada peça existe, o que está decidido, proposto e pendente |
 | [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) | 🟣 proposta | Opções e recomendação para D5/D6/D7 (linguagem do Core, forma dos componentes, comunicação) |
 | [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) | ✅ histórico | Como o Module System nasceu (diagnóstico da V1, manifesto, ordem de construção) |
 | [`../decisions/`](../decisions/) | ✅ ADRs 001–006 | Decisões fechadas, com contexto, alternativas e consequências |
+
+## Hierarquia
+
+1. [`../../ARCHITECTURE-INDEX.md`](../../ARCHITECTURE-INDEX.md) — mapa do repositório e ordem de leitura.
+2. Este README — escopo da pasta e status.
+3. [`arquitetura-alvo.md`](./arquitetura-alvo.md) — **fonte única** da arquitetura-alvo; separa definido, proposto, pendente e conflito.
+4. [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — dossier de decisão de D5/D6/D7; não é decisão.
+5. [`../decisions/`](../decisions/) — ADRs fechados. O canônico aponta para eles; não os substitui.
+6. [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) — histórico do Module System; não é a arquitetura-alvo.
+
+Regra de precedência: quando o canônico e um documento antigo divergirem, o
+canônico vence **somente** se a divergência estiver registrada em §17. Caso
+contrário, é conflito a resolver — não escolha automática.
 
 ## Regra de leitura
 
@@ -41,7 +54,7 @@ arquitetura aprovada.
 O documento canônico mantém a lista completa em
 [§16 — Decisões pendentes](./arquitetura-alvo.md#16-decisões-pendentes) e
 [§17 — Conflitos e divergências](./arquitetura-alvo.md#17-conflitos-e-divergências-abertos).
-As mais bloqueantes: linguagem do Core/Host (D5), formato dos componentes
+As mais bloqueantes: consolidação dos núcleos (D5), formato dos componentes
 (D6), mecanismo de comunicação (D7), persistência (D8, ⛔) e shell do aplicativo
 (D13, ⛔).
 

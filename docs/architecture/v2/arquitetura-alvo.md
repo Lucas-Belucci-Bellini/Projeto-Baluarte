@@ -1,7 +1,8 @@
 # Arquitetura-alvo do Baluarte V2
 
-> **Status:** 🟡 documento de arquitetura em elaboração — direção parcialmente
-> confirmada.
+> **Status:** ✅ **revisão arquitetural concluída em 2026-11-24** — direção
+> parcialmente confirmada e pendências explicitadas. A conclusão da documentação
+> **não depende** da implementação; ver [§19](#19-critérios-de-conclusão).
 >
 > **Origem:** [issue #540](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540),
 > com o comunicado de disponibilização da [issue #539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
@@ -27,6 +28,13 @@ As seções 15 e seguintes da issue #540 são uma **proposta técnica do autor d
 issue**. Elas aparecem aqui resumidas e marcadas, porque são o ponto de partida
 mais concreto que existe — não porque estejam aprovadas.
 
+**Vocabulário.** O ADR-004 separa duas funções que a palavra “Core” costuma
+juntar: o **Core de UI** (TypeScript, no webview) e o **Host de Runtime** (Rust,
+processo principal). Neste documento, “Host” sempre significa a segunda; “Core de
+UI” a primeira. Quando aparece **“Core”** sozinho — sobretudo no Module System — é
+o lado que carrega módulos e concede capacidades, histórico do ADR-004, e não
+autoriza fundir as duas funções (isso é **D5**).
+
 ---
 
 ## 1. Direção confirmada
@@ -39,10 +47,11 @@ mais concreto que existe — não porque estejam aprovadas.
 4. ✅ **Durante a reconstrução, o Baluarte será disponibilizado somente como
    aplicativo** — sem retorno do site e sem data definida ([#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539), [ADR-006](../decisions/ADR-006-disponibilizacao-somente-app.md)).
 
-O que **não** está confirmado: a divisão exata de responsabilidades entre Python,
-Rust e C++; a linguagem do Core; o mecanismo de comunicação entre componentes; o
-banco; o shell do aplicativo; o empacotamento; as plataformas; o nível de
-compatibilidade com a V1. Ver [§16](#16-decisões-pendentes).
+O que **não** está confirmado: a divisão fina de responsabilidades entre Python,
+Rust e C++; se o Core de UI e o Host de Runtime permanecem separados ou se
+consolidam em um único núcleo (D5); o mecanismo de comunicação entre componentes
+(D7); o banco (D8); o shell do aplicativo (D13); o empacotamento; as plataformas;
+o nível de compatibilidade com a V1. Ver [§16](#16-decisões-pendentes).
 
 Decisões antigas que continuam valendo para o que já foi construído estão em
 [ADR-001](../decisions/ADR-001-1.0.0-como-ponto-de-congelamento.md),
@@ -61,8 +70,8 @@ precisa partir disto, não de uma folha em branco.
 | Peça | Onde | Linguagem | Estado |
 | --- | --- | --- | --- |
 | Site V1 | `src/`, `index.html`, Vite 5 | JavaScript puro | congelando; referência de comportamento e dados (ADR-001/#420) |
-| App V1 | `desktop/` (Electron + IPC) | JavaScript | operacional; herda a decisão de shell do ADR-004 |
-| Core V2 protótipo | `v2/core/` — manifesto, registry, contexto, log, ciclo, boot, bus, config, api, métricas, trabalho | JS com `checkJs` + arquivos `.ts` parciais | 11 peças, testadas; migração parcial para TS em andamento |
+| App V1 | `desktop/` (Electron + IPC) | JavaScript | operacional; o ADR-004 aponta Tauri pós-1.0.0, decisão não revogada |
+| Core V2 protótipo | `v2/core/` — manifesto, registry, contexto, log, ciclo, boot, bus, config, api, métricas, trabalho | JS com `checkJs` + arquivos `.ts` parciais | 11 peças centrais listadas no `v2/README.md`, além de pontes de runtime; migração parcial para TS em andamento |
 | Runtime V2 | `v2/runtime/` (`Cargo.toml`, `src/`, `tests/`) | Rust | crate real; hoje só `ReadFile` implementado e `RuntimeStopped` |
 | Worker V2 | `v2/services/tarefas/` | Python | backoff, heartbeat, lote; 14 testes |
 | Dados V2 | `v2/data/migrations/`, `v2/data/*.ts` | SQL/Postgres + TS | migrações de proveniência, grafo e fila; testes contra Postgres real |
@@ -75,6 +84,25 @@ Consequência prática: a V2 **já tem** um Core de orquestração prototipado e
 um Runtime em Rust, um worker Python e persistência em Postgres. A questão
 arquitetural não é "o que criar do zero", é **o que cada peça vira** e **onde
 ficam as fronteiras** na nova organização.
+
+### 2.1 O que ainda **não** existe
+
+Para não confundir protótipo com produto entregue:
+
+- **nenhum frontend novo em TypeScript** — a interface da V2 não começou;
+- **nenhum shell de aplicativo V2** — o app atual é o da V1 (Electron);
+- **nenhum supervisor de processos** no Host;
+- **nenhum contrato IPC com allowlist** entre UI e Host;
+- **nenhuma linha de C++** no repositório;
+- **nenhuma biblioteca nativa integrada** via C ABI;
+- **nenhum empacotamento** que distribua Rust + Python + C++ juntos;
+- **nenhum inventário da V1** para migração (ver [§14](#14-migração-v1--v2));
+- **nenhuma Data/Evidence Layer completa** — há migrações e modelos em `v2/data/`,
+  não a camada fechada;
+- **nenhum ADR** para as decisões D1–D13.
+
+O que existe é fundação testada: Core de UI prototipado, Runtime mínimo em Rust,
+worker Python, fila em Postgres, módulos de prova e harness.
 
 ---
 
@@ -108,41 +136,48 @@ Diagrama lógico. Ele **não** define ainda se cada caixa é processo, bibliotec
 pacote — isso é pendência ([§16](#16-decisões-pendentes)).
 
 ```text
-┌──────────────────────────────────────────────────────────────┐
-│                    BALUARTE — APLICATIVO                     │
-│                                                              │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │ FRONTEND — TYPESCRIPT                                   │  │
-│  │ Interface · Navegação · Estado · Cliente tipado          │  │
-│  └───────────────────────────┬────────────────────────────┘  │
-│                              │ contrato local tipado          │
-│  ┌───────────────────────────▼────────────────────────────┐  │
-│  │ CORE / HOST                                             │  │
-│  │ Boot · Runtime · Event Bus · Task Manager · Registry    │  │
-│  │ Permissões · Config · Logs · Supervisão de processos    │  │
-│  └──────┬──────────────────────────────────┬──────────────┘  │
-│         │ contrato de worker               │ C ABI / FFI       │
-│  ┌──────▼──────────────────┐      ┌────────▼───────────────┐  │
-│  │ PYTHON — WORKERS        │      │ C++ — BIBLIOTECAS      │  │
-│  │ IA · Automação · Dados  │      │ Nativas especializadas │  │
-│  │ Parsers · Integrações   │      │ (só com benchmark)     │  │
-│  └─────────────────────────┘      └────────────────────────┘  │
-│                                                              │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │ MODULE SYSTEM — manifestos e capacidades concedidas     │  │
-│  └────────────────────────────────────────────────────────┘  │
-│                                                              │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │ DADOS E EVIDÊNCIAS — armazenamento, migrações,          │  │
-│  │ proveniência, backup e restauração                      │  │
-│  └────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                    BALUARTE — APLICATIVO                         │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ WEBVIEW                                                     │  │
+│  │  FRONTEND — TYPESCRIPT                                      │  │
+│  │  Interface · Navegação · Estado · Cliente tipado             │  │
+│  │  CORE DE UI — TYPESCRIPT (ADR-004)                          │  │
+│  │  Rotas · Views · Eventos de UI · Estado da aplicação         │  │
+│  └───────────────────────────┬────────────────────────────────┘  │
+│                              │ contrato local tipado             │
+│  ┌───────────────────────────▼────────────────────────────────┐  │
+│  │ HOST DE RUNTIME — RUST (ADR-004)                            │  │
+│  │ Boot · Permissões reais · Filesystem · Processos · Logs     │  │
+│  │ RuntimeHost · RuntimePolicy · supervisor (pendente)         │  │
+│  └──────┬─────────────────────────────────────┬───────────────┘  │
+│         │ chamada curta: stdio JSON-lines     │ C ABI / FFI      │
+│         │ trabalho longo: fila Postgres        │ (in-process)     │
+│  ┌──────▼──────────────────┐        ┌──────────▼─────────────┐   │
+│  │ PYTHON — WORKERS        │        │ C++ — BIBLIOTECAS      │   │
+│  │ IA · Automação · Dados  │        │ Nativas especializadas │   │
+│  │ Parsers de conteúdo     │        │ (escopo pendente;      │   │
+│  │ Integrações             │        │  só com benchmark)     │   │
+│  └─────────────────────────┘        └────────────────────────┘   │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ MODULE SYSTEM — manifestos e capacidades concedidas          │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ DADOS E EVIDÊNCIAS — armazenamento, migrações, proveniência, │  │
+│  │ backup e restauração                                         │  │
+│  └────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-A linguagem do Core/Host é pendente. A [proposta da #540 §15](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540) recomenda
-Rust; o ADR-004 já fixou **Rust para o Core de Runtime** (processo local) e
-**TypeScript para o Core de Orquestração** de interface. A consolidação das duas
-visões é uma decisão do operador — [§17](#17-conflitos-e-divergências-abertos).
+O diagrama separa duas responsabilidades que o **ADR-004 já distingue**: Core de
+UI (TypeScript, no webview) e Host de Runtime (Rust, processo principal). A
+[proposta da #540 §15](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540)
+sugere consolidar os dois em um host Rust único; isso é a pendência **D5** e
+**não** está representado como decidido. O diagrama também não decide se cada
+caixa é processo, biblioteca ou pacote (**D6**).
 
 ---
 
@@ -154,14 +189,16 @@ visões é uma decisão do operador — [§17](#17-conflitos-e-divergências-abe
 | --- | --- | --- | --- |
 | Interface, navegação, estado visual, cliente dos contratos | **TypeScript** | ✅ Definido | todo o frontend; nada de JS solto no frontend novo |
 | Validação de dados no limite da interface | **TypeScript** | ✅ Definido | esquema e cliente tipados |
-| Core de Orquestração (rotas, views, eventos de UI) | TypeScript | ✅ ADR-004 | hoje prototipado em `v2/core` (JS/TS parcial) |
-| Core de Runtime (processo local, permissões reais, filesystem, supervisão) | **Rust** | ✅ ADR-004 | implementação mínima existe em `v2/runtime` |
+| Core de UI (rotas, views, eventos de UI, estado) | **TypeScript** | ✅ ADR-004 | roda no webview do app; protótipo em `v2/core` (JS/TS parcial) |
+| Host de Runtime (processo, permissões reais, filesystem, supervisão) | **Rust** | ✅ ADR-004 | `v2/runtime` mínimo; supervisor de processos pendente |
+| Consolidação dos dois núcleos em um host Rust único | 🟡 A definir | 🟡 Pendente (D5) | proposta da #540 §15; **não aprovada** |
 | IA, coleta, automação, integrações flexíveis | **Python** | ✅ ADR-004 | executa como worker supervisionado |
 | Parsers binários (`.p3d`, `.pbo`) | Rust | ✅ ADR-004 | Python era 140× mais lento em laço de byte |
-| Bibliotecas nativas especializadas / SDKs C/C++ | **C++** | 🟡 Pendente de escopo | #540 determina a presença; a fronteira exige benchmark |
-| Camada de dados e persistência | 🟡 A definir | 🟡 Pendente | ⛔ ADR-004 fixa Postgres; #540 mantém pendente ([§17](#17-conflitos-e-divergências-abertos)) |
-| Mecanismo de comunicação entre linguagens | 🟡 A definir | 🟡 Pendente | proposta em [§8](#8-contratos-e-comunicação) |
-| Shell do aplicativo | 🟡 A definir | 🟡 Pendente | ADR-004 indica Tauri (Rust) pós-1.0.0 |
+| Parsers de conteúdo/documento | Python | ✅ ADR-004 | ecossistema de parsing e NLP |
+| Bibliotecas nativas especializadas / SDKs C/C++ | **C++** | ✅ presença (ADR-005) · 🟡 escopo (D4) | #540 confirma a presença; a forma (biblioteca C ABI) é **proposta** |
+| Camada de dados e persistência | 🟡 A definir | 🟡 Pendente (D8) + ⛔ | ADR-004 fixa Postgres; #540 mantém pendente ([§9.3](#93-persistência--pendência-que-trava-decisões)) |
+| Mecanismo de comunicação entre linguagens | 🟡 A definir | 🟡 Pendente (D7) | proposta em [§8](#8-contratos-e-comunicação) |
+| Shell do aplicativo | 🟡 A definir | 🟡 Pendente (D13) + ⛔ | direção anterior: Tauri (ADR-004), não revogada |
 
 ### 5.2 Regras de fronteira
 
@@ -173,11 +210,17 @@ visões é uma decisão do operador — [§17](#17-conflitos-e-divergências-abe
 - **Python implementa workers** — IA, automação, dados, integração — sob
   inicialização, permissão, timeout, cancelamento e encerramento do Core. Worker
   não abre API pública por padrão.
-- **C++ fornece biblioteca nativa isolada**, com interface C estável (C ABI),
-  consumida pelo Core. Não criar um segundo Core em C++ e não duplicar o que Rust
-  já faz sem ganho medido.
+- **C++, quando entrar, entra como biblioteca nativa isolada** — não como processo
+  nem como segundo Core. A forma e a interface (inclusive a hipótese de C ABI) e
+  o escopo são pendência **D4**; sem benchmark, não se cria a fronteira. Não
+  duplicar o que Rust já faz sem ganho medido.
 - **Uma regra de negócio tem um único dono.** Se a mesma regra aparecer em duas
   linguagens, uma das duas está errada.
+- **Parsers têm dono por tipo de dado:** binário e laço quente (`.p3d`, `.pbo`)
+  é Rust; conteúdo e documento é Python. A mesma rotina não é implementada duas
+  vezes.
+- **TypeScript não implementa regra de negócio de módulo.** Valida no limite,
+  apresenta estado e chama o contrato; a decisão fica no dono do domínio.
 
 ### 5.3 Critério para decidir a linguagem de uma função
 
@@ -226,6 +269,10 @@ vida, falhas possíveis, comportamento de recuperação e testes.
 8. Ao encerrar, o Core cancela tarefas, encerra workers, fecha recursos e
    persiste o estado necessário.
 
+Este fluxo descreve **ordem de dependências**, não decide D5/D6/D7. “Core” aqui é
+o lado que carrega módulos e concede capacidades; se ele roda no Host (Rust) ou no
+Core de UI (TypeScript), e quem inicia quem, continua pendente.
+
 ### 6.2 Regras de falha
 
 - Falha em módulo opcional **não derruba o aplicativo**.
@@ -234,6 +281,19 @@ vida, falhas possíveis, comportamento de recuperação e testes.
 - Worker Python que não responde é encerrado por timeout e registrado; o Core não
   fica bloqueado.
 - Recurso não concedido falha fechado (ADR-002).
+
+### 6.3 Logs, métricas e diagnóstico
+
+- **Log estruturado** com dono (módulo/componente), nível, correlação e retenção;
+  segredo não entra no payload.
+- **Métricas** com contagem, tempo e teto de cardinalidade — `v2/core/metricas.js`
+  já existe no protótipo.
+- **Diagnóstico é leitor do estado real** (módulos, permissões, flags, esquemas,
+  saúde e workers), não uma lista paralela mantida à mão.
+- **Saúde** por módulo e por worker, com estado explícito de “não observado” —
+  ausência de dado não é sinal verde.
+- **Contrato de diagnóstico** precisa ser versionado quando exposto à UI; hoje o
+  protótipo tem peças, não o contrato fechado.
 
 ---
 
@@ -270,6 +330,11 @@ interface ModuleManifest {
   lifecycle?: Record<string, LifecycleHandler>;
 }
 ```
+
+> O campo `ambiente` (`web` | `app` | `ambos`) existe porque o protótipo nasceu
+> ao lado da V1. Com a #539, a V2 entrega **somente app**; manter `web` no
+> contrato é dívida de compatibilidade, não autorização para criar superfície web
+> nova. Remover ou renomear o campo é decisão futura — não decidida aqui.
 
 Regras que o protótipo já provou:
 
@@ -308,13 +373,15 @@ sem contrato é o defeito que a V2 existe para não repetir.
 
 ### 8.1 Fronteiras e transporte
 
-| Fronteira | Transporte proposto | Estado |
+| Fronteira | Transporte | Estado |
 | --- | --- | --- |
-| Frontend TS ↔ Core | contrato local tipado, operações em lista permitida, envelope com id de requisição, resposta e erro padronizados | 🟣 proposto; o protótipo usa ponte JS |
-| Core ↔ Runtime Rust | envelope JSON versionado, validado dos dois lados | 🟣 em parte implementado (`v2/runtime/CONTRACT.md`) |
-| Core ↔ worker Python | protocolo estruturado sobre stdio ou socket local protegido, supervisionado | 🟣 proposto; worker existe, protocolo não fechado |
-| Core ↔ biblioteca C++ | C ABI pequena e documentada: ownership, códigos de erro, concorrência | 🟡 pendente (escopo de C++ em aberto) |
+| UI (TS) ↔ Core de UI | mesmo processo/webview, chamada direta tipada | ✅ protótipo |
+| Core de UI ↔ Host (Rust) | IPC com allowlist, envelope versionado, timeout e erro com código estável | 🟣 proposto (D7); hoje a ponte é JS |
+| Host ↔ worker Python — chamada curta | JSON-lines sobre stdio, worker iniciado pelo Host | 🟣 proposto |
+| Host ↔ worker Python — trabalho longo | fila com `SKIP LOCKED` | ✅ no protótipo, sobre Postgres — engine segue em conflito (D8, [§9.3](#93-persistência--pendência-que-trava-decisões)) |
+| Host ↔ biblioteca C++ | C ABI in-process: ownership, códigos de erro, thread-safety | 🟡 pendente (D4/D7) |
 | Módulo ↔ Core | API e eventos versionados; manifesto e capacidades | ✅ protótipo validado |
+| Eventos entre módulos | Event Bus com origem, versão, correlação e curinga | ✅ protótipo |
 | Módulo ↔ persistência | contratos de dados e serviços autorizados; sem conexão própria | 🟣 proposto |
 
 ### 8.2 Envelope do Runtime (formato existente)
@@ -375,14 +442,37 @@ o problema que a V2 quer resolver.
 contra Postgres real. O worker Python usa fila com `SKIP LOCKED`. Isso é o
 alicerce concreto da Data Layer — não uma proposta.
 
-### 9.3 Pendência que trava decisões
+### 9.3 Persistência — pendência que trava decisões
 
-O motor de persistência está ⛔ em conflito: o ADR-004 fixou **PostgreSQL** para
-dados e fila; a #540 mantém "qual banco e estratégia de persistência" como
-pendente e a §15.6 propõe **SQLite local** para configuração e estado, com
-Postgres remoto só onde houver sincronização. As duas coisas podem conviver
-(SQLite no dispositivo + Postgres no servidor), mas isso precisa ser decidido e
-registrado — não presumido.
+O motor de persistência está ⛔ em conflito: o **ADR-004 fixou PostgreSQL** para
+dados e fila, e há migrações reais em `v2/data/migrations/`; a **#540 mantém
+“qual banco e estratégia de persistência” como pendente** e a §15.6 propõe
+**SQLite local** para configuração e estado operacional. O ADR-004 **não foi
+revogado** — continua sendo a decisão registrada até que outro ADR o substitua.
+
+Alternativas, com custo dito:
+
+| Opção | Vantagens | Custos e riscos | Quando faz sentido |
+| --- | --- | --- | --- |
+| **A. PostgreSQL só** (ADR-004) | uma engine; fila `SKIP LOCKED` já funciona; migrações existem; concorrência testada | exige instância; app offline depende de Postgres local empacotado ou remoto; peso de distribuição | quando o app sempre tem um Postgres local ou remoto confiável |
+| **B. SQLite local só** | zero servidor; arquivo único; backup trivial; boot rápido; offline por construção | `SKIP LOCKED` não existe; escrita concorrente limitada; fila multi-worker precisa de outro desenho | quando o produto é single-user local-first e a fila é interna ao app |
+| **C. Híbrido** — SQLite local + Postgres remoto | estado/configuração local e offline; sincronização e colaboração onde precisam existir | duas engines, duas migrações, resolução de conflito, sincronização e teste de consistência | quando há uso local forte **e** recursos remotos reais |
+
+Critérios para decidir (critérios, não decisão):
+
+1. O app precisa operar 100% offline? Se sim, configuração e estado local não
+   podem depender de Postgres remoto.
+2. Existe colaboração/sincronização entre dispositivos? Se sim, algum serviço
+   remoto é necessário — e a pergunta vira onde fica a fonte da verdade.
+3. A fila é interna ao app ou compartilhada entre máquinas? `SKIP LOCKED` só faz
+   sentido no segundo caso.
+4. Qual é o custo de empacotar e atualizar a engine escolhida dentro do app?
+5. O dado do operador precisa sobreviver à troca de engine? Se sim, o formato de
+   exportação é parte da decisão.
+
+Enquanto **D8** não for decidido, nada na arquitetura-alvo depende de uma engine
+específica: os contratos de dados são descritos por comportamento, e as
+migrações existentes permanecem válidas para a opção A.
 
 ---
 
@@ -399,6 +489,8 @@ registrado — não presumido.
 | Logs e auditoria | estruturados, com dono, correlação e retenção definida |
 | Atualização | assinatura/verificação dos artefatos e rollback testado |
 | Falha | fechar, registrar e recuperar; nunca degradar em silêncio para acesso amplo |
+| Permissão em duas camadas | o Core valida o manifesto; o Runtime revalida o envelope antes de executar |
+| Diagnóstico | mostra estado real e nega acesso a segredo; não é lista mantida à mão |
 
 A segurança do aplicativo não pode depender de o módulo ser "confiável". Módulo de
 terceiro não recebe acesso irrestrito ao sistema operacional por padrão.
@@ -419,11 +511,15 @@ Isso reposiciona a arquitetura:
 - o frontend TypeScript não pode assumir um servidor web público;
 - recursos da V1 que só existiam para o site não são herdados automaticamente.
 
-Ainda pendente: tecnologia do shell, plataformas suportadas inicialmente,
-empacotamento dos runtimes Rust/Python/C++, assinatura, canal de atualização,
-rollback e diagnóstico de suporte. O ADR-004 indica **Tauri (Rust)** como destino
-pós-1.0.0; a #540 lista o shell como pendente — ver
-[§17](#17-conflitos-e-divergências-abertos).
+**O que já está decidido e o que não está.** O ADR-004 registrou **Tauri (Rust)**
+como destino do app, migrando do Electron pós-1.0.0; essa decisão **não foi
+revogada**. A #540 lista a tecnologia do shell como pendente (**D13**). Até
+decisão formal em contrário, vale a direção anterior — mas ela não deve ser
+tratada como aprovada para a V2 se o operador reabrir o tema.
+
+Ainda pendente: plataformas suportadas inicialmente, empacotamento dos runtimes
+Rust/Python/C++, assinatura, canal de atualização, rollback e diagnóstico de
+suporte. Ver [§17](#17-conflitos-e-divergências-abertos).
 
 ---
 
@@ -459,6 +555,10 @@ baluarte/
 Decisão pendente: **monorepo único ou múltiplos repositórios**. Critérios:
 build, versionamento, ownership, distribuição e custo de integração.
 
+> O `core/host/` acima reproduz a #540 §15.4 e **presume a fusão dos núcleos**.
+> Se D5/D6 forem resolvidos pela separação do ADR-004, a estrutura vira algo como
+> `core/ui/` + `core/host/`. O layout é proposta; não decide D5.
+
 ---
 
 ## 13. Testes, qualidade e integração contínua
@@ -468,7 +568,7 @@ CI só vale se cobrar o que importa.
 
 | Verificação | Estado |
 | --- | --- |
-| Type-check e testes do frontend TypeScript | 🟡 frontend novo ainda não existe; `v2/tipos` cobre o protótipo |
+| Type-check e testes do frontend TypeScript | 🟡 frontend novo ainda não existe; `npm run tipos:v2` cobre o protótipo |
 | Testes e verificações de Python | ✅ worker `tarefas` tem testes |
 | Testes, lint e build de Rust | 🟡 crate existe; cobertura mínima |
 | Testes e compilação de C++ | 🟡 não existe |
@@ -501,6 +601,28 @@ Para cada funcionalidade, módulo, dado e dependência da V1, classificar:
 | **Reescrever** | a arquitetura nova exige outra implementação |
 | **Substituir** | existe solução melhor no ecossistema novo |
 | **Descontinuar** | não faz sentido no produto atual |
+
+#### Como o inventário é feito (método, não resultado)
+
+O inventário ainda **não existe**. Quando for produzido, deve ser um documento
+próprio (a criar em `docs/v2/`) com uma linha por capacidade da V1 e, no mínimo:
+
+| Campo | Conteúdo |
+| --- | --- |
+| identificador | rota, módulo, tool ou serviço da V1 |
+| caminho no repo | `src/...`, `api/...`, `desktop/...` |
+| tipo | página, util, integração, dado, automação |
+| dependências | o que consome e quem depende dele |
+| dado do operador | chave de storage, tabela, arquivo — e versão |
+| classificação | reaproveitar · adaptar · reescrever · substituir · descontinuar |
+| justificativa | por que a classe, não “porque é mais fácil” |
+| destino V2 | módulo, worker, biblioteca ou nada |
+| critério de aceite | como provar que a fatia migrada equivale |
+
+Ordem prática: começar pelos itens com mais dependentes e menos acoplamento de
+UI — `politica.js`, storage e permissões — e só depois as páginas. Rotas que só
+existem para o site público entram como “descontinuar na entrega app-only” ou
+“revisar”, nunca como migração automática.
 
 ### 14.2 Regras
 
@@ -547,13 +669,16 @@ recomendação e critérios de aceite em
 [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — ainda
 proposta, não decisão.
 
+**Quem decide:** todas as linhas abaixo são decisões do operador. O agente pode
+documentar alternativas e recomendar, mas não promover proposta a decisão.
+
 | # | Decisão | Bloqueia | Observação |
 | --- | --- | --- | --- |
 | D1 | Framework/biblioteca de interface e estratégia de estado do frontend TS | início do app V2 | ADR-004 só fixa a linguagem |
 | D2 | Responsabilidade precisa de Python | desenho dos workers | base no ADR-004; falta contrato |
 | D3 | Responsabilidade precisa de Rust | desenho do Core/Runtime | base no ADR-004; falta consolidar com #540 |
 | D4 | Escopo de C++ | build, CI, distribuição | precisa de benchmark; não é "C++ para tudo" |
-| D5 | Linguagem do Core de Orquestração e do Host | arquitetura do app | ADR-004: TS (orquestração) + Rust (runtime); #540 propõe Rust como host |
+| D5 | Consolidação do Core de UI e do Host: dois núcleos ou host Rust único | arquitetura do app | ADR-004 registra a separação (TS + Rust); #540 §15 propõe fusão. Nenhuma das duas formas foi aprovada para a V2 |
 | D6 | Componentes são processos, bibliotecas ou mistura | IPC, empacotamento, segurança | impacta quase tudo |
 | D7 | Mecanismo de comunicação entre linguagens | contratos, testes de contrato | §8 propõe, não decide |
 | D8 | Banco e estratégia de persistência | Data/Evidence Layer | ⛔ ver §17 |
@@ -576,11 +701,11 @@ divergência. Nada aqui foi resolvido por este documento.
 
 | # | Divergência | Fontes | Situação |
 | --- | --- | --- | --- |
-| C1 | C++ fora vs. C++ no backend | ADR-004 (“Go, C e C++ ficam de fora”) × #540 (“backend reunirá Python, Rust e C++”) | **Resolvido a favor da #540** por [ADR-005](../decisions/ADR-005-v2-app-typescript-backend-poliglota.md). O escopo de C++ continua pendente (D4). |
+| C1 | C++ fora vs. C++ no backend | ADR-004 (“Go, C e C++ ficam de fora”) × #540 (“backend reunirá Python, Rust e C++”) | **Resolvido a favor da #540 apenas quanto à presença** por [ADR-005](../decisions/ADR-005-v2-app-typescript-backend-poliglota.md). Forma e escopo seguem pendentes (D4); biblioteca C ABI é **proposta**. |
 | C2 | Site/web no escopo vs. somente app | v2-vision e ADR-004 falam de “interface web”; #539 diz somente app | **Resolvido a favor do app-only** por [ADR-006](../decisions/ADR-006-disponibilizacao-somente-app.md). A menção a “web” no ADR-004 vira registro histórico. |
-| C3 | Postgres decidido vs. persistência pendente | ADR-004 (PostgreSQL) × #540 §13 e §15.6 (pendente; propõe SQLite local) | ⛔ **Aberto.** Não revogar o ADR-004 por conveniência nem ignorar a #540. Decidir D8. |
-| C4 | Tauri decidido vs. shell pendente | ADR-004 (Tauri pós-1.0.0) × #540 §13 (shell pendente) | ⛔ **Aberto.** Até revogação formal, o ADR-004 prevalece; a #540 pode reabrir. Decidir D13. |
-| C5 | Core de Orquestração em TS no navegador vs. host Rust no app | ADR-004 §2 × #540 §15.2 | ⛔ **Aberto.** Com o app-only, “navegador” perde o sentido original. Decidir D5. |
+| C3 | Postgres decidido vs. persistência pendente | ADR-004 (PostgreSQL) × #540 §13 e §15.6 (pendente; propõe SQLite local) | ⛔ **Aberto.** O ADR-004 não é revogado por omissão; a #540 reabre o tema. Alternativas e critérios em [§9.3](#93-persistência--pendência-que-trava-decisões). Decidir D8. |
+| C4 | Tauri decidido vs. shell pendente | ADR-004 (Tauri pós-1.0.0) × #540 §13 (shell pendente) | ⛔ **Aberto.** O ADR-004 é a direção registrada e não revogada; a #540 pode reabrir. Decidir D13. |
+| C5 | Dois núcleos (Core de UI TS + Host Rust, ADR-004) vs. host Rust único (#540 §15.2) | ADR-004 §2 × #540 §15.2 | ⛔ **Aberto (D5).** O ADR-004 continua sendo a decisão registrada; a fusão é proposta. Com app-only, “navegador” deve ser lido como “webview”. |
 | C6 | Localização do código: `v2/` atual vs. `apps/ core/ backend/` proposto | `v2/README.md` × #540 §15.4 | 🟡 **Aberto**, porém sem urgência: a estrutura atual funciona até a migração. |
 | C7 | Protótipo `v2/core` em JS vs. frontend/core em TS | #540 §3 (TS) × `v2/core` (JS + `checkJs`, `.ts` parcial) | 🟡 **Em andamento.** A direção é TS; a migração acompanha a reconstrução, não é conversão isolada. |
 
@@ -596,7 +721,7 @@ trabalho e ordenar as decisões.
 | A | Contratos e protótipo vertical | shell TS mínimo + Core mínimo + uma chamada real do frontend ao Core |
 | B | Runtime e módulos | ciclo de vida, registry, permissões e Event Bus integrados; um módulo simples; falha e reinício testados |
 | C | Worker Python | Core inicia/encerra worker; protocolo, timeout, cancelamento e logs |
-| D | C++ nativo | caso real escolhido; baseline medido; C ABI e ownership definidos; integração só após benchmark |
+| D | C++ nativo | caso real escolhido; baseline medido; interface e ownership definidos (forma conforme D4); integração só após benchmark |
 | E | Dados e recuperação | Data/Evidence Layer, migrações, backup e restauração testados |
 | F | Migração de capacidades | inventário da V1; migração por fatia; comparação antigo × novo; legado removido só após aceite |
 
@@ -605,22 +730,44 @@ contrato versionado, o resto do desenho está no ar. É mais barato descobrir al
 
 ---
 
-## 19. Critérios de conclusão desta documentação
+## 19. Critérios de conclusão
 
-Espelha a §14 da issue #540. O que este documento **não** fecha permanece aberto.
+A conclusão da **documentação** é independente da implementação. Ela está
+concluída quando outra pessoa entende a arquitetura, as pendências e o caminho —
+mesmo que nenhuma linha nova da V2 exista.
 
-- [x] Direção confirmada e registrada (frontend TS, backend Python/Rust/C++, app-only).
-- [x] Ponto de partida real documentado com caminhos do repositório.
-- [x] Componentes de fundação e seus contratos mínimos identificados.
-- [x] Riscos, conflitos e decisões pendentes explicitados.
-- [ ] Diagrama de arquitetura coerente com o **código final** — hoje é coerente com o protótipo, não com a V2 entregue.
-- [ ] Responsabilidade exata de cada linguagem definida — TS ✅; Python/Rust base ADR-004; C++ pendente.
-- [ ] Contratos entre frontend e backend documentados em esquema versionado — há proposta e envelope do Runtime, não o contrato completo.
-- [ ] Contratos do Core e dos módulos fechados — o manifesto existe; o restante está em protótipo.
-- [ ] Estratégia de dados, segurança e persistência fechada — C3 aberto.
-- [ ] Estratégia de build, testes e distribuição fechada — D9/D10 abertos.
-- [ ] Plano de migração V1 → V2 com inventário — regras existem; inventário não.
-- [ ] Links para todos os ADRs e planos de implementação — parciais; cada D vira ADR.
+### 19.1 Documentação — concluída nesta revisão
+
+- [x] Direção confirmada separada de proposta (frontend TS, backend
+      Python/Rust/C++, app-only).
+- [x] Responsabilidade de cada linguagem descrita, com a divisão fina marcada como
+      pendente.
+- [x] Fronteiras e contratos descritos por comportamento, com formato proposto e
+      estado de implementação.
+- [x] Core, ciclo de vida, Module System, permissões, segurança, logs,
+      diagnóstico, dados e evidências contemplados.
+- [x] Ponto de partida real **e** lista do que não existe.
+- [x] Plano de migração com método de inventário e classificação.
+- [x] Decisões pendentes, conflitos e quem decide explicitados.
+- [x] Links para issues, ADRs, documentos e código verificados.
+
+### 19.2 Refinamentos que acompanham a implementação — não bloqueiam a documentação
+
+- [ ] Esquemas de contrato versionados em arquivo (por exemplo
+      `shared/schemas/`), gerados e cobrados no CI.
+- [ ] Diagrama atualizado conforme o código entregue.
+- [ ] Inventário da V1 preenchido (o método está em [§14](#14-migração-v1--v2)).
+- [ ] ADRs das decisões D1–D13.
+
+### 19.3 O que impede a **implementação** de começar
+
+- [ ] D5/D6/D7 aprovados (Core, forma dos componentes, comunicação).
+- [ ] D13 (shell) resolvido antes da Etapa A.
+- [ ] D8 (persistência) resolvido antes da Data/Evidence Layer.
+- [ ] Gate e demais condições do [#420](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420)
+      conforme a decisão vigente.
+
+Nenhum item de 19.3 é pré-requisito para considerar esta documentação concluída.
 
 ---
 
@@ -650,8 +797,12 @@ Espelha a §14 da issue #540. O que este documento **não** fecha permanece aber
 - [`v2/README.md`](../../../v2/README.md) — o que existe na reconstrução.
 - [`v2/runtime/CONTRACT.md`](../../../v2/runtime/CONTRACT.md) — contrato do Runtime Rust.
 
+**Propostas**
+- [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — opções e
+  recomendação para D5/D6/D7.
+
 ---
 
-**Última atualização:** 2026-11-24 · **Mantenedor:** operador do projeto ·
-**Regra:** decisão nova vira ADR; este documento aponta para o ADR, não o
-substitui.
+**Última revisão:** 2026-11-24 — revisão arquitetural documental, sem mudança de
+código · **Mantenedor:** operador do projeto · **Regra:** decisão nova vira ADR;
+este documento aponta para o ADR, não o substitui.

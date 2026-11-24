@@ -12,7 +12,7 @@ existir — o mapa já está no `CLAUDE.md`.
 |---|---|---|
 | [`overview.md`](./overview.md) | ✅ escrito | O que é o Baluarte hoje, quais são as camadas e o que atravessa quais fronteiras |
 | [`v2-vision.md`](./v2-vision.md) | ✅ escrito (**bússola, não obra**) | Para onde a V2 vai — e o que **não** fazer até a 1.0.0 fechar |
-| [`v2/`](./v2/) | 🟡 em elaboração | Arquitetura-alvo da V2 (#539/#540): definido, proposto, pendente e conflitos |
+| [`v2/`](./v2/) | ✅ revisado | Arquitetura-alvo da V2 (#539/#540): definido, proposto, pendente e conflitos |
 | [`decisions/`](./decisions/) | ✅ 6 ADRs | Decisões fechadas, com o contexto que as gerou |
 | `core.md` | ⬜ a escrever | Router, state, storage, events, permissions, flags: contratos e quem depende de quem |
 | [`events.md`](./events.md) | ✅ **gerado** | Catálogo dos eventos do bus e quem escuta cada um — `npm run gen-catalogo-eventos`, cobrado pelo CI |

@@ -3,6 +3,11 @@
 > **Escopo:** o Baluarte **como ele é hoje**, não como ele deveria ser. Para o
 > destino, veja [`v2-vision.md`](./v2-vision.md) — e note que os dois documentos
 > descrevem coisas deliberadamente diferentes.
+>
+> **Nota (2026-11-24):** este documento descreve a **V1** — inclusive o site e a
+> divisão “web = leve / app = completo”. Na V2, a entrega é **somente app**
+> ([ADR-006](./decisions/ADR-006-disponibilizacao-somente-app.md)); a
+> arquitetura-alvo está em [`v2/arquitetura-alvo.md`](./v2/arquitetura-alvo.md).
 
 ---
 

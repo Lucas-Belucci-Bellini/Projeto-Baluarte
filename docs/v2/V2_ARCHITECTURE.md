@@ -294,3 +294,6 @@ solicitar decisão*:
 4. **JS puro na V2?** A V1 é "JS puro, sem framework, não negociável". O #420
    menciona TypeScript para a V2. Contratos de módulo são exatamente onde tipos
    pagam mais. **Continua não negociável, ou a V2 reabre isso?**
+   → **Respondida pela #540 §1:** todo o frontend da V2 é TypeScript
+   ([ADR-005](../architecture/decisions/ADR-005-v2-app-typescript-backend-poliglota.md)).
+   O item fica como registro da dúvida original.
