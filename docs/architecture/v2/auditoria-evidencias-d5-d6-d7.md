@@ -534,6 +534,11 @@ Se o operador quiser aprovar sem esperar, a aprovação deve ser explícita nas
 condições: "ARQ-1 aprovada como direção, com Windows e empacotamento portátil como
 requisitos abertos e verificáveis antes da Etapa B".
 
+A separação entre o que trava a assinatura e o que pertence à implementação está
+detalhada em [`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md), com critérios
+verificáveis por ajuste e portões P0–P5. Este parágrafo e aquele documento dizem a
+mesma coisa em níveis diferentes; nenhum dos dois aprova decisão.
+
 ---
 
 ## 9. Anexo — comandos e saídas brutas

@@ -674,7 +674,9 @@ de falsificação — está em
 As evidências desse estudo foram auditadas de forma independente em
 [`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md) — o que
 se reproduziu, o que não se reproduziu e o que o código de fato entrega. A
-auditoria também não decide nada.
+auditoria também não decide nada. O que falta para assinar D5/D6/D7 — e o que pode
+esperar a implementação — está em
+[`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md), igualmente 🔍.
 
 **Quem decide:** todas as linhas abaixo são decisões do operador. O agente pode
 documentar alternativas e recomendar, mas não promover proposta a decisão.
@@ -814,6 +816,11 @@ Nenhum item de 19.3 é pré-requisito para considerar esta documentação conclu
 - [`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md) —
   reprodução independente dos benchmarks e checagem do estado real dos protótipos;
   não aprova nenhuma decisão.
+
+**Planejamento**
+- [`plano-prontidao-arq1.md`](./plano-prontidao-arq1.md) — os sete ajustes, a
+  separação entre aprovação arquitetural e prontidão operacional, critérios
+  verificáveis e portões P0–P5.
 
 ---
 
