@@ -9,6 +9,7 @@ e [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
 | --- | --- | --- |
 | [`arquitetura-alvo.md`](./arquitetura-alvo.md) | ✅ revisado | Qual é a estrutura-alvo da V2, por que cada peça existe, o que está decidido, proposto e pendente |
 | [`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md) | 🟣 estudo | Alternativas de D5/D6/D7, quatro arquiteturas completas, custos medidos × estimados, critérios de falsificação e o que falta medir |
+| [`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md) | 🔍 auditoria | Reprodução independente dos benchmarks, estado real dos protótipos e checagem da ARQ-1 eixo por eixo; não aprova nada |
 | [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) | 🟣 proposta | Opções e recomendação para D5/D6/D7 (linguagem do Core, forma dos componentes, comunicação) |
 | [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) | ✅ histórico | Como o Module System nasceu (diagnóstico da V1, manifesto, ordem de construção) |
 | [`../decisions/`](../decisions/) | ✅ ADRs 001–006 | Decisões fechadas, com contexto, alternativas e consequências |
@@ -19,14 +20,15 @@ e [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
 2. Este README — escopo da pasta e status.
 3. [`arquitetura-alvo.md`](./arquitetura-alvo.md) — **fonte única** da arquitetura-alvo; separa definido, proposto, pendente e conflito.
 4. [`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md) — estudo técnico que sustenta D5/D6/D7; não é decisão.
-5. [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — dossier de decisão de D5/D6/D7; não é decisão.
-6. [`../decisions/`](../decisions/) — ADRs fechados. O canônico aponta para eles; não os substitui.
-7. [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) — histórico do Module System; não é a arquitetura-alvo.
+5. [`auditoria-evidencias-d5-d6-d7.md`](./auditoria-evidencias-d5-d6-d7.md) — auditoria independente das evidências do estudo; também não é decisão.
+6. [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — dossier de decisão de D5/D6/D7; não é decisão.
+7. [`../decisions/`](../decisions/) — ADRs fechados. O canônico aponta para eles; não os substitui.
+8. [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) — histórico do Module System; não é a arquitetura-alvo.
 
 Regra de precedência: quando o canônico e um documento antigo divergirem, o
 canônico vence **somente** se a divergência estiver registrada em §17. Caso
-contrário, é conflito a resolver — não escolha automática. Nem o estudo nem a
-proposta criam decisão: só ADR aprovado pelo operador cria.
+contrário, é conflito a resolver — não escolha automática. Nem o estudo, nem a
+auditoria, nem a proposta criam decisão: só ADR aprovado pelo operador cria.
 
 ## Regra de leitura
 

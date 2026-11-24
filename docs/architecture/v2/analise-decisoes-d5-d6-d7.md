@@ -825,7 +825,10 @@ nomeado como dívida.
 
 Nada aqui é aprovação. O caminho para fechar D5/D6/D7:
 
-1. O operador lê este estudo e o [dossier](./proposta-core-e-fronteiras.md).
+1. O operador lê este estudo e o [dossier](./proposta-core-e-fronteiras.md), e
+   pode conferir as evidências na
+   [auditoria independente](./auditoria-evidencias-d5-d6-d7.md), que reproduz os
+   benchmarks e separa código existente de funcionalidade operacional.
 2. Aprova, rejeita ou pede medição adicional (seção [§9](#9-o-que-falta-medir-antes-de-aprovar)).
 3. Se aprovar, cada decisão vira ADR (007, 008, 009) com contexto, alternativas,
    escolha, consequências e data — o rascunho já existe no dossier.
@@ -857,6 +860,7 @@ das alternativas consideradas — não a fonte da decisão.
 - [ADR-006](../decisions/ADR-006-disponibilizacao-somente-app.md) — disponibilização somente como app.
 - [arquitetura-alvo.md](./arquitetura-alvo.md) — arquitetura-alvo, decisões pendentes e conflitos.
 - [proposta-core-e-fronteiras.md](./proposta-core-e-fronteiras.md) — dossier de D5/D6/D7.
+- [auditoria-evidencias-d5-d6-d7.md](./auditoria-evidencias-d5-d6-d7.md) — auditoria independente das evidências deste estudo.
 
 **Issues**
 

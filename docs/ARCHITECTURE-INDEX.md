@@ -50,17 +50,21 @@ decisions (✅), proposals (🟣), pending items (🟡) and open conflicts (⛔)
 treat proposals in that document — including the recommended stack in #540 §15 —
 as approved architecture.
 
-The three decisions that gate implementation (D5, D6, D7) have two supporting
-documents, neither of which is a decision:
+The three decisions that gate implementation (D5, D6, D7) have three supporting
+documents, none of which is a decision:
 
 - [`analise-decisoes-d5-d6-d7.md`](architecture/v2/analise-decisoes-d5-d6-d7.md) —
   long-form technical study: alternatives, four complete architectures, estimated
   versus measured costs, falsification criteria, and what still needs measuring.
+- [`auditoria-evidencias-d5-d6-d7.md`](architecture/v2/auditoria-evidencias-d5-d6-d7.md) —
+  independent audit of that evidence: benchmarks re-run and classified, prototype
+  status (implemented / tested / integrated) verified, ARQ-1 checked axis by axis.
 - [`proposta-core-e-fronteiras.md`](architecture/v2/proposta-core-e-fronteiras.md) —
   short decision dossier with options, recommendation and acceptance checklist.
 
-Read the study for *why*; read the dossier for *what to sign*. D5/D6/D7 stay
-pending until the owner approves them and they become ADRs.
+Read the study for *why*, the audit for *how far the evidence actually goes*, and
+the dossier for *what to sign*. D5/D6/D7 stay pending until the owner approves
+them and they become ADRs.
 
 ## Ecosystem navigation
 
