@@ -8,6 +8,7 @@ e [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539).
 | Documento | Estado | Responde |
 | --- | --- | --- |
 | [`arquitetura-alvo.md`](./arquitetura-alvo.md) | 🟡 em elaboração | Qual é a estrutura-alvo da V2, por que cada peça existe, o que está decidido, proposto e pendente |
+| [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) | 🟣 proposta | Opções e recomendação para D5/D6/D7 (linguagem do Core, forma dos componentes, comunicação) |
 | [`../../v2/V2_ARCHITECTURE.md`](../../v2/V2_ARCHITECTURE.md) | ✅ histórico | Como o Module System nasceu (diagnóstico da V1, manifesto, ordem de construção) |
 | [`../decisions/`](../decisions/) | ✅ ADRs 001–006 | Decisões fechadas, com contexto, alternativas e consequências |
 

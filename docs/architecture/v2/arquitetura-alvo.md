@@ -542,6 +542,11 @@ falhar cedo e completa o bastante para provar todas as fronteiras.
 Nenhuma linha abaixo pode ser tratada como decidida. Cada uma deve virar ADR com
 contexto, alternativas, escolha, consequências e data.
 
+As três decisões que travam as demais (D5, D6 e D7) têm um dossier com opções,
+recomendação e critérios de aceite em
+[`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — ainda
+proposta, não decisão.
+
 | # | Decisão | Bloqueia | Observação |
 | --- | --- | --- | --- |
 | D1 | Framework/biblioteca de interface e estratégia de estado do frontend TS | início do app V2 | ADR-004 só fixa a linguagem |
