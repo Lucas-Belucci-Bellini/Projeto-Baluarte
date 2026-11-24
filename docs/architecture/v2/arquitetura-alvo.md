@@ -667,7 +667,10 @@ contexto, alternativas, escolha, consequências e data.
 As três decisões que travam as demais (D5, D6 e D7) têm um dossier com opções,
 recomendação e critérios de aceite em
 [`proposta-core-e-fronteiras.md`](./proposta-core-e-fronteiras.md) — ainda
-proposta, não decisão.
+proposta, não decisão. A análise longa que sustenta o dossier — alternativas
+completas, quatro arquiteturas integradas, custos medidos × estimados e critérios
+de falsificação — está em
+[`analise-decisoes-d5-d6-d7.md`](./analise-decisoes-d5-d6-d7.md), também 🟣.
 
 **Quem decide:** todas as linhas abaixo são decisões do operador. O agente pode
 documentar alternativas e recomendar, mas não promover proposta a decisão.
