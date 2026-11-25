@@ -36,14 +36,14 @@ números, as fronteiras e a divisão Rust/Python/TypeScript não foram refutados
 4. **O ADR-004 não é revogado por este ADR.** Ele continua sendo a decisão
    registrada para a separação **Core de UI em TypeScript** × **Host de Runtime
    em Rust**, para Python em IA/coleta/automação, para parsers binários em Rust e
-   para a direção de shell Tauri pós-1.0.0. A #540 reabre duas questões — a
-   consolidação dos dois núcleos em um host Rust único (D5) e a tecnologia do
-   shell (D13) — e ambas permanecem **pendentes**.
+   para a direção de shell Tauri pós-1.0.0. A #540 reabriu duas questões — a consolidação dos núcleos (D5) e a tecnologia do shell (D13). D5 foi resolvida pelo [ADR-007](./ADR-007-dois-nucleos-core-orquestracao-host-runtime.md), que mantém os dois núcleos separados; D13 permanece **pendente**.
 5. **A exclusão de C++ do ADR-004 fica revogada apenas quanto à presença.** A
-   #540 confirma que C++ integra o backend; **escopo, forma e fronteira seguem
-   pendentes (D4)**. A recomendação de biblioteca nativa com C ABI está em
-   [`proposta-core-e-fronteiras.md`](../v2/proposta-core-e-fronteiras.md) e
-   **não é decisão aprovada**. Exige benchmark e caso de uso real antes da
+   #540 confirma que C++ integra o backend; **caso de uso, escopo concreto e confirmação de ganho mensurável seguem
+   pendentes (D4)**. A forma condicional para eventual entrada — biblioteca
+   isolada in-process — está definida no ADR-008; o mecanismo de fronteira
+   (C ABI ou bridge gerada) é condicionado pelo ADR-009. A hipótese específica
+   de C ABI está em [`proposta-core-e-fronteiras.md`](../v2/proposta-core-e-fronteiras.md)
+   e não é uma escolha isolada. Exige benchmark e caso de uso real antes da
    primeira linha.
 
 ## Alternativas consideradas
