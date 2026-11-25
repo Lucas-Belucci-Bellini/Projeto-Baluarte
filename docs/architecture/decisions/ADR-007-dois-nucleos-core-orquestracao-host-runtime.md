@@ -164,7 +164,7 @@ entre exclusivo e compartilhado.
 | Responsabilidade | Dono da decisão | Dono da execução | Regra |
 | --- | --- | --- | --- |
 | Conceder `READ_FILES` a um módulo | Core TS (política declarada) | Host (revalida e aplica) | Host pode negar o que o Core concedeu; nunca conceder o que o Core negou |
-| Quais módulos sobem no boot | Host + Registry (manifesto como entrada) | Host | Divergência com o Core é erro de contrato, não "escolha de quem chegou primeiro" |
+| Autorização para módulos subirem no boot | Host (manifestos do Registry como entrada) | Host | Divergência com o Core é erro de contrato, não "escolha de quem chegou primeiro" |
 | Dados persistidos | Data Layer (D8) | Data Layer | Nem Core nem Host são donos da verdade |
 | Versão de contrato entre fronteiras | decisão arquitetural (ADR-009) | ambos, cada lado no seu limite | Mudança incompatível exige versão nova, não negociação em runtime |
 
