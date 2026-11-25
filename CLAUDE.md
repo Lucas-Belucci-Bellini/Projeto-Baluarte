@@ -4,6 +4,10 @@ Plataforma narrativa/militar/ferramentas em **JavaScript puro + Vite 5** — sem
 TypeScript, sem framework (Vite só empacota). Deploy estático no Vercel. Tem
 também um **app desktop** em Electron (`desktop/`, "Baluarte Launcher").
 
+> A partir da V2 (#539/[ADR-006](docs/architecture/decisions/ADR-006-disponibilizacao-somente-app.md)),
+> a entrega é **somente app**. O site descrito acima é a V1, preservada como
+> referência — não é plano de entrega da V2.
+
 ## 🧭 Continuidade entre sessões — comece por aqui
 
 Cada conversa começa **sem o histórico** das anteriores e (se for remota) **sem as
@@ -21,6 +25,13 @@ A prioridade agora **não é funcionalidade nova**. A definição em vigor:
 seguro` — e a 1.0.0 é um **ponto de congelamento**, com a V2 só depois, alvo de
 meados de 2027.
 
+> 📌 **Atualização 2026-11-24 (issues #539/#540):** o foco passou a ser a
+> reconstrução da V2, disponibilizada **somente como app**. A arquitetura-alvo
+> está em [`docs/architecture/v2/arquitetura-alvo.md`](docs/architecture/v2/arquitetura-alvo.md)
+> e as decisões em [ADR-005](docs/architecture/decisions/ADR-005-v2-app-typescript-backend-poliglota.md)
+> e [ADR-006](docs/architecture/decisions/ADR-006-disponibilizacao-somente-app.md).
+> A seção abaixo descreve o hardening da 1.0.0 e permanece como referência.
+
 👉 **[`docs/HARDENING-1.0.0.md`](docs/HARDENING-1.0.0.md)** — a fila executável da
 1.0.0: pegue o próximo item não-marcado. · 👉 **[`docs/architecture/`](docs/architecture/)**
 — overview, `v2-vision.md` (**bússola, não obra**: diz o que *não* fazer agora) e
@@ -37,17 +48,22 @@ que exerce, com benchmark em [`v2/bench/`](v2/bench/) — dá para rodar de novo
 
 | camada | linguagem | |
 | --- | --- | --- |
-| interface web e 3D | **TypeScript** | hoje JSDoc+`checkJs` (etapa 1) |
-| Core de **Orquestração** (navegador) | **TypeScript** | WASM mediu **4,7× mais lento** no despacho real |
+| interface do app (webview) e 3D | **TypeScript** | hoje JSDoc+`checkJs` (etapa 1) |
+| Core de **UI/Orquestração** (webview) | **TypeScript** | WASM mediu **4,7× mais lento** no despacho real |
 | Core de **Runtime** (processo local) | **Rust** | ⚠️ **ainda não existe** — é o próximo grande passo |
 | IA, coleta, automação | **Python** | ecossistema é a razão inteira |
 | parsers binários (`.p3d`/`.pbo`) | **Rust** | Python é 140× mais lento em laço de byte |
 | dados e fila entre processos | **PostgreSQL** | `SKIP LOCKED`, sem broker |
 | app desktop | **Tauri (Rust)** | migra do Electron, **pós-1.0.0** |
 
-Go, C e C++ ficam de fora, com motivo escrito no ADR. **A fronteira entre
-linguagens vai onde o volume por travessia é alto e a frequência é baixa** — onde
-a frequência é alta e o volume é baixo, a fronteira é o gargalo.
+Go e C continuam de fora. **C++ voltou ao escopo em 2026-11-24** (#540/ADR-005)
+**apenas quanto à presença**: forma, escopo e fronteira seguem pendentes (D4); a
+biblioteca nativa com C ABI é proposta, condicionada a benchmark. A exclusão de
+C++ do ADR-004 foi revogada, o resto da análise continua válido. A #540 §15 também
+propõe fundir Core de UI e Host em um host Rust único — proposta (D5), não
+decisão. **A fronteira entre linguagens vai onde o volume por travessia é alto e a
+frequência é baixa** — onde a frequência é alta e o volume é baixo, a fronteira é
+o gargalo.
 
 > A lição mais cara da Fase 0: o escalonador media **1073 µs** por tarefa e virou
 > **4,0 µs** — 265× mais rápido, **em JavaScript**, porque o defeito era O(n²).
@@ -126,7 +142,7 @@ ninguém ver).
 
 - **Por feature**: branch própria → commit → PR (draft) → merge quando o **CI ficar verde** → atualizar o `CHANGELOG.md`. Backup branch antes do merge.
 - **JS puro (ES2022)**, sem TypeScript e sem framework. Verificar mudanças de UI no navegador (há a skill `run-projeto-baluarte`).
-- **Mega-plano (#238)**: web = **leve** (conteúdo + ferramentas leves); app = **completo** (IA, Git Nexus, motor real). Gate o pesado por `window.baluarte.native`.
+- **Mega-plano (#238)**: web = **leve** (conteúdo + ferramentas leves); app = **completo** (IA, Git Nexus, motor real). Gate o pesado por `window.baluarte.native`. Na V2 vale o **app-only** ([ADR-006](docs/architecture/decisions/ADR-006-disponibilizacao-somente-app.md)); a divisão web/app acima é da V1.
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

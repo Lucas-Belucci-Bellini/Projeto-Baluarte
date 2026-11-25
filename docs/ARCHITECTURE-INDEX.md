@@ -41,6 +41,52 @@ When branch contents disagree, use this order:
 
 A branch is **not** authoritative merely because it contains more code.
 
+## V2 target architecture
+
+The current V2 architectural reference is
+[`docs/architecture/v2/arquitetura-alvo.md`](architecture/v2/arquitetura-alvo.md),
+derived from issues #540 and #539 and from ADRs 001–009. It separates confirmed
+decisions (✅), proposals (🟣), pending items (🟡) and open conflicts (⛔). Do not
+treat proposals in that document — including the recommended stack in #540 §15 —
+as approved architecture.
+
+D5, D6 and D7 were approved explicitly by the owner on 2026-11-24 and are now
+closed as [ADR-007](architecture/decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md)
+(two nuclei), [ADR-008](architecture/decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md)
+(hybrid execution) and [ADR-009](architecture/decisions/ADR-009-comunicacao-por-fronteira.md)
+(communication per boundary). D8 (persistence) and D13 (shell) remain open.
+
+The V1 freeze point is the release `v1.3.8`, identified by commit
+`7cce9d42bf756afcb1feffb7e05a4e87f0020616`, formalized on 2026-11-24 in
+[ADR-010](architecture/decisions/ADR-010-ponto-de-congelamento-efetivo-da-v1.md).
+The historic `1.0.0` was never published and no retroactive tag is created. The
+release's eight assets are tied to that commit by a workflow run whose
+`head_sha` matches it — strongly indicated, not cryptographically proven; the
+release object itself predates the run and its authorship is unidentified.
+
+Four supporting documents record how that decision was reached. None of them is
+a decision, and none overrides the ADRs:
+
+- [`analise-decisoes-d5-d6-d7.md`](architecture/v2/analise-decisoes-d5-d6-d7.md) —
+  long-form technical study: alternatives, four complete architectures, estimated
+  versus measured costs, falsification criteria, and what still needs measuring.
+- [`auditoria-evidencias-d5-d6-d7.md`](architecture/v2/auditoria-evidencias-d5-d6-d7.md) —
+  independent audit of that evidence: benchmarks re-run and classified, prototype
+  status (implemented / tested / integrated) verified, ARQ-1 checked axis by axis.
+- [`plano-prontidao-arq1.md`](architecture/v2/plano-prontidao-arq1.md) — readiness
+  plan: the seven audit adjustments mapped to verifiable criteria, architectural
+  approval separated from operational readiness, and gates P0–P5 per stage.
+- [`proposta-core-e-fronteiras.md`](architecture/v2/proposta-core-e-fronteiras.md) —
+  decision dossier with options, recommendation and the draft that preceded the
+  ADRs.
+
+Read the study for *why*, the audit for *how far the evidence actually goes*, the
+readiness plan for *what must be true before each stage*, and the dossier for
+*which alternatives were weighed*. Approval of ADR-007/008/009 did not complete
+any operational requirement: Windows coverage, process supervision, cross-platform
+shutdown, the Python worker distribution and packaging remain to be built, under
+gates P1–P5.
+
 ## Ecosystem navigation
 
 The Baluarte coordinates these repositories:
@@ -82,9 +128,10 @@ An agent working on Baluarte must not infer architecture from a random branch. I
 
 1. this file;
 2. `docs/ECOSYSTEM-CONTINUATION-STATE.md`;
-3. `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
-4. the relevant domain specification;
-5. the current `main` implementation.
+3. `docs/architecture/v2/arquitetura-alvo.md` (V2 target architecture; check the decided/proposed/pending marks);
+4. `docs/ECOSYSTEM-KNOWLEDGE-MESH-MASTERPLAN.md`;
+5. the relevant domain specification;
+6. the current `main` implementation.
 
 Then it may inspect historical or feature branches when needed.
 
@@ -92,4 +139,4 @@ Then it may inspect historical or feature branches when needed.
 
 Build the **branch-to-subsystem inventory** and connect it to the ecosystem continuation state. The objective is to make the repository navigable by an AI or developer without manually understanding hundreds of branches.
 
-Last verified: 2026-08-16.
+Last verified: 2026-11-24.

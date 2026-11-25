@@ -1,5 +1,14 @@
 # Visão da V2 — a bússola
 
+> 📌 **Atualização 2026-11-24.** A direção arquitetural vigente da V2 está em
+> [`v2/arquitetura-alvo.md`](./v2/arquitetura-alvo.md) — derivada das issues
+> [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539) e
+> [#540](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540) e
+> registrada nos [ADR-005](./decisions/ADR-005-v2-app-typescript-backend-poliglota.md)
+> e [ADR-006](./decisions/ADR-006-disponibilizacao-somente-app.md). Este documento
+> permanece como registro da visão original; as partes revistas ou reabertas estão
+> apontadas no documento novo.
+>
 > ⚠️ **Este documento não é para ser implementado agora.**
 >
 > Ele existe porque a issue [#420](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/420)

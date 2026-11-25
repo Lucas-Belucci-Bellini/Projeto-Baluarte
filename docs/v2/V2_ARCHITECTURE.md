@@ -1,5 +1,12 @@
 # V2 — Proposta de arquitetura
 
+> 📌 **Atualização 2026-11-24.** A referência arquitetural vigente da V2 está em
+> [`../architecture/v2/arquitetura-alvo.md`](../architecture/v2/arquitetura-alvo.md)
+> (issues [#539](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/539)
+> e [#540](https://github.com/Lucas-Belucci-Bellini/Projeto-Baluarte/issues/540)).
+> Este documento continua sendo o registro do diagnóstico da V1 e do nascimento do
+> Module System; ele não é a arquitetura-alvo completa.
+>
 > **Status: proposta.** Nenhuma linha de Core foi escrita. Este documento é o
 > passo 1 da ordem do [`V2_MASTER_PLAN.md`](./V2_MASTER_PLAN.md) §26
 > (*arquitetura → Core → Module System → contratos → migração → módulos*) e
@@ -287,3 +294,6 @@ solicitar decisão*:
 4. **JS puro na V2?** A V1 é "JS puro, sem framework, não negociável". O #420
    menciona TypeScript para a V2. Contratos de módulo são exatamente onde tipos
    pagam mais. **Continua não negociável, ou a V2 reabre isso?**
+   → **Respondida pela #540 §1:** todo o frontend da V2 é TypeScript
+   ([ADR-005](../architecture/decisions/ADR-005-v2-app-typescript-backend-poliglota.md)).
+   O item fica como registro da dúvida original.

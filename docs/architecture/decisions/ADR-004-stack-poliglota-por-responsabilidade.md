@@ -1,11 +1,26 @@
 # ADR-004 — Stack poliglota por responsabilidade, e onde ficam as fronteiras
 
-- **Status:** aceita
+- **Status:** aceita, **parcialmente revista** pelo [ADR-005](./ADR-005-v2-app-typescript-backend-poliglota.md): a exclusão de C++ foi revogada e o escopo “interface web” foi substituído pela disponibilização somente como app ([ADR-006](./ADR-006-disponibilizacao-somente-app.md)). O restante — inclusive Rust no Runtime, Python em IA/automação e a fronteira medida — continua válido.
 - **Data:** 2026-08-11
 - **Contexto:** #420 (arquitetura), #423 (ordem de construção)
 - **Medição:** [`v2/bench/RESULTADOS.md`](../../../v2/bench/RESULTADOS.md)
 - **Análise completa:** [`docs/v2/V2_STACK_REVIEW.md`](../../v2/V2_STACK_REVIEW.md)
 - **Substitui:** a conclusão de `docs/v2/V2_STACK.md`
+
+> **⛔ Correção (2026-11-24) — o marco "pós-1.0.0" é o congelamento da V1, base
+> `v1.3.8`.** A decisão situa a migração do Electron para Tauri "pós-1.0.0" (linha
+> do app desktop, na tabela) e "depois da tag `v1.0.0`" (último parágrafo),
+> justificando a espera pelo fato de a migração mexer "no app que o gate de
+> release protege". Esse marco é o **congelamento da V1** — a tag citada nunca foi
+> publicada, e a base efetiva é a `v1.3.8`, commit
+> `7cce9d42bf756afcb1feffb7e05a4e87f0020616`, conforme o
+> [ADR-010](./ADR-010-ponto-de-congelamento-efetivo-da-v1.md) §5. Não há
+> equivalência forçada: o critério declarado aqui sempre foi o gate de release, e
+> é a esse gate que o ADR-010 dá nome e data.
+>
+> O conteúdo da decisão **não muda**: Tauri continua situado depois do
+> congelamento, a migração continua condicionada a ele, e a escolha do shell
+> (**D13**) permanece aberta. O texto original fica como registro de 2026-08-11.
 
 ## Contexto
 

@@ -886,6 +886,17 @@ ADR-006-permissions.md
 ADR-007-jarvis.md
 ```
 
+> **Nota editorial (2026-11-24).** Os sete arquivos acima são **propostas
+> históricas** registradas na issue #420, não ADRs adotados. Nenhum deles existe
+> em `docs/architecture/decisions/`. A numeração 001–007 foi reaproveitada por
+> decisões diferentes: o
+> [ADR-007](../../architecture/decisions/ADR-007-dois-nucleos-core-orquestracao-host-runtime.md)
+> efetivo trata dos dois núcleos (Core/orquestração × host/runtime), não de um
+> "Jarvis"; o ADR-002 efetivo é permissões deny-by-default, não "state"; o
+> ADR-003 efetivo é congelamento da V1, não "storage". A série vigente está em
+> [docs/architecture/README.md](../../architecture/README.md). O bloco acima
+> permanece como foi capturado.
+
 Isso evita daqui a seis meses você olhar para um código e pensar:
 
 > "Por que diabos eu fiz desse jeito?"
