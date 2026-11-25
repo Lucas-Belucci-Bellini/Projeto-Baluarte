@@ -152,8 +152,11 @@ Regras que acompanham a matriz:
 
 ## Restrições e condições
 
-**Não decidido aqui.** A engine da fila (D8); o shell e seu IPC nativo (D13); o
-escopo e a forma de C++ (D4); o empacotamento (D9); as plataformas (D10).
+**Não decidido aqui.** A engine da fila (D8); o shell e seu IPC nativo (D13);
+o caso de uso, o escopo concreto e a confirmação de ganho para a entrada de C++
+(D4); o empacotamento (D9); e as plataformas (D10). A forma condicional de C++
+como biblioteca isolada in-process vem do ADR-008; este ADR condiciona C ABI ou
+bridge gerada à aprovação do caso de uso em D4.
 
 **Protobuf e sockets não são decisões gerais.** Ambos permanecem opções
 condicionadas a medição (volume de payload, múltiplos clientes) e exigiriam
