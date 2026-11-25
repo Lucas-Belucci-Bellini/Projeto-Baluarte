@@ -115,7 +115,7 @@ Para não confundir protótipo com produto entregue:
 - **nenhum inventário da V1** para migração (ver [§14](#14-migração-v1--v2));
 - **nenhuma Data/Evidence Layer completa** — há migrações e modelos em `v2/data/`,
   não a camada fechada;
-- **nenhum ADR** para as decisões D1–D13.
+- **nenhum ADR** para as decisões D1–D4 e D8–D13.
 
 O que existe é fundação testada: Core de UI prototipado, Runtime mínimo em Rust,
 worker Python, fila em Postgres, módulos de prova e harness.
@@ -215,7 +215,7 @@ processo, biblioteca ou pacote — isso é **D6**, decidido no
 | IA, coleta, automação, integrações flexíveis | **Python** | ✅ ADR-004 + [ADR-008](../decisions/ADR-008-execucao-hibrida-por-fronteiras-de-processo.md) | roda em processo separado; supervisão é capacidade **a construir** |
 | Parsers binários (`.p3d`, `.pbo`) | Rust | ✅ ADR-004 | Python era 140× mais lento em laço de byte |
 | Parsers de conteúdo/documento | Python | ✅ ADR-004 | ecossistema de parsing e NLP |
-| Bibliotecas nativas especializadas / SDKs C/C++ | **C++** | ✅ presença (ADR-005) · 🟡 escopo (D4) | #540 confirma a presença; a forma (biblioteca C ABI) é **proposta** |
+| Bibliotecas nativas especializadas / SDKs C/C++ | **C++** | ✅ presença na direção do backend (ADR-005) · 🟡 caso de uso e entrada efetiva (D4) | D6/ADR-008 condiciona a entrada a ganho medido e, se entrar, limita a forma a biblioteca isolada in-process; C ABI/bridge é mecanismo condicional do ADR-009 |
 | Camada de dados e persistência | 🟡 A definir | 🟡 Pendente (D8) + ⛔ | ADR-004 fixa Postgres; #540 mantém pendente ([§9.3](#93-persistência--pendência-que-trava-decisões)) |
 | Mecanismo de comunicação entre linguagens | **Por fronteira** | ✅ Decidido (D7) | [ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md); detalhe em [§8](#8-contratos-e-comunicação) |
 | Shell do aplicativo | 🟡 A definir | 🟡 Pendente (D13) + ⛔ | direção anterior: Tauri (ADR-004), não revogada |
@@ -230,10 +230,12 @@ processo, biblioteca ou pacote — isso é **D6**, decidido no
 - **Python implementa workers** — IA, automação, dados, integração — sob
   inicialização, permissão, timeout, cancelamento e encerramento do Core. Worker
   não abre API pública por padrão.
-- **C++, quando entrar, entra como biblioteca nativa isolada** — não como processo
-  nem como segundo Core. A forma e a interface (inclusive a hipótese de C ABI) e
-  o escopo são pendência **D4**; sem benchmark, não se cria a fronteira. Não
-  duplicar o que Rust já faz sem ganho medido.
+- **C++, se for incorporado, entra como biblioteca nativa isolada in-process**, não
+  como processo nem como segundo Core, conforme a decisão condicional D6/ADR-008.
+  **D4** decide o caso de uso, o escopo concreto e se há ganho suficiente para
+  justificar sua entrada; a interface concreta (C ABI ou bridge gerada) segue
+  condicionada ao contrato de fronteira do ADR-009. Sem caso real e benchmark, não
+  se cria a integração.
 - **Uma regra de negócio tem um único dono.** Se a mesma regra aparecer em duas
   linguagens, uma das duas está errada.
 - **Parsers têm dono por tipo de dado:** binário e laço quente (`.p3d`, `.pbo`)
@@ -403,7 +405,7 @@ sem contrato é o defeito que a V2 existe para não repetir.
 | Core de UI ↔ Host (Rust) | IPC do shell que D13 escolher, com allowlist, envelope versionado, prazo, cancelamento, limite de bytes na requisição **e** na resposta e erro com código estável | ✅ decidido ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); hoje a ponte é JS |
 | Host ↔ worker Python — chamada curta | JSON-lines sobre stdio, worker iniciado pelo Host, uma requisição em voo | ✅ decidido ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)) |
 | Host ↔ worker Python — trabalho longo | fila com `SKIP LOCKED` | ✅ decidido como **mecanismo** ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); no protótipo, sobre Postgres — a **engine** segue em conflito (D8, [§9.3](#93-persistência--pendência-que-trava-decisões)) |
-| Host ↔ biblioteca C++ | C ABI in-process: ownership, códigos de erro, thread-safety | ✅ forma decidida ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)), condicionada a D4 medir ganho |
+| Host ↔ biblioteca C++ | C ABI (ou bridge gerada) in-process, com ownership, códigos de erro e thread-safety | 🟡 mecanismo condicional do ADR-009; só se D4 confirmar caso de uso e ganho — não há integração aprovada para implementação antes disso |
 | Módulo ↔ Core | API e eventos versionados; manifesto e capacidades | ✅ decidido ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); protótipo validado |
 | Eventos entre módulos | Event Bus com origem, versão, correlação e curinga | ✅ protótipo |
 | Módulo ↔ persistência | contratos de dados e serviços autorizados; sem conexão própria | ✅ contrato pelo Core ([ADR-009](../decisions/ADR-009-comunicacao-por-fronteira.md)); engine conforme D8 |
