@@ -145,9 +145,11 @@ Regras que acompanham a tabela:
 ## Restrições e condições
 
 **Não decidido aqui.** O shell (D13); empacotamento, atualização e rollback (D9);
-plataformas suportadas (D10); escopo e forma de C++ (D4); engine de persistência
-(D8). A forma escolhida é compatível com as opções em aberto — é isso que permite
-decidir D6 antes delas.
+plataformas suportadas (D10); o caso de uso, o escopo concreto e a confirmação de
+ganho que justificam a entrada de C++ (D4); e a engine de persistência (D8).
+A forma condicional para eventual entrada de C++ — biblioteca isolada in-process
+— está fixada no item 4. Qualquer proposta de C++ como processo ou em outra forma
+exige novo ADR que reabra D6 antes de implementação.
 
 **Nenhuma promessa de recuperação automática.** Este ADR não afirma que o
 aplicativo reinicia componentes sozinho. Detecção de queda, reinício com teto,
