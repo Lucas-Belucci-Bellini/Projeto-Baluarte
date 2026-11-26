@@ -39,3 +39,4 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run tipos:v2
+      - run: npm run tipos:v2:ts
