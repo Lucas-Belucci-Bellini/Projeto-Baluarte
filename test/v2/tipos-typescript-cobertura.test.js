@@ -40,6 +40,7 @@ function arquivosDoProjetoTypeScript() {
 
 test('o gate TypeScript dedicado é estrito e não emite artefatos', () => {
   assert.equal(config.compilerOptions?.strict, true);
+  assert.equal(config.compilerOptions?.skipLibCheck, false);
   assert.equal(config.compilerOptions?.noEmit, true);
   assert.equal(config.compilerOptions?.allowImportingTsExtensions, true);
   assert.deepEqual(config.compilerOptions?.types, []);
