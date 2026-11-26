@@ -115,6 +115,7 @@ export function criarFakeStagingRls(
   const memories = new Map<string, FakeMemory>();
   const muralPosts = new Map<string, FakeMuralPost>();
   const auditEntries: FakeRlsAuditEntry[] = [];
+  const fixtureIds = new Set<string>(Object.values(FIXTURE_IDS));
 
   function snapshot(): FakeRlsSnapshot {
     return clone({
@@ -225,7 +226,7 @@ export function criarFakeStagingRls(
     let removed = 0;
     for (const table of [profiles, memories, muralPosts]) {
       for (const [id, row] of table.entries()) {
-        if ('fixtureId' in row && Object.values(FIXTURE_IDS).includes(row.fixtureId)) {
+        if ('fixtureId' in row && fixtureIds.has(row.fixtureId)) {
           table.delete(id);
           removed += 1;
         }
