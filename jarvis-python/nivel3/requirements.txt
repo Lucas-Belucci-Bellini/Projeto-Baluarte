@@ -1,6 +1,6 @@
-gitpython==3.1.43
-requests==2.32.3
-python-dotenv==1.0.1
+gitpython==3.2.1
+requests==2.33.0
+python-dotenv==1.2.2
 anthropic==0.40.0
 ollama==0.4.4
 pyttsx3==2.90
