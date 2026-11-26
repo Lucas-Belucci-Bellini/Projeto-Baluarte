@@ -38,6 +38,9 @@ jobs:
       - name: Typecheck V2
         run: npm run tipos:v2
 
+      - name: Native TypeScript V2 gate
+        run: npm run tipos:v2:ts
+
       # O portão abre um Chromium de verdade. O `npm ci` traz a biblioteca do
       # Playwright, não o navegador — sem este passo o `v2:integracao` morre
       # antes da primeira asserção. Ficou invisível porque o `Typecheck V2`
