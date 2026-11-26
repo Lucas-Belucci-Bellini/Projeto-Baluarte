@@ -1,7 +1,7 @@
 /** Coordinates multiple Runtime-managed modules using dependency-safe parallel batches. */
 
 /** @typedef {{start: (id: string) => Promise<unknown>, stop: (id: string) => Promise<unknown>}} RuntimeGroupManager */
-/** @typedef {{listar: () => ReadonlyArray<{id: string}>}} RuntimeGroupRegistry */
+/** @typedef {{listar: () => ReadonlyArray<{id: string, dependsOn?: ReadonlyArray<string>}>}} RuntimeGroupRegistry */
 /** @typedef {{order: () => ReadonlyArray<string>}} RuntimeDependencies */
 /** @typedef {{batches: () => ReadonlyArray<ReadonlyArray<string>>}} RuntimeBatches */
 /** @typedef {{groupBatchStarted?: (index: number, batch: ReadonlyArray<string>) => void, groupBatchReady?: (index: number, batch: ReadonlyArray<string>) => void, groupStartupFailed?: (error: unknown) => void, groupRollback?: (ids: ReadonlyArray<string>) => void, groupBatchStopped?: (index: number, ids: ReadonlyArray<string>) => void, groupShutdownFailed?: (errors: ReadonlyArray<{id: string, error: unknown}>) => void}} RuntimeGroupEvents */
@@ -31,12 +31,72 @@ export function criarRuntimeManagerGroup(options = {}) {
   /* Ver `runtime-supervisor.js`: o estreitamento das guardas não atravessa a
    * fronteira das funções declaradas abaixo. */
   const gerente = manager;
+  const catalogo = registry;
+  const plano = dependencies;
   const lotes = batches;
+
+  /** @returns {ReadonlyArray<ReadonlyArray<string>>} */
+  function planoValidado() {
+    const order = [...plano.order()];
+    const plannedBatches = lotes.batches().map(batch => [...batch]);
+    const flattened = plannedBatches.flat();
+    const orderIds = new Set(order);
+    const batchIds = new Set(flattened);
+    const batchesAreNonEmpty = plannedBatches.every(batch => batch.length > 0);
+    const sameMembership = order.length === flattened.length
+      && orderIds.size === order.length
+      && batchIds.size === flattened.length
+      && orderIds.size === batchIds.size
+      && [...orderIds].every(id => batchIds.has(id));
+
+    const registryEntries = catalogo.listar();
+    const registryIds = new Set(registryEntries.map(entry => entry.id));
+    const registryIsDescribed = registryEntries.length > 0;
+    const registryMembership = !registryIsDescribed
+      || (registryEntries.length === registryIds.size
+        && registryIds.size === orderIds.size
+        && [...registryIds].every(id => orderIds.has(id)));
+
+    const orderPosition = new Map(order.map((id, index) => [id, index]));
+    const batchPosition = new Map();
+    for (let index = 0; index < plannedBatches.length; index++) {
+      for (const id of plannedBatches[index]) batchPosition.set(id, index);
+    }
+
+    let dependenciesAreCoherent = true;
+    if (registryIsDescribed) {
+      for (const entry of registryEntries) {
+        for (const dependency of entry.dependsOn ?? []) {
+          const dependencyOrder = orderPosition.get(dependency);
+          const entryOrder = orderPosition.get(entry.id);
+          const dependencyBatch = batchPosition.get(dependency);
+          const entryBatch = batchPosition.get(entry.id);
+          if (!registryIds.has(dependency)
+            || dependencyOrder === undefined
+            || entryOrder === undefined
+            || dependencyOrder >= entryOrder
+            || dependencyBatch === undefined
+            || entryBatch === undefined
+            || dependencyBatch >= entryBatch) {
+            dependenciesAreCoherent = false;
+          }
+        }
+      }
+    }
+
+    if (!(batchesAreNonEmpty && sameMembership && registryMembership && dependenciesAreCoherent)) {
+      const error = new Error('Plano de dependências e batches divergentes');
+      Object.assign(error, { details: { order, batches: plannedBatches } });
+      throw error;
+    }
+    return plannedBatches;
+  }
 
   async function startAll() {
     const started = [];
     try {
-      for (const [index, batch] of lotes.batches().entries()) {
+      const plannedBatches = planoValidado();
+      for (const [index, batch] of plannedBatches.entries()) {
         events?.groupBatchStarted?.(index, batch);
         const results = await Promise.allSettled(batch.map(id => gerente.start(id)));
         const failure = results.find(result => result.status === 'rejected');
@@ -61,7 +121,7 @@ export function criarRuntimeManagerGroup(options = {}) {
 
   async function stopAll() {
     const errors = [];
-    const batchesInReverse = [...lotes.batches()].reverse();
+    const batchesInReverse = [...planoValidado()].reverse();
     for (let reverseIndex = 0; reverseIndex < batchesInReverse.length; reverseIndex++) {
       const batch = batchesInReverse[reverseIndex];
       const index = batchesInReverse.length - reverseIndex - 1;
