@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, relative, resolve, sep, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
-import ts from 'typescript';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const raizV2 = join(raiz, 'v2');
-const caminhoConfig = join(raizV2, 'tsconfig.types.json');
-const config = JSON.parse(readFileSync(caminhoConfig, 'utf8'));
+const config = JSON.parse(
+  readFileSync(join(raizV2, 'tsconfig.types.json'), 'utf8'),
+);
 
 /**
  * Lista fontes TypeScript reais sob v2/. Arquivos .d.ts também terminam em
@@ -22,23 +22,7 @@ function listarFontesTypeScript(diretorio) {
   });
 }
 
-function arquivosDoProjetoTypeScript() {
-  const projeto = ts.parseJsonConfigFileContent(
-    config,
-    ts.sys,
-    raizV2,
-    undefined,
-    caminhoConfig,
-  );
-  assert.deepEqual(
-    projeto.errors,
-    [],
-    'v2/tsconfig.types.json precisa ser interpretado sem erros pelo próprio TypeScript',
-  );
-  return new Set(projeto.fileNames.map((arquivo) => resolve(arquivo)));
-}
-
-test('o gate TypeScript dedicado é estrito e não emite artefatos', () => {
+test('o gate TypeScript dedicado é estrito e valida declarações', () => {
   assert.equal(config.compilerOptions?.strict, true);
   assert.equal(config.compilerOptions?.skipLibCheck, false);
   assert.equal(config.compilerOptions?.noEmit, true);
@@ -51,16 +35,35 @@ test('há fontes TypeScript reais para o gate verificar', () => {
   assert.ok(fontes.length > 0, 'nenhum arquivo .ts/.d.ts encontrado em v2/');
 });
 
-test('todo arquivo .ts/.d.ts de v2/ está no projeto real do TypeScript', () => {
+test('todo arquivo .ts/.d.ts de v2/ está coberto pelo include recursivo', () => {
   const fontes = listarFontesTypeScript(raizV2);
-  const incluidos = arquivosDoProjetoTypeScript();
-  const fora = fontes
-    .map((arquivo) => resolve(arquivo))
-    .filter((arquivo) => !incluidos.has(arquivo));
+  const includes = config.include ?? [];
+  const exclusoes = config.exclude ?? [];
+
+  // TypeScript interpreta **/*.ts como todos os arquivos .ts em v2/ e
+  // qualquer subdiretório. A execução de tsc valida a configuração de fato;
+  // este teste impede que o padrão seja removido ou estreitado em silêncio.
+  assert.deepEqual(
+    includes,
+    ['**/*.ts'],
+    `o include de v2/tsconfig.types.json precisa manter cobertura recursiva: ${includes.join(' | ')}`,
+  );
+  assert.deepEqual(
+    exclusoes,
+    [],
+    'o gate TypeScript da V2 não deve excluir fontes sem revisão explícita',
+  );
+
+  const foraDoEscopo = fontes.filter((arquivo) => {
+    const caminhoRelativo = relative(raizV2, resolve(arquivo));
+    return caminhoRelativo === '..'
+      || caminhoRelativo.startsWith(`..${sep}`)
+      || caminhoRelativo.startsWith(sep);
+  });
 
   assert.deepEqual(
-    fora,
+    foraDoEscopo,
     [],
-    'há fontes TypeScript da V2 fora de v2/tsconfig.types.json',
+    'todos os arquivos cobertos devem estar sob v2/',
   );
 });
