@@ -40,6 +40,7 @@ harness/      banco de prova: a V2 dirigindo o router REAL da V1
 ```sh
 npm test                 # JS — junto com os da V1
 npm run tipos:v2         # verificação de tipo (JSDoc + checkJs); exit 0 = limpo
+npm run tipos:v2:ts      # fontes TypeScript nativos (.ts/.d.ts) da V2; sem escopo legado da V1
 ```
 
 Postgres e worker Python: ver [`data/README.md`](./data/README.md).
