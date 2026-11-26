@@ -88,6 +88,11 @@ jobs:
       - name: Tipos da V2 (JSDoc + checkJs)
         run: npm run tipos:v2
 
+      # Cobertura separada para fontes .ts/.d.ts nativos da V2. O tsconfig
+      # raiz inclui código legado da V1 e não deve ser usado como gate da V2.
+      - name: Tipos nativos da V2 (TypeScript)
+        run: npm run tipos:v2:ts
+
       # A tabela de estabilidade do README é a PROMESSA PÚBLICA da 1.0.0 — "isto
       # aqui é estável". Promessa que mora em dois lugares diverge: alguém
       # promove uma flag no código, esquece o README, e a partir daí o README
