@@ -1,0 +1,26 @@
+{
+  "// purpose": [
+    "Gate específico dos fontes TypeScript nativos da V2.",
+    "O tsconfig.json raiz também inclui muitos fontes legados de src/ (V1);",
+    "não é adequado usá-lo como portão obrigatório da V2.",
+    "Este include recursivo cobre todo .ts/.d.ts dentro de v2/, sem importar",
+    "arquivos JavaScript da V1. O checkJs dos arquivos JS permanece em jsconfig.json."
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": false,
+    "allowImportingTsExtensions": true,
+    "types": [],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}
