@@ -24,6 +24,9 @@ jobs:
       - name: V2 JSDoc type gate
         run: npm run tipos:v2
 
+      - name: V2 native TypeScript gate
+        run: npm run tipos:v2:ts
+
   rust-specialist:
     name: Rust / Runtime specialist
     runs-on: ubuntu-latest
